@@ -17,13 +17,14 @@
 
 #pragma once
 
-#include "helpers/MultiArray.h"
+#include "helpers/EnumArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Nation.h"
+#include <array>
+#include <cstdint>
 
-// Konstanten für den Punkt, ab dem die Träger "verschwinden" bei einem Gebäude, jeweils als Y-Angabe
-
-const helpers::MultiArray<signed char, NUM_NATIONS, NUM_BUILDING_TYPES> DOOR_CONSTS = {
+/// Y-value for the point where the carrier disappears inside the building for each nation and building
+const std::array<helpers::EnumArray<int8_t, BuildingType>, NUM_NATIONS> DOOR_CONSTS = {
   {// Nubier
    {5, 10, 13, 0,  10, 0,  0,  0, 0,  6,  8, 8,  8,  8, 6,  0, 10, 10, 12, 14,
     9, 5,  11, 19, 19, 12, 18, 0, -6, 19, 0, 12, 11, 6, 10, 0, 0,  -1, 4,  13},

@@ -17,9 +17,9 @@
 
 #pragma once
 
+#include "helpers/EnumArray.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/BuildingType.h"
-#include <vector>
 
 namespace AIJH {
 
@@ -54,7 +54,7 @@ private:
     /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
     BuildingCount buildingNums;
     /// Contains how many buildings of every type is wanted
-    std::vector<unsigned> buildingsWanted;
+    helpers::EnumArray<unsigned, BuildingType> buildingsWanted;
     bool expansionRequired;
 
     void RefreshBuildingNums(const AIPlayerJH& aijh);

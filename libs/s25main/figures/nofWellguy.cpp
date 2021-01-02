@@ -74,13 +74,13 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     if(now_id < 2) // laufen 1
     {
         if(wpNation == NAT_ROMANS)
-            LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][0], now_id % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     } else if(now_id < 4) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
-            LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][1], now_id % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     } else if(now_id < 8) // laufen 3
@@ -109,13 +109,13 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     } else if(now_id < max_id - 2) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
-            LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][4], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     } else // laufen 1
     {
         if(wpNation == NAT_ROMANS)
-            LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][5], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }

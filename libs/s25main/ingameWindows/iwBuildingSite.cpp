@@ -35,7 +35,7 @@ iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const b
       gwv(gwv), buildingsite(buildingsite)
 {
     // Bild des Gebäudes
-    AddImage(0, DrawPoint(113, 130), buildingsite->GetBuildingImage());
+    AddImage(0, DrawPoint(113, 130), &buildingsite->GetBuildingImage());
     // Gebäudename
     AddText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
@@ -86,12 +86,12 @@ void iwBuildingSite::Msg_PaintAfter()
 
         if(i == 0)
         {
-            wares_count = BUILDING_COSTS[buildingsite->GetNation()][buildingsite->GetBuildingType()].boards;
+            wares_count = BUILDING_COSTS[buildingsite->GetBuildingType()].boards;
             wares_used = buildingsite->getUsedBoards();
             wares_delivered = buildingsite->getBoards() + wares_used;
         } else
         {
-            wares_count = BUILDING_COSTS[buildingsite->GetNation()][buildingsite->GetBuildingType()].stones;
+            wares_count = BUILDING_COSTS[buildingsite->GetBuildingType()].stones;
             wares_used = buildingsite->getUsedStones();
             wares_delivered = buildingsite->getStones() + wares_used;
         }

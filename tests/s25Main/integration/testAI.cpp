@@ -34,6 +34,13 @@
 #include <memory>
 #include <set>
 
+// LCOV_EXCL_START
+static std::ostream& operator<<(std::ostream& out, const BuildingType e)
+{
+    return out << static_cast<unsigned>(rttr::enum_cast(e));
+}
+// LCOV_EXCL_STOP
+
 // We need border land
 using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
 
@@ -65,9 +72,9 @@ BOOST_AUTO_TEST_SUITE(AI)
 BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, WorldWithGCExecution<1>)
 {
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    BOOST_TEST(playerHasBld(player, BLD_HEADQUARTERS));
+    BOOST_TEST(playerHasBld(player, BuildingType::Headquarters));
     MapPoint pos = hqPos;
-    for(const auto bld : {BLD_WOODCUTTER, BLD_BARRACKS, BLD_STOREHOUSE})
+    for(const auto bld : {BuildingType::Woodcutter, BuildingType::Barracks, BuildingType::Storehouse})
     {
         pos = world.MakeMapPoint(pos + Position(2, 0));
         BOOST_TEST_INFO(bld);
@@ -157,7 +164,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 
     // Build building
     const MapPoint bldPos = world.MakeMapPoint(hqPos + Position(5, 0));
-    this->SetBuildingSite(bldPos, BLD_BARRACKS);
+    this->SetBuildingSite(bldPos, BuildingType::Barracks);
     BOOST_REQUIRE(world.GetSpecObj<noBuildingSite>(bldPos));
     em.ExecuteNextGF();
     ai->RunGF(em.GetCurrentGF(), true);
@@ -258,13 +265,13 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
         {
             gc->Execute(world, curPlayer);
         }
-        if(playerHasBld(player, BLD_SAWMILL) && playerHasBld(player, BLD_WOODCUTTER)
-           && playerHasBld(player, BLD_FORESTER))
+        if(playerHasBld(player, BuildingType::Sawmill) && playerHasBld(player, BuildingType::Woodcutter)
+           && playerHasBld(player, BuildingType::Forester))
             break;
     }
-    BOOST_REQUIRE(playerHasBld(player, BLD_SAWMILL));
-    BOOST_REQUIRE(playerHasBld(player, BLD_WOODCUTTER));
-    BOOST_REQUIRE(playerHasBld(player, BLD_FORESTER));
+    BOOST_REQUIRE(playerHasBld(player, BuildingType::Sawmill));
+    BOOST_REQUIRE(playerHasBld(player, BuildingType::Woodcutter));
+    BOOST_REQUIRE(playerHasBld(player, BuildingType::Forester));
 }
 
 BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
@@ -295,10 +302,11 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
         {
             gc->Execute(world, curPlayer);
         }
-        if(containsBldType(bldSites, BLD_BARRACKS) || containsBldType(bldSites, BLD_GUARDHOUSE))
+        if(containsBldType(bldSites, BuildingType::Barracks) || containsBldType(bldSites, BuildingType::Guardhouse))
             break;
     }
-    BOOST_REQUIRE(containsBldType(bldSites, BLD_BARRACKS) || containsBldType(bldSites, BLD_GUARDHOUSE));
+    BOOST_REQUIRE(containsBldType(bldSites, BuildingType::Barracks)
+                  || containsBldType(bldSites, BuildingType::Guardhouse));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

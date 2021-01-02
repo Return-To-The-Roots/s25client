@@ -28,7 +28,7 @@
 #include <cmath>
 
 namespace AIJH {
-BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : buildingsWanted(NUM_BUILDING_TYPES), expansionRequired(false)
+BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : buildingsWanted(), expansionRequired(false)
 {
     RefreshBuildingNums(aijh);
     InitBuildingsWanted(aijh);
@@ -52,9 +52,9 @@ bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) con
         return false;
     if(GetNumMilitaryBldSites() > 0 || GetNumMilitaryBlds() > 4)
         return false;
-    bool hasWood = GetNumBuildings(BLD_WOODCUTTER) > 0;
-    bool hasBoards = GetNumBuildings(BLD_SAWMILL) > 0;
-    bool hasStone = GetNumBuildings(BLD_QUARRY) > 0;
+    bool hasWood = GetNumBuildings(BuildingType::Woodcutter) > 0;
+    bool hasBoards = GetNumBuildings(BuildingType::Sawmill) > 0;
+    bool hasStone = GetNumBuildings(BuildingType::Quarry) > 0;
     if(expansionRequired)
     {
         if(hasWood && hasBoards && hasStone)
@@ -69,11 +69,11 @@ bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) con
         for(const noBuilding* bld : blds)
         {
             if(!hasWood)
-                hasWood = aijh.FindPositionForBuildingAround(BLD_WOODCUTTER, bld->GetPos()).isValid();
+                hasWood = aijh.FindPositionForBuildingAround(BuildingType::Woodcutter, bld->GetPos()).isValid();
             if(!hasBoards)
-                hasBoards = aijh.FindPositionForBuildingAround(BLD_SAWMILL, bld->GetPos()).isValid();
+                hasBoards = aijh.FindPositionForBuildingAround(BuildingType::Sawmill, bld->GetPos()).isValid();
             if(!hasStone)
-                hasStone = aijh.FindPositionForBuildingAround(BLD_QUARRY, bld->GetPos()).isValid();
+                hasStone = aijh.FindPositionForBuildingAround(BuildingType::Quarry, bld->GetPos()).isValid();
         }
         return !(hasWood && hasBoards && hasStone);
     }
@@ -109,25 +109,25 @@ unsigned BuildingPlanner::GetNumMilitaryBldSites() const
 void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
 {
     std::fill(buildingsWanted.begin(), buildingsWanted.end(), 0u);
-    buildingsWanted[BLD_FORESTER] = 1;
-    buildingsWanted[BLD_SAWMILL] = 1;
-    buildingsWanted[BLD_WOODCUTTER] = 12;
-    buildingsWanted[BLD_GRANITEMINE] = 0;
-    buildingsWanted[BLD_COALMINE] = 4;
-    buildingsWanted[BLD_IRONMINE] = 2;
-    buildingsWanted[BLD_GOLDMINE] = 1;
-    buildingsWanted[BLD_CATAPULT] = 5;
-    buildingsWanted[BLD_FISHERY] = 6;
-    buildingsWanted[BLD_QUARRY] = 6;
-    buildingsWanted[BLD_HUNTER] = 2;
-    buildingsWanted[BLD_FARM] =
+    buildingsWanted[BuildingType::Forester] = 1;
+    buildingsWanted[BuildingType::Sawmill] = 1;
+    buildingsWanted[BuildingType::Woodcutter] = 12;
+    buildingsWanted[BuildingType::GraniteMine] = 0;
+    buildingsWanted[BuildingType::CoalMine] = 4;
+    buildingsWanted[BuildingType::IronMine] = 2;
+    buildingsWanted[BuildingType::GoldMine] = 1;
+    buildingsWanted[BuildingType::Catapult] = 5;
+    buildingsWanted[BuildingType::Fishery] = 6;
+    buildingsWanted[BuildingType::Quarry] = 6;
+    buildingsWanted[BuildingType::Hunter] = 2;
+    buildingsWanted[BuildingType::Farm] =
       aijh.player.GetInventory().goods[GoodType::Scythe] + aijh.player.GetInventory().people[Job::Farmer];
 
     unsigned numAIRelevantSeaIds = aijh.GetNumAIRelevantSeaIds();
     if(numAIRelevantSeaIds > 0)
     {
-        buildingsWanted[BLD_HARBORBUILDING] = 99;
-        buildingsWanted[BLD_SHIPYARD] = numAIRelevantSeaIds == 1 ? 1 : 99;
+        buildingsWanted[BuildingType::HarborBuilding] = 99;
+        buildingsWanted[BuildingType::Shipyard] = numAIRelevantSeaIds == 1 ? 1 : 99;
     }
 }
 
@@ -138,21 +138,21 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
 
     if(numMilitaryBlds == 0 && aijh.player.GetBuildingRegister().GetStorehouses().size() < 2)
     {
-        buildingsWanted[BLD_FORESTER] = 1;
+        buildingsWanted[BuildingType::Forester] = 1;
         // probably only has 1 saw+carpenter but if that is the case the ai will try to produce 1 additional saw very
         // quickly
-        buildingsWanted[BLD_SAWMILL] = 2;
-        buildingsWanted[BLD_WOODCUTTER] = 2;
-        buildingsWanted[BLD_QUARRY] = 2;
-        buildingsWanted[BLD_GRANITEMINE] = 0;
-        buildingsWanted[BLD_COALMINE] = 0;
-        buildingsWanted[BLD_IRONMINE] = 0;
-        buildingsWanted[BLD_GOLDMINE] = 0;
-        buildingsWanted[BLD_CATAPULT] = 0;
-        buildingsWanted[BLD_FISHERY] = 0;
-        buildingsWanted[BLD_HUNTER] = 0;
-        buildingsWanted[BLD_FARM] = 0;
-        buildingsWanted[BLD_CHARBURNER] = 0;
+        buildingsWanted[BuildingType::Sawmill] = 2;
+        buildingsWanted[BuildingType::Woodcutter] = 2;
+        buildingsWanted[BuildingType::Quarry] = 2;
+        buildingsWanted[BuildingType::GraniteMine] = 0;
+        buildingsWanted[BuildingType::CoalMine] = 0;
+        buildingsWanted[BuildingType::IronMine] = 0;
+        buildingsWanted[BuildingType::GoldMine] = 0;
+        buildingsWanted[BuildingType::Catapult] = 0;
+        buildingsWanted[BuildingType::Fishery] = 0;
+        buildingsWanted[BuildingType::Hunter] = 0;
+        buildingsWanted[BuildingType::Farm] = 0;
+        buildingsWanted[BuildingType::Charburner] = 0;
     } else
     {
         // at least some expansion happened -> more buildings wanted
@@ -162,24 +162,26 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
 
         // foresters
         unsigned max_available_forester = inventory[Job::Forester] + inventory[GoodType::Shovel];
-        unsigned additional_forester = GetNumBuildings(BLD_CHARBURNER);
+        unsigned additional_forester = GetNumBuildings(BuildingType::Charburner);
 
         // 1 mil -> 1 forester, 2 mil -> 2 forester, 4 mil -> 3 forester, 8 mil -> 4 forester, 16 mil -> 5 forester, ...
         // wanted
         if(numMilitaryBlds > 0)
-            buildingsWanted[BLD_FORESTER] = (unsigned)(1.45 * log(numMilitaryBlds) + 1);
+            buildingsWanted[BuildingType::Forester] = (unsigned)(1.45 * log(numMilitaryBlds) + 1);
         // If we are low on wood, we need more foresters
         if(aijh.player.GetBuildingRegister().GetBuildingSites().size()
            > (inventory[GoodType::Boards] + inventory[GoodType::Wood]) * 2)
             additional_forester++;
 
-        buildingsWanted[BLD_FORESTER] += additional_forester;
-        buildingsWanted[BLD_FORESTER] = std::min(max_available_forester, buildingsWanted[BLD_FORESTER]);
+        buildingsWanted[BuildingType::Forester] += additional_forester;
+        buildingsWanted[BuildingType::Forester] =
+          std::min(max_available_forester, buildingsWanted[BuildingType::Forester]);
 
         // woodcutters
         unsigned max_available_woodcutter = inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
-        buildingsWanted[BLD_WOODCUTTER] = std::min(
-          max_available_woodcutter, buildingsWanted[BLD_FORESTER] * 2 + 1); // two per forester + 1 for 'natural' forest
+        buildingsWanted[BuildingType::Woodcutter] =
+          std::min(max_available_woodcutter,
+                   buildingsWanted[BuildingType::Forester] * 2 + 1); // two per forester + 1 for 'natural' forest
 
         ////on maps with many trees the ai will build woodcutters all over the place which means the foresters are not
         /// really required
@@ -187,175 +189,190 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         // of foresters (less) and woodcutters (more)
 
         // fishery & hunter
-        buildingsWanted[BLD_FISHERY] =
+        buildingsWanted[BuildingType::Fishery] =
           std::min(inventory.goods[GoodType::RodAndLine] + inventory.people[Job::Fisher], numMilitaryBlds + 1u);
-        buildingsWanted[BLD_HUNTER] = std::min(inventory.goods[GoodType::Bow] + inventory.people[Job::Hunter], 4u);
+        buildingsWanted[BuildingType::Hunter] =
+          std::min(inventory.goods[GoodType::Bow] + inventory.people[Job::Hunter], 4u);
 
         // quarry: low ware games start at 2 otherwise build as many as we have stonemasons, higher ware games up to 6
         // quarries
         if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 7
            && inventory.people[Job::Stonemason] > 0 && inventory.people[Job::Miner] < 3)
         {
-            buildingsWanted[BLD_QUARRY] = std::max(std::min(inventory.people[Job::Stonemason], numMilitaryBlds), 2u);
+            buildingsWanted[BuildingType::Quarry] =
+              std::max(std::min(inventory.people[Job::Stonemason], numMilitaryBlds), 2u);
         } else
         {
             //>6miners = build up to 6 depending on resources, else max out at miners/2
             if(inventory.people[Job::Miner] > 6)
-                buildingsWanted[BLD_QUARRY] =
+                buildingsWanted[BuildingType::Quarry] =
                   std::min(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Stonemason], 6u);
             else
-                buildingsWanted[BLD_QUARRY] = inventory.people[Job::Miner] / 2;
+                buildingsWanted[BuildingType::Quarry] = inventory.people[Job::Miner] / 2;
 
-            if(buildingsWanted[BLD_QUARRY] > numMilitaryBlds)
-                buildingsWanted[BLD_QUARRY] = numMilitaryBlds;
+            if(buildingsWanted[BuildingType::Quarry] > numMilitaryBlds)
+                buildingsWanted[BuildingType::Quarry] = numMilitaryBlds;
         }
         // sawmills limited by woodcutters and carpenter+saws reduced by char burners minimum of 3
         int resourcelimit = inventory.people[Job::Carpenter] + inventory.goods[GoodType::Saw];
-        int numSawmillsFed =
-          (static_cast<int>(GetNumBuildings(BLD_WOODCUTTER)) - static_cast<int>(GetNumBuildings(BLD_CHARBURNER) * 2))
-          / 2;
-        buildingsWanted[BLD_SAWMILL] =
+        int numSawmillsFed = (static_cast<int>(GetNumBuildings(BuildingType::Woodcutter))
+                              - static_cast<int>(GetNumBuildings(BuildingType::Charburner) * 2))
+                             / 2;
+        buildingsWanted[BuildingType::Sawmill] =
           std::max(std::min(numSawmillsFed, resourcelimit), 3); // min 3
                                                                 // iron smelters limited by iron mines or crucibles
-        buildingsWanted[BLD_IRONSMELTER] = std::min(
-          inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder], GetNumBuildings(BLD_IRONMINE));
+        buildingsWanted[BuildingType::Ironsmelter] =
+          std::min(inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder],
+                   GetNumBuildings(BuildingType::IronMine));
 
-        buildingsWanted[BLD_MINT] = GetNumBuildings(BLD_GOLDMINE);
+        buildingsWanted[BuildingType::Mint] = GetNumBuildings(BuildingType::GoldMine);
         // armory count = smelter -metalworks if there is more than 1 smelter or 1 if there is just 1.
-        buildingsWanted[BLD_ARMORY] = (GetNumBuildings(BLD_IRONSMELTER) > 1) ?
-                                        std::max(0, static_cast<int>(GetNumBuildings(BLD_IRONSMELTER))
-                                                      - static_cast<int>(GetNumBuildings(BLD_METALWORKS))) :
-                                        GetNumBuildings(BLD_IRONSMELTER);
+        buildingsWanted[BuildingType::Armory] =
+          (GetNumBuildings(BuildingType::Ironsmelter) > 1) ?
+            std::max(0, static_cast<int>(GetNumBuildings(BuildingType::Ironsmelter))
+                          - static_cast<int>(GetNumBuildings(BuildingType::Metalworks))) :
+            GetNumBuildings(BuildingType::Ironsmelter);
         if(aijh.ggs.isEnabled(AddonId::HALF_COST_MIL_EQUIP))
-            buildingsWanted[BLD_ARMORY] *= 2;
+            buildingsWanted[BuildingType::Armory] *= 2;
         // brewery count = 1+(armory/5) if there is at least 1 armory or armory /6 for exhaustible mines
-        if(GetNumBuildings(BLD_ARMORY) > 0 && GetNumBuildings(BLD_FARM) > 0)
+        if(GetNumBuildings(BuildingType::Armory) > 0 && GetNumBuildings(BuildingType::Farm) > 0)
         {
             if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-                buildingsWanted[BLD_BREWERY] = 1 + GetNumBuildings(BLD_ARMORY) / 5;
+                buildingsWanted[BuildingType::Brewery] = 1 + GetNumBuildings(BuildingType::Armory) / 5;
             else
-                buildingsWanted[BLD_BREWERY] = 1 + GetNumBuildings(BLD_ARMORY) / 6;
+                buildingsWanted[BuildingType::Brewery] = 1 + GetNumBuildings(BuildingType::Armory) / 6;
         } else
-            buildingsWanted[BLD_BREWERY] = 0;
+            buildingsWanted[BuildingType::Brewery] = 0;
         // metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 iron
         // smelters
-        buildingsWanted[BLD_METALWORKS] = (GetNumBuildings(BLD_IRONSMELTER) > 0) ? 1 : 0;
+        buildingsWanted[BuildingType::Metalworks] = (GetNumBuildings(BuildingType::Ironsmelter) > 0) ? 1 : 0;
 
         // max processing
-        unsigned foodusers = GetNumBuildings(BLD_CHARBURNER) + GetNumBuildings(BLD_MILL) + GetNumBuildings(BLD_BREWERY)
-                             + GetNumBuildings(BLD_PIGFARM) + GetNumBuildings(BLD_DONKEYBREEDER);
+        unsigned foodusers = GetNumBuildings(BuildingType::Charburner) + GetNumBuildings(BuildingType::Mill)
+                             + GetNumBuildings(BuildingType::Brewery) + GetNumBuildings(BuildingType::PigFarm)
+                             + GetNumBuildings(BuildingType::DonkeyBreeder);
 
-        if(GetNumBuildings(BLD_FARM) >= foodusers - GetNumBuildings(BLD_MILL))
-            buildingsWanted[BLD_MILL] = std::min(GetNumBuildings(BLD_FARM) - (foodusers - GetNumBuildings(BLD_MILL)),
-                                                 GetNumBuildings(BLD_BAKERY) + 1);
+        if(GetNumBuildings(BuildingType::Farm) >= foodusers - GetNumBuildings(BuildingType::Mill))
+            buildingsWanted[BuildingType::Mill] =
+              std::min(GetNumBuildings(BuildingType::Farm) - (foodusers - GetNumBuildings(BuildingType::Mill)),
+                       GetNumBuildings(BuildingType::Bakery) + 1);
         else
-            buildingsWanted[BLD_MILL] = GetNumBuildings(BLD_MILL);
+            buildingsWanted[BuildingType::Mill] = GetNumBuildings(BuildingType::Mill);
 
         resourcelimit = inventory.people[Job::Baker] + inventory.goods[GoodType::Rollingpin] + 1;
-        buildingsWanted[BLD_BAKERY] = std::min<unsigned>(GetNumBuildings(BLD_MILL), resourcelimit);
+        buildingsWanted[BuildingType::Bakery] = std::min<unsigned>(GetNumBuildings(BuildingType::Mill), resourcelimit);
 
-        buildingsWanted[BLD_PIGFARM] =
-          (GetNumBuildings(BLD_FARM) < 8) ? GetNumBuildings(BLD_FARM) / 4 : (GetNumBuildings(BLD_FARM) - 2) / 4;
-        if(buildingsWanted[BLD_PIGFARM] > GetNumBuildings(BLD_SLAUGHTERHOUSE) + 1)
-            buildingsWanted[BLD_PIGFARM] = GetNumBuildings(BLD_SLAUGHTERHOUSE) + 1;
-        buildingsWanted[BLD_SLAUGHTERHOUSE] =
-          std::min(inventory.goods[GoodType::Cleaver] + inventory.people[Job::Butcher], GetNumBuildings(BLD_PIGFARM));
+        buildingsWanted[BuildingType::PigFarm] = (GetNumBuildings(BuildingType::Farm) < 8) ?
+                                                   GetNumBuildings(BuildingType::Farm) / 4 :
+                                                   (GetNumBuildings(BuildingType::Farm) - 2) / 4;
+        if(buildingsWanted[BuildingType::PigFarm] > GetNumBuildings(BuildingType::Slaughterhouse) + 1)
+            buildingsWanted[BuildingType::PigFarm] = GetNumBuildings(BuildingType::Slaughterhouse) + 1;
+        buildingsWanted[BuildingType::Slaughterhouse] = std::min(
+          inventory.goods[GoodType::Cleaver] + inventory.people[Job::Butcher], GetNumBuildings(BuildingType::PigFarm));
 
-        buildingsWanted[BLD_WELL] = buildingsWanted[BLD_BAKERY] + buildingsWanted[BLD_PIGFARM]
-                                    + buildingsWanted[BLD_DONKEYBREEDER] + buildingsWanted[BLD_BREWERY];
+        buildingsWanted[BuildingType::Well] =
+          buildingsWanted[BuildingType::Bakery] + buildingsWanted[BuildingType::PigFarm]
+          + buildingsWanted[BuildingType::DonkeyBreeder] + buildingsWanted[BuildingType::Brewery];
 
-        buildingsWanted[BLD_FARM] =
+        buildingsWanted[BuildingType::Farm] =
           std::min<unsigned>(inventory.goods[GoodType::Scythe] + inventory.people[Job::Farmer], foodusers + 3);
 
         if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 3)
         {
             // almost out of new pickaxes and miners - emergency program: get coal,iron,smelter&metalworks
-            buildingsWanted[BLD_COALMINE] = 1;
-            buildingsWanted[BLD_IRONMINE] = 1;
-            buildingsWanted[BLD_GOLDMINE] = 0;
-            buildingsWanted[BLD_IRONSMELTER] = 1;
-            buildingsWanted[BLD_METALWORKS] = 1;
-            buildingsWanted[BLD_ARMORY] = 0;
-            buildingsWanted[BLD_GRANITEMINE] = 0;
-            buildingsWanted[BLD_MINT] = 0;
+            buildingsWanted[BuildingType::CoalMine] = 1;
+            buildingsWanted[BuildingType::IronMine] = 1;
+            buildingsWanted[BuildingType::GoldMine] = 0;
+            buildingsWanted[BuildingType::Ironsmelter] = 1;
+            buildingsWanted[BuildingType::Metalworks] = 1;
+            buildingsWanted[BuildingType::Armory] = 0;
+            buildingsWanted[BuildingType::GraniteMine] = 0;
+            buildingsWanted[BuildingType::Mint] = 0;
         } else // more than 2 miners
         {
             // coal mine count now depends on iron & gold not linked to food or material supply - might have to add a
             // material check if this makes problems
-            if(GetNumBuildings(BLD_IRONMINE) > 0)
-                buildingsWanted[BLD_COALMINE] = GetNumBuildings(BLD_IRONMINE) * 2 - 1 + GetNumBuildings(BLD_GOLDMINE);
+            if(GetNumBuildings(BuildingType::IronMine) > 0)
+                buildingsWanted[BuildingType::CoalMine] =
+                  GetNumBuildings(BuildingType::IronMine) * 2 - 1 + GetNumBuildings(BuildingType::GoldMine);
             else
-                buildingsWanted[BLD_COALMINE] = std::max(GetNumBuildings(BLD_GOLDMINE), 1u);
+                buildingsWanted[BuildingType::CoalMine] = std::max(GetNumBuildings(BuildingType::GoldMine), 1u);
             // more mines planned than food available? -> limit mines
-            if(buildingsWanted[BLD_COALMINE] > 2
-               && buildingsWanted[BLD_COALMINE] * 2 > GetNumBuildings(BLD_FARM) + GetNumBuildings(BLD_FISHERY) + 1)
-                buildingsWanted[BLD_COALMINE] = (GetNumBuildings(BLD_FARM) + GetNumBuildings(BLD_FISHERY)) / 2 + 2;
-            if(GetNumBuildings(BLD_FARM) > 7) // quite the empire just scale mines with farms
+            if(buildingsWanted[BuildingType::CoalMine] > 2
+               && buildingsWanted[BuildingType::CoalMine] * 2
+                    > GetNumBuildings(BuildingType::Farm) + GetNumBuildings(BuildingType::Fishery) + 1)
+                buildingsWanted[BuildingType::CoalMine] =
+                  (GetNumBuildings(BuildingType::Farm) + GetNumBuildings(BuildingType::Fishery)) / 2 + 2;
+            if(GetNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
             {
                 if(aijh.ggs.isEnabled(
                      AddonId::INEXHAUSTIBLE_MINES)) // inexhaustible mines? -> more farms required for each mine
-                    buildingsWanted[BLD_IRONMINE] =
-                      std::min(GetNumBuildings(BLD_IRONSMELTER) + 1, GetNumBuildings(BLD_FARM) * 2 / 5);
+                    buildingsWanted[BuildingType::IronMine] = std::min(GetNumBuildings(BuildingType::Ironsmelter) + 1,
+                                                                       GetNumBuildings(BuildingType::Farm) * 2 / 5);
                 else
-                    buildingsWanted[BLD_IRONMINE] =
-                      std::min(GetNumBuildings(BLD_FARM) / 2, GetNumBuildings(BLD_IRONSMELTER) + 1);
-                buildingsWanted[BLD_GOLDMINE] =
-                  (GetNumBuildings(BLD_MINT) > 0) ?
-                    GetNumBuildings(BLD_IRONSMELTER) > 6 && GetNumBuildings(BLD_MINT) > 1 ?
-                    GetNumBuildings(BLD_IRONSMELTER) > 10 ? 4 : 3 :
+                    buildingsWanted[BuildingType::IronMine] =
+                      std::min(GetNumBuildings(BuildingType::Farm) / 2, GetNumBuildings(BuildingType::Ironsmelter) + 1);
+                buildingsWanted[BuildingType::GoldMine] =
+                  (GetNumBuildings(BuildingType::Mint) > 0) ?
+                    GetNumBuildings(BuildingType::Ironsmelter) > 6 && GetNumBuildings(BuildingType::Mint) > 1 ?
+                    GetNumBuildings(BuildingType::Ironsmelter) > 10 ? 4 : 3 :
                     2 :
                     1;
-                buildingsWanted[BLD_DONKEYBREEDER] = 1;
+                buildingsWanted[BuildingType::DonkeyBreeder] = 1;
                 if(aijh.ggs.isEnabled(AddonId::CHARBURNER)
-                   && (buildingsWanted[BLD_COALMINE] > GetNumBuildings(BLD_COALMINE) + 4))
+                   && (buildingsWanted[BuildingType::CoalMine] > GetNumBuildings(BuildingType::CoalMine) + 4))
                 {
                     resourcelimit = inventory.people[Job::CharBurner] + inventory.goods[GoodType::Shovel] + 1;
-                    buildingsWanted[BLD_CHARBURNER] = std::min<unsigned>(
-                      std::min(buildingsWanted[BLD_COALMINE] - (GetNumBuildings(BLD_COALMINE) + 1), 3u), resourcelimit);
+                    buildingsWanted[BuildingType::Charburner] = std::min<unsigned>(
+                      std::min(buildingsWanted[BuildingType::CoalMine] - (GetNumBuildings(BuildingType::CoalMine) + 1),
+                               3u),
+                      resourcelimit);
                 }
             } else
             {
                 // probably still limited in food supply go up to 4 coal 1 gold 2 iron (gold+coal->coin,
                 // iron+coal->tool, iron+coal+coal->weapon)
-                unsigned numFoodProducers = GetNumBuildings(BLD_BAKERY) + GetNumBuildings(BLD_SLAUGHTERHOUSE)
-                                            + GetNumBuildings(BLD_HUNTER) + GetNumBuildings(BLD_FISHERY);
-                buildingsWanted[BLD_IRONMINE] = (inventory.people[Job::Miner] + inventory.goods[GoodType::PickAxe]
-                                                   > GetNumBuildings(BLD_COALMINE) + GetNumBuildings(BLD_GOLDMINE) + 1
-                                                 && numFoodProducers > 4) ?
-                                                  2 :
-                                                  1;
-                buildingsWanted[BLD_GOLDMINE] = (inventory.people[Job::Miner] > 2) ? 1 : 0;
+                unsigned numFoodProducers =
+                  GetNumBuildings(BuildingType::Bakery) + GetNumBuildings(BuildingType::Slaughterhouse)
+                  + GetNumBuildings(BuildingType::Hunter) + GetNumBuildings(BuildingType::Fishery);
+                buildingsWanted[BuildingType::IronMine] =
+                  (inventory.people[Job::Miner] + inventory.goods[GoodType::PickAxe]
+                     > GetNumBuildings(BuildingType::CoalMine) + GetNumBuildings(BuildingType::GoldMine) + 1
+                   && numFoodProducers > 4) ?
+                    2 :
+                    1;
+                buildingsWanted[BuildingType::GoldMine] = (inventory.people[Job::Miner] > 2) ? 1 : 0;
                 resourcelimit = inventory.people[Job::CharBurner] + inventory.goods[GoodType::Shovel];
                 if(aijh.ggs.isEnabled(AddonId::CHARBURNER)
-                   && (GetNumBuildings(BLD_COALMINE) < 1
-                       && (GetNumBuildings(BLD_IRONMINE) + GetNumBuildings(BLD_GOLDMINE) > 0)))
-                    buildingsWanted[BLD_CHARBURNER] = std::min(1, resourcelimit);
+                   && (GetNumBuildings(BuildingType::CoalMine) < 1
+                       && (GetNumBuildings(BuildingType::IronMine) + GetNumBuildings(BuildingType::GoldMine) > 0)))
+                    buildingsWanted[BuildingType::Charburner] = std::min(1, resourcelimit);
             }
-            if(GetNumBuildings(BLD_QUARRY) + 1 < buildingsWanted[BLD_QUARRY]
+            if(GetNumBuildings(BuildingType::Quarry) + 1 < buildingsWanted[BuildingType::Quarry]
                && aijh.AmountInStorage(GoodType::Stones) < 100) // no quarry and low stones -> try granitemines.
             {
                 if(inventory.people[Job::Miner] > 6)
                 {
-                    buildingsWanted[BLD_GRANITEMINE] =
-                      std::min<int>(numMilitaryBlds / 15 + 1, // limit granite mines to military / 15
-                                    std::max<int>(buildingsWanted[BLD_QUARRY] - GetNumBuildings(BLD_QUARRY), 1));
+                    buildingsWanted[BuildingType::GraniteMine] = std::min<int>(
+                      numMilitaryBlds / 15 + 1, // limit granite mines to military / 15
+                      std::max<int>(buildingsWanted[BuildingType::Quarry] - GetNumBuildings(BuildingType::Quarry), 1));
                 } else
-                    buildingsWanted[BLD_GRANITEMINE] = 1;
+                    buildingsWanted[BuildingType::GraniteMine] = 1;
             } else
-                buildingsWanted[BLD_GRANITEMINE] = 0;
+                buildingsWanted[BuildingType::GraniteMine] = 0;
         }
 
         // Only build catapults if we have more than 5 military blds and 50 stones. Then reserve 4 stones per catapult
         // but do not build more than 4 additions catapults Note: This is a max amount. A catapult is only placed if
         // reasonable
-        buildingsWanted[BLD_CATAPULT] =
+        buildingsWanted[BuildingType::Catapult] =
           numMilitaryBlds <= 5 || inventory.goods[GoodType::Stones] < 50 ?
             0 :
-            std::min((inventory.goods[GoodType::Stones] - 50) / 4, GetNumBuildings(BLD_CATAPULT) + 4);
+            std::min((inventory.goods[GoodType::Stones] - 50) / 4, GetNumBuildings(BuildingType::Catapult) + 4);
     }
     if(aijh.ggs.GetMaxMilitaryRank() == 0)
     {
-        buildingsWanted[BLD_GOLDMINE] = 0; // max rank is 0 = private / recruit ==> gold is useless!
+        buildingsWanted[BuildingType::GoldMine] = 0; // max rank is 0 = private / recruit ==> gold is useless!
     }
 }
 
@@ -370,9 +387,9 @@ bool BuildingPlanner::WantMoreMilitaryBlds(const AIPlayerJH& aijh) const
         return false;
     if(expansionRequired)
         return true;
-    if(GetNumBuildings(BLD_SAWMILL) > 0)
+    if(GetNumBuildings(BuildingType::Sawmill) > 0)
         return true;
-    if(aijh.player.GetInventory().goods[GoodType::Boards] > 30 && GetNumBuildingSites(BLD_SAWMILL) > 0)
+    if(aijh.player.GetInventory().goods[GoodType::Boards] > 30 && GetNumBuildingSites(BuildingType::Sawmill) > 0)
         return true;
     return (GetNumMilitaryBlds() + GetNumMilitaryBldSites() > 0);
 }

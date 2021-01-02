@@ -94,9 +94,9 @@ void BuildJob::TryToBuild()
         // TODO: tmp solution for testing: only woodcutter
         // hier machen für mehre gebäude
         /*erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
-        if (type == BLD_WOODCUTTER)
+        if (type == BuildingType::Woodcutter)
         {
-            PositionSearch *search = new PositionSearch(around, WOOD, 20, BLD_WOODCUTTER, true);
+            PositionSearch *search = new PositionSearch(around, WOOD, 20, BuildingType::Woodcutter, true);
             SearchJob *job = new SearchJob(aijh, search);
             aijh.AddJob(job, true);
             status = JobState::Finished;
@@ -117,7 +117,7 @@ void BuildJob::TryToBuild()
                 // not allow normal buildings (probably important map part)
                 AIInterface& aiInterface = aijh.GetInterface();
                 RTTR_Assert(aiInterface.GetBuildingQuality(foundPos) == aijh.GetAINode(foundPos).bq);
-                if(type != BLD_FORTRESS && aiInterface.GetBuildingQuality(foundPos) != BQ_MINE
+                if(type != BuildingType::Fortress && aiInterface.GetBuildingQuality(foundPos) != BQ_MINE
                    && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type]
                    && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
                 {
@@ -158,7 +158,7 @@ void BuildJob::TryToBuild()
     }
 
 #ifdef DEBUG_AI
-    if(type == BLD_FARM)
+    if(type == BuildingType::Farm)
         std::cout << " Player " << (unsigned)aijh.GetPlayerId() << " built farm at " << foundPos << " on value of "
                   << aijh.resourceMaps[PLANTSPACE][foundPos] << std::endl;
 #endif
@@ -235,14 +235,14 @@ void BuildJob::BuildMainRoad()
 
     switch(type)
     {
-        case BLD_FORESTER: aijh.AddBuildJob(BLD_WOODCUTTER, target); break;
-        case BLD_CHARBURNER:
-        case BLD_FARM: aijh.SetFarmedNodes(target, true); break;
-        case BLD_MILL: aijh.AddBuildJob(BLD_BAKERY, target); break;
-        case BLD_PIGFARM: aijh.AddBuildJob(BLD_SLAUGHTERHOUSE, target); break;
-        case BLD_BAKERY:
-        case BLD_SLAUGHTERHOUSE:
-        case BLD_BREWERY: aijh.AddBuildJob(BLD_WELL, target); break;
+        case BuildingType::Forester: aijh.AddBuildJob(BuildingType::Woodcutter, target); break;
+        case BuildingType::Charburner:
+        case BuildingType::Farm: aijh.SetFarmedNodes(target, true); break;
+        case BuildingType::Mill: aijh.AddBuildJob(BuildingType::Bakery, target); break;
+        case BuildingType::PigFarm: aijh.AddBuildJob(BuildingType::Slaughterhouse, target); break;
+        case BuildingType::Bakery:
+        case BuildingType::Slaughterhouse:
+        case BuildingType::Brewery: aijh.AddBuildJob(BuildingType::Well, target); break;
         default: break;
     }
 

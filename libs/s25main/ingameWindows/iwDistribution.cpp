@@ -218,8 +218,8 @@ void iwDistribution::CreateGroups()
             groups.push_back(DistributionGroup(_(name), img));
         }
         // HQ = Construction
-        std::string name = std::get<1>(mapping) == BLD_HEADQUARTERS ? gettext_noop("Construction") :
-                                                                      BUILDING_NAMES[std::get<1>(mapping)];
+        std::string name = std::get<1>(mapping) == BuildingType::Headquarters ? gettext_noop("Construction") :
+                                                                                BUILDING_NAMES[std::get<1>(mapping)];
         groups.back().entries.push_back(_(name));
     }
 }

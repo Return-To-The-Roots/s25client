@@ -31,14 +31,14 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& gwg, const BuildingTy
     noBuilding* bld;
     switch(type)
     {
-        case BLD_HEADQUARTERS: bld = new nobHQ(pt, player, nation); break;
-        case BLD_STOREHOUSE: bld = new nobStorehouse(pt, player, nation); break;
-        case BLD_HARBORBUILDING: bld = new nobHarborBuilding(pt, player, nation); break;
-        case BLD_BARRACKS:
-        case BLD_GUARDHOUSE:
-        case BLD_WATCHTOWER:
-        case BLD_FORTRESS: bld = new nobMilitary(type, pt, player, nation); break;
-        case BLD_SHIPYARD: bld = new nobShipYard(pt, player, nation); break;
+        case BuildingType::Headquarters: bld = new nobHQ(pt, player, nation); break;
+        case BuildingType::Storehouse: bld = new nobStorehouse(pt, player, nation); break;
+        case BuildingType::HarborBuilding: bld = new nobHarborBuilding(pt, player, nation); break;
+        case BuildingType::Barracks:
+        case BuildingType::Guardhouse:
+        case BuildingType::Watchtower:
+        case BuildingType::Fortress: bld = new nobMilitary(type, pt, player, nation); break;
+        case BuildingType::Shipyard: bld = new nobShipYard(pt, player, nation); break;
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
     gwg.SetNO(pt, bld);

@@ -18,6 +18,7 @@
 #include "FOWObjects.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "buildings/noBaseBuilding.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/BuildingConsts.h"
 #include "s25util/colors.h"
@@ -54,16 +55,7 @@ void fowBuilding::Serialize(SerializedGameData& sgd) const
 
 void fowBuilding::Draw(DrawPoint drawPt) const
 {
-    if(type == BLD_CHARBURNER)
-    {
-        LOADER.GetImageN("charburner", nation * 8 + 1)->DrawFull(drawPt, FOW_DRAW_COLOR);
-    } else
-    {
-        LOADER.GetNationImage(nation, 250 + 5 * type)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        // ACHTUNG nicht jedes Gebäude hat einen Schatten !!
-        if(LOADER.GetNationImage(nation, 250 + 5 * type + 1))
-            LOADER.GetNationImage(nation, 250 + 5 * type + 1)->DrawFull(drawPt, COLOR_SHADOW);
-    }
+    noBaseBuilding::GetBuildingImage(type, nation).DrawFull(drawPt, FOW_DRAW_COLOR);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -106,23 +98,23 @@ void fowBuildingSite::Draw(DrawPoint drawPt) const
         unsigned progressRaw, progressBld;
         unsigned maxProgressRaw, maxProgressBld;
 
-        if(BUILDING_COSTS[nation][type].stones)
+        if(BUILDING_COSTS[type].stones)
         {
             // Haus besteht aus Steinen und Brettern
-            maxProgressRaw = BUILDING_COSTS[nation][type].boards * 8;
-            maxProgressBld = BUILDING_COSTS[nation][type].stones * 8;
+            maxProgressRaw = BUILDING_COSTS[type].boards * 8;
+            maxProgressBld = BUILDING_COSTS[type].stones * 8;
         } else
         {
             // Haus besteht nur aus Brettern, dann 50:50
-            maxProgressBld = maxProgressRaw = BUILDING_COSTS[nation][type].boards * 4;
+            maxProgressBld = maxProgressRaw = BUILDING_COSTS[type].boards * 4;
         }
         progressRaw = std::min<unsigned>(build_progress, maxProgressRaw);
         progressBld = ((build_progress > maxProgressRaw) ? (build_progress - maxProgressRaw) : 0);
 
-        // Rohbau
-        LOADER.building_cache[nation][type][1].drawPercent(drawPt, progressRaw * 100 / maxProgressRaw, FOW_DRAW_COLOR);
-        // Das richtige Haus
-        LOADER.building_cache[nation][type][0].drawPercent(drawPt, progressBld * 100 / maxProgressBld, FOW_DRAW_COLOR);
+        LOADER.building_cache[nation][type].skeleton.drawPercent(drawPt, progressRaw * 100 / maxProgressRaw,
+                                                                 FOW_DRAW_COLOR);
+        LOADER.building_cache[nation][type].building.drawPercent(drawPt, progressBld * 100 / maxProgressBld,
+                                                                 FOW_DRAW_COLOR);
     }
 }
 

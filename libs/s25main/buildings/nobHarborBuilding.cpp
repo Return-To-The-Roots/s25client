@@ -64,7 +64,7 @@ void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData&
 }
 
 nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(nullptr)
+    : nobBaseWarehouse(BuildingType::HarborBuilding, pos, player, nation), orderware_ev(nullptr)
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
@@ -322,9 +322,9 @@ void nobHarborBuilding::StartExpedition()
     // In unseren Warenbestand gucken und die erforderlichen Bretter und Steine sowie den
     // Bauarbeiter holen, falls vorhanden
     expedition.boards =
-      std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), inventory[GoodType::Boards]);
+      std::min(unsigned(BUILDING_COSTS[BuildingType::HarborBuilding].boards), inventory[GoodType::Boards]);
     expedition.stones =
-      std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), inventory[GoodType::Stones]);
+      std::min(unsigned(BUILDING_COSTS[BuildingType::HarborBuilding].stones), inventory[GoodType::Stones]);
     inventory.Remove(GoodType::Boards, expedition.boards);
     inventory.Remove(GoodType::Stones, expedition.stones);
 
@@ -481,9 +481,9 @@ void nobHarborBuilding::OrderExpeditionWares()
 
     // Prüfen, ob jeweils noch weitere Waren bestellt werden müssen
     unsigned todo_boards = 0;
-    if(boards + expedition.boards < BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards)
+    if(boards + expedition.boards < BUILDING_COSTS[BuildingType::HarborBuilding].boards)
     {
-        todo_boards = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards - (boards + expedition.boards);
+        todo_boards = BUILDING_COSTS[BuildingType::HarborBuilding].boards - (boards + expedition.boards);
         Ware* ware;
         do
         {
@@ -497,9 +497,9 @@ void nobHarborBuilding::OrderExpeditionWares()
     }
 
     unsigned todo_stones = 0;
-    if(stones + expedition.stones < BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones)
+    if(stones + expedition.stones < BUILDING_COSTS[BuildingType::HarborBuilding].stones)
     {
-        todo_stones = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones - (stones + expedition.stones);
+        todo_stones = BUILDING_COSTS[BuildingType::HarborBuilding].stones - (stones + expedition.stones);
         Ware* ware;
         do
         {
@@ -553,8 +553,9 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         return;
     }
     // Expedition ready?
-    if(expedition.active && expedition.builder && expedition.boards == BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards
-       && expedition.stones == BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones)
+    if(expedition.active && expedition.builder
+       && expedition.boards == BUILDING_COSTS[BuildingType::HarborBuilding].boards
+       && expedition.stones == BUILDING_COSTS[BuildingType::HarborBuilding].stones)
     {
         // Aufräumen am Hafen
         expedition.active = false;
@@ -678,8 +679,9 @@ void nobHarborBuilding::AddWare(Ware*& ware)
     // Brauchen wir die Ware?
     if(expedition.active)
     {
-        if((ware->type == GoodType::Boards && expedition.boards < BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards)
-           || (ware->type == GoodType::Stones && expedition.stones < BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones))
+        if((ware->type == GoodType::Boards && expedition.boards < BUILDING_COSTS[BuildingType::HarborBuilding].boards)
+           || (ware->type == GoodType::Stones
+               && expedition.stones < BUILDING_COSTS[BuildingType::HarborBuilding].stones))
         {
             if(ware->type == GoodType::Boards)
                 ++expedition.boards;
@@ -736,9 +738,9 @@ bool nobHarborBuilding::IsExpeditionReady() const
     if(!expedition.active)
         return false;
     // Alles da?
-    if(expedition.boards < BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards)
+    if(expedition.boards < BUILDING_COSTS[BuildingType::HarborBuilding].boards)
         return false;
-    if(expedition.stones < BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones)
+    if(expedition.stones < BUILDING_COSTS[BuildingType::HarborBuilding].stones)
         return false;
     if(!expedition.builder)
         return false;
@@ -1288,10 +1290,10 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
     unsigned short points = 10000;
 
     // Ermitteln, ob wir noch Bretter oder Steine brauchen
-    if(expedition.boards + ordered_boards >= BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards
+    if(expedition.boards + ordered_boards >= BUILDING_COSTS[BuildingType::HarborBuilding].boards
        && type == GoodType::Boards)
         return 0;
-    if(expedition.stones + ordered_stones >= BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones
+    if(expedition.stones + ordered_stones >= BUILDING_COSTS[BuildingType::HarborBuilding].stones
        && type == GoodType::Stones)
         return 0;
 

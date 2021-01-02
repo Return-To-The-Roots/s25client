@@ -209,7 +209,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     auto* hqFlag = hq->GetFlag();
     const MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
     auto* usualBld =
-      static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_BAKERY, usualBldPos, 0, NAT_VIKINGS));
+      static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BuildingType::Bakery, usualBldPos, 0, NAT_VIKINGS));
     world.BuildRoad(0, false, hqFlag->GetPos(), std::vector<Direction>(3, Direction::EAST));
     usualBld->is_working = true;
 

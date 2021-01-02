@@ -157,7 +157,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
     }
 
     // Prüfen ob Katapult und ob Katapult erlaubt ist
-    if(type == BLD_CATAPULT && !GetPlayer(player).CanBuildCatapult())
+    if(type == BuildingType::Catapult && !GetPlayer(player).CanBuildCatapult())
         return;
 
     DestroyNO(pt, false);
@@ -385,8 +385,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // Additional radius to eliminate border stones or odd remaining territory parts
     static const int ADD_RADIUS = 2;
     // Get the military radius this building affects. Bld is either a military building or a harbor building site
-    RTTR_Assert((building.GetBuildingType() == BLD_HARBORBUILDING && dynamic_cast<const noBuildingSite*>(&building))
-                || dynamic_cast<const nobBaseMilitary*>(&building));
+    RTTR_Assert(
+      (building.GetBuildingType() == BuildingType::HarborBuilding && dynamic_cast<const noBuildingSite*>(&building))
+      || dynamic_cast<const nobBaseMilitary*>(&building));
     const unsigned militaryRadius = building.GetMilitaryRadius();
     RTTR_Assert(militaryRadius > 0u);
 
@@ -503,8 +504,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
 bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& building) const
 {
     // Get the military radius this building affects. Bld is either a military building or a harbor building site
-    RTTR_Assert((building.GetBuildingType() == BLD_HARBORBUILDING && dynamic_cast<const noBuildingSite*>(&building))
-                || dynamic_cast<const nobBaseMilitary*>(&building));
+    RTTR_Assert(
+      (building.GetBuildingType() == BuildingType::HarborBuilding && dynamic_cast<const noBuildingSite*>(&building))
+      || dynamic_cast<const nobBaseMilitary*>(&building));
     const unsigned militaryRadius = building.GetMilitaryRadius();
     RTTR_Assert(militaryRadius > 0u);
 
@@ -592,7 +594,7 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
             // take territory
             const bool ownersAllied = oldOwner > 0 && newOwner > 0 && GetPlayer(oldOwner - 1).IsAlly(newOwner - 1);
             if((ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
-                && triggerBld.GetBuildingType() != BLD_HEADQUARTERS)
+                && triggerBld.GetBuildingType() != BuildingType::Headquarters)
                ||
                // rule 2: do not gain territory when you lose a building (captured or destroyed)
                (ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build) ||
@@ -1062,7 +1064,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     }
 
     // Sichtbereich von Spähtürmen
-    for(const nobUsual* bld : GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER)) //-V807
+    for(const nobUsual* bld : GetPlayer(player).GetBuildingRegister().GetBuildings(BuildingType::LookoutTower)) //-V807
     {
         // Ist Späturm überhaupt besetzt?
         if(!bld->HasWorker())
@@ -1380,7 +1382,7 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
 
 void GameWorldGame::RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site)
 {
-    RTTR_Assert(building_site->GetBuildingType() == BLD_HARBORBUILDING);
+    RTTR_Assert(building_site->GetBuildingType() == BuildingType::HarborBuilding);
     harbor_building_sites_from_sea.remove(building_site);
 }
 

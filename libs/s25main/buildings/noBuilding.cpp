@@ -58,19 +58,17 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id)
     }
 }
 
-void noBuilding::DrawBaseBuilding(DrawPoint drawPt)
+void noBuilding::DrawBaseBuilding(DrawPoint drawPt) const
 {
-    LOADER.building_cache[nation][bldType_][0].draw(drawPt);
+    GetBuildingImage().DrawFull(drawPt);
     DrawDoor(drawPt);
 }
 
-void noBuilding::DrawDoor(DrawPoint drawPt)
+void noBuilding::DrawDoor(DrawPoint drawPt) const
 {
     if(!IsDoorOpen())
         return;
-    glArchivItem_Bitmap* doorImg = GetDoorImage();
-    if(doorImg)
-        doorImg->DrawFull(drawPt);
+    GetDoorImage().DrawFull(drawPt);
 }
 
 void noBuilding::OpenDoor()

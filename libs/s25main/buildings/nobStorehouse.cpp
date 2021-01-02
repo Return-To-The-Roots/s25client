@@ -20,7 +20,7 @@
 #include "postSystem/PostMsgWithBuilding.h"
 
 nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)
+    : nobBaseWarehouse(BuildingType::Storehouse, pos, player, nation)
 {
     // Alle Waren 0, außer 100 Träger. TODO: Really?
     inventory.clear();

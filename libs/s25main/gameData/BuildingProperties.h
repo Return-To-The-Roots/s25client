@@ -18,7 +18,7 @@
 #pragma once
 
 #include "gameTypes/BuildingType.h"
-#include <boost/container/static_vector.hpp>
+#include <array>
 
 /// Static class to query properties of buildings (building types)
 class BuildingProperties
@@ -27,9 +27,8 @@ public:
     /// Static class only!
     BuildingProperties() = delete;
 
-    static void Init();
-    /// Stores the bld types that are military blds as a cache. Assumes that at most 1/4 of the blds are military
-    static boost::container::static_vector<BuildingType, NUM_BUILDING_TYPES / 4u> militaryBldTypes;
+    /// Stores the bld types that are military blds as a cache
+    static const std::array<BuildingType, 4> militaryBldTypes;
 
     /// True iff the building type is used (not nothing)
     static bool IsValid(BuildingType bld);
@@ -39,4 +38,6 @@ public:
     static bool IsMine(BuildingType bld);
     /// True iff wares can be stored in this building
     static bool IsWareHouse(BuildingType bld);
+    /// True iff this is a "usual" building, i.e. production.
+    static bool IsUsual(BuildingType bld);
 };

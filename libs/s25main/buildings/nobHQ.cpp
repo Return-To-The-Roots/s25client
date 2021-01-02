@@ -27,7 +27,7 @@
 #include <numeric>
 
 nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation, const bool isTent)
-    : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation), isTent_(isTent)
+    : nobBaseWarehouse(BuildingType::Headquarters, pos, player, nation), isTent_(isTent)
 {
     // StartWaren setzen
     switch(gwg->GetGGS().startWares)
@@ -354,7 +354,7 @@ nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(
 void nobHQ::Draw(DrawPoint drawPt)
 {
     if(isTent_)
-        LOADER.building_cache[nation][BLD_HEADQUARTERS][1].draw(drawPt);
+        LOADER.building_cache[nation][BuildingType::Headquarters].skeleton.draw(drawPt);
     else
     {
         DrawBaseBuilding(drawPt);

@@ -55,11 +55,11 @@ void AIResourceMap::Recalc()
 {
     Init();
     if(res == AIResource::WOOD) // existing woodcutters reduce rating
-        AdjustRatingForBlds(BLD_WOODCUTTER, 7, -10);
+        AdjustRatingForBlds(BuildingType::Woodcutter, 7, -10);
     else if(res == AIResource::PLANTSPACE)
     {
-        AdjustRatingForBlds(BLD_FARM, 3, -25);
-        AdjustRatingForBlds(BLD_FORESTER, 6, -25);
+        AdjustRatingForBlds(BuildingType::Farm, 3, -25);
+        AdjustRatingForBlds(BuildingType::Forester, 6, -25);
     }
 }
 

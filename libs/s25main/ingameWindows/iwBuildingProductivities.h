@@ -18,6 +18,8 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "helpers/EnumArray.h"
+#include "gameTypes/BuildingType.h"
 
 class GamePlayer;
 
@@ -26,7 +28,7 @@ class iwBuildingProductivities : public IngameWindow
 {
     const GamePlayer& player;
     /// Prozentzahlen der einzelnen Gebäude
-    std::vector<unsigned short> percents;
+    helpers::EnumArray<uint16_t, BuildingType> percents;
 
 public:
     iwBuildingProductivities(const GamePlayer& player);

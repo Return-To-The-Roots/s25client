@@ -125,7 +125,7 @@ public:
     glArchivItem_Bob* GetBob(const ResourceId& file);
     glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
-    glArchivItem_Bitmap* GetNationIcon(unsigned nation, unsigned nr);
+    glArchivItem_Bitmap* GetNationIcon(unsigned nation, BuildingType bld);
     /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
     ITexture* GetNationTex(unsigned nation, unsigned nr);
     glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned nation, unsigned nr);
@@ -177,8 +177,12 @@ public:
         return animal_cache[species][Direction::WEST][ANIMAL_MAX_ANIMATION_STEPS];
     }
 
+    struct BuildingSprites
+    {
+        glSmartBitmap building, skeleton, door;
+    };
     /// Buildings: Nation, Type, Building/Skeleton
-    helpers::MultiArray<glSmartBitmap, NUM_NATIONS, NUM_BUILDING_TYPES, 2> building_cache;
+    helpers::MultiEnumArray<BuildingSprites, Nation, BuildingType> building_cache;
     /// Flags: Nation, Type, AnimationFrame
     helpers::MultiArray<glSmartBitmap, NUM_NATIONS, 3, 8> flag_cache;
     /// Military Flags: AnimationFrame

@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
 
     // Place hut -> Addionally to changes by flag we can't place blds in range 1
     // and no large blds in range 2
-    world.SetBuildingSite(BLD_WOODCUTTER, bldPos, 0);
+    world.SetBuildingSite(BuildingType::Woodcutter, bldPos, 0);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_HUT); //-V807
     reducedBQs[bldPos] = BQ_NOTHING;
     // Every bq with distance==2 has BQ_HOUSE
@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     BOOST_REQUIRE(checkBQs(world, pts, ReducedBQMap()));
 
     // Place house -> Same as hut
-    world.SetBuildingSite(BLD_SAWMILL, bldPos, 0);
+    world.SetBuildingSite(BuildingType::Sawmill, bldPos, 0);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_HOUSE);
     BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     BOOST_REQUIRE(checkBQs(world, pts, ReducedBQMap()));
 
     // Place castle
-    world.SetBuildingSite(BLD_FORTRESS, bldPos, 0);
+    world.SetBuildingSite(BuildingType::Fortress, bldPos, 0);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_CASTLE);
     // Addionally to reduced BQs by hut:
     // Even flag is blocked by castle (model size)

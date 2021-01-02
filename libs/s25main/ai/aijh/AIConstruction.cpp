@@ -48,14 +48,16 @@
 namespace AIJH {
 
 AIConstruction::AIConstruction(AIPlayerJH& aijh)
-    : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner()), constructionorders(NUM_BUILDING_TYPES)
-{}
+    : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner())
+{
+    std::fill(constructionorders.begin(), constructionorders.end(), 0u);
+}
 
 AIConstruction::~AIConstruction() = default;
 
 void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
 {
-    if(job->GetType() == BLD_SHIPYARD && aijh.IsInvalidShipyardPosition(job->GetAround()))
+    if(job->GetType() == BuildingType::Shipyard && aijh.IsInvalidShipyardPosition(job->GetAround()))
         return;
     if(BuildingProperties::IsMilitary(
          job->GetType())) // non military buildings can only be added once to the contruction que for every location
@@ -482,18 +484,18 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
 
     const Inventory& inventory = aii.GetInventory();
     if(((rand() % 3) == 0 || inventory.people[Job::Private] < 15)
-       && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0))
-        bld = BLD_GUARDHOUSE;
+       && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
+        bld = BuildingType::Guardhouse;
     if(aijh.HarborPosClose(pt, 20) && rand() % 10 != 0 && aijh.ggs.getSelection(AddonId::SEA_ATTACK) != 2)
     {
-        if(aii.CanBuildBuildingtype(BLD_WATCHTOWER))
-            return BLD_WATCHTOWER;
+        if(aii.CanBuildBuildingtype(BuildingType::Watchtower))
+            return BuildingType::Watchtower;
         return GetBiggestAllowedMilBuilding();
     }
-    if(biggestBld == BLD_WATCHTOWER || biggestBld == BLD_FORTRESS)
+    if(biggestBld == BuildingType::Watchtower || biggestBld == BuildingType::Fortress)
     {
         if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
-           && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0)
+           && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0)
            && rand() % 10 != 0)
         {
             return biggestBld;
@@ -511,14 +513,14 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
         {
             int randmil = rand();
             bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult()
-                                 && bldPlanner.GetNumAdditionalBuildingsWanted(BLD_CATAPULT) > 0;
+                                 && bldPlanner.GetNumAdditionalBuildingsWanted(BuildingType::Catapult) > 0;
             // another catapult within "min" radius? ->dont build here!
             const unsigned min = 16;
             if(buildCatapult && aii.gwb.CalcDistance(pt, aii.GetStorehouses().front()->GetPos()) < min)
                 buildCatapult = false;
             if(buildCatapult)
             {
-                for(const nobUsual* catapult : aii.GetBuildings(BLD_CATAPULT))
+                for(const nobUsual* catapult : aii.GetBuildings(BuildingType::Catapult))
                 {
                     if(aii.gwb.CalcDistance(pt, catapult->GetPos()) < min)
                     {
@@ -539,11 +541,11 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
                 }
             }
             if(buildCatapult)
-                bld = BLD_CATAPULT;
+                bld = BuildingType::Catapult;
             else
             {
-                if(randmil % 2 == 0 && aii.CanBuildBuildingtype(BLD_WATCHTOWER))
-                    bld = BLD_WATCHTOWER;
+                if(randmil % 2 == 0 && aii.CanBuildBuildingtype(BuildingType::Watchtower))
+                    bld = BuildingType::Watchtower;
                 else
                     bld = biggestBld;
             }
@@ -551,8 +553,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
             // are no big building spots in that direction
             if(randmil % 10 == 0)
             {
-                if(aii.CanBuildBuildingtype(BLD_GUARDHOUSE))
-                    bld = BLD_GUARDHOUSE;
+                if(aii.CanBuildBuildingtype(BuildingType::Guardhouse))
+                    bld = BuildingType::Guardhouse;
                 else
                     bld = GetSmallestAllowedMilBuilding();
             }
@@ -567,13 +569,13 @@ bool AIConstruction::Wanted(BuildingType type) const
 {
     if(!aii.CanBuildBuildingtype(type))
         return false;
-    if(type == BLD_CATAPULT && !aii.CanBuildCatapult())
+    if(type == BuildingType::Catapult && !aii.CanBuildCatapult())
         return false;
-    if(BuildingProperties::IsMilitary(type) || type == BLD_STOREHOUSE)
+    if(BuildingProperties::IsMilitary(type) || type == BuildingType::Storehouse)
         return bldPlanner.WantMoreMilitaryBlds(aijh);
-    if(type == BLD_SAWMILL && bldPlanner.GetNumBuildings(BLD_SAWMILL) > 1)
+    if(type == BuildingType::Sawmill && bldPlanner.GetNumBuildings(BuildingType::Sawmill) > 1)
     {
-        if(aijh.AmountInStorage(GoodType::Wood) < 15 * (bldPlanner.GetNumBuildingSites(BLD_SAWMILL) + 1))
+        if(aijh.AmountInStorage(GoodType::Wood) < 15 * (bldPlanner.GetNumBuildingSites(BuildingType::Sawmill) + 1))
             return false;
     }
     return constructionorders[type] < bldPlanner.GetNumAdditionalBuildingsWanted(type);

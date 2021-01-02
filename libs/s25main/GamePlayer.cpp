@@ -129,10 +129,9 @@ BuildOrders GamePlayer::GetStandardBuildOrder()
 
     // Baureihenfolge füllen
     unsigned curPrio = 0;
-    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
+    for(const auto bld : helpers::enumRange<BuildingType>())
     {
-        auto bld = BuildingType(i);
-        if(bld == BLD_HEADQUARTERS || !BuildingProperties::IsValid(bld))
+        if(bld == BuildingType::Headquarters || !BuildingProperties::IsValid(bld))
             continue;
 
         RTTR_Assert(curPrio < ordering.size());
@@ -146,12 +145,13 @@ BuildOrders GamePlayer::GetStandardBuildOrder()
 void GamePlayer::LoadStandardDistribution()
 {
     // Verteilung mit Standardwerten füllen bei Waren mit nur einem Ziel (wie z.B. Mehl, Holz...)
-    distribution[GoodType::Flour].client_buildings.push_back(BLD_BAKERY);
-    distribution[GoodType::Gold].client_buildings.push_back(BLD_MINT);
-    distribution[GoodType::IronOre].client_buildings.push_back(BLD_IRONSMELTER);
-    distribution[GoodType::Ham].client_buildings.push_back(BLD_SLAUGHTERHOUSE);
-    distribution[GoodType::Stones].client_buildings.push_back(BLD_HEADQUARTERS); // BLD_HEADQUARTERS = Baustellen!
-    distribution[GoodType::Stones].client_buildings.push_back(BLD_CATAPULT);
+    distribution[GoodType::Flour].client_buildings.push_back(BuildingType::Bakery);
+    distribution[GoodType::Gold].client_buildings.push_back(BuildingType::Mint);
+    distribution[GoodType::IronOre].client_buildings.push_back(BuildingType::Ironsmelter);
+    distribution[GoodType::Ham].client_buildings.push_back(BuildingType::Slaughterhouse);
+    distribution[GoodType::Stones].client_buildings.push_back(
+      BuildingType::Headquarters); // BuildingType::Headquarters = Baustellen!
+    distribution[GoodType::Stones].client_buildings.push_back(BuildingType::Catapult);
 
     // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
     for(const auto i : helpers::enumRange<GoodType>())
@@ -205,17 +205,17 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
             sgd.PushUnsignedChar(p);
         sgd.PushUnsignedInt(dist.client_buildings.size());
         for(BuildingType bld : dist.client_buildings)
-            sgd.PushUnsignedChar(bld);
+            sgd.PushEnum<uint8_t>(bld);
         sgd.PushUnsignedInt(unsigned(dist.goals.size()));
         for(BuildingType goal : dist.goals)
-            sgd.PushUnsignedChar(goal);
+            sgd.PushEnum<uint8_t>(goal);
         sgd.PushUnsignedInt(dist.selected_goal);
     }
 
     sgd.PushBool(useCustomBuildOrder_);
 
-    for(auto i : build_order)
-        sgd.PushUnsignedChar(i);
+    for(BuildingType i : build_order)
+        sgd.PushEnum<uint8_t>(i);
 
     sgd.PushRawData(transportPrio.data(), transportPrio.size());
 
@@ -292,7 +292,8 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         jobs_wanted.push_back(nj);
     }
 
-    buildings.Deserialize2(sgd);
+    if(sgd.GetGameDataVersion() < 2)
+        buildings.Deserialize2(sgd);
 
     sgd.PopObjectContainer(ware_list, GOT_WARE);
     sgd.PopObjectContainer(flagworkers, GOT_UNKNOWN);
@@ -308,17 +309,17 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
             p = sgd.PopUnsignedChar();
         dist.client_buildings.resize(sgd.PopUnsignedInt());
         for(BuildingType& bld : dist.client_buildings)
-            bld = BuildingType(sgd.PopUnsignedChar());
+            bld = sgd.Pop<BuildingType>();
         dist.goals.resize(sgd.PopUnsignedInt());
         for(BuildingType& goal : dist.goals)
-            goal = BuildingType(sgd.PopUnsignedChar());
+            goal = sgd.Pop<BuildingType>();
         dist.selected_goal = sgd.PopUnsignedInt();
     }
 
     useCustomBuildOrder_ = sgd.PopBool();
 
     for(auto& i : build_order)
-        i = BuildingType(sgd.PopUnsignedChar());
+        i = sgd.Pop<BuildingType>();
 
     sgd.PopRawData(transportPrio.data(), transportPrio.size());
 
@@ -448,12 +449,12 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
         AddJobWanted(*description.job, bld);
     }
 
-    if(bldType == BLD_HARBORBUILDING)
+    if(bldType == BuildingType::HarborBuilding)
     {
         // Schiff durchgehen und denen Bescheid sagen
         for(noShip* ship : ships)
             ship->NewHarborBuilt(static_cast<nobHarborBuilding*>(bld));
-    } else if(bldType == BLD_HEADQUARTERS)
+    } else if(bldType == BuildingType::Headquarters)
         hqPos = bld->GetPos();
     else if(BuildingProperties::IsMilitary(bldType))
     {
@@ -469,16 +470,16 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
     RTTR_Assert(bld->GetPlayer() == GetPlayerId());
     buildings.Remove(bld, bldType);
     ChangeStatisticValue(STAT_BUILDINGS, -1);
-    if(bldType == BLD_HARBORBUILDING)
+    if(bldType == BuildingType::HarborBuilding)
     { // Schiffen Bescheid sagen
         for(auto& ship : ships)
             ship->HarborDestroyed(static_cast<nobHarborBuilding*>(bld));
-    } else if(bldType == BLD_HEADQUARTERS)
+    } else if(bldType == BuildingType::Headquarters)
     {
         hqPos = MapPoint::Invalid();
         for(const noBaseBuilding* bld : buildings.GetStorehouses())
         {
-            if(bld->GetBuildingType() == BLD_HEADQUARTERS)
+            if(bld->GetBuildingType() == BuildingType::Headquarters)
             {
                 hqPos = bld->GetPos();
                 break;
@@ -563,8 +564,9 @@ void GamePlayer::RoadDestroyed()
             noBaseBuilding* wareGoal = ware->GetGoal();
             if(wareGoal && ware->GetNextDir() == RoadPathDirection::NorthWest
                && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos()
-               && ((wareGoal->GetBuildingType() != BLD_STOREHOUSE && wareGoal->GetBuildingType() != BLD_HEADQUARTERS
-                    && wareGoal->GetBuildingType() != BLD_HARBORBUILDING)
+               && ((wareGoal->GetBuildingType() != BuildingType::Storehouse
+                    && wareGoal->GetBuildingType() != BuildingType::Headquarters
+                    && wareGoal->GetBuildingType() != BuildingType::HarborBuilding)
                    || wareGoal->GetType() == NOP_BUILDINGSITE))
             {
                 Direction newWareDir = Direction::NORTHWEST;
@@ -693,14 +695,14 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
     unsigned goal_count = 0;
 
-    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
+    for(const auto bld : helpers::enumRange<BuildingType>())
     {
-        uint8_t percentForCurBld = distribution[ware].percent_buildings[i];
+        uint8_t percentForCurBld = distribution[ware].percent_buildings[bld];
         if(percentForCurBld)
         {
-            distribution[ware].client_buildings.push_back(static_cast<BuildingType>(i));
+            distribution[ware].client_buildings.push_back(bld);
             goal_count += percentForCurBld;
-            bldPercentageMap.push_back(std::make_pair(static_cast<BuildingType>(i), percentForCurBld));
+            bldPercentageMap.emplace_back(bld, percentForCurBld);
         }
     }
 
@@ -869,8 +871,9 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
         else
         {
             // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
-            if((ware != GoodType::Boards && ware != GoodType::Stones) || goal->GetBuildingType() == BLD_WOODCUTTER
-               || goal->GetBuildingType() == BLD_SAWMILL)
+            if((ware != GoodType::Boards && ware != GoodType::Stones)
+               || goal->GetBuildingType() == BuildingType::Woodcutter
+               || goal->GetBuildingType() == BuildingType::Sawmill)
                 return wh->OrderWare(ware, goal);
             else
                 return nullptr;
@@ -1034,8 +1037,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
 
     for(const auto bldType : wareDistribution.client_buildings)
     {
-        // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
-        if(bldType == BLD_HEADQUARTERS)
+        // BuildingType::Headquarters sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
+        if(bldType == BuildingType::Headquarters)
         {
             // Bei Baustellen die Extraliste abfragen
             for(noBuildingSite* bldSite : buildings.GetBuildingSites())
@@ -1044,7 +1047,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
                 if(!points)
                     continue;
 
-                points += wareDistribution.percent_buildings[BLD_HEADQUARTERS] * 30;
+                points += wareDistribution.percent_buildings[BuildingType::Headquarters] * 30;
                 unsigned distance = gwg.CalcDistance(start->GetPos(), bldSite->GetPos()) / 2;
                 possibleClients.push_back(ClientForWare(bldSite, points > distance ? points - distance : 0, points));
             }
@@ -2086,7 +2089,8 @@ void GamePlayer::TestForEmergencyProgramm()
     // Emergency happens, if we have less than 10 boards or stones...
     bool isNewEmergency = boards <= 10 || stones <= 10;
     // ...and no woddcutter or sawmill
-    isNewEmergency &= buildings.GetBuildings(BLD_WOODCUTTER).empty() || buildings.GetBuildings(BLD_SAWMILL).empty();
+    isNewEmergency &=
+      buildings.GetBuildings(BuildingType::Woodcutter).empty() || buildings.GetBuildings(BuildingType::Sawmill).empty();
 
     // Wenn nötig, Notfallprogramm auslösen
     if(isNewEmergency)
@@ -2150,16 +2154,16 @@ bool GamePlayer::CanBuildCatapult() const
     // proportional?
     if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {
-        max =
-          int(bc.buildings[BLD_BARRACKS] * 0.125 + bc.buildings[BLD_GUARDHOUSE] * 0.25
-              + bc.buildings[BLD_WATCHTOWER] * 0.5 + bc.buildings[BLD_FORTRESS] + 0.111); // to avoid rounding errors
+        max = int(bc.buildings[BuildingType::Barracks] * 0.125 + bc.buildings[BuildingType::Guardhouse] * 0.25
+                  + bc.buildings[BuildingType::Watchtower] * 0.5 + bc.buildings[BuildingType::Fortress]
+                  + 0.111); // to avoid rounding errors
     } else if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
         const std::array<unsigned, 6> limits = {{0, 3, 5, 10, 20, 30}};
         max = limits[gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
     }
 
-    return bc.buildings[BLD_CATAPULT] + bc.buildingSites[BLD_CATAPULT] < max;
+    return bc.buildings[BuildingType::Catapult] + bc.buildingSites[BuildingType::Catapult] < max;
 }
 
 /// A ship has discovered new hostile territory --> determines if this is new

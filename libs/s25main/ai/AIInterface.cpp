@@ -117,15 +117,15 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
         // Adjust based on building on node (if any)
         if(res == AIResource::WOOD)
         {
-            if(IsBuildingOnNode(pt, BLD_WOODCUTTER))
+            if(IsBuildingOnNode(pt, BuildingType::Woodcutter))
                 return -40;
-            if(IsBuildingOnNode(pt, BLD_FORESTER))
+            if(IsBuildingOnNode(pt, BuildingType::Forester))
                 return 20;
         } else if(res == AIResource::PLANTSPACE)
         {
-            if(IsBuildingOnNode(pt, BLD_FORESTER))
+            if(IsBuildingOnNode(pt, BuildingType::Forester))
                 return -40;
-            if(IsBuildingOnNode(pt, BLD_FARM))
+            if(IsBuildingOnNode(pt, BuildingType::Farm))
                 return -20;
         }
     }

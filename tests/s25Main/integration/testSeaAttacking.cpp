@@ -115,7 +115,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             SetCurPlayer(i);
             BOOST_REQUIRE_EQUAL(gwv.GetBQ(harborPos[i]), BQ_HARBOR);
             const noBuilding* hb =
-              BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, harborPos[i], i, Nation(i));
+              BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, harborPos[i], i, Nation(i));
             BOOST_REQUIRE(hb);
             BuildRoadForBlds(harborPos[i], hqPos[i]);
             MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), 1);
@@ -132,21 +132,21 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         BOOST_REQUIRE(milBld1NearPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1NearPos, 1), BQ_HOUSE);
         milBld1Near = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1NearPos, 1, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Near);
 
         milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 4), BQ_HOUSE, 1);
         BOOST_REQUIRE(milBld1FarPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1FarPos, 1), BQ_HOUSE);
         milBld1Far = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1FarPos, 1, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Far);
 
         milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(2, 2), BQ_HOUSE, 2);
         BOOST_REQUIRE(milBld2Pos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld2Pos, 2), BQ_HOUSE);
         milBld2 = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld2Pos, 2, NAT_BABYLONIANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld2Pos, 2, NAT_BABYLONIANS));
         BOOST_REQUIRE(milBld2);
 
         // Add some soldiers (assumed by test cases!)
@@ -303,7 +303,8 @@ BOOST_FIXTURE_TEST_CASE(NoHarborBlock, SeaAttackFixture)
 
     // Non-Military building
     BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
-    const noBuilding* usualBld = BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, harborPos[0], 0, NAT_ROMANS);
+    const noBuilding* usualBld =
+      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, NAT_ROMANS);
     BOOST_REQUIRE(usualBld);
     TestFailingSeaAttack(harborPos[0]);
 
@@ -359,7 +360,8 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     TestFailingSeaAttack(harborPos[0]);
     // Non-Military building
     BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
-    const noBuilding* usualBld = BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, harborPos[0], 0, NAT_ROMANS);
+    const noBuilding* usualBld =
+      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, NAT_ROMANS);
     BOOST_REQUIRE(usualBld);
     TestFailingSeaAttack(harborPos[0]);
 
@@ -389,7 +391,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     pts.push_back(bldPos);
     for(const MapPoint& pt : pts)
         world.SetOwner(pt, 1 + 1);
-    const noBuilding* bld = BuildingFactory::CreateBuilding(world, BLD_BARRACKS, bldPos, 1, NAT_ROMANS);
+    const noBuilding* bld = BuildingFactory::CreateBuilding(world, BuildingType::Barracks, bldPos, 1, NAT_ROMANS);
     BOOST_REQUIRE(bld);
     AddSoldiers(bldPos, 2, 0);
     // Still unowned harbors
@@ -409,7 +411,8 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
     ggs.setSelection(AddonId::SEA_ATTACK, 1);
 
     // Build (later) ally harbor
-    noBuilding* harborBld = BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, harborPos[0], 1, NAT_ROMANS);
+    noBuilding* harborBld =
+      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, harborPos[0], 1, NAT_ROMANS);
     BOOST_REQUIRE(harborBld);
 
     // Enemy harbor blocks

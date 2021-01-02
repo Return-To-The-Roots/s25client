@@ -116,8 +116,8 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             const unsigned percent = 10 * percents[percent_index];
 
             // zurückgaben berechnen (abgerundet)
-            unsigned boards = (percent * BUILDING_COSTS[nation][bldType_].boards) / 1000;
-            unsigned stones = (percent * BUILDING_COSTS[nation][bldType_].stones) / 1000;
+            unsigned boards = (percent * BUILDING_COSTS[bldType_].boards) / 1000;
+            unsigned stones = (percent * BUILDING_COSTS[bldType_].stones) / 1000;
 
             std::array<GoodType, 2> goods = {GoodType::Boards, GoodType::Stones};
             bool which = false;
@@ -252,21 +252,18 @@ BlockingManner noBaseBuilding::GetBM() const
 }
 
 /// Gibt ein Bild zurück für das normale Gebäude
-ITexture* noBaseBuilding::GetBuildingImage() const
+ITexture& noBaseBuilding::GetBuildingImage() const
 {
     return GetBuildingImage(bldType_, nation);
 }
 
-ITexture* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-V688
+ITexture& noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-V688
 {
-    return &LOADER.building_cache[nation][type][0];
+    return LOADER.building_cache[nation][type].building;
 }
 
 /// Gibt ein Bild zurück für die Tür des Gebäudes
-glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
+ITexture& noBaseBuilding::GetDoorImage() const
 {
-    if(bldType_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + (LOADER.IsWinterGFX() ? 7 : 5));
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 4);
+    return LOADER.building_cache[nation][bldType_].door;
 }

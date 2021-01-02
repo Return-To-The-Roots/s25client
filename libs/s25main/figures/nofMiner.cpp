@@ -33,7 +33,7 @@ nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const helpers::MultiArray<DrawPoint, NUM_NATIONS, 4>
+    constexpr helpers::MultiArray<DrawPoint, NUM_NATIONS, 4>
       offsets = // work animation offset per nation and (granite, coal, iron, gold)
       {{
         {{5, 3}, {5, 3}, {5, 3}, {5, 3}},     // africans
@@ -42,6 +42,8 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
         {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, // vikings
         {{8, 3}, {8, 3}, {8, 3}, {8, 3}}      // babylonians
       }};
+    const unsigned mineIdx = rttr::enum_cast(workplace->GetBuildingType()) - rttr::enum_cast(BuildingType::GraniteMine);
+    RTTR_Assert(mineIdx < offsets.size());
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
     unsigned texture;
@@ -49,8 +51,7 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
         texture = 92 + now_id % 8;
     else
         texture = 1799 + now_id % 4;
-    LOADER.GetPlayerImage("rom_bobs", texture)
-      ->DrawFull(drawPt + offsets[workplace->GetNation()][workplace->GetBuildingType() - BLD_GRANITEMINE]);
+    LOADER.GetPlayerImage("rom_bobs", texture)->DrawFull(drawPt + offsets[workplace->GetNation()][mineIdx]);
 
     if(now_id % 8 == 3)
     {
@@ -63,9 +64,9 @@ unsigned short nofMiner::GetCarryID() const
 {
     switch(workplace->GetBuildingType())
     {
-        case BLD_GOLDMINE: return 65;
-        case BLD_IRONMINE: return 66;
-        case BLD_COALMINE: return 67;
+        case BuildingType::GoldMine: return 65;
+        case BuildingType::IronMine: return 66;
+        case BuildingType::CoalMine: return 67;
         default: return 68;
     }
 }
@@ -74,9 +75,9 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
     switch(workplace->GetBuildingType())
     {
-        case BLD_GOLDMINE: return GoodType::Gold;
-        case BLD_IRONMINE: return GoodType::IronOre;
-        case BLD_COALMINE: return GoodType::Coal;
+        case BuildingType::GoldMine: return GoodType::Gold;
+        case BuildingType::IronMine: return GoodType::IronOre;
+        case BuildingType::CoalMine: return GoodType::Coal;
         default: return GoodType::Stones;
     }
 }
@@ -92,9 +93,9 @@ bool nofMiner::StartWorking()
     if(!resPt.isValid())
         return false;
     const GlobalGameSettings& settings = gwg->GetGGS();
-    bool inexhaustibleRes =
-      settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-      || (workplace->GetBuildingType() == BLD_GRANITEMINE && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
+    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
+                            || (workplace->GetBuildingType() == BuildingType::GraniteMine
+                                && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
     if(!inexhaustibleRes)
         gwg->ReduceResource(resPt);
     return nofWorkman::StartWorking();
@@ -104,9 +105,9 @@ Resource::Type nofMiner::GetRequiredResType() const
 {
     switch(workplace->GetBuildingType())
     {
-        case BLD_GOLDMINE: return Resource::Gold;
-        case BLD_IRONMINE: return Resource::Iron;
-        case BLD_COALMINE: return Resource::Coal;
+        case BuildingType::GoldMine: return Resource::Gold;
+        case BuildingType::IronMine: return Resource::Iron;
+        case BuildingType::CoalMine: return Resource::Coal;
         default: return Resource::Granite;
     }
 }

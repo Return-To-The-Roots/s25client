@@ -65,7 +65,22 @@ namespace detail {
     {
         return helpers::EnumArray<T, T_Index>{src[I]...};
     }
+    template<typename T, typename... T_Indices>
+    struct GetMultiEnumArray
+    {
+        using type = T;
+    };
+    template<typename T, typename T_Index, typename... T_Indices>
+    struct GetMultiEnumArray<T, T_Index, T_Indices...>
+    {
+        using type = EnumArray<typename GetMultiEnumArray<T, T_Indices...>::type, T_Index>;
+    };
 } // namespace detail
+
+/// Shortcut for creating ND EnumArrays similar to int[5][4]
+/// MultiEnumArray<Value, MyEnum1, MyEnum2> --> EnumArray<EnumArray<Value, MyEnum2>, MyEnum1>
+template<typename T, typename... T_Indices>
+using MultiEnumArray = typename detail::GetMultiEnumArray<T, T_Indices...>::type;
 
 /// Convert a std::array to an EnumArray
 template<typename T_Index, typename T>

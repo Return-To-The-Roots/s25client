@@ -43,9 +43,9 @@ public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noBuilding(sgd); }
 
     /// Draws the basic building (no fires etc.) with the door
-    void DrawBaseBuilding(DrawPoint drawPt);
+    void DrawBaseBuilding(DrawPoint drawPt) const;
     /// Draws the door only (if building is drawn at x, y)
-    void DrawDoor(DrawPoint drawPt);
+    void DrawDoor(DrawPoint drawPt) const;
 
     void OpenDoor();
     void CloseDoor();

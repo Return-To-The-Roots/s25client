@@ -67,9 +67,9 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
 noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player), state(BuildingSiteState::Building),
-      planer(nullptr), boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards),
-      stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), used_boards(0), used_stones(0), build_progress(0)
+    : noBaseBuilding(NOP_BUILDINGSITE, BuildingType::HarborBuilding, pos, player), state(BuildingSiteState::Building),
+      planer(nullptr), boards(BUILDING_COSTS[BuildingType::HarborBuilding].boards),
+      stones(BUILDING_COSTS[BuildingType::HarborBuilding].stones), used_boards(0), used_stones(0), build_progress(0)
 {
     builder = new nofBuilder(pos, player, this);
     GamePlayer& owner = gwg->GetPlayer(player);
@@ -163,7 +163,7 @@ void noBuildingSite::OrderConstructionMaterial()
 
     // Bretter
     GamePlayer& owner = gwg->GetPlayer(player);
-    for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][bldType_].boards; ++i)
+    for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[bldType_].boards; ++i)
     {
         Ware* w = owner.OrderWare(GoodType::Boards, this);
         if(!w)
@@ -171,7 +171,7 @@ void noBuildingSite::OrderConstructionMaterial()
         RTTR_Assert(helpers::contains(ordered_boards, w));
     }
     // Steine
-    for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][bldType_].stones; ++i)
+    for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[bldType_].stones; ++i)
     {
         Ware* w = owner.OrderWare(GoodType::Stones, this);
         if(!w)
@@ -184,7 +184,7 @@ unsigned noBuildingSite::GetMilitaryRadius() const
 {
     /// Note: This actually only applies to harbor buildings made from expeditions. We rely on the calling functions to
     /// only take those into account
-    return bldType_ == BLD_HARBORBUILDING ? HARBOR_RADIUS : 0;
+    return bldType_ == BuildingType::HarborBuilding ? HARBOR_RADIUS : 0;
 }
 
 void noBuildingSite::Draw(DrawPoint drawPt)
@@ -220,23 +220,21 @@ void noBuildingSite::Draw(DrawPoint drawPt)
         unsigned progressRaw, progressBld;
         unsigned maxProgressRaw, maxProgressBld;
 
-        if(BUILDING_COSTS[nation][bldType_].stones)
+        if(BUILDING_COSTS[bldType_].stones)
         {
             // Haus besteht aus Steinen und Brettern
-            maxProgressRaw = BUILDING_COSTS[nation][bldType_].boards * 8;
-            maxProgressBld = BUILDING_COSTS[nation][bldType_].stones * 8;
+            maxProgressRaw = BUILDING_COSTS[bldType_].boards * 8;
+            maxProgressBld = BUILDING_COSTS[bldType_].stones * 8;
         } else
         {
             // Haus besteht nur aus Brettern, dann 50:50
-            maxProgressBld = maxProgressRaw = BUILDING_COSTS[nation][bldType_].boards * 4;
+            maxProgressBld = maxProgressRaw = BUILDING_COSTS[bldType_].boards * 4;
         }
         progressRaw = std::min<unsigned>(build_progress, maxProgressRaw);
         progressBld = ((build_progress > maxProgressRaw) ? (build_progress - maxProgressRaw) : 0);
 
-        // Rohbau
-        LOADER.building_cache[nation][bldType_][1].drawPercent(drawPt, progressRaw * 100 / maxProgressRaw);
-        // Das richtige Haus
-        LOADER.building_cache[nation][bldType_][0].drawPercent(drawPt, progressBld * 100 / maxProgressBld);
+        LOADER.building_cache[nation][bldType_].skeleton.drawPercent(drawPt, progressRaw * 100 / maxProgressRaw);
+        LOADER.building_cache[nation][bldType_].building.drawPercent(drawPt, progressBld * 100 / maxProgressBld);
     }
 }
 
@@ -280,12 +278,12 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
 
     const unsigned curBoards = ordered_boards.size() + boards + used_boards;
     const unsigned curStones = ordered_stones.size() + stones + used_stones;
-    RTTR_Assert(curBoards <= BUILDING_COSTS[nation][this->bldType_].boards);
-    RTTR_Assert(curStones <= BUILDING_COSTS[nation][this->bldType_].stones);
+    RTTR_Assert(curBoards <= BUILDING_COSTS[this->bldType_].boards);
+    RTTR_Assert(curStones <= BUILDING_COSTS[this->bldType_].stones);
 
     // Wenn wir schon genug Baumaterial haben, brauchen wir nichts mehr
-    if((goodtype == GoodType::Boards && curBoards == BUILDING_COSTS[nation][this->bldType_].boards)
-       || (goodtype == GoodType::Stones && curStones == BUILDING_COSTS[nation][this->bldType_].stones))
+    if((goodtype == GoodType::Boards && curBoards == BUILDING_COSTS[this->bldType_].boards)
+       || (goodtype == GoodType::Stones && curStones == BUILDING_COSTS[this->bldType_].stones))
         return 0;
 
     // 10000 als Basis wählen, damit man auch noch was abziehen kann
@@ -294,8 +292,8 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
 
     // Baumaterial mit einberechnen (wer noch am wenigsten braucht, soll mehr Punkte kriegen, da ja möglichst
     // zuerst Gebäude fertiggestellt werden sollten)
-    points -= (BUILDING_COSTS[nation][bldType_].boards - curBoards) * 20;
-    points -= (BUILDING_COSTS[nation][bldType_].stones - curStones) * 20;
+    points -= (BUILDING_COSTS[bldType_].boards - curBoards) * 20;
+    points -= (BUILDING_COSTS[bldType_].stones - curStones) * 20;
 
     // Baupriorität mit einberechnen (niedriger = höhere Priorität, daher - !)
     const unsigned buildingSitePrio = gwg->GetPlayer(player).GetBuidingSitePriority(this) * 30;
@@ -370,8 +368,7 @@ void noBuildingSite::TakeWare(Ware* ware)
 
 bool noBuildingSite::IsBuildingComplete()
 {
-    return (build_progress
-            == BUILDING_COSTS[nation][bldType_].boards * 8 + BUILDING_COSTS[nation][bldType_].stones * 8);
+    return (build_progress == BUILDING_COSTS[bldType_].boards * 8 + BUILDING_COSTS[bldType_].stones * 8);
 }
 
 unsigned char noBuildingSite::GetBuildProgress(bool percent) const
@@ -379,7 +376,7 @@ unsigned char noBuildingSite::GetBuildProgress(bool percent) const
     if(!percent)
         return build_progress;
 
-    unsigned costs = BUILDING_COSTS[nation][bldType_].boards * 8 + BUILDING_COSTS[nation][bldType_].stones * 8;
+    unsigned costs = BUILDING_COSTS[bldType_].boards * 8 + BUILDING_COSTS[bldType_].stones * 8;
     unsigned progress = (((unsigned)build_progress) * 100) / costs;
 
     return (unsigned char)progress;
@@ -402,7 +399,7 @@ void noBuildingSite::PlaningFinished()
 /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
 bool noBuildingSite::IsHarborBuildingSiteFromSea() const
 {
-    if(this->bldType_ == BLD_HARBORBUILDING)
+    if(this->bldType_ == BuildingType::HarborBuilding)
         return gwg->IsHarborBuildingSiteFromSea(this);
     else
         return false;

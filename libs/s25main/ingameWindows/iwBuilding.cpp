@@ -53,7 +53,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         AddImage(13, DrawPoint(28, 39), LOADER.GetJobTex(*job));
 
     // Gebäudesymbol
-    AddImage(1, DrawPoint(117, 114), building->GetBuildingImage());
+    AddImage(1, DrawPoint(117, 114), &building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
     const auto producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
@@ -71,10 +71,10 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     Window* enable_productivity = AddImageButton(
       6, DrawPoint(90, 147), Extent(34, 32), TC_GREY,
       LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)), _("Production on/off"));
-    if(building->GetBuildingType() == BLD_LOOKOUTTOWER)
+    if(building->GetBuildingType() == BuildingType::LookoutTower)
         enable_productivity->SetVisible(false);
     // Bei Bootsbauer Button zum Umwählen von Booten und Schiffen
-    if(building->GetBuildingType() == BLD_SHIPYARD)
+    if(building->GetBuildingType() == BuildingType::Shipyard)
     {
         // Jenachdem Boot oder Schiff anzeigen
         unsigned io_dat_id =
@@ -85,14 +85,11 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     // "Gehe Zum Ort"
     AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
-    // Gebäudebild und dessen Schatten
-    AddImage(8, DrawPoint(117, 114),
-             LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
-
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
     Window* productivity = AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TC_GREY, 0xFFFFFF00, SmallFont,
                                       building->GetProductivityPointer());
-    if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
+    if(building->GetBuildingType() == BuildingType::Catapult
+       || building->GetBuildingType() == BuildingType::LookoutTower)
         productivity->SetVisible(false);
 
     AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);

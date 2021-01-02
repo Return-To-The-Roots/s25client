@@ -52,8 +52,8 @@ public:
 
     /// Liefert die Anzahl aller Gebäude einzeln
     BuildingCount GetBuildingNums() const;
-    /// Calculate and fill the average productivities for all buildings. Vector must hold 1 entry per building type
-    void CalcProductivities(std::vector<unsigned short>& productivities) const;
+    /// Calculate and fill the average productivities for all buildings.
+    helpers::EnumArray<uint16_t, BuildingType> CalcProductivities() const;
     /// Calculate the average productivity for a building type
     unsigned CalcAverageProductivity(BuildingType bldType) const;
     /// Calculate the average productivity for all buildings
@@ -61,7 +61,8 @@ public:
 
 private:
     std::list<noBuildingSite*> building_sites;
-    std::array<std::list<nobUsual*>, 30> buildings;
+    // Only "usual" buildings
+    helpers::EnumArray<std::list<nobUsual*>, BuildingType> buildings;
     std::list<nobMilitary*> military_buildings;
     std::list<nobHarborBuilding*> harbors;
     std::list<nobBaseWarehouse*> warehouses;

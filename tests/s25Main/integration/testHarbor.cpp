@@ -30,7 +30,7 @@ struct HarborFixture : WorldFixture<CreateEmptyWorld, 1>
         GamePlayer& player = world.GetPlayer(0);
         hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
         hb = static_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(
-          world, BLD_HARBORBUILDING, player.GetHQPos() + MapPoint(4, 0), 0, NAT_ROMANS));
+          world, BuildingType::HarborBuilding, player.GetHQPos() + MapPoint(4, 0), 0, NAT_ROMANS));
         world.BuildRoad(0, false, hq->GetFlagPos(), {4, Direction::EAST});
     }
 

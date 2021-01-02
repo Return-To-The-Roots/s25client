@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2021 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "nobShipYard.h"
-#include "SerializedGameData.h"
+#include "helpers/serializeEnums.h"
+#include "helpers/format.hpp"
 
-nobShipYard::nobShipYard(const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobUsual(BuildingType::Shipyard, pos, player, nation), mode(nobShipYard::BOATS)
-{}
-
-nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id)
-    : nobUsual(sgd, obj_id), mode(sgd.Pop<nobShipYard::Mode>())
-{}
-
-/// Serialisierungsfunktionen
-void nobShipYard::Serialize(SerializedGameData& sgd) const
+std::range_error helpers::makeOutOfRange(unsigned value, unsigned maxValue)
 {
-    Serialize_nobUsual(sgd);
-
-    sgd.PushEnum<uint8_t>(mode);
-}
-
-/// Schaltet Modus entsprechend um
-void nobShipYard::SetMode(Mode newMode)
-{
-    mode = newMode;
+    return std::range_error(helpers::format("%s is out of range. Maximum allowed value: %s", value, maxValue));
 }
