@@ -25,7 +25,7 @@ struct TestGO : GameObject
     // LCOV_EXCL_START
     void Destroy() override final{};
     void Serialize(SerializedGameData&) const override final{};
-    GO_Type GetGOT() const override final { return GOT_ANIMAL; }
+    GO_Type GetGOT() const override final { return GO_Type::Animal; }
     // LCOV_EXCL_STOP
 
     void HandleEvent(unsigned) override final { handled = true; }

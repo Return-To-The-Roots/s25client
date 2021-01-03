@@ -102,13 +102,15 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
         return;
     }
 
-    ctrlComboBox* players = AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
+    ctrlComboBox* players =
+      AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
     for(const AIJH::AIPlayerJH* ai : ais_)
     {
         players->AddString(ai->GetPlayerName());
     }
 
-    ctrlComboBox* overlays = AddComboBox(ID_CbOverlay, DrawPoint(15, 60), Extent(250, 20), TC_GREY, NormalFont, 100);
+    ctrlComboBox* overlays =
+      AddComboBox(ID_CbOverlay, DrawPoint(15, 60), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
     overlays->AddString("None");
     overlays->AddString("BuildingQuality");
     overlays->AddString("Reachability");
@@ -124,8 +126,8 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     overlays->AddString("Fish");
 
     // Show 7 lines of text and 1 empty line
-    text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TC_GREY, NormalFont,
-                        FontStyle::NO_OUTLINE);
+    text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TextureColor::Grey,
+                        NormalFont, FontStyle::NO_OUTLINE);
 
     SetIwSize(Extent(GetIwSize().x, text->GetPos().y + text->GetSize().y));
 

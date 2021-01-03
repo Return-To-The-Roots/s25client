@@ -45,7 +45,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noGranite(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_GRANITE; }
+    GO_Type GetGOT() const override { return GO_Type::Granite; }
 
     void Draw(DrawPoint drawPt) override;
 

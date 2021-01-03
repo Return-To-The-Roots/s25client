@@ -57,12 +57,12 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
         {
             constexpr Extent btSize(20, 13);
             auto* txt = static_cast<ctrlTextDeepening*>(AddTextDeepening(
-              200 + i, DrawPoint(151, 31 + i * 28), Extent(22, 18), TC_GREY, "", NormalFont, COLOR_YELLOW));
+              200 + i, DrawPoint(151, 31 + i * 28), Extent(22, 18), TextureColor::Grey, "", NormalFont, COLOR_YELLOW));
             txt->ResizeForMaxChars(2);
             const auto txtSize = txt->GetSize();
-            ctrlButton* bt = AddImageButton(100 + i * 2, txt->GetPos() + DrawPoint(txtSize.x + 1, -4), btSize, TC_GREY,
-                                            LOADER.GetImageN("io", 33), "+1");
-            AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TC_GREY,
+            ctrlButton* bt = AddImageButton(100 + i * 2, txt->GetPos() + DrawPoint(txtSize.x + 1, -4), btSize,
+                                            TextureColor::Grey, LOADER.GetImageN("io", 33), "+1");
+            AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TextureColor::Grey,
                            LOADER.GetImageN("io", 34), "-1");
         }
         pendingOrderChanges.fill(0);
@@ -70,13 +70,13 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     }
 
     // Info
-    AddImageButton(12, DrawPoint(18, 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(12, DrawPoint(18, 384), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
-        AddImageButton(15, DrawPoint(130, 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 216),
+        AddImageButton(15, DrawPoint(130, 384), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 216),
                        _("Zero all production"));
     // Standard
     AddImageButton(13, DrawPoint(118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384), Extent(30, 32),
-                   TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+                   TextureColor::Grey, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
     UpdateSettings();
@@ -92,8 +92,8 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
 void iwTools::AddToolSettingSlider(unsigned id, GoodType ware)
 {
     ctrlProgress* el =
-      AddProgress(id, DrawPoint(17, 25 + id * 28), Extent(132, 26), TC_GREY, 140 + id * 2 + 1, 140 + id * 2, 10,
-                  _(WARE_NAMES[ware]), Extent(4, 4), 0, _("Less often"), _("More often"));
+      AddProgress(id, DrawPoint(17, 25 + id * 28), Extent(132, 26), TextureColor::Grey, 140 + id * 2 + 1, 140 + id * 2,
+                  10, _(WARE_NAMES[ware]), Extent(4, 4), 0, _("Less often"), _("More often"));
     if(isReplay)
         el->ActivateControls(false);
 }

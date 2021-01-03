@@ -39,7 +39,7 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
     const WorldDescription& desc = world.GetDescription();
     for(; t.value < desc.terrain.size(); t.value++)
     {
-        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
+        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::Land)
             break;
     }
     RTTR_FOREACH_PT(MapPoint, size_)
@@ -82,12 +82,12 @@ void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, De
 {
     switch(dir)
     {
-        case Direction::WEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t1 = t; break;
-        case Direction::NORTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t2 = t; break;
-        case Direction::NORTHEAST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHEAST)).t1 = t; break;
-        case Direction::EAST: world.GetNodeWriteable(pt).t2 = t; break;
-        case Direction::SOUTHEAST: world.GetNodeWriteable(pt).t1 = t; break;
-        case Direction::SOUTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::WEST)).t2 = t; break;
+        case Direction::West: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthWest)).t1 = t; break;
+        case Direction::NorthWest: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthWest)).t2 = t; break;
+        case Direction::NorthEast: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthEast)).t1 = t; break;
+        case Direction::East: world.GetNodeWriteable(pt).t2 = t; break;
+        case Direction::SouthEast: world.GetNodeWriteable(pt).t1 = t; break;
+        case Direction::SouthWest: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::West)).t2 = t; break;
     }
 }
 

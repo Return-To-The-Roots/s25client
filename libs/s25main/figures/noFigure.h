@@ -30,16 +30,16 @@ class glArchivItem_Bob;
 enum class Job : uint8_t;
 enum class GoodType : uint8_t;
 
-enum FigureState : uint8_t
+enum class FigureState : uint8_t
 {
-    FS_GOTOGOAL,
-    FS_GOHOME,
-    FS_WANDER,
-    FS_JOB
+    GotToGoal,
+    GoHome,
+    Wander,
+    Job
 };
 constexpr auto maxEnumValue(FigureState)
 {
-    return FigureState::FS_JOB;
+    return FigureState::Job;
 }
 
 class SerializedGameData;
@@ -67,7 +67,7 @@ protected:
     /// Wegpunkt, also auch beliebig dazwischen!
     bool waiting_for_free_node;
 
-    // nur bei FS_WANDER von Bedeutung:
+    // nur bei FigureState::Wander von Bedeutung:
     /// Restlicher Weg für das Rumirren (0xFFFF wenn schon auf dem Weg zu einer Flagge!)
     unsigned short wander_way;
     /// Wieviel (erfolglose) Rumirr-Flaggensuch-Versuche hat es schon gegeben (nach bestimmter Zahl Figur sterben
@@ -152,7 +152,7 @@ public:
     /// Getter
     bool GetRoadDir() const { return rs_dir; }
     const RoadSegment* GetCurrentRoad() const { return cur_rs; }
-    bool IsWandering() const { return fs == FS_WANDER; }
+    bool IsWandering() const { return fs == FigureState::Wander; }
     /// Tut was, nachdem er rausgehen soll
     void ActAtFirst();
     /// Legt die Anfangsdaten für das Laufen auf Wegen fest
@@ -219,7 +219,7 @@ public:
     unsigned char GetPlayer() const { return player; }
 
     /// Macht die Figur Job-Arbeiten?
-    bool DoJobWorks() const { return (fs == FS_JOB); }
+    bool DoJobWorks() const { return (fs == FigureState::Job); }
 
     void Abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 
@@ -234,9 +234,9 @@ public:
     bool IsWalkingOnRoad() const
     {
         // Nur Träger arbeiten richtig auf Straßen
-        if(fs == FS_JOB)
-            return (GetGOT() == GOT_NOF_CARRIER);
-        else if(fs == FS_GOHOME || fs == FS_GOTOGOAL)
+        if(fs == FigureState::Job)
+            return (GetGOT() == GO_Type::NofCarrier);
+        else if(fs == FigureState::GoHome || fs == FigureState::GotToGoal)
             return true;
         else
             return false;

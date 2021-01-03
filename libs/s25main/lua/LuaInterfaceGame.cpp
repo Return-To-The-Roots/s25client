@@ -140,7 +140,7 @@ LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILoc
     ADD_LUA_CONST(Ham);
 #undef ADD_LUA_CONST
 
-#define ADD_LUA_CONST(name) lua["RES_" + s25util::toUpper(#name)] = Resource::name
+#define ADD_LUA_CONST(name) lua["RES_" + s25util::toUpper(#name)] = ResourceType::name
     ADD_LUA_CONST(Iron);
     ADD_LUA_CONST(Gold);
     ADD_LUA_CONST(Coal);
@@ -363,7 +363,7 @@ void LuaInterfaceGame::EventGameFrame(unsigned nr)
         onGameFrame.call<void>(nr);
 }
 
-void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint pt, unsigned char type,
+void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint pt, ResourceType type,
                                           unsigned char quantity)
 {
     kaguya::LuaRef onResourceFound = lua["onResourceFound"];

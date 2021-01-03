@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_SUITE(FigureTests)
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 {
-    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
     MapPoint whPos(flagPos.x + 5, flagPos.y);
     auto* wh = static_cast<nobBaseWarehouse*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Romans));
@@ -36,9 +36,9 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     inv.Add(Job::Helper, 1);
     wh->AddGoods(inv, true);
     const unsigned numHelpers = world.GetPlayer(curPlayer).GetInventory().people[Job::Helper]; //-V807
-    MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SOUTHEAST);
+    MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SouthEast);
     // Build a road -> Requests a worker
-    this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::WEST));
+    this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::West));
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(Job::Helper), 0u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
     // Destroy Road
@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(Job::Helper), 1u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
-    this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::WEST));
+    this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::West));
     const noFigure* fig = wh->GetLeavingFigures().front();
     // Destroy wh -> Worker released
     this->DestroyFlag(whFlagPos);
@@ -56,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 
     // Same for HQ
     // Build a road -> Requests a worker
-    this->BuildRoad(flagPos, false, std::vector<Direction>(2, Direction::WEST));
+    this->BuildRoad(flagPos, false, std::vector<Direction>(2, Direction::West));
     wh = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
     fig = wh->GetLeavingFigures().front();
@@ -69,15 +69,15 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
 {
-    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
     MapPoint whFlagPos(flagPos.x + 5, flagPos.y);
-    MapPoint whPos = world.GetNeighbour(whFlagPos, Direction::NORTHWEST);
+    MapPoint whPos = world.GetNeighbour(whFlagPos, Direction::NorthWest);
     BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, whPos, curPlayer, Nation::Romans);
     // Build a road
-    this->BuildRoad(whFlagPos, false, std::vector<Direction>(5, Direction::WEST));
+    this->BuildRoad(whFlagPos, false, std::vector<Direction>(5, Direction::West));
     // Request people and wares
-    this->SetInventorySetting(whPos, GoodType::Wood, EInventorySetting::COLLECT);
-    this->SetInventorySetting(whPos, Job::Woodcutter, EInventorySetting::COLLECT);
+    this->SetInventorySetting(whPos, GoodType::Wood, EInventorySetting::Collect);
+    this->SetInventorySetting(whPos, Job::Woodcutter, EInventorySetting::Collect);
     auto* flag = world.GetSpecObj<noFlag>(flagPos);
     RTTR_EXEC_TILL(200, flag->GetNumWares() > 0);
     // Destroy wh -> Cancel wares and figures

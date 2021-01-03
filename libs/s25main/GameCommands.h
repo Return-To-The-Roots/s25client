@@ -52,8 +52,8 @@ private:
 protected:
     /// Koordinaten auf der Map, die dieses Command betreffen
     const MapPoint pt_;
-    Coords(const Type gst, const MapPoint pt) : GameCommand(gst), pt_(pt) {}
-    Coords(const Type gst, Serializer& ser) : GameCommand(gst), pt_(PopMapPoint(ser)) {}
+    Coords(const GCType gst, const MapPoint pt) : GameCommand(gst), pt_(pt) {}
+    Coords(const GCType gst, Serializer& ser) : GameCommand(gst), pt_(PopMapPoint(ser)) {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -70,8 +70,8 @@ class SetFlag : public Coords
     GC_FRIEND_DECL;
 
 protected:
-    SetFlag(const MapPoint pt) : Coords(SET_FLAG, pt) {}
-    SetFlag(Serializer& ser) : Coords(SET_FLAG, ser) {}
+    SetFlag(const MapPoint pt) : Coords(GCType::SetFlag, pt) {}
+    SetFlag(Serializer& ser) : Coords(GCType::SetFlag, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -83,8 +83,8 @@ class DestroyFlag : public Coords
     GC_FRIEND_DECL;
 
 protected:
-    DestroyFlag(const MapPoint pt) : Coords(DESTROY_FLAG, pt) {}
-    DestroyFlag(Serializer& ser) : Coords(DESTROY_FLAG, ser) {}
+    DestroyFlag(const MapPoint pt) : Coords(GCType::DestroyFlag, pt) {}
+    DestroyFlag(Serializer& ser) : Coords(GCType::DestroyFlag, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -101,7 +101,7 @@ class BuildRoad : public Coords
 
 protected:
     BuildRoad(const MapPoint pt, bool boat_road, std::vector<Direction> route)
-        : Coords(BUILD_ROAD, pt), boat_road(boat_road), route(std::move(route))
+        : Coords(GCType::BuildRoad, pt), boat_road(boat_road), route(std::move(route))
     {}
     BuildRoad(Serializer& ser);
 
@@ -119,7 +119,7 @@ class DestroyRoad : public Coords
     const Direction start_dir;
 
 protected:
-    DestroyRoad(const MapPoint pt, const Direction start_dir) : Coords(DESTROY_ROAD, pt), start_dir(start_dir) {}
+    DestroyRoad(const MapPoint pt, const Direction start_dir) : Coords(GCType::DestroyRoad, pt), start_dir(start_dir) {}
     DestroyRoad(Serializer& ser);
 
 public:
@@ -136,7 +136,7 @@ class UpgradeRoad : public Coords
     const Direction start_dir;
 
 protected:
-    UpgradeRoad(const MapPoint pt, const Direction start_dir) : Coords(UPGRADE_ROAD, pt), start_dir(start_dir) {}
+    UpgradeRoad(const MapPoint pt, const Direction start_dir) : Coords(GCType::UpgradeRoad, pt), start_dir(start_dir) {}
     UpgradeRoad(Serializer& ser);
 
 public:
@@ -153,10 +153,10 @@ class ChangeDistribution : public GameCommand
     Distributions data;
 
 protected:
-    ChangeDistribution(const Distributions& data) : GameCommand(CHANGE_DISTRIBUTION), data(data) {}
-    ChangeDistribution(Serializer& ser) : GameCommand(CHANGE_DISTRIBUTION)
+    ChangeDistribution(const Distributions& data) : GameCommand(GCType::ChangeDistribution), data(data) {}
+    ChangeDistribution(Serializer& ser) : GameCommand(GCType::ChangeDistribution)
     {
-        for(unsigned char& i : data)
+        for(uint8_t& i : data)
             i = ser.PopUnsignedChar();
     }
 
@@ -182,9 +182,9 @@ class ChangeBuildOrder : public GameCommand
 
 protected:
     ChangeBuildOrder(const bool useCustomBuildOrder, const BuildOrders& data)
-        : GameCommand(CHANGE_BUILDORDER), useCustomBuildOrder(useCustomBuildOrder), data(data)
+        : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(useCustomBuildOrder), data(data)
     {}
-    ChangeBuildOrder(Serializer& ser) : GameCommand(CHANGE_BUILDORDER), useCustomBuildOrder(ser.PopBool())
+    ChangeBuildOrder(Serializer& ser) : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
     {
         for(auto& i : data)
             i = helpers::popEnum<BuildingType>(ser);
@@ -210,8 +210,8 @@ class SetBuildingSite : public Coords
     const BuildingType bt;
 
 protected:
-    SetBuildingSite(const MapPoint pt, const BuildingType bt) : Coords(SET_BUILDINGSITE, pt), bt(bt) {}
-    SetBuildingSite(Serializer& ser) : Coords(SET_BUILDINGSITE, ser), bt(helpers::popEnum<BuildingType>(ser)) {}
+    SetBuildingSite(const MapPoint pt, const BuildingType bt) : Coords(GCType::SetBuildingsite, pt), bt(bt) {}
+    SetBuildingSite(Serializer& ser) : Coords(GCType::SetBuildingsite, ser), bt(helpers::popEnum<BuildingType>(ser)) {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -230,8 +230,8 @@ class DestroyBuilding : public Coords
     GC_FRIEND_DECL;
 
 protected:
-    DestroyBuilding(const MapPoint pt) : Coords(DESTROY_BUILDING, pt) {}
-    DestroyBuilding(Serializer& ser) : Coords(DESTROY_BUILDING, ser) {}
+    DestroyBuilding(const MapPoint pt) : Coords(GCType::DestroyBuilding, pt) {}
+    DestroyBuilding(Serializer& ser) : Coords(GCType::DestroyBuilding, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -243,8 +243,8 @@ class SendSoldiersHome : public Coords
     GC_FRIEND_DECL;
 
 protected:
-    SendSoldiersHome(const MapPoint pt) : Coords(SEND_SOLDIERS_HOME, pt) {}
-    SendSoldiersHome(Serializer& ser) : Coords(SEND_SOLDIERS_HOME, ser) {}
+    SendSoldiersHome(const MapPoint pt) : Coords(GCType::SendSoldiersHome, pt) {}
+    SendSoldiersHome(Serializer& ser) : Coords(GCType::SendSoldiersHome, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -256,8 +256,8 @@ class OrderNewSoldiers : public Coords
     GC_FRIEND_DECL;
 
 protected:
-    OrderNewSoldiers(const MapPoint pt) : Coords(ORDER_NEW_SOLDIERS, pt) {}
-    OrderNewSoldiers(Serializer& ser) : Coords(ORDER_NEW_SOLDIERS, ser) {}
+    OrderNewSoldiers(const MapPoint pt) : Coords(GCType::OrderNewSoldiers, pt) {}
+    OrderNewSoldiers(Serializer& ser) : Coords(GCType::OrderNewSoldiers, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -271,10 +271,10 @@ class ChangeTransport : public GameCommand
     TransportOrders data;
 
 protected:
-    ChangeTransport(const TransportOrders& data) : GameCommand(CHANGE_TRANSPORT), data(data) {}
-    ChangeTransport(Serializer& ser) : GameCommand(CHANGE_TRANSPORT)
+    ChangeTransport(const TransportOrders& data) : GameCommand(GCType::ChangeTransport), data(data) {}
+    ChangeTransport(Serializer& ser) : GameCommand(GCType::ChangeTransport)
     {
-        for(unsigned char& i : data)
+        for(uint8_t& i : data)
             i = ser.PopUnsignedChar();
     }
 
@@ -297,10 +297,10 @@ class ChangeMilitary : public GameCommand
     MilitarySettings data;
 
 protected:
-    ChangeMilitary(const MilitarySettings& data) : GameCommand(CHANGE_MILITARY), data(data) {}
-    ChangeMilitary(Serializer& ser) : GameCommand(CHANGE_MILITARY)
+    ChangeMilitary(const MilitarySettings& data) : GameCommand(GCType::ChangeMilitary), data(data) {}
+    ChangeMilitary(Serializer& ser) : GameCommand(GCType::ChangeMilitary)
     {
-        for(unsigned char& i : data)
+        for(uint8_t& i : data)
             i = ser.PopUnsignedChar();
     }
 
@@ -325,7 +325,8 @@ class ChangeTools : public GameCommand
     std::array<int8_t, NUM_TOOLS> orders;
 
 protected:
-    ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr) : GameCommand(CHANGE_TOOLS), data(data)
+    ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr)
+        : GameCommand(GCType::ChangeTools), data(data)
     {
         if(order_delta != nullptr)
         {
@@ -338,9 +339,9 @@ protected:
         }
     }
 
-    ChangeTools(Serializer& ser) : GameCommand(CHANGE_TOOLS)
+    ChangeTools(Serializer& ser) : GameCommand(GCType::ChangeTools)
     {
-        for(unsigned char& i : data)
+        for(uint8_t& i : data)
             i = ser.PopUnsignedChar();
 
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
@@ -368,8 +369,8 @@ class CallSpecialist : public Coords
     const Job job;
 
 protected:
-    CallSpecialist(const MapPoint pt, Job job) : Coords(CALL_SPECIALIST, pt), job(job) {}
-    CallSpecialist(Serializer& ser) : Coords(CALL_SPECIALIST, ser), job(helpers::popEnum<Job>(ser)) {}
+    CallSpecialist(const MapPoint pt, Job job) : Coords(GCType::CallSpecialist, pt), job(job) {}
+    CallSpecialist(Serializer& ser) : Coords(GCType::CallSpecialist, ser), job(helpers::popEnum<Job>(ser)) {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -391,10 +392,10 @@ protected:
     /// Starke Soldaten oder schwache Soldaten?
     const bool strong_soldiers;
 
-    BaseAttack(const Type gst, const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
+    BaseAttack(const GCType gst, const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
         : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers)
     {}
-    BaseAttack(const Type gst, Serializer& ser)
+    BaseAttack(const GCType gst, Serializer& ser)
         : Coords(gst, ser), soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool())
     {}
 
@@ -415,9 +416,9 @@ class Attack : public BaseAttack
 
 protected:
     Attack(const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
-        : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers)
+        : BaseAttack(GCType::Attack, pt, soldiers_count, strong_soldiers)
     {}
-    Attack(Serializer& ser) : BaseAttack(ATTACK, ser) {}
+    Attack(Serializer& ser) : BaseAttack(GCType::Attack, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -430,9 +431,9 @@ class SeaAttack : public BaseAttack
 
 protected:
     SeaAttack(const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
-        : BaseAttack(SEA_ATTACK, pt, soldiers_count, strong_soldiers)
+        : BaseAttack(GCType::SeaAttack, pt, soldiers_count, strong_soldiers)
     {}
-    SeaAttack(Serializer& ser) : BaseAttack(SEA_ATTACK, ser) {}
+    SeaAttack(Serializer& ser) : BaseAttack(GCType::SeaAttack, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -445,8 +446,8 @@ class SetCoinsAllowed : public Coords
     const bool enabled;
 
 protected:
-    SetCoinsAllowed(const MapPoint pt, bool enabled) : Coords(SET_COINS_ALLOWED, pt), enabled(enabled) {}
-    SetCoinsAllowed(Serializer& ser) : Coords(SET_COINS_ALLOWED, ser), enabled(ser.PopBool()) {}
+    SetCoinsAllowed(const MapPoint pt, bool enabled) : Coords(GCType::SetCoinsAllowed, pt), enabled(enabled) {}
+    SetCoinsAllowed(Serializer& ser) : Coords(GCType::SetCoinsAllowed, ser), enabled(ser.PopBool()) {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -464,8 +465,9 @@ class SetProductionEnabled : public Coords
     const bool enabled;
 
 protected:
-    SetProductionEnabled(const MapPoint pt, bool enabled) : Coords(SET_PRODUCTION_ENABLED, pt), enabled(enabled) {}
-    SetProductionEnabled(Serializer& ser) : Coords(SET_PRODUCTION_ENABLED, ser), enabled(ser.PopBool()) {}
+    SetProductionEnabled(const MapPoint pt, bool enabled) : Coords(GCType::SetProductionEnabled, pt), enabled(enabled)
+    {}
+    SetProductionEnabled(Serializer& ser) : Coords(GCType::SetProductionEnabled, ser), enabled(ser.PopBool()) {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -482,8 +484,8 @@ class NotifyAlliesOfLocation : public Coords
     GC_FRIEND_DECL;
 
 protected:
-    NotifyAlliesOfLocation(const MapPoint pt) : Coords(NOTIFY_ALLIES_OF_LOCATION, pt) {}
-    NotifyAlliesOfLocation(Serializer& ser) : Coords(NOTIFY_ALLIES_OF_LOCATION, ser) {}
+    NotifyAlliesOfLocation(const MapPoint pt) : Coords(GCType::NotifyAlliesOfLocation, pt) {}
+    NotifyAlliesOfLocation(Serializer& ser) : Coords(GCType::NotifyAlliesOfLocation, ser) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -498,9 +500,9 @@ class SetInventorySetting : public Coords
 
 protected:
     SetInventorySetting(const MapPoint pt, boost::variant<GoodType, Job> what, const InventorySetting state)
-        : Coords(SET_INVENTORY_SETTING, pt), what(std::move(what)), state(state)
+        : Coords(GCType::SetInventorySetting, pt), what(std::move(what)), state(state)
     {}
-    SetInventorySetting(Serializer& ser) : Coords(SET_INVENTORY_SETTING, ser)
+    SetInventorySetting(Serializer& ser) : Coords(GCType::SetInventorySetting, ser)
 
     {
         if(ser.PopBool())
@@ -533,9 +535,9 @@ class SetAllInventorySettings : public Coords
 
 protected:
     SetAllInventorySettings(const MapPoint pt, bool isJob, std::vector<InventorySetting> states)
-        : Coords(SET_ALL_INVENTORY_SETTINGS, pt), isJob(isJob), states(std::move(states))
+        : Coords(GCType::SetAllInventorySettings, pt), isJob(isJob), states(std::move(states))
     {}
-    SetAllInventorySettings(Serializer& ser) : Coords(SET_ALL_INVENTORY_SETTINGS, ser), isJob(ser.PopBool())
+    SetAllInventorySettings(Serializer& ser) : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
     {
         const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
         states.reserve(numStates);
@@ -568,10 +570,10 @@ class ChangeReserve : public Coords
 
 protected:
     ChangeReserve(const MapPoint pt, const uint8_t rank, const uint32_t count)
-        : Coords(CHANGE_RESERVE, pt), rank(rank), count(count)
+        : Coords(GCType::ChangeReserve, pt), rank(rank), count(count)
     {}
     ChangeReserve(Serializer& ser)
-        : Coords(CHANGE_RESERVE, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+        : Coords(GCType::ChangeReserve, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
     {}
 
 public:
@@ -592,8 +594,8 @@ class CheatArmageddon : public GameCommand
     GC_FRIEND_DECL;
 
 protected:
-    CheatArmageddon() : GameCommand(CHEAT_ARMAGEDDON) {}
-    CheatArmageddon(Serializer& /*ser*/) : GameCommand(CHEAT_ARMAGEDDON) {}
+    CheatArmageddon() : GameCommand(GCType::CheatArmageddon) {}
+    CheatArmageddon(Serializer& /*ser*/) : GameCommand(GCType::CheatArmageddon) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -605,8 +607,8 @@ class Surrender : public GameCommand
     GC_FRIEND_DECL;
 
 protected:
-    Surrender() : GameCommand(SURRENDER) {}
-    Surrender(Serializer& /*ser*/) : GameCommand(SURRENDER) {}
+    Surrender() : GameCommand(GCType::Surrender) {}
+    Surrender(Serializer& /*ser*/) : GameCommand(GCType::Surrender) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -618,8 +620,8 @@ class DestroyAll : public GameCommand
     GC_FRIEND_DECL;
 
 protected:
-    DestroyAll() : GameCommand(DESTROY_ALL) {}
-    DestroyAll(Serializer& /*ser*/) : GameCommand(DESTROY_ALL) {}
+    DestroyAll() : GameCommand(GCType::DestroyAll) {}
+    DestroyAll(Serializer& /*ser*/) : GameCommand(GCType::DestroyAll) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -638,10 +640,10 @@ class SuggestPact : public GameCommand
 
 protected:
     SuggestPact(const uint8_t targetPlayer, const PactType pt, const uint32_t duration)
-        : GameCommand(SUGGEST_PACT), targetPlayer(targetPlayer), pt(pt), duration(duration)
+        : GameCommand(GCType::SuggestPact), targetPlayer(targetPlayer), pt(pt), duration(duration)
     {}
     SuggestPact(Serializer& ser)
-        : GameCommand(SUGGEST_PACT), targetPlayer(ser.PopUnsignedChar()), pt(helpers::popEnum<PactType>(ser)),
+        : GameCommand(GCType::SuggestPact), targetPlayer(ser.PopUnsignedChar()), pt(helpers::popEnum<PactType>(ser)),
           duration(ser.PopUnsignedInt())
     {}
 
@@ -670,10 +672,10 @@ class AcceptPact : public GameCommand
 
 protected:
     AcceptPact(const uint32_t id, const PactType pt, const uint8_t fromPlayer)
-        : GameCommand(ACCEPT_PACT), id(id), pt(pt), fromPlayer(fromPlayer)
+        : GameCommand(GCType::AcceptPact), id(id), pt(pt), fromPlayer(fromPlayer)
     {}
     AcceptPact(Serializer& ser)
-        : GameCommand(ACCEPT_PACT), id(ser.PopUnsignedInt()), pt(helpers::popEnum<PactType>(ser)),
+        : GameCommand(GCType::AcceptPact), id(ser.PopUnsignedInt()), pt(helpers::popEnum<PactType>(ser)),
           fromPlayer(ser.PopUnsignedChar())
     {}
 
@@ -700,10 +702,10 @@ class CancelPact : public GameCommand
 
 protected:
     CancelPact(const PactType pt, const uint8_t otherPlayer)
-        : GameCommand(CANCEL_PACT), pt(pt), otherPlayer(otherPlayer)
+        : GameCommand(GCType::CancelPact), pt(pt), otherPlayer(otherPlayer)
     {}
     CancelPact(Serializer& ser)
-        : GameCommand(CANCEL_PACT), pt(helpers::popEnum<PactType>(ser)), otherPlayer(ser.PopUnsignedChar())
+        : GameCommand(GCType::CancelPact), pt(helpers::popEnum<PactType>(ser)), otherPlayer(ser.PopUnsignedChar())
     {}
 
 public:
@@ -724,8 +726,8 @@ class SetShipYardMode : public Coords
     const bool buildShips;
 
 protected:
-    SetShipYardMode(const MapPoint pt, bool buildShips) : Coords(SET_SHIPYARD_MODE, pt), buildShips(buildShips) {}
-    SetShipYardMode(Serializer& ser) : Coords(SET_SHIPYARD_MODE, ser), buildShips(ser.PopBool()) {}
+    SetShipYardMode(const MapPoint pt, bool buildShips) : Coords(GCType::SetShipyardMode, pt), buildShips(buildShips) {}
+    SetShipYardMode(Serializer& ser) : Coords(GCType::SetShipyardMode, ser), buildShips(ser.PopBool()) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -743,8 +745,8 @@ class StartStopExpedition : public Coords
     const bool start;
 
 protected:
-    StartStopExpedition(const MapPoint pt, bool start) : Coords(START_STOP_EXPEDITION, pt), start(start) {}
-    StartStopExpedition(Serializer& ser) : Coords(START_STOP_EXPEDITION, ser), start(ser.PopBool()) {}
+    StartStopExpedition(const MapPoint pt, bool start) : Coords(GCType::StartStopExpedition, pt), start(start) {}
+    StartStopExpedition(Serializer& ser) : Coords(GCType::StartStopExpedition, ser), start(ser.PopBool()) {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -763,10 +765,10 @@ class StartStopExplorationExpedition : public Coords
 
 protected:
     StartStopExplorationExpedition(const MapPoint pt, bool start)
-        : Coords(START_STOP_EXPLORATION_EXPEDITION, pt), start(start)
+        : Coords(GCType::StartStopExplorationExpedition, pt), start(start)
     {}
     StartStopExplorationExpedition(Serializer& ser)
-        : Coords(START_STOP_EXPLORATION_EXPEDITION, ser), start(ser.PopBool())
+        : Coords(GCType::StartStopExplorationExpedition, ser), start(ser.PopBool())
     {}
 
 public:
@@ -787,23 +789,23 @@ protected:
     /// Aktion, die ausgeführt wird
     enum class Action : uint8_t
     {
-        FOUNDCOLONY,
-        CANCELEXPEDITION,
-        NORTH,
-        NORTHEAST,
-        SOUTHEAST,
-        SOUTH,
-        SOUTHWEST,
-        NORTHWEST
+        FoundColony,
+        CancelExpedition,
+        North,
+        NorthEast,
+        SouthEast,
+        South,
+        SouthWest,
+        NorthWest
     };
-    friend constexpr auto maxEnumValue(Action) { return Action::NORTHWEST; }
+    friend constexpr auto maxEnumValue(Action) { return Action::NorthWest; }
 
     ExpeditionCommand(const Action action, const uint32_t ship_id)
-        : GameCommand(EXPEDITION_COMMAND), action(action), ship_id(ship_id)
+        : GameCommand(GCType::ExpeditionCommand), action(action), ship_id(ship_id)
     {}
 
     ExpeditionCommand(Serializer& ser)
-        : GameCommand(EXPEDITION_COMMAND), action(helpers::popEnum<Action>(ser)), ship_id(ser.PopUnsignedInt())
+        : GameCommand(GCType::ExpeditionCommand), action(helpers::popEnum<Action>(ser)), ship_id(ser.PopUnsignedInt())
     {}
 
 public:
@@ -834,9 +836,9 @@ class TradeOverLand : public Coords
 protected:
     /// Note: Can only trade wares or figures!
     TradeOverLand(const MapPoint pt, boost::variant<GoodType, Job> what, const uint32_t count)
-        : Coords(TRADE, pt), what(std::move(what)), count(count)
+        : Coords(GCType::Trade, pt), what(std::move(what)), count(count)
     {}
-    TradeOverLand(Serializer& ser) : Coords(TRADE, ser)
+    TradeOverLand(Serializer& ser) : Coords(GCType::Trade, ser)
     {
         if(ser.PopBool())
             what = helpers::popEnum<Job>(ser);

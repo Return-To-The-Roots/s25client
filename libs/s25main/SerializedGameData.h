@@ -23,6 +23,7 @@
 #include "helpers/MaxEnumValue.h"
 #include "helpers/OptionalEnum.h"
 #include "helpers/ReserveElements.hpp"
+#include "helpers/serializeEnums.h"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
 #include "s25util/Serializer.h"
@@ -104,14 +105,7 @@ public:
     template<typename T_SavedType, typename T>
     void PushEnum(const T val)
     {
-        using UnderlyingType = std::underlying_type_t<T>;
-        static_assert(std::is_same<T_SavedType, UnderlyingType>::value, "Wrong saved type");
-        constexpr auto maxValue = helpers::MaxEnumValue_v<T>;
-        static_assert(std::numeric_limits<T_SavedType>::max() >= maxValue, "SavedType cannot hold all enum values");
-
-        const auto iVal = static_cast<UnderlyingType>(val);
-        RTTR_Assert(iVal <= maxValue);
-        Push(iVal);
+        helpers::pushEnum<T_SavedType>(*this, val);
     }
     template<typename T_SavedType, typename T>
     void PushOptionalEnum(const helpers::OptionalEnum<T> val)
@@ -307,11 +301,13 @@ helpers::OptionalEnum<T> SerializedGameData::PopOptionalEnum()
 template<typename T>
 std::enable_if_t<std::is_enum<T>::value, T> SerializedGameData::Pop()
 {
-    using Integral = std::underlying_type_t<T>;
-    const auto value = Serializer::Pop<Integral>();
-    if(value > helpers::MaxEnumValue_v<T>)
-        throw makeOutOfRange(value, helpers::MaxEnumValue_v<T>);
-    return static_cast<T>(value); // Avoid additional range checks
+    try
+    {
+        return helpers::popEnum<T>(*this);
+    } catch(const std::range_error& e)
+    {
+        throw Error(e.what());
+    }
 }
 template<typename T>
 std::enable_if_t<!std::is_enum<T>::value, T> SerializedGameData::Pop()

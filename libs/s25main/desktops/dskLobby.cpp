@@ -47,17 +47,17 @@ dskLobby::dskLobby()
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Zurück"
-    AddTextButton(3, DrawPoint(530, 530), Extent(250, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(3, DrawPoint(530, 530), Extent(250, 22), TextureColor::Red1, _("Back"), NormalFont);
     // "Verbinden"
-    AddTextButton(4, DrawPoint(530, 470), Extent(250, 22), TC_GREEN2, _("Connect"), NormalFont);
+    AddTextButton(4, DrawPoint(530, 470), Extent(250, 22), TextureColor::Green2, _("Connect"), NormalFont);
     // "Internet Ranking"
-    AddTextButton(5, DrawPoint(530, 500), Extent(250, 22), TC_GREEN2, _("Internet Ranking"), NormalFont);
+    AddTextButton(5, DrawPoint(530, 500), Extent(250, 22), TextureColor::Green2, _("Internet Ranking"), NormalFont);
     // "Server hinzufügen"
-    AddTextButton(6, DrawPoint(530, 440), Extent(250, 22), TC_GREEN2, _("Add Server"), NormalFont);
+    AddTextButton(6, DrawPoint(530, 440), Extent(250, 22), TextureColor::Green2, _("Add Server"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
     using SRT = ctrlTable::SortType;
-    AddTable(10, DrawPoint(20, 20), Extent(500, 262), TC_GREY, NormalFont,
+    AddTable(10, DrawPoint(20, 20), Extent(500, 262), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("ID"), 0, SRT::Number},
                                 {_("Server"), 300, SRT::String},
                                 {_("Map"), 300, SRT::String},
@@ -65,14 +65,14 @@ dskLobby::dskLobby()
                                 {_("Version"), 100, SRT::String},
                                 {_("Ping"), 100, SRT::Number}});
     // Spieler-Tabelle - "Name", "Punkte", "Version"
-    AddTable(11, DrawPoint(530, 20), Extent(250, 410), TC_GREY, NormalFont,
+    AddTable(11, DrawPoint(530, 20), Extent(250, 410), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{
                {_("Name"), 500, SRT::String}, {_("Points"), 250, SRT::String}, {_("Version"), 250, SRT::String}});
 
     // Chatfenster
-    AddChatCtrl(20, DrawPoint(20, 290), Extent(500, 238), TC_GREY, NormalFont);
+    AddChatCtrl(20, DrawPoint(20, 290), Extent(500, 238), TextureColor::Grey, NormalFont);
     // Chatfenster-Edit
-    AddEdit(21, DrawPoint(20, 530), Extent(500, 22), TC_GREY, NormalFont);
+    AddEdit(21, DrawPoint(20, 530), Extent(500, 22), TextureColor::Grey, NormalFont);
 
     using namespace std::chrono_literals;
     AddTimer(30, 5s);
@@ -146,7 +146,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
                   this, MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
             else
             {
-                createServerWnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::LOBBY));
+                createServerWnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::Lobby));
             }
         }
         break;
@@ -248,7 +248,7 @@ bool dskLobby::ConnectToSelectedGame()
             serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
         if(serverRevision == RTTR_Version::GetShortRevision())
         {
-            auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LOBBY);
+            auto connect = std::make_unique<iwDirectIPConnect>(ServerType::Lobby);
             connect->Connect(itServer->getHost(), itServer->getPort(), false, itServer->hasPassword());
             WINDOWMANAGER.ReplaceWindow(std::move(connect));
             return true;

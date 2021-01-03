@@ -188,19 +188,19 @@ public:
         // Uses knowledge about Direction<->RoadDir to avoid switch, see static_asserts
         using rttr::enum_cast;
         auto iDir = enum_cast(dir);
-        if(iDir >= enum_cast(Direction::EAST))
+        if(iDir >= enum_cast(Direction::East))
         {
-            static_assert(enum_cast(Direction::EAST) - 3 == enum_cast(RoadDir::East)
-                            && enum_cast(Direction::SOUTHEAST) - 3 == enum_cast(RoadDir::SouthEast)
-                            && enum_cast(Direction::SOUTHWEST) - 3 == enum_cast(RoadDir::SouthWest),
+            static_assert(enum_cast(Direction::East) - 3 == enum_cast(RoadDir::East)
+                            && enum_cast(Direction::SouthEast) - 3 == enum_cast(RoadDir::SouthEast)
+                            && enum_cast(Direction::SouthWest) - 3 == enum_cast(RoadDir::SouthWest),
                           "Mismatch");
             iDir -= 3u; // Map East->East etc
         } else
         {
             // Will map iDir to opposite
-            static_assert(enum_cast(Direction::WEST) == enum_cast(RoadDir::East)
-                            && enum_cast(Direction::NORTHWEST) == enum_cast(RoadDir::SouthEast)
-                            && enum_cast(Direction::NORTHEAST) == enum_cast(RoadDir::SouthWest),
+            static_assert(enum_cast(Direction::West) == enum_cast(RoadDir::East)
+                            && enum_cast(Direction::NorthWest) == enum_cast(RoadDir::SouthEast)
+                            && enum_cast(Direction::NorthEast) == enum_cast(RoadDir::SouthWest),
                           "Mismatch");
             pt = GetNeighbour(pt, dir);
         }

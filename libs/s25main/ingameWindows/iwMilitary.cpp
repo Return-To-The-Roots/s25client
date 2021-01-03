@@ -37,26 +37,27 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
     // Einzelne Balken
     const Extent progSize(132, 26);
     const Extent progPadding(4, 4);
-    AddProgress(0, DrawPoint(17, 25), progSize, TC_GREY, 119, 120, MILITARY_SETTINGS_SCALE[0], "", progPadding, 0,
-                _("Fewer recruits"), _("More recruits")); /* pitch: progPadding */
-    AddProgress(1, DrawPoint(17, 57), progSize, TC_GREY, 121, 122, MILITARY_SETTINGS_SCALE[1], "", progPadding, 0,
-                _("Weak defense"), _("Strong defense"));
-    AddProgress(2, DrawPoint(17, 89), progSize, TC_GREY, 123, 124, MILITARY_SETTINGS_SCALE[2], "", progPadding, 0,
-                _("Fewer defenders"), _("More defenders"));
-    AddProgress(3, DrawPoint(17, 121), progSize, TC_GREY, 209, 210, MILITARY_SETTINGS_SCALE[3], "", progPadding, 0,
-                _("Less attackers"), _("More attackers"));
-    AddProgress(4, DrawPoint(17, 153), progSize, TC_GREY, 129, 130, MILITARY_SETTINGS_SCALE[4], "", progPadding, 0,
-                _("Interior"), _("Interior"));
-    AddProgress(5, DrawPoint(17, 185), progSize, TC_GREY, 127, 128, MILITARY_SETTINGS_SCALE[5], "", progPadding, 0,
-                _("Center of country"), _("Center of country"));
-    AddProgress(6, DrawPoint(17, 217), progSize, TC_GREY, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "", progPadding, 0,
-                _("Near harbor points"), _("Near harbor points"));
-    AddProgress(7, DrawPoint(17, 249), progSize, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", progPadding, 0,
-                _("Border areas"), _("Border areas"));
+    AddProgress(0, DrawPoint(17, 25), progSize, TextureColor::Grey, 119, 120, MILITARY_SETTINGS_SCALE[0], "",
+                progPadding, 0, _("Fewer recruits"), _("More recruits")); /* pitch: progPadding */
+    AddProgress(1, DrawPoint(17, 57), progSize, TextureColor::Grey, 121, 122, MILITARY_SETTINGS_SCALE[1], "",
+                progPadding, 0, _("Weak defense"), _("Strong defense"));
+    AddProgress(2, DrawPoint(17, 89), progSize, TextureColor::Grey, 123, 124, MILITARY_SETTINGS_SCALE[2], "",
+                progPadding, 0, _("Fewer defenders"), _("More defenders"));
+    AddProgress(3, DrawPoint(17, 121), progSize, TextureColor::Grey, 209, 210, MILITARY_SETTINGS_SCALE[3], "",
+                progPadding, 0, _("Less attackers"), _("More attackers"));
+    AddProgress(4, DrawPoint(17, 153), progSize, TextureColor::Grey, 129, 130, MILITARY_SETTINGS_SCALE[4], "",
+                progPadding, 0, _("Interior"), _("Interior"));
+    AddProgress(5, DrawPoint(17, 185), progSize, TextureColor::Grey, 127, 128, MILITARY_SETTINGS_SCALE[5], "",
+                progPadding, 0, _("Center of country"), _("Center of country"));
+    AddProgress(6, DrawPoint(17, 217), progSize, TextureColor::Grey, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "",
+                progPadding, 0, _("Near harbor points"), _("Near harbor points"));
+    AddProgress(7, DrawPoint(17, 249), progSize, TextureColor::Grey, 125, 126, MILITARY_SETTINGS_SCALE[7], "",
+                progPadding, 0, _("Border areas"), _("Border areas"));
 
     // unteren 2 Buttons
-    AddImageButton(20, DrawPoint(18, 282), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
-    AddImageButton(21, DrawPoint(120, 282), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(20, DrawPoint(18, 282), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(21, DrawPoint(120, 282), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 191),
+                   _("Default"));
 
     // Falls Verteidiger ändern verboten ist, einfach die Bar ausblenden
     if(gwv.GetWorld().GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 1)

@@ -272,7 +272,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     // const unsigned short maxSearchRadius = 10;
 
     // flag of a military building? -> check if we really want to connect this right now
-    const MapPoint bldPos = aii.gwb.GetNeighbour(flag->GetPos(), Direction::NORTHWEST);
+    const MapPoint bldPos = aii.gwb.GetNeighbour(flag->GetPos(), Direction::NorthWest);
     if(const auto* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
     {
         if(!MilitaryBuildingWantsRoad(*milBld))
@@ -303,7 +303,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         tmpRoute.clear();
         unsigned length;
         // the flag should not be at a military building!
-        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag->GetPos(), Direction::NORTHWEST), true))
+        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag->GetPos(), Direction::NorthWest), true))
             continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
         if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag->GetPos(), &tmpRoute, &length))
@@ -612,7 +612,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         route.clear();
         unsigned newLength;
         // the flag should not be at a military building!
-        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST), true))
+        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest), true))
             continue;
 
         if(!IsConnectedToRoadSystem(&curFlag))

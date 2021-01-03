@@ -144,9 +144,9 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     }
 
     // Build road
-    const MapPoint flagPos = world.MakeMapPoint(world.GetNeighbour(hqPos, Direction::SOUTHEAST) + Position(4, 0));
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>(4, Direction::EAST));
-    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPos)->GetRoute(Direction::WEST));
+    const MapPoint flagPos = world.MakeMapPoint(world.GetNeighbour(hqPos, Direction::SouthEast) + Position(4, 0));
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SouthEast), false, std::vector<Direction>(4, Direction::East));
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPos)->GetRoute(Direction::West));
     em.ExecuteNextGF();
     ai->RunGF(em.GetCurrentGF(), true);
     assertBqEqualAround(__LINE__, flagPos, 6);
@@ -165,8 +165,8 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     ai->RunGF(em.GetCurrentGF(), true);
     assertBqEqualAround(__LINE__, bldPos, 6);
 
-    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false,
-                    std::vector<Direction>(5, Direction::WEST));
+    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SouthEast), false,
+                    std::vector<Direction>(5, Direction::West));
     em.ExecuteNextGF();
     ai->RunGF(em.GetCurrentGF(), true);
     RTTR_EXEC_TILL(2000, world.GetSpecObj<noBuilding>(bldPos));

@@ -44,7 +44,7 @@ public:
     // LCOV_EXCL_START
     void Destroy() override {}
     void Serialize(SerializedGameData&) const override {}
-    GO_Type GetGOT() const override { return GOT_UNKNOWN; }
+    GO_Type GetGOT() const override { return GO_Type::Unknown; }
     // LCOV_EXCL_STOP
 };
 
@@ -159,7 +159,7 @@ public:
     // LCOV_EXCL_START
     void Destroy() override { destroyNum++; }
     void Serialize(SerializedGameData&) const override {}
-    GO_Type GetGOT() const override { return GOT_UNKNOWN; }
+    GO_Type GetGOT() const override { return GO_Type::Unknown; }
     // LCOV_EXCL_STOP
 };
 

@@ -40,7 +40,7 @@ nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, T
 {}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), tr(sgd, *gwg, player), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
+    : noFigure(sgd, obj_id), tr(sgd, *gwg, player), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
       homePos(sgd.PopMapPoint()), goalPos(sgd.PopMapPoint())
 {}
 
@@ -119,7 +119,7 @@ void nofTradeLeader::Walked()
             }
             return;
         } else if(*next_dir == TradeDirection::ReachedGoal)
-            next_dir = TradeDirection(Direction::NORTHWEST); // Walk into building
+            next_dir = TradeDirection(Direction::NorthWest); // Walk into building
         StartWalking(toDirection(*next_dir));
         if(successor)
             successor->AddNextDir(*next_dir);
@@ -151,7 +151,7 @@ bool nofTradeLeader::TryToGoHome()
         return false;
 
     // Find a way back home
-    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, Direction::SOUTHEAST);
+    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, Direction::SouthEast);
     tr.AssignNewGoal(this->GetPos(), homeFlagPos);
     return tr.IsValid();
 }

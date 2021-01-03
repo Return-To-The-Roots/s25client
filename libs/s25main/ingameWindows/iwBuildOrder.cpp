@@ -33,7 +33,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
                    LOADER.GetImageN("io", 5)),
       gwv(gwv), settings_changed(false)
 {
-    ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TC_GREY, NormalFont);
+    ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
 
     // Liste füllen
     BuildOrders buildOrders = GAMECLIENT.visual_settings.build_order;
@@ -41,19 +41,20 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
         list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
-    AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
+    AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 215), _("Top"));
     // Hoch
-    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 33), _("Up"));
+    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 33), _("Up"));
     // Runter
-    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 34), _("Down"));
+    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 34), _("Down"));
     // Nach ganz unten
-    AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
+    AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 216),
+                   _("Bottom"));
 
     // Bild der Auswahl
     AddImage(5, DrawPoint(240, 150),
              LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + rttr::enum_cast(buildOrders[0]) * 5));
 
-    ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TC_GREY, NormalFont, 100);
+    ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
     combo->AddString(_("After the following order")); // "Nach folgender Reihenfolge"
 
@@ -61,7 +62,8 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     combo->SetSelection(GAMECLIENT.visual_settings.useCustomBuildOrder ? 1 : 0);
 
     // Standard
-    AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TextureColor::Grey, LOADER.GetImageN("io", 191),
+                   _("Default"));
 
     // Absendetimer, in 2s-Abschnitten wird jeweils das ganze als Netzwerknachricht ggf. abgeschickt
     AddTimer(11, 2s);

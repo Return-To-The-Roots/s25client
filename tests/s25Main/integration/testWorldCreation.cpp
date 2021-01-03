@@ -18,6 +18,7 @@
 #include "GamePlayer.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameData/MilitaryConsts.h"
 #include <boost/test/unit_test.hpp>
 
@@ -29,7 +30,7 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
     BOOST_REQUIRE(player.isUsed());
     const MapPoint hqPos = player.GetHQPos();
     BOOST_REQUIRE(hqPos.isValid());
-    BOOST_REQUIRE_EQUAL(world.GetNO(player.GetHQPos())->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE_EQUAL(world.GetNO(player.GetHQPos())->GetGOT(), GO_Type::NobHq);
     // Check ownership of points
     std::vector<MapPoint> ownerPts = world.GetPointsInRadius(hqPos, HQ_RADIUS);
     for(MapPoint pt : ownerPts)

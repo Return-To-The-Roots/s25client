@@ -101,13 +101,13 @@ bool nofMiner::StartWorking()
     return nofWorkman::StartWorking();
 }
 
-Resource::Type nofMiner::GetRequiredResType() const
+ResourceType nofMiner::GetRequiredResType() const
 {
     switch(workplace->GetBuildingType())
     {
-        case BuildingType::GoldMine: return Resource::Gold;
-        case BuildingType::IronMine: return Resource::Iron;
-        case BuildingType::CoalMine: return Resource::Coal;
-        default: return Resource::Granite;
+        case BuildingType::GoldMine: return ResourceType::Gold;
+        case BuildingType::IronMine: return ResourceType::Iron;
+        case BuildingType::CoalMine: return ResourceType::Coal;
+        default: return ResourceType::Granite;
     }
 }

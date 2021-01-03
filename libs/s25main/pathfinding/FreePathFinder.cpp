@@ -92,7 +92,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         if(length)
             *length = 0;
         if(firstDir)
-            *firstDir = Direction::EAST;
+            *firstDir = Direction::East;
         return true;
     }
 
@@ -116,7 +116,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
     // Start at random dir (so different jobs may use different roads)
     const Direction startDir =
-      randomRoute ? convertToDirection(gwb_.GetIdx(start) * gwb_.GetEvMgr().GetCurrentGF()) : Direction::WEST;
+      randomRoute ? convertToDirection(gwb_.GetIdx(start) * gwb_.GetEvMgr().GetCurrentGF()) : Direction::West;
 
     while(!todo.empty())
     {

@@ -51,7 +51,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_LookoutTower(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
+    GO_Type GetGOT() const override { return GO_Type::NofScoutLookouttower; }
 
     void HandleDerivedEvent(unsigned id) override;
 };

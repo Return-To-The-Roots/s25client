@@ -56,7 +56,7 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 }
 
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
-    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
+    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>(GO_Type::Unknown)),
       productivity(sgd.PopUnsignedShort()), disable_production(sgd.PopBool()),
       disable_production_virtual(disable_production), last_ordered_ware(sgd.PopUnsignedChar()),
       orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()), numGfNotWorking(sgd.PopUnsignedShort()),
@@ -68,7 +68,7 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
     ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
     for(std::list<Ware*>& orderedWare : ordered_wares)
-        sgd.PopObjectContainer(orderedWare, GOT_WARE);
+        sgd.PopObjectContainer(orderedWare, GO_Type::Ware);
     for(unsigned short& last_productivitie : last_productivities)
         last_productivitie = sgd.PopUnsignedShort();
 }
@@ -525,7 +525,7 @@ void nobUsual::SetProductionEnabled(const bool enabled)
 
 bool nobUsual::HasWorker() const
 {
-    return worker && worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK;
+    return worker && worker->GetState() != nofBuildingWorker::State::FigureWork;
 }
 
 void nobUsual::OnOutOfResources()

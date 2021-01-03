@@ -40,7 +40,7 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     if(nowId < 10)
     {
         // 1. Ein Stück vom Baum nach links laufen
-        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::WEST, nowId % 8)
+        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::West, nowId % 8)
           .draw(drawPt - DrawPoint(nowId, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
     } else if(nowId < 82)
     {
@@ -68,12 +68,12 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     } else if(nowId < 115)
     {
         // 4. Wieder zurückgehen nach rechts
-        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::EAST, (nowId - 105) % 8)
+        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::East, (nowId - 105) % 8)
           .draw(drawPt - DrawPoint(9 - (nowId - 105), 0), COLOR_WHITE, gwg->GetPlayer(player).color);
     } else
     {
         // 5. kurz am Baum warten (quasi Baumstamm in die Hand nehmen)
-        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::EAST, 1)
+        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::East, 1)
           .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     }
 }
@@ -107,16 +107,16 @@ nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt) cons
     if(no->GetType() == NodalObjectType::Tree)
     {
         if(static_cast<const noTree*>(no)->IsFullyGrown() && static_cast<const noTree*>(no)->ProducesWood())
-            return PQ_CLASS1;
+            return PointQuality::Class1;
     }
 
-    return PQ_NOTPOSSIBLE;
+    return PointQuality::NotPossible;
 }
 
 void nofWoodcutter::WorkAborted()
 {
     nofFarmhand::WorkAborted();
     // Dem Baum Bescheid sagen
-    if(state == STATE_WORK)
+    if(state == State::Work)
         gwg->GetSpecObj<noTree>(pos)->DontFall();
 }

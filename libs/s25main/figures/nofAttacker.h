@@ -44,7 +44,7 @@ class nofAttacker : public nofActiveSoldier
     /// In welchem Radius steht der Soldat, wenn er um eine Fahne herum wartet?
     unsigned short radius;
     /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
-    /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
+    /// nur benutzt bei AttackingWaitingfordefender
     const GameEvent* blocking_event;
 
     /// Für Seeangreifer: Stelle, wo sich der Hafen befindet, von wo aus sie losfahren sollen
@@ -70,7 +70,7 @@ class nofAttacker : public nofActiveSoldier
     /// Doesn't find a defender at the flag -> Send defenders or capture it
     void ContinueAtFlag();
 
-    /// Geht zum STATE_ATTACKING_WAITINGFORDEFENDER über und meldet gleichzeitig ein Block-Event an
+    /// Geht zum AttackingWaitingfordefender über und meldet gleichzeitig ein Block-Event an
     void SwitchStateAttackingWaitingForDefender();
 
     /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
@@ -109,7 +109,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofAttacker(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_ATTACKER; }
+    GO_Type GetGOT() const override { return GO_Type::NofAttacker; }
     const nofAggressiveDefender* GetHuntingDefender() const { return huntingDefender; }
 
     void HandleDerivedEvent(unsigned id) override;
@@ -154,7 +154,7 @@ public:
     void LetsFight(nofAggressiveDefender* other);
 
     /// Fragt, ob ein Angreifender Soldat vor dem Gebäude wartet und kämpfen will
-    bool IsAttackerReady() const { return (state == STATE_ATTACKING_WAITINGAROUNDBUILDING); }
+    bool IsAttackerReady() const { return (state == SoldierState::AttackingWaitingAroundBuilding); }
 
     /// Liefert das angegriffene Gebäude zurück
     nobBaseMilitary* GetAttackedGoal() const { return attacked_goal; }
@@ -169,10 +169,10 @@ public:
     /// notify sea attackers that they wont return home
     void HomeHarborLost();
     /// Sagt Bescheid, dass sich die Angreifer nun auf dem Schiff befinden
-    void SeaAttackStarted() { state = STATE_SEAATTACKING_ONSHIP; }
+    void SeaAttackStarted() { state = SoldierState::SeaattackingOnShip; }
     /// Fragt einen Schiffs-Angreifer auf dem Schiff, ob er schon einmal
     /// draußen war und gekämpft hat
-    bool IsSeaAttackCompleted() const { return (state != STATE_SEAATTACKING_ONSHIP); }
+    bool IsSeaAttackCompleted() const { return (state != SoldierState::SeaattackingOnShip); }
     /// Bricht einen Seeangriff ab
     void CancelSeaAttack();
 };

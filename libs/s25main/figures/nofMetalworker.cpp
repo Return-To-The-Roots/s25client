@@ -56,13 +56,13 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
             nextProducedTool = GoodType(iWare);
     } else
         nextProducedTool = sgd.PopOptionalEnum<GoodType>();
-    if(state == STATE_ENTERBUILDING && current_ev == nullptr && !ware && !nextProducedTool)
+    if(state == State::EnterBuilding && current_ev == nullptr && !ware && !nextProducedTool)
     {
         LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this "
                   "with a new game, "
                   "report this!");
         RTTR_Assert(false);
-        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        state = State::WaitingForWaresOrProductionStopped;
         current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }
     toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
@@ -159,7 +159,7 @@ bool nofMetalworker::StartWorking()
 void nofMetalworker::CheckForOrders()
 {
     // If we are waiting and an order or setting was changed -> See if we can work
-    if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
+    if(state == State::WaitingForWaresOrProductionStopped)
         TryToWork();
 }
 

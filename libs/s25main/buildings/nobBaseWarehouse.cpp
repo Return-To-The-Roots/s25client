@@ -156,10 +156,10 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData& sgd) const
 
 nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
 {
-    sgd.PopObjectContainer(waiting_wares, GOT_WARE);
+    sgd.PopObjectContainer(waiting_wares, GO_Type::Ware);
     fetch_double_protection = sgd.PopBool();
-    sgd.PopObjectContainer(dependent_figures, GOT_UNKNOWN);
-    sgd.PopObjectContainer(dependent_wares, GOT_WARE);
+    sgd.PopObjectContainer(dependent_figures, GO_Type::Unknown);
+    sgd.PopObjectContainer(dependent_wares, GO_Type::Ware);
 
     producinghelpers_event = sgd.PopEvent();
     recruiting_event = sgd.PopEvent();
@@ -318,7 +318,7 @@ void nobBaseWarehouse::HandleCollectEvent()
     for(const auto i : helpers::enumRange<GoodType>())
     {
         // Soll Ware eingeliefert werden?
-        if(!GetInventorySetting(i).IsSet(EInventorySetting::COLLECT))
+        if(!GetInventorySetting(i).IsSet(EInventorySetting::Collect))
             continue;
 
         storing_wanted = true;
@@ -345,7 +345,7 @@ void nobBaseWarehouse::HandleCollectEvent()
         for(const auto i : helpers::enumRange<Job>())
         {
             // Soll dieser Typ von Mensch bestellt werden?
-            if(!GetInventorySetting(i).IsSet(EInventorySetting::COLLECT))
+            if(!GetInventorySetting(i).IsSet(EInventorySetting::Collect))
                 continue;
 
             storing_wanted = true;
@@ -372,7 +372,7 @@ void nobBaseWarehouse::HandleCollectEvent()
 void nobBaseWarehouse::HandleSendoutEvent()
 {
     // Fight or something in front of the house? Try again later!
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SOUTHEAST)))
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SouthEast)))
     {
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
         return;
@@ -385,7 +385,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     {
         for(const auto i : helpers::enumRange<GoodType>())
         {
-            if(GetInventorySetting(i).IsSet(EInventorySetting::SEND) && inventory[i])
+            if(GetInventorySetting(i).IsSet(EInventorySetting::Send) && inventory[i])
                 possibleTypes.push_back(i);
         }
     }
@@ -393,7 +393,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     for(const auto i : helpers::enumRange<Job>())
     {
         // Figuren, die noch nicht implementiert sind, nicht nehmen!
-        if(GetInventorySetting(i).IsSet(EInventorySetting::SEND) && inventory[i])
+        if(GetInventorySetting(i).IsSet(EInventorySetting::Send) && inventory[i])
             possibleTypes.push_back(i);
     }
 
@@ -551,7 +551,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
 {
 #if RTTR_ENABLE_ASSERTS
     // Harbors have more queues. Ignore for now
-    if(GetGOT() != GOT_NOB_HARBORBUILDING)
+    if(GetGOT() != GO_Type::NobHarborbuilding)
     {
         Inventory should = inventory.real;
         for(auto& it : leave_house)
@@ -577,13 +577,13 @@ void nobBaseWarehouse::HandleLeaveEvent()
     }
 
     // Fight or something in front of the house and we are not defending?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SOUTHEAST)))
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SouthEast)))
     {
         // there's a fight
 
         // try to find a defender
         const auto it = std::find_if(leave_house.begin(), leave_house.end(), [](const auto* sld) {
-            return sld->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER || sld->GetGOT() == GOT_NOF_DEFENDER;
+            return sld->GetGOT() == GO_Type::NofAggressivedefender || sld->GetGOT() == GO_Type::NofDefender;
         });
         // no defender found? trigger next leaving event :)
         if(it == leave_house.end())
@@ -607,7 +607,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
 
         // Init road walking for figures walking on roads
         if(fig->IsWalkingOnRoad())
-            fig->InitializeRoadWalking(GetRoute(Direction::SOUTHEAST), 0, true);
+            fig->InitializeRoadWalking(GetRoute(Direction::SouthEast), 0, true);
 
         fig->ActAtFirst();
         // Bei Lagerhausarbeitern das nicht abziehen!
@@ -622,7 +622,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
             } else
                 inventory.visual.Remove(fig->GetJobType());
 
-            if(fig->GetGOT() == GOT_NOF_TRADEDONKEY)
+            if(fig->GetGOT() == GO_Type::NofTradedonkey)
             {
                 // Trade donkey carrying wares?
                 const auto& carriedWare = static_cast<nofTradeDonkey*>(fig)->GetCarriedWare();
@@ -1054,12 +1054,12 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
     {
         nofSoldier* soldier;
         // Soldat?
-        if((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER)
+        if((*it)->GetGOT() == GO_Type::NofAggressivedefender)
         {
             auto* aggDefender = static_cast<nofAggressiveDefender*>(*it);
             aggDefender->NeedForHomeDefence();
             soldier = aggDefender;
-        } else if((*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
+        } else if((*it)->GetGOT() == GO_Type::NofPassivesoldier)
             soldier = static_cast<nofPassiveSoldier*>(*it);
         else
             continue;
@@ -1236,20 +1236,20 @@ void nobBaseWarehouse::SetInventorySetting(const boost::variant<GoodType, Job>& 
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerId() != player)
         SetInventorySettingVisual(what, state);
 
-    if(holds_alternative<GoodType>(what) && oldState.IsSet(EInventorySetting::STOP)
-       && !state.IsSet(EInventorySetting::STOP))
+    if(holds_alternative<GoodType>(what) && oldState.IsSet(EInventorySetting::Stop)
+       && !state.IsSet(EInventorySetting::Stop))
     {
         // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
         gwg->GetPlayer(player).FindClientForLostWares();
     } // No else here!
-    if(!oldState.IsSet(EInventorySetting::SEND) && state.IsSet(EInventorySetting::SEND))
+    if(!oldState.IsSet(EInventorySetting::Send) && state.IsSet(EInventorySetting::Send))
     {
         // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues
         // anmelden
         auto getWaresOrJobs = [this](auto type) { return inventory[type]; };
         if(!empty_event && boost::apply_visitor(getWaresOrJobs, what))
             empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
-    } else if(!oldState.IsSet(EInventorySetting::COLLECT) && state.IsSet(EInventorySetting::COLLECT))
+    } else if(!oldState.IsSet(EInventorySetting::Collect) && state.IsSet(EInventorySetting::Collect))
     {
         // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
         if(!store_event)
@@ -1272,8 +1272,8 @@ void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vect
     {
         state.MakeValid();
         *(settings++) = state;
-        isUnstopped |= !state.IsSet(EInventorySetting::STOP);
-        isCollectSet |= state.IsSet(EInventorySetting::COLLECT);
+        isUnstopped |= !state.IsSet(EInventorySetting::Stop);
+        isCollectSet |= state.IsSet(EInventorySetting::Collect);
     }
 
     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
@@ -1300,14 +1300,14 @@ bool nobBaseWarehouse::AreWaresToEmpty() const
     // Waren überprüfen
     for(const auto i : helpers::enumRange<GoodType>())
     {
-        if(GetInventorySetting(i).IsSet(EInventorySetting::SEND) && inventory[i])
+        if(GetInventorySetting(i).IsSet(EInventorySetting::Send) && inventory[i])
             return true;
     }
 
     // Figuren überprüfen
     for(const auto i : helpers::enumRange<Job>())
     {
-        if(GetInventorySetting(i).IsSet(EInventorySetting::SEND) && inventory[i])
+        if(GetInventorySetting(i).IsSet(EInventorySetting::Send) && inventory[i])
             return true;
     }
 
@@ -1402,7 +1402,7 @@ void nobBaseWarehouse::CheckOuthousing(const boost::variant<GoodType, Job>& what
                              [this](GoodType good) { return GetInventorySetting(good); }),
                            what);
 
-    if(setting.IsSet(EInventorySetting::SEND))
+    if(setting.IsSet(EInventorySetting::Send))
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
 }
 

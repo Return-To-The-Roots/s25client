@@ -160,7 +160,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     if(radius == 0u)
         return;
     // Also ignore non-occupied military buildings
-    if(building.GetGOT() == GOT_NOB_MILITARY && static_cast<const nobMilitary&>(building).IsNewBuilt())
+    if(building.GetGOT() == GO_Type::NobMilitary && static_cast<const nobMilitary&>(building).IsNewBuilt())
         return;
 
     const std::vector<MapPoint>* allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();

@@ -60,17 +60,17 @@ AIResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
     Resource subres = gwb.GetNode(pt).resources;
     if(subres.getAmount() == 0u)
-        return AIResource::NOTHING;
+        return AIResource::Nothing;
     switch(subres.getType())
     {
-        case Resource::Iron: return AIResource::IRONORE;
-        case Resource::Gold: return AIResource::GOLD;
-        case Resource::Coal: return AIResource::COAL;
-        case Resource::Granite: return AIResource::GRANITE;
-        case Resource::Fish: return AIResource::FISH;
+        case ResourceType::Iron: return AIResource::Ironore;
+        case ResourceType::Gold: return AIResource::Gold;
+        case ResourceType::Coal: return AIResource::Coal;
+        case ResourceType::Granite: return AIResource::Granite;
+        case ResourceType::Fish: return AIResource::Fish;
         default: break;
     }
-    return AIResource::NOTHING;
+    return AIResource::Nothing;
 }
 
 AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const
@@ -84,44 +84,44 @@ AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const
         {
             // exclude pineapple because it's not a real tree
             if(gwb.GetSpecObj<noTree>(pt)->ProducesWood())
-                return AIResource::WOOD;
+                return AIResource::Wood;
             else
-                return AIResource::BLOCKED;
+                return AIResource::Blocked;
         } else if(no == NodalObjectType::Granite)
-            return AIResource::STONES;
+            return AIResource::Stones;
         else if(no == NodalObjectType::Nothing || no == NodalObjectType::Environment)
-            return AIResource::NOTHING;
+            return AIResource::Nothing;
         else
-            return AIResource::BLOCKED;
+            return AIResource::Blocked;
     } else
-        return AIResource::BLOCKED;
+        return AIResource::Blocked;
 }
 
 int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
 {
     // surface resource?
-    if(res == AIResource::PLANTSPACE || res == AIResource::BORDERLAND || res == AIResource::WOOD
-       || res == AIResource::STONES)
+    if(res == AIResource::Plantspace || res == AIResource::Borderland || res == AIResource::Wood
+       || res == AIResource::Stones)
     {
         AIResource surfaceRes = GetSurfaceResource(pt);
         DescIdx<TerrainDesc> t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
         if(surfaceRes == res
-           || (res == AIResource::PLANTSPACE && surfaceRes == AIResource::NOTHING
+           || (res == AIResource::Plantspace && surfaceRes == AIResource::Nothing
                && gwb.GetDescription().get(t1).IsVital())
-           || (res == AIResource::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt))
+           || (res == AIResource::Borderland && (IsBorder(pt) || !IsOwnTerritory(pt))
                && (gwb.GetDescription().get(t1).Is(ETerrain::Walkable)
                    || gwb.GetDescription().get(t2).Is(ETerrain::Walkable))))
         {
             return RES_RADIUS[static_cast<unsigned>(res)];
         }
         // Adjust based on building on node (if any)
-        if(res == AIResource::WOOD)
+        if(res == AIResource::Wood)
         {
             if(IsBuildingOnNode(pt, BuildingType::Woodcutter))
                 return -40;
             if(IsBuildingOnNode(pt, BuildingType::Forester))
                 return 20;
-        } else if(res == AIResource::PLANTSPACE)
+        } else if(res == AIResource::Plantspace)
         {
             if(IsBuildingOnNode(pt, BuildingType::Forester))
                 return -40;
@@ -190,7 +190,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
         }
         return returnVal;
     }
-    // if(returnval<0&&lastval>=0&&res==AIResource::BORDERLAND)
+    // if(returnval<0&&lastval>=0&&res==AIResource::Borderland)
     // LOG.write(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction,
     // lastval);
 }

@@ -59,7 +59,7 @@ constexpr std::array<helpers::EnumArray<DrawPoint, Direction>, 2> SHIPS_FLAG_POS
 }};
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
-    : noMovable(NodalObjectType::Ship, pos), ownerId_(player), state(STATE_IDLE), seaId_(0), goal_harborId(0),
+    : noMovable(NodalObjectType::Ship, pos), ownerId_(player), state(State::Idle), seaId_(0), goal_harborId(0),
       goal_dir(0),
       name(ship_names[gwg->GetPlayer(player).nation]
                      [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_names[gwg->GetPlayer(player).nation].size())]),
@@ -91,7 +91,7 @@ void noShip::Serialize(SerializedGameData& sgd) const
     noMovable::Serialize(sgd);
 
     sgd.PushUnsignedChar(ownerId_);
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(seaId_);
     sgd.PushUnsignedInt(goal_harborId);
     sgd.PushUnsignedChar(goal_dir);
@@ -109,16 +109,16 @@ void noShip::Serialize(SerializedGameData& sgd) const
 }
 
 noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
-      seaId_(sgd.PopUnsignedShort()), goal_harborId(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
+    : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(sgd.Pop<State>()), seaId_(sgd.PopUnsignedShort()),
+      goal_harborId(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
       name(sgd.GetGameDataVersion() < 2 ? sgd.PopLongString() : sgd.PopString()), curRouteIdx(sgd.PopUnsignedInt()),
       route_(sgd.PopUnsignedInt()), lost(sgd.PopBool()), remaining_sea_attackers(sgd.PopUnsignedInt()),
       home_harbor(sgd.PopUnsignedInt()), covered_distance(sgd.PopUnsignedInt())
 {
     for(auto& dir : route_)
         dir = sgd.Pop<Direction>();
-    sgd.PopObjectContainer(figures, GOT_UNKNOWN);
-    sgd.PopObjectContainer(wares, GOT_WARE);
+    sgd.PopObjectContainer(figures, GO_Type::Unknown);
+    sgd.PopObjectContainer(wares, GO_Type::Ware);
 }
 
 void noShip::Destroy()
@@ -146,46 +146,46 @@ void noShip::Draw(DrawPoint drawPt)
     switch(state)
     {
         default: break;
-        case STATE_IDLE:
-        case STATE_SEAATTACK_WAITING:
+        case State::Idle:
+        case State::SeaattackWaiting:
         {
             DrawFixed(drawPt, false);
             flag_drawing_type = 0;
         }
         break;
 
-        case STATE_GOTOHARBOR:
+        case State::Gotoharbor:
         {
             DrawDriving(drawPt);
         }
         break;
-        case STATE_EXPEDITION_LOADING:
-        case STATE_EXPEDITION_UNLOADING:
-        case STATE_TRANSPORT_LOADING:
-        case STATE_TRANSPORT_UNLOADING:
-        case STATE_SEAATTACK_LOADING:
-        case STATE_SEAATTACK_UNLOADING:
-        case STATE_EXPLORATIONEXPEDITION_LOADING:
-        case STATE_EXPLORATIONEXPEDITION_UNLOADING:
+        case State::ExpeditionLoading:
+        case State::ExpeditionUnloading:
+        case State::TransportLoading:
+        case State::TransportUnloading:
+        case State::SeaattackLoading:
+        case State::SeaattackUnloading:
+        case State::ExplorationexpeditionLoading:
+        case State::ExplorationexpeditionUnloading:
         {
             DrawFixed(drawPt, false);
         }
         break;
-        case STATE_EXPLORATIONEXPEDITION_WAITING:
-        case STATE_EXPEDITION_WAITING:
+        case State::ExplorationexpeditionWaiting:
+        case State::ExpeditionWaiting:
         {
             DrawFixed(drawPt, true);
         }
         break;
-        case STATE_EXPEDITION_DRIVING:
-        case STATE_TRANSPORT_DRIVING:
-        case STATE_SEAATTACK_DRIVINGTODESTINATION:
-        case STATE_EXPLORATIONEXPEDITION_DRIVING:
+        case State::ExpeditionDriving:
+        case State::TransportDriving:
+        case State::SeaattackDrivingToDestination:
+        case State::ExplorationexpeditionDriving:
         {
             DrawDrivingWithWares(drawPt);
         }
         break;
-        case STATE_SEAATTACK_RETURN_DRIVING:
+        case State::SeaattackReturnDriving:
         {
             if(!figures.empty() || !wares.empty())
                 DrawDrivingWithWares(drawPt);
@@ -199,7 +199,7 @@ void noShip::Draw(DrawPoint drawPt)
       ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()], COLOR_WHITE,
                  gwg->GetPlayer(ownerId_).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
-    if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
+    if(state >= State::ExpeditionLoading && state <= State::ExpeditionDriving)
         LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))
           ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()]);
 }
@@ -254,9 +254,9 @@ void noShip::HandleEvent(const unsigned id)
                 RTTR_Assert(false);
                 LOG.write("Bug detected: Invalid state in ship event");
                 break;
-            case STATE_EXPEDITION_LOADING:
+            case State::ExpeditionLoading:
                 // Schiff ist nun bereit und Expedition kann beginnen
-                state = STATE_EXPEDITION_WAITING;
+                state = State::ExpeditionWaiting;
 
                 // Spieler benachrichtigen
                 SendPostMessage(ownerId_, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(),
@@ -264,17 +264,17 @@ void noShip::HandleEvent(const unsigned id)
                                                                         PostCategory::Economy, *this));
                 gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, ownerId_, pos));
                 break;
-            case STATE_EXPLORATIONEXPEDITION_LOADING:
-            case STATE_EXPLORATIONEXPEDITION_WAITING:
+            case State::ExplorationexpeditionLoading:
+            case State::ExplorationexpeditionWaiting:
                 // Schiff ist nun bereit und Expedition kann beginnen
                 ContinueExplorationExpedition();
                 break;
-            case STATE_EXPEDITION_UNLOADING:
+            case State::ExpeditionUnloading:
             {
                 // Hafen herausfinden
                 noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : nullptr;
 
-                if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+                if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
                 {
                     Inventory goods;
                     goods.goods[GoodType::Boards] = BUILDING_COSTS[BuildingType::HarborBuilding].boards;
@@ -287,19 +287,19 @@ void noShip::HandleEvent(const unsigned id)
                 } else
                 {
                     // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
-                    state = STATE_EXPEDITION_DRIVING;
+                    state = State::ExpeditionDriving;
                     HandleState_ExpeditionDriving();
                 }
                 break;
             }
-            case STATE_EXPLORATIONEXPEDITION_UNLOADING:
+            case State::ExplorationexpeditionUnloading:
             {
                 // Hafen herausfinden
                 noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : nullptr;
 
                 unsigned old_visual_range = GetVisualRange();
 
-                if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+                if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
                 {
                     // Späher wieder entladen
                     Inventory goods;
@@ -311,7 +311,7 @@ void noShip::HandleEvent(const unsigned id)
                 } else
                 {
                     // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
-                    state = STATE_EXPLORATIONEXPEDITION_DRIVING;
+                    state = State::ExplorationexpeditionDriving;
                     HandleState_ExplorationExpeditionDriving();
                 }
 
@@ -320,25 +320,25 @@ void noShip::HandleEvent(const unsigned id)
 
                 break;
             }
-            case STATE_TRANSPORT_LOADING: StartTransport(); break;
-            case STATE_TRANSPORT_UNLOADING:
-            case STATE_SEAATTACK_UNLOADING:
+            case State::TransportLoading: StartTransport(); break;
+            case State::TransportUnloading:
+            case State::SeaattackUnloading:
             {
                 // Hafen herausfinden
-                RTTR_Assert(state == STATE_SEAATTACK_UNLOADING || remaining_sea_attackers == 0);
+                RTTR_Assert(state == State::SeaattackUnloading || remaining_sea_attackers == 0);
                 noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : nullptr;
-                if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+                if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
                 {
                     static_cast<nobHarborBuilding*>(hb)->ReceiveGoodsFromShip(figures, wares);
                     figures.clear();
                     wares.clear();
 
-                    state = STATE_TRANSPORT_UNLOADING;
+                    state = State::TransportUnloading;
                     // Hafen bescheid sagen, dass er das Schiff nun nutzen kann
                     static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
 
                     // Hafen hat keinen Job für uns?
-                    if(state == STATE_TRANSPORT_UNLOADING)
+                    if(state == State::TransportUnloading)
                     {
                         // Wieder idlen und ggf. neuen Job suchen
                         StartIdling();
@@ -347,15 +347,15 @@ void noShip::HandleEvent(const unsigned id)
                 } else
                 {
                     // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
-                    if(state == STATE_TRANSPORT_UNLOADING)
-                        FindUnloadGoal(STATE_TRANSPORT_DRIVING);
+                    if(state == State::TransportUnloading)
+                        FindUnloadGoal(State::TransportDriving);
                     else
-                        FindUnloadGoal(STATE_SEAATTACK_RETURN_DRIVING);
+                        FindUnloadGoal(State::SeaattackReturnDriving);
                 }
                 break;
             }
-            case STATE_SEAATTACK_LOADING: StartSeaAttack(); break;
-            case STATE_SEAATTACK_WAITING:
+            case State::SeaattackLoading: StartSeaAttack(); break;
+            case State::SeaattackWaiting:
             {
                 // Nächsten Soldaten nach draußen beordern
                 if(figures.empty())
@@ -403,33 +403,33 @@ void noShip::Driven()
 
     switch(state)
     {
-        case STATE_GOTOHARBOR: HandleState_GoToHarbor(); break;
-        case STATE_EXPEDITION_DRIVING: HandleState_ExpeditionDriving(); break;
-        case STATE_EXPLORATIONEXPEDITION_DRIVING: HandleState_ExplorationExpeditionDriving(); break;
-        case STATE_TRANSPORT_DRIVING: HandleState_TransportDriving(); break;
-        case STATE_SEAATTACK_DRIVINGTODESTINATION: HandleState_SeaAttackDriving(); break;
-        case STATE_SEAATTACK_RETURN_DRIVING: HandleState_SeaAttackReturn(); break;
+        case State::Gotoharbor: HandleState_GoToHarbor(); break;
+        case State::ExpeditionDriving: HandleState_ExpeditionDriving(); break;
+        case State::ExplorationexpeditionDriving: HandleState_ExplorationExpeditionDriving(); break;
+        case State::TransportDriving: HandleState_TransportDriving(); break;
+        case State::SeaattackDrivingToDestination: HandleState_SeaAttackDriving(); break;
+        case State::SeaattackReturnDriving: HandleState_SeaAttackReturn(); break;
         default: RTTR_Assert(false); break;
     }
 }
 
 bool noShip::IsLoading() const
 {
-    return state == STATE_EXPEDITION_LOADING || state == STATE_EXPLORATIONEXPEDITION_LOADING
-           || state == STATE_TRANSPORT_LOADING || state == STATE_SEAATTACK_LOADING;
+    return state == State::ExpeditionLoading || state == State::ExplorationexpeditionLoading
+           || state == State::TransportLoading || state == State::SeaattackLoading;
 }
 
 bool noShip::IsUnloading() const
 {
-    return state == STATE_EXPEDITION_UNLOADING || state == STATE_EXPLORATIONEXPEDITION_UNLOADING
-           || state == STATE_TRANSPORT_UNLOADING || state == STATE_SEAATTACK_UNLOADING;
+    return state == State::ExpeditionUnloading || state == State::ExplorationexpeditionUnloading
+           || state == State::TransportUnloading || state == State::SeaattackUnloading;
 }
 
 /// Gibt Sichtradius dieses Schiffes zurück
 unsigned noShip::GetVisualRange() const
 {
     // Erkundungsschiffe haben einen größeren Sichtbereich
-    if(state >= STATE_EXPLORATIONEXPEDITION_LOADING && state <= STATE_EXPLORATIONEXPEDITION_DRIVING)
+    if(state >= State::ExplorationexpeditionLoading && state <= State::ExplorationexpeditionDriving)
         return VISUALRANGE_EXPLORATION_SHIP;
     else
         return VISUALRANGE_SHIP;
@@ -438,12 +438,12 @@ unsigned noShip::GetVisualRange() const
 /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
 void noShip::GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction>& route)
 {
-    RTTR_Assert(state == STATE_IDLE); // otherwise we might carry wares etc
+    RTTR_Assert(state == State::Idle); // otherwise we might carry wares etc
     RTTR_Assert(figures.empty());
     RTTR_Assert(wares.empty());
     RTTR_Assert(remaining_sea_attackers == 0);
 
-    state = STATE_GOTOHARBOR;
+    state = State::Gotoharbor;
 
     goal_harborId = gwg->GetNode(hb.GetPos()).harborId;
     RTTR_Assert(goal_harborId);
@@ -460,7 +460,7 @@ void noShip::GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction
 void noShip::StartExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
-    state = STATE_EXPEDITION_LOADING;
+    state = State::ExpeditionLoading;
     current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
@@ -472,7 +472,7 @@ void noShip::StartExpedition(unsigned homeHarborId)
 void noShip::StartExplorationExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
-    state = STATE_EXPLORATIONEXPEDITION_LOADING;
+    state = State::ExplorationexpeditionLoading;
     current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
     covered_distance = 0;
     RTTR_Assert(homeHarborId);
@@ -493,7 +493,7 @@ noShip::Result noShip::DriveToHarbour()
     RTTR_Assert(goal.isValid());
 
     // Existiert der Hafen überhaupt noch?
-    if(gwg->GetGOT(goal) != GOT_NOB_HARBORBUILDING)
+    if(gwg->GetGOT(goal) != GO_Type::NobHarborbuilding)
         return Result::HarborDoesntExist;
 
     return DriveToHarbourPlace();
@@ -544,7 +544,7 @@ noShip::Result noShip::DriveToHarbourPlace()
 
 unsigned noShip::GetCurrentHarbor() const
 {
-    RTTR_Assert(state == STATE_EXPEDITION_WAITING);
+    RTTR_Assert(state == State::ExpeditionWaiting);
     return goal_harborId;
 }
 
@@ -561,7 +561,7 @@ unsigned noShip::GetHomeHarbor() const
 /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
 void noShip::ContinueExpedition(const ShipDirection dir)
 {
-    if(state != STATE_EXPEDITION_WAITING)
+    if(state != State::ExpeditionWaiting)
         return;
 
     // Nächsten Hafenpunkt in dieser Richtung suchen
@@ -578,7 +578,7 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     // Dann fahren wir da mal hin
     curRouteIdx = 0;
     goal_harborId = new_goal;
-    state = STATE_EXPEDITION_DRIVING;
+    state = State::ExpeditionDriving;
 
     StartDriving(route_[curRouteIdx++]);
 }
@@ -588,7 +588,7 @@ void noShip::ContinueExpedition(const ShipDirection dir)
 void noShip::CancelExpedition()
 {
     // Protect against double execution
-    if(state != STATE_EXPEDITION_WAITING)
+    if(state != State::ExpeditionWaiting)
         return;
 
     // We are waiting. There should be no event!
@@ -600,11 +600,11 @@ void noShip::CancelExpedition()
     {
         route_.clear();
         curRouteIdx = 0;
-        state = STATE_EXPEDITION_DRIVING; // just in case the home harbor was destroyed
+        state = State::ExpeditionDriving; // just in case the home harbor was destroyed
         HandleState_ExpeditionDriving();
     } else
     {
-        state = STATE_EXPEDITION_DRIVING;
+        state = State::ExpeditionDriving;
         goal_harborId = home_harbor;
         StartDrivingToHarborPlace();
         HandleState_ExpeditionDriving();
@@ -614,14 +614,14 @@ void noShip::CancelExpedition()
 /// Weist das Schiff an, an der aktuellen Position einen Hafen zu gründen
 void noShip::FoundColony()
 {
-    if(state != STATE_EXPEDITION_WAITING)
+    if(state != State::ExpeditionWaiting)
         return;
 
     // Kolonie gründen
     if(gwg->FoundColony(goal_harborId, ownerId_, seaId_))
     {
         // For checks
-        state = STATE_EXPEDITION_UNLOADING;
+        state = State::ExpeditionUnloading;
         // Dann idlen wir wieder
         StartIdling();
         // Neue Arbeit suchen
@@ -651,7 +651,7 @@ void noShip::HandleState_GoToHarbor()
             StartIdling();
             // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
             noBase* hb = goal.isValid() ? gwg->GetNO(goal) : nullptr;
-            if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+            if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
                 static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
         }
         break;
@@ -686,12 +686,12 @@ void noShip::HandleState_ExpeditionDriving()
             if(home_harbor == goal_harborId)
             {
                 // Sachen wieder in den Hafen verladen
-                state = STATE_EXPEDITION_UNLOADING;
+                state = State::ExpeditionUnloading;
                 current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
             } else
             {
                 // Warten auf weitere Anweisungen
-                state = STATE_EXPEDITION_WAITING;
+                state = State::ExpeditionWaiting;
 
                 // Spieler benachrichtigen
                 SendPostMessage(
@@ -712,7 +712,7 @@ void noShip::HandleState_ExpeditionDriving()
                 goal_harborId = home_harbor;
                 HandleState_ExpeditionDriving();
             } else
-                FindUnloadGoal(STATE_EXPEDITION_DRIVING); // Unload anywhere!
+                FindUnloadGoal(State::ExpeditionDriving); // Unload anywhere!
         }
         break;
     }
@@ -736,7 +736,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
             if(home_harbor == goal_harborId)
             {
                 // Dann sind wir fertig -> wieder entladen
-                state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
+                state = State::ExplorationexpeditionUnloading;
                 current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
             } else
             {
@@ -744,7 +744,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
                 covered_distance += route_.size();
                 // Erstmal kurz ausruhen an diesem Punkt und das Rohr ausfahren, um ein bisschen
                 // auf der Insel zu gucken
-                state = STATE_EXPLORATIONEXPEDITION_WAITING;
+                state = State::ExplorationexpeditionWaiting;
                 current_ev = GetEvMgr().AddEvent(this, EXPLORATION_EXPEDITION_WAITING_TIME, 1);
             }
         }
@@ -757,7 +757,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
                 goal_harborId = home_harbor;
                 HandleState_ExplorationExpeditionDriving();
             } else
-                FindUnloadGoal(STATE_EXPLORATIONEXPEDITION_DRIVING); // Unload anywhere!
+                FindUnloadGoal(State::ExplorationexpeditionDriving); // Unload anywhere!
             break;
     }
 }
@@ -771,7 +771,7 @@ void noShip::HandleState_TransportDriving()
         case Result::GoalReached:
         {
             // Waren abladen, dafür wieder kurze Zeit hier ankern
-            state = STATE_TRANSPORT_UNLOADING;
+            state = State::TransportUnloading;
             current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
         }
         break;
@@ -795,7 +795,7 @@ void noShip::HandleState_TransportDriving()
                 ware->NotifyGoalAboutLostWare();
             }
 
-            FindUnloadGoal(STATE_TRANSPORT_DRIVING);
+            FindUnloadGoal(State::TransportDriving);
         }
         break;
     }
@@ -809,7 +809,7 @@ void noShip::HandleState_SeaAttackDriving()
         case Result::Driving: return; // OK
         case Result::GoalReached:
             // Ziel erreicht, dann stellen wir das Schiff hier hin und die Soldaten laufen nacheinander raus zum Ziel
-            state = STATE_SEAATTACK_WAITING;
+            state = State::SeaattackWaiting;
             current_ev = GetEvMgr().AddEvent(this, 15, 1);
             remaining_sea_attackers = figures.size();
             break;
@@ -829,7 +829,7 @@ void noShip::HandleState_SeaAttackReturn()
         case Result::Driving: return;
         case Result::GoalReached:
             // Entladen
-            state = STATE_SEAATTACK_UNLOADING;
+            state = State::SeaattackUnloading;
             this->current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
             break;
         case Result::HarborDoesntExist:
@@ -841,7 +841,7 @@ void noShip::HandleState_SeaAttackReturn()
 bool noShip::IsAbleToFoundColony() const
 {
     // Warten wir gerade?
-    if(state == STATE_EXPEDITION_WAITING)
+    if(state == State::ExpeditionWaiting)
     {
         // We must always have a goal harbor
         RTTR_Assert(goal_harborId);
@@ -861,24 +861,24 @@ bool noShip::IsGoingToHarbor(const nobHarborBuilding& hb) const
     // Explicit switch to check all states
     switch(state)
     {
-        case noShip::STATE_IDLE:
-        case noShip::STATE_EXPEDITION_LOADING:
-        case noShip::STATE_EXPEDITION_UNLOADING:
-        case noShip::STATE_EXPEDITION_WAITING:
-        case noShip::STATE_EXPEDITION_DRIVING:
-        case noShip::STATE_EXPLORATIONEXPEDITION_LOADING:
-        case noShip::STATE_EXPLORATIONEXPEDITION_UNLOADING:
-        case noShip::STATE_EXPLORATIONEXPEDITION_WAITING:
-        case noShip::STATE_EXPLORATIONEXPEDITION_DRIVING:
-        case noShip::STATE_SEAATTACK_LOADING:
-        case noShip::STATE_SEAATTACK_DRIVINGTODESTINATION:
-        case noShip::STATE_SEAATTACK_WAITING: return false;
-        case noShip::STATE_GOTOHARBOR:
-        case noShip::STATE_TRANSPORT_DRIVING:        // Driving to this harbor
-        case noShip::STATE_TRANSPORT_LOADING:        // Loading at home harbor and going to goal
-        case noShip::STATE_TRANSPORT_UNLOADING:      // Unloading at this harbor
-        case noShip::STATE_SEAATTACK_UNLOADING:      // Unloading attackers at this harbor
-        case noShip::STATE_SEAATTACK_RETURN_DRIVING: // Returning attackers to this harbor
+        case State::Idle:
+        case State::ExpeditionLoading:
+        case State::ExpeditionUnloading:
+        case State::ExpeditionWaiting:
+        case State::ExpeditionDriving:
+        case State::ExplorationexpeditionLoading:
+        case State::ExplorationexpeditionUnloading:
+        case State::ExplorationexpeditionWaiting:
+        case State::ExplorationexpeditionDriving:
+        case State::SeaattackLoading:
+        case State::SeaattackDrivingToDestination:
+        case State::SeaattackWaiting: return false;
+        case State::Gotoharbor:
+        case State::TransportDriving:       // Driving to this harbor
+        case State::TransportLoading:       // Loading at home harbor and going to goal
+        case State::TransportUnloading:     // Unloading at this harbor
+        case State::SeaattackUnloading:     // Unloading attackers at this harbor
+        case State::SeaattackReturnDriving: // Returning attackers to this harbor
             return true;
     }
     RTTR_Assert(false);
@@ -894,13 +894,13 @@ void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::l
     this->home_harbor = homeHarborId;
     // ID von Zielhafen herausfinden
     noBase* nb = gwg->GetNO(goal);
-    RTTR_Assert(nb->GetGOT() == GOT_NOB_HARBORBUILDING);
+    RTTR_Assert(nb->GetGOT() == GO_Type::NobHarborbuilding);
     this->goal_harborId = static_cast<nobHarborBuilding*>(nb)->GetHarborPosID();
 
     this->figures = figures;
     this->wares = wares;
 
-    state = STATE_TRANSPORT_LOADING;
+    state = State::TransportLoading;
     current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
 }
 
@@ -919,24 +919,24 @@ void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::l
         static_cast<nofAttacker*>(figure)->StartShipJourney();
         static_cast<nofAttacker*>(figure)->SeaAttackStarted();
     }
-    state = STATE_SEAATTACK_LOADING;
+    state = State::SeaattackLoading;
     current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
 }
 
 /// Startet Schiffs-Angreiff
 void noShip::StartSeaAttack()
 {
-    state = STATE_SEAATTACK_DRIVINGTODESTINATION;
+    state = State::SeaattackDrivingToDestination;
     StartDrivingToHarborPlace();
     HandleState_SeaAttackDriving();
 }
 
 void noShip::AbortSeaAttack()
 {
-    RTTR_Assert(state != STATE_SEAATTACK_WAITING); // figures are not aboard if this fails!
+    RTTR_Assert(state != State::SeaattackWaiting); // figures are not aboard if this fails!
     RTTR_Assert(remaining_sea_attackers == 0);     // Some soldiers are still not aboard
 
-    if((state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION)
+    if((state == State::SeaattackLoading || state == State::SeaattackDrivingToDestination)
        && goal_harborId != home_harbor && home_harbor != 0)
     {
         // We did not start the attack yet and we can (possibly) go back to our home harbor
@@ -947,16 +947,16 @@ void noShip::AbortSeaAttack()
             RTTR_Assert(dynamic_cast<nofAttacker*>(figure));
             static_cast<nofAttacker*>(figure)->StartReturnViaShip(*this);
         }
-        if(state == STATE_SEAATTACK_LOADING)
+        if(state == State::SeaattackLoading)
         {
             // We are still loading (loading event must be active)
             // -> Use it to unload
             RTTR_Assert(current_ev);
-            state = STATE_SEAATTACK_UNLOADING;
+            state = State::SeaattackUnloading;
         } else
         {
             // Else start driving back
-            state = STATE_SEAATTACK_RETURN_DRIVING;
+            state = State::SeaattackReturnDriving;
             HandleState_SeaAttackReturn();
         }
     } else
@@ -969,7 +969,7 @@ void noShip::AbortSeaAttack()
             static_cast<nofAttacker*>(figure)->CancelSeaAttack();
         }
 
-        if(state == STATE_SEAATTACK_LOADING)
+        if(state == State::SeaattackLoading)
         {
             // Abort loading
             RTTR_Assert(current_ev);
@@ -977,7 +977,7 @@ void noShip::AbortSeaAttack()
         }
 
         // Das Schiff muss einen Notlandeplatz ansteuern
-        FindUnloadGoal(STATE_SEAATTACK_RETURN_DRIVING);
+        FindUnloadGoal(State::SeaattackReturnDriving);
     }
 }
 
@@ -1014,8 +1014,9 @@ void noShip::StartDrivingToHarborPlace()
                       "replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i "
                       "pos %u,%u goal "
                       "coastal %u,%u goal-id %i goalpos %u,%u \n")
-              % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % state % pos.x % pos.y % coastalPos.x % coastalPos.y
-              % goal_harborId % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
+              % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % unsigned(state) % pos.x % pos.y % coastalPos.x
+              % coastalPos.y % goal_harborId % gwg->GetHarborPoint(goal_harborId).x
+              % gwg->GetHarborPoint(goal_harborId).y;
             goal_harborId = 0;
             return;
         }
@@ -1026,7 +1027,7 @@ void noShip::StartDrivingToHarborPlace()
 /// Startet die eigentliche Transportaktion, nachdem das Schiff beladen wurde
 void noShip::StartTransport()
 {
-    state = STATE_TRANSPORT_DRIVING;
+    state = State::TransportDriving;
 
     StartDrivingToHarborPlace();
     // Einfach weiterfahren
@@ -1042,19 +1043,19 @@ void noShip::FindUnloadGoal(State newState)
     {
         curRouteIdx = 0;
         home_harbor = goal_harborId; // To allow unloading here
-        if(state == STATE_EXPEDITION_DRIVING)
+        if(state == State::ExpeditionDriving)
             HandleState_ExpeditionDriving();
-        else if(state == STATE_EXPLORATIONEXPEDITION_DRIVING)
+        else if(state == State::ExplorationexpeditionDriving)
             HandleState_ExplorationExpeditionDriving();
-        else if(state == STATE_TRANSPORT_DRIVING)
+        else if(state == State::TransportDriving)
             HandleState_TransportDriving();
-        else if(state == STATE_SEAATTACK_RETURN_DRIVING)
+        else if(state == State::SeaattackReturnDriving)
             HandleState_SeaAttackReturn();
         else
         {
             RTTR_Assert(false);
             LOG.write("Bug detected: Invalid state for FindUnloadGoal");
-            FindUnloadGoal(STATE_TRANSPORT_DRIVING);
+            FindUnloadGoal(State::TransportDriving);
         }
     } else
     {
@@ -1092,8 +1093,8 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
                 goal_harborId = 0;
             }
             return; // Skip the rest
-        case noShip::STATE_TRANSPORT_LOADING:
-        case noShip::STATE_TRANSPORT_UNLOADING:
+        case State::TransportLoading:
+        case State::TransportUnloading:
             // Tell wares and figures that they won't reach their goal
             for(auto& figure : figures)
             {
@@ -1109,15 +1110,15 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
                     ware->SetGoal(nullptr);
             }
             break;
-        case noShip::STATE_SEAATTACK_LOADING:
+        case State::SeaattackLoading:
             // We could also just set the goal harbor id to 0 but this can reuse the event
             AbortSeaAttack();
             break;
-        case noShip::STATE_SEAATTACK_UNLOADING: break;
+        case State::SeaattackUnloading: break;
     }
 
     // Are we currently getting the wares?
-    if(oldState == STATE_TRANSPORT_LOADING)
+    if(oldState == State::TransportLoading)
     {
         RTTR_Assert(current_ev);
         if(home_harbor)
@@ -1125,21 +1126,21 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
             // Then save us some time and unload immediately
             // goal is now the start harbor (if it still exists)
             goal_harborId = home_harbor;
-            state = STATE_TRANSPORT_UNLOADING;
+            state = State::TransportUnloading;
         } else
         {
             GetEvMgr().RemoveEvent(current_ev);
-            FindUnloadGoal(STATE_TRANSPORT_DRIVING);
+            FindUnloadGoal(State::TransportDriving);
         }
-    } else if(oldState == STATE_TRANSPORT_UNLOADING || oldState == STATE_SEAATTACK_UNLOADING)
+    } else if(oldState == State::TransportUnloading || oldState == State::SeaattackUnloading)
     {
         // Remove current unload event
         GetEvMgr().RemoveEvent(current_ev);
 
-        if(oldState == STATE_SEAATTACK_UNLOADING)
+        if(oldState == State::SeaattackUnloading)
             AbortSeaAttack();
         else
-            FindUnloadGoal(STATE_TRANSPORT_DRIVING);
+            FindUnloadGoal(State::TransportDriving);
     }
 }
 
@@ -1151,19 +1152,19 @@ void noShip::StartIdling()
     RTTR_Assert(wares.empty());
     RTTR_Assert(remaining_sea_attackers == 0);
     // Implicit contained wares/figures on expeditions
-    RTTR_Assert(!IsOnExplorationExpedition() || state == STATE_EXPLORATIONEXPEDITION_UNLOADING);
-    RTTR_Assert(!IsOnExpedition() || state == STATE_EXPEDITION_UNLOADING);
+    RTTR_Assert(!IsOnExplorationExpedition() || state == State::ExplorationexpeditionUnloading);
+    RTTR_Assert(!IsOnExpedition() || state == State::ExpeditionUnloading);
 
     home_harbor = 0;
     goal_harborId = 0;
-    state = STATE_IDLE;
+    state = State::Idle;
 }
 
 /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
 void noShip::SeaAttackerWishesNoReturn()
 {
     RTTR_Assert(remaining_sea_attackers);
-    RTTR_Assert(state == STATE_SEAATTACK_WAITING);
+    RTTR_Assert(state == State::SeaattackWaiting);
 
     --remaining_sea_attackers;
     // Alle Soldaten an Bord
@@ -1176,7 +1177,7 @@ void noShip::SeaAttackerWishesNoReturn()
             // Go back home. Note: home_harbor can be 0 if it was destroyed, allow this and let the state handlers
             // handle that case later
             goal_harborId = home_harbor;
-            state = STATE_SEAATTACK_RETURN_DRIVING;
+            state = State::SeaattackReturnDriving;
             StartDrivingToHarborPlace();
             HandleState_SeaAttackReturn();
         } else
@@ -1224,7 +1225,7 @@ void noShip::ContinueExplorationExpedition()
     }
 
     StartDrivingToHarborPlace();
-    state = STATE_EXPLORATIONEXPEDITION_DRIVING;
+    state = State::ExplorationexpeditionDriving;
     HandleState_ExplorationExpeditionDriving();
 }
 
@@ -1245,10 +1246,10 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
 
     switch(state)
     {
-        case STATE_EXPLORATIONEXPEDITION_DRIVING:
-        case STATE_EXPEDITION_DRIVING:
-        case STATE_TRANSPORT_DRIVING:
-        case STATE_SEAATTACK_RETURN_DRIVING: Driven(); break;
+        case State::ExplorationexpeditionDriving:
+        case State::ExpeditionDriving:
+        case State::TransportDriving:
+        case State::SeaattackReturnDriving: Driven(); break;
         default:
             RTTR_Assert(false); // Das darf eigentlich nicht passieren
             LOG.write("Bug detected: Invalid state in NewHarborBuilt");

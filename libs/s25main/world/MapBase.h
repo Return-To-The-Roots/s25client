@@ -122,10 +122,10 @@ MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt&& t
     for(unsigned r = 1; r <= radius; ++r)
     {
         // Go one level/hull to the left
-        curStartPt = GetNeighbour(curStartPt, Direction::WEST);
+        curStartPt = GetNeighbour(curStartPt, Direction::West);
         // Now iterate over the "circle" of radius r by going r steps in one direction, turn right and repeat
         MapPoint curPt = curStartPt;
-        for(const auto dir : helpers::enumRange(Direction::NORTHEAST))
+        for(const auto dir : helpers::enumRange(Direction::NorthEast))
         {
             for(unsigned step = 0; step < r; ++step)
             {
@@ -153,10 +153,10 @@ inline bool MapBase::CheckPointsInRadius(const MapPoint pt, unsigned radius, T_I
     for(unsigned r = 1; r <= radius; ++r)
     {
         // Go one level/hull to the left
-        curStartPt = GetNeighbour(curStartPt, Direction::WEST);
+        curStartPt = GetNeighbour(curStartPt, Direction::West);
         // Now iterate over the "circle" of radius r by going r steps in one direction, turn right and repeat
         MapPoint curPt = curStartPt;
-        for(const auto dir : helpers::enumRange(Direction::NORTHEAST))
+        for(const auto dir : helpers::enumRange(Direction::NorthEast))
         {
             for(unsigned step = 0; step < r; ++step)
             {

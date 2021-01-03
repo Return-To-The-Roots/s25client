@@ -75,14 +75,15 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
                 break;
             Extent btSize = Extent(32, 32);
             DrawPoint btPos = iconPadding - btSize / 2 + iconSpacing * DrawPoint(x, y);
-            AddImageButton(y * 4 + x, btPos, btSize, TC_GREY, LOADER.GetNationIcon(playerNation, bts[y * 4 + x]),
-                           _(BUILDING_NAMES[bts[y * 4 + x]]));
+            AddImageButton(y * 4 + x, btPos, btSize, TextureColor::Grey,
+                           LOADER.GetNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
     // Hilfe-Button
     Extent btSize = Extent(30, 32);
-    AddImageButton(32, GetSize() - DrawPoint(14, 20) - btSize, btSize, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(32, GetSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey, LOADER.GetImageN("io", 225),
+                   _("Help"));
 }
 
 /// Anzahlen der Gebäude zeichnen

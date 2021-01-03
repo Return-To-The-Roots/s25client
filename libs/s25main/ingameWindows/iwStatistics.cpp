@@ -62,27 +62,27 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
         switch(curPlayer.nation)
         {
             case Nation::Africans:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
                                LOADER.GetImageN("io", 257), curPlayer.name)
                   ->SetBorder(false);
                 break;
             case Nation::Japanese:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
                                LOADER.GetImageN("io", 253), curPlayer.name)
                   ->SetBorder(false);
                 break;
             case Nation::Romans:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
                                LOADER.GetImageN("io", 252), curPlayer.name)
                   ->SetBorder(false);
                 break;
             case Nation::Vikings:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
                                LOADER.GetImageN("io", 256), curPlayer.name)
                   ->SetBorder(false);
                 break;
             case Nation::Babylonians:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
                                LOADER.GetImageN("io_new", 7), curPlayer.name)
                   ->SetBorder(false);
                 break;
@@ -121,32 +121,32 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
     // Die Buttons zum Wechseln der Statistiken
     ctrlOptionGroup* statChanger = AddOptionGroup(19, GroupSelectType::Illuminate);
-    statChanger->AddImageButton(11, DrawPoint(18, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 167),
+    statChanger->AddImageButton(11, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 167),
                                 _("Size of country"));
-    statChanger->AddImageButton(12, DrawPoint(45, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 168),
+    statChanger->AddImageButton(12, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 168),
                                 _("Buildings"));
-    statChanger->AddImageButton(13, DrawPoint(72, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 169),
+    statChanger->AddImageButton(13, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 169),
                                 _("Inhabitants"));
-    statChanger->AddImageButton(14, DrawPoint(99, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 170),
+    statChanger->AddImageButton(14, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 170),
                                 _("Merchandise"));
-    statChanger->AddImageButton(15, DrawPoint(126, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 171),
-                                _("Military strength"));
-    statChanger->AddImageButton(16, DrawPoint(153, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 172),
-                                _("Gold"));
-    statChanger->AddImageButton(17, DrawPoint(180, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 173),
-                                _("Productivity"));
-    statChanger->AddImageButton(18, DrawPoint(207, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 217),
-                                _("Vanquished enemies"));
+    statChanger->AddImageButton(15, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 171), _("Military strength"));
+    statChanger->AddImageButton(16, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 172), _("Gold"));
+    statChanger->AddImageButton(17, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 173), _("Productivity"));
+    statChanger->AddImageButton(18, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 217), _("Vanquished enemies"));
 
     // Zeit-Buttons
     ctrlOptionGroup* timeChanger = AddOptionGroup(20, GroupSelectType::Illuminate);
-    timeChanger->AddTextButton(21, DrawPoint(51, 288), Extent(43, 28), TC_GREY, _("15 m"), NormalFont);
-    timeChanger->AddTextButton(22, DrawPoint(96, 288), Extent(43, 28), TC_GREY, _("1 h"), NormalFont);
-    timeChanger->AddTextButton(23, DrawPoint(141, 288), Extent(43, 28), TC_GREY, _("4 h"), NormalFont);
-    timeChanger->AddTextButton(24, DrawPoint(186, 288), Extent(43, 28), TC_GREY, _("16 h"), NormalFont);
+    timeChanger->AddTextButton(21, DrawPoint(51, 288), Extent(43, 28), TextureColor::Grey, _("15 m"), NormalFont);
+    timeChanger->AddTextButton(22, DrawPoint(96, 288), Extent(43, 28), TextureColor::Grey, _("1 h"), NormalFont);
+    timeChanger->AddTextButton(23, DrawPoint(141, 288), Extent(43, 28), TextureColor::Grey, _("4 h"), NormalFont);
+    timeChanger->AddTextButton(24, DrawPoint(186, 288), Extent(43, 28), TextureColor::Grey, _("16 h"), NormalFont);
 
     // Hilfe-Button
-    AddImageButton(25, DrawPoint(18, 288), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(25, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
 
     // Aktuelle Überschrift über der Statistik
     headline = AddText(30, DrawPoint(130, 120), _("Size of country"), MakeColor(255, 136, 96, 52),

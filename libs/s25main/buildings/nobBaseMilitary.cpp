@@ -120,14 +120,14 @@ void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
 
 nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id) : noBuilding(sgd, obj_id)
 {
-    sgd.PopObjectContainer(leave_house, GOT_UNKNOWN);
+    sgd.PopObjectContainer(leave_house, GO_Type::Unknown);
     leaving_event = sgd.PopEvent();
     go_out = sgd.PopBool();
     sgd.PopUnsignedInt(); // former age, compatibility with 0.7, remove it in furher versions
-    sgd.PopObjectContainer(troops_on_mission, GOT_UNKNOWN);
-    sgd.PopObjectContainer(aggressors, GOT_NOF_ATTACKER);
-    sgd.PopObjectContainer(aggressive_defenders, GOT_NOF_AGGRESSIVEDEFENDER);
-    defender_ = sgd.PopObject<nofDefender>(GOT_NOF_DEFENDER);
+    sgd.PopObjectContainer(troops_on_mission, GO_Type::Unknown);
+    sgd.PopObjectContainer(aggressors, GO_Type::NofAttacker);
+    sgd.PopObjectContainer(aggressive_defenders, GO_Type::NofAggressivedefender);
+    defender_ = sgd.PopObject<nofDefender>(GO_Type::NofDefender);
 }
 
 void nobBaseMilitary::AddLeavingEvent()
@@ -187,7 +187,7 @@ struct GetMapPointWithRadius
 
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
 {
-    const MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
+    const MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SouthEast);
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
@@ -309,7 +309,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
         {
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 5, false))
+            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SouthEast), 5, false))
             {
                 // dann kann der zur Flagge gehen
                 aggressor->AttackFlag();
@@ -380,7 +380,7 @@ void nobBaseMilitary::CancelJobs()
     {
         // Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen
         // sollen zum Kampf
-        if((*it)->DoJobWorks() && (*it)->GetGOT() != GOT_NOF_DEFENDER)
+        if((*it)->DoJobWorks() && (*it)->GetGOT() != GO_Type::NofDefender)
         {
             auto* soldier = dynamic_cast<nofActiveSoldier*>(*it);
             RTTR_Assert(soldier);

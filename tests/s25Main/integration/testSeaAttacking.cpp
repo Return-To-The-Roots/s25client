@@ -179,8 +179,8 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
     /// Constructs a road connecting 2 buildings and checks for success
     void BuildRoadForBlds(const MapPoint bldPosFrom, const MapPoint bldPosTo)
     {
-        const MapPoint start = world.GetNeighbour(bldPosFrom, Direction::SOUTHEAST);
-        const MapPoint end = world.GetNeighbour(bldPosTo, Direction::SOUTHEAST);
+        const MapPoint start = world.GetNeighbour(bldPosFrom, Direction::SouthEast);
+        const MapPoint end = world.GetNeighbour(bldPosTo, Direction::SouthEast);
         std::vector<Direction> road = FindPathForRoad(world, start, end, false);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(start, false, road);
@@ -540,7 +540,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     BOOST_REQUIRE(hbDest.GetDefender());
 
     // Eventually the harbor gets destroyed
-    RTTR_EXEC_TILL(1000, world.GetNO(harborPos[1])->GetGOT() == GOT_FIRE);
+    RTTR_EXEC_TILL(1000, world.GetNO(harborPos[1])->GetGOT() == GO_Type::Fire);
 
     // Collect remaining attackers, so we know how many survived
     std::vector<MapPoint> pts = world.GetPointsInRadius(harborPos[1], 5);
@@ -612,14 +612,14 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER
+        if(world.GetDescription().get(tWater).kind == TerrainKind::Water
            && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
             break;
     }
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
            && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
@@ -641,20 +641,20 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
             world.GetNodeWriteable(pt).t2 = tWater;
         }
     }
-    const MapPoint ptW = world.GetNeighbour(harborPos[1], Direction::WEST);
+    const MapPoint ptW = world.GetNeighbour(harborPos[1], Direction::West);
     // Make west point a non-coastal point by adding land to its sea points
-    const MapPoint seaPtW = world.GetNeighbour(ptW, Direction::WEST);
-    const MapPoint seaPtW2 = world.GetNeighbour(ptW, Direction::NORTHWEST);
+    const MapPoint seaPtW = world.GetNeighbour(ptW, Direction::West);
+    const MapPoint seaPtW2 = world.GetNeighbour(ptW, Direction::NorthWest);
     world.GetNodeWriteable(seaPtW).t2 = tLand;
     world.GetNodeWriteable(seaPtW2).t1 = tLand;
     // Make NE pt a sea point
-    const MapPoint ptNE = world.GetNeighbour(harborPos[1], Direction::NORTHEAST);
-    const MapPoint seaPtN = world.GetNeighbour(ptNE, Direction::NORTHWEST);
+    const MapPoint ptNE = world.GetNeighbour(harborPos[1], Direction::NorthEast);
+    const MapPoint seaPtN = world.GetNeighbour(ptNE, Direction::NorthWest);
     world.GetNodeWriteable(seaPtN).t1 = tWater;
     world.GetNodeWriteable(seaPtN).t2 = tWater;
 
-    const MapPoint ptNW = world.GetNeighbour(harborPos[1], Direction::NORTHWEST);
-    BOOST_REQUIRE(world.IsWaterPoint(world.GetNeighbour(ptNW, Direction::NORTHWEST)));
+    const MapPoint ptNW = world.GetNeighbour(harborPos[1], Direction::NorthWest);
+    BOOST_REQUIRE(world.IsWaterPoint(world.GetNeighbour(ptNW, Direction::NorthWest)));
     BOOST_REQUIRE(world.IsWaterPoint(seaPtN));
     // Re-init seas/harbors
     BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
@@ -663,12 +663,12 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     const unsigned hbId = world.GetHarborPointID(harborPos[1]);
     BOOST_REQUIRE(hbId);
     // Should have coast at NE (NW is skipped)
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::WEST), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHEAST), 1u);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::EAST), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SOUTHEAST), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SOUTHWEST), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::West), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NorthWest), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NorthEast), 1u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::East), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SouthEast), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SouthWest), 0u);
 
     // So we should still be able to attack
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
@@ -684,7 +684,7 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     BOOST_REQUIRE(ship.IsOnAttackMission());
     // Harbor should be destroyed and the ship go back
     RTTR_EXEC_TILL(500, ship.IsMoving());
-    BOOST_REQUIRE_EQUAL(world.GetNO(harborPos[1])->GetGOT(), GOT_FIRE);
+    BOOST_REQUIRE_EQUAL(world.GetNO(harborPos[1])->GetGOT(), GO_Type::Fire);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -64,5 +64,5 @@ public:
     /// Event-Handler
     void HandleEvent(unsigned id) override;
 
-    GO_Type GetGOT() const override { return GOT_CATAPULTSTONE; }
+    GO_Type GetGOT() const override { return GO_Type::Catapultstone; }
 };

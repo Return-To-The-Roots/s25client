@@ -25,24 +25,26 @@ class SerializedGameData;
 /// Der Planierer
 class nofPlaner : public noFigure
 {
-    /// Was der Planierer gerade so schönes macht
-    enum PlanerState
-    {
-        STATE_FIGUREWORK,
-        STATE_WALKING, /// läuft zum nächsten Punkt, um zu graben
-        STATE_PLANING  /// planiert einen Punkt (Abspielen der Animation
-    } state;
-
     /// Arbeitsstelle des Planierers
     noBuildingSite* building_site;
 
-    /// Wie rum er geht
-    enum PlaningDir
+    /// Was der Planierer gerade so schönes macht
+    enum class PlanerState : uint8_t
     {
-        PD_NOTWORKING,
-        PD_CLOCKWISE,       /// Uhrzeigersinn
-        PD_COUNTERCLOCKWISE /// entgegen Uhrzeigersinn
+        FigureWork,
+        Walking, /// läuft zum nächsten Punkt, um zu graben
+        Planing  /// planiert einen Punkt (Abspielen der Animation
+    } state;
+    friend constexpr auto maxEnumValue(PlanerState) { return PlanerState::Planing; }
+
+    /// Wie rum er geht
+    enum class PlaningDir : uint8_t
+    {
+        NotWorking,
+        Clockwise,       /// Uhrzeigersinn
+        Counterclockwise /// entgegen Uhrzeigersinn
     } pd;
+    friend constexpr auto maxEnumValue(PlaningDir) { return PlaningDir::Counterclockwise; }
 
 private:
     void GoalReached() override;
@@ -61,7 +63,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofPlaner(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_PLANER; }
+    GO_Type GetGOT() const override { return GO_Type::NofPlaner; }
 
     void Draw(DrawPoint drawPt) override;
 

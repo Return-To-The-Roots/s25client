@@ -24,16 +24,16 @@
 
 BOOST_AUTO_TEST_CASE(DirectionCmp)
 {
-    Direction east(Direction::EAST); //-V525
-    Direction east2(Direction::EAST);
-    Direction west(Direction::WEST);
+    Direction east(Direction::East); //-V525
+    Direction east2(Direction::East);
+    Direction west(Direction::West);
     // All variations: Dir-Dir, Dir-Type, Type-Dir
     BOOST_REQUIRE_EQUAL(east, east2);
-    BOOST_REQUIRE_EQUAL(east, Direction::EAST);
-    BOOST_REQUIRE_EQUAL(Direction::EAST, east2);
+    BOOST_REQUIRE_EQUAL(east, Direction::East);
+    BOOST_REQUIRE_EQUAL(Direction::East, east2);
     BOOST_REQUIRE_NE(east, west);
-    BOOST_REQUIRE_NE(east, Direction::WEST);
-    BOOST_REQUIRE_NE(Direction::WEST, east2);
+    BOOST_REQUIRE_NE(east, Direction::West);
+    BOOST_REQUIRE_NE(Direction::West, east2);
 }
 
 BOOST_AUTO_TEST_CASE(DirectionIncDec)

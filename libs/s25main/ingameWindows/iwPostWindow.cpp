@@ -68,35 +68,35 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
       gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(nullptr),
       lastHasMissionGoal(true)
 {
-    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TC_GREY,
+    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier
-    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TC_GREY,
+    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.GetImageN("io", 30)); // Viewer:  31 - Soldat
-    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TC_GREY,
+    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.GetImageN("io", 20)); // Viewer:  21 - Geologe
-    AddImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TC_GREY,
+    AddImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.GetImageN("io", 28)); // Viewer:  29 - Wage
-    AddImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TC_GREY,
+    AddImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
-    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TC_GREY,
+    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.GetImageN("io", 79)); // Viewer:  80 - Notiz
     AddImage(0, DrawPoint(126, 151), LOADER.GetImageN("io", 228));
-    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TC_GREY,
+    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TextureColor::Grey,
                    LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
-    AddImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TC_GREY,
+    AddImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
-    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TC_GREY,
+    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
-    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TC_GREY,
+    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TC_GREY,
+    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
 
     // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
-    AddImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107))
+    AddImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TextureColor::Grey, LOADER.GetImageN("io", 107))
       ->SetVisible(false);
     // Mülleimer, nur sichtbar, wenn Nachricht da
-    AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 106))
+    AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TextureColor::Grey, LOADER.GetImageN("io", 106))
       ->SetVisible(false);
 
     AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM,
@@ -106,15 +106,15 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     AddImage(ID_IMG, DrawPoint(127, 155), LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TC_INVISIBLE, NormalFont,
-                                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE);
+    ctrlMultiline* text = AddMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TextureColor::Invisible,
+                                       NormalFont, FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE);
     text->SetNumVisibleLines(4);
     text->ShowBackground(false);
 
     // Button with OK and deny sign (tick and cross) for contracts
-    AddImageButton(ID_ACCEPT, DrawPoint(87, 185), Extent(30, 26), TC_GREEN1, LOADER.GetImageN("io", 32))
+    AddImageButton(ID_ACCEPT, DrawPoint(87, 185), Extent(30, 26), TextureColor::Green1, LOADER.GetImageN("io", 32))
       ->SetVisible(false);
-    AddImageButton(ID_DENY, DrawPoint(137, 185), Extent(30, 26), TC_RED1, LOADER.GetImageN("io", 40))
+    AddImageButton(ID_DENY, DrawPoint(137, 185), Extent(30, 26), TextureColor::Red1, LOADER.GetImageN("io", 40))
       ->SetVisible(false);
 
     FilterMessages();
@@ -232,9 +232,9 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.kt)
     {
         default: break;
-        case KT_DELETE: // Delete current message
+        case KeyType::Delete: // Delete current message
 #ifdef __APPLE__
-        case KT_BACKSPACE: // Macs usually have no delete key on small keyboards, so backspace is more convenient
+        case KeyType::Backspace: // Macs usually have no delete key on small keyboards, so backspace is more convenient
 #endif
             Msg_ButtonClick(ID_DELETE);
             return true;

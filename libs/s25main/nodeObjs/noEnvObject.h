@@ -26,5 +26,5 @@ public:
     noEnvObject(MapPoint pos, unsigned short id, unsigned short file = 0xFFFF);
     noEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GOT_ENVOBJECT; }
+    GO_Type GetGOT() const override { return GO_Type::Envobject; }
 };

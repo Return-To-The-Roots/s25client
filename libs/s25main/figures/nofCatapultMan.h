@@ -64,7 +64,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofCatapultMan(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_CATAPULTMAN; }
+    GO_Type GetGOT() const override { return GO_Type::NofCatapultman; }
 
     void HandleDerivedEvent(unsigned id) override;
 

@@ -126,7 +126,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     }
 
     // Katapultsteine deserialisieren
-    sgd.PopObjectContainer(world.catapult_stones, GOT_CATAPULTSTONE);
+    sgd.PopObjectContainer(world.catapult_stones, GO_Type::Catapultstone);
 
     // Meeresinformationen deserialisieren
     world.seas.resize(sgd.PopUnsignedInt());

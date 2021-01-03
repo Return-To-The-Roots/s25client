@@ -30,17 +30,18 @@ protected:
     /// Flaggen-Ausgangspunkt
     noFlag* flag;
 
-    enum State
+    enum class State : uint8_t
     {
-        STATE_FIGUREWORK, // Zur Flagge und zurückgehen, Rumirren usw
-        STATE_GOTOFLAG,   // geht zurück zur Flagge um anschließend nach Hause zu gehen
+        FigureWork, // Zur Flagge und zurückgehen, Rumirren usw
+        GoToFlag,   // geht zurück zur Flagge um anschließend nach Hause zu gehen
 
-        STATE_GEOLOGIST_GOTONEXTNODE, // Zum nächsten Punkt gehen, um dort zu graben
-        STATE_GEOLOGIST_DIG,          // graben (mit Hammer auf Berg hauen)
-        STATE_GEOLOGIST_CHEER,        // Jubeln, dass man etwas gefunden hat
+        GeologistGotonextnode, // Zum nächsten Punkt gehen, um dort zu graben
+        GeologistDig,          // graben (mit Hammer auf Berg hauen)
+        GeologistCheer,        // Jubeln, dass man etwas gefunden hat
 
-        STATE_SCOUT_SCOUTING // läuft umher und erkundet
+        ScoutScouting // läuft umher und erkundet
     } state;
+    friend constexpr auto maxEnumValue(State) { return State::ScoutScouting; }
 
     /// Kündigt bei der Flagge
     void AbrogateWorkplace() override;

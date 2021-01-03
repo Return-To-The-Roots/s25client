@@ -76,7 +76,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofHunter(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_HUNTER; }
+    GO_Type GetGOT() const override { return GO_Type::NofHunter; }
 
     void HandleDerivedEvent(unsigned id) override;
 

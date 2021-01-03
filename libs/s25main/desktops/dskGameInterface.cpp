@@ -116,16 +116,17 @@ dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::share
                      GetSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
     Extent btSize = Extent(37, 32);
-    AddImageButton(ID_btMap, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 50), _("Map"))->SetBorder(false);
-    barPos.x += btSize.x;
-    AddImageButton(ID_btOptions, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"))
+    AddImageButton(ID_btMap, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 50), _("Map"))
       ->SetBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btConstructionAid, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 83),
+    AddImageButton(ID_btOptions, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 192), _("Main selection"))
+      ->SetBorder(false);
+    barPos.x += btSize.x;
+    AddImageButton(ID_btConstructionAid, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 83),
                    _("Construction aid mode"))
       ->SetBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btPost, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"))
+    AddImageButton(ID_btPost, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 62), _("Post office"))
       ->SetBorder(false);
     barPos += DrawPoint(18, 24);
 
@@ -544,11 +545,11 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 // Welches Gebäude kann gebaut werden?
                 switch(bq)
                 {
-                    case BuildingQuality::Hut: action_tabs.build_tabs = iwAction::Tabs::BT_HUT; break;
-                    case BuildingQuality::House: action_tabs.build_tabs = iwAction::Tabs::BT_HOUSE; break;
-                    case BuildingQuality::Castle: action_tabs.build_tabs = iwAction::Tabs::BT_CASTLE; break;
-                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::Tabs::BT_MINE; break;
-                    case BuildingQuality::Harbor: action_tabs.build_tabs = iwAction::Tabs::BT_HARBOR; break;
+                    case BuildingQuality::Hut: action_tabs.build_tabs = iwAction::BuildTab::Hut; break;
+                    case BuildingQuality::House: action_tabs.build_tabs = iwAction::BuildTab::House; break;
+                    case BuildingQuality::Castle: action_tabs.build_tabs = iwAction::BuildTab::Castle; break;
+                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::BuildTab::Mine; break;
+                    case BuildingQuality::Harbor: action_tabs.build_tabs = iwAction::BuildTab::Harbor; break;
                     default: break;
                 }
 
@@ -673,41 +674,41 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.kt)
     {
         default: break;
-        case KT_RETURN: // Chatfenster öffnen
+        case KeyType::Return: // Chatfenster öffnen
             WINDOWMANAGER.Show(std::make_unique<iwChat>(this));
             return true;
 
-        case KT_SPACE: // Bauqualitäten anzeigen
+        case KeyType::Space: // Bauqualitäten anzeigen
             gwv.ToggleShowBQ();
             return true;
 
-        case KT_LEFT: // Nach Links Scrollen
+        case KeyType::Left: // Nach Links Scrollen
             gwv.MoveToX(-30);
             return true;
-        case KT_RIGHT: // Nach Rechts Scrollen
+        case KeyType::Right: // Nach Rechts Scrollen
             gwv.MoveToX(30);
             return true;
-        case KT_UP: // Nach Oben Scrollen
+        case KeyType::Up: // Nach Oben Scrollen
             gwv.MoveToY(-30);
             return true;
-        case KT_DOWN: // Nach Unten Scrollen
+        case KeyType::Down: // Nach Unten Scrollen
             gwv.MoveToY(30);
             return true;
 
-        case KT_F2: // Spiel speichern
+        case KeyType::F2: // Spiel speichern
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
             return true;
-        case KT_F3: // Map debug window/ Multiplayer coordinates
+        case KeyType::F3: // Map debug window/ Multiplayer coordinates
             WINDOWMANAGER.ToggleWindow(
               std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
             return true;
-        case KT_F8: // Tastaturbelegung
+        case KeyType::F8: // Tastaturbelegung
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
-        case KT_F9: // Readme
+        case KeyType::F9: // Readme
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
-        case KT_F10:
+        case KeyType::F10:
         {
 #ifdef NDEBUG
             const bool allowHumanAI = isCheatModeOn;
@@ -718,10 +719,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 GAMECLIENT.ToggleHumanAIPlayer();
             return true;
         }
-        case KT_F11: // Music player (midi files)
+        case KeyType::F11: // Music player (midi files)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
-        case KT_F12: // Optionsfenster
+        case KeyType::F12: // Optionsfenster
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>());
             return true;
     }
@@ -1020,25 +1021,25 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 {
     const GameWorldBase& world = worldViewer.GetWorld();
 
-    unsigned params = 0;
+    iwAction::Params params;
 
     // Sind wir am Wasser?
     if(action_tabs.setflag)
     {
-        auto isWater = [](const auto& desc) { return desc.kind == TerrainKind::WATER; };
+        auto isWater = [](const auto& desc) { return desc.kind == TerrainKind::Water; };
         if(world.HasTerrain(cSel, isWater))
-            params = iwAction::AWFT_WATERFLAG;
+            params = iwAction::FlagType::WaterFlag;
     }
 
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen
     if(action_tabs.flag)
     {
-        if(world.GetNO(world.GetNeighbour(cSel, Direction::NORTHWEST))->GetGOT() == GOT_NOB_HQ)
-            params = iwAction::AWFT_HQ;
+        if(world.GetNO(world.GetNeighbour(cSel, Direction::NorthWest))->GetGOT() == GO_Type::NobHq)
+            params = iwAction::FlagType::HQ;
         else if(world.GetNO(cSel)->GetType() == NodalObjectType::Flag)
         {
             if(world.GetSpecObj<noFlag>(cSel)->GetFlagType() == FlagType::Water)
-                params = iwAction::AWFT_WATERFLAG;
+                params = iwAction::FlagType::WaterFlag;
         }
     }
 

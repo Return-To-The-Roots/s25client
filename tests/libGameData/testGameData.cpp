@@ -38,10 +38,10 @@ BOOST_AUTO_TEST_SUITE(GameData)
 BOOST_AUTO_TEST_CASE(BQ_Output)
 {
     std::stringstream s;
-    s << TerrainBQ::NOTHING;
+    s << TerrainBQ::Nothing;
     BOOST_TEST(s.str() == "Nothing");
     s.str("");
-    s << TerrainBQ::MINE;
+    s << TerrainBQ::Mine;
     BOOST_TEST(s.str() == "Mine");
 }
 
@@ -76,13 +76,13 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
             BOOST_REQUIRE_EQUAL(newEdge, TerrainData::GetEdgeType(lt, t));
             BOOST_REQUIRE_EQUAL(desc.GetBQ(), TerrainData::GetBuildingQuality(t));
             BOOST_REQUIRE_EQUAL(!desc.Is(ETerrain::Walkable),
-                                TerrainData::GetBuildingQuality(t) == TerrainBQ::NOTHING
-                                  || TerrainData::GetBuildingQuality(t) == TerrainBQ::DANGER);
-            BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Mineable), TerrainData::GetBuildingQuality(t) == TerrainBQ::MINE);
-            BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Buildable), TerrainData::GetBuildingQuality(t) == TerrainBQ::CASTLE);
+                                TerrainData::GetBuildingQuality(t) == TerrainBQ::Nothing
+                                  || TerrainData::GetBuildingQuality(t) == TerrainBQ::Danger);
+            BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Mineable), TerrainData::GetBuildingQuality(t) == TerrainBQ::Mine);
+            BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Buildable), TerrainData::GetBuildingQuality(t) == TerrainBQ::Castle);
             BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Shippable), TerrainData::IsUsableByShip(t));
-            BOOST_REQUIRE_EQUAL(desc.kind == TerrainKind::SNOW, TerrainData::IsSnow(lt, t));
-            BOOST_REQUIRE_EQUAL(desc.IsUsableByAnimals() || desc.kind == TerrainKind::SNOW,
+            BOOST_REQUIRE_EQUAL(desc.kind == TerrainKind::Snow, TerrainData::IsSnow(lt, t));
+            BOOST_REQUIRE_EQUAL(desc.IsUsableByAnimals() || desc.kind == TerrainKind::Snow,
                                 TerrainData::IsUsableByAnimals(t) || TerrainData::IsSnow(lt, t));
             BOOST_REQUIRE_EQUAL(desc.IsVital(), TerrainData::IsVital(t));
             BOOST_REQUIRE_EQUAL(desc.minimapColor, TerrainData::GetColor(lt, t));

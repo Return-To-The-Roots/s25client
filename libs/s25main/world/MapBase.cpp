@@ -57,32 +57,32 @@ MapPoint MapBase::GetNeighbour(const MapPoint pt, const Direction dir) const
     MapPoint res;
     switch(dir)
     {
-        case Direction::WEST: // -1|0   -1|0
+        case Direction::West: // -1|0   -1|0
             res.x = ((pt.x == 0) ? size_.x : pt.x) - 1;
             res.y = pt.y;
             break;
-        case Direction::NORTHWEST: // -1|-1   0|-1
+        case Direction::NorthWest: // -1|-1   0|-1
             res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1);
             res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
             break;
-        case Direction::NORTHEAST: // 0|-1  -1|-1
+        case Direction::NorthEast: // 0|-1  -1|-1
             res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
             res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
             break;
-        case Direction::EAST: // 1|0    1|0
+        case Direction::East: // 1|0    1|0
             res.x = pt.x + 1;
             if(res.x == size_.x)
                 res.x = 0;
             res.y = pt.y;
             break;
-        case Direction::SOUTHEAST: // 1|1    0|1
+        case Direction::SouthEast: // 1|1    0|1
             res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
             res.y = pt.y + 1;
             if(res.y == size_.y)
                 res.y = 0;
             break;
         default:
-            RTTR_Assert(dir == Direction::SOUTHWEST);                         // 0|1   -1|1
+            RTTR_Assert(dir == Direction::SouthWest);                         // 0|1   -1|1
             res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1); //-V537
             res.y = pt.y + 1;
             if(res.y == size_.y)
@@ -140,7 +140,7 @@ unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const
 
 ShipDirection MapBase::GetShipDir(MapPoint fromPt, MapPoint toPt) const
 {
-    // First divide into NORTH/SOUTH by only looking at the y-Difference. On equal we choose SOUTH
+    // First divide into North/South by only looking at the y-Difference. On equal we choose South
     // Then choose between main dir (S/N) or partial E/W:
     //     6 directions -> 60deg covered per direction, mainDir +- 30deg
     //     -> Switching at an angle of 60deg compared to x-axis

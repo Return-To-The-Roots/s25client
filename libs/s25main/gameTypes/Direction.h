@@ -23,17 +23,17 @@
 /// "Enum" to represent one of the 6 directions from each node
 enum class Direction : uint8_t
 {
-    WEST,      /// 0
-    NORTHWEST, /// 1
-    NORTHEAST, /// 2
-    EAST,      /// 3
-    SOUTHEAST, /// 4
-    SOUTHWEST  /// 5
+    West,      /// 0
+    NorthWest, /// 1
+    NorthEast, /// 2
+    East,      /// 3
+    SouthEast, /// 4
+    SouthWest  /// 5
 };
 
 constexpr auto maxEnumValue(Direction)
 {
-    return Direction::SOUTHWEST;
+    return Direction::SouthWest;
 }
 
 /// Convert an UInt safely to a Direction

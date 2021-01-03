@@ -59,7 +59,7 @@ void World::Unload()
     std::set<RoadSegment*> roadsegments;
     for(const auto& node : nodes)
     {
-        if(!node.obj || node.obj->GetGOT() != GOT_FLAG)
+        if(!node.obj || node.obj->GetGOT() != GO_Type::Flag)
             continue;
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
@@ -182,7 +182,7 @@ GO_Type World::GetGOT(const MapPoint pt) const
     if(obj)
         return obj->GetGOT();
     else
-        return GOT_NOTHING;
+        return GO_Type::Nothing;
 }
 
 void World::ReduceResource(const MapPoint pt)
@@ -253,10 +253,10 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
     if(nodeBQ == BuildingQuality::Nothing || !IsPlayerTerritory(pt, player + 1))
         return BuildingQuality::Nothing;
     // If we could build a building, but the buildings flag point is at the border, we can only build a flag
-    if(nodeBQ != BuildingQuality::Flag && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
+    if(nodeBQ != BuildingQuality::Flag && !IsPlayerTerritory(GetNeighbour(pt, Direction::SouthEast)))
     {
         // Check for close flags, that prohibit to build a flag but not a building at this spot
-        for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
+        for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
             if(GetNO(GetNeighbour(pt, dir))->GetBM() == BlockingManner::Flag)
                 return BuildingQuality::Nothing;
@@ -270,12 +270,12 @@ DescIdx<TerrainDesc> World::GetRightTerrain(const MapPoint pt, Direction dir) co
 {
     switch(dir)
     {
-        case Direction::WEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t1;
-        case Direction::NORTHWEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t2;
-        case Direction::NORTHEAST: return GetNeighbourNode(pt, Direction::NORTHEAST).t1;
-        case Direction::EAST: return GetNode(pt).t2;
-        case Direction::SOUTHEAST: return GetNode(pt).t1;
-        case Direction::SOUTHWEST: return GetNeighbourNode(pt, Direction::WEST).t2;
+        case Direction::West: return GetNeighbourNode(pt, Direction::NorthWest).t1;
+        case Direction::NorthWest: return GetNeighbourNode(pt, Direction::NorthWest).t2;
+        case Direction::NorthEast: return GetNeighbourNode(pt, Direction::NorthEast).t1;
+        case Direction::East: return GetNode(pt).t2;
+        case Direction::SouthEast: return GetNode(pt).t1;
+        case Direction::SouthWest: return GetNeighbourNode(pt, Direction::West).t2;
     }
     throw std::logic_error("Invalid direction");
 }
@@ -313,7 +313,7 @@ bool World::IsSeaPoint(const MapPoint pt) const
 
 bool World::IsWaterPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.kind == TerrainKind::WATER; });
+    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.kind == TerrainKind::Water; });
 }
 
 unsigned World::GetSeaSize(const unsigned seaId) const
@@ -451,9 +451,9 @@ bool World::SetBQ(const MapPoint pt, BuildingQuality bq)
 void World::RecalcShadow(const MapPoint pt)
 {
     int altitude = GetNode(pt).altitude;
-    int A = GetNeighbourNode(pt, Direction::NORTHEAST).altitude - altitude;
+    int A = GetNeighbourNode(pt, Direction::NorthEast).altitude - altitude;
     int B = GetNode(GetNeighbour2(pt, 0)).altitude - altitude;
-    int C = GetNode(GetNeighbour(pt, Direction::WEST)).altitude - altitude;
+    int C = GetNode(GetNeighbour(pt, Direction::West)).altitude - altitude;
     int D = GetNode(GetNeighbour2(pt, 11)).altitude - altitude;
 
     int shadingS2 = 64 + 9 * A - 3 * B - 6 * C - 9 * D;

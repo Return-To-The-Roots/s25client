@@ -175,7 +175,7 @@ public:
     }
     glSmartBitmap& getDeadAnimalSprite(Species species)
     {
-        return animal_cache[species][Direction::WEST][ANIMAL_MAX_ANIMATION_STEPS];
+        return animal_cache[species][Direction::West][ANIMAL_MAX_ANIMATION_STEPS];
     }
 
     struct BuildingSprites

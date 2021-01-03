@@ -39,12 +39,12 @@ void AIResourceMap::Init()
     RTTR_FOREACH_PT(MapPoint, mapSize)
     {
         const Node& node = aiMap[pt];
-        if(res == AIResource::FISH && node.res == res)
+        if(res == AIResource::Fish && node.res == res)
             Change(pt, 1);
         else if(aii.gwb.GetDescription().get(aii.gwb.GetNode(pt).t1).Is(ETerrain::Walkable))
         {
-            if((res != AIResource::BORDERLAND && node.res == res) || (res == AIResource::BORDERLAND && aii.IsBorder(pt))
-               || (node.res == AIResource::MULTIPLE
+            if((res != AIResource::Borderland && node.res == res) || (res == AIResource::Borderland && aii.IsBorder(pt))
+               || (node.res == AIResource::Multiple
                    && (aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)))
                 Change(pt, 1);
         }
@@ -54,9 +54,9 @@ void AIResourceMap::Init()
 void AIResourceMap::Recalc()
 {
     Init();
-    if(res == AIResource::WOOD) // existing woodcutters reduce rating
+    if(res == AIResource::Wood) // existing woodcutters reduce rating
         AdjustRatingForBlds(BuildingType::Woodcutter, 7, -10);
-    else if(res == AIResource::PLANTSPACE)
+    else if(res == AIResource::Plantspace)
     {
         AdjustRatingForBlds(BuildingType::Farm, 3, -25);
         AdjustRatingForBlds(BuildingType::Forester, 6, -25);

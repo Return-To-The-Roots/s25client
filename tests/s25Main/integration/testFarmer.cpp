@@ -37,8 +37,8 @@ struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
         farm = dynamic_cast<nobUsual*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Farm, farmPt, 0, Nation::Romans));
         BOOST_REQUIRE(farm);
-        world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST),
-                        std::vector<Direction>(5, Direction::WEST));
+        world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SouthEast),
+                        std::vector<Direction>(5, Direction::West));
         RTTR_EXEC_TILL(7 * 20 + 60, farm->HasWorker());
         farmer = dynamic_cast<const nofFarmhand*>(farm->GetWorker());
         BOOST_REQUIRE(farmer);
@@ -89,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     world.SetNO(grainFieldPos, grainField);
     BOOST_REQUIRE(!farmer->IsPointAvailable(grainFieldPos));
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 1)));
-    const MapPoint grainFieldPos2 = world.GetNeighbour(world.GetNeighbour2(farmPt, 2), Direction::NORTHWEST);
+    const MapPoint grainFieldPos2 = world.GetNeighbour(world.GetNeighbour2(farmPt, 2), Direction::NorthWest);
     world.SetNO(grainFieldPos2, new noGrainfield(grainFieldPos2));
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 0)));
 
@@ -117,16 +117,16 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
         if(i == 0)
             world.SetBuildingSite(BuildingType::Woodcutter, newField, 0);
         else
-            world.SetBuildingSite(BuildingType::Woodcutter, world.GetNeighbour(newField, Direction::SOUTHEAST), 0);
+            world.SetBuildingSite(BuildingType::Woodcutter, world.GetNeighbour(newField, Direction::SouthEast), 0);
         // Let farmer return
         RTTR_EXEC_TILL(150, !farm->is_working);
         // Aborted work
         BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
         // And remove
         if(i == 0)
-            world.DestroyFlag(world.GetNeighbour(newField, Direction::SOUTHEAST), 0);
+            world.DestroyFlag(world.GetNeighbour(newField, Direction::SouthEast), 0);
         else
-            world.DestroyBuilding(world.GetNeighbour(newField, Direction::SOUTHEAST), 0);
+            world.DestroyBuilding(world.GetNeighbour(newField, Direction::SouthEast), 0);
     }
 
     RTTR_EXEC_TILL(3000, grainField->IsHarvestable());

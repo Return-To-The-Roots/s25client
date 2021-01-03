@@ -210,7 +210,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     const MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
     auto* usualBld = static_cast<nobUsual*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Bakery, usualBldPos, 0, Nation::Vikings));
-    world.BuildRoad(0, false, hqFlag->GetPos(), std::vector<Direction>(3, Direction::EAST));
+    world.BuildRoad(0, false, hqFlag->GetPos(), std::vector<Direction>(3, Direction::East));
     usualBld->is_working = true;
 
     // Add 3 fires with first between the others to have a mixed event order in the same GF

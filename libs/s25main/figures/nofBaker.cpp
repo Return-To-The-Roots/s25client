@@ -44,15 +44,15 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
        {{{9, 11}, {11, 13}, {9, 15}, {7, 17}, {4, 15}, {1, 13}, {-2, 11}, {-5, 9}}},
        {{{9, 11}, {11, 13}, {7, 17}, {3, 20}, {-1, 17}, {-5, 14}, {-9, 12}, {-13, 10}}}}};
     constexpr helpers::EnumArray<std::array<Direction, 6>, Nation> walkdirection = {
-      {{Direction::EAST, Direction::EAST, Direction::NORTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::WEST},
-       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-        Direction::NORTHWEST},
-       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-        Direction::NORTHWEST},
-       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-        Direction::NORTHWEST},
-       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-        Direction::NORTHWEST}}};
+      {{Direction::East, Direction::East, Direction::NorthEast, Direction::SouthWest, Direction::West, Direction::West},
+       {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+        Direction::NorthWest},
+       {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+        Direction::NorthWest},
+       {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+        Direction::NorthWest},
+       {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+        Direction::NorthWest}}};
 
     unsigned max_id = 120;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);

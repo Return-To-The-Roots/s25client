@@ -47,18 +47,22 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* 
       ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
 {
     AddImage(0, DrawPoint(126, 101), LOADER.GetImageN("io", 228));
-    AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
-    AddImageButton(3, DrawPoint(51, 196), Extent(30, 26), TC_GREY,
+    AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TextureColor::Grey,
+                   LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
+    AddImageButton(3, DrawPoint(51, 196), Extent(30, 26), TextureColor::Grey,
                    LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
-    AddImageButton(4, DrawPoint(81, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
-    AddImageButton(5, DrawPoint(111, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(6, DrawPoint(141, 196), Extent(30, 26), TC_GREY,
+    AddImageButton(4, DrawPoint(81, 196), Extent(30, 26), TextureColor::Grey,
+                   LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
+    AddImageButton(5, DrawPoint(111, 196), Extent(30, 26), TextureColor::Grey,
+                   LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+    AddImageButton(6, DrawPoint(141, 196), Extent(30, 26), TextureColor::Grey,
                    LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
-    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107),
+    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TextureColor::Grey, LOADER.GetImageN("io", 107),
                    _("Go to place")); // "Gehe Zu Ort"
 
     // Die Expeditionsweiterfahrbuttons
-    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))
+    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TextureColor::Grey, LOADER.GetImageN("io", 187),
+                   _("Found colony"))
       ->SetVisible(false);
 
     constexpr helpers::EnumArray<DrawPoint, ShipDirection> BUTTON_POS = {
@@ -66,12 +70,13 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* 
     constexpr helpers::EnumArray<unsigned, ShipDirection> BUTTON_IDs = {{185, 186, 181, 182, 183, 184}};
 
     // Expedition abbrechen
-    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))
+    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TextureColor::Red1, LOADER.GetImageN("io", 40),
+                   _("Return to harbor"))
       ->SetVisible(false);
 
     // Die 6 Richtungen
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
-        AddImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TC_GREY,
+        AddImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TextureColor::Grey,
                        LOADER.GetImageN("io", BUTTON_IDs[dir]))
           ->SetVisible(false);
 }

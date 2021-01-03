@@ -36,12 +36,12 @@ Position GetNeighbour(const Position& p, const Direction dir)
     */
     switch(dir)
     {
-        case Direction::WEST: return Position(p.x - 1, p.y);
-        case Direction::NORTHWEST: return Position(p.x - !(p.y & 1), p.y - 1);
-        case Direction::NORTHEAST: return Position(p.x + (p.y & 1), p.y - 1);
-        case Direction::EAST: return Position(p.x + 1, p.y);
-        case Direction::SOUTHEAST: return Position(p.x + (p.y & 1), p.y + 1);
-        case Direction::SOUTHWEST: return Position(p.x - !(p.y & 1), p.y + 1);
+        case Direction::West: return Position(p.x - 1, p.y);
+        case Direction::NorthWest: return Position(p.x - !(p.y & 1), p.y - 1);
+        case Direction::NorthEast: return Position(p.x + (p.y & 1), p.y - 1);
+        case Direction::East: return Position(p.x + 1, p.y);
+        case Direction::SouthEast: return Position(p.x + (p.y & 1), p.y + 1);
+        case Direction::SouthWest: return Position(p.x - !(p.y & 1), p.y + 1);
     }
     RTTR_Assert(false);
     BOOST_UNREACHABLE_RETURN({});

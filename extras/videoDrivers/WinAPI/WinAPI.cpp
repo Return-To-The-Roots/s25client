@@ -20,6 +20,7 @@
 #include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
+#include "enum_cast.hpp"
 #include "helpers/containerUtils.h"
 #include "s25clientResources.h"
 #include <boost/nowide/convert.hpp>
@@ -525,7 +526,7 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
     if(c == ' ')
         return;
 
-    KeyEvent ke = {KT_CHAR, c, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
+    KeyEvent ke = {KeyType::Char, c, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
                    (lParam & KF_ALTDOWN) != 0};
 
     if(c == 'V' || c == 'v' || c == 0x16)
@@ -545,7 +546,7 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
  */
 void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
 {
-    KeyEvent ke = {KT_INVALID, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
+    KeyEvent ke = {KeyType::Invalid, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
                    (lParam & KF_ALTDOWN) != 0};
 
     switch(c)
@@ -553,34 +554,34 @@ void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
         case VK_RETURN:
         {
             // Don't report Alt+Return events, as WinAPI seems to fire them in a lot of cases
-            ke.kt = KT_RETURN;
+            ke.kt = KeyType::Return;
             ke.alt = false;
         }
         break;
-        case VK_SPACE: ke.kt = KT_SPACE; break;
-        case VK_LEFT: ke.kt = KT_LEFT; break;
-        case VK_RIGHT: ke.kt = KT_RIGHT; break;
-        case VK_UP: ke.kt = KT_UP; break;
-        case VK_DOWN: ke.kt = KT_DOWN; break;
-        case VK_BACK: ke.kt = KT_BACKSPACE; break;
-        case VK_DELETE: ke.kt = KT_DELETE; break;
-        case VK_LSHIFT: ke.kt = KT_SHIFT; break;
-        case VK_RSHIFT: ke.kt = KT_SHIFT; break;
-        case VK_TAB: ke.kt = KT_TAB; break;
-        case VK_END: ke.kt = KT_END; break;
-        case VK_HOME: ke.kt = KT_HOME; break;
-        case VK_ESCAPE: ke.kt = KT_ESCAPE; break;
-        case VK_PRINT: ke.kt = KT_PRINT; break;
+        case VK_SPACE: ke.kt = KeyType::Space; break;
+        case VK_LEFT: ke.kt = KeyType::Left; break;
+        case VK_RIGHT: ke.kt = KeyType::Right; break;
+        case VK_UP: ke.kt = KeyType::Up; break;
+        case VK_DOWN: ke.kt = KeyType::Down; break;
+        case VK_BACK: ke.kt = KeyType::Backspace; break;
+        case VK_DELETE: ke.kt = KeyType::Delete; break;
+        case VK_LSHIFT: ke.kt = KeyType::Shift; break;
+        case VK_RSHIFT: ke.kt = KeyType::Shift; break;
+        case VK_TAB: ke.kt = KeyType::Tab; break;
+        case VK_END: ke.kt = KeyType::End; break;
+        case VK_HOME: ke.kt = KeyType::Home; break;
+        case VK_ESCAPE: ke.kt = KeyType::Escape; break;
+        case VK_PRINT: ke.kt = KeyType::Print; break;
         default:
         {
             // Die 12 F-Tasten
             if(c >= VK_F1 && c <= VK_F12)
-                ke.kt = static_cast<KeyType>(KT_F1 + int(c) - VK_F1);
+                ke.kt = static_cast<KeyType>(rttr::enum_cast(KeyType::F1) + c - VK_F1);
         }
         break;
     }
 
-    if(ke.kt != KT_INVALID)
+    if(ke.kt != KeyType::Invalid)
         CallBack->Msg_KeyDown(ke);
 }
 
@@ -716,8 +717,8 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
  */
 KeyEvent VideoWinAPI::GetModKeyState() const
 {
-    const KeyEvent ke = {KT_INVALID, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
-                         (GetKeyState(VK_MENU) & 0x8000) != 0};
+    const KeyEvent ke = {KeyType::Invalid, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0,
+                         (GetKeyState(VK_SHIFT) & 0x8000) != 0, (GetKeyState(VK_MENU) & 0x8000) != 0};
     return ke;
 }
 

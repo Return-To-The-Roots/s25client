@@ -50,7 +50,7 @@ protected:
     virtual bool StartWorking();
 
     /// Looks for a point with a given resource on the node
-    MapPoint FindPointWithResource(Resource::Type type) const;
+    MapPoint FindPointWithResource(ResourceType type) const;
 
 public:
     /// Going to workplace

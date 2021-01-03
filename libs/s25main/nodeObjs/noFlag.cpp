@@ -53,7 +53,7 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player)
         flag->GetRoute(dir)->SplitRoad(this);
 
     // auf Wasseranteile prüfen
-    if(gwg->HasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::WATER; }))
+    if(gwg->HasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::Water; }))
         flagtype = FlagType::Water;
     else
         flagtype = FlagType::Normal;
@@ -63,7 +63,7 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(sgd.Pop<FlagType>())
 {
     for(auto& ware : wares)
-        ware = sgd.PopObject<Ware>(GOT_WARE);
+        ware = sgd.PopObject<Ware>(GO_Type::Ware);
 
     // BWUs laden
     for(auto& bwu : bwus)
@@ -235,10 +235,10 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
             {
                 // Gebäude?
 
-                if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType()
+                if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, Direction::NorthWest))->GetType()
                    == NodalObjectType::Building)
                 {
-                    if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->FreePlaceAtFlag())
+                    if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NorthWest))->FreePlaceAtFlag())
                         break;
                 }
             } else
@@ -279,7 +279,7 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     const RoadSegment* routeInDir = GetRoute(dir);
     if(!routeInDir->isOccupied())
         points += 500;
-    else if(routeInDir->hasCarrier(0) && routeInDir->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
+    else if(routeInDir->hasCarrier(0) && routeInDir->getCarrier(0)->GetCarrierState() == CarrierState::FigureWork
             && !routeInDir->hasCarrier(
               1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
         points += 50;
@@ -293,7 +293,7 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 void noFlag::DestroyAttachedBuilding()
 {
     // Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
-    noBase* no = gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST));
+    noBase* no = gwg->GetNO(gwg->GetNeighbour(pos, Direction::NorthWest));
     if(no->GetType() == NodalObjectType::Buildingsite || no->GetType() == NodalObjectType::Building)
     {
         no->Destroy();
@@ -318,7 +318,7 @@ void noFlag::Capture(const unsigned char new_owner)
     // Alle Straßen um mich herum zerstören bis auf die zum Gebäude
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(dir != Direction::NORTHWEST)
+        if(dir != Direction::NorthWest)
             DestroyRoad(dir);
     }
 

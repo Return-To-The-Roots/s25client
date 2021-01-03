@@ -51,16 +51,16 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     DrawPoint btPos(GetSize().x / 2, GetSize().y);
     btPos -= DrawPoint(btSize.x * 2, 50);
     // Lupe: 36
-    AddImageButton(1, btPos, btSize, TC_GREY, LOADER.GetImageN("io", 36), _("Zoom"));
+    AddImageButton(1, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 36), _("Zoom"));
     // Kamera (Folgen): 43
     btPos.x += btSize.x;
-    AddImageButton(2, btPos, btSize, TC_GREY, LOADER.GetImageN("io", 43), _("Follow object"));
+    AddImageButton(2, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 43), _("Follow object"));
     // Zum Ort
     btPos.x += btSize.x;
-    AddImageButton(3, btPos, btSize, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(3, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 107), _("Go to place"));
     // Fenster vergroessern/verkleinern
     btPos.x += btSize.x;
-    AddImageButton(4, btPos, btSize, TC_GREY, LOADER.GetImageN("io", 109), _("Resize window"));
+    AddImageButton(4, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 109), _("Resize window"));
 }
 
 void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)

@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
 {
     TestWindow wnd;
     auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), DrawPoint(0, 0), Extent(40, 20),
-                                             TextureColor::TC_GREEN1, NormalFont, 20, false);
+                                             TextureColor::Green1, NormalFont, 20, false);
     REQUIRE(cb->GetNumItems() == 0);
     REQUIRE(!cb->GetSelection());
 
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
 {
     TestWindow wnd;
     auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), randomPoint<DrawPoint>(0, 100),
-                                             randomPoint<Extent>(20, 200), TextureColor::TC_GREEN1, NormalFont,
+                                             randomPoint<Extent>(20, 200), TextureColor::Green1, NormalFont,
                                              randomValue(20, 200), false);
 
     for(int i = 0; i < 3; i++)
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(ListRemove)
 {
     TestWindow wnd;
     auto list = std::make_unique<ctrlList>(&wnd, randomValue<unsigned>(), randomPoint<DrawPoint>(0, 100),
-                                           randomPoint<Extent>(20, 200), TextureColor::TC_GREEN1, NormalFont);
+                                           randomPoint<Extent>(20, 200), TextureColor::Green1, NormalFont);
     std::vector<std::string> lines;
     for(int i = 0; i < 10; i++)
     {

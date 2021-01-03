@@ -105,11 +105,11 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 unsigned char PreviewMinimap::CalcShading(const MapPoint pt, const std::vector<unsigned char>& altitudes) const
 {
     int altitude = altitudes[GetMMIdx(pt)];
-    MapPoint tmp = MakeMapPoint(GetNeighbour(Position(pt), Direction::NORTHEAST), GetMapSize());
+    MapPoint tmp = MakeMapPoint(GetNeighbour(Position(pt), Direction::NorthEast), GetMapSize());
     int A = altitudes[GetMMIdx(tmp)] - altitude;
     tmp = MakeMapPoint(GetNeighbour2(Position(pt), 0), GetMapSize());
     int B = altitudes[GetMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(GetNeighbour(Position(pt), Direction::WEST), GetMapSize());
+    tmp = MakeMapPoint(GetNeighbour(Position(pt), Direction::West), GetMapSize());
     int C = altitudes[GetMMIdx(tmp)] - altitude;
     tmp = MakeMapPoint(GetNeighbour2(Position(pt), 7), GetMapSize());
     int D = altitudes[GetMMIdx(tmp)] - altitude;

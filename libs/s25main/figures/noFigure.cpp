@@ -43,7 +43,7 @@
 #include "s25util/colors.h"
 
 const RoadSegment noFigure::emulated_wanderroad(RoadType::Normal, nullptr, nullptr,
-                                                std::vector<Direction>(0, Direction::EAST));
+                                                std::vector<Direction>(0, Direction::East));
 /// Welche Strecke soll minimal und maximal zurückgelegt werden beim Rumirren, bevor eine Flagge gesucht wird
 const unsigned short WANDER_WAY_MIN = 20;
 const unsigned short WANDER_WAY_MAX = 40;
@@ -56,23 +56,23 @@ const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
-    : noMovable(NodalObjectType::Figure, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0),
-      rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
-      flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+    : noMovable(NodalObjectType::Figure, pos), fs(FigureState::GotToGoal), job_(job), player(player), cur_rs(nullptr),
+      rs_pos(0), rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0),
+      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {
     // Haben wir ein Ziel?
     // Gehen wir in ein Lagerhaus? Dann dürfen wir da nicht unsere Arbeit ausführen, sondern
     // gehen quasi nach Hause von Anfang an aus
     if(goal
-       && (goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE
-           || goal->GetGOT() == GOT_NOB_HQ))
-        fs = FS_GOHOME;
+       && (goal->GetGOT() == GO_Type::NobHarborbuilding || goal->GetGOT() == GO_Type::NobStorehouse
+           || goal->GetGOT() == GO_Type::NobHq))
+        fs = FigureState::GoHome;
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
-    : noMovable(NodalObjectType::Figure, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0),
-      rs_dir(false), on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
-      flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+    : noMovable(NodalObjectType::Figure, pos), fs(FigureState::Job), job_(job), player(player), cur_rs(nullptr),
+      rs_pos(0), rs_dir(false), on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0),
+      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {}
 
 void noFigure::Destroy_noFigure()
@@ -96,12 +96,12 @@ void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
     sgd.PushBool(rs_dir);
     sgd.PushBool(on_ship);
 
-    if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
+    if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         sgd.PushObject(goal_, false);
 
     sgd.PushBool(waiting_for_free_node);
 
-    if(fs == FS_WANDER)
+    if(fs == FigureState::Wander)
     {
         sgd.PushUnsignedShort(wander_way);
         sgd.PushUnsignedShort(wander_tryings);
@@ -113,17 +113,17 @@ void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
 
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), fs(sgd.Pop<FigureState>()), job_(sgd.Pop<Job>()), player(sgd.PopUnsignedChar()),
-      cur_rs(sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
+      cur_rs(sgd.PopObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
       on_ship(sgd.PopBool()), last_id(0xFFFFFFFF)
 {
-    if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
-        goal_ = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
+    if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
+        goal_ = sgd.PopObject<noRoadNode>(GO_Type::Unknown);
     else
         goal_ = nullptr;
 
     waiting_for_free_node = sgd.PopBool();
 
-    if(fs == FS_WANDER)
+    if(fs == FigureState::Wander)
     {
         wander_way = sgd.PopUnsignedShort();
         wander_tryings = sgd.PopUnsignedShort();
@@ -153,11 +153,11 @@ void noFigure::ActAtFirst()
     switch(fs)
     {
         default: break;
-        case FS_GOTOGOAL: WalkToGoal(); break;
-        case FS_JOB:
-            StartWalking(Direction::SOUTHEAST);
+        case FigureState::GotToGoal: WalkToGoal(); break;
+        case FigureState::Job:
+            StartWalking(Direction::SouthEast);
             break; // erstmal rauslaufen, darum kümmern sich dann die abgeleiteten Klassen
-        case FS_GOHOME:
+        case FigureState::GoHome:
         {
             // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst
             // rausgehen!
@@ -175,8 +175,8 @@ void noFigure::ActAtFirst()
                 WalkToGoal();
         }
         break;
-        case FS_WANDER:
-            StartWalking(Direction::SOUTHEAST);
+        case FigureState::Wander:
+            StartWalking(Direction::SouthEast);
             break; // erstmal rauslaufen, darum kümmern sich dann die Wander-Funktionen
     }
 }
@@ -203,13 +203,13 @@ DrawPoint noFigure::CalcFigurRelative() const
 
     Position offset(0, 0);
 
-    if(GetCurMoveDir() == Direction::NORTHWEST
+    if(GetCurMoveDir() == Direction::NorthWest
        && (gwg->GetNO(targetPt)->GetType() == NodalObjectType::Buildingsite
            || gwg->GetNO(targetPt)->GetType() == NodalObjectType::Building))
     {
         auto* const bld = gwg->GetSpecObj<noBaseBuilding>(targetPt);
         nextPt += bld->GetDoorPoint();
-    } else if(GetCurMoveDir() == Direction::SOUTHEAST
+    } else if(GetCurMoveDir() == Direction::SouthEast
               && (gwg->GetNO(pos)->GetType() == NodalObjectType::Buildingsite
                   || gwg->GetNO(pos)->GetType() == NodalObjectType::Building))
     {
@@ -223,14 +223,14 @@ DrawPoint noFigure::CalcFigurRelative() const
 
 void noFigure::StartWalking(const Direction dir)
 {
-    RTTR_Assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
+    RTTR_Assert(!(GetGOT() == GO_Type::NofPassivesoldier && fs == FigureState::Job));
 
     // Gehen wir in ein Gebäude?
-    if(dir == Direction::NORTHWEST
-       && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NodalObjectType::Building)
-        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen
+    if(dir == Direction::NorthWest
+       && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NorthWest))->GetType() == NodalObjectType::Building)
+        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NorthWest))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
-    else if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
+    else if(dir == Direction::SouthEast && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
 
     // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf Straßen?
@@ -258,7 +258,7 @@ void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Directi
 void noFigure::WalkFigure()
 {
     // Tür hinter sich zumachen, wenn wir aus einem Gebäude kommen
-    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
+    if(GetCurMoveDir() == Direction::SouthEast && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
     Walk();
@@ -267,7 +267,7 @@ void noFigure::WalkFigure()
         ++rs_pos;
 
     // oder in eins reingegangen sind
-    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
+    if(GetCurMoveDir() == Direction::NorthWest && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 }
 
@@ -287,7 +287,7 @@ void noFigure::WalkToGoal()
         // Ziel erreicht?
         // Bei dem Träger können das beide Flaggen sein!
         bool reachedGoal;
-        if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
+        if(GetGOT() == GO_Type::NofCarrier && fs == FigureState::GotToGoal)
         {
             RTTR_Assert(dynamic_cast<nofCarrier*>(this));
             auto* carrier = static_cast<nofCarrier*>(this);
@@ -312,7 +312,7 @@ void noFigure::WalkToGoal()
             goal_ = nullptr;
             rs_dir = false;
             rs_pos = 0;
-            if(fs == FS_GOHOME)
+            if(fs == FigureState::GoHome)
             {
                 // Mann im Lagerhaus angekommen
                 gwg->RemoveFigure(pos, this);
@@ -320,7 +320,7 @@ void noFigure::WalkToGoal()
             } else
             {
                 // abgeleiteter Klasse sagen, dass das Ziel erreicht wurde
-                fs = FS_JOB;
+                fs = FigureState::Job;
                 GoalReached();
             }
 
@@ -340,7 +340,7 @@ void noFigure::WalkToGoal()
                 // Wir gehen jetzt nach Hause
                 GoHome();
                 // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
-                if(fs == FS_WANDER)
+                if(fs == FigureState::Wander)
                     Wander();
                 else
                     WalkToGoal(); // Nach Hause laufen...
@@ -350,7 +350,7 @@ void noFigure::WalkToGoal()
             {
                 // Uns in den Hafen einquartieren
                 noBase* hb = gwg->GetNO(pos);
-                if(hb->GetGOT() != GOT_NOB_HARBORBUILDING)
+                if(hb->GetGOT() != GO_Type::NobHarborbuilding)
                 {
                     // Es gibt keinen Hafen mehr -> nach Hause gehen
 
@@ -359,7 +359,7 @@ void noFigure::WalkToGoal()
                     // Wir gehen jetzt nach Hause
                     GoHome();
                     // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
-                    if(fs == FS_WANDER)
+                    if(fs == FigureState::Wander)
                         Wander();
                     else
                         WalkToGoal(); // Nach Hause laufen...
@@ -405,19 +405,19 @@ void noFigure::HandleEvent(const unsigned id)
 
         switch(fs)
         {
-            case FS_GOHOME:
-            case FS_GOTOGOAL:
+            case FigureState::GoHome:
+            case FigureState::GotToGoal:
             {
                 WalkToGoal();
             }
             break;
 
-            case FS_JOB:
+            case FigureState::Job:
             {
                 Walked();
                 break;
             }
-            case FS_WANDER:
+            case FigureState::Wander:
             {
                 Wander();
                 break;
@@ -453,9 +453,9 @@ void noFigure::GoHome(noRoadNode* goal)
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
         if(cur_rs == nullptr)
         {
-            RTTR_Assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ || //-V807
-                        gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
-                        || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
+            RTTR_Assert(gwg->GetNO(pos)->GetGOT() == GO_Type::NobHq || //-V807
+                        gwg->GetNO(pos)->GetGOT() == GO_Type::NobStorehouse
+                        || gwg->GetNO(pos)->GetGOT() == GO_Type::NobHarborbuilding);
 
             goal_ = nullptr;
             gwg->GetSpecObj<nobBaseWarehouse>(pos)->CancelFigure(this);
@@ -468,7 +468,7 @@ void noFigure::GoHome(noRoadNode* goal)
 
     if(this->goal_)
     {
-        fs = FS_GOHOME;
+        fs = FigureState::GoHome;
         // Lagerhaus Bescheid sagen
         static_cast<nobBaseWarehouse*>(this->goal_)->AddDependentFigure(this);
 
@@ -491,7 +491,7 @@ void noFigure::GoHome(noRoadNode* goal)
 void noFigure::StartWandering(const unsigned burned_wh_id)
 {
     RTTR_Assert(HasNoGoal());
-    fs = FS_WANDER;
+    fs = FigureState::Wander;
     cur_rs = nullptr;
     rs_pos = 0;
     this->burned_wh_id = burned_wh_id;
@@ -683,7 +683,7 @@ void noFigure::WanderToFlag()
             goal_ = wh;
             cur_rs = nullptr;
             rs_pos = 0;
-            fs = FS_GOHOME;
+            fs = FigureState::GoHome;
             wh->AddDependentFigure(this);
             WalkToGoal();
             return;
@@ -881,11 +881,11 @@ void noFigure::NodeFreed(const MapPoint pt)
         return;
 
     // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
-    if(GetCurMoveDir() == Direction::NORTHWEST
-       && gwg->GetNO(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->GetType() == NodalObjectType::Building)
-        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->CloseDoor();
+    if(GetCurMoveDir() == Direction::NorthWest
+       && gwg->GetNO(gwg->GetNeighbour(this->pos, Direction::NorthWest))->GetType() == NodalObjectType::Building)
+        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, Direction::NorthWest))->CloseDoor();
     // oder aus einem raus?
-    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(this->pos)->GetType() == NodalObjectType::Building)
+    if(GetCurMoveDir() == Direction::SouthEast && gwg->GetNO(this->pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();
 
     // Wir stehen nun nicht mehr
@@ -901,7 +901,7 @@ void noFigure::NodeFreed(const MapPoint pt)
 void noFigure::Abrogate()
 {
     // Arbeisplatz oder Laghaus Bescheid sagen
-    if(fs == FS_GOHOME)
+    if(fs == FigureState::GoHome)
     {
         // goal might by nullptr if goal was a harbor that got destroyed during sea travel
         if(goal_)
@@ -915,7 +915,7 @@ void noFigure::Abrogate()
             {
                 LOG.write("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i "
                           "pos %u,%u \n")
-                  % player % fs % pos.x % pos.y;
+                  % player % rttr::enum_cast(fs) % pos.x % pos.y;
                 // RTTR_Assert(false);
             }
         }
@@ -929,7 +929,8 @@ void noFigure::Abrogate()
 void noFigure::StopIfNecessary(const MapPoint pt)
 {
     // Lauf ich auf Wegen --> wenn man zum Ziel oder Weg läuft oder die Träger, die natürlich auch auf Wegen arbeiten
-    if(fs == FS_GOHOME || fs == FS_GOTOGOAL || (fs == FS_JOB && GetGOT() == GOT_NOF_CARRIER))
+    if(fs == FigureState::GoHome || fs == FigureState::GotToGoal
+       || (fs == FigureState::Job && GetGOT() == GO_Type::NofCarrier))
     {
         // Laufe ich zu diesem Punkt?
         if(current_ev && !waiting_for_free_node && gwg->GetNeighbour(this->pos, GetCurMoveDir()) == pt)

@@ -33,18 +33,20 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
                    LOADER.GetImageN("io", 5)),
       gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
-    AddImageButton(0, DrawPoint(18, 285), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(0, DrawPoint(18, 285), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
 
     // Standard
-    AddImageButton(1, DrawPoint(60, 285), Extent(48, 30), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(1, DrawPoint(60, 285), Extent(48, 30), TextureColor::Grey, LOADER.GetImageN("io", 191),
+                   _("Default"));
     // ganz hoch
-    AddImageButton(2, DrawPoint(118, 235), Extent(30, 20), TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
+    AddImageButton(2, DrawPoint(118, 235), Extent(30, 20), TextureColor::Grey, LOADER.GetImageN("io", 215), _("Top"));
     // hoch
-    AddImageButton(3, DrawPoint(118, 255), Extent(30, 20), TC_GREY, LOADER.GetImageN("io", 33), _("Up"));
+    AddImageButton(3, DrawPoint(118, 255), Extent(30, 20), TextureColor::Grey, LOADER.GetImageN("io", 33), _("Up"));
     // runter
-    AddImageButton(4, DrawPoint(118, 275), Extent(30, 20), TC_GREY, LOADER.GetImageN("io", 34), _("Down"));
+    AddImageButton(4, DrawPoint(118, 275), Extent(30, 20), TextureColor::Grey, LOADER.GetImageN("io", 34), _("Down"));
     // ganz runter
-    AddImageButton(5, DrawPoint(118, 295), Extent(30, 20), TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
+    AddImageButton(5, DrawPoint(118, 295), Extent(30, 20), TextureColor::Grey, LOADER.GetImageN("io", 216),
+                   _("Bottom"));
 
     // Buttons der einzelnen Waren anlegen
     ctrlOptionGroup* group = AddOptionGroup(6, GroupSelectType::Illuminate);
@@ -83,7 +85,7 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     // Einstellungen festlegen
     for(unsigned char i = 0; i < buttonData.size(); ++i)
     {
-        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TC_GREY,
+        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TextureColor::Grey,
                               buttonData[GAMECLIENT.visual_settings.transport_order[i]].sprite,
                               _(buttonData[GAMECLIENT.visual_settings.transport_order[i]].tooltip));
     }

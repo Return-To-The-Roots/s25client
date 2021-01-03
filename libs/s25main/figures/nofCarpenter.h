@@ -36,5 +36,5 @@ public:
     nofCarpenter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofCarpenter(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GOT_NOF_CARPENTER; }
+    GO_Type GetGOT() const override { return GO_Type::NofCarpenter; }
 };

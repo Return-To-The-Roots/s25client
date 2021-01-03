@@ -135,8 +135,8 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     });
     codepoints.back() = '?';
     const auto font = createMockFont(codepoints);
-    ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TC_GREEN1, font.get());
-    ctrlEdit edt2(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TC_GREEN1, font.get());
+    ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TextureColor::Green1, font.get());
+    ctrlEdit edt2(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TextureColor::Green1, font.get());
     const ctrlBaseText* txt = edt.GetCtrl<ctrlBaseText>(0);
     const ctrlBaseText* txt2 = edt2.GetCtrl<ctrlBaseText>(0);
     BOOST_TEST_REQUIRE(txt);
@@ -156,7 +156,7 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         // Activate
         edt2.Msg_LeftDown(MouseCoords(edt2.GetPos(), true));
         edt2.Msg_PaintAfter();
-        edt2.Msg_KeyDown(KeyEvent{KT_CHAR, c, false, false, false});
+        edt2.Msg_KeyDown(KeyEvent{KeyType::Char, c, false, false, false});
         // Remove chars from front until in size
         auto itFirst = curChars.begin();
         while(font->getWidth(curText) > allowedWidth)
@@ -175,12 +175,12 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         int moveOffset = rttr::test::randomValue<int>(-curCursorPos - 1,
                                                       curChars.size() - curCursorPos + 1); //+-1 to check for "overrun"
         for(; moveOffset < 0; ++moveOffset, --curCursorPos)
-            edt.Msg_KeyDown(KeyEvent{KT_LEFT, 0, false, false, false});
+            edt.Msg_KeyDown(KeyEvent{KeyType::Left, 0, false, false, false});
         for(; moveOffset > 0; --moveOffset, ++curCursorPos)
-            edt.Msg_KeyDown(KeyEvent{KT_RIGHT, 0, false, false, false});
+            edt.Msg_KeyDown(KeyEvent{KeyType::Right, 0, false, false, false});
         curCursorPos = helpers::clamp(curCursorPos, 0, static_cast<int>(curChars.size()));
         // Erase one char (currently only good way to check where the cursor is
-        edt.Msg_KeyDown(KeyEvent{KT_BACKSPACE, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent{KeyType::Backspace, 0, false, false, false});
         if(curCursorPos > 0)
         {
             curChars.erase(curChars.begin() + --curCursorPos);
@@ -206,18 +206,18 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     do
     {
         BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
-        edt.Msg_KeyDown(KeyEvent{KT_LEFT, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent{KeyType::Left, 0, false, false, false});
         --curCursorPos;
     } while(curCursorPos > 5);
     while(curCursorPos-- >= 0)
     {
         BOOST_TEST_REQUIRE(txt->GetText() == curText); // Trailing chars are removed by font rendering
-        edt.Msg_KeyDown(KeyEvent{KT_LEFT, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent{KeyType::Left, 0, false, false, false});
     }
     // Moving fully right shows txt again
     curCursorPos = 0;
     while(static_cast<unsigned>(curCursorPos++) < curChars.size())
-        edt.Msg_KeyDown(KeyEvent{KT_RIGHT, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent{KeyType::Right, 0, false, false, false});
     BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
 }
 
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
     auto font = createMockFont({'?', 'a', 'z'});
     {
         ctrlTextDeepening txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(),
-                              TC_GREEN1, "foo", font.get(), COLOR_BLACK);
+                              TextureColor::Green1, "foo", font.get(), COLOR_BLACK);
         const Extent sizeBefore = txt.GetSize();
         // Don't assume size, so get size for 0 chars
         txt.ResizeForMaxChars(0);
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
     }
     {
         ctrlTextButton txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(),
-                           TC_GREEN1, "foo", font.get(), "tooltip");
+                           TextureColor::Green1, "foo", font.get(), "tooltip");
         const Extent sizeBefore = txt.GetSize();
         // Don't assume size, so get size for 0 chars
         txt.ResizeForMaxChars(0);
@@ -261,7 +261,7 @@ static std::vector<std::string> getRow(const ctrlTable& table, unsigned row)
 BOOST_AUTO_TEST_CASE(TableSorting)
 {
     auto font = createMockFont({'?', 'a', 'z'});
-    ctrlTable table(nullptr, 0, DrawPoint::all(0), Extent(400, 300), TC_GREEN1, font.get(),
+    ctrlTable table(nullptr, 0, DrawPoint::all(0), Extent(400, 300), TextureColor::Green1, font.get(),
                     ctrlTable::Columns{{"String", 1, TableSortType::String},
                                        {"MapSize", 2, TableSortType::MapSize},
                                        {"Number", 3, TableSortType::Number},

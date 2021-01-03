@@ -31,7 +31,7 @@ struct HarborFixture : WorldFixture<CreateEmptyWorld, 1>
         hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
         hb = static_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(
           world, BuildingType::HarborBuilding, player.GetHQPos() + MapPoint(4, 0), 0, Nation::Romans));
-        world.BuildRoad(0, false, hq->GetFlagPos(), {4, Direction::EAST});
+        world.BuildRoad(0, false, hq->GetFlagPos(), {4, Direction::East});
     }
 
     nobBaseWarehouse* hq;

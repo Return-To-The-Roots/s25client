@@ -55,16 +55,16 @@ void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, DescIdx<Terra
     clearWorld(world, tBlue);
     // Create the white terrain from left to right
     // curPt stores the current point on the path
-    world.GetNodeWriteable(world.GetNeighbour(startPt, Direction::NORTHWEST)).t2 = tWhite;
-    MapPoint curPt = world.GetNeighbour(startPt, Direction::NORTHEAST);
+    world.GetNodeWriteable(world.GetNeighbour(startPt, Direction::NorthWest)).t2 = tWhite;
+    MapPoint curPt = world.GetNeighbour(startPt, Direction::NorthEast);
     world.GetNodeWriteable(curPt).t2 = tWhite; //-V807
-    curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
+    curPt = world.GetNeighbour(curPt, Direction::SouthEast);
     world.GetNodeWriteable(curPt).t1 = tWhite;
-    curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
-    world.GetNodeWriteable(world.GetNeighbour(curPt, Direction::NORTHEAST)).t1 = tWhite;
-    curPt = world.GetNeighbour(curPt, Direction::NORTHEAST);
-    world.GetNodeWriteable(world.GetNeighbour(curPt, Direction::NORTHEAST)).t1 = tWhite;
-    curPt = world.GetNeighbour(curPt, Direction::EAST);
+    curPt = world.GetNeighbour(curPt, Direction::SouthEast);
+    world.GetNodeWriteable(world.GetNeighbour(curPt, Direction::NorthEast)).t1 = tWhite;
+    curPt = world.GetNeighbour(curPt, Direction::NorthEast);
+    world.GetNodeWriteable(world.GetNeighbour(curPt, Direction::NorthEast)).t1 = tWhite;
+    curPt = world.GetNeighbour(curPt, Direction::East);
     world.GetNodeWriteable(curPt).t2 = tWhite;
 }
 
@@ -121,14 +121,14 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER
+        if(world.GetDescription().get(tWater).kind == TerrainKind::Water
            && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
             break;
     }
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
            && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
@@ -141,8 +141,8 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     BOOST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length, &route));
     BOOST_REQUIRE_EQUAL(length, 6u);
     BOOST_REQUIRE_EQUAL(route.size(), 6u);
-    const std::vector<Direction> expectedRoute{Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST,
-                                               Direction::NORTHEAST, Direction::EAST,      Direction::EAST};
+    const std::vector<Direction> expectedRoute{Direction::NorthEast, Direction::SouthEast, Direction::SouthEast,
+                                               Direction::NorthEast, Direction::East,      Direction::East};
     BOOST_TEST_REQUIRE(route == expectedRoute, boost::test_tools::per_element());
     // Inverse route
     BOOST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route));
@@ -166,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     // Start far enough away from the HQ in the middle
     const MapPoint startPt(1, 2);
     // Test cases 2                                    a)                 b)                     c)
-    const std::vector<Direction> testDirections{Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST};
+    const std::vector<Direction> testDirections{Direction::East, Direction::SouthEast, Direction::NorthEast};
 
     std::vector<DescIdx<TerrainDesc>> deepWaterTerrains;
     for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
@@ -178,7 +178,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
            && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
@@ -228,9 +228,9 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     // Start far enough away from the HQ in the middle
     const MapPoint startPt(1, 2);
     const std::vector<Direction> testDirections{// Test cases 3 a)        b)                    c)
-                                                Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST,
+                                                Direction::East, Direction::SouthEast, Direction::NorthEast,
                                                 // Test cases 4 a)        b)                    c)
-                                                Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST};
+                                                Direction::West, Direction::SouthWest, Direction::NorthWest};
     std::vector<DescIdx<TerrainDesc>> deadlyTerrains;
     const WorldDescription& worldDescription = world.GetDescription();
     for(DescIdx<TerrainDesc> t(0); t.value < worldDescription.terrain.size(); t.value++)
@@ -241,7 +241,7 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < worldDescription.terrain.size(); tLand.value++)
     {
-        if(worldDescription.get(tLand).kind == TerrainKind::LAND && worldDescription.get(tLand).Is(ETerrain::Walkable))
+        if(worldDescription.get(tLand).kind == TerrainKind::Land && worldDescription.get(tLand).Is(ETerrain::Walkable))
             break;
     }
     for(DescIdx<TerrainDesc> deadlyTerrain : deadlyTerrains)

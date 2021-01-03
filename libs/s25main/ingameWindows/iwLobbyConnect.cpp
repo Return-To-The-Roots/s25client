@@ -63,12 +63,12 @@ iwLobbyConnect::iwLobbyConnect()
                    LOADER.GetImageN("resource", 41))
 {
     AddText(ID_txtUser, DrawPoint(20, 40), _("Username:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlEdit* user = AddEdit(ID_edtUser, DrawPoint(260, 40), Extent(220, 22), TC_GREEN2, NormalFont, 15);
+    ctrlEdit* user = AddEdit(ID_edtUser, DrawPoint(260, 40), Extent(220, 22), TextureColor::Green2, NormalFont, 15);
     user->SetFocus();
     user->SetText(SETTINGS.lobby.name); //-V807
 
     AddText(ID_txtPw, DrawPoint(20, 70), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlEdit* pass = AddEdit(ID_edtPw, DrawPoint(260, 70), Extent(220, 22), TC_GREEN2, NormalFont, 0, true);
+    ctrlEdit* pass = AddEdit(ID_edtPw, DrawPoint(260, 70), Extent(220, 22), TextureColor::Green2, NormalFont, 0, true);
     pass->SetText(isStoredPasswordHash(SETTINGS.lobby.password) ? SETTINGS.lobby.password.substr(4) :
                                                                   SETTINGS.lobby.password);
 
@@ -76,22 +76,22 @@ iwLobbyConnect::iwLobbyConnect()
 
     Extent btSize = Extent(105, 22);
     ctrlOptionGroup* savepassword = AddOptionGroup(ID_optSavePw, GroupSelectType::Check);
-    savepassword->AddTextButton(0, DrawPoint(260, 100), btSize, TC_GREEN2, _("No"), NormalFont);
-    savepassword->AddTextButton(1, DrawPoint(375, 100), btSize, TC_GREEN2, _("Yes"), NormalFont);
+    savepassword->AddTextButton(0, DrawPoint(260, 100), btSize, TextureColor::Green2, _("No"), NormalFont);
+    savepassword->AddTextButton(1, DrawPoint(375, 100), btSize, TextureColor::Green2, _("Yes"), NormalFont);
     savepassword->SetSelection((SETTINGS.lobby.save_password ? 1 : 0));
 
     AddText(ID_txtProtocol, DrawPoint(20, 130), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(ID_optProtocol, GroupSelectType::Check);
-    ipv6->AddTextButton(0, DrawPoint(260, 130), btSize, TC_GREEN2, _("IPv4"), NormalFont);
-    ipv6->AddTextButton(1, DrawPoint(375, 130), btSize, TC_GREEN2, _("IPv6"), NormalFont);
+    ipv6->AddTextButton(0, DrawPoint(260, 130), btSize, TextureColor::Green2, _("IPv4"), NormalFont);
+    ipv6->AddTextButton(1, DrawPoint(375, 130), btSize, TextureColor::Green2, _("IPv6"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     AddText(ID_txtStatus, DrawPoint(250, 165), "", COLOR_RED, FontStyle::CENTER, NormalFont);
 
     btSize = Extent(220, 22);
-    AddTextButton(ID_btConnect, DrawPoint(20, 190), btSize, TC_RED1, _("Connect"), NormalFont);
-    AddTextButton(ID_btRegister, DrawPoint(260, 190), btSize, TC_GREEN2, _("Register"), NormalFont);
+    AddTextButton(ID_btConnect, DrawPoint(20, 190), btSize, TextureColor::Red1, _("Connect"), NormalFont);
+    AddTextButton(ID_btRegister, DrawPoint(260, 190), btSize, TextureColor::Green2, _("Register"), NormalFont);
 
     LOBBYCLIENT.SetProgramVersion(RTTR_Version::GetReadableVersion());
     LOBBYCLIENT.AddListener(this);
@@ -207,7 +207,7 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigne
 
 bool iwLobbyConnect::Msg_KeyDown(const KeyEvent& ev)
 {
-    if(ev.kt != KT_TAB)
+    if(ev.kt != KeyType::Tab)
         return false;
     auto* user = GetCtrl<ctrlEdit>(ID_edtUser);
     auto* pass = GetCtrl<ctrlEdit>(ID_edtPw);

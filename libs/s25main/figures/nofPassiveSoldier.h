@@ -63,7 +63,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofPassiveSoldier(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_PASSIVESOLDIER; }
+    GO_Type GetGOT() const override { return GO_Type::NofPassivesoldier; }
 
     // Zeichnet den Soldaten
     void Draw(DrawPoint drawPt) override;

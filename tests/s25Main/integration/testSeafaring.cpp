@@ -67,13 +67,13 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(buildings.GetHarbors().back(), harbor);
     std::vector<nobHarborBuilding*> harbors;
     BOOST_REQUIRE_EQUAL(world.GetNode(MapPoint(0, 0)).seaId, seaId);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHEAST), seaId);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NorthEast), seaId);
     player.GetHarborsAtSea(harbors, seaId);
     BOOST_REQUIRE_EQUAL(harbors.size(), 1u);
     BOOST_REQUIRE_EQUAL(harbors.front(), harbor);
 
-    const std::vector<Direction> road = FindRoadPath(world.GetNeighbour(hqPos, Direction::SOUTHEAST),
-                                                     world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
+    const std::vector<Direction> road = FindRoadPath(world.GetNeighbour(hqPos, Direction::SouthEast),
+                                                     world.GetNeighbour(hbPos, Direction::SouthEast), world);
     BOOST_REQUIRE(!road.empty());
 }
 
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
 
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const MapPoint hqPos = player.GetHQPos();
-    const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+    const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
     const unsigned hbId = 1;
     const MapPoint hbPos = world.GetHarborPoint(hbId);
     const MapPoint shipyardPos(hqPos.x + 3, hqPos.y - 5);
@@ -91,7 +91,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
       BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_REQUIRE(harbor);
-    std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
+    std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SouthEast), world);
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     MapPoint curPt = hqFlagPos;
@@ -104,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     auto* shipYard = dynamic_cast<nobShipYard*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Shipyard, shipyardPos, curPlayer, Nation::Romans));
     BOOST_REQUIRE(shipYard);
-    road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SOUTHEAST), world);
+    road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SouthEast), world);
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::Mode::Boats); //-V522
@@ -148,7 +148,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
     {
         GamePlayer& player = world.GetPlayer(curPlayer);
         const MapPoint hqPos = player.GetHQPos();
-        const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+        const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
         const MapPoint hbPos = world.GetHarborPoint(T_hbId);
         world.GetPostMgr().AddPostBox(curPlayer);
         postBox = world.GetPostMgr().GetPostBox(curPlayer);
@@ -157,7 +157,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
           BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_REQUIRE(harbor);
         world.RecalcBQAroundPointBig(hbPos);
-        std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
+        std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SouthEast), world);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(hqFlagPos, false, road);
         MapPoint curPt = hqFlagPos;
@@ -536,7 +536,7 @@ void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
     // Remove burned wh if existing
     for(noBase* fig : world.GetFigures(pos))
     {
-        if(fig->GetGOT() == GOT_BURNEDWAREHOUSE)
+        if(fig->GetGOT() == GO_Type::Burnedwarehouse)
         {
             // Remove go-out event (not automatically done as the burned wh is never removed)
             const GameEvent* ev = static_cast<TestEventManager&>(world.GetEvMgr()).GetObjEvents(*fig).front();
@@ -557,8 +557,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     const MapPoint hb3Pos = world.GetHarborPoint(3);
 
     // Order goods
-    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::Collect);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::Collect);
 
     // Destroy home before load -> Abort after ship reaches harbor
     RTTR_EXEC_TILL(90, ship.IsMoving());
@@ -587,8 +587,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     // Destroy destination during load -> Unload again
     createHarbor(2);
     // Order goods
-    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::Collect);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::Collect);
     RTTR_EXEC_TILL(300, ship.IsLoading());
     destroyBldAndFire(world, hb2Pos);
     BOOST_REQUIRE(ship.IsUnloading());
@@ -597,8 +597,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     // Destroy destination during driving -> Go back and unload
     createHarbor(2);
     // Order goods
-    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::Collect);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::Collect);
     RTTR_EXEC_TILL(300, ship.IsLoading());
     RTTR_EXEC_TILL(200, ship.IsMoving());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
@@ -612,8 +612,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     // Destroy destination during unloading -> Go back and unload
     createHarbor(2);
     // Order goods
-    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::Collect);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::Collect);
     RTTR_EXEC_TILL(700, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
@@ -627,8 +627,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     createHarbor(2);
     createHarbor(3);
     // Order goods
-    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::Collect);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::Collect);
     RTTR_EXEC_TILL(700, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);

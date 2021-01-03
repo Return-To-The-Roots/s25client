@@ -42,9 +42,9 @@ void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        case STATE_WAITING1: HandleStateWaiting1(); break;
-        case STATE_WORK: HandleStateWork(); break;
-        case STATE_WAITING2: HandleStateWaiting2(); break;
+        case State::Waiting1: HandleStateWaiting1(); break;
+        case State::Work: HandleStateWork(); break;
+        case State::Waiting2: HandleStateWaiting2(); break;
         default: break;
     }
 }
@@ -52,7 +52,7 @@ void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
 bool nofWorkman::StartWorking()
 {
     current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
-    state = STATE_WORK;
+    state = State::Work;
     workplace->is_working = true;
     // Waren verbrauchen
     workplace->ConsumeWares();
@@ -64,7 +64,7 @@ void nofWorkman::HandleStateWaiting1()
     current_ev = nullptr;
     if(!StartWorking())
     {
-        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        state = State::WaitingForWaresOrProductionStopped;
         workplace->StartNotWorking();
     }
 }
@@ -80,8 +80,8 @@ void nofWorkman::HandleStateWaiting2()
     } else
     {
         // und diese raustragen
-        StartWalking(Direction::SOUTHEAST);
-        state = STATE_CARRYOUTWARE;
+        StartWalking(Direction::SouthEast);
+        state = State::CarryoutWare;
     }
 
     // abgeleiteten Klassen Bescheid sagen
@@ -93,7 +93,7 @@ void nofWorkman::HandleStateWork()
     // Nach Arbeiten wird noch ein bisschen gewartet, bevor das Produkt herausgetragen wird
     // Bei 0 mind. 1 GF
     current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
-    state = STATE_WAITING2;
+    state = State::Waiting2;
     // wir arbeiten nicht mehr
     workplace->is_working = false;
 
@@ -109,14 +109,14 @@ namespace {
 struct NodeHasResource
 {
     const GameWorldGame& gwg;
-    const Resource::Type res;
-    NodeHasResource(const GameWorldGame& gwg, const Resource::Type res) : gwg(gwg), res(res) {}
+    const ResourceType res;
+    NodeHasResource(const GameWorldGame& gwg, const ResourceType res) : gwg(gwg), res(res) {}
 
     bool operator()(const MapPoint pt) { return gwg.GetNode(pt).resources.has(res); }
 };
 } // namespace
 
-MapPoint nofWorkman::FindPointWithResource(Resource::Type type) const
+MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
 {
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
     std::vector<MapPoint> pts =

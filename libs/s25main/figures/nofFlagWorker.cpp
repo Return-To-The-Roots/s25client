@@ -24,13 +24,13 @@
 #include "nodeObjs/noFlag.h"
 
 nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
-    : noFigure(job, pos, player, goal), flag(nullptr), state(STATE_FIGUREWORK)
+    : noFigure(job, pos, player, goal), flag(nullptr), state(State::FigureWork)
 {
     // Flagge als Ziel, dann arbeiten wir auch, ansonsten kanns aber auch nur ein Lagerhaus oder Null sein, wenn ein
     // Lagerhaus abgerissen wurde oder ausgelagert wurde etc., dann auch den nicht als Flag-Worker registrieren
     if(goal)
     {
-        if(goal->GetGOT() == GOT_FLAG)
+        if(goal->GetGOT() == GO_Type::Flag)
         {
             this->flag = static_cast<noFlag*>(goal);
             gwg->GetPlayer(player).RegisterFlagWorker(this);
@@ -41,7 +41,7 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
 }
 
 nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), flag(sgd.PopObject<noFlag>(GOT_FLAG)), state(State(sgd.PopUnsignedChar()))
+    : noFigure(sgd, obj_id), flag(sgd.PopObject<noFlag>(GO_Type::Flag)), state(sgd.Pop<State>())
 {}
 
 void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
@@ -49,7 +49,7 @@ void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
     Serialize_noFigure(sgd);
 
     sgd.PushObject(flag, true);
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
 }
 
 void nofFlagWorker::Destroy_nofFlagWorker()
@@ -98,7 +98,7 @@ void nofFlagWorker::GoToFlag()
         // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
         // "abmelden"
         gwg->GetPlayer(player).RemoveFlagWorker(this);
-        state = STATE_FIGUREWORK;
+        state = State::FigureWork;
         flag = nullptr;
     } else
     {
@@ -113,7 +113,7 @@ void nofFlagWorker::GoToFlag()
             Abrogate();
             StartWandering();
             Wander();
-            state = STATE_FIGUREWORK;
+            state = State::FigureWork;
 
             flag = nullptr;
         }

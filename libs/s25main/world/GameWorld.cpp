@@ -96,7 +96,7 @@ void GameWorld::Deserialize(const std::shared_ptr<Game>& game, ILocalGameState& 
 {
     MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 
-    sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
+    sgd.PopObjectContainer(harbor_building_sites_from_sea, GO_Type::Buildingsite);
 
     std::string luaScript = sgd.PopLongString();
     if(!luaScript.empty())

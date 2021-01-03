@@ -589,7 +589,7 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 501)") % envPt3.x % envPt3.y);
     const noStaticObject* obj2 = world.GetSpecObj<noStaticObject>(envPt3);
     BOOST_REQUIRE(obj2);
-    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_STATICOBJECT);
+    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GO_Type::Staticobject);
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 501u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 0xFFFFu);
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 1u);
@@ -597,7 +597,7 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
-    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_STATICOBJECT);
+    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GO_Type::Staticobject);
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 5u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 3u);
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 1u);
@@ -605,7 +605,7 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 2)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
-    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_STATICOBJECT);
+    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GO_Type::Staticobject);
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 5u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 3u);
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 2u);
@@ -623,7 +623,7 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
-    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_ENVOBJECT);
+    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GO_Type::Envobject);
 
     MapPoint animalPos(20, 12);
     const std::list<noBase*>& figs = world.GetFigures(animalPos);
@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.EventOccupied(1, pt1);
     lua.EventExplored(1, pt2, 0);
     lua.EventGameFrame(0);
-    lua.EventResourceFound(1, pt3, Resource::Gold, 1);
+    lua.EventResourceFound(1, pt3, ResourceType::Gold, 1);
     executeLua("function getResName(res)\n  if(res==RES_IRON) then return 'Iron' "
                "elseif(res==RES_GOLD) then return 'Gold' "
                "elseif(res==RES_COAL) then return 'Coal' "
@@ -738,15 +738,15 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
       "function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', "
       "'..y..')'..getResName(type)..':'..quantity)\nend");
     boost::format resFmt("resFound: %1%%2%%3%:%4%\n");
-    lua.EventResourceFound(2, pt3, Resource::Iron, 1);
+    lua.EventResourceFound(2, pt3, ResourceType::Iron, 1);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Iron" % 1).str());
-    lua.EventResourceFound(2, pt3, Resource::Gold, 2);
+    lua.EventResourceFound(2, pt3, ResourceType::Gold, 2);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Gold" % 2).str());
-    lua.EventResourceFound(2, pt3, Resource::Coal, 3);
+    lua.EventResourceFound(2, pt3, ResourceType::Coal, 3);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Coal" % 3).str());
-    lua.EventResourceFound(2, pt3, Resource::Granite, 6);
+    lua.EventResourceFound(2, pt3, ResourceType::Granite, 6);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Granite" % 6).str());
-    lua.EventResourceFound(2, pt3, Resource::Water, 5);
+    lua.EventResourceFound(2, pt3, ResourceType::Water, 5);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Water" % 5).str());
 }
 

@@ -146,7 +146,7 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
         return; // No windows -> nothing to do
 
     // Letztes Fenster schließen? (Escape oder Alt-W)
-    if(ke.kt == KT_ESCAPE || (ke.c == 'w' && ke.alt))
+    if(ke.kt == KeyType::Escape || (ke.c == 'w' && ke.alt))
     {
         Close(GetTopMostWindow());
         return;
@@ -609,14 +609,14 @@ void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 
 void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 {
-    if(ke.alt && (ke.kt == KT_RETURN))
+    if(ke.alt && (ke.kt == KeyType::Return))
     {
         // Switch Fullscreen/Windowed
         const auto newScreenSize =
           !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
         VIDEODRIVER.ResizeScreen(newScreenSize, !SETTINGS.video.fullscreen);
         SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
-    } else if(ke.kt == KT_PRINT)
+    } else if(ke.kt == KeyType::Print)
         TakeScreenshot();
     else
         RelayKeyboardMessage(&Window::Msg_KeyDown, ke);

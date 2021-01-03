@@ -29,15 +29,15 @@ iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, const Position&
       gi(gi), mousePosAtOpen_(mousePos)
 {
     // Bau abbrechen
-    ctrlButton* cancel = AddImageButton(1, DrawPoint(10, 20), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 110),
-                                        _("Interrupt road building"));
+    ctrlButton* cancel = AddImageButton(1, DrawPoint(10, 20), Extent(36, 36), TextureColor::Grey,
+                                        LOADER.GetImageN("io", 110), _("Interrupt road building"));
     ctrlButton* defaultBt = cancel;
 
     if(flagpossible)
     {
         // Flagge platzieren
-        defaultBt =
-          AddImageButton(0, DrawPoint(10, 20), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 70), _("Erect flag"));
+        defaultBt = AddImageButton(0, DrawPoint(10, 20), Extent(36, 36), TextureColor::Grey, LOADER.GetImageN("io", 70),
+                                   _("Erect flag"));
         // Abbrechen button daneben schieben
         cancel->SetPos(DrawPoint(46, 20));
     }

@@ -31,8 +31,8 @@ struct NewNode
     unsigned way = 0;
     unsigned wayEven = 0;
     /// Die Richtung, über die dieser Knoten erreicht wurde
-    Direction dir = Direction::WEST;
-    Direction dirEven = Direction::WEST;
+    Direction dir = Direction::West;
+    Direction dirEven = Direction::West;
     /// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
     unsigned prev = INVALID_PREV;
     unsigned prevEven = INVALID_PREV;

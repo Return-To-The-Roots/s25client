@@ -37,32 +37,32 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
 
     // "Name des Spiels"
     AddText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    name = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
+    name = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
     // "Server-Port"
     AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
+    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
     // "Passwort"
     AddText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
+    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
     AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, GroupSelectType::Check);
-    ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);
-    ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TC_GREEN2, _("IPv6"), NormalFont);
+    ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TextureColor::Green2, _("IPv4"), NormalFont);
+    ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TextureColor::Green2, _("IPv6"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
     AddText(6, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Starten"
-    AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TC_GREEN2, _("Start"), NormalFont);
+    AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TextureColor::Green2, _("Start"), NormalFont);
 
     // "Zurück"
-    AddTextButton(8, DrawPoint(155, 240), Extent(125, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(8, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     name->SetText(SETTINGS.lobby.name + _("'s Game"));
     name->SetFocus();

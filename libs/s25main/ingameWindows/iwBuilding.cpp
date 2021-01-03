@@ -64,12 +64,13 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     }
 
     // Info
-    AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
     // Abreißen
-    AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
+    AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
+                   _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
     Window* enable_productivity = AddImageButton(
-      6, DrawPoint(90, 147), Extent(34, 32), TC_GREY,
+      6, DrawPoint(90, 147), Extent(34, 32), TextureColor::Grey,
       LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)), _("Production on/off"));
     if(building->GetBuildingType() == BuildingType::LookoutTower)
         enable_productivity->SetVisible(false);
@@ -79,14 +80,15 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         // Jenachdem Boot oder Schiff anzeigen
         unsigned io_dat_id =
           (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
-        AddImageButton(11, DrawPoint(130, 147), Extent(43, 32), TC_GREY, LOADER.GetImageN("io", io_dat_id));
+        AddImageButton(11, DrawPoint(130, 147), Extent(43, 32), TextureColor::Grey, LOADER.GetImageN("io", io_dat_id));
     }
 
     // "Gehe Zum Ort"
-    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
+                   _("Go to place"));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
-    Window* productivity = AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TC_GREY, 0xFFFFFF00, SmallFont,
+    Window* productivity = AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TextureColor::Grey, 0xFFFFFF00, SmallFont,
                                       building->GetProductivityPointer());
     if(building->GetBuildingType() == BuildingType::Catapult
        || building->GetBuildingType() == BuildingType::LookoutTower)
@@ -95,7 +97,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Go to next" (building of same type)
-    AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11),
+    AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 11),
                    _("Go to next building of same type"));
 }
 

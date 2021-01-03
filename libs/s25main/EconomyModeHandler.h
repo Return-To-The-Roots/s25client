@@ -98,7 +98,7 @@ public:
     /// Return the good types to collect
     const std::vector<GoodType>& GetGoodTypesToCollect() const { return goodsToCollect; }
 
-    GO_Type GetGOT() const override { return GOT_ECONOMYMODEHANDLER; }
+    GO_Type GetGOT() const override { return GO_Type::Economymodehandler; }
 
     /// Miscellaneous status checks
     bool isOver() const;

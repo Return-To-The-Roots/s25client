@@ -100,7 +100,7 @@ void ctrlButton::Draw_()
     if(GetSize().x == 0 || GetSize().y == 0)
         return;
 
-    if(tc != TC_INVISIBLE)
+    if(tc != TextureColor::Invisible)
     {
         unsigned color = isEnabled ? COLOR_WHITE : 0xFFBBBBBB;
         bool isCurIlluminated = isIlluminated || (!isEnabled && isChecked);

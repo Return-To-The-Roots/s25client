@@ -30,10 +30,10 @@ class nofCharburner : public nofFarmhand
     /// Is he harvesting a charburner pile (or planting?)
     bool harvest;
     /// If stacking wood pile: Determines which ware he carries (wood or grain?)
-    enum WareType
+    enum class WareType
     {
-        WT_WOOD,
-        WT_GRAIN
+        Wood,
+        Grain
     } wt;
 
 private:
@@ -69,5 +69,5 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GOT_NOF_CHARBURNER; }
+    GO_Type GetGOT() const override { return GO_Type::NofCharburner; }
 };

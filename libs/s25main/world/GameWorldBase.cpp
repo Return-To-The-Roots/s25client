@@ -124,9 +124,9 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             TerrainBQ bq = GetDescription().get(GetRightTerrain(pt, dir)).GetBQ();
-            if(bq == TerrainBQ::DANGER)
+            if(bq == TerrainBQ::Danger)
                 return false;
-            else if(bq != TerrainBQ::NOTHING)
+            else if(bq != TerrainBQ::Nothing)
                 flagPossible = true;
         }
 
@@ -185,7 +185,7 @@ void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
 {
     RecalcBQ(pt);
 
-    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
+    for(const Direction dir : {Direction::East, Direction::SouthEast, Direction::SouthWest})
         RecalcBQ(GetNeighbour(pt, dir));
 }
 
@@ -394,7 +394,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harborId, const unsigned ch
 
     // Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn
     // der Hafen und die Flagge im Spielergebiet liegen
-    MapPoint flagPos = GetNeighbour(hbPos, Direction::SOUTHEAST);
+    MapPoint flagPos = GetNeighbour(hbPos, Direction::SouthEast);
     if(GetNode(hbPos).owner != player + 1 || GetNode(flagPos).owner != player + 1)
     {
         if(CheckPointsInRadius(hbPos, 4, IsPointOwnerDifferent(*this, player), false))
@@ -442,7 +442,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
 {
     // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the
     // harbor this might be blocked
-    const MapPoint flagPt = GetNeighbour(targetPt, Direction::SOUTHEAST);
+    const MapPoint flagPt = GetNeighbour(targetPt, Direction::SouthEast);
     std::vector<unsigned> harbor_points;
     // Check each possible harbor
     for(unsigned curHbId = 1; curHbId <= GetNumHarborPoints(); ++curHbId)
@@ -503,7 +503,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
 {
     // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the
     // harbor this might be blocked
-    const MapPoint flagPt = GetNeighbour(targetPt, Direction::SOUTHEAST);
+    const MapPoint flagPt = GetNeighbour(targetPt, Direction::SouthEast);
     std::vector<unsigned short> confirmedSeaIds;
     // Check each possible harbor
     for(unsigned curHbId = 1; curHbId <= GetNumHarborPoints(); ++curHbId)

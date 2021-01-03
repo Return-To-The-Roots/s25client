@@ -40,7 +40,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noSkeleton(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_SKELETON; }
+    GO_Type GetGOT() const override { return GO_Type::Skeleton; }
 
 protected:
     void Destroy_noSkeleton();

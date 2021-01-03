@@ -364,7 +364,7 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     for(TestIngameWnd* curWnd : expectedOrder)
         MOCK_EXPECT(curWnd->Msg_KeyDown).once().in(s).returns(true);
     // Way outside any window, should still be handled
-    KeyEvent ke{KT_CHAR, 'a', false, false, false};
+    KeyEvent ke{KeyType::Char, 'a', false, false, false};
     for(TestIngameWnd* curWnd : expectedOrder)
     {
         REQUIRE_WINDOW_ACTIVE(curWnd);

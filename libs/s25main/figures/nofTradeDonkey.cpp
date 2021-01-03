@@ -37,7 +37,7 @@ nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
+    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
       gt(sgd.PopOptionalEnum<GoodType>())
 {
     if(sgd.GetGameDataVersion() < 6)

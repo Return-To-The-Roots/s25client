@@ -210,7 +210,7 @@ const noShip* GameWorldViewer::GetShip(const MapPoint pt) const
         const std::list<noBase*>& figures = world.GetFigures(curPt);
         for(const auto* figure : figures)
         {
-            if(figure->GetGOT() == GOT_SHIP && checkShip(static_cast<const noShip&>(*figure)))
+            if(figure->GetGOT() == GO_Type::Ship && checkShip(static_cast<const noShip&>(*figure)))
                 return true;
         }
         return false;
@@ -264,7 +264,7 @@ void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
 {
     RecalcBQ(pt);
 
-    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
+    for(const Direction dir : {Direction::East, Direction::SouthEast, Direction::SouthWest})
         RecalcBQ(GetNeighbour(pt, dir));
 }
 

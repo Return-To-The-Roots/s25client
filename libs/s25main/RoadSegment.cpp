@@ -36,11 +36,11 @@ RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* co
 }
 
 RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), rt(sgd.Pop<RoadType>()), f1(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
-      f2(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), route(sgd.PopUnsignedShort())
+    : GameObject(sgd, obj_id), rt(sgd.Pop<RoadType>()), f1(sgd.PopObject<noRoadNode>(GO_Type::Unknown)),
+      f2(sgd.PopObject<noRoadNode>(GO_Type::Unknown)), route(sgd.PopUnsignedShort())
 {
-    carriers_[0] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
-    carriers_[1] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
+    carriers_[0] = sgd.PopObject<nofCarrier>(GO_Type::NofCarrier);
+    carriers_[1] = sgd.PopObject<nofCarrier>(GO_Type::NofCarrier);
 
     for(auto& i : route)
         i = sgd.Pop<Direction>();
@@ -61,8 +61,8 @@ void RoadSegment::Destroy_RoadSegment()
 {
     // This can be the road segment from the flag to the building (always in this order!)
     // Those are not considered "roads" and therefore never registered
-    RTTR_Assert(f1->GetGOT() == GOT_FLAG);
-    if(f2->GetGOT() == GOT_FLAG)
+    RTTR_Assert(f1->GetGOT() == GO_Type::Flag);
+    if(f2->GetGOT() == GO_Type::Flag)
         gwg->GetPlayer(f1->GetPlayer()).DeleteRoad(this);
 
     if(carriers_[0])
@@ -223,18 +223,18 @@ bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_w
         switch(carriers_[otherCarrier]->GetCarrierState())
         {
             default: break;
-            case CARRS_FETCHWARE:
-            case CARRS_CARRYWARE:
-            case CARRS_WAITFORWARESPACE:
-            case CARRS_GOBACKFROMFLAG:
+            case CarrierState::FetchWare:
+            case CarrierState::CarryWare:
+            case CarrierState::WaitForWareSpace:
+            case CarrierState::GoBackFromFlag:
             {
                 // Läuft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
                 if(carriers_[otherCarrier]->GetRoadDir() == !flag)
                     return false;
             }
             break;
-            case CARRS_CARRYWARETOBUILDING:
-            case CARRS_LEAVEBUILDING:
+            case CarrierState::CarryWareToBuilding:
+            case CarrierState::LeaveBuilding:
             {
                 // Wenn an die Flagge ein Gebäude angrenzt und der Träger da was reinträgt, kann der auch die Ware
                 // gleich mitnehmen, der zweite muss hier also nicht kommen
@@ -317,8 +317,8 @@ void RoadSegment::UpgradeDonkeyRoad()
     }
 
     // Flaggen auf beiden Seiten upgraden
-    RTTR_Assert(f1->GetGOT() == GOT_FLAG);
-    RTTR_Assert(f2->GetGOT() == GOT_FLAG);
+    RTTR_Assert(f1->GetGOT() == GO_Type::Flag);
+    RTTR_Assert(f2->GetGOT() == GO_Type::Flag);
 
     static_cast<noFlag*>(f1)->Upgrade();
     static_cast<noFlag*>(f2)->Upgrade();

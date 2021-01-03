@@ -46,7 +46,7 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
 
     // the trick only seems to work for flags
-    if(this->GetGOT() == GOT_FLAG)
+    if(this->GetGOT() == GO_Type::Flag)
     {
         // this is a trick:
         // -> initialize routes for flag with nullptr
@@ -70,7 +70,7 @@ noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id)
 {
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        routes[dir] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
+        routes[dir] = sgd.PopObject<RoadSegment>(GO_Type::Roadsegment);
     }
 
     last_visit = 0;

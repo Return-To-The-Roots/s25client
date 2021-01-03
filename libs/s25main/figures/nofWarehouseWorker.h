@@ -67,7 +67,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofWarehouseWorker(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_WAREHOUSEWORKER; }
+    GO_Type GetGOT() const override { return GO_Type::NofWarehouseworker; }
 
     void Draw(DrawPoint drawPt) override;
 

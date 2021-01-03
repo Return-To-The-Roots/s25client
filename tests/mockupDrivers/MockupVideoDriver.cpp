@@ -20,7 +20,7 @@
 
 MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), tickCount_(1)
 {
-    modKeyState_.kt = KT_INVALID;
+    modKeyState_.kt = KeyType::Invalid;
     modKeyState_.c = 0;
     modKeyState_.ctrl = false;
     modKeyState_.shift = false;

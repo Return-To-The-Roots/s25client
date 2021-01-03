@@ -83,7 +83,7 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
 
     // Die Tabelle für die Maps
     using SRT = ctrlTable::SortType;
-    AddTable(1, DrawPoint(110, 35), Extent(680, 400), TC_GREY, NormalFont,
+    AddTable(1, DrawPoint(110, 35), Extent(680, 400), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("Name"), 250, SRT::String},
                                 {_("Author"), 216, SRT::String},
                                 {_("Player"), 170, SRT::Number},
@@ -95,45 +95,45 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
     AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // "Zurück"
-    AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     // "Spiel laden..."
-    AddTextButton(4, DrawPoint(590, 530), Extent(200, 22), TC_GREEN2, _("Load game..."), NormalFont);
+    AddTextButton(4, DrawPoint(590, 530), Extent(200, 22), TextureColor::Green2, _("Load game..."), NormalFont);
     // "Weiter"
-    AddTextButton(5, DrawPoint(590, 560), Extent(200, 22), TC_GREEN2, _("Continue"), NormalFont);
+    AddTextButton(5, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont);
     // random map generation
-    AddTextButton(6, DrawPoint(380, 530), Extent(150, 22), TC_GREEN2, _("Random Map"), NormalFont);
+    AddTextButton(6, DrawPoint(380, 530), Extent(150, 22), TextureColor::Green2, _("Random Map"), NormalFont);
     // random map settings
-    AddTextButton(7, DrawPoint(540, 530), Extent(40, 22), TC_GREEN2, _("..."), NormalFont);
+    AddTextButton(7, DrawPoint(540, 530), Extent(40, 22), TextureColor::Green2, _("..."), NormalFont);
 
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, GroupSelectType::Check);
     Extent catBtSize = Extent(90, 22);
     // "Alte"
     DrawPoint curBtPos = DrawPoint(10, 35);
-    optiongroup->AddTextButton(0, curBtPos, catBtSize, TC_GREY, _("Old maps"), NormalFont);
+    optiongroup->AddTextButton(0, curBtPos, catBtSize, TextureColor::Grey, _("Old maps"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Neue"
-    optiongroup->AddTextButton(1, curBtPos, catBtSize, TC_GREY, _("New maps"), NormalFont);
+    optiongroup->AddTextButton(1, curBtPos, catBtSize, TextureColor::Grey, _("New maps"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Eigene"
-    optiongroup->AddTextButton(2, curBtPos, catBtSize, TC_GREY, _("Own maps"), NormalFont);
+    optiongroup->AddTextButton(2, curBtPos, catBtSize, TextureColor::Grey, _("Own maps"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Kontinente"
-    optiongroup->AddTextButton(3, curBtPos, catBtSize, TC_GREY, _("Continents"), NormalFont);
+    optiongroup->AddTextButton(3, curBtPos, catBtSize, TextureColor::Grey, _("Continents"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Kampagne"
-    optiongroup->AddTextButton(4, curBtPos, catBtSize, TC_GREY, _("Campaign"), NormalFont);
+    optiongroup->AddTextButton(4, curBtPos, catBtSize, TextureColor::Grey, _("Campaign"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "RTTR"
-    optiongroup->AddTextButton(5, curBtPos, catBtSize, TC_GREY, _("RTTR"), NormalFont);
+    optiongroup->AddTextButton(5, curBtPos, catBtSize, TextureColor::Grey, _("RTTR"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Andere"
-    optiongroup->AddTextButton(6, curBtPos, catBtSize, TC_GREY, _("Other"), NormalFont);
+    optiongroup->AddTextButton(6, curBtPos, catBtSize, TextureColor::Grey, _("Other"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Andere"
-    optiongroup->AddTextButton(7, curBtPos, catBtSize, TC_GREY, _("Sea"), NormalFont);
+    optiongroup->AddTextButton(7, curBtPos, catBtSize, TextureColor::Grey, _("Sea"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Heruntergeladene"
-    optiongroup->AddTextButton(8, curBtPos, catBtSize, TC_GREY, _("Played"), NormalFont);
+    optiongroup->AddTextButton(8, curBtPos, catBtSize, TextureColor::Grey, _("Played"), NormalFont);
 
     AddPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), nullptr);
     AddText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
@@ -260,11 +260,11 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::opti
 
 void dskSelectMap::GoBack() const
 {
-    if(csi.type == ServerType::LOCAL)
+    if(csi.type == ServerType::Local)
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(csi.type == ServerType::LAN)
         WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
-    else if(csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
+    else if(csi.type == ServerType::Lobby && LOBBYCLIENT.IsLoggedIn())
         WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
     else
         WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
@@ -385,9 +385,9 @@ void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     {
         GAMECLIENT.Stop();
 
-        if(csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
+        if(csi.type == ServerType::Lobby && LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
-        else if(csi.type == ServerType::LOBBY)
+        else if(csi.type == ServerType::Lobby)
             WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
         else if(csi.type == ServerType::LAN)
             WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
@@ -403,7 +403,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
         case ConnectState::Finished:
         {
             std::unique_ptr<ILobbyClient> lobbyClient;
-            if(csi.type == ServerType::LOBBY)
+            if(csi.type == ServerType::Lobby)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
             WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(csi.type, GAMECLIENT.GetGameLobby(),
                                                                GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));

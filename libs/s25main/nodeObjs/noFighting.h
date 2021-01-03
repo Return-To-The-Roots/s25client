@@ -61,7 +61,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noFighting(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_FIGHTING; }
+    GO_Type GetGOT() const override { return GO_Type::Fighting; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;

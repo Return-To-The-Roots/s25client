@@ -30,7 +30,7 @@
 #include <stdexcept>
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(Job::CharBurner, pos, player, workplace), harvest(false), wt(WT_WOOD)
+    : nofFarmhand(Job::CharBurner, pos, player, workplace), harvest(false), wt(WareType::Wood)
 {}
 
 nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
@@ -77,7 +77,7 @@ void nofCharburner::WorkFinished()
     noBase* no = gwg->GetNO(pos);
 
     // Is a charburner pile is already there?
-    if(no->GetGOT() == GOT_CHARBURNERPILE)
+    if(no->GetGOT() == GO_Type::Charburnerpile)
     {
         // Is Pile already in the normal "coal harvest mode"?
         if(static_cast<noCharburnerPile*>(no)->GetState() == noCharburnerPile::State::Harvest)
@@ -89,7 +89,7 @@ void nofCharburner::WorkFinished()
     }
 
     // Point still good?
-    if(GetPointQuality(pos) != PQ_NOTPOSSIBLE)
+    if(GetPointQuality(pos) != PointQuality::NotPossible)
     {
         // Delete previous elements
         // Only environt objects and signs are allowed to be removed by the worker!
@@ -114,64 +114,64 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     noBase* no = gwg->GetNO(pt);
 
     // Is a charburner pile already here?
-    if(no->GetGOT() == GOT_CHARBURNERPILE)
+    if(no->GetGOT() == GO_Type::Charburnerpile)
     {
         noCharburnerPile::State pileState = static_cast<noCharburnerPile*>(no)->GetState();
         // Can't it be harvested?
         if(pileState == noCharburnerPile::State::Smoldering)
-            return PQ_NOTPOSSIBLE;
+            return PointQuality::NotPossible;
 
         // Wood stack which stell need resources?
         if(pileState == noCharburnerPile::State::Wood)
         {
-            // Does it need resources and I don't have them hen starting new work (state = STATE_WAITING1)?
-            if(!workplace->WaresAvailable() && this->state == STATE_WAITING1)
-                return PQ_NOTPOSSIBLE;
+            // Does it need resources and I don't have them hen starting new work (state = Waiting1)?
+            if(!workplace->WaresAvailable() && this->state == State::Waiting1)
+                return PointQuality::NotPossible;
             else
                 // Only second class, harvest all piles first before continue
                 // to build others
-                return PQ_CLASS2;
+                return PointQuality::Class2;
         }
 
         // All ok, work on this pile
-        return PQ_CLASS1;
+        return PointQuality::Class1;
     }
 
     // Try to "plant" a new pile
-    // Still enough wares when starting new work (state = STATE_WAITING1)?
-    if(!workplace->WaresAvailable() && state == STATE_WAITING1)
-        return PQ_NOTPOSSIBLE;
+    // Still enough wares when starting new work (state = Waiting1)?
+    if(!workplace->WaresAvailable() && state == State::Waiting1)
+        return PointQuality::NotPossible;
 
     // Der Platz muss frei sein
     BlockingManner bm = gwg->GetNO(pt)->GetBM();
 
     if(bm != BlockingManner::None)
-        return PQ_NOTPOSSIBLE;
+        return PointQuality::NotPossible;
 
     // Kein Grenzstein darf da stehen
     if(gwg->GetNode(pt).boundary_stones[BorderStonePos::OnPoint])
-        return PQ_NOTPOSSIBLE;
+        return PointQuality::NotPossible;
 
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
         // Don't set it next to buildings and other charburner piles and grain fields
         BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetBM();
         if(bm != BlockingManner::None)
-            return PQ_NOTPOSSIBLE;
+            return PointQuality::NotPossible;
         // darf außerdem nicht neben einer Straße liegen
         for(const auto dir2 : helpers::EnumRange<Direction>{})
         {
             if(gwg->GetPointRoad(gwg->GetNeighbour(pt, dir), dir2) != PointRoad::None)
-                return PQ_NOTPOSSIBLE;
+                return PointQuality::NotPossible;
         }
     }
 
     // Terrain untersuchen (need walkable land)
     if(gwg->IsOfTerrain(pt,
-                        [](const auto& desc) { return desc.Is(ETerrain::Walkable) && desc.kind == TerrainKind::LAND; }))
-        return PQ_CLASS3;
+                        [](const auto& desc) { return desc.Is(ETerrain::Walkable) && desc.kind == TerrainKind::Land; }))
+        return PointQuality::Class3;
     else
-        return PQ_NOTPOSSIBLE;
+        return PointQuality::NotPossible;
 }
 
 void nofCharburner::Serialize(SerializedGameData& sgd) const
@@ -186,7 +186,7 @@ void nofCharburner::Serialize(SerializedGameData& sgd) const
 void nofCharburner::WalkingStarted()
 {
     noBase* nob = gwg->GetNO(dest);
-    if(nob->GetGOT() == GOT_CHARBURNERPILE)
+    if(nob->GetGOT() == GO_Type::Charburnerpile)
         harvest = !(static_cast<noCharburnerPile*>(nob)->GetState() == noCharburnerPile::State::Wood);
     else
         harvest = false;
@@ -196,8 +196,8 @@ void nofCharburner::WalkingStarted()
     {
         workplace->ConsumeWares();
         // Dertermine ware which we should carry to the pile
-        if(nob->GetGOT() != GOT_CHARBURNERPILE)
-            wt = WT_WOOD;
+        if(nob->GetGOT() != GO_Type::Charburnerpile)
+            wt = WareType::Wood;
         else
             wt = WareType(static_cast<noCharburnerPile*>(nob)->GetNeededWareType());
     }
@@ -215,12 +215,12 @@ void nofCharburner::DrawOtherStates(DrawPoint drawPt)
 {
     switch(state)
     {
-        case STATE_WALKTOWORKPOINT:
+        case State::WalkToWorkpoint:
         {
             // Carry ware?
             if(!harvest)
             {
-                if(wt == WT_WOOD)
+                if(wt == WareType::Wood)
                     DrawWalking(drawPt, "charburner_bobs", 102);
                 else
                     DrawWalking(drawPt, "charburner_bobs", 151);

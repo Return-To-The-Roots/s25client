@@ -82,7 +82,7 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
 
 {
     for(auto& soldier : soldiers)
-        soldier = sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN);
+        soldier = sgd.PopObject<nofActiveSoldier>(GO_Type::Unknown);
 }
 
 void noFighting::Destroy_noFighting()
@@ -134,7 +134,7 @@ void noFighting::Draw(DrawPoint drawPt)
             {
                 const GamePlayer& owner = gwg->GetPlayer(soldiers[i]->GetPlayer());
                 glSmartBitmap& bmp = LOADER.getBobSprite(owner.nation, soldiers[i]->GetJobType(),
-                                                         (i == 0) ? Direction::WEST : Direction::EAST,
+                                                         (i == 0) ? Direction::West : Direction::East,
                                                          GAMECLIENT.Interpolate(8, current_ev));
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
                 drawPt.x += 2 * x_diff;

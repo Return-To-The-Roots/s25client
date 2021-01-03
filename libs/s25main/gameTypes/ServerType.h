@@ -20,8 +20,8 @@
 // Servertypen
 enum class ServerType
 {
-    LOBBY,
-    DIRECT,
-    LOCAL,
+    Lobby,
+    Direct,
+    Local,
     LAN
 };

@@ -40,7 +40,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
 
     const unsigned short maxTextWidth = GetIwSize().x - imgSize.x - textSpace - imgSpace;
     ctrlMultiline* text = AddMultiline(0, contentOffset + DrawPoint::all(textSpace),
-                                       Extent(maxTextWidth, GetIwSize().y), TC_GREEN2, NormalFont);
+                                       Extent(maxTextWidth, GetIwSize().y), TextureColor::Green2, NormalFont);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);
     text->Resize(text->GetContentSize());
@@ -53,7 +53,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
 
     AddTextButton(1,
                   DrawPoint((GetSize().x - buttonSize.x) / 2, GetRightBottomBoundary().y - buttonSpace - buttonSize.y),
-                  buttonSize, TC_GREY, _("Continue"), NormalFont);
+                  buttonSize, TextureColor::Grey, _("Continue"), NormalFont);
     if(img)
     {
         DrawPoint imgPos =

@@ -29,7 +29,7 @@
 EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()) {}
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
-    : noCoordBase(nop, pos), curMoveDir(Direction::SOUTHEAST), ascent(0), moving(false), current_ev(nullptr)
+    : noCoordBase(nop, pos), curMoveDir(Direction::SouthEast), ascent(0), moving(false), current_ev(nullptr)
 {}
 
 void noMovable::Serialize(SerializedGameData& sgd) const

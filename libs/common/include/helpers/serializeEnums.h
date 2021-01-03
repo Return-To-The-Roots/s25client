@@ -27,22 +27,6 @@ namespace helpers {
 
 std::range_error makeOutOfRange(unsigned value, unsigned maxValue);
 
-namespace detail {
-    struct SerializerAccessor : Serializer
-    {
-        template<typename T>
-        static void Push(Serializer& ser, T val)
-        {
-            ser.Push(val);
-        }
-        template<typename T>
-        static T Pop(Serializer& ser)
-        {
-            return ser.Pop<T>();
-        }
-    };
-} // namespace detail
-
 template<typename T_SavedType, typename T>
 void pushEnum(Serializer& ser, const T val)
 {
@@ -53,13 +37,13 @@ void pushEnum(Serializer& ser, const T val)
 
     const auto iVal = static_cast<T_SavedType>(val);
     RTTR_Assert(iVal <= maxValue);
-    detail::SerializerAccessor::Push(ser, iVal);
+    ser.Push(iVal);
 }
 
 template<typename T>
 T popEnum(Serializer& ser)
 {
-    const auto value = detail::SerializerAccessor::Pop<std::underlying_type_t<T>>(ser);
+    const auto value = ser.Pop<std::underlying_type_t<T>>();
     if(value > helpers::MaxEnumValue_v<T>)
         throw makeOutOfRange(value, helpers::MaxEnumValue_v<T>);
     return static_cast<T>(value);

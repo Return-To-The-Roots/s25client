@@ -74,42 +74,44 @@ iwOptionsWindow::iwOptionsWindow()
                      COLOR_YELLOW, FontStyle::CENTER, NormalFont)
       % RTTR_Version::GetYear();
 
-    AddImageButton(ID_btKeyboardLayout, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
+    AddImageButton(ID_btKeyboardLayout, DrawPoint(35, 120), Extent(35, 35), TextureColor::Green2,
+                   LOADER.GetImageN("io", 79));
     AddText(ID_txtKeyboardLayout, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
             NormalFont);
-    AddImageButton(ID_btReadme, DrawPoint(35, 160), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
+    AddImageButton(ID_btReadme, DrawPoint(35, 160), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 79));
     AddText(ID_txtReadme, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
     // "Spiel laden!"
     // TODO: Implement
-    // AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 48));
+    // AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 48));
     // AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
 
     // "Spiel speichern!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
-    AddImageButton(ID_btSave, DrawPoint(35, 230), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 47));
+    AddImageButton(ID_btSave, DrawPoint(35, 230), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 47));
     AddText(ID_txtSave, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
     // Geräusche an/aus
-    AddImageButton(ID_btSoundEffects, DrawPoint(35, 300), Extent(35, 35), TC_GREEN2,
+    AddImageButton(ID_btSoundEffects, DrawPoint(35, 300), Extent(35, 35), TextureColor::Green2,
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
 
     // Musik an/aus
-    AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2,
+    AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TextureColor::Green2,
                    LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
 
     // Geräuschlautstärke
-    AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 100)
+    AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
 
     // Musiklautstärke
-    AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 100)
+    AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
 
-    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 380), Extent(160, 22), TC_GREEN2, _("Music player"), NormalFont);
-    AddTextButton(ID_btAdvanced, DrawPoint(67, 412), Extent(168, 24), TC_GREEN2, _("Advanced"), NormalFont);
-    AddTextButton(ID_btSurrender, DrawPoint(67, 443), Extent(168, 24), TC_RED1, _("Surrender"), NormalFont);
-    AddTextButton(ID_btEndGame, DrawPoint(67, 474), Extent(168, 24), TC_RED1, _("End game"), NormalFont);
+    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 380), Extent(160, 22), TextureColor::Green2, _("Music player"),
+                  NormalFont);
+    AddTextButton(ID_btAdvanced, DrawPoint(67, 412), Extent(168, 24), TextureColor::Green2, _("Advanced"), NormalFont);
+    AddTextButton(ID_btSurrender, DrawPoint(67, 443), Extent(168, 24), TextureColor::Red1, _("Surrender"), NormalFont);
+    AddTextButton(ID_btEndGame, DrawPoint(67, 474), Extent(168, 24), TextureColor::Red1, _("End game"), NormalFont);
 }
 
 void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)

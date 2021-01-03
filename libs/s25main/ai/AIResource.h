@@ -22,19 +22,19 @@
 
 enum class AIResource : unsigned
 {
-    WOOD,
-    STONES,
-    GOLD,
-    IRONORE,
-    COAL,
-    GRANITE,
-    PLANTSPACE,
-    BORDERLAND,
-    FISH,
-    MULTIPLE,
+    Wood,
+    Stones,
+    Gold,
+    Ironore,
+    Coal,
+    Granite,
+    Plantspace,
+    Borderland,
+    Fish,
+    Multiple,
     // special:
-    BLOCKED = 254,
-    NOTHING = 255
+    Blocked = 254,
+    Nothing = 255
 };
 
 const unsigned NUM_AIRESOURCES = 9;

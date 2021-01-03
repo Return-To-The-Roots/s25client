@@ -53,37 +53,38 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
 
     Extent btSize(200, 22);
     if(policy != AddonChangeAllowed::None)
-        AddTextButton(ID_btApply, DrawPoint(20, GetSize().y - 40), btSize, TC_GREEN2, _("Apply"), NormalFont,
+        AddTextButton(ID_btApply, DrawPoint(20, GetSize().y - 40), btSize, TextureColor::Green2, _("Apply"), NormalFont,
                       _("Apply Changes"));
 
-    AddTextButton(ID_btAbort, DrawPoint(250, GetSize().y - 40), btSize, TC_RED1, _("Abort"), NormalFont,
+    AddTextButton(ID_btAbort, DrawPoint(250, GetSize().y - 40), btSize, TextureColor::Red1, _("Abort"), NormalFont,
                   _("Close Without Saving"));
 
     if(policy != AddonChangeAllowed::None)
-        AddTextButton(ID_btS2Defaults, DrawPoint(480, GetSize().y - 40), btSize, TC_GREY, _("Default"), NormalFont,
-                      _("Use S2 Defaults"));
+        AddTextButton(ID_btS2Defaults, DrawPoint(480, GetSize().y - 40), btSize, TextureColor::Grey, _("Default"),
+                      NormalFont, _("Use S2 Defaults"));
 
     // Kategorien
     ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpAddonGroup, GroupSelectType::Check);
     btSize = Extent(120, 22);
     // "Alle"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::All), DrawPoint(20, 50), btSize, TC_GREEN2, _("All"),
-                               NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::All), DrawPoint(20, 50), btSize, TextureColor::Green2,
+                               _("All"), NormalFont);
     // "Militär"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Military), DrawPoint(150, 50), btSize, TC_GREEN2,
-                               _("Military"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Military), DrawPoint(150, 50), btSize,
+                               TextureColor::Green2, _("Military"), NormalFont);
     // "Wirtschaft"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Economy), DrawPoint(290, 50), btSize, TC_GREEN2,
-                               _("Economy"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Economy), DrawPoint(290, 50), btSize,
+                               TextureColor::Green2, _("Economy"), NormalFont);
     // "Spielverhalten"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::GamePlay), DrawPoint(430, 50), btSize, TC_GREEN2,
-                               _("Gameplay"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::GamePlay), DrawPoint(430, 50), btSize,
+                               TextureColor::Green2, _("Gameplay"), NormalFont);
     // "Sonstiges"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Other), DrawPoint(560, 50), btSize, TC_GREEN2,
-                               _("Other"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Other), DrawPoint(560, 50), btSize,
+                               TextureColor::Green2, _("Other"), NormalFont);
 
-    ctrlScrollBar* scrollbar = AddScrollBar(ID_scroll, DrawPoint(GetSize().x - SCROLLBAR_WIDTH - 20, 90),
-                                            Extent(SCROLLBAR_WIDTH, GetSize().y - 140), SCROLLBAR_WIDTH, TC_GREEN2, 1);
+    ctrlScrollBar* scrollbar =
+      AddScrollBar(ID_scroll, DrawPoint(GetSize().x - SCROLLBAR_WIDTH - 20, 90),
+                   Extent(SCROLLBAR_WIDTH, GetSize().y - 140), SCROLLBAR_WIDTH, TextureColor::Green2, 1);
     scrollbar->SetPageSize(scrollbar->GetSize().y / AddonGuiLineHeight);
 
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)

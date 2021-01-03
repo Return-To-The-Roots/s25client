@@ -47,31 +47,31 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(gwg->GetPointRoad(pos, Direction::SOUTHEAST) == PointRoad::None)
+    if(gwg->GetPointRoad(pos, Direction::SouthEast) == PointRoad::None)
     {
-        gwg->SetPointRoad(pos, Direction::SOUTHEAST, PointRoad::Normal);
+        gwg->SetPointRoad(pos, Direction::SouthEast, PointRoad::Normal);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)
-        std::vector<Direction> route(1, Direction::NORTHWEST);
+        std::vector<Direction> route(1, Direction::NorthWest);
         // Straße zuweisen
         auto* rs = new RoadSegment(RoadType::Normal, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
-        gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NORTHWEST, rs); // der Flagge
-        SetRoute(Direction::SOUTHEAST, rs);                                      // dem Gebäude
+        gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NorthWest, rs); // der Flagge
+        SetRoute(Direction::SouthEast, rs);                                      // dem Gebäude
     } else
     {
         // vorhandene Straße der Flagge nutzen
         auto* flag = gwg->GetSpecObj<noFlag>(flagPt);
 
-        RTTR_Assert(flag->GetRoute(Direction::NORTHWEST));
-        SetRoute(Direction::SOUTHEAST, flag->GetRoute(Direction::NORTHWEST));
-        GetRoute(Direction::SOUTHEAST)->SetF2(this);
+        RTTR_Assert(flag->GetRoute(Direction::NorthWest));
+        SetRoute(Direction::SouthEast, flag->GetRoute(Direction::NorthWest));
+        GetRoute(Direction::SouthEast)->SetF2(this);
     }
 
     // Werde/Bin ich (mal) ein großes Schloss? Dann müssen die Anbauten gesetzt werden
     if(GetSize() == BuildingQuality::Castle || GetSize() == BuildingQuality::Harbor)
     {
-        for(const Direction i : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
+        for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
             MapPoint pos2 = gwg->GetNeighbour(pos, i);
             gwg->DestroyNO(pos2, false);
@@ -95,7 +95,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
     const GlobalGameSettings& settings = gwg->GetGGS();
-    if((GetGOT() != GOT_BUILDINGSITE)
+    if((GetGOT() != GO_Type::Buildingsite)
        && (settings.isEnabled(AddonId::REFUND_MATERIALS) || settings.isEnabled(AddonId::REFUND_ON_EMERGENCY)))
     {
         // lebt unsere Flagge noch?
@@ -205,7 +205,7 @@ noFlag* noBaseBuilding::GetFlag() const
 
 MapPoint noBaseBuilding::GetFlagPos() const
 {
-    return gwg->GetNeighbour(pos, Direction::SOUTHEAST);
+    return gwg->GetNeighbour(pos, Direction::SouthEast);
 }
 
 void noBaseBuilding::WareNotNeeded(Ware* ware)
@@ -234,7 +234,7 @@ void noBaseBuilding::DestroyBuildingExtensions()
     // Nur bei großen Gebäuden gibts diese Anbauten
     if(GetSize() == BuildingQuality::Castle || GetSize() == BuildingQuality::Harbor)
     {
-        for(const Direction i : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
+        for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
             gwg->DestroyNO(gwg->GetNeighbour(pos, i));
         }

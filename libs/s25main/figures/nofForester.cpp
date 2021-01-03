@@ -106,29 +106,29 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     BlockingManner bm = gwg->GetNO(pt)->GetBM();
 
     if(bm != BlockingManner::None)
-        return PQ_NOTPOSSIBLE;
+        return PointQuality::NotPossible;
 
     // Kein Grenzstein darf da stehen
     if(gwg->GetNode(pt).boundary_stones[BorderStonePos::OnPoint])
-        return PQ_NOTPOSSIBLE;
+        return PointQuality::NotPossible;
 
     // darf außerdem nich auf einer Straße liegen
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
         if(gwg->GetPointRoad(pt, dir) != PointRoad::None)
-            return PQ_NOTPOSSIBLE;
+            return PointQuality::NotPossible;
     }
 
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
         if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() == NodalObjectType::Building)
-            return PQ_NOTPOSSIBLE;
+            return PointQuality::NotPossible;
     }
 
     // Terrain untersuchen
     if(gwg->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
-        return PQ_CLASS1;
+        return PointQuality::Class1;
     else
-        return PQ_NOTPOSSIBLE;
+        return PointQuality::NotPossible;
 }

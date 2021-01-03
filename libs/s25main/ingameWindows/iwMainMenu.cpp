@@ -49,41 +49,48 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
       gwv(gwv), gcFactory(gcFactory)
 {
     // Verteilung
-    AddImageButton(0, DrawPoint(12, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 134),
+    AddImageButton(0, DrawPoint(12, 22), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 134),
                    _("Distribution of goods"));
     // Transport
-    AddImageButton(1, DrawPoint(68, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
+    AddImageButton(1, DrawPoint(68, 22), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 198),
+                   _("Transport"));
     // Werkzeugproduktion
-    AddImageButton(2, DrawPoint(124, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 137), _("Tools"));
+    AddImageButton(2, DrawPoint(124, 22), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 137), _("Tools"));
 
     // Statistiken
-    AddImageButton(3, DrawPoint(12, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
-    AddImageButton(4, DrawPoint(54, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 135),
+    AddImageButton(3, DrawPoint(12, 70), Extent(39, 44), TextureColor::Grey, LOADER.GetImageN("io", 166),
+                   _("General statistics"));
+    AddImageButton(4, DrawPoint(54, 70), Extent(39, 44), TextureColor::Grey, LOADER.GetImageN("io", 135),
                    _("Merchandise statistics"));
-    AddImageButton(5, DrawPoint(96, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
+    AddImageButton(5, DrawPoint(96, 70), Extent(39, 44), TextureColor::Grey, LOADER.GetImageN("io", 132),
+                   _("Buildings"));
 
     // Inventur
-    AddImageButton(6, DrawPoint(138, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
+    AddImageButton(6, DrawPoint(138, 70), Extent(39, 44), TextureColor::Grey, LOADER.GetImageN("io", 214), _("Stock"));
 
     // Gebäude
-    AddImageButton(7, DrawPoint(12, 118), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
+    AddImageButton(7, DrawPoint(12, 118), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 136),
+                   _("Productivity"));
     // Militär
-    AddImageButton(8, DrawPoint(68, 118), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
+    AddImageButton(8, DrawPoint(68, 118), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 133),
+                   _("Military"));
     // Schiffe
-    AddImageButton(9, DrawPoint(124, 118), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
+    AddImageButton(9, DrawPoint(124, 118), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 175),
+                   _("Ship register"));
 
     // Baureihenfolge
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
-        AddImageButton(10, DrawPoint(12, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 24),
+        AddImageButton(10, DrawPoint(12, 166), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 24),
                        _("Building sequence"));
 
     // Diplomatie (todo: besseres Bild suchen)
-    AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
+    AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 190),
+                   _("Diplomacy"));
 
     if(gwv.GetWorld().econHandler)
     {
         // Economy Mode
-        AddImageButton(12, DrawPoint(124, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 196),
+        AddImageButton(12, DrawPoint(124, 166), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 196),
                        _("Economic Progress"));
     }
 
@@ -95,13 +102,14 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
 #endif
     if(gwv.GetViewer().GetPlayer().isHost && enableAIDebug)
     {
-        auto* bt = static_cast<ctrlTextButton*>(
-          AddTextButton(13, DrawPoint(80, 210), Extent(0, 22), TC_GREY, _("AI"), NormalFont, _("AI Debug Window")));
+        auto* bt = static_cast<ctrlTextButton*>(AddTextButton(13, DrawPoint(80, 210), Extent(0, 22), TextureColor::Grey,
+                                                              _("AI"), NormalFont, _("AI Debug Window")));
         bt->ResizeForMaxChars(bt->GetText().size());
     }
 
     // Optionen
-    AddImageButton(30, DrawPoint(12, 231), Extent(165, 32), TC_GREY, LOADER.GetImageN("io", 37), _("Options"));
+    AddImageButton(30, DrawPoint(12, 231), Extent(165, 32), TextureColor::Grey, LOADER.GetImageN("io", 37),
+                   _("Options"));
 }
 
 /**

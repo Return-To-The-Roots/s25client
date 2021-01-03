@@ -94,7 +94,7 @@ private:
     bool checkOptions();
 
     void GoBack();
-    bool IsSinglePlayer() { return serverType == ServerType::LOCAL; }
+    bool IsSinglePlayer() { return serverType == ServerType::Local; }
 
     const ServerType serverType;
     std::shared_ptr<GameLobby> gameLobby;

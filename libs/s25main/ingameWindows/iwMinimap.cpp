@@ -47,12 +47,12 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);
     for(unsigned i = 0; i < 3; ++i)
     {
-        AddImageButton(i + 1, curPos, BUTTON_SIZE, TC_GREY, LOADER.GetImageN("io", 85 + i));
+        AddImageButton(i + 1, curPos, BUTTON_SIZE, TextureColor::Grey, LOADER.GetImageN("io", 85 + i));
         curPos.x += BUTTON_SIZE.x;
     }
 
     // Fenster vergrößern/verkleinern
-    AddImageButton(4, DrawPoint(0, 0), BUTTON_SIZE, TC_GREY, LOADER.GetImageN("io", 109));
+    AddImageButton(4, DrawPoint(0, 0), BUTTON_SIZE, TextureColor::Grey, LOADER.GetImageN("io", 109));
 
     Resize(GetSize());
 }

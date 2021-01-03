@@ -42,34 +42,34 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
 
     // "IP - Adresse vom Host"
     AddText(0, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false,
-                   (server_type != ServerType::DIRECT), true);
+    host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false,
+                   (server_type != ServerType::Direct), true);
 
     // "Server-Port"
     AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false,
-                   (server_type != ServerType::DIRECT), true);
+    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false,
+                   (server_type != ServerType::Direct), true);
 
     // "Passwort (falls vorhanden)"
     AddText(4, DrawPoint(20, 130), _("Password (if needed):"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
+    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
     AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, GroupSelectType::Check);
-    ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);
-    ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TC_GREEN2, _("IPv6"), NormalFont);
+    ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TextureColor::Green2, _("IPv4"), NormalFont);
+    ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TextureColor::Green2, _("IPv6"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
     AddText(6, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Verbinden"
-    AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TC_GREEN2, _("Connect"), NormalFont);
+    AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TextureColor::Green2, _("Connect"), NormalFont);
 
     // "Zurück"
-    AddTextButton(8, DrawPoint(155, 240), Extent(125, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(8, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     host->SetFocus();
     host->SetText(SETTINGS.server.last_ip);
@@ -230,7 +230,7 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
         case ConnectState::Finished: // Wir wurden verbunden
         {
             std::unique_ptr<ILobbyClient> lobbyClient;
-            if(server_type == ServerType::LOBBY)
+            if(server_type == ServerType::Lobby)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
             WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(server_type, GAMECLIENT.GetGameLobby(),
                                                                GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));

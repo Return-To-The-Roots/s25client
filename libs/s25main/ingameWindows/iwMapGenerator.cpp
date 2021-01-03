@@ -54,19 +54,20 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         return;
     }
 
-    AddTextButton(0, DrawPoint(20, 310), Extent(100, 20), TC_RED1, _("Back"), NormalFont);
-    AddTextButton(1, DrawPoint(130, 310), Extent(100, 20), TC_GREEN2, _("Apply"), NormalFont);
+    AddTextButton(0, DrawPoint(20, 310), Extent(100, 20), TextureColor::Red1, _("Back"), NormalFont);
+    AddTextButton(1, DrawPoint(130, 310), Extent(100, 20), TextureColor::Green2, _("Apply"), NormalFont);
 
-    ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TC_GREY, NormalFont, 100);
+    ctrlComboBox* combo =
+      AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
     for(unsigned n = 2; n < MAX_PLAYERS; n++)
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
 
-    combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TC_GREY, NormalFont, 100);
+    combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Water"));
     combo->AddString(_("Land"));
     combo->AddString(_("Mixed"));
 
-    combo = AddComboBox(CTRL_MAP_SIZE, DrawPoint(20, 90), Extent(210, 20), TC_GREY, NormalFont, 100);
+    combo = AddComboBox(CTRL_MAP_SIZE, DrawPoint(20, 90), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
     combo->AddString("64 x 64");
     combo->AddString("128 x 128");
     combo->AddString("256 x 256");
@@ -74,18 +75,18 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString("1024 x 1024");
 
     AddText(2, DrawPoint(20, 120), _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 140), Extent(210, 20), TC_GREY, NormalFont, 100);
+    combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 140), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
     for(unsigned i = 0; i < desc.landscapes.size(); i++)
         combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
     AddText(3, DrawPoint(20, 175), _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 170), Extent(130, 20), TC_GREY, 139, 138, 100);
+    AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 170), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
     AddText(4, DrawPoint(20, 205), _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_IRON, DrawPoint(100, 200), Extent(130, 20), TC_GREY, 139, 138, 100);
+    AddProgress(CTRL_RATIO_IRON, DrawPoint(100, 200), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
     AddText(5, DrawPoint(20, 235), _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_COAL, DrawPoint(100, 230), Extent(130, 20), TC_GREY, 139, 138, 100);
+    AddProgress(CTRL_RATIO_COAL, DrawPoint(100, 230), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
     AddText(6, DrawPoint(20, 265), _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 260), Extent(130, 20), TC_GREY, 139, 138, 100);
+    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 260), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
 
     Reset();
 }

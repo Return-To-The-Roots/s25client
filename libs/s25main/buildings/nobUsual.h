@@ -77,7 +77,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nobUsual(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOB_USUAL; }
+    GO_Type GetGOT() const override { return GO_Type::NobUsual; }
     unsigned GetMilitaryRadius() const override { return 0; }
 
     void Draw(DrawPoint drawPt) override;

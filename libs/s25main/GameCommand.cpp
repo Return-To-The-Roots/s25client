@@ -18,52 +18,51 @@
 #include "GameCommand.h"
 #include "GameCommands.h"
 #include "helpers/toString.h"
-
 #include <stdexcept>
 
 namespace gc {
 
 GameCommandPtr GameCommand::Deserialize(Serializer& ser)
 {
-    auto gcType = static_cast<Type>(ser.PopUnsignedChar());
+    auto gcType = helpers::popEnum<GCType>(ser);
     GameCommand* gc;
     switch(gcType)
     {
-        case SET_FLAG: gc = new SetFlag(ser); break;
-        case DESTROY_FLAG: gc = new DestroyFlag(ser); break;
-        case BUILD_ROAD: gc = new BuildRoad(ser); break;
-        case DESTROY_ROAD: gc = new DestroyRoad(ser); break;
-        case CHANGE_DISTRIBUTION: gc = new ChangeDistribution(ser); break;
-        case CHANGE_BUILDORDER: gc = new ChangeBuildOrder(ser); break;
-        case SET_BUILDINGSITE: gc = new SetBuildingSite(ser); break;
-        case DESTROY_BUILDING: gc = new DestroyBuilding(ser); break;
-        case CHANGE_TRANSPORT: gc = new ChangeTransport(ser); break;
-        case CHANGE_MILITARY: gc = new ChangeMilitary(ser); break;
-        case CHANGE_TOOLS: gc = new ChangeTools(ser); break;
-        case CALL_SPECIALIST: gc = new CallSpecialist(ser); break;
-        case ATTACK: gc = new Attack(ser); break;
-        case SEA_ATTACK: gc = new SeaAttack(ser); break;
-        case SET_COINS_ALLOWED: gc = new SetCoinsAllowed(ser); break;
-        case SET_PRODUCTION_ENABLED: gc = new SetProductionEnabled(ser); break;
-        case SET_INVENTORY_SETTING: gc = new SetInventorySetting(ser); break;
-        case SET_ALL_INVENTORY_SETTINGS: gc = new SetAllInventorySettings(ser); break;
-        case CHANGE_RESERVE: gc = new ChangeReserve(ser); break;
-        case SUGGEST_PACT: gc = new SuggestPact(ser); break;
-        case ACCEPT_PACT: gc = new AcceptPact(ser); break;
-        case CANCEL_PACT: gc = new CancelPact(ser); break;
-        case SET_SHIPYARD_MODE: gc = new SetShipYardMode(ser); break;
-        case START_STOP_EXPEDITION: gc = new StartStopExpedition(ser); break;
-        case START_STOP_EXPLORATION_EXPEDITION: gc = new StartStopExplorationExpedition(ser); break;
-        case EXPEDITION_COMMAND: gc = new ExpeditionCommand(ser); break;
-        case TRADE: gc = new TradeOverLand(ser); break;
-        case SURRENDER: gc = new Surrender(ser); break;
-        case CHEAT_ARMAGEDDON: gc = new CheatArmageddon(ser); break;
-        case DESTROY_ALL: gc = new DestroyAll(ser); break;
-        case UPGRADE_ROAD: gc = new UpgradeRoad(ser); break;
-        case ORDER_NEW_SOLDIERS: gc = new OrderNewSoldiers(ser); break;
-        case SEND_SOLDIERS_HOME: gc = new SendSoldiersHome(ser); break;
-        case NOTIFY_ALLIES_OF_LOCATION: gc = new NotifyAlliesOfLocation(ser); break;
-        default: gc = nullptr; throw std::logic_error("Invalid GC Type: " + helpers::toString(gcType));
+        case GCType::SetFlag: gc = new SetFlag(ser); break;
+        case GCType::DestroyFlag: gc = new DestroyFlag(ser); break;
+        case GCType::BuildRoad: gc = new BuildRoad(ser); break;
+        case GCType::DestroyRoad: gc = new DestroyRoad(ser); break;
+        case GCType::ChangeDistribution: gc = new ChangeDistribution(ser); break;
+        case GCType::ChangeBuildOrder: gc = new ChangeBuildOrder(ser); break;
+        case GCType::SetBuildingsite: gc = new SetBuildingSite(ser); break;
+        case GCType::DestroyBuilding: gc = new DestroyBuilding(ser); break;
+        case GCType::ChangeTransport: gc = new ChangeTransport(ser); break;
+        case GCType::ChangeMilitary: gc = new ChangeMilitary(ser); break;
+        case GCType::ChangeTools: gc = new ChangeTools(ser); break;
+        case GCType::CallSpecialist: gc = new CallSpecialist(ser); break;
+        case GCType::Attack: gc = new Attack(ser); break;
+        case GCType::SeaAttack: gc = new SeaAttack(ser); break;
+        case GCType::SetCoinsAllowed: gc = new SetCoinsAllowed(ser); break;
+        case GCType::SetProductionEnabled: gc = new SetProductionEnabled(ser); break;
+        case GCType::SetInventorySetting: gc = new SetInventorySetting(ser); break;
+        case GCType::SetAllInventorySettings: gc = new SetAllInventorySettings(ser); break;
+        case GCType::ChangeReserve: gc = new ChangeReserve(ser); break;
+        case GCType::SuggestPact: gc = new SuggestPact(ser); break;
+        case GCType::AcceptPact: gc = new AcceptPact(ser); break;
+        case GCType::CancelPact: gc = new CancelPact(ser); break;
+        case GCType::SetShipyardMode: gc = new SetShipYardMode(ser); break;
+        case GCType::StartStopExpedition: gc = new StartStopExpedition(ser); break;
+        case GCType::StartStopExplorationExpedition: gc = new StartStopExplorationExpedition(ser); break;
+        case GCType::ExpeditionCommand: gc = new ExpeditionCommand(ser); break;
+        case GCType::Trade: gc = new TradeOverLand(ser); break;
+        case GCType::Surrender: gc = new Surrender(ser); break;
+        case GCType::CheatArmageddon: gc = new CheatArmageddon(ser); break;
+        case GCType::DestroyAll: gc = new DestroyAll(ser); break;
+        case GCType::UpgradeRoad: gc = new UpgradeRoad(ser); break;
+        case GCType::OrderNewSoldiers: gc = new OrderNewSoldiers(ser); break;
+        case GCType::SendSoldiersHome: gc = new SendSoldiersHome(ser); break;
+        case GCType::NotifyAlliesOfLocation: gc = new NotifyAlliesOfLocation(ser); break;
+        default: throw std::logic_error("Invalid GC Type: " + helpers::toString(rttr::enum_cast(gcType)));
     }
     RTTR_Assert(gc->gcType == gcType);
     return gc;
@@ -71,7 +70,7 @@ GameCommandPtr GameCommand::Deserialize(Serializer& ser)
 
 void GameCommand::Serialize(Serializer& ser) const
 {
-    ser.PushUnsignedChar(static_cast<uint8_t>(gcType));
+    helpers::pushEnum<uint8_t>(ser, gcType);
 }
 
 } // namespace gc

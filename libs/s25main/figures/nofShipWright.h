@@ -56,7 +56,7 @@ private:
 public:
     nofShipWright(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofShipWright(SerializedGameData& sgd, unsigned obj_id);
-    GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
+    GO_Type GetGOT() const override { return GO_Type::NofShipwright; }
     void HandleDerivedEvent(unsigned id) override;
     void Serialize(SerializedGameData& sgd) const override;
 };

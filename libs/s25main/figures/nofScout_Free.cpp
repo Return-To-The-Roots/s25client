@@ -53,7 +53,7 @@ void nofScout_Free::GoalReached()
     /// Bestimmte Anzahl an Punkten abklappern, leicht variieren
     rest_way = 80 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 20);
 
-    state = STATE_SCOUT_SCOUTING;
+    state = State::ScoutScouting;
 
     // Loslegen
     GoToNewNode();
@@ -64,12 +64,12 @@ void nofScout_Free::Walked()
     switch(state)
     {
         default: break;
-        case STATE_GOTOFLAG:
+        case State::GoToFlag:
         {
             GoToFlag();
         }
         break;
-        case STATE_SCOUT_SCOUTING:
+        case State::ScoutScouting:
         {
             Scout();
         }
@@ -87,17 +87,17 @@ void nofScout_Free::LostWork()
     {
         default: break;
         // Wenn wir noch hingehen, dann zurückgehen
-        case STATE_FIGUREWORK:
+        case State::FigureWork:
         {
             GoHome();
         }
         break;
-        case STATE_GOTOFLAG:
-        case STATE_SCOUT_SCOUTING:
+        case State::GoToFlag:
+        case State::ScoutScouting:
         {
             // dann sofort rumirren, wenn wir zur Flagge gehen
             StartWandering();
-            state = STATE_FIGUREWORK;
+            state = State::FigureWork;
         }
         break;
     }
@@ -110,7 +110,7 @@ void nofScout_Free::Scout()
     if(--rest_way == 0)
     {
         // Wieder zur Flagge zurückgehen
-        state = STATE_GOTOFLAG;
+        state = State::GoToFlag;
         GoToFlag();
         return;
     }
@@ -173,7 +173,7 @@ void nofScout_Free::GoToNewNode()
     }
 
     // Nothing found -> Go back
-    state = STATE_GOTOFLAG;
+    state = State::GoToFlag;
     GoToFlag();
 }
 

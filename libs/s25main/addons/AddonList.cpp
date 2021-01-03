@@ -43,7 +43,7 @@ AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly) : Add
 {
     DrawPoint cbPos(430, 0);
 
-    auto* cb = window.AddComboBox(2, cbPos, Extent(220, 20), TC_GREY, NormalFont, 100, readonly);
+    auto* cb = window.AddComboBox(2, cbPos, Extent(220, 20), TextureColor::Grey, NormalFont, 100, readonly);
     for(const auto& option : addon.options)
         cb->AddString(option);
 }

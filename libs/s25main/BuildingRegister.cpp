@@ -43,18 +43,18 @@ void BuildingRegister::Serialize(SerializedGameData& sgd) const
 
 void BuildingRegister::Deserialize(SerializedGameData& sgd)
 {
-    sgd.PopObjectContainer(warehouses, GOT_UNKNOWN);
-    sgd.PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
+    sgd.PopObjectContainer(warehouses, GO_Type::Unknown);
+    sgd.PopObjectContainer(harbors, GO_Type::NobHarborbuilding);
 
     if(sgd.GetGameDataVersion() >= 6)
     {
         for(const auto bld : helpers::enumRange<BuildingType>())
         {
             if(BuildingProperties::IsUsual(bld))
-                sgd.PopObjectContainer(buildings[bld], GOT_NOB_USUAL);
+                sgd.PopObjectContainer(buildings[bld], GO_Type::NobUsual);
         }
-        sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
-        sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
+        sgd.PopObjectContainer(building_sites, GO_Type::Buildingsite);
+        sgd.PopObjectContainer(military_buildings, GO_Type::NobMilitary);
     } else if(sgd.GetGameDataVersion() >= 2)
         Deserialize2(sgd);
 }
@@ -63,9 +63,9 @@ void BuildingRegister::Deserialize2(SerializedGameData& sgd)
 {
     // Pop all buildings starting at the first usual building
     for(unsigned i = static_cast<uint8_t>(BuildingType::GraniteMine); i < helpers::NumEnumValues_v<BuildingType>; ++i)
-        sgd.PopObjectContainer(buildings[BuildingType(i)], GOT_NOB_USUAL);
-    sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
-    sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
+        sgd.PopObjectContainer(buildings[BuildingType(i)], GO_Type::NobUsual);
+    sgd.PopObjectContainer(building_sites, GO_Type::Buildingsite);
+    sgd.PopObjectContainer(military_buildings, GO_Type::NobMilitary);
 }
 
 void BuildingRegister::Add(noBuildingSite* building_site)

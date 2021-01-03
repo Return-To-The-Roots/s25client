@@ -156,10 +156,10 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
       size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()),
       goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
 {
-    sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
-    sgd.PopObjectContainer(ordered_coins, GOT_WARE);
-    sgd.PopObjectContainer(troops, GOT_NOF_PASSIVESOLDIER);
-    sgd.PopObjectContainer(far_away_capturers, GOT_NOF_ATTACKER);
+    sgd.PopObjectContainer(ordered_troops, GO_Type::NofPassivesoldier);
+    sgd.PopObjectContainer(ordered_coins, GO_Type::Ware);
+    sgd.PopObjectContainer(troops, GO_Type::NofPassivesoldier);
+    sgd.PopObjectContainer(far_away_capturers, GO_Type::NofAttacker);
 
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
@@ -345,7 +345,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             else if(distance < BASE_ATTACKING_DISTANCE + (GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
             {
                 newFrontierDistance = FrontierDistance::Mid;
-            } else if(building->GetGOT() == GOT_NOB_MILITARY)
+            } else if(building->GetGOT() == GO_Type::NobMilitary)
             {
                 auto* mil = static_cast<nobMilitary*>(building);
                 if(distance < BASE_ATTACKING_DISTANCE + (mil->GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
@@ -487,7 +487,7 @@ void nobMilitary::RegulateTroops()
         for(const auto dir : helpers::enumRange<Direction>())
         {
             // every direction but 1 because 1 is the building connection so it doesn't count for this check
-            if(dir == Direction::NORTHWEST)
+            if(dir == Direction::NorthWest)
                 continue;
             if(GetFlag()->GetRoute(dir))
             {
@@ -715,7 +715,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
 void nobMilitary::SoldierLost(nofSoldier* soldier)
 {
     // Soldat konnte nicht (mehr) kommen --> rauswerfen und ggf. neue Soldaten rufen
-    if(soldier->GetGOT() == GOT_NOF_PASSIVESOLDIER)
+    if(soldier->GetGOT() == GO_Type::NofPassivesoldier)
     {
         RTTR_Assert(helpers::contains(ordered_troops, static_cast<nofPassiveSoldier*>(soldier)));
         ordered_troops.erase(static_cast<nofPassiveSoldier*>(soldier));
@@ -965,7 +965,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     }
 
     // ehemalige Leute dieses Gebäudes nach Hause schicken, die ggf. grad auf dem Weg rein/raus waren
-    std::array<MapPoint, 2> coords = {pos, gwg->GetNeighbour(pos, Direction::SOUTHEAST)};
+    std::array<MapPoint, 2> coords = {pos, gwg->GetNeighbour(pos, Direction::SouthEast)};
     for(const auto& coord : coords)
     {
         const std::list<noBase*>& figures = gwg->GetFigures(coord);
@@ -973,7 +973,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
         {
             if(figure->GetType() == NodalObjectType::Figure)
             {
-                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == GetRoute(Direction::SOUTHEAST)
+                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == GetRoute(Direction::SouthEast)
                    && static_cast<noFigure*>(figure)->GetPlayer() != new_owner)
                 {
                     static_cast<noFigure*>(figure)->Abrogate();
@@ -1048,7 +1048,7 @@ void nobMilitary::NeedOccupyingTroops()
                 continue;
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die vor ihm ihn den Weg
             // versperren)?
-            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 10, false))
+            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SouthEast), 10, false))
             {
                 // Dann is das der bisher beste
                 best_attacker = aggressor;
@@ -1094,7 +1094,7 @@ void nobMilitary::NeedOccupyingTroops()
         nofAttacker* attacker = *it;
         // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
         // also: dont remove attackers owned by players not allied with the new owner!
-        if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT
+        if(attacker->GetState() != nofActiveSoldier::SoldierState::AttackingCapturingNext
            && !gwg->GetPlayer(attacker->GetPlayer()).IsAttackable(player))
         {
             it = aggressors.erase(it);

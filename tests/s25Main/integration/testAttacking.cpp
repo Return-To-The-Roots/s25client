@@ -68,12 +68,12 @@ void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
         world.RemoveFigure(obj.GetPos(), &obj);
     else if(helpers::contains(world.GetFigures(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u)), &obj))
         world.RemoveFigure(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u), &obj);
-    obj.SetPos(world.GetNeighbour(pos, Direction::WEST));
+    obj.SetPos(world.GetNeighbour(pos, Direction::West));
     world.AddFigure(obj.GetPos(), &obj);
     if(obj.IsMoving())
-        obj.FaceDir(Direction::EAST);
+        obj.FaceDir(Direction::East);
     else
-        obj.StartWalking(Direction::EAST);
+        obj.StartWalking(Direction::East);
 }
 // LCOV_EXCL_STOP
 
@@ -110,8 +110,8 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
     /// Constructs a road connecting 2 buildings and checks for success
     void BuildRoadForBlds(const MapPoint bldPosFrom, const MapPoint bldPosTo)
     {
-        const MapPoint start = world.GetNeighbour(bldPosFrom, Direction::SOUTHEAST);
-        const MapPoint end = world.GetNeighbour(bldPosTo, Direction::SOUTHEAST);
+        const MapPoint start = world.GetNeighbour(bldPosFrom, Direction::SouthEast);
+        const MapPoint end = world.GetNeighbour(bldPosTo, Direction::SouthEast);
         std::vector<Direction> road = FindPathForRoad(world, start, end, false);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(start, false, road);
@@ -522,7 +522,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 
     AddSoldiers(milBld0Pos, 0, 6);
     AddSoldiersWithRank(milBld1Pos, 1, 0);
-    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SOUTHEAST);
+    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SouthEast);
 
     // Scenario 1: Attack with one soldier.
     // Once enemy is defeated we walk in with another soldier of the enemy who wants to occupy its building.
@@ -536,7 +536,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     moveObjTo(world, *attacker, milBld1FlagPos); //-V522
     BOOST_REQUIRE(!milBld1->IsDoorOpen());
     const std::list<noBase*>& flagFigs = world.GetFigures(milBld1FlagPos);
-    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING); //-V807
+    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GO_Type::Fighting); //-V807
     BOOST_REQUIRE(!milBld1->IsDoorOpen());
     // Speed up fight by reducing defenders HP to 1
     auto* defender = const_cast<nofDefender*>(milBld1->GetDefender());
@@ -545,7 +545,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     RTTR_EXEC_TILL(500, milBld1->GetDefender() == nullptr);
     // Defender defeated. Attacker moving in.
     BOOST_REQUIRE(attacker->IsMoving());
-    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
+    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NorthWest);
     // Door opened
     BOOST_REQUIRE(milBld1->IsDoorOpen());
     // New soldiers walked in
@@ -554,7 +554,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     RTTR_EXEC_TILL(20, attacker->GetPos() == milBld1Pos);
     RTTR_EXEC_TILL(20, attacker->GetPos() == milBld1FlagPos);
     // New fight and door closed
-    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING);
+    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GO_Type::Fighting);
     BOOST_REQUIRE(!milBld1->IsDoorOpen());
 
     // Scenario 2: Attacker successful
@@ -624,7 +624,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     RTTR_EXEC_TILL(500, milBld1->GetDefender() == nullptr);
     // Defender defeated. Attacker moving in.
     BOOST_REQUIRE(attacker->IsMoving());
-    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
+    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NorthWest);
     // Door opened
     BOOST_REQUIRE(milBld1->IsDoorOpen());
     // Give him a bit of a head start
@@ -666,7 +666,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     rescheduleWalkEvent(em, *hostileAttacker, 1);
     BOOST_REQUIRE(hostileAttacker->GetAttackedGoal() != nullptr);
     RTTR_EXEC_TILL(220, hostileAttacker->GetPos() == milBld1FlagPos);
-    RTTR_EXEC_TILL(50, world.GetFigures(milBld1FlagPos).front()->GetGOT() == GOT_FIGHTING);
+    RTTR_EXEC_TILL(50, world.GetFigures(milBld1FlagPos).front()->GetGOT() == GO_Type::Fighting);
 }
 
 BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
@@ -675,14 +675,14 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // 2. Carrier with coin walking out of the building
     AddSoldiers(milBld0Pos, 0, 6);
     AddSoldiersWithRank(milBld1Pos, 1, 0);
-    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SOUTHEAST);
+    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SouthEast);
 
     curPlayer = 1;
     MapPoint flagPos = world.MakeMapPoint(milBld1FlagPos - Position(2, 0));
-    this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::WEST));
+    this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::West));
     auto* flag = world.GetSpecObj<noFlag>(flagPos);
     BOOST_REQUIRE(flag);
-    RoadSegment* rs = flag->GetRoute(Direction::EAST);
+    RoadSegment* rs = flag->GetRoute(Direction::East);
     BOOST_REQUIRE(rs);
     auto* carrierIn = new nofCarrier(CarrierType::Normal, flagPos, curPlayer, rs, flag);
     auto* carrierOut = new nofCarrier(CarrierType::Donkey, flagPos, curPlayer, rs, flag);
@@ -716,15 +716,15 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     rescheduleWalkEvent(em, *carrierOut, 1);
     RTTR_SKIP_GFS(1);
     rescheduleWalkEvent(em, *carrierOut, 10000);
-    BOOST_REQUIRE_EQUAL(carrierIn->GetCurMoveDir(), Direction::NORTHWEST);
-    BOOST_REQUIRE_EQUAL(carrierOut->GetCurMoveDir(), Direction::SOUTHEAST);
+    BOOST_REQUIRE_EQUAL(carrierIn->GetCurMoveDir(), Direction::NorthWest);
+    BOOST_REQUIRE_EQUAL(carrierOut->GetCurMoveDir(), Direction::SouthEast);
 
     // Add another for later
     MapPoint flagPosE = world.MakeMapPoint(milBld1FlagPos + Position(2, 0));
-    this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::East));
     auto* flagE = world.GetSpecObj<noFlag>(flagPosE);
     BOOST_REQUIRE(flagE);
-    RoadSegment* rsE = flagE->GetRoute(Direction::WEST);
+    RoadSegment* rsE = flagE->GetRoute(Direction::West);
     BOOST_REQUIRE(rsE);
     auto* carrierInE = new nofCarrier(CarrierType::Normal, flagPosE, curPlayer, rsE, flagE);
     world.AddFigure(flagPosE, carrierInE);
@@ -762,7 +762,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     rescheduleWalkEvent(em, *carrierInE, 1);
 
     // Start fight
-    RTTR_EXEC_TILL(50, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING);
+    RTTR_EXEC_TILL(50, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GO_Type::Fighting);
     // East carrier gets blocked
     BOOST_REQUIRE(!carrierInE->IsMoving());
 
@@ -776,7 +776,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     RTTR_EXEC_TILL(500, milBld1->GetDefender() == nullptr);
     // Defender defeated. Attacker moving in.
     BOOST_REQUIRE(attacker->IsMoving());
-    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
+    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NorthWest);
 
     // Door opened
     BOOST_REQUIRE(milBld1->IsDoorOpen());
@@ -816,10 +816,10 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
     // Flag -> Bld
     const MapPoint flagPt = world.MakeMapPoint(milBld1Pos - Position(2, 0));
     this->SetFlag(flagPt);
-    BuildRoadForBlds(world.GetNeighbour(flagPt, Direction::NORTHWEST), milBld1Pos);
+    BuildRoadForBlds(world.GetNeighbour(flagPt, Direction::NorthWest), milBld1Pos);
     // Build a long road connecting left&right w/o any flag inbetween (See #863)
     BuildRoadForBlds(leftBldPos, rightBldPos);
-    BOOST_REQUIRE_GE(leftBld->GetFlag()->GetRoute(Direction::EAST)->GetLength(), 10u);
+    BOOST_REQUIRE_GE(leftBld->GetFlag()->GetRoute(Direction::East)->GetLength(), 10u);
 
     curPlayer = 0;
     this->Attack(milBld1Pos, 5, true);
@@ -827,11 +827,11 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
     std::array<MapPoint, 3> bldPts = {{leftBldPos, rightBldPos, milBld1Pos}};
     for(const MapPoint& bldPt : bldPts)
     {
-        MapPoint flagPt = world.GetNeighbour(bldPt, Direction::SOUTHEAST);
+        MapPoint flagPt = world.GetNeighbour(bldPt, Direction::SouthEast);
         for(Direction i : helpers::EnumRange<Direction>{})
         {
             // No routes except the main road
-            if(i != Direction::NORTHWEST)
+            if(i != Direction::NorthWest)
             {
                 BOOST_REQUIRE(!world.GetSpecObj<noRoadNode>(flagPt)->GetRoute(i));
                 BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt, i), PointRoad::None);

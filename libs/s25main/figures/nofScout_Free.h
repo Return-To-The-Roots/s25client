@@ -55,7 +55,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_Free(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_SCOUT_FREE; }
+    GO_Type GetGOT() const override { return GO_Type::NofScoutFree; }
 
     void Draw(DrawPoint drawPt) override;
 
@@ -63,5 +63,5 @@ public:
     void LostWork() override;
 
     ///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
-    // bool IsScouting() const { return (state == STATE_SCOUT_SCOUTING || state == STATE_GOTOFLAG); }
+    // bool IsScouting() const { return (state == ScoutScouting || state == GoToFlag); }
 };

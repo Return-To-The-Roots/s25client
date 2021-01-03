@@ -30,7 +30,7 @@
 dskIntro::dskIntro() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // "Zurück"
-    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }

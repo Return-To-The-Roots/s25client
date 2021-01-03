@@ -54,23 +54,25 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(GoodType::ShieldRomans));
 
     // Hilfe
-    AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
     // Abreißen
-    AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
+    AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
+                   _("Demolish house"));
     // Gold an/aus (227,226)
-    AddImageButton(6, DrawPoint(90, 147), Extent(32, 32), TC_GREY,
+    AddImageButton(6, DrawPoint(90, 147), Extent(32, 32), TextureColor::Grey,
                    LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)), _("Gold delivery"));
     // "Gehe Zu Ort"
-    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
+                   _("Go to place"));
 
     // Gebäudebild
     AddImage(8, DrawPoint(117, 114), &building->GetBuildingImage());
     // "Go to next" (building of same type)
-    AddImageButton(9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11),
+    AddImageButton(9, DrawPoint(179, 115), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 11),
                    _("Go to next military building"));
     // addon military control active? -> show button
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
-        AddImageButton(10, DrawPoint(124, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 12),
+        AddImageButton(10, DrawPoint(124, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 12),
                        _("Send max rank soldiers to a warehouse"));
 }
 
@@ -96,8 +98,8 @@ void iwMilitaryBuilding::Draw_()
     for(const noFigure* fig : building->GetLeavingFigures())
     {
         const GO_Type figType = fig->GetGOT();
-        if(figType == GOT_NOF_ATTACKER || figType == GOT_NOF_AGGRESSIVEDEFENDER || figType == GOT_NOF_DEFENDER
-           || figType == GOT_NOF_PASSIVESOLDIER)
+        if(figType == GO_Type::NofAttacker || figType == GO_Type::NofAggressivedefender
+           || figType == GO_Type::NofDefender || figType == GO_Type::NofPassivesoldier)
         {
             soldiers.insert(static_cast<const nofSoldier*>(fig));
         }

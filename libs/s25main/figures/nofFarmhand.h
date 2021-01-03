@@ -28,13 +28,14 @@ protected:
     /// Arbeitsziel, das der Arbeiter ansteuert
     MapPoint dest;
 
-    enum PointQuality
+    enum class PointQuality
     {
-        PQ_NOTPOSSIBLE, // Work is not possible at this position
-        PQ_CLASS1,      /// Work is possible, points are prefered to other points
-        PQ_CLASS2,      /// Work is possible, points are prefered to other points class 2
-        PQ_CLASS3       /// Work is possible, points are only chosen if there are no other class 1/2's
+        NotPossible, // Work is not possible at this position
+        Class1,      /// Work is possible, points are prefered to other points
+        Class2,      /// Work is possible, points are prefered to other points class 2
+        Class3       /// Work is possible, points are only chosen if there are no other class 1/2's
     };
+    friend constexpr auto maxEnumValue(PointQuality) { return PointQuality::Class3; }
 
     /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn...
     void WalkedDerived() override;
