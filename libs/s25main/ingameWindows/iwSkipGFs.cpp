@@ -32,11 +32,11 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     AddText(0, DrawPoint(50, 36), _("to GameFrame:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     // Editfeld zum Eingeben des Ziel-GF
-    ctrlEdit* edit = AddEdit(1, DrawPoint(126, 32), Extent(120, 20), TC_GREY, NormalFont);
+    ctrlEdit* edit = AddEdit(1, DrawPoint(126, 32), Extent(120, 20), TextureColor::Grey, NormalFont);
     edit->SetFocus();
 
     // OK-Button
-    AddTextButton(2, DrawPoint(110, 65), Extent(80, 22), TC_GREEN2, _("OK"), NormalFont);
+    AddTextButton(2, DrawPoint(110, 65), Extent(80, 22), TextureColor::Green2, _("OK"), NormalFont);
 }
 
 void iwSkipGFs::SkipGFs()

@@ -53,5 +53,5 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmer(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_FARMER; }
+    GO_Type GetGOT() const override { return GO_Type::NofFarmer; }
 };

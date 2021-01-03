@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/Resource.h"
 #include "gameData/JobConsts.h"
 #include <boost/test/unit_test.hpp>
@@ -24,48 +25,48 @@ BOOST_AUTO_TEST_SUITE(GameTypes)
 BOOST_AUTO_TEST_CASE(ResourceValues)
 {
     // Basic value
-    Resource res(Resource::Gold, 10);
-    BOOST_REQUIRE_EQUAL(res.getType(), Resource::Gold);
+    Resource res(ResourceType::Gold, 10);
+    BOOST_REQUIRE_EQUAL(res.getType(), ResourceType::Gold);
     BOOST_REQUIRE_EQUAL(res.getAmount(), 10u);
     // Change type
-    res.setType(Resource::Iron);
-    BOOST_REQUIRE_EQUAL(res.getType(), Resource::Iron);
+    res.setType(ResourceType::Iron);
+    BOOST_REQUIRE_EQUAL(res.getType(), ResourceType::Iron);
     BOOST_REQUIRE_EQUAL(res.getAmount(), 10u);
     // Amount
     res.setAmount(5);
-    BOOST_REQUIRE_EQUAL(res.getType(), Resource::Iron);
+    BOOST_REQUIRE_EQUAL(res.getType(), ResourceType::Iron);
     BOOST_REQUIRE_EQUAL(res.getAmount(), 5u);
     // Copy value
     Resource res2(res.getValue());
-    BOOST_REQUIRE_EQUAL(res.getType(), Resource::Iron);
+    BOOST_REQUIRE_EQUAL(res.getType(), ResourceType::Iron);
     BOOST_REQUIRE_EQUAL(res.getAmount(), 5u);
     // Set 0
     res2.setAmount(0);
-    BOOST_REQUIRE_EQUAL(res2.getType(), Resource::Iron);
+    BOOST_REQUIRE_EQUAL(res2.getType(), ResourceType::Iron);
     BOOST_REQUIRE_EQUAL(res2.getAmount(), 0u);
     // Has
-    BOOST_REQUIRE(res.has(Resource::Iron));
-    BOOST_REQUIRE(!res.has(Resource::Gold));
-    BOOST_REQUIRE(!res2.has(Resource::Iron));
-    BOOST_REQUIRE(!res.has(Resource::Nothing));
-    BOOST_REQUIRE(!res2.has(Resource::Nothing));
+    BOOST_REQUIRE(res.has(ResourceType::Iron));
+    BOOST_REQUIRE(!res.has(ResourceType::Gold));
+    BOOST_REQUIRE(!res2.has(ResourceType::Iron));
+    BOOST_REQUIRE(!res.has(ResourceType::Nothing));
+    BOOST_REQUIRE(!res2.has(ResourceType::Nothing));
     // Nothing -> 0
     BOOST_REQUIRE_NE(res.getAmount(), 0u);
-    res.setType(Resource::Nothing);
-    BOOST_REQUIRE_EQUAL(res.getType(), Resource::Nothing);
+    res.setType(ResourceType::Nothing);
+    BOOST_REQUIRE_EQUAL(res.getType(), ResourceType::Nothing);
     BOOST_REQUIRE_EQUAL(res.getAmount(), 0u);
     // And stays 0
     res.setAmount(10);
-    BOOST_REQUIRE_EQUAL(res.getType(), Resource::Nothing);
+    BOOST_REQUIRE_EQUAL(res.getType(), ResourceType::Nothing);
     BOOST_REQUIRE_EQUAL(res.getAmount(), 0u);
-    BOOST_REQUIRE(!res.has(Resource::Iron));
-    BOOST_REQUIRE(!res.has(Resource::Nothing));
+    BOOST_REQUIRE(!res.has(ResourceType::Iron));
+    BOOST_REQUIRE(!res.has(ResourceType::Nothing));
     // Overflow check
     res2.setAmount(15);
-    BOOST_REQUIRE_EQUAL(res2.getType(), Resource::Iron);
+    BOOST_REQUIRE_EQUAL(res2.getType(), ResourceType::Iron);
     BOOST_REQUIRE_EQUAL(res2.getAmount(), 15u);
     res2.setAmount(17);
-    BOOST_REQUIRE_EQUAL(res2.getType(), Resource::Iron);
+    BOOST_REQUIRE_EQUAL(res2.getType(), ResourceType::Iron);
     // Unspecified
     BOOST_REQUIRE_LT(res2.getAmount(), 17u);
 }

@@ -61,7 +61,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singleP
     if(SETTINGS.sound.musicEnabled)
         MUSICPLAYER.Play();
 
-    const CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort,
+    const CreateServerInfo csi(singlePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
                                _("Unlimited Play"));
 
     LOG.write(_("Loading game...\n"));

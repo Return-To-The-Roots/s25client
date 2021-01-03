@@ -35,7 +35,7 @@ public:
 
     void Serialize(SerializedGameData& /*sgd*/) const override {}
 
-    GO_Type GetGOT() const override { return GOT_UNKNOWN; }
+    GO_Type GetGOT() const override { return GO_Type::Unknown; }
 
     /// An x,y zeichnen.
     void Draw(DrawPoint drawPt) override;

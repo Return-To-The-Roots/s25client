@@ -30,38 +30,35 @@ class nofActiveSoldier : public nofSoldier
 {
 public:
     /// State of each soldier
-    enum SoldierState : uint8_t
+    enum class SoldierState : uint8_t
     {
-        STATE_FIGUREWORK,      /// Go to work etc., all which is done by noFigure
-        STATE_WALKINGHOME,     /// Walking home after work to the military building
-        STATE_MEETENEMY,       /// Prepare fighting with an enemy
-        STATE_WAITINGFORFIGHT, /// Standing still and waiting for a fight
-        STATE_FIGHTING,        // Fighting
+        FigureWork,      /// Go to work etc., all which is done by noFigure
+        WalkingHome,     /// Walking home after work to the military building
+        MeetEnemy,       /// Prepare fighting with an enemy
+        WaitingForFight, /// Standing still and waiting for a fight
+        Fighting,        // Fighting
 
-        STATE_ATTACKING_WALKINGTOGOAL,         // Attacker is walking to his attacked destination
-        STATE_ATTACKING_WAITINGAROUNDBUILDING, // Attacker is waiting around the building for his fight at the flag
-                                               // against the defender(s)
-        STATE_ATTACKING_WAITINGFORDEFENDER,    // Waiting at the flag until the defender emerges from the building
-        STATE_ATTACKING_CAPTURINGFIRST,        // Captures the hostile building as first person
-        STATE_ATTACKING_CAPTURINGNEXT,         // The next soldiers capture the building in this state
-        STATE_ATTACKING_ATTACKINGFLAG,         // Goes to the flag to fight the defender
-        STATE_ATTACKING_FIGHTINGVSDEFENDER,    // Fighting against a defender at the flag
+        AttackingWalkingToGoal,         // Attacker is walking to his attacked destination
+        AttackingWaitingAroundBuilding, // Attacker is waiting around the building for his fight at the flag
+                                        // against the defender(s)
+        AttackingWaitingForDefender,    // Waiting at the flag until the defender emerges from the building
+        AttackingCapturingFirst,        // Captures the hostile building as first person
+        AttackingCapturingNext,         // The next soldiers capture the building in this state
+        AttackingAttackingFlag,         // Goes to the flag to fight the defender
+        AttackingFightingVsDefender,    // Fighting against a defender at the flag
 
-        STATE_SEAATTACKING_GOTOHARBOR,   // Goes from his home military building to the start harbor
-        STATE_SEAATTACKING_WAITINHARBOR, // Waiting in the start harbor for the ship
-        STATE_SEAATTACKING_ONSHIP,       // On the ship to the destination
-        STATE_SEAATTACKING_RETURNTOSHIP, // Returns to the ship at the destination environment
+        SeaattackingGoToHarbor,   // Goes from his home military building to the start harbor
+        SeaattackingWaitInHarbor, // Waiting in the start harbor for the ship
+        SeaattackingOnShip,       // On the ship to the destination
+        SeaattackingReturnToShip, // Returns to the ship at the destination environment
 
-        STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR, // Follow the attacker in order to fight against him
+        AggressivedefendingWalkingToAggressor, // Follow the attacker in order to fight against him
 
-        STATE_DEFENDING_WAITING,    // Waiting at the flag for further attackers
-        STATE_DEFENDING_WALKINGTO,  // Goes to the flag before the fight
-        STATE_DEFENDING_WALKINGFROM // Goes into the building after the fight
+        DefendingWaiting,    // Waiting at the flag for further attackers
+        DefendingWalkingTo,  // Goes to the flag before the fight
+        DefendingWalkingFrom // Goes into the building after the fight
     };
-    friend constexpr auto maxEnumValue(SoldierState)
-    {
-        return nofActiveSoldier::SoldierState::STATE_DEFENDING_WALKINGFROM;
-    }
+    friend constexpr auto maxEnumValue(SoldierState) { return nofActiveSoldier::SoldierState::DefendingWalkingFrom; }
 
 protected:
     /// State of the soldier, always has to be a valid value
@@ -157,7 +154,7 @@ public:
     /// Sets the home (building) to nullptr e.g. after the soldier was removed from the homes list but it was not
     /// destroyed
     void ResetHome() { building = nullptr; }
-    void FightVsDefenderStarted() { state = STATE_ATTACKING_FIGHTINGVSDEFENDER; }
+    void FightVsDefenderStarted() { state = SoldierState::AttackingFightingVsDefender; }
 
     // For debugging
     const nofActiveSoldier* GetEnemy() const { return enemy; }

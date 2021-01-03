@@ -162,7 +162,7 @@ public:
 
     // Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
     // Für Spiele ohne Gold.
-    void ConvertMineResourceTypes(Resource::Type from, Resource::Type to);
+    void ConvertMineResourceTypes(ResourceType from, ResourceType to);
 
     // Fills water depending on terrain and Addon setting
     void PlaceAndFixWater();

@@ -32,11 +32,13 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding*
       gwv(gwv), building(building), flag(flag)
 {
     // Ja
-    AddImageButton(0, DrawPoint(14, 140), Extent(66, 40), TC_RED1, LOADER.GetImageN("io", 32), _("Yes")); //-V525
+    AddImageButton(0, DrawPoint(14, 140), Extent(66, 40), TextureColor::Red1, LOADER.GetImageN("io", 32),
+                   _("Yes")); //-V525
     // Nein
-    AddImageButton(1, DrawPoint(82, 140), Extent(66, 40), TC_GREY, LOADER.GetImageN("io", 40), _("No"));
+    AddImageButton(1, DrawPoint(82, 140), Extent(66, 40), TextureColor::Grey, LOADER.GetImageN("io", 40), _("No"));
     // Gehe zum Standort
-    AddImageButton(2, DrawPoint(150, 140), Extent(36, 40), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(2, DrawPoint(150, 140), Extent(36, 40), TextureColor::Grey, LOADER.GetImageN("io", 107),
+                   _("Go to place"));
     // Gebäudebild
     AddImage(3, DrawPoint(104, 109), &building->GetBuildingImage());
     // Gebäudename
@@ -53,7 +55,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             if(flag)
             {
                 // Flagge (mitsamt Gebäude) wegreißen
-                GAMECLIENT.DestroyFlag(gwv.GetViewer().GetNeighbour(building->GetPos(), Direction::SOUTHEAST));
+                GAMECLIENT.DestroyFlag(gwv.GetViewer().GetNeighbour(building->GetPos(), Direction::SouthEast));
             } else
             {
                 GAMECLIENT.DestroyBuilding(building->GetPos());

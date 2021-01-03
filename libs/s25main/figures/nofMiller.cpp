@@ -55,13 +55,13 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     if(now_id < 4) // hinauslaufen teil 1
     {
         LOADER.building_cache[nation][BuildingType::Mill].door.DrawFull(drawPt);
-        LOADER.getBobSprite(nation, Job::Miller, Direction::SOUTHEAST, now_id % 8)
+        LOADER.getBobSprite(nation, Job::Miller, Direction::SouthEast, now_id % 8)
           .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }
     if((now_id >= 4) && (now_id < 8)) // hinauslaufen teil 2
     {
-        LOADER.getBobSprite(nation, Job::Miller, Direction::EAST, now_id % 8)
+        LOADER.getBobSprite(nation, Job::Miller, Direction::East, now_id % 8)
           .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     if((now_id >= 8) && (now_id < 16)) // hinsetzen
@@ -81,13 +81,13 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= max_id - 8) && (now_id < max_id - 4)) // zurücklaufen teil 1
     {
-        LOADER.getBobSprite(nation, Job::Miller, Direction::WEST, now_id % 8)
+        LOADER.getBobSprite(nation, Job::Miller, Direction::West, now_id % 8)
           .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     if((now_id >= max_id - 4) && (now_id < max_id)) // zurücklaufen teil 2
     {
         LOADER.building_cache[nation][BuildingType::Mill].door.DrawFull(drawPt);
-        LOADER.getBobSprite(nation, Job::Miller, Direction::NORTHWEST, now_id % 8)
+        LOADER.getBobSprite(nation, Job::Miller, Direction::NorthWest, now_id % 8)
           .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }

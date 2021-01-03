@@ -55,45 +55,50 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     // Waren-Buttons
     // obere Reihe
     ctrlMultiSelectGroup* types = AddMultiSelectGroup(22, GroupSelectType::Illuminate);
-    types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Wood), _("Wood"));
-    types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Boards),
-                          _("Boards"));
-    types->AddImageButton(3, DrawPoint(79, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Stones),
-                          _("Stones"));
-    types->AddImageButton(4, DrawPoint(110, 192), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 80), _("Food"));
-    types->AddImageButton(5, DrawPoint(141, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Water),
-                          _("Water"));
-    types->AddImageButton(6, DrawPoint(172, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Beer),
+    types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TextureColor::Grey, LOADER.GetWareTex(GoodType::Wood),
+                          _("Wood"));
+    types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TextureColor::Grey,
+                          LOADER.GetWareTex(GoodType::Boards), _("Boards"));
+    types->AddImageButton(3, DrawPoint(79, 192), Extent(30, 30), TextureColor::Grey,
+                          LOADER.GetWareTex(GoodType::Stones), _("Stones"));
+    types->AddImageButton(4, DrawPoint(110, 192), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 80),
+                          _("Food"));
+    types->AddImageButton(5, DrawPoint(141, 192), Extent(30, 30), TextureColor::Grey,
+                          LOADER.GetWareTex(GoodType::Water), _("Water"));
+    types->AddImageButton(6, DrawPoint(172, 192), Extent(30, 30), TextureColor::Grey, LOADER.GetWareTex(GoodType::Beer),
                           _("Beer"));
-    types->AddImageButton(7, DrawPoint(203, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Coal),
+    types->AddImageButton(7, DrawPoint(203, 192), Extent(30, 30), TextureColor::Grey, LOADER.GetWareTex(GoodType::Coal),
                           _("Coal"));
 
     // untere Reihe
-    types->AddImageButton(8, DrawPoint(17, 227), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::IronOre),
-                          _("Ironore"));
-    types->AddImageButton(9, DrawPoint(48, 227), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Gold), _("Gold"));
-    types->AddImageButton(10, DrawPoint(79, 227), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Iron),
+    types->AddImageButton(8, DrawPoint(17, 227), Extent(30, 30), TextureColor::Grey,
+                          LOADER.GetWareTex(GoodType::IronOre), _("Ironore"));
+    types->AddImageButton(9, DrawPoint(48, 227), Extent(30, 30), TextureColor::Grey, LOADER.GetWareTex(GoodType::Gold),
+                          _("Gold"));
+    types->AddImageButton(10, DrawPoint(79, 227), Extent(30, 30), TextureColor::Grey, LOADER.GetWareTex(GoodType::Iron),
                           _("Iron"));
-    types->AddImageButton(11, DrawPoint(110, 227), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Coins),
-                          _("Coins"));
-    types->AddImageButton(12, DrawPoint(141, 227), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Hammer),
-                          _("Tools"));
-    types->AddImageButton(13, DrawPoint(172, 227), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 111), _("Weapons"));
-    types->AddImageButton(14, DrawPoint(203, 227), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Boat),
-                          _("Boats"));
+    types->AddImageButton(11, DrawPoint(110, 227), Extent(30, 30), TextureColor::Grey,
+                          LOADER.GetWareTex(GoodType::Coins), _("Coins"));
+    types->AddImageButton(12, DrawPoint(141, 227), Extent(30, 30), TextureColor::Grey,
+                          LOADER.GetWareTex(GoodType::Hammer), _("Tools"));
+    types->AddImageButton(13, DrawPoint(172, 227), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 111),
+                          _("Weapons"));
+    types->AddImageButton(14, DrawPoint(203, 227), Extent(30, 30), TextureColor::Grey,
+                          LOADER.GetWareTex(GoodType::Boat), _("Boats"));
 
     // Hilfe
-    AddImageButton(16, DrawPoint(17, 261), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(16, DrawPoint(17, 261), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
 
     // Mülleimer
-    AddImageButton(17, DrawPoint(49, 263), Extent(30, 28), TC_GREY, LOADER.GetImageN("io", 106), _("Delete all"));
+    AddImageButton(17, DrawPoint(49, 263), Extent(30, 28), TextureColor::Grey, LOADER.GetImageN("io", 106),
+                   _("Delete all"));
 
     // Zeiten
     ctrlOptionGroup* times = AddOptionGroup(23, GroupSelectType::Illuminate);
-    times->AddTextButton(18, DrawPoint(81, 263), Extent(36, 28), TC_GREY, _("15 m"), NormalFont);
-    times->AddTextButton(19, DrawPoint(119, 263), Extent(36, 28), TC_GREY, _("1 h"), NormalFont);
-    times->AddTextButton(20, DrawPoint(155, 263), Extent(36, 28), TC_GREY, _("4 h"), NormalFont);
-    times->AddTextButton(21, DrawPoint(191, 263), Extent(36, 28), TC_GREY, _("16 h"), NormalFont);
+    times->AddTextButton(18, DrawPoint(81, 263), Extent(36, 28), TextureColor::Grey, _("15 m"), NormalFont);
+    times->AddTextButton(19, DrawPoint(119, 263), Extent(36, 28), TextureColor::Grey, _("1 h"), NormalFont);
+    times->AddTextButton(20, DrawPoint(155, 263), Extent(36, 28), TextureColor::Grey, _("4 h"), NormalFont);
+    times->AddTextButton(21, DrawPoint(191, 263), Extent(36, 28), TextureColor::Grey, _("16 h"), NormalFont);
     times->SetSelection(19);
 
     // Zeit-Werte an der x-Achse

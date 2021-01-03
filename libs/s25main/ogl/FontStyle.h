@@ -51,21 +51,24 @@ public:
     };
 
     constexpr FontStyle() = default;
-    constexpr FontStyle(unsigned style) : value(style) {}
+    template<class T_Enum, typename = std::enable_if_t<std::is_enum<T_Enum>::value>>
+    constexpr FontStyle(T_Enum style) : value(style)
+    {}
 
-    template<class T_Enum>
+    template<class T_Enum, typename = std::enable_if_t<std::is_enum<T_Enum>::value>>
     constexpr FontStyle operator|(T_Enum style) const
     {
         return (value & ~detail::GetFontStyleMask<T_Enum>::value) | style;
     }
 
-    template<class T_Enum>
+    template<class T_Enum, typename = std::enable_if_t<std::is_enum<T_Enum>::value>>
     constexpr bool is(T_Enum style) const
     {
         return (value & detail::GetFontStyleMask<T_Enum>::value) == style;
     }
 
 private:
+    constexpr FontStyle(unsigned style) : value(style) {}
     unsigned value = 0;
 };
 

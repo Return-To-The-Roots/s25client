@@ -35,12 +35,12 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noSign(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_SIGN; }
+    GO_Type GetGOT() const override { return GO_Type::Sign; }
 
     /// An x,y zeichnen.
     void Draw(DrawPoint drawPt) override;
 
-    Resource::Type GetSignType() const { return resource.getType(); }
+    ResourceType GetSignType() const { return resource.getType(); }
 
 private:
     Resource resource;

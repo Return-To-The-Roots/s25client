@@ -35,11 +35,11 @@ protected:
 
     bool AreWaresAvailable() const override;
     bool StartWorking() override;
-    Resource::Type GetRequiredResType() const;
+    ResourceType GetRequiredResType() const;
 
 public:
     nofMiner(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMiner(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GOT_NOF_MINER; }
+    GO_Type GetGOT() const override { return GO_Type::NofMiner; }
 };

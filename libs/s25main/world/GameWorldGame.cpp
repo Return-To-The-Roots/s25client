@@ -109,10 +109,10 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
             return;
 
         // Get the attached building if existing
-        noBase* building = GetNO(GetNeighbour(pt, Direction::NORTHWEST));
+        noBase* building = GetNO(GetNeighbour(pt, Direction::NorthWest));
 
         // Is this a military building?
-        if(building->GetGOT() == GOT_NOB_MILITARY)
+        if(building->GetGOT() == GO_Type::NobMilitary)
         {
             // Maybe demolition of the building is not allowed?
             if(!static_cast<nobMilitary*>(building)->IsDemolitionAllowed())
@@ -184,7 +184,7 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
             return;
 
         // Militärgebäude?
-        if(nbb->GetGOT() == GOT_NOB_MILITARY)
+        if(nbb->GetGOT() == GO_Type::NobMilitary)
         {
             // Darf das Gebäude abgerissen werden?
             if(!static_cast<nobMilitary*>(nbb)->IsDemolitionAllowed())
@@ -233,7 +233,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     curPt = GetNeighbour(curPt, route.back());
 
     // Prüfen, ob am Ende auch eine Flagge steht oder eine gebaut werden kann
-    if(GetNO(curPt)->GetGOT() == GOT_FLAG)
+    if(GetNO(curPt)->GetGOT() == GO_Type::Flag)
     {
         // Falscher Spieler?
         if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
@@ -457,7 +457,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         // BQ neu berechnen
         RecalcBQ(pt);
         // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
-        const MapPoint neighbourPt = GetNeighbour(pt, Direction::NORTHWEST);
+        const MapPoint neighbourPt = GetNeighbour(pt, Direction::NorthWest);
         if(GetNode(neighbourPt).bq != BuildingQuality::Nothing)
             RecalcBQ(neighbourPt);
     }
@@ -673,10 +673,10 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner
     // Do not destroy military buildings that hold territory on their own
     // Normally they will be on players territory but it can happen that they don't
     // Examples: Improved alliances or expedition building sites
-    const noBase* noCheckMil = (noType == NodalObjectType::Flag) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
+    const noBase* noCheckMil = (noType == NodalObjectType::Flag) ? GetNO(GetNeighbour(pt, Direction::NorthWest)) : no;
     const GO_Type goType = noCheckMil->GetGOT();
-    if(goType == GOT_NOB_HQ || goType == GOT_NOB_HARBORBUILDING
-       || (goType == GOT_NOB_MILITARY && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
+    if(goType == GO_Type::NobHq || goType == GO_Type::NobHarborbuilding
+       || (goType == GO_Type::NobMilitary && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
        || (noCheckMil->GetType() == NodalObjectType::Buildingsite
            && static_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
     {
@@ -883,14 +883,14 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
                 }*/
 
         // Kampf
-        if(object->GetGOT() == GOT_FIGHTING)
+        if(object->GetGOT() == GO_Type::Fighting)
         {
             if(static_cast<noFighting*>(object)->IsActive())
                 return false;
         }
 
         //// wartende Angreifer
-        if(object->GetGOT() == GOT_NOF_ATTACKER)
+        if(object->GetGOT() == GO_Type::NofAttacker)
         {
             if(static_cast<nofAttacker*>(object)->IsBlockingRoads())
                 return false;
@@ -972,17 +972,17 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttack
     for(auto* figure : figures)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
-        if(figure->GetGOT() == GOT_NOF_ATTACKER || figure->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER
-           || figure->GetGOT() == GOT_NOF_DEFENDER)
+        if(figure->GetGOT() == GO_Type::NofAttacker || figure->GetGOT() == GO_Type::NofAggressivedefender
+           || figure->GetGOT() == GO_Type::NofDefender)
         {
-            if(static_cast<nofActiveSoldier*>(figure)->GetState() == nofActiveSoldier::STATE_WAITINGFORFIGHT
+            if(static_cast<nofActiveSoldier*>(figure)->GetState() == nofActiveSoldier::SoldierState::WaitingForFight
                || static_cast<nofActiveSoldier*>(figure)->GetState()
-                    == nofActiveSoldier::STATE_ATTACKING_WAITINGAROUNDBUILDING)
+                    == nofActiveSoldier::SoldierState::AttackingWaitingAroundBuilding)
                 return false;
         }
 
         // Oder ein Kampf, der hier tobt?
-        if(figure->GetGOT() == GOT_FIGHTING)
+        if(figure->GetGOT() == GO_Type::Fighting)
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
@@ -993,10 +993,10 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
                                           nofActiveSoldier* exception)
 {
     // Is this a flag of a military building?
-    if(avoid_military_building_flags && GetNO(pt)->GetGOT() == GOT_FLAG)
+    if(avoid_military_building_flags && GetNO(pt)->GetGOT() == GO_Type::Flag)
     {
-        GO_Type got = GetNO(GetNeighbour(pt, Direction::NORTHWEST))->GetGOT();
-        if(got == GOT_NOB_MILITARY || got == GOT_NOB_HARBORBUILDING || got == GOT_NOB_HQ)
+        GO_Type got = GetNO(GetNeighbour(pt, Direction::NorthWest))->GetGOT();
+        if(got == GO_Type::NobMilitary || got == GO_Type::NobHarborbuilding || got == GO_Type::NobHq)
             return false;
     }
 
@@ -1005,23 +1005,23 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
     for(auto* figure : figures)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
-        if(figure->GetGOT() == GOT_NOF_ATTACKER || figure->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER
-           || figure->GetGOT() == GOT_NOF_DEFENDER)
+        if(figure->GetGOT() == GO_Type::NofAttacker || figure->GetGOT() == GO_Type::NofAggressivedefender
+           || figure->GetGOT() == GO_Type::NofDefender)
         {
             if(static_cast<nofActiveSoldier*>(figure) == exception)
                 continue;
             switch(static_cast<nofActiveSoldier*>(figure)->GetState())
             {
                 default: break;
-                case nofActiveSoldier::STATE_WAITINGFORFIGHT:
-                case nofActiveSoldier::STATE_ATTACKING_WAITINGAROUNDBUILDING:
-                case nofActiveSoldier::STATE_ATTACKING_WAITINGFORDEFENDER:
-                case nofActiveSoldier::STATE_DEFENDING_WAITING: return false;
+                case nofActiveSoldier::SoldierState::WaitingForFight:
+                case nofActiveSoldier::SoldierState::AttackingWaitingAroundBuilding:
+                case nofActiveSoldier::SoldierState::AttackingWaitingForDefender:
+                case nofActiveSoldier::SoldierState::DefendingWaiting: return false;
             }
         }
 
         // Oder ein Kampf, der hier tobt?
-        if(figure->GetGOT() == GOT_FIGHTING)
+        if(figure->GetGOT() == GO_Type::Fighting)
         {
             if(static_cast<noFighting*>(figure)->IsActive() && !static_cast<noFighting*>(figure)->IsFighter(exception))
                 return false;
@@ -1043,7 +1043,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
         if(milBld->GetPlayer() == player && milBld != exception)
         {
             // Prüfen, obs auch unbesetzt ist
-            if(milBld->GetGOT() == GOT_NOB_MILITARY)
+            if(milBld->GetGOT() == GO_Type::NobMilitary)
             {
                 if(static_cast<const nobMilitary*>(milBld)->IsNewBuilt())
                     continue;
@@ -1100,7 +1100,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, 
     {
         const GO_Type got = obj->GetGOT();
         // Check for scout. Note: no need to check for distance as scouts have higher distance than soldiers
-        if(got == GOT_NOF_SCOUT_FREE)
+        if(got == GO_Type::NofScoutFree)
         {
             // Prüfen, ob er auch am Erkunden ist und an der Position genau und ob es vom richtigen Spieler ist
             if(static_cast<nofScout_Free*>(obj)->GetPlayer() == player)
@@ -1110,13 +1110,13 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, 
         } else if(distance <= VISUALRANGE_SOLDIER)
         {
             // Soldaten?
-            if(got == GOT_NOF_ATTACKER || got == GOT_NOF_AGGRESSIVEDEFENDER)
+            if(got == GO_Type::NofAttacker || got == GO_Type::NofAggressivedefender)
             {
                 if(static_cast<nofActiveSoldier*>(obj)->GetPlayer() == player)
                     return true;
             }
             // Kämpfe (wo auch Soldaten drin sind)
-            else if(got == GOT_FIGHTING)
+            else if(got == GO_Type::Fighting)
             {
                 // Prüfen, ob da ein Soldat vom angegebenen Spieler dabei ist
                 if(static_cast<noFighting*>(obj)->IsSoldierOfPlayer(player))
@@ -1292,7 +1292,7 @@ bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char owner) c
  *  Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
  *  Für Spiele ohne Gold.
  */
-void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type to)
+void GameWorldGame::ConvertMineResourceTypes(ResourceType from, ResourceType to)
 {
     // LOG.write(("Convert map resources from %i to %i\n", from, to);
     if(from == to)
@@ -1322,11 +1322,11 @@ void GameWorldGame::PlaceAndFixWater()
     {
         Resource curNodeResource = GetNode(pt).resources;
 
-        if(curNodeResource.getType() == Resource::Nothing)
+        if(curNodeResource.getType() == ResourceType::Nothing)
         {
             if(!waterEverywhere)
                 continue;
-        } else if(curNodeResource.getType() != Resource::Water)
+        } else if(curNodeResource.getType() != ResourceType::Water)
         {
             // do not override maps resource.
             continue;
@@ -1346,9 +1346,9 @@ void GameWorldGame::PlaceAndFixWater()
         }
         if(minHumidity)
             curNodeResource = Resource(
-              Resource::Water, waterEverywhere ? 7 : static_cast<uint8_t>(std::lround(minHumidity * 7. / 100.)));
+              ResourceType::Water, waterEverywhere ? 7 : static_cast<uint8_t>(std::lround(minHumidity * 7. / 100.)));
         else
-            curNodeResource = Resource(Resource::Nothing);
+            curNodeResource = Resource(ResourceType::Nothing, 0);
 
         SetResource(pt, curNodeResource);
     }

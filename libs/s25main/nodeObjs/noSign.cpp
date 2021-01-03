@@ -40,7 +40,7 @@ noSign::noSign(const MapPoint pos, Resource resource)
 {
     // As this is only for drawing we set the type to nothing if the resource is depleted
     if(resource.getAmount() == 0u)
-        this->resource.setType(Resource::Nothing);
+        this->resource.setType(ResourceType::Nothing);
 }
 
 void noSign::Serialize_noSign(SerializedGameData& sgd) const
@@ -63,12 +63,12 @@ void noSign::Draw(DrawPoint drawPt)
     unsigned imgId;
     switch(resource.getType())
     {
-        case Resource::Iron: imgId = 680; break;
-        case Resource::Gold: imgId = 683; break;
-        case Resource::Coal: imgId = 686; break;
-        case Resource::Granite: imgId = 689; break;
-        case Resource::Water: imgId = 692; break;
-        case Resource::Nothing: imgId = 695; break;
+        case ResourceType::Iron: imgId = 680; break;
+        case ResourceType::Gold: imgId = 683; break;
+        case ResourceType::Coal: imgId = 686; break;
+        case ResourceType::Granite: imgId = 689; break;
+        case ResourceType::Water: imgId = 692; break;
+        case ResourceType::Nothing: imgId = 695; break;
         default: return;
     }
     imgId += std::min(resource.getAmount() / 3u, 2u);

@@ -32,7 +32,7 @@
 #include "gameData/ShieldConsts.h"
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), was_sounding(false)
+    : noFigure(job, pos, player, workplace), state(State::FigureWork), workplace(workplace), was_sounding(false)
 {
     RTTR_Assert(dynamic_cast<nobUsual*>(static_cast<GameObject*>(
       workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
@@ -40,16 +40,16 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player,
                                      nobBaseWarehouse* goalWh)
-    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(nullptr), was_sounding(false)
+    : noFigure(job, pos, player, goalWh), state(State::FigureWork), workplace(nullptr), was_sounding(false)
 {}
 
 void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
 
-    if(fs != FS_GOHOME && fs != FS_WANDER)
+    if(fs != FigureState::GoHome && fs != FigureState::Wander)
     {
         sgd.PushObject(workplace, false);
         sgd.PushOptionalEnum<uint8_t>(ware);
@@ -58,11 +58,11 @@ void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) con
 }
 
 nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), state(State(sgd.PopUnsignedChar()))
+    : noFigure(sgd, obj_id), state(sgd.Pop<State>())
 {
-    if(fs != FS_GOHOME && fs != FS_WANDER)
+    if(fs != FigureState::GoHome && fs != FigureState::Wander)
     {
-        workplace = sgd.PopObject<nobUsual>(GOT_UNKNOWN);
+        workplace = sgd.PopObject<nobUsual>(GO_Type::Unknown);
         if(sgd.GetGameDataVersion() < 5)
         {
             const auto iWare = sgd.PopUnsignedChar();
@@ -94,19 +94,19 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
-        case STATE_FIGUREWORK:
-        case STATE_HUNTER_CHASING:
-        case STATE_HUNTER_WALKINGTOCADAVER:
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT: DrawWalking(drawPt); break;
-        case STATE_WORK:
-        case STATE_HUNTER_SHOOTING:
-        case STATE_HUNTER_EVISCERATING:
-        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
-        case STATE_CATAPULT_TARGETBUILDING:
-        case STATE_CATAPULT_BACKOFF: DrawWorking(drawPt); break;
-        case STATE_CARRYOUTWARE: DrawWalkingWithWare(drawPt); break;
-        case STATE_WALKINGHOME:
-        case STATE_ENTERBUILDING:
+        case State::FigureWork:
+        case State::HunterChasing:
+        case State::HunterWalkingToCadaver:
+        case State::HunterFindingShootingpoint: DrawWalking(drawPt); break;
+        case State::Work:
+        case State::HunterShooting:
+        case State::HunterEviscerating:
+        case State::HunterWaitingForAnimalReady:
+        case State::CatapultTargetBuilding:
+        case State::CatapultBackoff: DrawWorking(drawPt); break;
+        case State::CarryoutWare: DrawWalkingWithWare(drawPt); break;
+        case State::WalkingHome:
+        case State::EnterBuilding:
             if(ware)
                 DrawWalkingWithWare(drawPt);
             else
@@ -120,14 +120,14 @@ void nofBuildingWorker::Walked()
 {
     switch(state)
     {
-        case STATE_ENTERBUILDING:
+        case State::EnterBuilding:
         {
             // Hab ich noch ne Ware in der Hand?
 
             if(ware)
             {
                 // dann war draußen kein Platz --> ist jetzt evtl Platz?
-                state = STATE_WAITFORWARESPACE;
+                state = State::WaitForWareSpace;
                 if(workplace->GetFlag()->GetNumWares() < 8)
                     FreePlaceAtFlag();
                 // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
@@ -139,7 +139,7 @@ void nofBuildingWorker::Walked()
             }
         }
         break;
-        case STATE_CARRYOUTWARE:
+        case State::CarryoutWare:
         {
             // Alles weitere übernimmt nofBuildingWorker
             WorkingReady();
@@ -181,21 +181,21 @@ void nofBuildingWorker::WorkingReady()
     }
 
     // Wieder reingehen
-    StartWalking(Direction::NORTHWEST);
-    state = STATE_ENTERBUILDING;
+    StartWalking(Direction::NorthWest);
+    state = State::EnterBuilding;
 }
 
 void nofBuildingWorker::TryToWork()
 {
     if(!workplace->IsProductionDisabled() && AreWaresAvailable())
     {
-        state = STATE_WAITING1;
+        state = State::Waiting1;
         current_ev = GetEvMgr().AddEvent(
-          this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+          this, (GetGOT() == GO_Type::NofCatapultman) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
         workplace->StopNotWorking();
     } else
     {
-        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        state = State::WaitingForWaresOrProductionStopped;
         // Nun arbeite ich nich mehr
         workplace->StartNotWorking();
     }
@@ -209,7 +209,7 @@ bool nofBuildingWorker::AreWaresAvailable() const
 void nofBuildingWorker::GotWareOrProductionAllowed()
 {
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
-    if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
+    if(state == State::WaitingForWaresOrProductionStopped)
     {
         // anfangen zu arbeiten
         TryToWork();
@@ -232,10 +232,10 @@ void nofBuildingWorker::GoalReached()
 bool nofBuildingWorker::FreePlaceAtFlag()
 {
     // Hinaus gehen, um Ware abzulegen, falls wir auf einen freien Platz warten
-    if(state == STATE_WAITFORWARESPACE)
+    if(state == State::WaitForWareSpace)
     {
-        StartWalking(Direction::SOUTHEAST);
-        state = STATE_CARRYOUTWARE;
+        StartWalking(Direction::SouthEast);
+        state = State::CarryoutWare;
         return true;
     } else
         return false;
@@ -245,22 +245,22 @@ void nofBuildingWorker::LostWork()
     switch(state)
     {
         default: break;
-        case STATE_FIGUREWORK:
+        case State::FigureWork:
         {
             // Auf Wegen nach Hause gehen
             GoHome();
         }
         break;
-        case STATE_WAITING1:
-        case STATE_WAITING2:
-        case STATE_WORK:
-        case STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED:
-        case STATE_WAITFORWARESPACE:
-        case STATE_HUNTER_SHOOTING:
-        case STATE_HUNTER_EVISCERATING:
-        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
-        case STATE_CATAPULT_TARGETBUILDING:
-        case STATE_CATAPULT_BACKOFF:
+        case State::Waiting1:
+        case State::Waiting2:
+        case State::Work:
+        case State::WaitingForWaresOrProductionStopped:
+        case State::WaitForWareSpace:
+        case State::HunterShooting:
+        case State::HunterEviscerating:
+        case State::HunterWaitingForAnimalReady:
+        case State::CatapultTargetBuilding:
+        case State::CatapultBackoff:
         {
             // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
             GetEvMgr().RemoveEvent(current_ev);
@@ -275,16 +275,16 @@ void nofBuildingWorker::LostWork()
             // Evtl. Sounds löschen
             SOUNDMANAGER.WorkingFinished(this);
 
-            state = STATE_FIGUREWORK;
+            state = State::FigureWork;
         }
         break;
-        case STATE_ENTERBUILDING:
-        case STATE_CARRYOUTWARE:
-        case STATE_WALKTOWORKPOINT:
-        case STATE_WALKINGHOME:
-        case STATE_HUNTER_CHASING:
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
-        case STATE_HUNTER_WALKINGTOCADAVER:
+        case State::EnterBuilding:
+        case State::CarryoutWare:
+        case State::WalkToWorkpoint:
+        case State::WalkingHome:
+        case State::HunterChasing:
+        case State::HunterFindingShootingpoint:
+        case State::HunterWalkingToCadaver:
         {
             // Bescheid sagen, dass Arbeit abgebrochen wurde
             WorkAborted();
@@ -297,7 +297,7 @@ void nofBuildingWorker::LostWork()
             // Evtl. Sounds löschen
             SOUNDMANAGER.WorkingFinished(this);
 
-            state = STATE_FIGUREWORK;
+            state = State::FigureWork;
         }
         break;
     }
@@ -308,11 +308,11 @@ void nofBuildingWorker::LostWork()
 void nofBuildingWorker::ProductionStopped()
 {
     // Wenn ich gerade warte und schon ein Arbeitsevent angemeldet habe, muss das wieder abgemeldet werden
-    if(state == STATE_WAITING1)
+    if(state == State::Waiting1)
     {
         GetEvMgr().RemoveEvent(current_ev);
         current_ev = nullptr;
-        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        state = State::WaitingForWaresOrProductionStopped;
         workplace->StartNotWorking();
     }
 }

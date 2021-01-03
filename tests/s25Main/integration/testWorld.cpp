@@ -138,7 +138,7 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
     GamePlayer& player = world.GetPlayer(0);
     BOOST_REQUIRE(player.isUsed());
     BOOST_REQUIRE(worldCreator.hqs[0].isValid());
-    BOOST_REQUIRE_EQUAL(world.GetNO(worldCreator.hqs[0])->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE_EQUAL(world.GetNO(worldCreator.hqs[0])->GetGOT(), GO_Type::NobHq);
 }
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
@@ -147,14 +147,14 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER
+        if(world.GetDescription().get(tWater).kind == TerrainKind::Water
            && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
             break;
     }
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
            && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
@@ -173,16 +173,16 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     hbPos.push_back(MapPoint(11, 10));
 
     hbPos.push_back(MapPoint(20, 10));
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NORTHWEST));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NorthWest));
 
     hbPos.push_back(MapPoint(10, 20)); //-V525
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NORTHEAST));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NorthEast));
 
     hbPos.push_back(MapPoint(0, 10));
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SOUTHEAST));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SouthEast));
 
     hbPos.push_back(MapPoint(20, 10));
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SOUTHWEST));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SouthWest));
 
     // Place land in radius 2
     for(const MapPoint& pt : hbPos)
@@ -196,12 +196,12 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
 
     // And a node of water nearby so we do have a coast
     std::vector<MapPoint> waterPts;
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SOUTHWEST), Direction::SOUTHWEST));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SOUTHEAST), Direction::SOUTHEAST));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[3], Direction::NORTHEAST), Direction::NORTHEAST));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[5], Direction::EAST), Direction::EAST));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[7], Direction::SOUTHWEST), Direction::SOUTHWEST));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[9], Direction::SOUTHEAST), Direction::SOUTHEAST));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SouthWest), Direction::SouthWest));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SouthEast), Direction::SouthEast));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[3], Direction::NorthEast), Direction::NorthEast));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[5], Direction::East), Direction::East));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[7], Direction::SouthWest), Direction::SouthWest));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[9], Direction::SouthEast), Direction::SouthEast));
 
     for(const MapPoint& pt : waterPts)
     {

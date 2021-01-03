@@ -20,12 +20,14 @@
 #include "AIInfo.h"
 #include "BuildingType.h"
 #include "FlagType.h"
+#include "GO_Type.h"
 #include "GameSettingTypes.h"
 #include "JobTypes.h"
 #include "MapType.h"
 #include "Nation.h"
 #include "PactTypes.h"
 #include "PlayerState.h"
+#include "Resource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
@@ -58,7 +60,7 @@
 
 RTTR_ENUM_OUTPUT(BorderStonePos, OnPoint, HalfEast, HalfSouthEast, HalfSouthWest)
 RTTR_ENUM_OUTPUT(BuildingQuality, Nothing, Flag, Hut, House, Castle, Mine, Harbor)
-RTTR_ENUM_OUTPUT(Direction, WEST, NORTHWEST, NORTHEAST, EAST, SOUTHEAST, SOUTHWEST)
+RTTR_ENUM_OUTPUT(Direction, West, NorthWest, NorthEast, East, SouthEast, SouthWest)
 RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
 RTTR_ENUM_OUTPUT(FlagType, Normal, Large, Water)
 RTTR_ENUM_OUTPUT(GameObjective, None, Conquer3_4, TotalDomination, EconomyMode, Tournament1, Tournament2, Tournament3,
@@ -67,7 +69,8 @@ RTTR_ENUM_OUTPUT(GameSpeed, VerySlow, Slow, Normal, Fast, VeryFast)
 RTTR_ENUM_OUTPUT(MapType, OldMap, Savegame)
 RTTR_ENUM_OUTPUT(PlayerState, Free, Occupied, Locked, AI)
 RTTR_ENUM_OUTPUT(PointRoad, None, Normal, Donkey, Boat)
-RTTR_ENUM_OUTPUT(PactType, TreatyOfAlliance, NonAgressionPact);
+RTTR_ENUM_OUTPUT(PactType, TreatyOfAlliance, NonAgressionPact)
+RTTR_ENUM_OUTPUT(ResourceType, Nothing, Iron, Gold, Coal, Granite, Water, Fish)
 RTTR_ENUM_OUTPUT(RoadDir, East, SouthEast, SouthWest)
 RTTR_ENUM_OUTPUT(StartWares, VLow, Low, Normal, ALot)
 RTTR_ENUM_OUTPUT(Visibility, Invisible, FogOfWar, Visible)
@@ -82,7 +85,7 @@ RTTR_ENUM_OUTPUT(Level, Easy, Medium, Hard)
 
 // Simple only
 #define RTTR_ENUM_OUTPUT(EnumName)                                                 \
-    static std::ostream& operator<<(std::ostream& out, const EnumName e)           \
+    inline std::ostream& operator<<(std::ostream& out, const EnumName e)           \
     {                                                                              \
         return out << #EnumName "::" << static_cast<unsigned>(rttr::enum_cast(e)); \
     }
@@ -90,6 +93,7 @@ RTTR_ENUM_OUTPUT(Level, Easy, Medium, Hard)
 RTTR_ENUM_OUTPUT(BuildingType)
 RTTR_ENUM_OUTPUT(Job)
 RTTR_ENUM_OUTPUT(Nation)
+RTTR_ENUM_OUTPUT(GO_Type)
 
 #undef RTTR_ENUM_OUTPUT
 

@@ -36,7 +36,7 @@ public:
     nofPigbreeder(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofPigbreeder(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GOT_NOF_PIGBREEDER; }
+    GO_Type GetGOT() const override { return GO_Type::NofPigbreeder; }
 
     /// Ggf. Schweinesounds abspielen
     void MakePigSounds();

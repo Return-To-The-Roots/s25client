@@ -72,9 +72,9 @@ iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned
                    true),
       win_id(win_id), playerWnd_(playerWnd)
 {
-    AddEdit(ID_edtName, DrawPoint(20, 30), Extent(GetSize().x - 40, 22), TC_GREEN2, NormalFont)->SetFocus();
-    AddTextButton(ID_btOk, DrawPoint(20, 60), Extent(100, 22), TC_GREEN1, _("OK"), NormalFont);
-    AddTextButton(ID_btAbort, DrawPoint(130, 60), Extent(100, 22), TC_RED1, _("Abort"), NormalFont);
+    AddEdit(ID_edtName, DrawPoint(20, 30), Extent(GetSize().x - 40, 22), TextureColor::Green2, NormalFont)->SetFocus();
+    AddTextButton(ID_btOk, DrawPoint(20, 60), Extent(100, 22), TextureColor::Green1, _("OK"), NormalFont);
+    AddTextButton(ID_btAbort, DrawPoint(130, 60), Extent(100, 22), TextureColor::Red1, _("Abort"), NormalFont);
 }
 
 void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned ctrl_id)
@@ -95,34 +95,38 @@ iwMusicPlayer::iwMusicPlayer()
                    LOADER.GetImageN("resource", 41)),
       changed(false)
 {
-    AddList(ID_lstSongs, DrawPoint(20, 30), Extent(330, 200), TC_GREEN1, NormalFont);
+    AddList(ID_lstSongs, DrawPoint(20, 30), Extent(330, 200), TextureColor::Green1, NormalFont);
     AddText(ID_txtPlaylist, DrawPoint(20, 240), _("Playlist:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddComboBox(ID_cbPlaylist, DrawPoint(20, 260), Extent(330, 22), TC_GREEN1, NormalFont, 200);
+    AddComboBox(ID_cbPlaylist, DrawPoint(20, 260), Extent(330, 22), TextureColor::Green1, NormalFont, 200);
 
     // Playlistbuttons
     const unsigned short button_distance = 10;
     const Extent buttonSize((330 - button_distance) / 2, 22);
-    ctrlButton* b1 = AddTextButton(ID_btAddPlaylist, DrawPoint(20, 288), buttonSize, TC_GREEN2, _("Add"), NormalFont);
+    ctrlButton* b1 =
+      AddTextButton(ID_btAddPlaylist, DrawPoint(20, 288), buttonSize, TextureColor::Green2, _("Add"), NormalFont);
     AddTextButton(ID_btRemovePlaylist, b1->GetPos() + DrawPoint(buttonSize.x + button_distance, 0), buttonSize,
-                  TC_GREEN2, _("Remove"), NormalFont);
+                  TextureColor::Green2, _("Remove"), NormalFont);
 
     // Buttons für die Musikstücke
-    AddImageButton(ID_btAddTrack, DrawPoint(360, 30), Extent(30, 40), TC_GREY, LOADER.GetImageN("io", 138),
+    AddImageButton(ID_btAddTrack, DrawPoint(360, 30), Extent(30, 40), TextureColor::Grey, LOADER.GetImageN("io", 138),
                    _("Add track"));
-    AddImageButton(ID_btAddTrackDir, DrawPoint(390, 30), Extent(30, 40), TC_GREY, LOADER.GetImageN("io_new", 2),
-                   _("Add directory of tracks"));
-    AddImageButton(ID_btRemoveTrack, DrawPoint(370, 80), Extent(40, 40), TC_RED1, LOADER.GetImageN("io", 220),
-                   _("Remove track"));
-    AddImageButton(ID_btUp, DrawPoint(370, 130), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 33), _("Upwards"));
-    AddImageButton(ID_btDown, DrawPoint(370, 145), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 34), _("Downwards"));
-    AddTextDeepening(ID_txtRepeat, DrawPoint(370, 170), Extent(40, 20), TC_GREY, "1", NormalFont, COLOR_YELLOW);
-    AddImageButton(ID_btDecRepeat, DrawPoint(370, 190), Extent(20, 20), TC_RED1, LOADER.GetImageN("io", 139),
+    AddImageButton(ID_btAddTrackDir, DrawPoint(390, 30), Extent(30, 40), TextureColor::Grey,
+                   LOADER.GetImageN("io_new", 2), _("Add directory of tracks"));
+    AddImageButton(ID_btRemoveTrack, DrawPoint(370, 80), Extent(40, 40), TextureColor::Red1,
+                   LOADER.GetImageN("io", 220), _("Remove track"));
+    AddImageButton(ID_btUp, DrawPoint(370, 130), Extent(40, 15), TextureColor::Grey, LOADER.GetImageN("io", 33),
+                   _("Upwards"));
+    AddImageButton(ID_btDown, DrawPoint(370, 145), Extent(40, 15), TextureColor::Grey, LOADER.GetImageN("io", 34),
+                   _("Downwards"));
+    AddTextDeepening(ID_txtRepeat, DrawPoint(370, 170), Extent(40, 20), TextureColor::Grey, "1", NormalFont,
+                     COLOR_YELLOW);
+    AddImageButton(ID_btDecRepeat, DrawPoint(370, 190), Extent(20, 20), TextureColor::Red1, LOADER.GetImageN("io", 139),
                    _("Less repeats"));
-    AddImageButton(ID_btIncRepeat, DrawPoint(390, 190), Extent(20, 20), TC_GREY, LOADER.GetImageN("io", 138),
+    AddImageButton(ID_btIncRepeat, DrawPoint(390, 190), Extent(20, 20), TextureColor::Grey, LOADER.GetImageN("io", 138),
                    _("More repeats"));
-    AddImageButton(ID_btRandom, DrawPoint(370, 220), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 107),
+    AddImageButton(ID_btRandom, DrawPoint(370, 220), Extent(40, 40), TextureColor::Grey, LOADER.GetImageN("io", 107),
                    _("Playback in this order"));
-    AddImageButton(ID_btSave, DrawPoint(370, 270), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 37),
+    AddImageButton(ID_btSave, DrawPoint(370, 270), Extent(40, 40), TextureColor::Grey, LOADER.GetImageN("io", 37),
                    _("Save playlist"));
 
     // Mit Werten füllen

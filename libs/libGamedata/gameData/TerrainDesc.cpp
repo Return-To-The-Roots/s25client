@@ -25,15 +25,15 @@ namespace {
 TerrainKind strToTerrainKind(const std::string& name)
 {
     if(name == "land")
-        return TerrainKind::LAND;
+        return TerrainKind::Land;
     else if(name == "water")
-        return TerrainKind::WATER;
+        return TerrainKind::Water;
     else if(name == "lava")
-        return TerrainKind::LAVA;
+        return TerrainKind::Lava;
     else if(name == "snow")
-        return TerrainKind::SNOW;
+        return TerrainKind::Snow;
     else if(name == "mountain")
-        return TerrainKind::MOUNTAIN;
+        return TerrainKind::Mountain;
     else
         throw GameDataError("Invalid terrain kind: " + name);
 }
@@ -54,11 +54,11 @@ ETerrain getDefaultFlags(TerrainKind kind)
 {
     switch(kind)
     {
-        case TerrainKind::LAND: return ETerrain::Buildable;
-        case TerrainKind::WATER: return ETerrain::Shippable;
-        case TerrainKind::LAVA:
-        case TerrainKind::SNOW: return ETerrain::Unreachable;
-        case TerrainKind::MOUNTAIN: return ETerrain::Mineable;
+        case TerrainKind::Land: return ETerrain::Buildable;
+        case TerrainKind::Water: return ETerrain::Shippable;
+        case TerrainKind::Lava:
+        case TerrainKind::Snow: return ETerrain::Unreachable;
+        case TerrainKind::Mountain: return ETerrain::Mineable;
     }
     throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
@@ -67,11 +67,11 @@ uint8_t getDefaultHumidity(TerrainKind kind)
 {
     switch(kind)
     {
-        case TerrainKind::LAND:
-        case TerrainKind::WATER: return 100;
-        case TerrainKind::LAVA:
-        case TerrainKind::SNOW:
-        case TerrainKind::MOUNTAIN: return 0;
+        case TerrainKind::Land:
+        case TerrainKind::Water: return 100;
+        case TerrainKind::Lava:
+        case TerrainKind::Snow:
+        case TerrainKind::Mountain: return 0;
     }
     throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
@@ -124,26 +124,26 @@ TerrainDesc::~TerrainDesc() = default;
 TerrainBQ TerrainDesc::GetBQ() const
 {
     if(Is(ETerrain::Buildable))
-        return TerrainBQ::CASTLE;
+        return TerrainBQ::Castle;
     else if(Is(ETerrain::Mineable))
-        return TerrainBQ::MINE;
+        return TerrainBQ::Mine;
     else if(Is(ETerrain::Walkable))
-        return TerrainBQ::FLAG;
+        return TerrainBQ::Flag;
     else if(Is(ETerrain::Unreachable))
-        return TerrainBQ::DANGER;
+        return TerrainBQ::Danger;
     else
-        return TerrainBQ::NOTHING;
+        return TerrainBQ::Nothing;
 }
 
 bool TerrainDesc::IsUsableByAnimals() const
 {
     // If it is buildable land or mountain, animals can use it
-    return (kind == TerrainKind::LAND || kind == TerrainKind::MOUNTAIN) && Is(ETerrain::Buildable);
+    return (kind == TerrainKind::Land || kind == TerrainKind::Mountain) && Is(ETerrain::Buildable);
 }
 
 bool TerrainDesc::IsVital() const
 {
-    return kind == TerrainKind::LAND && Is(ETerrain::Buildable);
+    return kind == TerrainKind::Land && Is(ETerrain::Buildable);
 }
 
 TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const

@@ -27,14 +27,14 @@
 #include "nodeObjs/noRoadNode.h"
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
-    : noFigure(Job::Helper, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))),
+    : noFigure(Job::Helper, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SouthEast))),
       carried_ware(ware), shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     gwg->GetPlayer(player).IncreaseInventoryJob(Job::Helper, 1);
 
     /// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
-    cur_rs = static_cast<noFlag*>(GetGoal())->GetRoute(Direction::NORTHWEST);
+    cur_rs = static_cast<noFlag*>(GetGoal())->GetRoute(Direction::NorthWest);
     RTTR_Assert(cur_rs->GetLength() == 1);
     rs_dir = true;
 }
@@ -62,7 +62,7 @@ void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) c
 }
 
 nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), carried_ware(sgd.PopObject<Ware>(GOT_WARE)), shouldBringWareIn(sgd.PopBool()),
+    : noFigure(sgd, obj_id), carried_ware(sgd.PopObject<Ware>(GO_Type::Ware)), shouldBringWareIn(sgd.PopBool()),
       fat(sgd.PopBool())
 {}
 
@@ -77,7 +77,7 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 
 void nofWarehouseWorker::GoalReached()
 {
-    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, Direction::NORTHWEST));
+    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, Direction::NorthWest));
     if(!shouldBringWareIn)
     {
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
@@ -98,19 +98,19 @@ void nofWarehouseWorker::GoalReached()
             carried_ware = nullptr;
         } else
             // ansonsten Ware wieder mit reinnehmen
-            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NORTHWEST)));
+            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NorthWest)));
     } else
     {
         // Ware aufnehmen
-        carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(Direction::NORTHWEST, false, this);
+        carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(Direction::NorthWest, false, this);
 
         if(carried_ware)
-            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NORTHWEST)));
+            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NorthWest)));
     }
 
     // Wieder ins Schloss gehen
-    StartWalking(Direction::NORTHWEST);
-    InitializeRoadWalking(wh->GetRoute(Direction::SOUTHEAST), 0, false);
+    StartWalking(Direction::NorthWest);
+    InitializeRoadWalking(wh->GetRoute(Direction::SouthEast), 0, false);
 }
 
 void nofWarehouseWorker::Walked()

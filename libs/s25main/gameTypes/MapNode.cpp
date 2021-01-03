@@ -82,14 +82,14 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     resources = Resource(sgd.PopUnsignedChar());
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();
-    for(unsigned char& boundary_stone : boundary_stones)
+    for(uint8_t& boundary_stone : boundary_stones)
         boundary_stone = sgd.PopUnsignedChar();
     bq = sgd.Pop<BuildingQuality>();
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Deserialize(sgd);
-    obj = sgd.PopObject<noBase>(GOT_UNKNOWN);
-    sgd.PopObjectContainer(figures, GOT_UNKNOWN);
+    obj = sgd.PopObject<noBase>(GO_Type::Unknown);
+    sgd.PopObjectContainer(figures, GO_Type::Unknown);
     seaId = sgd.PopUnsignedShort();
     harborId = sgd.PopUnsignedInt();
 }

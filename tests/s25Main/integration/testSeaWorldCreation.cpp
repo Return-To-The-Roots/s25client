@@ -61,7 +61,7 @@ void testShipDir(const MapBase& world, const MapPoint fromPt)
     // 6 directions -> 60deg covered per direction, mainDir +- 30deg
     // Switch pt between north and south is simple: Above or below zero diff (already tested above)
     // But S to SE or SW (same for N) is harder. Dividing line as an angle of +- 60deg compared to x-axis
-    // hence: |dy/dx| > tan(60deg) -> SOUTH, tan(60deg) ~= 1.732. Test here with |dy| = |dx| * 1.732 as the divider
+    // hence: |dy/dx| > tan(60deg) -> South, tan(60deg) ~= 1.732. Test here with |dy| = |dx| * 1.732 as the divider
     BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, 173)), ShipDirection::SouthEast);
     // Switch point
     BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, 174)), ShipDirection::South);

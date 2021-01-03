@@ -56,7 +56,7 @@ enum
 
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(entries.end())
 {
-    AddTextButton(ID_btBack, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(300, 550), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     AddText(ID_txtRttr, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
     AddText(ID_txtCredits, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
     AddTimer(ID_tmrBobAnim, 40ms);

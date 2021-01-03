@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include "helpers/EnumArray.h"
 #include "helpers/OptionalEnum.h"
 #include "nofFlagWorker.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
-#include <array>
 #include <vector>
 
 class SerializedGameData;
@@ -40,7 +40,7 @@ private:
     /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
     static const unsigned short MAX_RADIUS = 10;
 
-    std::array<bool, Resource::TypeCount> resAlreadyFound;
+    helpers::EnumArray<bool, ResourceType> resAlreadyFound;
 
     void GoalReached() override;
     void Walked() override;
@@ -61,7 +61,7 @@ private:
     /// Setzt das Schild, wenn noch was frei ist
     void SetSign(Resource resources);
 
-    bool IsSignInArea(Resource::Type type) const;
+    bool IsSignInArea(ResourceType type) const;
 
 public:
     nofGeologist(MapPoint pos, unsigned char player, noRoadNode* goal);
@@ -74,7 +74,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofGeologist(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_GEOLOGIST; }
+    GO_Type GetGOT() const override { return GO_Type::NofGeologist; }
 
     void Draw(DrawPoint drawPt) override;
 

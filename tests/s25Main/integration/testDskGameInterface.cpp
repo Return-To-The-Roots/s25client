@@ -1,4 +1,4 @@
-// Copyright (c) 2016 -2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -103,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
     WINDOWMANAGER.Msg_RightDown(mouse);
     startPos = mouse.pos;
     KeyEvent key;
-    key.kt = KT_CHAR;
+    key.kt = KeyType::Char;
     key.c = 'm';
     key.ctrl = key.alt = key.shift = false;
     WINDOWMANAGER.Msg_KeyDown(key);

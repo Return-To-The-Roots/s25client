@@ -43,9 +43,9 @@ inline Direction toDirection(BorderStonePos dir)
 {
     switch(dir)
     {
-        case BorderStonePos::HalfEast: return Direction::EAST;
-        case BorderStonePos::HalfSouthEast: return Direction::SOUTHEAST;
-        case BorderStonePos::HalfSouthWest: return Direction::SOUTHWEST;
+        case BorderStonePos::HalfEast: return Direction::East;
+        case BorderStonePos::HalfSouthEast: return Direction::SouthEast;
+        case BorderStonePos::HalfSouthWest: return Direction::SouthWest;
         case BorderStonePos::OnPoint: break;
     }
     throw std::logic_error("Can't convert");

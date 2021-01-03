@@ -264,7 +264,7 @@ void BuildJob::BuildMainRoad()
 void BuildJob::TryToBuildSecondaryRoad()
 {
     const auto* houseFlag =
-      aijh.GetWorld().GetSpecObj<noFlag>(aijh.GetWorld().GetNeighbour(target, Direction::SOUTHEAST));
+      aijh.GetWorld().GetSpecObj<noFlag>(aijh.GetWorld().GetNeighbour(target, Direction::SouthEast));
 
     if(!houseFlag)
     {
@@ -428,7 +428,7 @@ void ConnectJob::ExecuteJob()
 
     // is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is
     // required to avoid multiple connections on mil buildings)
-    if(world.IsMilitaryBuildingOnNode(world.GetNeighbour(flag->GetPos(), Direction::NORTHWEST), true))
+    if(world.IsMilitaryBuildingOnNode(world.GetNeighbour(flag->GetPos(), Direction::NorthWest), true))
     {
         for(unsigned dir = 2; dir < 7; dir++)
         {

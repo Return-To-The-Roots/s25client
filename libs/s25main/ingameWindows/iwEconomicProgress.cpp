@@ -92,8 +92,8 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
         DrawPoint curTxtPos = curBoxPos + DrawPoint(wareIconSize.x, 0);
         for(unsigned j = 0; j < 1 + eH->GetTeams().size(); j++)
         {
-            AddTextDeepening(300 + (MAX_PLAYERS + 2) * j + i, curTxtPos, Extent(txtBoxWidth, wareIconSize.y), TC_GREY,
-                             "?", NormalFont, textcolor[j < 2 ? j : 2]);
+            AddTextDeepening(300 + (MAX_PLAYERS + 2) * j + i, curTxtPos, Extent(txtBoxWidth, wareIconSize.y),
+                             TextureColor::Grey, "?", NormalFont, textcolor[j < 2 ? j : 2]);
             curTxtPos.x += txtBoxWidth;
         }
         curBoxPos.y += wareIconSize.y;
@@ -110,8 +110,8 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     }
 
     // help button
-    AddImageButton(25, DrawPoint(padding1.x, this->GetSize().y - wareIconSize.y - padding2.y), wareIconSize, TC_GREY,
-                   LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(25, DrawPoint(padding1.x, this->GetSize().y - wareIconSize.y - padding2.y), wareIconSize,
+                   TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
 }
 
 iwEconomicProgress::~iwEconomicProgress() = default;

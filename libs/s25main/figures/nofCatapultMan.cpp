@@ -68,7 +68,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
     switch(state)
     {
         default: return;
-        case STATE_CATAPULT_TARGETBUILDING:
+        case State::CatapultTargetBuilding:
         {
             int step = GAMECLIENT.Interpolate(std::abs(wheel_steps) + 1, current_ev);
 
@@ -85,7 +85,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
             //  LOADER.GetPlayerImage("rom_bobs", 1787+(7+wheel_steps)%6)->Draw(x-7,y-19);
         }
         break;
-        case STATE_CATAPULT_BACKOFF:
+        case State::CatapultBackoff:
         {
             int step = GAMECLIENT.Interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
 
@@ -112,7 +112,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
     switch(state)
     {
         default: break;
-        case STATE_WAITING1:
+        case State::Waiting1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
 
@@ -123,7 +123,8 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             for(auto& building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if(building->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsAttackable(building->GetPlayer()))
+                if(building->GetGOT() == GO_Type::NobMilitary
+                   && gwg->GetPlayer(player).IsAttackable(building->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
                     if(gwg->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible
@@ -200,14 +201,14 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
 
             // Y-Abstand nur unwesentlich klein --> Richtung 0 und 3 (direkt gegenüber) nehmen
             if(distY <= distX / 5)
-                shooting_dir = (targetIsRight) ? Direction::EAST : Direction::WEST;
+                shooting_dir = (targetIsRight) ? Direction::East : Direction::West;
             else
             {
                 // Ansonsten noch y mit berücksichtigen und je einen der 4 Quadranten nehmen
                 if(targetIsDown)
-                    shooting_dir = (targetIsRight) ? Direction::SOUTHEAST : Direction::SOUTHWEST;
+                    shooting_dir = (targetIsRight) ? Direction::SouthEast : Direction::SouthWest;
                 else
-                    shooting_dir = (targetIsRight) ? Direction::NORTHEAST : Direction::NORTHWEST;
+                    shooting_dir = (targetIsRight) ? Direction::NorthEast : Direction::NorthWest;
             }
 
             // "Drehschritte" ausrechnen, da von Richtung 4 aus gedreht wird
@@ -217,13 +218,13 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
 
             current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
 
-            state = STATE_CATAPULT_TARGETBUILDING;
+            state = State::CatapultTargetBuilding;
 
             // wir arbeiten
             workplace->is_working = true;
         }
         break;
-        case STATE_CATAPULT_TARGETBUILDING:
+        case State::CatapultTargetBuilding:
         {
             // Stein in Bewegung setzen
 
@@ -283,10 +284,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // Katapult wieder in Ausgangslage zurückdrehen
             current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
-            state = STATE_CATAPULT_BACKOFF;
+            state = State::CatapultBackoff;
         }
         break;
-        case STATE_CATAPULT_BACKOFF:
+        case State::CatapultBackoff:
         {
             current_ev = nullptr;
             // wir arbeiten nicht mehr

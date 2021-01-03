@@ -39,7 +39,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noExtension(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_EXTENSION; }
+    GO_Type GetGOT() const override { return GO_Type::Extension; }
 
     BlockingManner GetBM() const override { return BlockingManner::Single; }
 

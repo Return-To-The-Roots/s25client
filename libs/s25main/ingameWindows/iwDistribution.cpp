@@ -68,7 +68,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
         {
             unsigned txtId = group.entries.size() + curId;
             tabGrp->AddText(txtId, txtPos, entry, COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, SmallFont);
-            tabGrp->AddProgress(curId++, progPos, progSize, TC_GREY, 139, 138, 10);
+            tabGrp->AddProgress(curId++, progPos, progSize, TextureColor::Grey, 139, 138, 10);
             txtPos.y = progPos.y += progSize.y * 2;
         }
     }
@@ -81,10 +81,10 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
 
     const Extent btSize(32, 32);
     // Hilfe
-    AddImageButton(2, DrawPoint(15, GetSize().y - 15 - btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 225),
-                   _("Help"));
+    AddImageButton(2, DrawPoint(15, GetSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
+                   LOADER.GetImageN("io", 225), _("Help"));
     // Standardbelegung
-    AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TC_GREY, LOADER.GetImageN("io", 191),
+    AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey, LOADER.GetImageN("io", 191),
                    _("Default"));
 
     UpdateSettings();

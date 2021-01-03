@@ -41,7 +41,8 @@ void DestroyFlag::Execute(GameWorldGame& gwg, uint8_t playerId)
     gwg.DestroyFlag(pt_, playerId);
 }
 
-BuildRoad::BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
+BuildRoad::BuildRoad(Serializer& ser)
+    : Coords(GCType::BuildRoad, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
 {
     for(auto& i : route)
         i = helpers::popEnum<Direction>(ser);
@@ -62,7 +63,9 @@ void BuildRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
     gwg.BuildRoad(playerId, boat_road, pt_, route);
 }
 
-DestroyRoad::DestroyRoad(Serializer& ser) : Coords(DESTROY_ROAD, ser), start_dir(helpers::popEnum<Direction>(ser)) {}
+DestroyRoad::DestroyRoad(Serializer& ser)
+    : Coords(GCType::DestroyRoad, ser), start_dir(helpers::popEnum<Direction>(ser))
+{}
 
 void DestroyRoad::Serialize(Serializer& ser) const
 {
@@ -78,7 +81,9 @@ void DestroyRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
         flag->DestroyRoad(start_dir);
 }
 
-UpgradeRoad::UpgradeRoad(Serializer& ser) : Coords(UPGRADE_ROAD, ser), start_dir(helpers::popEnum<Direction>(ser)) {}
+UpgradeRoad::UpgradeRoad(Serializer& ser)
+    : Coords(GCType::UpgradeRoad, ser), start_dir(helpers::popEnum<Direction>(ser))
+{}
 
 void UpgradeRoad::Serialize(Serializer& ser) const
 {
@@ -266,14 +271,14 @@ void ExpeditionCommand::Execute(GameWorldGame& gwg, uint8_t playerId)
 
     switch(action)
     {
-        case Action::FOUNDCOLONY: ship->FoundColony(); break;
-        case Action::CANCELEXPEDITION: ship->CancelExpedition(); break;
-        case Action::NORTH: ship->ContinueExpedition(ShipDirection::North); break;
-        case Action::NORTHEAST: ship->ContinueExpedition(ShipDirection::NorthEast); break;
-        case Action::SOUTHEAST: ship->ContinueExpedition(ShipDirection::SouthEast); break;
-        case Action::SOUTH: ship->ContinueExpedition(ShipDirection::South); break;
-        case Action::SOUTHWEST: ship->ContinueExpedition(ShipDirection::SouthWest); break;
-        case Action::NORTHWEST: ship->ContinueExpedition(ShipDirection::NorthWest); break;
+        case Action::FoundColony: ship->FoundColony(); break;
+        case Action::CancelExpedition: ship->CancelExpedition(); break;
+        case Action::North: ship->ContinueExpedition(ShipDirection::North); break;
+        case Action::NorthEast: ship->ContinueExpedition(ShipDirection::NorthEast); break;
+        case Action::SouthEast: ship->ContinueExpedition(ShipDirection::SouthEast); break;
+        case Action::South: ship->ContinueExpedition(ShipDirection::South); break;
+        case Action::SouthWest: ship->ContinueExpedition(ShipDirection::SouthWest); break;
+        case Action::NorthWest: ship->ContinueExpedition(ShipDirection::NorthWest); break;
     }
 }
 

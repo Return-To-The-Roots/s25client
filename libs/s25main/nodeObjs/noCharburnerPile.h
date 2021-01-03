@@ -27,7 +27,7 @@ class noCharburnerPile : public noCoordBase
 {
 public:
     /// Status
-    enum class State
+    enum class State : uint8_t
     {
         Wood,        // Wood stack is constructed
         Smoldering,  // Smolder slightly
@@ -68,7 +68,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noCharburnerPile(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_CHARBURNERPILE; }
+    GO_Type GetGOT() const override { return GO_Type::Charburnerpile; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;

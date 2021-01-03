@@ -28,6 +28,7 @@ class LuaPlayer;
 class LuaWorld;
 class Serializer;
 class Game;
+enum class ResourceType : uint8_t;
 
 class LuaInterfaceGame : public LuaInterfaceGameBase
 {
@@ -44,7 +45,7 @@ public:
     void EventOccupied(unsigned player, MapPoint pt);
     void EventStart(bool isFirstStart);
     void EventGameFrame(unsigned nr);
-    void EventResourceFound(unsigned char player, MapPoint pt, unsigned char type, unsigned char quantity);
+    void EventResourceFound(unsigned char player, MapPoint pt, ResourceType type, unsigned char quantity);
     // Called if player wants to cancel a pact
     bool EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
     // Called if player suggests a pact

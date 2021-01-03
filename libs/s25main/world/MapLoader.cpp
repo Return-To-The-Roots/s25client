@@ -144,17 +144,17 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         Resource resource;
         // Wasser?
         if(mapResource == 0x20 || mapResource == 0x21)
-            resource = Resource(Resource::Water, 7);
+            resource = Resource(ResourceType::Water, 7);
         else if(mapResource > 0x40 && mapResource < 0x48)
-            resource = Resource(Resource::Coal, mapResource - 0x40);
+            resource = Resource(ResourceType::Coal, mapResource - 0x40);
         else if(mapResource > 0x48 && mapResource < 0x50)
-            resource = Resource(Resource::Iron, mapResource - 0x48);
+            resource = Resource(ResourceType::Iron, mapResource - 0x48);
         else if(mapResource > 0x50 && mapResource < 0x58)
-            resource = Resource(Resource::Gold, mapResource - 0x50);
+            resource = Resource(ResourceType::Gold, mapResource - 0x50);
         else if(mapResource > 0x58 && mapResource < 0x60)
-            resource = Resource(Resource::Granite, mapResource - 0x58);
+            resource = Resource(ResourceType::Granite, mapResource - 0x58);
         else if(mapResource > 0x80 && mapResource < 0x90) // fish
-            resource = Resource(Resource::Fish, 4);       // Use 4 fish
+            resource = Resource(ResourceType::Fish, 4);   // Use 4 fish
         node.resources = resource;
 
         node.reserved = false;
@@ -446,7 +446,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         {
             // Skip point at NW as often there is no path from it if the harbor is north of an island
             unsigned short seaId =
-              (dir == Direction::NORTHWEST) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
+              (dir == Direction::NorthWest) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
             // Only 1 coastal point per sea
             if(hasCoastAtSea[seaId])
                 seaId = 0;

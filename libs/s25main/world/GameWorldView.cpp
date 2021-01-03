@@ -364,7 +364,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             // Draw object name
             if(show_names)
             {
-                unsigned color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
+                unsigned color = (no->GetGOT() == GO_Type::Buildingsite) ? COLOR_GREY : COLOR_YELLOW;
                 SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]),
                                 FontStyle::CENTER | FontStyle::VCENTER, color);
                 curPos.y += SmallFont->getHeight();
@@ -380,13 +380,13 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
 void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos)
 {
     const GO_Type got = no.GetGOT();
-    if(got == GOT_BUILDINGSITE)
+    if(got == GO_Type::Buildingsite)
     {
         unsigned color = COLOR_GREY;
 
         unsigned short p = static_cast<const noBuildingSite&>(no).GetBuildProgress();
         SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
-    } else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
+    } else if(got == GO_Type::NobUsual || got == GO_Type::NobShipyard)
     {
         const auto& n = static_cast<const nobUsual&>(no);
         std::string text;
@@ -412,7 +412,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
                 color = COLOR_20_PERCENT;
         }
         SmallFont->Draw(curPos, text, FontStyle::CENTER | FontStyle::VCENTER, color);
-    } else if(got == GOT_NOB_MILITARY)
+    } else if(got == GO_Type::NobMilitary)
     {
         // Display amount of soldiers
         unsigned soldiers_count = static_cast<const nobMilitary&>(no).GetNumTroops();
@@ -437,11 +437,11 @@ void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
         {
             // Drawn from above
             Direction curMoveDir = static_cast<noMovable*>(figure)->GetCurMoveDir();
-            if(curMoveDir == Direction::NORTHEAST || curMoveDir == Direction::NORTHWEST)
+            if(curMoveDir == Direction::NorthEast || curMoveDir == Direction::NorthWest)
                 continue;
             // Draw later
             between_lines.push_back(ObjectBetweenLines(figure, curPos));
-        } else if(figure->GetGOT() == GOT_SHIP)
+        } else if(figure->GetGOT() == GO_Type::Ship)
             between_lines.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
         else
             // Ansonsten jetzt schon zeichnen
@@ -453,7 +453,7 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
                                                std::vector<ObjectBetweenLines>& between_lines)
 {
     // First draw figures moving towards this point from below
-    static const std::array<Direction, 2> aboveDirs = {{Direction::NORTHEAST, Direction::NORTHWEST}};
+    static const std::array<Direction, 2> aboveDirs = {{Direction::NorthEast, Direction::NorthWest}};
     for(Direction dir : aboveDirs)
     {
         // Get figures opposite the current dir and check if they are moving in this dir

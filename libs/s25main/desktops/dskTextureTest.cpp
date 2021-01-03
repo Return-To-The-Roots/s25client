@@ -43,9 +43,9 @@ enum
 dskTextureTest::dskTextureTest()
 {
     AddText(ID_txtTitle, DrawPoint(300, 20), "Test screen for textures", COLOR_ORANGE, FontStyle::CENTER, LargeFont);
-    AddComboBox(ID_cbTexture, DrawPoint(630, 50), Extent(100, 22), TC_GREEN2, NormalFont, 100);
+    AddComboBox(ID_cbTexture, DrawPoint(630, 50), Extent(100, 22), TextureColor::Green2, NormalFont, 100);
     Load();
-    AddTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TextureColor::Red1, _("Back"), NormalFont);
 }
 
 dskTextureTest::~dskTextureTest() = default;
@@ -141,7 +141,7 @@ void dskTextureTest::Msg_PaintAfter()
 
 bool dskTextureTest::Msg_KeyDown(const KeyEvent& ke)
 {
-    if(ke.kt == KT_F5)
+    if(ke.kt == KeyType::F5)
     {
         Load();
         return true;

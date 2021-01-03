@@ -26,23 +26,23 @@ class Ware;
 class noRoadNode;
 class SerializedGameData;
 
-enum CarrierState : uint8_t
+enum class CarrierState : uint8_t
 {
-    CARRS_FIGUREWORK,               // Aufgaben der Figur
-    CARRS_WAITFORWARE,              // auf Weg auf Ware warten
-    CARRS_GOTOMIDDLEOFROAD,         // zur Mitte seines Weges gehen
-    CARRS_FETCHWARE,                // Ware holen
-    CARRS_CARRYWARE,                // Ware zur Flagge tragen
-    CARRS_CARRYWARETOBUILDING,      // Ware zum Gebäude schaffen
-    CARRS_LEAVEBUILDING,            // kommt aus Gebäude wieder raus (bzw kommt von Baustelle zurück) zum Weg
-    CARRS_WAITFORWARESPACE,         // wartet vor der Flagge auf einen freien Platz
-    CARRS_GOBACKFROMFLAG,           // geht von der Flagge zurück, weil kein Platz mehr frei war
-    CARRS_BOATCARRIER_WANDERONWATER // Rumirren der Bootsträger auf dem Wasser, d.h. Paddeln zum
+    FigureWork,              // Aufgaben der Figur
+    WaitForWare,             // auf Weg auf Ware warten
+    GotoMiddleOfRoad,        // zur Mitte seines Weges gehen
+    FetchWare,               // Ware holen
+    CarryWare,               // Ware zur Flagge tragen
+    CarryWareToBuilding,     // Ware zum Gebäude schaffen
+    LeaveBuilding,           // kommt aus Gebäude wieder raus (bzw kommt von Baustelle zurück) zum Weg
+    WaitForWareSpace,        // wartet vor der Flagge auf einen freien Platz
+    GoBackFromFlag,          // geht von der Flagge zurück, weil kein Platz mehr frei war
+    BoatcarrierWanderOnWater // Rumirren der Bootsträger auf dem Wasser, d.h. Paddeln zum
     // nächsten Ufer, nachdem der Wasserweg zerstört wurde
 };
 constexpr auto maxEnumValue(CarrierState)
 {
-    return CarrierState::CARRS_BOATCARRIER_WANDERONWATER;
+    return CarrierState::BoatcarrierWanderOnWater;
 }
 
 enum class CarrierType : uint8_t
@@ -130,7 +130,7 @@ protected:
 public:
     void Destroy() override { Destroy_nofCarrier(); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_CARRIER; }
+    GO_Type GetGOT() const override { return GO_Type::NofCarrier; }
 
     /// Gibt Träger-Typ zurück
     CarrierType GetCarrierType() const { return ct; }

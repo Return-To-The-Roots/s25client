@@ -470,10 +470,10 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.kt)
     {
         default: return false;
-        case KT_UP:
+        case KeyType::Up:
             if(selection_.value_or(0u) > 0u)
                 SetSelection(*selection_ - 1);
             return true;
-        case KT_DOWN: SetSelection(selection_.value_or(0u) + 1u); return true;
+        case KeyType::Down: SetSelection(selection_.value_or(0u) + 1u); return true;
     }
 }

@@ -54,7 +54,7 @@ iwLobbyRanking::iwLobbyRanking()
                    LOADER.GetImageN("resource", 41), true)
 {
     using SRT = ctrlTable::SortType;
-    AddTable(0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont,
+    AddTable(0, DrawPoint(20, 25), Extent(400, 340), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("Name"), 360, SRT::String},
                                 {_("Points"), 185, SRT::Number},
                                 {_("Lost"), 215, SRT::Number},
@@ -62,7 +62,7 @@ iwLobbyRanking::iwLobbyRanking()
     AddTimer(1, 1min);
 
     // "Zurück"
-    AddTextButton(3, DrawPoint(20, 370), Extent(400, 20), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(3, DrawPoint(20, 370), Extent(400, 20), TextureColor::Red1, _("Back"), NormalFont);
 }
 
 void iwLobbyRanking::Msg_Timer(const unsigned ctrl_id)

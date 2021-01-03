@@ -43,7 +43,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_BurnedWarehouse(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_BURNEDWAREHOUSE; }
+    GO_Type GetGOT() const override { return GO_Type::Burnedwarehouse; }
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
     void HandleEvent(unsigned id) override;

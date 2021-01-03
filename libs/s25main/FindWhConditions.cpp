@@ -51,7 +51,7 @@ bool AcceptsWare::operator()(const nobBaseWarehouse& wh) const
     // Einlagern darf nicht verboten sein
     // Schilder beachten!
     const GoodType good = ConvertShields(type);
-    return !wh.GetInventorySetting(good).IsSet(EInventorySetting::STOP);
+    return !wh.GetInventorySetting(good).IsSet(EInventorySetting::Stop);
 }
 
 bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
@@ -61,7 +61,7 @@ bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
     if(job == Job::BoatCarrier)
         job = Job::Helper;
 
-    return !wh.GetInventorySetting(job).IsSet(EInventorySetting::STOP);
+    return !wh.GetInventorySetting(job).IsSet(EInventorySetting::Stop);
 }
 
 bool CollectsWare::operator()(const nobBaseWarehouse& wh) const
@@ -69,7 +69,7 @@ bool CollectsWare::operator()(const nobBaseWarehouse& wh) const
     // Einlagern muss gewollt sein
     // Schilder beachten!
     GoodType gt = ConvertShields(type);
-    return (wh.GetInventorySetting(gt).IsSet(EInventorySetting::COLLECT));
+    return (wh.GetInventorySetting(gt).IsSet(EInventorySetting::Collect));
 }
 
 bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
@@ -78,7 +78,7 @@ bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
     Job job = type;
     if(job == Job::BoatCarrier)
         job = Job::Helper;
-    return (wh.GetInventorySetting(job).IsSet(EInventorySetting::COLLECT));
+    return (wh.GetInventorySetting(job).IsSet(EInventorySetting::Collect));
 }
 
 bool HasWareButNoCollect::operator()(const nobBaseWarehouse& wh) const
@@ -94,7 +94,7 @@ bool HasFigureButNoCollect::operator()(const nobBaseWarehouse& wh) const
 bool AcceptsWareButNoSend::operator()(const nobBaseWarehouse& wh) const
 {
     const GoodType good = ConvertShields(type);
-    return AcceptsWare::operator()(wh) && !wh.GetInventorySetting(good).IsSet(EInventorySetting::SEND);
+    return AcceptsWare::operator()(wh) && !wh.GetInventorySetting(good).IsSet(EInventorySetting::Send);
 }
 
 bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
@@ -103,7 +103,7 @@ bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
     if(job == Job::BoatCarrier)
         job = Job::Helper;
 
-    return AcceptsFigure::operator()(wh) && !wh.GetInventorySetting(job).IsSet(EInventorySetting::SEND);
+    return AcceptsFigure::operator()(wh) && !wh.GetInventorySetting(job).IsSet(EInventorySetting::Send);
 }
 
 } // namespace FW

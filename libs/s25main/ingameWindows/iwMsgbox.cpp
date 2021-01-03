@@ -66,7 +66,7 @@ void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigne
     textX += paddingX;
     Extent txtSize = Extent(std::max<int>(minTextWidth, GetRightBottomBoundary().x - textX - paddingX), maxTextHeight);
     ctrlMultiline* multiline =
-      AddMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TC_GREEN2, NormalFont);
+      AddMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TextureColor::Green2, NormalFont);
     multiline->ShowBackground(false);
     multiline->AddString(text, COLOR_YELLOW);
     multiline->Resize(multiline->GetContentSize());
@@ -80,26 +80,26 @@ void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigne
     switch(button)
     {
         case MsgboxButton::Ok:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45, _("OK"), TC_GREEN2);
+            AddButton(ID_BT_0, GetSize().x / 2 - 45, _("OK"), TextureColor::Green2);
             defaultBt = 0;
             break;
 
         case MsgboxButton::OkCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("OK"), TC_GREEN2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("Cancel"), TC_RED1);
+            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
+            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNo:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("Yes"), TC_GREEN2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("No"), TC_RED1);
+            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
+            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("No"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNoCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 - 45, _("No"), TC_RED1);
-            AddButton(ID_BT_0 + 2, GetSize().x / 2 + 45 + 6, _("Cancel"), TC_GREY);
+            AddButton(ID_BT_0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
+            AddButton(ID_BT_0 + 1, GetSize().x / 2 - 45, _("No"), TextureColor::Red1);
+            AddButton(ID_BT_0 + 2, GetSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
             defaultBt = 2;
             break;
     }

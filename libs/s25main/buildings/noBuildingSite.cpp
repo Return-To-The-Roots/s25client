@@ -47,7 +47,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             // Richtung 4 wird nicht planiert (Flagge)
-            if(dir != Direction::SOUTHEAST)
+            if(dir != Direction::SouthEast)
             {
                 // Gibt es da Differenzen?
                 if(altitude - gwg->GetNeighbourNode(pos, dir).altitude != 0)
@@ -148,12 +148,12 @@ void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const
 
 noBuildingSite::noBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
     : noBaseBuilding(sgd, obj_id), state(sgd.Pop<BuildingSiteState>()),
-      planer(sgd.PopObject<nofPlaner>(GOT_NOF_PLANER)), builder(sgd.PopObject<nofBuilder>(GOT_NOF_BUILDER)),
+      planer(sgd.PopObject<nofPlaner>(GO_Type::NofPlaner)), builder(sgd.PopObject<nofBuilder>(GO_Type::NofBuilder)),
       boards(sgd.PopUnsignedChar()), stones(sgd.PopUnsignedChar()), used_boards(sgd.PopUnsignedChar()),
       used_stones(sgd.PopUnsignedChar()), build_progress(sgd.PopUnsignedChar())
 {
-    sgd.PopObjectContainer(ordered_boards, GOT_WARE);
-    sgd.PopObjectContainer(ordered_stones, GOT_WARE);
+    sgd.PopObjectContainer(ordered_boards, GO_Type::Ware);
+    sgd.PopObjectContainer(ordered_stones, GO_Type::Ware);
 }
 
 void noBuildingSite::OrderConstructionMaterial()
@@ -250,11 +250,11 @@ void noBuildingSite::GotWorker(Job /*job*/, noFigure* worker)
     // Aha, wir haben nen Planierer/Bauarbeiter bekommen
     if(state == BuildingSiteState::Planing)
     {
-        RTTR_Assert(worker->GetGOT() == GOT_NOF_PLANER);
+        RTTR_Assert(worker->GetGOT() == GO_Type::NofPlaner);
         planer = static_cast<nofPlaner*>(worker);
     } else
     {
-        RTTR_Assert(worker->GetGOT() == GOT_NOF_BUILDER);
+        RTTR_Assert(worker->GetGOT() == GO_Type::NofBuilder);
         builder = static_cast<nofBuilder*>(worker);
     }
 }

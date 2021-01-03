@@ -34,13 +34,13 @@ iwSettings::iwSettings()
 {
     AddText(46, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddText(47, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddCheckBox(4, DrawPoint(200, 124), Extent(150, 26), TC_GREY, _("Statistics Scale"), NormalFont, false);
+    AddCheckBox(4, DrawPoint(200, 124), Extent(150, 26), TextureColor::Grey, _("Statistics Scale"), NormalFont, false);
     GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
     // "Vollbild"
     ctrlOptionGroup* optiongroup = AddOptionGroup(3, GroupSelectType::Check);
-    optiongroup->AddTextButton(1, DrawPoint(200, 70), Extent(150, 22), TC_GREY, _("Fullscreen"), NormalFont);
-    optiongroup->AddTextButton(2, DrawPoint(200, 95), Extent(150, 22), TC_GREY, _("Windowed"), NormalFont);
+    optiongroup->AddTextButton(1, DrawPoint(200, 70), Extent(150, 22), TextureColor::Grey, _("Fullscreen"), NormalFont);
+    optiongroup->AddTextButton(2, DrawPoint(200, 95), Extent(150, 22), TextureColor::Grey, _("Windowed"), NormalFont);
 
     // "Vollbild" setzen
     optiongroup = GetCtrl<ctrlOptionGroup>(3);
@@ -48,7 +48,7 @@ iwSettings::iwSettings()
     VIDEODRIVER.ListVideoModes(video_modes);
 
     // "Auflösung"
-    AddComboBox(0, DrawPoint(200, 35), Extent(150, 22), TC_GREY, NormalFont, 110);
+    AddComboBox(0, DrawPoint(200, 35), Extent(150, 22), TextureColor::Grey, NormalFont, 110);
 
     // Und zu der Combobox hinzufügen
     for(unsigned i = 0; i < video_modes.size(); ++i)

@@ -36,15 +36,16 @@ class Ware : public GameObject
     /// Die Richtung von der Fahne auf dem Weg, auf dem die Ware transportiert werden will als nächstes
     RoadPathDirection next_dir;
     /// In welchem Status die Ware sich gerade befindet
-    enum State
+    enum class State : uint8_t
     {
-        STATE_WAITINWAREHOUSE, // Ware wartet im Lagerhaus noch auf Auslagerun
-        STATE_WAITATFLAG,      // Ware liegt an einer Fahne und wartet auf den Träger, der kommt
-        STATE_CARRIED,         // Ware wird von einem Träger getragen
-        STATE_WAITFORSHIP,     // Ware wartet im Hafengebäude auf das Schiff, das sie abholt
-        STATE_ONSHIP           // Ware befindet sich auf einem Schiff
+        WaitInWarehouse, // Ware wartet im Lagerhaus noch auf Auslagerun
+        WaitAtFlag,      // Ware liegt an einer Fahne und wartet auf den Träger, der kommt
+        Carried,         // Ware wird von einem Träger getragen
+        WaitForShip,     // Ware wartet im Hafengebäude auf das Schiff, das sie abholt
+        OnShip           // Ware befindet sich auf einem Schiff
     } state;
-    /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware
+    friend constexpr auto maxEnumValue(State) { return State::OnShip; }
+    /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei Carried ist es die Flagge, zu der die Ware
     /// getragen wird!)
     noRoadNode* location;
 
@@ -73,7 +74,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_Ware(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_WARE; }
+    GO_Type GetGOT() const override { return GO_Type::Ware; }
 
     RoadPathDirection GetNextDir() const { return next_dir; }
     /// Gibt nächsten Hafen zurück, falls vorhanden
@@ -97,9 +98,9 @@ public:
     /// Wenn die Ware vernichtet werden muss
     void WareLost(unsigned char player);
     /// Gibt Status der Ware zurück
-    bool IsWaitingAtFlag() const { return (state == STATE_WAITATFLAG); }
-    bool IsWaitingInWarehouse() const { return (state == STATE_WAITINWAREHOUSE); }
-    bool IsWaitingForShip() const { return (state == STATE_WAITFORSHIP); }
+    bool IsWaitingAtFlag() const { return (state == State::WaitAtFlag); }
+    bool IsWaitingInWarehouse() const { return (state == State::WaitInWarehouse); }
+    bool IsWaitingForShip() const { return (state == State::WaitForShip); }
     /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
     void RemoveWareJobForDir(RoadPathDirection last_next_dir);
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
@@ -116,7 +117,7 @@ public:
     noRoadNode* GetLocation() { return location; }
     const noRoadNode* GetLocation() const { return location; }
     /// Ist die Ware eine LostWare (Ware, die kein Ziel mehr hat und irgendwo sinnlos rumliegt)?
-    bool IsLostWare() const { return ((goal ? false : true) && state != STATE_ONSHIP); }
+    bool IsLostWare() const { return ((goal ? false : true) && state != State::OnShip); }
     /// Informiert Ware, dass eine Schiffsreise beginnt
     void StartShipJourney();
     /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt

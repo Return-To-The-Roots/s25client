@@ -48,10 +48,11 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 
     const unsigned left_column = 200;
 
-    AddComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TC_GREY, NormalFont, 90); // Ware/Figure names
+    AddComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TextureColor::Grey, NormalFont,
+                90); // Ware/Figure names
     AddText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
-    ctrlComboBox* box =
-      this->AddComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TC_GREY, NormalFont, 200); // Ware or figure?
+    ctrlComboBox* box = this->AddComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TextureColor::Grey,
+                                          NormalFont, 200); // Ware or figure?
     box->AddString(_("Wares"));
     box->AddString(_("Settlers"));
     AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
@@ -76,10 +77,10 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     }
 
     AddImage(5, DrawPoint(left_column + 20, 130), static_cast<ITexture*>(nullptr), _("Ware you like to trade"));
-    AddEdit(6, DrawPoint(left_column + 34, 120), Extent(39, 20), TC_GREY, NormalFont)->SetNumberOnly(true);
+    AddEdit(6, DrawPoint(left_column + 34, 120), Extent(39, 20), TextureColor::Grey, NormalFont)->SetNumberOnly(true);
     AddText(7, DrawPoint(left_column + 75, 125), "/ 20", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
-    AddTextButton(8, DrawPoint(left_column, 150), Extent(150, 22), TC_GREEN2, _("Send"), NormalFont);
+    AddTextButton(8, DrawPoint(left_column, 150), Extent(150, 22), TextureColor::Green2, _("Send"), NormalFont);
 
     // Choose wares at first
     box->SetSelection(0);

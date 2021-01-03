@@ -55,5 +55,5 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFisher(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_FISHER; }
+    GO_Type GetGOT() const override { return GO_Type::NofFisher; }
 };

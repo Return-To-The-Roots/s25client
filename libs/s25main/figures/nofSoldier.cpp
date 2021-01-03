@@ -41,7 +41,7 @@ void nofSoldier::Serialize_nofSoldier(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    if(fs != FS_WANDER && fs != FS_GOHOME)
+    if(fs != FigureState::Wander && fs != FigureState::GoHome)
         sgd.PushObject(building, false);
 
     sgd.PushUnsignedChar(hitpoints);
@@ -51,8 +51,8 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 {
     RTTR_Assert(IsSoldier());
 
-    if(fs != FS_WANDER && fs != FS_GOHOME)
-        building = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
+    if(fs != FigureState::Wander && fs != FigureState::GoHome)
+        building = sgd.PopObject<nobBaseMilitary>(GO_Type::Unknown);
     else
         building = nullptr;
 

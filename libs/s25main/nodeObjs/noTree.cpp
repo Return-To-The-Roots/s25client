@@ -41,9 +41,9 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
     if(!size)
     {
         event = GetEvMgr().AddEvent(this, WAIT_LENGTH);
-        state = STATE_GROWING_WAIT;
+        state = State::GrowingWait;
     } else
-        state = STATE_NOTHING;
+        state = State::Nothing;
 
     // Every nth tree produces animals, but no palm and pineapple trees
     const std::array<unsigned, 6> TREESPERANIMALSPAWN = {20, 13, 10, 6, 4, 2};
@@ -70,24 +70,23 @@ void noTree::Serialize_noTree(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(type);
     sgd.PushUnsignedChar(size);
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushEvent(event);
     sgd.PushEvent(produce_animal_event);
     sgd.PushBool(produce_animals);
 }
 
 noTree::noTree(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()),
-      state(State(sgd.PopUnsignedChar())), event(sgd.PopEvent()), produce_animal_event(sgd.PopEvent()),
-      produce_animals(sgd.PopBool())
+    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), state(sgd.Pop<State>()),
+      event(sgd.PopEvent()), produce_animal_event(sgd.PopEvent()), produce_animals(sgd.PopBool())
 {}
 
 void noTree::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
-        case STATE_NOTHING:
-        case STATE_FALLING_WAIT:
+        case State::Nothing:
+        case State::FallingWait:
         {
             // Wenn er ausgewachsen ist, dann animiert zeichnen
             LOADER
@@ -99,13 +98,13 @@ void noTree::Draw(DrawPoint drawPt)
             ++DRAW_COUNTER;
         }
         break;
-        case STATE_GROWING_WAIT:
+        case State::GrowingWait:
         {
             // normal zeichnen, wächst nicht
             LOADER.tree_cache[type][8 + size].draw(drawPt);
         }
         break;
-        case STATE_GROWING_GROW:
+        case State::GrowingGrow:
         {
             // alten Baum ausblenden
             unsigned transparency = (GAMECLIENT.Interpolate(0xFF, event)) << 24;
@@ -121,7 +120,7 @@ void noTree::Draw(DrawPoint drawPt)
             }
         }
         break;
-        case STATE_FALLING_FALL:
+        case State::FallingFall:
         {
             // Umfallen beschleunigen --> für erste Frames mehr Zeit
             unsigned short i = GAMECLIENT.Interpolate(9, event);
@@ -136,7 +135,7 @@ void noTree::Draw(DrawPoint drawPt)
             LOADER.tree_cache[type][11 + i].draw(drawPt);
         }
         break;
-        case STATE_FALLING_FALLEN:
+        case State::FallingFallen:
         {
             LOADER.tree_cache[type][14].draw(drawPt);
         }
@@ -159,14 +158,14 @@ void noTree::HandleEvent(const unsigned id)
 
     switch(state)
     {
-        case STATE_GROWING_WAIT:
+        case State::GrowingWait:
         {
             // Der Baum hat gewartet, also wächst er jetzt
             event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
-            state = STATE_GROWING_GROW;
+            state = State::GrowingGrow;
         }
         break;
-        case STATE_GROWING_GROW:
+        case State::GrowingGrow:
         {
             // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter
             // wächst
@@ -174,31 +173,31 @@ void noTree::HandleEvent(const unsigned id)
             {
                 event = GetEvMgr().AddEvent(this, WAIT_LENGTH);
                 // Erstmal wieder bis zum nächsten Wachsstumsschub warten
-                state = STATE_GROWING_WAIT;
+                state = State::GrowingWait;
             } else
             {
                 // bin nun ausgewachsen
-                state = STATE_NOTHING;
+                state = State::Nothing;
                 event = nullptr;
             }
         }
         break;
-        case STATE_FALLING_WAIT:
+        case State::FallingWait:
         {
             // Jetzt umfallen
-            state = STATE_FALLING_FALL;
+            state = State::FallingFall;
 
             event = GetEvMgr().AddEvent(this, 15);
         }
         break;
-        case STATE_FALLING_FALL:
+        case State::FallingFall:
         {
             // Baum ist gefallen, nach bestimmer Zeit verschwinden
-            state = STATE_FALLING_FALLEN;
+            state = State::FallingFallen;
             event = GetEvMgr().AddEvent(this, 28);
         }
         break;
-        case STATE_FALLING_FALLEN:
+        case State::FallingFallen:
         {
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
             event = nullptr;
@@ -224,12 +223,12 @@ void noTree::FallSoon()
 {
     // Warten bis der Holzfäller fertig ist und der Baum dann umfällt
     event = GetEvMgr().AddEvent(this, 105);
-    state = STATE_FALLING_WAIT;
+    state = State::FallingWait;
 }
 
 void noTree::DontFall()
 {
-    if(state == STATE_FALLING_WAIT)
+    if(state == State::FallingWait)
         GetEvMgr().RemoveEvent(event);
 }
 

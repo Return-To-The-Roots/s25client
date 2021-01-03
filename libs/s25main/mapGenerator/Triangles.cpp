@@ -36,25 +36,25 @@ namespace rttr { namespace mapGenerator {
 
             switch(direction)
             {
-                case Direction::WEST:
+                case Direction::West:
                     return {Triangle(true, Position(p.x, p.y - 1), size),
                             Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHWEST:
+                case Direction::SouthWest:
                     return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHEAST:
+                case Direction::SouthEast:
                     return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x, p.y), size)};
 
-                case Direction::EAST:
+                case Direction::East:
                     return {Triangle(true, Position(p.x + 1, p.y - 1), size),
                             Triangle(false, Position(p.x, p.y), size)};
 
-                case Direction::NORTHEAST:
+                case Direction::NorthEast:
                     return {Triangle(true, Position(p.x + 1, p.y - 1), size),
                             Triangle(false, Position(p.x, p.y - 1), size)};
 
-                case Direction::NORTHWEST:
+                case Direction::NorthWest:
                     return {Triangle(true, Position(p.x, p.y - 1), size),
                             Triangle(false, Position(p.x, p.y - 1), size)};
             }
@@ -72,24 +72,24 @@ namespace rttr { namespace mapGenerator {
 
             switch(direction)
             {
-                case Direction::WEST:
+                case Direction::West:
                     return {Triangle(true, Position(p.x - 1, p.y - 1), size),
                             Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHWEST:
+                case Direction::SouthWest:
                     return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHEAST:
+                case Direction::SouthEast:
                     return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x, p.y), size)};
 
-                case Direction::EAST:
+                case Direction::East:
                     return {Triangle(true, Position(p.x, p.y - 1), size), Triangle(false, Position(p.x, p.y), size)};
 
-                case Direction::NORTHEAST:
+                case Direction::NorthEast:
                     return {Triangle(true, Position(p.x, p.y - 1), size),
                             Triangle(false, Position(p.x - 1, p.y - 1), size)};
 
-                case Direction::NORTHWEST:
+                case Direction::NorthWest:
                     return {Triangle(true, Position(p.x - 1, p.y - 1), size),
                             Triangle(false, Position(p.x - 1, p.y - 1), size)};
             }

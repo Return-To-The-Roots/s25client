@@ -32,7 +32,7 @@
 #include "s25util/colors.h"
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
-    : noMovable(NodalObjectType::Animal, pos), species(species), state(STATE_WALKING),
+    : noMovable(NodalObjectType::Animal, pos), species(species), state(State::Walking),
       pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(nullptr), sound_moment(0)
 {}
 
@@ -41,14 +41,14 @@ void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
     noMovable::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(species);
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(pause_way);
     sgd.PushObject(hunter, true);
 }
 
 noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), species(sgd.Pop<Species>()), state(State(sgd.PopUnsignedChar())),
-      pause_way(sgd.PopUnsignedShort()), hunter(sgd.PopObject<nofHunter>(GOT_NOF_HUNTER)), sound_moment(0)
+    : noMovable(sgd, obj_id), species(sgd.Pop<Species>()), state(sgd.Pop<State>()), pause_way(sgd.PopUnsignedShort()),
+      hunter(sgd.PopObject<nofHunter>(GO_Type::NofHunter)), sound_moment(0)
 {}
 
 void noAnimal::StartLiving()
@@ -64,8 +64,8 @@ void noAnimal::Draw(DrawPoint drawPt)
     switch(state)
     {
         default: break;
-        case STATE_WALKINGUNTILWAITINGFORHUNTER:
-        case STATE_WALKING:
+        case State::WalkingUntilWaitingForHunter:
+        case State::Walking:
         {
             // Laufend (bzw. Ente schwimmend zeichnen)
 
@@ -95,14 +95,14 @@ void noAnimal::Draw(DrawPoint drawPt)
             }
         }
         break;
-        case STATE_WAITINGFORHUNTER:
-        case STATE_PAUSED:
+        case State::WaitingForHunter:
+        case State::Paused:
         {
             // Stehend zeichnen
             LOADER.getAnimalSprite(species, GetCurMoveDir(), 0).draw(drawPt);
         }
         break;
-        case STATE_DEAD:
+        case State::Dead:
         {
             if(!LOADER.getDeadAnimalSprite(species).empty())
             {
@@ -110,7 +110,7 @@ void noAnimal::Draw(DrawPoint drawPt)
             }
         }
         break;
-        case STATE_DISAPPEARING:
+        case State::Disappearing:
         {
             // Alpha-Wert ausrechnen
             unsigned char alpha = 0xFF - GAMECLIENT.Interpolate(0xFF, current_ev);
@@ -151,8 +151,8 @@ void noAnimal::HandleEvent(const unsigned id)
             // wieder weiterlaufen
             StandardWalking();
             // state entsprechen setzen, wenn es nich gestorben ist
-            if(state != STATE_DEAD)
-                state = STATE_WALKING;
+            if(state != State::Dead)
+                state = State::Walking;
         }
         break;
         // Sterbe-Event
@@ -160,7 +160,7 @@ void noAnimal::HandleEvent(const unsigned id)
         {
             // nun verschwinden
             current_ev = GetEvMgr().AddEvent(this, 30, 3);
-            state = STATE_DISAPPEARING;
+            state = State::Disappearing;
 
             // Jäger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
             if(hunter)
@@ -212,13 +212,13 @@ void noAnimal::Walked()
     switch(state)
     {
         default: break;
-        case STATE_WALKINGUNTILWAITINGFORHUNTER:
+        case State::WalkingUntilWaitingForHunter:
         {
             // stehenbleiben und auf den Jäger warten
-            state = STATE_WAITINGFORHUNTER;
+            state = State::WaitingForHunter;
         }
         break;
-        case STATE_WALKING:
+        case State::Walking:
         {
             // ein weiteres Stück gelaufen
             --pause_way;
@@ -227,7 +227,7 @@ void noAnimal::Walked()
             if(!pause_way)
             {
                 // dann stellt es sich hier hin und wartet erstmal eine Weile
-                state = STATE_PAUSED;
+                state = State::Paused;
                 pause_way = 5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15);
                 current_ev = GetEvMgr().AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 50), 1);
             } else
@@ -264,14 +264,14 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
         if(species == Species::Duck)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein
-            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::WATER
-               && gwg->GetDescription().get(tRight).kind == TerrainKind::WATER)
+            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::Water
+               && gwg->GetDescription().get(tRight).kind == TerrainKind::Water)
                 return dir;
         } else if(species == Species::PolarBear)
         {
             // Polarbären laufen nur auf Schnee rum
-            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::SNOW
-               && gwg->GetDescription().get(tRight).kind == TerrainKind::SNOW)
+            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::Snow
+               && gwg->GetDescription().get(tRight).kind == TerrainKind::Snow)
                 return dir;
         } else
         {
@@ -309,7 +309,7 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
 bool noAnimal::CanHunted() const
 {
     // Enten sowie Tiere, die bereits gejagt werden, oder schon tot daliegen, können nicht gejagt werden
-    return (species != Species::Duck && state != STATE_DEAD && state != STATE_DISAPPEARING && !hunter);
+    return (species != Species::Duck && state != State::Dead && state != State::Disappearing && !hunter);
 }
 
 void noAnimal::BeginHunting(nofHunter* hunter)
@@ -320,17 +320,17 @@ void noAnimal::BeginHunting(nofHunter* hunter)
 MapPoint noAnimal::HunterIsNear()
 {
     // Steht es gerade?
-    if(state == STATE_PAUSED)
+    if(state == State::Paused)
     {
         // dann bleibt es einfach stehen und gibt seine jetzigen Koordinaten zurück
-        state = STATE_WAITINGFORHUNTER;
+        state = State::WaitingForHunter;
         // Warteevent abmelden
         GetEvMgr().RemoveEvent(current_ev);
         return pos;
     } else
     {
         // ansonsten nach dem Laufen stehenbleiben und die Koordinaten zurückgeben von dem Punkt, der erreicht wird
-        state = STATE_WALKINGUNTILWAITINGFORHUNTER;
+        state = State::WalkingUntilWaitingForHunter;
         return gwg->GetNeighbour(pos, GetCurMoveDir());
     }
 }
@@ -344,17 +344,17 @@ void noAnimal::StopHunting()
     {
         default: return;
 
-        case STATE_WAITINGFORHUNTER:
+        case State::WaitingForHunter:
         {
             // wenn wir stehen, zusätzlich loslaufen
-            state = STATE_WALKING;
+            state = State::Walking;
             StandardWalking();
         }
         break;
-        case STATE_WALKINGUNTILWAITINGFORHUNTER:
+        case State::WalkingUntilWaitingForHunter:
         {
             // wir können wieder normal weiterlaufen
-            state = STATE_WALKING;
+            state = State::Walking;
         }
         break;
     }
@@ -367,12 +367,12 @@ void noAnimal::Die()
     {
         // Verwesungsevent
         current_ev = GetEvMgr().AddEvent(this, 300, 2);
-        state = STATE_DEAD;
+        state = State::Dead;
     } else
     {
         // Falls keine Verwesungsgrafik --> sofort verschwinden
         current_ev = GetEvMgr().AddEvent(this, 30, 3);
-        state = STATE_DISAPPEARING;
+        state = State::Disappearing;
     }
 }
 

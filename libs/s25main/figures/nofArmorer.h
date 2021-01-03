@@ -50,5 +50,5 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofArmorer(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_ARMORER; }
+    GO_Type GetGOT() const override { return GO_Type::NofArmorer; }
 };

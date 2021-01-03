@@ -17,7 +17,23 @@
 
 #pragma once
 
+#include "helpers/MaxEnumValue.h"
 #include <cstdint>
+
+enum class ResourceType : uint8_t
+{
+    Nothing,
+    Iron,
+    Gold,
+    Coal,
+    Granite,
+    Water,
+    Fish
+};
+constexpr auto maxEnumValue(ResourceType)
+{
+    return ResourceType::Fish;
+}
 
 /// Holds a resource and its value.
 /// Maximum number of resource types and amount is 15!
@@ -28,53 +44,38 @@ class Resource
     uint8_t value_;
 
 public:
-    enum Type
-    {
-        Nothing,
-        Iron,
-        Gold,
-        Coal,
-        Granite,
-        Water,
-        Fish
-    };
-    static constexpr int TypeCount = Fish + 1;
-
-    Resource(Type type, uint8_t amount);
-    explicit Resource(uint8_t value = 0);
-    explicit operator uint8_t() const { return value_; }
-    uint8_t getValue() const { return value_; }
-    Type getType() const { return Type(value_ >> 4); }
-    uint8_t getAmount() const { return value_ & 0x0F; }
-    void setType(Type newType);
-    void setAmount(uint8_t newAmount);
+    constexpr Resource(ResourceType type, uint8_t amount);
+    constexpr explicit Resource(uint8_t value = 0);
+    constexpr explicit operator uint8_t() const { return value_; }
+    constexpr uint8_t getValue() const { return value_; }
+    constexpr ResourceType getType() const { return ResourceType(value_ >> 4); }
+    constexpr uint8_t getAmount() const { return value_ & 0x0F; }
+    constexpr void setType(ResourceType newType);
+    constexpr void setAmount(uint8_t newAmount);
     /// True if we have a non-zero amount of the given resource. Always false for Nothing
-    bool has(Type type) const { return getAmount() > 0u && getType() == type; }
-    bool operator==(Resource rhs) const { return value_ == rhs.value_; }
-    bool operator!=(Resource rhs) const { return !(*this == rhs); }
+    constexpr bool has(ResourceType type) const { return getAmount() > 0u && getType() == type; }
+    constexpr bool operator==(Resource rhs) const { return value_ == rhs.value_; }
+    constexpr bool operator!=(Resource rhs) const { return !(*this == rhs); }
 };
 
-inline Resource::Resource(Type type, uint8_t amount)
+constexpr Resource::Resource(ResourceType type, uint8_t amount)
+    : value_((type == ResourceType::Nothing) ? 0 : (static_cast<uint8_t>(type) << 4) | (amount & 0x0F))
+{}
+constexpr Resource::Resource(uint8_t value) : value_(value)
 {
-    if(type == Nothing)
-        value_ = 0;
-    else
-        value_ = (static_cast<uint8_t>(type) << 4) | (amount & 0x0F);
-}
-inline Resource::Resource(uint8_t value) : value_(value)
-{
-    if(getType() == Nothing || getType() >= TypeCount)
+    const uint8_t type = value >> 4u;
+    if(type >= helpers::MaxEnumValue_v<ResourceType> || type == static_cast<uint8_t>(ResourceType::Nothing))
         value_ = 0;
 }
-inline void Resource::setType(Type newType)
+constexpr void Resource::setType(ResourceType newType)
 {
-    if(newType == Nothing)
+    if(newType == ResourceType::Nothing)
         value_ = 0;
     else
         value_ = (static_cast<uint8_t>(newType) << 4) | getAmount();
 }
-inline void Resource::setAmount(uint8_t newAmount)
+constexpr void Resource::setAmount(uint8_t newAmount)
 {
-    if(getType() != Nothing)
+    if(getType() != ResourceType::Nothing)
         value_ = (value_ & 0xF0) | (newAmount & 0x0F);
 }

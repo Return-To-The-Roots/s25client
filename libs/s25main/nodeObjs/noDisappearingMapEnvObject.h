@@ -34,7 +34,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noDisappearingMapEnvObject(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_DISAPPEARINGMAPENVOBJECT; }
+    GO_Type GetGOT() const override { return GO_Type::Disappearingmapenvobject; }
 
     /// An x,y zeichnen.
     void Draw(DrawPoint drawPt) override;

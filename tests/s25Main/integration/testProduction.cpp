@@ -46,12 +46,12 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddGoods(goods, true);
     MapPoint bldPos = hqPos + MapPoint(2, 0);
     BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, bldPos, curPlayer, Nation::Africans);
-    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false,
-                    std::vector<Direction>(2, Direction::WEST));
+    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SouthEast), false,
+                    std::vector<Direction>(2, Direction::West));
     MapPoint bldPos2 = hqPos - MapPoint(2, 0);
     BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, bldPos2, curPlayer, Nation::Africans);
-    this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SOUTHEAST), false,
-                    std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SouthEast), false,
+                    std::vector<Direction>(2, Direction::East));
 
     std::array<signed char, NUM_TOOLS> toolOrder;
     ToolSettings toolSettings;
@@ -99,8 +99,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     MapPoint housePos(hqPos.x + 3, hqPos.y);
     const nobUsual* mw = static_cast<nobUsual*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, housePos, curPlayer, Nation::Romans));
-    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
-    this->BuildRoad(flagPos, false, std::vector<Direction>(3, Direction::EAST));
+    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
+    this->BuildRoad(flagPos, false, std::vector<Direction>(3, Direction::East));
     RTTR_EXEC_TILL(200, mw->HasWorker());
     BOOST_REQUIRE(!mw->is_working);
     // Wait till he has all the wares

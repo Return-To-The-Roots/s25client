@@ -35,20 +35,20 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
     Modifications for the dirs: */
     helpers::EnumArray<Position, Direction> evenPtMod, oddPtMod;
     // In x dir there is no difference
-    evenPtMod[Direction::WEST] = Position(-1, 0);
-    oddPtMod[Direction::WEST] = Position(-1, 0);
-    evenPtMod[Direction::EAST] = Position(1, 0);
-    oddPtMod[Direction::EAST] = Position(1, 0);
+    evenPtMod[Direction::West] = Position(-1, 0);
+    oddPtMod[Direction::West] = Position(-1, 0);
+    evenPtMod[Direction::East] = Position(1, 0);
+    oddPtMod[Direction::East] = Position(1, 0);
     // To north we decrease y and may change x. x changed in NW <=> not changed in NE
-    evenPtMod[Direction::NORTHWEST] = Position(-1, -1);
-    oddPtMod[Direction::NORTHWEST] = Position(0, -1);
-    evenPtMod[Direction::NORTHEAST] = Position(0, -1);
-    oddPtMod[Direction::NORTHEAST] = Position(1, -1);
+    evenPtMod[Direction::NorthWest] = Position(-1, -1);
+    oddPtMod[Direction::NorthWest] = Position(0, -1);
+    evenPtMod[Direction::NorthEast] = Position(0, -1);
+    oddPtMod[Direction::NorthEast] = Position(1, -1);
     // And similar for south. X offsets stay the same!
-    evenPtMod[Direction::SOUTHWEST] = Position(-1, 1);
-    oddPtMod[Direction::SOUTHWEST] = Position(0, 1);
-    evenPtMod[Direction::SOUTHEAST] = Position(0, 1);
-    oddPtMod[Direction::SOUTHEAST] = Position(1, 1);
+    evenPtMod[Direction::SouthWest] = Position(-1, 1);
+    oddPtMod[Direction::SouthWest] = Position(0, 1);
+    evenPtMod[Direction::SouthEast] = Position(0, 1);
+    oddPtMod[Direction::SouthEast] = Position(1, 1);
     std::vector<Position> testPoints{
       // Test a simple even and odd point
       Position(10, 10), Position(10, 9),
@@ -78,16 +78,16 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
 
         // Neighbour 2 -> Radius 2, right circle
         MapPoint curPt(pt);
-        MapPoint curTargetPoint = world.GetNeighbour(world.GetNeighbour(curPt, Direction::WEST), Direction::WEST);
+        MapPoint curTargetPoint = world.GetNeighbour(world.GetNeighbour(curPt, Direction::West), Direction::West);
         BOOST_REQUIRE_EQUAL(world.CalcDistance(curPt, curTargetPoint), 2u);
         BOOST_REQUIRE_EQUAL(world.GetNeighbour2(curPt, 0), curTargetPoint);
         // We now go 2 steps in each direction to describe the circle
         // (Note: Could iterator over directions, but to easily identify errors and make intentions clear we do it
         // explicitely)
-        const std::array<Direction, 11> steps{Direction::NORTHEAST, Direction::NORTHEAST, Direction::EAST,
-                                              Direction::EAST,      Direction::SOUTHEAST, Direction::SOUTHEAST,
-                                              Direction::SOUTHWEST, Direction::SOUTHWEST, Direction::WEST,
-                                              Direction::WEST,      Direction::NORTHWEST};
+        const std::array<Direction, 11> steps{Direction::NorthEast, Direction::NorthEast, Direction::East,
+                                              Direction::East,      Direction::SouthEast, Direction::SouthEast,
+                                              Direction::SouthWest, Direction::SouthWest, Direction::West,
+                                              Direction::West,      Direction::NorthWest};
         // Note: 0==12 already handled
         for(unsigned j = 1; j < 12; j++)
         {

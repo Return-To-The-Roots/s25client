@@ -18,13 +18,13 @@
 #pragma once
 
 /// Texturfarben
-enum TextureColor
+enum class TextureColor
 {
-    TC_GREY,
-    TC_RED1,
-    TC_GREEN1,
-    TC_GREEN2,
-    TC_RED2,
-    TC_BRICKS,
-    TC_INVISIBLE
+    Grey,
+    Red1,
+    Green1,
+    Green2,
+    Red2,
+    Bricks,
+    Invisible
 };

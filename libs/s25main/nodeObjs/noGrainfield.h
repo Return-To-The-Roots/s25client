@@ -29,13 +29,14 @@ private:
     unsigned char type;
 
     /// Status
-    enum State
+    enum class State : uint8_t
     {
-        STATE_GROWING_WAITING, /// Wachsphase, wartet auf den nächsten Wachstumsschub
-        STATE_GROWING,         /// wächst
-        STATE_NORMAL,          /// ist ausgewachsen und verdorrt nach einer Weile
-        STATE_WITHERING        /// verdorrt (verschwindet)
+        GrowingWaiting, /// Wachsphase, wartet auf den nächsten Wachstumsschub
+        Growing,        /// wächst
+        Normal,         /// ist ausgewachsen und verdorrt nach einer Weile
+        Withering       /// verdorrt (verschwindet)
     } state;
+    friend constexpr auto maxEnumValue(State) { return State::Withering; }
 
     /// Größe des Feldes (0-3), 3 ist ausgewachsen
     unsigned char size;
@@ -63,7 +64,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noGrainfield(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_GRAINFIELD; }
+    GO_Type GetGOT() const override { return GO_Type::Grainfield; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
@@ -71,7 +72,7 @@ public:
     BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 
     /// Kann man es abernten?
-    bool IsHarvestable() const { return size == 3 && state == STATE_NORMAL; }
+    bool IsHarvestable() const { return size == 3 && state == State::Normal; }
 
     /// Gibt die ID des abgeernteten Getreidefelds in der map_last zurück
     unsigned GetHarvestMapLstID() const { return 532 + type * 5 + 4; }

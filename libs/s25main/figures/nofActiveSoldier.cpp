@@ -48,7 +48,7 @@ void nofActiveSoldier::Serialize_nofActiveSoldier(SerializedGameData& sgd) const
 }
 
 nofActiveSoldier::nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id)
-    : nofSoldier(sgd, obj_id), state(sgd.Pop<SoldierState>()), enemy(sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN))
+    : nofSoldier(sgd, obj_id), state(sgd.Pop<SoldierState>()), enemy(sgd.PopObject<nofActiveSoldier>(GO_Type::Unknown))
 {
     fightSpot_ = sgd.PopMapPoint();
 }
@@ -82,7 +82,7 @@ void nofActiveSoldier::GoalReached()
 void nofActiveSoldier::ReturnHome()
 {
     // Set appropriate state
-    state = STATE_WALKINGHOME;
+    state = SoldierState::WalkingHome;
     // Start walking
     WalkingHome();
 }
@@ -93,7 +93,7 @@ void nofActiveSoldier::WalkingHome()
     if(!building)
     {
         // Start wandering around
-        state = STATE_FIGUREWORK;
+        state = SoldierState::FigureWork;
         StartWandering();
         Wander();
 
@@ -106,7 +106,7 @@ void nofActiveSoldier::WalkingHome()
     if(GetPos() == building->GetFlag()->GetPos())
     {
         // Enter via the door
-        StartWalking(Direction::NORTHWEST);
+        StartWalking(Direction::NorthWest);
         return;
     }
     // or are we at the building?
@@ -134,7 +134,7 @@ void nofActiveSoldier::WalkingHome()
         Abrogate();
         // Start wandering around then
         StartWandering();
-        state = STATE_FIGUREWORK;
+        state = SoldierState::FigureWork;
         Wander();
     }
 }
@@ -144,27 +144,27 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
     switch(state)
     {
         default: break;
-        case STATE_WAITINGFORFIGHT:
-        case STATE_ATTACKING_WAITINGAROUNDBUILDING:
-        case STATE_ATTACKING_WAITINGFORDEFENDER:
-        case STATE_DEFENDING_WAITING:
+        case SoldierState::WaitingForFight:
+        case SoldierState::AttackingWaitingAroundBuilding:
+        case SoldierState::AttackingWaitingForDefender:
+        case SoldierState::DefendingWaiting:
         {
             // Draw waiting states
             DrawSoldierWaiting(drawPt);
         }
         break;
-        case STATE_FIGUREWORK:
-        case STATE_MEETENEMY:
-        case STATE_ATTACKING_WALKINGTOGOAL:
-        case STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR:
-        case STATE_WALKINGHOME:
-        case STATE_DEFENDING_WALKINGTO:
-        case STATE_DEFENDING_WALKINGFROM:
-        case STATE_ATTACKING_CAPTURINGFIRST:
-        case STATE_ATTACKING_CAPTURINGNEXT:
-        case STATE_ATTACKING_ATTACKINGFLAG:
-        case STATE_SEAATTACKING_GOTOHARBOR:
-        case STATE_SEAATTACKING_RETURNTOSHIP:
+        case SoldierState::FigureWork:
+        case SoldierState::MeetEnemy:
+        case SoldierState::AttackingWalkingToGoal:
+        case SoldierState::AggressivedefendingWalkingToAggressor:
+        case SoldierState::WalkingHome:
+        case SoldierState::DefendingWalkingTo:
+        case SoldierState::DefendingWalkingFrom:
+        case SoldierState::AttackingCapturingFirst:
+        case SoldierState::AttackingCapturingNext:
+        case SoldierState::AttackingAttackingFlag:
+        case SoldierState::SeaattackingGoToHarbor:
+        case SoldierState::SeaattackingReturnToShip:
         {
             // Draw walking states
             DrawWalkingBobJobs(drawPt, job_);
@@ -241,8 +241,8 @@ void nofActiveSoldier::Walked()
     switch(state)
     {
         default: return;
-        case STATE_WALKINGHOME: WalkingHome(); return;
-        case STATE_MEETENEMY: MeetingEnemy(); return;
+        case SoldierState::WalkingHome: WalkingHome(); return;
+        case SoldierState::MeetEnemy: MeetingEnemy(); return;
     }
 }
 
@@ -293,7 +293,7 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     }
 
     // We try to meet us now
-    state = STATE_MEETENEMY;
+    state = SoldierState::MeetEnemy;
     // Inform the other soldier
     enemy->MeetEnemy(this, fightSpot_);
 
@@ -331,7 +331,7 @@ void nofActiveSoldier::MeetingEnemy()
     if(GetPos() == fightSpot_)
     {
         // Enemy already there?
-        if(enemy->GetPos() == fightSpot_ && enemy->GetState() == STATE_WAITINGFORFIGHT)
+        if(enemy->GetPos() == fightSpot_ && enemy->GetState() == SoldierState::WaitingForFight)
         {
             // Start fighting
             gwg->AddFigure(pos, new noFighting(enemy, this));
@@ -344,7 +344,7 @@ void nofActiveSoldier::MeetingEnemy()
         {
             // Is the fighting point still valid (could be another fight there already e.g.)?
             // And the enemy still on the way?
-            if(!gwg->ValidPointForFighting(pos, false, this) || enemy->GetState() != STATE_MEETENEMY)
+            if(!gwg->ValidPointForFighting(pos, false, this) || enemy->GetState() != SoldierState::MeetEnemy)
             {
                 // No
                 // Abort the whole fighting fun with the enemy
@@ -357,7 +357,7 @@ void nofActiveSoldier::MeetingEnemy()
             else
             {
                 RTTR_Assert(enemy->enemy == this);
-                state = STATE_WAITINGFORFIGHT;
+                state = SoldierState::WaitingForFight;
                 return;
             }
         }
@@ -406,10 +406,10 @@ bool nofActiveSoldier::IsReadyForFight() const
     switch(state)
     {
         default: return false;
-        case STATE_WALKINGHOME:
-        case STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR:
-        case STATE_ATTACKING_WALKINGTOGOAL:
-        case STATE_ATTACKING_WAITINGAROUNDBUILDING: return true;
+        case SoldierState::WalkingHome:
+        case SoldierState::AggressivedefendingWalkingToAggressor:
+        case SoldierState::AttackingWalkingToGoal:
+        case SoldierState::AttackingWaitingAroundBuilding: return true;
     }
 }
 
@@ -421,10 +421,10 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
     this->fightSpot_ = figh_spot;
 
     SoldierState old_state = state;
-    state = STATE_MEETENEMY;
+    state = SoldierState::MeetEnemy;
 
     // In some cases we have to start walking
-    if(old_state == STATE_ATTACKING_WAITINGAROUNDBUILDING)
+    if(old_state == SoldierState::AttackingWaitingAroundBuilding)
     {
         MeetingEnemy();
     }
@@ -482,6 +482,6 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
 /// Informs a waiting soldier about the start of a fight
 void nofActiveSoldier::FightingStarted()
 {
-    state = STATE_FIGHTING;
+    state = SoldierState::Fighting;
     enemy = nullptr;
 }

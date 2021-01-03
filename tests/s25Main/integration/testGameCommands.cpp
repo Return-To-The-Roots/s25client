@@ -78,14 +78,14 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(flag->GetPos(), flagPt);
     BOOST_REQUIRE_EQUAL(flag->GetPlayer(), 0);
     // Flag blocked
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::WEST).bq, BuildingQuality::Nothing);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NORTHEAST).bq, BuildingQuality::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::West).bq, BuildingQuality::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NorthEast).bq, BuildingQuality::Nothing);
     // This flag = house flag
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NORTHWEST).bq, BuildingQuality::Castle);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NorthWest).bq, BuildingQuality::Castle);
     // Flag blocks castle
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::EAST).bq, BuildingQuality::House);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SOUTHEAST).bq, BuildingQuality::House);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SOUTHWEST).bq, BuildingQuality::House);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::East).bq, BuildingQuality::House);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SouthEast).bq, BuildingQuality::House);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SouthWest).bq, BuildingQuality::House);
     // Place flag again
     this->SetFlag(flagPt);
     // Nothing should be changed
@@ -119,40 +119,40 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     this->SetFlag(flagPt + MapPoint(4, 0));
     // Build road with 3 segments:
     // a1) invalid start pt -> No road
-    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<Direction>(4, Direction::EAST));
+    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<Direction>(4, Direction::East));
     for(unsigned i = 0; i < 6; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
     // a2) invalid player
     curPlayer = 1;
-    this->BuildRoad(flagPt, false, std::vector<Direction>(4, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(4, Direction::East));
     for(unsigned i = 0; i < 6; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
     curPlayer = 0;
 
     // b) Flag->Flag ->OK
-    this->BuildRoad(flagPt, false, std::vector<Direction>(4, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(4, Direction::East));
     for(unsigned i = 0; i < 4; i++)
     {
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
         // Same but in opposite direction
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 1, 0), Direction::WEST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 1, 0), Direction::West), PointRoad::Normal);
     }
     // End of road
-    BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(4, 0), Direction::EAST), PointRoad::None);
+    BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(4, 0), Direction::East), PointRoad::None);
     // BQ on road
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(1, 0)).bq, BuildingQuality::Nothing);
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(2, 0)).bq, BuildingQuality::Flag);
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(3, 0)).bq, BuildingQuality::Nothing);
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(4, 0)).bq, BuildingQuality::Nothing);
     // BQ above road
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq,
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NorthWest).bq,
                         BuildingQuality::Castle); // Flag could be build
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq,
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NorthEast).bq,
                         BuildingQuality::Flag); // only flag possible
     // BQ below road (Castle blocked by road)
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHEAST).bq,
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SouthEast).bq,
                         BuildingQuality::House);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHWEST).bq,
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SouthWest).bq,
                         BuildingQuality::House);
 
     // Set another flag on the road
@@ -162,43 +162,43 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     // d) middle -> ok
     this->SetFlag(flagPt + MapPoint(2, 0));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Flag); //-V807
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq,
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NorthWest).bq,
                         BuildingQuality::Castle); // Flag could be build
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq,
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NorthEast).bq,
                         BuildingQuality::Nothing); // no more flag possible
     // f) destroy middle flag -> Road destroyed
     this->DestroyFlag(flagPt + MapPoint(2, 0));
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
     this->DestroyFlag(flagPt + MapPoint(4, 0));
 
     // g) Road with no existing end flag -> Build road and place flag if possible
     // g1) Other flag to close
     this->SetFlag(flagPt + MapPoint(3, 0));
-    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::East));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Nothing);
     for(unsigned i = 0; i < 3; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
     this->DestroyFlag(flagPt + MapPoint(3, 0));
     // g2) Building to close
     this->SetBuildingSite(flagPt + MapPoint(3, 0), BuildingType::Farm);
-    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::East));
     BOOST_REQUIRE_NE(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Flag);
     for(unsigned i = 0; i < 2; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
-    this->DestroyFlag(world.GetNeighbour(flagPt + MapPoint(3, 0), Direction::SOUTHEAST));
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
+    this->DestroyFlag(world.GetNeighbour(flagPt + MapPoint(3, 0), Direction::SouthEast));
     // g3) Nothing objectionable
-    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::East));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Flag);
     for(unsigned i = 0; i < 2; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
 
     // h) Non-blocking env. object
     world.SetNO(flagPt + MapPoint(3, 0), new noEnvObject(flagPt, 512));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NodalObjectType::Environment);
-    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<Direction>(2, Direction::East));
     for(unsigned i = 2; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NodalObjectType::Nothing);
 
     // Remove other flags
@@ -206,13 +206,13 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
 
     // i) outside player territory
     // i1) border
-    this->BuildRoad(flagPt, false, std::vector<Direction>(HQ_RADIUS - (flagPt.x - hqPos.x), Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(HQ_RADIUS - (flagPt.x - hqPos.x), Direction::East));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
     // i2) territory
-    this->BuildRoad(flagPt, false, std::vector<Direction>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, Direction::East));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyRoadTest, WorldWithGCExecution2P)
@@ -221,50 +221,50 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadTest, WorldWithGCExecution2P)
     MapPoint flagPt2 = flagPt + MapPoint(2, 0);
     this->SetFlag(flagPt);
     // Build road with 3 segments:
-    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
-    this->BuildRoad(flagPt2, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::East));
+    this->BuildRoad(flagPt2, false, std::vector<Direction>(2, Direction::East));
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
     // Destroy from middle of road -> fail
-    this->DestroyRoad(flagPt2 + MapPoint(1, 0), Direction::EAST);
+    this->DestroyRoad(flagPt2 + MapPoint(1, 0), Direction::East);
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
     // Wrong player -> Fail
     curPlayer = 1;
-    this->DestroyRoad(flagPt2, Direction::EAST);
+    this->DestroyRoad(flagPt2, Direction::East);
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
     // Wrong direction -> Fail
     curPlayer = 0;
-    this->DestroyRoad(flagPt2, Direction::SOUTHEAST);
+    this->DestroyRoad(flagPt2, Direction::SouthEast);
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
     // Correct -> Succeed
-    this->DestroyRoad(flagPt2, Direction::EAST);
+    this->DestroyRoad(flagPt2, Direction::East);
     for(unsigned i = 0; i < 2; i++)
     {
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 2, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 2, 0), Direction::East), PointRoad::None);
     }
     // Flags must still exist
     BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt));
     BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2));
     BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2 + MapPoint(2, 0)));
     // Rebuild
-    this->BuildRoad(flagPt2, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(flagPt2, false, std::vector<Direction>(2, Direction::East));
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::Normal);
     // Opposite dir
-    this->DestroyRoad(flagPt2, Direction::WEST);
+    this->DestroyRoad(flagPt2, Direction::West);
     for(unsigned i = 0; i < 2; i++)
     {
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 2, 0), Direction::EAST), PointRoad::Normal);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 2, 0), Direction::East), PointRoad::Normal);
     }
     // Both
-    this->DestroyRoad(flagPt2, Direction::EAST);
+    this->DestroyRoad(flagPt2, Direction::East);
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::East), PointRoad::None);
     // Flags must still exist
     BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt));
     BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2));
@@ -274,10 +274,10 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadTest, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(UpgradeRoadTest, WorldWithGCExecution2P)
 {
     // 3 Roads, so we have a middle flag, and an additional road
-    const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
-    this->BuildRoad(hqFlagPos, false, std::vector<Direction>(2, Direction::EAST));
-    this->BuildRoad(hqFlagPos + MapPoint(2, 0), false, std::vector<Direction>(2, Direction::EAST));
-    this->BuildRoad(hqFlagPos + MapPoint(4, 0), false, std::vector<Direction>(2, Direction::EAST));
+    const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
+    this->BuildRoad(hqFlagPos, false, std::vector<Direction>(2, Direction::East));
+    this->BuildRoad(hqFlagPos + MapPoint(2, 0), false, std::vector<Direction>(2, Direction::East));
+    this->BuildRoad(hqFlagPos + MapPoint(4, 0), false, std::vector<Direction>(2, Direction::East));
     const MapPoint middleFlag = hqFlagPos + MapPoint(2, 0);
     const noFlag* hqFlag = world.GetSpecObj<noFlag>(hqFlagPos);
     const noFlag* flag = world.GetSpecObj<noFlag>(middleFlag);
@@ -287,33 +287,33 @@ BOOST_FIXTURE_TEST_CASE(UpgradeRoadTest, WorldWithGCExecution2P)
     BOOST_REQUIRE(flag2);
     BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FlagType::Normal);
     // No flag
-    this->UpgradeRoad(middleFlag - MapPoint(1, 0), Direction::EAST);
+    this->UpgradeRoad(middleFlag - MapPoint(1, 0), Direction::East);
     BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FlagType::Normal);
     // Wrong direction
-    this->UpgradeRoad(middleFlag, Direction::SOUTHEAST);
+    this->UpgradeRoad(middleFlag, Direction::SouthEast);
     BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FlagType::Normal);
     // Upgrading correctly but twice (2nd does nothing)
     for(unsigned i = 0; i < 2; i++)
     {
         // Correct
-        this->UpgradeRoad(middleFlag, Direction::EAST);
+        this->UpgradeRoad(middleFlag, Direction::East);
         BOOST_CHECK_EQUAL(flag->GetFlagType(), FlagType::Large);
         BOOST_CHECK_EQUAL(flag2->GetFlagType(), FlagType::Large);
         BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FlagType::Normal);
-        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::EAST), PointRoad::Donkey);
-        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::EAST), PointRoad::Donkey);
-        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::EAST), PointRoad::Normal);
-        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::WEST), PointRoad::Normal);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::East), PointRoad::Donkey);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::East), PointRoad::Donkey);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::East), PointRoad::Normal);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::West), PointRoad::Normal);
     }
     // Upgrade in other direction
-    this->UpgradeRoad(middleFlag, Direction::WEST);
+    this->UpgradeRoad(middleFlag, Direction::West);
     BOOST_CHECK_EQUAL(flag->GetFlagType(), FlagType::Large);
     BOOST_CHECK_EQUAL(flag2->GetFlagType(), FlagType::Large);
     BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FlagType::Large);
-    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::EAST), PointRoad::Donkey);
-    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::EAST), PointRoad::Donkey);
-    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::EAST), PointRoad::Normal);
-    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::WEST), PointRoad::Donkey);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::East), PointRoad::Donkey);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::East), PointRoad::Donkey);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::East), PointRoad::Normal);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::West), PointRoad::Donkey);
 }
 
 BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
@@ -322,7 +322,7 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
     for(; curPlayer < 2; curPlayer++)
     {
         Distributions inDist;
-        for(unsigned char& i : inDist)
+        for(uint8_t& i : inDist)
             i = rand();
         this->ChangeDistribution(inDist);
 
@@ -343,7 +343,7 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
         this->ChangeMilitary(militarySettings);
 
         ToolSettings toolPrios;
-        for(unsigned char& toolPrio : toolPrios)
+        for(uint8_t& toolPrio : toolPrios)
             toolPrio = rand() % 11;
         this->ChangeTools(toolPrios);
 
@@ -382,13 +382,13 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     this->SetBuildingSite(closePt, BuildingType::Woodcutter);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NodalObjectType::Buildingsite);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BuildingType::Woodcutter);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(closePt, Direction::SOUTHEAST))->GetType(),
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(closePt, Direction::SouthEast))->GetType(),
                         NodalObjectType::Flag);
     // OK
     this->SetBuildingSite(farmPt, BuildingType::Farm);
     BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NodalObjectType::Buildingsite);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(farmPt)->GetBuildingType(), BuildingType::Farm);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(),
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SouthEast))->GetType(),
                         NodalObjectType::Flag);
     // Millitary bld to close
     this->SetBuildingSite(closeMilPt, BuildingType::Barracks);
@@ -397,25 +397,25 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     this->SetBuildingSite(okMilPt, BuildingType::Barracks);
     BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NodalObjectType::Buildingsite);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(okMilPt)->GetBuildingType(), BuildingType::Barracks);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(),
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SouthEast))->GetType(),
                         NodalObjectType::Flag);
 
     // Remove bld
     this->DestroyBuilding(farmPt);
     BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NodalObjectType::Nothing);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(),
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SouthEast))->GetType(),
                         NodalObjectType::Flag);
 
     // Remove flag -> bld also destroyed
-    this->DestroyFlag(world.GetNeighbour(okMilPt, Direction::SOUTHEAST));
+    this->DestroyFlag(world.GetNeighbour(okMilPt, Direction::SouthEast));
     BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NodalObjectType::Nothing);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(),
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SouthEast))->GetType(),
                         NodalObjectType::Nothing);
 
     // Check if bld is build
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::East));
     RTTR_EXEC_TILL(1200, world.GetNO(closePt)->GetType() == NodalObjectType::Building);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetGOT(), GOT_NOB_USUAL);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetGOT(), GO_Type::NobUsual);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BuildingType::Woodcutter);
 
     // Destroy finished bld -> Fire
@@ -454,8 +454,8 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     auto* bld = dynamic_cast<nobMilitary*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milPt, curPlayer, player.nation));
     BOOST_REQUIRE(bld);
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false,
-                    std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SouthEast), false,
+                    std::vector<Direction>((milPt.x - hqPos.x), Direction::East));
     // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to
     // and from flag), 30GFs for leaving carrier)
     unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
@@ -538,8 +538,8 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     // Build a watchtower and connect it
     auto* bld = static_cast<nobMilitary*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Barracks, milPt, curPlayer, player.nation));
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false,
-                    std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SouthEast), false,
+                    std::vector<Direction>((milPt.x - hqPos.x), Direction::East));
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     nofPassiveSoldier* soldier = nullptr;
     for(noFigure* fig : hq->GetLeavingFigures())
@@ -550,7 +550,7 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     }
     BOOST_REQUIRE(soldier);
     // Let soldiers out and walk a bit
-    MapPoint sldTestPos = world.GetNeighbour(world.GetNeighbour(hqPos, Direction::SOUTHEAST), Direction::EAST);
+    MapPoint sldTestPos = world.GetNeighbour(world.GetNeighbour(hqPos, Direction::SouthEast), Direction::East);
     RTTR_EXEC_TILL(30 * 2 + 20 * 2 + 10, soldier->GetPos() == sldTestPos); //-V522
     BOOST_REQUIRE_EQUAL(soldier->GetGoal(), bld);
     this->OrderNewSoldiers(milPt);
@@ -567,7 +567,7 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
 namespace {
 void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType)
 {
-    const MapPoint flagPt = worldFixture.world.GetNeighbour(worldFixture.hqPos, Direction::SOUTHEAST) + MapPoint(3, 0);
+    const MapPoint flagPt = worldFixture.world.GetNeighbour(worldFixture.hqPos, Direction::SouthEast) + MapPoint(3, 0);
     GamePlayer& player = worldFixture.world.GetPlayer(worldFixture.curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
@@ -590,7 +590,7 @@ void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodTyp
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
     // Build road and let worker leave
-    worldFixture.BuildRoad(flagPt, false, std::vector<Direction>(3, Direction::WEST));
+    worldFixture.BuildRoad(flagPt, false, std::vector<Direction>(3, Direction::West));
     for(unsigned i = 0; i < 30; i++)
         worldFixture.em.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
@@ -774,42 +774,42 @@ BOOST_AUTO_TEST_CASE(InventorySettingType)
     BOOST_REQUIRE_EQUAL(static_cast<uint8_t>(setting), 0u);
 
     // Test all 3 single types
-    setting = EInventorySetting::STOP;
-    BOOST_REQUIRE(setting.IsSet(EInventorySetting::STOP));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::SEND));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::COLLECT));
+    setting = EInventorySetting::Stop;
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::Stop));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::Send));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::Collect));
 
-    setting = EInventorySetting::SEND;
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::STOP));
-    BOOST_REQUIRE(setting.IsSet(EInventorySetting::SEND));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::COLLECT));
+    setting = EInventorySetting::Send;
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::Stop));
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::Send));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::Collect));
 
-    setting = EInventorySetting::COLLECT;
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::STOP));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::SEND));
-    BOOST_REQUIRE(setting.IsSet(EInventorySetting::COLLECT));
+    setting = EInventorySetting::Collect;
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::Stop));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::Send));
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::Collect));
 
     // Reset and test toggle
     setting = InventorySetting();
-    setting.Toggle(EInventorySetting::STOP);
-    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::STOP);
-    setting.Toggle(EInventorySetting::SEND);
+    setting.Toggle(EInventorySetting::Stop);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::Stop);
+    setting.Toggle(EInventorySetting::Send);
     // Both set
-    BOOST_REQUIRE(setting.IsSet(EInventorySetting::STOP));
-    BOOST_REQUIRE(setting.IsSet(EInventorySetting::SEND));
-    BOOST_REQUIRE(!setting.IsSet(EInventorySetting::COLLECT));
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::Stop));
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::Send));
+    BOOST_REQUIRE(!setting.IsSet(EInventorySetting::Collect));
 
     // Resets others
-    setting.Toggle(EInventorySetting::COLLECT);
-    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::COLLECT);
+    setting.Toggle(EInventorySetting::Collect);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::Collect);
     // Resets collect
-    setting.Toggle(EInventorySetting::STOP);
-    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::STOP);
+    setting.Toggle(EInventorySetting::Stop);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::Stop);
 
     // Enable send, disable stop
-    setting.Toggle(EInventorySetting::SEND);
-    setting.Toggle(EInventorySetting::STOP);
-    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::SEND);
+    setting.Toggle(EInventorySetting::Send);
+    setting.Toggle(EInventorySetting::Stop);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::Send);
 }
 
 template<class T, class U>
@@ -828,15 +828,15 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
     InventorySetting expectedSetting;
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType::Boards), expectedSetting); //-V522
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job::Private), expectedSetting);
-    expectedSetting.Toggle(EInventorySetting::STOP);
-    expectedSetting.Toggle(EInventorySetting::SEND);
+    expectedSetting.Toggle(EInventorySetting::Stop);
+    expectedSetting.Toggle(EInventorySetting::Send);
 
     this->SetInventorySetting(hqPos, GoodType::Boards, expectedSetting);
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType::Boards), expectedSetting);
     this->SetInventorySetting(hqPos, Job::Private, expectedSetting);
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job::Private), expectedSetting);
 
-    expectedSetting.Toggle(EInventorySetting::COLLECT);
+    expectedSetting.Toggle(EInventorySetting::Collect);
     this->SetInventorySetting(hqPos, GoodType::Boards, expectedSetting);
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType::Boards), expectedSetting);
     this->SetInventorySetting(hqPos, Job::Private, expectedSetting);
@@ -869,12 +869,12 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 
     unsigned numBoards = wh->GetNumRealWares(GoodType::Boards);
     unsigned numWoodcutters = wh->GetNumRealFigures(Job::Woodcutter);
-    this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::SEND);
+    this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::Send);
     // Nothing should happen
     RTTR_SKIP_GFS(100);
     BOOST_REQUIRE_EQUAL(wh->GetNumRealWares(GoodType::Boards), numBoards);
     this->SetInventorySetting(hqPos, GoodType::Boards, InventorySetting());
-    this->SetInventorySetting(hqPos, Job::Woodcutter, EInventorySetting::SEND);
+    this->SetInventorySetting(hqPos, Job::Woodcutter, EInventorySetting::Send);
     // Figure goes out and wanders
     RTTR_SKIP_GFS(100);
     BOOST_REQUIRE_LT(wh->GetNumRealFigures(Job::Woodcutter), numWoodcutters);
@@ -883,13 +883,13 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
     numWoodcutters = wh->GetNumRealFigures(Job::Woodcutter);
     MapPoint whPos = hqPos + MapPoint(3, 0);
     BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Africans);
-    this->BuildRoad(wh->GetFlag()->GetPos(), false, std::vector<Direction>(3, Direction::EAST));
-    this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::SEND);
+    this->BuildRoad(wh->GetFlag()->GetPos(), false, std::vector<Direction>(3, Direction::East));
+    this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::Send);
     // Send some
     RTTR_SKIP_GFS(100);
     BOOST_REQUIRE_LT(wh->GetNumRealWares(GoodType::Boards), numBoards);
     this->SetInventorySetting(hqPos, GoodType::Boards, InventorySetting());
-    this->SetInventorySetting(hqPos, Job::Woodcutter, EInventorySetting::SEND);
+    this->SetInventorySetting(hqPos, Job::Woodcutter, EInventorySetting::Send);
     // Nothing should happen
     RTTR_SKIP_GFS(100);
     BOOST_REQUIRE_LT(wh->GetNumRealFigures(Job::Woodcutter), numWoodcutters);
@@ -959,8 +959,8 @@ BOOST_FIXTURE_TEST_CASE(Armageddon, WorldWithGCExecution2P)
         const MapNode& node = world.GetNode(pt);
         BOOST_REQUIRE_EQUAL(node.owner, 0u);
     }
-    BOOST_REQUIRE_NE(world.GetNO(hqPt1)->GetGOT(), GOT_NOB_HQ);
-    BOOST_REQUIRE_NE(world.GetNO(hqPt2)->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE_NE(world.GetNO(hqPt1)->GetGOT(), GO_Type::NobHq);
+    BOOST_REQUIRE_NE(world.GetNO(hqPt2)->GetGOT(), GO_Type::NobHq);
     BOOST_REQUIRE(player1.IsDefeated());
     BOOST_REQUIRE(player2.IsDefeated());
 }
@@ -982,8 +982,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyAllTest, WorldWithGCExecution2P)
         const MapNode& node = world.GetNode(pt);
         BOOST_REQUIRE_NE(node.owner, 1u);
     }
-    BOOST_REQUIRE_NE(world.GetNO(hqPt1)->GetGOT(), GOT_NOB_HQ);
-    BOOST_REQUIRE_EQUAL(world.GetNO(hqPt2)->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE_NE(world.GetNO(hqPt1)->GetGOT(), GO_Type::NobHq);
+    BOOST_REQUIRE_EQUAL(world.GetNO(hqPt2)->GetGOT(), GO_Type::NobHq);
     BOOST_REQUIRE(player1.IsDefeated());
     BOOST_REQUIRE(!player2.IsDefeated());
 }

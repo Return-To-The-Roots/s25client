@@ -56,7 +56,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GOT_NOF_TRADELEADER; }
+    GO_Type GetGOT() const override { return GO_Type::NofTradeleader; }
 
     void Draw(DrawPoint drawPt) override;
 

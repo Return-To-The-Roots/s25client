@@ -63,7 +63,7 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
 {
     if(tab_count < tabs.size())
     {
-        if(AddImageButton(tab_count, DrawPoint(36 * tab_count, 0), Extent(36, 45), TC_RED1, image, tooltip))
+        if(AddImageButton(tab_count, DrawPoint(36 * tab_count, 0), Extent(36, 45), TextureColor::Red1, image, tooltip))
         {
             tabs[tab_count++] = id;
             ctrlGroup* group = AddGroup(tabs.size() + 1 + id);
@@ -103,7 +103,7 @@ void ctrlTab::SetSelection(unsigned short nr, bool /*notify*/)
 
     button = GetCtrl<ctrlButton>(tab_selection);
     if(button)
-        button->SetTexture(TC_RED1);
+        button->SetTexture(TextureColor::Red1);
 
     // Steuerelemente auf der alten Tabseite ausblenden
     GetCtrl<ctrlGroup>(tabs[tab_selection] + tabs.size() + 1)->SetVisible(false);
@@ -114,7 +114,7 @@ void ctrlTab::SetSelection(unsigned short nr, bool /*notify*/)
     // Farbe des neuen Buttons ändern
     button = GetCtrl<ctrlButton>(tab_selection);
     if(button)
-        button->SetTexture(TC_GREEN1);
+        button->SetTexture(TextureColor::Green1);
 
     // Steuerelemente auf der neuen Tabseite einblenden
     GetCtrl<ctrlGroup>(tabs[nr] + tabs.size() + 1)->SetVisible(true);
@@ -143,7 +143,7 @@ void ctrlTab::Draw_()
     LOADER.GetImageN("io", 3)->DrawPart(
       Rect(GetDrawPos() + DrawPoint(headerSize, 0), Extent(GetSize().x - headerSize, 45)));
 
-    Draw3D(Rect(GetDrawPos() + DrawPoint(0, 32), Extent(GetSize().x, 13)), TC_GREEN1, true);
+    Draw3D(Rect(GetDrawPos() + DrawPoint(0, 32), Extent(GetSize().x, 13)), TextureColor::Green1, true);
 
     auto* button = GetCtrl<ctrlButton>(tab_selection);
     if(button)

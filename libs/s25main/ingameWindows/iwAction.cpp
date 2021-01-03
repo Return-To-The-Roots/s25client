@@ -55,7 +55,7 @@ enum TabID
 };
 
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt,
-                   const DrawPoint& mousePos, unsigned params, bool military_buildings)
+                   const DrawPoint& mousePos, Params params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.GetImageN("io", 1)), gi(gi),
       gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos)
 {
@@ -97,141 +97,97 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlTab* build_tab = group->AddTabCtrl(1, DrawPoint(0, 45), 180);
 
         // Building tabs
-        if(tabs.build_tabs == Tabs::BT_MINE) // mines
-            build_tab->AddTab(LOADER.GetImageN("io", 76), _("-> Dig mines"), Tabs::BT_MINE);
+        if(tabs.build_tabs == BuildTab::Mine) // mines
+            build_tab->AddTab(LOADER.GetImageN("io", 76), _("-> Dig mines"), int(BuildTab::Mine));
         else
         {
-            build_tab->AddTab(LOADER.GetImageN("io", 67), _("-> Build hut"), Tabs::BT_HUT);
-            if(tabs.build_tabs >= Tabs::BT_HOUSE)
-                build_tab->AddTab(LOADER.GetImageN("io", 68), _("-> Build house"), Tabs::BT_HOUSE);
-            if(tabs.build_tabs >= Tabs::BT_CASTLE) // castle & harbor
-                build_tab->AddTab(LOADER.GetImageN("io", 69), _("-> Build castle"), Tabs::BT_CASTLE);
+            build_tab->AddTab(LOADER.GetImageN("io", 67), _("-> Build hut"), int(BuildTab::Hut));
+            if(tabs.build_tabs >= BuildTab::House)
+                build_tab->AddTab(LOADER.GetImageN("io", 68), _("-> Build house"), int(BuildTab::House));
+            if(tabs.build_tabs >= BuildTab::Castle) // castle & harbor
+                build_tab->AddTab(LOADER.GetImageN("io", 69), _("-> Build castle"), int(BuildTab::Castle));
         }
 
-        // add building icons to TabCtrl
-        const unsigned char building_count_max = 13;
-        const std::array<unsigned, 4> building_count = {9, 13, 6, 4};
-        const helpers::MultiArray<BuildingType, building_count.size(), building_count_max> building_icons = {
+        // add building icons to TabCtrl. Note: None for BuildTab::Harbor (last)
+        const helpers::EnumArray<std::vector<BuildingType>, BuildTab> building_icons = {
           // Linebreak
-          {{/* 0 */
-            /* 0 */ BuildingType::Woodcutter,
-            /* 1 */ BuildingType::Forester,
-            /* 2 */ BuildingType::Quarry,
-            /* 3 */ BuildingType::Fishery,
-            /* 4 */ BuildingType::Hunter,
-            /* 5 */ BuildingType::Barracks,
-            /* 6 */ BuildingType::Guardhouse,
-            /* 7 */ BuildingType::LookoutTower,
-            /* 8 */ BuildingType::Well},
-           {/* 1 */
-            /*  0 */ BuildingType::Sawmill,
-            /*  1 */ BuildingType::Slaughterhouse,
-            /*  2 */ BuildingType::Mill,
-            /*  3 */ BuildingType::Bakery,
-            /*  4 */ BuildingType::Ironsmelter,
-            /*  5 */ BuildingType::Metalworks,
-            /*  6 */ BuildingType::Armory,
-            /*  7 */ BuildingType::Mint,
-            /*  8 */ BuildingType::Shipyard,
-            /*  9 */ BuildingType::Brewery,
-            /* 10 */ BuildingType::Storehouse,
-            /* 11 */ BuildingType::Watchtower,
-            /* 12 */ BuildingType::Catapult},
-           {/* 2 */
-            /* 0 */ BuildingType::Farm,
-            /* 1 */ BuildingType::PigFarm,
-            /* 2 */ BuildingType::DonkeyBreeder,
-            /* 3 */ BuildingType::Charburner,
-            /* 4 */ BuildingType::Fortress,
-            /* 5 */ BuildingType::HarborBuilding},
-           {/* 3 */
-            /* 0 */ BuildingType::GoldMine,
-            /* 1 */ BuildingType::IronMine,
-            /* 2 */ BuildingType::CoalMine,
-            /* 3 */ BuildingType::GraniteMine}}};
+          {{BuildingType::Woodcutter, BuildingType::Forester, BuildingType::Quarry, BuildingType::Fishery,
+            BuildingType::Hunter, BuildingType::Barracks, BuildingType::Guardhouse, BuildingType::LookoutTower,
+            BuildingType::Well},
+           {BuildingType::Sawmill, BuildingType::Slaughterhouse, BuildingType::Mill, BuildingType::Bakery,
+            BuildingType::Ironsmelter, BuildingType::Metalworks, BuildingType::Armory, BuildingType::Mint,
+            BuildingType::Shipyard, BuildingType::Brewery, BuildingType::Storehouse, BuildingType::Watchtower,
+            BuildingType::Catapult},
+           {BuildingType::Farm, BuildingType::PigFarm, BuildingType::DonkeyBreeder, BuildingType::Charburner,
+            BuildingType::Fortress, BuildingType::HarborBuilding},
+           {BuildingType::GoldMine, BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine}}};
 
         /// Flexible what-buildings-are-available handling
-        helpers::MultiArray<bool, 4, building_count_max> building_available;
+        helpers::EnumArray<bool, BuildingType> building_available;
 
         // First enable all buildings
-        for(unsigned char i = 0; i < 4; ++i)
-        {
-            for(unsigned char j = 0; j < building_count_max; ++j)
-            {
-                if(j < building_count[i])
-                {
-                    building_available[i][j] = player.IsBuildingEnabled(building_icons[i][j]);
-                } else
-                {
-                    building_available[i][j] = false;
-                }
-            }
-        }
+        for(const auto bld : helpers::enumRange<BuildingType>())
+            building_available[bld] = player.IsBuildingEnabled(bld);
 
         // Now deactivate those we don't want
 
-        // Harbor
-        if(tabs.build_tabs != Tabs::BT_HARBOR)
-            building_available[2][5] = false;
+        if(tabs.build_tabs != BuildTab::Harbor)
+            building_available[BuildingType::HarborBuilding] = false;
 
-        // Military buildings
         if(!military_buildings)
         {
-            building_available[0][5] = false;
-            building_available[0][6] = false;
-            building_available[1][11] = false;
-            building_available[2][4] = false;
+            building_available[BuildingType::Barracks] = false;
+            building_available[BuildingType::Guardhouse] = false;
+            building_available[BuildingType::Watchtower] = false;
+            building_available[BuildingType::Fortress] = false;
         }
 
-        // Mint and Goldmine
         if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
         {
-            building_available[1][7] = false;
-            building_available[3][0] = false;
+            building_available[BuildingType::GoldMine] = false;
+            building_available[BuildingType::Mint] = false;
         }
 
-        // Catapult
-        if(!player.CanBuildCatapult()) //-V807
-            building_available[1][12] = false;
+        if(!player.CanBuildCatapult())
+            building_available[BuildingType::Catapult] = false;
 
-        // Charburner
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
-            building_available[2][3] = false;
+            building_available[BuildingType::Charburner] = false;
 
-        const std::array<unsigned, 5> NUM_TABS = {1, 2, 3, 1, 3};
+        constexpr helpers::EnumArray<unsigned, BuildTab> NUM_TABS = {1, 2, 3, 1, 3};
 
         for(unsigned char i = 0; i < NUM_TABS[tabs.build_tabs]; ++i)
         {
             unsigned char k = 0;
-            Tabs::BuildTab bt = (tabs.build_tabs == Tabs::BT_MINE) ? Tabs::BT_MINE : Tabs::BuildTab(i);
+            const BuildTab bt = (tabs.build_tabs == BuildTab::Mine) ? BuildTab::Mine : BuildTab(i);
 
-            for(unsigned char j = 0; j < building_count_max; ++j)
+            for(const BuildingType bld : building_icons[bt])
             {
-                if(!building_available[bt][j])
+                if(!building_available[bld])
                     continue;
 
                 // Baukosten im Tooltip mit anzeigen
                 std::stringstream tooltip;
-                tooltip << _(BUILDING_NAMES[building_icons[bt][j]]);
+                tooltip << _(BUILDING_NAMES[bld]);
 
                 tooltip << _("\nCosts: ");
-                if(BUILDING_COSTS[building_icons[bt][j]].boards > 0)
-                    tooltip << (int)BUILDING_COSTS[building_icons[bt][j]].boards << _(" boards");
-                if(BUILDING_COSTS[building_icons[bt][j]].stones > 0)
+                if(BUILDING_COSTS[bld].boards > 0)
+                    tooltip << (int)BUILDING_COSTS[bld].boards << _(" boards");
+                if(BUILDING_COSTS[bld].stones > 0)
                 {
-                    if(BUILDING_COSTS[building_icons[bt][j]].boards > 0)
+                    if(BUILDING_COSTS[bld].boards > 0)
                         tooltip << ", ";
-                    tooltip << (int)BUILDING_COSTS[building_icons[bt][j]].stones << _(" stones");
+                    tooltip << (int)BUILDING_COSTS[bld].stones << _(" stones");
                 }
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
-                build_tab->GetGroup(bt)->AddBuildingIcon(j, iconPos, building_icons[bt][j], player.nation, 36,
-                                                         tooltip.str());
+                build_tab->GetGroup(static_cast<int>(bt))
+                  ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
 
                 ++k;
             }
 
-            building_tab_heights[bt] = (k / 5 + ((k % 5 != 0) ? 1 : 0)) * 36 + 150;
+            building_tab_heights[static_cast<int>(bt)] = (k / 5 + ((k % 5 != 0) ? 1 : 0)) * 36 + 150;
         }
 
         build_tab->SetSelection(0, true);
@@ -242,46 +198,46 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 70), _("Erect flag"), TAB_FLAG);
 
-        switch(params)
+        switch(boost::get<FlagType>(params))
         {
-            case AWFT_NORMAL: // normal Flag
+            case FlagType::Normal:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io", 65),
-                                      _("Build road"));
-                group->AddImageButton(3, DrawPoint(45, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io", 118),
-                                      _("Pull down flag"));
-                group->AddImageButton(4, DrawPoint(90, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io", 20),
-                                      _("Call in geologist"));
-                group->AddImageButton(5, DrawPoint(135, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io", 96),
-                                      _("Send out scout"));
+                group->AddImageButton(1, DrawPoint(0, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 65), _("Build road"));
+                group->AddImageButton(3, DrawPoint(45, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 118), _("Pull down flag"));
+                group->AddImageButton(4, DrawPoint(90, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 20), _("Call in geologist"));
+                group->AddImageButton(5, DrawPoint(135, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 96), _("Send out scout"));
             }
             break;
-            case AWFT_WATERFLAG: // Water flag
+            case FlagType::WaterFlag:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 65),
-                                      _("Build road"));
-                group->AddImageButton(2, DrawPoint(36, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 95),
-                                      _("Build waterway"));
-                group->AddImageButton(3, DrawPoint(72, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 118),
-                                      _("Pull down flag"));
-                group->AddImageButton(4, DrawPoint(108, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 20),
-                                      _("Call in geologist"));
-                group->AddImageButton(5, DrawPoint(144, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 96),
-                                      _("Send out scout"));
+                group->AddImageButton(1, DrawPoint(0, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 65), _("Build road"));
+                group->AddImageButton(2, DrawPoint(36, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 95), _("Build waterway"));
+                group->AddImageButton(3, DrawPoint(72, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 118), _("Pull down flag"));
+                group->AddImageButton(4, DrawPoint(108, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 20), _("Call in geologist"));
+                group->AddImageButton(5, DrawPoint(144, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 96), _("Send out scout"));
             }
             break;
-            case AWFT_HQ: // HQ
+            case FlagType::HQ:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(180, 36), TC_GREY, LOADER.GetImageN("io", 65),
-                                      _("Build road"));
+                group->AddImageButton(1, DrawPoint(0, 45), Extent(180, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 65), _("Build road"));
             }
             break;
-            case AWFT_STOREHOUSE: // Storehouse
+            case FlagType::Storehouse:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(90, 36), TC_GREY, LOADER.GetImageN("io", 65),
-                                      _("Build road"));
-                group->AddImageButton(3, DrawPoint(90, 45), Extent(90, 36), TC_GREY, LOADER.GetImageN("io", 118),
-                                      _("Demolish house"));
+                group->AddImageButton(1, DrawPoint(0, 45), Extent(90, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 65), _("Build road"));
+                group->AddImageButton(3, DrawPoint(90, 45), Extent(90, 36), TextureColor::Grey,
+                                      LOADER.GetImageN("io", 118), _("Demolish house"));
             }
             break;
         }
@@ -293,7 +249,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 45), _("Erect flag"), TAB_SETFLAG);
 
         unsigned nr = 70;
-        if(params == AWFT_WATERFLAG)
+        if(boost::get<FlagType>(params) == FlagType::WaterFlag)
             nr = 94;
 
         // Straße aufwerten ggf anzeigen
@@ -301,7 +257,8 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         unsigned btPosX = 90;
         AddUpgradeRoad(group, btPosX, btSize.x);
 
-        group->AddImageButton(1, DrawPoint(0, 45), btSize, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
+        group->AddImageButton(1, DrawPoint(0, 45), btSize, TextureColor::Grey, LOADER.GetImageN("io", nr),
+                              _("Erect flag"));
     }
 
     // Cut-main_tab
@@ -315,14 +272,15 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         if(tabs.upgradeRoad)
             AddUpgradeRoad(group, btPosX, btSize.x);
 
-        group->AddImageButton(1, DrawPoint(btPosX, 45), btSize, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
+        group->AddImageButton(1, DrawPoint(btPosX, 45), btSize, TextureColor::Grey, LOADER.GetImageN("io", 32),
+                              _("Dig up road"));
     }
 
     if(tabs.attack)
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 98), _("Attack options"), TAB_ATTACK);
-        available_soldiers_count = params;
-        AddAttackControls(group, params);
+        available_soldiers_count = boost::get<SoldierCount>(params);
+        AddAttackControls(group, available_soldiers_count);
         selected_soldiers_count = 1;
     }
 
@@ -342,13 +300,15 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 36), _("Display options"), TAB_WATCH);
         const Extent btSize(45, 36);
         DrawPoint curPos(0, 45);
-        group->AddImageButton(1, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 108), _("Observation window"));
+        group->AddImageButton(1, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 108),
+                              _("Observation window"));
         curPos.x += btSize.x;
-        group->AddImageButton(2, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 179), _("House names"));
+        group->AddImageButton(2, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 179), _("House names"));
         curPos.x += btSize.x;
-        group->AddImageButton(3, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 180), _("Go to headquarters"));
+        group->AddImageButton(3, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 180),
+                              _("Go to headquarters"));
         curPos.x += btSize.x;
-        group->AddImageButton(4, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 107),
+        group->AddImageButton(4, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 107),
                               _("Notify allies of this location"));
     }
 
@@ -373,7 +333,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned& /*x*/, unsigned& width
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
     {
         width = 90;
-        group->AddImageButton(2, DrawPoint(90, 45), Extent(width, 36), TC_GREY, LOADER.GetImageN("io", 44),
+        group->AddImageButton(2, DrawPoint(90, 45), Extent(width, 36), TextureColor::Grey, LOADER.GetImageN("io", 44),
                               _("Upgrade to donkey road"));
     }
 }
@@ -399,16 +359,16 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
         selected_soldiers_count = 1;
 
         // Minus und Plus - Button
-        group->AddImageButton(1, DrawPoint(3, 49), Extent(26, 32), TC_GREY, LOADER.GetImageN("io", 139),
+        group->AddImageButton(1, DrawPoint(3, 49), Extent(26, 32), TextureColor::Grey, LOADER.GetImageN("io", 139),
                               _("Less attackers"));
-        group->AddImageButton(2, DrawPoint(89, 49), Extent(26, 32), TC_GREY, LOADER.GetImageN("io", 138),
+        group->AddImageButton(2, DrawPoint(89, 49), Extent(26, 32), TextureColor::Grey, LOADER.GetImageN("io", 138),
                               _("More attackers"));
 
         // Starke/Schwache Soldaten
         ctrlOptionGroup* ogroup = group->AddOptionGroup(3, GroupSelectType::Illuminate);
-        ogroup->AddImageButton(0, DrawPoint(146, 49), Extent(30, 33), TC_GREY, LOADER.GetImageN("io", 31),
+        ogroup->AddImageButton(0, DrawPoint(146, 49), Extent(30, 33), TextureColor::Grey, LOADER.GetImageN("io", 31),
                                _("Weak attackers"));
-        ogroup->AddImageButton(1, DrawPoint(117, 49), Extent(30, 33), TC_GREY, LOADER.GetImageN("io", 30),
+        ogroup->AddImageButton(1, DrawPoint(117, 49), Extent(30, 33), TextureColor::Grey, LOADER.GetImageN("io", 30),
                                _("Strong attackers"));
         // standardmäßig starke Soldaten
         ogroup->SetSelection(1);
@@ -418,11 +378,12 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
         unsigned short button_width = 112 / buttons_count;
 
         for(unsigned i = 0; i < buttons_count; ++i)
-            group->AddImageButton(10 + i, DrawPoint(3 + i * button_width, 83), Extent(button_width, 32), TC_GREY,
-                                  LOADER.GetImageN("io", 204 + i), _("Number of attackers"));
+            group->AddImageButton(10 + i, DrawPoint(3 + i * button_width, 83), Extent(button_width, 32),
+                                  TextureColor::Grey, LOADER.GetImageN("io", 204 + i), _("Number of attackers"));
 
         // Angriffsbutton
-        group->AddImageButton(4, DrawPoint(117, 83), Extent(59, 32), TC_RED1, LOADER.GetImageN("io", 25), _("Attack!"));
+        group->AddImageButton(4, DrawPoint(117, 83), Extent(59, 32), TextureColor::Red1, LOADER.GetImageN("io", 25),
+                              _("Attack!"));
     }
 }
 
@@ -650,16 +611,16 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
         case 3: // Flagge abreißen
         {
             const GameWorldBase& world = gwv.GetWorld();
-            NodalObjectType nop = (world.GetNO(world.GetNeighbour(selectedPt, Direction::NORTHWEST)))->GetType();
+            NodalObjectType nop = (world.GetNO(world.GetNeighbour(selectedPt, Direction::NorthWest)))->GetType();
             // Haben wir ne Baustelle/Gebäude dran?
             if(nop == NodalObjectType::Building || nop == NodalObjectType::Buildingsite)
             {
                 // Abreißen?
                 const auto* building =
-                  world.GetSpecObj<noBaseBuilding>(world.GetNeighbour(selectedPt, Direction::NORTHWEST));
+                  world.GetSpecObj<noBaseBuilding>(world.GetNeighbour(selectedPt, Direction::NorthWest));
 
                 // Militärgebäude?
-                if(building->GetGOT() == GOT_NOB_MILITARY)
+                if(building->GetGOT() == GO_Type::NobMilitary)
                 {
                     // Darf das Gebäude abgerissen werden?
                     if(!static_cast<const nobMilitary*>(building)->IsDemolitionAllowed())

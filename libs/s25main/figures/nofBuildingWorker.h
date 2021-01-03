@@ -29,28 +29,29 @@ class nofBuildingWorker : public noFigure
 {
 public:
     /// Was der gerade so schönes macht
-    enum State
+    enum class State : uint8_t
     {
-        STATE_FIGUREWORK,    /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
-        STATE_ENTERBUILDING, /// Betreten des Gebäudes
-        STATE_WAITING1,      /// Warten, bis man anfängt zu produzieren
-        STATE_WAITING2,      /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
-        STATE_CARRYOUTWARE,  /// Raustragen der Ware
-        STATE_WORK,          /// Arbeiten
-        STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED, /// Warten auf Waren oder weil Produktion eingetellt wurde
-        STATE_WALKTOWORKPOINT,                      /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
-        STATE_WALKINGHOME,                          /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)
-        STATE_WAITFORWARESPACE,                     /// auf einen freien Platz an der Flagge vor dem Gebäude warten
-        STATE_HUNTER_CHASING,                       /// Jäger: verfolgt das Tier bis auf eine gewisse Distanz
-        STATE_HUNTER_FINDINGSHOOTINGPOINT, /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
-        STATE_HUNTER_SHOOTING,             /// Jäger: Tier erschießen
-        STATE_HUNTER_WALKINGTOCADAVER,     /// Jäger: Zum Kadaver laufen
-        STATE_HUNTER_EVISCERATING,         /// Jäger: Tier ausnehmen
-        STATE_CATAPULT_TARGETBUILDING,     /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
-        STATE_CATAPULT_BACKOFF, /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
-        STATE_HUNTER_WAITING_FOR_ANIMAL_READY, /// Hunter: Arrived at shooting pos and waiting for animal to be ready to
-                                               /// be shot
+        FigureWork,                         /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
+        EnterBuilding,                      /// Betreten des Gebäudes
+        Waiting1,                           /// Warten, bis man anfängt zu produzieren
+        Waiting2,                           /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
+        CarryoutWare,                       /// Raustragen der Ware
+        Work,                               /// Arbeiten
+        WaitingForWaresOrProductionStopped, /// Warten auf Waren oder weil Produktion eingetellt wurde
+        WalkToWorkpoint,                    /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
+        WalkingHome,                        /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)
+        WaitForWareSpace,                   /// auf einen freien Platz an der Flagge vor dem Gebäude warten
+        HunterChasing,                      /// Jäger: verfolgt das Tier bis auf eine gewisse Distanz
+        HunterFindingShootingpoint,  /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
+        HunterShooting,              /// Jäger: Tier erschießen
+        HunterWalkingToCadaver,      /// Jäger: Zum Kadaver laufen
+        HunterEviscerating,          /// Jäger: Tier ausnehmen
+        CatapultTargetBuilding,      /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
+        CatapultBackoff,             /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
+        HunterWaitingForAnimalReady, /// Hunter: Arrived at shooting pos and waiting for animal to be ready to
+                                     /// be shot
     };
+    friend constexpr auto maxEnumValue(State) { return State::HunterWaitingForAnimalReady; }
 
 protected:
     State state;

@@ -45,7 +45,7 @@ iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& windo
                    LOADER.GetImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
-    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TC_GREEN2, NormalFont,
+    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TextureColor::Green2, NormalFont,
              ctrlTable::Columns{{_("Filename"), 270, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 250, SRT::Date},
@@ -132,12 +132,12 @@ void iwSave::SaveLoad()
 
 iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 {
-    AddEdit(1, DrawPoint(20, 390), Extent(510, 22), TC_GREEN2, NormalFont);
-    AddImageButton(2, DrawPoint(540, 386), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 47));
+    AddEdit(1, DrawPoint(20, 390), Extent(510, 22), TextureColor::Green2, NormalFont);
+    AddImageButton(2, DrawPoint(540, 386), Extent(40, 40), TextureColor::Green2, LOADER.GetImageN("io", 47));
 
     // Autospeicherzeug
     AddText(3, DrawPoint(20, 350), _("Auto-Save every:"), 0xFFFFFF00, FontStyle{}, NormalFont);
-    ctrlComboBox* combo = AddComboBox(4, DrawPoint(270, 345), Extent(130, 22), TC_GREEN2, NormalFont, 100);
+    ctrlComboBox* combo = AddComboBox(4, DrawPoint(270, 345), Extent(130, 22), TextureColor::Green2, NormalFont, 100);
 
     /// Combobox füllen
     combo->AddString(_("Disabled")); // deaktiviert
@@ -181,8 +181,8 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned sele
 
 iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(0, _("Load game!")), csi(std::move(csi))
 {
-    AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TC_GREEN2, NormalFont);
-    AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 48));
+    AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont);
+    AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TextureColor::Green2, LOADER.GetImageN("io", 48));
     // Tabelle ausfüllen beim Start
     RefreshTable();
 }

@@ -195,14 +195,14 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     for(unsigned short& seaId : seaIds)
         seaId = sgd.PopUnsignedShort();
 
-    sgd.PopObjectContainer(wares_for_ships, GOT_WARE);
+    sgd.PopObjectContainer(wares_for_ships, GO_Type::Ware);
 
     unsigned count = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < count; ++i)
     {
         FigureForShip ffs;
         ffs.dest = sgd.PopMapPoint();
-        ffs.fig = sgd.PopObject<noFigure>(GOT_UNKNOWN);
+        ffs.fig = sgd.PopObject<noFigure>(GO_Type::Unknown);
         figures_for_ships.push_back(ffs);
     }
 
@@ -211,7 +211,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     {
         SoldierForShip ffs;
         ffs.dest = sgd.PopMapPoint();
-        ffs.attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
+        ffs.attacker = sgd.PopObject<nofAttacker>(GO_Type::NofAttacker);
         soldiers_for_ships.push_back(ffs);
     }
 }
@@ -285,10 +285,10 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
 
             DrawPoint builderPos = drawPt + BUILDER_POS[nation];
             if(id < 500)
-                LOADER.getBobSprite(nation, Job::Builder, Direction::WEST, walking_id)
+                LOADER.getBobSprite(nation, Job::Builder, Direction::West, walking_id)
                   .draw(builderPos - DrawPoint(walking_distance, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
             else
-                LOADER.getBobSprite(nation, Job::Builder, Direction::EAST, walking_id)
+                LOADER.getBobSprite(nation, Job::Builder, Direction::East, walking_id)
                   .draw(builderPos + DrawPoint(walking_distance - WALKING_DISTANCE, 0), COLOR_WHITE,
                         gwg->GetPlayer(player).color);
         }
@@ -585,7 +585,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         for(const auto& figureForShip : figures_for_ships)
         {
             noBase* nb = gwg->GetNO(figureForShip.dest);
-            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING
+            if(nb->GetGOT() == GO_Type::NobHarborbuilding
                && gwg->GetNode(figureForShip.dest).owner
                     == player + 1) // target is a harbor and owned by the same player
             {
@@ -597,7 +597,8 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         for(const auto* wareForShip : wares_for_ships)
         {
             noBase* nb = gwg->GetNO(wareForShip->GetNextHarbor());
-            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode(wareForShip->GetNextHarbor()).owner == player + 1)
+            if(nb->GetGOT() == GO_Type::NobHarborbuilding
+               && gwg->GetNode(wareForShip->GetNextHarbor()).owner == player + 1)
             {
                 dest = wareForShip->GetNextHarbor();
                 gotdest = true;
@@ -839,10 +840,10 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         return connections;
 
     // Should already be handled by the above check, but keep the runtime check for now (TODO: remove runtime check)
-    RTTR_Assert(gwg->GetGOT(pos) == GOT_NOB_HARBORBUILDING);
+    RTTR_Assert(gwg->GetGOT(pos) == GO_Type::NobHarborbuilding);
 
     // Is there any harbor building at all? (could be destroyed)?
-    if(gwg->GetGOT(pos) != GOT_NOB_HARBORBUILDING)
+    if(gwg->GetGOT(pos) != GO_Type::NobHarborbuilding)
         return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
@@ -1147,7 +1148,7 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
     // Und zählen
     for(auto& all_building : all_buildings)
     {
-        if(all_building->GetGOT() != GOT_NOB_MILITARY)
+        if(all_building->GetGOT() != GO_Type::NobMilitary)
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
@@ -1178,7 +1179,7 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
     // Und zählen
     for(auto& all_building : all_buildings)
     {
-        if(all_building->GetGOT() != GOT_NOB_MILITARY)
+        if(all_building->GetGOT() != GO_Type::NobMilitary)
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
@@ -1310,7 +1311,7 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
 void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
 {
     // Maybe this building is already destroyed
-    if(gwg->GetGOT(pos) != GOT_NOB_HARBORBUILDING)
+    if(gwg->GetGOT(pos) != GO_Type::NobHarborbuilding)
         return;
 
     RTTR_Assert(helpers::contains(wares_for_ships, ware));

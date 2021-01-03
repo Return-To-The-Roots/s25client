@@ -31,51 +31,54 @@ class GameCommand;
 // Use this for safely using Pointers to GameCommands
 using GameCommandPtr = boost::intrusive_ptr<GameCommand>;
 
+enum class GCType : uint8_t
+{
+    SetFlag,
+    DestroyFlag,
+    BuildRoad,
+    DestroyRoad,
+    ChangeDistribution,
+    ChangeBuildOrder,
+    SetBuildingsite,
+    DestroyBuilding,
+    ChangeTransport,
+    ChangeMilitary,
+    ChangeTools,
+    CallSpecialist,
+    CallScout,
+    Attack,
+    SetCoinsAllowed,
+    SetProductionEnabled,
+    SetInventorySetting,
+    SetAllInventorySettings,
+    ChangeReserve,
+    SuggestPact,
+    AcceptPact,
+    CancelPact,
+    SetShipyardMode,
+    StartStopExpedition,
+    ExpeditionCommand,
+    SeaAttack,
+    StartStopExplorationExpedition,
+    Trade,
+    Surrender,
+    CheatArmageddon,
+    DestroyAll,
+    UpgradeRoad,
+    SendSoldiersHome,
+    OrderNewSoldiers,
+    NotifyAlliesOfLocation
+};
+constexpr auto maxEnumValue(GCType)
+{
+    return GCType::NotifyAlliesOfLocation;
+}
+
 class GameCommand
 {
-protected:
-    enum Type
-    {
-        SET_FLAG,
-        DESTROY_FLAG,
-        BUILD_ROAD,
-        DESTROY_ROAD,
-        CHANGE_DISTRIBUTION,
-        CHANGE_BUILDORDER,
-        SET_BUILDINGSITE,
-        DESTROY_BUILDING,
-        CHANGE_TRANSPORT,
-        CHANGE_MILITARY,
-        CHANGE_TOOLS,
-        CALL_SPECIALIST,
-        CALL_SCOUT,
-        ATTACK,
-        SET_COINS_ALLOWED,
-        SET_PRODUCTION_ENABLED,
-        SET_INVENTORY_SETTING,
-        SET_ALL_INVENTORY_SETTINGS,
-        CHANGE_RESERVE,
-        SUGGEST_PACT,
-        ACCEPT_PACT,
-        CANCEL_PACT,
-        SET_SHIPYARD_MODE,
-        START_STOP_EXPEDITION,
-        EXPEDITION_COMMAND,
-        SEA_ATTACK,
-        START_STOP_EXPLORATION_EXPEDITION,
-        TRADE,
-        SURRENDER,
-        CHEAT_ARMAGEDDON,
-        DESTROY_ALL,
-        UPGRADE_ROAD,
-        SEND_SOLDIERS_HOME,
-        ORDER_NEW_SOLDIERS,
-        NOTIFY_ALLIES_OF_LOCATION
-    };
-
 private:
     /// Type of this command
-    Type gcType;
+    GCType gcType;
     unsigned refCounter_;
     friend void intrusive_ptr_add_ref(GameCommand* x);
     friend void intrusive_ptr_release(GameCommand* x);
@@ -102,7 +105,7 @@ public:
     virtual void Execute(GameWorldGame& gwg, uint8_t playerId) = 0;
 
 protected:
-    GameCommand(const Type gcType) : gcType(gcType), refCounter_(0) {}
+    GameCommand(const GCType gcType) : gcType(gcType), refCounter_(0) {}
 };
 
 inline void intrusive_ptr_add_ref(GameCommand* x)

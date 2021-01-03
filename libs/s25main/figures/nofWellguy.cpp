@@ -49,16 +49,16 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
         {{{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 15}, {-4, 15}, {-7, 15}, {-10, 15}}},
         {{{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}}}}};
     constexpr helpers::EnumArray<std::array<Direction, 6>, Nation> walkdirection = {{
-      {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-       Direction::NORTHWEST},
-      {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-       Direction::NORTHWEST},
-      {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-       Direction::NORTHWEST},
-      {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-       Direction::NORTHWEST},
-      {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
-       Direction::NORTHWEST},
+      {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+       Direction::NorthWest},
+      {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+       Direction::NorthWest},
+      {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+       Direction::NorthWest},
+      {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+       Direction::NorthWest},
+      {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
+       Direction::NorthWest},
     }};
 
     unsigned max_id = 112;
@@ -135,12 +135,12 @@ helpers::OptionalEnum<GoodType> nofWellguy::ProduceWare()
 bool nofWellguy::AreWaresAvailable() const
 {
     // Check for water
-    return FindPointWithResource(Resource::Water).isValid();
+    return FindPointWithResource(ResourceType::Water).isValid();
 }
 
 bool nofWellguy::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(Resource::Water);
+    MapPoint resPt = FindPointWithResource(ResourceType::Water);
     if(!resPt.isValid())
         return false;
     if(gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)

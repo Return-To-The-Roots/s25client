@@ -73,7 +73,7 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
             healing_event = nullptr;
 
             // Sind wir noch im Haus?
-            if(fs == FS_JOB)
+            if(fs == FigureState::Job)
             {
                 // Dann uns heilen, wenn wir nicht schon gesund sind
                 if(hitpoints < HITPOINTS[GetRank()])
@@ -132,7 +132,7 @@ void nofPassiveSoldier::LeaveBuilding()
     // Nach Hause in ein Lagerhaus gehen
     rs_dir = true;
     rs_pos = 1;
-    cur_rs = building->GetRoute(Direction::SOUTHEAST);
+    cur_rs = building->GetRoute(Direction::SouthEast);
     GoHome();
 
     building = nullptr;

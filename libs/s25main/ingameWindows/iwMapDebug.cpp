@@ -163,11 +163,11 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
 {
     gwv.AddDrawNodeCallback(printer.get());
 
-    ctrlCheck* cbShowCoords =
-      AddCheckBox(ID_cbShowCoordinates, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
+    ctrlCheck* cbShowCoords = AddCheckBox(ID_cbShowCoordinates, DrawPoint(15, 25), Extent(200, 20), TextureColor::Grey,
+                                          _("Show coordinates"), NormalFont);
     cbShowCoords->SetCheck(true);
     ctrlComboBox* cbCheckEvents =
-      AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
+      AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TextureColor::Grey, NormalFont, 100);
     cbCheckEvents->AddString(_("BQ check disabled"));
     for(const std::chrono::milliseconds ms : BQ_CHECK_INTERVALS)
     {
@@ -179,7 +179,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
 
     if(allowCheating)
     {
-        ctrlComboBox* data = AddComboBox(ID_cbShowWhat, DrawPoint(15, 75), Extent(200, 20), TC_GREY, NormalFont, 100);
+        ctrlComboBox* data =
+          AddComboBox(ID_cbShowWhat, DrawPoint(15, 75), Extent(200, 20), TextureColor::Grey, NormalFont, 100);
         data->AddString(_("Nothing"));
         data->AddString(_("Reserved"));
         data->AddString(_("Altitude"));
@@ -189,7 +190,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
         ctrlComboBox* players =
-          AddComboBox(ID_cbShowForPlayer, DrawPoint(15, 100), Extent(200, 20), TC_GREY, NormalFont, 100);
+          AddComboBox(ID_cbShowForPlayer, DrawPoint(15, 100), Extent(200, 20), TextureColor::Grey, NormalFont, 100);
         for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetNumPlayers(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);

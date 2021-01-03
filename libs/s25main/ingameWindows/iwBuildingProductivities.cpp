@@ -71,8 +71,8 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
                          _(BUILDING_NAMES[bts[y * 2 + x]]));
                 DrawPoint percentPos(image_percent_x + x * (percent_image_x + percentSize.x + image_percent_x),
                                      distance_y * y);
-                AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont,
-                           &percents[bts[y * 2 + x]]);
+                AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TextureColor::Grey, COLOR_YELLOW,
+                           SmallFont, &percents[bts[y * 2 + x]]);
             } else
                 AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
         }
@@ -82,7 +82,8 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 
     // Hilfe-Button
     // Original S2 does not have a Help button in this window. Add it if you have something to say.
-    // AddImageButton(500, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225),
+    // AddImageButton(500, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TextureColor::Grey,
+    // LOADER.GetImageN("io", 225),
     // _("Help"));
 }
 

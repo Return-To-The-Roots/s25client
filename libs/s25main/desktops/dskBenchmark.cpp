@@ -71,13 +71,13 @@ struct dskBenchmark::GameView
 };
 
 dskBenchmark::dskBenchmark()
-    : curTest_(TEST_NONE), runAll_(false), numInstances_(1000), frameCtr_(FrameCounter::clock::duration::max())
+    : curTest_(Benchmark::None), runAll_(false), numInstances_(1000), frameCtr_(FrameCounter::clock::duration::max())
 {
+    for(std::chrono::milliseconds& t : testDurations_)
+        t = std::chrono::milliseconds::zero();
     AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances",
             COLOR_YELLOW, FontStyle::LEFT, LargeFont);
     AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
-    for(std::chrono::milliseconds& t : testDurations_)
-        t = std::chrono::milliseconds::zero();
 }
 
 dskBenchmark::~dskBenchmark()
@@ -93,17 +93,17 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
-        case KT_ESCAPE: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
-        case KT_F1: startTest(TEST_TEXT); break;
-        case KT_F2: startTest(TEST_PRIMITIVES); break;
-        case KT_F3: startTest(TEST_EMPTY_GAME); break;
-        case KT_F4: startTest(TEST_BASIC_GAME); break;
-        case KT_F5: startTest(TEST_FULL_GAME); break;
-        case KT_F10:
+        case KeyType::Escape: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
+        case KeyType::F1: startTest(Benchmark::Text); break;
+        case KeyType::F2: startTest(Benchmark::Primitives); break;
+        case KeyType::F3: startTest(Benchmark::EmptyGame); break;
+        case KeyType::F4: startTest(Benchmark::BasicGame); break;
+        case KeyType::F5: startTest(Benchmark::FullGame); break;
+        case KeyType::F10:
             runAll_ = true;
-            startTest(TEST_TEXT);
+            startTest(Benchmark::Text);
             break;
-        case KT_CHAR:
+        case KeyType::Char:
             if(ke.c >= '0' && ke.c <= '9')
             {
                 numInstances_ = (ke.c - '0') * 100;
@@ -130,7 +130,7 @@ void dskBenchmark::Msg_PaintAfter()
         roadState.mode = RoadBuildMode::Disabled;
         gameView_->view.Draw(roadState, MapPoint::Invalid(), false);
     }
-    if(curTest_ != TEST_NONE)
+    if(curTest_ != Benchmark::None)
     {
         if(frameCtr_.getCurNumFrames() + 1u >= numTestFrames)
             VIDEODRIVER.GetRenderer()->synchronize();
@@ -148,15 +148,14 @@ void dskBenchmark::SetActive(bool activate)
     dskMenuBase::SetActive(activate);
 }
 
-void dskBenchmark::startTest(Test test)
+void dskBenchmark::startTest(Benchmark test)
 {
     uint32_t seed = 0x1337;
     std::mt19937 rng(seed);
     switch(test)
     {
-        case TEST_NONE:
-        case TEST_CT: return;
-        case TEST_TEXT:
+        case Benchmark::None: return;
+        case Benchmark::Text:
         {
             static const std::string charset =
               "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()`~-_=+[{]{\\|;:'\",<.>/? ";
@@ -182,7 +181,7 @@ void dskBenchmark::startTest(Test test)
             }
             break;
         }
-        case TEST_PRIMITIVES:
+        case Benchmark::Primitives:
         {
             Extent screenSize = VIDEODRIVER.GetRenderSize();
             std::uniform_int_distribution<unsigned> distSize(5, 50);
@@ -218,7 +217,7 @@ void dskBenchmark::startTest(Test test)
             }
             break;
         }
-        case TEST_EMPTY_GAME:
+        case Benchmark::EmptyGame:
             createGame();
             if(!game_)
                 return;
@@ -227,7 +226,7 @@ void dskBenchmark::startTest(Test test)
                 game_->world_.SetVisibility(pt, 0, Visibility::Visible);
             }
             break;
-        case TEST_BASIC_GAME:
+        case Benchmark::BasicGame:
         {
             createGame();
             if(!game_)
@@ -237,7 +236,7 @@ void dskBenchmark::startTest(Test test)
             MapLoader::PlaceHQs(game_->world_, hqs, false);
             break;
         }
-        case TEST_FULL_GAME:
+        case Benchmark::FullGame:
         {
             createGame();
             if(!game_)
@@ -257,7 +256,7 @@ void dskBenchmark::startTest(Test test)
                 std::uniform_int_distribution<unsigned> getDir(0, helpers::MaxEnumValue_v<Direction>);
                 for(MapPoint pt : pts)
                 {
-                    MapPoint flagPt = game_->world_.GetNeighbour(pt, Direction::SOUTHEAST);
+                    MapPoint flagPt = game_->world_.GetNeighbour(pt, Direction::SouthEast);
                     if(game_->world_.GetNode(pt).obj || game_->world_.GetNode(flagPt).obj || !dist(rng))
                         continue;
                     BuildingType bldType = blds[getBld(rng)];
@@ -289,7 +288,7 @@ void dskBenchmark::startTest(Test test)
 void dskBenchmark::finishTest()
 {
     using namespace std::chrono;
-    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % curTest_
+    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enum_cast(curTest_)
       % duration_cast<duration<float>>(frameCtr_.getCurIntervalLength())
       % duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames());
     if(testDurations_[curTest_] == milliseconds::zero())
@@ -311,14 +310,16 @@ void dskBenchmark::finishTest()
     SetFpsDisplay(true);
     VIDEODRIVER.setTargetFramerate(0);
     if(!runAll_)
-        curTest_ = TEST_NONE;
+        curTest_ = Benchmark::None;
     else
     {
-        curTest_ = Test(curTest_ + 1);
-        if(curTest_ == TEST_CT)
-            curTest_ = TEST_NONE;
+        if(curTest_ == helpers::MaxEnumValue<Benchmark>::value)
+            curTest_ = Benchmark::None;
         else
+        {
+            curTest_ = Benchmark(rttr::enum_cast(curTest_) + 1);
             startTest(curTest_);
+        }
     }
 }
 
@@ -384,9 +385,12 @@ void dskBenchmark::printTimes() const
 {
     using namespace std::chrono;
     milliseconds total(0);
-    for(unsigned i = 1; i < testDurations_.size(); i++)
+    for(const auto i : helpers::enumRange<Benchmark>())
     {
-        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % i % duration_cast<duration<float>>(testDurations_[i])
+        if(i == Benchmark::None)
+            continue;
+        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enum_cast(i)
+          % duration_cast<duration<float>>(testDurations_[i])
           % duration_cast<milliseconds>(testDurations_[i] / numTestFrames);
         total += testDurations_[i];
     }

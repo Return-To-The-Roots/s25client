@@ -19,6 +19,7 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/MapCoordinates.h"
+#include <boost/variant.hpp>
 #include <array>
 
 class GameInterface;
@@ -28,15 +29,27 @@ class ctrlGroup;
 class iwAction : public IngameWindow
 {
 public:
+    using SoldierCount = unsigned;
     /// Konstanten für ActionWindow-Flag-Tab - Typen
-    enum
+    enum class FlagType
     {
-        AWFT_NORMAL,
-        AWFT_HQ,         /// von der HQ-Flagge kann nur eine Straße gebaut werden
-        AWFT_STOREHOUSE, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen
-                         /// werden
-        AWFT_WATERFLAG   /// Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
+        Normal,
+        HQ,         /// von der HQ-Flagge kann nur eine Straße gebaut werden
+        Storehouse, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen
+                    /// werden
+        WaterFlag   /// Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
     };
+    using Params = boost::variant<FlagType, SoldierCount>;
+
+    enum class BuildTab
+    {
+        Hut,
+        House,
+        Castle,
+        Mine,
+        Harbor
+    };
+    friend constexpr auto maxEnumValue(BuildTab) { return BuildTab::Harbor; }
 
     /// Struktur mit den Tabs, die angestellt werden sollen
     class Tabs
@@ -45,18 +58,11 @@ public:
         /// Haupttabs
         bool build, setflag, watch, flag, cutroad, upgradeRoad, attack, sea_attack;
         /// Gebäude-Bau-Tabs
-        enum BuildTab
-        {
-            BT_HUT,
-            BT_HOUSE,
-            BT_CASTLE,
-            BT_MINE,
-            BT_HARBOR
-        } build_tabs;
+        BuildTab build_tabs;
 
         Tabs()
             : build(false), setflag(false), watch(false), flag(false), cutroad(false), upgradeRoad(false),
-              attack(false), sea_attack(false), build_tabs(BT_HUT)
+              attack(false), sea_attack(false), build_tabs(BuildTab::Hut)
         {}
     };
 
@@ -78,7 +84,7 @@ private:
 
 public:
     iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos,
-             unsigned params, bool military_buildings);
+             Params params, bool military_buildings);
     ~iwAction() override;
 
     /// Gibt zurück, auf welchen Punkt es sich bezieht

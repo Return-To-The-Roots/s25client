@@ -31,15 +31,16 @@ class noAnimal : public noMovable
     Species species;
 
     /// Was macht das Tier gerade?
-    enum State
+    enum class State : uint8_t
     {
-        STATE_WALKING,                      /// Läuft dumm in der Gegend rum
-        STATE_PAUSED,                       /// macht mal ne kurze Verschnaufpause ;)
-        STATE_WAITINGFORHUNTER,             /// wartet auf den Jäger bis er es abknallt
-        STATE_WALKINGUNTILWAITINGFORHUNTER, /// läuft weiter, wartet aber dann auf den Jäger
-        STATE_DEAD,                         /// wurde erschossen und liegt tot rum
-        STATE_DISAPPEARING                  /// Leiche verschwindet langsam...
+        Walking,                      /// Läuft dumm in der Gegend rum
+        Paused,                       /// macht mal ne kurze Verschnaufpause ;)
+        WaitingForHunter,             /// wartet auf den Jäger bis er es abknallt
+        WalkingUntilWaitingForHunter, /// läuft weiter, wartet aber dann auf den Jäger
+        Dead,                         /// wurde erschossen und liegt tot rum
+        Disappearing                  /// Leiche verschwindet langsam...
     } state;
+    friend constexpr auto maxEnumValue(State) { return State::Disappearing; }
 
     /// Wie weit kann es noch rumlaufen, bis es mal wieder eine Pause machen muss
     unsigned short pause_way;
@@ -82,7 +83,7 @@ protected:
 public:
     void Destroy() override { Destroy_noAnimal(); }
 
-    GO_Type GetGOT() const override { return GOT_ANIMAL; }
+    GO_Type GetGOT() const override { return GO_Type::Animal; }
     Species GetSpecies() const { return species; }
 
     // An x,y zeichnen
@@ -105,8 +106,8 @@ public:
     void StopHunting();
 
     /// Steht das Tier schon schön ruhig, damit der Jäger es erschießen kann?
-    bool IsReadyForShooting() const { return (state == STATE_WAITINGFORHUNTER); }
-    bool IsGettingReadyForShooting() const { return (state == STATE_WALKINGUNTILWAITINGFORHUNTER); }
+    bool IsReadyForShooting() const { return (state == State::WaitingForHunter); }
+    bool IsGettingReadyForShooting() const { return (state == State::WalkingUntilWaitingForHunter); }
     /// Tier soll sterben - erstmal nur Leiche liegen lassen
     void Die();
     /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden

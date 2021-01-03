@@ -261,7 +261,7 @@ KeyEvent VideoDriverWrapper::GetModKeyState() const
 {
     if(videodriver)
         return videodriver->GetModKeyState();
-    const KeyEvent ke = {KT_INVALID, 0, false, false, false};
+    const KeyEvent ke = {KeyType::Invalid, 0, false, false, false};
     return ke;
 }
 

@@ -279,23 +279,23 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     isDefeated = sgd.PopBool();
     buildings.Deserialize(sgd);
 
-    sgd.PopObjectContainer(roads, GOT_ROADSEGMENT);
+    sgd.PopObjectContainer(roads, GO_Type::Roadsegment);
 
     unsigned list_size = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < list_size; ++i)
     {
         JobNeeded nj;
         nj.job = sgd.Pop<Job>();
-        nj.workplace = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
+        nj.workplace = sgd.PopObject<noRoadNode>(GO_Type::Unknown);
         jobs_wanted.push_back(nj);
     }
 
     if(sgd.GetGameDataVersion() < 2)
         buildings.Deserialize2(sgd);
 
-    sgd.PopObjectContainer(ware_list, GOT_WARE);
-    sgd.PopObjectContainer(flagworkers, GOT_UNKNOWN);
-    sgd.PopObjectContainer(ships, GOT_SHIP);
+    sgd.PopObjectContainer(ware_list, GO_Type::Ware);
+    sgd.PopObjectContainer(flagworkers, GO_Type::Unknown);
+    sgd.PopObjectContainer(ships, GO_Type::Ship);
 
     sgd.PopContainer(shouldSendDefenderList);
 
@@ -321,10 +321,10 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     sgd.PopRawData(transportPrio.data(), transportPrio.size());
 
-    for(unsigned char& militarySetting : militarySettings_)
+    for(uint8_t& militarySetting : militarySettings_)
         militarySetting = sgd.PopUnsignedChar();
 
-    for(unsigned char& toolsSetting : toolsSettings_)
+    for(uint8_t& toolsSetting : toolsSettings_)
         toolsSetting = sgd.PopUnsignedChar();
 
     // qx:tools
@@ -565,10 +565,10 @@ void GamePlayer::RoadDestroyed()
                     && wareGoal->GetBuildingType() != BuildingType::HarborBuilding)
                    || wareGoal->GetType() == NodalObjectType::Buildingsite))
             {
-                Direction newWareDir = Direction::NORTHWEST;
+                Direction newWareDir = Direction::NorthWest;
                 for(auto dir : helpers::EnumRange<Direction>{})
                 {
-                    dir += 2u; // Need to skip Direction::NORTHWEST and we used to start with an offset of 2. TODO:
+                    dir += 2u; // Need to skip Direction::NorthWest and we used to start with an offset of 2. TODO:
                                // Increase gameDataVersion and just skip NW
                     if(wareLocation.GetRoute(dir))
                     {
@@ -576,7 +576,7 @@ void GamePlayer::RoadDestroyed()
                         break;
                     }
                 }
-                if(newWareDir != Direction::NORTHWEST)
+                if(newWareDir != Direction::NorthWest)
                 {
                     ware->SetNextDir(toRoadPathDirection(newWareDir));
                 } else // no route to goal -> notify goal, try to send ware to a warehouse

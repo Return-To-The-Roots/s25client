@@ -22,9 +22,9 @@
 /// Setting for each item in a warehouses inventory
 enum class EInventorySetting : unsigned
 {
-    STOP,
-    SEND,
-    COLLECT
+    Stop,
+    Send,
+    Collect
 };
 
 struct InventorySetting
@@ -58,10 +58,10 @@ constexpr InventorySetting InventorySetting::Toggle(const EInventorySetting sett
     state ^= MakeBitField(setting);
     // If we changed collect, then allow only collect to be set
     // Else clear collect (Collect with anything else makes no sense)
-    if(setting == EInventorySetting::COLLECT)
-        state &= MakeBitField(EInventorySetting::COLLECT);
+    if(setting == EInventorySetting::Collect)
+        state &= MakeBitField(EInventorySetting::Collect);
     else
-        state &= ~MakeBitField(EInventorySetting::COLLECT);
+        state &= ~MakeBitField(EInventorySetting::Collect);
     return *this;
 }
 
@@ -74,10 +74,10 @@ constexpr void InventorySetting::MakeValid()
 {
     switch(state)
     {
-        case MakeBitField(EInventorySetting::STOP):
-        case MakeBitField(EInventorySetting::SEND):
-        case MakeBitField(EInventorySetting::COLLECT):
-        case static_cast<uint8_t>(MakeBitField(EInventorySetting::STOP) | MakeBitField(EInventorySetting::SEND)): break;
+        case MakeBitField(EInventorySetting::Stop):
+        case MakeBitField(EInventorySetting::Send):
+        case MakeBitField(EInventorySetting::Collect):
+        case static_cast<uint8_t>(MakeBitField(EInventorySetting::Stop) | MakeBitField(EInventorySetting::Send)): break;
         default: state = 0; break;
     }
 }

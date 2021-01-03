@@ -47,7 +47,7 @@ void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 
-    if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
+    if(state != State::FigureWork && state != State::Waiting1)
     {
         sgd.PushObject(animal, true);
         sgd.PushMapPoint(shootingPos);
@@ -57,14 +57,14 @@ void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
 
 nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
 {
-    if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
+    if(state != State::FigureWork && state != State::Waiting1)
     {
-        animal = sgd.PopObject<noAnimal>(GOT_ANIMAL);
+        animal = sgd.PopObject<noAnimal>(GO_Type::Animal);
         shootingPos = sgd.PopMapPoint();
         shooting_dir = sgd.Pop<Direction>();
         // https://github.com/Return-To-The-Roots/s25client/issues/1126
-        if(sgd.GetGameDataVersion() < 4 && state == STATE_HUNTER_FINDINGSHOOTINGPOINT && pos == shootingPos)
-            state = STATE_HUNTER_WAITING_FOR_ANIMAL_READY;
+        if(sgd.GetGameDataVersion() < 4 && state == State::HunterFindingShootingpoint && pos == shootingPos)
+            state = State::HunterWaitingForAnimalReady;
     } else
     {
         animal = nullptr;
@@ -78,12 +78,12 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
     switch(state)
     {
         default: break;
-        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
+        case State::HunterWaitingForAnimalReady:
             LOADER.getBobSprite(owner.nation, Job::Hunter, shooting_dir, 0).drawForPlayer(drawPt, owner.color);
             break;
-        case STATE_HUNTER_SHOOTING:
+        case State::HunterShooting:
         {
-            if(shooting_dir == Direction::EAST)
+            if(shooting_dir == Direction::East)
             {
                 // die Animation in dieser Richtung ist etwas anders als die in den restlichen
                 unsigned short id = GAMECLIENT.Interpolate(13, current_ev);
@@ -110,7 +110,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             DrawShadow(drawPt, 0, shooting_dir);
         }
         break;
-        case STATE_HUNTER_EVISCERATING:
+        case State::HunterEviscerating:
         {
             unsigned short id = GAMECLIENT.Interpolate(45, current_ev);
             unsigned short draw_id;
@@ -133,10 +133,10 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
     switch(state)
     {
         default: RTTR_Assert(false); break;
-        case STATE_WAITING1: TryStartHunting(); break;
-        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY: HandleStateWaitingForAnimalReady(); break;
-        case STATE_HUNTER_SHOOTING: HandleStateShooting(); break;
-        case STATE_HUNTER_EVISCERATING: HandleStateEviscerating(); break;
+        case State::Waiting1: TryStartHunting(); break;
+        case State::HunterWaitingForAnimalReady: HandleStateWaitingForAnimalReady(); break;
+        case State::HunterShooting: HandleStateShooting(); break;
+        case State::HunterEviscerating: HandleStateEviscerating(); break;
     }
 }
 
@@ -183,7 +183,7 @@ void nofHunter::TryStartHunting()
         animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_animals.size())];
 
         // Wir jagen es jetzt
-        state = STATE_HUNTER_CHASING;
+        state = State::HunterChasing;
 
         // Wir arbeiten jetzt
         workplace->is_working = true;
@@ -192,7 +192,7 @@ void nofHunter::TryStartHunting()
         animal->BeginHunting(this);
 
         // Anfangen zu laufen (erstmal aus dem Haus raus!)
-        StartWalking(Direction::SOUTHEAST);
+        StartWalking(Direction::SouthEast);
 
         workplace->StopNotWorking();
     } else
@@ -212,10 +212,10 @@ void nofHunter::WalkedDerived()
     switch(state)
     {
         default: break;
-        case STATE_HUNTER_CHASING: HandleStateChasing(); break;
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT: HandleStateFindingShootingPoint(); break;
-        case STATE_HUNTER_WALKINGTOCADAVER: HandleStateWalkingToCadaver(); break;
-        case STATE_WALKINGHOME: HandleStateWalkingHome(); break;
+        case State::HunterChasing: HandleStateChasing(); break;
+        case State::HunterFindingShootingpoint: HandleStateFindingShootingPoint(); break;
+        case State::HunterWalkingToCadaver: HandleStateWalkingToCadaver(); break;
+        case State::WalkingHome: HandleStateWalkingHome(); break;
     }
 }
 
@@ -242,27 +242,27 @@ void nofHunter::HandleStateChasing()
             Position delta;
             switch((d + doffset))
             {
-                case Direction::WEST:
+                case Direction::West:
                     delta.x = -4;
                     delta.y = 0;
                     break;
-                case Direction::NORTHWEST:
+                case Direction::NorthWest:
                     delta.x = -2;
                     delta.y = -4;
                     break;
-                case Direction::NORTHEAST:
+                case Direction::NorthEast:
                     delta.x = 2;
                     delta.y = -4;
                     break;
-                case Direction::EAST:
+                case Direction::East:
                     delta.x = 4;
                     delta.y = 0;
                     break;
-                case Direction::SOUTHEAST:
+                case Direction::SouthEast:
                     delta.x = 2;
                     delta.y = 4;
                     break;
-                case Direction::SOUTHWEST:
+                case Direction::SouthWest:
                     delta.x = -2;
                     delta.y = 4;
                     break;
@@ -283,7 +283,7 @@ void nofHunter::HandleStateChasing()
         if(shootingPos.isValid())
         {
             // dorthingehen
-            state = STATE_HUNTER_FINDINGSHOOTINGPOINT;
+            state = State::HunterFindingShootingpoint;
             HandleStateFindingShootingPoint();
         } else
         {
@@ -312,7 +312,7 @@ void nofHunter::HandleStateFindingShootingPoint()
     // Are we there yet?
     if(shootingPos == pos)
     {
-        state = STATE_HUNTER_WAITING_FOR_ANIMAL_READY;
+        state = State::HunterWaitingForAnimalReady;
         HandleStateWaitingForAnimalReady();
     } else
     {
@@ -336,7 +336,7 @@ void nofHunter::HandleStateWaitingForAnimalReady()
     if(animal->IsReadyForShooting())
     {
         // fire!
-        state = STATE_HUNTER_SHOOTING;
+        state = State::HunterShooting;
         current_ev = GetEvMgr().AddEvent(this, 16, 1);
     } else if(animal->IsGettingReadyForShooting())
         current_ev = GetEvMgr().AddEvent(this, 15, 2); // Give the animal some time for getting ready
@@ -352,7 +352,7 @@ void nofHunter::HandleStateShooting()
     // Tier muss sterben
     animal->Die();
     // zum Kadaver laufen, um ihn auszunehmen
-    state = STATE_HUNTER_WALKINGTOCADAVER;
+    state = State::HunterWalkingToCadaver;
     HandleStateWalkingToCadaver();
 }
 
@@ -362,7 +362,7 @@ void nofHunter::HandleStateWalkingToCadaver()
     if(animal->GetPos() == pos)
     {
         // dann ausnehmen
-        state = STATE_HUNTER_EVISCERATING;
+        state = State::HunterEviscerating;
         current_ev = GetEvMgr().AddEvent(this, 80, 1);
     } else
     {
@@ -403,7 +403,7 @@ void nofHunter::HandleStateEviscerating()
 void nofHunter::StartWalkingHome()
 {
     WorkAborted();
-    state = STATE_WALKINGHOME;
+    state = State::WalkingHome;
     // We may be still walking in which case we delay finding a path home until we reached the next node
     if(!IsMoving())
         HandleStateWalkingHome();
@@ -412,7 +412,7 @@ void nofHunter::StartWalkingHome()
 void nofHunter::HandleStateWalkingHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
-    MapPoint homeFlagPos = gwg->GetNeighbour(workplace->GetPos(), Direction::SOUTHEAST);
+    MapPoint homeFlagPos = gwg->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
     if(pos == homeFlagPos)
     {
         // Weiteres übernimmt nofBuildingWorker
@@ -443,12 +443,12 @@ void nofHunter::AnimalLost()
     switch(state)
     {
         default: return;
-        case STATE_HUNTER_CHASING:
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
-        case STATE_HUNTER_WALKINGTOCADAVER: StartWalkingHome(); break;
-        case STATE_HUNTER_SHOOTING:
-        case STATE_HUNTER_EVISCERATING:
-        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
+        case State::HunterChasing:
+        case State::HunterFindingShootingpoint:
+        case State::HunterWalkingToCadaver: StartWalkingHome(); break;
+        case State::HunterShooting:
+        case State::HunterEviscerating:
+        case State::HunterWaitingForAnimalReady:
             // Arbeits-Event abmelden
             GetEvMgr().RemoveEvent(current_ev);
             // Nach Hause laufen

@@ -25,12 +25,14 @@ iwSurrender::iwSurrender()
                    LOADER.GetImageN("resource", 41))
 {
     // Ok
-    AddImageButton(0, DrawPoint(85, 24), Extent(68, 57), TC_GREEN2, LOADER.GetImageN("io", 32), _("Surrender"));
+    AddImageButton(0, DrawPoint(85, 24), Extent(68, 57), TextureColor::Green2, LOADER.GetImageN("io", 32),
+                   _("Surrender"));
     // Ok + Abbrennen
-    AddImageButton(2, DrawPoint(16, 24), Extent(68, 57), TC_GREEN2, LOADER.GetImageN("io", 23),
+    AddImageButton(2, DrawPoint(16, 24), Extent(68, 57), TextureColor::Green2, LOADER.GetImageN("io", 23),
                    _("Destroy all buildings and surrender"));
     // Abbrechen
-    AddImageButton(1, DrawPoint(158, 24), Extent(68, 57), TC_RED1, LOADER.GetImageN("io", 40), _("Don't surrender"));
+    AddImageButton(1, DrawPoint(158, 24), Extent(68, 57), TextureColor::Red1, LOADER.GetImageN("io", 40),
+                   _("Don't surrender"));
 }
 
 void iwSurrender::Msg_ButtonClick(const unsigned ctrl_id)

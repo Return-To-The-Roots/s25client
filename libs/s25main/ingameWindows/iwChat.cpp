@@ -32,18 +32,18 @@ iwChat::iwChat(Window* parent)
                    LOADER.GetImageN("resource", 41), false, true, parent)
 {
     // Eingabefeld für Chattext
-    AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TC_GREY, NormalFont);
+    AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TextureColor::Grey, NormalFont);
 
     ctrlOptionGroup* group = AddOptionGroup(1, GroupSelectType::Check);
     // "Alle"
-    group->AddTextButton(rttr::enum_cast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"),
-                         NormalFont);
+    group->AddTextButton(rttr::enum_cast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TextureColor::Grey,
+                         _("All"), NormalFont);
     // "Verbündete"
-    group->AddTextButton(rttr::enum_cast(ChatDestination::Allies), DrawPoint(20, 112), Extent(125, 22), TC_GREEN2,
-                         _("Allies"), NormalFont);
+    group->AddTextButton(rttr::enum_cast(ChatDestination::Allies), DrawPoint(20, 112), Extent(125, 22),
+                         TextureColor::Green2, _("Allies"), NormalFont);
     // "Feinde"
-    group->AddTextButton(rttr::enum_cast(ChatDestination::Enemies), DrawPoint(155, 112), Extent(125, 22), TC_RED1,
-                         _("Enemies"), NormalFont);
+    group->AddTextButton(rttr::enum_cast(ChatDestination::Enemies), DrawPoint(155, 112), Extent(125, 22),
+                         TextureColor::Red1, _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
     group->SetSelection(rttr::enum_cast(lastChatDestination));

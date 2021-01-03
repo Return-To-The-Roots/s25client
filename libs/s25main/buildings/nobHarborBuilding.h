@@ -120,7 +120,7 @@ public:
 
     /// Serialisierung
     void Serialize(SerializedGameData& sgd) const override;
-    GO_Type GetGOT() const override { return GOT_NOB_HARBORBUILDING; }
+    GO_Type GetGOT() const override { return GO_Type::NobHarborbuilding; }
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
 

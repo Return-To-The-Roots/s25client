@@ -83,7 +83,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noBuildingSite(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_BUILDINGSITE; }
+    GO_Type GetGOT() const override { return GO_Type::Buildingsite; }
     unsigned GetMilitaryRadius() const override;
 
     void Draw(DrawPoint drawPt) override;

@@ -97,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE(checkBQs_Correct, EmptyWorldFixture1P)
 BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
 {
     const MapPoint flagPos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(5, 6));
-    const MapPoint bldPos = world.GetNeighbour(flagPos, Direction::NORTHWEST);
+    const MapPoint bldPos = world.GetNeighbour(flagPos, Direction::NorthWest);
     // All points possibly affected by a building
     const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(bldPos, 4);
     const std::vector<MapPoint> radius1Pts = world.GetPointsInRadius(bldPos, 1);
@@ -110,13 +110,13 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     reducedBQs.clear();
     reducedBQs[flagPos] = BuildingQuality::Nothing;
     // Flag to any building would be to close and flag also to close (min diff of 2 required)
-    reducedBQs[world.GetNeighbour(flagPos, Direction::WEST)] = BuildingQuality::Nothing;
-    reducedBQs[world.GetNeighbour(flagPos, Direction::NORTHEAST)] = BuildingQuality::Nothing;
+    reducedBQs[world.GetNeighbour(flagPos, Direction::West)] = BuildingQuality::Nothing;
+    reducedBQs[world.GetNeighbour(flagPos, Direction::NorthEast)] = BuildingQuality::Nothing;
     // Can build houses but not castles
-    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
+    for(const Direction dir : {Direction::East, Direction::SouthEast, Direction::SouthWest})
         reducedBQs[world.GetNeighbour(flagPos, dir)] = BuildingQuality::House;
     // Flag to bld is blocked by flag
-    for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
+    for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         reducedBQs[world.GetNeighbour(bldPos, dir)] = BuildingQuality::Flag;
     BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
@@ -161,23 +161,23 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BuildingQuality::Castle);
     // Addionally to reduced BQs by hut:
     // Even flag is blocked by castle (model size)
-    for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
+    for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
     {
         const MapPoint wouldBeFlagPt = world.GetNeighbour(bldPos, dir);
         reducedBQs[wouldBeFlagPt] = BuildingQuality::Nothing;
         // And therefore also the bld
-        reducedBQs[world.GetNeighbour(wouldBeFlagPt, Direction::NORTHWEST)] = BuildingQuality::Flag;
+        reducedBQs[world.GetNeighbour(wouldBeFlagPt, Direction::NorthWest)] = BuildingQuality::Flag;
     }
     BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, bldPos));
     // No roads over attachment
-    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::WEST)));
-    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::NORTHWEST)));
-    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::NORTHEAST)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::West)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::NorthWest)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::NorthEast)));
     // But other 2 points are ok
-    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::SOUTHWEST)));
-    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::EAST)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::SouthWest)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::East)));
 
     // Remove -> BQ reset
     world.DestroyFlag(flagPos, 0);
@@ -197,9 +197,9 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
     for(unsigned i = 0; i < 6; i++)
     {
         roadPts.push_back(curPt);
-        world.SetPointRoad(curPt, Direction::SOUTHEAST, PointRoad::Normal);
+        world.SetPointRoad(curPt, Direction::SouthEast, PointRoad::Normal);
         world.RecalcBQForRoad(curPt);
-        curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
+        curPt = world.GetNeighbour(curPt, Direction::SouthEast);
     }
     // Final pt still belongs to road
     roadPts.push_back(curPt);
@@ -245,7 +245,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     for(unsigned i = 0; i < 6; i++)
     {
         roadPts.push_back(curPt);
-        curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
+        curPt = world.GetNeighbour(curPt, Direction::SouthEast);
     }
     // Final pt still belongs to road
     roadPts.push_back(curPt);
@@ -262,8 +262,8 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
         // Next to the road should be houses
         // But left to first point is still a castle
         BuildingQuality leftBQ = (pt == roadPts[0]) ? BuildingQuality::Castle : BuildingQuality::House;
-        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::WEST)), leftBQ);
-        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::EAST)), BuildingQuality::House);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::West)), leftBQ);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::East)), BuildingQuality::House);
     }
     // Destroy road partially
     // The first point (after start) must have ID 2
@@ -293,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     for(unsigned i = 0; i < 6; i++)
     {
         roadPts.push_back(curPt);
-        curPt = world.GetNeighbour(curPt, Direction::EAST);
+        curPt = world.GetNeighbour(curPt, Direction::East);
     }
     // Final pt still belongs to road
     roadPts.push_back(curPt);
@@ -308,11 +308,11 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
         // On the road we only allow flags
         BOOST_REQUIRE_EQUAL(gwv.GetBQ(pt), BuildingQuality::Flag);
         // Above should be castles
-        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::NORTHWEST)), BuildingQuality::Castle);
-        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::NORTHEAST)), BuildingQuality::Castle);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::NorthWest)), BuildingQuality::Castle);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::NorthEast)), BuildingQuality::Castle);
         // Below should be big houses
-        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::SOUTHWEST)), BuildingQuality::House);
-        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::SOUTHEAST)), BuildingQuality::House);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::SouthWest)), BuildingQuality::House);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::SouthEast)), BuildingQuality::House);
     }
 
     // Destroy road
@@ -352,7 +352,7 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
         {
             // Near border, flag if we cant build a buildings flag
             BOOST_REQUIRE(world.IsPlayerTerritory(pt));
-            if(!world.IsPlayerTerritory(world.GetNeighbour(pt, Direction::SOUTHEAST)))
+            if(!world.IsPlayerTerritory(world.GetNeighbour(pt, Direction::SouthEast)))
                 BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BuildingQuality::Flag);
             else
                 BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BuildingQuality::Castle);
@@ -374,22 +374,22 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
     // Place a flag near a border
     MapPoint flagPt = hqPos;
     for(unsigned i = 0; i < hqRadius - 2; i++)
-        flagPt = world.GetNeighbour(flagPt, i % 2 ? Direction::SOUTHEAST : Direction::SOUTHWEST);
+        flagPt = world.GetNeighbour(flagPt, i % 2 ? Direction::SouthEast : Direction::SouthWest);
     // This is near the border, so only a flag is possible
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BuildingQuality::Flag);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SouthEast), 0), BuildingQuality::Flag);
     world.SetFlag(flagPt, 0);
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetGOT(), GOT_FLAG);
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::WEST), 0),
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetGOT(), GO_Type::Flag);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::West), 0),
                         BuildingQuality::Nothing); // Buildings flag or flag to close to this
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHWEST), 0),
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NorthWest), 0),
                         BuildingQuality::Castle); // Building to this flag
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHEAST), 0),
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NorthEast), 0),
                         BuildingQuality::Nothing); // Buildings flag or flag to close to this
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::EAST), 0),
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::East), 0),
                         BuildingQuality::House); // This flag blocks castles extensions
                                                  // This flag is to close and border prohibits building
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BuildingQuality::Nothing);
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHWEST), 0), BuildingQuality::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SouthEast), 0), BuildingQuality::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SouthWest), 0), BuildingQuality::Nothing);
 }
 
 static void addStaticObj(GameWorldBase& world, const MapPoint& pos, unsigned size)
@@ -417,9 +417,9 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     // Size=1 -> Block only point
     addStaticObj(world, objPos, 1);
     reducedBQs[objPos] = BuildingQuality::Nothing;
-    reducedBQs[world.GetNeighbour(objPos, Direction::NORTHWEST)] = BuildingQuality::Flag;
+    reducedBQs[world.GetNeighbour(objPos, Direction::NorthWest)] = BuildingQuality::Flag;
     // Can build houses but not castles
-    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
+    for(const Direction dir : {Direction::East, Direction::SouthEast, Direction::SouthWest})
         reducedBQs[world.GetNeighbour(objPos, dir)] = BuildingQuality::House;
     BOOST_REQUIRE(checkBQs(world, ptsAroundObj, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));
@@ -430,28 +430,28 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     addStaticObj(world, objPos, 2);
     // Addionally reduced BQs:
     // Extensions block spots
-    for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
+    for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
     {
         const MapPoint extensionPos = world.GetNeighbour(objPos, dir);
         reducedBQs[extensionPos] = BuildingQuality::Nothing;
         // And therefore also the bld
-        reducedBQs[world.GetNeighbour(extensionPos, Direction::NORTHWEST)] = BuildingQuality::Flag;
+        reducedBQs[world.GetNeighbour(extensionPos, Direction::NorthWest)] = BuildingQuality::Flag;
     }
     // Also blocked by extensions:
-    reducedBQs[world.GetNeighbour(world.GetNeighbour(objPos, Direction::WEST), Direction::SOUTHWEST)] =
+    reducedBQs[world.GetNeighbour(world.GetNeighbour(objPos, Direction::West), Direction::SouthWest)] =
       BuildingQuality::House;
-    reducedBQs[world.GetNeighbour(world.GetNeighbour(objPos, Direction::NORTHEAST), Direction::EAST)] =
+    reducedBQs[world.GetNeighbour(world.GetNeighbour(objPos, Direction::NorthEast), Direction::East)] =
       BuildingQuality::House;
     BOOST_REQUIRE(checkBQs(world, ptsAroundObj, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));
     // No roads over attachment
-    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::WEST)));
-    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::NORTHWEST)));
-    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::NORTHEAST)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::West)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::NorthWest)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::NorthEast)));
     // But other 3 points are ok
-    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::EAST)));
-    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::SOUTHEAST)));
-    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::SOUTHWEST)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::East)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::SouthEast)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::SouthWest)));
 }
 
 BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
@@ -459,7 +459,7 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.SetOwner(pt, 1);
     const MapPoint hqPos = world.GetPlayer(0).GetHQPos();
-    const MapPoint startPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+    const MapPoint startPos = world.GetNeighbour(hqPos, Direction::SouthEast);
     const MapPoint endPos = world.MakeMapPoint(startPos + Position(4, 0));
     // Place these env objs
     const std::vector<unsigned> ids{505, 506, 507, 508, 509, 510, 512, 513, 514, 515, 531, 536, 541, 542, 543,
@@ -469,16 +469,16 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
         MapPoint curPos = startPos;
         for(unsigned i = 0; i < 4; i++)
         {
-            curPos = world.GetNeighbour(curPos, Direction::EAST);
+            curPos = world.GetNeighbour(curPos, Direction::East);
             world.SetNO(curPos, new noEnvObject(curPos, curId));
         }
-        world.BuildRoad(0, false, startPos, std::vector<Direction>(4, Direction::EAST));
+        world.BuildRoad(0, false, startPos, std::vector<Direction>(4, Direction::East));
         // Check road build and objs removed
         curPos = startPos;
         for(unsigned i = 0; i < 3; i++)
         {
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(curPos, Direction::EAST), PointRoad::Normal);
-            curPos = world.GetNeighbour(curPos, Direction::EAST);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(curPos, Direction::East), PointRoad::Normal);
+            curPos = world.GetNeighbour(curPos, Direction::East);
             BOOST_REQUIRE_EQUAL(world.GetNO(curPos)->GetType(), NodalObjectType::Nothing);
         }
         world.DestroyFlag(endPos, 0);

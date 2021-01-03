@@ -53,7 +53,7 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
         for(PointRoad& road : roads)
             road = sgd.Pop<PointRoad>();
         owner = sgd.PopUnsignedChar();
-        for(unsigned char& boundary_stone : boundary_stones)
+        for(uint8_t& boundary_stone : boundary_stones)
             boundary_stone = sgd.PopUnsignedChar();
     } else
     {
@@ -62,7 +62,7 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
         for(PointRoad& road : roads)
             road = PointRoad::None;
         owner = 0;
-        for(unsigned char& boundary_stone : boundary_stones)
+        for(uint8_t& boundary_stone : boundary_stones)
             boundary_stone = 0;
     }
 }

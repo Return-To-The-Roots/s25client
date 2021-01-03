@@ -68,8 +68,8 @@ struct WindowFixture
     WindowFixture()
         : wnd(DrawPoint(0, 0), 0, nullptr, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
     {
-        bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TC_RED1, "Test", NormalFont);
-        bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TC_RED1, "Test", NormalFont);
+        bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
+        bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
         wnd.Draw();
     }
 
@@ -674,9 +674,9 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     MockupVideoDriver* video = uiHelper::GetVideoDriver();
     auto* dsk = WINDOWMANAGER.Switch(std::make_unique<Desktop>(nullptr));
     WINDOWMANAGER.Draw();
-    bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TC_RED1, "", NormalFont);
+    bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TextureColor::Red1, "", NormalFont);
     ctrlButton* btReference =
-      dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TC_RED1, "", NormalFont);
+      dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TextureColor::Red1, "", NormalFont);
     dsk->GetAnimationManager().addAnimation(
       new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RepeatType::None));
     dsk->Msg_PaintBefore();

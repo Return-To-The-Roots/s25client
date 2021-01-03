@@ -30,25 +30,25 @@
 
 nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
                          const unsigned char rank, nofAttacker* const attacker)
-    : nofActiveSoldier(pos, player, home, rank, STATE_DEFENDING_WALKINGTO), attacker(attacker)
+    : nofActiveSoldier(pos, player, home, rank, SoldierState::DefendingWalkingTo), attacker(attacker)
 {}
 
 nofDefender::nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
-    : nofActiveSoldier(*other, STATE_DEFENDING_WALKINGTO), attacker(attacker)
+    : nofActiveSoldier(*other, SoldierState::DefendingWalkingTo), attacker(attacker)
 {}
 
 void nofDefender::Serialize_nofDefender(SerializedGameData& sgd) const
 {
     Serialize_nofActiveSoldier(sgd);
 
-    if(state != STATE_FIGUREWORK)
+    if(state != SoldierState::FigureWork)
         sgd.PushObject(attacker, true);
 }
 
 nofDefender::nofDefender(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
-    if(state != STATE_FIGUREWORK)
-        attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
+    if(state != SoldierState::FigureWork)
+        attacker = sgd.PopObject<nofAttacker>(GO_Type::NofAttacker);
     else
         attacker = nullptr;
 }
@@ -59,22 +59,22 @@ void nofDefender::Walked()
     // Was bestimmtes machen, je nachdem welchen Status wir gerade haben
     switch(state)
     {
-        case STATE_DEFENDING_WALKINGTO:
+        case SoldierState::DefendingWalkingTo:
         {
             // Mit Angreifer den Kampf beginnen
             gwg->AddFigure(pos, new noFighting(attacker, this));
-            state = STATE_FIGHTING;
+            state = SoldierState::Fighting;
             attacker->FightVsDefenderStarted();
         }
         break;
-        case STATE_DEFENDING_WALKINGFROM:
+        case SoldierState::DefendingWalkingFrom:
         {
             // Ist evtl. unser Heimatgebäude zerstört?
             if(!building)
             {
                 // Rumirren
                 attacker = nullptr;
-                state = STATE_FIGUREWORK;
+                state = SoldierState::FigureWork;
                 StartWandering();
                 Wander();
                 return;
@@ -85,8 +85,8 @@ void nofDefender::Walked()
             if(attacker)
             {
                 // dann umdrehen und wieder rausgehen
-                state = STATE_DEFENDING_WALKINGTO;
-                StartWalking(Direction::SOUTHEAST);
+                state = SoldierState::DefendingWalkingTo;
+                StartWalking(Direction::SouthEast);
             } else
             {
                 // mich von der Landkarte tilgen
@@ -110,26 +110,26 @@ void nofDefender::HomeDestroyed()
 
     switch(state)
     {
-        case STATE_DEFENDING_WAITING:
+        case SoldierState::DefendingWaiting:
         {
             // Hier muss sofort reagiert werden, da man steht
             attacker = nullptr;
             // Rumirren
-            state = STATE_FIGUREWORK;
+            state = SoldierState::FigureWork;
             StartWandering();
             Wander();
         }
         break;
-        case STATE_DEFENDING_WALKINGTO:
-        case STATE_DEFENDING_WALKINGFROM:
+        case SoldierState::DefendingWalkingTo:
+        case SoldierState::DefendingWalkingFrom:
         {
             attacker = nullptr;
             // Rumirren
             StartWandering();
-            state = STATE_FIGUREWORK;
+            state = SoldierState::FigureWork;
         }
         break;
-        case STATE_FIGHTING:
+        case SoldierState::Fighting:
         {
             // Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
             // wird er auch nicht mehr zurückgehen)
@@ -143,7 +143,7 @@ void nofDefender::HomeDestroyedAtBegin()
 {
     building = nullptr;
 
-    state = STATE_FIGUREWORK;
+    state = SoldierState::FigureWork;
 
     // Rumirren
     StartWandering();
@@ -163,7 +163,7 @@ void nofDefender::WonFighting()
     if(!building)
     {
         // Rumirren
-        state = STATE_FIGUREWORK;
+        state = SoldierState::FigureWork;
         StartWandering();
         Wander();
 
@@ -175,12 +175,12 @@ void nofDefender::WonFighting()
     if(attacker)
     {
         // Ein Angreifer gefunden, dann warten wir auf ihn, bis er kommt
-        state = STATE_DEFENDING_WAITING;
+        state = SoldierState::DefendingWaiting;
     } else
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
-        state = STATE_DEFENDING_WALKINGFROM;
-        StartWalking(Direction::NORTHWEST);
+        state = SoldierState::DefendingWalkingFrom;
+        StartWalking(Direction::NorthWest);
     }
 }
 
@@ -212,8 +212,8 @@ void nofDefender::AttackerArrested()
     if(!attacker)
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
-        state = STATE_DEFENDING_WALKINGFROM;
-        StartWalking(Direction::NORTHWEST);
+        state = SoldierState::DefendingWalkingFrom;
+        StartWalking(Direction::NorthWest);
     }
 }
 

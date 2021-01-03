@@ -250,11 +250,11 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
     {
         default: return false;
         // Wird bereits über Char geliefert !!
-        case KT_SPACE: // Leertaste
+        case KeyType::Space: // Leertaste
             AddChar(0x20);
             break;
 
-        case KT_LEFT: // Cursor nach Links
+        case KeyType::Left: // Cursor nach Links
             // Blockweise nach links, falls Strg gedrückt
             if(ke.ctrl)
             {
@@ -274,7 +274,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
                 CursorLeft(); // just one step
             break;
 
-        case KT_RIGHT: // Cursor nach Rechts
+        case KeyType::Right: // Cursor nach Rechts
             // Blockweise nach rechts, falls Strg gedrückt
             if(ke.ctrl)
             {
@@ -293,17 +293,17 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
                 CursorRight(); // just one step
             break;
 
-        case KT_CHAR: // Zeichen eingegeben
+        case KeyType::Char: // Zeichen eingegeben
             if(!isDisabled_ && txtCtrl->GetFont()->CharExist(ke.c))
                 AddChar(ke.c);
             break;
 
-        case KT_BACKSPACE: // Backspace gedrückt
+        case KeyType::Backspace: // Backspace gedrückt
             if(!isDisabled_)
                 RemoveChar();
             break;
 
-        case KT_DELETE: // Entfernen gedrückt
+        case KeyType::Delete: // Entfernen gedrückt
             if(!isDisabled_ && cursorPos_ < text_.length())
             {
                 CursorRight();
@@ -311,12 +311,12 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             }
             break;
 
-        case KT_RETURN: // Enter gedrückt
+        case KeyType::Return: // Enter gedrückt
             if(!isDisabled_ && GetParent())
                 GetParent()->Msg_EditEnter(GetID());
             break;
 
-        case KT_HOME: // Pos1 gedrückt
+        case KeyType::Home: // Pos1 gedrückt
             if(cursorPos_ > 0)
             {
                 cursorPos_ = 0;
@@ -324,7 +324,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             }
             break;
 
-        case KT_END: // Ende gedrückt
+        case KeyType::End: // Ende gedrückt
             if(cursorPos_ < text_.length())
             {
                 cursorPos_ = text_.length();

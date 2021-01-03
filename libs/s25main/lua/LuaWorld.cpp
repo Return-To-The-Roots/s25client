@@ -56,8 +56,8 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
     if(obj)
     {
         const GO_Type got = obj->GetGOT();
-        RTTR_Assert(got != GOT_NOTHING);
-        if(got != GOT_STATICOBJECT && got != GOT_ENVOBJECT)
+        RTTR_Assert(got != GO_Type::Nothing);
+        if(got != GO_Type::Staticobject && got != GO_Type::Envobject)
             return false;
     }
 
@@ -76,8 +76,8 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
     if(obj)
     {
         const GO_Type got = obj->GetGOT();
-        RTTR_Assert(got != GOT_NOTHING);
-        if(got != GOT_STATICOBJECT && got != GOT_ENVOBJECT)
+        RTTR_Assert(got != GO_Type::Nothing);
+        if(got != GO_Type::Staticobject && got != GO_Type::Envobject)
             return false;
     }
 

@@ -45,15 +45,16 @@ enum
 dskLAN::dskLAN() : dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DISCOVERY_CFG)
 {
     // "Server hinzufügen"
-    AddTextButton(ID_btAddServer, DrawPoint(530, 250), Extent(250, 22), TC_GREEN2, _("Add Server"), NormalFont);
+    AddTextButton(ID_btAddServer, DrawPoint(530, 250), Extent(250, 22), TextureColor::Green2, _("Add Server"),
+                  NormalFont);
     // "Verbinden"
-    AddTextButton(ID_btConnect, DrawPoint(530, 280), Extent(250, 22), TC_GREEN2, _("Connect"), NormalFont);
+    AddTextButton(ID_btConnect, DrawPoint(530, 280), Extent(250, 22), TextureColor::Green2, _("Connect"), NormalFont);
     // "Zurück"
-    AddTextButton(ID_btBack, DrawPoint(530, 530), Extent(250, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(530, 530), Extent(250, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version"
     using SRT = ctrlTable::SortType;
-    AddTable(ID_tblServer, DrawPoint(20, 20), Extent(500, 530), TC_GREY, NormalFont,
+    AddTable(ID_tblServer, DrawPoint(20, 20), Extent(500, 530), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("ID"), 0, SRT::Number},
                                 {_("Server"), 300, SRT::String},
                                 {_("Map"), 300, SRT::String},

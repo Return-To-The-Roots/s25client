@@ -62,15 +62,15 @@ void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(step);
     sgd.PushUnsignedShort(sub_step);
     sgd.PushEvent(event);
 }
 
 noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), state(State(sgd.PopUnsignedChar())), step(sgd.PopUnsignedShort()),
-      sub_step(sgd.PopUnsignedShort()), event(sgd.PopEvent())
+    : noCoordBase(sgd, obj_id), state(sgd.Pop<State>()), step(sgd.PopUnsignedShort()), sub_step(sgd.PopUnsignedShort()),
+      event(sgd.PopEvent())
 {}
 
 void noCharburnerPile::Draw(DrawPoint drawPt)

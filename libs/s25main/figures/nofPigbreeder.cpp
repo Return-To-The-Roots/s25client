@@ -52,7 +52,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
         DrawPoint walkPos =
           drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * now_id / walksteps;
 
-        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::SOUTHEAST, now_id % 8)
+        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::SouthEast, now_id % 8)
           .draw(walkPos, COLOR_WHITE, plColor);
     } else if(now_id < 40)
     {
@@ -72,7 +72,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos =
           drawPt + walkstart[wpNation] + (walkstart[wpNation] - offsets[wpNation]) * (now_id - 40) / walksteps;
-        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::NORTHWEST, (now_id - 40) % 8)
+        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::NorthWest, (now_id - 40) % 8)
           .draw(walkPos, COLOR_WHITE, plColor);
     }
 }

@@ -314,17 +314,17 @@ void GameClient::StartGame(const unsigned random_init)
         }
 
         /// Evtl. Goldvorkommen ändern
-        Resource::Type target; // löschen
+        ResourceType target; // löschen
         switch(game->ggs_.getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             case 0:
-            default: target = Resource::Gold; break;
-            case 1: target = Resource::Nothing; break;
-            case 2: target = Resource::Iron; break;
-            case 3: target = Resource::Coal; break;
-            case 4: target = Resource::Granite; break;
+            default: target = ResourceType::Gold; break;
+            case 1: target = ResourceType::Nothing; break;
+            case 2: target = ResourceType::Iron; break;
+            case 3: target = ResourceType::Coal; break;
+            case 4: target = ResourceType::Granite; break;
         }
-        gameWorld.ConvertMineResourceTypes(Resource::Gold, target);
+        gameWorld.ConvertMineResourceTypes(ResourceType::Gold, target);
         gameWorld.PlaceAndFixWater();
     }
     gameWorld.InitAfterLoad();

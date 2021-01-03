@@ -29,19 +29,19 @@ class CheckedLuaTable;
 
 enum class TerrainBQ : uint8_t
 {
-    NOTHING,
-    DANGER,
-    FLAG,
-    CASTLE,
-    MINE
+    Nothing,
+    Danger,
+    Flag,
+    Castle,
+    Mine
 };
 enum class TerrainKind : uint8_t
 {
-    LAND,
-    WATER,
-    LAVA,
-    SNOW,
-    MOUNTAIN
+    Land,
+    Water,
+    Lava,
+    Snow,
+    Mountain
 };
 /// Bitset of what can be done on that terrain
 enum class ETerrain : uint8_t

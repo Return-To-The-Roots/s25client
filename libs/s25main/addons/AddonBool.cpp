@@ -37,7 +37,7 @@ unsigned AddonBool::getNumOptions() const
 AddonBool::Gui::Gui(const Addon& addon, Window& window, bool readonly) : AddonGui(addon, window, readonly)
 {
     DrawPoint cbPos(430, 0);
-    window.AddCheckBox(2, cbPos, Extent(220, 20), TC_GREY, _("Use"), NormalFont, readonly);
+    window.AddCheckBox(2, cbPos, Extent(220, 20), TextureColor::Grey, _("Use"), NormalFont, readonly);
 }
 
 void AddonBool::Gui::setStatus(Window& window, unsigned status)

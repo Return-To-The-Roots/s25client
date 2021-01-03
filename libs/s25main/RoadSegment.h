@@ -51,7 +51,7 @@ public:
     /// serialisiert das Objekt.
     void Serialize(SerializedGameData& sgd) const override { Serialize_RoadSegment(sgd); }
     /// liefert den GO-Type.
-    GO_Type GetGOT() const override { return GOT_ROADSEGMENT; }
+    GO_Type GetGOT() const override { return GO_Type::Roadsegment; }
     /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straße zurück (die Flagge muss zu dieser Straße gehören, sonst
     /// kommt Müll raus!!)
     bool GetNodeID(const noRoadNode& rn) const;

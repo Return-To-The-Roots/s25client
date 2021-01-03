@@ -72,7 +72,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     const WorldDescription& desc = world.GetDescription();
     for(; t.value < desc.terrain.size(); t.value++)
     {
-        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::WATER) //-V807
+        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::Water) //-V807
             break;
     }
     RTTR_FOREACH_PT(MapPoint, size_)
@@ -107,7 +107,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     t = DescIdx<TerrainDesc>(0);
     for(; t.value < desc.terrain.size(); t.value++)
     {
-        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
+        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::Land)
             break;
     }
     // Vertical
@@ -200,7 +200,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
     const WorldDescription& desc = world.GetDescription();
     for(; t.value < desc.terrain.size(); t.value++)
     {
-        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::WATER) //-V807
+        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::Water) //-V807
             break;
     }
     RTTR_FOREACH_PT(MapPoint, size_)
@@ -216,7 +216,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
     t = DescIdx<TerrainDesc>(0);
     for(; t.value < desc.terrain.size(); t.value++)
     {
-        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
+        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::Land)
             break;
     }
     for(MapPoint hqPos : hqPositions)

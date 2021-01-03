@@ -29,33 +29,36 @@
 #include "gameData/JobConsts.h"
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
-    : noFigure(Job::Planer, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site),
-      pd(PD_NOTWORKING)
+    : noFigure(Job::Planer, pos, player, building_site), building_site(building_site), state(PlanerState::FigureWork),
+      pd(PlaningDir::NotWorking)
 {}
 
 void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(building_site, true);
-    sgd.PushUnsignedChar(static_cast<unsigned char>(pd));
+    sgd.PushEnum<uint8_t>(pd);
 }
 
-nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), state(PlanerState(sgd.PopUnsignedChar())),
-      building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)), pd(PlaningDir(sgd.PopUnsignedChar()))
-{}
+nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
+{
+    state = sgd.Pop<PlanerState>();
+    building_site = sgd.PopObject<noBuildingSite>(GO_Type::Buildingsite);
+    pd = sgd.Pop<PlaningDir>();
+}
 
 void nofPlaner::GoalReached()
 {
-    state = STATE_WALKING;
+    state = PlanerState::Walking;
 
     // Zufällig Uhrzeigersinn oder dagegen
-    pd = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
+    pd =
+      (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0) ? (PlaningDir::Clockwise) : (PlaningDir::Counterclockwise);
 
     // Je nachdem erst nach rechts oder links gehen
-    StartWalking((pd == PD_CLOCKWISE) ? Direction::SOUTHWEST : Direction::EAST);
+    StartWalking((pd == PlaningDir::Clockwise) ? Direction::SouthWest : Direction::East);
 }
 
 void nofPlaner::Walked()
@@ -66,21 +69,21 @@ void nofPlaner::Walked()
         // Baustelle Bescheid sagen
         building_site->PlaningFinished();
 
-        state = STATE_FIGUREWORK;
+        state = PlanerState::FigureWork;
 
         // Nach Hause laufen bzw. auch rumirren
         rs_pos = 0;
         rs_dir = true;
-        cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SOUTHEAST);
+        cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
         building_site = nullptr;
 
         GoHome();
-        StartWalking(Direction::SOUTHEAST);
+        StartWalking(Direction::SouthEast);
     } else
     {
         /// Anfangen zu arbeiten
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[Job::Planer].work_length, 1);
-        state = STATE_PLANING;
+        state = PlanerState::Planing;
     }
 }
 
@@ -88,7 +91,7 @@ void nofPlaner::AbrogateWorkplace()
 {
     if(building_site)
     {
-        state = STATE_FIGUREWORK;
+        state = PlanerState::FigureWork;
         building_site->Abrogate();
         building_site = nullptr;
     }
@@ -98,12 +101,12 @@ void nofPlaner::LostWork()
 {
     building_site = nullptr;
 
-    if(state == STATE_FIGUREWORK)
+    if(state == PlanerState::FigureWork)
         GoHome();
     else
     {
         // Event ggf. abmelden
-        if(state == STATE_PLANING)
+        if(state == PlanerState::Planing)
         {
             GetEvMgr().RemoveEvent(current_ev);
             /// Sounds abmelden
@@ -112,10 +115,10 @@ void nofPlaner::LostWork()
 
         StartWandering();
         // wenn wir schon laufen, nicht nochmal laufen!
-        if(state != STATE_WALKING)
+        if(state != PlanerState::Walking)
             Wander();
 
-        state = STATE_FIGUREWORK;
+        state = PlanerState::FigureWork;
     }
 }
 
@@ -123,13 +126,13 @@ void nofPlaner::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
-        case STATE_FIGUREWORK:
-        case STATE_WALKING:
+        case PlanerState::FigureWork:
+        case PlanerState::Walking:
         {
             DrawWalkingBobJobs(drawPt, Job::Planer);
         }
         break;
-        case STATE_PLANING:
+        case PlanerState::Planing:
         {
             // 41
 
@@ -173,23 +176,23 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
         /// Sounds abmelden
         SOUNDMANAGER.WorkingFinished(this);
 
-        state = STATE_WALKING;
+        state = PlanerState::Walking;
 
         // Planierung fertig --> weiterlaufen
         Direction curDir = GetCurMoveDir();
 
         // Das erste Mal gelaufen?
-        if((pd == PD_CLOCKWISE && curDir == Direction::SOUTHWEST)
-           || (pd == PD_COUNTERCLOCKWISE && curDir == Direction::EAST))
-            StartWalking(Direction::NORTHWEST);
+        if((pd == PlaningDir::Clockwise && curDir == Direction::SouthWest)
+           || (pd == PlaningDir::Counterclockwise && curDir == Direction::East))
+            StartWalking(Direction::NorthWest);
         // Fertig -> zur Baustelle zurücklaufen
-        else if(pd == PD_CLOCKWISE && curDir == Direction::SOUTHEAST)
-            StartWalking(Direction::WEST);
-        else if(pd == PD_COUNTERCLOCKWISE && curDir == Direction::SOUTHEAST)
-            StartWalking(Direction::NORTHEAST);
+        else if(pd == PlaningDir::Clockwise && curDir == Direction::SouthEast)
+            StartWalking(Direction::West);
+        else if(pd == PlaningDir::Counterclockwise && curDir == Direction::SouthEast)
+            StartWalking(Direction::NorthEast);
 
         // In nächste Richtung gehen
-        else if(pd == PD_CLOCKWISE)
+        else if(pd == PlaningDir::Clockwise)
             StartWalking(curDir + 1u);
         else
             StartWalking(curDir - 1u);

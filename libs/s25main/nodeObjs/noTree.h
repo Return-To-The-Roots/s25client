@@ -47,15 +47,16 @@ class noTree : public noCoordBase
     unsigned char type;
     /// Größe des Baumes (0-2, 3 = aufgewachsen!)
     unsigned char size;
-    enum State
+    enum class State : uint8_t
     {
-        STATE_NOTHING,       // Baum steht einfach nur rum
-        STATE_GROWING_WAIT,  // Baum ist noch im Wachsstadium, hat aber gerade keinen "Wachstumsschub"
-        STATE_GROWING_GROW,  // Baum hat gerade den Wachstumsschub
-        STATE_FALLING_WAIT,  // Baum wartet noch bis er umfällt
-        STATE_FALLING_FALL,  // Baum fällt gerade um
-        STATE_FALLING_FALLEN // Baum ist schon umgefallen und liegt noch ne Weile da bis er abtransportiert wird
+        Nothing,      // Baum steht einfach nur rum
+        GrowingWait,  // Baum ist noch im Wachsstadium, hat aber gerade keinen "Wachstumsschub"
+        GrowingGrow,  // Baum hat gerade den Wachstumsschub
+        FallingWait,  // Baum wartet noch bis er umfällt
+        FallingFall,  // Baum fällt gerade um
+        FallingFallen // Baum ist schon umgefallen und liegt noch ne Weile da bis er abtransportiert wird
     } state;
+    friend constexpr auto maxEnumValue(State) { return State::FallingFallen; }
 
     /// Wachsevent
     const GameEvent* event;
@@ -96,7 +97,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noTree(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_TREE; }
+    GO_Type GetGOT() const override { return GO_Type::Tree; }
 
     void Draw(DrawPoint drawPt) override;
 

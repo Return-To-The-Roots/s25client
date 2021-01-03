@@ -48,7 +48,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noStaticObject(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_STATICOBJECT; }
+    GO_Type GetGOT() const override { return GO_Type::Staticobject; }
 
 protected:
     void Destroy_noStaticObject();

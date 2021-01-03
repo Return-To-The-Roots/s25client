@@ -31,7 +31,7 @@
 #include "world/GameWorldGame.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(Job::Fisher, pos, player, workplace), fishing_dir(Direction::WEST), successful(false)
+    : nofFarmhand(Job::Fisher, pos, player, workplace), fishing_dir(Direction::West), successful(false)
 {}
 
 void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
@@ -111,7 +111,7 @@ void nofFisher::WorkStarted()
     {
         fishing_dir = dir + doffset;
         Resource neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources;
-        if(neighbourRes.has(Resource::Fish))
+        if(neighbourRes.has(ResourceType::Fish))
             break;
     }
 
@@ -138,14 +138,14 @@ nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
 {
     // Der Punkt muss passierbar sein für Figuren
     if(!PathConditionHuman(*gwg).IsNodeOk(pt))
-        return PQ_NOTPOSSIBLE;
+        return PointQuality::NotPossible;
 
     // irgendwo drumherum muss es Fisch geben
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, dir)).resources.has(Resource::Fish))
-            return PQ_CLASS1;
+        if(gwg->GetNode(gwg->GetNeighbour(pt, dir)).resources.has(ResourceType::Fish))
+            return PointQuality::Class1;
     }
 
-    return PQ_NOTPOSSIBLE;
+    return PointQuality::NotPossible;
 }

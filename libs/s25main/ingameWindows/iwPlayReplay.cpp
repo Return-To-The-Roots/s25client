@@ -60,19 +60,19 @@ iwPlayReplay::iwPlayReplay()
                    LOADER.GetImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
-    AddTable(0, DrawPoint(20, 30), Extent(560, 220), TC_GREEN2, NormalFont,
+    AddTable(0, DrawPoint(20, 30), Extent(560, 220), TextureColor::Green2, NormalFont,
              ctrlTable::Columns{{("Filename"), 300, SRT::String},
                                 {_("Stocktaking date"), 220, SRT::Date},
                                 {_("Player"), 360, SRT::String},
                                 {_("Length"), 120, SRT::Number},
                                 {}});
 
-    AddTextButton(2, DrawPoint(20, 260), Extent(100, 22), TC_RED1, _("Clear"), NormalFont);
-    AddTextButton(5, DrawPoint(130, 260), Extent(160, 22), TC_RED1, "Delete Invalid", NormalFont,
+    AddTextButton(2, DrawPoint(20, 260), Extent(100, 22), TextureColor::Red1, _("Clear"), NormalFont);
+    AddTextButton(5, DrawPoint(130, 260), Extent(160, 22), TextureColor::Red1, "Delete Invalid", NormalFont,
                   _("Removes all replays that cannot be loaded with the current game version"));
-    AddTextButton(3, DrawPoint(20, 290), Extent(160, 22), TC_RED1, _("Delete selected"), NormalFont);
-    AddTextButton(4, DrawPoint(190, 290), Extent(190, 22), TC_RED1, _("Back"), NormalFont);
-    AddTextButton(1, DrawPoint(390, 290), Extent(190, 22), TC_GREEN2, _("Start"), NormalFont);
+    AddTextButton(3, DrawPoint(20, 290), Extent(160, 22), TextureColor::Red1, _("Delete selected"), NormalFont);
+    AddTextButton(4, DrawPoint(190, 290), Extent(190, 22), TextureColor::Red1, _("Back"), NormalFont);
+    AddTextButton(1, DrawPoint(390, 290), Extent(190, 22), TextureColor::Green2, _("Start"), NormalFont);
 
     PopulateTable();
 

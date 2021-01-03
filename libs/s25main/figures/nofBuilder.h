@@ -31,13 +31,14 @@ private:
     static const short UP_MAX = 0;
     static const short DOWN_MAX = 16;
 
-    enum BuilderState
+    enum class BuilderState : uint8_t
     {
-        STATE_FIGUREWORK,
-        STATE_WAITINGFREEWALK, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
-        STATE_BUILDFREEWALK,   // Bauarbeiter geht auf und ab und baut
-        STATE_BUILD            // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)
+        FigureWork,
+        WaitingFreewalk, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
+        BuildFreewalk,   // Bauarbeiter geht auf und ab und baut
+        Build            // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)
     } state;
+    friend constexpr auto maxEnumValue(BuilderState) { return BuilderState::Build; }
 
     /// Baustelle des Bauarbeiters
     noBuildingSite* building_site;
@@ -79,7 +80,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuilder(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_NOF_BUILDER; }
+    GO_Type GetGOT() const override { return GO_Type::NofBuilder; }
 
     void Draw(DrawPoint drawPt) override;
 

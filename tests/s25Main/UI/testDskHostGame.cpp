@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     client->SendChat("");
 
     auto* desktop = WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(
-      ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));
+      ServerType::Lobby, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));
     auto* ci = dynamic_cast<ClientInterface*>(desktop);
     auto* li = dynamic_cast<LobbyInterface*>(desktop);
     BOOST_REQUIRE(ci && li);

@@ -31,7 +31,7 @@ iwHelp::iwHelp(const std::string& content)
                    LOADER.GetImageN("io", 1))
 {
     // Größe des Fensters und des Controls nach der Anzahl der Zeilen
-    ctrlMultiline* text = AddMultiline(2, DrawPoint(contentOffset), GetIwSize(), TC_GREEN1, NormalFont);
+    ctrlMultiline* text = AddMultiline(2, DrawPoint(contentOffset), GetIwSize(), TextureColor::Green1, NormalFont);
     text->SetNumVisibleLines(MAX_LINES);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);

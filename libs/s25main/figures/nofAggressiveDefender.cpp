@@ -27,15 +27,15 @@
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
                                              nobBaseMilitary* const home, const unsigned char rank,
                                              nofAttacker* const attacker)
-    : nofActiveSoldier(pos, player, home, rank, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
-      attacked_goal(attacker->GetAttackedGoal())
+    : nofActiveSoldier(pos, player, home, rank, SoldierState::AggressivedefendingWalkingToAggressor),
+      attacker(attacker), attacked_goal(attacker->GetAttackedGoal())
 {
     // Angegriffenem Gebäude Bescheid sagen
     attacked_goal->LinkAggressiveDefender(this);
 }
 
 nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
-    : nofActiveSoldier(*other, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
+    : nofActiveSoldier(*other, SoldierState::AggressivedefendingWalkingToAggressor), attacker(attacker),
       attacked_goal(attacker->GetAttackedGoal())
 {
     // Angegriffenem Gebäude Bescheid sagen
@@ -55,7 +55,7 @@ void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& 
 {
     Serialize_nofActiveSoldier(sgd);
 
-    if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
+    if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
         sgd.PushObject(attacker, true);
         sgd.PushObject(attacked_goal, false);
@@ -65,10 +65,10 @@ void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& 
 nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id)
     : nofActiveSoldier(sgd, obj_id)
 {
-    if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
+    if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
-        attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
-        attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
+        attacker = sgd.PopObject<nofAttacker>(GO_Type::NofAttacker);
+        attacked_goal = sgd.PopObject<nobBaseMilitary>(GO_Type::Unknown);
     } else
     {
         attacker = nullptr;
@@ -82,7 +82,7 @@ void nofAggressiveDefender::Walked()
     switch(state)
     {
         default: nofActiveSoldier::Walked(); return;
-        case STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR:
+        case SoldierState::AggressivedefendingWalkingToAggressor:
         {
             MissAggressiveDefendingWalk();
         }
@@ -103,7 +103,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
     InformTargetsAboutCancelling();
 
-    state = STATE_FIGUREWORK;
+    state = SoldierState::FigureWork;
 
     // Rumirren
     StartWandering();
@@ -133,7 +133,7 @@ void nofAggressiveDefender::WonFighting()
         InformTargetsAboutCancelling();
 
         // Rumirren
-        state = STATE_FIGUREWORK;
+        state = SoldierState::FigureWork;
         StartWandering();
         Wander();
 
@@ -167,7 +167,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
 
     /// Vermeiden, dass in FindAggressor nochmal der Soldat zum Loslaufen gezwungen wird, weil er als state
     // noch drinstehen hat, dass er auf einen Kampf wartet
-    state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
+    state = SoldierState::AggressivedefendingWalkingToAggressor;
 
     // nach anderen suchen, die in meiner Nähe sind und mich evtl noch mit denen kloppen
     attacker = attacked_goal->FindAggressor(this);
@@ -188,13 +188,13 @@ void nofAggressiveDefender::AttackedGoalDestroyed()
     attacked_goal = nullptr;
 
     /*// Stehen wir? Dann losgehen
-    if(state == STATE_WAITINGFORFIGHT)
+    if(state == Waitingforfight)
         ReturnHome();*/
 }
 
 void nofAggressiveDefender::MissAggressiveDefendingContinueWalking()
 {
-    state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
+    state = SoldierState::AggressivedefendingWalkingToAggressor;
     MissAggressiveDefendingWalk();
 }
 
@@ -206,7 +206,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         InformTargetsAboutCancelling();
 
         // Rumirren
-        state = STATE_FIGUREWORK;
+        state = SoldierState::FigureWork;
         StartWandering();
         Wander();
         return;
@@ -308,5 +308,5 @@ void nofAggressiveDefender::FreeFightEnded()
 {
     nofActiveSoldier::FreeFightEnded();
     // Continue with normal walking towards our goal
-    state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
+    state = SoldierState::AggressivedefendingWalkingToAggressor;
 }

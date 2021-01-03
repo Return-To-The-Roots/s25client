@@ -39,7 +39,8 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
     // Background image, only a button when outhousing is allowed
     if(allow_outhousing)
     {
-        ctrlButton* b = page.AddImageButton(100 + idOffset, btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298), name);
+        ctrlButton* b =
+          page.AddImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.GetMapImageN(2298), name);
         b->SetBorder(false);
     } else
         page.AddImage(100 + idOffset, btPos + btSize / 2, LOADER.GetMapImageN(2298), name);
@@ -143,10 +144,10 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
     }
 
     // "Blättern"
-    AddImageButton(0, DrawPoint(52, GetSize().y - 47), Extent(66, 32), TC_GREY, LOADER.GetImageN("io", 84),
+    AddImageButton(0, DrawPoint(52, GetSize().y - 47), Extent(66, 32), TextureColor::Grey, LOADER.GetImageN("io", 84),
                    _("Next page"));
     // Hilfe
-    AddImageButton(12, DrawPoint(16, GetSize().y - 47), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 225),
+    AddImageButton(12, DrawPoint(16, GetSize().y - 47), Extent(32, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
                    _("Help"));
 
     waresPage.SetVisible(true);

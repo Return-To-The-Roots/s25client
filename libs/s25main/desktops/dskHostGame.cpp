@@ -97,7 +97,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
               _("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"),
               this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
             lua.reset();
-        } else if(!lua->EventSettingsInit(serverType == ServerType::LOCAL, gameLobby->isSavegame()))
+        } else if(!lua->EventSettingsInit(serverType == ServerType::Local, gameLobby->isSavegame()))
         {
             RTTR_Assert(
               gameLobby->isHost()); // This should be done first for the host so others won't even see the script
@@ -145,40 +145,44 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         if(lobbyClient_ && lobbyClient_->IsLoggedIn())
         {
             ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, GroupSelectType::Check);
-            chatTab->AddTextButton(TAB_GAMECHAT, DrawPoint(20, 320), Extent(178, 22), TC_GREEN2, _("Game Chat"),
-                                   NormalFont);
-            chatTab->AddTextButton(TAB_LOBBYCHAT, DrawPoint(202, 320), Extent(178, 22), TC_GREEN2, _("Lobby Chat"),
-                                   NormalFont);
-            gameChat = AddChatCtrl(ID_GAME_CHAT, DrawPoint(20, 345), Extent(360, 218 - 25), TC_GREY, NormalFont);
-            lobbyChat = AddChatCtrl(ID_LOBBY_CHAT, DrawPoint(20, 345), Extent(360, 218 - 25), TC_GREY, NormalFont);
+            chatTab->AddTextButton(TAB_GAMECHAT, DrawPoint(20, 320), Extent(178, 22), TextureColor::Green2,
+                                   _("Game Chat"), NormalFont);
+            chatTab->AddTextButton(TAB_LOBBYCHAT, DrawPoint(202, 320), Extent(178, 22), TextureColor::Green2,
+                                   _("Lobby Chat"), NormalFont);
+            gameChat =
+              AddChatCtrl(ID_GAME_CHAT, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
+            lobbyChat =
+              AddChatCtrl(ID_LOBBY_CHAT, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
             chatTab->SetSelection(TAB_GAMECHAT, true);
         } else
         {
             // Chatfenster
-            gameChat = AddChatCtrl(ID_GAME_CHAT, DrawPoint(20, 320), Extent(360, 218), TC_GREY, NormalFont);
+            gameChat = AddChatCtrl(ID_GAME_CHAT, DrawPoint(20, 320), Extent(360, 218), TextureColor::Grey, NormalFont);
         }
         // Edit für Chatfenster
-        AddEdit(ID_CHAT_INPUT, DrawPoint(20, 540), Extent(360, 22), TC_GREY, NormalFont);
+        AddEdit(ID_CHAT_INPUT, DrawPoint(20, 540), Extent(360, 22), TextureColor::Grey, NormalFont);
     }
 
     // "Spiel starten"
-    AddTextButton(2, DrawPoint(600, 560), Extent(180, 22), TC_GREEN2,
+    AddTextButton(2, DrawPoint(600, 560), Extent(180, 22), TextureColor::Green2,
                   (gameLobby->isHost() ? _("Start game") : _("Ready")), NormalFont);
 
     // "Zurück"
-    AddTextButton(3, DrawPoint(400, 560), Extent(180, 22), TC_RED1, _("Return"), NormalFont);
+    AddTextButton(3, DrawPoint(400, 560), Extent(180, 22), TextureColor::Red1, _("Return"), NormalFont);
 
     // "Teams sperren"
-    AddCheckBox(20, DrawPoint(400, 460), Extent(180, 26), TC_GREY, _("Lock teams:"), NormalFont, readonlySettings);
+    AddCheckBox(20, DrawPoint(400, 460), Extent(180, 26), TextureColor::Grey, _("Lock teams:"), NormalFont,
+                readonlySettings);
     // "Gemeinsame Team-Sicht"
-    AddCheckBox(19, DrawPoint(600, 460), Extent(180, 26), TC_GREY, _("Shared team view"), NormalFont, readonlySettings);
+    AddCheckBox(19, DrawPoint(600, 460), Extent(180, 26), TextureColor::Grey, _("Shared team view"), NormalFont,
+                readonlySettings);
     // "Random Start Locations"
-    AddCheckBox(23, DrawPoint(600, 430), Extent(180, 26), TC_GREY, _("Random start locations"), NormalFont,
+    AddCheckBox(23, DrawPoint(600, 430), Extent(180, 26), TextureColor::Grey, _("Random start locations"), NormalFont,
                 readonlySettings);
 
     // "Enhancements"
     AddText(21, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddTextButton(22, DrawPoint(600, 495), Extent(180, 22), TC_GREEN2,
+    AddTextButton(22, DrawPoint(600, 495), Extent(180, 22), TextureColor::Green2,
                   allowAddonChange ? _("Change Settings...") : _("View Settings..."), NormalFont);
 
     ctrlComboBox* combo;
@@ -187,7 +191,8 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
 
     // "Aufklärung"
     AddText(30, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(40, DrawPoint(600, 400), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
+    combo =
+      AddComboBox(40, DrawPoint(600, 400), Extent(180, 20), TextureColor::Grey, NormalFont, 100, readonlySettings);
     combo->AddString(_("Off (all visible)"));
     combo->AddString(_("Classic (Settlers 2)"));
     combo->AddString(_("Fog of War"));
@@ -195,7 +200,8 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
 
     // "Waren zu Beginn"
     AddText(31, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(41, DrawPoint(600, 370), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
+    combo =
+      AddComboBox(41, DrawPoint(600, 370), Extent(180, 20), TextureColor::Grey, NormalFont, 100, readonlySettings);
     combo->AddString(_("Very Low"));
     combo->AddString(_("Low"));
     combo->AddString(_("Normal"));
@@ -203,7 +209,8 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
 
     // "Spielziel"
     AddText(32, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(42, DrawPoint(600, 340), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
+    combo =
+      AddComboBox(42, DrawPoint(600, 340), Extent(180, 20), TextureColor::Grey, NormalFont, 100, readonlySettings);
     combo->AddString(_("None"));               // Kein Spielziel
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
     combo->AddString(_("Total domination"));   // Alleinherrschaft
@@ -219,7 +226,8 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
 
     // "Geschwindigkeit"
     AddText(33, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(43, DrawPoint(600, 310), Extent(180, 20), TC_GREY, NormalFont, 100, !gameLobby->isHost());
+    combo =
+      AddComboBox(43, DrawPoint(600, 310), Extent(180, 20), TextureColor::Grey, NormalFont, 100, !gameLobby->isHost());
     combo->AddString(_("Very slow")); // Sehr Langsam
     combo->AddString(_("Slow"));      // Langsam
     combo->AddString(_("Normal"));    // Normal
@@ -269,14 +277,14 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         for(unsigned i = 0; i < gameLobby->getNumPlayers(); i++)
         {
             DrawPoint rowPos = GetCtrl<Window>(ID_PLAYER_GROUP_START + i)->GetCtrl<Window>(1)->GetPos();
-            ctrlButton* bt =
-              AddTextButton(ID_SWAP_BUTTON + i, DrawPoint(5, 0), Extent(22, 22), TC_RED1, _("-"), NormalFont);
+            ctrlButton* bt = AddTextButton(ID_SWAP_BUTTON + i, DrawPoint(5, 0), Extent(22, 22), TextureColor::Red1,
+                                           _("-"), NormalFont);
             bt->SetPos(DrawPoint(bt->GetPos().x, rowPos.y));
         }
     }
     CI_GGSChanged(gameLobby->getSettings());
 
-    if(serverType == ServerType::LOBBY && lobbyClient_ && lobbyClient_->IsLoggedIn())
+    if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         lobbyClient_->AddListener(this);
         lobbyClient_->SendServerJoinRequest();
@@ -335,7 +343,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     const JoinPlayerInfo& player = gameLobby->getPlayer(row);
 
     unsigned cy = 80 + row * 30;
-    TextureColor tc = (row & 1 ? TC_GREY : TC_GREEN2);
+    TextureColor tc = (row & 1 ? TextureColor::Grey : TextureColor::Green2);
 
     // Alle Controls erstmal zerstören (die ganze Gruppe)
     DeleteCtrl(ID_PLAYER_GROUP_START + row);
@@ -610,7 +618,7 @@ void dskHostGame::GoBack()
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(serverType == ServerType::LAN)
         WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
-    else if(serverType == ServerType::LOBBY && lobbyClient_ && lobbyClient_->IsLoggedIn())
+    else if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->IsLoggedIn())
         WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
     else
         WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
@@ -833,7 +841,7 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned s
         gameChat->SetVisible(selection == TAB_GAMECHAT);
         lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
         auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
-        tab->GetCtrl<ctrlButton>(selection)->SetTexture(TC_GREEN2);
+        tab->GetCtrl<ctrlButton>(selection)->SetTexture(TextureColor::Green2);
         if(selection == TAB_GAMECHAT)
         {
             tab->GetAnimationManager().finishAnimation(localChatTabAnimId, false);

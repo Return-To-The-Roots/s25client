@@ -35,13 +35,13 @@ dskMultiPlayer::dskMultiPlayer()
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Internet - Lobby"
-    AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TC_GREEN2, _("Internet Lobby"), NormalFont);
+    AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Internet Lobby"), NormalFont);
     // "Netzwerk / LAN"
-    AddTextButton(4, DrawPoint(115, 210), Extent(220, 22), TC_GREEN2, _("Network/LAN"), NormalFont);
+    AddTextButton(4, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Network/LAN"), NormalFont);
     // "Direkte IP"
-    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2, _("Direct IP"), NormalFont);
+    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, _("Direct IP"), NormalFont);
     // "Zurück"
-    AddTextButton(6, DrawPoint(115, 290), Extent(220, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(6, DrawPoint(115, 290), Extent(220, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }

@@ -19,25 +19,31 @@
 
 #include "FrameCounter.h"
 #include "desktops/dskMenuBase.h"
+#include "helpers/EnumArray.h"
 #include <chrono>
 #include <memory>
 #include <vector>
 
 class Game;
 
+enum class Benchmark
+{
+    None,
+    Text,
+    Primitives,
+    EmptyGame,
+    BasicGame,
+    FullGame,
+};
+constexpr auto maxEnumValue(Benchmark)
+{
+    return Benchmark::FullGame;
+}
+
 class dskBenchmark : public dskMenuBase
 {
     using clock = std::chrono::steady_clock;
-    enum Test
-    {
-        TEST_NONE,
-        TEST_TEXT,
-        TEST_PRIMITIVES,
-        TEST_EMPTY_GAME,
-        TEST_BASIC_GAME,
-        TEST_FULL_GAME,
-        TEST_CT
-    };
+
     struct ColoredRect
     {
         Rect rect;
@@ -59,7 +65,7 @@ public:
     void SetActive(bool activate) override;
 
 private:
-    Test curTest_;
+    Benchmark curTest_;
     bool runAll_;
     int numInstances_;
     FrameCounter frameCtr_;
@@ -67,9 +73,9 @@ private:
     std::vector<ColoredLine> lines_;
     std::shared_ptr<Game> game_;
     std::unique_ptr<GameView> gameView_;
-    std::array<std::chrono::milliseconds, TEST_CT> testDurations_;
+    helpers::EnumArray<std::chrono::milliseconds, Benchmark> testDurations_;
 
-    void startTest(Test test);
+    void startTest(Benchmark test);
     void finishTest();
     void createGame();
     void printTimes() const;

@@ -55,7 +55,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noFire(sgd); }
 
-    GO_Type GetGOT() const override { return GOT_FIRE; }
+    GO_Type GetGOT() const override { return GO_Type::Fire; }
 
     BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 

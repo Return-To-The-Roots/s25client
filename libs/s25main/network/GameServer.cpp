@@ -71,7 +71,7 @@ GameServer::ServerConfig::ServerConfig()
 
 void GameServer::ServerConfig::Clear()
 {
-    servertype = ServerType::LOCAL;
+    servertype = ServerType::Local;
     gamename.clear();
     password.clear();
     port = 0;
@@ -219,7 +219,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
 
     if(config.servertype == ServerType::LAN)
         lanAnnouncer.Start();
-    else if(config.servertype == ServerType::LOBBY)
+    else if(config.servertype == ServerType::Lobby)
     {
         LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (config.password.length() != 0), config.port);
         LOBBYCLIENT.AddListener(this);
@@ -257,7 +257,7 @@ void GameServer::AnnounceStatusChange()
         Serializer ser;
         info.Serialize(ser);
         lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
-    } else if(config.servertype == ServerType::LOBBY)
+    } else if(config.servertype == ServerType::Lobby)
     {
         if(LOBBYCLIENT.IsIngame())
             LOBBYCLIENT.UpdateServerNumPlayers(GetNumFilledSlots(), playerInfos.size());
@@ -910,7 +910,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
             player.ps = msg.ps;
             player.aiInfo = msg.aiInfo;
         }
-        if(player.ps == PlayerState::Free && config.servertype == ServerType::LOCAL)
+        if(player.ps == PlayerState::Free && config.servertype == ServerType::Local)
         {
             player.ps = PlayerState::AI;
             player.aiInfo = AI::Info(AI::Type::Default);

@@ -83,5 +83,5 @@ void nofStonemason::WorkFinished()
 nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt) const
 {
     // An dieser Position muss es nur Stein geben
-    return ((gwg->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PQ_CLASS1 : PQ_NOTPOSSIBLE);
+    return ((gwg->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PointQuality::Class1 : PointQuality::NotPossible);
 }

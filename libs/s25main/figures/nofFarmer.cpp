@@ -90,7 +90,7 @@ void nofFarmer::WorkFinished()
         // normales Zierobjekt gesetzt wird
         noBase* nob = gwg->GetNO(pos);
         // Check if there is still a grain field at this position
-        if(nob->GetGOT() != GOT_GRAINFIELD)
+        if(nob->GetGOT() != GO_Type::Grainfield)
             return;
         unsigned mapLstId = static_cast<noGrainfield*>(nob)->GetHarvestMapLstID();
         gwg->DestroyNO(pos);
@@ -101,7 +101,7 @@ void nofFarmer::WorkFinished()
     } else
     {
         // If the point got bad (e.g. something was build), abort work
-        if(GetPointQuality(pos) == PQ_NOTPOSSIBLE)
+        if(GetPointQuality(pos) == PointQuality::NotPossible)
             return;
 
         // Was stand hier vorher?
@@ -130,9 +130,9 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
     if(gwg->GetNO(pt)->GetType() == NodalObjectType::Grainfield)
     {
         if(gwg->GetSpecObj<noGrainfield>(pt)->IsHarvestable())
-            return PQ_CLASS1;
+            return PointQuality::Class1;
         else
-            return PQ_NOTPOSSIBLE;
+            return PointQuality::NotPossible;
     }
     // oder einen freien Platz, wo wir ein neues sähen können
     else
@@ -141,17 +141,17 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             if(gwg->GetPointRoad(pt, dir) != PointRoad::None)
-                return PQ_NOTPOSSIBLE;
+                return PointQuality::NotPossible;
         }
 
         // Terrain untersuchen
         if(!gwg->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
-            return PQ_NOTPOSSIBLE;
+            return PointQuality::NotPossible;
 
         // Ist Platz frei?
         NodalObjectType noType = gwg->GetNO(pt)->GetType();
         if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
-            return PQ_NOTPOSSIBLE;
+            return PointQuality::NotPossible;
 
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
@@ -159,10 +159,10 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
             noType = gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType();
             if(noType == NodalObjectType::Grainfield || noType == NodalObjectType::Building
                || noType == NodalObjectType::Buildingsite)
-                return PQ_NOTPOSSIBLE;
+                return PointQuality::NotPossible;
         }
 
-        return PQ_CLASS2;
+        return PointQuality::Class2;
     }
 }
 
@@ -170,6 +170,6 @@ void nofFarmer::WorkAborted()
 {
     nofFarmhand::WorkAborted();
     // dem Getreidefeld Bescheid sagen, damit es wieder verdorren kann, wenn wir abernten
-    if(harvest && state == STATE_WORK)
+    if(harvest && state == State::Work)
         gwg->GetSpecObj<noGrainfield>(pos)->EndHarvesting();
 }

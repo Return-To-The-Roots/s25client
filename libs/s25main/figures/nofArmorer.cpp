@@ -91,7 +91,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        case STATE_WAITING1:
+        case State::Waiting1:
         {
             if(!gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
             {
@@ -101,18 +101,18 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
             {
                 // Nach 1. Warten wird gearbeitet
                 current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
-                state = STATE_WORK;
+                state = State::Work;
                 workplace->is_working = true;
                 // LOG.write(("armorer handlewait1 - no consume wares %i \n",player);
             }
         }
         break;
-        case STATE_WORK:
+        case State::Work:
         {
             HandleStateWork();
         }
         break;
-        case STATE_WAITING2:
+        case State::Waiting2:
         {
             HandleStateWaiting2();
         }

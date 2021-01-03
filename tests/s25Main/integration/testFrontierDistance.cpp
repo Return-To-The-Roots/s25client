@@ -65,7 +65,7 @@ DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
+        if(fieldDesc.kind == TerrainKind::Water && !fieldDesc.Is(ETerrain::Walkable))
             return tWater;
     }
     throw std::logic_error("No water"); // LCOV_EXCL_LINE
@@ -112,7 +112,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
 {
     for(int terrain = 0; terrain < 2; terrain++)
     {
-        TerrainKind searchedTerrain = terrain == 1 ? TerrainKind::LAVA : TerrainKind::SNOW;
+        TerrainKind searchedTerrain = terrain == 1 ? TerrainKind::Lava : TerrainKind::Snow;
         DescIdx<TerrainDesc> tUnreachable(0);
         for(; tUnreachable.value < world.GetDescription().terrain.size(); tUnreachable.value++)
         {

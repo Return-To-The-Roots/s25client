@@ -210,11 +210,11 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 continue;
 
             // No pathes over buildings
-            if((dir == Direction::NORTHWEST) && (neighbour != &goal))
+            if((dir == Direction::NorthWest) && (neighbour != &goal))
             {
                 // Flags and harbors are allowed
                 const GO_Type got = neighbour->GetGOT();
-                if(got != GOT_FLAG && got != GOT_NOB_HARBORBUILDING)
+                if(got != GO_Type::Flag && got != GO_Type::NobHarborbuilding)
                     continue;
             }
 
@@ -257,7 +257,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         }
 
         // Stehen wir hier auf einem Hafenplatz
-        if(best.GetGOT() == GOT_NOB_HARBORBUILDING)
+        if(best.GetGOT() == GO_Type::NobHarborbuilding)
         {
             std::vector<nobHarborBuilding::ShipConnection> scs =
               static_cast<const nobHarborBuilding&>(best).GetShipConnections();

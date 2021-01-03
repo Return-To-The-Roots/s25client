@@ -55,8 +55,8 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
 
     sgd.PushMapPoint(node_goal);
 
-    for(unsigned i = 0; i < 5; ++i)
-        sgd.PushBool(resAlreadyFound[i]);
+    for(const bool found : resAlreadyFound)
+        sgd.PushBool(found);
 }
 
 nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
@@ -71,8 +71,8 @@ nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
 
     node_goal = sgd.PopMapPoint();
 
-    for(unsigned i = 0; i < 5; ++i)
-        resAlreadyFound[i] = sgd.PopBool();
+    for(bool& found : resAlreadyFound)
+        found = sgd.PopBool();
 }
 
 void nofGeologist::Draw(DrawPoint drawPt)
@@ -80,15 +80,15 @@ void nofGeologist::Draw(DrawPoint drawPt)
     switch(state)
     {
         default: break;
-        case STATE_FIGUREWORK:
-        case STATE_GEOLOGIST_GOTONEXTNODE:
-        case STATE_GOTOFLAG:
+        case State::FigureWork:
+        case State::GeologistGotonextnode:
+        case State::GoToFlag:
         {
             // normales Laufen zeichnen
             DrawWalkingBobJobs(drawPt, Job::Geologist);
         }
         break;
-        case STATE_GEOLOGIST_DIG:
+        case State::GeologistDig:
         {
             // 1x grab, 1x "spring-grab", 2x grab, 1x "spring-grab", 2x grab, 1x "spring-grab", 4x grab
             unsigned short i = GAMECLIENT.Interpolate(84, current_ev);
@@ -182,7 +182,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 SOUNDMANAGER.PlayNOSound((sound == 1) ? 81 : 56, this, sound_id);
         }
         break;
-        case STATE_GEOLOGIST_CHEER:
+        case State::GeologistCheer:
         {
             unsigned short i = GAMECLIENT.Interpolate(16, current_ev);
 
@@ -227,7 +227,7 @@ void nofGeologist::GoalReached()
 
 void nofGeologist::Walked()
 {
-    if(state == STATE_GEOLOGIST_GOTONEXTNODE)
+    if(state == State::GeologistGotonextnode)
     {
         // Check if the flag still exists (not destroyed) and the goal node is still available (something could be build
         // there)
@@ -245,7 +245,7 @@ void nofGeologist::Walked()
         {
             // anfangen zu graben
             current_ev = GetEvMgr().AddEvent(this, 100, 1);
-            state = STATE_GEOLOGIST_DIG;
+            state = State::GeologistDig;
         } else
         {
             // Weg zum nächsten Punkt suchen
@@ -257,7 +257,7 @@ void nofGeologist::Walked()
             else
                 StartWalking(*dir);
         }
-    } else if(state == STATE_GOTOFLAG)
+    } else if(state == State::GoToFlag)
     {
         GoToFlag();
     }
@@ -268,18 +268,18 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
     switch(state)
     {
         default: break;
-        case STATE_GEOLOGIST_DIG:
+        case State::GeologistDig:
         {
             // Check what is here
             Resource foundRes = gwg->GetNode(pos).resources;
             // We don't care for fish (and most likely never find it)
-            if(foundRes.getType() == Resource::Fish)
-                foundRes.setType(Resource::Nothing);
+            if(foundRes.getType() == ResourceType::Fish)
+                foundRes.setType(ResourceType::Nothing);
 
             if(foundRes.getAmount() > 0u)
             {
                 // Es wurde was gefunden, erstmal Jubeln
-                state = STATE_GEOLOGIST_CHEER;
+                state = State::GeologistCheer;
                 current_ev = GetEvMgr().AddEvent(this, 15, 1);
             } else
             {
@@ -291,7 +291,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
             }
         }
         break;
-        case STATE_GEOLOGIST_CHEER:
+        case State::GeologistCheer:
         {
             // Schild reinstecken
             SetSign(gwg->GetNode(pos).resources);
@@ -310,8 +310,8 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
-    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GOT_SIGN && obj.GetType() != NodalObjectType::Flag
-           && obj.GetType() != NodalObjectType::Tree;
+    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GO_Type::Sign
+           && obj.GetType() != NodalObjectType::Flag && obj.GetType() != NodalObjectType::Tree;
 }
 
 namespace {
@@ -401,7 +401,7 @@ void nofGeologist::GoToNextNode()
     {
         StartWandering();
         Wander();
-        state = STATE_FIGUREWORK;
+        state = State::FigureWork;
         return;
     }
 
@@ -411,26 +411,26 @@ void nofGeologist::GoToNextNode()
     if(dir)
     {
         // Wenn es einen Punkt gibt, dann hingehen
-        state = STATE_GEOLOGIST_GOTONEXTNODE;
+        state = State::GeologistGotonextnode;
         StartWalking(*dir);
         --signs;
     } else if(node_goal == pos)
     {
         // Already there
-        state = STATE_GEOLOGIST_GOTONEXTNODE;
+        state = State::GeologistGotonextnode;
         --signs;
         Walked();
     } else
     {
         // ansonsten zur Flagge zurückgehen
-        state = STATE_GOTOFLAG;
+        state = State::GoToFlag;
         Walked();
     }
 }
 
 void nofGeologist::SetSign(Resource resources)
 {
-    RTTR_Assert(resources.getType() != Resource::Fish); // Shall never happen
+    RTTR_Assert(resources.getType() != ResourceType::Fish); // Shall never happen
 
     // Bestimmte Objekte können gelöscht werden
     NodalObjectType noType = gwg->GetNO(pos)->GetType();
@@ -450,15 +450,15 @@ void nofGeologist::SetSign(Resource resources)
         const char* msg;
         switch(resources.getType())
         {
-            case Resource::Iron: msg = _("Found iron ore"); break;
-            case Resource::Gold: msg = _("Found gold"); break;
-            case Resource::Coal: msg = _("Found coal"); break;
-            case Resource::Granite: msg = _("Found granite"); break;
-            case Resource::Water: msg = _("Found water"); break;
+            case ResourceType::Iron: msg = _("Found iron ore"); break;
+            case ResourceType::Gold: msg = _("Found gold"); break;
+            case ResourceType::Coal: msg = _("Found coal"); break;
+            case ResourceType::Granite: msg = _("Found granite"); break;
+            case ResourceType::Water: msg = _("Found water"); break;
             default: RTTR_Assert(false); return;
         }
 
-        if(resources.getType() != Resource::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1)
+        if(resources.getType() != ResourceType::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1)
         {
             SendPostMessage(player,
                             std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
@@ -479,16 +479,16 @@ void nofGeologist::LostWork()
     {
         default: break;
         // Wenn wir noch hingehen, dann zurückgehen
-        case STATE_FIGUREWORK:
+        case State::FigureWork:
         {
             GoHome();
         }
         break;
-        case STATE_GOTOFLAG:
+        case State::GoToFlag:
         {
             // dann sofort rumirren, wenn wir zur Flagge gehen
             StartWandering();
-            state = STATE_FIGUREWORK;
+            state = State::FigureWork;
         }
         break;
     }
@@ -496,10 +496,10 @@ void nofGeologist::LostWork()
 
 struct IsSignOfType
 {
-    const Resource::Type type;
+    const ResourceType type;
     const World& gwb;
 
-    IsSignOfType(Resource::Type type, const World& gwb) : type(type), gwb(gwb) {}
+    IsSignOfType(ResourceType type, const World& gwb) : type(type), gwb(gwb) {}
 
     bool operator()(const MapPoint& pt, unsigned /*distance*/)
     {
@@ -508,7 +508,7 @@ struct IsSignOfType
     }
 };
 
-bool nofGeologist::IsSignInArea(Resource::Type type) const
+bool nofGeologist::IsSignInArea(ResourceType type) const
 {
     return gwg->CheckPointsInRadius(pos, 7, IsSignOfType(type, *gwg), false);
 }

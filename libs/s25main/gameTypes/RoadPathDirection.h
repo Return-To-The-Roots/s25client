@@ -24,12 +24,12 @@
 /// This is either Ship, None or convertible to Direction
 enum class RoadPathDirection : uint8_t
 {
-    West = static_cast<uint8_t>(Direction::WEST),
-    NorthWest = static_cast<uint8_t>(Direction::NORTHWEST),
-    NorthEast = static_cast<uint8_t>(Direction::NORTHEAST),
-    East = static_cast<uint8_t>(Direction::EAST),
-    SouthEast = static_cast<uint8_t>(Direction::SOUTHEAST),
-    SouthWest = static_cast<uint8_t>(Direction::SOUTHWEST),
+    West = static_cast<uint8_t>(Direction::West),
+    NorthWest = static_cast<uint8_t>(Direction::NorthWest),
+    NorthEast = static_cast<uint8_t>(Direction::NorthEast),
+    East = static_cast<uint8_t>(Direction::East),
+    SouthEast = static_cast<uint8_t>(Direction::SouthEast),
+    SouthWest = static_cast<uint8_t>(Direction::SouthWest),
     Ship = helpers::NumEnumValues_v<Direction>,
     None
 };

@@ -479,18 +479,18 @@ void Window::Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highl
 
 void Window::Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated)
 {
-    if(tc == TC_INVISIBLE)
+    if(tc == TextureColor::Invisible)
         return;
-    glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + tc);
+    glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + rttr::enum_cast(tc));
     VIDEODRIVER.GetRenderer()->Draw3DBorder(rect, elevated, *borderImg);
 }
 
 void Window::Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted, bool illuminated,
                            unsigned contentColor)
 {
-    if(tc == TC_INVISIBLE)
+    if(tc == TextureColor::Invisible)
         return;
-    glArchivItem_Bitmap* contentImg = LOADER.GetImageN("io", tc * 2 + (highlighted ? 0 : 1));
+    glArchivItem_Bitmap* contentImg = LOADER.GetImageN("io", rttr::enum_cast(tc) * 2 + (highlighted ? 0 : 1));
     VIDEODRIVER.GetRenderer()->Draw3DContent(rect, elevated, *contentImg, illuminated, contentColor);
 }
 

@@ -99,7 +99,7 @@
 /// Changelog:
 /// 2: All player buildings together, variable width size for containers and ship names
 /// 3: Landscape and terrain names stored as strings
-/// 4: STATE_HUNTER_WAITING_FOR_ANIMAL_READY introduced as sub-state of STATE_HUNTER_FINDINGSHOOTINGPOINT
+/// 4: HunterWaitingForAnimalReady introduced as sub-state of HunterFindingShootingpoint
 /// 5: Make RoadPathDirection contiguous and use optional for ware in nofBuildingWorker
 /// 6: Make TradeDirection contiguous, Serialize only nobUsuals in BuildingRegister::buildings
 static const unsigned currentGameDataVersion = 6;
@@ -109,72 +109,72 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
 {
     switch(got)
     {
-        case GOT_NOB_HQ: return new nobHQ(*this, obj_id);
-        case GOT_NOB_MILITARY: return new nobMilitary(*this, obj_id);
-        case GOT_NOB_STOREHOUSE: return new nobStorehouse(*this, obj_id);
-        case GOT_NOB_USUAL: return new nobUsual(*this, obj_id);
-        case GOT_NOB_SHIPYARD: return new nobShipYard(*this, obj_id);
-        case GOT_NOB_HARBORBUILDING: return new nobHarborBuilding(*this, obj_id);
-        case GOT_NOF_AGGRESSIVEDEFENDER: return new nofAggressiveDefender(*this, obj_id);
-        case GOT_NOF_ATTACKER: return new nofAttacker(*this, obj_id);
-        case GOT_NOF_DEFENDER: return new nofDefender(*this, obj_id);
-        case GOT_NOF_PASSIVESOLDIER: return new nofPassiveSoldier(*this, obj_id);
-        case GOT_NOF_PASSIVEWORKER: return new nofPassiveWorker(*this, obj_id);
-        case GOT_NOF_WELLGUY: return new nofWellguy(*this, obj_id);
-        case GOT_NOF_CARRIER: return new nofCarrier(*this, obj_id);
-        case GOT_NOF_WOODCUTTER: return new nofWoodcutter(*this, obj_id);
-        case GOT_NOF_FISHER: return new nofFisher(*this, obj_id);
-        case GOT_NOF_FORESTER: return new nofForester(*this, obj_id);
-        case GOT_NOF_CARPENTER: return new nofCarpenter(*this, obj_id);
-        case GOT_NOF_STONEMASON: return new nofStonemason(*this, obj_id);
-        case GOT_NOF_HUNTER: return new nofHunter(*this, obj_id);
-        case GOT_NOF_FARMER: return new nofFarmer(*this, obj_id);
-        case GOT_NOF_MILLER: return new nofMiller(*this, obj_id);
-        case GOT_NOF_BAKER: return new nofBaker(*this, obj_id);
-        case GOT_NOF_BUTCHER: return new nofButcher(*this, obj_id);
-        case GOT_NOF_MINER: return new nofMiner(*this, obj_id);
-        case GOT_NOF_BREWER: return new nofBrewer(*this, obj_id);
-        case GOT_NOF_PIGBREEDER: return new nofPigbreeder(*this, obj_id);
-        case GOT_NOF_DONKEYBREEDER: return new nofDonkeybreeder(*this, obj_id);
-        case GOT_NOF_IRONFOUNDER: return new nofIronfounder(*this, obj_id);
-        case GOT_NOF_MINTER: return new nofMinter(*this, obj_id);
-        case GOT_NOF_METALWORKER: return new nofMetalworker(*this, obj_id);
-        case GOT_NOF_ARMORER: return new nofArmorer(*this, obj_id);
-        case GOT_NOF_BUILDER: return new nofBuilder(*this, obj_id);
-        case GOT_NOF_PLANER: return new nofPlaner(*this, obj_id);
-        case GOT_NOF_GEOLOGIST: return new nofGeologist(*this, obj_id);
-        case GOT_NOF_SHIPWRIGHT: return new nofShipWright(*this, obj_id);
-        case GOT_NOF_SCOUT_FREE: return new nofScout_Free(*this, obj_id);
-        case GOT_NOF_SCOUT_LOOKOUTTOWER: return new nofScout_LookoutTower(*this, obj_id);
-        case GOT_NOF_WAREHOUSEWORKER: return new nofWarehouseWorker(*this, obj_id);
-        case GOT_NOF_CATAPULTMAN: return new nofCatapultMan(*this, obj_id);
-        case GOT_NOF_CHARBURNER: return new nofCharburner(*this, obj_id);
-        case GOT_NOF_TRADEDONKEY: return new nofTradeDonkey(*this, obj_id);
-        case GOT_NOF_TRADELEADER: return new nofTradeLeader(*this, obj_id);
-        case GOT_EXTENSION: return new noExtension(*this, obj_id);
-        case GOT_BUILDINGSITE: return new noBuildingSite(*this, obj_id);
-        case GOT_ENVOBJECT: return new noEnvObject(*this, obj_id);
-        case GOT_FIRE: return new noFire(*this, obj_id);
-        case GOT_BURNEDWAREHOUSE: return new BurnedWarehouse(*this, obj_id);
-        case GOT_FLAG: return new noFlag(*this, obj_id);
-        case GOT_GRAINFIELD: return new noGrainfield(*this, obj_id);
-        case GOT_GRANITE: return new noGranite(*this, obj_id);
-        case GOT_SIGN: return new noSign(*this, obj_id);
-        case GOT_SKELETON: return new noSkeleton(*this, obj_id);
-        case GOT_STATICOBJECT: return new noStaticObject(*this, obj_id);
-        case GOT_DISAPPEARINGMAPENVOBJECT: return new noDisappearingMapEnvObject(*this, obj_id);
-        case GOT_TREE: return new noTree(*this, obj_id);
-        case GOT_ANIMAL: return new noAnimal(*this, obj_id);
-        case GOT_FIGHTING: return new noFighting(*this, obj_id);
-        case GOT_ROADSEGMENT: return new RoadSegment(*this, obj_id);
-        case GOT_WARE: return new Ware(*this, obj_id);
-        case GOT_CATAPULTSTONE: return new CatapultStone(*this, obj_id);
-        case GOT_SHIP: return new noShip(*this, obj_id);
-        case GOT_SHIPBUILDINGSITE: return new noShipBuildingSite(*this, obj_id);
-        case GOT_CHARBURNERPILE: return new noCharburnerPile(*this, obj_id);
-        case GOT_ECONOMYMODEHANDLER: return new EconomyModeHandler(*this, obj_id);
-        case GOT_NOTHING:
-        case GOT_UNKNOWN: RTTR_Assert(false); break;
+        case GO_Type::NobHq: return new nobHQ(*this, obj_id);
+        case GO_Type::NobMilitary: return new nobMilitary(*this, obj_id);
+        case GO_Type::NobStorehouse: return new nobStorehouse(*this, obj_id);
+        case GO_Type::NobUsual: return new nobUsual(*this, obj_id);
+        case GO_Type::NobShipyard: return new nobShipYard(*this, obj_id);
+        case GO_Type::NobHarborbuilding: return new nobHarborBuilding(*this, obj_id);
+        case GO_Type::NofAggressivedefender: return new nofAggressiveDefender(*this, obj_id);
+        case GO_Type::NofAttacker: return new nofAttacker(*this, obj_id);
+        case GO_Type::NofDefender: return new nofDefender(*this, obj_id);
+        case GO_Type::NofPassivesoldier: return new nofPassiveSoldier(*this, obj_id);
+        case GO_Type::NofPassiveworker: return new nofPassiveWorker(*this, obj_id);
+        case GO_Type::NofWellguy: return new nofWellguy(*this, obj_id);
+        case GO_Type::NofCarrier: return new nofCarrier(*this, obj_id);
+        case GO_Type::NofWoodcutter: return new nofWoodcutter(*this, obj_id);
+        case GO_Type::NofFisher: return new nofFisher(*this, obj_id);
+        case GO_Type::NofForester: return new nofForester(*this, obj_id);
+        case GO_Type::NofCarpenter: return new nofCarpenter(*this, obj_id);
+        case GO_Type::NofStonemason: return new nofStonemason(*this, obj_id);
+        case GO_Type::NofHunter: return new nofHunter(*this, obj_id);
+        case GO_Type::NofFarmer: return new nofFarmer(*this, obj_id);
+        case GO_Type::NofMiller: return new nofMiller(*this, obj_id);
+        case GO_Type::NofBaker: return new nofBaker(*this, obj_id);
+        case GO_Type::NofButcher: return new nofButcher(*this, obj_id);
+        case GO_Type::NofMiner: return new nofMiner(*this, obj_id);
+        case GO_Type::NofBrewer: return new nofBrewer(*this, obj_id);
+        case GO_Type::NofPigbreeder: return new nofPigbreeder(*this, obj_id);
+        case GO_Type::NofDonkeybreeder: return new nofDonkeybreeder(*this, obj_id);
+        case GO_Type::NofIronfounder: return new nofIronfounder(*this, obj_id);
+        case GO_Type::NofMinter: return new nofMinter(*this, obj_id);
+        case GO_Type::NofMetalworker: return new nofMetalworker(*this, obj_id);
+        case GO_Type::NofArmorer: return new nofArmorer(*this, obj_id);
+        case GO_Type::NofBuilder: return new nofBuilder(*this, obj_id);
+        case GO_Type::NofPlaner: return new nofPlaner(*this, obj_id);
+        case GO_Type::NofGeologist: return new nofGeologist(*this, obj_id);
+        case GO_Type::NofShipwright: return new nofShipWright(*this, obj_id);
+        case GO_Type::NofScoutFree: return new nofScout_Free(*this, obj_id);
+        case GO_Type::NofScoutLookouttower: return new nofScout_LookoutTower(*this, obj_id);
+        case GO_Type::NofWarehouseworker: return new nofWarehouseWorker(*this, obj_id);
+        case GO_Type::NofCatapultman: return new nofCatapultMan(*this, obj_id);
+        case GO_Type::NofCharburner: return new nofCharburner(*this, obj_id);
+        case GO_Type::NofTradedonkey: return new nofTradeDonkey(*this, obj_id);
+        case GO_Type::NofTradeleader: return new nofTradeLeader(*this, obj_id);
+        case GO_Type::Extension: return new noExtension(*this, obj_id);
+        case GO_Type::Buildingsite: return new noBuildingSite(*this, obj_id);
+        case GO_Type::Envobject: return new noEnvObject(*this, obj_id);
+        case GO_Type::Fire: return new noFire(*this, obj_id);
+        case GO_Type::Burnedwarehouse: return new BurnedWarehouse(*this, obj_id);
+        case GO_Type::Flag: return new noFlag(*this, obj_id);
+        case GO_Type::Grainfield: return new noGrainfield(*this, obj_id);
+        case GO_Type::Granite: return new noGranite(*this, obj_id);
+        case GO_Type::Sign: return new noSign(*this, obj_id);
+        case GO_Type::Skeleton: return new noSkeleton(*this, obj_id);
+        case GO_Type::Staticobject: return new noStaticObject(*this, obj_id);
+        case GO_Type::Disappearingmapenvobject: return new noDisappearingMapEnvObject(*this, obj_id);
+        case GO_Type::Tree: return new noTree(*this, obj_id);
+        case GO_Type::Animal: return new noAnimal(*this, obj_id);
+        case GO_Type::Fighting: return new noFighting(*this, obj_id);
+        case GO_Type::Roadsegment: return new RoadSegment(*this, obj_id);
+        case GO_Type::Ware: return new Ware(*this, obj_id);
+        case GO_Type::Catapultstone: return new CatapultStone(*this, obj_id);
+        case GO_Type::Ship: return new noShip(*this, obj_id);
+        case GO_Type::Shipbuildingsite: return new noShipBuildingSite(*this, obj_id);
+        case GO_Type::Charburnerpile: return new noCharburnerPile(*this, obj_id);
+        case GO_Type::Economymodehandler: return new EconomyModeHandler(*this, obj_id);
+        case GO_Type::Nothing:
+        case GO_Type::Unknown: RTTR_Assert(false); break;
     }
     throw Error("Invalid GameObjectType " + helpers::toString(got) + " for objId=" + helpers::toString(obj_id)
                 + " found!");
@@ -276,7 +276,7 @@ void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game, ILocalG
     em->Deserialize(*this);
     if(game->ggs_.objective == GameObjective::EconomyMode)
     {
-        gw.econHandler.reset(PopObject<EconomyModeHandler>(GOT_ECONOMYMODEHANDLER));
+        gw.econHandler.reset(PopObject<EconomyModeHandler>(GO_Type::Economymodehandler));
     }
 
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
@@ -341,7 +341,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
-        PushUnsignedShort(go->GetGOT());
+        PushEnum<uint8_t>(go->GetGOT());
 
     // Objekt serialisieren
     if(debugMode)
@@ -447,8 +447,8 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
         return go;
 
     // Objekt nich bekannt? Dann in den heiligen Schriften lesen
-    if(got == GOT_UNKNOWN)
-        got = GO_Type(PopUnsignedShort());
+    if(got == GO_Type::Unknown)
+        got = Pop<GO_Type>();
 
     // und erzeugen
     go = Create_GameObject(got, objId);
@@ -460,7 +460,7 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
     {
         LOG.write(
           "SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n")
-          % objId % got;
+          % objId % rttr::enum_cast(got);
         delete go;
         throw Error("Invalid safety code after PopObject");
     }
@@ -470,7 +470,7 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
 
 unsigned short SerializedGameData::GetSafetyCode(const GameObject& go)
 {
-    return 0xFFFF ^ go.GetGOT() ^ go.GetObjId();
+    return 0xFFFF ^ rttr::enum_cast(go.GetGOT()) ^ go.GetObjId();
 }
 
 unsigned short SerializedGameData::GetSafetyCode(const GameEvent& ev)
