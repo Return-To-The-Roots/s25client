@@ -80,26 +80,26 @@ void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigne
     switch(button)
     {
         case MsgboxButton::Ok:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45, _("OK"), TextureColor::Green2);
+            AddButton(0, GetSize().x / 2 - 45, _("OK"), TextureColor::Green2);
             defaultBt = 0;
             break;
 
         case MsgboxButton::OkCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
+            AddButton(0, GetSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
+            AddButton(1, GetSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNo:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("No"), TextureColor::Red1);
+            AddButton(0, GetSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
+            AddButton(1, GetSize().x / 2 + 3, _("No"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNoCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 - 45, _("No"), TextureColor::Red1);
-            AddButton(ID_BT_0 + 2, GetSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
+            AddButton(0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
+            AddButton(1, GetSize().x / 2 - 45, _("No"), TextureColor::Red1);
+            AddButton(2, GetSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
             defaultBt = 2;
             break;
     }
