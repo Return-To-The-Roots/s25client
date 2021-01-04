@@ -440,47 +440,50 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
 {
     static_assert(NUM_TEAMS == 4, "Expected exactly 4 playable teams!");
 
-    std::array<std::set<unsigned>, NUM_TEAMS> potentialPlayersPerTeam;
-    std::array<unsigned, NUM_TEAMS> nPlayers{};
+    struct PlayerTeam
+    {
+        std::set<unsigned> potentialPlayers;
+        unsigned nPlayers = 0;
+    };
+    std::array<PlayerTeam, NUM_TEAMS> teams;
     unsigned unassignedPlayers = 0;
 
     // First collect fixed players and potential ones.
     for(unsigned player = 0; player < playerInfos.size(); ++player)
     {
-        JoinPlayerInfo& playerInfo = playerInfos[player];
-        switch(playerInfo.team)
+        switch(playerInfos[player].team)
         {
             case TM_RANDOMTEAM:
-            case TM_TEAM1: ++nPlayers[0]; break;
+            case TM_TEAM1: ++teams[0].nPlayers; break;
             case TM_RANDOMTEAM2:
-            case TM_TEAM2: ++nPlayers[1]; break;
+            case TM_TEAM2: ++teams[1].nPlayers; break;
             case TM_RANDOMTEAM3:
-            case TM_TEAM3: ++nPlayers[2]; break;
+            case TM_TEAM3: ++teams[2].nPlayers; break;
             case TM_RANDOMTEAM4:
-            case TM_TEAM4: ++nPlayers[3]; break;
+            case TM_TEAM4: ++teams[3].nPlayers; break;
             case TM_TEAM_1_TO_2:
                 ++unassignedPlayers;
-                potentialPlayersPerTeam[0].insert(player);
-                potentialPlayersPerTeam[1].insert(player);
+                teams[0].potentialPlayers.insert(player);
+                teams[1].potentialPlayers.insert(player);
                 break;
             case TM_TEAM_1_TO_3:
                 ++unassignedPlayers;
-                potentialPlayersPerTeam[0].insert(player);
-                potentialPlayersPerTeam[1].insert(player);
-                potentialPlayersPerTeam[2].insert(player);
+                teams[0].potentialPlayers.insert(player);
+                teams[1].potentialPlayers.insert(player);
+                teams[2].potentialPlayers.insert(player);
                 break;
             case TM_TEAM_1_TO_4:
                 ++unassignedPlayers;
-                potentialPlayersPerTeam[0].insert(player);
-                potentialPlayersPerTeam[1].insert(player);
-                potentialPlayersPerTeam[2].insert(player);
-                potentialPlayersPerTeam[3].insert(player);
+                teams[0].potentialPlayers.insert(player);
+                teams[1].potentialPlayers.insert(player);
+                teams[2].potentialPlayers.insert(player);
+                teams[3].potentialPlayers.insert(player);
                 break;
             case TM_NOTEAM: break;
         }
     }
     // Check for unassigned players first.
-    if(unassignedPlayers == 0)
+    if(unassignedPlayers == 0u)
         return false;
 
     auto rng = helpers::getRandomGenerator();
@@ -492,36 +495,36 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
 
         // Determine the minimal team size for teams that can take an unassigned player.
         unsigned minNextTeamSize = std::numeric_limits<unsigned>::max();
-        for(unsigned team = 0; team < NUM_TEAMS; ++team)
+        for(const auto& team : teams)
         {
             // Check if we can add a player to this team at all.
-            if(!potentialPlayersPerTeam[team].empty())
-                minNextTeamSize = std::min(minNextTeamSize, nPlayers[team]);
+            if(!team.potentialPlayers.empty())
+                minNextTeamSize = std::min(minNextTeamSize, team.nPlayers);
         }
 
         for(unsigned team = 0; team < NUM_TEAMS; ++team)
         {
             // Check if we can add a player to this team at all.
-            if(potentialPlayersPerTeam[team].empty())
+            if(teams[team].potentialPlayers.empty())
                 continue;
             // Check if this is a team with the minimal number of players amongst teams that can have unassigned ones.
-            if(nPlayers[team] == minNextTeamSize)
+            if(teams[team].nPlayers == minNextTeamSize)
                 teamsForNextPlayer.push_back(team);
         }
 
         RTTR_Assert_Msg(!teamsForNextPlayer.empty(), "Expected to have teams with potential players!");
         const unsigned nextTeam = helpers::getRandomElement(rng, teamsForNextPlayer);
-        RTTR_Assert_Msg(!potentialPlayersPerTeam[nextTeam].empty(), "Expected next team to have potential players!");
+        RTTR_Assert_Msg(!teams[nextTeam].potentialPlayers.empty(), "Expected next team to have potential players!");
 
         // Pick a random player that can go into this team.
-        const unsigned nextPlayer = helpers::getRandomElement(rng, potentialPlayersPerTeam[nextTeam]);
+        const unsigned nextPlayer = helpers::getRandomElement(rng, teams[nextTeam].potentialPlayers);
 
         playerInfos[nextPlayer].team = Team(TM_TEAM1 + nextTeam);
-        ++nPlayers[nextTeam];
+        ++teams[nextTeam].nPlayers;
 
         // The player is now assigned so remove from the remaining ones
-        for(auto& potentialPlayers : potentialPlayersPerTeam)
-            potentialPlayers.erase(nextPlayer);
+        for(auto& team : teams)
+            team.potentialPlayers.erase(nextPlayer);
     }
 
     return true;
