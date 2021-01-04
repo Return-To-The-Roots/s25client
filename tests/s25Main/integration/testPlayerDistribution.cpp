@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BOOST_TEST((playerInfos[8].team == TM_TEAM1 || playerInfos[8].team == TM_TEAM2));
     BOOST_TEST((playerInfos[9].team == TM_TEAM1 || playerInfos[9].team == TM_TEAM2 || playerInfos[9].team == TM_TEAM3));
     BOOST_TEST((playerInfos[10].team == TM_TEAM1 || playerInfos[10].team == TM_TEAM2 || playerInfos[10].team == TM_TEAM3
-               || playerInfos[10].team == TM_TEAM4));
+                || playerInfos[10].team == TM_TEAM4));
 
     // Sanity check for getMaxTeamSizeDifference: team 2 is empty, 1 & 3 have 1 player
     playerInfos = {BPI3, BPI3, BPIRT1, BPIRT1};
