@@ -21,7 +21,7 @@
 
 /// To be able to load old savegames and keep ids unique, please insert new
 /// items at the end of the list.
-enum class GO_Type : uint8_t
+enum class GO_Type : uint16_t
 {
     Unknown,
     Nothing,
