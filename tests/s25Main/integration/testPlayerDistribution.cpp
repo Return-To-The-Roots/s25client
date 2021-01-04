@@ -21,10 +21,10 @@
 #include "gameTypes/TeamTypes.h"
 #include <boost/test/unit_test.hpp>
 
-static unsigned getMaxTeamSizeDifference(std::vector<JoinPlayerInfo>& playerInfos, unsigned nTeams)
+static unsigned getMaxTeamSizeDifference(const std::vector<JoinPlayerInfo>& playerInfos, unsigned nTeams)
 {
-    unsigned nPlayers[4] = {0, 0, 0, 0};
-    for(auto& playerInfo : playerInfos)
+    std::array<unsigned, NUM_TEAMS> nPlayers{};
+    for(const auto& playerInfo : playerInfos)
     {
         switch(playerInfo.team)
         {
@@ -36,11 +36,11 @@ static unsigned getMaxTeamSizeDifference(std::vector<JoinPlayerInfo>& playerInfo
             case TM_TEAM3: ++nPlayers[2]; break;
             case TM_RANDOMTEAM4:
             case TM_TEAM4: ++nPlayers[3]; break;
-            default: return -1;
+            default: BOOST_TEST_FAIL("Invalid team");
         };
     }
 
-    std::sort(&nPlayers[0], &nPlayers[nTeams]);
+    std::sort(nPlayers.begin(), nPlayers.begin() + nTeams);
     BOOST_TEST_REQUIRE(nPlayers[0] <= nPlayers[nTeams - 1]);
     return nPlayers[nTeams - 1] - nPlayers[0];
 }
