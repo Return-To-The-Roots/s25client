@@ -341,7 +341,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
-        PushEnum<uint8_t>(go->GetGOT());
+        PushEnum<uint16_t>(go->GetGOT());
 
     // Objekt serialisieren
     if(debugMode)
