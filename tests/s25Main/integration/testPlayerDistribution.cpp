@@ -47,7 +47,7 @@ static unsigned getMaxTeamSizeDifference(const std::vector<JoinPlayerInfo>& play
 
 BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
 {
-    BasePlayerInfo BPI1, BPI2, BPI3, BPI4, BPI1_2, BPI1_3, BPI1_4, BPIRT1, BPIRT2, BPIRT3, BPIRT4;
+    JoinPlayerInfo BPI1, BPI2, BPI3, BPI4, BPI1_2, BPI1_3, BPI1_4, BPIRT1, BPIRT2, BPIRT3, BPIRT4;
     BPI1.team = TM_TEAM1;
     BPI2.team = TM_TEAM2;
     BPI3.team = TM_TEAM3;
@@ -62,68 +62,66 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
 
     std::vector<JoinPlayerInfo> playerInfos;
 
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1));
-    playerInfos.push_back(JoinPlayerInfo(BPIRT2));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(2u >= getMaxTeamSizeDifference(playerInfos, 4));
-
-    playerInfos.clear();
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1));
-    playerInfos.push_back(JoinPlayerInfo(BPIRT2));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(0u == getMaxTeamSizeDifference(playerInfos, 4));
-
-    playerInfos.clear();
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    playerInfos.push_back(JoinPlayerInfo(BPI1));
-    playerInfos.push_back(JoinPlayerInfo(BPIRT2));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(1u == getMaxTeamSizeDifference(playerInfos, 3));
-
-    playerInfos.clear();
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(0u == getMaxTeamSizeDifference(playerInfos, 4));
-
-    playerInfos.clear();
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_4));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_3));
-    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(2u >= getMaxTeamSizeDifference(playerInfos, 4));
-
-    playerInfos.clear();
-    playerInfos.push_back(JoinPlayerInfo(BPI3));
-    playerInfos.push_back(JoinPlayerInfo(BPI3));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_2));
-    playerInfos.push_back(JoinPlayerInfo(BPI1_2));
-    playerInfos.push_back(JoinPlayerInfo(BPIRT1));
-    playerInfos.push_back(JoinPlayerInfo(BPIRT1));
-    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(0u == getMaxTeamSizeDifference(playerInfos, 3));
-
-    playerInfos.clear();
-    playerInfos.push_back(JoinPlayerInfo(BPI3));
-    playerInfos.push_back(JoinPlayerInfo(BPI3));
-    playerInfos.push_back(JoinPlayerInfo(BPIRT1));
-    playerInfos.push_back(JoinPlayerInfo(BPIRT1));
+    // No change
+    playerInfos = {BPI1, BPI2, BPI3, BPI4, BPIRT1, BPIRT2, BPIRT3, BPIRT4};
     BOOST_REQUIRE(!GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(2u == getMaxTeamSizeDifference(playerInfos, 3));
+    BOOST_TEST(playerInfos[0].team == TM_TEAM1);
+    BOOST_TEST(playerInfos[1].team == TM_TEAM2);
+    BOOST_TEST(playerInfos[2].team == TM_TEAM3);
+    BOOST_TEST(playerInfos[3].team == TM_TEAM4);
+    BOOST_TEST(playerInfos[4].team == TM_RANDOMTEAM);
+    BOOST_TEST(playerInfos[5].team == TM_RANDOMTEAM2);
+    BOOST_TEST(playerInfos[6].team == TM_RANDOMTEAM3);
+    BOOST_TEST(playerInfos[7].team == TM_RANDOMTEAM4);
+
+    // Assigned teams are as selected
+    playerInfos = {BPI1, BPI2, BPI3, BPI4, BPIRT1, BPIRT2, BPIRT3, BPIRT4, BPI1_2, BPI1_3, BPI1_4};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(playerInfos[0].team == TM_TEAM1);
+    BOOST_TEST(playerInfos[1].team == TM_TEAM2);
+    BOOST_TEST(playerInfos[2].team == TM_TEAM3);
+    BOOST_TEST(playerInfos[3].team == TM_TEAM4);
+    BOOST_TEST(playerInfos[4].team == TM_RANDOMTEAM);
+    BOOST_TEST(playerInfos[5].team == TM_RANDOMTEAM2);
+    BOOST_TEST(playerInfos[6].team == TM_RANDOMTEAM3);
+    BOOST_TEST(playerInfos[7].team == TM_RANDOMTEAM4);
+    BOOST_TEST((playerInfos[8].team == TM_TEAM1 || playerInfos[8].team == TM_TEAM2));
+    BOOST_TEST((playerInfos[9].team == TM_TEAM1 || playerInfos[9].team == TM_TEAM2 || playerInfos[9].team == TM_TEAM3));
+    BOOST_TEST((playerInfos[10].team == TM_TEAM1 || playerInfos[10].team == TM_TEAM2 || playerInfos[10].team == TM_TEAM3
+               || playerInfos[10].team == TM_TEAM4));
+
+    // Sanity check for getMaxTeamSizeDifference: team 2 is empty, 1 & 3 have 1 player
+    playerInfos = {BPI3, BPI3, BPIRT1, BPIRT1};
+    BOOST_REQUIRE(!GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 2u);
+
+    // 1 player each to team 3 and 4
+    playerInfos = {BPI1_4, BPI1, BPIRT2, BPI1_4};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 0u);
+
+    // 1 player to team 3 the other to any of 1-3
+    playerInfos = {BPI1_3, BPI1, BPIRT2, BPI1_3};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 1u);
+
+    // If BPI1_4 gets into team 3 then team 4 will be empty, else all will be even
+    playerInfos = {BPI1_4, BPI1, BPIRT2, BPI1_3};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) <= 2u);
+
+    // Randomly distribute all evenly
+    playerInfos = {BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 0u);
+
+    // Worst case: First 3 into team 1-3 so team 4 will be empty
+    playerInfos = {BPI1_4, BPI1_4, BPI1_4, BPI1_3, BPI1_3, BPI1_3, BPI1_3, BPI1_3, BPI1_3};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) <= 2u);
+
+    // Both randoms will be in team 2
+    playerInfos = {BPI3, BPI3, BPI1_2, BPI1_2, BPIRT1, BPIRT1};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 0u);
 }
