@@ -101,7 +101,8 @@
 /// 3: Landscape and terrain names stored as strings
 /// 4: HunterWaitingForAnimalReady introduced as sub-state of HunterFindingShootingpoint
 /// 5: Make RoadPathDirection contiguous and use optional for ware in nofBuildingWorker
-/// 6: Make TradeDirection contiguous, Serialize only nobUsuals in BuildingRegister::buildings
+/// 6: Make TradeDirection contiguous, Serialize only nobUsuals in BuildingRegister::buildings,
+///    include water and fish in geologists resourceFound
 static const unsigned currentGameDataVersion = 6;
 // clang-format on
 
