@@ -23,6 +23,7 @@
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
+#include "helpers/EnumRange.h"
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
 #include "notifications/ResourceNote.h"
@@ -71,8 +72,18 @@ nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
 
     node_goal = sgd.PopMapPoint();
 
-    for(bool& found : resAlreadyFound)
-        found = sgd.PopBool();
+    if(sgd.GetGameDataVersion() < 6)
+    {
+        for(const auto res : helpers::enumRange<ResourceType>())
+        {
+            if(res != ResourceType::Fish && res != ResourceType::Water)
+                resAlreadyFound[res] = sgd.PopBool();
+        }
+    } else
+    {
+        for(bool& found : resAlreadyFound)
+            found = sgd.PopBool();
+    }
 }
 
 void nofGeologist::Draw(DrawPoint drawPt)
