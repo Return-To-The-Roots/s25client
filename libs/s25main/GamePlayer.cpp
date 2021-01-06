@@ -324,8 +324,16 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     for(uint8_t& militarySetting : militarySettings_)
         militarySetting = sgd.PopUnsignedChar();
 
+// False positive, see https://github.com/Return-To-The-Roots/s25client/issues/1327
+#if defined(__GNUC__) && __GNUC__ == 10
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
     for(uint8_t& toolsSetting : toolsSettings_)
         toolsSetting = sgd.PopUnsignedChar();
+#if defined(__GNUC__) && __GNUC__ == 10
+#    pragma GCC diagnostic pop
+#endif
 
     // qx:tools
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
