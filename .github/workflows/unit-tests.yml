@@ -19,8 +19,10 @@ jobs:
           - { compiler: clang  ,  os: macos-10.15,  buildType: Debug, boostVersion: 1.74.0 } # Multiple bugs with recent OSX until 1.74
           # Latest GCC
           - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Debug }
+          - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Release }
           # Latest Clang with externals
           - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug, externalSanitizer: true }
+          - { compiler: clang-10, os: ubuntu-18.04, buildType: Release }
           # Latest Clang with latest boost
           - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug, boostVersion: 1.75.0, externalSanitizer: true }
 
