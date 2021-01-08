@@ -20,6 +20,7 @@
 #include "addons/Addon.h"
 #include "addons/Addons.h"
 #include "helpers/containerUtils.h"
+#include "helpers/serializeEnums.h"
 #include "gameData/MilitaryConsts.h"
 #include "s25util/Log.h"
 #include "s25util/Serializer.h"
@@ -208,11 +209,11 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
 {
     // LOG.writeToFile(">>> Addon Status:\n");
 
-    ser.PushUnsignedChar(static_cast<unsigned char>(speed));
-    ser.PushUnsignedChar(static_cast<unsigned char>(objective));
-    ser.PushUnsignedChar(static_cast<unsigned char>(startWares));
+    helpers::pushEnum<uint8_t>(ser, speed);
+    helpers::pushEnum<uint8_t>(ser, objective);
+    helpers::pushEnum<uint8_t>(ser, startWares);
     ser.PushBool(lockedTeams);
-    ser.PushUnsignedChar(static_cast<unsigned char>(exploration));
+    helpers::pushEnum<uint8_t>(ser, exploration);
     ser.PushBool(teamView);
     ser.PushBool(randomStartPosition);
 
@@ -231,11 +232,11 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
  */
 void GlobalGameSettings::Deserialize(Serializer& ser)
 {
-    speed = static_cast<GameSpeed>(ser.PopUnsignedChar());
-    objective = static_cast<GameObjective>(ser.PopUnsignedChar());
-    startWares = static_cast<StartWares>(ser.PopUnsignedChar());
+    speed = helpers::popEnum<GameSpeed>(ser);
+    objective = helpers::popEnum<GameObjective>(ser);
+    startWares = helpers::popEnum<StartWares>(ser);
     lockedTeams = ser.PopBool();
-    exploration = static_cast<Exploration>(ser.PopUnsignedChar());
+    exploration = helpers::popEnum<Exploration>(ser);
     teamView = ser.PopBool();
     randomStartPosition = ser.PopBool();
 

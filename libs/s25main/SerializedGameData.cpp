@@ -411,7 +411,7 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
     }
 
     // Objekt-Typ
-    PushUnsignedChar(static_cast<unsigned char>(fowobj->GetType()));
+    PushEnum<uint8_t>(fowobj->GetType());
 
     // Objekt serialisieren
     fowobj->Serialize(*this);
@@ -420,7 +420,7 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
 FOWObject* SerializedGameData::PopFOWObject()
 {
     // Typ auslesen
-    auto type = FoW_Type(PopUnsignedChar());
+    auto type = Pop<FoW_Type>();
 
     // Kein Objekt?
     if(type == FoW_Type::Nothing)

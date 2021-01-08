@@ -21,11 +21,12 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/Nation.h"
+#include <cstdint>
 
 class SerializedGameData;
 
 /// Typen für die FOW Objekte
-enum class FoW_Type
+enum class FoW_Type : uint8_t
 {
     Nothing,
     Building,
@@ -34,6 +35,10 @@ enum class FoW_Type
     Tree,
     Granite
 };
+constexpr auto maxEnumValue(FoW_Type)
+{
+    return FoW_Type::Granite;
+}
 
 /// Helligkeit der Objekte beim Zeichnen
 const unsigned FOW_DRAW_COLOR_BRIGHTNESS = 0x80;

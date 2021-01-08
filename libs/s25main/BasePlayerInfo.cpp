@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "BasePlayerInfo.h"
+#include "helpers/serializeEnums.h"
 #include "s25util/Serializer.h"
 #include "s25util/colors.h"
 
@@ -24,8 +25,7 @@ BasePlayerInfo::BasePlayerInfo()
 {}
 
 BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
-    : ps(static_cast<PlayerState>(ser.PopUnsignedChar())),
-      aiInfo(!lightData || ps == PlayerState::AI ? ser : AI::Info())
+    : ps(helpers::popEnum<PlayerState>(ser)), aiInfo(!lightData || ps == PlayerState::AI ? ser : AI::Info())
 {
     if(lightData && !isUsed())
     {
@@ -35,23 +35,23 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
     } else
     {
         name = ser.PopLongString();
-        nation = static_cast<Nation>(ser.PopUnsignedChar());
+        nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
-        team = static_cast<Team>(ser.PopUnsignedChar());
+        team = helpers::popEnum<Team>(ser);
     }
 }
 
 void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
 {
-    ser.PushUnsignedChar(static_cast<unsigned char>(ps));
+    helpers::pushEnum<uint8_t>(ser, ps);
     if(lightData && !isUsed())
         return;
     if(!lightData || ps == PlayerState::AI)
         aiInfo.serialize(ser);
     ser.PushLongString(name);
-    ser.PushUnsignedChar(static_cast<unsigned char>(nation));
+    helpers::pushEnum<uint8_t>(ser, nation);
     ser.PushUnsignedInt(color);
-    ser.PushUnsignedChar(static_cast<unsigned char>(team));
+    helpers::pushEnum<uint8_t>(ser, team);
 }
 
 int BasePlayerInfo::GetColorIdx() const

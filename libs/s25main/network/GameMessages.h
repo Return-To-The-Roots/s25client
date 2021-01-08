@@ -289,14 +289,14 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::Serialize(ser);
-        ser.PushUnsignedChar(static_cast<unsigned char>(destination));
+        helpers::pushEnum<uint8_t>(ser, destination);
         ser.PushString(text);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::Deserialize(ser);
-        destination = ChatDestination(ser.PopUnsignedChar());
+        destination = helpers::popEnum<ChatDestination>(ser);
         text = ser.PopString();
     }
 
@@ -422,17 +422,17 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::Serialize(ser);
-        ser.PushUnsignedChar(static_cast<unsigned char>(ps));
-        ser.PushUnsignedChar(static_cast<unsigned char>(aiInfo.level));
-        ser.PushUnsignedChar(static_cast<unsigned char>(aiInfo.type));
+        helpers::pushEnum<uint8_t>(ser, ps);
+        helpers::pushEnum<uint8_t>(ser, aiInfo.level);
+        helpers::pushEnum<uint8_t>(ser, aiInfo.type);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::Deserialize(ser);
-        ps = PlayerState(ser.PopUnsignedChar());
-        aiInfo.level = AI::Level(ser.PopUnsignedChar());
-        aiInfo.type = AI::Type(ser.PopUnsignedChar());
+        ps = helpers::popEnum<PlayerState>(ser);
+        aiInfo.level = helpers::popEnum<AI::Level>(ser);
+        aiInfo.type = helpers::popEnum<AI::Type>(ser);
     }
 
     bool Run(GameMessageInterface* callback) const override
@@ -459,13 +459,13 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::Serialize(ser);
-        ser.PushUnsignedChar(static_cast<unsigned char>(nation));
+        helpers::pushEnum<uint8_t>(ser, nation);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::Deserialize(ser);
-        nation = Nation(ser.PopUnsignedChar());
+        nation = helpers::popEnum<Nation>(ser);
     }
 
     bool Run(GameMessageInterface* callback) const override
@@ -491,13 +491,13 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::Serialize(ser);
-        ser.PushUnsignedChar(static_cast<unsigned char>(team));
+        helpers::pushEnum<uint8_t>(ser, team);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::Deserialize(ser);
-        team = Team(ser.PopUnsignedChar());
+        team = helpers::popEnum<Team>(ser);
     }
 
     bool Run(GameMessageInterface* callback) const override
@@ -742,7 +742,7 @@ public:
     {
         GameMessage::Serialize(ser);
         ser.PushString(filename);
-        ser.PushUnsignedChar(static_cast<unsigned char>(mt));
+        helpers::pushEnum<uint8_t>(ser, mt);
         ser.PushUnsignedInt(mapLen);
         ser.PushUnsignedInt(mapCompressedLen);
         ser.PushUnsignedInt(luaLen);

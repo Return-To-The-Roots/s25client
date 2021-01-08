@@ -17,8 +17,10 @@
 
 #pragma once
 
+#include <cstdint>
+
 // Targets for ingame chat
-enum class ChatDestination
+enum class ChatDestination : uint8_t
 {
     System,
     All,
