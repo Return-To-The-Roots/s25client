@@ -110,6 +110,7 @@ void EventManager::DestroyCurrentObjects()
         // Object is no longer in the kill list (some may check this upon destruction)
         it = nullptr;
         obj->Destroy();
+        RTTR_Assert(!ObjectHasEvents(*obj));
         delete obj;
     }
 
@@ -145,7 +146,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
     // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
     for(auto e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
     {
-        const GameEvent* ev = (*e_it);
+        const GameEvent* ev = *e_it;
         RTTR_Assert(ev->obj);
         RTTR_Assert(ev->obj->GetObjId() <= GameObject::GetObjIDCounter());
 

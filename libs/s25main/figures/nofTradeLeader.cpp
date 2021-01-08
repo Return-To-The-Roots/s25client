@@ -101,7 +101,6 @@ void nofTradeLeader::Walked()
             CancelTradeCaravane();
             WanderFailedTrade();
         }
-        return;
     } else if(pos == goalPos)
         GoalReached();
     else
@@ -117,12 +116,14 @@ void nofTradeLeader::Walked()
                 CancelTradeCaravane();
                 WanderFailedTrade();
             }
-            return;
-        } else if(*next_dir == TradeDirection::ReachedGoal)
-            next_dir = TradeDirection(Direction::NorthWest); // Walk into building
-        StartWalking(toDirection(*next_dir));
-        if(successor)
-            successor->AddNextDir(*next_dir);
+        } else
+        {
+            if(*next_dir == TradeDirection::ReachedGoal)
+                next_dir = TradeDirection(Direction::NorthWest); // Walk into building
+            StartWalking(toDirection(*next_dir));
+            if(successor)
+                successor->AddNextDir(*next_dir);
+        }
     }
 }
 
