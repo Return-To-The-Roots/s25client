@@ -280,7 +280,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFailDie, TradeFixture)
     // Let them walk a bit
     RTTR_SKIP_GFS(40);
 
-    // No make everything enemy territory (e.g. enemy captured the building)
+    // Now make everything enemy territory (e.g. enemy captured the building)
     // They will then not find any further route and die
     // See https://github.com/Return-To-The-Roots/s25client/issues/1336
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
