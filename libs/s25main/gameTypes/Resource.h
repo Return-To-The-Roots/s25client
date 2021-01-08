@@ -64,7 +64,7 @@ constexpr Resource::Resource(ResourceType type, uint8_t amount)
 constexpr Resource::Resource(uint8_t value) : value_(value)
 {
     const uint8_t type = value >> 4u;
-    if(type >= helpers::MaxEnumValue_v<ResourceType> || type == static_cast<uint8_t>(ResourceType::Nothing))
+    if(type > helpers::MaxEnumValue_v<ResourceType> || type == static_cast<uint8_t>(ResourceType::Nothing))
         value_ = 0;
 }
 constexpr void Resource::setType(ResourceType newType)

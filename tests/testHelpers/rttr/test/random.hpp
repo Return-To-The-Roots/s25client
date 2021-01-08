@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "helpers/MaxEnumValue.h"
 #include <limits>
 #include <random>
 #include <string>
@@ -34,6 +35,12 @@ namespace rttr { namespace test {
           min, max);
         return static_cast<T>(distr(getRandState()));
     }
+    template<typename T>
+    T randomEnum()
+    {
+        return T(randomValue<std::underlying_type_t<T>>(0, helpers::MaxEnumValue_v<T>));
+    }
+    inline bool randomBool() { return randomValue(0, 1) == 0; }
     template<typename T>
     auto randomPoint(typename T::ElementType min = std::numeric_limits<typename T::ElementType>::min(),
                      typename T::ElementType max = std::numeric_limits<typename T::ElementType>::max())
