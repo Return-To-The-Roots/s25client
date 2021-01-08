@@ -84,6 +84,7 @@ void nofTradeDonkey::Walked()
     {
         CancelTradeCaravane();
         WanderFailedTrade();
+        return;
     }
 
     TradeDirection nextDir = GetNextDir();

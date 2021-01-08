@@ -4,13 +4,12 @@
 #define BOOST_FIXTURE_TEST_SUITE(name, fixture) namespace name{ typedef F BOOST_AUTO_TEST_CASE_FIXTURE;
 #define BOOST_AUTO_TEST_SUITE_END() }
 #define BOOST_REQUIRE(cond) if(!(cond)) assert(false)
+#define BOOST_TEST(cond) BOOST_REQUIRE(cond)
+#define BOOST_TEST_REQUIRE(cond) BOOST_REQUIRE(cond)
 #define BOOST_REQUIRE_EQUAL(x,y) BOOST_REQUIRE((x) == (y))
 #define BOOST_REQUIRE_LT(x,y) BOOST_REQUIRE((x) < (y))
 #define BOOST_REQUIRE_GT(x,y) BOOST_REQUIRE((x) > (y))
-#define BOOST_SCOPED_ENUM_DECLARE_BEGIN(name) enum name
-#define BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(name, type) enum name
-#define BOOST_SCOPED_ENUM_DECLARE_END(name) ;
 
-#define RTTR_FOREACH_PT(PtType, width, height) for(PtType pt;;)
+#define RTTR_FOREACH_PT(PtType, size) for(PtType pt;;)
 #define SUPPRESS_UNUSED
 #define RTTR_Assert(cond) assert(cond)

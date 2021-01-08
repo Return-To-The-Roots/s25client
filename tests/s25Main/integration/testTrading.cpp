@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "RttrForeachPt.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "postSystem/PostBox.h"
@@ -236,7 +237,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     numWoodcutters -= 2;
     testExpectedWares();
 
-    // Add a ring off enemy owned land so they cannot pass
+    // Add a ring of enemy owned land so they cannot pass
     std::vector<MapPoint> pts = world.GetPointsInRadius(curWh->GetPos(), 10);
     for(const MapPoint& pt : pts)
     {
@@ -258,6 +259,35 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     numWoodcutters += 2;
     // helpers can be produced in the meantime
     BOOST_REQUIRE_GE(curWh->GetNumRealFigures(Job::Helper), numHelpers);
+    numHelpers = curWh->GetNumRealFigures(Job::Helper);
+    testExpectedWares();
+}
+
+BOOST_FIXTURE_TEST_CASE(TradeFailDie, TradeFixture)
+{
+    initGameRNG();
+
+    this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
+    this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 2);
+    // Each donkey carries a ware and we need 2 leaders
+    numBoards -= 2;
+    numDonkeys -= 2;
+    numHelpers -= 2;
+    numWoodcutters -= 2;
+    testExpectedWares();
+    testAfterLeaving(4);
+
+    // Let them walk a bit
+    RTTR_SKIP_GFS(40);
+
+    // No make everything enemy territory (e.g. enemy captured the building)
+    // They will then not find any further route and die
+    // See https://github.com/Return-To-The-Roots/s25client/issues/1336
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        world.SetOwner(pt, 2 + 1); // playerID = 2 -> Owner = +1
+    // Let them all die
+    RTTR_SKIP_GFS(50);
+    // Don't care about helpers but check the rest: Still gone
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
     testExpectedWares();
 }
