@@ -17,21 +17,30 @@
 
 #pragma once
 
+#include <cstdint>
 class Serializer;
 
 namespace AI {
-enum class Level
+enum class Level : uint8_t
 {
     Easy,
     Medium,
     Hard
 };
+constexpr auto maxEnumValue(Level)
+{
+    return Level::Hard;
+}
 
-enum class Type
+enum class Type : uint8_t
 {
     Dummy,
     Default
 };
+constexpr auto maxEnumValue(Type)
+{
+    return Type::Default;
+}
 
 struct Info
 {

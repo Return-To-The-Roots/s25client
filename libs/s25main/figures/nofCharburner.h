@@ -18,6 +18,8 @@
 #pragma once
 
 #include "nofFarmhand.h"
+#include <cstdint>
+
 class SerializedGameData;
 class nobUsual;
 
@@ -30,11 +32,12 @@ class nofCharburner : public nofFarmhand
     /// Is he harvesting a charburner pile (or planting?)
     bool harvest;
     /// If stacking wood pile: Determines which ware he carries (wood or grain?)
-    enum class WareType
+    enum class WareType : uint8_t
     {
         Wood,
         Grain
     } wt;
+    friend constexpr auto maxEnumValue(WareType) { return WareType::Grain; }
 
 private:
     /// Malt den Arbeiter beim Arbeiten

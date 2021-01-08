@@ -17,7 +17,9 @@
 
 #pragma once
 
-enum Team
+#include <cstdint>
+
+enum Team : uint8_t
 {
     TM_NOTEAM,
     TM_RANDOMTEAM,
@@ -29,6 +31,10 @@ enum Team
     TM_RANDOMTEAM3,
     TM_RANDOMTEAM4
 };
+constexpr auto maxEnumValue(Team)
+{
+    return Team::TM_RANDOMTEAM4;
+}
 
 /// Anzahl der Team-Optionen
 const unsigned NUM_TEAMS = 6; // teamrandom2,3,4 dont count

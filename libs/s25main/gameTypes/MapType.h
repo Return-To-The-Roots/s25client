@@ -17,8 +17,14 @@
 
 #pragma once
 
-enum class MapType
+#include <cstdint>
+
+enum class MapType : uint8_t
 {
     OldMap,
     Savegame
 };
+constexpr auto maxEnumValue(MapType)
+{
+    return MapType::Savegame;
+}

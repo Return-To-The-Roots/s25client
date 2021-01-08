@@ -16,16 +16,15 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "AIInfo.h"
+#include "helpers/serializeEnums.h"
 #include "s25util/Serializer.h"
 
 namespace AI {
-Info::Info(Serializer& ser)
-    : type(static_cast<Type>(ser.PopUnsignedChar())), level(static_cast<Level>(ser.PopUnsignedChar()))
-{}
+Info::Info(Serializer& ser) : type(helpers::popEnum<Type>(ser)), level(helpers::popEnum<Level>(ser)) {}
 
 void Info::serialize(Serializer& ser) const
 {
-    ser.PushUnsignedChar(static_cast<unsigned char>(type));
-    ser.PushUnsignedChar(static_cast<unsigned char>(level));
+    helpers::pushEnum<uint8_t>(ser, type);
+    helpers::pushEnum<uint8_t>(ser, level);
 }
 } // namespace AI

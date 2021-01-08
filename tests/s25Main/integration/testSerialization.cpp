@@ -24,6 +24,7 @@
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
+#include "addons/Addon.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
@@ -46,6 +47,7 @@
 // LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(Resource)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(AddonId)
 
 template<class T>
 std::ostream& operator<<(std::ostream& os, const DescIdx<T>& d)
@@ -200,6 +202,44 @@ BOOST_AUTO_TEST_CASE(Serializer)
     BOOST_TEST_REQUIRE(sgd.PopVarSize() == 0xFFFFFFFu);
     BOOST_TEST_REQUIRE(sgd.PopVarSize() == 0x10000000u);
     BOOST_TEST_REQUIRE(sgd.PopVarSize() == 0xFFFFFFFFu);
+}
+
+BOOST_AUTO_TEST_CASE(SerializeGGS)
+{
+    GlobalGameSettings ggs;
+    ggs.speed = rttr::test::randomEnum<GameSpeed>();
+    ggs.objective = rttr::test::randomEnum<GameObjective>();
+    ggs.startWares = rttr::test::randomEnum<StartWares>();
+    ggs.lockedTeams = rttr::test::randomBool();
+    ggs.exploration = rttr::test::randomEnum<Exploration>();
+    ggs.teamView = rttr::test::randomBool();
+    ggs.randomStartPosition = rttr::test::randomBool();
+    for(unsigned i = 0; i < ggs.getNumAddons(); i++)
+    {
+        const auto* addon = ggs.getAddon(i);
+        BOOST_TEST_REQUIRE(addon);
+        ggs.setSelection(addon->getId(), rttr::test::randomValue(0u, addon->getNumOptions() - 1));
+    }
+    ::Serializer ser;
+    ggs.Serialize(ser);
+    ::Serializer loader(ser.GetData(), ser.GetLength());
+    GlobalGameSettings ggsLoaded;
+    ggsLoaded.Deserialize(loader);
+    BOOST_TEST(ggs.speed == ggsLoaded.speed);
+    BOOST_TEST(ggs.objective == ggsLoaded.objective);
+    BOOST_TEST(ggs.startWares == ggsLoaded.startWares);
+    BOOST_TEST(ggs.lockedTeams == ggsLoaded.lockedTeams);
+    BOOST_TEST(ggs.exploration == ggsLoaded.exploration);
+    BOOST_TEST(ggs.teamView == ggsLoaded.teamView);
+    BOOST_TEST(ggs.randomStartPosition == ggsLoaded.randomStartPosition);
+    for(unsigned i = 0; i < ggs.getNumAddons(); i++)
+    {
+        const auto* addon = ggs.getAddon(i);
+        const auto* addonLoaded = ggsLoaded.getAddon(i);
+        BOOST_TEST_REQUIRE(addonLoaded);
+        BOOST_TEST_REQUIRE(addon->getId() == addonLoaded->getId());
+        BOOST_TEST(ggs.getSelection(addon->getId()) == ggsLoaded.getSelection(addon->getId()));
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)

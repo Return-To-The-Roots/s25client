@@ -17,7 +17,9 @@
 
 #pragma once
 
-enum class GameSpeed
+#include <cstdint>
+
+enum class GameSpeed : uint8_t
 {
     VerySlow,
     Slow,
@@ -30,7 +32,7 @@ constexpr auto maxEnumValue(GameSpeed)
     return GameSpeed::VeryFast;
 }
 
-enum class GameObjective
+enum class GameObjective : uint8_t
 {
     None,
     Conquer3_4,
@@ -49,7 +51,7 @@ constexpr auto maxEnumValue(GameObjective)
 }
 constexpr unsigned NUM_TOURNAMENT_MODES = 5;
 
-enum class StartWares
+enum class StartWares : uint8_t
 {
     VLow,
     Low,
@@ -61,7 +63,7 @@ constexpr auto maxEnumValue(StartWares)
     return StartWares::ALot;
 }
 
-enum class Exploration
+enum class Exploration : uint8_t
 {
     Disabled,
     Classic,
