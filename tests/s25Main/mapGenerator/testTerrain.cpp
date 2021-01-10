@@ -44,10 +44,9 @@ BOOST_AUTO_TEST_CASE(Restructure_keeps_minimum_and_maximum_values_unchanged)
 {
     RunTest([](Map& map) {
         map.z.Resize(map.size, 5); // default height
+        auto predicate = [](const MapPoint& pt) { return pt.x == 4 && pt.y == 4; };
 
-        std::set<MapPoint, MapPointLess> focusArea = {MapPoint(4, 4)}; // center
-
-        Restructure(map, focusArea);
+        Restructure(map, predicate);
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
@@ -61,11 +60,11 @@ BOOST_AUTO_TEST_CASE(Restructure_increases_height_of_focus_area)
 {
     RunTest([](Map& map) {
         MapPoint focus(4, 4);
-
+        auto predicate = [&focus](const MapPoint& pt) { return pt == focus; };
         const uint8_t heightBefore = 5;
         map.z.Resize(map.size, heightBefore);
 
-        Restructure(map, {focus});
+        Restructure(map, predicate);
 
         const uint8_t heightAfter = map.z[focus];
 
@@ -77,12 +76,13 @@ BOOST_AUTO_TEST_CASE(Restructure_increases_height_less_when_further_away_from_fo
 {
     RunTest([](Map& map) {
         MapPoint focus(4, 4);
+        auto predicate = [&focus](const MapPoint& pt) { return pt == focus; };
         MapPoint nonFocus(0, 3);
 
         const uint8_t heightBefore = 5;
         map.z.Resize(map.size, heightBefore);
 
-        Restructure(map, {focus});
+        Restructure(map, predicate);
 
         const int diffFocus = map.z[focus] - heightBefore;
         const int diffNonFocus = map.z[nonFocus] - heightBefore;

@@ -20,6 +20,7 @@
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
+#include <functional>
 
 namespace rttr { namespace mapGenerator {
 
@@ -28,11 +29,11 @@ namespace rttr { namespace mapGenerator {
      * Nodes closer to the focus area experience more elevation than nodes further away from the focus area.
      *
      * @param map reference to the map to manipulate
-     * @param focusArea area defining the focus of elevation
+     * @param predicate predicate defining the focus of elevation
      * @param weight factor influencing the strength of elevation towards the focused area (default: 2 - quadratic drop
      * with distance)
      */
-    void Restructure(Map& map, const std::set<MapPoint, MapPointLess>& focusArea, double weight = 2.);
+    void Restructure(Map& map, std::function<bool(const MapPoint&)> predicate, double weight = 2.);
 
     /**
      * Resets the sea level to "0" by setting all sea nodes to "0" height and scaling the remaining nodes to a range

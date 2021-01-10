@@ -24,14 +24,11 @@
 
 namespace rttr { namespace mapGenerator {
 
-    void Restructure(Map& map, const std::set<MapPoint, MapPointLess>& focusArea, double weight)
+    void Restructure(Map& map, std::function<bool(const MapPoint&)> predicate, double weight)
     {
         const MapExtent& size = map.size;
-
-        auto inFocusArea = [&focusArea](const MapPoint& pt) { return helpers::contains(focusArea, pt); };
-
         auto& z = map.z;
-        auto distances = Distances(size, inFocusArea);
+        auto distances = Distances(size, predicate);
         auto maximum = GetMaximum(distances);
 
         RTTR_FOREACH_PT(MapPoint, size)
