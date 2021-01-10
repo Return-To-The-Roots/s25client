@@ -81,16 +81,13 @@ namespace rttr { namespace mapGenerator {
                 {
                     forbiddenArea.insert(point);
                 }
-            } else
-            if(map.textureMap.Any(pt, IsSnowOrLava))
+            } else if(map.textureMap.Any(pt, IsSnowOrLava))
             {
                 forbiddenArea.insert(pt);
             }
         }
 
-        auto isForbiddenArea = [&forbiddenArea](const MapPoint& pt) {
-            return helpers::contains(forbiddenArea, pt);
-        };
+        auto isForbiddenArea = [&forbiddenArea](const MapPoint& pt) { return helpers::contains(forbiddenArea, pt); };
 
         auto distanceToForbiddenArea = Distances(map.size, isForbiddenArea);
 
