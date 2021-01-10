@@ -182,24 +182,14 @@ namespace rttr { namespace mapGenerator {
 
     void RandomMap::CreateMixedMap()
     {
-        MapPoint origin(0, 0);
         MapPoint center(map_.size.x / 2, map_.size.y / 2);
+        unsigned maxDistance = map_.z.CalcDistance(MapPoint(0, 0), center);
 
-        unsigned maxDistance = map_.z.CalcDistance(origin, center);
-
-        std::set<MapPoint, MapPointLess> focus;
-        RTTR_FOREACH_PT(MapPoint, map_.size)
-        {
+        Restructure(map_, [this, &center, maxDistance](const MapPoint& pt) {
             auto weight = 1. - static_cast<float>(map_.z.CalcDistance(pt, center)) / maxDistance;
             auto percentage = static_cast<unsigned>(12 * weight);
-
-            if(rnd_.ByChance(percentage))
-            {
-                focus.insert(pt);
-            }
-        }
-
-        Restructure(map_, focus);
+            return rnd_.ByChance(percentage);
+        });
         SmoothHeightMap(map_.z, map_.height);
 
         const double sea = 0.5;
@@ -229,25 +219,14 @@ namespace rttr { namespace mapGenerator {
 
     void RandomMap::CreateWaterMap()
     {
-        MapPoint origin(0, 0);
         MapPoint center(map_.size.x / 2, map_.size.y / 2);
+        unsigned maxDistance = map_.z.CalcDistance(MapPoint(0, 0), center);
 
-        unsigned maxDistance = map_.z.CalcDistance(origin, center);
-
-        std::set<MapPoint, MapPointLess> focus;
-
-        RTTR_FOREACH_PT(MapPoint, map_.size)
-        {
+        Restructure(map_, [this, &center, maxDistance](const MapPoint& pt) {
             auto weight = 1. - static_cast<float>(map_.z.CalcDistance(pt, center)) / maxDistance;
             auto percentage = static_cast<unsigned>(15 * weight * weight);
-
-            if(rnd_.ByChance(percentage))
-            {
-                focus.insert(pt);
-            }
-        }
-
-        Restructure(map_, focus);
+            return rnd_.ByChance(percentage);
+        });
         SmoothHeightMap(map_.z, map_.height);
 
         // 20% of map is center island (100% - 80% water)
@@ -293,17 +272,7 @@ namespace rttr { namespace mapGenerator {
 
     void RandomMap::CreateLandMap()
     {
-        std::set<MapPoint, MapPointLess> focus;
-
-        RTTR_FOREACH_PT(MapPoint, map_.size)
-        {
-            if(rnd_.ByChance(5))
-            {
-                focus.insert(pt);
-            }
-        }
-
-        Restructure(map_, focus);
+        Restructure(map_, [this](const MapPoint& _) { return _.x >= 0 && rnd_.ByChance(5); });
         SmoothHeightMap(map_.z, map_.height);
 
         const double sea = rnd_.RandomDouble(0.1, 0.2);
