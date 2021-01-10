@@ -33,7 +33,7 @@ namespace rttr { namespace mapGenerator {
      * @param weight factor influencing the strength of elevation towards the focused area (default: 2 - quadratic drop
      * with distance)
      */
-    void Restructure(Map& map, std::function<bool(const MapPoint&)> predicate, double weight = 2.);
+    void Restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate, double weight = 2.);
 
     /**
      * Resets the sea level to "0" by setting all sea nodes to "0" height and scaling the remaining nodes to a range

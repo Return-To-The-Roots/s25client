@@ -24,7 +24,7 @@
 
 namespace rttr { namespace mapGenerator {
 
-    void Restructure(Map& map, std::function<bool(const MapPoint&)> predicate, double weight)
+    void Restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate, double weight)
     {
         const MapExtent& size = map.size;
         auto& z = map.z;
