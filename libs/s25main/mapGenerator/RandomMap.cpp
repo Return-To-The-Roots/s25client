@@ -187,7 +187,7 @@ namespace rttr { namespace mapGenerator {
 
         unsigned maxDistance = map_.z.CalcDistance(origin, center);
 
-        std::vector<MapPoint> focus;
+        std::set<MapPoint, MapPointLess> focus;
         RTTR_FOREACH_PT(MapPoint, map_.size)
         {
             auto weight = 1. - static_cast<float>(map_.z.CalcDistance(pt, center)) / maxDistance;
@@ -195,7 +195,7 @@ namespace rttr { namespace mapGenerator {
 
             if(rnd_.ByChance(percentage))
             {
-                focus.push_back(pt);
+                focus.insert(pt);
             }
         }
 
@@ -234,7 +234,7 @@ namespace rttr { namespace mapGenerator {
 
         unsigned maxDistance = map_.z.CalcDistance(origin, center);
 
-        std::vector<MapPoint> focus;
+        std::set<MapPoint, MapPointLess> focus;
 
         RTTR_FOREACH_PT(MapPoint, map_.size)
         {
@@ -243,7 +243,7 @@ namespace rttr { namespace mapGenerator {
 
             if(rnd_.ByChance(percentage))
             {
-                focus.push_back(pt);
+                focus.insert(pt);
             }
         }
 
@@ -293,13 +293,13 @@ namespace rttr { namespace mapGenerator {
 
     void RandomMap::CreateLandMap()
     {
-        std::vector<MapPoint> focus;
+        std::set<MapPoint, MapPointLess> focus;
 
         RTTR_FOREACH_PT(MapPoint, map_.size)
         {
             if(rnd_.ByChance(5))
             {
-                focus.push_back(pt);
+                focus.insert(pt);
             }
         }
 

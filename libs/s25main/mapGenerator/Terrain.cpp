@@ -20,12 +20,11 @@
 #include "mapGenerator/TextureHelper.h"
 
 #include <algorithm>
-#include <set>
 #include <stdexcept>
 
 namespace rttr { namespace mapGenerator {
 
-    void Restructure(Map& map, const std::vector<MapPoint>& focusArea, double weight)
+    void Restructure(Map& map, const std::set<MapPoint, MapPointLess>& focusArea, double weight)
     {
         const MapExtent& size = map.size;
 

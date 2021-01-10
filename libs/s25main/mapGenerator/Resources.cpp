@@ -60,6 +60,7 @@ namespace rttr { namespace mapGenerator {
 
     void AddObjects(Map& map, RandomUtility& rnd)
     {
+        std::set<MapPoint, MapPointLess> forbiddenArea;
         NodeMapBase<unsigned> probabilities;
         probabilities.Resize(map.size, 0u);
 
@@ -71,9 +72,24 @@ namespace rttr { namespace mapGenerator {
                    || helpers::contains_if(map.harbors, [pt](const Triangle& tr) { return tr.position == pt; });
         };
 
-        auto isForbiddenArea = [&isForbidden, &map](const MapPoint& pt) {
-            return helpers::contains_if(map.textures.GetPointsInRadiusWithCenter(pt, 5), isForbidden)
-                   || map.textureMap.Any(pt, IsSnowOrLava);
+        RTTR_FOREACH_PT(MapPoint, map.size)
+        {
+            if(isForbidden(pt))
+            {
+                auto suroundingArea = map.textures.GetPointsInRadiusWithCenter(pt, 5);
+                for(const auto& point : suroundingArea)
+                {
+                    forbiddenArea.insert(point);
+                }
+            } else
+            if(map.textureMap.Any(pt, IsSnowOrLava))
+            {
+                forbiddenArea.insert(pt);
+            }
+        }
+
+        auto isForbiddenArea = [&forbiddenArea](const MapPoint& pt) {
+            return helpers::contains(forbiddenArea, pt);
         };
 
         auto distanceToForbiddenArea = Distances(map.size, isForbiddenArea);

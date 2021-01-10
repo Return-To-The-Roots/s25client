@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(Restructure_keeps_minimum_and_maximum_values_unchanged)
     RunTest([](Map& map) {
         map.z.Resize(map.size, 5); // default height
 
-        std::vector<MapPoint> focusArea = {MapPoint(4, 4)}; // center
+        std::set<MapPoint, MapPointLess> focusArea = {MapPoint(4, 4)}; // center
 
         Restructure(map, focusArea);
 
