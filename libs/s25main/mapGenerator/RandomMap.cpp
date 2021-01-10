@@ -272,7 +272,7 @@ namespace rttr { namespace mapGenerator {
 
     void RandomMap::CreateLandMap()
     {
-        Restructure(map_, [this](const MapPoint& _) { return _.x >= 0 && rnd_.ByChance(5); });
+        Restructure(map_, [this](const MapPoint& pt) { return rnd_.ByChance((pt.x + pt.y) % 6); });
         SmoothHeightMap(map_.z, map_.height);
 
         const double sea = rnd_.RandomDouble(0.1, 0.2);
