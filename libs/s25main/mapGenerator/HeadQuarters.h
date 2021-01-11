@@ -47,14 +47,9 @@ namespace rttr { namespace mapGenerator {
     template<class T_Container>
     std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area)
     {
-        std::vector<MapPoint> headQuarters;
-        for(const MapPoint& hq : map.headQuarters)
-        {
-            if(hq.isValid())
-            {
-                headQuarters.push_back(hq);
-            }
-        }
+        auto isHeadQuarter = [&map](const MapPoint& pt) {
+            return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask;
+        };
         auto isObstacle = [&map](MapPoint point) {
             return map.textureMap.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); });
         };
@@ -62,7 +57,7 @@ namespace rttr { namespace mapGenerator {
         // Quality of a map point as one player's HQ is a mix of:
         // 1. distance to other players' HQs (higher = better)
         // 2. distance to any other obstacle e.g. mountain & water (higher = better)
-        NodeMapBase<unsigned> potentialHeadQuarterQuality = DistancesTo(headQuarters, map.size);
+        NodeMapBase<unsigned> potentialHeadQuarterQuality = Distances(map.size, isHeadQuarter);
         const auto& obstacleDistance = Distances(map.size, isObstacle);
         const auto minDistance = helpers::clamp(GetMaximum(obstacleDistance, area), 2u, 4u);
 
