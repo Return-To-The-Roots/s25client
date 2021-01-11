@@ -85,7 +85,7 @@ namespace rttr { namespace mapGenerator {
 
         for(unsigned i = 0; i < 7; i++)
         {
-            if (hqPositions[i].isValid())
+            if(hqPositions[i].isValid())
             {
                 objectInfo[this->objectInfos.GetIdx(hqPositions[i])] = libsiedler2::OI_HeadquarterMask;
                 objectType[this->objectTypes.GetIdx(hqPositions[i])] = libsiedler2::ObjectType(i);
