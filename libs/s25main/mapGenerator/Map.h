@@ -32,6 +32,7 @@ namespace rttr { namespace mapGenerator {
     class Map
     {
     private:
+        std::vector<MapPoint> hqPositions_;
         std::vector<DescIdx<TerrainDesc>> terrains_;
         DescIdx<LandscapeDesc> landscape_;
 
@@ -43,7 +44,6 @@ namespace rttr { namespace mapGenerator {
         NodeMapBase<uint8_t> resources;
         NodeMapBase<libsiedler2::Animal> animals;
         std::vector<Triangle> harbors;
-        std::vector<MapPoint> headQuarters;
         TextureMap textureMap;
 
         const std::string name;
