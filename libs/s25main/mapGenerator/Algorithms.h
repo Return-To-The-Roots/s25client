@@ -148,6 +148,33 @@ namespace rttr { namespace mapGenerator {
     void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue);
 
     /**
+     * Computes a map of distance values describing the distance of each grid position to the closest flagged point.
+     *
+     * @param flaggedPoints contains all flagged points
+     * @param size size of  the map
+     *
+     * @return distance of each grid position to closest flagged point.
+     */
+    template<class T_Container>
+    NodeMapBase<unsigned> DistancesTo(const T_Container& flaggedPoints, const MapExtent& size)
+    {
+        const unsigned maximumDistance = size.x * size.y;
+        std::queue<MapPoint> queue;
+        NodeMapBase<unsigned> distances;
+        distances.Resize(size, maximumDistance);
+
+        for(const MapPoint& pt : flaggedPoints)
+        {
+            distances[pt] = 0;
+            queue.push(pt);
+        }
+
+        UpdateDistances(distances, queue);
+
+        return distances;
+    }
+
+    /**
      * Computes a map of distance values describing the distance of each grid position to the closest position for
      * which the evaluator returned `true`. The computation takes place only within the specified area - points outside
      * the area are set to a maximum value of width + height of the map.
