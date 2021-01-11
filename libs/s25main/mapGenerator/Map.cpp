@@ -25,7 +25,7 @@ namespace rttr { namespace mapGenerator {
 
     Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
              DescIdx<LandscapeDesc> landscape, uint8_t maxHeight)
-        : headQuarters(MAX_PLAYERS, MapPoint::Invalid()), textureMap(TextureMap(worldDesc, landscape, textures)),
+        : hqPositions(MAX_PLAYERS, MapPoint::Invalid()), textureMap(TextureMap(worldDesc, landscape, textures)),
           name("Random"), author("Auto"), height(0, maxHeight), players(players), size(size)
     {
         z.Resize(size);
@@ -38,9 +38,9 @@ namespace rttr { namespace mapGenerator {
 
     void Map::MarkAsHeadQuarter(const MapPoint& position, int index)
     {
-        auto oldPosition = headQuarters[index];
+        auto oldPosition = hqPositions[index];
 
-        headQuarters[index] = position;
+        hqPositions[index] = position;
 
         if(position.isValid())
         {
@@ -72,7 +72,7 @@ namespace rttr { namespace mapGenerator {
         // First 7 players go into the header
         for(unsigned i = 0; i < 7; i++)
         {
-            header->setPlayerHQ(i, headQuarters[i].x, headQuarters[i].y);
+            header->setPlayerHQ(i, hqPositions[i].x, hqPositions[i].y);
         }
 
         std::vector<uint8_t> z(numNodes);

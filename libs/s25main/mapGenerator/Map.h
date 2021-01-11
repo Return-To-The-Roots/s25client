@@ -43,7 +43,7 @@ namespace rttr { namespace mapGenerator {
         NodeMapBase<uint8_t> resources;
         NodeMapBase<libsiedler2::Animal> animals;
         std::vector<Triangle> harbors;
-        std::vector<MapPoint> headQuarters;
+        std::vector<MapPoint> hqPositions;
         TextureMap textureMap;
 
         const std::string name;
