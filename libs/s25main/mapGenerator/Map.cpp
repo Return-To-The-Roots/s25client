@@ -36,23 +36,6 @@ namespace rttr { namespace mapGenerator {
         animals.Resize(size, libsiedler2::Animal::None);
     }
 
-    void Map::MarkAsHeadQuarter(const MapPoint& position, int index)
-    {
-        auto oldPosition = hqPositions[index];
-
-        hqPositions[index] = position;
-
-        if(position.isValid())
-        {
-            objectInfos[position] = libsiedler2::OI_HeadquarterMask;
-            objectTypes[position] = libsiedler2::ObjectType(index);
-        } else if(oldPosition.isValid())
-        {
-            objectInfos[oldPosition] = libsiedler2::OI_Empty;
-            objectTypes[oldPosition] = libsiedler2::OT_Empty;
-        }
-    }
-
     libsiedler2::Archiv Map::CreateArchiv() const
     {
         libsiedler2::Archiv info;
@@ -98,6 +81,15 @@ namespace rttr { namespace mapGenerator {
             objectInfo[i] = this->objectInfos[i];
             animal[i] = static_cast<uint8_t>(this->animals[i]);
             resource[i] = this->resources[i];
+        }
+
+        for(unsigned i = 0; i < 7; i++)
+        {
+            if (hqPositions[i].isValid())
+            {
+                objectInfo[this->objectInfos.GetIdx(hqPositions[i])] = libsiedler2::OI_HeadquarterMask;
+                objectType[this->objectTypes.GetIdx(hqPositions[i])] = libsiedler2::ObjectType(i);
+            }
         }
 
         for(const Triangle& t : harbors)

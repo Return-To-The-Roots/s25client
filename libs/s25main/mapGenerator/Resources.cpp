@@ -68,7 +68,7 @@ namespace rttr { namespace mapGenerator {
         // harbor positions to avoid inaccessible harbors or invalid player positions.
 
         auto isForbidden = [&map](const MapPoint& pt) {
-            return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask
+            return helpers::contains(map.hqPositions, pt)
                    || helpers::contains_if(map.harbors, [pt](const Triangle& tr) { return tr.position == pt; });
         };
 

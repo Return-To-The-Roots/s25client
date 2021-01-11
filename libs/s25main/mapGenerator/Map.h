@@ -56,14 +56,6 @@ namespace rttr { namespace mapGenerator {
             uint8_t maxHeight = 0x60);
 
         /**
-         * Marks the position as HQ position if set to a valid position, otherwise unmarks previously marked position.
-         *
-         * @param position position to mark or unmark as HQ position
-         * @param index index of the player
-         */
-        void MarkAsHeadQuarter(const MapPoint& position, int index);
-
-        /**
          * Creates a new archiv for this map.
          *
          * @return a new archiv containing the information of this map

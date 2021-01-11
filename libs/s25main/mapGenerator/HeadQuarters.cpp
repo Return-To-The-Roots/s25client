@@ -76,7 +76,7 @@ namespace rttr { namespace mapGenerator {
                 {
                     for(int i = 0; i < number; i++)
                     {
-                        map.MarkAsHeadQuarter(MapPoint::Invalid(), i);
+                        map.hqPositions[i] = MapPoint::Invalid();
                     }
                     success = false;
                     break;
@@ -84,7 +84,7 @@ namespace rttr { namespace mapGenerator {
 
                 auto hq = retries == maxRetries ? possiblePositions.front() : rnd.RandomItem(possiblePositions);
 
-                map.MarkAsHeadQuarter(hq, index);
+                map.hqPositions[index] = hq;
             }
 
             retries--;

@@ -161,8 +161,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_places_hq_on_map_at_suitable_position)
 
         PlaceHeadQuarter(map, 3, area);
 
-        BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_HeadquarterMask);
-        BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::ObjectType(3));
+        BOOST_REQUIRE(map.hqPositions[3] == hq);
     });
 }
 
@@ -195,17 +194,10 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_places_hqs_for_any_player_number_on_suita
 
             PlaceHeadQuarters(map, rnd, players);
 
-            int hqs = 0;
-
-            RTTR_FOREACH_PT(MapPoint, size)
+            for(int index = 0; index < players - 1; index++)
             {
-                if(map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask)
-                {
-                    hqs++;
-                }
+                BOOST_REQUIRE(map.hqPositions[index].isValid());
             }
-
-            BOOST_REQUIRE(hqs == players);
         });
     }
 }
