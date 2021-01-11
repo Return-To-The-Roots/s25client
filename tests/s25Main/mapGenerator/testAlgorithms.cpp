@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
                                             4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
                                             5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 6u, 5u, 4u, 4u, 4u, 4u, 4u, 5u};
 
-    std::set<MapPoint, MapPointLess> flaggedPoints { MapPoint(4, 3) };
+    std::set<MapPoint, MapPointLess> flaggedPoints{MapPoint(4, 3)};
     auto distances = DistancesTo(flaggedPoints, size);
 
     BOOST_REQUIRE(distances.GetSize() == size);
