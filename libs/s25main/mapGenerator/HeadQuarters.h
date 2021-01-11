@@ -48,7 +48,7 @@ namespace rttr { namespace mapGenerator {
     std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area)
     {
         std::vector<MapPoint> headQuarters;
-        for(const MapPoint& hq : map.headQuarters)
+        for(const MapPoint& hq : map.hqPositions)
         {
             if(hq.isValid())
             {
