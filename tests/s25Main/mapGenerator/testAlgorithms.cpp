@@ -210,6 +210,26 @@ BOOST_AUTO_TEST_CASE(Distances_returns_expected_distance_for_each_map_point)
     }
 }
 
+BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
+{
+    MapExtent size(8, 8);
+
+    std::vector<unsigned> expectedDistances{5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
+                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 4u, 3u, 2u, 1u, 0u, 1u, 2u, 3u,
+                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
+                                            5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 6u, 5u, 4u, 4u, 4u, 4u, 4u, 5u};
+
+    std::set<MapPoint, MapPointLess> flaggedPoints { MapPoint(4, 3) };
+    auto distances = DistancesTo(flaggedPoints, size);
+
+    BOOST_REQUIRE(distances.GetSize() == size);
+
+    RTTR_FOREACH_PT(MapPoint, size)
+    {
+        BOOST_REQUIRE_EQUAL(expectedDistances[pt.x + pt.y * size.x], distances[pt]);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(Count_all_nodes_within_thresholds_correctly)
 {
     MapExtent size(8, 16);

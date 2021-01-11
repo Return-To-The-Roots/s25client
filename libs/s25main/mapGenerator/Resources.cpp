@@ -77,19 +77,14 @@ namespace rttr { namespace mapGenerator {
             if(isForbidden(pt))
             {
                 auto suroundingArea = map.textures.GetPointsInRadiusWithCenter(pt, 5);
-                for(const auto& point : suroundingArea)
-                {
-                    forbiddenArea.insert(point);
-                }
+                forbiddenArea.insert(suroundingArea.begin(), suroundingArea.end());
             } else if(map.textureMap.Any(pt, IsSnowOrLava))
             {
                 forbiddenArea.insert(pt);
             }
         }
 
-        auto isForbiddenArea = [&forbiddenArea](const MapPoint& pt) { return helpers::contains(forbiddenArea, pt); };
-
-        auto distanceToForbiddenArea = Distances(map.size, isForbiddenArea);
+        auto distanceToForbiddenArea = DistancesTo(forbiddenArea, map.size);
 
         // 1) compute maximum water distance until mountain area
         // 2) probabilities
