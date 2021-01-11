@@ -30,20 +30,9 @@ void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
     BOOST_REQUIRE(map.players == players);
     BOOST_REQUIRE(map.size == size);
 
-    std::vector<uint8_t> hqs;
-
-    RTTR_FOREACH_PT(MapPoint, size)
-    {
-        if(map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask)
-        {
-            hqs.push_back(map.objectTypes[pt]);
-        }
-    }
-
-    BOOST_REQUIRE(hqs.size() == players);
     for(unsigned index = 0; index < players; index++)
     {
-        BOOST_REQUIRE(helpers::contains(hqs, index));
+        BOOST_REQUIRE(map.hqPositions[index].isValid());
     }
 }
 

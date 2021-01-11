@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
     RunTest([](Map& map) {
         RandomUtility rnd(0);
         MapPoint hq(3, 3);
-        map.MarkAsHeadQuarter(hq, 0);
+        map.hqPositions[0] = hq;
 
         AddObjects(map, rnd);
 

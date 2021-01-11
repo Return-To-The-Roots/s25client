@@ -51,35 +51,4 @@ BOOST_AUTO_TEST_CASE(Constructor_resizes_all_maps)
     });
 }
 
-BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_sets_object_info_and_type_for_any_player_index)
-{
-    RunTest([](Map& map) {
-        MapPoint hq(3, 4);
-
-        for(int index = 0; index < 7; index++)
-        {
-            map.MarkAsHeadQuarter(hq, index);
-
-            BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_HeadquarterMask);
-            BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::ObjectType(index));
-        }
-    });
-}
-
-BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_removes_hq_for_invalid_map_point)
-{
-    RunTest([](Map& map) {
-        MapPoint hq(3, 7);
-
-        for(int index = 0; index < 7; index++)
-        {
-            map.MarkAsHeadQuarter(hq, index);
-            map.MarkAsHeadQuarter(MapPoint::Invalid(), index);
-
-            BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_Empty);
-            BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::OT_Empty);
-        }
-    });
-}
-
 BOOST_AUTO_TEST_SUITE_END()

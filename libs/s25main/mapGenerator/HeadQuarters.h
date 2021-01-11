@@ -102,7 +102,7 @@ namespace rttr { namespace mapGenerator {
             return false;
         }
 
-        map.MarkAsHeadQuarter(positions.front(), index);
+        map.hqPositions[index] = positions.front();
         return true;
     }
 
