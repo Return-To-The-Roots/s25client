@@ -17,15 +17,19 @@
 
 #include "lua/GameDataLoader.h"
 #include "mapGenerator/RandomMap.h"
+#include "gameData/MaxPlayers.h"
+#include "libsiedler2/ArchivItem_Map.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/libsiedler2.h"
+#include "rttr/test/TmpFolder.hpp"
+#include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(RandomMapTests)
 
-void ValidateMap(const Map& map, const MapExtent& size, unsigned players);
-
-void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
+static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
 {
     BOOST_REQUIRE(map.players == players);
     BOOST_REQUIRE(map.size == size);
@@ -36,49 +40,104 @@ void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
     }
 }
 
-BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_tiny_7_player_land_map)
+static MapExtent getRandomMapSize(const unsigned minSize = 32)
+{
+    auto size = rttr::test::randomPoint<MapExtent>(minSize, 80);
+    // Need even size
+    size.x &= ~1u;
+    size.y &= ~1u;
+    return size;
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_land_map)
 {
     RandomUtility rnd(0);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = MapExtent(64, 64);
-    settings.numPlayers = 7u;
+    settings.size = getRandomMapSize();
+    settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Land;
 
     Map map = GenerateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
-BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_tiny_7_player_water_map)
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
 {
     RandomUtility rnd(0);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = MapExtent(64, 64);
-    settings.numPlayers = 7u;
+    settings.size = getRandomMapSize(50); // Need enough space for player islands
+    settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Water;
 
     Map map = GenerateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
-BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_tiny_7_player_mixed_map)
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mixed_map)
 {
     RandomUtility rnd(0);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = MapExtent(64, 64);
-    settings.numPlayers = 7u;
+    settings.size = getRandomMapSize();
+    settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Mixed;
 
     Map map = GenerateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
+{
+    RandomUtility rnd(0);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = getRandomMapSize();
+    settings.numPlayers = MAX_PLAYERS;
+    settings.style = MapStyle::Land;
+
+    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    ValidateMap(map, settings.size, settings.numPlayers);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)
+{
+    rttr::test::TmpFolder tmpFolder;
+    const auto mapPath = tmpFolder.get() / "map.wld";
+
+    MapSettings settings;
+    settings.size = MapExtent(64, 64);
+    settings.numPlayers = MAX_PLAYERS;
+    settings.style = MapStyle::Land;
+
+    CreateRandomMap(mapPath, settings);
+    libsiedler2::Archiv archive;
+    BOOST_TEST_REQUIRE(libsiedler2::Load(mapPath, archive) == 0);
+    const auto* map = dynamic_cast<const libsiedler2::ArchivItem_Map*>(archive[0]);
+    BOOST_TEST_REQUIRE(map);
+    const auto* mapHeader = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(map->get(0));
+    BOOST_TEST_REQUIRE(mapHeader);
+    BOOST_TEST(mapHeader->getWidth() == settings.size.x);
+    BOOST_TEST(mapHeader->getHeight() == settings.size.y);
+    BOOST_TEST(mapHeader->getNumPlayers() == settings.numPlayers);
+    // Must have unique HQ positions
+    std::vector<MapPoint> hqs;
+    for(unsigned i = 0; i < std::min(unsigned(mapHeader->maxPlayers), settings.numPlayers); i++)
+    {
+        Point<uint16_t> hqPos;
+        mapHeader->getPlayerHQ(i, hqPos.x, hqPos.y);
+        BOOST_TEST(!helpers::contains(hqs, MapPoint(hqPos)));
+        hqs.emplace_back(hqPos);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

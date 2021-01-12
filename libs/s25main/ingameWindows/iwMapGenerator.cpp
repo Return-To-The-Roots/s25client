@@ -59,7 +59,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 
     ctrlComboBox* combo =
       AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
-    for(unsigned n = 2; n < MAX_PLAYERS; n++)
+    for(unsigned n = 2; n <= MAX_PLAYERS; n++)
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
 
     combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
@@ -142,10 +142,9 @@ void iwMapGenerator::Apply()
 void iwMapGenerator::Reset()
 {
     auto* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
-    const uint16_t playersSelection = mapSettings.numPlayers - 2;
-    if(playersSelection < MAX_PLAYERS - 2)
+    if(mapSettings.numPlayers <= MAX_PLAYERS)
     {
-        combo->SetSelection(playersSelection);
+        combo->SetSelection(mapSettings.numPlayers - 2); // List starts at 2 players
     }
 
     GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->SetPosition(mapSettings.ratioGold);
