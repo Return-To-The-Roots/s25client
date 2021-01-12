@@ -33,6 +33,47 @@
 
 namespace fs = boost::filesystem;
 
+namespace {
+libsiedler2::Archiv createTxtArchive(const std::initializer_list<const char*>& values)
+{
+    libsiedler2::Archiv txt;
+    for(const char* s : values)
+    {
+        if(!s)
+            txt.push(nullptr);
+        else
+        {
+            auto txtItem = std::make_unique<libsiedler2::ArchivItem_Text>();
+            txtItem->setText(s);
+            txt.push(std::move(txtItem));
+        }
+    }
+    return txt;
+}
+struct CreateTestData
+{
+    const rttr::test::TmpFolder resourceFolder;
+    const fs::path mainFile, overrideFolder1, overrideFolder2;
+    CreateTestData()
+        : mainFile(resourceFolder / fs::path("test.GER")), overrideFolder1(resourceFolder / fs::path("override1")),
+          overrideFolder2(resourceFolder / fs::path("override2"))
+    {
+        createTxtArchiveFile(mainFile, {"0", "10"});
+        fs::create_directory(overrideFolder1);
+        createTxtArchiveFile(overrideFolder1 / mainFile.filename(), {"1", nullptr, "20"});
+        fs::create_directory(overrideFolder2);
+        createTxtArchiveFile(overrideFolder2 / mainFile.filename(), {"2", nullptr, nullptr, "30"});
+    }
+
+private:
+    void createTxtArchiveFile(const fs::path& path, const std::initializer_list<const char*>& values)
+    {
+        libsiedler2::Archiv txt = createTxtArchive(values);
+        BOOST_TEST_REQUIRE(libsiedler2::Write(path, txt) == 0);
+    }
+};
+} // namespace
+
 BOOST_AUTO_TEST_SUITE(LoaderTests)
 
 static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archive,
@@ -75,21 +116,10 @@ static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv
     return true;
 }
 
-const fs::path mainFile = rttr::test::rttrBaseDir / "tests/testData/test.GER";
-const fs::path overrideFolder1 = rttr::test::rttrBaseDir / "tests/testData/override1";
-const fs::path overrideFolder2 = rttr::test::rttrBaseDir / "tests/testData/override2";
-
 BOOST_AUTO_TEST_CASE(TestPredicate)
 {
     // Create archive of size 3 where first item is "1", second is empty and third is "20"
-    libsiedler2::Archiv txt;
-    txt.alloc(3);
-    auto txtItem = std::make_unique<libsiedler2::ArchivItem_Text>();
-    txtItem->setText("1");
-    txt.set(0, std::move(txtItem));
-    txtItem = std::make_unique<libsiedler2::ArchivItem_Text>();
-    txtItem->setText("20");
-    txt.set(2, std::move(txtItem));
+    libsiedler2::Archiv txt = createTxtArchive({"1", nullptr, "20"});
 
     BOOST_REQUIRE(compareTxts(txt, "1||20"));
     BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
@@ -99,7 +129,7 @@ BOOST_AUTO_TEST_CASE(TestPredicate)
     BOOST_TEST(compareTxts(txt, "4||20").message().str() == "Mismatch at 0 [1 != 4]");
 }
 
-BOOST_AUTO_TEST_CASE(Overrides)
+BOOST_FIXTURE_TEST_CASE(Overrides, CreateTestData)
 {
     rttr::test::LogAccessor logAcc;
     ArchiveLoader loader(LOG);
