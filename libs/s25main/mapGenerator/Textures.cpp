@@ -140,13 +140,13 @@ namespace rttr { namespace mapGenerator {
         }
         excludedTextures.insert(water);
 
-        for(unsigned i = 0; i < 3; ++i)
+        for(unsigned i = 0; i < transitionTextures.size(); ++i)
         {
             // for nodes covered by water & coast, replace only neighboring coast textures
             unsigned appliedWidth = width - (i == 0 ? 1 : 0);
             ReplaceTextures(textures_, appliedWidth, visited, transitionTextures[i], excludedTextures);
 
-            // don't replace already applied transtion textures
+            // don't replace already applied transition textures
             excludedTextures.insert(transitionTextures[i]);
         }
     }
