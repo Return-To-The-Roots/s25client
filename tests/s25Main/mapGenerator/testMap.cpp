@@ -24,10 +24,7 @@ using namespace rttr::mapGenerator;
 BOOST_AUTO_TEST_SUITE(MapTests)
 
 template<class T_Test>
-void RunTest(T_Test test);
-
-template<class T_Test>
-void RunTest(T_Test test)
+static void RunTest(T_Test test)
 {
     DescIdx<LandscapeDesc> landscape(1);
     WorldDescription worldDesc;

@@ -53,7 +53,9 @@ namespace rttr { namespace mapGenerator {
         header->setGfxSet(textureMap.GetLandscapeId());
 
         // First players go into the header
-        for(unsigned i = 0; i < std::min<unsigned>(header->maxPlayers, hqPositions.size()); i++)
+        const unsigned numPlayersInHeader =
+          std::min(static_cast<unsigned>(header->maxPlayers), static_cast<unsigned>(hqPositions.size()));
+        for(unsigned i = 0; i < numPlayersInHeader; i++)
         {
             header->setPlayerHQ(i, hqPositions[i].x, hqPositions[i].y);
         }
