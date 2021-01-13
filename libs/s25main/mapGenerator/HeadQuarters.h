@@ -20,6 +20,7 @@
 #include "helpers/mathFuncs.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
+#include <stdexcept>
 
 namespace rttr { namespace mapGenerator {
 
@@ -91,19 +92,17 @@ namespace rttr { namespace mapGenerator {
      * @param index player index for the HQ
      * @param area area to place the HQ in
      *
-     * @returns true if a HQ was placed fro the specified player, false otherwise.
+     * @throw NoHqPositionFoundException
      */
     template<class T_Container>
-    bool PlaceHeadQuarter(Map& map, int index, const T_Container& area)
+    void PlaceHeadQuarter(Map& map, int index, const T_Container& area)
     {
         auto positions = FindHqPositions(map, area);
         if(positions.empty())
         {
-            return false;
+            throw std::runtime_error("could not find any valid HQ position");
         }
-
         map.hqPositions[index] = positions.front();
-        return true;
     }
 
     /**
@@ -114,8 +113,8 @@ namespace rttr { namespace mapGenerator {
      * @param number number of HQs to place - equal to the number of players
      * @param retries number of retries to place valid HQs on this map
      *
-     * @return false if no valid HQ position was found for at least one player, true otherwise
+     * @throw NoHqPositionFoundException
      */
-    bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
+    void PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
 
 }} // namespace rttr::mapGenerator

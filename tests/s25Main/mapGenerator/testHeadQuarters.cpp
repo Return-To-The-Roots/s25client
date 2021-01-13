@@ -142,8 +142,13 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_returns_true_for_area_with_suitable_positi
         map.textures[obstacle] = TexturePair(water);
 
         std::vector<MapPoint> area{hq};
-
-        BOOST_REQUIRE(PlaceHeadQuarter(map, 0, area));
+        try
+        {
+            PlaceHeadQuarter(map, 0, area);
+        } catch(...)
+        {
+            BOOST_FAIL("Failed to place HQ");
+        }
     });
 }
 
@@ -174,10 +179,13 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_returns_true_for_any_player_number_on_sui
     {
         RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
             map.textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
-
-            auto success = PlaceHeadQuarters(map, rnd, players);
-
-            BOOST_REQUIRE(success);
+            try
+            {
+                PlaceHeadQuarters(map, rnd, players);
+            } catch(...)
+            {
+                BOOST_FAIL("Failed to place HQs");
+            }
         });
     }
 }
