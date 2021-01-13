@@ -30,6 +30,7 @@
 #include "helpers/toString.h"
 #include "iwPleaseWait.h"
 #include "network/GameClient.h"
+#include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "s25util/Log.h"
@@ -49,7 +50,7 @@ iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& windo
              ctrlTable::Columns{{_("Filename"), 270, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 250, SRT::Date},
-                                {_("Start GF"), 320, SRT::Number},
+                                {_("Game Time"), 320, SRT::Time},
                                 {}});
 }
 
@@ -101,7 +102,7 @@ void iwSaveLoad::RefreshTable()
         // Just filename w/o extension
         const auto fileName = saveFile.stem().string();
 
-        std::string startGF = helpers::toString(save.start_gf);
+        std::string startGF = GAMECLIENT.FormatGFTime(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
         GetCtrl<ctrlTable>(0)->AddRow({fileName, save.GetMapName(), dateStr, startGF, saveFile.string()});
@@ -147,7 +148,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     // Die Intervalle
     for(unsigned i = 0; i < numIntervalls; ++i)
-        combo->AddString(helpers::toString(AUTO_SAVE_INTERVALS[i]) + " GF");
+        combo->AddString(helpers::toString(AUTO_SAVE_INTERVALS[i] * SPEED_GF_LENGTHS[referenceSpeed] / 1000) + " s");
 
     // Richtigen Eintrag auswählen
     bool found = false;

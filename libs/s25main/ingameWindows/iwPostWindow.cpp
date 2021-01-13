@@ -291,7 +291,8 @@ void iwPostWindow::DisplayPostMessage()
 
     // We have a message, display its status...
     std::stringstream ss;
-    ss << _("Message") << " " << curMsgId + 1 << " " << _("of") << " " << size << " - GF: " << curMsg->GetSendFrame();
+    ss << _("Message") << " " << curMsgId + 1 << "/" << size << " - " << _("Time") << ": "
+       << GAMECLIENT.FormatGFTime(curMsg->GetSendFrame());
     GetCtrl<ctrlText>(ID_INFO)->SetText(ss.str());
     GetCtrl<ctrlText>(ID_INFO)->SetVisible(true);
     // ...and delete button

@@ -25,6 +25,9 @@
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
 constexpr helpers::EnumArray<unsigned, GameSpeed> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30}};
 
+/// Normal speed as reference speed for ingame time computations
+constexpr GameSpeed referenceSpeed = GameSpeed::Normal;
+
 /// Reichweite der Bergarbeiter
 constexpr unsigned MINER_RADIUS = 2;
 

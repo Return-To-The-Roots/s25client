@@ -24,6 +24,7 @@
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
+#include "gameData/GameConsts.h"
 #include <boost/optional.hpp>
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
@@ -48,8 +49,9 @@ void Game::Start(bool startFromSave)
         if(ggs_.objective == GameObjective::EconomyMode)
         {
             unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
-            world_.econHandler = std::make_unique<EconomyModeHandler>(
-              std::chrono::minutes(AddonEconomyModeGameLengthList[selection]) / GAMECLIENT.GetGFLength());
+            world_.econHandler =
+              std::make_unique<EconomyModeHandler>(std::chrono::minutes(AddonEconomyModeGameLengthList[selection])
+                                                   / (std::chrono::milliseconds)SPEED_GF_LENGTHS[referenceSpeed]);
         }
         StatisticStep();
     }
@@ -94,8 +96,9 @@ void Game::RunGF()
 
     if(world_.HasLua())
         world_.GetLua().EventGameFrame(em_->GetCurrentGF());
-    // Update statistic every 750 GFs (30 seconds on 'fast')
-    if(em_->GetCurrentGF() % 750 == 0)
+    // Update statistic every 30 seconds
+    constexpr unsigned GFsIn30s = 30 * 1000 / SPEED_GF_LENGTHS[referenceSpeed];
+    if(em_->GetCurrentGF() % GFsIn30s == 0)
         StatisticStep();
     // If some players got defeated check objective
     if(getNumAlivePlayers(world_) < numPlayersAlive)
