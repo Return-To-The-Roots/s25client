@@ -103,7 +103,7 @@ namespace rttr { namespace mapGenerator {
     template<class T_Container>
     void PlaceHeadquarter(Map& map, int index, const T_Container& area)
     {
-        const auto& positions = FindHqPositions(map, area);
+        auto positions = FindHqPositions(map, area);
         if(positions.empty())
         {
             throw std::runtime_error("Could not find any valid HQ position!");
