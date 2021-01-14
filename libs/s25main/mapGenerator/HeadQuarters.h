@@ -44,6 +44,7 @@ namespace rttr { namespace mapGenerator {
      * @param area area within the HQ position should be
      *
      * @return all suitable HQ positions witihn the specified area (or the entire map if the area is empty).
+     * @throw runtime_error
      */
     template<class T_Container>
     std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area)
@@ -97,7 +98,7 @@ namespace rttr { namespace mapGenerator {
      * @param index player index for the HQ
      * @param area area to place the HQ in
      *
-     * @throw NoHqPositionFoundException
+     * @throw runtime_error
      */
     template<class T_Container>
     void PlaceHeadQuarter(Map& map, int index, const T_Container& area)
@@ -118,7 +119,7 @@ namespace rttr { namespace mapGenerator {
      * @param number number of HQs to place - equal to the number of players
      * @param retries number of retries to place valid HQs on this map
      *
-     * @throw NoHqPositionFoundException
+     * @throw runtime_error
      */
     void PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
 
