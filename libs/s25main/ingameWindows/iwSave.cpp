@@ -27,6 +27,7 @@
 #include "controls/ctrlTable.h"
 #include "desktops/dskLobby.h"
 #include "files.h"
+#include "helpers/make_array.h"
 #include "helpers/toString.h"
 #include "iwPleaseWait.h"
 #include "network/GameClient.h"
@@ -36,10 +37,9 @@
 #include "s25util/Log.h"
 #include <utility>
 
-const unsigned NUM_AUTO_SAVE_INTERVALS = 7;
-
-const std::array<unsigned, NUM_AUTO_SAVE_INTERVALS> AUTO_SAVE_INTERVALS = {500,   1000,   5000, 10000,
-                                                                           50000, 100000, 1 /*  */};
+// autosave intervals in minutes
+const auto AUTO_SAVE_INTERVALS = helpers::make_array(1u, 5u, 10u, 15u, 30u, 60u, 90u);
+constexpr unsigned NUM_AUTO_SAVE_INTERVALS = AUTO_SAVE_INTERVALS.size();
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title,
@@ -143,23 +143,32 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     /// Combobox füllen
     combo->AddString(_("Disabled")); // deaktiviert
 
-    // Last entry is only for debugging
-    const unsigned numIntervalls = SETTINGS.global.debugMode ? NUM_AUTO_SAVE_INTERVALS : NUM_AUTO_SAVE_INTERVALS - 1;
-
     // Die Intervalle
-    for(unsigned i = 0; i < numIntervalls; ++i)
-        combo->AddString(helpers::toString(AUTO_SAVE_INTERVALS[i] * SPEED_GF_LENGTHS[referenceSpeed] / 1000) + " s");
+    for(unsigned i = 0; i < NUM_AUTO_SAVE_INTERVALS; ++i)
+        combo->AddString((boost::format(_("%1% m")) % AUTO_SAVE_INTERVALS[i]).str());
+
+    // Last entry is only for debugging
+    if(SETTINGS.global.debugMode)
+    {
+        combo->AddString(_("Every GF"));
+    }
 
     // Richtigen Eintrag auswählen
     bool found = false;
-    for(unsigned i = 0; i < numIntervalls; ++i)
+    constexpr unsigned GFsPerMinute = 60 * 1000 / SPEED_GF_LENGTHS[referenceSpeed];
+    for(unsigned i = 0; i < NUM_AUTO_SAVE_INTERVALS; ++i)
     {
-        if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i])
+        if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i] * GFsPerMinute)
         {
             combo->SetSelection(i + 1);
             found = true;
             break;
         }
+    }
+    if(SETTINGS.interface.autosave_interval == 1)
+    {
+        combo->SetSelection(NUM_AUTO_SAVE_INTERVALS + 1);
+        found = true;
     }
 
     // Ungültig oder 0 --> Deaktiviert auswählen
@@ -175,9 +184,14 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned sele
     // Erster Eintrag --> deaktiviert
     if(selection == 0)
         SETTINGS.interface.autosave_interval = 0;
+    else if(selection >= NUM_AUTO_SAVE_INTERVALS)
+        SETTINGS.interface.autosave_interval = 1;
     else
+    {
         // ansonsten jeweilige GF-Zahl eintragen
-        SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1];
+        constexpr unsigned GFsPerMinute = 60 * 1000 / SPEED_GF_LENGTHS[referenceSpeed];
+        SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1] * GFsPerMinute;
+    }
 }
 
 iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(0, _("Load game!")), csi(std::move(csi))
