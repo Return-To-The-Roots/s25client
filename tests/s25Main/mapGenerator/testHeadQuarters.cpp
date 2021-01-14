@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_suitable_position_for_single_player
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_returns_true_for_area_with_suitable_position)
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_with_suitable_position_for_player)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
@@ -170,7 +170,45 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_places_hq_on_map_at_suitable_position)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_returns_true_for_any_player_number_on_suitable_map)
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_with_empty_area_throws_exception)
+{
+    MapExtent size(8, 8);
+    RunTest(size, [&size](Map& map, TextureMap& textures) {
+        auto water = textures.Find(IsShipableWater);
+        map.textures.Resize(size, TexturePair(water));
+        std::vector<MapPoint> area;
+        bool exceptionThrown = false;
+        try
+        {
+            PlaceHeadQuarter(map, 0, area);
+        } catch(...)
+        {
+            exceptionThrown = true;
+        }
+        BOOST_REQUIRE(exceptionThrown);
+    });
+}
+
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_without_suitable_position_throws_exception)
+{
+    MapExtent size(8, 8);
+    RunTest(size, [&size](Map& map, TextureMap& textures) {
+        auto water = textures.Find(IsShipableWater);
+        map.textures.Resize(size, TexturePair(water));
+        std::vector<MapPoint> area{MapPoint(0, 0)};
+        bool exceptionThrown = false;
+        try
+        {
+            PlaceHeadQuarter(map, 0, area);
+        } catch(...)
+        {
+            exceptionThrown = true;
+        }
+        BOOST_REQUIRE(exceptionThrown);
+    });
+}
+
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_with_suitable_positions_for_all_players)
 {
     MapExtent size(32, 32);
     RandomUtility rnd(0);
@@ -206,6 +244,28 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_places_hqs_for_any_player_number_on_suita
             {
                 BOOST_REQUIRE(map.hqPositions[index].isValid());
             }
+        });
+    }
+}
+
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_without_suitable_position_throws_exception)
+{
+    MapExtent size(32, 32);
+    RandomUtility rnd(0);
+
+    for(int players = 1; players < 8; players++)
+    {
+        RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
+            map.textures.Resize(size, textures.Find(IsWater));
+            bool exceptionThrown = false;
+            try
+            {
+                PlaceHeadQuarters(map, rnd, players);
+            } catch(...)
+            {
+                exceptionThrown = true;
+            }
+            BOOST_REQUIRE(exceptionThrown);
         });
     }
 }

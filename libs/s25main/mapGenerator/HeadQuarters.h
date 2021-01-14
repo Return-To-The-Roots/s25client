@@ -48,6 +48,11 @@ namespace rttr { namespace mapGenerator {
     template<class T_Container>
     std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area)
     {
+        if(area.empty())
+        {
+            throw std::runtime_error("could not find any valid HQ position");
+        }
+
         std::vector<MapPoint> headQuarters;
         for(const MapPoint& hq : map.hqPositions)
         {
@@ -97,7 +102,7 @@ namespace rttr { namespace mapGenerator {
     template<class T_Container>
     void PlaceHeadQuarter(Map& map, int index, const T_Container& area)
     {
-        auto positions = FindHqPositions(map, area);
+        const auto& positions = FindHqPositions(map, area);
         if(positions.empty())
         {
             throw std::runtime_error("could not find any valid HQ position");
