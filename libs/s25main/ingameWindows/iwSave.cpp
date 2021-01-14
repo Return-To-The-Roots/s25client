@@ -102,10 +102,10 @@ void iwSaveLoad::RefreshTable()
         // Just filename w/o extension
         const auto fileName = saveFile.stem().string();
 
-        std::string startGF = GAMECLIENT.FormatGFTime(save.start_gf);
+        std::string gameTime = GAMECLIENT.FormatGFTime(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow({fileName, save.GetMapName(), dateStr, startGF, saveFile.string()});
+        GetCtrl<ctrlTable>(0)->AddRow({fileName, save.GetMapName(), dateStr, gameTime, saveFile.string()});
     }
 
     // Nach Zeit Sortieren
