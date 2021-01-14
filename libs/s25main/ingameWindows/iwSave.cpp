@@ -37,9 +37,8 @@
 #include "s25util/Log.h"
 #include <utility>
 
-// autosave intervals in minutes
-const auto AUTO_SAVE_INTERVALS = helpers::make_array(1u, 5u, 10u, 15u, 30u, 60u, 90u);
-constexpr unsigned NUM_AUTO_SAVE_INTERVALS = AUTO_SAVE_INTERVALS.size();
+using namespace std::chrono_literals;
+const auto AUTO_SAVE_INTERVALS = helpers::make_array(1min, 5min, 10min, 15min, 30min, 60min, 90min);
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title,
@@ -144,8 +143,8 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     combo->AddString(_("Disabled")); // deaktiviert
 
     // Die Intervalle
-    for(unsigned i = 0; i < NUM_AUTO_SAVE_INTERVALS; ++i)
-        combo->AddString((boost::format(_("%1% m")) % AUTO_SAVE_INTERVALS[i]).str());
+    for(const std::chrono::minutes interval : AUTO_SAVE_INTERVALS)
+        combo->AddString((boost::format(_("%1% min")) % interval.count()).str());
 
     // Last entry is only for debugging
     if(SETTINGS.global.debugMode)
@@ -155,10 +154,10 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     // Richtigen Eintrag auswählen
     bool found = false;
-    constexpr unsigned GFsPerMinute = 60 * 1000 / SPEED_GF_LENGTHS[referenceSpeed];
-    for(unsigned i = 0; i < NUM_AUTO_SAVE_INTERVALS; ++i)
+    for(unsigned i = 0; i < AUTO_SAVE_INTERVALS.size(); ++i)
     {
-        if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i] * GFsPerMinute)
+        if(SETTINGS.interface.autosave_interval
+           == AUTO_SAVE_INTERVALS[i] / std::chrono::milliseconds(SPEED_GF_LENGTHS[referenceSpeed]))
         {
             combo->SetSelection(i + 1);
             found = true;
@@ -167,7 +166,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     }
     if(SETTINGS.interface.autosave_interval == 1)
     {
-        combo->SetSelection(NUM_AUTO_SAVE_INTERVALS + 1);
+        combo->SetSelection(AUTO_SAVE_INTERVALS.size() + 1);
         found = true;
     }
 
@@ -184,13 +183,13 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned sele
     // Erster Eintrag --> deaktiviert
     if(selection == 0)
         SETTINGS.interface.autosave_interval = 0;
-    else if(selection >= NUM_AUTO_SAVE_INTERVALS)
+    else if(selection >= AUTO_SAVE_INTERVALS.size())
         SETTINGS.interface.autosave_interval = 1;
     else
     {
         // ansonsten jeweilige GF-Zahl eintragen
-        constexpr unsigned GFsPerMinute = 60 * 1000 / SPEED_GF_LENGTHS[referenceSpeed];
-        SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1] * GFsPerMinute;
+        SETTINGS.interface.autosave_interval =
+          AUTO_SAVE_INTERVALS[selection - 1] / std::chrono::milliseconds(SPEED_GF_LENGTHS[referenceSpeed]);
     }
 }
 
