@@ -214,7 +214,7 @@ namespace rttr { namespace mapGenerator {
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
         PlaceHarbors(map_, rivers, (map_.size.x + map_.size.y) / 2);
-        PlaceHeadQuarters(map_, rnd_, map_.players);
+        PlaceHeadquarters(map_, rnd_, map_.players);
     }
 
     void RandomMap::CreateWaterMap()
@@ -266,7 +266,7 @@ namespace rttr { namespace mapGenerator {
 
         for(unsigned i = 0; i < map_.players; i++)
         {
-            PlaceHeadQuarter(map_, i, islands[i]);
+            PlaceHeadquarter(map_, i, islands[i]);
         }
     }
 
@@ -285,7 +285,7 @@ namespace rttr { namespace mapGenerator {
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
-        PlaceHeadQuarters(map_, rnd_, map_.players);
+        PlaceHeadquarters(map_, rnd_, map_.players);
     }
 
     Map GenerateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings)

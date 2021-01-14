@@ -67,14 +67,14 @@ namespace rttr { namespace mapGenerator {
         // Do not allow to place trees/stone piles nearby head quarters or
         // harbor positions to avoid inaccessible harbors or invalid player positions.
 
-        auto harberOrHeadQuarter = [&map](const MapPoint& pt) {
+        auto harberOrHeadquarter = [&map](const MapPoint& pt) {
             return helpers::contains(map.hqPositions, pt)
                    || helpers::contains_if(map.harbors, [pt](const Triangle& tr) { return tr.position == pt; });
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            if(harberOrHeadQuarter(pt))
+            if(harberOrHeadquarter(pt))
             {
                 auto suroundingArea = map.textures.GetPointsInRadiusWithCenter(pt, 5);
                 excludedArea.insert(suroundingArea.begin(), suroundingArea.end());

@@ -57,7 +57,7 @@ namespace rttr { namespace mapGenerator {
         return connectedArea;
     }
 
-    void PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries)
+    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, int retries)
     {
         auto maxRetries = retries;
         auto success = false;
@@ -92,7 +92,7 @@ namespace rttr { namespace mapGenerator {
 
         if(!success)
         {
-            throw std::runtime_error("could not find any valid HQ position");
+            throw std::runtime_error("Could not find any valid HQ position!");
         }
     }
 
