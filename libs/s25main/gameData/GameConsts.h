@@ -20,6 +20,7 @@
 #include "helpers/EnumArray.h"
 #include "helpers/make_array.h"
 #include "gameTypes/GameSettingTypes.h"
+#include <chrono>
 #include <limits>
 
 using namespace std::chrono_literals;
