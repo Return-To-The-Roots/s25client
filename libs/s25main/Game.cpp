@@ -49,9 +49,8 @@ void Game::Start(bool startFromSave)
         if(ggs_.objective == GameObjective::EconomyMode)
         {
             unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
-            world_.econHandler =
-              std::make_unique<EconomyModeHandler>(std::chrono::minutes(AddonEconomyModeGameLengthList[selection])
-                                                   / std::chrono::milliseconds(SPEED_GF_LENGTHS[referenceSpeed]));
+            world_.econHandler = std::make_unique<EconomyModeHandler>(
+              std::chrono::minutes(AddonEconomyModeGameLengthList[selection]) / SPEED_GF_LENGTHS[referenceSpeed]);
         }
         StatisticStep();
     }
@@ -97,7 +96,7 @@ void Game::RunGF()
     if(world_.HasLua())
         world_.GetLua().EventGameFrame(em_->GetCurrentGF());
     // Update statistic every 30 seconds
-    constexpr unsigned GFsIn30s = 30 * 1000 / SPEED_GF_LENGTHS[referenceSpeed];
+    constexpr unsigned GFsIn30s = 30s / SPEED_GF_LENGTHS[referenceSpeed];
     if(em_->GetCurrentGF() % GFsIn30s == 0)
         StatisticStep();
     // If some players got defeated check objective

@@ -369,8 +369,8 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw speed indicator icon
-    const int startSpeed = SPEED_GF_LENGTHS[game_->ggs_.speed];
-    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength() / std::chrono::milliseconds(10));
+    const int speedStep =
+      static_cast<int>(SPEED_GF_LENGTHS[referenceSpeed] / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
 
     if(speedStep != 0)
     {

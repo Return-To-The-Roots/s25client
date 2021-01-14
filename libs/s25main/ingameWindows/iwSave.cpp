@@ -156,8 +156,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     bool found = false;
     for(unsigned i = 0; i < AUTO_SAVE_INTERVALS.size(); ++i)
     {
-        if(SETTINGS.interface.autosave_interval
-           == AUTO_SAVE_INTERVALS[i] / std::chrono::milliseconds(SPEED_GF_LENGTHS[referenceSpeed]))
+        if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i] / SPEED_GF_LENGTHS[referenceSpeed])
         {
             combo->SetSelection(i + 1);
             found = true;
@@ -188,8 +187,7 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned sele
     else
     {
         // ansonsten jeweilige GF-Zahl eintragen
-        SETTINGS.interface.autosave_interval =
-          AUTO_SAVE_INTERVALS[selection - 1] / std::chrono::milliseconds(SPEED_GF_LENGTHS[referenceSpeed]);
+        SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1] / SPEED_GF_LENGTHS[referenceSpeed];
     }
 }
 
