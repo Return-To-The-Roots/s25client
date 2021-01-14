@@ -51,7 +51,7 @@ void Game::Start(bool startFromSave)
             unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
             world_.econHandler =
               std::make_unique<EconomyModeHandler>(std::chrono::minutes(AddonEconomyModeGameLengthList[selection])
-                                                   / (std::chrono::milliseconds)SPEED_GF_LENGTHS[referenceSpeed]);
+                                                   / std::chrono::milliseconds(SPEED_GF_LENGTHS[referenceSpeed]));
         }
         StatisticStep();
     }
