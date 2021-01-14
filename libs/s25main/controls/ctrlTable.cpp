@@ -110,40 +110,26 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
             s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
 
-            int val_a[3], val_b[3];
+            int seconds_a = 0;
+            int seconds_b = 0;
             char c;
 
             // "h:mm:ss" or "mm:ss"
-            for(int i = 0; i < 3; i++)
+            int tmp;
+            while(ss_a >> tmp)
             {
-                ss_a >> val_a[i];
-                ss_b >> val_b[i];
-                if(!ss_a)
-                {
-                    RTTR_Assert(i == 2);
-                    for(int j = i; j > 0; j--)
-                    {
-                        val_a[j] = val_a[j - 1];
-                    }
-                    val_a[0] = 0;
-                }
-                if(!ss_b)
-                {
-                    RTTR_Assert(i == 2);
-                    for(int j = i; j > 0; j--)
-                    {
-                        val_b[j] = val_b[j - 1];
-                    }
-                    val_b[0] = 0;
-                }
+                seconds_a *= 60;
+                seconds_a += tmp;
                 ss_a >> c;
+            }
+            while(ss_b >> tmp)
+            {
+                seconds_b *= 60;
+                seconds_b += tmp;
                 ss_b >> c;
             }
-            for(int i = 0; i < 3; i++)
-            {
-                if(val_a[i] != val_b[i] || i >= 2)
-                    return val_a[i] - val_b[i];
-            }
+
+            return seconds_a - seconds_b;
         }
         break;
     }
