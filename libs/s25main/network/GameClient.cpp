@@ -1719,7 +1719,7 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
     using std::chrono::duration_cast;
 
     // In Sekunden umrechnen
-    seconds numSeconds = duration_cast<seconds>(gf * (std::chrono::milliseconds)SPEED_GF_LENGTHS[referenceSpeed]);
+    seconds numSeconds = duration_cast<seconds>(gf * std::chrono::milliseconds(SPEED_GF_LENGTHS[referenceSpeed]));
 
     // Angaben rausfiltern
     hours numHours = duration_cast<hours>(numSeconds);
