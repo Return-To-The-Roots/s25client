@@ -96,7 +96,7 @@ void Game::RunGF()
     if(world_.HasLua())
         world_.GetLua().EventGameFrame(em_->GetCurrentGF());
     // Update statistic every 30 seconds
-    constexpr unsigned GFsIn30s = 30s / SPEED_GF_LENGTHS[referenceSpeed];
+    constexpr unsigned GFsIn30s = std::chrono::duration<unsigned>(30) / SPEED_GF_LENGTHS[referenceSpeed];
     if(em_->GetCurrentGF() % GFsIn30s == 0)
         StatisticStep();
     // If some players got defeated check objective
