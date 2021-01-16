@@ -36,6 +36,7 @@ void RunTest(T_Test test)
     loadGameData(worldDesc);
     DescIdx<LandscapeDesc> landscape(0);
     Map map(size, 0x1, worldDesc, landscape);
+    map.z.Resize(map.size, map.height.maximum);
 
     test(rnd, map);
 }
@@ -104,7 +105,6 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
-        map.z.Resize(map.size, 4);
         NodeMapBase<uint8_t> originalZ;
         originalZ.Resize(map.size);
         RTTR_FOREACH_PT(MapPoint, map.size)
@@ -123,6 +123,23 @@ BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
             {
                 BOOST_REQUIRE(map.z[pt] < originalZ[pt]);
             }
+        }
+    });
+}
+
+BOOST_AUTO_TEST_CASE(CreateStream_which_ends_at_minimum_height)
+{
+    RunTest([](RandomUtility& rnd, Map& map) {
+        MapPoint source(3, 3);
+        map.z.Resize(map.size, map.height.minimum);
+        map.z[source] = map.height.maximum;
+
+        const auto river = CreateStream(rnd, map, source, Direction::East, 20);
+        const auto expectedRange = map.z.GetPointsInRadiusWithCenter(source, 2);
+
+        for(const MapPoint& pt : river)
+        {
+            BOOST_REQUIRE(helpers::contains(expectedRange, pt));
         }
     });
 }
