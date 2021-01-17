@@ -30,7 +30,7 @@ namespace rttr { namespace mapGenerator {
         std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
 
         auto& textures = map.textureMap;
-        auto water = textures.Find(IsWater);
+        const auto water = textures.Find(IsWater);
 
         MapPoint currentNode = source;
         Direction currentDir = direction;
@@ -48,6 +48,11 @@ namespace rttr { namespace mapGenerator {
                 {
                     river.insert(edge);
                 }
+            }
+
+            if(map.z[currentNode] == map.height.minimum)
+            {
+                return river;
             }
 
             const auto lastDir = currentDir;
