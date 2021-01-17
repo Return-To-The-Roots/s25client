@@ -63,8 +63,7 @@ namespace rttr { namespace mapGenerator {
 
     bool IsMountainOrSnowOrLava(const TerrainDesc& terrain)
     {
-        return terrain.kind == TerrainKind::Mountain || terrain.kind == TerrainKind::Snow
-               || terrain.kind == TerrainKind::Lava;
+        return terrain.kind == TerrainKind::Mountain || IsSnowOrLava(terrain);
     }
 
 }} // namespace rttr::mapGenerator
