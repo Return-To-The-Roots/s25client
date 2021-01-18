@@ -334,11 +334,6 @@ void dskSelectMap::CreateRandomMap()
 
 void dskSelectMap::OnMapCreated(const boost::filesystem::path& mapPath)
 {
-    if(waitWnd)
-    {
-        waitWnd->Close();
-        waitWnd = nullptr;
-    }
     // select the "played maps" entry
     auto* optionGroup = GetCtrl<ctrlOptionGroup>(10);
     optionGroup->SetSelection(8, true);
@@ -432,8 +427,11 @@ void dskSelectMap::Draw_()
 {
     if(!newRandMapPath.empty() || !randMapGenError.empty())
     {
-        // mapGenThread->join();
-        // mapGenThread = nullptr;
+        if(waitWnd)
+        {
+            waitWnd->Close();
+            waitWnd = nullptr;
+        }
         if(!randMapGenError.empty())
         {
             const std::string errorTxt = _("Failed to generate random map.\nReason: ") + randMapGenError;

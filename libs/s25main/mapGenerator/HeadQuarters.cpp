@@ -19,7 +19,7 @@
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/TextureHelper.h"
-#
+
 namespace rttr { namespace mapGenerator {
 
     std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
@@ -57,7 +57,7 @@ namespace rttr { namespace mapGenerator {
         return connectedArea;
     }
 
-    bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries)
+    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, int retries)
     {
         auto maxRetries = retries;
         auto success = false;
@@ -90,7 +90,10 @@ namespace rttr { namespace mapGenerator {
             retries--;
         }
 
-        return success;
+        if(!success)
+        {
+            throw std::runtime_error("Could not find any valid HQ position!");
+        }
     }
 
 }} // namespace rttr::mapGenerator

@@ -18,6 +18,7 @@
 #include "lua/GameDataLoader.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/TextureHelper.h"
+#include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
@@ -128,7 +129,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_suitable_position_for_single_player
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_returns_true_for_area_with_suitable_position)
+BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_for_player)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
@@ -142,12 +143,11 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_returns_true_for_area_with_suitable_positi
         map.textures[obstacle] = TexturePair(water);
 
         std::vector<MapPoint> area{hq};
-
-        BOOST_REQUIRE(PlaceHeadQuarter(map, 0, area));
+        BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, 0, area));
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_places_hq_on_map_at_suitable_position)
+BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
@@ -159,47 +159,69 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_places_hq_on_map_at_suitable_position)
 
         std::vector<MapPoint> area{hq};
 
-        PlaceHeadQuarter(map, 3, area);
+        PlaceHeadquarter(map, 3, area);
 
         BOOST_REQUIRE(map.hqPositions[3] == hq);
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_returns_true_for_any_player_number_on_suitable_map)
+BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_empty_area_throws_exception)
 {
-    MapExtent size(32, 32);
-    RandomUtility rnd(0);
-
-    for(int players = 1; players < 8; players++)
-    {
-        RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
-            map.textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
-
-            auto success = PlaceHeadQuarters(map, rnd, players);
-
-            BOOST_REQUIRE(success);
-        });
-    }
+    MapExtent size(8, 8);
+    RunTest(size, [&size](Map& map, TextureMap& textures) {
+        auto water = textures.Find(IsShipableWater);
+        map.textures.Resize(size, TexturePair(water));
+        std::vector<MapPoint> area;
+        BOOST_CHECK_THROW(PlaceHeadquarter(map, 0, area), std::runtime_error);
+    });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_places_hqs_for_any_player_number_on_suitable_map)
+BOOST_AUTO_TEST_CASE(PlaceHeadquarter_without_suitable_position_throws_exception)
+{
+    MapExtent size(8, 8);
+    RunTest(size, [&size](Map& map, TextureMap& textures) {
+        auto water = textures.Find(IsShipableWater);
+        map.textures.Resize(size, TexturePair(water));
+        std::vector<MapPoint> area{MapPoint(0, 0)};
+        BOOST_CHECK_THROW(PlaceHeadquarter(map, 0, area), std::runtime_error);
+    });
+}
+
+BOOST_AUTO_TEST_CASE(PlaceHeadquarters_with_suitable_positions_for_all_players)
 {
     MapExtent size(32, 32);
     RandomUtility rnd(0);
+    int players = rttr::test::randomValue(1, 8);
+    RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
+        map.textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
+        BOOST_REQUIRE_NO_THROW(PlaceHeadquarters(map, rnd, players));
+    });
+}
 
-    for(int players = 1; players < 8; players++)
-    {
-        RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
-            map.textures.Resize(size, textures.Find(IsBuildableLand));
+BOOST_AUTO_TEST_CASE(PlaceHeadquarters_places_hqs_for_any_player_number_on_suitable_map)
+{
+    MapExtent size(32, 32);
+    RandomUtility rnd(0);
+    int players = rttr::test::randomValue(1, 8);
+    RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
+        map.textures.Resize(size, textures.Find(IsBuildableLand));
+        PlaceHeadquarters(map, rnd, players);
+        for(int index = 0; index < players - 1; index++)
+        {
+            BOOST_REQUIRE(map.hqPositions[index].isValid());
+        }
+    });
+}
 
-            PlaceHeadQuarters(map, rnd, players);
-
-            for(int index = 0; index < players - 1; index++)
-            {
-                BOOST_REQUIRE(map.hqPositions[index].isValid());
-            }
-        });
-    }
+BOOST_AUTO_TEST_CASE(PlaceHeadquarters_without_suitable_position_throws_exception)
+{
+    MapExtent size(32, 32);
+    RandomUtility rnd(0);
+    int players = rttr::test::randomValue(1, 8);
+    RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
+        map.textures.Resize(size, textures.Find(IsWater));
+        BOOST_CHECK_THROW(PlaceHeadquarters(map, rnd, players), std::runtime_error);
+    });
 }
 
 BOOST_AUTO_TEST_SUITE_END()
