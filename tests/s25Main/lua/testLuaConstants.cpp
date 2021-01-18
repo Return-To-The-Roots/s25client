@@ -80,14 +80,14 @@ BOOST_AUTO_TEST_CASE(AllGoodTypesWork)
             GD_HAM
         )
     )LUA");
-    BOOST_REQUIRE_NO_THROW(executeLua(R"LUA(
+    executeLua(R"LUA(
         for i, ware in elements(wares) do
             assert(ware ~= nil, "nil at " .. tostring(i))
             prior = player:GetNumWares(ware)
             assert(player:AddWares({[ware] = 1}))
             assert(player:GetNumWares(ware) == prior + 1)
         end
-    )LUA"));
+    )LUA");
 }
 
 BOOST_AUTO_TEST_CASE(AllBuildingTypesWork)
@@ -130,13 +130,13 @@ BOOST_AUTO_TEST_CASE(AllBuildingTypesWork)
             BLD_HARBORBUILDING
         )
     )LUA");
-    BOOST_REQUIRE_NO_THROW(executeLua(R"LUA(
+    executeLua(R"LUA(
         for i, bld in elements(buildings) do
             assert(bld ~= nil, "nil at " .. tostring(i))
             num = player:GetNumBuildings(bld)
             assert(num == 0 or num == 1)
         end
-    )LUA"));
+    )LUA");
 }
 
 BOOST_AUTO_TEST_CASE(AllJobTypesWork)
@@ -178,13 +178,13 @@ BOOST_AUTO_TEST_CASE(AllJobTypesWork)
             JOB_CHARBURNER
         )
     )LUA");
-    BOOST_REQUIRE_NO_THROW(executeLua(R"LUA(
+    executeLua(R"LUA(
         for i, job in elements(jobs) do
             assert(job ~= nil, "nil at " .. tostring(i))
             num = player:GetNumPeople(job)
             assert(num >= 0)
         end
-    )LUA"));
+    )LUA");
 }
 
 // Put the remaining ones together
@@ -213,17 +213,17 @@ BOOST_AUTO_TEST_CASE(AllOtherConstantsWork)
             SPEC_SHEEP
         )
     )LUA");
-    BOOST_REQUIRE_NO_THROW(executeLua(R"LUA(
+    executeLua(R"LUA(
         for i, constant in elements(constants) do
             assert(constant ~= nil, "nil at " .. tostring(i))
         end
-    )LUA"));
-    BOOST_REQUIRE_NO_THROW(executeLua(R"LUA(
+    )LUA");
+    executeLua(R"LUA(
         for i, animal in elements(animals) do
             assert(animal ~= nil, "nil at " .. tostring(i))
             rttr:GetWorld():AddAnimal(i, i, animal)
         end
-    )LUA"));
+    )LUA");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
