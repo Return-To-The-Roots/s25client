@@ -20,10 +20,16 @@
 #include "helpers/EnumArray.h"
 #include "helpers/make_array.h"
 #include "gameTypes/GameSettingTypes.h"
+#include <chrono>
 #include <limits>
 
+using namespace std::chrono_literals;
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
-constexpr helpers::EnumArray<unsigned, GameSpeed> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30}};
+constexpr helpers::EnumArray<std::chrono::duration<unsigned, std::milli>, GameSpeed> SUPPRESS_UNUSED
+  SPEED_GF_LENGTHS = {{80ms, 60ms, 50ms, 40ms, 30ms}};
+
+/// Normal speed as reference speed for ingame time computations
+constexpr GameSpeed referenceSpeed = GameSpeed::Normal;
 
 /// Reichweite der Bergarbeiter
 constexpr unsigned MINER_RADIUS = 2;

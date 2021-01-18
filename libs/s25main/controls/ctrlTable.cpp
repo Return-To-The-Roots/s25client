@@ -104,6 +104,33 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
                 return h_a - h_b;
             return min_a - min_b;
         }
+        case SRT::Time:
+        {
+            // Sort by time with format h:mm:ss or mm:ss
+            s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
+            s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
+
+            int seconds_a = 0;
+            int seconds_b = 0;
+            char c;
+
+            // "h:mm:ss" or "mm:ss"
+            int tmp;
+            while(ss_a >> tmp)
+            {
+                seconds_a *= 60;
+                seconds_a += tmp;
+                ss_a >> c;
+            }
+            while(ss_b >> tmp)
+            {
+                seconds_b *= 60;
+                seconds_b += tmp;
+                ss_b >> c;
+            }
+
+            return seconds_a - seconds_b;
+        }
         break;
     }
     return 0;

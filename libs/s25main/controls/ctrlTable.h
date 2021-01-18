@@ -33,6 +33,7 @@ enum class TableSortType
     MapSize,
     Number,
     Date,
+    Time,
     Default
 };
 enum class TableSortDir

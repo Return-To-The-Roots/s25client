@@ -27,18 +27,18 @@
 #include "controls/ctrlTable.h"
 #include "desktops/dskLobby.h"
 #include "files.h"
+#include "helpers/make_array.h"
 #include "helpers/toString.h"
 #include "iwPleaseWait.h"
 #include "network/GameClient.h"
+#include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "s25util/Log.h"
 #include <utility>
 
-const unsigned NUM_AUTO_SAVE_INTERVALS = 7;
-
-const std::array<unsigned, NUM_AUTO_SAVE_INTERVALS> AUTO_SAVE_INTERVALS = {500,   1000,   5000, 10000,
-                                                                           50000, 100000, 1 /*  */};
+using namespace std::chrono_literals;
+const auto AUTO_SAVE_INTERVALS = helpers::make_array(1min, 5min, 10min, 15min, 30min, 60min, 90min);
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title,
@@ -49,7 +49,7 @@ iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& windo
              ctrlTable::Columns{{_("Filename"), 270, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 250, SRT::Date},
-                                {_("Start GF"), 320, SRT::Number},
+                                {_("Game Time"), 320, SRT::Time},
                                 {}});
 }
 
@@ -101,10 +101,10 @@ void iwSaveLoad::RefreshTable()
         // Just filename w/o extension
         const auto fileName = saveFile.stem().string();
 
-        std::string startGF = helpers::toString(save.start_gf);
+        std::string gameTime = GAMECLIENT.FormatGFTime(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow({fileName, save.GetMapName(), dateStr, startGF, saveFile.string()});
+        GetCtrl<ctrlTable>(0)->AddRow({fileName, save.GetMapName(), dateStr, gameTime, saveFile.string()});
     }
 
     // Nach Zeit Sortieren
@@ -142,23 +142,31 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     /// Combobox füllen
     combo->AddString(_("Disabled")); // deaktiviert
 
-    // Last entry is only for debugging
-    const unsigned numIntervalls = SETTINGS.global.debugMode ? NUM_AUTO_SAVE_INTERVALS : NUM_AUTO_SAVE_INTERVALS - 1;
-
     // Die Intervalle
-    for(unsigned i = 0; i < numIntervalls; ++i)
-        combo->AddString(helpers::toString(AUTO_SAVE_INTERVALS[i]) + " GF");
+    for(const std::chrono::minutes interval : AUTO_SAVE_INTERVALS)
+        combo->AddString((boost::format(_("%1% min")) % interval.count()).str());
+
+    // Last entry is only for debugging
+    if(SETTINGS.global.debugMode)
+    {
+        combo->AddString(_("Every GF"));
+    }
 
     // Richtigen Eintrag auswählen
     bool found = false;
-    for(unsigned i = 0; i < numIntervalls; ++i)
+    for(unsigned i = 0; i < AUTO_SAVE_INTERVALS.size(); ++i)
     {
-        if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i])
+        if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i] / SPEED_GF_LENGTHS[referenceSpeed])
         {
             combo->SetSelection(i + 1);
             found = true;
             break;
         }
+    }
+    if(SETTINGS.interface.autosave_interval == 1)
+    {
+        combo->SetSelection(AUTO_SAVE_INTERVALS.size() + 1);
+        found = true;
     }
 
     // Ungültig oder 0 --> Deaktiviert auswählen
@@ -174,9 +182,13 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned sele
     // Erster Eintrag --> deaktiviert
     if(selection == 0)
         SETTINGS.interface.autosave_interval = 0;
+    else if(selection >= AUTO_SAVE_INTERVALS.size())
+        SETTINGS.interface.autosave_interval = 1;
     else
+    {
         // ansonsten jeweilige GF-Zahl eintragen
-        SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1];
+        SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1] / SPEED_GF_LENGTHS[referenceSpeed];
+    }
 }
 
 iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(0, _("Load game!")), csi(std::move(csi))

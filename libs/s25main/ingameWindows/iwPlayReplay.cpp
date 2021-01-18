@@ -64,7 +64,7 @@ iwPlayReplay::iwPlayReplay()
              ctrlTable::Columns{{("Filename"), 300, SRT::String},
                                 {_("Stocktaking date"), 220, SRT::Date},
                                 {_("Player"), 360, SRT::String},
-                                {_("Length"), 120, SRT::Number},
+                                {_("Length"), 120, SRT::Time},
                                 {}});
 
     AddTextButton(2, DrawPoint(20, 260), Extent(100, 22), TextureColor::Red1, _("Clear"), NormalFont);
@@ -128,10 +128,10 @@ void iwPlayReplay::PopulateTable()
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
-        std::string lastGF = helpers::toString(replay.GetLastGF());
+        std::string length = GAMECLIENT.FormatGFTime(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->AddRow({fileName, dateStr, tmp_players, lastGF, path.string()});
+        table->AddRow({fileName, dateStr, tmp_players, length, path.string()});
     }
 
     // Erst einmal nach Dateiname sortieren

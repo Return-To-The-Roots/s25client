@@ -260,7 +260,7 @@ void GameClient::StartGame(const unsigned random_init)
     framesinfo.isPaused = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
-    framesinfo.gf_length = FramesInfo::milliseconds32_t(SPEED_GF_LENGTHS[gameLobby->getSettings().speed]);
+    framesinfo.gf_length = SPEED_GF_LENGTHS[gameLobby->getSettings().speed];
     framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
@@ -1719,7 +1719,7 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
     using std::chrono::duration_cast;
 
     // In Sekunden umrechnen
-    seconds numSeconds = duration_cast<seconds>(gf * framesinfo.gf_length);
+    seconds numSeconds = duration_cast<seconds>(gf * SPEED_GF_LENGTHS[referenceSpeed]);
 
     // Angaben rausfiltern
     hours numHours = duration_cast<hours>(numSeconds);
@@ -1729,7 +1729,7 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
 
     // ganze Stunden mit dabei? Dann entsprechend anderes format, ansonsten ignorieren wir die einfach
     if(numHours.count())
-        return helpers::format("%02u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
+        return helpers::format("%u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
     else
         return helpers::format("%02u:%02u", numMinutes.count(), numSeconds.count());
 }
@@ -1759,7 +1759,7 @@ unsigned GameClient::GetTournamentModeDuration() const
             < rttr::enum_cast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
     {
         const auto turnamentMode = rttr::enum_cast(game->ggs_.objective) - rttr::enum_cast(GameObjective::Tournament1);
-        return minutes(TOURNAMENT_MODES_DURATION[turnamentMode]) / framesinfo.gf_length;
+        return minutes(TOURNAMENT_MODES_DURATION[turnamentMode]) / SPEED_GF_LENGTHS[referenceSpeed];
     } else
         return 0;
 }
