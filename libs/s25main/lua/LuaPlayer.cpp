@@ -221,7 +221,13 @@ bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
 
     for(const auto& it : people)
     {
-        goods.Add(it.first, it.second);
+        const Job job = it.first;
+        if(job == Job::BoatCarrier)
+        {
+            goods.Add(Job::Helper, it.second);
+            goods.Add(GoodType::Boat, it.second);
+        } else
+            goods.Add(job, it.second);
     }
 
     warehouse->AddGoods(goods, true);

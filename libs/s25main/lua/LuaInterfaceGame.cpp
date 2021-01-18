@@ -103,6 +103,7 @@ LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILoc
     ADD_LUA_CONST(Shipwright);
     ADD_LUA_CONST(Scout);
     ADD_LUA_CONST(PackDonkey);
+    ADD_LUA_CONST(BoatCarrier);
     ADD_LUA_CONST(CharBurner);
 #undef ADD_LUA_CONST
 
@@ -127,7 +128,7 @@ LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILoc
     ADD_LUA_CONST(Flour);
     ADD_LUA_CONST(Fish);
     ADD_LUA_CONST(Bread);
-    lua["GoodType::SHIELD"] = GoodType::ShieldRomans;
+    lua["GD_SHIELD"] = GoodType::ShieldRomans;
     ADD_LUA_CONST(Wood);
     ADD_LUA_CONST(Boards);
     ADD_LUA_CONST(Stones);
