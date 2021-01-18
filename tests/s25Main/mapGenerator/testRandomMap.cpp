@@ -40,9 +40,9 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
     }
 }
 
-static MapExtent getRandomMapSize(const unsigned minSize = 32)
+static MapExtent getRandomMapSize(const unsigned minSize = 32, const unsigned maxSize = 80)
 {
-    auto size = rttr::test::randomPoint<MapExtent>(minSize, 80);
+    auto size = rttr::test::randomPoint<MapExtent>(minSize, maxSize);
     // Need even size
     size.x &= ~1u;
     size.y &= ~1u;
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = getRandomMapSize(50); // Need enough space for player islands
+    settings.size = getRandomMapSize(76, 90); // Need enough space for player islands
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Water;
 

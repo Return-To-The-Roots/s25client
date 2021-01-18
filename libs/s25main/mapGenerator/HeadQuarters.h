@@ -20,6 +20,7 @@
 #include "helpers/mathFuncs.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
+#include <stdexcept>
 
 namespace rttr { namespace mapGenerator {
 
@@ -43,16 +44,22 @@ namespace rttr { namespace mapGenerator {
      * @param area area within the HQ position should be
      *
      * @return all suitable HQ positions witihn the specified area (or the entire map if the area is empty).
+     * @throw runtime_error
      */
     template<class T_Container>
     std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area)
     {
-        std::vector<MapPoint> headQuarters;
+        if(area.empty())
+        {
+            throw std::runtime_error("Could not find any valid HQ position!");
+        }
+
+        std::vector<MapPoint> headquarters;
         for(const MapPoint& hq : map.hqPositions)
         {
             if(hq.isValid())
             {
-                headQuarters.push_back(hq);
+                headquarters.push_back(hq);
             }
         }
         auto isObstacle = [&map](MapPoint point) {
@@ -62,7 +69,7 @@ namespace rttr { namespace mapGenerator {
         // Quality of a map point as one player's HQ is a mix of:
         // 1. distance to other players' HQs (higher = better)
         // 2. distance to any other obstacle e.g. mountain & water (higher = better)
-        NodeMapBase<unsigned> potentialHeadQuarterQuality = DistancesTo(headQuarters, map.size);
+        NodeMapBase<unsigned> potentialHqQuality = DistancesTo(headquarters, map.size);
         const auto& obstacleDistance = Distances(map.size, isObstacle);
         const auto minDistance = helpers::clamp(GetMaximum(obstacleDistance, area), 2u, 4u);
 
@@ -74,11 +81,11 @@ namespace rttr { namespace mapGenerator {
                 positions.push_back(pt);
             } else
             {
-                potentialHeadQuarterQuality[pt] = 0;
+                potentialHqQuality[pt] = 0;
             }
         }
-        auto isBetter = [&potentialHeadQuarterQuality](MapPoint p1, MapPoint p2) {
-            return potentialHeadQuarterQuality[p1] > potentialHeadQuarterQuality[p2];
+        auto isBetter = [&potentialHqQuality](MapPoint p1, MapPoint p2) {
+            return potentialHqQuality[p1] > potentialHqQuality[p2];
         };
         std::sort(positions.begin(), positions.end(), isBetter);
         return positions;
@@ -91,19 +98,17 @@ namespace rttr { namespace mapGenerator {
      * @param index player index for the HQ
      * @param area area to place the HQ in
      *
-     * @returns true if a HQ was placed fro the specified player, false otherwise.
+     * @throw runtime_error
      */
     template<class T_Container>
-    bool PlaceHeadQuarter(Map& map, int index, const T_Container& area)
+    void PlaceHeadquarter(Map& map, int index, const T_Container& area)
     {
         auto positions = FindHqPositions(map, area);
         if(positions.empty())
         {
-            return false;
+            throw std::runtime_error("Could not find any valid HQ position!");
         }
-
         map.hqPositions[index] = positions.front();
-        return true;
     }
 
     /**
@@ -114,8 +119,8 @@ namespace rttr { namespace mapGenerator {
      * @param number number of HQs to place - equal to the number of players
      * @param retries number of retries to place valid HQs on this map
      *
-     * @return false if no valid HQ position was found for at least one player, true otherwise
+     * @throw runtime_error
      */
-    bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
+    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
 
 }} // namespace rttr::mapGenerator

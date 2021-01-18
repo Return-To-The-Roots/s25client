@@ -60,31 +60,31 @@ namespace rttr { namespace mapGenerator {
 
     void AddObjects(Map& map, RandomUtility& rnd)
     {
-        std::set<MapPoint, MapPointLess> forbiddenArea;
+        std::set<MapPoint, MapPointLess> excludedArea;
         NodeMapBase<unsigned> probabilities;
         probabilities.Resize(map.size, 0u);
 
         // Do not allow to place trees/stone piles nearby head quarters or
         // harbor positions to avoid inaccessible harbors or invalid player positions.
 
-        auto isForbidden = [&map](const MapPoint& pt) {
+        auto harborOrHeadquarter = [&map](const MapPoint& pt) {
             return helpers::contains(map.hqPositions, pt)
                    || helpers::contains_if(map.harbors, [pt](const Triangle& tr) { return tr.position == pt; });
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            if(isForbidden(pt))
+            if(harborOrHeadquarter(pt))
             {
                 auto suroundingArea = map.textures.GetPointsInRadiusWithCenter(pt, 5);
-                forbiddenArea.insert(suroundingArea.begin(), suroundingArea.end());
+                excludedArea.insert(suroundingArea.begin(), suroundingArea.end());
             } else if(map.textureMap.Any(pt, IsSnowOrLava))
             {
-                forbiddenArea.insert(pt);
+                excludedArea.insert(pt);
             }
         }
 
-        auto distanceToForbiddenArea = DistancesTo(forbiddenArea, map.size);
+        auto distanceToExcludedArea = DistancesTo(excludedArea, map.size);
 
         // 1) compute maximum water distance until mountain area
         // 2) probabilities
@@ -104,6 +104,8 @@ namespace rttr { namespace mapGenerator {
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
+            // work around to avoid mountains to be considered for the total range of
+            // distance-to-water values
             if(waterDistance[pt] > 0 && mountainDistance[pt] == 0)
             {
                 waterDistance[pt] = 1;
@@ -116,24 +118,19 @@ namespace rttr { namespace mapGenerator {
 
         auto mountainDepth =
           Distances(map.size, [&map](const MapPoint& pt) { return !map.textureMap.All(pt, IsMountainOrSnowOrLava); });
-
-        auto maximumMountainDepth = GetMaximum(mountainDepth);
         auto mountainRange = GetRange(mountainDepth);
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            const unsigned waterDist = waterDistance[pt];
-            const unsigned mountainDist = mountainDistance[pt];
-
-            if(waterDist > 0 && distanceToForbiddenArea[pt] > 0)
+            if(waterDistance[pt] > 0 && distanceToExcludedArea[pt] > 0)
             {
-                if(mountainDist > 0)
+                if(mountainDistance[pt] > 0)
                 {
-                    auto prob = MapValueToIndex(waterDist, range, probDiff);
+                    auto prob = MapValueToIndex(waterDistance[pt], range, probDiff);
                     probabilities[pt] = prob + probRange.minimum;
                 } else
                 {
-                    auto diff = maximumMountainDepth - mountainDepth[pt];
+                    auto diff = mountainRange.maximum - mountainDepth[pt];
                     auto prob = MapValueToIndex(diff, mountainRange, probDiff);
                     probabilities[pt] = prob + probRange.minimum;
                 }
