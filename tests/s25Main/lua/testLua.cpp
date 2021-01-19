@@ -406,21 +406,28 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("wares = {[GD_HAMMER]=8,[GD_AXE]=6,[GD_SAW]=3}\n"
                "people = {[JOB_HELPER] = 30,[JOB_WOODCUTTER] = 6,[JOB_FISHER] = 0,[JOB_FORESTER] = 2}");
     executeLua("assert(player:AddWares(wares))");
-    BOOST_TEST_REQUIRE(playerInv.goods[GoodType::Hammer] == 8u);
-    BOOST_TEST_REQUIRE(playerInv.goods[GoodType::Axe] == 6u);
-    BOOST_TEST_REQUIRE(playerInv.goods[GoodType::Saw] == 3u);
+    BOOST_TEST_REQUIRE(playerInv[GoodType::Hammer] == 8u);
+    BOOST_TEST_REQUIRE(playerInv[GoodType::Axe] == 6u);
+    BOOST_TEST_REQUIRE(playerInv[GoodType::Saw] == 3u);
     BOOST_TEST(hq->GetNumRealWares(GoodType::Hammer) == 8u);
     BOOST_TEST(hq->GetNumRealWares(GoodType::Axe) == 6u);
     BOOST_TEST(hq->GetNumRealWares(GoodType::Saw) == 3u);
+
     executeLua("assert(player:AddPeople(people))");
-    BOOST_TEST_REQUIRE(playerInv.people[Job::Helper] == 30u);
-    BOOST_TEST_REQUIRE(playerInv.people[Job::Woodcutter] == 6u);
-    BOOST_TEST_REQUIRE(playerInv.people[Job::Fisher] == 0u);
-    BOOST_TEST_REQUIRE(playerInv.people[Job::Forester] == 2u);
+    BOOST_TEST_REQUIRE(playerInv[Job::Helper] == 30u);
+    BOOST_TEST_REQUIRE(playerInv[Job::Woodcutter] == 6u);
+    BOOST_TEST_REQUIRE(playerInv[Job::Fisher] == 0u);
+    BOOST_TEST_REQUIRE(playerInv[Job::Forester] == 2u);
     BOOST_TEST(hq->GetNumRealFigures(Job::Helper) == 30u);
     BOOST_TEST(hq->GetNumRealFigures(Job::Woodcutter) == 6u);
     BOOST_TEST(hq->GetNumRealFigures(Job::Fisher) == 0u);
     BOOST_TEST(hq->GetNumRealFigures(Job::Forester) == 2u);
+    executeLua("assert(player:AddPeople({[JOB_BOATCARRIER] = 3}))");
+    // Converted to helper and boat
+    BOOST_TEST_REQUIRE(playerInv[Job::Helper] == 33u);
+    BOOST_TEST_REQUIRE(playerInv[GoodType::Boat] == 3u);
+    BOOST_TEST(hq->GetNumRealFigures(Job::Helper) == 33u);
+    BOOST_TEST(hq->GetNumRealWares(GoodType::Boat) == 3u);
 
     BOOST_TEST_REQUIRE(getLog() == "");
     // Invalid ware/player throws
@@ -432,7 +439,7 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_HAMMER)", "8"));
     BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_AXE)", "6"));
 
-    BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_HELPER)", "30"));
+    BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_HELPER)", "33"));
     BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_FORESTER)", "2"));
 
     BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
