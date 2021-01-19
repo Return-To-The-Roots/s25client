@@ -225,24 +225,15 @@ namespace rttr { namespace mapGenerator {
     template<typename T_Value>
     NodeMapBase<unsigned> Distances(const MapExtent& size, T_Value&& evaluator)
     {
-        const unsigned maximumDistance = size.x * size.y;
-
-        std::queue<MapPoint> queue;
-        NodeMapBase<unsigned> distances;
-        distances.Resize(size, maximumDistance);
-
+        std::vector<MapPoint> flaggedPoints;
         RTTR_FOREACH_PT(MapPoint, size)
         {
             if(evaluator(pt))
             {
-                distances[pt] = 0;
-                queue.push(pt);
+                flaggedPoints.push_back(pt);
             }
         }
-
-        UpdateDistances(distances, queue);
-
-        return distances;
+        return DistancesTo(flaggedPoints, size);
     }
 
     /**
