@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.9)
 if(POLICY CMP0093)
   cmake_policy(SET CMP0093 NEW) # Use Boost_VERSION x.y.z in CMake >= 3.15 or BoostConfig
 endif()
+if (POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW) # find_package uses <PackageName>_ROOT variables
+endif()
 
 project(s25client)
 
@@ -291,13 +294,20 @@ endif()
 ################################################################################
 
 include(RttrBoostCfg)
+include(RttrTestingCfg)
 
 set(rttrContribBoostDir ${CMAKE_CURRENT_SOURCE_DIR}/contrib/boost)
 if(EXISTS ${rttrContribBoostDir} AND IS_DIRECTORY ${rttrContribBoostDir})
     set(BOOST_ROOT ${rttrContribBoostDir} CACHE PATH "Path to find boost at")
 endif()
 
-find_package(Boost 1.65.1 COMPONENTS filesystem program_options)
+set(BoostPackages filesystem program_options)
+if(BUILD_TESTING)
+    # Avoid having to search for this in all tests speeding up configure
+    list(APPEND BoostPackages unit_test_framework)
+endif()
+
+find_package(Boost 1.65.1 COMPONENTS ${BoostPackages})
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.64) into contrib/boost or set (as CMake or environment variable) "
     "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
@@ -344,7 +354,6 @@ gettext_create_translations(external/languages/rttr.pot ALL
 )
 
 # include Test
-include(RttrTestingCfg)
 if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
