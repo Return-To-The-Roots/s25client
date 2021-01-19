@@ -31,28 +31,28 @@ BOOST_FIXTURE_TEST_CASE(Ping, rttr::test::MockClockFixture)
     currentTime += seconds(5);
     player.doPing();
     // Not connected
-    BOOST_REQUIRE(player.sendQueue.empty());
+    BOOST_TEST_REQUIRE(player.sendQueue.empty());
     player.setActive();
     player.doPing();
     // Cmd sent
-    BOOST_REQUIRE(!player.sendQueue.empty());
+    BOOST_TEST_REQUIRE(!player.sendQueue.empty());
     player.sendQueue.pop();
     currentTime += milliseconds(15);
-    BOOST_REQUIRE_EQUAL(player.calcPingTime(), 15u);
+    BOOST_TEST_REQUIRE(player.calcPingTime() == 15u);
     currentTime += milliseconds(seconds(PING_RATE)) / 2;
     player.doPing();
     // To fast
-    BOOST_REQUIRE(player.sendQueue.empty());
+    BOOST_TEST_REQUIRE(player.sendQueue.empty());
     currentTime += milliseconds(seconds(PING_RATE)) / 2;
     player.doPing();
     // Cmd sent
-    BOOST_REQUIRE(!player.sendQueue.empty());
+    BOOST_TEST_REQUIRE(!player.sendQueue.empty());
     player.sendQueue.pop();
     currentTime += seconds(PING_RATE) * 2;
     player.doPing();
     // Already pinging
-    BOOST_REQUIRE(player.sendQueue.empty());
-    BOOST_REQUIRE_EQUAL(player.calcPingTime(), (2000u + 15u) / 2u); // Smoothed value
+    BOOST_TEST_REQUIRE(player.sendQueue.empty());
+    BOOST_TEST_REQUIRE(player.calcPingTime() == (2000u + 15u) / 2u); // Smoothed value
 }
 
 BOOST_AUTO_TEST_SUITE_END()

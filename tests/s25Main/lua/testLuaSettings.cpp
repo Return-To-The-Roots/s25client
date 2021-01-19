@@ -87,13 +87,13 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
 
     void checkSettings(const GlobalGameSettings& shouldVal) const
     {
-        BOOST_REQUIRE_EQUAL(ggs.speed, shouldVal.speed);
-        BOOST_REQUIRE_EQUAL(ggs.objective, shouldVal.objective);
-        BOOST_REQUIRE_EQUAL(ggs.startWares, shouldVal.startWares);
-        BOOST_REQUIRE_EQUAL(ggs.lockedTeams, shouldVal.lockedTeams);
-        BOOST_REQUIRE_EQUAL(ggs.exploration, shouldVal.exploration);
-        BOOST_REQUIRE_EQUAL(ggs.teamView, shouldVal.teamView);
-        BOOST_REQUIRE_EQUAL(ggs.randomStartPosition, shouldVal.randomStartPosition);
+        BOOST_TEST_REQUIRE(ggs.speed == shouldVal.speed);
+        BOOST_TEST_REQUIRE(ggs.objective == shouldVal.objective);
+        BOOST_TEST_REQUIRE(ggs.startWares == shouldVal.startWares);
+        BOOST_TEST_REQUIRE(ggs.lockedTeams == shouldVal.lockedTeams);
+        BOOST_TEST_REQUIRE(ggs.exploration == shouldVal.exploration);
+        BOOST_TEST_REQUIRE(ggs.teamView == shouldVal.teamView);
+        BOOST_TEST_REQUIRE(ggs.randomStartPosition == shouldVal.randomStartPosition);
     }
 };
 
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(AddonId_ToString)
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
     BOOST_REQUIRE_THROW(executeLua("assert(false)"), LuaExecutionError);
-    BOOST_REQUIRE_NE(getLog(), "");
+    BOOST_TEST_REQUIRE(getLog() != "");
 }
 
 BOOST_AUTO_TEST_CASE(Events)
@@ -122,56 +122,56 @@ BOOST_AUTO_TEST_CASE(Events)
     lua.EventPlayerJoined(0);
     lua.EventPlayerLeft(0);
     lua.EventPlayerReady(0);
-    BOOST_REQUIRE(lua.IsChangeAllowed("general", true));
-    BOOST_REQUIRE(!lua.IsChangeAllowed("general", false));
+    BOOST_TEST_REQUIRE(lua.IsChangeAllowed("general", true));
+    BOOST_TEST_REQUIRE(!lua.IsChangeAllowed("general", false));
     std::vector<AddonId> allowedAddons = lua.GetAllowedAddons();
-    BOOST_REQUIRE(allowedAddons.empty());
+    BOOST_TEST_REQUIRE(allowedAddons.empty());
 
     clearLog();
     executeLua("function onSettingsInit(isSinglePlayer, isSavegame)\n  rttr:Log('init: '..tostring(isSinglePlayer)..' "
                "'..tostring(isSavegame))\nend");
     lua.EventSettingsInit(true, false);
-    BOOST_REQUIRE_EQUAL(getLog(), "init: true false\n");
+    BOOST_TEST_REQUIRE(getLog() == "init: true false\n");
     lua.EventSettingsInit(false, true);
-    BOOST_REQUIRE_EQUAL(getLog(), "init: false true\n");
+    BOOST_TEST_REQUIRE(getLog() == "init: false true\n");
 
     executeLua("function onSettingsReady()\n  rttr:Log('ready')\nend");
     lua.EventSettingsReady();
-    BOOST_REQUIRE_EQUAL(getLog(), "ready\n");
+    BOOST_TEST_REQUIRE(getLog() == "ready\n");
 
     executeLua("function onPlayerJoined(playerIdx)\n  rttr:Log('joined'..playerIdx)\nend");
     lua.EventPlayerJoined(2);
-    BOOST_REQUIRE_EQUAL(getLog(), "joined2\n");
+    BOOST_TEST_REQUIRE(getLog() == "joined2\n");
 
     executeLua("function onPlayerLeft(playerIdx)\n  rttr:Log('left'..playerIdx)\nend");
     lua.EventPlayerLeft(2);
-    BOOST_REQUIRE_EQUAL(getLog(), "left2\n");
+    BOOST_TEST_REQUIRE(getLog() == "left2\n");
 
     executeLua("function onPlayerReady(playerIdx)\n  rttr:Log('ready'..playerIdx)\nend");
     lua.EventPlayerReady(2);
-    BOOST_REQUIRE_EQUAL(getLog(), "ready2\n");
+    BOOST_TEST_REQUIRE(getLog() == "ready2\n");
 
     executeLua("function getAllowedChanges()\n  return {general=true, swapping=true}\nend");
-    BOOST_REQUIRE(lua.IsChangeAllowed("general", false));
-    BOOST_REQUIRE(lua.IsChangeAllowed("swapping", false));
-    BOOST_REQUIRE(!lua.IsChangeAllowed("addonsAll", false));
+    BOOST_TEST_REQUIRE(lua.IsChangeAllowed("general", false));
+    BOOST_TEST_REQUIRE(lua.IsChangeAllowed("swapping", false));
+    BOOST_TEST_REQUIRE(!lua.IsChangeAllowed("addonsAll", false));
 
     executeLua("function getAllowedAddons()\n  return {ADDON_LIMIT_CATAPULTS, ADDON_CHARBURNER, ADDON_TRADE}\nend");
     allowedAddons = lua.GetAllowedAddons();
-    BOOST_REQUIRE_EQUAL(allowedAddons.size(), 3u);
-    BOOST_REQUIRE_EQUAL(allowedAddons[0], AddonId::LIMIT_CATAPULTS);
-    BOOST_REQUIRE_EQUAL(allowedAddons[1], AddonId::CHARBURNER);
-    BOOST_REQUIRE_EQUAL(allowedAddons[2], AddonId::TRADE);
+    BOOST_TEST_REQUIRE(allowedAddons.size() == 3u);
+    BOOST_TEST_REQUIRE(allowedAddons[0] == AddonId::LIMIT_CATAPULTS);
+    BOOST_TEST_REQUIRE(allowedAddons[1] == AddonId::CHARBURNER);
+    BOOST_TEST_REQUIRE(allowedAddons[2] == AddonId::TRADE);
     // Return invalid type -> ignored, but log output
     clearLog();
     executeLua("function getAllowedAddons()\n  return {'ADDON_FAIL_ME'}\nend");
     allowedAddons = lua.GetAllowedAddons();
-    BOOST_REQUIRE(allowedAddons.empty());
-    BOOST_REQUIRE_NE(getLog(), "");
+    BOOST_TEST_REQUIRE(allowedAddons.empty());
+    BOOST_TEST_REQUIRE(getLog() != "");
     executeLua("function getAllowedAddons()\n  return {9999}\nend");
     allowedAddons = lua.GetAllowedAddons();
-    BOOST_REQUIRE(allowedAddons.empty());
-    BOOST_REQUIRE_NE(getLog(), "");
+    BOOST_TEST_REQUIRE(allowedAddons.empty());
+    BOOST_TEST_REQUIRE(getLog() != "");
 }
 
 BOOST_AUTO_TEST_CASE(SettingsFunctions)
@@ -187,11 +187,11 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     RTTR_REQUIRE_LOG_CONTAINS("Invalid player idx", false);
 
     executeLua("rttr:SetAddon(ADDON_LIMIT_CATAPULTS, 4)\n  rttr:SetAddon(ADDON_TRADE, true)\n");
-    BOOST_REQUIRE_EQUAL(ggs.getSelection(AddonId::LIMIT_CATAPULTS), 4u);
-    BOOST_REQUIRE(ggs.isEnabled(AddonId::TRADE));
+    BOOST_TEST_REQUIRE(ggs.getSelection(AddonId::LIMIT_CATAPULTS) == 4u);
+    BOOST_TEST_REQUIRE(ggs.isEnabled(AddonId::TRADE));
     executeLua("rttr:SetAddon(ADDON_LIMIT_CATAPULTS, 1)\n  rttr:SetAddon(ADDON_TRADE, false)\n");
-    BOOST_REQUIRE_EQUAL(ggs.getSelection(AddonId::LIMIT_CATAPULTS), 1u);
-    BOOST_REQUIRE(!ggs.isEnabled(AddonId::TRADE));
+    BOOST_TEST_REQUIRE(ggs.getSelection(AddonId::LIMIT_CATAPULTS) == 1u);
+    BOOST_TEST_REQUIRE(!ggs.isEnabled(AddonId::TRADE));
     // Set some random options
     for(unsigned i = 0; i < ggs.getNumAddons(); i++)
     {
@@ -202,8 +202,8 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     for(unsigned i = 0; i < ggs.getNumAddons(); i++)
     {
         const Addon* curAddon = ggs.getAddon(i);
-        BOOST_REQUIRE_EQUAL(ggs.getSelection(curAddon->getId()), curAddon->getDefaultStatus());
-        BOOST_REQUIRE(!ggs.isEnabled(curAddon->getId()));
+        BOOST_TEST_REQUIRE(ggs.getSelection(curAddon->getId()) == curAddon->getDefaultStatus());
+        BOOST_TEST_REQUIRE(!ggs.isEnabled(curAddon->getId()));
     }
 
     GlobalGameSettings shouldSettings = ggs;
@@ -258,12 +258,12 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     shouldSettings.teamView = true;
     shouldSettings.randomStartPosition = false;
     checkSettings(shouldSettings);
-    BOOST_REQUIRE_EQUAL(ggs.getNumAddons(), shouldSettings.getNumAddons());
+    BOOST_TEST_REQUIRE(ggs.getNumAddons() == shouldSettings.getNumAddons());
     for(unsigned i = 0; i < ggs.getNumAddons(); i++)
     {
         const Addon* curAddon = ggs.getAddon(i);
-        BOOST_REQUIRE_EQUAL(ggs.getSelection(curAddon->getId()), curAddon->getDefaultStatus());
-        BOOST_REQUIRE(!ggs.isEnabled(curAddon->getId()));
+        BOOST_TEST_REQUIRE(ggs.getSelection(curAddon->getId()) == curAddon->getDefaultStatus());
+        BOOST_TEST_REQUIRE(!ggs.isEnabled(curAddon->getId()));
     }
 }
 
@@ -273,9 +273,9 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     executeLua("player = rttr:GetPlayer(0)");
     executeLua("player1 = rttr:GetPlayer(1)");
     executeLua("player:SetNation(NAT_ROMANS)");
-    BOOST_REQUIRE_EQUAL(players[0].nation, Nation::Romans);
+    BOOST_TEST_REQUIRE(players[0].nation == Nation::Romans);
     executeLua("player1:SetNation(NAT_BABYLONIANS)");
-    BOOST_REQUIRE_EQUAL(players[1].nation, Nation::Babylonians);
+    BOOST_TEST_REQUIRE(players[1].nation == Nation::Babylonians);
 
     // Check some properties
     BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
@@ -285,48 +285,48 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
 
     executeLua("player:SetTeam(TM_TEAM2)");
-    BOOST_REQUIRE_EQUAL(players[0].team, TM_TEAM2);
+    BOOST_TEST_REQUIRE(players[0].team == TM_TEAM2);
 
     executeLua("player:SetName(\"Foo\")");
     BOOST_CHECK(isLuaEqual("player:GetName()", "'Foo'"));
 
     executeLua("player:SetColor(2)");
-    BOOST_REQUIRE_EQUAL(players[0].color, PLAYER_COLORS[2]);
+    BOOST_TEST_REQUIRE(players[0].color == PLAYER_COLORS[2]);
     executeLua("player:SetColor(0xFF0000FF)");
-    BOOST_REQUIRE_EQUAL(players[0].color, 0xFF0000FF);
+    BOOST_TEST_REQUIRE(players[0].color == 0xFF0000FF);
     executeLua("player1:SetColor(2)");
-    BOOST_REQUIRE_EQUAL(players[1].color, PLAYER_COLORS[2]);
+    BOOST_TEST_REQUIRE(players[1].color == PLAYER_COLORS[2]);
     // Duplicate color are allowed
     executeLua("player1:SetColor(0xFF0000FF)");
-    BOOST_REQUIRE_EQUAL(players[0].color, 0xFF0000FF);
-    BOOST_REQUIRE_EQUAL(players[1].color, 0xFF0000FF);
+    BOOST_TEST_REQUIRE(players[0].color == 0xFF0000FF);
+    BOOST_TEST_REQUIRE(players[1].color == 0xFF0000FF);
 
     // Kick AI
     executeLua("player1:Close()");
-    BOOST_REQUIRE_EQUAL(players[1].ps, PlayerState::Locked);
+    BOOST_TEST_REQUIRE(players[1].ps == PlayerState::Locked);
     // Kick Human
     players[1].ps = PlayerState::Occupied;
     executeLua("player1:Close()");
-    BOOST_REQUIRE_EQUAL(players[1].ps, PlayerState::Locked);
+    BOOST_TEST_REQUIRE(players[1].ps == PlayerState::Locked);
     // Kick none
     executeLua("player1:Close()");
-    BOOST_REQUIRE_EQUAL(players[1].ps, PlayerState::Locked);
+    BOOST_TEST_REQUIRE(players[1].ps == PlayerState::Locked);
 
     executeLua("player:SetAI(0)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Dummy); //-V807
+    BOOST_TEST_REQUIRE(players[0].ps == PlayerState::AI);
+    BOOST_TEST_REQUIRE(players[0].aiInfo.type == AI::Type::Dummy); //-V807
     executeLua("player:SetAI(1)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Default);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::Level::Easy);
+    BOOST_TEST_REQUIRE(players[0].ps == PlayerState::AI);
+    BOOST_TEST_REQUIRE(players[0].aiInfo.type == AI::Type::Default);
+    BOOST_TEST_REQUIRE(players[0].aiInfo.level == AI::Level::Easy);
     executeLua("player:SetAI(2)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Default);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::Level::Medium);
+    BOOST_TEST_REQUIRE(players[0].ps == PlayerState::AI);
+    BOOST_TEST_REQUIRE(players[0].aiInfo.type == AI::Type::Default);
+    BOOST_TEST_REQUIRE(players[0].aiInfo.level == AI::Level::Medium);
     executeLua("player:SetAI(3)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Default);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::Level::Hard);
+    BOOST_TEST_REQUIRE(players[0].ps == PlayerState::AI);
+    BOOST_TEST_REQUIRE(players[0].aiInfo.type == AI::Type::Default);
+    BOOST_TEST_REQUIRE(players[0].aiInfo.level == AI::Level::Hard);
     // Invalid lvl
     BOOST_REQUIRE_THROW(executeLua("player:SetAI(4)"), std::exception);
     RTTR_REQUIRE_LOG_CONTAINS("Invalid AI", false);

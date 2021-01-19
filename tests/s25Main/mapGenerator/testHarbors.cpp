@@ -19,6 +19,7 @@
 #include "mapGenerator/Harbors.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
+#include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
@@ -26,10 +27,7 @@ using namespace rttr::mapGenerator;
 BOOST_AUTO_TEST_SUITE(HarborsTests)
 
 template<class T_Test>
-void RunTest(T_Test test);
-
-template<class T_Test>
-void RunTest(T_Test test)
+static void RunTest(T_Test test)
 {
     DescIdx<LandscapeDesc> landscape(1);
     WorldDescription worldDesc;
@@ -63,10 +61,10 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
         // run actual test
         PlaceHarborPosition(map, position);
 
-        BOOST_REQUIRE(map.z[position] == minHeight);
+        BOOST_TEST_REQUIRE(map.z[position] == minHeight);
         for(auto neighbor : neighbors)
         {
-            BOOST_REQUIRE(map.z[neighbor] == minHeight);
+            BOOST_TEST_REQUIRE(map.z[neighbor] == minHeight);
         }
     });
 }
@@ -88,10 +86,10 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_applies_buildable_terrain_around_positi
         {
             if(triangle.rsu)
             {
-                BOOST_REQUIRE(map.textures[triangle.position].rsu == buildable);
+                BOOST_TEST_REQUIRE(map.textures[triangle.position].rsu == buildable);
             } else
             {
-                BOOST_REQUIRE(map.textures[triangle.position].lsd == buildable);
+                BOOST_TEST_REQUIRE(map.textures[triangle.position].lsd == buildable);
             }
         }
     });
@@ -111,7 +109,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbors_on_coast_below_minimum_size)
 
         PlaceHarbors(map, {}, 100);
 
-        BOOST_REQUIRE(map.harbors.empty());
+        BOOST_TEST_REQUIRE(map.harbors.empty());
     });
 }
 
@@ -129,7 +127,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_harbor_on_suitable_island)
 
         PlaceHarbors(map, {}, 5);
 
-        BOOST_REQUIRE(!map.harbors.empty());
+        BOOST_TEST_REQUIRE(!map.harbors.empty());
     });
 }
 
@@ -149,7 +147,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbor_near_river)
 
         PlaceHarbors(map, {river}, 5);
 
-        BOOST_REQUIRE(map.harbors.empty());
+        BOOST_TEST_REQUIRE(map.harbors.empty());
     });
 }
 

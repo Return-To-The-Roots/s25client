@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(RandomTest)
             const unsigned average = numSamples / result.size();
             const unsigned minCt = average * minPercentage / 100u;
             for(unsigned int i : result)
-                BOOST_REQUIRE_GT(i, minCt);
+                BOOST_TEST_REQUIRE(i > minCt);
         }
     }
 }
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(RandomSameSeq)
     for(int result : results)
     {
         // std::cout << RANDOM_RAND(0, 1024) << std::endl;
-        BOOST_REQUIRE_EQUAL(RANDOM_RAND(0, 1024), result);
+        BOOST_TEST_REQUIRE(RANDOM_RAND(0, 1024) == result);
     }
 }
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(RandomEmptySeq)
         for(int i = 0; i < 100; i++)
         {
             // Create a random number in [0, 0) is always 0 (by definition)
-            BOOST_REQUIRE_EQUAL(RANDOM_RAND(0, 0), 0);
+            BOOST_TEST_REQUIRE(RANDOM_RAND(0, 0) == 0);
         }
     }
 }
@@ -105,8 +105,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ValueRangeValid, T_RNG, TestedRNGS)
         for(unsigned i = 0; i < numSamplesMinMax; i++)
         {
             const auto val = rng();
-            BOOST_REQUIRE_GE(val, min);
-            BOOST_REQUIRE_LE(val, max);
+            BOOST_TEST_REQUIRE(val >= min);
+            BOOST_TEST_REQUIRE(val <= max);
         }
 
         std::vector<std::vector<unsigned>> results = {{2}, {10}, {11}, {13}, {32}, {33}};
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ValueRangeValid, T_RNG, TestedRNGS)
             const unsigned average = numSamples / result.size();
             const unsigned minCt = average * minPercentage / 100u;
             for(unsigned int i : result)
-                BOOST_REQUIRE_GT(i, minCt);
+                BOOST_TEST_REQUIRE(i > minCt);
         }
     }
 }
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(EmptyRange)
         for(int i = 0; i < 100; i++)
         {
             // Create a random number in [0, 0] is always 0
-            BOOST_REQUIRE_EQUAL(RANDOM_RAND(1337, 0), 0);
+            BOOST_TEST_REQUIRE(RANDOM_RAND(1337, 0) == 0);
         }
     }
 }
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CtorFromSeedSeq, T_RNG, TestedRNGS)
             break;
         }
     }
-    BOOST_REQUIRE(differentValueFound);
+    BOOST_TEST_REQUIRE(differentValueFound);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(Copy, T_RNG, TestedRNGS)
@@ -175,20 +175,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Copy, T_RNG, TestedRNGS)
     for(unsigned seed : seeds)
     {
         T_RNG rng(seed), rng2(seed);
-        BOOST_REQUIRE_EQUAL(rng, rng2);
+        BOOST_TEST_REQUIRE(rng == rng2);
         const auto val = rng();
-        BOOST_REQUIRE_NE(rng, rng2);
+        BOOST_TEST_REQUIRE(rng != rng2);
         // Both must return the same value
-        BOOST_REQUIRE_EQUAL(val, rng2());
+        BOOST_TEST_REQUIRE(val == rng2());
 
         // Execute it a few times
         for(unsigned i = 0; i < 10; i++)
             rng();
-        BOOST_REQUIRE_NE(rng, rng2);
+        BOOST_TEST_REQUIRE(rng != rng2);
         rng2 = rng;
-        BOOST_REQUIRE_EQUAL(rng, rng2);
+        BOOST_TEST_REQUIRE(rng == rng2);
         // Both must return the same value
-        BOOST_REQUIRE_EQUAL(rng(), rng2());
+        BOOST_TEST_REQUIRE(rng() == rng2());
     }
 }
 
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(StreamOperations, T_RNG, TestedRNGS)
         ss << rng;
         // Load it
         ss >> rng2;
-        BOOST_REQUIRE_EQUAL(rng, rng2);
+        BOOST_TEST_REQUIRE(rng == rng2);
     }
 }
 
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Serialization, T_RNG, TestedRNGS)
         Serializer ser;
         rng.serialize(ser);
         rng2.deserialize(ser);
-        BOOST_REQUIRE_EQUAL(rng, rng2);
+        BOOST_TEST_REQUIRE(rng == rng2);
     }
 }
 
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Discard, T_RNG, TestedRNGS)
         for(unsigned i = 0; i < skipCt; i++)
             rng();
         rng2.discard(skipCt);
-        BOOST_REQUIRE_EQUAL(rng, rng2);
+        BOOST_TEST_REQUIRE(rng == rng2);
     }
 }
 

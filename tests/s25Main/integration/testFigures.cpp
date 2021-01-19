@@ -39,32 +39,32 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SouthEast);
     // Build a road -> Requests a worker
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::West));
-    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(Job::Helper), 0u);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
+    BOOST_TEST_REQUIRE(wh->GetNumRealFigures(Job::Helper) == 0u);
+    BOOST_TEST_REQUIRE(wh->GetLeavingFigures().size() == 1u);
     // Destroy Road
     this->DestroyFlag(whFlagPos - MapPoint(2, 0));
-    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(Job::Helper), 1u);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
+    BOOST_TEST_REQUIRE(wh->GetNumRealFigures(Job::Helper) == 1u);
+    BOOST_TEST_REQUIRE(wh->GetLeavingFigures().size() == 0u);
 
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::West));
     const noFigure* fig = wh->GetLeavingFigures().front();
     // Destroy wh -> Worker released
     this->DestroyFlag(whFlagPos);
-    BOOST_REQUIRE_EQUAL(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper], numHelpers);
-    BOOST_REQUIRE_EQUAL(fig->GetPos(), whPos);
-    BOOST_REQUIRE(fig->IsWandering());
+    BOOST_TEST_REQUIRE(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper] == numHelpers);
+    BOOST_TEST_REQUIRE(fig->GetPos() == whPos);
+    BOOST_TEST_REQUIRE(fig->IsWandering());
 
     // Same for HQ
     // Build a road -> Requests a worker
     this->BuildRoad(flagPos, false, std::vector<Direction>(2, Direction::West));
     wh = world.GetSpecObj<nobBaseWarehouse>(hqPos);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
+    BOOST_TEST_REQUIRE(wh->GetLeavingFigures().size() == 1u);
     fig = wh->GetLeavingFigures().front();
     // Destroy wh -> Worker released
     this->DestroyFlag(flagPos);
-    BOOST_REQUIRE_EQUAL(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper], numHelpers);
-    BOOST_REQUIRE_EQUAL(fig->GetPos(), hqPos);
-    BOOST_REQUIRE(fig->IsWandering());
+    BOOST_TEST_REQUIRE(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper] == numHelpers);
+    BOOST_TEST_REQUIRE(fig->GetPos() == hqPos);
+    BOOST_TEST_REQUIRE(fig->IsWandering());
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)

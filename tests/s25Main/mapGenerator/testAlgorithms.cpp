@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "PointOutput.h"
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Algorithms.h"
 #include <boost/test/unit_test.hpp>
@@ -36,11 +37,11 @@ BOOST_AUTO_TEST_CASE(UpdateDistances_updates_enqueued_elements_correctly)
 
     UpdateDistances(distances, queue);
 
-    BOOST_REQUIRE(queue.empty());
+    BOOST_TEST_REQUIRE(queue.empty());
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_REQUIRE_EQUAL(distances[pt], distances.CalcDistance(pt, reference));
+        BOOST_TEST_REQUIRE(distances[pt] == distances.CalcDistance(pt, reference));
     }
 }
 
@@ -59,7 +60,7 @@ BOOST_AUTO_TEST_CASE(Smooth_keeps_homogenous_map_unchanged)
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_REQUIRE(nodes[pt] == expectedValue);
+        BOOST_TEST_REQUIRE(nodes[pt] == expectedValue);
     }
 }
 
@@ -79,13 +80,13 @@ BOOST_AUTO_TEST_CASE(Smooth_interpolates_values_around_peak)
 
     Smooth(iterations, radius, nodes);
 
-    BOOST_REQUIRE(nodes[peak] < peakValue);
+    BOOST_TEST_REQUIRE(nodes[peak] < peakValue);
 
     auto neighbors = nodes.GetPointsInRadius(peak, radius);
 
     for(MapPoint p : neighbors)
     {
-        BOOST_REQUIRE(nodes[p] > defaultValue);
+        BOOST_TEST_REQUIRE(nodes[p] > defaultValue);
     }
 }
 
@@ -99,8 +100,8 @@ BOOST_AUTO_TEST_CASE(Scale_updates_minimum_and_maximum_values_correctly)
 
     Scale(values, 0u, 20u);
 
-    BOOST_REQUIRE(values[0] == 20u);
-    BOOST_REQUIRE(values[1] == 0u);
+    BOOST_TEST_REQUIRE(values[0] == 20u);
+    BOOST_TEST_REQUIRE(values[1] == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(Scale_keeps_equal_values_unchanged)
@@ -113,7 +114,7 @@ BOOST_AUTO_TEST_CASE(Scale_keeps_equal_values_unchanged)
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_REQUIRE(values[pt] == 8u);
+        BOOST_TEST_REQUIRE(values[pt] == 8u);
     }
 }
 
@@ -128,7 +129,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_empty_for_negative_map_point)
 
     auto result = Collect(map, negative, [&map](const MapPoint& p) { return map[p]; });
 
-    BOOST_REQUIRE(result.empty());
+    BOOST_TEST_REQUIRE(result.empty());
 }
 
 BOOST_AUTO_TEST_CASE(Collect_returns_all_map_points_for_entirely_positive_map)
@@ -143,11 +144,11 @@ BOOST_AUTO_TEST_CASE(Collect_returns_all_map_points_for_entirely_positive_map)
 
     const unsigned expectedResults = size.x * size.y;
 
-    BOOST_REQUIRE(result.size() == expectedResults);
+    BOOST_TEST_REQUIRE(result.size() == expectedResults);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_REQUIRE(helpers::contains(result, pt));
+        BOOST_TEST_REQUIRE(helpers::contains(result, pt));
     }
 }
 
@@ -180,12 +181,33 @@ BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
     const unsigned expectedSize = neighbors.size() + 1u;
     const unsigned actualSize = result.size();
 
-    BOOST_REQUIRE(actualSize == expectedSize);
-    BOOST_REQUIRE(helpers::contains(result, point));
+    BOOST_TEST_REQUIRE(actualSize == expectedSize);
+    BOOST_TEST_REQUIRE(helpers::contains(result, point));
 
     for(auto pt : neighbors)
     {
-        BOOST_REQUIRE(helpers::contains(result, pt));
+        BOOST_TEST_REQUIRE(helpers::contains(result, pt));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(Distances_returns_expected_distance_for_each_map_point)
+{
+    MapExtent size(8, 8);
+
+    std::vector<unsigned> expectedDistances{5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
+                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 4u, 3u, 2u, 1u, 0u, 1u, 2u, 3u,
+                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
+                                            5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 6u, 5u, 4u, 4u, 4u, 4u, 4u, 5u};
+
+    auto distances = Distances(size, [](MapPoint pt) {
+        return pt.x == 4 && pt.y == 3; // compute distance to P(4/3)
+    });
+
+    BOOST_TEST_REQUIRE(distances.GetSize() == size);
+
+    RTTR_FOREACH_PT(MapPoint, size)
+    {
+        BOOST_TEST_REQUIRE(expectedDistances[pt.x + pt.y * size.x] == distances[pt]);
     }
 }
 
@@ -201,11 +223,11 @@ BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
     std::set<MapPoint, MapPointLess> flaggedPoints{MapPoint(4, 3)};
     auto distances = DistancesTo(flaggedPoints, size);
 
-    BOOST_REQUIRE(distances.GetSize() == size);
+    BOOST_TEST_REQUIRE(distances.GetSize() == size);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_REQUIRE_EQUAL(expectedDistances[pt.x + pt.y * size.x], distances[pt]);
+        BOOST_TEST_REQUIRE(expectedDistances[pt.x + pt.y * size.x] == distances[pt]);
     }
 }
 
@@ -233,7 +255,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
             actualNodes++;
         }
     }
-    BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
+    BOOST_TEST_REQUIRE(actualNodes == expectedNodes);
 }
 
 BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
@@ -259,7 +281,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
             actualNodes++;
         }
     }
-    BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
+    BOOST_TEST_REQUIRE(actualNodes == expectedNodes);
 }
 
 BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
@@ -280,7 +302,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_REQUIRE_EQUAL(LimitFor(values, coverage, minimum), 5);
+    BOOST_TEST_REQUIRE(LimitFor(values, coverage, minimum) == 5);
 
     for(unsigned i = 0; i < exactNumberOfNodes + 5; i++)
     {
@@ -292,7 +314,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_REQUIRE_EQUAL(LimitFor(values, coverage, minimum), 5);
+    BOOST_TEST_REQUIRE(LimitFor(values, coverage, minimum) == 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

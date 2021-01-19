@@ -18,6 +18,7 @@
 #include "lua/GameDataLoader.h"
 #include "mapGenerator/TextureHelper.h"
 #include "mapGenerator/Textures.h"
+#include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
@@ -25,10 +26,7 @@ using namespace rttr::mapGenerator;
 BOOST_AUTO_TEST_SUITE(TextureTests)
 
 template<class T_Test>
-void RunTest(T_Test test);
-
-template<class T_Test>
-void RunTest(T_Test test)
+static void RunTest(T_Test test)
 {
     MapExtent size(8, 8);
     DescIdx<LandscapeDesc> landscape(1);
@@ -76,8 +74,8 @@ BOOST_AUTO_TEST_CASE(AddTextures_sets_valid_textures_for_entire_map)
 
         RTTR_FOREACH_PT(MapPoint, textures.GetSize())
         {
-            BOOST_REQUIRE(textures[pt].rsu.value != DescIdx<TerrainDesc>::INVALID);
-            BOOST_REQUIRE(textures[pt].lsd.value != DescIdx<TerrainDesc>::INVALID);
+            BOOST_TEST_REQUIRE((textures[pt].rsu.value != DescIdx<TerrainDesc>::INVALID));
+            BOOST_TEST_REQUIRE((textures[pt].lsd.value != DescIdx<TerrainDesc>::INVALID));
         }
     });
 }
@@ -100,8 +98,8 @@ BOOST_AUTO_TEST_CASE(AddTextures_does_not_override_textures)
 
         RTTR_FOREACH_PT(MapPoint, textures.GetSize())
         {
-            BOOST_REQUIRE(textures[pt].rsu == water);
-            BOOST_REQUIRE(textures[pt].lsd == water);
+            BOOST_TEST_REQUIRE(textures[pt].rsu == water);
+            BOOST_TEST_REQUIRE(textures[pt].lsd == water);
         }
     });
 }
@@ -117,8 +115,8 @@ BOOST_AUTO_TEST_CASE(AddTextures_sets_water_textures_for_minimum_height)
 
         RTTR_FOREACH_PT(MapPoint, textures.GetSize())
         {
-            BOOST_REQUIRE(textureMap.Check(Triangle(true, pt), IsWater));
-            BOOST_REQUIRE(textureMap.Check(Triangle(false, pt), IsWater));
+            BOOST_TEST_REQUIRE(textureMap.Check(Triangle(true, pt), IsWater));
+            BOOST_TEST_REQUIRE(textureMap.Check(Triangle(false, pt), IsWater));
         }
     });
 }
@@ -137,8 +135,8 @@ BOOST_AUTO_TEST_CASE(AddTextures_sets_mountain_textures_above_mountain_level)
         {
             if(z[pt] >= mountainLevel)
             {
-                BOOST_REQUIRE(textureMap.Check(Triangle(true, pt), IsMountainOrSnowOrLava));
-                BOOST_REQUIRE(textureMap.Check(Triangle(false, pt), IsMountainOrSnowOrLava));
+                BOOST_TEST_REQUIRE(textureMap.Check(Triangle(true, pt), IsMountainOrSnowOrLava));
+                BOOST_TEST_REQUIRE(textureMap.Check(Triangle(false, pt), IsMountainOrSnowOrLava));
             }
         }
     });
@@ -154,7 +152,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_replaces_all_textures)
 
         ReplaceTextureForPoint(textures, point, target, {});
 
-        BOOST_REQUIRE(textureMap.All(point, IsSnowOrLava));
+        BOOST_TEST_REQUIRE(textureMap.All(point, IsSnowOrLava));
     });
 }
 
@@ -168,7 +166,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_does_not_replace_excluded_textures)
 
         ReplaceTextureForPoint(textures, point, target, {source});
 
-        BOOST_REQUIRE(textureMap.All(point, IsWater));
+        BOOST_TEST_REQUIRE(textureMap.All(point, IsWater));
     });
 }
 
@@ -195,11 +193,11 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_replaces_textures_within_radius)
                 {
                     for(const MapPoint& p : textures.GetPointsInRadius(pt, radius))
                     {
-                        BOOST_REQUIRE(textureMap.All(p, IsSnowOrLava));
+                        BOOST_TEST_REQUIRE(textureMap.All(p, IsSnowOrLava));
                     }
                 } else
                 {
-                    BOOST_REQUIRE(textureMap.All(pt, IsSnowOrLava));
+                    BOOST_TEST_REQUIRE(textureMap.All(pt, IsSnowOrLava));
                 }
             }
         });
@@ -225,7 +223,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_does_not_replace_excluded_textures)
 
             RTTR_FOREACH_PT(MapPoint, textures.GetSize())
             {
-                BOOST_REQUIRE(textureMap.All(pt, IsWater));
+                BOOST_TEST_REQUIRE(textureMap.All(pt, IsWater));
             }
         });
     }

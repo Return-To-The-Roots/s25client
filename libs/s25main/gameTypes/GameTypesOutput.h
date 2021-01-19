@@ -32,6 +32,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/DescIdx.h"
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
@@ -96,6 +97,12 @@ RTTR_ENUM_OUTPUT(Nation)
 RTTR_ENUM_OUTPUT(GO_Type)
 
 #undef RTTR_ENUM_OUTPUT
+
+template<class T>
+std::ostream& operator<<(std::ostream& out, const DescIdx<T>& d)
+{
+    return out << d.value;
+}
 
 // LCOV_EXCL_STOP
 

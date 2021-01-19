@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(Index_returns_values_gte_zero_and_lt_size)
     {
         auto result = rnd.Index(size);
 
-        BOOST_REQUIRE(result < size);
+        BOOST_TEST_REQUIRE(result < size);
     }
 }
 
@@ -52,8 +52,8 @@ BOOST_AUTO_TEST_CASE(RandomInt_returns_value_within_thresholds)
 
     auto result = rnd.RandomValue(minimum, maximum);
 
-    BOOST_REQUIRE(result >= minimum);
-    BOOST_REQUIRE(result <= maximum);
+    BOOST_TEST_REQUIRE(result >= minimum);
+    BOOST_TEST_REQUIRE(result <= maximum);
 }
 
 BOOST_AUTO_TEST_CASE(RandomDouble_returns_value_within_thresholds)
@@ -65,8 +65,8 @@ BOOST_AUTO_TEST_CASE(RandomDouble_returns_value_within_thresholds)
 
     auto result = rnd.RandomDouble(minimum, maximum);
 
-    BOOST_REQUIRE(result >= minimum);
-    BOOST_REQUIRE(result <= maximum);
+    BOOST_TEST_REQUIRE(result >= minimum);
+    BOOST_TEST_REQUIRE(result <= maximum);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

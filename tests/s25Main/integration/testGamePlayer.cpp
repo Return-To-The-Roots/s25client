@@ -28,12 +28,12 @@ using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2>;
 
 BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
 {
-    BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
-    BOOST_REQUIRE(!world.GetPlayer(1).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.GetPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.GetPlayer(1).IsDefeated());
     // Destroy HQ -> defeated
     world.DestroyNO(world.GetPlayer(1).GetHQPos()); //-V522
-    BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
-    BOOST_REQUIRE(world.GetPlayer(1).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.GetPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(world.GetPlayer(1).IsDefeated());
     // Destroy HQ but leave a military bld
     MapPoint milBldPos = world.MakeMapPoint(world.GetPlayer(0).GetFirstWH()->GetPos() + Position(4, 0)); //-V522
     auto* milBld = dynamic_cast<nobMilitary*>(
@@ -43,8 +43,8 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     milBld->GotWorker(Job::Private, sld);
     sld->WalkToGoal();
     world.DestroyNO(world.GetPlayer(0).GetHQPos());
-    BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.GetPlayer(0).IsDefeated());
     // Destroy this -> defeated
     world.DestroyNO(milBldPos);
-    BOOST_REQUIRE(world.GetPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(world.GetPlayer(0).IsDefeated());
 }

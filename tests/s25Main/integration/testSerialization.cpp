@@ -49,11 +49,6 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(Resource)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AddonId)
 
-template<class T>
-std::ostream& operator<<(std::ostream& os, const DescIdx<T>& d)
-{
-    return os << d.value;
-}
 namespace boost { namespace test_tools { namespace tt_detail {
     template<>
     struct print_log_value<ReplayCommand>

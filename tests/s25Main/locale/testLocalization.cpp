@@ -53,15 +53,15 @@ BOOST_AUTO_TEST_CASE(ConvertToString)
     for(const std::string& curLang : getLanguageCodes())
     {
         rttr::test::LocaleResetter resetter(curLang.c_str());
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(0), "0");
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(-2147483647), "-2147483647"); // -2^31+1
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(2147483647), "2147483647");   // 2^31-1
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(4294967295u), "4294967295");  // 2^32-1
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(0.), "0");
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(-12345678.), "-12345678");
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(12345678.), "12345678");
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(-12345678.5), "-12345678.5");
-        BOOST_REQUIRE_EQUAL(s25util::toStringClassic(12345678.5), "12345678.5");
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(0) == "0");
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(-2147483647) == "-2147483647"); // -2^31+1
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(2147483647) == "2147483647");   // 2^31-1
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(4294967295u) == "4294967295");  // 2^32-1
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(0.) == "0");
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(-12345678.) == "-12345678");
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(12345678.) == "12345678");
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(-12345678.5) == "-12345678.5");
+        BOOST_TEST_REQUIRE(s25util::toStringClassic(12345678.5) == "12345678.5");
     }
 }
 
@@ -98,48 +98,48 @@ BOOST_AUTO_TEST_CASE(ConvertFromString)
     for(const std::string& curLang : getLanguageCodes())
     {
         rttr::test::LocaleResetter resetter(curLang.c_str());
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<int32_t>("+0"), 0);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<int32_t>("-0"), 0);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<int32_t>("0"), 0);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<int32_t>("-2147483647"), -2147483647);  // -2^31+1
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<int32_t>("2147483647"), 2147483647);    // 2^31-1
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<int32_t>("+2147483647"), 2147483647);   // 2^31-1
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<uint32_t>("4294967295"), 4294967295u);  // 2^32-1
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<uint32_t>("+4294967295"), 4294967295u); // 2^32-1
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("0"), 0.);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("0."), 0.);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("+0."), 0.);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("-0."), -0.);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("-12345678."), -12345678.);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("12345678."), 12345678.);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("+12345678."), 12345678.);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("-12345678.5"), -12345678.5);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("12345678.5"), 12345678.5);
-        BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("+12345678.5"), 12345678.5);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<int32_t>("+0") == 0);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<int32_t>("-0") == 0);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<int32_t>("0") == 0);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<int32_t>("-2147483647") == -2147483647);  // -2^31+1
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<int32_t>("2147483647") == 2147483647);    // 2^31-1
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<int32_t>("+2147483647") == 2147483647);   // 2^31-1
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<uint32_t>("4294967295") == 4294967295u);  // 2^32-1
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<uint32_t>("+4294967295") == 4294967295u); // 2^32-1
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("0") == 0.);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("0.") == 0.);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("+0.") == 0.);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("-0.") == -0.);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("-12345678.") == -12345678.);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("12345678.") == 12345678.);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("+12345678.") == 12345678.);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("-12345678.5") == -12345678.5);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("12345678.5") == 12345678.5);
+        BOOST_TEST_REQUIRE(s25util::fromStringClassic<double>("+12345678.5") == 12345678.5);
 
         for(const std::string& val : invalidInts)
         {
             int32_t outVal;
             BOOST_REQUIRE_THROW(s25util::fromStringClassic<int32_t>(val), s25util::ConversionError);
-            BOOST_REQUIRE(!s25util::tryFromStringClassic<int32_t>(val, outVal));
+            BOOST_TEST_REQUIRE(!s25util::tryFromStringClassic<int32_t>(val, outVal));
             int32_t outValDef = rand();
-            BOOST_REQUIRE_EQUAL(s25util::fromStringClassicDef<int32_t>(val, outValDef), outValDef);
+            BOOST_TEST_REQUIRE(s25util::fromStringClassicDef<int32_t>(val, outValDef) == outValDef);
         }
         for(const std::string& val : invalidUints)
         {
             uint32_t outVal;
             BOOST_REQUIRE_THROW(s25util::fromStringClassic<uint32_t>(val), s25util::ConversionError);
-            BOOST_REQUIRE(!s25util::tryFromStringClassic<uint32_t>(val, outVal));
+            BOOST_TEST_REQUIRE(!s25util::tryFromStringClassic<uint32_t>(val, outVal));
             uint32_t outValDef = rand();
-            BOOST_REQUIRE_EQUAL(s25util::fromStringClassicDef<uint32_t>(val, outValDef), outValDef);
+            BOOST_TEST_REQUIRE(s25util::fromStringClassicDef<uint32_t>(val, outValDef) == outValDef);
         }
         for(const std::string& val : invalidFloats)
         {
             double outVal;
             BOOST_REQUIRE_THROW(s25util::fromStringClassic<double>(val), s25util::ConversionError);
-            BOOST_REQUIRE(!s25util::tryFromStringClassic<double>(val, outVal));
+            BOOST_TEST_REQUIRE(!s25util::tryFromStringClassic<double>(val, outVal));
             double outValDef = rand();
-            BOOST_REQUIRE_EQUAL(s25util::fromStringClassicDef<double>(val, outValDef), outValDef);
+            BOOST_TEST_REQUIRE(s25util::fromStringClassicDef<double>(val, outValDef) == outValDef);
         }
     }
 }
@@ -152,8 +152,8 @@ BOOST_AUTO_TEST_CASE(IniValues)
         rttr::test::LocaleResetter resetter(curLang.c_str());
         ini.setValue("int", 123456);
         ini.setValue("string", "123456");
-        BOOST_REQUIRE_EQUAL(ini.getValue("int"), "123456");
-        BOOST_REQUIRE_EQUAL(ini.getValueI("string"), 123456);
+        BOOST_TEST_REQUIRE(ini.getValue("int") == "123456");
+        BOOST_TEST_REQUIRE(ini.getValueI("string") == 123456);
     }
 }
 

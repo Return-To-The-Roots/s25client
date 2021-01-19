@@ -46,10 +46,10 @@ struct TradeFixture : public WorldWithGCExecution3P
             world.GetPlayer(i).MakeStartPacts();
             players[i] = &world.GetPlayer(i);
         }
-        BOOST_REQUIRE(players[1]->IsAlly(0));
-        BOOST_REQUIRE(!players[1]->IsAlly(2));
+        BOOST_TEST_REQUIRE(players[1]->IsAlly(0));
+        BOOST_TEST_REQUIRE(!players[1]->IsAlly(2));
         curWh = world.GetSpecObj<nobBaseWarehouse>(players[1]->GetHQPos());
-        BOOST_REQUIRE(curWh);
+        BOOST_TEST_REQUIRE(curWh);
         // Get start count and check that we have some
         numHelpers = curWh->GetNumRealFigures(Job::Helper);
         numWoodcutters = curWh->GetNumRealFigures(Job::Woodcutter);
@@ -57,11 +57,11 @@ struct TradeFixture : public WorldWithGCExecution3P
         numBoards = curWh->GetNumRealWares(GoodType::Boards);
         numSaws = curWh->GetNumRealWares(GoodType::Saw);
         numSwords = curWh->GetNumRealWares(GoodType::Sword);
-        BOOST_REQUIRE_GT(numHelpers, 10u);
-        BOOST_REQUIRE_GT(numDonkeys, 5u);
-        BOOST_REQUIRE_GT(numBoards, 10u);
-        BOOST_REQUIRE_GT(numSaws, 0u);
-        BOOST_REQUIRE_GT(numWoodcutters, 2u);
+        BOOST_TEST_REQUIRE(numHelpers > 10u);
+        BOOST_TEST_REQUIRE(numDonkeys > 5u);
+        BOOST_TEST_REQUIRE(numBoards > 10u);
+        BOOST_TEST_REQUIRE(numSaws > 0u);
+        BOOST_TEST_REQUIRE(numWoodcutters > 2u);
 
         // Enable trading
         this->ggs.setSelection(AddonId::TRADE, 1);
@@ -69,11 +69,11 @@ struct TradeFixture : public WorldWithGCExecution3P
 
     void testExpectedWares() const
     {
-        BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(Job::Helper), numHelpers);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(Job::Woodcutter), numWoodcutters);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(Job::PackDonkey), numDonkeys);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumRealWares(GoodType::Boards), numBoards);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumRealWares(GoodType::Saw), numSaws);
+        BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) == numHelpers);
+        BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Woodcutter) == numWoodcutters);
+        BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::PackDonkey) == numDonkeys);
+        BOOST_TEST_REQUIRE(curWh->GetNumRealWares(GoodType::Boards) == numBoards);
+        BOOST_TEST_REQUIRE(curWh->GetNumRealWares(GoodType::Saw) == numSaws);
     }
 
     void testAfterLeaving(unsigned numTradeItems)
@@ -82,15 +82,15 @@ struct TradeFixture : public WorldWithGCExecution3P
         RTTR_EXEC_TILL(30 * (numTradeItems + 1), curWh->GetLeavingFigures().empty());
         // Real count should not be changed
         // But helpers can be produced in the meantime
-        BOOST_REQUIRE_GE(curWh->GetNumRealFigures(Job::Helper), numHelpers);
+        BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
         numHelpers = curWh->GetNumRealFigures(Job::Helper);
         testExpectedWares();
         // Visual count should match real count
-        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualFigures(Job::Helper), numHelpers);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualFigures(Job::Woodcutter), numWoodcutters);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualFigures(Job::PackDonkey), numDonkeys);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualWares(GoodType::Boards), numBoards);
-        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualWares(GoodType::Saw), numSaws);
+        BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::Helper) == numHelpers);
+        BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::Woodcutter) == numWoodcutters);
+        BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::PackDonkey) == numDonkeys);
+        BOOST_TEST_REQUIRE(curWh->GetNumVisualWares(GoodType::Boards) == numBoards);
+        BOOST_TEST_REQUIRE(curWh->GetNumVisualWares(GoodType::Saw) == numSaws);
     }
 };
 
@@ -132,14 +132,14 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     // And some were produced (at least every 170 GFs)
     numHelpers += (20 * distance) / 170;
     curWh = world.GetSpecObj<nobBaseWarehouse>(players[0]->GetHQPos());
-    BOOST_REQUIRE(curWh);
+    BOOST_TEST_REQUIRE(curWh);
     // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received
     // them)
     numBoards += 2 * 2;
     numDonkeys += 2 * 2;
     numHelpers += 2 * 1;
     // helpers can be produced in the meantime
-    BOOST_REQUIRE_GE(curWh->GetNumRealFigures(Job::Helper), numHelpers);
+    BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
     testExpectedWares();
 }
@@ -175,13 +175,13 @@ BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
     // And some were produced (at least every 170 GFs)
     numHelpers += (20 * distance) / 170;
     curWh = world.GetSpecObj<nobBaseWarehouse>(players[0]->GetHQPos());
-    BOOST_REQUIRE(curWh);
+    BOOST_TEST_REQUIRE(curWh);
     // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received
     // them)
     numWoodcutters += 2 * 2;
     numHelpers += 2 * 1;
     // helpers can be produced in the meantime
-    BOOST_REQUIRE_GE(curWh->GetNumRealFigures(Job::Helper), numHelpers);
+    BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
     testExpectedWares();
 }
@@ -191,7 +191,7 @@ BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
     initGameRNG();
 
     // Trade more wares than available (not limited by donkeys)
-    BOOST_REQUIRE_LT(numSaws, numDonkeys);
+    BOOST_TEST_REQUIRE(numSaws < numDonkeys);
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Saw, numSaws * 2);
     numDonkeys -= numSaws;
     numSaws = 0;
@@ -199,7 +199,7 @@ BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
     testExpectedWares();
 
     // Trade more than donkeys available -> Trade what is possible, limited by donkeys
-    BOOST_REQUIRE_GT(numBoards, numDonkeys);
+    BOOST_TEST_REQUIRE(numBoards > numDonkeys);
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, numBoards);
     numBoards -= numDonkeys;
     numDonkeys = 0;
@@ -258,7 +258,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     numHelpers += 1 + 1;
     numWoodcutters += 2;
     // helpers can be produced in the meantime
-    BOOST_REQUIRE_GE(curWh->GetNumRealFigures(Job::Helper), numHelpers);
+    BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
     testExpectedWares();
 }
@@ -308,11 +308,11 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
     numHelpers -= numSwords;
 
     const PostMsg* post = postbox.GetMsg(0);
-    BOOST_REQUIRE(post);
+    BOOST_TEST_REQUIRE(post);
     const auto* msg = dynamic_cast<const PostMsgWithBuilding*>(post);
-    BOOST_REQUIRE(msg->GetText().find('2') != std::string::npos);
-    BOOST_REQUIRE(msg->GetText().find(_(JOB_NAMES[Job::Woodcutter])) != std::string::npos);
-    BOOST_REQUIRE(msg->GetText().find(players[1]->name) != std::string::npos);
+    BOOST_TEST_REQUIRE(msg->GetText().find('2') != std::string::npos);
+    BOOST_TEST_REQUIRE(msg->GetText().find(_(JOB_NAMES[Job::Woodcutter])) != std::string::npos);
+    BOOST_TEST_REQUIRE(msg->GetText().find(players[1]->name) != std::string::npos);
 
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
     numHelpers -= 1;
@@ -324,10 +324,10 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
     RTTR_SKIP_GFS(20 * distance);
 
     const PostMsg* post2 = postbox.GetMsg(1);
-    BOOST_REQUIRE(post2);
+    BOOST_TEST_REQUIRE(post2);
     const auto* msg2 = dynamic_cast<const PostMsgWithBuilding*>(post2);
-    BOOST_REQUIRE(msg2->GetText().find('2') != std::string::npos);
-    BOOST_REQUIRE(msg2->GetText().find(_(WARE_NAMES[GoodType::Boards])) != std::string::npos);
-    BOOST_REQUIRE(msg2->GetText().find(players[1]->name) != std::string::npos);
+    BOOST_TEST_REQUIRE(msg2->GetText().find('2') != std::string::npos);
+    BOOST_TEST_REQUIRE(msg2->GetText().find(_(WARE_NAMES[GoodType::Boards])) != std::string::npos);
+    BOOST_TEST_REQUIRE(msg2->GetText().find(players[1]->name) != std::string::npos);
 }
 BOOST_AUTO_TEST_SUITE_END()

@@ -25,14 +25,14 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     uiHelper::initGUITests();
     iwHelp wnd("Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
     const Extent oldSize = wnd.GetSize();
-    BOOST_REQUIRE_GT(oldSize.x, 50u);
-    BOOST_REQUIRE_GT(oldSize.y, 50u);
+    BOOST_TEST_REQUIRE(oldSize.x > 50u);
+    BOOST_TEST_REQUIRE(oldSize.y > 50u);
     // Window should reduce height (only)
     wnd.SetMinimized(true);
-    BOOST_REQUIRE_EQUAL(wnd.GetSize().x, oldSize.x); //-V807
-    BOOST_REQUIRE_GT(wnd.GetSize().y, 0u);
-    BOOST_REQUIRE_LT(wnd.GetSize().y, oldSize.y);
+    BOOST_TEST_REQUIRE(wnd.GetSize().x == oldSize.x); //-V807
+    BOOST_TEST_REQUIRE(wnd.GetSize().y > 0u);
+    BOOST_TEST_REQUIRE(wnd.GetSize().y < oldSize.y);
     // And fully expand to old size
     wnd.SetMinimized(false);
-    BOOST_REQUIRE_EQUAL(wnd.GetSize(), oldSize);
+    BOOST_TEST_REQUIRE(wnd.GetSize() == oldSize);
 }

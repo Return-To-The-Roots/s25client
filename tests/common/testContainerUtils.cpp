@@ -84,26 +84,26 @@ BOOST_AUTO_TEST_CASE(IndexOf)
 {
     std::vector<int> vec;
     // Empty vector
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 1), -1);
+    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 1) == -1);
     // 1 el
     vec.push_back(1);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 1), 0);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 2), -1);
+    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 1) == 0);
+    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 2) == -1);
     // 2 els
     vec.push_back(0);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 1), 0);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 0), 1);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 2), -1);
+    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 1) == 0);
+    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 0) == 1);
+    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 2) == -1);
 
     // Pointer vector
     std::vector<int*> ptrVec;
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), -1);       //-V566
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), -1); //-V566
-    ptrVec.push_back((int*)1336);                                        //-V566
-    ptrVec.push_back((int*)1337);                                        //-V566
-    ptrVec.push_back((int*)1338);                                        //-V566
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), 1);        //-V566
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), 1);  //-V566
+    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (int*)1337) == -1);       //-V566
+    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (const int*)1337) == -1); //-V566
+    ptrVec.push_back((int*)1336);                                         //-V566
+    ptrVec.push_back((int*)1337);                                         //-V566
+    ptrVec.push_back((int*)1338);                                         //-V566
+    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (int*)1337) == 1);        //-V566
+    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (const int*)1337) == 1);  //-V566
 }
 
 BOOST_AUTO_TEST_CASE(Reverse)

@@ -27,10 +27,7 @@ using namespace libsiedler2;
 BOOST_AUTO_TEST_SUITE(ResourcesTests)
 
 template<class T_Test>
-void RunTest(T_Test test);
-
-template<class T_Test>
-void RunTest(T_Test test)
+static void RunTest(T_Test test)
 {
     MapExtent size(16, 16);
     DescIdx<LandscapeDesc> landscape(1);
@@ -106,8 +103,8 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
         auto forbiddenArea = objectTypes.GetPointsInRadius(hq, 5);
         for(const MapPoint& pt : forbiddenArea)
         {
-            BOOST_REQUIRE(objectTypes[pt] == OT_Empty);
-            BOOST_REQUIRE(objectInfos[pt] == OI_Empty);
+            BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
+            BOOST_TEST_REQUIRE(objectInfos[pt] == OI_Empty);
         }
     });
 }
@@ -127,8 +124,8 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_harbors_empty)
         auto forbiddenArea = objectTypes.GetPointsInRadius(harbor, 5);
         for(const MapPoint& pt : forbiddenArea)
         {
-            BOOST_REQUIRE(objectTypes[pt] == OT_Empty);
-            BOOST_REQUIRE(objectInfos[pt] == OI_Empty);
+            BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
+            BOOST_TEST_REQUIRE(objectInfos[pt] == OI_Empty);
         }
     });
 }
@@ -157,7 +154,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
 
         const unsigned objectsAfter = countObjects();
 
-        BOOST_REQUIRE(objectsAfter > objectsBefore);
+        BOOST_TEST_REQUIRE(objectsAfter > objectsBefore);
     });
 }
 
@@ -173,13 +170,13 @@ BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
         {
             if(map.textureMap.All(pt, IsMinableMountain))
             {
-                BOOST_REQUIRE(map.resources[pt] != R_None);
+                BOOST_TEST_REQUIRE(map.resources[pt] != R_None);
             } else if(map.textureMap.All(pt, IsWater))
             {
-                BOOST_REQUIRE(map.resources[pt] == R_Fish);
+                BOOST_TEST_REQUIRE(map.resources[pt] == R_Fish);
             } else
             {
-                BOOST_REQUIRE(map.resources[pt] == R_Water);
+                BOOST_TEST_REQUIRE(map.resources[pt] == R_Water);
             }
         }
     });
@@ -196,11 +193,11 @@ BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
         {
             if(map.textureMap.All(pt, IsWater))
             {
-                BOOST_REQUIRE(map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck
-                              || map.animals[pt] == Animal::Duck2);
+                BOOST_TEST_REQUIRE((map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck
+                                    || map.animals[pt] == Animal::Duck2));
             } else
             {
-                BOOST_REQUIRE(map.animals[pt] != Animal::Duck && map.animals[pt] != Animal::Duck2);
+                BOOST_TEST_REQUIRE((map.animals[pt] != Animal::Duck && map.animals[pt] != Animal::Duck2));
             }
         }
     });

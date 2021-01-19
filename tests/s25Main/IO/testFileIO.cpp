@@ -68,19 +68,19 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
     BOOST_TEST_REQUIRE(files.size() == 3u);
     for(const bfs::path& file : files)
     {
-        BOOST_REQUIRE(bfs::exists(file));
-        BOOST_REQUIRE(file.is_absolute());
+        BOOST_TEST_REQUIRE(bfs::exists(file));
+        BOOST_TEST_REQUIRE(file.is_absolute());
 
         // String result must still be utf8
-        BOOST_REQUIRE(s25util::isValidUTF8(file.string()));
+        BOOST_TEST_REQUIRE(s25util::isValidUTF8(file.string()));
 
         // Scopes for auto-close
         {
             // path input
             bnw::ifstream sFile(file);
-            BOOST_REQUIRE(sFile);
+            BOOST_TEST_REQUIRE(!!sFile);
             std::string content;
-            BOOST_REQUIRE(sFile >> content);
+            BOOST_TEST_REQUIRE(!!(sFile >> content));
             BOOST_TEST_REQUIRE(content == "OK");
         }
 
@@ -92,7 +92,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
             using MMStream = boost::iostreams::stream<boost::iostreams::mapped_file_source>;
             MMStream map(mmapFile);
             std::string content;
-            BOOST_REQUIRE(map >> content);
+            BOOST_TEST_REQUIRE(!!(map >> content));
             BOOST_TEST_REQUIRE(content == "OK");
         }
     }
