@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "PointOutput.h"
 #include "lua/GameDataLoader.h"
 #include "mapGenerator/Map.h"
 #include <boost/test/unit_test.hpp>
@@ -39,12 +40,12 @@ static void RunTest(T_Test test)
 BOOST_AUTO_TEST_CASE(Constructor_resizes_all_maps)
 {
     RunTest([](Map& map) {
-        BOOST_REQUIRE(map.z.GetSize() == map.size);
-        BOOST_REQUIRE(map.textures.GetSize() == map.size);
-        BOOST_REQUIRE(map.objectInfos.GetSize() == map.size);
-        BOOST_REQUIRE(map.objectTypes.GetSize() == map.size);
-        BOOST_REQUIRE(map.resources.GetSize() == map.size);
-        BOOST_REQUIRE(map.animals.GetSize() == map.size);
+        BOOST_TEST_REQUIRE(map.z.GetSize() == map.size);
+        BOOST_TEST_REQUIRE(map.textures.GetSize() == map.size);
+        BOOST_TEST_REQUIRE(map.objectInfos.GetSize() == map.size);
+        BOOST_TEST_REQUIRE(map.objectTypes.GetSize() == map.size);
+        BOOST_TEST_REQUIRE(map.resources.GetSize() == map.size);
+        BOOST_TEST_REQUIRE(map.animals.GetSize() == map.size);
     });
 }
 

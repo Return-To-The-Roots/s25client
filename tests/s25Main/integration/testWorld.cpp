@@ -47,13 +47,13 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
     // Check that loading and saving a map does not alter it
     glArchivItem_Map map;
     bnw::ifstream mapFile(testMapPath, std::ios::binary);
-    BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
+    BOOST_TEST_REQUIRE(map.load(mapFile, false) == 0);
     TmpFile outMap(".swd");
-    BOOST_REQUIRE(outMap.isValid());
-    BOOST_REQUIRE_EQUAL(map.write(outMap.getStream()), 0);
+    BOOST_TEST_REQUIRE(outMap.isValid());
+    BOOST_TEST_REQUIRE(map.write(outMap.getStream()) == 0);
     mapFile.close();
     outMap.close();
-    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath));
+    BOOST_TEST_REQUIRE(CalcChecksumOfFile(testMapPath) == CalcChecksumOfFile(outMap.filePath));
 }
 
 namespace {
@@ -100,23 +100,23 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     MapTestFixture fixture;
     glArchivItem_Map map;
     bnw::ifstream mapFile(fixture.testMapPath, std::ios::binary);
-    BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
+    BOOST_TEST_REQUIRE(map.load(mapFile, false) == 0);
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
-    BOOST_CHECK_EQUAL(header.getWidth(), 176);
-    BOOST_CHECK_EQUAL(header.getHeight(), 80);
-    BOOST_CHECK_EQUAL(header.getNumPlayers(), 4);
+    BOOST_TEST(header.getWidth() == 176);
+    BOOST_TEST(header.getHeight() == 80);
+    BOOST_TEST(header.getNumPlayers() == 4);
 
     MapLoader loader(world);
-    BOOST_REQUIRE(loader.Load(map, Exploration::FogOfWar));
-    BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
-    BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
+    BOOST_TEST_REQUIRE(loader.Load(map, Exploration::FogOfWar));
+    BOOST_TEST(world.GetWidth() == map.getHeader().getWidth());
+    BOOST_TEST(world.GetHeight() == map.getHeader().getHeight());
 }
 
 BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedFixture)
 {
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetNode(pt).altitude, worldCreator.map.GetMapDataAt(MapLayer::Altitude, pt.x, pt.y));
+        BOOST_TEST_REQUIRE(world.GetNode(pt).altitude == worldCreator.map.GetMapDataAt(MapLayer::Altitude, pt.x, pt.y));
     }
 }
 
@@ -126,19 +126,21 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
     world.InitAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        auto s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y) & 0x7);
+        BOOST_TEST_INFO("pt " << pt);
+        const auto original = worldCreator.map.GetMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y);
+        BOOST_TEST_INFO(" original: " << original);
+        auto s2BQ = BuildingQuality(original & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;
-        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bq << "!=" << s2BQ << " at " << pt << " original:"
-                                             << worldCreator.map.GetMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y));
+        BOOST_TEST(bq == s2BQ);
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
 {
     GamePlayer& player = world.GetPlayer(0);
-    BOOST_REQUIRE(player.isUsed());
-    BOOST_REQUIRE(worldCreator.hqs[0].isValid());
-    BOOST_REQUIRE_EQUAL(world.GetNO(worldCreator.hqs[0])->GetGOT(), GO_Type::NobHq);
+    BOOST_TEST_REQUIRE(player.isUsed());
+    BOOST_TEST_REQUIRE(worldCreator.hqs[0].isValid());
+    BOOST_TEST_REQUIRE(world.GetNO(worldCreator.hqs[0])->GetGOT() == GO_Type::NobHq);
 }
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
@@ -210,9 +212,9 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     }
 
     // Check if this works
-    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, hbPos));
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, hbPos));
     // All harbors valid
-    BOOST_REQUIRE_EQUAL(world.GetNumHarborPoints(), hbPos.size());
+    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == hbPos.size());
     for(unsigned startHb = 1; startHb < world.GetNumHarborPoints(); startHb++)
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
@@ -221,14 +223,14 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
             if(!seaId)
                 continue;
             MapPoint startPt = world.GetCoastalPoint(startHb, seaId);
-            BOOST_REQUIRE_EQUAL(startPt, world.GetNeighbour(world.GetHarborPoint(startHb), dir));
+            BOOST_TEST_REQUIRE(startPt == world.GetNeighbour(world.GetHarborPoint(startHb), dir));
             for(unsigned targetHb = 1; targetHb < world.GetNumHarborPoints(); targetHb++)
             {
                 MapPoint destPt = world.GetCoastalPoint(targetHb, seaId);
-                BOOST_REQUIRE(destPt.isValid());
+                BOOST_TEST_REQUIRE(destPt.isValid());
                 std::vector<Direction> route;
-                BOOST_REQUIRE(startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr));
-                BOOST_REQUIRE_EQUAL(route.size(), world.CalcHarborDistance(startHb, targetHb));
+                BOOST_TEST_REQUIRE((startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr)));
+                BOOST_TEST_REQUIRE(route.size() == world.CalcHarborDistance(startHb, targetHb));
             }
         }
     }

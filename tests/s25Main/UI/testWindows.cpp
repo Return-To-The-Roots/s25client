@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(Victory)
     winnerNames.push_back("BarNameBaz");
     const iwVictory wnd(winnerNames);
     // 2 buttons
-    BOOST_REQUIRE_EQUAL(wnd.GetCtrls<ctrlButton>().size(), 2u);
+    BOOST_TEST_REQUIRE(wnd.GetCtrls<ctrlButton>().size() == 2u);
     // Find a text field containing all winner names
     const auto txts = wnd.GetCtrls<ctrlMultiline>();
     bool found = false;
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(Victory)
         }
         found |= curFound;
     }
-    BOOST_REQUIRE(found);
+    BOOST_TEST_REQUIRE(found);
 }
 
 namespace {

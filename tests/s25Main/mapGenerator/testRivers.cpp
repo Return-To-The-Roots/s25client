@@ -25,10 +25,7 @@ using namespace rttr::mapGenerator;
 BOOST_AUTO_TEST_SUITE(RiversTests)
 
 template<class T_Test>
-void RunTest(T_Test test);
-
-template<class T_Test>
-void RunTest(T_Test test)
+static void RunTest(T_Test test)
 {
     MapExtent size(8, 8);
     RandomUtility rnd(0);
@@ -57,7 +54,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_river_of_expected_size)
 
             const unsigned expectedNodes = (length + 1) * 2;
 
-            BOOST_REQUIRE_EQUAL(static_cast<unsigned>(river.size()), expectedNodes);
+            BOOST_TEST_REQUIRE(static_cast<unsigned>(river.size()) == expectedNodes);
         }
     });
 }
@@ -76,7 +73,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
 
             for(const MapPoint& pt : river)
             {
-                BOOST_REQUIRE(helpers::contains_if(map.z.GetNeighbours(pt), containedByRiver));
+                BOOST_TEST_REQUIRE(helpers::contains_if(map.z.GetNeighbours(pt), containedByRiver));
             }
         }
     });
@@ -96,7 +93,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 
             for(const MapPoint& pt : river)
             {
-                BOOST_REQUIRE(map.textureMap.Any(pt, IsWater));
+                BOOST_TEST_REQUIRE(map.textureMap.Any(pt, IsWater));
             }
         }
     });
@@ -121,7 +118,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
 
             for(const MapPoint& pt : river)
             {
-                BOOST_REQUIRE(map.z[pt] < originalZ[pt]);
+                BOOST_TEST_REQUIRE(map.z[pt] < originalZ[pt]);
             }
         }
     });
@@ -139,7 +136,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_which_ends_at_minimum_height)
 
         for(const MapPoint& pt : river)
         {
-            BOOST_REQUIRE(helpers::contains(expectedRange, pt));
+            BOOST_TEST_REQUIRE(helpers::contains(expectedRange, pt));
         }
     });
 }

@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     RTTR_REQUIRE_LOG_CONTAINS("Committing an order", true);
     // Wait for completion message
     RTTR_EXEC_TILL(3000, postbox.GetNumMsgs() == 1u);
-    BOOST_REQUIRE_EQUAL(postbox.GetMsg(0)->GetCategory(), PostCategory::Economy);
+    BOOST_TEST_REQUIRE(postbox.GetMsg(0)->GetCategory() == PostCategory::Economy);
     // Stop it and wait till goods are produced
     this->SetProductionEnabled(bldPos, false);
     this->SetProductionEnabled(bldPos2, false);
@@ -102,12 +102,12 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
     this->BuildRoad(flagPos, false, std::vector<Direction>(3, Direction::East));
     RTTR_EXEC_TILL(200, mw->HasWorker());
-    BOOST_REQUIRE(!mw->is_working);
+    BOOST_TEST_REQUIRE(!mw->is_working);
     // Wait till he has all the wares
     RTTR_EXEC_TILL(3000, mw->GetNumWares(0) == 6);
     RTTR_EXEC_TILL(3000, mw->GetNumWares(1) == 6);
     // No order -> not working
-    BOOST_REQUIRE(!mw->is_working);
+    BOOST_TEST_REQUIRE(!mw->is_working);
     std::array<int8_t, NUM_TOOLS> orders;
     std::fill(orders.begin(), orders.end(), 0);
     orders[0] = 1;

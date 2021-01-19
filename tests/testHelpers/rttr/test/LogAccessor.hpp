@@ -32,9 +32,9 @@ namespace rttr { namespace test {
         LogAccessor()
         {
             logWriter = std::dynamic_pointer_cast<AvoidDuplicatesWriter>(LOG.getStdoutWriter());
-            BOOST_REQUIRE(logWriter);
+            BOOST_TEST_REQUIRE(logWriter);
             logWriterBuff = std::dynamic_pointer_cast<BufferedWriter>(logWriter->origWriter);
-            BOOST_REQUIRE(logWriterBuff);
+            BOOST_TEST_REQUIRE(logWriterBuff);
             flush();
         }
 

@@ -45,7 +45,7 @@ struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
         milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
         milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
         // Assumed by distributions and sizes
-        BOOST_REQUIRE_EQUAL(milBld0Pos.y, milBld1Pos.y);
+        BOOST_TEST_REQUIRE(milBld0Pos.y == milBld1Pos.y);
         // Destroy HQs so only blds are checked
         world.DestroyNO(p0.GetHQPos());
         world.DestroyNO(p1.GetHQPos());
@@ -101,10 +101,10 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
         FrontierDistance distance0 = milBld0->GetFrontierDistance();
         FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-        BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(
-          distance0,
-          (i == 0 ? FrontierDistance::Near : FrontierDistance::Far)); // near if addon is inactive, otherwise inland
+        BOOST_TEST(distance0 == distance1);
+        BOOST_TEST(
+          distance0
+          == (i == 0 ? FrontierDistance::Near : FrontierDistance::Far)); // near if addon is inactive, otherwise inland
     }
 }
 
@@ -146,10 +146,10 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
             FrontierDistance distance0 = milBld0->GetFrontierDistance();
             FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-            BOOST_REQUIRE_EQUAL(distance0, distance1);
-            BOOST_REQUIRE_EQUAL(
-              distance0,
-              (i == 0 ? FrontierDistance::Near : FrontierDistance::Far)); // near if addon is inactive, otherwise inland
+            BOOST_TEST(distance0 == distance1);
+            BOOST_TEST(distance0
+                       == (i == 0 ? FrontierDistance::Near :
+                                    FrontierDistance::Far)); // near if addon is inactive, otherwise inland
         }
     }
 }
@@ -183,10 +183,10 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
         FrontierDistance distance0 = milBld0->GetFrontierDistance();
         FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-        BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(
-          distance0,
-          (i == 0 ? FrontierDistance::Mid : FrontierDistance::Far)); // middle if addon is inactive, otherwise inland
+        BOOST_TEST(distance0 == distance1);
+        BOOST_TEST(
+          distance0
+          == (i == 0 ? FrontierDistance::Mid : FrontierDistance::Far)); // middle if addon is inactive, otherwise inland
     }
 }
 
@@ -219,8 +219,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
         FrontierDistance distance0 = milBld0->GetFrontierDistance();
         FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-        BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0, FrontierDistance::Far); // everytime inland
+        BOOST_TEST_REQUIRE(distance0 == distance1);
+        BOOST_TEST_REQUIRE(distance0 == FrontierDistance::Far); // everytime inland
     }
 }
 
@@ -256,8 +256,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
         FrontierDistance distance0 = milBld0->GetFrontierDistance();
         FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-        BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0, FrontierDistance::Mid);
+        BOOST_TEST_REQUIRE(distance0 == distance1);
+        BOOST_TEST_REQUIRE(distance0 == FrontierDistance::Mid);
     }
 }
 
@@ -351,8 +351,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
     FrontierDistance distance0 = milBld0->GetFrontierDistance();
     FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-    BOOST_REQUIRE_EQUAL(distance0, FrontierDistance::Near);
-    BOOST_REQUIRE_EQUAL(distance1, FrontierDistance::Near);
+    BOOST_TEST_REQUIRE(distance0 == FrontierDistance::Near);
+    BOOST_TEST_REQUIRE(distance1 == FrontierDistance::Near);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

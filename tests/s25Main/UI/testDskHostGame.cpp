@@ -68,11 +68,11 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
       ServerType::Lobby, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));
     auto* ci = dynamic_cast<ClientInterface*>(desktop);
     auto* li = dynamic_cast<LobbyInterface*>(desktop);
-    BOOST_REQUIRE(ci && li);
+    BOOST_TEST_REQUIRE((ci && li));
     std::vector<ctrlOptionGroup*> chatTab = desktop->GetCtrls<ctrlOptionGroup>();
-    BOOST_REQUIRE_EQUAL(chatTab.size(), 1u);
+    BOOST_TEST_REQUIRE(chatTab.size() == 1u);
     std::vector<ctrlButton*> chatBts = chatTab.front()->GetCtrls<ctrlButton>();
-    BOOST_REQUIRE_EQUAL(chatBts.size(), 2u);
+    BOOST_TEST_REQUIRE(chatBts.size() == 2u);
 
     WINDOWMANAGER.Draw();
 

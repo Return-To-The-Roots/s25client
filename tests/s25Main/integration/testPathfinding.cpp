@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "RttrForeachPt.h"
+#include "helpers/OptionalIO.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "nodeObjs/noGranite.h"
@@ -106,11 +107,11 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
                 endPt = world.GetNeighbour(endPt, dir);
             unsigned length;
             // Must be able to go there directly
-            BOOST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length));
-            BOOST_REQUIRE_EQUAL(length, 3u);
+            BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(length == 3u);
             // Inverse route
-            BOOST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length));
-            BOOST_REQUIRE_EQUAL(length, 3u);
+            BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(length == 3u);
         }
     }
 }
@@ -138,16 +139,16 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     unsigned length;
     std::vector<Direction> route;
     // Forward route
-    BOOST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length, &route));
-    BOOST_REQUIRE_EQUAL(length, 6u);
-    BOOST_REQUIRE_EQUAL(route.size(), 6u);
+    BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length, &route));
+    BOOST_TEST_REQUIRE(length == 6u);
+    BOOST_TEST_REQUIRE(route.size() == 6u);
     const std::vector<Direction> expectedRoute{Direction::NorthEast, Direction::SouthEast, Direction::SouthEast,
                                                Direction::NorthEast, Direction::East,      Direction::East};
     BOOST_TEST_REQUIRE(route == expectedRoute, boost::test_tools::per_element());
     // Inverse route
-    BOOST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route));
-    BOOST_REQUIRE_EQUAL(length, 6u);
-    BOOST_REQUIRE_EQUAL(route.size(), 6u);
+    BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route));
+    BOOST_TEST_REQUIRE(length == 6u);
+    BOOST_TEST_REQUIRE(route.size() == 6u);
     std::vector<Direction> expectedRevRoute;
     for(Direction dir : expectedRoute | boost::adaptors::reversed)
     {
@@ -193,25 +194,25 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
                 endPt = world.GetNeighbour(endPt, dir);
             // We can't go directly so 1 step detour
             unsigned length;
-            BOOST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length));
-            BOOST_REQUIRE_EQUAL(length, 4u);
+            BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(length == 4u);
             // Inverse route
-            BOOST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length));
-            BOOST_REQUIRE_EQUAL(length, 4u);
+            BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(length == 4u);
             // But road must be constructible
             world.SetFlag(startPt, 0);
             std::vector<Direction> roadRoute(3, dir);
             world.BuildRoad(0, false, startPt, roadRoute);
             Direction revDir(dir + 3u);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), PointRoad::Normal);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), PointRoad::Normal);
+            BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, dir) == PointRoad::Normal);
+            BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, revDir) == PointRoad::Normal);
             world.DestroyFlag(endPt, 0);
             // Reverse direction
             std::vector<Direction> roadRouteRev(3, revDir);
             world.SetFlag(endPt, 0);
             world.BuildRoad(0, false, endPt, roadRouteRev);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), PointRoad::Normal);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), PointRoad::Normal);
+            BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, dir) == PointRoad::Normal);
+            BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, revDir) == PointRoad::Normal);
             world.DestroyFlag(startPt, 0);
             world.DestroyFlag(endPt, 0);
         }
@@ -258,25 +259,25 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
             for(int i = 0; i < 2; i++)
             {
                 unsigned length;
-                BOOST_REQUIRE(world.FindHumanPath(curStartPt, endPt, 99, false, &length));
-                BOOST_REQUIRE_EQUAL(length, 4u);
+                BOOST_TEST_REQUIRE(world.FindHumanPath(curStartPt, endPt, 99, false, &length));
+                BOOST_TEST_REQUIRE(length == 4u);
                 // Inverse route
-                BOOST_REQUIRE(world.FindHumanPath(endPt, curStartPt, 99, false, &length));
-                BOOST_REQUIRE_EQUAL(length, 4u);
+                BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, curStartPt, 99, false, &length));
+                BOOST_TEST_REQUIRE(length == 4u);
                 // No road must be constructible
                 world.SetFlag(startPt, 0);
                 std::vector<Direction> roadRoute(3, dir);
                 world.BuildRoad(0, false, startPt, roadRoute);
                 Direction revDir(dir + 3u);
-                BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), PointRoad::None);
-                BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), PointRoad::None);
+                BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, dir) == PointRoad::None);
+                BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, revDir) == PointRoad::None);
                 world.DestroyFlag(startPt, 0);
                 // Reverse direction
                 std::vector<Direction> roadRouteRev(3, revDir);
                 world.SetFlag(endPt, 0);
                 world.BuildRoad(0, false, endPt, roadRouteRev);
-                BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir), PointRoad::None);
-                BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir), PointRoad::None);
+                BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, revDir) == PointRoad::None);
+                BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, dir) == PointRoad::None);
                 world.DestroyFlag(endPt, 0);
                 // Switch to yellow points. They are placed to be one step left than the direction
                 curStartPt = world.GetNeighbour(curStartPt, dir - 1u);
@@ -297,10 +298,10 @@ BOOST_FIXTURE_TEST_CASE(BlockedPaths, WorldFixtureEmpty0P)
     for(unsigned i = 0; i < 12; i++)
         surroundingPts2.push_back(world.GetNeighbour2(startPt, i));
     for(const MapPoint& pt : surroundingPts2)
-        BOOST_REQUIRE(!world.FindHumanPath(startPt, pt));
+        BOOST_TEST_REQUIRE(!world.FindHumanPath(startPt, pt));
     // Allow left exit
     world.DestroyNO(surroundingPts[0]);
-    BOOST_REQUIRE(world.FindHumanPath(startPt, surroundingPts2[0]));
+    BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, surroundingPts2[0]));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

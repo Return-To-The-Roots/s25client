@@ -55,8 +55,8 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
     bool OnNMSLobbyLogin(unsigned id, const unsigned /*revision*/, const std::string& user, const std::string& pass,
                          const std::string& /*version*/) override
     {
-        BOOST_REQUIRE_EQUAL(user, testUser);
-        BOOST_REQUIRE_EQUAL(pass, s25util::md5(testPw).toString());
+        BOOST_TEST_REQUIRE(user == testUser);
+        BOOST_TEST_REQUIRE(pass == s25util::md5(testPw).toString());
         connections[id].sendQueue.push(new LobbyMessage_Login_Done(testMail));
         return true;
     }
@@ -66,7 +66,7 @@ struct LobbyFixture
 {
     TestLobbySever lobbyServer;
     uint16_t lobbyPort;
-    LobbyFixture() : lobbyPort(5664) { BOOST_REQUIRE(lobbyServer.listen(lobbyPort)); }
+    LobbyFixture() : lobbyPort(5664) { BOOST_TEST_REQUIRE(lobbyServer.listen(lobbyPort)); }
     ~LobbyFixture() { LOBBYCLIENT.Stop(); } // To avoid error msg due to missing server
     void run()
     {
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(LobbyConnectAndChat)
     MOCK_EXPECT(lobby.LC_Connected).once().in(s);
     MOCK_EXPECT(lobby.LC_LoggedIn).once().with(lobbyServer.testMail).in(s);
 
-    BOOST_REQUIRE(LOBBYCLIENT.Login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
+    BOOST_TEST_REQUIRE(LOBBYCLIENT.Login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
     RTTR_REQUIRE_LOG_CONTAINS("Connect", true);
     lobbyServer.run(true);
     for(unsigned i = 0; i < 50; i++)
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(LobbyConnectAndChat)
         if(LOBBYCLIENT.IsLoggedIn())
             break;
     }
-    BOOST_REQUIRE(LOBBYCLIENT.IsLoggedIn());
+    BOOST_TEST_REQUIRE(LOBBYCLIENT.IsLoggedIn());
     RTTR_REQUIRE_LOG_CONTAINS("NMS", true);
 
     // Send a chat message via lobby chat

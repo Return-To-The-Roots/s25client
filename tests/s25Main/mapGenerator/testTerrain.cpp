@@ -25,10 +25,7 @@ using namespace rttr::mapGenerator;
 BOOST_AUTO_TEST_SUITE(TerrainTests)
 
 template<class T_Test>
-void RunTest(T_Test test);
-
-template<class T_Test>
-void RunTest(T_Test test)
+static void RunTest(T_Test test)
 {
     DescIdx<LandscapeDesc> landscape(1);
     WorldDescription worldDesc;
@@ -50,8 +47,8 @@ BOOST_AUTO_TEST_CASE(Restructure_keeps_minimum_and_maximum_values_unchanged)
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            BOOST_REQUIRE(map.z[pt] <= map.height.maximum);
-            BOOST_REQUIRE(map.z[pt] >= map.height.minimum);
+            BOOST_TEST_REQUIRE(map.z[pt] <= map.height.maximum);
+            BOOST_TEST_REQUIRE(map.z[pt] >= map.height.minimum);
         }
     });
 }
@@ -68,7 +65,7 @@ BOOST_AUTO_TEST_CASE(Restructure_increases_height_of_focus_area)
 
         const uint8_t heightAfter = map.z[focus];
 
-        BOOST_REQUIRE(heightAfter > heightBefore);
+        BOOST_TEST_REQUIRE(heightAfter > heightBefore);
     });
 }
 
@@ -87,7 +84,7 @@ BOOST_AUTO_TEST_CASE(Restructure_increases_height_less_when_further_away_from_fo
         const int diffFocus = map.z[focus] - heightBefore;
         const int diffNonFocus = map.z[nonFocus] - heightBefore;
 
-        BOOST_REQUIRE(diffFocus > diffNonFocus);
+        BOOST_TEST_REQUIRE(diffFocus > diffNonFocus);
     });
 }
 

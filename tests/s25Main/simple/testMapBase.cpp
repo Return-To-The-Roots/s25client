@@ -66,21 +66,21 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
             const Position targetPointRaw = pt + (isEvenRow ? evenPtMod : oddPtMod)[dir];
             const MapPoint targetPoint((targetPointRaw.x + world.GetWidth()) % world.GetWidth(),
                                        (targetPointRaw.y + world.GetHeight()) % world.GetHeight());
-            BOOST_REQUIRE_EQUAL(world.CalcDistance(MapPoint(pt), targetPoint), 1u);
+            BOOST_TEST_REQUIRE(world.CalcDistance(MapPoint(pt), targetPoint) == 1u);
 
-            BOOST_REQUIRE_EQUAL(world.GetNeighbour(MapPoint(pt), dir), targetPoint);
+            BOOST_TEST_REQUIRE(world.GetNeighbour(MapPoint(pt), dir) == targetPoint);
             // Consistency check: The inverse must also match
-            BOOST_REQUIRE_EQUAL(world.GetNeighbour(targetPoint, Direction(dir + 3)), MapPoint(pt));
+            BOOST_TEST_REQUIRE(world.GetNeighbour(targetPoint, Direction(dir + 3)) == MapPoint(pt));
             // Also the global function must return the same:
-            BOOST_REQUIRE_EQUAL(::GetNeighbour(Position(pt), dir), targetPointRaw);
-            BOOST_REQUIRE_EQUAL(world.MakeMapPoint(::GetNeighbour(Position(pt), dir)), targetPoint);
+            BOOST_TEST_REQUIRE(::GetNeighbour(Position(pt), dir) == targetPointRaw);
+            BOOST_TEST_REQUIRE(world.MakeMapPoint(::GetNeighbour(Position(pt), dir)) == targetPoint);
         }
 
         // Neighbour 2 -> Radius 2, right circle
         MapPoint curPt(pt);
         MapPoint curTargetPoint = world.GetNeighbour(world.GetNeighbour(curPt, Direction::West), Direction::West);
-        BOOST_REQUIRE_EQUAL(world.CalcDistance(curPt, curTargetPoint), 2u);
-        BOOST_REQUIRE_EQUAL(world.GetNeighbour2(curPt, 0), curTargetPoint);
+        BOOST_TEST_REQUIRE(world.CalcDistance(curPt, curTargetPoint) == 2u);
+        BOOST_TEST_REQUIRE(world.GetNeighbour2(curPt, 0) == curTargetPoint);
         // We now go 2 steps in each direction to describe the circle
         // (Note: Could iterator over directions, but to easily identify errors and make intentions clear we do it
         // explicitely)
@@ -92,20 +92,20 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
         for(unsigned j = 1; j < 12; j++)
         {
             curTargetPoint = world.GetNeighbour(curTargetPoint, steps.at(j - 1));
-            BOOST_REQUIRE_EQUAL(world.CalcDistance(curPt, curTargetPoint), 2u);
-            BOOST_REQUIRE_EQUAL(world.GetNeighbour2(curPt, j), curTargetPoint);
+            BOOST_TEST_REQUIRE(world.CalcDistance(curPt, curTargetPoint) == 2u);
+            BOOST_TEST_REQUIRE(world.GetNeighbour2(curPt, j) == curTargetPoint);
         }
 
         // And finally the points in radius
         std::vector<MapPoint> radiusPts = world.GetPointsInRadiusWithCenter(curPt, 3);
-        BOOST_REQUIRE_EQUAL(radiusPts.size(), 1u + 6u + 12u + 18u);
-        BOOST_REQUIRE_EQUAL(radiusPts[0], curPt);
+        BOOST_TEST_REQUIRE(radiusPts.size() == 1u + 6u + 12u + 18u);
+        BOOST_TEST_REQUIRE(radiusPts[0] == curPt);
         for(const auto j : helpers::EnumRange<Direction>{})
-            BOOST_REQUIRE_EQUAL(radiusPts[rttr::enum_cast(j) + 1], world.GetNeighbour(curPt, j));
+            BOOST_TEST_REQUIRE(radiusPts[rttr::enum_cast(j) + 1] == world.GetNeighbour(curPt, j));
         for(unsigned j = 0; j < 12; j++)
-            BOOST_REQUIRE_EQUAL(radiusPts[j + 7], world.GetNeighbour2(curPt, j));
+            BOOST_TEST_REQUIRE(radiusPts[j + 7] == world.GetNeighbour2(curPt, j));
         for(unsigned j = 0; j < 18; j++)
-            BOOST_REQUIRE_EQUAL(world.CalcDistance(curPt, radiusPts[j + 19]), 3u);
+            BOOST_TEST_REQUIRE(world.CalcDistance(curPt, radiusPts[j + 19]) == 3u);
 
         const std::array<MapPoint, 6> neighbours = world.GetNeighbours(MapPoint(pt));
         for(const auto dir : helpers::EnumRange<Direction>{})
@@ -118,19 +118,19 @@ BOOST_AUTO_TEST_CASE(GetIdx)
     MapBase world;
     // Small world
     world.Resize(MapExtent(100, 50));
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 0)), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(99, 0)), 99u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), 100u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), 101u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(99, 49)), 50u * 100u - 1u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(0, 0)) == 0u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(99, 0)) == 99u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(0, 1)) == 100u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(1, 1)) == 101u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(99, 49)) == 50u * 100u - 1u);
     // Big world.
     world.Resize(MapExtent(MAX_MAP_SIZE, MAX_MAP_SIZE - 2));
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 0)), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(MAX_MAP_SIZE - 1, 0)), MAX_MAP_SIZE - 1);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), MAX_MAP_SIZE);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), MAX_MAP_SIZE + 1u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(MAX_MAP_SIZE - 1, MAX_MAP_SIZE - 3)),
-                        MAX_MAP_SIZE * (MAX_MAP_SIZE - 2u) - 1u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(0, 0)) == 0u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(MAX_MAP_SIZE - 1, 0)) == MAX_MAP_SIZE - 1);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(0, 1)) == MAX_MAP_SIZE);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(1, 1)) == MAX_MAP_SIZE + 1u);
+    BOOST_TEST_REQUIRE(world.GetIdx(MapPoint(MAX_MAP_SIZE - 1, MAX_MAP_SIZE - 3))
+                       == MAX_MAP_SIZE * (MAX_MAP_SIZE - 2u) - 1u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

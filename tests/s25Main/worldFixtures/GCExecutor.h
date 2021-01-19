@@ -36,11 +36,11 @@ protected:
         gc->Serialize(ser);
         gc.reset();
         gc = gc::GameCommand::Deserialize(ser);
-        BOOST_REQUIRE_EQUAL(ser.GetBytesLeft(), 0u);
+        BOOST_TEST_REQUIRE(ser.GetBytesLeft() == 0u);
         Serializer ser2;
         gc->Serialize(ser2);
-        BOOST_REQUIRE_EQUAL(ser2.GetLength(), ser.GetLength());
-        BOOST_REQUIRE_EQUAL(memcmp(ser2.GetData(), ser.GetData(), ser.GetLength()), 0);
+        BOOST_TEST_REQUIRE(ser2.GetLength() == ser.GetLength());
+        BOOST_TEST_REQUIRE(memcmp(ser2.GetData(), ser.GetData(), ser.GetLength()) == 0);
         gc->Execute(GetWorld(), curPlayer);
         return true;
     }

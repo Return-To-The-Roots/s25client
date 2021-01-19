@@ -51,7 +51,7 @@ struct LoadMockupAudio
         auto driver = std::make_unique<MockupAudioDriver>(audioCallbackMock.get());
         audioDriverMock = driver.get();
         AUDIODRIVER.LoadDriver(std::move(driver));
-        BOOST_REQUIRE_NE(AUDIODRIVER.GetName(), "");
+        BOOST_TEST_REQUIRE(AUDIODRIVER.GetName() != "");
     }
     ~LoadMockupAudio() { AUDIODRIVER.UnloadDriver(); }
     /// Return a callable to be used with MOCK_EXPECT(...).calls(...) that loads a sound of the given type

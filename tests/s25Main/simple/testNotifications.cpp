@@ -45,12 +45,12 @@ BOOST_AUTO_TEST_CASE(SubscribeAndNotify)
 
     mgr.publish(TestNote("World"));
 
-    BOOST_CHECK_EQUAL(notes1.size(), 2u);
-    BOOST_CHECK_EQUAL("Hello", notes1[0].text);
-    BOOST_CHECK_EQUAL("World", notes1[1].text);
+    BOOST_TEST(notes1.size() == 2u);
+    BOOST_TEST("Hello" == notes1[0].text);
+    BOOST_TEST("World" == notes1[1].text);
 
-    BOOST_CHECK_EQUAL(notes2.size(), 1u);
-    BOOST_CHECK_EQUAL("World", notes2[0].text);
+    BOOST_TEST(notes2.size() == 1u);
+    BOOST_TEST("World" == notes2[0].text);
 }
 
 BOOST_AUTO_TEST_CASE(Unsubscribe)
@@ -62,19 +62,19 @@ BOOST_AUTO_TEST_CASE(Unsubscribe)
     {
         Subscription subscription2 = mgr.subscribe<TestNote>([&notes2](const auto& note) { notes2.push_back(note); });
         mgr.publish(TestNote("Test"));
-        BOOST_REQUIRE_EQUAL(notes1.size(), 1u);
-        BOOST_REQUIRE_EQUAL(notes2.size(), 1u);
+        BOOST_TEST_REQUIRE(notes1.size() == 1u);
+        BOOST_TEST_REQUIRE(notes2.size() == 1u);
         // subscription2 goes out of scope and should be unregistred...
     }
     // ... but subscription1 should still be active
     mgr.publish(TestNote("Test"));
-    BOOST_CHECK_EQUAL(notes1.size(), 2u);
-    BOOST_CHECK_EQUAL(notes2.size(), 1u);
+    BOOST_TEST(notes1.size() == 2u);
+    BOOST_TEST(notes2.size() == 1u);
     mgr.unsubscribe(subscription1);
     // Nothing active anymore
     mgr.publish(TestNote("Test"));
-    BOOST_CHECK_EQUAL(notes1.size(), 2u);
-    BOOST_CHECK_EQUAL(notes2.size(), 1u);
+    BOOST_TEST(notes1.size() == 2u);
+    BOOST_TEST(notes2.size() == 1u);
 }
 
 BOOST_AUTO_TEST_CASE(DestroyManager)
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(DestroyManager)
         NotificationManager mgr;
         subscription = mgr.subscribe<TestNote>([&notes](const auto& note) { notes.push_back(note); });
         mgr.publish(TestNote("Test"));
-        BOOST_REQUIRE_EQUAL(notes.size(), 1u);
+        BOOST_TEST_REQUIRE(notes.size() == 1u);
         // Manager goes out of scope
     }
     // But we shall not crash when subscription goes out of scope

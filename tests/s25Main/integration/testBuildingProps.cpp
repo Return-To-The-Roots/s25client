@@ -37,19 +37,19 @@ BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
         if(!BuildingProperties::IsValid(bldType))
             continue;
         noBuilding* bld = BuildingFactory::CreateBuilding(world, bldType, bldPos, 0, Nation::Romans);
-        BOOST_REQUIRE(bld);
+        BOOST_TEST_REQUIRE(bld);
         if(BuildingProperties::IsMilitary(bldType))
-            BOOST_REQUIRE(dynamic_cast<nobMilitary*>(bld));
+            BOOST_TEST_REQUIRE(dynamic_cast<nobMilitary*>(bld));
         else
-            BOOST_REQUIRE(!dynamic_cast<nobMilitary*>(bld));
+            BOOST_TEST_REQUIRE(!dynamic_cast<nobMilitary*>(bld));
         if(BuildingProperties::IsWareHouse(bldType))
-            BOOST_REQUIRE(dynamic_cast<nobBaseWarehouse*>(bld));
+            BOOST_TEST_REQUIRE(dynamic_cast<nobBaseWarehouse*>(bld));
         else
-            BOOST_REQUIRE(!dynamic_cast<nobBaseWarehouse*>(bld));
+            BOOST_TEST_REQUIRE(!dynamic_cast<nobBaseWarehouse*>(bld));
         if(BuildingProperties::IsMine(bldType))
-            BOOST_REQUIRE(dynamic_cast<nobUsual*>(bld)); // At least a usual
+            BOOST_TEST_REQUIRE(dynamic_cast<nobUsual*>(bld)); // At least a usual
         if(BuildingProperties::IsUsual(bldType))
-            BOOST_REQUIRE(dynamic_cast<nobUsual*>(bld));
+            BOOST_TEST_REQUIRE(dynamic_cast<nobUsual*>(bld));
         world.DestroyNO(bldPos);
         // Destroy fire
         world.DestroyNO(bldPos);

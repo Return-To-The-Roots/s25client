@@ -36,12 +36,12 @@ struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
         farmPt = world.GetPlayer(0).GetHQPos() + MapPoint(5, 0);
         farm = dynamic_cast<nobUsual*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Farm, farmPt, 0, Nation::Romans));
-        BOOST_REQUIRE(farm);
+        BOOST_TEST_REQUIRE(farm);
         world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SouthEast),
                         std::vector<Direction>(5, Direction::West));
         RTTR_EXEC_TILL(7 * 20 + 60, farm->HasWorker());
         farmer = dynamic_cast<const nofFarmhand*>(farm->GetWorker());
-        BOOST_REQUIRE(farmer);
+        BOOST_TEST_REQUIRE(farmer);
     }
 };
 
@@ -53,14 +53,14 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     // First check points for validity
     // Cannot build directly next to farm
     for(MapPoint pt : radius1Pts)
-        BOOST_REQUIRE(!farmer->IsPointAvailable(pt));
+        BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(pt));
     // Can build everywhere but on road
     for(unsigned dir = 0; dir < 12; dir++)
     {
         if(dir == 11)
-            BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, dir)));
+            BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, dir)));
         else
-            BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, dir)));
+            BOOST_TEST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, dir)));
     }
     // Not on non-vital terrain
     DescIdx<TerrainDesc> tUnvital(0);
@@ -70,28 +70,28 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
             break;
     }
     world.GetNodeWriteable(world.GetNeighbour2(farmPt, 3)).t1 = tUnvital;
-    BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 2)));
-    BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 3)));
-    BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 4)));
+    BOOST_TEST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 2)));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 3)));
+    BOOST_TEST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 4)));
     world.GetNodeWriteable(world.GetNeighbour2(farmPt, 3)).t2 = tUnvital;
-    BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 3)));
-    BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 4)));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 3)));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 4)));
     // Env obj is allowed
     world.SetNO(world.GetNeighbour2(farmPt, 5), new noEnvObject(world.GetNeighbour2(farmPt, 5), 0));
-    BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 5)));
+    BOOST_TEST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 5)));
     // On bld and next to it is not allowed
     world.SetBuildingSite(BuildingType::Watchtower, world.GetNeighbour2(farmPt, 6), 0);
-    BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 6)));
-    BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 7)));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 6)));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 7)));
     // On or next to grain field is not allowed
     const MapPoint grainFieldPos = world.GetNeighbour2(farmPt, 0);
     auto* grainField = new noGrainfield(grainFieldPos);
     world.SetNO(grainFieldPos, grainField);
-    BOOST_REQUIRE(!farmer->IsPointAvailable(grainFieldPos));
-    BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 1)));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(grainFieldPos));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 1)));
     const MapPoint grainFieldPos2 = world.GetNeighbour(world.GetNeighbour2(farmPt, 2), Direction::NorthWest);
     world.SetNO(grainFieldPos2, new noGrainfield(grainFieldPos2));
-    BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 0)));
+    BOOST_TEST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 0)));
 
     // Test farmer behaviour
     for(unsigned i = 0; i < 2; i++)
@@ -108,12 +108,12 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
                 break;
             }
         }
-        BOOST_REQUIRE(newField.isValid());
+        BOOST_TEST_REQUIRE(newField.isValid());
         // Let him get there
         RTTR_EXEC_TILL(60, farmer->GetPos() == newField);
         // Start sawing
         RTTR_SKIP_GFS(50);
-        BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
+        BOOST_TEST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
         if(i == 0)
             world.SetBuildingSite(BuildingType::Woodcutter, newField, 0);
         else
@@ -121,7 +121,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
         // Let farmer return
         RTTR_EXEC_TILL(150, !farm->is_working);
         // Aborted work
-        BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
+        BOOST_TEST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
         // And remove
         if(i == 0)
             world.DestroyFlag(world.GetNeighbour(newField, Direction::SouthEast), 0);
@@ -135,9 +135,9 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     // And started again
     RTTR_EXEC_TILL(150, farm->is_working);
     // Should pick this
-    BOOST_REQUIRE(world.GetNode(grainFieldPos).reserved);
+    BOOST_TEST_REQUIRE(world.GetNode(grainFieldPos).reserved);
     // Wait till farmer stopped working
     RTTR_EXEC_TILL(270, !farm->is_working);
     // Grainfield is gone
-    BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(grainFieldPos));
+    BOOST_TEST_REQUIRE(!world.GetSpecObj<noGrainfield>(grainFieldPos));
 }

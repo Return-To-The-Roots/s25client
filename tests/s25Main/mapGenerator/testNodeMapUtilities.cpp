@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "PointOutput.h"
 #include "helpers/containerUtils.h"
 #include "mapGenerator/NodeMapUtilities.h"
 #include <boost/test/unit_test.hpp>
@@ -27,35 +28,35 @@ BOOST_AUTO_TEST_CASE(GetDifference_returns_maximum_difference_between_range)
 {
     ValueRange<int> range(4, 20);
 
-    BOOST_REQUIRE(range.GetDifference() == 16);
+    BOOST_TEST_REQUIRE(range.GetDifference() == 16);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_minimum_value)
 {
     ValueRange<int> range(4, 20);
 
-    BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0u);
+    BOOST_TEST_REQUIRE(MapValueToIndex(4, range, 100) == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_zero_range)
 {
     ValueRange<int> range(4, 4);
 
-    BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0u);
+    BOOST_TEST_REQUIRE(MapValueToIndex(4, range, 100) == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_expected_index_for_range)
 {
     ValueRange<int> range(10, 20);
 
-    BOOST_REQUIRE(MapValueToIndex(15, range, 100) == 50u);
+    BOOST_TEST_REQUIRE(MapValueToIndex(15, range, 100) == 50u);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_largest_index_for_maximum_value)
 {
     ValueRange<int> range(4, 20);
 
-    BOOST_REQUIRE(MapValueToIndex(20, range, 100) == 99u);
+    BOOST_TEST_REQUIRE(MapValueToIndex(20, range, 100) == 99u);
 }
 
 BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
@@ -68,8 +69,8 @@ BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
 
     auto range = GetRange(values);
 
-    BOOST_REQUIRE(range.minimum == -1);
-    BOOST_REQUIRE(range.maximum == 7);
+    BOOST_TEST_REQUIRE(range.minimum == -1);
+    BOOST_TEST_REQUIRE(range.maximum == 7);
 }
 
 BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
@@ -80,7 +81,7 @@ BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
     MapPoint maximumPoint(3, 5);
     values[maximumPoint] = 5;
 
-    BOOST_REQUIRE(GetMaximumPoint(values) == maximumPoint);
+    BOOST_TEST_REQUIRE(GetMaximumPoint(values) == maximumPoint);
 }
 
 BOOST_AUTO_TEST_CASE(SelectPoints_returns_all_points_which_fulfill_predicate)
@@ -92,10 +93,10 @@ BOOST_AUTO_TEST_CASE(SelectPoints_returns_all_points_which_fulfill_predicate)
     {
         expectedResult.push_back(MapPoint(0, y));
     }
-    BOOST_REQUIRE(expectedResult.size() == result.size());
+    BOOST_TEST_REQUIRE(expectedResult.size() == result.size());
     for(const MapPoint& expectedPoint : expectedResult)
     {
-        BOOST_REQUIRE(helpers::contains(result, expectedPoint));
+        BOOST_TEST_REQUIRE(helpers::contains(result, expectedPoint));
     }
 }
 

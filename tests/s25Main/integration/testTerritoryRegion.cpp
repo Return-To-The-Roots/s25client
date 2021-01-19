@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         {
             // Result for this particular point
             bool result = helpers::contains(results, pt);
-            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, i, pt), result);
+            BOOST_TEST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, i, pt) == result);
         }
     }
 
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
                     pt.x += y - 10;
                 else if(y >= 13)
                     pt.x += 15 - y;
-                BOOST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
+                BOOST_TEST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
                 if(i == 0)
                     results.insert(pt);
             }
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         // Those must be outside
         for(MapPoint pt : outsidePts)
         {
-            BOOST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectArea, pt));
+            BOOST_TEST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectArea, pt));
         }
     }
     // Border points are unspecified, but must be consistently either inside or outside
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         if(isValid)
             results.insert(pt);
         for(unsigned i = 1; i < rectAreas.size(); i++)
-            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt), isValid);
+            BOOST_TEST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt) == isValid);
     }
 
     // Note the usage of width and height to include the border points
@@ -189,29 +189,31 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     std::reverse_copy(fullMapArea.begin(), fullMapArea.end(), fullMapAreaReversed.begin());
 
     for(unsigned i = 0; i < 4; i++)
-    {
-        std::vector<MapPoint> fullArea{MapPoint(0, 0)};
-        if(i < 2)
-            boost::push_back(fullArea, fullMapArea);
-        else
-            boost::push_back(fullArea, fullMapAreaReversed);
-        fullArea.emplace_back(0, 0);
-        if(i % 2 == 0)
-            boost::push_back(fullArea, rectAreas[1]);
-        else
-            boost::push_back(fullArea, rectAreas[3]);
-        fullArea.emplace_back(0, 0);
-
-        // check the whole area
-        RTTR_FOREACH_PT(MapPoint, worldSize)
+        BOOST_TEST_CONTEXT("iteration " << i)
         {
-            // If the point is in the set, it is in the small rect and should not be in the big rect with this as a hole
-            const bool result = !helpers::contains(results, pt);
-            const bool isValid = TerritoryRegion::IsPointValid(worldSize, fullArea, pt);
-            BOOST_REQUIRE_MESSAGE(isValid == result,
-                                  isValid << "!=" << result << " at " << pt << " (iteration " << i << ")");
+            std::vector<MapPoint> fullArea{MapPoint(0, 0)};
+            if(i < 2)
+                boost::push_back(fullArea, fullMapArea);
+            else
+                boost::push_back(fullArea, fullMapAreaReversed);
+            fullArea.emplace_back(0, 0);
+            if(i % 2 == 0)
+                boost::push_back(fullArea, rectAreas[1]);
+            else
+                boost::push_back(fullArea, rectAreas[3]);
+            fullArea.emplace_back(0, 0);
+
+            // check the whole area
+            RTTR_FOREACH_PT(MapPoint, worldSize)
+            {
+                // If the point is in the set, it is in the small rect and should not be in the big rect with this as a
+                // hole
+                const bool result = !helpers::contains(results, pt);
+                const bool isValid = TerritoryRegion::IsPointValid(worldSize, fullArea, pt);
+                BOOST_TEST_INFO(" at " << pt);
+                BOOST_TEST_REQUIRE(isValid == result);
+            }
         }
-    }
 }
 
 // HQ radius = 9, HQs 2 + 5 + 6 = 13 fields apart
@@ -224,10 +226,10 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
     milBldPos[1] = world.MakeMapPoint(milBldPos[0] + Position(5, 4));
     milBldPos[2] = world.MakeMapPoint(milBldPos[0] + Position(5, -4));
     // Distance to HQ must be less than distance to other blds or they will be destroyed on capture
-    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1,
-                     world.CalcDistance(milBldPos[0], milBldPos[1]));
-    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1,
-                     world.CalcDistance(milBldPos[0], milBldPos[2]));
+    BOOST_TEST_REQUIRE(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1
+                       < world.CalcDistance(milBldPos[0], milBldPos[1]));
+    BOOST_TEST_REQUIRE(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1
+                       < world.CalcDistance(milBldPos[0], milBldPos[2]));
     // Create them in different orders. 3 blds -> 6 orders
     for(unsigned i = 0; i < 6; i++)
     {
@@ -272,7 +274,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
 
         TerritoryRegion region(Position(0, 0), Extent(world.GetSize()), world);
         sortedMilitaryBlds buildings = world.LookForMilitaryBuildings(MapPoint(0, 0), 99);
-        BOOST_REQUIRE_EQUAL(buildings.size(), 5u);
+        BOOST_TEST_REQUIRE(buildings.size() == 5u);
         for(const nobBaseMilitary* bld : buildings)
             region.CalcTerritoryOfBuilding(*bld);
         // Check that TerritoryRegion assigned owners as expected

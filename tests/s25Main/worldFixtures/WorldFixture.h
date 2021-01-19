@@ -51,7 +51,7 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
 
 #define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                           \
     gfReturnVar = rttr_exec_till_ct_gf(this->em, maxGFs, [&] { return (cond); }); \
-    BOOST_REQUIRE((cond))
+    BOOST_TEST_REQUIRE((cond))
 
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
 #define RTTR_EXEC_TILL(maxGFs, cond)                       \
@@ -118,8 +118,8 @@ struct WorldFixture
         ggs.setSelection(AddonId::SHIP_SPEED, 4);
         // Explored area stays explored. Avoids fow creation
         ggs.exploration = Exploration::Classic;
-        BOOST_REQUIRE(worldCreator(world));
-        BOOST_REQUIRE_EQUAL(world.GetNumPlayers(), T_numPlayers);
+        BOOST_TEST_REQUIRE(worldCreator(world));
+        BOOST_TEST_REQUIRE(world.GetNumPlayers() == T_numPlayers);
     }
     static PlayerInfo GetPlayer()
     {

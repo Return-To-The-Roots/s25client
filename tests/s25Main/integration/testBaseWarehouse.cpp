@@ -49,13 +49,13 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
         nobBaseWarehouse& hq = *world.GetSpecObj<nobBaseWarehouse>(world.GetPlayer(0).GetHQPos());
         for(const auto i : helpers::enumRange<Job>())
         {
-            BOOST_REQUIRE_EQUAL(hq.GetNumVisualFigures(i), numPeople[i]);
-            BOOST_REQUIRE_EQUAL(hq.GetNumRealFigures(i), numPeople[i]);
+            BOOST_TEST_REQUIRE(hq.GetNumVisualFigures(i) == numPeople[i]);
+            BOOST_TEST_REQUIRE(hq.GetNumRealFigures(i) == numPeople[i]);
         }
         for(const auto i : helpers::enumRange<GoodType>())
         {
-            BOOST_REQUIRE_EQUAL(hq.GetNumVisualWares(i), numGoods[i]);
-            BOOST_REQUIRE_EQUAL(hq.GetNumRealWares(i), numGoods[i]);
+            BOOST_TEST_REQUIRE(hq.GetNumVisualWares(i) == numGoods[i]);
+            BOOST_TEST_REQUIRE(hq.GetNumRealWares(i) == numGoods[i]);
         }
     }
     /// Asserts that the expected and actual good count match for the player
@@ -63,9 +63,9 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
     {
         GamePlayer& player = world.GetPlayer(0);
         for(const auto i : helpers::enumRange<Job>())
-            BOOST_REQUIRE_EQUAL(player.GetInventory()[i], numPeoplePlayer[i]);
+            BOOST_TEST_REQUIRE(player.GetInventory()[i] == numPeoplePlayer[i]);
         for(const auto i : helpers::enumRange<GoodType>())
-            BOOST_REQUIRE_EQUAL(player.GetInventory()[i], numGoodsPlayer[i]);
+            BOOST_TEST_REQUIRE(player.GetInventory()[i] == numGoodsPlayer[i]);
     }
 };
 

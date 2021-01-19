@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(TestPredicate)
     // Create archive of size 3 where first item is "1", second is empty and third is "20"
     libsiedler2::Archiv txt = createTxtArchive({"1", nullptr, "20"});
 
-    BOOST_REQUIRE(compareTxts(txt, "1||20"));
+    BOOST_TEST_REQUIRE(compareTxts(txt, "1||20"));
     BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
     BOOST_TEST(compareTxts(txt, "1||20|2").message().str() == "Item count mismatch [3 != 4]");
     BOOST_TEST(compareTxts(txt, "1||").message().str() == "Unexpected item at 2");
@@ -136,19 +136,19 @@ BOOST_FIXTURE_TEST_CASE(Overrides, CreateTestData)
 
     { // No override
         const auto archive = loader.load(ResolvedFile{mainFile});
-        BOOST_REQUIRE(compareTxts(archive, "0|10"));
+        BOOST_TEST_REQUIRE(compareTxts(archive, "0|10"));
     }
 
     { // 1 override
         // Explicitly loading a file overwrites this and override file is used
         const auto archive = loader.load(ResolvedFile{mainFile, overrideFolder1 / mainFile.filename()});
-        BOOST_REQUIRE(compareTxts(archive, "1|10|20"));
+        BOOST_TEST_REQUIRE(compareTxts(archive, "1|10|20"));
     }
 
     { // 2 overrides
         const auto archive = loader.load(
           ResolvedFile{mainFile, overrideFolder1 / mainFile.filename(), overrideFolder2 / mainFile.filename()});
-        BOOST_REQUIRE(compareTxts(archive, "2|10|20|30"));
+        BOOST_TEST_REQUIRE(compareTxts(archive, "2|10|20|30"));
     }
 
     // Avoid log cluttering
