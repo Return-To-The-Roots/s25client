@@ -248,24 +248,22 @@ namespace rttr { namespace mapGenerator {
     /**
      * Counts the number of values within the specified range.
      *
-     * @param values map of comparable values
+     * @param nodes map of comparable values
      * @param minimum minimum value to consider
      * @param maximum maximum value to consider
      *
      * @returns number of values between the specified minimum and maximum values.
      */
     template<typename T>
-    unsigned Count(const NodeMapBase<T>& values, T minimum, T maximum)
+    unsigned Count(const NodeMapBase<T>& nodes, T minimum, T maximum)
     {
-        unsigned valuesInRange = 0;
-        RTTR_FOREACH_PT(MapPoint, values.GetSize())
-        {
-            if(values[pt] >= minimum && values[pt] <= maximum)
-            {
-                valuesInRange++;
-            }
-        }
-        return valuesInRange;
+        std::function<unsigned(const std::vector<T>&)> countBetween = [minimum, maximum](const std::vector<T>& values) {
+            return static_cast<unsigned>(std::count_if(values.begin(), values.end(), [minimum, maximum](const T value) {
+                return value >= minimum && value <= maximum;
+            }));
+        };
+
+        return nodes.Map(countBetween);
     }
 
     /**
