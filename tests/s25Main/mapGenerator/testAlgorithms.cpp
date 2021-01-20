@@ -230,22 +230,6 @@ BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Count_nodes_in_area_within_thresholds_correctly)
-{
-    MapExtent size(16, 16);
-    NodeMapBase<int> values;
-    values.Resize(size);
-    for(int i = 0; i < size.x * size.y; i++)
-    {
-        values[i] = i;
-    }
-    const std::vector<MapPoint> area{MapPoint(6, 0), MapPoint(7, 0), MapPoint(8, 0), MapPoint(11, 0)};
-
-    const auto result = Count(values, area, 5, 10);
-
-    BOOST_REQUIRE_EQUAL(3u, result);
-}
-
 BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
 {
     MapExtent size(8, 16);

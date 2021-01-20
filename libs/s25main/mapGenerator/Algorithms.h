@@ -237,25 +237,6 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Counts the number of values within the specified range.
-     *
-     * @param values map of comparable values
-     * @param area area of nodes to consider
-     * @param minimum minimum value to consider
-     * @param maximum maximum value to consider
-     *
-     * @returns number of values between the specified minimum and maximum values.
-     */
-    template<typename T, class T_Area>
-    unsigned Count(const NodeMapBase<T>& values, const T_Area& area, T minimum, T maximum)
-    {
-        return static_cast<unsigned>(
-          std::count_if(area.begin(), area.end(), [&values, minimum, maximum](const MapPoint& pt) {
-              return values[pt] >= minimum && values[pt] <= maximum;
-          }));
-    }
-
-    /**
      * Computes an upper limit for the specified values. The number of values between the specified minimum and the
      * computed limit is at least as high as the specified coverage of the map.
      *
@@ -292,9 +273,9 @@ namespace rttr { namespace mapGenerator {
         while(currentNodes < expectedNodes && limit <= maximum)
         {
             previousNodes = currentNodes;
-            currentNodes = std::count_if(values.begin(), values.end(), [minimum, limit](const T value) {
+            currentNodes = static_cast<unsigned>(std::count_if(values.begin(), values.end(), [minimum, limit](const T value) {
                 return value >= minimum && value <= limit;
-            });
+            }));
             limit++;
         }
 
@@ -344,7 +325,9 @@ namespace rttr { namespace mapGenerator {
         while(currentNodes < expectedNodes && limit <= maximum)
         {
             previousNodes = currentNodes;
-            currentNodes = Count(values, area, minimum, limit);
+            currentNodes = static_cast<unsigned>(std::count_if(area.begin(), area.end(), [&values, minimum, limit](const MapPoint& pt) {
+                return values[pt] >= minimum && values[pt] <= limit;
+            }));
             limit++;
         }
 
