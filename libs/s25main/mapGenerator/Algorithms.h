@@ -273,9 +273,10 @@ namespace rttr { namespace mapGenerator {
         while(currentNodes < expectedNodes && limit <= maximum)
         {
             previousNodes = currentNodes;
-            currentNodes = static_cast<unsigned>(std::count_if(values.begin(), values.end(), [minimum, limit](const T value) {
-                return value >= minimum && value <= limit;
-            }));
+            currentNodes =
+              static_cast<unsigned>(std::count_if(values.begin(), values.end(), [minimum, limit](const T value) {
+                  return value >= minimum && value <= limit;
+              }));
             limit++;
         }
 
@@ -325,9 +326,10 @@ namespace rttr { namespace mapGenerator {
         while(currentNodes < expectedNodes && limit <= maximum)
         {
             previousNodes = currentNodes;
-            currentNodes = static_cast<unsigned>(std::count_if(area.begin(), area.end(), [&values, minimum, limit](const MapPoint& pt) {
-                return values[pt] >= minimum && values[pt] <= limit;
-            }));
+            currentNodes = static_cast<unsigned>(
+              std::count_if(area.begin(), area.end(), [&values, minimum, limit](const MapPoint& pt) {
+                  return values[pt] >= minimum && values[pt] <= limit;
+              }));
             limit++;
         }
 
