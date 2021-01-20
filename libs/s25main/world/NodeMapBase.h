@@ -31,7 +31,7 @@ class NodeMapBase final : public MapBase
 
 public:
     using Node = T_Node;
-    
+
     void Resize(const MapExtent& newSize) override;
     void Resize(const MapExtent& newSize, const Node& defaultValue);
 
