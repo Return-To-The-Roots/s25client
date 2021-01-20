@@ -118,22 +118,6 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Finds the maximum value of the map.
-     *
-     * @param values reference to the node map to search for the maximum
-     *
-     * @returns the maximum value of the map.
-     */
-    template<typename T_Value>
-    T_Value GetMaximum(const NodeMapBase<T_Value>& values)
-    {
-        std::function<T_Value(const std::vector<T_Value>&)> calcMax = [](const std::vector<T_Value>& nodes) {
-            return *std::max_element(nodes.begin(), nodes.end());
-        };
-        return values.Map(calcMax);
-    }
-
-    /**
      * Finds the point with the maximum value on the map.
      *
      * @param values reference to the node map to search for the maximum
@@ -143,13 +127,10 @@ namespace rttr { namespace mapGenerator {
     template<typename T_Value>
     MapPoint GetMaximumPoint(const NodeMapBase<T_Value>& values)
     {
-        std::function<MapPoint(const std::vector<T_Value>&)> calcMax = [&values](const std::vector<T_Value>& nodes) {
-            auto maximum = std::max_element(nodes.begin(), nodes.end());
-            auto index = std::distance(nodes.begin(), maximum);
-            return MapPoint(static_cast<unsigned>(index % values.GetWidth()),
-                            static_cast<unsigned>(index / values.GetWidth()));
-        };
-        return values.Map(calcMax);
+        auto maximum = std::max_element(values.begin(), values.end());
+        auto index = std::distance(values.begin(), maximum);
+        return MapPoint(static_cast<unsigned>(index % values.GetWidth()),
+                        static_cast<unsigned>(index / values.GetWidth()));
     }
 
     /**
@@ -162,12 +143,8 @@ namespace rttr { namespace mapGenerator {
     template<typename T_Value>
     ValueRange<T_Value> GetRange(const NodeMapBase<T_Value>& values)
     {
-        std::function<ValueRange<T_Value>(const std::vector<T_Value>&)> calcRange =
-          [](const std::vector<T_Value>& nodes) {
-              auto range = std::minmax_element(nodes.begin(), nodes.end());
-              return ValueRange<T_Value>(*range.first, *range.second);
-          };
-        return values.Map(calcRange);
+        auto range = std::minmax_element(values.begin(), values.end());
+        return ValueRange<T_Value>(*range.first, *range.second);
     }
 
     /**

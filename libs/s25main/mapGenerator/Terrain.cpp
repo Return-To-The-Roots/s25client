@@ -29,7 +29,7 @@ namespace rttr { namespace mapGenerator {
         const MapExtent& size = map.size;
         auto& z = map.z;
         auto distances = Distances(size, predicate);
-        auto maximum = GetMaximum(distances);
+        auto maximum = *std::max_element(distances.begin(), distances.end());
 
         RTTR_FOREACH_PT(MapPoint, size)
         {
@@ -63,7 +63,7 @@ namespace rttr { namespace mapGenerator {
         auto coastDistance = Distances(map.size, isCoast);
 
         auto minimum = static_cast<unsigned>(map.height.minimum);
-        auto maximum = GetMaximum(coastDistance);
+        auto maximum = *std::max_element(coastDistance.begin(), coastDistance.end());
 
         if(maximum > map.height.maximum)
         {

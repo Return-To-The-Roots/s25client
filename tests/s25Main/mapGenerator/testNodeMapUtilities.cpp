@@ -72,16 +72,6 @@ BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
     BOOST_REQUIRE(range.maximum == 7);
 }
 
-BOOST_AUTO_TEST_CASE(GetMaximum_returns_maximum_value)
-{
-    MapExtent size(16, 8);
-    NodeMapBase<int> values;
-    values.Resize(size, 4);
-    values[7] = 5;
-
-    BOOST_REQUIRE(GetMaximum(values) == 5);
-}
-
 BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
 {
     MapExtent size(16, 8);

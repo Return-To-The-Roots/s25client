@@ -31,7 +31,7 @@ class NodeMapBase final : public MapBase
 
 public:
     using Node = T_Node;
-
+    
     void Resize(const MapExtent& newSize) override;
     void Resize(const MapExtent& newSize, const Node& defaultValue);
 
@@ -41,8 +41,8 @@ public:
     Node& operator[](const MapPoint& pt);
     const Node& operator[](const MapPoint& pt) const;
 
-    template<typename T_Result>
-    T_Result Map(std::function<T_Result(const std::vector<Node>&)> func) const;
+    typename std::vector<Node>::const_iterator begin() const noexcept { return nodes.begin(); }
+    typename std::vector<Node>::const_iterator end() const noexcept { return nodes.end(); }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,11 +74,4 @@ void NodeMapBase<T_Node>::Resize(const MapExtent& newSize, const T_Node& default
     MapBase::Resize(newSize);
     nodes.clear();
     nodes.resize(prodOfComponents(newSize), defaultValue);
-}
-
-template<typename T_Node>
-template<typename T_Result>
-T_Result NodeMapBase<T_Node>::Map(std::function<T_Result(const std::vector<T_Node>&)> func) const
-{
-    return func(nodes);
 }
