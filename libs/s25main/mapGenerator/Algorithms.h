@@ -239,27 +239,6 @@ namespace rttr { namespace mapGenerator {
     /**
      * Counts the number of values within the specified range.
      *
-     * @param nodes map of comparable values
-     * @param minimum minimum value to consider
-     * @param maximum maximum value to consider
-     *
-     * @returns number of values between the specified minimum and maximum values.
-     */
-    template<typename T>
-    unsigned Count(const NodeMapBase<T>& nodes, T minimum, T maximum)
-    {
-        std::function<unsigned(const std::vector<T>&)> countBetween = [minimum, maximum](const std::vector<T>& values) {
-            return static_cast<unsigned>(std::count_if(values.begin(), values.end(), [minimum, maximum](const T value) {
-                return value >= minimum && value <= maximum;
-            }));
-        };
-
-        return nodes.Map(countBetween);
-    }
-
-    /**
-     * Counts the number of values within the specified range.
-     *
      * @param values map of comparable values
      * @param area area of nodes to consider
      * @param minimum minimum value to consider
@@ -295,7 +274,7 @@ namespace rttr { namespace mapGenerator {
             throw std::invalid_argument("coverage must be between 0 and 1");
         }
 
-        const T maximum = GetMaximum(values);
+        const T maximum = *std::max_element(values.begin(), values.end());
 
         if(minimum == maximum)
         {
@@ -313,7 +292,9 @@ namespace rttr { namespace mapGenerator {
         while(currentNodes < expectedNodes && limit <= maximum)
         {
             previousNodes = currentNodes;
-            currentNodes = Count(values, minimum, limit);
+            currentNodes = std::count_if(values.begin(), values.end(), [minimum, limit](const T value) {
+                return value >= minimum && value <= limit;
+            });
             limit++;
         }
 

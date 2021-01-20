@@ -230,21 +230,6 @@ BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Count_all_nodes_within_thresholds_correctly)
-{
-    MapExtent size(8, 16);
-    NodeMapBase<int> values;
-    values.Resize(size);
-    for(int i = 0; i < size.x * size.y; i++)
-    {
-        values[i] = i;
-    }
-
-    auto result = Count(values, 5, 10);
-
-    BOOST_REQUIRE_EQUAL(6u, result);
-}
-
 BOOST_AUTO_TEST_CASE(Count_nodes_in_area_within_thresholds_correctly)
 {
     MapExtent size(16, 16);

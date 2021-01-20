@@ -64,9 +64,9 @@ namespace rttr { namespace mapGenerator {
             throw std::invalid_argument("sea level must be below mountain level by at least 2");
         }
 
-        const uint8_t maximum = GetMaximum(z_);
+        const uint8_t maximum = *std::max_element(z_.begin(), z_.end());
         std::vector<DescIdx<TerrainDesc>> mapping(maximum + 1);
-        auto waterTexture = textureMap_.Find(IsShipableWater);
+        const auto waterTexture = textureMap_.Find(IsShipableWater);
         auto landTextures = textureMap_.FindAll(IsBuildableLand);
         textureMap_.Sort(landTextures, ByHumidity);
         auto mountainTextures = textureMap_.FindAll(IsMinableMountain);
