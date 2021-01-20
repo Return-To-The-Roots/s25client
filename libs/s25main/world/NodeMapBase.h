@@ -31,7 +31,7 @@ class NodeMapBase final : public MapBase
 
 public:
     using Node = T_Node;
-    typedef typename std::vector<Node>::const_iterator const_iterator;
+    using const_iterator = typename std::vector<Node>::const_iterator;
 
     void Resize(const MapExtent& newSize) override;
     void Resize(const MapExtent& newSize, const Node& defaultValue);
