@@ -145,16 +145,13 @@ namespace rttr { namespace mapGenerator {
         const bool odd = p.y & 1;
         const bool rsu = t.rsu;
 
-        int x1 = p.x + (rsu ? -1 : 1);
-        int y1 = p.y;
+        const int x1 = p.x + (rsu ? -1 : 1);
+        const int y1 = p.y;
 
-        int x2 = p.x + (!odd ? -1 : 0) + (!rsu ? 1 : 0);
-        int y2 = p.y + (rsu ? 1 : -1);
+        const int x2 = p.x + (!odd ? -1 : 0) + (!rsu ? 1 : 0);
+        const int y2 = p.y + (rsu ? 1 : -1);
 
-        const MapPoint& p1 = MakeMapPoint(Position(x1, y1), size);
-        const MapPoint& p2 = MakeMapPoint(Position(x2, y2), size);
-
-        return {t.Inverse(), t.Inverse(p1), t.Inverse(p2)};
+        return {Triangle(!rsu, p), Triangle(!rsu, Position(x1, y1), size), Triangle(!rsu, Position(x2, y2), size)};
     }
 
     std::array<MapPoint, 3> GetTriangleEdges(const Triangle& t, const MapExtent& size)
