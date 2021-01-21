@@ -16,12 +16,12 @@ set_target_properties(s25Common PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_EXTE
 target_compile_features(s25Common PUBLIC cxx_std_14)
 
 if(RTTR_Assert_Enabled EQUAL 0)
-	target_compile_definitions(s25Common PUBLIC RTTR_ENABLE_ASSERTS=0)
+    target_compile_definitions(s25Common PUBLIC RTTR_ENABLE_ASSERTS=0)
 elseif(RTTR_Assert_Enabled EQUAL 1)
-	target_compile_definitions(s25Common PUBLIC RTTR_ENABLE_ASSERTS=1)
+    target_compile_definitions(s25Common PUBLIC RTTR_ENABLE_ASSERTS=1)
 endif()
 if(HAVE_STRUCT_TIMESPEC)
-	target_compile_definitions(s25Common PUBLIC HAVE_STRUCT_TIMESPEC)
+    target_compile_definitions(s25Common PUBLIC HAVE_STRUCT_TIMESPEC)
 endif()
 
 if(WIN32)

@@ -4,11 +4,11 @@ add_library(rttrConfig STATIC
   src/RTTR_Version.h
   src/RttrConfig.cpp
   src/RttrConfig.h
-)  
+)
 target_include_directories(rttrConfig INTERFACE src)
 target_link_libraries(rttrConfig
-	PUBLIC s25util::common Boost::filesystem
-	PRIVATE s25Common
+    PUBLIC s25util::common Boost::filesystem
+    PRIVATE s25Common
 )
 set_property(TARGET rttrConfig PROPERTY POSITION_INDEPENDENT_CODE ON)
 

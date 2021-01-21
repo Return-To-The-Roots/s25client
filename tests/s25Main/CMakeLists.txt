@@ -1,6 +1,6 @@
 get_filename_component(RTTR_BASE_DIR "${CMAKE_SOURCE_DIR}" ABSOLUTE)
 set(RTTR_LIBSIEDLER2_TEST_FILES_DIR "${RTTR_BASE_DIR}/external/libsiedler2/tests/testFiles")
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/testConfig.h.cmake include/test/testConfig.h @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testConfig.h.cmake include/test/testConfig.h @ONLY)
 unset(RTTR_BASE_DIR)
 unset(RTTR_LIBSIEDLER2_TEST_FILES_DIR)
 
