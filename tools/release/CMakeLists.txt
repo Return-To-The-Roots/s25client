@@ -34,7 +34,7 @@ elseif(APPLE)
     else()
         set(APP "\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}")
         set(DIRS "${CMAKE_BINARY_DIR}")
-        # Path used for searching by FIND_XXX(), with appropriate suffixes added
+        # Path used for searching by find_xxx(), with appropriate suffixes added
         if(CMAKE_PREFIX_PATH)
             foreach(dir ${CMAKE_PREFIX_PATH})
                 list(APPEND DIRS "${dir}/bin" "${dir}/lib")

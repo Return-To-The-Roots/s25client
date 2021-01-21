@@ -18,7 +18,7 @@ set(sdl2_extra_required "")
 # Invoke pkgconfig for hints
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-	pkg_search_module(PC_SDL2 QUIET sdl2)
+    pkg_search_module(PC_SDL2 QUIET sdl2)
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -28,31 +28,31 @@ else()
 endif()
 
 find_path(SDL2_INCLUDE_DIR NAMES SDL_haptic.h # this file was introduced with SDL2
-	HINTS ${PC_SDL2_INCLUDE_DIRS}
-	PATHS ${SDL2_ROOT_DIR}
+    HINTS ${PC_SDL2_INCLUDE_DIRS}
+    PATHS ${SDL2_ROOT_DIR}
           ENV SDL2DIR
-	PATH_SUFFIXES include/SDL2 SDL2 include
+    PATH_SUFFIXES include/SDL2 SDL2 include
 )
 
-find_library(SDL2_LIBRARY NAMES	SDL2
-	HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
-	PATHS ${SDL2_ROOT_DIR}
+find_library(SDL2_LIBRARY NAMES    SDL2
+    HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
+    PATHS ${SDL2_ROOT_DIR}
           ENV SDL2DIR
-	PATH_SUFFIXES SDL2 lib ${sdl2_lib_suffix} lib/${sdl2_lib_suffix}
+    PATH_SUFFIXES SDL2 lib ${sdl2_lib_suffix} lib/${sdl2_lib_suffix}
 )
 
 if(WIN32 AND SDL2_LIBRARY)
-	find_file(SDL2_RUNTIME_LIBRARY NAMES SDL2.dll libSDL2.dll
-		HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
-		PATHS ${SDL2_ROOT_DIR}
+    find_file(SDL2_RUNTIME_LIBRARY NAMES SDL2.dll libSDL2.dll
+        HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
+        PATHS ${SDL2_ROOT_DIR}
               ENV SDL2DIR
-		PATH_SUFFIXES bin lib ${sdl2_lib_suffix} bin/${sdl2_lib_suffix}
+        PATH_SUFFIXES bin lib ${sdl2_lib_suffix} bin/${sdl2_lib_suffix}
     )
 endif()
 
 if(NOT SDL2_INCLUDE_DIR MATCHES ".framework")
-	list(APPEND sdl2_extra_required SDL2_SDL2MAIN_LIBRARY)
-	find_library(SDL2_SDL2MAIN_LIBRARY NAMES SDL2main
+    list(APPEND sdl2_extra_required SDL2_SDL2MAIN_LIBRARY)
+    find_library(SDL2_SDL2MAIN_LIBRARY NAMES SDL2main
         HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
         PATHS ${SDL2_ROOT_DIR}
               ENV SDL2DIR
@@ -61,8 +61,8 @@ if(NOT SDL2_INCLUDE_DIR MATCHES ".framework")
 endif()
 
 if(MINGW)
-	find_library(SDL2_MINGW_LIBRARY mingw32)
-	list(APPEND sdl2_extra_required SDL2_MINGW_LIBRARY)
+    find_library(SDL2_MINGW_LIBRARY mingw32)
+    list(APPEND sdl2_extra_required SDL2_MINGW_LIBRARY)
 endif()
 
 if(SDL2_INCLUDE_DIR AND EXISTS "${SDL2_INCLUDE_DIR}/SDL_version.h")
@@ -99,11 +99,11 @@ if(SDL2_FOUND)
             )
         else()
             add_library(SDL2::SDL2 UNKNOWN IMPORTED)
-	    if(APPLE AND SDL2_LIBRARY MATCHES "/([^/]*).framework$")
-	        set(sdl2_location "${SDL2_LIBRARY}/${CMAKE_MATCH_1}")
-	    else()
-		set(sdl2_location "${SDL2_LIBRARY}")
-	    endif()
+        if(APPLE AND SDL2_LIBRARY MATCHES "/([^/]*).framework$")
+            set(sdl2_location "${SDL2_LIBRARY}/${CMAKE_MATCH_1}")
+        else()
+        set(sdl2_location "${SDL2_LIBRARY}")
+        endif()
             set_target_properties(SDL2::SDL2 PROPERTIES
                 IMPORTED_LOCATION "${sdl2_location}"
                 INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIR}"
@@ -139,8 +139,8 @@ if(SDL2_FOUND)
 endif()
 
 mark_as_advanced(SDL2_LIBRARY
-	SDL2_RUNTIME_LIBRARY
-	SDL2_INCLUDE_DIR
-	SDL2_SDL2MAIN_LIBRARY
-	SDL2_MINGW_LIBRARY
+    SDL2_RUNTIME_LIBRARY
+    SDL2_INCLUDE_DIR
+    SDL2_SDL2MAIN_LIBRARY
+    SDL2_MINGW_LIBRARY
 )

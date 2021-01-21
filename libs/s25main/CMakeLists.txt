@@ -1,12 +1,12 @@
 find_package(BZip2 1.0.6 REQUIRED)
 gather_dll(BZIP2)
 
-SET(SOURCES_SUBDIRS )
-MACRO(AddDirectory dir)
-    FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
-    SET(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
-    SOURCE_GROUP(${dir} FILES ${SUB_FILES})
-ENDMACRO()
+set(SOURCES_SUBDIRS )
+macro(AddDirectory dir)
+    file(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
+    set(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
+    source_group(${dir} FILES ${SUB_FILES})
+endmacro()
 
 AddDirectory(addons)
 AddDirectory(ai)
@@ -33,15 +33,15 @@ AddDirectory(postSystem)
 AddDirectory(random)
 AddDirectory(resources)
 AddDirectory(world)
-FILE(GLOB SOURCES_OTHER *.cpp *.h)
-SOURCE_GROUP(other FILES ${SOURCES_OTHER})
+file(GLOB SOURCES_OTHER *.cpp *.h)
+source_group(other FILES ${SOURCES_OTHER})
 
-SET(s25Main_SRCS
+set(s25Main_SRCS
     ${SOURCES_OTHER}
     ${SOURCES_SUBDIRS}
 )
 
-ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
+add_library(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(s25Main PUBLIC cxx_std_14)

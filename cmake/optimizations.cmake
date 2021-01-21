@@ -66,8 +66,8 @@ int main(int argc, char** argv){
 
     if(APPLE)
         # ppc only?
-        IF(CMAKE_OSX_ARCHITECTURES MATCHES "^ppc[^;]*$")
+        if(CMAKE_OSX_ARCHITECTURES MATCHES "^ppc[^;]*$")
             CheckAndAddFlags(-faltivec -maltivec) # Clang and GCC version
-        ENDIF()
+        endif()
     endif()
 endif()
