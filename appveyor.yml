@@ -33,7 +33,7 @@ for:
       only:
         - image: Visual Studio 2017
     environment:
-      BOOST_ROOT: C:\Libraries\boost_1_67_0
+      BOOST_ROOT: C:\Libraries\boost_1_69_0
       GENERATOR: Visual Studio 15 2017
 
 install:

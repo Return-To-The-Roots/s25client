@@ -35,9 +35,6 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
-if(CMAKE_VERSION VERSION_LESS 3.11)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/cmake_3.11.0")
-endif()
 if(CMAKE_VERSION VERSION_LESS 3.14)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/libutil/cmake/cmake_3.14")
 endif()
@@ -301,15 +298,15 @@ if(EXISTS ${rttrContribBoostDir} AND IS_DIRECTORY ${rttrContribBoostDir})
     set(BOOST_ROOT ${rttrContribBoostDir} CACHE PATH "Path to find boost at")
 endif()
 
-set(BoostPackages filesystem program_options)
+set(BoostPackages filesystem iostreams locale program_options)
 if(BUILD_TESTING)
     # Avoid having to search for this in all tests speeding up configure
     list(APPEND BoostPackages unit_test_framework)
 endif()
 
-find_package(Boost 1.65.1 COMPONENTS ${BoostPackages})
+find_package(Boost 1.69 COMPONENTS ${BoostPackages})
 if(NOT Boost_FOUND)
-    message(FATAL_ERROR "You have to install boost (>=1.64) into contrib/boost or set (as CMake or environment variable) "
+    message(FATAL_ERROR "You have to install boost (>=1.69) into contrib/boost or set (as CMake or environment variable) "
     "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
     "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}') "
     "since cmake was unable to find boost!")
