@@ -133,7 +133,7 @@ Then just run (tests or application) as usual.
     - press OK
 - If you haven't installed boost, install boost
   Fast Way:
-  - extract boost-1.64.zip (i.e to external/boost, so that external/boost/bootstrap.bat exist)
+  - extract boost-1.69.zip (i.e to external/boost, so that external/boost/bootstrap.bat exist)
   - run that "bootstrap.bat"
   - run created "b2.exe": this should build boost
     Notice: if you have multiple Visual Studio versions installed, use the latest one with the "toolset"-parameter.
