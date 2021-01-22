@@ -174,8 +174,8 @@ namespace rttr { namespace mapGenerator {
         const auto water = textureMap_.Find(IsWater);
         const auto boulder = textureMap_.Find(IsBuildableMountain);
         const auto swamp = textureMap_.Find(IsSwamp);
-        ReplaceTextures(textures_, 0, nodes, swamp, { water });
-        ReplaceTextures(textures_, 1, nodes, boulder, { swamp, water });
+        ReplaceTextures(textures_, 0, nodes, swamp, {water});
+        ReplaceTextures(textures_, 1, nodes, boulder, {swamp, water});
     }
 
     void Texturizer::AddTextures(unsigned mountainLevel, unsigned coastline)
