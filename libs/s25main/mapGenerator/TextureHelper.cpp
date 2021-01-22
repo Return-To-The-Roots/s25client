@@ -23,6 +23,8 @@ namespace rttr { namespace mapGenerator {
 
     bool IsWater(const TerrainDesc& terrain) { return terrain.kind == TerrainKind::Water; }
 
+    bool IsSwamp(const TerrainDesc& terrain) { return !terrain.Is(ETerrain::Walkable) && terrain.humidity > 0; }
+
     bool IsLand(const TerrainDesc& terrain) { return terrain.kind == TerrainKind::Land; }
 
     bool IsShipableWater(const TerrainDesc& terrain)

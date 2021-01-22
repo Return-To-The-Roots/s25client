@@ -132,12 +132,9 @@ namespace rttr { namespace mapGenerator {
 
         // exclude mountain & water textures from being replaced by water-land transition
         std::set<DescIdx<TerrainDesc>> excludedTextures;
-        auto mountainTextures = textureMap_.FindAll(IsMountainOrSnowOrLava);
-        auto water = textureMap_.Find(IsShipableWater);
-        for(const auto& mountainTexture : mountainTextures)
-        {
-            excludedTextures.insert(mountainTexture);
-        }
+        const auto mountainTextures = textureMap_.FindAll(IsMountainOrSnowOrLava);
+        const auto water = textureMap_.Find(IsShipableWater);
+        excludedTextures.insert(mountainTextures.begin(), mountainTextures.end());
         excludedTextures.insert(water);
 
         for(unsigned i = 0; i < transitionTextures.size(); ++i)
@@ -170,6 +167,17 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
+    void Texturizer::ApplyMountainWaterTransitions(const std::vector<MapPoint>& transitions)
+    {
+        std::set<MapPoint, MapPointLess> nodes;
+        nodes.insert(transitions.begin(), transitions.end());
+        const auto water = textureMap_.Find(IsWater);
+        const auto boulder = textureMap_.Find(IsBuildableMountain);
+        const auto swamp = textureMap_.Find(IsSwamp);
+        ReplaceTextures(textures_, 0, nodes, swamp, { water });
+        ReplaceTextures(textures_, 1, nodes, boulder, { swamp, water });
+    }
+
     void Texturizer::AddTextures(unsigned mountainLevel, unsigned coastline)
     {
         ApplyTexturingByHeightMap(mountainLevel);
@@ -190,13 +198,21 @@ namespace rttr { namespace mapGenerator {
 
         ApplyCoastTexturing(coast, coastline);
 
-        auto mountainFoot = SelectPoints(
+        const auto mountainFoot = SelectPoints(
           [this](const MapPoint& pt) {
               return this->textureMap_.Any(pt, IsMinableMountain) && !this->textureMap_.All(pt, IsMountainOrSnowOrLava);
           },
           this->textures_.GetSize());
 
         ApplyMountainTransitions(mountainFoot);
+
+        const auto moutainWaterTransition = SelectPoints(
+          [this](const MapPoint& pt) {
+              return this->textureMap_.Any(pt, IsMinableMountain) && this->textureMap_.Any(pt, IsWater);
+          },
+          this->textures_.GetSize());
+
+        ApplyMountainWaterTransitions(moutainWaterTransition);
     }
 
     void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, DescIdx<TerrainDesc> texture,
