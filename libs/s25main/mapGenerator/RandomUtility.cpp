@@ -37,10 +37,7 @@ namespace rttr { namespace mapGenerator {
 
     unsigned RandomUtility::Index(const size_t& size) { return RandomValue(0u, static_cast<unsigned>(size - 1)); }
 
-    MapPoint RandomUtility::Point(const MapExtent& size)
-    {
-        return MapPoint(Index(size.x), Index(size.y));
-    }
+    MapPoint RandomUtility::Point(const MapExtent& size) { return MapPoint(Index(size.x), Index(size.y)); }
 
     double RandomUtility::RandomDouble(double min, double max)
     {
