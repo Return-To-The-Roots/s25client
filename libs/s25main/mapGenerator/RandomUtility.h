@@ -52,6 +52,15 @@ namespace rttr { namespace mapGenerator {
         unsigned Index(const size_t& size);
 
         /**
+         * Creates a random point within the specified size.
+         *
+         * @param size size of the map
+         *
+         * @return a random point on the map.
+         */
+        MapPoint Point(const MapExtent& size);
+
+        /**
          * Returns a random item.
          *
          * @param items collection of all items to choose from

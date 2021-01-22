@@ -35,7 +35,7 @@ namespace rttr { namespace mapGenerator {
     {
         MapSettings()
             : numPlayers(2), size(MapExtent::all(128)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15),
-              type(0), style(MapStyle::Mixed)
+              rivers(15), type(0), style(MapStyle::Mixed)
         {}
 
         void MakeValid();
@@ -47,6 +47,7 @@ namespace rttr { namespace mapGenerator {
         unsigned short ratioIron;
         unsigned short ratioCoal;
         unsigned short ratioGranite;
+        unsigned short rivers;
         DescIdx<LandscapeDesc> type;
         MapStyle style;
     };
