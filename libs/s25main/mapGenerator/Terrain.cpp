@@ -28,7 +28,7 @@ namespace rttr { namespace mapGenerator {
     {
         const MapExtent& size = map.size;
         auto& z = map.z;
-        auto distances = Distances(size, predicate);
+        auto distances = DistancesTo(SelectPoints(predicate, size), size);
         auto maximum = *std::max_element(distances.begin(), distances.end());
 
         RTTR_FOREACH_PT(MapPoint, size)
@@ -59,8 +59,7 @@ namespace rttr { namespace mapGenerator {
         }
 
         auto isCoast = [&z, &map](const MapPoint& pt) { return z[pt] == map.height.minimum; };
-
-        auto coastDistance = Distances(map.size, isCoast);
+        auto coastDistance = DistancesTo(SelectPoints(isCoast, map.size), map.size);
 
         auto minimum = static_cast<unsigned>(map.height.minimum);
         auto maximum = *std::max_element(coastDistance.begin(), coastDistance.end());

@@ -72,8 +72,7 @@ namespace rttr { namespace mapGenerator {
             return helpers::contains_if(rivers, [&pt](const River& river) { return river.find(pt) != river.end(); });
         };
 
-        auto distanceToRiver = Distances(map.size, isPartOfRiver);
-
+        auto distanceToRiver = DistancesTo(SelectPoints(isPartOfRiver, map.size), map.size);
         auto allWater = [&map](const MapPoint& pt) { return map.textureMap.All(pt, IsWater); };
 
         auto isCoast = [&map, allWater, &distanceToRiver](const MapPoint& pt) {

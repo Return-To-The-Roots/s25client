@@ -28,7 +28,7 @@ namespace rttr { namespace mapGenerator {
 
         auto isLand = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
 
-        const auto& distances = Distances(map.size, isLand);
+        const auto& distances = DistancesTo(SelectPoints(isLand, map.size), map.size);
         const auto center = GetMaximumPoint(distances);
 
         auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {

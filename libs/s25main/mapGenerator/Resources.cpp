@@ -97,10 +97,10 @@ namespace rttr { namespace mapGenerator {
 
         auto& textureMap = map.textureMap;
         auto mountainDistance =
-          Distances(map.size, [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsMountainOrSnowOrLava); });
+        DistancesTo(SelectPoints([&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsMountainOrSnowOrLava); }, map.size), map.size);
 
         auto waterDistance =
-          Distances(map.size, [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsWater); });
+        DistancesTo(SelectPoints([&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsWater); }, map.size), map.size);
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
@@ -116,9 +116,9 @@ namespace rttr { namespace mapGenerator {
         auto probRange = ValueRange<unsigned>(15, 40);
         auto probDiff = probRange.GetDifference();
 
-        auto mountainDepth =
-          Distances(map.size, [&map](const MapPoint& pt) { return !map.textureMap.All(pt, IsMountainOrSnowOrLava); });
-        auto mountainRange = GetRange(mountainDepth);
+        const auto mountainDepth =
+        DistancesTo(SelectPoints([&map](const MapPoint& pt) { return !map.textureMap.All(pt, IsMountainOrSnowOrLava); }, map.size), map.size);
+        const auto mountainRange = GetRange(mountainDepth);
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
