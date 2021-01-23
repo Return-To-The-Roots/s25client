@@ -38,6 +38,7 @@ enum
     CTRL_TXT_COAL,
     CTRL_TXT_GRANITE,
     CTRL_TXT_RIVERS,
+    CTRL_TXT_MOUNTAIN_DIST,
     CTRL_PLAYER_NUMBER,
     CTRL_MAP_STYLE,
     CTRL_MAP_SIZE,
@@ -46,11 +47,12 @@ enum
     CTRL_RATIO_IRON,
     CTRL_RATIO_COAL,
     CTRL_RATIO_GRANITE,
-    CTRL_RIVERS
+    CTRL_RIVERS,
+    CTRL_MOUNTAIN_DIST
 };
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
-    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 380), _("Map Generator"),
+    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 410), _("Map Generator"),
                    LOADER.GetImageN("resource", 41), true),
       mapSettings(settings)
 {
@@ -62,8 +64,8 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         return;
     }
 
-    AddTextButton(CTRL_BTN_BACK, DrawPoint(20, 340), Extent(100, 20), TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(CTRL_BTN_APPLY, DrawPoint(130, 340), Extent(100, 20), TextureColor::Green2, _("Apply"), NormalFont);
+    AddTextButton(CTRL_BTN_BACK, DrawPoint(20, 370), Extent(100, 20), TextureColor::Red1, _("Back"), NormalFont);
+    AddTextButton(CTRL_BTN_APPLY, DrawPoint(130, 370), Extent(100, 20), TextureColor::Green2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo =
       AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
@@ -87,17 +89,24 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     for(unsigned i = 0; i < desc.landscapes.size(); i++)
         combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
-    AddText(CTRL_TXT_GOAL, DrawPoint(20, 175), _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 170), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
-    AddText(CTRL_TXT_IRON, DrawPoint(20, 205), _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_IRON, DrawPoint(100, 200), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
-    AddText(CTRL_TXT_COAL, DrawPoint(20, 235), _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_COAL, DrawPoint(100, 230), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
-    AddText(CTRL_TXT_GRANITE, DrawPoint(20, 265), _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 260), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
+    AddText(CTRL_TXT_MOUNTAIN_DIST, DrawPoint(20, 170), _("Mountain Distance"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = AddComboBox(CTRL_MOUNTAIN_DIST, DrawPoint(20, 190), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
+    combo->AddString(_("Close"));
+    combo->AddString(_("Normal"));
+    combo->AddString(_("Far"));
+    combo->AddString(_("Very far"));
 
-    AddText(CTRL_TXT_RIVERS, DrawPoint(20, 295), _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RIVERS, DrawPoint(100, 290), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
+    AddText(CTRL_TXT_GOAL, DrawPoint(20, 225), _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 220), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
+    AddText(CTRL_TXT_IRON, DrawPoint(20, 255), _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_RATIO_IRON, DrawPoint(100, 250), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
+    AddText(CTRL_TXT_COAL, DrawPoint(20, 285), _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_RATIO_COAL, DrawPoint(100, 280), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
+    AddText(CTRL_TXT_GRANITE, DrawPoint(20, 315), _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 310), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
+
+    AddText(CTRL_TXT_RIVERS, DrawPoint(20, 345), _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_RIVERS, DrawPoint(100, 340), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
 
     Reset();
 }
@@ -128,6 +137,14 @@ void iwMapGenerator::Apply()
     mapSettings.ratioGranite = GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->GetPosition();
     mapSettings.rivers = GetCtrl<ctrlProgress>(CTRL_RIVERS)->GetPosition();
 
+    switch (GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->GetSelection().get())
+    {
+        case 0: mapSettings.mountainDistance = MountainDistance::Close; break;
+        case 1: mapSettings.mountainDistance = MountainDistance::Normal; break;
+        case 2: mapSettings.mountainDistance = MountainDistance::Far; break;
+        case 3: mapSettings.mountainDistance = MountainDistance::VeryFar; break;
+        default: break;
+    }
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection().get())
     {
         case 0: mapSettings.style = MapStyle::Water; break;
@@ -162,6 +179,16 @@ void iwMapGenerator::Reset()
     GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->SetPosition(mapSettings.ratioCoal);
     GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(mapSettings.ratioGranite);
     GetCtrl<ctrlProgress>(CTRL_RIVERS)->SetPosition(mapSettings.rivers);
+
+    combo = GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST);
+    switch(mapSettings.mountainDistance)
+    {
+        case MountainDistance::Close: combo->SetSelection(0); break;
+        case MountainDistance::Normal: combo->SetSelection(1); break;
+        case MountainDistance::Far: combo->SetSelection(2); break;
+        case MountainDistance::VeryFar: combo->SetSelection(3); break;
+        default: break;
+    }
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
     switch(mapSettings.style)

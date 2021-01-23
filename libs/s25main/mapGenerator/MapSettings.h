@@ -31,11 +31,19 @@ namespace rttr { namespace mapGenerator {
         Mixed
     };
 
+    enum class MountainDistance
+    {
+        Close   = 5,
+        Normal  = 20,
+        Far     = 30,
+        VeryFar = 50
+    };
+
     struct MapSettings
     {
         MapSettings()
             : numPlayers(2), size(MapExtent::all(128)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15),
-              rivers(15), type(0), style(MapStyle::Mixed)
+              rivers(15), mountainDistance(MountainDistance::Normal), type(0), style(MapStyle::Mixed)
         {}
 
         void MakeValid();
@@ -48,6 +56,7 @@ namespace rttr { namespace mapGenerator {
         unsigned short ratioCoal;
         unsigned short ratioGranite;
         unsigned short rivers;
+        MountainDistance mountainDistance;
         DescIdx<LandscapeDesc> type;
         MapStyle style;
     };

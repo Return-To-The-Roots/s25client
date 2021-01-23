@@ -57,7 +57,7 @@ namespace rttr { namespace mapGenerator {
         return connectedArea;
     }
 
-    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, int retries)
+    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, unsigned playerDistanceToMountains, int retries)
     {
         auto maxRetries = retries;
         auto success = false;
@@ -70,7 +70,7 @@ namespace rttr { namespace mapGenerator {
 
             for(int index = 0; index < number; index++)
             {
-                auto possiblePositions = FindHqPositions(map, area);
+                auto possiblePositions = FindHqPositions(map, area, playerDistanceToMountains);
 
                 if(possiblePositions.empty())
                 {
