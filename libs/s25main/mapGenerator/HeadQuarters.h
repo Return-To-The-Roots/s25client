@@ -59,7 +59,7 @@ namespace rttr { namespace mapGenerator {
             return map.textureMap.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); });
         };
         std::vector<MapPoint> hqs;
-        std::copy_if (map.hqPositions.begin(), map.hqPositions.end(), std::back_inserter(hqs), isValid);
+        std::copy_if(map.hqPositions.begin(), map.hqPositions.end(), std::back_inserter(hqs), isValid);
 
         // Quality of a map point as one player's HQ is a mix of:
         // 1. distance to other players' HQs (higher = better)
