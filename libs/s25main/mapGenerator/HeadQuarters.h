@@ -56,58 +56,56 @@ namespace rttr { namespace mapGenerator {
             throw std::runtime_error("Could not find any valid HQ position!");
         }
 
-        const auto isValid = [](const MapPoint& pt) { return pt.isValid(); };
         const auto isObstacle = [&map](const MapPoint& pt) {
             return map.textureMap.Any(pt, [](auto t) { return !t.Is(ETerrain::Buildable); });
         };
-        const auto isMountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
-        std::vector<MapPoint> hqs;
-        std::copy_if(map.hqPositions.begin(), map.hqPositions.end(), std::back_inserter(hqs), isValid);
 
-        // Too consider a MapPoint as possible HQ position it requires:
-        // 1. a minimum distances to obstacle
-        // 2. a maximum distances to mountains
-        // Quality of a possible HQ position depends on the distance to other HQ positions.
-        NodeMapBase<unsigned> potentialHqQuality = DistancesTo(hqs, map.size);
+        // Ensure possible HQ positions are far enough from any obstacles
         const auto obstacleDistance = DistancesTo(map.size, isObstacle);
         const auto minObstacleDistance = helpers::clamp(GetMaximum(obstacleDistance, area), 2u, 4u);
-        const auto mountainDistance = DistancesTo(map.size, isMountain);
-        const auto minMountainDistance = std::max(GetMinimum(mountainDistance, area), playerDistanceToMountains);
-        const auto maxMountainDistance = static_cast<unsigned>(map.size.x + map.size.y);
-        const auto noMountainsAvailable = minMountainDistance > maxMountainDistance;
+        const auto farFromObstacles = [&obstacleDistance, minObstacleDistance](const MapPoint& pt) {
+            return obstacleDistance[pt] >= minObstacleDistance;
+        };
+        std::vector<MapPoint> possiblePositions;
+        std::copy_if(area.begin(), area.end(), std::back_inserter(possiblePositions), farFromObstacles);
+
+        if(possiblePositions.empty())
+        {
+            return possiblePositions;
+        }
+
+        // Ensure HQ positions keep desired distance to mountains
+        const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
+        const auto mountainDistance = DistancesTo(map.size, mountain);
+        const auto desiredDistance = std::max(GetMinimum(mountainDistance, possiblePositions), playerDistanceToMountains);
+        const auto maxDistance = static_cast<unsigned>(map.size.x + map.size.y) / 4;
 
         std::vector<MapPoint> positions;
-        auto allowedMountainDistance = minMountainDistance;
-        while(positions.empty())
+        auto allowedMountainDistance = desiredDistance;
+        while(positions.empty() && allowedMountainDistance < maxDistance)
         {
-            for(const MapPoint& pt : area)
+            for(const MapPoint& pt : possiblePositions)
             {
-                const auto mountainsInReach = mountainDistance[pt] < allowedMountainDistance + 5 && mountainDistance[pt] > allowedMountainDistance - 5;
-
-                if(obstacleDistance[pt] >= minObstacleDistance && (noMountainsAvailable || mountainsInReach))
+                if(obstacleDistance[pt] >= minObstacleDistance && mountainDistance[pt] < allowedMountainDistance + 5 && mountainDistance[pt] > allowedMountainDistance - 5)
                 {
                     positions.push_back(pt);
                 }
             }
-            if(allowedMountainDistance < maxMountainDistance)
-            {
-                allowedMountainDistance++;
-            } else
-            {
-                // fall back to ignore desired mountain distance
-                for(const MapPoint& pt : area)
-                {
-                    if(obstacleDistance[pt] >= minObstacleDistance)
-                    {
-                        positions.push_back(pt);
-                    }
-                }
-                break;
-            }
+            allowedMountainDistance++;
         }
 
-        const auto isBetter = [&potentialHqQuality](MapPoint p1, MapPoint p2) {
-            return potentialHqQuality[p1] > potentialHqQuality[p2];
+        if(positions.empty()) // fallback to ignore mountain distance
+        {
+            positions = possiblePositions;
+        }
+
+        // Sort available HQ positions by distance to other HQs (higher = better)
+        std::vector<MapPoint> hqs;
+        const auto isValid = [](const MapPoint& pt) { return pt.isValid(); };
+        std::copy_if(map.hqPositions.begin(), map.hqPositions.end(), std::back_inserter(hqs), isValid);
+        const auto distanceToOtherHqs = DistancesTo(hqs, map.size);
+        const auto isBetter = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
+            return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
         };
         std::sort(positions.begin(), positions.end(), isBetter);
         return positions;
