@@ -102,31 +102,6 @@ void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
     aii.gwb.CheckPointsInRadius(pt, radius, ValueAdjuster(map, radius, value), true);
 }
 
-MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius,
-                                         bool inTerritory) const
-{
-    RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
-
-    // TODO was besseres wär schön ;)
-    if(radius == -1)
-        radius = 30;
-
-    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
-    for(const MapPoint& curPt : pts)
-    {
-        const unsigned idx = map.GetIdx(curPt);
-        if(map[idx] >= threshold)
-        {
-            if((inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
-                continue;
-            RTTR_Assert(aii.GetBuildingQuality(curPt) == aiMap[curPt].bq);
-            if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
-                return curPt;
-        }
-    }
-    return MapPoint::Invalid();
-}
-
 MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius,
                                          bool inTerritory) const
 {
