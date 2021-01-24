@@ -143,10 +143,6 @@ public:
     // returns true if we can get to the startflag in <maxlen without turning back
     bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
                             helpers::OptionalEnum<Direction> excludeDir, std::vector<const noFlag*> oldFlags);
-    /// Finds a good position for a specific resource in an area using the resource maps,
-    /// first position satisfying threshold is returned, returns false if no such position found
-    MapPoint FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1,
-                              bool inTerritory = true) const;
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
     MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
@@ -248,10 +244,7 @@ public:
 
     bool NoEnemyHarbor();
 
-    void SetResourceMapValue(AIResource res, MapPoint pt, int newvalue)
-    {
-        resourceMaps[res][pt] = newvalue;
-    }
+    void SetResourceMapValue(AIResource res, MapPoint pt, int newvalue) { resourceMaps[res][pt] = newvalue; }
 
     MapPoint UpgradeBldPos;
 

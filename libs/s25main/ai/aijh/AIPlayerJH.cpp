@@ -667,12 +667,6 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
         aiMap[curPt].farmed = set;
 }
 
-MapPoint AIPlayerJH::FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size,
-                                      int radius, bool inTerritory) const
-{
-    return resourceMaps[res].FindGoodPosition(pt, threshold, size, radius, inTerritory);
-}
-
 MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size,
                                                          int minimum, int radius, bool inTerritory)
 {
