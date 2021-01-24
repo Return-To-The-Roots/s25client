@@ -30,7 +30,14 @@ using namespace rttr::mapGenerator;
 
 enum
 {
-    CTRL_LAST_ID = 7, // last UI control ID used before enum controls
+    CTRL_BTN_BACK = 0,
+    CTRL_BTN_APPLY,
+    CTRL_TXT_LANDSCAPE,
+    CTRL_TXT_GOAL,
+    CTRL_TXT_IRON,
+    CTRL_TXT_COAL,
+    CTRL_TXT_GRANITE,
+    CTRL_TXT_RIVERS,
     CTRL_PLAYER_NUMBER,
     CTRL_MAP_STYLE,
     CTRL_MAP_SIZE,
@@ -55,8 +62,8 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         return;
     }
 
-    AddTextButton(0, DrawPoint(20, 340), Extent(100, 20), TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(1, DrawPoint(130, 340), Extent(100, 20), TextureColor::Green2, _("Apply"), NormalFont);
+    AddTextButton(CTRL_BTN_BACK, DrawPoint(20, 340), Extent(100, 20), TextureColor::Red1, _("Back"), NormalFont);
+    AddTextButton(CTRL_BTN_APPLY, DrawPoint(130, 340), Extent(100, 20), TextureColor::Green2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo =
       AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
@@ -75,21 +82,21 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString("512 x 512");
     combo->AddString("1024 x 1024");
 
-    AddText(2, DrawPoint(20, 120), _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(CTRL_TXT_LANDSCAPE, DrawPoint(20, 120), _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 140), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
     for(unsigned i = 0; i < desc.landscapes.size(); i++)
         combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
-    AddText(3, DrawPoint(20, 175), _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(CTRL_TXT_GOAL, DrawPoint(20, 175), _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 170), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
-    AddText(4, DrawPoint(20, 205), _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(CTRL_TXT_IRON, DrawPoint(20, 205), _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_IRON, DrawPoint(100, 200), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
-    AddText(5, DrawPoint(20, 235), _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(CTRL_TXT_COAL, DrawPoint(20, 235), _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_COAL, DrawPoint(100, 230), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
-    AddText(6, DrawPoint(20, 265), _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(CTRL_TXT_GRANITE, DrawPoint(20, 265), _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 260), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
 
-    AddText(7, DrawPoint(20, 295), _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(CTRL_TXT_RIVERS, DrawPoint(20, 295), _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RIVERS, DrawPoint(100, 290), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
 
     Reset();
@@ -103,11 +110,11 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
     {
         default: break;
 
-        case 0: // back
+        case CTRL_BTN_BACK:
             Close();
             break;
 
-        case 1: // apply
+        case CTRL_BTN_APPLY:
             Apply();
             Close();
             break;
