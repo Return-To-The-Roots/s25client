@@ -43,12 +43,11 @@ struct Inventory;
 class AIInterface : public GameCommandFactory
 {
 public:
-    AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, unsigned char playerID)
-        : gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID)
-    {}
+    AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, unsigned char playerID);
 
     unsigned char GetPlayerId() const { return playerID_; }
     unsigned GetNumPlayers() const { return gwb.GetNumPlayers(); }
+    const std::vector<unsigned>& getUsableHarbors() const { return usableHarbors_; }
 
     bool IsDefeated() const { return player_.IsDefeated(); }
     /// Return the resource buried on a given spot (gold, coal, ironore, granite (sub), fish, nothing)
@@ -144,6 +143,13 @@ public:
     {
         return player_.GetBuildingRegister().GetStorehouses();
     }
+
+    /// Check if there is a building of the given type in a radius of at most maxDistance
+    bool isBuildingNearby(BuildingType bldType, MapPoint pt, unsigned maxDistance) const;
+    /// Check if there is a (useful) harbor spot in at most the given distance. onlyEmpty=True -> No harbor building
+    /// there yet
+    bool isHarborPosClose(MapPoint pt, unsigned maxDistance, bool onlyEmpty = false) const;
+
     /// Return the inventory of the AI player
     const Inventory& GetInventory() const { return player_.GetInventory(); }
     /// Return the number of ships
@@ -207,4 +213,6 @@ private:
     std::vector<gc::GameCommandPtr>& gcs;
     /// ID of AI player
     const unsigned char playerID_;
+    /// Harbor ids which have at least one other harbor at the same sea
+    std::vector<unsigned> usableHarbors_;
 };

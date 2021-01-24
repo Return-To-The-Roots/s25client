@@ -78,13 +78,13 @@ public:
     int GetResMapValue(MapPoint pt, AIResource res) const;
     const AIResourceMap& GetResMap(AIResource res) const;
 
+    Node& GetAINode(const MapPoint pt) { return aiMap[pt]; }
     const Node& GetAINode(const MapPoint pt) const { return aiMap[pt]; }
+
     unsigned GetNumPlannedConnectedInlandMilitaryBlds()
     {
         return std::max<unsigned>(6u, aii.GetMilitaryBuildings().size() / 5u);
     }
-    /// checks distance to all harborpositions
-    bool HarborPosClose(MapPoint pt, unsigned range, bool onlyempty = false) const;
     /// returns the percentage*100 of possible normal building places
     unsigned BQsurroundcheck(MapPoint pt, unsigned range, bool includeexisting, unsigned limit = 0);
     /// returns list entry of the building the ai uses for troop upgrades
@@ -97,7 +97,6 @@ public:
 
     void SendAIEvent(std::unique_ptr<AIEvent::Base> ev);
 
-    Node& GetAINode(const MapPoint pt) { return aiMap[pt]; }
     /// Executes a job form the job queue
     void ExecuteAIJob();
     /// Tries to build a bld of the given type at that point.
@@ -110,9 +109,6 @@ public:
     /// adds buildjobs for a buildingtype around every warehouse or military building
     void AddBuildJobAroundEveryWarehouse(BuildingType bt);
     void AddBuildJobAroundEveryMilBld(BuildingType bt);
-    /// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if
-    /// building is finished
-    void CheckNewMilitaryBuildings();
     /// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they
     /// unblock
     void DistributeGoodsByBlocking(GoodType good, unsigned limit);
@@ -145,24 +141,14 @@ public:
                             helpers::OptionalEnum<Direction> excludeDir, std::vector<const noFlag*> oldFlags);
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
-                              bool inTerritory = true);
-    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int radius = -1,
-                              bool inTerritory = true)
-    {
-        return FindBestPosition(pt, res, size, 1, radius, inTerritory);
-    }
-    /// finds the best position for a resource that cannot increase (fish,iron,coal,gold,granite,stones)
-    MapPoint FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum,
-                                                 int radius = -1, bool inTerritory = true);
+    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, unsigned radius,
+                              int minimum = 1);
     /// Finds a position for the desired building size
-    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius = -1) const;
+    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const;
     /// Find a position for a specific building around a given point
     MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
     /// Density in percent (0-100)
     unsigned GetDensity(MapPoint pt, AIResource res, int radius);
-    /// Recalculate the Buildingquality around a certain point
-    void RecalcBQAround(MapPoint pt);
     /// Does some actions after a new military building is occupied
     void HandleNewMilitaryBuildingOccupied(MapPoint pt);
     /// Does some actions after a military building is lost
@@ -205,9 +191,6 @@ public:
     /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when
     /// onlyempty=true there has to be at least 1 other free harborid
     bool HarborPosRelevant(unsigned harborid, bool onlyempty = false) const;
-    /// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no
-    /// warehouse/military))
-    bool BuildingNearby(MapPoint pt, BuildingType bldType, unsigned min);
     /// Update BQ and farming ground around new building site + road
     void RecalcGround(MapPoint buildingPos, std::vector<Direction>& route_road);
 
@@ -243,8 +226,6 @@ public:
     void ExecuteLuaConstructionOrder(MapPoint pt, BuildingType bt, bool forced = false);
 
     bool NoEnemyHarbor();
-
-    void SetResourceMapValue(AIResource res, MapPoint pt, int newvalue) { resourceMaps[res][pt] = newvalue; }
 
     MapPoint UpgradeBldPos;
 

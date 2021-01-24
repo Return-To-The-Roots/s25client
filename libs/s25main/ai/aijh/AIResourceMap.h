@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,31 +29,34 @@ namespace AIJH {
 class AIResourceMap
 {
 public:
-    AIResourceMap(AIResource res, const AIInterface& aii, const AIMap& aiMap);
+    AIResourceMap(AIResource res, bool isInfinite, const AIInterface& aii, const AIMap& aiMap);
     ~AIResourceMap();
 
     /// Initialize the resource map
-    void Init();
-    void Recalc();
-    /// Changes every point around pt in radius; to every point around pt distanceFromCenter * value is added
-    void Change(MapPoint pt, unsigned radius, int value);
-    void Change(const MapPoint pt, int value) { Change(pt, resRadius, value); }
+    void init();
+
+    void updateAround(const MapPoint& pt, int radius);
+
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    MapPoint FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius = -1,
-                              bool inTerritory = true) const;
-    MapPoint FindBestPosition(const MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true) const
-    {
-        return FindBestPosition(pt, size, 1, radius, inTerritory);
-    }
+    MapPoint findBestPosition(const MapPoint& pt, BuildingQuality size, unsigned radius, int minimum) const;
 
-    int& operator[](const MapPoint& pt) { return map[pt]; }
+    /// Marks a position to be avoided.
+    /// Only has an effect on diminishable resources where this blocks this point forever
+    void avoidPosition(const MapPoint& pt);
+
     int operator[](const MapPoint& pt) const { return map[pt]; }
 
 private:
-    void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
+    /// Update algorithm for resources which cannot be regrown
+    void updateAroundDiminishable(const MapPoint& pt, int radius);
+    /// Update algorithm for resources which can be replenished
+    void updateAroundReplinishable(const MapPoint& pt, int radius);
+
     /// Which resource is stored in the map and radius of affected nodes
     const AIResource res;
+    const bool isInfinite;
+    const bool isDiminishableResource;
     const unsigned resRadius;
 
     NodeMapBase<int> map;

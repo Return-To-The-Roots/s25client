@@ -44,15 +44,7 @@
 class GameWithLuaAccess : public Game
 {
 public:
-    GameWithLuaAccess() : Game(GlobalGameSettings(), 0u, CreatePlayers())
-    {
-        for(unsigned id = 0; id < world_.GetNumPlayers(); id++)
-        {
-            GamePlayer& player = world_.GetPlayer(id);
-            if(!player.isHuman() && player.isUsed())
-                AddAIPlayer(AIFactory::Create(world_.GetPlayer(id).aiInfo, id, world_));
-        }
-    }
+    GameWithLuaAccess() : Game(GlobalGameSettings(), 0u, CreatePlayers()) {}
 
     void executeAICommands()
     {
@@ -118,6 +110,13 @@ public:
         playerNations.push_back(world.GetPlayer(0).nation);
         playerNations.push_back(world.GetPlayer(1).nation);
         BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
+
+        for(unsigned id = 0; id < world.GetNumPlayers(); id++)
+        {
+            GamePlayer& player = world.GetPlayer(id);
+            if(!player.isHuman() && player.isUsed())
+                game->AddAIPlayer(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
+        }
     }
 
     virtual GameWorldGame& GetWorld() override { return world; }

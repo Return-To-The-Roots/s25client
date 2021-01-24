@@ -486,7 +486,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     if(((rand() % 3) == 0 || inventory.people[Job::Private] < 15)
        && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
         bld = BuildingType::Guardhouse;
-    if(aijh.HarborPosClose(pt, 20) && rand() % 10 != 0 && aijh.ggs.getSelection(AddonId::SEA_ATTACK) != 2)
+    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && rand() % 10 != 0
+       && aijh.ggs.getSelection(AddonId::SEA_ATTACK) != 2)
     {
         if(aii.CanBuildBuildingtype(BuildingType::Watchtower))
             return BuildingType::Watchtower;

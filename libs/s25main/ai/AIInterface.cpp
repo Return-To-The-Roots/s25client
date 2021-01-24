@@ -17,10 +17,12 @@
 
 #include "AIInterface.h"
 #include "buildings/noBuilding.h"
+#include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
+#include "helpers/containerUtils.h"
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/PathConditionRoad.h"
 #include "pathfinding/RoadPathFinder.h"
@@ -55,6 +57,32 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
     return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BuildingQuality::Nothing;
 }
 } // namespace
+
+AIInterface::AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, unsigned char playerID)
+    : gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID)
+{
+    for(unsigned curHarborId = 1; curHarborId <= gwb.GetNumHarborPoints(); curHarborId++)
+    {
+        bool hasOtherHarbor = false;
+        for(const auto dir : helpers::EnumRange<Direction>{})
+        {
+            const unsigned short seaId = gwb.GetSeaId(curHarborId, dir);
+            if(!seaId)
+                continue;
+
+            for(unsigned otherHarborId = curHarborId + 1; otherHarborId <= gwb.GetNumHarborPoints(); otherHarborId++)
+            {
+                if(gwb.IsHarborAtSea(otherHarborId, seaId))
+                {
+                    hasOtherHarbor = true;
+                    break;
+                }
+            }
+            if(hasOtherHarbor)
+                usableHarbors_.push_back(curHarborId);
+        }
+    }
+}
 
 AISubSurfaceResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
@@ -241,6 +269,39 @@ bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& tar
 const nobHQ* AIInterface::GetHeadquarter() const
 {
     return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
+}
+
+bool AIInterface::isBuildingNearby(BuildingType bldType, const MapPoint pt, unsigned maxDistance) const
+{
+    for(const nobUsual* bld : GetBuildings(bldType))
+    {
+        if(gwb.CalcDistance(pt, bld->GetPos()) <= maxDistance)
+            return true;
+    }
+    for(const noBuildingSite* bldSite : GetBuildingSites())
+    {
+        if(bldSite->GetBuildingType() == bldType)
+        {
+            if(gwb.CalcDistance(pt, bldSite->GetPos()) <= maxDistance)
+                return true;
+        }
+    }
+    return false;
+}
+
+bool AIInterface::isHarborPosClose(const MapPoint pt, unsigned maxDistance, bool onlyempty) const
+{
+    // skip harbordummy
+    for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
+    {
+        const MapPoint harborPoint = gwb.GetHarborPoint(i);
+        if(gwb.CalcDistance(pt, harborPoint) <= maxDistance && helpers::contains(usableHarbors_, i))
+        {
+            if(!onlyempty || !IsBuildingOnNode(harborPoint, BuildingType::HarborBuilding))
+                return true;
+        }
+    }
+    return false;
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor,

@@ -25,7 +25,7 @@ namespace AIJH {
 struct Node
 {
     BuildingQuality bq;
-    AINodeResource res;
+    AINodeResource res; // TODO: Fixup to keep in sync
     bool owned;
     bool reachable;
     char failed_penalty; // when a node was marked reachable, but building failed, this field is >0
