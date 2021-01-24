@@ -15,10 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "ai/AIResource.h"
 #include "helpers/EnumRange.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/Resource.h"
 #include "gameData/JobConsts.h"
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/stringize.hpp>
+#include <boost/preprocessor/variadic/to_seq.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameTypes)
@@ -121,6 +125,28 @@ BOOST_AUTO_TEST_CASE(NationSpecificJobBobs)
                != JOB_SPRITE_CONSTS[Job::Scout].getBobId(Nation::Africans));
     BOOST_TEST(JOB_SPRITE_CONSTS[Job::Scout].getBobId(Nation::Vikings)
                < JOB_SPRITE_CONSTS[Job::Scout].getBobId(Nation::Babylonians));
+}
+
+BOOST_AUTO_TEST_CASE(AIResourcesMatchValues)
+{
+    // This simply tests that the convertToNodeResource function works, which is enough to verify the correctness of the
+    // enumerator values
+
+#define TEST_AIRESOURCE_SINGLE(s, EnumName, Enumerator)                                      \
+    static_assert(convertToNodeResource(EnumName::Enumerator) == AINodeResource::Enumerator, \
+                  "Mismatch for " BOOST_PP_STRINGIZE(EnumName) "::" BOOST_PP_STRINGIZE(Enumerator));
+
+    // Generate a static assert for each enumerator
+#define TEST_AIRESOURCE(EnumName, ...) \
+    BOOST_PP_SEQ_FOR_EACH(TEST_AIRESOURCE_SINGLE, EnumName, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+
+    TEST_AIRESOURCE(AIResource, Gold, Ironore, Coal, Granite, Fish, Wood, Stones, Plantspace, Borderland)
+
+    TEST_AIRESOURCE(AISurfaceResource, Wood, Stones, Blocked, Nothing)
+
+    TEST_AIRESOURCE(AISubSurfaceResource, Gold, Ironore, Coal, Granite, Fish, Nothing)
+
+    BOOST_TEST(true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

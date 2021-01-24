@@ -131,7 +131,7 @@ public:
     /// Updates the nodes around a position
     void UpdateNodesAround(MapPoint pt, unsigned radius);
     /// Returns the resource on a specific point
-    AIResource CalcResource(MapPoint pt);
+    AINodeResource CalcResource(MapPoint pt);
     /// Initialize the resource maps
     void InitResourceMaps();
     /// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know
@@ -248,9 +248,9 @@ public:
 
     bool NoEnemyHarbor();
 
-    void SetResourceMap(AIResource res, MapPoint pt, int newvalue)
+    void SetResourceMapValue(AIResource res, MapPoint pt, int newvalue)
     {
-        resourceMaps[static_cast<unsigned>(res)][pt] = newvalue;
+        resourceMaps[res][pt] = newvalue;
     }
 
     MapPoint UpgradeBldPos;
@@ -265,7 +265,7 @@ private:
     /// Nodes containing some information about every map node
     AIMap aiMap;
     /// Resource maps, containing a rating for every map point concerning a resource
-    boost::container::static_vector<AIResourceMap, NUM_AIRESOURCES> resourceMaps;
+    helpers::EnumArray<AIResourceMap, AIResource> resourceMaps;
 
     unsigned attack_interval;
     unsigned build_interval;

@@ -29,6 +29,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "helpers/MaxEnumValue.h"
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "network/GameMessages.h"
@@ -52,6 +53,7 @@
 #include <memory>
 #include <random>
 #include <stdexcept>
+#include <type_traits>
 
 namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
@@ -144,9 +146,20 @@ Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& b
     });
 }
 
+template<size_t... I>
+auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap, std::index_sequence<I...>)
+{
+    return helpers::EnumArray<AIResourceMap, AIResource>{AIResourceMap(AIResource(I), aii, aiMap)...};
+}
+
+auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
+{
+    return createResourceMaps(aii, aiMap, std::make_index_sequence<helpers::NumEnumValues_v<AIResource>>{});
+}
+
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-    : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), isInitGfCompleted(false),
-      defeated(player.IsDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
+    : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
+      isInitGfCompleted(false), defeated(player.IsDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this))
 {
     InitNodes();
@@ -497,36 +510,36 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
     }
 }
 
-AIResource AIPlayerJH::CalcResource(const MapPoint pt)
+AINodeResource AIPlayerJH::CalcResource(MapPoint pt)
 {
-    AIResource subRes = aii.GetSubsurfaceResource(pt);
-    AIResource surfRes = aii.GetSurfaceResource(pt);
+    const AISubSurfaceResource subRes = aii.GetSubsurfaceResource(pt);
+    const AISurfaceResource surfRes = aii.GetSurfaceResource(pt);
 
     // no resources underground
-    if(subRes == AIResource::Nothing)
+    if(subRes == AISubSurfaceResource::Nothing)
     {
         // also no resource on the ground: plant space or unusable?
-        if(surfRes == AIResource::Nothing)
+        if(surfRes == AISurfaceResource::Nothing)
         {
             // already road, really no resources here
             if(gwb.IsOnRoad(pt))
-                return AIResource::Nothing;
+                return AINodeResource::Nothing;
             // check for vital plant space
             if(!gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.IsVital(); }))
-                return AIResource::Nothing;
-            return AIResource::Plantspace;
-        }
-
-        return surfRes;
+                return AINodeResource::Nothing;
+            return AINodeResource::Plantspace;
+        } else
+            return convertToNodeResource(surfRes);
     } else // resources in underground
     {
-        if(surfRes == AIResource::Stones || surfRes == AIResource::Wood)
-            return AIResource::Multiple;
-
-        if(subRes == AIResource::Blocked)
-            return AIResource::Nothing; // nicht so ganz logisch... aber Blocked als res is doof TODO
-
-        return subRes;
+        switch(surfRes)
+        {
+            case AISurfaceResource::Stones:
+            case AISurfaceResource::Wood: return AINodeResource::Multiple;
+            case AISurfaceResource::Blocked: break;
+            case AISurfaceResource::Nothing: return convertToNodeResource(subRes);
+        }
+        return AINodeResource::Nothing;
     }
 }
 
@@ -639,12 +652,8 @@ void AIPlayerJH::UpdateNodesAround(const MapPoint pt, unsigned radius)
 
 void AIPlayerJH::InitResourceMaps()
 {
-    resourceMaps.clear();
-    for(unsigned res = 0; res < NUM_AIRESOURCES; ++res)
-    {
-        resourceMaps.push_back(AIResourceMap(static_cast<AIResource>(res), aii, aiMap));
-        resourceMaps.back().Init();
-    }
+    for(auto& resMap : resourceMaps)
+        resMap.Init();
 }
 
 void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
@@ -661,16 +670,26 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 MapPoint AIPlayerJH::FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size,
                                       int radius, bool inTerritory) const
 {
-    return resourceMaps[static_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
+    return resourceMaps[res].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
 MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size,
                                                          int minimum, int radius, bool inTerritory)
 {
-    RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
-    bool fixed = ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                 && (res == AIResource::Ironore || res == AIResource::Coal || res == AIResource::Gold
-                     || res == AIResource::Granite);
+    bool unlimitedResource;
+    switch(res)
+    {
+        case AIResource::Gold:
+        case AIResource::Ironore:
+        case AIResource::Coal: unlimitedResource = ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES); break;
+        case AIResource::Granite:
+            unlimitedResource =
+              ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES) || ggs.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES);
+            break;
+        case AIResource::Fish: unlimitedResource = ggs.isEnabled(AddonId::INEXHAUSTIBLE_FISH); break;
+        default: unlimitedResource = false;
+    }
+
     bool lastcirclevaluecalculated = false;
     bool lastvaluecalculated = false;
     // to avoid having to calculate a value twice and still move left on the same level without any problems we use this
@@ -692,8 +711,8 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
         {
             for(MapCoord step = 0; step < r; ++step, curPt = aiMap.GetNeighbour(curPt, convertToDirection(curDir)))
             {
-                int& resMapVal = resourceMaps[static_cast<unsigned>(res)][curPt];
-                if(!fixed)
+                int& resMapVal = resourceMaps[res][curPt];
+                if(!unlimitedResource)
                 {
                     // only do a complete calculation for the first point or when moving outward and the last value is
                     // unknown
@@ -811,7 +830,7 @@ MapPoint AIPlayerJH::FindBestPosition(const MapPoint& pt, AIResource res, Buildi
                 else // last step was the previous direction
                     temp = aii.CalcResourceValue(curPt, res, convertToDirection(curDir - 1), temp);
                 // copy the value to the resource map (map is only used in the ai debug mode)
-                resourceMaps[static_cast<unsigned>(res)][curPt] = temp;
+                resourceMaps[res][curPt] = temp;
                 if(temp > best_value)
                 {
                     if(!aiMap[curPt].reachable || (inTerritory && !aii.IsOwnTerritory(curPt)) || aiMap[curPt].farmed)
@@ -1128,7 +1147,7 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                                         std::min(40u, 1 + numQuarries * 10), 11);
             if(foundPos.isValid() && !ValidStoneinRange(foundPos))
             {
-                SetResourceMap(AIResource::Stones, foundPos, 0);
+                SetResourceMapValue(AIResource::Stones, foundPos, 0);
                 foundPos = MapPoint::Invalid();
             }
             break;
@@ -1160,7 +1179,7 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             foundPos = FindBestPosition(around, AIResource::Fish, BUILDING_SIZE[type], 11, true);
             if(foundPos.isValid() && !ValidFishInRange(foundPos))
             {
-                SetResourceMap(AIResource::Fish, foundPos, 0);
+                SetResourceMapValue(AIResource::Fish, foundPos, 0);
                 foundPos = MapPoint::Invalid();
             }
             break;
@@ -1454,7 +1473,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
         for(const nobUsual* forester : aii.GetBuildings(BuildingType::Forester))
         {
             // is the forester somewhat close?
-            if(gwb.CalcDistance(pt, forester->GetPos()) <= RES_RADIUS[static_cast<unsigned>(AIResource::Wood)])
+            if(gwb.CalcDistance(pt, forester->GetPos()) <= RES_RADIUS[AIResource::Wood])
             {
                 // then find it's 2 woodcutters
                 unsigned maxdist = gwb.CalcDistance(pt, forester->GetPos());
@@ -1467,7 +1486,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
                     // TODO: We currently don't take the distance to the forester into account when placing a woodcutter
                     // This leads to points beeing equally good for placing but later it will be destroyed. Avoid that
                     // by checking only close woddcutters
-                    if(gwb.CalcDistance(woodcutter->GetPos(), pt) > RES_RADIUS[static_cast<unsigned>(AIResource::Wood)])
+                    if(gwb.CalcDistance(woodcutter->GetPos(), pt) > RES_RADIUS[AIResource::Wood])
                         continue;
                     // closer or equally close to forester than woodcutter in question?
                     if(gwb.CalcDistance(woodcutter->GetPos(), forester->GetPos()) <= maxdist)
@@ -1487,7 +1506,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     // fishery cant find fish? set fish value at location to 0 so we dont have to calculate the value for this location
     // again
     if(bld == BuildingType::Fishery)
-        SetResourceMap(AIResource::Fish, pt, 0);
+        SetResourceMapValue(AIResource::Fish, pt, 0);
 
     UpdateNodesAround(pt, 11); // todo: fix radius
     RemoveUnusedRoad(*gwb.GetSpecObj<noFlag>(gwb.GetNeighbour(pt, Direction::SouthEast)), Direction::NorthWest, true);
@@ -1945,44 +1964,43 @@ void AIPlayerJH::TrySeaAttack()
 
 void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>& route_road)
 {
-    MapPoint pt = buildingPos;
-
     // building itself
-    RecalcBQAround(pt);
-    if(aiMap[pt].res == AIResource::Plantspace)
+    RecalcBQAround(buildingPos);
+    if(aiMap[buildingPos].res == AIResource::Plantspace)
     {
-        resourceMaps[static_cast<unsigned>(AIResource::Plantspace)].Change(pt, -1);
-        aiMap[pt].res = AIResource::Nothing;
+        resourceMaps[AIResource::Plantspace].Change(buildingPos, -1);
+        aiMap[buildingPos].res = AINodeResource::Nothing;
     }
 
     // flag of building
-    pt = gwb.GetNeighbour(pt, Direction::SouthEast);
-    RecalcBQAround(pt);
-    if(aiMap[pt].res == AIResource::Plantspace)
+    const MapPoint flagPos = gwb.GetNeighbour(buildingPos, Direction::SouthEast);
+    RecalcBQAround(flagPos);
+    if(aiMap[flagPos].res == AIResource::Plantspace)
     {
-        resourceMaps[static_cast<unsigned>(AIResource::Plantspace)].Change(pt, -1);
-        aiMap[pt].res = AIResource::Nothing;
+        resourceMaps[AIResource::Plantspace].Change(flagPos, -1);
+        aiMap[flagPos].res = AINodeResource::Nothing;
     }
 
     // along the road
+    MapPoint curPt = flagPos;
     for(auto i : route_road)
     {
-        pt = gwb.GetNeighbour(pt, i);
-        RecalcBQAround(pt);
+        curPt = gwb.GetNeighbour(curPt, i);
+        RecalcBQAround(curPt);
         // Auch Plantspace entsprechend anpassen:
-        if(aiMap[pt].res == AIResource::Plantspace)
+        if(aiMap[curPt].res == AIResource::Plantspace)
         {
-            resourceMaps[static_cast<unsigned>(AIResource::Plantspace)].Change(pt, -1);
-            aiMap[pt].res = AIResource::Nothing;
+            resourceMaps[AIResource::Plantspace].Change(curPt, -1);
+            aiMap[curPt].res = AINodeResource::Nothing;
         }
     }
 }
 
 void AIPlayerJH::SaveResourceMapsToFile()
 {
-    for(unsigned res = 0; res < NUM_AIRESOURCES; ++res)
+    for(const auto res : helpers::enumRange<AIResource>())
     {
-        bfs::ofstream file("resmap-" + std::to_string(res) + ".log");
+        bfs::ofstream file("resmap-" + std::to_string(static_cast<unsigned>(res)) + ".log");
         for(unsigned y = 0; y < aiMap.GetHeight(); ++y)
         {
             if(y % 2 == 1)
@@ -2001,7 +2019,7 @@ int AIPlayerJH::GetResMapValue(const MapPoint pt, AIResource res) const
 
 const AIResourceMap& AIPlayerJH::GetResMap(AIResource res) const
 {
-    return resourceMaps[static_cast<unsigned>(res)];
+    return resourceMaps[res];
 }
 
 void AIPlayerJH::SendAIEvent(std::unique_ptr<AIEvent::Base> ev)

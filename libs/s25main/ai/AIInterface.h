@@ -52,9 +52,9 @@ public:
 
     bool IsDefeated() const { return player_.IsDefeated(); }
     /// Return the resource buried on a given spot (gold, coal, ironore, granite (sub), fish, nothing)
-    AIResource GetSubsurfaceResource(MapPoint pt) const;
+    AISubSurfaceResource GetSubsurfaceResource(MapPoint pt) const;
     /// Return the resource on top on a given spot (wood, stones, nothing)
-    AIResource GetSurfaceResource(MapPoint pt) const;
+    AISurfaceResource GetSurfaceResource(MapPoint pt) const;
     /// Calculate the surface resource value on a given spot (wood/ stones/ farmland)
     /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
     int CalcResourceValue(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction = boost::none,
