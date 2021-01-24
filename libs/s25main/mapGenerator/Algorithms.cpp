@@ -21,8 +21,6 @@ namespace rttr { namespace mapGenerator {
 
     void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue)
     {
-        const unsigned maximumDistance = distances.GetWidth() * distances.GetHeight();
-
         while(!queue.empty())
         {
             const auto currentPoint = queue.front();
@@ -36,7 +34,7 @@ namespace rttr { namespace mapGenerator {
             {
                 if(distances[neighbor] > 0)
                 {
-                    if(distances[neighbor] == maximumDistance)
+                    if(distances[neighbor] == unsigned(-1))
                     {
                         queue.push(neighbor);
                     }

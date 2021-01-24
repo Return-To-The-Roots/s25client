@@ -67,7 +67,7 @@ namespace rttr { namespace mapGenerator {
         // Do not allow to place trees/stone piles nearby head quarters or
         // harbor positions to avoid inaccessible harbors or invalid player positions.
 
-        auto harborOrHeadquarter = [&map](const MapPoint& pt) {
+        const auto harborOrHeadquarter = [&map](const MapPoint& pt) {
             return helpers::contains(map.hqPositions, pt)
                    || helpers::contains_if(map.harbors, [pt](const Triangle& tr) { return tr.position == pt; });
         };
@@ -84,7 +84,7 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        auto distanceToExcludedArea = DistancesTo(excludedArea, map.size);
+        const auto distanceToExcludedArea = DistancesTo(excludedArea, map.size);
 
         // 1) compute maximum water distance until mountain area
         // 2) probabilities
@@ -96,11 +96,11 @@ namespace rttr { namespace mapGenerator {
         // 3b) mountains: last element of trees
 
         auto& textureMap = map.textureMap;
-        auto mountainDistance =
-          Distances(map.size, [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsMountainOrSnowOrLava); });
+        const auto mountain = [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsMountainOrSnowOrLava); };
+        const auto mountainDistance = DistancesTo(map.size, mountain);
 
-        auto waterDistance =
-          Distances(map.size, [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsWater); });
+        const auto water = [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsWater); };
+        auto waterDistance = DistancesTo(map.size, water);
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
@@ -116,9 +116,11 @@ namespace rttr { namespace mapGenerator {
         auto probRange = ValueRange<unsigned>(15, 40);
         auto probDiff = probRange.GetDifference();
 
-        auto mountainDepth =
-          Distances(map.size, [&map](const MapPoint& pt) { return !map.textureMap.All(pt, IsMountainOrSnowOrLava); });
-        auto mountainRange = GetRange(mountainDepth);
+        const auto mountainFoot = [&map](const MapPoint& pt) {
+            return !map.textureMap.All(pt, IsMountainOrSnowOrLava);
+        };
+        const auto mountainDepth = DistancesTo(map.size, mountainFoot);
+        const auto mountainRange = GetRange(mountainDepth);
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {

@@ -158,10 +158,9 @@ namespace rttr { namespace mapGenerator {
     template<class T_Container>
     NodeMapBase<unsigned> DistancesTo(const T_Container& flaggedPoints, const MapExtent& size)
     {
-        const unsigned maximumDistance = size.x * size.y;
         std::queue<MapPoint> queue;
         NodeMapBase<unsigned> distances;
-        distances.Resize(size, maximumDistance);
+        distances.Resize(size, unsigned(-1));
 
         for(const MapPoint& pt : flaggedPoints)
         {
@@ -172,6 +171,12 @@ namespace rttr { namespace mapGenerator {
         UpdateDistances(distances, queue);
 
         return distances;
+    }
+
+    template<typename T>
+    NodeMapBase<unsigned> DistancesTo(const MapExtent& size, T&& evaluator)
+    {
+        return DistancesTo(SelectPoints(evaluator, size), size);
     }
 
     /**
@@ -190,8 +195,6 @@ namespace rttr { namespace mapGenerator {
     NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue,
                                     T&& evaluator)
     {
-        const unsigned maximumDistance = size.x * size.y;
-
         std::queue<MapPoint> queue;
         NodeMapBase<unsigned> distances;
         distances.Resize(size, defaultValue);
@@ -204,7 +207,7 @@ namespace rttr { namespace mapGenerator {
                 queue.push(pt);
             } else
             {
-                distances[pt] = maximumDistance;
+                distances[pt] = unsigned(-1);
             }
         }
 
@@ -214,36 +217,12 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Computes a map of distance values describing the distance of each grid position to the closest position for
-     * which the evaluator returned `true`.
-     *
-     * @param size size of  the map
-     * @param evaluator evaluator function takes a MapPoint as input and returns `true` or `false`
-     *
-     * @return distance of each grid position to closest point which has been evaluted with `true`.
-     */
-    template<typename T_Value>
-    NodeMapBase<unsigned> Distances(const MapExtent& size, T_Value&& evaluator)
-    {
-        std::vector<MapPoint> flaggedPoints;
-        RTTR_FOREACH_PT(MapPoint, size)
-        {
-            if(evaluator(pt))
-            {
-                flaggedPoints.push_back(pt);
-            }
-        }
-        return DistancesTo(flaggedPoints, size);
-    }
-
-    /**
      * Computes an upper limit for the specified values. The number of values between the specified minimum and the
      * computed limit is at least as high as the specified coverage of the map.
      *
      * @param values map of comparable values
      * @param coverage percentage of expected map coverage (value between 0 and 1)
      * @param minimum minimum value to consider
-     * @param maximum maximum value to consider
      *
      * @returns a value between the specified minimum and the maximum value of the map.
      */
@@ -296,7 +275,6 @@ namespace rttr { namespace mapGenerator {
      * @param area area of nodes to consider
      * @param coverage percentage of expected map coverage (value between 0 and 1)
      * @param minimum minimum value to consider
-     * @param maximum maximum value to consider
      *
      * @returns a value between the specified minimum and the maximum value of the map.
      */

@@ -68,15 +68,14 @@ namespace rttr { namespace mapGenerator {
         std::vector<std::vector<MapPoint>> coasts;
         std::set<MapPoint, MapPointLess> visited;
 
-        auto isPartOfRiver = [&rivers](const MapPoint& pt) {
+        const auto partOfRiver = [&rivers](const MapPoint& pt) {
             return helpers::contains_if(rivers, [&pt](const River& river) { return river.find(pt) != river.end(); });
         };
 
-        auto distanceToRiver = Distances(map.size, isPartOfRiver);
+        const auto distanceToRiver = DistancesTo(map.size, partOfRiver);
+        const auto allWater = [&map](const MapPoint& pt) { return map.textureMap.All(pt, IsWater); };
 
-        auto allWater = [&map](const MapPoint& pt) { return map.textureMap.All(pt, IsWater); };
-
-        auto isCoast = [&map, allWater, &distanceToRiver](const MapPoint& pt) {
+        const auto isCoast = [&map, allWater, &distanceToRiver](const MapPoint& pt) {
             return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater)
                    && helpers::contains_if(map.textures.GetNeighbours(pt), allWater) && distanceToRiver[pt] >= 5;
         };

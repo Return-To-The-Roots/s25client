@@ -26,10 +26,10 @@ namespace rttr { namespace mapGenerator {
 
     void Restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate, double weight)
     {
-        const MapExtent& size = map.size;
         auto& z = map.z;
-        auto distances = Distances(size, predicate);
-        auto maximum = *std::max_element(distances.begin(), distances.end());
+        const MapExtent& size = map.size;
+        const auto distances = DistancesTo(size, predicate);
+        const auto maximum = *std::max_element(distances.begin(), distances.end());
 
         RTTR_FOREACH_PT(MapPoint, size)
         {
@@ -58,10 +58,8 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        auto isCoast = [&z, &map](const MapPoint& pt) { return z[pt] == map.height.minimum; };
-
-        auto coastDistance = Distances(map.size, isCoast);
-
+        const auto isCoast = [&z, &map](const MapPoint& pt) { return z[pt] == map.height.minimum; };
+        auto coastDistance = DistancesTo(map.size, isCoast);
         auto minimum = static_cast<unsigned>(map.height.minimum);
         auto maximum = *std::max_element(coastDistance.begin(), coastDistance.end());
 

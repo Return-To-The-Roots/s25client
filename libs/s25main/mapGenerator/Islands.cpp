@@ -26,9 +26,8 @@ namespace rttr { namespace mapGenerator {
     {
         Island island;
 
-        auto isLand = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
-
-        const auto& distances = Distances(map.size, isLand);
+        const auto isLand = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
+        const auto distances = DistancesTo(map.size, isLand);
         const auto center = GetMaximumPoint(distances);
 
         auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {

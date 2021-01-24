@@ -54,23 +54,18 @@ namespace rttr { namespace mapGenerator {
             throw std::runtime_error("Could not find any valid HQ position!");
         }
 
-        std::vector<MapPoint> headquarters;
-        for(const MapPoint& hq : map.hqPositions)
-        {
-            if(hq.isValid())
-            {
-                headquarters.push_back(hq);
-            }
-        }
-        auto isObstacle = [&map](MapPoint point) {
+        const auto isValid = [](const MapPoint& pt) { return pt.isValid(); };
+        const auto isObstacle = [&map](MapPoint point) {
             return map.textureMap.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); });
         };
+        std::vector<MapPoint> hqs;
+        std::copy_if(map.hqPositions.begin(), map.hqPositions.end(), std::back_inserter(hqs), isValid);
 
         // Quality of a map point as one player's HQ is a mix of:
         // 1. distance to other players' HQs (higher = better)
         // 2. distance to any other obstacle e.g. mountain & water (higher = better)
-        NodeMapBase<unsigned> potentialHqQuality = DistancesTo(headquarters, map.size);
-        const auto& obstacleDistance = Distances(map.size, isObstacle);
+        NodeMapBase<unsigned> potentialHqQuality = DistancesTo(hqs, map.size);
+        const auto obstacleDistance = DistancesTo(map.size, isObstacle);
         const auto minDistance = helpers::clamp(GetMaximum(obstacleDistance, area), 2u, 4u);
 
         std::vector<MapPoint> positions;
