@@ -56,84 +56,93 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 }
 } // namespace
 
-AIResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
+AISubSurfaceResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
-    Resource subres = gwb.GetNode(pt).resources;
+    const Resource subres = gwb.GetNode(pt).resources;
     if(subres.getAmount() == 0u)
-        return AIResource::Nothing;
+        return AISubSurfaceResource::Nothing;
     switch(subres.getType())
     {
-        case ResourceType::Iron: return AIResource::Ironore;
-        case ResourceType::Gold: return AIResource::Gold;
-        case ResourceType::Coal: return AIResource::Coal;
-        case ResourceType::Granite: return AIResource::Granite;
-        case ResourceType::Fish: return AIResource::Fish;
-        default: break;
+        case ResourceType::Iron: return AISubSurfaceResource::Ironore;
+        case ResourceType::Gold: return AISubSurfaceResource::Gold;
+        case ResourceType::Coal: return AISubSurfaceResource::Coal;
+        case ResourceType::Granite: return AISubSurfaceResource::Granite;
+        case ResourceType::Fish: return AISubSurfaceResource::Fish;
+        case ResourceType::Nothing:
+        case ResourceType::Water: break;
     }
-    return AIResource::Nothing;
+    return AISubSurfaceResource::Nothing;
 }
 
-AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const
+AISurfaceResource AIInterface::GetSurfaceResource(const MapPoint pt) const
 {
-    NodalObjectType no = gwb.GetNO(pt)->GetType();
-    DescIdx<TerrainDesc> t1 = gwb.GetNode(pt).t1;
+    const auto& node = gwb.GetNode(pt);
+    NodalObjectType no = node.obj ? node.obj->GetType() : NodalObjectType::Nothing;
+    DescIdx<TerrainDesc> t1 = node.t1;
     // valid terrain?
     if(gwb.GetDescription().get(t1).Is(ETerrain::Walkable))
     {
         if(no == NodalObjectType::Tree)
         {
             // exclude pineapple because it's not a real tree
-            if(gwb.GetSpecObj<noTree>(pt)->ProducesWood())
-                return AIResource::Wood;
+            if(static_cast<const noTree*>(node.obj)->ProducesWood())
+                return AISurfaceResource::Wood;
             else
-                return AIResource::Blocked;
+                return AISurfaceResource::Blocked;
         } else if(no == NodalObjectType::Granite)
-            return AIResource::Stones;
+            return AISurfaceResource::Stones;
         else if(no == NodalObjectType::Nothing || no == NodalObjectType::Environment)
-            return AIResource::Nothing;
+            return AISurfaceResource::Nothing;
         else
-            return AIResource::Blocked;
+            return AISurfaceResource::Blocked;
     } else
-        return AIResource::Blocked;
+        return AISurfaceResource::Blocked;
 }
 
 int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
 {
-    // surface resource?
-    if(res == AIResource::Plantspace || res == AIResource::Borderland || res == AIResource::Wood
-       || res == AIResource::Stones)
+    switch(res)
     {
-        AIResource surfaceRes = GetSurfaceResource(pt);
-        DescIdx<TerrainDesc> t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
-        if(surfaceRes == res
-           || (res == AIResource::Plantspace && surfaceRes == AIResource::Nothing
-               && gwb.GetDescription().get(t1).IsVital())
-           || (res == AIResource::Borderland && (IsBorder(pt) || !IsOwnTerritory(pt))
-               && (gwb.GetDescription().get(t1).Is(ETerrain::Walkable)
-                   || gwb.GetDescription().get(t2).Is(ETerrain::Walkable))))
-        {
-            return RES_RADIUS[static_cast<unsigned>(res)];
-        }
-        // Adjust based on building on node (if any)
-        if(res == AIResource::Wood)
-        {
-            if(IsBuildingOnNode(pt, BuildingType::Woodcutter))
+        case AIResource::Wood:
+            if(GetSurfaceResource(pt) == AISurfaceResource::Wood)
+                return RES_RADIUS[res];
+            else if(IsBuildingOnNode(pt, BuildingType::Woodcutter))
                 return -40;
-            if(IsBuildingOnNode(pt, BuildingType::Forester))
+            else if(IsBuildingOnNode(pt, BuildingType::Forester))
                 return 20;
-        } else if(res == AIResource::Plantspace)
-        {
-            if(IsBuildingOnNode(pt, BuildingType::Forester))
+            break;
+        case AIResource::Stones:
+            if(GetSurfaceResource(pt) == AISurfaceResource::Stones)
+                return RES_RADIUS[res];
+            break;
+        case AIResource::Plantspace:
+            if(GetSurfaceResource(pt) == AISurfaceResource::Nothing
+               && gwb.GetDescription().get(gwb.GetNode(pt).t1).IsVital())
+                return RES_RADIUS[res];
+            else if(IsBuildingOnNode(pt, BuildingType::Forester))
                 return -40;
-            if(IsBuildingOnNode(pt, BuildingType::Farm))
+            else if(IsBuildingOnNode(pt, BuildingType::Farm))
                 return -20;
-        }
-    }
-    // so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-    else
-    {
-        if(GetSubsurfaceResource(pt) == res)
-            return RES_RADIUS[static_cast<unsigned>(res)];
+            break;
+        case AIResource::Borderland:
+            if(IsOwnTerritory(pt) && !IsBorder(pt))
+                return 0;
+            else
+            {
+                const auto& desc = gwb.GetDescription();
+                const auto& node = gwb.GetNode(pt);
+                if(desc.get(node.t1).Is(ETerrain::Walkable) || desc.get(node.t2).Is(ETerrain::Walkable))
+                    return RES_RADIUS[res];
+            }
+            break;
+        case AIResource::Gold:
+        case AIResource::Ironore:
+        case AIResource::Coal:
+        case AIResource::Granite:
+        case AIResource::Fish:
+            if(convertToNodeResource(GetSubsurfaceResource(pt)) == res)
+                return RES_RADIUS[res];
+            break;
     }
     return 0;
 }
@@ -141,9 +150,10 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
 int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
                                    int lastval) const
 {
+    const unsigned resRadius = RES_RADIUS[res];
     if(!direction) // calculate complete value from scratch (3n^2+3n+1)
     {
-        std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[static_cast<unsigned>(res)]);
+        std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, resRadius);
         return std::accumulate(pts.begin(), pts.end(), 0, [this, res](int lhs, const auto& curPt) {
             return lhs + this->GetResourceRating(curPt, res);
         });
@@ -154,16 +164,16 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
         // add new points
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
-        for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
+        for(unsigned i = 0; i < resRadius; i++)
             tmpPt = gwb.GetNeighbour(tmpPt, *direction - 1u);
         // then clockwise around at radius distance to get all new points
         for(unsigned i = iDirection + 1u; i < iDirection + 3u; ++i)
         {
-            int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
+            int numSteps = resRadius;
             // add 1 extra step on the second side we check to complete the side
             if(i == iDirection + 2u)
-                ++resRadius;
-            for(MapCoord r2 = 0; r2 < resRadius; ++r2)
+                ++numSteps;
+            for(MapCoord r2 = 0; r2 < numSteps; ++r2)
             {
                 returnVal += GetResourceRating(tmpPt, res);
                 tmpPt = gwb.GetNeighbour(tmpPt, convertToDirection(i));
@@ -174,15 +184,15 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
         tmpPt = pt;
         tmpPt = gwb.GetNeighbour(tmpPt, *direction + 3u);
         // next: go to the first old point we have to substract
-        for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
+        for(unsigned i = 0; i < RES_RADIUS[res]; i++)
             tmpPt = gwb.GetNeighbour(tmpPt, *direction + 2u);
         // now clockwise around at radius distance to remove all old points
         for(int i = iDirection + 4; i < iDirection + 6; ++i)
         {
-            int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
+            int numSteps = resRadius;
             if(i == iDirection + 5)
-                ++resRadius;
-            for(MapCoord r2 = 0; r2 < resRadius; ++r2)
+                ++numSteps;
+            for(MapCoord r2 = 0; r2 < numSteps; ++r2)
             {
                 returnVal -= GetResourceRating(tmpPt, res);
                 tmpPt = gwb.GetNeighbour(tmpPt, convertToDirection(i));

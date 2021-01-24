@@ -26,7 +26,7 @@
 namespace AIJH {
 
 AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap)
-    : res(res), resRadius(RES_RADIUS[static_cast<unsigned>(res)]), aii(aii), aiMap(aiMap)
+    : res(res), resRadius(RES_RADIUS[res]), aii(aii), aiMap(aiMap)
 {}
 
 AIResourceMap::~AIResourceMap() = default;
@@ -44,8 +44,9 @@ void AIResourceMap::Init()
         else if(aii.gwb.GetDescription().get(aii.gwb.GetNode(pt).t1).Is(ETerrain::Walkable))
         {
             if((res != AIResource::Borderland && node.res == res) || (res == AIResource::Borderland && aii.IsBorder(pt))
-               || (node.res == AIResource::Multiple
-                   && (aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)))
+               || (node.res == AINodeResource::Multiple
+                   && (convertToNodeResource(aii.GetSubsurfaceResource(pt)) == res
+                       || convertToNodeResource(aii.GetSurfaceResource(pt)) == res)))
                 Change(pt, 1);
         }
     }

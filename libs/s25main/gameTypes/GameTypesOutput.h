@@ -38,9 +38,6 @@
 #include <boost/preprocessor/variadic/to_seq.hpp>
 #include <ostream>
 
-#define RTTR_CASE_OUT(Enum, Enumerator) \
-    case Enum::Enumerator: os << #Enumerator; break
-
 // LCOV_EXCL_START
 
 #define RTTR_ENUM_CASE_SINGLE(s, EnumName, Enumerator) \
@@ -105,5 +102,3 @@ std::ostream& operator<<(std::ostream& out, const DescIdx<T>& d)
 }
 
 // LCOV_EXCL_STOP
-
-#undef RTTR_CASE_OUT
