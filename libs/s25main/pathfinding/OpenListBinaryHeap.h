@@ -21,6 +21,9 @@
 #include <limits>
 #include <vector>
 
+/// Just for occasional temporary debugging, all should be covered by tests and this is SLOW
+#define RTTR_SLOW_DEBUG_CHECKS 0
+
 template<typename T>
 class OpenListBinaryHeapBase
 {
@@ -48,6 +51,7 @@ public:
     OpenListBinaryHeapBase() { elements.reserve(128); }
     size_type size() const { return elements.size(); }
     bool empty() const { return elements.empty(); }
+    void clear() { elements.clear(); }
 
 protected:
     std::vector<Element> elements;
@@ -76,13 +80,13 @@ public:
     void decreasedKey(T* el);
     void rearrange(T* el) { decreasedKey(el); }
 
-private:
+protected:
     static size_type NoPos() { return std::numeric_limits<size_type>::max(); }
     static size_type ParentPos(size_type pos) { return (pos - 1) / 2; }
     static size_type LeftChildPos(size_type pos) { return (2 * pos) + 1; }
     static size_type RightChildPos(size_type pos) { return (2 * pos) + 2; }
 
-    bool isHeap(size_type pos = 0) const;
+    bool isHeap() const;
     bool arePositionsValid() const;
     static size_type& GetPos(T* el) { return Parent::GetPos(GetPosMarker()(el)); }
     static key_type GetKey(T* el) { return T_GetKey()(*el); }
@@ -93,36 +97,29 @@ private:
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
+#if RTTR_SLOW_DEBUG_CHECKS
+#    define RTTR_VALIDATE_HEAP() \
+        RTTR_Assert(isHeap());   \
+        RTTR_Assert(arePositionsValid())
+#else
+#    define RTTR_VALIDATE_HEAP() (void)0
+#endif
+
 template<typename T, class T_GetKey, class GetPosMarker>
-bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap(size_type pos) const
+bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap() const
 {
     size_type size = this->size();
-    if(pos >= size)
-        return true;
-    if(pos == 0)
+    for(size_type i = 0; i < size; i++)
     {
-        for(size_type i = 0; i < size; i++)
-        {
-            const size_type left = LeftChildPos(i);
-            const size_type right = RightChildPos(i);
-            // If child exist, parent must be "less" than child
-            if(left < size && GetKey(left) < GetKey(i))
-                return false;
-            if(right < size && GetKey(right) < GetKey(i))
-                return false;
-        }
-        return true;
-    } else
-    {
-        const size_type left = LeftChildPos(pos);
-        const size_type right = RightChildPos(pos);
+        const size_type left = LeftChildPos(i);
+        const size_type right = RightChildPos(i);
         // If child exist, parent must be "less" than child
-        if(left < size && GetKey(left) < GetKey(pos))
+        if(left < size && GetKey(left) < GetKey(i))
             return false;
-        if(right < size && GetKey(right) < GetKey(pos))
+        if(right < size && GetKey(right) < GetKey(i))
             return false;
-        return isHeap(left) && isHeap(right);
     }
+    return true;
 }
 
 template<typename T, class T_GetKey, class GetPosMarker>
@@ -139,24 +136,22 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::arePositionsValid() const
 template<typename T, class T_GetKey, class GetPosMarker>
 inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::top() const
 {
+    RTTR_Assert(!this->empty());
     return this->elements.front().el;
 }
 
 template<typename T, class T_GetKey, class GetPosMarker>
 inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::push(T* newEl)
 {
-    RTTR_Assert(isHeap());
-    RTTR_Assert(arePositionsValid());
+    RTTR_VALIDATE_HEAP();
     GetPos(newEl) = this->size();
     this->elements.push_back(Element(GetKey(newEl), newEl));
     decreasedKey(newEl);
-    RTTR_Assert(isHeap());
 }
 
 template<typename T, class T_GetKey, class GetPosMarker>
 inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
 {
-    RTTR_Assert(arePositionsValid());
     size_type i = GetPos(el);
     unsigned elVal = this->elements[i].key = GetKey(el);
     RTTR_Assert(i < this->size());
@@ -171,16 +166,14 @@ inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
         i = parentPos;
     }
     GetPos(el) = i;
-    RTTR_Assert(isHeap());
-    RTTR_Assert(arePositionsValid());
+    RTTR_VALIDATE_HEAP();
 }
 
 template<typename T, class T_GetKey, class GetPosMarker>
 inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
 {
-    RTTR_Assert(arePositionsValid());
-    RTTR_Assert(isHeap());
     RTTR_Assert(!this->empty());
+    RTTR_VALIDATE_HEAP();
 
     // Return value is the current minimum element
     T* const result = top();
@@ -204,11 +197,9 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
     {
         // Now check if the heap condition is violated for the current position
         const size_type left = LeftChildPos(i);
-        RTTR_Assert(isHeap(left));
         if(left >= size)
             break; // No child? -> All ok
         const size_type right = RightChildPos(i);
-        RTTR_Assert(isHeap(right));
         const unsigned leftVal = this->elements[left].key;
         if(leftVal < el.key) // left < i
         {
@@ -233,7 +224,8 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
     this->elements[i] = el;
     GetPos(el.el) = i;
 
-    RTTR_Assert(isHeap());
-    RTTR_Assert(arePositionsValid());
     return result;
 }
+
+#undef RTTR_SLOW_DEBUG_CHECKS
+#undef RTTR_VALIDATE_HEAP
