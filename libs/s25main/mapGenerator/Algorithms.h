@@ -223,7 +223,6 @@ namespace rttr { namespace mapGenerator {
      * @param values map of comparable values
      * @param coverage percentage of expected map coverage (value between 0 and 1)
      * @param minimum minimum value to consider
-     * @param maximum maximum value to consider
      *
      * @returns a value between the specified minimum and the maximum value of the map.
      */
@@ -276,7 +275,6 @@ namespace rttr { namespace mapGenerator {
      * @param area area of nodes to consider
      * @param coverage percentage of expected map coverage (value between 0 and 1)
      * @param minimum minimum value to consider
-     * @param maximum maximum value to consider
      *
      * @returns a value between the specified minimum and the maximum value of the map.
      */
