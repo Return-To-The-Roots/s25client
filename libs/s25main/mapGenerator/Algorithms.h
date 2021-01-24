@@ -173,7 +173,7 @@ namespace rttr { namespace mapGenerator {
         return distances;
     }
 
-    template <typename T>
+    template<typename T>
     NodeMapBase<unsigned> DistancesTo(const MapExtent& size, T&& evaluator)
     {
         return DistancesTo(SelectPoints(evaluator, size), size);

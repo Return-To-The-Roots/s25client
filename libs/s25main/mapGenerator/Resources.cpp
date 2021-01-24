@@ -116,7 +116,9 @@ namespace rttr { namespace mapGenerator {
         auto probRange = ValueRange<unsigned>(15, 40);
         auto probDiff = probRange.GetDifference();
 
-        const auto mountainFoot = [&map](const MapPoint& pt) { return !map.textureMap.All(pt, IsMountainOrSnowOrLava); };
+        const auto mountainFoot = [&map](const MapPoint& pt) {
+            return !map.textureMap.All(pt, IsMountainOrSnowOrLava);
+        };
         const auto mountainDepth = DistancesTo(map.size, mountainFoot);
         const auto mountainRange = GetRange(mountainDepth);
 
