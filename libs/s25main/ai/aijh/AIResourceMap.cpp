@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,92 +25,69 @@
 
 namespace AIJH {
 
-AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap)
-    : res(res), resRadius(RES_RADIUS[res]), aii(aii), aiMap(aiMap)
+static constexpr bool isDiminishable(AIResource res)
+{
+    switch(res)
+    {
+        case AIResource::Gold:
+        case AIResource::Ironore:
+        case AIResource::Coal:
+        case AIResource::Granite:
+        case AIResource::Fish:
+        case AIResource::Stones: return true;
+        case AIResource::Wood:
+        case AIResource::Plantspace:
+        case AIResource::Borderland: return false;
+    }
+    return false;
+}
+
+AIResourceMap::AIResourceMap(const AIResource res, bool isInfinite, const AIInterface& aii, const AIMap& aiMap)
+    : res(res), isInfinite(isInfinite), isDiminishableResource(isDiminishable(res)), resRadius(RES_RADIUS[res]),
+      aii(aii), aiMap(aiMap)
 {}
 
 AIResourceMap::~AIResourceMap() = default;
 
-void AIResourceMap::Init()
+void AIResourceMap::init()
 {
     const MapExtent mapSize = aiMap.GetSize();
 
     map.Resize(mapSize);
-    RTTR_FOREACH_PT(MapPoint, mapSize)
+    // Calculate value for each point.
+    // This is quite expensive so do just for the diminishable resources to sort out ones where there will never be
+    // anything, which allows an optimization when calculating the value which must always be done on demand
+    if(isDiminishableResource)
     {
-        const Node& node = aiMap[pt];
-        if(res == AIResource::Fish && node.res == res)
-            Change(pt, 1);
-        else if(aii.gwb.GetDescription().get(aii.gwb.GetNode(pt).t1).Is(ETerrain::Walkable))
+        RTTR_FOREACH_PT(MapPoint, mapSize)
         {
-            if((res != AIResource::Borderland && node.res == res) || (res == AIResource::Borderland && aii.IsBorder(pt))
-               || (node.res == AINodeResource::Multiple
-                   && (convertToNodeResource(aii.GetSubsurfaceResource(pt)) == res
-                       || convertToNodeResource(aii.GetSurfaceResource(pt)) == res)))
-                Change(pt, 1);
+            bool isValid = true;
+            if(res == AIResource::Fish)
+            {
+                isValid =
+                  aii.gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.kind == TerrainKind::Water; });
+            } else if(res == AIResource::Stones)
+            {
+                isValid = aii.gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Buildable); });
+            } else //= granite,gold,iron,coal
+            {
+                isValid = aii.gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); });
+            }
+            map[pt] = isValid ? aii.CalcResourceValue(pt, res) : 0;
         }
     }
 }
 
-void AIResourceMap::Recalc()
+void AIResourceMap::updateAround(const MapPoint& pt, int radius)
 {
-    Init();
-    if(res == AIResource::Wood) // existing woodcutters reduce rating
-        AdjustRatingForBlds(BuildingType::Woodcutter, 7, -10);
-    else if(res == AIResource::Plantspace)
-    {
-        AdjustRatingForBlds(BuildingType::Farm, 3, -25);
-        AdjustRatingForBlds(BuildingType::Forester, 6, -25);
-    }
+    if(isDiminishableResource)
+        updateAroundDiminishable(pt, radius);
+    else
+        updateAroundReplinishable(pt, radius);
 }
 
-void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int value)
+MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality size, unsigned radius, int minimum) const
 {
-    const unsigned playerCt = aii.GetNumPlayers();
-    for(unsigned i = 0; i < playerCt; i++)
-    {
-        const std::list<nobUsual*>& blds = aii.GetPlayerBuildings(bld, i);
-        for(auto* bld : blds)
-            Change(bld->GetPos(), radius, value);
-        const std::list<noBuildingSite*>& bldSites = aii.GetPlayerBuildingSites(i);
-        for(auto* bldSite : bldSites)
-        {
-            if(bldSite->GetBuildingType() == bld)
-                Change(bldSite->GetPos(), radius, value);
-        }
-    }
-}
-
-namespace {
-    struct ValueAdjuster
-    {
-        NodeMapBase<int>& map;
-        unsigned radius;
-        int value;
-
-        ValueAdjuster(NodeMapBase<int>& map, unsigned radius, int value) : map(map), radius(radius), value(value) {}
-        bool operator()(const MapPoint pt, unsigned r) const
-        {
-            map[pt] += value * (radius - r);
-            return false; // Don't exit
-        }
-    };
-} // namespace
-
-void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
-{
-    aii.gwb.CheckPointsInRadius(pt, radius, ValueAdjuster(map, radius, value), true);
-}
-
-MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius,
-                                         bool inTerritory) const
-{
-    RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
-
-    // TODO was besseres wär schön ;)
-    if(radius == -1)
-        radius = 30;
-
     MapPoint best = MapPoint::Invalid();
     int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
@@ -120,18 +97,121 @@ MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality siz
         const unsigned idx = map.GetIdx(curPt);
         if(map[idx] > best_value)
         {
-            if(!aiMap[idx].reachable || (inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
+            if(!aiMap[idx].reachable || !aiMap[idx].owned || aiMap[idx].farmed)
                 continue;
-            RTTR_Assert(aii.GetBuildingQuality(curPt) == aiMap[curPt].bq);
-            if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
-            {
-                best = curPt;
-                best_value = map[idx];
-            }
+            RTTR_Assert(aii.GetBuildingQuality(curPt)
+                        == aiMap[curPt].bq); // Temporary, to check if aiMap is correctly update, see below
+            if(!canUseBq(aii.GetBuildingQuality(curPt), size)) // map[idx].bq; TODO: Update nodes BQ and use that
+                continue;
+            // special case fish -> check for other fishery buildings
+            if(res == AIResource::Fish && aii.isBuildingNearby(BuildingType::Fishery, curPt, 5))
+                continue;
+            if(res == AIResource::Borderland && aii.gwb.IsOnRoad(aii.gwb.GetNeighbour(curPt, Direction::SouthEast)))
+                continue;
+            // dont build next to empty harborspots
+            if(aii.isHarborPosClose(curPt, 2, true))
+                continue;
+            best = curPt;
+            best_value = map[idx];
+            // TODO: calculate "perfect" rating and instantly return if we got that already
         }
     }
 
     return best;
+}
+
+void AIResourceMap::avoidPosition(const MapPoint& pt)
+{
+    map[pt] = 0;
+}
+
+void AIResourceMap::updateAroundDiminishable(const MapPoint& pt, const int radius)
+{
+    if(isInfinite)
+        return;
+
+    bool lastCircleValueCalculated = false;
+    bool lastValueCalculated = false;
+    // to avoid having to calculate a value twice and still move left on the same level without any problems we use this
+    // variable to remember the first calculation we did in the circle.
+    int circleStartValue = 0;
+
+    for(MapCoord tx = aii.gwb.GetXA(pt, Direction::West), r = 1; r <= radius;
+        tx = aii.gwb.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
+    {
+        MapPoint curPt(tx, pt.y);
+        for(const auto curDir : helpers::enumRange(Direction::NorthEast))
+        {
+            for(MapCoord step = 0; step < r; ++step, curPt = aiMap.GetNeighbour(curPt, curDir))
+            {
+                int& resMapVal = map[curPt];
+                // only do a complete calculation for the first point or when moving outward and the last value is
+                // unknown
+                if((r < 2 || !lastCircleValueCalculated) && step < 1 && curDir == Direction::NorthEast && resMapVal)
+                {
+                    resMapVal = aii.CalcResourceValue(curPt, res);
+                    circleStartValue = resMapVal;
+                    lastCircleValueCalculated = true;
+                    lastValueCalculated = true;
+                } else if(!resMapVal) // was there ever anything? if not skip it!
+                {
+                    if(step < 1 && curDir == Direction::NorthEast)
+                        lastCircleValueCalculated = false;
+                    lastValueCalculated = false;
+                } else if(step < 1 && curDir == Direction::NorthEast) // circle not yet started? -> last direction was
+                                                                      // outward (left=0)
+                {
+                    resMapVal = aii.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
+                    circleStartValue = resMapVal;
+                } else if(lastValueCalculated)
+                {
+                    if(step > 0) // we moved direction i%6
+                        resMapVal = aii.CalcResourceValue(curPt, res, curDir, resMapVal);
+                    else // last step was the previous direction
+                        resMapVal = aii.CalcResourceValue(curPt, res, curDir - 1u, resMapVal);
+                } else
+                {
+                    resMapVal = aii.CalcResourceValue(curPt, res);
+                    lastValueCalculated = true;
+                }
+            }
+        }
+    }
+}
+
+void AIResourceMap::updateAroundReplinishable(const MapPoint& pt, const int radius)
+{
+    // to avoid having to calculate a value twice and still move left on the same level without any problems we use this
+    // variable to remember the first calculation we did in the circle.
+    int circleStartValue = 0;
+
+    int resValue = 0;
+    for(MapCoord tx = aii.gwb.GetXA(pt, Direction::West), r = 1; r <= radius;
+        tx = aii.gwb.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
+    {
+        MapPoint curPt(tx, pt.y);
+        for(const auto curDir : helpers::enumRange(Direction::NorthEast))
+        {
+            for(MapCoord step = 0; step < r; ++step, curPt = aii.gwb.GetNeighbour(curPt, curDir))
+            {
+                if(r == 1 && step == 0 && curDir == Direction::NorthEast)
+                {
+                    // only do a complete calculation for the first point!
+                    resValue = aii.CalcResourceValue(curPt, res);
+                    circleStartValue = resValue;
+                } else if(step == 0 && curDir == Direction::NorthEast)
+                {
+                    // circle not yet started? -> last direction was outward
+                    resValue = aii.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
+                    circleStartValue = resValue;
+                } else if(step > 0) // we moved direction i%6
+                    resValue = aii.CalcResourceValue(curPt, res, curDir, resValue);
+                else // last step was the previous direction
+                    resValue = aii.CalcResourceValue(curPt, res, curDir - 1u, resValue);
+                map[curPt] = resValue;
+            }
+        }
+    }
 }
 
 } // namespace AIJH
