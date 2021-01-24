@@ -77,7 +77,8 @@ namespace rttr { namespace mapGenerator {
         // Ensure HQ positions keep desired distance to mountains
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
         const auto mountainDistance = DistancesTo(map.size, mountain);
-        const auto desiredDistance = std::max(GetMinimum(mountainDistance, possiblePositions), playerDistanceToMountains);
+        const auto desiredDistance =
+          std::max(GetMinimum(mountainDistance, possiblePositions), playerDistanceToMountains);
         const auto maxDistance = static_cast<unsigned>(map.size.x + map.size.y) / 4;
 
         std::vector<MapPoint> positions;
@@ -86,7 +87,8 @@ namespace rttr { namespace mapGenerator {
         {
             for(const MapPoint& pt : possiblePositions)
             {
-                if(obstacleDistance[pt] >= minObstacleDistance && mountainDistance[pt] < allowedMountainDistance + 5 && mountainDistance[pt] > allowedMountainDistance - 5)
+                if(obstacleDistance[pt] >= minObstacleDistance && mountainDistance[pt] < allowedMountainDistance + 5
+                   && mountainDistance[pt] > allowedMountainDistance - 5)
                 {
                     positions.push_back(pt);
                 }
@@ -143,6 +145,7 @@ namespace rttr { namespace mapGenerator {
      *
      * @throw runtime_error
      */
-    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, unsigned playerDistanceToMountains, int retries = 10);
+    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, unsigned playerDistanceToMountains,
+                           int retries = 10);
 
 }} // namespace rttr::mapGenerator

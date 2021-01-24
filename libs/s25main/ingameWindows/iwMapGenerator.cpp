@@ -137,7 +137,7 @@ void iwMapGenerator::Apply()
     mapSettings.ratioGranite = GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->GetPosition();
     mapSettings.rivers = GetCtrl<ctrlProgress>(CTRL_RIVERS)->GetPosition();
 
-    switch (GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->GetSelection().get())
+    switch(GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->GetSelection().get())
     {
         case 0: mapSettings.mountainDistance = MountainDistance::Close; break;
         case 1: mapSettings.mountainDistance = MountainDistance::Normal; break;
