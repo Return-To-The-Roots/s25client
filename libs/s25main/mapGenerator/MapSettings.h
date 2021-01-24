@@ -34,7 +34,7 @@ namespace rttr { namespace mapGenerator {
     enum class MountainDistance
     {
         Close = 5,
-        Normal = 20,
+        Normal = 15,
         Far = 30,
         VeryFar = 50
     };

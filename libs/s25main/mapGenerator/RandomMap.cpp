@@ -289,7 +289,7 @@ namespace rttr { namespace mapGenerator {
         SmoothHeightMap(map_.z, map_.height);
 
         const double sea = rnd_.RandomDouble(0.1, 0.2);
-        const double mountain = rnd_.RandomDouble(0.2, 0.5 - sea);
+        const double mountain = rnd_.RandomDouble(0.15, 0.4 - sea);
         const double land = 1. - sea - mountain;
 
         ResetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
