@@ -203,6 +203,13 @@ namespace rttr { namespace mapGenerator {
          */
         void ApplyMountainTransitions(const std::vector<MapPoint>& mountainFoot);
 
+        /**
+         * Creates swamp transitions between water and mountain textures.
+         *
+         * @param transitions all points surounded by mountain and water textures
+         */
+        void ApplyMountainWaterTransitions(const std::vector<MapPoint>& transitions);
+
     public:
         Texturizer(NodeMapBase<uint8_t>& z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap)
             : z_(z), textures_(textures), textureMap_(textureMap)

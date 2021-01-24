@@ -20,6 +20,7 @@
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/RandomUtility.h"
+#include "mapGenerator/Rivers.h"
 
 #include <boost/filesystem/path.hpp>
 
@@ -39,7 +40,9 @@ namespace rttr { namespace mapGenerator {
         RandomUtility& rnd_;
         Map& map_;
         Texturizer texturizer_;
+        MapSettings settings_;
 
+        std::vector<River> CreateRivers();
         void CreateMixedMap();
         void CreateLandMap();
         void CreateWaterMap();

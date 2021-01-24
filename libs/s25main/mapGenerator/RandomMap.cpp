@@ -20,7 +20,6 @@
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/Islands.h"
 #include "mapGenerator/Resources.h"
-#include "mapGenerator/Rivers.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
 #include "mapGenerator/Textures.h"
@@ -164,6 +163,7 @@ namespace rttr { namespace mapGenerator {
     {
         auto defaultHeight = map_.height.minimum + map_.height.GetDifference() / 2;
 
+        settings_ = settings;
         map_.z.Resize(settings.size, defaultHeight);
 
         switch(settings.style)
@@ -178,6 +178,26 @@ namespace rttr { namespace mapGenerator {
         AddObjects(map_, rnd_);
         AddResources(map_, rnd_, settings);
         AddAnimals(map_, rnd_);
+    }
+
+    std::vector<River> RandomMap::CreateRivers()
+    {
+        std::vector<River> rivers;
+
+        const MapExtent size = settings_.size;
+        const MapPoint center(size.x / 2, size.y / 2);
+        const unsigned length = size.x + size.y;
+
+        for(const auto dir : helpers::EnumRange<Direction>())
+        {
+            if(rnd_.ByChance(settings_.rivers))
+            {
+                const MapPoint source = settings_.style == MapStyle::Land ? rnd_.Point(size) : center;
+                const unsigned splitRate = rnd_.RandomValue(0u, 2u);
+                rivers.push_back(CreateStream(rnd_, map_, source, dir, length, splitRate));
+            }
+        }
+        return rivers;
     }
 
     void RandomMap::CreateMixedMap()
@@ -198,18 +218,8 @@ namespace rttr { namespace mapGenerator {
 
         ResetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
 
-        auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
-
-        std::vector<River> rivers;
-
-        if(rnd_.ByChance(25))
-        {
-            const unsigned length = (map_.size.x + map_.size.y) / 3;
-            const unsigned splitRate = rnd_.RandomValue(0u, 2u);
-            const auto dir = Direction(rnd_.RandomValue(0u, helpers::MaxEnumValue_v<Direction>));
-
-            rivers.push_back(CreateStream(rnd_, map_, center, dir, length, splitRate));
-        }
+        const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
+        const auto rivers = CreateRivers();
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
@@ -261,9 +271,11 @@ namespace rttr { namespace mapGenerator {
             islands[i] = CreateIsland(map_, rnd_, distanceToLand, nodesPerIsland, islandRadius, .2);
         }
 
+        const auto rivers = CreateRivers();
+
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
-        PlaceHarbors(map_, {}, (map_.size.x + map_.size.y) / 4);
+        PlaceHarbors(map_, rivers, (map_.size.x + map_.size.y) / 4);
 
         for(unsigned i = 0; i < map_.players; i++)
         {
@@ -282,7 +294,8 @@ namespace rttr { namespace mapGenerator {
 
         ResetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
 
-        auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
+        const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
+        CreateRivers();
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 

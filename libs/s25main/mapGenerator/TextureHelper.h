@@ -25,6 +25,8 @@ namespace rttr { namespace mapGenerator {
 
     bool IsWater(const TerrainDesc& terrain);
 
+    bool IsSwamp(const TerrainDesc& terrain);
+
     bool IsLand(const TerrainDesc& terrain);
 
     bool IsShipableWater(const TerrainDesc& terrain);

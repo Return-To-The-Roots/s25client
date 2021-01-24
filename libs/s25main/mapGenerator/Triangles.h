@@ -35,22 +35,6 @@ namespace rttr { namespace mapGenerator {
         Triangle(bool rsu, const Position& position, const MapExtent& size)
             : rsu(rsu), position(MakeMapPoint(position, size))
         {}
-
-        /**
-         * Creates a new, inverted triangle at the same position.
-         *
-         * @returns a new, inverted triangle (RSU -> LSD, LSD -> RSU).
-         */
-        Triangle Inverse() const { return Triangle(!rsu, position); }
-
-        /**
-         * Creates a new, inverted triangle with the specified position.
-         *
-         * @param position position of the triangle
-         *
-         * @returns a new, inverted triangle (RSU -> LSD, LSD -> RSU).
-         */
-        Triangle Inverse(const MapPoint& position) const { return Triangle(!rsu, position); }
     };
 
     /**

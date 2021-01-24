@@ -30,7 +30,7 @@ using namespace rttr::mapGenerator;
 
 enum
 {
-    CTRL_LAST_ID = 6, // last UI control ID used before enum controls
+    CTRL_LAST_ID = 7, // last UI control ID used before enum controls
     CTRL_PLAYER_NUMBER,
     CTRL_MAP_STYLE,
     CTRL_MAP_SIZE,
@@ -38,11 +38,12 @@ enum
     CTRL_RATIO_GOLD,
     CTRL_RATIO_IRON,
     CTRL_RATIO_COAL,
-    CTRL_RATIO_GRANITE
+    CTRL_RATIO_GRANITE,
+    CTRL_RIVERS
 };
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
-    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 350), _("Map Generator"),
+    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 380), _("Map Generator"),
                    LOADER.GetImageN("resource", 41), true),
       mapSettings(settings)
 {
@@ -54,8 +55,8 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         return;
     }
 
-    AddTextButton(0, DrawPoint(20, 310), Extent(100, 20), TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(1, DrawPoint(130, 310), Extent(100, 20), TextureColor::Green2, _("Apply"), NormalFont);
+    AddTextButton(0, DrawPoint(20, 340), Extent(100, 20), TextureColor::Red1, _("Back"), NormalFont);
+    AddTextButton(1, DrawPoint(130, 340), Extent(100, 20), TextureColor::Green2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo =
       AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TextureColor::Grey, NormalFont, 100);
@@ -88,6 +89,9 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     AddText(6, DrawPoint(20, 265), _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 260), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
 
+    AddText(7, DrawPoint(20, 295), _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_RIVERS, DrawPoint(100, 290), Extent(130, 20), TextureColor::Grey, 139, 138, 100);
+
     Reset();
 }
 
@@ -117,6 +121,7 @@ void iwMapGenerator::Apply()
     mapSettings.ratioIron = GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->GetPosition();
     mapSettings.ratioCoal = GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->GetPosition();
     mapSettings.ratioGranite = GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->GetPosition();
+    mapSettings.rivers = GetCtrl<ctrlProgress>(CTRL_RIVERS)->GetPosition();
 
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection().get())
     {
@@ -151,6 +156,7 @@ void iwMapGenerator::Reset()
     GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->SetPosition(mapSettings.ratioIron);
     GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->SetPosition(mapSettings.ratioCoal);
     GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(mapSettings.ratioGranite);
+    GetCtrl<ctrlProgress>(CTRL_RIVERS)->SetPosition(mapSettings.rivers);
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
     switch(mapSettings.style)
