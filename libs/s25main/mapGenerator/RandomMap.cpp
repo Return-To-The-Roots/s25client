@@ -98,6 +98,28 @@ namespace rttr { namespace mapGenerator {
         return 6;
     }
 
+    unsigned GetIslandNodes(const MapExtent& size, unsigned waterNodes)
+    {
+        const unsigned combinedSize = size.x + size.y;
+        if(combinedSize <= 256)
+        {
+            return static_cast<unsigned>(.5 * waterNodes);
+        }
+        if(combinedSize <= 512)
+        {
+            return static_cast<unsigned>(.3 * waterNodes);
+        }
+        if(combinedSize <= 1024)
+        {
+            return static_cast<unsigned>(.2 * waterNodes);
+        }
+        if(combinedSize <= 2048)
+        {
+            return static_cast<unsigned>(.1 * waterNodes);
+        }
+        return static_cast<unsigned>(.05 * waterNodes);
+    }
+
     unsigned GetSmoothRadius(const MapExtent& size)
     {
         const unsigned combinedSize = size.x + size.y;
@@ -254,13 +276,8 @@ namespace rttr { namespace mapGenerator {
 
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
-
-        // 40% of map reserved for player island (80% * 50%)
-        const auto islandNodes = static_cast<unsigned>(.5 * waterNodes);
-
-        // 5% of map per player island (40% / 8 = 5%)
+        const auto islandNodes = GetIslandNodes(map_.size, waterNodes);
         const unsigned nodesPerIsland = islandNodes / 8;
-
         const auto islandRadius = GetIslandRadius(map_.size);
         const auto distanceToLand = islandRadius;
 

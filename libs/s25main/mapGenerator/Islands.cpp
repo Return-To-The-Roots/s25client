@@ -26,13 +26,19 @@ namespace rttr { namespace mapGenerator {
     {
         Island island;
 
-        const auto isLand = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
-        const auto distances = DistancesTo(SelectPoints(isLand, map.size), map.size);
-        const auto possibleCenters = SelectPoints([&distances, distanceToLand](const MapPoint& pt) {
-            return distances[pt] > distanceToLand * 10;
-        }, map.size);
-        const auto center = possibleCenters.empty() ? GetMaximumPoint(distances) : rnd.RandomItem(possibleCenters);
-        
+        const auto land = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
+        const auto distances = DistancesTo(map.size, land);
+
+        const auto findSuitableIslandCenter = [&rnd, &distances, distanceToLand]() {
+            const auto possibleCenters = SelectPoints(
+              [&distances, distanceToLand](const MapPoint& pt) {
+                  return distances[pt] > distanceToLand * 10; // keep proper distance to land
+              },
+              distances.GetSize());
+            return possibleCenters.empty() ? GetMaximumPoint(distances) : rnd.RandomItem(possibleCenters);
+        };
+        const MapPoint center = findSuitableIslandCenter();
+
         const auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {
             // computes prefered extension points for the island by considering distance to
             // center of the island and maximizing distance to other land
