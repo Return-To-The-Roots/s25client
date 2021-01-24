@@ -158,10 +158,9 @@ namespace rttr { namespace mapGenerator {
     template<class T_Container>
     NodeMapBase<unsigned> DistancesTo(const T_Container& flaggedPoints, const MapExtent& size)
     {
-        const unsigned maximumDistance = size.x * size.y;
         std::queue<MapPoint> queue;
         NodeMapBase<unsigned> distances;
-        distances.Resize(size, maximumDistance);
+        distances.Resize(size, unsigned(-1));
 
         for(const MapPoint& pt : flaggedPoints)
         {
@@ -196,8 +195,6 @@ namespace rttr { namespace mapGenerator {
     NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue,
                                     T&& evaluator)
     {
-        const unsigned maximumDistance = size.x * size.y;
-
         std::queue<MapPoint> queue;
         NodeMapBase<unsigned> distances;
         distances.Resize(size, defaultValue);
@@ -210,7 +207,7 @@ namespace rttr { namespace mapGenerator {
                 queue.push(pt);
             } else
             {
-                distances[pt] = maximumDistance;
+                distances[pt] = unsigned(-1);
             }
         }
 

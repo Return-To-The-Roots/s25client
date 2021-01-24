@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(UpdateDistances_updates_enqueued_elements_correctly)
     MapExtent size(8, 8);
     MapPoint reference(4, 7);
     NodeMapBase<unsigned> distances;
-    distances.Resize(size, size.x * size.y);
+    distances.Resize(size, unsigned(-1));
     std::queue<MapPoint> queue;
     queue.push(reference);
     distances[reference] = 0;
