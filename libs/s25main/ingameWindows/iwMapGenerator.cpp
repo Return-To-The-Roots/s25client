@@ -110,9 +110,7 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
     {
         default: break;
 
-        case CTRL_BTN_BACK:
-            Close();
-            break;
+        case CTRL_BTN_BACK: Close(); break;
 
         case CTRL_BTN_APPLY:
             Apply();
