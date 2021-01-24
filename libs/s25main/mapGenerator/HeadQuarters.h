@@ -65,7 +65,7 @@ namespace rttr { namespace mapGenerator {
         // 1. distance to other players' HQs (higher = better)
         // 2. distance to any other obstacle e.g. mountain & water (higher = better)
         NodeMapBase<unsigned> potentialHqQuality = DistancesTo(hqs, map.size);
-        const auto obstacleDistance = DistancesTo(SelectPoints(isObstacle, map.size), map.size);
+        const auto obstacleDistance = DistancesTo(map.size, isObstacle);
         const auto minDistance = helpers::clamp(GetMaximum(obstacleDistance, area), 2u, 4u);
 
         std::vector<MapPoint> positions;

@@ -174,6 +174,12 @@ namespace rttr { namespace mapGenerator {
         return distances;
     }
 
+    template <typename T>
+    NodeMapBase<unsigned> DistancesTo(const MapExtent& size, T&& evaluator)
+    {
+        return DistancesTo(SelectPoints(evaluator, size), size);
+    }
+
     /**
      * Computes a map of distance values describing the distance of each grid position to the closest position for
      * which the evaluator returned `true`. The computation takes place only within the specified area - points outside
