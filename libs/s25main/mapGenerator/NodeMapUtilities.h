@@ -102,22 +102,6 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Finds the minimum value of the map within the specified area.
-     *
-     * @param values reference to the node map to search for the minimum
-     * @param area container of map points to compute minimum value for
-     *
-     * @returns the minimum value of the map within the area.
-     */
-    template<typename T_Value, class T_Container>
-    const T_Value& GetMinimum(const NodeMapBase<T_Value>& values, const T_Container& area)
-    {
-        const auto compare = [&values](const MapPoint& rhs, const MapPoint& lhs) { return values[rhs] < values[lhs]; };
-        const auto minimum = std::min_element(area.begin(), area.end(), compare);
-        return values[*minimum];
-    }
-
-    /**
      * Computes the range of values covered by the map.
      *
      * @param values reference to the node map to compute the range for
