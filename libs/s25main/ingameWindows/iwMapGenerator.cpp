@@ -71,8 +71,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     const Extent buttonSize(100, 20);
 
     curPos.y += 30;
-    ctrlComboBox* combo =
-      AddComboBox(CTRL_PLAYER_NUMBER, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned n = 2; n <= MAX_PLAYERS; n++)
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
 

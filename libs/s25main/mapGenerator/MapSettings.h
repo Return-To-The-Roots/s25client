@@ -38,10 +38,7 @@ namespace rttr { namespace mapGenerator {
         Far = 25,
         VeryFar = 30
     };
-    constexpr auto maxEnumValue(MountainDistance)
-    {
-        return MountainDistance::VeryFar;
-    };
+    constexpr auto maxEnumValue(MountainDistance) { return MountainDistance::VeryFar; }
 
     struct MapSettings
     {
