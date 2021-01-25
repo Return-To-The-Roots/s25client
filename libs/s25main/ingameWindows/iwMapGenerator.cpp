@@ -98,7 +98,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
     curPos.y += 30;
-    AddText(CTRL_TXT_MOUNTAIN_DIST, curPos, _("Mountain Distance"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(CTRL_TXT_MOUNTAIN_DIST, curPos, _("HQ distance to mountain"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
     combo = AddComboBox(CTRL_MOUNTAIN_DIST, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Close"));
