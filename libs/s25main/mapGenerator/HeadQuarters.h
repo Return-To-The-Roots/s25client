@@ -78,7 +78,7 @@ namespace rttr { namespace mapGenerator {
         // Keep minimum distance to other HQs and desired distance to mountains
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
         const auto mountainDistances = DistancesTo(map.size, mountain);
-        const unsigned desiredDistance = static_cast<unsigned>(distance);
+        const auto desiredDistance = static_cast<unsigned>(distance);
         const auto distanceToOtherHqs = DistancesTo(map.hqPositions, map.size);
         const unsigned minimumHqDistance = (map.size.x + map.size.y) / 16;
         const int maximumRadius = (map.size.x + map.size.y) / 4;
