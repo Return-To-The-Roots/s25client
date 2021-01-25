@@ -175,8 +175,8 @@ namespace rttr { namespace mapGenerator {
             case MapStyle::Land: CreateLandMap(); break;
         }
 
-        AddObjects(map_, rnd_);
-        AddResources(map_, rnd_, settings);
+        AddObjects(map_, rnd_, settings_);
+        AddResources(map_, rnd_, settings_);
         AddAnimals(map_, rnd_);
     }
 

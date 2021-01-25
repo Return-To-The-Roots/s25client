@@ -39,6 +39,8 @@ enum
     CTRL_TXT_GRANITE,
     CTRL_TXT_RIVERS,
     CTRL_TXT_MOUNTAIN_DIST,
+    CTRL_TXT_TREES,
+    CTRL_TXT_STONE_PILES,
     CTRL_PLAYER_NUMBER,
     CTRL_MAP_STYLE,
     CTRL_MAP_SIZE,
@@ -48,11 +50,13 @@ enum
     CTRL_RATIO_COAL,
     CTRL_RATIO_GRANITE,
     CTRL_RIVERS,
-    CTRL_MOUNTAIN_DIST
+    CTRL_MOUNTAIN_DIST,
+    CTRL_TREES,
+    CTRL_STONE_PILES
 };
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
-    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 410), _("Map Generator"),
+    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 470), _("Map Generator"),
                    LOADER.GetImageN("resource", 41), true),
       mapSettings(settings)
 {
@@ -66,7 +70,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 
     DrawPoint curPos(20, 0);
 
-    const Extent comboSize(210, 20);
+    const Extent comboSize(230, 20);
     const Extent progressSize(130, 20);
     const Extent buttonSize(100, 20);
 
@@ -105,21 +109,28 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString(_("Far"));
     combo->AddString(_("Very far"));
 
+    const int pgrOffset = 120;
     curPos.y += 35;
     AddText(CTRL_TXT_GOAL, curPos, _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddProgress(CTRL_RATIO_GOLD, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
     AddText(CTRL_TXT_IRON, curPos, _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_IRON, DrawPoint(100, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddProgress(CTRL_RATIO_IRON, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
     AddText(CTRL_TXT_COAL, curPos, _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_COAL, DrawPoint(100, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddProgress(CTRL_RATIO_COAL, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
     AddText(CTRL_TXT_GRANITE, curPos, _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
     AddText(CTRL_TXT_RIVERS, curPos, _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RIVERS, DrawPoint(100, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddProgress(CTRL_RIVERS, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    curPos.y += 30;
+    AddText(CTRL_TXT_TREES, curPos, _("Trees:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_TREES, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    curPos.y += 30;
+    AddText(CTRL_TXT_STONE_PILES, curPos, _("Stone piles:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(CTRL_STONE_PILES, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
 
     curPos.y += 25;
     AddTextButton(CTRL_BTN_BACK, curPos, buttonSize, TextureColor::Red1, _("Back"), NormalFont);
@@ -153,6 +164,8 @@ void iwMapGenerator::Apply()
     mapSettings.ratioCoal = GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->GetPosition();
     mapSettings.ratioGranite = GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->GetPosition();
     mapSettings.rivers = GetCtrl<ctrlProgress>(CTRL_RIVERS)->GetPosition();
+    mapSettings.trees = GetCtrl<ctrlProgress>(CTRL_TREES)->GetPosition();
+    mapSettings.stonePiles = GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->GetPosition();
 
     switch(GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->GetSelection().get())
     {
@@ -196,6 +209,8 @@ void iwMapGenerator::Reset()
     GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->SetPosition(mapSettings.ratioCoal);
     GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(mapSettings.ratioGranite);
     GetCtrl<ctrlProgress>(CTRL_RIVERS)->SetPosition(mapSettings.rivers);
+    GetCtrl<ctrlProgress>(CTRL_TREES)->SetPosition(mapSettings.trees);
+    GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->SetPosition(mapSettings.stonePiles);
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST);
     switch(mapSettings.mountainDistance)

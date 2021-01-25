@@ -38,7 +38,7 @@ namespace rttr { namespace mapGenerator {
 
     std::vector<Tree> CreateTrees(const TextureMap& textures);
 
-    void AddObjects(Map& map, RandomUtility& rnd);
+    void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings);
 
     void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings);
 
