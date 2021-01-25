@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
     RunTest([](Map& map) {
         RandomUtility rnd(0);
         MapPoint hq(3, 3);
-        map.hqPositions[0] = hq;
+        map.hqPositions.push_back(hq);
 
         AddObjects(map, rnd);
 

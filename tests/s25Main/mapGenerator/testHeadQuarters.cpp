@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_for_player)
         map.textures[obstacle] = TexturePair(mountain);
 
         std::vector<MapPoint> area{hq};
-        BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, 0, area, MountainDistance::Normal));
+        BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, area, MountainDistance::Normal));
     });
 }
 
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_without_mountain)
         MapPoint hq(4, 4);
         map.textures.Resize(size, TexturePair(buildable));
         std::vector<MapPoint> area{hq};
-        BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, 0, area, mntDist));
+        BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, area, mntDist));
     });
 }
 
@@ -167,9 +167,9 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
 
         std::vector<MapPoint> area{hq};
 
-        PlaceHeadquarter(map, 3, area, mntDist);
+        PlaceHeadquarter(map, area, mntDist);
 
-        BOOST_REQUIRE(map.hqPositions[3] == hq);
+        BOOST_REQUIRE(map.hqPositions[0] == hq);
     });
 }
 
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_empty_area_throws_exception)
         const auto water = textures.Find(IsShipableWater);
         map.textures.Resize(size, TexturePair(water));
         std::vector<MapPoint> area;
-        BOOST_CHECK_THROW(PlaceHeadquarter(map, 0, area, mntDist), std::runtime_error);
+        BOOST_CHECK_THROW(PlaceHeadquarter(map, area, mntDist), std::runtime_error);
     });
 }
 
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_without_suitable_position_throws_exception
         const auto water = textures.Find(IsShipableWater);
         map.textures.Resize(size, TexturePair(water));
         std::vector<MapPoint> area{MapPoint(0, 0)};
-        BOOST_CHECK_THROW(PlaceHeadquarter(map, 0, area, mntDist), std::runtime_error);
+        BOOST_CHECK_THROW(PlaceHeadquarter(map, area, mntDist), std::runtime_error);
     });
 }
 

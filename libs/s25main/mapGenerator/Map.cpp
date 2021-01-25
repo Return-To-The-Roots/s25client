@@ -25,7 +25,7 @@ namespace rttr { namespace mapGenerator {
 
     Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
              DescIdx<LandscapeDesc> landscape, uint8_t maxHeight)
-        : hqPositions(MAX_PLAYERS, MapPoint::Invalid()), textureMap(TextureMap(worldDesc, landscape, textures)),
+        : textureMap(TextureMap(worldDesc, landscape, textures)),
           name("Random"), author("Auto"), height(0, maxHeight), players(players), size(size)
     {
         z.Resize(size);

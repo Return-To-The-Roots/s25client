@@ -118,21 +118,20 @@ namespace rttr { namespace mapGenerator {
      * Tries to place a head quarter (HQ) for a single player within the specified area.
      *
      * @param map reference to the map to place the HQ on
-     * @param index player index for the HQ
      * @param area area to place the HQ in
      * @param distance desired player distance to mountain
      *
      * @throw runtime_error
      */
     template<class T_Container>
-    void PlaceHeadquarter(Map& map, int index, const T_Container& area, MountainDistance distance)
+    void PlaceHeadquarter(Map& map, const T_Container& area, MountainDistance distance)
     {
         const auto positions = FindHqPositions(map, area, distance);
         if(positions.empty())
         {
             throw std::runtime_error("Could not find any valid HQ position!");
         }
-        map.hqPositions[index] = positions.front();
+        map.hqPositions.push_back(positions.front());
     }
 
     /**

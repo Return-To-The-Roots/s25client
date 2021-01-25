@@ -279,7 +279,7 @@ namespace rttr { namespace mapGenerator {
 
         for(unsigned i = 0; i < map_.players; i++)
         {
-            PlaceHeadquarter(map_, i, islands[i], settings_.mountainDistance);
+            PlaceHeadquarter(map_, islands[i], settings_.mountainDistance);
         }
     }
 

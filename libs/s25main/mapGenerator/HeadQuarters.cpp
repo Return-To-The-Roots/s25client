@@ -74,17 +74,14 @@ namespace rttr { namespace mapGenerator {
 
                 if(possiblePositions.empty())
                 {
-                    for(int i = 0; i < number; i++)
-                    {
-                        map.hqPositions[i] = MapPoint::Invalid();
-                    }
+                    map.hqPositions.clear();
                     success = false;
                     break;
                 }
 
                 auto hq = retries == maxRetries ? possiblePositions.front() : rnd.RandomItem(possiblePositions);
 
-                map.hqPositions[index] = hq;
+                map.hqPositions.push_back(hq);
             }
 
             retries--;
