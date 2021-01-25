@@ -96,7 +96,7 @@ namespace rttr { namespace mapGenerator {
         }
 
         // fallback in case all points within desired mountain distance are too close to other HQs
-        if (positions.empty())
+        if(positions.empty())
         {
             positions = possiblePositions;
         }
