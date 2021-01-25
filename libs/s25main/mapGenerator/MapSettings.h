@@ -35,8 +35,8 @@ namespace rttr { namespace mapGenerator {
     {
         Close = 5,
         Normal = 15,
-        Far = 30,
-        VeryFar = 50
+        Far = 25,
+        VeryFar = 30
     };
     constexpr auto maxEnumValue(MountainDistance)
     {
