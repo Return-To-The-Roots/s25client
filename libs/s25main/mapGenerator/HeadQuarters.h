@@ -88,8 +88,7 @@ namespace rttr { namespace mapGenerator {
         {
             for(const MapPoint& pt : possiblePositions)
             {
-                if(mountainDistance[pt] < allowedMountainDistance + 5
-                   && mountainDistance[pt] > allowedMountainDistance - 5)
+                if(std::abs(static_cast<int>(mountainDistance[pt] - allowedMountainDistance)) < 5)
                 {
                     positions.push_back(pt);
                 }
