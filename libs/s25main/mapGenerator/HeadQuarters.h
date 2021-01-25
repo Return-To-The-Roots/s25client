@@ -75,37 +75,33 @@ namespace rttr { namespace mapGenerator {
             return possiblePositions;
         }
 
-        // Ensure HQ positions keep desired distance to mountains
+        // Keep minimum distance to other HQs and desired distance to mountains
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
-        const auto mountainDistance = DistancesTo(map.size, mountain);
-        const auto desiredDistance =
-          std::max(GetMinimum(mountainDistance, possiblePositions), static_cast<unsigned>(distance));
-        const auto maxDistance = static_cast<unsigned>(map.size.x + map.size.y) / 4;
-
+        const auto mountainDistances = DistancesTo(map.size, mountain);
+        const unsigned desiredDistance = static_cast<unsigned>(distance);
+        const auto distanceToOtherHqs = DistancesTo(map.hqPositions, map.size);
+        const unsigned minimumHqDistance = (map.size.x + map.size.y) / 16;
+        const int maximumRadius = (map.size.x + map.size.y) / 4;
         std::vector<MapPoint> positions;
-        auto allowedMountainDistance = desiredDistance;
-        while(positions.empty() && allowedMountainDistance < maxDistance)
+        for(int radius = 1; positions.empty() && radius < maximumRadius; radius *= 2)
         {
             for(const MapPoint& pt : possiblePositions)
             {
-                if(std::abs(static_cast<int>(mountainDistance[pt] - allowedMountainDistance)) < 5)
+                if(std::abs(static_cast<int>(mountainDistances[pt] - desiredDistance)) < radius
+                   && distanceToOtherHqs[pt] > minimumHqDistance)
                 {
                     positions.push_back(pt);
                 }
             }
-            allowedMountainDistance++;
         }
 
-        if(positions.empty()) // fallback to ignore mountain distance
+        // fallback in case all points within desired mountain distance are too close to other HQs
+        if (positions.empty())
         {
             positions = possiblePositions;
         }
 
         // Sort available HQ positions by distance to other HQs (higher = better)
-        std::vector<MapPoint> hqs;
-        const auto isValid = [](const MapPoint& pt) { return pt.isValid(); };
-        std::copy_if(map.hqPositions.begin(), map.hqPositions.end(), std::back_inserter(hqs), isValid);
-        const auto distanceToOtherHqs = DistancesTo(hqs, map.size);
         const auto isBetter = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
             return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
         };
