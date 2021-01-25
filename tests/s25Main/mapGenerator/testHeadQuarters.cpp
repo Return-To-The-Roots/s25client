@@ -62,11 +62,11 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_returns_expected_nodes)
 {
     MapExtent size(32, 32);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
-        auto water = textures.Find(IsShipableWater);
-        auto land = textures.Find(IsBuildableLand);
+        const auto water = textures.Find(IsShipableWater);
+        const auto land = textures.Find(IsBuildableLand);
         map.textures.Resize(size, TexturePair(water));
         MapPoint centerOfLargeArea(3, 3);
-        auto largeArea = map.textures.GetPointsInRadiusWithCenter(centerOfLargeArea, 3);
+        const auto largeArea = map.textures.GetPointsInRadiusWithCenter(centerOfLargeArea, 3);
 
         for(auto node : largeArea)
         {
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_returns_expected_nodes)
         }
 
         MapPoint centerOfSmallArea(15, 15);
-        auto smallArea = map.textures.GetPointsInRadiusWithCenter(centerOfSmallArea, 2);
+        const auto smallArea = map.textures.GetPointsInRadiusWithCenter(centerOfSmallArea, 2);
 
         for(auto node : smallArea)
         {
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_empty_for_map_without_suitable_posi
     MapExtent size(32, 32);
     RunTestForArea(size, [&size](Map& map, TextureMap& textures, const auto& area) {
         map.textures.Resize(size, TexturePair(textures.Find(IsShipableWater)));
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         const auto positions = FindHqPositions(map, area, mntDist);
 
         BOOST_REQUIRE(positions.empty());
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_suitable_position_for_single_player
         map.textures.Resize(size, TexturePair(buildable));
         map.textures[obstacle] = TexturePair(water);
 
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         const auto positions = FindHqPositions(map, area, mntDist);
 
         BOOST_REQUIRE(!positions.empty());
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_for_player)
         map.textures[obstacle] = TexturePair(mountain);
 
         std::vector<MapPoint> area{hq};
-        BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, 0, area, 20));
+        BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, 0, area, MountainDistance::Normal));
     });
 }
 
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_without_mountain)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         const auto buildable = textures.Find(IsBuildableLand);
         MapPoint hq(4, 4);
         map.textures.Resize(size, TexturePair(buildable));
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         const MapPoint obstacle(0, 0);
         const MapPoint hq(4, 4);
 
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_empty_area_throws_exception)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         const auto water = textures.Find(IsShipableWater);
         map.textures.Resize(size, TexturePair(water));
         std::vector<MapPoint> area;
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_without_suitable_position_throws_exception
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         const auto water = textures.Find(IsShipableWater);
         map.textures.Resize(size, TexturePair(water));
         std::vector<MapPoint> area{MapPoint(0, 0)};
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_with_suitable_positions_for_all_players)
     RandomUtility rnd(0);
     const int players = rttr::test::randomValue(1, 8);
     RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         map.textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
         map.textures[MapPoint(0, 0)] = TexturePair(textures.Find(IsWater));
         BOOST_REQUIRE_NO_THROW(PlaceHeadquarters(map, rnd, players, mntDist));
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_places_hqs_for_any_player_number_on_suita
     RandomUtility rnd(0);
     const int players = rttr::test::randomValue(1, 8);
     RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         map.textures.Resize(size, textures.Find(IsBuildableLand));
         map.textures[MapPoint(0, 0)] = TexturePair(textures.Find(IsWater));
         PlaceHeadquarters(map, rnd, players, mntDist);
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_without_suitable_position_throws_exceptio
     RandomUtility rnd(0);
     const int players = rttr::test::randomValue(1, 8);
     RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
-        const auto mntDist = rttr::test::randomValue(2u, 50u);
+        const auto mntDist = rttr::test::randomEnum<MountainDistance>();
         map.textures.Resize(size, textures.Find(IsWater));
         BOOST_CHECK_THROW(PlaceHeadquarters(map, rnd, players, mntDist), std::runtime_error);
     });

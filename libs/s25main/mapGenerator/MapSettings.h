@@ -31,12 +31,16 @@ namespace rttr { namespace mapGenerator {
         Mixed
     };
 
-    enum class MountainDistance
+    enum class MountainDistance : uint8_t
     {
         Close = 5,
         Normal = 15,
         Far = 30,
         VeryFar = 50
+    };
+    constexpr auto maxEnumValue(MountainDistance)
+    {
+        return MountainDistance::VeryFar;
     };
 
     struct MapSettings

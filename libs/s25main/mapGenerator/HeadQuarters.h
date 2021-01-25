@@ -19,6 +19,7 @@
 
 #include "helpers/mathFuncs.h"
 #include "mapGenerator/Map.h"
+#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/RandomUtility.h"
 #include "mapGenerator/TextureHelper.h"
 #include <stdexcept>
@@ -43,13 +44,13 @@ namespace rttr { namespace mapGenerator {
      *
      * @param map map to search for suitable HQ positions
      * @param area area within the HQ position should be
-     * @param playerDistanceToMountains desired player distance to mountain
+     * @param distance desired player distance to mountain
      *
      * @return all suitable HQ positions witihn the specified area (or the entire map if the area is empty).
      * @throw runtime_error
      */
     template<class T_Container>
-    std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, unsigned playerDistanceToMountains)
+    std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, MountainDistance distance)
     {
         if(area.empty())
         {
@@ -78,7 +79,7 @@ namespace rttr { namespace mapGenerator {
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
         const auto mountainDistance = DistancesTo(map.size, mountain);
         const auto desiredDistance =
-          std::max(GetMinimum(mountainDistance, possiblePositions), playerDistanceToMountains);
+          std::max(GetMinimum(mountainDistance, possiblePositions), static_cast<unsigned>(distance));
         const auto maxDistance = static_cast<unsigned>(map.size.x + map.size.y) / 4;
 
         std::vector<MapPoint> positions;
@@ -119,14 +120,14 @@ namespace rttr { namespace mapGenerator {
      * @param map reference to the map to place the HQ on
      * @param index player index for the HQ
      * @param area area to place the HQ in
-     * @param playerDistanceToMountains desired player distance to mountain
+     * @param distance desired player distance to mountain
      *
      * @throw runtime_error
      */
     template<class T_Container>
-    void PlaceHeadquarter(Map& map, int index, const T_Container& area, unsigned playerDistanceToMountains)
+    void PlaceHeadquarter(Map& map, int index, const T_Container& area, MountainDistance distance)
     {
-        const auto positions = FindHqPositions(map, area, playerDistanceToMountains);
+        const auto positions = FindHqPositions(map, area, distance);
         if(positions.empty())
         {
             throw std::runtime_error("Could not find any valid HQ position!");
@@ -141,11 +142,10 @@ namespace rttr { namespace mapGenerator {
      * @param rnd random number generated used for retrying HQ placement on failures
      * @param number number of HQs to place - equal to the number of players
      * @param retries number of retries to place valid HQs on this map
-     * @param playerDistanceToMountains desired player distance to mountain
+     * @param distance desired player distance to mountain
      *
      * @throw runtime_error
      */
-    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, unsigned playerDistanceToMountains,
-                           int retries = 10);
+    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries = 10);
 
 }} // namespace rttr::mapGenerator
