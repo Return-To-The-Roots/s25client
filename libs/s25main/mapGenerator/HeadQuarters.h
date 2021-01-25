@@ -88,7 +88,7 @@ namespace rttr { namespace mapGenerator {
         {
             for(const MapPoint& pt : possiblePositions)
             {
-                if(obstacleDistance[pt] >= minObstacleDistance && mountainDistance[pt] < allowedMountainDistance + 5
+                if(mountainDistance[pt] < allowedMountainDistance + 5
                    && mountainDistance[pt] > allowedMountainDistance - 5)
                 {
                     positions.push_back(pt);
