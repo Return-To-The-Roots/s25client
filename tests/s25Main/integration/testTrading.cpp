@@ -38,9 +38,9 @@ struct TradeFixture : public WorldWithGCExecution3P
     TradeFixture()
     {
         curPlayer = 1;
-        world.GetPlayer(0).team = TM_TEAM1; //-V525
-        world.GetPlayer(1).team = TM_TEAM1;
-        world.GetPlayer(2).team = TM_TEAM2;
+        world.GetPlayer(0).team = Team::Team1; //-V525
+        world.GetPlayer(1).team = Team::Team1;
+        world.GetPlayer(2).team = Team::Team2;
         for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         {
             world.GetPlayer(i).MakeStartPacts();

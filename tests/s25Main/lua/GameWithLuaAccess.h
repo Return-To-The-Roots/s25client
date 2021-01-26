@@ -76,14 +76,14 @@ public:
         players[0].name = "Player1";
         players[0].nation = Nation::Vikings;
         players[0].color = PLAYER_COLORS[5];
-        players[0].team = TM_TEAM1;
+        players[0].team = Team::Team1;
         players[0].isHost = true;
 
         players[1].ps = PlayerState::AI;
         players[1].name = "PlayerAI";
         players[1].nation = Nation::Romans;
         players[1].color = 0xFFFF0000;
-        players[1].team = TM_TEAM2;
+        players[1].team = Team::Team2;
         players[1].isHost = false;
 
         players[2].ps = PlayerState::Locked;

@@ -717,7 +717,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
 {
     // At first there are no teams
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-        BOOST_TEST_REQUIRE(world.GetPlayer(i).team == TM_NOTEAM);
+        BOOST_TEST_REQUIRE(world.GetPlayer(i).team == Team::None);
     PostManager& postMgr = world.GetPostMgr();
     // Add postbox for each player
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)
@@ -730,15 +730,15 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         BOOST_TEST_REQUIRE(postMgr.GetPostBox(i)->GetNumMsgs() == 0u); //-V807
     // Still no allies
-    world.GetPlayer(1).team = TM_TEAM1; //-V807
+    world.GetPlayer(1).team = Team::Team1; //-V807
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         BOOST_TEST_REQUIRE(postMgr.GetPostBox(i)->GetNumMsgs() == 0u);
 
     // First 2 players are allied -> Message received by player 0 only
-    world.GetPlayer(0).team = TM_TEAM1; //-V807
-    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(0).team = Team::Team1; //-V807
+    world.GetPlayer(1).team = Team::Team1;
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.GetPostBox(0u)->GetNumMsgs() == 1u); //-V807
@@ -746,9 +746,9 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
         BOOST_TEST_REQUIRE(postMgr.GetPostBox(i)->GetNumMsgs() == 0u);
 
     // Same if player 2 is in another team
-    world.GetPlayer(0).team = TM_TEAM1; //-V525
-    world.GetPlayer(1).team = TM_TEAM1;
-    world.GetPlayer(2).team = TM_TEAM2; //-V807
+    world.GetPlayer(0).team = Team::Team1; //-V525
+    world.GetPlayer(1).team = Team::Team1;
+    world.GetPlayer(2).team = Team::Team2; //-V807
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.GetPostBox(0u)->GetNumMsgs() == 1u);
@@ -756,9 +756,9 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
         BOOST_TEST_REQUIRE(postMgr.GetPostBox(i)->GetNumMsgs() == 0u);
 
     // player 2 is in same team
-    world.GetPlayer(0).team = TM_TEAM1; //-V525
-    world.GetPlayer(1).team = TM_TEAM2;
-    world.GetPlayer(2).team = TM_TEAM2;
+    world.GetPlayer(0).team = Team::Team1; //-V525
+    world.GetPlayer(1).team = Team::Team2;
+    world.GetPlayer(2).team = Team::Team2;
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.GetPostBox(2u)->GetNumMsgs() == 1u);
@@ -766,9 +766,9 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
         BOOST_TEST_REQUIRE(postMgr.GetPostBox(i)->GetNumMsgs() == 0u);
 
     // All are in same team
-    world.GetPlayer(0).team = TM_TEAM3;
-    world.GetPlayer(1).team = TM_TEAM3;
-    world.GetPlayer(2).team = TM_TEAM3;
+    world.GetPlayer(0).team = Team::Team3;
+    world.GetPlayer(1).team = Team::Team3;
+    world.GetPlayer(2).team = Team::Team3;
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.GetPostBox(0u)->GetNumMsgs() == 1u);

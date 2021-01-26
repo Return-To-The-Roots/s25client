@@ -40,9 +40,9 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     constexpr auto amountsToAdd = helpers::make_array(63, 100, 85);
 
     RTTR_Assert(world.GetNumPlayers() == 3);
-    world.GetPlayer(0).team = TM_TEAM2;
-    world.GetPlayer(1).team = TM_TEAM1;
-    world.GetPlayer(2).team = TM_TEAM2;
+    world.GetPlayer(0).team = Team::Team2;
+    world.GetPlayer(1).team = Team::Team1;
+    world.GetPlayer(2).team = Team::Team2;
     std::array<MapPoint, 3> hqPos;
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {

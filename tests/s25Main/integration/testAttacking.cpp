@@ -322,15 +322,15 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
     MakeVisible(usualBldPos);
     MakeVisible(storehousePos);
 
-    world.GetPlayer(0).team = TM_TEAM1;
-    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(0).team = Team::Team1;
+    world.GetPlayer(1).team = Team::Team1;
     for(unsigned i = 0; i < 2; i++)
         world.GetPlayer(i).MakeStartPacts();
     // Try to attack ally -> Fail
     TestFailingAttack(gwv, milBld1Pos, attackSrc);
 
-    world.GetPlayer(0).team = TM_TEAM1;
-    world.GetPlayer(1).team = TM_TEAM2;
+    world.GetPlayer(0).team = Team::Team1;
+    world.GetPlayer(1).team = Team::Team2;
     for(unsigned i = 0; i < 2; i++)
         world.GetPlayer(i).MakeStartPacts();
 
@@ -510,10 +510,10 @@ using AttackFixture4P = AttackFixture<4, 32, 34>;
 BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 {
     initGameRNG();
-    world.GetPlayer(0).team = TM_TEAM1; //-V525
-    world.GetPlayer(1).team = TM_NOTEAM;
-    world.GetPlayer(2).team = TM_TEAM1; // Allied to 0
-    world.GetPlayer(3).team = TM_TEAM2; // Hostile to 0
+    world.GetPlayer(0).team = Team::Team1; //-V525
+    world.GetPlayer(1).team = Team::None;
+    world.GetPlayer(2).team = Team::Team1; // Allied to 0
+    world.GetPlayer(3).team = Team::Team2; // Hostile to 0
     for(unsigned i = 0; i < 4; i++)
         world.GetPlayer(i).MakeStartPacts();
     MilitarySettings milSettings = MILITARY_SETTINGS_SCALE;

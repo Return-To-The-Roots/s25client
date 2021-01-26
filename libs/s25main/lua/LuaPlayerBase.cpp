@@ -18,7 +18,7 @@
 #include "LuaPlayerBase.h"
 #include "BasePlayerInfo.h"
 #include "RTTR_Assert.h"
-#include "s25util/strAlgos.h"
+#include "luaRegistrationHelpers.h"
 #include <kaguya/kaguya.hpp>
 
 void LuaPlayerBase::Register(kaguya::State& state)
@@ -35,25 +35,16 @@ void LuaPlayerBase::Register(kaguya::State& state)
                                    .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel));
 
 #pragma region ConstDefs
-#define ADD_LUA_CONST(name) state["NAT_" + s25util::toUpper(#name)] = Nation::name
-    ADD_LUA_CONST(Africans);
-    ADD_LUA_CONST(Japanese);
-    ADD_LUA_CONST(Romans);
-    ADD_LUA_CONST(Vikings);
-    ADD_LUA_CONST(Babylonians);
-#undef ADD_LUA_CONST
 
-#define ADD_LUA_CONST(name) state[#name] = name
-    ADD_LUA_CONST(TM_NOTEAM);
-    ADD_LUA_CONST(TM_RANDOMTEAM);
-    ADD_LUA_CONST(TM_RANDOMTEAM2);
-    ADD_LUA_CONST(TM_RANDOMTEAM3);
-    ADD_LUA_CONST(TM_RANDOMTEAM4);
-    ADD_LUA_CONST(TM_TEAM1);
-    ADD_LUA_CONST(TM_TEAM2);
-    ADD_LUA_CONST(TM_TEAM3);
-    ADD_LUA_CONST(TM_TEAM4);
-#undef ADD_LUA_CONST
+    RTTR_LUA_REGISTER_ENUM(Nation, "NAT_", Africans, Japanese, Romans, Vikings, Babylonians);
+    RTTR_LUA_REGISTER_ENUM(Team, "TM_", None, Random, Team1, Team2, Team3, Team4, Random1To2, Random1To3, Random1To4);
+
+    // Legacy variables
+    state["TM_NOTEAM"] = Team::None;
+    state["TM_RANDOMTEAM"] = Team::Team1;
+    state["TM_RANDOMTEAM2"] = Team::Team2;
+    state["TM_RANDOMTEAM3"] = Team::Team3;
+    state["TM_RANDOMTEAM4"] = Team::Team4;
 #pragma endregion ConstDefs
 }
 

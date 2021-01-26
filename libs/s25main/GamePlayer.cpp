@@ -1767,17 +1767,15 @@ void GamePlayer::MakeStartPacts()
             pacts[i][z] = Pact();
     }
 
-    // Translate possible random team to real team or no team
-    Team ownTeam = GetFixedTeam(team);
     // No team -> No pacts
-    if(ownTeam == TM_NOTEAM)
+    if(team == Team::None)
         return;
-    RTTR_Assert(ownTeam >= TM_TEAM1 && ownTeam <= TM_TEAM4);
+    RTTR_Assert(isTeam(team));
 
     // Create ally- and non-aggression-pact for all players of same team
     for(unsigned i = 0; i < gwg.GetNumPlayers(); ++i)
     {
-        if(ownTeam != GetFixedTeam(gwg.GetPlayer(i).team))
+        if(team != gwg.GetPlayer(i).team)
             continue;
         for(const auto z : helpers::enumRange<PactType>())
         {
@@ -1787,15 +1785,6 @@ void GamePlayer::MakeStartPacts()
             pacts[i][z].want_cancel = false;
         }
     }
-}
-
-Team GamePlayer::GetFixedTeam(Team rawteam)
-{
-    if(rawteam == TM_RANDOMTEAM)
-        return TM_TEAM1;
-    if(rawteam > TM_TEAM4)
-        return Team(rawteam - 3);
-    return rawteam;
 }
 
 bool GamePlayer::IsWareRegistred(Ware* ware)

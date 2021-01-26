@@ -54,7 +54,7 @@ bool GameMessage_Player_List::Run(GameMessageInterface* callback) const
     {
         const JoinPlayerInfo& playerInfo = playerInfos[i];
         LOG.writeToFile("    %d: %s %d %d %d %d %d %s\n") % i % playerInfo.name % rttr::enum_cast(playerInfo.ps)
-          % playerInfo.ping % rttr::enum_cast(playerInfo.nation) % playerInfo.color % playerInfo.team
+          % playerInfo.ping % rttr::enum_cast(playerInfo.nation) % playerInfo.color % rttr::enum_cast(playerInfo.team)
           % (playerInfo.isReady ? "true" : "false");
     }
     return callback->OnGameMessage(*this);

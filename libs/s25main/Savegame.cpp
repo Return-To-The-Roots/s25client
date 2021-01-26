@@ -26,6 +26,7 @@ std::string Savegame::GetSignature() const
 uint16_t Savegame::GetVersion() const
 {
     // Note: If you increase the version, reset currentGameDataVersion in SerializedGameData.cpp (see note there)
+    // Note2: Also remove the workaround for the team in BasePlayerInfo
     return 4; // SaveGameVersion -- Updater signature, do NOT remove
 }
 
