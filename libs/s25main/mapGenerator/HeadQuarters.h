@@ -38,8 +38,8 @@ namespace rttr { namespace mapGenerator {
     std::vector<MapPoint> FindLargestConnectedArea(const Map& map);
 
     /**
-     * Finds suitable positions for a HQ in the specified area of the map. The resulting HQ positions are sorted by quality.
-     * To find suitable positions, this function does:
+     * Finds suitable positions for a HQ in the specified area of the map. The resulting HQ positions are sorted by
+     * quality. To find suitable positions, this function does:
      * 1. look for points within a buildable area of radius 2 (min. req. of HQ)
      * 2. if no such point exists return empty
      * 3. sort all those points by their distance to existing HQs
@@ -66,9 +66,7 @@ namespace rttr { namespace mapGenerator {
         const auto obstacleDistance = DistancesTo(map.size, [&map](const MapPoint& pt) {
             return map.textureMap.Any(pt, [](auto t) { return !t.Is(ETerrain::Buildable); });
         });
-        const auto hasEnoughSpace = [&obstacleDistance](const MapPoint& pt) {
-            return obstacleDistance[pt] >= 2;
-        };
+        const auto hasEnoughSpace = [&obstacleDistance](const MapPoint& pt) { return obstacleDistance[pt] >= 2; };
         std::vector<MapPoint> possiblePositions;
         std::copy_if(area.begin(), area.end(), std::back_inserter(possiblePositions), hasEnoughSpace);
 
@@ -99,7 +97,7 @@ namespace rttr { namespace mapGenerator {
         {
             return possiblePositions;
         }
-        
+
         // 6. sort remaining points by how close they're to desired mountain distance
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
         const auto mountainDistances = DistancesTo(map.size, mountain);
