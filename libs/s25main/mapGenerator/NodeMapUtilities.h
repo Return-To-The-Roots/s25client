@@ -86,18 +86,18 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Finds the maximum value of the map.
+     * Finds the maximum value of the map within the specified area.
      *
      * @param values reference to the node map to search for the maximum
      * @param area container of map points to compute maximum value for
      *
-     * @returns the maximum value of the map.
+     * @returns the maximum value of the map within the area.
      */
     template<typename T_Value, class T_Container>
     const T_Value& GetMaximum(const NodeMapBase<T_Value>& values, const T_Container& area)
     {
-        auto compare = [&values](const MapPoint& rhs, const MapPoint& lhs) { return values[rhs] < values[lhs]; };
-        auto maximum = std::max_element(area.begin(), area.end(), compare);
+        const auto compare = [&values](const MapPoint& rhs, const MapPoint& lhs) { return values[rhs] < values[lhs]; };
+        const auto maximum = std::max_element(area.begin(), area.end(), compare);
         return values[*maximum];
     }
 

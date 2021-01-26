@@ -31,25 +31,30 @@ namespace rttr { namespace mapGenerator {
         Mixed
     };
 
+    enum class MountainDistance : uint8_t
+    {
+        Close = 5,
+        Normal = 15,
+        Far = 25,
+        VeryFar = 30
+    };
+    constexpr auto maxEnumValue(MountainDistance) { return MountainDistance::VeryFar; }
+
     struct MapSettings
     {
-        MapSettings()
-            : numPlayers(2), size(MapExtent::all(128)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15),
-              rivers(15), type(0), style(MapStyle::Mixed)
-        {}
-
         void MakeValid();
 
         std::string name, author;
-        unsigned numPlayers;
-        MapExtent size;
-        unsigned short ratioGold;
-        unsigned short ratioIron;
-        unsigned short ratioCoal;
-        unsigned short ratioGranite;
-        unsigned short rivers;
-        DescIdx<LandscapeDesc> type;
-        MapStyle style;
+        unsigned numPlayers = 2;
+        MapExtent size = MapExtent::all(128);
+        unsigned short ratioGold = 9;
+        unsigned short ratioIron = 36;
+        unsigned short ratioCoal = 40;
+        unsigned short ratioGranite = 15;
+        unsigned short rivers = 15;
+        MountainDistance mountainDistance = MountainDistance::Normal;
+        DescIdx<LandscapeDesc> type = DescIdx<LandscapeDesc>(0);
+        MapStyle style = MapStyle::Mixed;
     };
 
 }} // namespace rttr::mapGenerator

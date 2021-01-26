@@ -57,7 +57,7 @@ namespace rttr { namespace mapGenerator {
         return connectedArea;
     }
 
-    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, int retries)
+    void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries)
     {
         auto maxRetries = retries;
         auto success = false;
@@ -70,21 +70,18 @@ namespace rttr { namespace mapGenerator {
 
             for(int index = 0; index < number; index++)
             {
-                auto possiblePositions = FindHqPositions(map, area);
+                auto possiblePositions = FindHqPositions(map, area, distance);
 
                 if(possiblePositions.empty())
                 {
-                    for(int i = 0; i < number; i++)
-                    {
-                        map.hqPositions[i] = MapPoint::Invalid();
-                    }
+                    map.hqPositions.clear();
                     success = false;
                     break;
                 }
 
                 auto hq = retries == maxRetries ? possiblePositions.front() : rnd.RandomItem(possiblePositions);
 
-                map.hqPositions[index] = hq;
+                map.hqPositions.push_back(hq);
             }
 
             retries--;
