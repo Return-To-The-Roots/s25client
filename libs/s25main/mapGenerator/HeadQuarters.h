@@ -88,18 +88,19 @@ namespace rttr { namespace mapGenerator {
         const unsigned minHqDistance = (map.size.x + map.size.y) / 16;
 
         const auto desiredDistanceOffset = [&mountainDistances, desiredDistance](const MapPoint& pt) {
-            return mountainDistances[pt] > desiredDistance
-                ? mountainDistances[pt] - desiredDistance : desiredDistance - mountainDistances[pt];
+            return mountainDistances[pt] > desiredDistance ? mountainDistances[pt] - desiredDistance :
+                                                             desiredDistance - mountainDistances[pt];
         };
         const auto byDesiredMountainDistanceOffset = [desiredDistanceOffset](MapPoint p1, MapPoint p2) {
             return desiredDistanceOffset(p1) < desiredDistanceOffset(p2);
         };
-        const auto farFromOtherHqs = [&distanceToOtherHqs, minHqDistance](const MapPoint&  pt) {
+        const auto farFromOtherHqs = [&distanceToOtherHqs, minHqDistance](const MapPoint& pt) {
             return distanceToOtherHqs[pt] > minHqDistance;
         };
 
         std::vector<MapPoint> positions;
-        std::copy_if(possiblePositions.begin(), possiblePositions.end(), std::back_inserter(positions), farFromOtherHqs);
+        std::copy_if(possiblePositions.begin(), possiblePositions.end(), std::back_inserter(positions),
+                     farFromOtherHqs);
         std::sort(positions.begin(), positions.end(), byDesiredMountainDistanceOffset);
 
         return positions.empty() ? possiblePositions : positions;
