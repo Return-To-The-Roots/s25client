@@ -75,38 +75,34 @@ namespace rttr { namespace mapGenerator {
             return possiblePositions;
         }
 
+        const auto distanceToOtherHqs = DistancesTo(map.hqPositions, map.size);
+        const auto byDistanceToOtherHqs = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
+            return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
+        };
+        std::sort(possiblePositions.begin(), possiblePositions.end(), byDistanceToOtherHqs);
+
         // Keep minimum distance to other HQs and desired distance to mountains
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
         const auto mountainDistances = DistancesTo(map.size, mountain);
         const auto desiredDistance = static_cast<unsigned>(distance);
-        const auto distanceToOtherHqs = DistancesTo(map.hqPositions, map.size);
-        const unsigned minimumHqDistance = (map.size.x + map.size.y) / 16;
-        const int maximumRadius = (map.size.x + map.size.y) / 4;
-        std::vector<MapPoint> positions;
-        for(int radius = 1; positions.empty() && radius < maximumRadius; radius *= 2)
-        {
-            for(const MapPoint& pt : possiblePositions)
-            {
-                if(std::abs(static_cast<int>(mountainDistances[pt] - desiredDistance)) < radius
-                   && distanceToOtherHqs[pt] > minimumHqDistance)
-                {
-                    positions.push_back(pt);
-                }
-            }
-        }
+        const unsigned minHqDistance = (map.size.x + map.size.y) / 16;
 
-        // fallback in case all points within desired mountain distance are too close to other HQs
-        if(positions.empty())
-        {
-            positions = possiblePositions;
-        }
-
-        // Sort available HQ positions by distance to other HQs (higher = better)
-        const auto isBetter = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
-            return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
+        const auto desiredDistanceOffset = [&mountainDistances, desiredDistance](const MapPoint& pt) {
+            return mountainDistances[pt] > desiredDistance
+                ? mountainDistances[pt] - desiredDistance : desiredDistance - mountainDistances[pt];
         };
-        std::sort(positions.begin(), positions.end(), isBetter);
-        return positions;
+        const auto byDesiredMountainDistanceOffset = [desiredDistanceOffset](MapPoint p1, MapPoint p2) {
+            return desiredDistanceOffset(p1) < desiredDistanceOffset(p2);
+        };
+        const auto farFromOtherHqs = [&distanceToOtherHqs, minHqDistance](const MapPoint&  pt) {
+            return distanceToOtherHqs[pt] > minHqDistance;
+        };
+
+        std::vector<MapPoint> positions;
+        std::copy_if(possiblePositions.begin(), possiblePositions.end(), std::back_inserter(positions), farFromOtherHqs);
+        std::sort(positions.begin(), positions.end(), byDesiredMountainDistanceOffset);
+
+        return positions.empty() ? possiblePositions : positions;
     }
 
     /**
