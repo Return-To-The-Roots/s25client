@@ -21,7 +21,7 @@
 #include "s25util/colors.h"
 
 BasePlayerInfo::BasePlayerInfo()
-    : ps(PlayerState::Free), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(TM_NOTEAM)
+    : ps(PlayerState::Free), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(Team::None)
 {}
 
 BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
@@ -30,14 +30,23 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
     if(lightData && !isUsed())
     {
         nation = Nation::Romans;
-        team = TM_NOTEAM;
+        team = Team::None;
         color = PLAYER_COLORS[0];
     } else
     {
         name = ser.PopLongString();
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
-        team = helpers::popEnum<Team>(ser);
+        // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
+        auto tmpTeam = ser.Pop<uint8_t>();
+        if(tmpTeam > static_cast<uint8_t>(Team::Team4))
+            tmpTeam -= 3; // Was random team 2-4
+        else if(tmpTeam > helpers::MaxEnumValue_v<Team>)
+            throw helpers::makeOutOfRange(tmpTeam, helpers::MaxEnumValue_v<Team>);
+        team = Team(tmpTeam);
+        if(team == Team::Random)
+            team = Team::Team1; // Was random team 1
+        // team = helpers::popEnum<Team>(ser);
     }
 }
 

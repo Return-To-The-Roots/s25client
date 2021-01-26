@@ -50,9 +50,8 @@ void LuaServerPlayer::SetNation(lua::SafeEnum<Nation> nat)
     lobbyServerController_.SetNation(playerId, nat);
 }
 
-void LuaServerPlayer::SetTeam(Team team)
+void LuaServerPlayer::SetTeam(lua::SafeEnum<Team> team)
 {
-    lua::assertTrue(unsigned(team) < NUM_TEAM_OPTIONS, "Invalid team");
     player.team = team;
     lobbyServerController_.SetTeam(playerId, team);
 }

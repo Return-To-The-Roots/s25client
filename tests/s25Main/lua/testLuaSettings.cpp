@@ -72,14 +72,14 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
         players[0].name = "Player1";
         players[0].nation = Nation::Vikings;
         players[0].color = 0xFF00FF00;
-        players[0].team = TM_TEAM1;
+        players[0].team = Team::Team1;
         players[0].isHost = true;
 
         players[1].ps = PlayerState::AI;
         players[1].name = "PlayerAI";
         players[1].nation = Nation::Romans;
         players[1].color = 0xFFFF0000;
-        players[1].team = TM_TEAM2;
+        players[1].team = Team::Team2;
         players[1].isHost = false;
 
         players[2].ps = PlayerState::Free;
@@ -285,7 +285,7 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
 
     executeLua("player:SetTeam(TM_TEAM2)");
-    BOOST_TEST_REQUIRE(players[0].team == TM_TEAM2);
+    BOOST_TEST_REQUIRE(players[0].team == Team::Team2);
 
     executeLua("player:SetName(\"Foo\")");
     BOOST_CHECK(isLuaEqual("player:GetName()", "'Foo'"));

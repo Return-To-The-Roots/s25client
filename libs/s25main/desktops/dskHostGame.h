@@ -29,6 +29,7 @@ class LobbyPlayerInfo;
 class LuaInterfaceSettings;
 class GameLobbyController;
 class ILobbyClient;
+enum class Team : uint8_t;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame final : public Desktop, public ClientInterface, public LobbyInterface
@@ -50,11 +51,11 @@ private:
     void UpdatePlayerRow(unsigned row);
 
     /// Füllt die Felder einer Reihe aus
-    void ChangeTeam(unsigned i, unsigned char nr);
+    void ChangeTeam(unsigned player, Team);
     void ChangeReady(unsigned player, bool ready);
-    void ChangeNation(unsigned i, Nation nation);
+    void ChangeNation(unsigned player, Nation);
     void ChangePing(unsigned playerId);
-    void ChangeColor(unsigned i, unsigned color);
+    void ChangeColor(unsigned player, unsigned color);
 
     void Msg_PaintBefore() override;
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;

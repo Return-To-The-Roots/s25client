@@ -38,7 +38,7 @@ public:
     static void Register(kaguya::State& state);
 
     void SetNation(lua::SafeEnum<Nation> nat);
-    void SetTeam(Team team);
+    void SetTeam(lua::SafeEnum<Team> team);
     void SetColor(unsigned colorOrIdx);
     void Close();
     void SetAI(unsigned level);

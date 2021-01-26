@@ -287,8 +287,6 @@ public:
     unsigned GetRemainingPactTime(PactType pt, unsigned char other_player) const;
     /// Setzt die initialen Bündnisse anhand der Teams
     void MakeStartPacts();
-    /// returns fixed team number for randomteam players
-    static Team GetFixedTeam(Team rawteam);
     /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
     void TestPacts();
 

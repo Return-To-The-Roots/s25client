@@ -71,7 +71,12 @@ enum CtrlIds
     TAB_GAMECHAT,
     TAB_LOBBYCHAT
 };
+template<typename T>
+constexpr T nextEnumValue(T value)
+{
+    return T((rttr::enum_cast(value) + 1) % helpers::NumEnumValues_v<T>);
 }
+} // namespace
 
 dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>& gameLobby, unsigned playerId,
                          std::unique_ptr<ILobbyClient> lobbyClient)
@@ -494,7 +499,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                player.nation = Nation((rttr::enum_cast(player.nation) + 1) % helpers::NumEnumValues_v<Nation>);
+                player.nation = nextEnumValue(player.nation);
                 if(gameLobby->isHost())
                     lobbyHostController->SetNation(playerId, player.nation);
                 else
@@ -551,23 +556,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                if(player.team >= TM_TEAM1 && player.team < Team(NUM_TEAM_OPTIONS)) // team: 1->2->3->4->0 //-V807
-                {
-                    player.team = Team((player.team + 1) % NUM_TEAM_OPTIONS);
-                } else
-                {
-                    if(player.team == TM_NOTEAM) // 0(noteam)->randomteam(1-4)
-                    {
-                        int rnd = rand() % 4;
-                        if(!rnd)
-                            player.team = TM_RANDOMTEAM;
-                        else
-                            player.team = Team(TM_RANDOMTEAM2 + rnd - 1);
-                    } else // any randomteam -> team 1
-                    {
-                        player.team = TM_TEAM1;
-                    }
-                }
+                player.team = nextEnumValue(player.team);
                 if(gameLobby->isHost())
                     lobbyHostController->SetTeam(playerId, player.team);
                 else
@@ -879,11 +868,11 @@ void dskHostGame::UpdateGGS()
     lobbyHostController->ChangeGlobalGameSettings(ggs);
 }
 
-void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
+void dskHostGame::ChangeTeam(const unsigned player, const Team team)
 {
-    const std::array<std::string, 12> teams = {"-", "?", "1", "2", "3", "4", "1-2", "1-3", "1-4", "?", "?", "?"};
+    constexpr helpers::EnumArray<const char*, Team> teams = {"-", "?", "1", "2", "3", "4", "1-2", "1-3", "1-4"};
 
-    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + i)->GetCtrl<ctrlBaseText>(5)->SetText(teams[nr]);
+    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseText>(5)->SetText(teams[team]);
 }
 
 void dskHostGame::ChangeReady(const unsigned player, const bool ready)
@@ -902,9 +891,9 @@ void dskHostGame::ChangeReady(const unsigned player, const bool ready)
     }
 }
 
-void dskHostGame::ChangeNation(const unsigned i, const Nation nation)
+void dskHostGame::ChangeNation(const unsigned player, const Nation nation)
 {
-    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + i)->GetCtrl<ctrlBaseText>(3)->SetText(_(NationNames[nation]));
+    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseText>(3)->SetText(_(NationNames[nation]));
 }
 
 void dskHostGame::ChangePing(unsigned playerId)
@@ -921,13 +910,13 @@ void dskHostGame::ChangePing(unsigned playerId)
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + playerId)->GetCtrl<ctrlVarDeepening>(7)->SetTextColor(color);
 }
 
-void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
+void dskHostGame::ChangeColor(const unsigned player, const unsigned color)
 {
-    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + i)->GetCtrl<ctrlBaseColor>(4)->SetColor(color);
+    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseColor>(4)->SetColor(color);
 
     // Minimap-Startfarbe ändern
     if(GetCtrl<ctrlPreviewMinimap>(70))
-        GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(i, color);
+        GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(player, color);
 }
 
 void dskHostGame::SetPlayerReady(unsigned char player, bool ready)

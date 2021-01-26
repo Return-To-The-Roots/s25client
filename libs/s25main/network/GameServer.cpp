@@ -433,12 +433,16 @@ void GameServer::Stop()
     LOG.write("server state changed to stop\n");
 }
 
-// Check if there are players that have not been assigned a team but only a
-// range. Those players are assigned a team now while we try to balanace the
-// number of players per team. Returns true iff players have been assigned.
+// Check if there are players that have not been assigned a team but only a random team.
+// Those players are assigned a team now optionally trying to balance the number of players per team.
+// Returns true iff players have been assigned.
 bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerInfos)
 {
     static_assert(NUM_TEAMS == 4, "Expected exactly 4 playable teams!");
+    const auto teamNumToTeam = [](const unsigned teamNum) {
+        RTTR_Assert(teamNum < NUM_TEAMS);
+        return Team(static_cast<unsigned>(Team::Team1) + teamNum);
+    };
 
     struct PlayerTeam
     {
@@ -446,47 +450,49 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
         unsigned nPlayers = 0;
     };
     std::array<PlayerTeam, NUM_TEAMS> teams;
+    auto rng = helpers::getRandomGenerator();
+
     unsigned unassignedPlayers = 0;
+    bool playerWasAssigned = false;
 
     // First collect fixed players and potential ones.
     for(unsigned player = 0; player < playerInfos.size(); ++player)
     {
-        switch(playerInfos[player].team)
+        auto& playerInfo = playerInfos[player];
+        if(playerInfo.team == Team::Random)
         {
-            case TM_RANDOMTEAM:
-            case TM_TEAM1: ++teams[0].nPlayers; break;
-            case TM_RANDOMTEAM2:
-            case TM_TEAM2: ++teams[1].nPlayers; break;
-            case TM_RANDOMTEAM3:
-            case TM_TEAM3: ++teams[2].nPlayers; break;
-            case TM_RANDOMTEAM4:
-            case TM_TEAM4: ++teams[3].nPlayers; break;
-            case TM_TEAM_1_TO_2:
+            const unsigned randTeam = std::uniform_int_distribution<unsigned>{0, NUM_TEAMS - 1u}(rng);
+            playerInfo.team = teamNumToTeam(randTeam);
+            playerWasAssigned = true;
+        }
+        switch(playerInfo.team)
+        {
+            case Team::Team1: ++teams[0].nPlayers; break;
+            case Team::Team2: ++teams[1].nPlayers; break;
+            case Team::Team3: ++teams[2].nPlayers; break;
+            case Team::Team4: ++teams[3].nPlayers; break;
+            case Team::Random1To2:
                 ++unassignedPlayers;
                 teams[0].potentialPlayers.insert(player);
                 teams[1].potentialPlayers.insert(player);
                 break;
-            case TM_TEAM_1_TO_3:
+            case Team::Random1To3:
                 ++unassignedPlayers;
                 teams[0].potentialPlayers.insert(player);
                 teams[1].potentialPlayers.insert(player);
                 teams[2].potentialPlayers.insert(player);
                 break;
-            case TM_TEAM_1_TO_4:
+            case Team::Random1To4:
                 ++unassignedPlayers;
                 teams[0].potentialPlayers.insert(player);
                 teams[1].potentialPlayers.insert(player);
                 teams[2].potentialPlayers.insert(player);
                 teams[3].potentialPlayers.insert(player);
                 break;
-            case TM_NOTEAM: break;
+            case Team::Random: RTTR_Assert(false); break;
+            case Team::None: break;
         }
     }
-    // Check for unassigned players first.
-    if(unassignedPlayers == 0u)
-        return false;
-
-    auto rng = helpers::getRandomGenerator();
 
     for(; unassignedPlayers > 0u; --unassignedPlayers)
     {
@@ -519,15 +525,16 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
         // Pick a random player that can go into this team.
         const unsigned nextPlayer = helpers::getRandomElement(rng, teams[nextTeam].potentialPlayers);
 
-        playerInfos[nextPlayer].team = Team(TM_TEAM1 + nextTeam);
+        playerInfos[nextPlayer].team = teamNumToTeam(nextTeam);
         ++teams[nextTeam].nPlayers;
+        playerWasAssigned = true;
 
         // The player is now assigned so remove from the remaining ones
         for(auto& team : teams)
             team.potentialPlayers.erase(nextPlayer);
     }
 
-    return true;
+    return playerWasAssigned;
 }
 
 /**

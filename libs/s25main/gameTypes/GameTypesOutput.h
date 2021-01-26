@@ -32,14 +32,12 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/TeamTypes.h"
 #include "gameData/DescIdx.h"
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 #include <ostream>
-
-#define RTTR_CASE_OUT(Enum, Enumerator) \
-    case Enum::Enumerator: os << #Enumerator; break
 
 // LCOV_EXCL_START
 
@@ -75,6 +73,7 @@ RTTR_ENUM_OUTPUT(ResourceType, Nothing, Iron, Gold, Coal, Granite, Water, Fish)
 RTTR_ENUM_OUTPUT(RoadDir, East, SouthEast, SouthWest)
 RTTR_ENUM_OUTPUT(StartWares, VLow, Low, Normal, ALot)
 RTTR_ENUM_OUTPUT(Visibility, Invisible, FogOfWar, Visible)
+RTTR_ENUM_OUTPUT(Team, None, Random, Team1, Team2, Team3, Team4, Random1To2, Random1To3, Random1To4)
 
 namespace AI {
 RTTR_ENUM_OUTPUT(Type, Dummy, Default)
@@ -105,5 +104,3 @@ std::ostream& operator<<(std::ostream& out, const DescIdx<T>& d)
 }
 
 // LCOV_EXCL_STOP
-
-#undef RTTR_CASE_OUT

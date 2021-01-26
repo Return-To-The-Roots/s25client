@@ -418,9 +418,9 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
     // Enemy harbor blocks
     TestFailingSeaAttack(hqPos[1]);
 
-    world.GetPlayer(0).team = TM_TEAM2; //-V525
-    world.GetPlayer(1).team = TM_TEAM1;
-    world.GetPlayer(2).team = TM_TEAM1;
+    world.GetPlayer(0).team = Team::Team2; //-V525
+    world.GetPlayer(1).team = Team::Team1;
+    world.GetPlayer(2).team = Team::Team1;
     for(unsigned i = 0; i < 3; i++)
         world.GetPlayer(i).MakeStartPacts();
 

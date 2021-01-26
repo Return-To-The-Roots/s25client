@@ -127,7 +127,7 @@ Set the settings with a table of keys:
 
 [Back](#Lua-objects-and-their-methods)  
 
-### Gamefunctions (callable in game modeonly)
+### Gamefunctions (callable in game mode only)
 
 Reference: [lua/LuaInterfaceGame.h](../../libs/s25main/lua/LuaInterfaceGame.h)  
 **Important: All state-changing functions should be executed by all players at the same time (GF), or there will be asyncs!**
@@ -184,7 +184,7 @@ Return the players name.
 Return the nation, one of `NAT_AFRICANS, NAT_JAPANESE, NAT_ROMANS, NAT_VIKINGS, NAT_BABYLONIANS`
 
 **GetTeam()**  
-Return the players team, one of `TM_NOTEAM, TM_RANDOMTEAM, TM_RANDOMTEAM2, TM_RANDOMTEAM3, TM_RANDOMTEAM4, TM_TEAM1, TM_TEAM2, TM_TEAM3, TM_TEAM4`  
+Return the players team, one of `TM_NONE, TM_RANDOM, TM_TEAM1, TM_TEAM2, TM_TEAM3, TM_TEAM4, TM_TEAM1TO2, TM_TEAM1TO3, TM_TEAM1TO4`  
 See [TeamTypes](../../libs/s25main/gameTypes/TeamTypes.h) for enums.
 
 **GetColor()**  

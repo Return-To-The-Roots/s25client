@@ -226,8 +226,8 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::Visible; //-V807
     // Team visibility, so set one to own team
-    world.GetPlayer(curPlayer).team = TM_TEAM1;
-    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(curPlayer).team = Team::Team1;
+    world.GetPlayer(1).team = Team::Team1;
     world.GetPlayer(curPlayer).MakeStartPacts();
     world.GetPlayer(1).MakeStartPacts();
     world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = Visibility::Visible;
@@ -293,8 +293,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     BOOST_TEST_REQUIRE(ship->IsIdling());
 
     // We want the ship to only scout unexplored harbors, so set all but one to visible
-    world.GetPlayer(curPlayer).team = TM_TEAM1;
-    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(curPlayer).team = Team::Team1;
+    world.GetPlayer(1).team = Team::Team1;
     world.GetPlayer(curPlayer).MakeStartPacts();
     world.GetPlayer(1).MakeStartPacts();
 
