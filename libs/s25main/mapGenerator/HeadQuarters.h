@@ -41,11 +41,10 @@ namespace rttr { namespace mapGenerator {
      * Finds suitable positions for a HQ in the specified area of the map. The resulting HQ positions are sorted by
      * quality. To find suitable positions, this function does:
      * 1. look for points within a buildable area of radius 2 (min. req. of HQ)
-     * 2. if no such point exists return empty
-     * 3. sort all those points by their distance to existing HQs
-     * 4. filter out points within minimum distance to existing HQs
-     * 5. if no remaining points just return result of 3.
-     * 6. sort remaining points by how close they're to desired mountain distance
+     * 2. sort all those points by their distance to existing HQs
+     * 3. filter out points within minimum distance to existing HQs
+     * 4. if no remaining points just return result of 3.
+     * 5. sort remaining points by how close they're to desired mountain distance
      *
      * @param map map to search for suitable HQ positions
      * @param area area within the HQ position should be
@@ -70,20 +69,19 @@ namespace rttr { namespace mapGenerator {
         std::vector<MapPoint> possiblePositions;
         std::copy_if(area.begin(), area.end(), std::back_inserter(possiblePositions), hasEnoughSpace);
 
-        // 2. if no such point exists return empty
         if(possiblePositions.empty())
         {
             return possiblePositions;
         }
 
-        // 3. sort all those points by their distance to existing HQs
+        // 2. sort all those points by their distance to existing HQs
         const auto distanceToOtherHqs = DistancesTo(map.hqPositions, map.size);
         const auto byDistanceToOtherHqs = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
             return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
         };
         std::sort(possiblePositions.begin(), possiblePositions.end(), byDistanceToOtherHqs);
 
-        // 4. filter out points within minimum distance to existing HQs
+        // 3. filter out points within minimum distance to existing HQs
         const unsigned minHqDistance = (map.size.x + map.size.y) / 16;
         const auto farFromOtherHqs = [&distanceToOtherHqs, minHqDistance](const MapPoint& pt) {
             return distanceToOtherHqs[pt] > minHqDistance;
@@ -92,13 +90,13 @@ namespace rttr { namespace mapGenerator {
         std::copy_if(possiblePositions.begin(), possiblePositions.end(), std::back_inserter(positions),
                      farFromOtherHqs);
 
-        // 5. if no remaining points just return result of 3.
+        // 4. if no remaining points just return result of 3.
         if(positions.empty())
         {
             return possiblePositions;
         }
 
-        // 6. sort remaining points by how close they're to desired mountain distance
+        // 5. sort remaining points by how close they're to desired mountain distance
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
         const auto mountainDistances = DistancesTo(map.size, mountain);
         const auto desiredDistance = static_cast<unsigned>(distance);
@@ -109,7 +107,7 @@ namespace rttr { namespace mapGenerator {
         const auto byDesiredMountainDistanceOffset = [desiredDistanceOffset](MapPoint p1, MapPoint p2) {
             return desiredDistanceOffset(p1) < desiredDistanceOffset(p2);
         };
-        std::sort(positions.begin(), positions.end(), byDesiredMountainDistanceOffset);
+        std::stable_sort(positions.begin(), positions.end(), byDesiredMountainDistanceOffset);
 
         return positions;
     }
