@@ -942,31 +942,32 @@ MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size
 
 MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapPoint& around)
 {
+    constexpr unsigned searchRadius = 11;
     MapPoint foundPos = MapPoint::Invalid();
     switch(type)
     {
         case BuildingType::Woodcutter:
         {
-            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], 11, 20);
+            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 20);
             break;
         }
         case BuildingType::Forester:
             // ensure some distance to other foresters and an minimal amount of plantspace
             if(!construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester)
                && GetDensity(around, AIResource::Plantspace, 7) > 15)
-                foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], 11, 0);
+                foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 0);
             break;
         case BuildingType::Hunter:
         {
             // check if there are any animals in range
             if(HuntablesinRange(around, (2 << GetBldPlanner().GetNumBuildings(BuildingType::Hunter))))
-                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
             break;
         }
         case BuildingType::Quarry:
         {
             unsigned numQuarries = GetBldPlanner().GetNumBuildings(BuildingType::Quarry);
-            foundPos = FindBestPosition(around, AIResource::Stones, BUILDING_SIZE[type], 11,
+            foundPos = FindBestPosition(around, AIResource::Stones, BUILDING_SIZE[type], searchRadius,
                                         std::min(40u, 1 + numQuarries * 10));
             if(foundPos.isValid() && !ValidStoneinRange(foundPos))
             {
@@ -979,27 +980,27 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
         case BuildingType::Guardhouse:
         case BuildingType::Watchtower:
         case BuildingType::Fortress:
-            foundPos = FindBestPosition(around, AIResource::Borderland, BUILDING_SIZE[type], 11);
+            foundPos = FindBestPosition(around, AIResource::Borderland, BUILDING_SIZE[type], searchRadius);
             break;
         case BuildingType::GoldMine:
-            foundPos = FindBestPosition(around, AIResource::Gold, BuildingQuality::Mine, 11);
+            foundPos = FindBestPosition(around, AIResource::Gold, BuildingQuality::Mine, searchRadius);
             break;
         case BuildingType::CoalMine:
-            foundPos = FindBestPosition(around, AIResource::Coal, BuildingQuality::Mine, 11);
+            foundPos = FindBestPosition(around, AIResource::Coal, BuildingQuality::Mine, searchRadius);
             break;
         case BuildingType::IronMine:
-            foundPos = FindBestPosition(around, AIResource::Ironore, BuildingQuality::Mine, 11);
+            foundPos = FindBestPosition(around, AIResource::Ironore, BuildingQuality::Mine, searchRadius);
             break;
         case BuildingType::GraniteMine:
             if(!ggs.isEnabled(
                  AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
-                foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, 11);
+                foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, searchRadius);
             else
-                foundPos = SimpleFindPosition(around, BuildingQuality::Mine, 11);
+                foundPos = SimpleFindPosition(around, BuildingQuality::Mine, searchRadius);
             break;
 
         case BuildingType::Fishery:
-            foundPos = FindBestPosition(around, AIResource::Fish, BUILDING_SIZE[type], 11);
+            foundPos = FindBestPosition(around, AIResource::Fish, BUILDING_SIZE[type], searchRadius);
             if(foundPos.isValid() && !ValidFishInRange(foundPos))
             {
                 resourceMaps[AIResource::Fish].avoidPosition(foundPos);
@@ -1008,30 +1009,30 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             break;
         case BuildingType::Storehouse:
             if(!construction->OtherStoreInRadius(around, 15))
-                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
             break;
         case BuildingType::HarborBuilding:
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
             if(foundPos.isValid()
                && !HarborPosRelevant(GetWorld().GetHarborPointID(foundPos))) // bad harborspot detected DO NOT USE
                 foundPos = MapPoint::Invalid();
             break;
         case BuildingType::Shipyard:
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
             if(foundPos.isValid() && IsInvalidShipyardPosition(foundPos))
                 foundPos = MapPoint::Invalid();
             break;
         case BuildingType::Farm:
-            foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], 11, 85);
+            foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
             if(foundPos.isValid())
-                foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], 11, 85);
+                foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
             break;
         case BuildingType::Catapult:
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
             if(foundPos.isValid() && aii.isBuildingNearby(BuildingType::Catapult, foundPos, 7))
                 foundPos = MapPoint::Invalid();
             break;
-        default: foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11); break;
+        default: foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius); break;
     }
     return foundPos;
 }
