@@ -38,9 +38,14 @@ namespace rttr { namespace mapGenerator {
     std::vector<MapPoint> FindLargestConnectedArea(const Map& map);
 
     /**
-     * Finds the most suitable position for a HQ in the specified area of the map. To find the most suitable position
-     * for the entire map just leave the area empty. The resulting HQ positions are sorted by quality (highest quality
-     * first). Good HQ positions are positions which are far away from other HQs and in a widely buildable area.
+     * Finds suitable positions for a HQ in the specified area of the map. The resulting HQ positions are sorted by quality.
+     * To find suitable positions, this function does:
+     * 1. look for points within a buildable area of radius 2 (min. req. of HQ)
+     * 2. if no such point exists return empty
+     * 3. sort all those points by their distance to existing HQs
+     * 4. filter out points within minimum distance to existing HQs
+     * 5. if no remaining points just return result of 3.
+     * 6. sort remaining points by how close they're to desired mountain distance
      *
      * @param map map to search for suitable HQ positions
      * @param area area within the HQ position should be
@@ -57,36 +62,48 @@ namespace rttr { namespace mapGenerator {
             throw std::runtime_error("Could not find any valid HQ position!");
         }
 
-        const auto isObstacle = [&map](const MapPoint& pt) {
+        // 1. look for points within a buildable area of radius 2 (min. req. of HQ)
+        const auto obstacleDistance = DistancesTo(map.size, [&map](const MapPoint& pt) {
             return map.textureMap.Any(pt, [](auto t) { return !t.Is(ETerrain::Buildable); });
-        };
-
-        // Ensure possible HQ positions are far enough from any obstacles
-        const auto obstacleDistance = DistancesTo(map.size, isObstacle);
-        const auto minObstacleDistance = helpers::clamp(GetMaximum(obstacleDistance, area), 2u, 4u);
-        const auto farFromObstacles = [&obstacleDistance, minObstacleDistance](const MapPoint& pt) {
-            return obstacleDistance[pt] >= minObstacleDistance;
+        });
+        const auto hasEnoughSpace = [&obstacleDistance](const MapPoint& pt) {
+            return obstacleDistance[pt] >= 2;
         };
         std::vector<MapPoint> possiblePositions;
-        std::copy_if(area.begin(), area.end(), std::back_inserter(possiblePositions), farFromObstacles);
+        std::copy_if(area.begin(), area.end(), std::back_inserter(possiblePositions), hasEnoughSpace);
 
+        // 2. if no such point exists return empty
         if(possiblePositions.empty())
         {
             return possiblePositions;
         }
 
+        // 3. sort all those points by their distance to existing HQs
         const auto distanceToOtherHqs = DistancesTo(map.hqPositions, map.size);
         const auto byDistanceToOtherHqs = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
             return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
         };
         std::sort(possiblePositions.begin(), possiblePositions.end(), byDistanceToOtherHqs);
 
-        // Keep minimum distance to other HQs and desired distance to mountains
+        // 4. filter out points within minimum distance to existing HQs
+        const unsigned minHqDistance = (map.size.x + map.size.y) / 16;
+        const auto farFromOtherHqs = [&distanceToOtherHqs, minHqDistance](const MapPoint& pt) {
+            return distanceToOtherHqs[pt] > minHqDistance;
+        };
+        std::vector<MapPoint> positions;
+        std::copy_if(possiblePositions.begin(), possiblePositions.end(), std::back_inserter(positions),
+                     farFromOtherHqs);
+
+        // 5. if no remaining points just return result of 3.
+        if(positions.empty())
+        {
+            return possiblePositions;
+        }
+        
+        // 6. sort remaining points by how close they're to desired mountain distance
         const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
         const auto mountainDistances = DistancesTo(map.size, mountain);
         const auto desiredDistance = static_cast<unsigned>(distance);
-        const unsigned minHqDistance = (map.size.x + map.size.y) / 16;
-
         const auto desiredDistanceOffset = [&mountainDistances, desiredDistance](const MapPoint& pt) {
             return mountainDistances[pt] > desiredDistance ? mountainDistances[pt] - desiredDistance :
                                                              desiredDistance - mountainDistances[pt];
@@ -94,16 +111,9 @@ namespace rttr { namespace mapGenerator {
         const auto byDesiredMountainDistanceOffset = [desiredDistanceOffset](MapPoint p1, MapPoint p2) {
             return desiredDistanceOffset(p1) < desiredDistanceOffset(p2);
         };
-        const auto farFromOtherHqs = [&distanceToOtherHqs, minHqDistance](const MapPoint& pt) {
-            return distanceToOtherHqs[pt] > minHqDistance;
-        };
-
-        std::vector<MapPoint> positions;
-        std::copy_if(possiblePositions.begin(), possiblePositions.end(), std::back_inserter(positions),
-                     farFromOtherHqs);
         std::sort(positions.begin(), positions.end(), byDesiredMountainDistanceOffset);
 
-        return positions.empty() ? possiblePositions : positions;
+        return positions;
     }
 
     /**
