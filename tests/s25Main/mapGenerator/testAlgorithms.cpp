@@ -190,44 +190,62 @@ BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Distances_returns_expected_distance_for_each_map_point)
+BOOST_AUTO_TEST_CASE(DistancesTo_with_predicate_returns_expected_distance_for_each_map_point)
 {
-    MapExtent size(8, 8);
+    MapExtent size(9, 8);
 
-    std::vector<unsigned> expectedDistances{5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
-                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 4u, 3u, 2u, 1u, 0u, 1u, 2u, 3u,
-                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
-                                            5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 6u, 5u, 4u, 4u, 4u, 4u, 4u, 5u};
+    std::vector<unsigned> expectedDistances{
+      // clang-format off
+        5, 4, 3, 3, 3, 3, 4, 5, 6,
+         5, 4, 4, 4, 4, 4, 5, 6, 6,
+        5, 4, 3, 3, 3, 3, 4, 5, 6,
+         4, 3, 2, 2, 2, 3, 4, 5, 5,
+        4, 3, 2, 1, 1, 2, 3, 4, 5,
+         3, 2, 1, 0, 1, 2, 3, 4, 4,
+        4, 3, 2, 1, 1, 2, 3, 4, 5,
+         4, 3, 2, 2, 2, 3, 4, 5, 5,
+      // clang-format on
+    };
 
-    auto distances = Distances(size, [](MapPoint pt) {
-        return pt.x == 4 && pt.y == 3; // compute distance to P(4/3)
+    auto distances = DistancesTo(size, [](MapPoint pt) {
+        return pt == MapPoint(3, 5); // compute distance to P(4/3)
     });
 
     BOOST_TEST_REQUIRE(distances.GetSize() == size);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_TEST_REQUIRE(expectedDistances[pt.x + pt.y * size.x] == distances[pt]);
+        BOOST_TEST_INFO(pt);
+        BOOST_TEST(expectedDistances[pt.x + pt.y * size.x] == distances[pt]);
     }
 }
 
 BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
 {
-    MapExtent size(8, 8);
+    MapExtent size(9, 8);
 
-    std::vector<unsigned> expectedDistances{5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
-                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 4u, 3u, 2u, 1u, 0u, 1u, 2u, 3u,
-                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
-                                            5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 6u, 5u, 4u, 4u, 4u, 4u, 4u, 5u};
+    std::vector<unsigned> expectedDistances{
+      // clang-format off
+        5, 4, 3, 3, 3, 3, 4, 5, 6,
+         5, 4, 4, 4, 4, 4, 5, 6, 6,
+        5, 4, 3, 3, 3, 3, 4, 5, 6,
+         4, 3, 2, 2, 2, 3, 4, 5, 5,
+        4, 3, 2, 1, 1, 2, 3, 4, 5,
+         3, 2, 1, 0, 1, 2, 3, 4, 4,
+        4, 3, 2, 1, 1, 2, 3, 4, 5,
+         4, 3, 2, 2, 2, 3, 4, 5, 5,
+      // clang-format on
+    };
 
-    std::set<MapPoint, MapPointLess> flaggedPoints{MapPoint(4, 3)};
+    std::set<MapPoint, MapPointLess> flaggedPoints{MapPoint(3, 5)};
     auto distances = DistancesTo(flaggedPoints, size);
 
     BOOST_TEST_REQUIRE(distances.GetSize() == size);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_TEST_REQUIRE(expectedDistances[pt.x + pt.y * size.x] == distances[pt]);
+        BOOST_TEST_INFO(pt);
+        BOOST_TEST(expectedDistances[pt.x + pt.y * size.x] == distances[pt]);
     }
 }
 
