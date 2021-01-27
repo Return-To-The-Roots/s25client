@@ -128,12 +128,12 @@ namespace rttr { namespace mapGenerator {
             {
                 if(mountainDistance[pt] > 0)
                 {
-                    const unsigned prob = MapValueToIndex(waterDistance[pt], range, probDiff);
+                    const unsigned prob = probDiff ? MapValueToIndex(waterDistance[pt], range, probDiff) : 0;
                     probabilities[pt] = prob + probRange.minimum;
                 } else
                 {
                     const unsigned diff = mountainRange.maximum - mountainDepth[pt];
-                    const unsigned prob = MapValueToIndex(diff, mountainRange, probDiff);
+                    const unsigned prob = probDiff ? MapValueToIndex(diff, mountainRange, probDiff) : 0;
                     probabilities[pt] = prob + probRange.minimum;
                 }
             } else
@@ -154,20 +154,21 @@ namespace rttr { namespace mapGenerator {
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            auto treeProb = probabilities[pt];
+            const bool canPlaceStonePile = waterDistance[pt] > 0 && distanceToExcludedArea[pt] > 0;
+            if(canPlaceStonePile && rnd.ByChance(settings.stonePiles))
+            {
+                map.objectInfos[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
+                map.objectTypes[pt] = rnd.RandomValue(1, 6);
+                continue;
+            }
 
+            const auto treeProb = probabilities[pt];
             if(treeProb > 0 && rnd.ByChance(treeProb))
             {
                 auto tree = treeForPoint(pt);
 
                 map.objectInfos[pt] = tree.type;
                 map.objectTypes[pt] = tree.index + rnd.RandomValue(0, 7);
-            }
-
-            if(probabilities[pt] > 0 && rnd.ByChance(settings.stonePiles))
-            {
-                map.objectInfos[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
-                map.objectTypes[pt] = rnd.RandomValue(1, 6);
             }
         }
     }
