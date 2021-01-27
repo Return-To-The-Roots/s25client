@@ -50,7 +50,7 @@ Position GetNeighbour(const Position& p, const Direction dir)
         case Direction::SouthWest: return Position(p.x - !(p.y & 1), p.y + 1);
     }
     RTTR_Assert(false);
-    BOOST_UNREACHABLE_RETURN({});
+    BOOST_UNREACHABLE_RETURN({})
 }
 
 Position GetNeighbour2(Position pt, unsigned dir)
