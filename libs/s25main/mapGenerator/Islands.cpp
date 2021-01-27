@@ -30,9 +30,8 @@ namespace rttr { namespace mapGenerator {
         const auto distances = DistancesTo(map.size, land);
         const unsigned maxDistance = *std::max_element(distances.begin(), distances.end());
         const unsigned minDistance = std::min(maxDistance, distanceToLand * 10);
-        const auto possibleCenters = SelectPoints([&distances, minDistance](const MapPoint& pt) {
-            return distances[pt] >= minDistance;
-        }, distances.GetSize());
+        const auto possibleCenters = SelectPoints(
+          [&distances, minDistance](const MapPoint& pt) { return distances[pt] >= minDistance; }, distances.GetSize());
         const MapPoint center = rnd.RandomItem(possibleCenters);
 
         const auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {
