@@ -94,6 +94,9 @@ IncludeCategories:
   - Regex:           '<(kaguya|turtle|glad|KHR)'
     Priority:        95
     SortPriority:    0
+  - Regex:           '<benchmark/'
+    Priority:        98
+    SortPriority:    0
   - Regex:           '<boost/'
     Priority:        99
     SortPriority:    0

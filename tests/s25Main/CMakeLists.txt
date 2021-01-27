@@ -42,6 +42,11 @@ add_subdirectory(resources)
 add_subdirectory(simple)
 add_subdirectory(UI)
 
+option(RTTR_ENABLE_BENCHMARKS "Build the benchmarks" OFF)
+if(RTTR_ENABLE_BENCHMARKS)
+  add_subdirectory(benchmarks)
+endif()
+
 if(WIN32)
     include(GatherDll)
     gather_dll_copy(testWorldFixtures)
