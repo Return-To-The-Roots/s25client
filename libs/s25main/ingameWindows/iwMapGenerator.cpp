@@ -121,7 +121,8 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     AddProgress(CTRL_RATIO_COAL, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
     AddText(CTRL_TXT_GRANITE, curPos, _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138,
+                100);
     curPos.y += 30;
     AddText(CTRL_TXT_RIVERS, curPos, _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RIVERS, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
