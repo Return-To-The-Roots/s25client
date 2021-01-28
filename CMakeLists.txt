@@ -121,6 +121,10 @@ endif()
 # Better portability
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Hidden visibility by default to reduce binary size and possibly increase performance
+set(CMAKE_CXX_VISIBILITY_PRESET hidden CACHE STRING "Default symbol visibility")
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON CACHE BOOL "Inline symbol visibility")
+
 ################################################################################
 # ClangFormat
 ################################################################################
