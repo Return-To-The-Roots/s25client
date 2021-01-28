@@ -26,7 +26,7 @@ MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTim
 {
     Point<double> diff(newPos_ - origPos_);
     diff = elMax(Point<double>::all(1), diff); // Avoid division by zero
-    Point<double> msPerPixel(static_cast<double>(animTime) / diff);
+    Point<double> msPerPixel(Point<double>::all(animTime) / diff);
     double frameRate = std::max(1., std::floor(std::min(msPerPixel.x, msPerPixel.y)));
     setFrameRate(static_cast<unsigned>(frameRate));
     setNumFrames(static_cast<unsigned>(std::ceil(animTime / frameRate)) + 1u);
