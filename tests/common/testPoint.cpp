@@ -30,7 +30,7 @@ using SignedTypes = boost::mpl::list<int8_t, int16_t, int32_t, int64_t, float, d
 // Custom trait to support float/double
 template<typename T>
 using make_unsigned_t =
-  typename std::conditional_t<std::is_floating_point<T>::value, std::common_type<T>, std::make_unsigned<T>>::type;
+  typename std::conditional_t<std::is_floating_point<T>::value, detail::type_identity<T>, std::make_unsigned<T>>::type;
 
 template<typename T>
 constexpr T abs(T val)
@@ -264,14 +264,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(unscale_point, T, SignedTypes)
 
     pt2 /= scale;
     TEST_POINTS_CLOSE(pt2, resultUnsigned, epsilon);
-
-    x = randomValue<T>(1, 100);
-    y = randomValue<T>(1, 100);
-    const auto scale2 = randomValue<T>();
-    pt = SignedPoint(x, y);
-    const auto resultPt = scale2 / pt;
-    static_assert(std::is_same<decltype(resultPt.x), T>::value, "Result must be signed");
-    TEST_POINTS_CLOSE(resultPt, SignedPoint::all(scale2) / pt, epsilon);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(symetric_operators, T, SignedTypes)
