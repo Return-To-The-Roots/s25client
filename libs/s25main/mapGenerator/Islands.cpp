@@ -26,11 +26,15 @@ namespace rttr { namespace mapGenerator {
     {
         Island island;
 
-        const auto isLand = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
-        const auto distances = DistancesTo(map.size, isLand);
-        const auto center = GetMaximumPoint(distances);
+        const auto land = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
+        const auto distances = DistancesTo(map.size, land);
+        const unsigned maxDistance = *std::max_element(distances.begin(), distances.end());
+        const unsigned minDistance = std::min(maxDistance, distanceToLand * 10);
+        const auto possibleCenters = SelectPoints(
+          [&distances, minDistance](const MapPoint& pt) { return distances[pt] >= minDistance; }, distances.GetSize());
+        const MapPoint center = rnd.RandomItem(possibleCenters);
 
-        auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {
+        const auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {
             // computes prefered extension points for the island by considering distance to
             // center of the island and maximizing distance to other land
 
