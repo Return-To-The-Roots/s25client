@@ -52,6 +52,8 @@ namespace rttr { namespace mapGenerator {
         unsigned short ratioCoal = 40;
         unsigned short ratioGranite = 15;
         unsigned short rivers = 15;
+        unsigned short trees = 40;
+        unsigned short stonePiles = 5;
         MountainDistance mountainDistance = MountainDistance::Normal;
         DescIdx<LandscapeDesc> type = DescIdx<LandscapeDesc>(0);
         MapStyle style = MapStyle::Mixed;

@@ -95,10 +95,11 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);
+        MapSettings settings;
         MapPoint hq(3, 3);
         map.hqPositions.push_back(hq);
 
-        AddObjects(map, rnd);
+        AddObjects(map, rnd, settings);
 
         auto& objectTypes = map.objectTypes;
         auto& objectInfos = map.objectInfos;
@@ -115,10 +116,11 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_harbors_empty)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);
+        MapSettings settings;
         MapPoint harbor(3, 3);
         map.harbors.push_back(Triangle(true, harbor));
 
-        AddObjects(map, rnd);
+        AddObjects(map, rnd, settings);
 
         auto& objectTypes = map.objectTypes;
         auto& objectInfos = map.objectInfos;
@@ -135,6 +137,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);
+        MapSettings settings;
 
         auto countObjects = [&map]() {
             unsigned objects = 0;
@@ -150,7 +153,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
 
         const unsigned objectsBefore = countObjects();
 
-        AddObjects(map, rnd);
+        AddObjects(map, rnd, settings);
 
         const unsigned objectsAfter = countObjects();
 

@@ -58,7 +58,7 @@ namespace rttr { namespace mapGenerator {
         throw std::invalid_argument("invalid landscape type");
     }
 
-    void AddObjects(Map& map, RandomUtility& rnd)
+    void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
     {
         std::set<MapPoint, MapPointLess> excludedArea;
         NodeMapBase<unsigned> probabilities;
@@ -112,9 +112,9 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        auto range = GetRange(waterDistance);
-        auto probRange = ValueRange<unsigned>(15, 40);
-        auto probDiff = probRange.GetDifference();
+        const auto range = GetRange(waterDistance);
+        const auto probRange = ValueRange<unsigned>(settings.trees / 2, settings.trees);
+        const unsigned probDiff = probRange.GetDifference();
 
         const auto mountainFoot = [&map](const MapPoint& pt) {
             return !map.textureMap.All(pt, IsMountainOrSnowOrLava);
@@ -128,12 +128,12 @@ namespace rttr { namespace mapGenerator {
             {
                 if(mountainDistance[pt] > 0)
                 {
-                    auto prob = MapValueToIndex(waterDistance[pt], range, probDiff);
+                    const unsigned prob = probDiff ? MapValueToIndex(waterDistance[pt], range, probDiff) : 0;
                     probabilities[pt] = prob + probRange.minimum;
                 } else
                 {
-                    auto diff = mountainRange.maximum - mountainDepth[pt];
-                    auto prob = MapValueToIndex(diff, mountainRange, probDiff);
+                    const unsigned diff = mountainRange.maximum - mountainDepth[pt];
+                    const unsigned prob = probDiff ? MapValueToIndex(diff, mountainRange, probDiff) : 0;
                     probabilities[pt] = prob + probRange.minimum;
                 }
             } else
@@ -142,8 +142,8 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        auto trees = CreateTrees(map.textureMap);
-        auto treeForPoint = [&mountainDistance, &waterDistance, &range, &trees](const MapPoint& pt) {
+        const auto trees = CreateTrees(map.textureMap);
+        const auto treeForPoint = [&mountainDistance, &waterDistance, &range, &trees](const MapPoint& pt) {
             if(mountainDistance[pt] == 0)
             {
                 return trees.back();
@@ -154,22 +154,21 @@ namespace rttr { namespace mapGenerator {
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            auto treeProb = probabilities[pt];
+            const bool canPlaceStonePile = waterDistance[pt] > 0 && distanceToExcludedArea[pt] > 0;
+            if(canPlaceStonePile && rnd.ByChance(settings.stonePiles))
+            {
+                map.objectInfos[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
+                map.objectTypes[pt] = rnd.RandomValue(1, 6);
+                continue;
+            }
 
+            const auto treeProb = probabilities[pt];
             if(treeProb > 0 && rnd.ByChance(treeProb))
             {
                 auto tree = treeForPoint(pt);
 
                 map.objectInfos[pt] = tree.type;
                 map.objectTypes[pt] = tree.index + rnd.RandomValue(0, 7);
-            }
-
-            auto graniteProb = probabilities[pt] / 4;
-
-            if(graniteProb > 0 && rnd.ByChance(graniteProb))
-            {
-                map.objectInfos[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
-                map.objectTypes[pt] = rnd.RandomValue(1, 6);
             }
         }
     }
