@@ -254,13 +254,8 @@ namespace rttr { namespace mapGenerator {
 
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
-
-        // 40% of map reserved for player island (80% * 50%)
         const auto islandNodes = static_cast<unsigned>(.5 * waterNodes);
-
-        // 5% of map per player island (40% / 8 = 5%)
         const unsigned nodesPerIsland = islandNodes / 8;
-
         const auto islandRadius = GetIslandRadius(map_.size);
         const auto distanceToLand = islandRadius;
 
