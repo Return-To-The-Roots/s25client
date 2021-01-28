@@ -17,6 +17,8 @@ jobs:
           - { compiler: clang-7,  os: ubuntu-18.04, buildType: Release }
           - { compiler: clang-7,  os: ubuntu-18.04, buildType: Debug }
           - { compiler: clang  ,  os: macos-10.15,  buildType: Debug, boostVersion: 1.74.0 } # Multiple bugs with recent OSX until 1.74
+          # GCC 9 is know to show a few warnings that GCC 10 has "fixed", make sure this doesn't happen for us
+          - { compiler: gcc-9,    os: ubuntu-18.04, buildType: Debug }
           # Latest GCC
           - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Debug }
           - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Release }

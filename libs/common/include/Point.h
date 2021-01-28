@@ -28,6 +28,7 @@ template<typename T>
 struct Point //-V690
 {
     using ElementType = T;
+    static_assert(std::is_arithmetic<ElementType>::value, "Requires an arithmetic type");
 
     T x, y;
     constexpr Point() noexcept : x(getInvalidValue()), y(getInvalidValue()) {}
@@ -37,16 +38,16 @@ struct Point //-V690
     constexpr explicit Point(const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
 
-    static constexpr Point Invalid() { return Point(); }
+    static constexpr Point Invalid() noexcept { return Point(); }
     /// Create a new point with all coordinates set to value
-    static constexpr Point all(const T& value);
-    constexpr bool isValid() const;
+    static constexpr Point all(const T value) noexcept { return Point(value, value); }
+    constexpr bool isValid() const noexcept;
 
-    constexpr bool operator==(const Point& second) const;
-    constexpr bool operator!=(const Point& second) const;
+    constexpr bool operator==(const Point& second) const noexcept;
+    constexpr bool operator!=(const Point& second) const noexcept;
 
 private:
-    static constexpr T getInvalidValue();
+    static constexpr T getInvalidValue() noexcept;
 };
 
 /// Type for describing a position/offset etc. (signed type)
@@ -58,31 +59,25 @@ using Extent = Point<unsigned>;
 //////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-constexpr T Point<T>::getInvalidValue()
+constexpr T Point<T>::getInvalidValue() noexcept
 {
     return std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max();
 }
 
 template<typename T>
-constexpr Point<T> Point<T>::all(const T& val)
-{
-    return Point(val, val);
-}
-
-template<typename T>
-constexpr bool Point<T>::isValid() const
+constexpr bool Point<T>::isValid() const noexcept
 {
     return *this != Invalid();
 }
 
 template<typename T>
-constexpr bool Point<T>::operator==(const Point<T>& second) const
+constexpr bool Point<T>::operator==(const Point<T>& second) const noexcept
 {
     return (x == second.x && y == second.y);
 }
 
 template<typename T>
-constexpr bool Point<T>::operator!=(const Point<T>& second) const
+constexpr bool Point<T>::operator!=(const Point<T>& second) const noexcept
 {
     return !(*this == second);
 }
@@ -93,7 +88,7 @@ constexpr bool Point<T>::operator!=(const Point<T>& second) const
 
 /// Compute the element wise minimum
 template<typename T>
-constexpr Point<T> elMin(const Point<T>& lhs, const Point<T>& rhs)
+constexpr Point<T> elMin(const Point<T>& lhs, const Point<T>& rhs) noexcept
 {
     using std::min;
     return Point<T>(min(lhs.x, rhs.x), min(lhs.y, rhs.y));
@@ -101,71 +96,44 @@ constexpr Point<T> elMin(const Point<T>& lhs, const Point<T>& rhs)
 
 /// Compute the element wise maximum
 template<typename T>
-constexpr Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs)
+constexpr Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs) noexcept
 {
     using std::max;
     return Point<T>(max(lhs.x, rhs.x), max(lhs.y, rhs.y));
 }
 
-template<typename T, bool T_isFloat = std::is_floating_point<T>::value>
-struct PointProductType
+namespace detail {
+template<class T>
+struct type_identity
 {
     using type = T;
 };
 
-template<typename T>
-struct PointProductType<T, false>
-{
-    static constexpr bool is64Bit = sizeof(T) > 4u;
-    using type32Bit = std::conditional_t<std::is_signed<T>::value, int32_t, uint32_t>;
-    using type = std::conditional_t<is64Bit, T, type32Bit>;
-};
-
-/// Compute pt.x * pt.y
-/// The result type is T iff T is a floating point value, else a >=32 bit integer type with the same signednes as T
-template<typename T>
-constexpr typename PointProductType<T>::type prodOfComponents(const Point<T>& pt)
-{
-    return pt.x * pt.y;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Math ops: add/subtract/negate of Point(s). multiply/divide of points and or scalars
-
-namespace detail {
-template<typename T>
-using TryMakeSigned = std::conditional_t<std::is_integral<T>::value, std::make_signed<T>, std::common_type<T>>;
-template<typename T>
-using TryMakeSigned_t = typename TryMakeSigned<T>::type;
+/// Convert the type T to a signed type if the condition is true (safe for float types)
+template<bool cond, typename T>
+using make_signed_if_t =
+  typename std::conditional_t<cond && !std::is_signed<T>::value, std::make_signed<T>, type_identity<T>>::type;
 
 /// Creates a mixed type out of types T and U which is
 /// the larger type of T & U AND signed iff either is signed
 /// Will be a floating point type if either T or U is floating point
-/// fails for non-numeric types with SFINAE
-template<typename T, typename U, bool T_areNumeric = std::is_arithmetic<T>::value&& std::is_arithmetic<U>::value>
-struct MixedType;
-
 template<typename T, typename U>
-struct MixedType<T, U, true>
-{
-    static constexpr bool isTBigger = sizeof(T) > sizeof(U);
-    // If both are floating point or both are not
-    using Common =
-      std::conditional_t<std::is_floating_point<T>::value == std::is_floating_point<U>::value,
-                         std::conditional_t<isTBigger, T, U>,                       // Take the larger type
-                         std::conditional_t<std::is_floating_point<T>::value, T, U> // Take the floating point type
-                         >;
-    // Convert to signed iff at least one value is signed
-    using type =
-      std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common>;
-};
-template<typename T, typename U>
-using MixedType_t = typename MixedType<T, U>::type;
+using mixed_type_t =
+  // clang-format off
+  make_signed_if_t<
+    std::is_signed<T>::value || std::is_signed<U>::value,
+    typename std::conditional_t<
+        std::is_floating_point<T>::value == std::is_floating_point<U>::value, // both are FP or not FP?
+        std::conditional<(sizeof(T) > sizeof(U)), T, U>, // Take the larger type
+        std::conditional<std::is_floating_point<T>::value, T, U> // Take the floating point type
+    >::type
+  >;
+// clang-format on
 
 template<typename T, typename U>
 struct IsNonLossyOp
 {
-    // We can do T <op> U (except overflow) if:
+    // We can do T = T <op> U (except overflow) if:
     static constexpr bool value =
       std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value;
 };
@@ -175,35 +143,49 @@ template<typename T>
 using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
 } // namespace detail
 
+/// Compute pt.x * pt.y
+/// The result type is T iff T is a floating point value, else a >=32 bit integer type with the same signednes as T
+template<typename T>
+constexpr auto prodOfComponents(const Point<T>& pt) noexcept
+{
+    // Let the compiler handle conversion to at least 32 bits keeping float types
+    using op_type = decltype(T{} * uint32_t{});
+    using ResultType = detail::make_signed_if_t<std::is_signed<T>::value, op_type>;
+    return static_cast<ResultType>(pt.x * pt.y);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Math ops: add/subtract/negate of Point(s). multiply/divide of points and or scalars
+
 /// Unary negate
 template<typename T>
-constexpr auto operator-(const Point<T>& pt)
+constexpr auto operator-(const Point<T>& pt) noexcept
 {
-    using Res = detail::TryMakeSigned_t<T>;
+    using Res = detail::make_signed_if_t<true, T>;
     return Point<Res>(-static_cast<Res>(pt.x), -static_cast<Res>(pt.y));
 }
 
 /// Add and subtract operations
 template<typename T, typename U>
-constexpr auto operator+(const Point<T>& lhs, const Point<U>& rhs) -> Point<detail::MixedType_t<T, U>>
+constexpr auto operator+(const Point<T>& lhs, const Point<U>& rhs) noexcept
 {
-    return Point<detail::MixedType_t<T, U>>(lhs.x + rhs.x, lhs.y + rhs.y);
+    return Point<detail::mixed_type_t<T, U>>(lhs.x + rhs.x, lhs.y + rhs.y);
 }
 
 template<typename T>
-constexpr Point<T>& operator+=(Point<T>& lhs, const Point<T>& rhs)
+constexpr Point<T>& operator+=(Point<T>& lhs, const Point<T>& rhs) noexcept
 {
     return lhs = lhs + rhs; // Single return assignment for MSVC2015
 }
 
 template<typename T, typename U>
-constexpr auto operator-(const Point<T>& lhs, const Point<U>& rhs) -> Point<detail::MixedType_t<T, U>>
+constexpr auto operator-(const Point<T>& lhs, const Point<U>& rhs) noexcept
 {
-    return Point<detail::MixedType_t<T, U>>(lhs.x - rhs.x, lhs.y - rhs.y);
+    return Point<detail::mixed_type_t<T, U>>(lhs.x - rhs.x, lhs.y - rhs.y);
 }
 
 template<typename T>
-constexpr Point<T>& operator-=(Point<T>& lhs, const Point<T>& rhs)
+constexpr Point<T>& operator-=(Point<T>& lhs, const Point<T>& rhs) noexcept
 {
     return lhs = lhs - rhs;
 }
@@ -212,32 +194,32 @@ constexpr Point<T>& operator-=(Point<T>& lhs, const Point<T>& rhs)
 // Multiply
 
 template<typename T, typename U>
-constexpr auto operator*(const Point<T>& lhs, const Point<U>& rhs)
+constexpr auto operator*(const Point<T>& lhs, const Point<U>& rhs) noexcept
 {
-    using Res = detail::MixedType_t<T, U>;
+    using Res = detail::mixed_type_t<T, U>;
     return Point<Res>{static_cast<Res>(Res(lhs.x) * Res(rhs.x)), static_cast<Res>(Res(lhs.y) * Res(rhs.y))};
 }
 
 template<typename T>
-constexpr Point<T>& operator*=(Point<T>& lhs, const Point<T>& rhs)
+constexpr Point<T>& operator*=(Point<T>& lhs, const Point<T>& rhs) noexcept
 {
     return lhs = lhs * rhs;
 }
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator*=(Point<T>& lhs, U factor)
+constexpr Point<T>& operator*=(Point<T>& lhs, U factor) noexcept
 {
     return lhs *= Point<T>::all(factor);
 }
 
 template<typename T, typename U, class = detail::require_arithmetic<U>>
-constexpr auto operator*(const Point<T>& pt, const U factor)
+constexpr auto operator*(const Point<T>& pt, const U factor) noexcept
 {
     return pt * Point<U>::all(factor);
 }
 
 template<typename T, typename U, class = detail::require_arithmetic<T>>
-constexpr auto operator*(const T left, const Point<U>& factor)
+constexpr auto operator*(const T left, const Point<U>& factor) noexcept
 {
     return factor * left;
 }
@@ -246,32 +228,32 @@ constexpr auto operator*(const T left, const Point<U>& factor)
 // Divide
 
 template<typename T, typename U>
-constexpr auto operator/(const Point<T>& lhs, const Point<U>& rhs)
+constexpr auto operator/(const Point<T>& lhs, const Point<U>& rhs) noexcept
 {
-    using Res = detail::MixedType_t<T, U>;
+    using Res = detail::mixed_type_t<T, U>;
     return Point<Res>{static_cast<Res>(Res(lhs.x) / Res(rhs.x)), static_cast<Res>(Res(lhs.y) / Res(rhs.y))};
 }
 
 template<typename T>
-constexpr Point<T>& operator/=(Point<T>& lhs, const Point<T>& rhs)
+constexpr Point<T>& operator/=(Point<T>& lhs, const Point<T>& rhs) noexcept
 {
     return lhs = lhs / rhs;
 }
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator/=(Point<T>& lhs, U div)
+constexpr Point<T>& operator/=(Point<T>& lhs, U div) noexcept
 {
     return lhs /= Point<T>::all(div);
 }
 
 template<typename T, typename U, class = detail::require_arithmetic<U>>
-constexpr auto operator/(const Point<T>& lhs, const U div)
+constexpr auto operator/(const Point<T>& lhs, const U div) noexcept
 {
     return lhs / Point<U>::all(div);
 }
 
 template<typename T, typename U, class = detail::require_arithmetic<U>>
-constexpr auto operator/(const U rhs, const Point<T>& div)
+constexpr auto operator/(const U rhs, const Point<T>& div) noexcept
 {
     return Point<U>::all(rhs) / div;
 }
