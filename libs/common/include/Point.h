@@ -191,7 +191,7 @@ RTTR_GEN_ARITH(/)
 // Scaling operators
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator*=(Point<T>& lhs, const U factor) noexcept
+constexpr Point<T>& operator*=(Point<T>& lhs, U factor) noexcept
 {
     return lhs *= Point<T>::all(factor);
 }
@@ -209,7 +209,7 @@ constexpr auto operator*(const T left, const Point<U>& factor) noexcept
 }
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator/=(Point<T>& lhs, const U div) noexcept
+constexpr Point<T>& operator/=(Point<T>& lhs, U div) noexcept
 {
     return lhs /= Point<T>::all(div);
 }

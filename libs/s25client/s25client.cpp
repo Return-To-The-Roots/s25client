@@ -528,7 +528,8 @@ int main(int argc, char** argv)
     try
     {
         po::store(po::command_line_parser(argc, argv).options(desc).positional(positionalOptions).run(), options);
-    } catch(const po::error& e)
+        // Catch the generic stdlib exception as hidden visibility messes up boost typeinfo on OSX
+    } catch(const std::exception& e)
     {
         bnw::cerr << "Error: " << e.what() << "\n\n";
         bnw::cerr << desc << "\n";
