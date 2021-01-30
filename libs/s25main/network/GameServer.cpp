@@ -439,99 +439,75 @@ void GameServer::Stop()
 bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerInfos)
 {
     static_assert(NUM_TEAMS == 4, "Expected exactly 4 playable teams!");
-    const auto teamNumToTeam = [](const unsigned teamNum) {
+    using PlayerIndex = unsigned;
+    using TeamIndex = unsigned;
+    const auto teamNumToTeam = [](const TeamIndex teamNum) {
         RTTR_Assert(teamNum < NUM_TEAMS);
-        return Team(static_cast<unsigned>(Team::Team1) + teamNum);
+        return Team(static_cast<TeamIndex>(Team::Team1) + teamNum);
     };
 
-    struct PlayerTeam
-    {
-        std::set<unsigned> potentialPlayers;
-        unsigned nPlayers = 0;
-    };
-    std::array<PlayerTeam, NUM_TEAMS> teams;
+    std::array<unsigned, NUM_TEAMS> numPlayersInTeam{};
+    // To make the teams as even as possible we start to assign the most constrained players first
+    // Hence create separate lists for players to assign to teams 1-2, 1-3, 1-4
+    std::array<std::vector<PlayerIndex>, 3> playersToAssign;
     auto rng = helpers::getRandomGenerator();
 
-    unsigned unassignedPlayers = 0;
     bool playerWasAssigned = false;
 
-    // First collect fixed players and potential ones.
-    for(unsigned player = 0; player < playerInfos.size(); ++player)
+    // Assign (fully) random teams, count players in team and sort into playersToAssign
+    for(PlayerIndex player = 0; player < playerInfos.size(); ++player)
     {
         auto& playerInfo = playerInfos[player];
         if(playerInfo.team == Team::Random)
         {
-            const unsigned randTeam = std::uniform_int_distribution<unsigned>{0, NUM_TEAMS - 1u}(rng);
+            const TeamIndex randTeam = std::uniform_int_distribution<TeamIndex>{0, NUM_TEAMS - 1u}(rng);
             playerInfo.team = teamNumToTeam(randTeam);
             playerWasAssigned = true;
         }
         switch(playerInfo.team)
         {
-            case Team::Team1: ++teams[0].nPlayers; break;
-            case Team::Team2: ++teams[1].nPlayers; break;
-            case Team::Team3: ++teams[2].nPlayers; break;
-            case Team::Team4: ++teams[3].nPlayers; break;
-            case Team::Random1To2:
-                ++unassignedPlayers;
-                teams[0].potentialPlayers.insert(player);
-                teams[1].potentialPlayers.insert(player);
-                break;
-            case Team::Random1To3:
-                ++unassignedPlayers;
-                teams[0].potentialPlayers.insert(player);
-                teams[1].potentialPlayers.insert(player);
-                teams[2].potentialPlayers.insert(player);
-                break;
-            case Team::Random1To4:
-                ++unassignedPlayers;
-                teams[0].potentialPlayers.insert(player);
-                teams[1].potentialPlayers.insert(player);
-                teams[2].potentialPlayers.insert(player);
-                teams[3].potentialPlayers.insert(player);
-                break;
+            case Team::Team1: ++numPlayersInTeam[0]; break;
+            case Team::Team2: ++numPlayersInTeam[1]; break;
+            case Team::Team3: ++numPlayersInTeam[2]; break;
+            case Team::Team4: ++numPlayersInTeam[3]; break;
+            case Team::Random1To2: playersToAssign[0].push_back(player); break;
+            case Team::Random1To3: playersToAssign[1].push_back(player); break;
+            case Team::Random1To4: playersToAssign[2].push_back(player); break;
             case Team::Random: RTTR_Assert(false); break;
             case Team::None: break;
         }
     }
 
-    for(; unassignedPlayers > 0u; --unassignedPlayers)
+    while(true)
     {
-        // Set of potential teams for the next player.
-        std::vector<unsigned> teamsForNextPlayer;
+        // NOLINTNEXTLINE(readability-qualified-auto)
+        const auto itNextPlayers =
+          helpers::find_if(playersToAssign, [](const auto& players) { return !players.empty(); });
+        if(itNextPlayers == playersToAssign.end())
+            break;
+        // Pick a random player that will be assigned a team.
+        const PlayerIndex nextPlayer = helpers::getRandomElement(rng, *itNextPlayers);
 
-        // Determine the minimal team size for teams that can take an unassigned player.
-        unsigned minNextTeamSize = std::numeric_limits<unsigned>::max();
-        for(const auto& team : teams)
-        {
-            // Check if we can add a player to this team at all.
-            if(!team.potentialPlayers.empty())
-                minNextTeamSize = std::min(minNextTeamSize, team.nPlayers);
-        }
+        // The maximum team number for the current players. First entry is 1-2
+        const auto maxTeam = static_cast<unsigned>(std::distance(playersToAssign.begin(), itNextPlayers) + 2);
 
-        for(unsigned team = 0; team < NUM_TEAMS; ++team)
+        // Determine the minimal team size for the currently possible teams and choose and randomly
+        const unsigned minNextTeamSize =
+          *std::min_element(numPlayersInTeam.begin(), numPlayersInTeam.begin() + maxTeam);
+        std::vector<TeamIndex> teamsForNextPlayer;
+        for(TeamIndex team = 0; team < maxTeam; ++team)
         {
-            // Check if we can add a player to this team at all.
-            if(teams[team].potentialPlayers.empty())
-                continue;
-            // Check if this is a team with the minimal number of players amongst teams that can have unassigned ones.
-            if(teams[team].nPlayers == minNextTeamSize)
+            if(numPlayersInTeam[team] == minNextTeamSize)
                 teamsForNextPlayer.push_back(team);
         }
-
-        RTTR_Assert_Msg(!teamsForNextPlayer.empty(), "Expected to have teams with potential players!");
-        const unsigned nextTeam = helpers::getRandomElement(rng, teamsForNextPlayer);
-        RTTR_Assert_Msg(!teams[nextTeam].potentialPlayers.empty(), "Expected next team to have potential players!");
-
-        // Pick a random player that can go into this team.
-        const unsigned nextPlayer = helpers::getRandomElement(rng, teams[nextTeam].potentialPlayers);
+        const TeamIndex nextTeam = helpers::getRandomElement(rng, teamsForNextPlayer);
 
         playerInfos[nextPlayer].team = teamNumToTeam(nextTeam);
-        ++teams[nextTeam].nPlayers;
+        ++numPlayersInTeam[nextTeam];
         playerWasAssigned = true;
 
         // The player is now assigned so remove from the remaining ones
-        for(auto& team : teams)
-            team.potentialPlayers.erase(nextPlayer);
+        helpers::remove(*itNextPlayers, nextPlayer);
     }
 
     return playerWasAssigned;

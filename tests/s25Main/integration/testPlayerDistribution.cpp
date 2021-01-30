@@ -56,6 +56,12 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
 
     std::vector<JoinPlayerInfo> playerInfos;
 
+    // Sanity check for getMaxTeamSizeDifference: team 2 is empty, 1 & 3 have 2 players
+    playerInfos = {BPI3, BPI3, BPI1, BPI1};
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 1) == 0u);
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 2u);
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 2u);
+
     // No change
     playerInfos = {BPI1, BPI2, BPI3, BPI4};
     BOOST_REQUIRE(!GameServer::assignPlayersOfRandomTeams(playerInfos));
@@ -73,7 +79,7 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BOOST_TEST(playerInfos[3].team == Team::Team4);
     BOOST_TEST(isTeam(playerInfos[4].team));
 
-    // Assigned teams are as selected
+    // Assigned teams are as selected, teams are even
     playerInfos = {BPI1, BPI2, BPI3, BPI4, BPI_Rand, BPI1_2, BPI1_3, BPI1_4};
     BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
     BOOST_TEST(playerInfos[0].team == Team::Team1);
@@ -85,11 +91,7 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BOOST_TEST(
       (playerInfos[6].team == Team::Team1 || playerInfos[6].team == Team::Team2 || playerInfos[6].team == Team::Team3));
     BOOST_TEST(isTeam(playerInfos[7].team));
-
-    // Sanity check for getMaxTeamSizeDifference: team 2 is empty, 1 & 3 have 2 players
-    playerInfos = {BPI3, BPI3, BPI1, BPI1};
-    BOOST_REQUIRE(!GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 2u);
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 0u);
 
     // 1 player each to team 3 and 4
     playerInfos = {BPI1_4, BPI1, BPI2, BPI1_4};
@@ -101,23 +103,46 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
     BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 1u);
 
-    // If BPI1_4 gets into team 3 then team 4 will be empty, else all will be even
+    // BPI1_3 has to go into team 3, and then BPI1_4 into team 4
     playerInfos = {BPI1_4, BPI1, BPI2, BPI1_3};
     BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) <= 2u);
+    BOOST_TEST(playerInfos[0].team == Team::Team4);
+    BOOST_TEST(playerInfos[1].team == Team::Team1);
+    BOOST_TEST(playerInfos[2].team == Team::Team2);
+    BOOST_TEST(playerInfos[3].team == Team::Team3);
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 0u);
 
     // Randomly distribute all evenly
     playerInfos = {BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4, BPI1_4};
     BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
     BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 0u);
 
-    // Worst case: First 3 into team 1-3 so team 4 will be empty
-    playerInfos = {BPI1_4, BPI1_4, BPI1_4, BPI1_3, BPI1_3, BPI1_3, BPI1_3, BPI1_3, BPI1_3};
+    // First the teams 1-3 are filled evenly, then the other 2 are put into team 4
+    playerInfos = {BPI1_4, BPI1_4, BPI1_3, BPI1_3, BPI1_3, BPI1_3, BPI1_3, BPI1_3};
     BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
-    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) <= 2u);
+    BOOST_TEST(playerInfos[0].team == Team::Team4);
+    BOOST_TEST(playerInfos[1].team == Team::Team4);
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 0u);
 
     // Both randoms will be in team 2
     playerInfos = {BPI3, BPI3, BPI1_2, BPI1_2, BPI1, BPI1};
     BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(playerInfos[0].team == Team::Team3);
+    BOOST_TEST(playerInfos[1].team == Team::Team3);
+    BOOST_TEST(playerInfos[2].team == Team::Team2);
+    BOOST_TEST(playerInfos[3].team == Team::Team2);
+    BOOST_TEST(playerInfos[4].team == Team::Team1);
+    BOOST_TEST(playerInfos[5].team == Team::Team1);
     BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 0u);
+
+    // Uneven distribution: Team 3 doesn't has any player yet, but team 1-2 have
+    // --> First BPI1_2 goes into team 2, the second to 1 or 2 making it 3 players, while the others has 2. Team 3 will
+    // only get exactly 1
+    playerInfos = {BPI1_3, BPI2, BPI1_2, BPI1_2, BPI1, BPI1};
+    BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+    BOOST_TEST(playerInfos[0].team == Team::Team3);
+    BOOST_TEST(playerInfos[1].team == Team::Team2);
+    BOOST_TEST(playerInfos[4].team == Team::Team1);
+    BOOST_TEST(playerInfos[5].team == Team::Team1);
+    BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 2u);
 }
