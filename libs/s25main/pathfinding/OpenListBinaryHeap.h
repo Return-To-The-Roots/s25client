@@ -18,8 +18,8 @@
 #pragma once
 
 #include "RTTR_Assert.h"
+#include <boost/container/small_vector.hpp>
 #include <limits>
-#include <vector>
 
 /// Just for occasional temporary debugging, all should be covered by tests and this is SLOW
 #define RTTR_SLOW_DEBUG_CHECKS 0
@@ -48,13 +48,12 @@ public:
         friend class OpenListBinaryHeapBase;
     };
 
-    OpenListBinaryHeapBase() { elements.reserve(128); }
     size_type size() const { return elements.size(); }
     bool empty() const { return elements.empty(); }
     void clear() { elements.clear(); }
 
 protected:
-    std::vector<Element> elements;
+    boost::container::small_vector<Element, 64> elements;
     static size_type& GetPos(PosMarker& posMarker) { return posMarker.pos; }
 };
 
