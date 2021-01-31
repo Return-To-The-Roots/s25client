@@ -33,7 +33,7 @@ static unsigned getMaxTeamSizeDifference(const std::vector<JoinPlayerInfo>& play
             case Team::Team2: ++nPlayers[1]; break;
             case Team::Team3: ++nPlayers[2]; break;
             case Team::Team4: ++nPlayers[3]; break;
-            default: BOOST_TEST_FAIL("Invalid team"); //LCOV_EXCL_LINE
+            default: BOOST_TEST_FAIL("Invalid team"); // LCOV_EXCL_LINE
         };
     }
 
@@ -148,4 +148,67 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BOOST_TEST(playerInfos[4].team == Team::Team1);
     BOOST_TEST(playerInfos[5].team == Team::Team1);
     BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 2u);
+
+    {
+        std::array<helpers::EnumArray<bool, Team>, 5> playerWasAssignedTeam{};
+        const auto playerWasInTeams = [&playerWasAssignedTeam](unsigned player, std::initializer_list<Team> teams) {
+            for(const Team t : teams)
+            {
+                if(!playerWasAssignedTeam[player][t])
+                    return false;
+            }
+            return true;
+        };
+        for(int i = 0; i < 100000; i++)
+        { // Any large bound to avoid infinite loop
+            // More difficult case: First selected player will go in team 2, the next 2 to a random on (in its bounds)
+            // But all random players have a chance to be in any team
+            playerInfos = {BPI1, BPI3, BPI1_2, BPI1_3, BPI1_3};
+            BOOST_REQUIRE(GameServer::assignPlayersOfRandomTeams(playerInfos));
+            for(unsigned j = 2; j < playerInfos.size(); j++)
+                playerWasAssignedTeam[j][playerInfos[j].team] = true;
+            if(playerWasInTeams(2, {Team::Team1, Team::Team2})
+               && playerWasInTeams(3, {Team::Team1, Team::Team2, Team::Team3})
+               && playerWasInTeams(4, {Team::Team1, Team::Team2, Team::Team3}))
+            {
+                break;
+            }
+            BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 1u);
+        }
+        BOOST_TEST(playerWasInTeams(2, {Team::Team1, Team::Team2}));
+        BOOST_TEST(playerWasInTeams(3, {Team::Team1, Team::Team2, Team::Team3}));
+        BOOST_TEST(playerWasInTeams(4, {Team::Team1, Team::Team2, Team::Team3}));
+    }
+
+    {
+        std::array<helpers::EnumArray<bool, Team>, 6> playerWasAssignedTeam{};
+        const auto playerWasInTeams = [&playerWasAssignedTeam](unsigned player, std::initializer_list<Team> teams) {
+            for(const Team t : teams)
+            {
+                if(!playerWasAssignedTeam[player][t])
+                    return false;
+            }
+            return true;
+        };
+        for(int i = 0; i < 100000; i++)
+        { // Any large bound to avoid infinite loop
+            // Similar to above but it should result in even teams
+            playerInfos = {BPI1, BPI3, BPI1_2, BPI1_3, BPI1_3, BPI1_3};
+            GameServer::assignPlayersOfRandomTeams(playerInfos);
+            for(unsigned j = 2; j < playerInfos.size(); j++)
+                playerWasAssignedTeam[j][playerInfos[j].team] = true;
+            if(playerWasInTeams(2, {Team::Team1, Team::Team2})
+               && playerWasInTeams(3, {Team::Team1, Team::Team2, Team::Team3})
+               && playerWasInTeams(4, {Team::Team1, Team::Team2, Team::Team3})
+               && playerWasInTeams(5, {Team::Team1, Team::Team2, Team::Team3}))
+            {
+                break;
+            }
+            BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 3) == 0u);
+        }
+        BOOST_TEST(playerWasInTeams(2, {Team::Team1, Team::Team2}));
+        BOOST_TEST(playerWasInTeams(3, {Team::Team1, Team::Team2, Team::Team3}));
+        BOOST_TEST(playerWasInTeams(4, {Team::Team1, Team::Team2, Team::Team3}));
+        BOOST_TEST(playerWasInTeams(5, {Team::Team1, Team::Team2, Team::Team3}));
+    }
 }
