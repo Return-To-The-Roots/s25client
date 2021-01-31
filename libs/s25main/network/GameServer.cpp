@@ -37,12 +37,14 @@
 #include "gameTypes/TeamTypes.h"
 #include "gameData/GameConsts.h"
 #include "gameData/LanDiscoveryCfg.h"
+#include "gameData/MaxPlayers.h"
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
 #include "s25util/SocketSet.h"
 #include "s25util/colors.h"
 #include "s25util/utf8.h"
+#include <boost/container/static_vector.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/nowide/convert.hpp>
 #include <boost/nowide/fstream.hpp>
@@ -439,17 +441,25 @@ void GameServer::Stop()
 bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerInfos)
 {
     static_assert(NUM_TEAMS == 4, "Expected exactly 4 playable teams!");
+    RTTR_Assert(playerInfos.size() <= MAX_PLAYERS);
+
+    using boost::container::static_vector;
     using PlayerIndex = unsigned;
     using TeamIndex = unsigned;
-    const auto teamNumToTeam = [](const TeamIndex teamNum) {
+    const auto teamIdxToTeam = [](const TeamIndex teamNum) {
         RTTR_Assert(teamNum < NUM_TEAMS);
         return Team(static_cast<TeamIndex>(Team::Team1) + teamNum);
     };
 
     std::array<unsigned, NUM_TEAMS> numPlayersInTeam{};
-    // To make the teams as even as possible we start to assign the most constrained players first
-    // Hence create separate lists for players to assign to teams 1-2, 1-3, 1-4
-    std::array<std::vector<PlayerIndex>, 3> playersToAssign;
+    struct AssignPlayer
+    {
+        PlayerIndex player;
+        static_vector<TeamIndex, NUM_TEAMS> possibleTeams;
+        TeamIndex chosenTeam = 0;
+    };
+
+    static_vector<AssignPlayer, MAX_PLAYERS> playersToAssign;
     auto rng = helpers::getRandomGenerator();
 
     bool playerWasAssigned = false;
@@ -461,7 +471,7 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
         if(playerInfo.team == Team::Random)
         {
             const TeamIndex randTeam = std::uniform_int_distribution<TeamIndex>{0, NUM_TEAMS - 1u}(rng);
-            playerInfo.team = teamNumToTeam(randTeam);
+            playerInfo.team = teamIdxToTeam(randTeam);
             playerWasAssigned = true;
         }
         switch(playerInfo.team)
@@ -470,44 +480,57 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
             case Team::Team2: ++numPlayersInTeam[1]; break;
             case Team::Team3: ++numPlayersInTeam[2]; break;
             case Team::Team4: ++numPlayersInTeam[3]; break;
-            case Team::Random1To2: playersToAssign[0].push_back(player); break;
-            case Team::Random1To3: playersToAssign[1].push_back(player); break;
-            case Team::Random1To4: playersToAssign[2].push_back(player); break;
+            case Team::Random1To2: playersToAssign.emplace_back(AssignPlayer{player, {0, 1}}); break;
+            case Team::Random1To3: playersToAssign.emplace_back(AssignPlayer{player, {0, 1, 2}}); break;
+            case Team::Random1To4: playersToAssign.emplace_back(AssignPlayer{player, {0, 1, 2, 3}}); break;
             case Team::Random: RTTR_Assert(false); break;
             case Team::None: break;
         }
     }
 
-    while(true)
+    // To make the teams as even as possible we start to assign the most constrained players first
+    std::sort(playersToAssign.begin(), playersToAssign.end(), [](const AssignPlayer& lhs, const AssignPlayer& rhs) {
+        return lhs.possibleTeams.size() < rhs.possibleTeams.size();
+    });
+
+    // Put each player into a random team with the currently least amount of players using the possible teams only
+    for(AssignPlayer& player : playersToAssign)
     {
-        // NOLINTNEXTLINE(readability-qualified-auto)
-        const auto itNextPlayers =
-          helpers::find_if(playersToAssign, [](const auto& players) { return !players.empty(); });
-        if(itNextPlayers == playersToAssign.end())
-            break;
-        // Pick a random player that will be assigned a team.
-        const PlayerIndex nextPlayer = helpers::getRandomElement(rng, *itNextPlayers);
-
-        // The maximum team number for the current players. First entry is 1-2
-        const auto maxTeam = static_cast<unsigned>(std::distance(playersToAssign.begin(), itNextPlayers) + 2);
-
-        // Determine the minimal team size for the currently possible teams and choose and randomly
-        const unsigned minNextTeamSize =
-          *std::min_element(numPlayersInTeam.begin(), numPlayersInTeam.begin() + maxTeam);
-        std::vector<TeamIndex> teamsForNextPlayer;
-        for(TeamIndex team = 0; team < maxTeam; ++team)
+        // Determine the teams with the minima size for the currently possible teams and choose one randomly
+        unsigned minNextTeamSize = std::numeric_limits<unsigned>::max();
+        static_vector<TeamIndex, NUM_TEAMS> teamsForNextPlayer;
+        for(const TeamIndex team : player.possibleTeams)
         {
-            if(numPlayersInTeam[team] == minNextTeamSize)
+            if(minNextTeamSize > numPlayersInTeam[team])
+            {
+                teamsForNextPlayer.clear();
+                teamsForNextPlayer.push_back(team);
+                minNextTeamSize = numPlayersInTeam[team];
+            } else if(minNextTeamSize == numPlayersInTeam[team])
                 teamsForNextPlayer.push_back(team);
         }
-        const TeamIndex nextTeam = helpers::getRandomElement(rng, teamsForNextPlayer);
+        player.chosenTeam = helpers::getRandomElement(rng, teamsForNextPlayer);
 
-        playerInfos[nextPlayer].team = teamNumToTeam(nextTeam);
-        ++numPlayersInTeam[nextTeam];
+        ++numPlayersInTeam[player.chosenTeam];
         playerWasAssigned = true;
-
-        // The player is now assigned so remove from the remaining ones
-        helpers::remove(*itNextPlayers, nextPlayer);
+    }
+    // Now the teams are as even as possible and the uneven team(s) is a random one within the constraints
+    // To have some more randomness we swap players within their constraints
+    std::shuffle(playersToAssign.begin(), playersToAssign.end(), rng);
+    for(auto it = playersToAssign.begin(); it != playersToAssign.end(); ++it)
+    {
+        // Search for a random player with which we can swap, including ourselfes
+        // Go only forward to avoid back-swapping
+        static_vector<decltype(it), MAX_PLAYERS> possibleSwapTargets;
+        for(auto it2 = it; it2 != playersToAssign.end(); ++it2)
+        {
+            if(helpers::contains(it->possibleTeams, it2->chosenTeam)
+               && helpers::contains(it2->possibleTeams, it->chosenTeam))
+                possibleSwapTargets.push_back(it2);
+        }
+        const auto itSwapTarget = helpers::getRandomElement(rng, possibleSwapTargets);
+        std::swap(it->chosenTeam, itSwapTarget->chosenTeam);
+        playerInfos[it->player].team = teamIdxToTeam(it->chosenTeam);
     }
 
     return playerWasAssigned;

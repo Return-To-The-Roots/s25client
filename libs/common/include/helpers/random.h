@@ -43,7 +43,8 @@ auto getRandomElement(RandomT& rng, ContainerT& container)
 {
     RTTR_Assert(!container.empty());
     auto it = container.begin();
-    std::advance(it, getRandomIndex(rng, container.size()));
+    if(container.size() > 1u)
+        std::advance(it, getRandomIndex(rng, container.size()));
     return *it;
 }
 } // namespace helpers
