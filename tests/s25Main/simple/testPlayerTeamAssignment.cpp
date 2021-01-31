@@ -33,18 +33,18 @@ static unsigned getMaxTeamSizeDifference(const std::vector<JoinPlayerInfo>& play
             case Team::Team2: ++nPlayers[1]; break;
             case Team::Team3: ++nPlayers[2]; break;
             case Team::Team4: ++nPlayers[3]; break;
-            default: BOOST_TEST_FAIL("Invalid team");
+            default: BOOST_TEST_FAIL("Invalid team"); //LCOV_EXCL_LINE
         };
     }
 
-    std::sort(nPlayers.begin(), nPlayers.begin() + nTeams);
-    BOOST_TEST_REQUIRE(nPlayers[0] <= nPlayers[nTeams - 1]);
-    return nPlayers[nTeams - 1] - nPlayers[0];
+    const auto itMinMax = std::minmax_element(nPlayers.begin(), nPlayers.begin() + nTeams);
+    BOOST_TEST_REQUIRE(*itMinMax.first <= *itMinMax.second);
+    return *itMinMax.second - *itMinMax.first;
 }
 
 BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
 {
-    JoinPlayerInfo BPI1, BPI2, BPI3, BPI4, BPI1_2, BPI1_3, BPI1_4, BPI_Rand;
+    JoinPlayerInfo BPI1, BPI2, BPI3, BPI4, BPI1_2, BPI1_3, BPI1_4, BPI_Rand, BPI_None;
     BPI1.team = Team::Team1;
     BPI2.team = Team::Team2;
     BPI3.team = Team::Team3;
@@ -53,6 +53,7 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BPI1_2.team = Team::Random1To2;
     BPI1_3.team = Team::Random1To3;
     BPI1_4.team = Team::Random1To4;
+    BPI_None.team = Team::None;
 
     std::vector<JoinPlayerInfo> playerInfos;
 
@@ -63,12 +64,13 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BOOST_TEST(getMaxTeamSizeDifference(playerInfos, 4) == 2u);
 
     // No change
-    playerInfos = {BPI1, BPI2, BPI3, BPI4};
+    playerInfos = {BPI1, BPI2, BPI3, BPI4, BPI_None};
     BOOST_REQUIRE(!GameServer::assignPlayersOfRandomTeams(playerInfos));
     BOOST_TEST(playerInfos[0].team == Team::Team1);
     BOOST_TEST(playerInfos[1].team == Team::Team2);
     BOOST_TEST(playerInfos[2].team == Team::Team3);
     BOOST_TEST(playerInfos[3].team == Team::Team4);
+    BOOST_TEST(playerInfos[4].team == Team::None);
 
     // (only) random team gets changed
     playerInfos.push_back(BPI_Rand);
@@ -77,7 +79,8 @@ BOOST_AUTO_TEST_CASE(JoinPlayerAssignment)
     BOOST_TEST(playerInfos[1].team == Team::Team2);
     BOOST_TEST(playerInfos[2].team == Team::Team3);
     BOOST_TEST(playerInfos[3].team == Team::Team4);
-    BOOST_TEST(isTeam(playerInfos[4].team));
+    BOOST_TEST(playerInfos[4].team == Team::None);
+    BOOST_TEST(isTeam(playerInfos[5].team));
 
     // Assigned teams are as selected, teams are even
     playerInfos = {BPI1, BPI2, BPI3, BPI4, BPI_Rand, BPI1_2, BPI1_3, BPI1_4};
