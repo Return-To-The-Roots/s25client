@@ -35,7 +35,7 @@ struct NodePtrCmpGreater
         if(lhs->estimatedDistance == rhs->estimatedDistance)
         {
             // Enforce strictly monotonic increasing order
-            return (lhs->idx > rhs->idx);
+            return (lhs > rhs);
         }
 
         return (lhs->estimatedDistance > rhs->estimatedDistance);
@@ -117,10 +117,11 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
             continue;
 
         // Knoten in alle 6 Richtungen bilden
+        const auto neighbors = gwb_.GetNeighbours(best.mapPt);
         for(const Direction dir : helpers::enumRange(startDir))
         {
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint neighbourPos = gwb_.GetNeighbour(best.mapPt, dir);
+            MapPoint neighbourPos = neighbors[dir];
 
             // ID des umliegenden Knotens bilden
             unsigned nbId = gwb_.GetIdx(neighbourPos);

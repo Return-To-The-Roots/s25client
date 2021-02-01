@@ -49,7 +49,6 @@ void FreePathFinder::Init(const MapExtent& mapSize)
         nodes[idx].mapPt = pt;
         fpNodes[idx].lastVisited = 0;
         fpNodes[idx].mapPt = pt;
-        fpNodes[idx].idx = idx;
     }
 }
 
