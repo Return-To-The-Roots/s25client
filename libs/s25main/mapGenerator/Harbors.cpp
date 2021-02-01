@@ -68,16 +68,8 @@ namespace rttr { namespace mapGenerator {
         std::vector<std::vector<MapPoint>> coasts;
         std::set<MapPoint, MapPointLess> visited;
 
-        const auto partOfRiver = [&rivers](const MapPoint& pt) {
-            return helpers::contains_if(rivers, [&pt](const River& river) { return river.find(pt) != river.end(); });
-        };
-
-        const auto distanceToRiver = DistancesTo(map.size, partOfRiver);
-        const auto allWater = [&map](const MapPoint& pt) { return map.textureMap.All(pt, IsWater); };
-
-        const auto isCoast = [&map, allWater, &distanceToRiver](const MapPoint& pt) {
-            return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater)
-                   && helpers::contains_if(map.textures.GetNeighbours(pt), allWater) && distanceToRiver[pt] >= 5;
+        const auto isCoast = [&map](const MapPoint& pt) {
+            return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater);
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
@@ -86,19 +78,29 @@ namespace rttr { namespace mapGenerator {
             {
                 if(isCoast(pt))
                 {
-                    auto coast = Collect(map.textures, pt, isCoast);
+                    const auto coast = Collect(map.textures, pt, isCoast);
                     coasts.push_back(coast);
                     visited.insert(coast.begin(), coast.end());
                 }
             }
         }
+
+        const auto distanceToRiver = DistancesTo(join(rivers), map.size);
+        const auto closeToRiver = [&distanceToRiver](const MapPoint& pt) { return distanceToRiver[pt] < 5; };
+
+        for(std::vector<MapPoint>& coast : coasts)
+        {
+            coast.erase(std::remove_if(coast.begin(), coast.end(), closeToRiver), coast.end());
+        }
+
         return coasts;
     }
 
     void PlaceHarbors(Map& map, const std::vector<River>& rivers, int coastSize, int nodesPerHarbor)
     {
-        auto coasts = FindCoastlines(map, rivers);
-        for(auto coast : coasts)
+        const auto coasts = FindCoastlines(map, rivers);
+        std::vector<MapPoint> harbors;
+        for(const auto& coast : coasts)
         {
             if(coast.size() < static_cast<unsigned>(coastSize))
             {
@@ -108,24 +110,20 @@ namespace rttr { namespace mapGenerator {
             int numberOfHarborsForCoast = std::max(static_cast<int>(coast.size() / nodesPerHarbor), 1);
             int maxDistance = map.size.x * map.size.y;
 
-            std::vector<MapPoint> harbors;
-
-            auto distanceToHarbors = [&map, &harbors, maxDistance](const MapPoint& pt) {
-                auto calcDistance = [pt, &map](const MapPoint& hp1, const MapPoint& hp2) {
+            const auto distanceToHarbors = [&map, &harbors, maxDistance](const MapPoint& pt) {
+                const auto calcDistance = [pt, &map](const MapPoint& hp1, const MapPoint& hp2) {
                     return map.textures.CalcDistance(hp1, pt) < map.textures.CalcDistance(hp2, pt);
                 };
-                auto closestHarbor = std::min_element(harbors.begin(), harbors.end(), calcDistance);
-                auto minDistance =
-                  closestHarbor == harbors.end() ? maxDistance : map.textures.CalcDistance(pt, *closestHarbor);
-                return minDistance;
+                const auto closestHarbor = std::min_element(harbors.begin(), harbors.end(), calcDistance);
+                return closestHarbor == harbors.end() ? maxDistance : map.textures.CalcDistance(pt, *closestHarbor);
+            };
+            const auto compareHarbors = [&distanceToHarbors](const MapPoint& p1, const MapPoint& p2) {
+                return distanceToHarbors(p1) < distanceToHarbors(p2);
             };
 
             for(int i = 0; i < numberOfHarborsForCoast; i++)
             {
-                auto harbor = std::max_element(coast.begin(), coast.end(),
-                                               [distanceToHarbors](const MapPoint& pt1, const MapPoint& pt2) {
-                                                   return distanceToHarbors(pt1) < distanceToHarbors(pt2);
-                                               });
+                auto harbor = std::max_element(coast.begin(), coast.end(), compareHarbors);
                 if(harbor != coast.end())
                 {
                     harbors.push_back(*harbor);

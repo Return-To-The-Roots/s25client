@@ -28,6 +28,17 @@
 
 namespace rttr { namespace mapGenerator {
 
+    template<template<typename...> class C1, typename... T1, template<typename...> class C2, typename... T2, typename E>
+    std::vector<E> join(const C1<C2<E, T2...>, T1...>& container)
+    {
+        std::vector<E> joined;
+        for(const auto& el : container)
+        {
+            std::copy(el.begin(), el.end(), std::back_inserter(joined));
+        }
+        return joined;
+    }
+
     /**
      * Smoothes the specified nodes with a smoothing kernel of the specified extent (radius).
      *

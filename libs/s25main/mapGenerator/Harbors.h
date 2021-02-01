@@ -48,6 +48,6 @@ namespace rttr { namespace mapGenerator {
      * @param coastSize minimum number of nodes a coastline requires to be considered for harbor positions
      * @param nodesPerHarbor number of coast nodes required per harbor position
      */
-    void PlaceHarbors(Map& map, const std::vector<River>& rivers, int coastSize, int nodesPerHarbor = 50);
+    void PlaceHarbors(Map& map, const std::vector<River>& rivers, int coastSize = 32, int nodesPerHarbor = 64);
 
 }} // namespace rttr::mapGenerator
