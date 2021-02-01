@@ -202,8 +202,8 @@ namespace rttr { namespace mapGenerator {
 
     void RandomMap::CreateMixedMap()
     {
-        MapPoint center(map_.size.x / 2, map_.size.y / 2);
-        unsigned maxDistance = map_.z.CalcDistance(MapPoint(0, 0), center);
+        const auto center = rnd_.Point(map_.size);
+        const unsigned maxDistance = map_.z.CalcMaxDistance();
 
         Restructure(map_, [this, &center, maxDistance](const MapPoint& pt) {
             auto weight = 1. - static_cast<float>(map_.z.CalcDistance(pt, center)) / maxDistance;
@@ -229,12 +229,12 @@ namespace rttr { namespace mapGenerator {
 
     void RandomMap::CreateWaterMap()
     {
-        MapPoint center(map_.size.x / 2, map_.size.y / 2);
-        unsigned maxDistance = map_.z.CalcDistance(MapPoint(0, 0), center);
+        const auto center = rnd_.Point(map_.size);
+        const unsigned maxDistance = map_.z.CalcMaxDistance();
 
         Restructure(map_, [this, &center, maxDistance](const MapPoint& pt) {
-            auto weight = 1. - static_cast<float>(map_.z.CalcDistance(pt, center)) / maxDistance;
-            auto percentage = static_cast<unsigned>(15 * weight * weight);
+            const auto weight = 1. - static_cast<float>(map_.z.CalcDistance(pt, center)) / maxDistance;
+            const auto percentage = static_cast<unsigned>(15 * weight * weight);
             return rnd_.ByChance(percentage);
         });
         SmoothHeightMap(map_.z, map_.height);
@@ -249,9 +249,7 @@ namespace rttr { namespace mapGenerator {
 
         ResetSeaLevel(map_, rnd_, seaLevel);
 
-        const auto waterNodes =
-          std::count_if(map_.z.begin(), map_.z.end(), [this](uint8_t z) { return z == this->map_.height.minimum; });
-
+        const auto waterNodes = std::count(map_.z.begin(), map_.z.end(), map_.height.minimum);
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
         const auto islandNodes = static_cast<unsigned>(.5 * waterNodes);

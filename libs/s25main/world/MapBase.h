@@ -81,6 +81,7 @@ public:
     {
         return CalcDistance(Position(p1), Position(p2));
     }
+    unsigned CalcMaxDistance() const;
     /// Return the direction for ships for going from one point to another
     ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;
 };
