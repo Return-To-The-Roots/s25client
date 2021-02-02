@@ -90,7 +90,7 @@ namespace rttr { namespace mapGenerator {
 
         for(std::vector<MapPoint>& coast : coasts)
         {
-            coast.erase(std::remove_if(coast.begin(), coast.end(), closeToRiver), coast.end());
+            helpers::remove_if(coast, closeToRiver);
         }
 
         return coasts;
@@ -100,7 +100,7 @@ namespace rttr { namespace mapGenerator {
     {
         const auto coasts = FindCoastlines(map, rivers);
         std::vector<MapPoint> harbors;
-        for(const auto& coast : coasts)
+        for(const std::vector<MapPoint>& coast : coasts)
         {
             if(coast.size() < static_cast<unsigned>(coastSize))
             {
