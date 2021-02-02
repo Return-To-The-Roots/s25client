@@ -69,7 +69,9 @@ namespace rttr { namespace mapGenerator {
         std::set<MapPoint, MapPointLess> visited;
 
         const auto isCoast = [&map](const MapPoint& pt) {
-            return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater);
+            const auto allWater = [&map](const MapPoint& p) { return map.textureMap.All(p, IsWater); };
+            return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater) &&
+              helpers::contains_if(map.textures.GetNeighbours(pt), allWater);
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
