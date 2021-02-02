@@ -100,7 +100,7 @@ MapPoint MapBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
     return MakeMapPoint(::GetNeighbour2(Position(pt), dir));
 }
 
-std::array<MapPoint, 6> MapBase::GetNeighbours(const MapPoint& pt) const
+helpers::EnumArray<MapPoint, Direction> MapBase::GetNeighbours(const MapPoint& pt) const
 {
     unsigned yplus1 = pt.y == size_.y - 1 ? 0 : pt.y + 1;
     unsigned yminus1 = (pt.y == 0 ? size_.y : pt.y) - 1;
