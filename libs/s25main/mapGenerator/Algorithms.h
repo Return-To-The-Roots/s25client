@@ -34,7 +34,7 @@ namespace rttr { namespace mapGenerator {
         std::vector<E> joined;
         for(const auto& el : container)
         {
-            std::copy(el.begin(), el.end(), std::back_inserter(joined));
+            joined.insert(joined.end(), el.begin(), el.end());
         }
         return joined;
     }
