@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
 
     for(unsigned i = 0; i < neighbors.size(); i++)
     {
-        map.z[neighbors[i]] = minHeight + i;
+        map.z[neighbors[Direction(i)]] = minHeight + i;
     }
 
     // run actual test

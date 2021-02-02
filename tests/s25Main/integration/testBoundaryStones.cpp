@@ -69,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
                       0u);
         }
         // Get the minimum possible region where border stones would be placed
-        const auto radius1Pts = helpers::toEnumArray<Direction>(world.GetNeighbours(middlePt));
+        const auto radius1Pts = world.GetNeighbours(middlePt);
         // Set only the middle pt and recalc
         world.SetOwner(middlePt, 1);
         // Only middle pt has a single boundary stone
