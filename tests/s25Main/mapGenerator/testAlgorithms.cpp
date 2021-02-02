@@ -31,12 +31,7 @@ BOOST_AUTO_TEST_CASE(join_vector_of_simple_vectors)
     std::vector<int> result = join(multiVector);
     std::vector<int> expectedResult{1, 2, 3, 2, 3, 4, 5, 6};
 
-    BOOST_REQUIRE(result.size() == expectedResult.size());
-
-    for(int i = 0; i < 8; i++)
-    {
-        BOOST_REQUIRE(result[i] == expectedResult[i]);
-    }
+    BOOST_TEST(result == expectedResult, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(join_vector_of_map_point_sets)
@@ -47,12 +42,7 @@ BOOST_AUTO_TEST_CASE(join_vector_of_map_point_sets)
     std::vector<MapPoint> result = join(multiVector);
     std::vector<MapPoint> expectedResult{MapPoint(0, 0), MapPoint(1, 0), MapPoint(0, 0), MapPoint(0, 1)};
 
-    BOOST_REQUIRE(result.size() == expectedResult.size());
-
-    for(int i = 0; i < 4; i++)
-    {
-        BOOST_REQUIRE(result[i] == expectedResult[i]);
-    }
+    BOOST_TEST(result == expectedResult, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(UpdateDistances_updates_enqueued_elements_correctly)
