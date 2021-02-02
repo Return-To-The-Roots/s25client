@@ -28,9 +28,9 @@
 
 namespace rttr { namespace mapGenerator {
 
-    template<template<typename...> class C1, typename... T1, template<typename...> class C2, typename... T2, typename E>
-    std::vector<E> join(const C1<C2<E, T2...>, T1...>& container)
-    {
+    template<typename T>
+    auto join(const T& container){
+        using E = typename T::value_type::value_type;
         std::vector<E> joined;
         for(const auto& el : container)
         {
