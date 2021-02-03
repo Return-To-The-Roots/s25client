@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(AllFilesHaveValidFormat)
     for(const auto& it : boost::filesystem::directory_iterator(RTTR_TRANSLATION_DIR))
     {
         if(!is_regular_file(it.status()) || it.path().extension() != ".mo")
-            continue;
+            continue; // LCOV_EXCL_LINE
         const auto translatedStrings = mygettext::readCatalog(it.path().string(), "UTF-8");
 
         BOOST_TEST_CONTEXT("Locale: " << it.path().stem())
@@ -87,8 +87,13 @@ BOOST_AUTO_TEST_CASE(AllFilesHaveValidFormat)
                     BOOST_TEST(fmt.expected_args() == entry.second.numParameters);
                 } catch(const std::exception&)
                 {
-                    if(entry.second.numParameters > 0) // Should have been a format string
+                    // Should have been a format string
+                    if(entry.second.numParameters > 0)
+                    {
+                        // LCOV_EXCL_START
                         BOOST_TEST_ERROR("Invalid format string");
+                        // LCOV_EXCL_STOP
+                    }
                 }
             }
         }

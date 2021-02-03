@@ -31,6 +31,7 @@
 #include "uiHelper/uiHelpers.hpp"
 #include <boost/test/unit_test.hpp>
 
+// LCOV_EXCL_START
 #define RTTR_ENUM_OUTPUT(EnumName)                                                 \
     static std::ostream& operator<<(std::ostream& out, const EnumName e)           \
     {                                                                              \
@@ -41,6 +42,7 @@ RTTR_ENUM_OUTPUT(Animation::SkipType)
 RTTR_ENUM_OUTPUT(Animation::RepeatType)
 
 #undef RTTR_ENUM_OUTPUT
+// LCOV_EXCL_STOP
 
 namespace {
 

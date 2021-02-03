@@ -24,183 +24,177 @@
 using namespace rttr::mapGenerator;
 using namespace libsiedler2;
 
-BOOST_AUTO_TEST_SUITE(ResourcesTests)
-
-template<class T_Test>
-static void RunTest(T_Test test)
+struct ResourceTestFixture
 {
-    MapExtent size(16, 16);
-    DescIdx<LandscapeDesc> landscape(1);
+    MapExtent size = MapExtent(16, 16);
+    DescIdx<LandscapeDesc> landscape = DescIdx<LandscapeDesc>(1);
     WorldDescription worldDesc;
-    loadGameData(worldDesc);
+    Map map;
 
-    Map map(size, 1, worldDesc, landscape);
-
-    auto mountain = map.textureMap.Find(IsMountainOrSnowOrLava);
-    auto water = map.textureMap.Find(IsWater);
-    auto land = map.textureMap.Find(IsBuildableCoast);
-
-    /*
-     * ========== Test Map ===========
-     * W = water / L = land / M = mountain
-     *
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     *              ....
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     * W W L L L L M M M M L L L L W W
-     */
-
-    for(unsigned y = 0; y < map.size.y; y++)
+    Map makeMap()
     {
-        for(unsigned x = 0; x < 2; x++)
-        {
-            map.textures[MapPoint(x, y)] = TexturePair(water);
-        }
-
-        for(unsigned x = 2; x < 6; x++)
-        {
-            map.textures[MapPoint(x, y)] = TexturePair(land);
-        }
-
-        for(unsigned x = 6; x < 10; x++)
-        {
-            map.textures[MapPoint(x, y)] = TexturePair(mountain);
-        }
-
-        for(unsigned x = 10; x < 14; x++)
-        {
-            map.textures[MapPoint(x, y)] = TexturePair(land);
-        }
-
-        for(unsigned x = 14; x < 16; x++)
-        {
-            map.textures[MapPoint(x, y)] = TexturePair(water);
-        }
+        loadGameData(worldDesc);
+        return Map(size, 1, worldDesc, landscape);
     }
 
-    test(map);
-}
+    ResourceTestFixture() : map(makeMap())
+    {
+        auto mountain = map.textureMap.Find(IsMinableMountain);
+        auto water = map.textureMap.Find(IsWater);
+        auto land = map.textureMap.Find(IsBuildableCoast);
+
+        /*
+         * ========== Test Map ===========
+         * W = water / L = land / M = mountain
+         *
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         *              ....
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         * W W L L L L M M M M L L L L W W
+         */
+
+        for(unsigned y = 0; y < map.size.y; y++)
+        {
+            for(unsigned x = 0; x < 2; x++)
+            {
+                map.textures[MapPoint(x, y)] = TexturePair(water);
+            }
+
+            for(unsigned x = 2; x < 6; x++)
+            {
+                map.textures[MapPoint(x, y)] = TexturePair(land);
+            }
+
+            for(unsigned x = 6; x < 10; x++)
+            {
+                map.textures[MapPoint(x, y)] = TexturePair(mountain);
+            }
+
+            for(unsigned x = 10; x < 14; x++)
+            {
+                map.textures[MapPoint(x, y)] = TexturePair(land);
+            }
+
+            for(unsigned x = 14; x < 16; x++)
+            {
+                map.textures[MapPoint(x, y)] = TexturePair(water);
+            }
+        }
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(ResourcesTests, ResourceTestFixture)
 
 BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
 {
-    RunTest([](Map& map) {
-        RandomUtility rnd(0);
-        MapSettings settings;
-        MapPoint hq(3, 3);
-        map.hqPositions.push_back(hq);
+    RandomUtility rnd(0);
+    MapSettings settings;
+    MapPoint hq(3, 3);
+    map.hqPositions.push_back(hq);
 
-        AddObjects(map, rnd, settings);
+    AddObjects(map, rnd, settings);
 
-        auto& objectTypes = map.objectTypes;
-        auto& objectInfos = map.objectInfos;
-        auto forbiddenArea = objectTypes.GetPointsInRadius(hq, 5);
-        for(const MapPoint& pt : forbiddenArea)
-        {
-            BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
-            BOOST_TEST_REQUIRE(objectInfos[pt] == OI_Empty);
-        }
-    });
+    auto& objectTypes = map.objectTypes;
+    auto& objectInfos = map.objectInfos;
+    auto forbiddenArea = objectTypes.GetPointsInRadius(hq, 5);
+    for(const MapPoint& pt : forbiddenArea)
+    {
+        BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
+        BOOST_TEST_REQUIRE(objectInfos[pt] == OI_Empty);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_harbors_empty)
 {
-    RunTest([](Map& map) {
-        RandomUtility rnd(0);
-        MapSettings settings;
-        MapPoint harbor(3, 3);
-        map.harbors.push_back(Triangle(true, harbor));
+    RandomUtility rnd(0);
+    MapSettings settings;
+    MapPoint harbor(3, 3);
+    map.harbors.push_back(Triangle(true, harbor));
 
-        AddObjects(map, rnd, settings);
+    AddObjects(map, rnd, settings);
 
-        auto& objectTypes = map.objectTypes;
-        auto& objectInfos = map.objectInfos;
-        auto forbiddenArea = objectTypes.GetPointsInRadius(harbor, 5);
-        for(const MapPoint& pt : forbiddenArea)
-        {
-            BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
-            BOOST_TEST_REQUIRE(objectInfos[pt] == OI_Empty);
-        }
-    });
+    auto& objectTypes = map.objectTypes;
+    auto& objectInfos = map.objectInfos;
+    auto forbiddenArea = objectTypes.GetPointsInRadius(harbor, 5);
+    for(const MapPoint& pt : forbiddenArea)
+    {
+        BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
+        BOOST_TEST_REQUIRE(objectInfos[pt] == OI_Empty);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
 {
-    RunTest([](Map& map) {
-        RandomUtility rnd(0);
-        MapSettings settings;
+    RandomUtility rnd(0);
+    MapSettings settings;
 
-        auto countObjects = [&map]() {
-            unsigned objects = 0;
-            RTTR_FOREACH_PT(MapPoint, map.size)
+    auto countObjects = [this]() {
+        unsigned objects = 0;
+        RTTR_FOREACH_PT(MapPoint, map.size)
+        {
+            if(map.objectInfos[pt] != OI_Empty)
             {
-                if(map.objectInfos[pt] != OI_Empty)
-                {
-                    objects++;
-                }
+                objects++;
             }
-            return objects;
-        };
+        }
+        return objects;
+    };
 
-        const unsigned objectsBefore = countObjects();
+    const unsigned objectsBefore = countObjects();
 
-        AddObjects(map, rnd, settings);
+    AddObjects(map, rnd, settings);
 
-        const unsigned objectsAfter = countObjects();
+    const unsigned objectsAfter = countObjects();
 
-        BOOST_TEST_REQUIRE(objectsAfter > objectsBefore);
-    });
+    BOOST_TEST_REQUIRE(objectsAfter > objectsBefore);
 }
 
 BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
 {
-    RunTest([](Map& map) {
-        RandomUtility rnd(0);
-        MapSettings settings;
+    RandomUtility rnd(0);
+    MapSettings settings;
 
-        AddResources(map, rnd, settings);
+    AddResources(map, rnd, settings);
 
-        RTTR_FOREACH_PT(MapPoint, map.size)
+    RTTR_FOREACH_PT(MapPoint, map.size)
+    {
+        if(map.textureMap.All(pt, IsMinableMountain))
         {
-            if(map.textureMap.All(pt, IsMinableMountain))
-            {
-                BOOST_TEST_REQUIRE(map.resources[pt] != R_None);
-            } else if(map.textureMap.All(pt, IsWater))
-            {
-                BOOST_TEST_REQUIRE(map.resources[pt] == R_Fish);
-            } else
-            {
-                BOOST_TEST_REQUIRE(map.resources[pt] == R_Water);
-            }
+            BOOST_TEST_REQUIRE(map.resources[pt] != R_None);
+        } else if(map.textureMap.All(pt, IsWater))
+        {
+            BOOST_TEST_REQUIRE(map.resources[pt] == R_Fish);
+        } else
+        {
+            BOOST_TEST_REQUIRE(map.resources[pt] == R_Water);
         }
-    });
+    }
 }
 
 BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
 {
-    RunTest([](Map& map) {
-        RandomUtility rnd(0);
+    RandomUtility rnd(0);
 
-        AddAnimals(map, rnd);
+    AddAnimals(map, rnd);
 
-        RTTR_FOREACH_PT(MapPoint, map.size)
+    RTTR_FOREACH_PT(MapPoint, map.size)
+    {
+        if(map.textureMap.All(pt, IsWater))
         {
-            if(map.textureMap.All(pt, IsWater))
-            {
-                BOOST_TEST_REQUIRE((map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck
-                                    || map.animals[pt] == Animal::Duck2));
-            } else
-            {
-                BOOST_TEST_REQUIRE((map.animals[pt] != Animal::Duck && map.animals[pt] != Animal::Duck2));
-            }
+            BOOST_TEST_REQUIRE(
+              (map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck || map.animals[pt] == Animal::Duck2));
+        } else
+        {
+            BOOST_TEST_REQUIRE((map.animals[pt] != Animal::Duck && map.animals[pt] != Animal::Duck2));
         }
-    });
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

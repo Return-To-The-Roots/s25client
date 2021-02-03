@@ -30,10 +30,11 @@
 
 namespace bfs = boost::filesystem;
 
+// LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(EffectPlayId)
-// Doesn't fully work until Boost 1.69
-// BOOST_TEST_DONT_PRINT_LOG_VALUE(SoundHandle)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(SoundHandle)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(driver::SoundType)
+// LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(SoundTests)
 
@@ -84,12 +85,12 @@ BOOST_FIXTURE_TEST_CASE(SoundHandleGetUnloadedWhenLastGoesOutOfScope, LoadMockup
         MOCK_EXPECT(audioDriverMock->LoadEffect).once().with("Foo.wav").calls(makeDoLoad(SoundType::Effect));
         SoundHandle handle = AUDIODRIVER.LoadEffect("Foo.wav");
         BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 1);
-        BOOST_TEST_REQUIRE(bool(handle)); // bool() is  workaround until Boost 1.69
+        BOOST_TEST_REQUIRE(handle);
         BOOST_TEST_REQUIRE(handle.getType() == SoundType::Effect);
         MOCK_EXPECT(audioDriverMock->LoadMusic).once().with("Foo2.wav").calls(makeDoLoad(SoundType::Music));
         SoundHandle handle2 = AUDIODRIVER.LoadMusic("Foo2.wav");
         BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 2);
-        BOOST_TEST_REQUIRE(bool(handle2)); // bool() is  workaround until Boost 1.69
+        BOOST_TEST_REQUIRE(handle2);
         BOOST_TEST_REQUIRE(handle2.getType() == SoundType::Music);
 
         {
@@ -99,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(SoundHandleGetUnloadedWhenLastGoesOutOfScope, LoadMockup
             RTTR_UNUSED(handleCopy);
             // Copy goes out of scope
         }
-        BOOST_TEST_REQUIRE(bool(handle)); // bool() is  workaround until Boost 1.69
+        BOOST_TEST_REQUIRE(handle);
         BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 2);
 
         // Handles go out of scope -> Close them
@@ -124,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(SoundHandlesCanBeUnloadedByDriver, LoadMockupAudio)
         MOCK_EXPECT(audioDriverMock->LoadEffect).once().with("Foo.wav").calls(makeDoLoad(SoundType::Effect));
         SoundHandle handle = AUDIODRIVER.LoadEffect("Foo.wav");
         BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 1);
-        BOOST_TEST_REQUIRE(bool(handle)); // bool() is  workaround until Boost 1.69
+        BOOST_TEST_REQUIRE(handle);
         BOOST_TEST_REQUIRE(handle.getType() == SoundType::Effect);
 
         // Release driver

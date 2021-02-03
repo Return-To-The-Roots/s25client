@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(Victory)
     for(const ctrlMultiline* txt : txts)
     {
         if(txt->GetNumLines() != winnerNames.size())
-            continue;
+            continue; // LCOV_EXCL_LINE
         bool curFound = true;
         for(unsigned i = 0; i < winnerNames.size(); i++)
         {

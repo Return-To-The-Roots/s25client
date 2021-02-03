@@ -21,10 +21,12 @@
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
 
+// LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const FrontierDistance e)
 {
     return out << static_cast<unsigned>(rttr::enum_cast(e));
 }
+// LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(FrontierDistanceSuite)
 

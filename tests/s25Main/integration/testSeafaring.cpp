@@ -30,6 +30,7 @@
 #include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
 
+// LCOV_EXCL_START
 #define RTTR_ENUM_OUTPUT(EnumName)                                                 \
     static std::ostream& operator<<(std::ostream& out, const EnumName e)           \
     {                                                                              \
@@ -37,6 +38,7 @@
     }
 
 RTTR_ENUM_OUTPUT(nobShipYard::Mode)
+// LCOV_EXCL_STOP
 
 namespace {
 std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)

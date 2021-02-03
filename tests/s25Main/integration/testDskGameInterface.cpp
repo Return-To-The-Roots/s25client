@@ -28,10 +28,12 @@
 #include "worldFixtures/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
 
+// LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& os, const Cursor& cursor)
 {
     return os << static_cast<unsigned>(cursor);
 }
+// LCOV_EXCL_STOP
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(GameInterfaceDesktop)
