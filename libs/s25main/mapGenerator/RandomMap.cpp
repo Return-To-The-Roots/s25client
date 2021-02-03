@@ -192,7 +192,8 @@ namespace rttr { namespace mapGenerator {
             if(rnd_.ByChance(settings_.rivers))
             {
                 const unsigned splitRate = rnd_.RandomValue(0u, 2u);
-                rivers.push_back(CreateStream(rnd_, map_, source, dir, length, splitRate));
+                rivers.push_back(CreateStream(rnd_, map_, source.isValid() ? source : rnd_.Point(map_.size), dir,
+                                              length, splitRate));
             }
         }
         return rivers;
@@ -286,7 +287,7 @@ namespace rttr { namespace mapGenerator {
         ResetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
 
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
-        CreateRivers(rnd_.Point(map_.size));
+        CreateRivers();
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 

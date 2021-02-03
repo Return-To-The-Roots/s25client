@@ -42,7 +42,7 @@ namespace rttr { namespace mapGenerator {
         Texturizer texturizer_;
         MapSettings settings_;
 
-        std::vector<River> CreateRivers(const MapPoint& source);
+        std::vector<River> CreateRivers(const MapPoint& source = MapPoint::Invalid());
         void CreateMixedMap();
         void CreateLandMap();
         void CreateWaterMap();
