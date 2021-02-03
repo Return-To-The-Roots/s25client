@@ -70,8 +70,8 @@ namespace rttr { namespace mapGenerator {
 
         const auto isCoast = [&map](const MapPoint& pt) {
             const auto allWater = [&map](const MapPoint& p) { return map.textureMap.All(p, IsWater); };
-            return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater) &&
-              helpers::contains_if(map.textures.GetNeighbours(pt), allWater);
+            return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater)
+                   && helpers::contains_if(map.textures.GetNeighbours(pt), allWater);
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
