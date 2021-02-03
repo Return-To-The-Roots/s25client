@@ -192,8 +192,8 @@ namespace rttr { namespace mapGenerator {
             if(rnd_.ByChance(settings_.rivers))
             {
                 const unsigned splitRate = rnd_.RandomValue(0u, 2u);
-                rivers.push_back(CreateStream(rnd_, map_, source.isValid() ? source : rnd_.Point(map_.size), dir,
-                                              length, splitRate));
+                rivers.push_back(
+                  CreateStream(rnd_, map_, source.isValid() ? source : rnd_.Point(map_.size), dir, length, splitRate));
             }
         }
         return rivers;
