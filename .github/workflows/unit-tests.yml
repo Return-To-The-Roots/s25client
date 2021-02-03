@@ -38,8 +38,15 @@ jobs:
         if: matrix.externalSanitizer
 
       - uses: actions/checkout@v2
+        if: "!matrix.coverage"
         with:
           submodules: true
+      # Coverage collection requires access to history to find merge-base
+      - uses: actions/checkout@v2
+        if: matrix.coverage
+        with:
+          submodules: true
+          fetch-depth: 0
 
       - name: Cache dependencies
         uses: actions/cache@v2
@@ -108,11 +115,6 @@ jobs:
       - name: Enable coverage collection
         if: matrix.coverage
         run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
-      - name: Setup ruby for coverage collection
-        if: matrix.coverage
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.6
 
       - name: Setup environment
         run: |
@@ -123,3 +125,10 @@ jobs:
 
       - run: tools/ci/uploadCoverageData.sh
         if: matrix.coverage && success()
+      - name: Upload coverage (Coveralls)
+        if: matrix.coverage && success()
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.info
+
