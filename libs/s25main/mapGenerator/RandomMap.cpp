@@ -180,7 +180,7 @@ namespace rttr { namespace mapGenerator {
         AddAnimals(map_, rnd_);
     }
 
-    std::vector<River> RandomMap::CreateRivers(const MapPoint& source)
+    std::vector<River> RandomMap::CreateRivers(const MapPoint source)
     {
         std::vector<River> rivers;
 
