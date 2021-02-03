@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "helpers/OptionalEnum.h"
+#include "helpers/OptionalIO.h"
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -36,11 +37,13 @@ enum class UnsignedEnum : unsigned char
     Value2
 };
 
+// LCOV_EXCL_START
 template<typename T>
 static std::enable_if_t<std::is_enum<T>::value, std::ostream&> operator<<(std::ostream& os, T enumVal)
 {
     return os << static_cast<int>(enumVal);
 }
+// LCOV_EXCL_STOP
 
 constexpr auto maxEnumValue(DefaultEnum)
 {
@@ -56,17 +59,6 @@ constexpr auto maxEnumValue(UnsignedEnum)
 }
 
 } // namespace testEnums
-
-namespace helpers {
-template<typename T>
-static std::ostream& operator<<(std::ostream& os, OptionalEnum<T> enumVal)
-{
-    if(enumVal)
-        return os << *enumVal;
-    else
-        return os << "empty_opt";
-}
-} // namespace helpers
 
 using namespace testEnums;
 

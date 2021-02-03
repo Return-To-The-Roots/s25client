@@ -24,6 +24,6 @@ namespace helpers {
 template<typename T>
 std::ostream& operator<<(std::ostream& os, OptionalEnum<T> const& v)
 {
-    return (v) ? os << v : os << "[empty]";
+    return (v) ? os << *v : os << "[empty]";
 }
 } // namespace helpers

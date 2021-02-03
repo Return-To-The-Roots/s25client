@@ -57,7 +57,7 @@ void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
             return;
         }
     }
-    BOOST_TEST_REQUIRE(false);
+    BOOST_TEST_FAIL("Event not found"); // LCOV_EXCL_LINE
 }
 
 /// Move the object next to the given point. The next walk event will make it reach that point

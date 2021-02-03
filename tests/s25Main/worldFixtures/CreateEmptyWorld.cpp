@@ -72,7 +72,7 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
             curPt.y += playerDist.y;
         }
         if(!MapLoader::PlaceHQs(world, hqPositions, false))
-            return false;
+            return false; // LCOV_EXCL_LINE
     }
     world.InitAfterLoad();
     return true;

@@ -41,10 +41,12 @@
 #include <array>
 #include <numeric>
 
+// LCOV_EXCL_START
 static std::ostream& boost_test_print_type(std::ostream& stream, TableSortDir dir)
 {
     return stream << static_cast<int>(dir);
 }
+// LCOV_EXCL_STOP
 
 static std::unique_ptr<glFont> createMockFont(const std::vector<char32_t>& chars)
 {

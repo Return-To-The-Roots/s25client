@@ -44,11 +44,6 @@
 #include <utility>
 #include <vector>
 
-static std::ostream& operator<<(std::ostream& os, Species spec)
-{
-    return os << unsigned(rttr::enum_cast(spec));
-}
-
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 
 BOOST_AUTO_TEST_CASE(LuaEqual_IsCorrect)
