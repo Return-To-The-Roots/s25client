@@ -25,6 +25,26 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(AlgorithmsTests)
 
+BOOST_AUTO_TEST_CASE(join_vector_of_simple_vectors)
+{
+    std::vector<std::vector<int>> multiVector{{1, 2, 3}, {2, 3, 4}, {5, 6}};
+    std::vector<int> result = join(multiVector);
+    std::vector<int> expectedResult{1, 2, 3, 2, 3, 4, 5, 6};
+
+    BOOST_TEST(result == expectedResult, boost::test_tools::per_element());
+}
+
+BOOST_AUTO_TEST_CASE(join_vector_of_map_point_sets)
+{
+    std::set<MapPoint, MapPointLess> set1{MapPoint(0, 0), MapPoint(1, 0)};
+    std::set<MapPoint, MapPointLess> set2{MapPoint(0, 0), MapPoint(0, 1)};
+    std::vector<std::set<MapPoint, MapPointLess>> multiVector{set1, set2};
+    std::vector<MapPoint> result = join(multiVector);
+    std::vector<MapPoint> expectedResult{MapPoint(0, 0), MapPoint(1, 0), MapPoint(0, 0), MapPoint(0, 1)};
+
+    BOOST_TEST(result == expectedResult, boost::test_tools::per_element());
+}
+
 BOOST_AUTO_TEST_CASE(UpdateDistances_updates_enqueued_elements_correctly)
 {
     MapExtent size(8, 8);

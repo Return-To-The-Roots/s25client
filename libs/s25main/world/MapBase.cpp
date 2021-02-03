@@ -138,6 +138,11 @@ unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const
     return ((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
+unsigned MapBase::CalcMaxDistance() const
+{
+    return CalcDistance(MapPoint::all(0), MapPoint(size_.x / 2, size_.y / 2));
+}
+
 ShipDirection MapBase::GetShipDir(MapPoint fromPt, MapPoint toPt) const
 {
     // First divide into North/South by only looking at the y-Difference. On equal we choose South
