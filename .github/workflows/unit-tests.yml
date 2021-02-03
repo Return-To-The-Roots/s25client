@@ -123,7 +123,7 @@ jobs:
       - name: Build
         run: tools/ci/travisBuild.sh
 
-      - run: tools/ci/uploadCoverageData.sh
+      - run: tools/ci/collectCoverageData.sh && external/libutil/tools/ci/uploadCoverageData.sh
         if: matrix.coverage && success()
       - name: Upload coverage (Coveralls)
         if: matrix.coverage && success()
