@@ -41,7 +41,7 @@ void AnimationManager::update(unsigned time)
         if(it->second->isFinished())
         {
             delete it->second;
-            it = helpers::erase(animations_, it);
+            it = animations_.erase(it);
         } else
             ++it;
     }

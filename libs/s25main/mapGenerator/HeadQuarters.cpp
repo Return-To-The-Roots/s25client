@@ -52,7 +52,7 @@ namespace rttr { namespace mapGenerator {
         // added before due to allowing tiny rivers to be part of
         // connected areas
 
-        helpers::remove_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsWater); });
+        helpers::erase_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsWater); });
 
         return connectedArea;
     }

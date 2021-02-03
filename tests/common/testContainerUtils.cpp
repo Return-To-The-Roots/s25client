@@ -125,24 +125,24 @@ BOOST_AUTO_TEST_CASE(Reverse)
     BOOST_TEST(vecIn == vecOut, boost::test_tools::per_element());
 }
 
-BOOST_AUTO_TEST_CASE(Remove)
+BOOST_AUTO_TEST_CASE(Erase)
 {
     std::vector<int> vecIn = {1, 2, 3, 4, 5}, vecExp;
-    helpers::remove(vecIn, 42);
+    helpers::erase(vecIn, 42);
     BOOST_TEST(vecIn == vecIn, boost::test_tools::per_element());
-    helpers::remove(vecIn, 2);
+    helpers::erase(vecIn, 2);
     vecExp = {1, 3, 4, 5};
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
-    helpers::remove(vecIn, 1);
+    helpers::erase(vecIn, 1);
     vecExp = {3, 4, 5};
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
-    helpers::remove(vecIn, 5);
+    helpers::erase(vecIn, 5);
     vecExp = {3, 4};
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
-    helpers::remove(vecIn, 4);
+    helpers::erase(vecIn, 4);
     vecExp = {3};
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
-    helpers::remove(vecIn, 3);
+    helpers::erase(vecIn, 3);
     vecExp = {};
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
 }
@@ -150,11 +150,11 @@ BOOST_AUTO_TEST_CASE(Remove)
 BOOST_AUTO_TEST_CASE(RemoveIf)
 {
     std::vector<int> vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {1, 3, 5};
-    helpers::remove_if(vecIn, [](int i) { return i % 2 == 0; });
+    helpers::erase_if(vecIn, [](int i) { return i % 2 == 0; });
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
 
     vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {2, 4, 6};
-    helpers::remove_if(vecIn, [](int i) { return i % 2 != 0; });
+    helpers::erase_if(vecIn, [](int i) { return i % 2 != 0; });
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
 }
 
