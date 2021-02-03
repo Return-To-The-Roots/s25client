@@ -194,7 +194,7 @@ namespace rttr { namespace mapGenerator {
             auto suroundedByWater = [this](const MapPoint& pt) { return this->textureMap_.All(pt, IsWater); };
             return !helpers::contains_if(this->textures_.GetNeighbours(pt), suroundedByWater);
         };
-        helpers::remove_if(coast, isRiver);
+        helpers::erase_if(coast, isRiver);
 
         ApplyCoastTexturing(coast, coastline);
 

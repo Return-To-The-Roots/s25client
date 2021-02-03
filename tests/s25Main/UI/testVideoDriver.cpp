@@ -65,7 +65,7 @@ void APIENTRY glDeleteTextures(GLsizei n, const GLuint* textures)
     {
         BOOST_TEST(*textures != 0u);
         BOOST_TEST(helpers::contains(activeTextures, *textures));
-        helpers::remove(activeTextures, *(textures++));
+        helpers::erase(activeTextures, *(textures++));
     }
 }
 

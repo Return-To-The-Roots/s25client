@@ -275,7 +275,7 @@ void nobMilitary::HandleEvent(const unsigned id)
                     // Rang merken
                     last_rank = soldier->GetRank();
                     // Remove from sorted container as changing it breaks sorting
-                    it = helpers::erase(troops, it);
+                    it = helpers::erase_reverse(troops, it);
                     // Dann befördern
                     soldier->Upgrade();
                     upgradedSoldiers.push_back(soldier);
@@ -426,7 +426,7 @@ void nobMilitary::RegulateTroops()
             for(auto it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
             {
                 notNeededSoldiers.push_back(*it);
-                it = helpers::erase(ordered_troops, it);
+                it = ordered_troops.erase(it);
             }
         }
         // Strong ones first
@@ -435,7 +435,7 @@ void nobMilitary::RegulateTroops()
             for(auto it = ordered_troops.rbegin(); diff && !ordered_troops.empty(); ++diff)
             {
                 notNeededSoldiers.push_back(*it);
-                it = helpers::erase(ordered_troops, it);
+                it = helpers::erase_reverse(ordered_troops, it);
             }
         }
 
@@ -456,7 +456,7 @@ void nobMilitary::RegulateTroops()
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(*it);
-                    it = helpers::erase(troops, it);
+                    it = troops.erase(it);
                 }
             }
             // erst die starken Soldaten raus
@@ -466,7 +466,7 @@ void nobMilitary::RegulateTroops()
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(*it);
-                    it = helpers::erase(troops, it);
+                    it = helpers::erase_reverse(troops, it);
                 }
             }
         }
@@ -534,7 +534,7 @@ void nobMilitary::SendSoldiersHome()
                 return;
             (*it)->LeaveBuilding();
             AddLeavingFigure(*it);
-            it = helpers::erase(troops, it);
+            it = helpers::erase_reverse(troops, it);
         }
     }
 }
@@ -554,7 +554,7 @@ void nobMilitary::OrderNewSoldiers()
         if((*it)->GetRank() >= ggs.GetMaxMilitaryRank())
         {
             nofPassiveSoldier* soldier = *it;
-            it = helpers::erase(ordered_troops, it);
+            it = ordered_troops.erase(it);
             noNeed.push_back(soldier);
         } else
             ++it;

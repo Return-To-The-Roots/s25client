@@ -56,36 +56,30 @@ namespace detail {
     };
 } // namespace detail
 
-/// Removes an element from a container by its iterator and returns an iterator to the next element
-/// Works only for list and set as they don't invalidate other iterators, so erase is save to call inside a loop
-/// Works also for reverse iterators
+/// Removes an element from a container by its reverse iterator and returns an iterator to the next element
+/// IMPORTANT: For containers other than list and set existing iterators may be invalidated!
 template<typename T>
-typename T::iterator erase(T& container, typename T::iterator it)
+auto erase_reverse(T& container, typename T::reverse_iterator it)
 {
-    return container.erase(it);
-}
-
-template<typename T>
-auto erase(T& container, typename T::reverse_iterator it)
-{
-    return typename T::reverse_iterator(erase(container, (++it).base()));
+    return typename T::reverse_iterator(container.erase((++it).base()));
 }
 
 template<typename T, typename T_Element>
-void remove(T& container, T_Element&& element)
+void erase(T& container, T_Element&& element)
 {
     using std::begin;
     using std::end;
-    container.erase(std::remove(begin(container), end(container), std::forward<T_Element>(element)), end(container));
+    const auto it = std::remove(begin(container), end(container), std::forward<T_Element>(element));
+    container.erase(it, end(container));
 }
 
 template<typename T, typename T_Predicate>
-void remove_if(T& container, T_Predicate&& predicate)
+void erase_if(T& container, T_Predicate&& predicate)
 {
     using std::begin;
     using std::end;
-    container.erase(std::remove_if(begin(container), end(container), std::forward<T_Predicate>(predicate)),
-                    end(container));
+    const auto it = std::remove_if(begin(container), end(container), std::forward<T_Predicate>(predicate));
+    container.erase(it, end(container));
 }
 
 /// Removes the first element in a container

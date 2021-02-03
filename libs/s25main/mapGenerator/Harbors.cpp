@@ -92,7 +92,7 @@ namespace rttr { namespace mapGenerator {
 
         for(std::vector<MapPoint>& coast : coasts)
         {
-            helpers::remove_if(coast, closeToRiver);
+            helpers::erase_if(coast, closeToRiver);
         }
 
         return coasts;

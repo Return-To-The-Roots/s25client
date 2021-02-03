@@ -47,7 +47,7 @@ void ctrlEdit::SetText(const std::string& text)
 {
     text_ = s25util::utf8to32(text);
     if(numberOnly_)
-        helpers::remove_if(text_, [](char32_t c) { return !(c >= '0' && c <= '9'); });
+        helpers::erase_if(text_, [](char32_t c) { return !(c >= '0' && c <= '9'); });
     if(maxLength_ > 0 && text_.size() > maxLength_)
         text_.resize(maxLength_);
 
