@@ -15,77 +15,64 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "lua/GameDataLoader.h"
+#include "mapGenFixtures.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
-BOOST_AUTO_TEST_SUITE(TerrainTests)
-
-template<class T_Test>
-static void RunTest(T_Test test)
-{
-    DescIdx<LandscapeDesc> landscape(1);
-    WorldDescription worldDesc;
-    loadGameData(worldDesc);
-
-    MapExtent size(8, 8);
-    Map map(size, 1, worldDesc, landscape);
-
-    test(map);
-}
+BOOST_FIXTURE_TEST_SUITE(TerrainTests, MapGenFixture)
 
 BOOST_AUTO_TEST_CASE(Restructure_keeps_minimum_and_maximum_values_unchanged)
 {
-    RunTest([](Map& map) {
-        map.z.Resize(map.size, 5); // default height
-        auto predicate = [](const MapPoint& pt) { return pt.x == 4 && pt.y == 4; };
+    Map map = createMap(MapExtent(6, 8));
 
-        Restructure(map, predicate);
+    map.z.Resize(map.size, 5); // default height
+    auto predicate = [](const MapPoint& pt) { return pt.x == 3 && pt.y == 4; };
 
-        RTTR_FOREACH_PT(MapPoint, map.size)
-        {
-            BOOST_TEST_REQUIRE(map.z[pt] <= map.height.maximum);
-            BOOST_TEST_REQUIRE(map.z[pt] >= map.height.minimum);
-        }
-    });
+    Restructure(map, predicate);
+
+    RTTR_FOREACH_PT(MapPoint, map.size)
+    {
+        BOOST_TEST_REQUIRE(map.z[pt] <= map.height.maximum);
+        BOOST_TEST_REQUIRE(map.z[pt] >= map.height.minimum);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(Restructure_increases_height_of_focus_area)
 {
-    RunTest([](Map& map) {
-        MapPoint focus(4, 4);
-        auto predicate = [&focus](const MapPoint& pt) { return pt == focus; };
-        const uint8_t heightBefore = 5;
-        map.z.Resize(map.size, heightBefore);
+    Map map = createMap(MapExtent(6, 8));
 
-        Restructure(map, predicate);
+    MapPoint focus(3, 4);
+    auto predicate = [&focus](const MapPoint& pt) { return pt == focus; };
+    const uint8_t heightBefore = 5;
+    map.z.Resize(map.size, heightBefore);
 
-        const uint8_t heightAfter = map.z[focus];
+    Restructure(map, predicate);
 
-        BOOST_TEST_REQUIRE(heightAfter > heightBefore);
-    });
+    const uint8_t heightAfter = map.z[focus];
+
+    BOOST_TEST(heightAfter > heightBefore);
 }
 
 BOOST_AUTO_TEST_CASE(Restructure_increases_height_less_when_further_away_from_focus)
 {
-    RunTest([](Map& map) {
-        MapPoint focus(4, 4);
-        auto predicate = [&focus](const MapPoint& pt) { return pt == focus; };
-        MapPoint nonFocus(0, 3);
+    Map map = createMap(MapExtent(6, 8));
 
-        const uint8_t heightBefore = 5;
-        map.z.Resize(map.size, heightBefore);
+    MapPoint focus(3, 4);
+    auto predicate = [&focus](const MapPoint& pt) { return pt == focus; };
+    MapPoint nonFocus(0, 3);
 
-        Restructure(map, predicate);
+    const uint8_t heightBefore = 5;
+    map.z.Resize(map.size, heightBefore);
 
-        const int diffFocus = map.z[focus] - heightBefore;
-        const int diffNonFocus = map.z[nonFocus] - heightBefore;
+    Restructure(map, predicate);
 
-        BOOST_TEST_REQUIRE(diffFocus > diffNonFocus);
-    });
+    const int diffFocus = map.z[focus] - heightBefore;
+    const int diffNonFocus = map.z[nonFocus] - heightBefore;
+
+    BOOST_TEST(diffFocus > diffNonFocus);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

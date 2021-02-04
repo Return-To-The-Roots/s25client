@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "PointOutput.h"
-#include "lua/GameDataLoader.h"
+#include "mapGenFixtures.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/TextureHelper.h"
 #include "rttr/test/random.hpp"
@@ -24,15 +24,6 @@
 
 using namespace rttr::mapGenerator;
 
-struct HQTestFixture
-{
-    DescIdx<LandscapeDesc> landscape = DescIdx<LandscapeDesc>(1);
-    WorldDescription worldDesc;
-
-    HQTestFixture() { loadGameData(worldDesc); }
-
-    Map createMap(const MapExtent size, unsigned numPlayers = 1) { return Map(size, numPlayers, worldDesc, landscape); }
-};
 static auto getAllPoints(const MapExtent size)
 {
     std::vector<MapPoint> allPositions;
@@ -45,7 +36,7 @@ static auto getAllPoints(const MapExtent size)
     return allPositions;
 }
 
-BOOST_FIXTURE_TEST_SUITE(HeadQuartersTests, HQTestFixture)
+BOOST_FIXTURE_TEST_SUITE(HeadQuartersTests, MapGenFixture)
 
 BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_returns_expected_nodes)
 {
@@ -92,7 +83,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_empty_for_map_without_suitable_posi
     const auto mntDist = rttr::test::randomEnum<MountainDistance>();
     const auto positions = FindHqPositions(map, getAllPoints(size), mntDist);
 
-    BOOST_TEST_REQUIRE(positions.empty());
+    BOOST_TEST(positions.empty());
 }
 
 BOOST_AUTO_TEST_CASE(FindHqPositions_returns_suitable_position_for_single_player)
@@ -165,7 +156,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
 
     PlaceHeadquarter(map, area, mntDist);
 
-    BOOST_TEST_REQUIRE(map.hqPositions[0] == hq);
+    BOOST_TEST(map.hqPositions[0] == hq);
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_empty_area_throws_exception)

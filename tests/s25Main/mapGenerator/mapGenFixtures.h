@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2020 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "PointOutput.h"
-#include "mapGenFixtures.h"
+#pragma once
+
+#include "lua/GameDataLoader.h"
 #include "mapGenerator/Map.h"
-#include <boost/test/unit_test.hpp>
+#include "gameData/WorldDescription.h"
 
-using namespace rttr::mapGenerator;
-
-BOOST_FIXTURE_TEST_SUITE(MapTests, MapGenFixture)
-
-BOOST_AUTO_TEST_CASE(Constructor_resizes_all_maps)
+struct MapGenFixture
 {
-    const Map map = createMap(MapExtent(14, 6));
-    BOOST_TEST(map.z.GetSize() == map.size);
-    BOOST_TEST(map.textures.GetSize() == map.size);
-    BOOST_TEST(map.objectInfos.GetSize() == map.size);
-    BOOST_TEST(map.objectTypes.GetSize() == map.size);
-    BOOST_TEST(map.resources.GetSize() == map.size);
-    BOOST_TEST(map.animals.GetSize() == map.size);
-}
+    DescIdx<LandscapeDesc> landscape = DescIdx<LandscapeDesc>(1);
+    WorldDescription worldDesc;
+    using Map = rttr::mapGenerator::Map;
 
-BOOST_AUTO_TEST_SUITE_END()
+    MapGenFixture() { loadGameData(worldDesc); }
+
+    Map createMap(const MapExtent size, unsigned numPlayers = 1) const
+    {
+        return Map(size, numPlayers, worldDesc, landscape);
+    }
+};
