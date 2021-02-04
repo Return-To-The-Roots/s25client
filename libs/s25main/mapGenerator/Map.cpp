@@ -14,10 +14,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/Map.h"
-
+#include "helpers/containerUtils.h"
 #include "gameData/MaxPlayers.h"
 #include "libsiedler2/enumTypes.h"
-
 #include <stdexcept>
 #include <utility>
 
@@ -52,6 +51,9 @@ namespace rttr { namespace mapGenerator {
         header->setNumPlayers(players);
         header->setGfxSet(textureMap.GetLandscapeId());
 
+        if(players != hqPositions.size())
+            throw std::logic_error("Not all players have an HQ set");
+        RTTR_Assert(!helpers::contains(hqPositions, MapPoint::Invalid()));
         // First players go into the header
         const unsigned numPlayersInHeader =
           std::min(static_cast<unsigned>(header->maxPlayers), static_cast<unsigned>(hqPositions.size()));
