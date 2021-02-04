@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "RttrForeachPt.h"
-#include "lua/GameDataLoader.h"
+#include "mapGenFixtures.h"
 #include "mapGenerator/Resources.h"
 #include "mapGenerator/TextureHelper.h"
 #include <boost/test/unit_test.hpp>
@@ -24,20 +24,12 @@
 using namespace rttr::mapGenerator;
 using namespace libsiedler2;
 
-struct ResourceTestFixture
+struct ResourceTestFixture : MapGenFixture
 {
     MapExtent size = MapExtent(16, 16);
-    DescIdx<LandscapeDesc> landscape = DescIdx<LandscapeDesc>(1);
-    WorldDescription worldDesc;
     Map map;
 
-    Map makeMap()
-    {
-        loadGameData(worldDesc);
-        return Map(size, 1, worldDesc, landscape);
-    }
-
-    ResourceTestFixture() : map(makeMap())
+    ResourceTestFixture() : map(createMap(size))
     {
         auto mountain = map.textureMap.Find(IsMinableMountain);
         auto water = map.textureMap.Find(IsWater);
@@ -153,7 +145,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
 
     const unsigned objectsAfter = countObjects();
 
-    BOOST_TEST_REQUIRE(objectsAfter > objectsBefore);
+    BOOST_TEST(objectsAfter > objectsBefore);
 }
 
 BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)

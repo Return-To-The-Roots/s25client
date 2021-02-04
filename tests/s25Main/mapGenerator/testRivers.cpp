@@ -15,130 +15,114 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "lua/GameDataLoader.h"
+#include "mapGenFixtures.h"
 #include "mapGenerator/Rivers.h"
 #include "mapGenerator/TextureHelper.h"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
-BOOST_AUTO_TEST_SUITE(RiversTests)
-
-template<class T_Test>
-static void RunTest(T_Test test)
+class RiverFixture : public MapGenFixture
 {
-    MapExtent size(8, 8);
-    RandomUtility rnd(0);
-    WorldDescription worldDesc;
-    loadGameData(worldDesc);
-    DescIdx<LandscapeDesc> landscape(0);
-    Map map(size, 0x1, worldDesc, landscape);
-    map.z.Resize(map.size, map.height.maximum);
+public:
+    Map map;
+    RandomUtility rnd;
+    RiverFixture() : map(createMap(MapExtent(8, 10))), rnd(0) { map.z.Resize(map.size, map.height.maximum); }
+};
 
-    test(rnd, map);
-}
+BOOST_FIXTURE_TEST_SUITE(RiversTest, RiverFixture)
 
 BOOST_AUTO_TEST_CASE(CreateStream_returns_river_of_expected_size)
 {
-    RunTest([](RandomUtility& rnd, Map& map) {
-        const MapPoint source(4, 1);
-        const int length = 6;
+    const MapPoint source(4, 1);
+    const int length = 6;
 
-        for(const auto d : helpers::enumRange<Direction>())
-        {
-            auto river = CreateStream(rnd, map, source, d, length);
+    for(const auto d : helpers::enumRange<Direction>())
+    {
+        auto river = CreateStream(rnd, map, source, d, length);
 
-            // each point represents one triangle while length is given
-            // in tiles (2 triangles) - and one more for the source (which
-            // is not counted in length)
+        // each point represents one triangle while length is given
+        // in tiles (2 triangles) - and one more for the source (which
+        // is not counted in length)
 
-            const unsigned expectedNodes = (length + 1) * 2;
+        const unsigned expectedNodes = (length + 1) * 2;
 
-            BOOST_TEST_REQUIRE(static_cast<unsigned>(river.size()) == expectedNodes);
-        }
-    });
+        BOOST_TEST_REQUIRE(static_cast<unsigned>(river.size()) == expectedNodes);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
 {
-    RunTest([](RandomUtility& rnd, Map& map) {
-        const MapPoint source(3, 2);
-        const int length = 7;
+    const MapPoint source(3, 2);
+    const int length = 7;
 
-        for(const auto d : helpers::enumRange<Direction>())
+    for(const auto d : helpers::enumRange<Direction>())
+    {
+        auto river = CreateStream(rnd, map, source, d, length);
+
+        auto containedByRiver = [&river](const MapPoint& pt) { return helpers::contains(river, pt); };
+
+        for(const MapPoint& pt : river)
         {
-            auto river = CreateStream(rnd, map, source, d, length);
-
-            auto containedByRiver = [&river](const MapPoint& pt) { return helpers::contains(river, pt); };
-
-            for(const MapPoint& pt : river)
-            {
-                BOOST_TEST_REQUIRE(helpers::contains_if(map.z.GetNeighbours(pt), containedByRiver));
-            }
+            BOOST_TEST_REQUIRE(helpers::contains_if(map.z.GetNeighbours(pt), containedByRiver));
         }
-    });
+    }
 }
 
 BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 {
-    RunTest([](RandomUtility& rnd, Map& map) {
-        auto land = map.textureMap.Find(IsBuildableLand);
-        map.textures.Resize(map.size, land);
-        const MapPoint source(3, 2);
-        const int length = 7;
+    auto land = map.textureMap.Find(IsBuildableLand);
+    map.textures.Resize(map.size, land);
+    const MapPoint source(3, 2);
+    const int length = 7;
 
-        for(const auto d : helpers::enumRange<Direction>())
+    for(const auto d : helpers::enumRange<Direction>())
+    {
+        auto river = CreateStream(rnd, map, source, d, length);
+
+        for(const MapPoint& pt : river)
         {
-            auto river = CreateStream(rnd, map, source, d, length);
-
-            for(const MapPoint& pt : river)
-            {
-                BOOST_TEST_REQUIRE(map.textureMap.Any(pt, IsWater));
-            }
+            BOOST_TEST_REQUIRE(map.textureMap.Any(pt, IsWater));
         }
-    });
+    }
 }
 
 BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
 {
-    RunTest([](RandomUtility& rnd, Map& map) {
-        NodeMapBase<uint8_t> originalZ;
-        originalZ.Resize(map.size);
-        RTTR_FOREACH_PT(MapPoint, map.size)
+    NodeMapBase<uint8_t> originalZ;
+    originalZ.Resize(map.size);
+    RTTR_FOREACH_PT(MapPoint, map.size)
+    {
+        originalZ[pt] = map.z[pt];
+    }
+
+    const MapPoint source(4, 1);
+    const int length = 6;
+
+    for(const auto d : helpers::enumRange<Direction>())
+    {
+        auto river = CreateStream(rnd, map, source, d, length);
+
+        for(const MapPoint& pt : river)
         {
-            originalZ[pt] = map.z[pt];
+            BOOST_TEST_REQUIRE(map.z[pt] < originalZ[pt]);
         }
-
-        const MapPoint source(4, 1);
-        const int length = 6;
-
-        for(const auto d : helpers::enumRange<Direction>())
-        {
-            auto river = CreateStream(rnd, map, source, d, length);
-
-            for(const MapPoint& pt : river)
-            {
-                BOOST_TEST_REQUIRE(map.z[pt] < originalZ[pt]);
-            }
-        }
-    });
+    }
 }
 
 BOOST_AUTO_TEST_CASE(CreateStream_which_ends_at_minimum_height)
 {
-    RunTest([](RandomUtility& rnd, Map& map) {
-        MapPoint source(3, 3);
-        map.z.Resize(map.size, map.height.minimum);
-        map.z[source] = map.height.maximum;
+    MapPoint source(3, 3);
+    map.z.Resize(map.size, map.height.minimum);
+    map.z[source] = map.height.maximum;
 
-        const auto river = CreateStream(rnd, map, source, Direction::East, 20);
-        const auto expectedRange = map.z.GetPointsInRadiusWithCenter(source, 2);
+    const auto river = CreateStream(rnd, map, source, Direction::East, 20);
+    const auto expectedRange = map.z.GetPointsInRadiusWithCenter(source, 2);
 
-        for(const MapPoint& pt : river)
-        {
-            BOOST_TEST_REQUIRE(helpers::contains(expectedRange, pt));
-        }
-    });
+    for(const MapPoint& pt : river)
+    {
+        BOOST_TEST_REQUIRE(helpers::contains(expectedRange, pt));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

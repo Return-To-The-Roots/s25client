@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_SUITE(RandomMapTests)
 static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
 {
     BOOST_TEST_REQUIRE(map.players == players);
-    BOOST_TEST_REQUIRE(map.size == size);
+    BOOST_TEST(map.size == size);
 
     for(unsigned index = 0; index < players; index++)
     {

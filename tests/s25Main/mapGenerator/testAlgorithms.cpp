@@ -120,8 +120,8 @@ BOOST_AUTO_TEST_CASE(Scale_updates_minimum_and_maximum_values_correctly)
 
     Scale(values, 0u, 20u);
 
-    BOOST_TEST_REQUIRE(values[0] == 20u);
-    BOOST_TEST_REQUIRE(values[1] == 0u);
+    BOOST_TEST(values[0] == 20u);
+    BOOST_TEST(values[1] == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(Scale_keeps_equal_values_unchanged)
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_empty_for_negative_map_point)
 
     auto result = Collect(map, negative, [&map](const MapPoint& p) { return map[p]; });
 
-    BOOST_TEST_REQUIRE(result.empty());
+    BOOST_TEST(result.empty());
 }
 
 BOOST_AUTO_TEST_CASE(Collect_returns_all_map_points_for_entirely_positive_map)
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
             actualNodes++;
         }
     }
-    BOOST_TEST_REQUIRE(actualNodes == expectedNodes);
+    BOOST_TEST(actualNodes == expectedNodes);
 }
 
 BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
             actualNodes++;
         }
     }
-    BOOST_TEST_REQUIRE(actualNodes == expectedNodes);
+    BOOST_TEST(actualNodes == expectedNodes);
 }
 
 BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_TEST_REQUIRE(LimitFor(values, coverage, minimum) == 5);
+    BOOST_TEST(LimitFor(values, coverage, minimum) == 5);
 
     for(unsigned i = 0; i < exactNumberOfNodes + 5; i++)
     {
@@ -352,7 +352,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_TEST_REQUIRE(LimitFor(values, coverage, minimum) == 5);
+    BOOST_TEST(LimitFor(values, coverage, minimum) == 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
