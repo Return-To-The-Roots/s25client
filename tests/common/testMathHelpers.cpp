@@ -19,9 +19,9 @@
 #include "helpers/mathFuncs.h"
 #include "helpers/roundToNextPow2.h"
 #include <rttr/test/random.hpp>
-#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 #include <chrono>
+#include <utility>
 
 BOOST_AUTO_TEST_SUITE(MathHelperTests)
 
@@ -135,8 +135,7 @@ BOOST_AUTO_TEST_CASE(DivCeilResults)
     BOOST_TEST(helpers::divCeil(9, 8) == 2u);
 }
 
-using TimeTypes =
-  boost::mpl::list<std::chrono::duration<int32_t, std::milli>, std::chrono::duration<uint32_t, std::milli>>;
+using TimeTypes = std::tuple<std::chrono::duration<int32_t, std::milli>, std::chrono::duration<uint32_t, std::milli>>;
 template<typename T>
 struct Rep
 {

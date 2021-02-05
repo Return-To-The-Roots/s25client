@@ -74,10 +74,7 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     global_inventory.clear();
 
     // Statistiken mit 0en füllen
-    memset(&statistic[StatisticTime::T15Minutes], 0, sizeof(statistic[StatisticTime::T15Minutes]));
-    memset(&statistic[StatisticTime::T1Hour], 0, sizeof(statistic[StatisticTime::T1Hour]));
-    memset(&statistic[StatisticTime::T4Hours], 0, sizeof(statistic[StatisticTime::T4Hours]));
-    memset(&statistic[StatisticTime::T16Hours], 0, sizeof(statistic[StatisticTime::T16Hours]));
+    memset(&statistic, 0, sizeof(statistic));
     memset(&statisticCurrentData, 0, sizeof(statisticCurrentData));
     memset(&statisticCurrentMerchandiseData, 0, sizeof(statisticCurrentMerchandiseData));
 
