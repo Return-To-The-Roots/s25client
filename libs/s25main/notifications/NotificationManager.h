@@ -40,7 +40,7 @@ public:
     /// Subscribe to a specific notification.
     /// Unsubscribes when the subscription has no references left
     template<class T_Note>
-    Subscription subscribe(std::function<void(T_Note)> callback);
+    Subscription subscribe(std::function<void(const T_Note&)> callback);
     /// Manually unsubscribes the callback
     static void unsubscribe(Subscription& subscription);
     /// Call the registred callbacks for the note
