@@ -2,21 +2,24 @@
 
 "Return To The Roots" is a fan-project, which aims to renew the original The Settlers 2.
 
-We aim to extend new features such as a multiplayer mode via internet as well as the support for modern hardware and several operating systems like Windows XP/Vista/Seven, Linux and MacOS X.
+We aim to extend new features such as a multiplayer mode via internet as well as the support for modern hardware and several operating systems like Windows Vista/Seven/10, Linux and MacOS X.
 Likewise we want to invent some smaller upgrades.
 Unfortunately it is necessary to rewrite the whole game, but we will stick to the original graphics and sounds, because they are still common and nice to be heard or seen.
 So you will still need an original "The Settlers 2 Gold Edition" version to play Return To The Roots.
 
-see more information on <http://www.rttr.info>
+See more information on <http://www.rttr.info>
 
 ## Current Build Info
 
-Appveyor: [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)](https://ci.appveyor.com/project/Flow86/s25client/branch/master)
+Build & Tests:
+ [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)](https://ci.appveyor.com/project/Flow86/s25client/branch/master)
+ ![GHA Unit tests](https://github.com/Return-To-The-Roots/s25client/workflows/Unit%20tests/badge.svg)
+ ![Static analysis](https://github.com/Return-To-The-Roots/s25client/workflows/Static%20analysis/badge.svg)
 
 Coverage:
-[![Coverage Status](https://coveralls.io/repos/github/Return-To-The-Roots/s25client/badge.svg?branch=master)](https://coveralls.io/github/Return-To-The-Roots/s25client?branch=master)
+[![Coverage Status Coveralls](https://coveralls.io/repos/github/Return-To-The-Roots/s25client/badge.svg?branch=master)](https://coveralls.io/github/Return-To-The-Roots/s25client?branch=master)
  /
-[![codecov](https://codecov.io/gh/Return-To-The-Roots/s25client/branch/master/graph/badge.svg)](https://codecov.io/gh/Return-To-The-Roots/s25client)
+[![Coverage Status Codecov](https://codecov.io/gh/Return-To-The-Roots/s25client/branch/master/graph/badge.svg)](https://codecov.io/gh/Return-To-The-Roots/s25client)
 
 ## How to install
 
