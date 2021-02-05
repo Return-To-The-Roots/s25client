@@ -83,11 +83,11 @@ inline void NotificationManager::unsubscribe(Subscription& subscription)
 }
 
 template<class T_Note>
-Subscription NotificationManager::subscribe(std::function<void(T_Note)> callback)
+Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> callback)
 {
     if(isPublishing)
         throw std::runtime_error("Cannot subscribe during publishing of messages");
-    auto* subscriber = new NoteCallback<T_Note>(callback);
+    auto* subscriber = new NoteCallback<T_Note>(std::move(callback));
     noteId2Subscriber[T_Note::getNoteId()].push_back(subscriber);
     return Subscription(subscriber, CallbackUnregistrar<T_Note>(*this));
 }
