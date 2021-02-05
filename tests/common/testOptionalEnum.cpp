@@ -17,8 +17,8 @@
 
 #include "helpers/OptionalEnum.h"
 #include "helpers/OptionalIO.h"
-#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
+#include <utility>
 
 namespace testEnums {
 enum class DefaultEnum
@@ -62,7 +62,7 @@ constexpr auto maxEnumValue(UnsignedEnum)
 
 using namespace testEnums;
 
-using EnumsToTest = boost::mpl::list<DefaultEnum, SignedEnum, UnsignedEnum>;
+using EnumsToTest = std::tuple<DefaultEnum, SignedEnum, UnsignedEnum>;
 
 BOOST_AUTO_TEST_SUITE(OptionalEnum)
 

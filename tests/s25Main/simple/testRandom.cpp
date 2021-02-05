@@ -20,10 +20,10 @@
 #include "random/Random.h"
 #include "random/XorShift.h"
 #include "s25util/Serializer.h"
-#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 #include <limits>
 #include <random>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -34,7 +34,7 @@ struct SeedFixture
     std::vector<unsigned> seeds = {0, 0x1337, std::numeric_limits<unsigned>::max(),
                                    std::numeric_limits<unsigned short>::max()};
 };
-using TestedRNGS = boost::mpl::list<DefaultLCG, XorShift>;
+using TestedRNGS = std::tuple<DefaultLCG, XorShift>;
 
 } // namespace
 

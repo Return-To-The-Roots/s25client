@@ -18,15 +18,15 @@
 #include "Point.h"
 #include "PointOutput.h"
 #include <rttr/test/random.hpp>
-#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 #include <type_traits>
+#include <utility>
 
 using boost::test_tools::tolerance;
 using rttr::test::randomPoint;
 using rttr::test::randomValue;
 
-using SignedTypes = boost::mpl::list<int8_t, int16_t, int32_t, int64_t, float, double>;
+using SignedTypes = std::tuple<int8_t, int16_t, int32_t, int64_t, float, double>;
 // Custom trait to support float/double
 template<typename T>
 using make_unsigned_t =
