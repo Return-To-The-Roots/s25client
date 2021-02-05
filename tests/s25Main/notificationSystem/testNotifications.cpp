@@ -59,16 +59,14 @@ BOOST_AUTO_TEST_CASE(SubscribeAndNotify)
 {
     NotificationManager mgr;
     std::vector<StringNote> notes1;
-    Subscription subscription1 =
-      mgr.subscribe<StringNote>([&notes1](const StringNote& note) { notes1.push_back(note); });
+    const Subscription sub1 = mgr.subscribe<StringNote>([&notes1](const StringNote& note) { notes1.push_back(note); });
 
     mgr.publish(StringNote{"Hello"});
 
     std::vector<StringNote> notes2;
-    Subscription subscription2 =
-      mgr.subscribe<StringNote>([&notes2](const StringNote& note) { notes2.push_back(note); });
+    const Subscription sub2 = mgr.subscribe<StringNote>([&notes2](const StringNote& note) { notes2.push_back(note); });
     std::vector<IntNote> notes3;
-    Subscription subscription3 = mgr.subscribe<IntNote>([&notes3](const IntNote& note) { notes3.push_back(note); });
+    const Subscription sub3 = mgr.subscribe<IntNote>([&notes3](const IntNote& note) { notes3.push_back(note); });
 
     mgr.publish(StringNote{"World"});
     mgr.publish(IntNote{42});
@@ -91,11 +89,11 @@ BOOST_AUTO_TEST_CASE(Unsubscribe)
     Subscription subscription1 = mgr.subscribe<StringNote>([&notes1](const auto& note) { notes1.push_back(note); });
 
     {
-        Subscription subscription2 = mgr.subscribe<StringNote>([&notes2](const auto& note) { notes2.push_back(note); });
+        const Subscription sub2 = mgr.subscribe<StringNote>([&notes2](const auto& note) { notes2.push_back(note); });
         mgr.publish(StringNote{"Test"});
         BOOST_TEST(notes1.size() == 1u);
         BOOST_TEST(notes2.size() == 1u);
-        // subscription2 goes out of scope and should be unregistred...
+        // sub2 goes out of scope and should be unregistred...
     }
     // ... but subscription1 should still be active
     mgr.publish(StringNote{"Test"});
@@ -122,13 +120,28 @@ BOOST_AUTO_TEST_CASE(DestroyManager)
     // But we shall not crash when subscription goes out of scope
 }
 
+BOOST_AUTO_TEST_CASE(SubscribeOrUnsubscribeDuringPublish)
+{
+    NotificationManager mgr;
+    // Changing the state of the NotificationManager during publish is not possible (ATM)
+    {
+        const auto sub = mgr.subscribe<IntNote>([&mgr](const IntNote&) { mgr.subscribe<IntNote>({}); });
+        BOOST_CHECK_THROW(mgr.publish(IntNote{}), std::runtime_error);
+    }
+    {
+        Subscription sub;
+        sub = mgr.subscribe<IntNote>([&mgr, &sub](const IntNote&) { mgr.unsubscribe(sub); });
+        BOOST_CHECK_THROW(mgr.publish(IntNote{}), std::runtime_error);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(SendAndReceiveAcrossTranslationUnits)
 {
     NotificationManager mgr;
     std::string lastString;
     int lastValue = 0;
-    auto sub1 = mgr.subscribe<StringNote>([&lastString](const StringNote& note) { lastString = note.value; });
-    auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) { lastValue = note.value; });
+    const auto sub1 = mgr.subscribe<StringNote>([&lastString](const StringNote& note) { lastString = note.value; });
+    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) { lastValue = note.value; });
     subscribeTestNote1(mgr);
     subscribeTestNote2(mgr);
 
