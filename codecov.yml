@@ -1,6 +1,6 @@
 coverage:
     range: "55..95"
     ignore:
-        - external/*
-        - tests/*
+        - external/**/*
+        - tests/**/*
 comment: false
