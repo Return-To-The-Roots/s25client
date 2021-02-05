@@ -6,7 +6,8 @@ export PATH="/tmp/lcov/bin:$PATH"
 SRC_PATH="$PWD/tests"
 
 result=0
-lcov --extract coverage.info '*/tests/*' -o testcov.info &> /dev/null
+lcov --extract coverage.info '*/tests/*' -o testcov.info > /dev/null
+lcov --remove coverage.info '*/tests/*' -o srccov.info > /dev/null
 while read -r line; do
     IFS='|' read -ra data <<< "$line"
     if [[ ${#data[@]} == 4 ]]; then
