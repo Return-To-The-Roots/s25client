@@ -29,12 +29,8 @@ class NotificationManager
     /// Type of the callback for a Notification(Note)
     template<class T_Note>
     struct NoteCallback;
-    /// Class used as a deleter for shared_ptr to unregister a callback
-    template<class T_Note>
-    class CallbackUnregistrar;
 
 public:
-    NotificationManager();
     ~NotificationManager();
 
     /// Subscribe to a specific notification.
@@ -47,10 +43,6 @@ public:
     template<class T_Note>
     void publish(const T_Note& notification);
 
-    /// Internally used by CallbackUnregistrar for unsubscribing
-    template<class T_Note>
-    void unsubscribe(NoteCallback<T_Note>* callback);
-
 private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*
     /// and use a cast based on the NoteId
@@ -58,7 +50,10 @@ private:
     using SubscriberMap = std::unordered_map<uint32_t, CallbackList>;
     SubscriberMap noteId2Subscriber;
     /// True when we are in the publish method (used for error checking)
-    bool isPublishing;
+    bool isPublishing = false;
+
+    template<class T_Note>
+    void unsubscribe(NoteCallback<T_Note>* callback);
 };
 
 #include "notifications/NotificationManager_impl.h"

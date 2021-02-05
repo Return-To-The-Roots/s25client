@@ -26,30 +26,11 @@
 #include <stdexcept>
 #include <utility>
 
-template<class T_Note>
-class NotificationManager::CallbackUnregistrar
-{
-    NotificationManager& noteMgr;
-
-public:
-    explicit CallbackUnregistrar(NotificationManager& noteMgr) : noteMgr(noteMgr) {}
-    void operator()(void* subscription)
-    {
-        if(!subscription)
-            return; // Nothing to do
-        auto* callback = static_cast<NoteCallback<T_Note>*>(subscription);
-        // Check if we are still subscribed
-        if(callback->IsSubscribed())
-            noteMgr.unsubscribe<T_Note>(callback);
-        delete callback;
-    }
-};
-
 struct NotificationManager::NoteCallbackBase
 {
-    NoteCallbackBase() : isSubscribed(true) {}
-    void SetUnsubscribed() { isSubscribed = false; }
-    bool IsSubscribed() const { return isSubscribed; }
+    NoteCallbackBase() noexcept : isSubscribed(true) {}
+    void SetUnsubscribed() noexcept { isSubscribed = false; }
+    bool IsSubscribed() const noexcept { return isSubscribed; }
 
 private:
     /// Used internally to detect unsubscribed callbacks.
@@ -58,22 +39,20 @@ private:
 };
 
 template<class T_Note>
-struct NotificationManager::NoteCallback : NoteCallbackBase
+struct NotificationManager::NoteCallback final : NoteCallbackBase
 {
     using Callback = std::function<void(const T_Note&)>;
-    explicit NoteCallback(Callback callback) : execute(std::move(callback)) {}
+    explicit NoteCallback(Callback callback) noexcept : execute(std::move(callback)) {}
     const Callback execute;
 };
-
-inline NotificationManager::NotificationManager() : isPublishing(false) {}
 
 inline NotificationManager::~NotificationManager()
 {
     RTTR_Assert(!isPublishing);
     // Unsubscribe all callbacks so we don't get accesses to this class after destruction
-    for(auto& itSubscribers : noteId2Subscriber)
-        for(auto& itCallback : itSubscribers.second)
-            static_cast<NoteCallbackBase*>(itCallback)->SetUnsubscribed();
+    for(auto& subscribers : noteId2Subscriber)
+        for(auto& callback : subscribers.second)
+            static_cast<NoteCallbackBase*>(callback)->SetUnsubscribed();
 }
 
 inline void NotificationManager::unsubscribe(Subscription& subscription)
@@ -87,24 +66,30 @@ Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> c
 {
     if(isPublishing)
         throw std::runtime_error("Cannot subscribe during publishing of messages");
+
     auto* subscriber = new NoteCallback<T_Note>(std::move(callback));
     noteId2Subscriber[T_Note::getNoteId()].push_back(subscriber);
-    return Subscription(subscriber, CallbackUnregistrar<T_Note>(*this));
+
+    return Subscription(subscriber, [this](void* subscription) {
+        RTTR_Assert(subscription); // As we use this in a shared_ptr, this can never be nullptr
+        auto* callback = static_cast<NoteCallback<T_Note>*>(subscription);
+        if(callback->IsSubscribed())
+            this->unsubscribe<T_Note>(callback);
+        delete callback;
+    });
 }
 
 template<class T_Note>
 void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback)
 {
-    if(!callback->IsSubscribed())
-        return;
     if(isPublishing)
         throw std::runtime_error("Cannot unsubscribe during publishing of messages");
+
+    RTTR_Assert(callback->IsSubscribed());
     CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
     auto itEl = std::find(callbacks.begin(), callbacks.end(), callback);
-    if(itEl != callbacks.end())
-        callbacks.erase(itEl);
-    else
-        RTTR_Assert(false);
+    RTTR_Assert(itEl != callbacks.end());
+    callbacks.erase(itEl);
     // Set only the flag. Actual deletion of the callback must be handled by the shared_ptr deleter
     callback->SetUnsubscribed();
 }
@@ -113,7 +98,7 @@ template<class T_Note>
 void NotificationManager::publish(const T_Note& notification)
 {
     isPublishing = true;
-    for(auto* it : noteId2Subscriber[T_Note::getNoteId()])
-        static_cast<NoteCallback<T_Note>*>(it)->execute(notification);
+    for(auto* cb : noteId2Subscriber[T_Note::getNoteId()])
+        static_cast<NoteCallback<T_Note>*>(cb)->execute(notification);
     isPublishing = false;
 }
