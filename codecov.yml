@@ -1,8 +1,6 @@
 coverage:
-    range: "65..95"
+    range: "55..95"
     ignore:
         - external/*
-        - tests/legacyFiles/*
-        - tests/mockupDrivers/*
-        - tests/testHelpers/*
+        - tests/*
 comment: false

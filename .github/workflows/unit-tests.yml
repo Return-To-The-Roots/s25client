@@ -125,11 +125,11 @@ jobs:
 
       - run: tools/ci/collectCoverageData.sh && external/libutil/tools/ci/uploadCoverageData.sh
         if: matrix.coverage && success()
+      - run: tools/ci/checkTestCoverage.sh
+        if: matrix.coverage && success()
       - name: Upload coverage (Coveralls)
         if: matrix.coverage && success()
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.info
-      - run: tools/ci/checkTestCoverage.sh
-        if: matrix.coverage && success()
+          path-to-lcov: srccov.info
