@@ -128,3 +128,15 @@ struct WorldFixture
         return result;
     }
 };
+
+class TestWorld : public World
+{
+public:
+    TestWorld() = default;
+    TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { Init(size, lt); }
+    using World::GetNodeInt;
+
+protected:
+    void AltitudeChanged(MapPoint) override {}
+    void VisibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
+};

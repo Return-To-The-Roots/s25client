@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/EnumRange.h"
 #include "world/World.h"
 
 struct PathConditionReachable
@@ -30,9 +29,9 @@ struct PathConditionReachable
     BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
         bool goodTerrainFound = false;
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
         {
-            const TerrainDesc& t = world.GetDescription().get(world.GetRightTerrain(pt, dir));
+            const TerrainDesc& t = world.GetDescription().get(tIdx);
             if(t.Is(ETerrain::Unreachable))
                 return false;
             else if(t.Is(ETerrain::Walkable))
@@ -44,8 +43,9 @@ struct PathConditionReachable
     BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // Check terrain for node transition
-        const TerrainDesc& tLeft = world.GetDescription().get(world.GetLeftTerrain(fromPt, dir));
-        const TerrainDesc& tRight = world.GetDescription().get(world.GetRightTerrain(fromPt, dir));
+        const auto terrains = world.GetTerrain(fromPt, dir);
+        const TerrainDesc& tLeft = world.GetDescription().get(terrains.left);
+        const TerrainDesc& tRight = world.GetDescription().get(terrains.right);
         // Don't go next to danger terrain
         return !tLeft.Is(ETerrain::Unreachable) && !tRight.Is(ETerrain::Unreachable);
     }

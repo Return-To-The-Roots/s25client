@@ -102,7 +102,7 @@ RTTR_ENUM_OUTPUT(GO_Type)
 template<class T>
 std::ostream& operator<<(std::ostream& out, const DescIdx<T>& d)
 {
-    return out << d.value;
+    return out << static_cast<unsigned>(d.value);
 }
 
 inline std::ostream& operator<<(std::ostream& out, const Resource r)

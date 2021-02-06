@@ -275,4 +275,55 @@ BOOST_FIXTURE_TEST_CASE(LoadLua, WorldFixture<UninitializedWorldCreator>)
     BOOST_TEST(world.HasLua());
 }
 
+BOOST_AUTO_TEST_CASE(GetTerrainReturnsCorrectValues)
+{
+    using TerrainIdx = DescIdx<TerrainDesc>;
+    TestWorld world(MapExtent(6, 4));
+    const auto calcT1 = [&world](MapPoint pt) { return TerrainIdx(world.GetIdx(pt) * 2); };
+    const auto calcT2 = [&world](MapPoint pt) { return TerrainIdx(world.GetIdx(pt) * 2 + 1); };
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        auto& node = world.GetNodeInt(pt);
+        node.t1 = calcT1(pt);
+        node.t2 = calcT2(pt);
+    }
+    {
+        const MapPoint testPt(1, 1);
+        // t1 (idx) is the triangle directly below, t2 (idx+1) on right lower
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::SouthEast) == calcT1(testPt));
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::East) == calcT2(testPt));
+        // right lower from previous point
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::SouthWest) == calcT2(MapPoint(0, 1)));
+        // below and right lower from upper point
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::West) == calcT1(MapPoint(1, 0)));
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::NorthWest) == calcT2(MapPoint(1, 0)));
+        // below of the point next to it
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::NorthEast) == calcT1(MapPoint(2, 0)));
+    }
+    {
+        const MapPoint testPt(5, 3); // Last point -> check borders
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::SouthEast) == calcT1(testPt));
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::East) == calcT2(testPt));
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::SouthWest) == calcT2(MapPoint(4, 3)));
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::West) == calcT1(MapPoint(5, 2)));
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::NorthWest) == calcT2(MapPoint(5, 2)));
+        BOOST_TEST(world.GetRightTerrain(testPt, Direction::NorthEast) == calcT1(MapPoint(0, 2)));
+    }
+    // Now assume GetRightTerrain works and only check for consistency:
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_TEST_CONTEXT(pt)
+        {
+            const auto terrains = world.GetTerrainsAround(pt);
+            for(const auto dir : helpers::enumRange<Direction>())
+            {
+                BOOST_TEST(terrains[dir] == world.GetRightTerrain(pt, dir));
+                const auto terrain = world.GetTerrain(pt, dir);
+                BOOST_TEST(terrain.left == terrains[dir - 1u]);
+                BOOST_TEST(terrain.right == terrains[dir]);
+            }
+        }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

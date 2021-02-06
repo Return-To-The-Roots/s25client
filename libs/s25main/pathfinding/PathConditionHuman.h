@@ -32,7 +32,8 @@ struct PathConditionHuman : PathConditionReachable
     BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
         // Node blocked -> Can't go there
-        const BlockingManner bm = world.GetNO(pt)->GetBM();
+        const auto* no = world.GetNode(pt).obj;
+        const BlockingManner bm = no ? no->GetBM() : BlockingManner::None;
         if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
             return false;
         return PathConditionReachable::IsNodeOk(pt);
@@ -47,12 +48,13 @@ struct PathConditionHuman : PathConditionReachable
             return true;
 
         // Check terrain for node transition
-        const TerrainDesc& tLeft = world.GetDescription().get(world.GetLeftTerrain(fromPt, dir));
-        const TerrainDesc& tRight = world.GetDescription().get(world.GetRightTerrain(fromPt, dir));
+        const auto terrains = world.GetTerrain(fromPt, dir);
+        const TerrainDesc& tLeft = world.GetDescription().get(terrains.left);
+        const TerrainDesc& tRight = world.GetDescription().get(terrains.right);
         // Don't go next to danger terrain
         if(tLeft.Is(ETerrain::Unreachable) || tRight.Is(ETerrain::Unreachable))
             return false;
         // If either terrain is walkable, then we can use this transition
-        return (tLeft.Is(ETerrain::Walkable) || tRight.Is(ETerrain::Walkable));
+        return tLeft.Is(ETerrain::Walkable) || tRight.Is(ETerrain::Walkable);
     }
 };

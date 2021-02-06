@@ -253,34 +253,33 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
 {
     // mit zufälliger Richtung anfangen
     const Direction doffset = RANDOM_ENUM(Direction);
+    const WorldDescription& worldDesc = gwg->GetDescription();
 
     for(const auto dir : helpers::enumRange(doffset))
     {
-        DescIdx<TerrainDesc> tLeft = gwg->GetLeftTerrain(pos, dir);
-        DescIdx<TerrainDesc> tRight = gwg->GetRightTerrain(pos, dir);
+        const auto terrains = gwg->GetTerrain(pos, dir);
+        const DescIdx<TerrainDesc> tLeft = terrains.left;
+        const DescIdx<TerrainDesc> tRight = terrains.right;
 
         if(species == Species::Duck)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein
-            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::Water
-               && gwg->GetDescription().get(tRight).kind == TerrainKind::Water)
+            if(worldDesc.get(tLeft).kind == TerrainKind::Water && worldDesc.get(tRight).kind == TerrainKind::Water)
                 return dir;
         } else if(species == Species::PolarBear)
         {
             // Polarbären laufen nur auf Schnee rum
-            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::Snow
-               && gwg->GetDescription().get(tRight).kind == TerrainKind::Snow)
+            if(worldDesc.get(tLeft).kind == TerrainKind::Snow && worldDesc.get(tRight).kind == TerrainKind::Snow)
                 return dir;
         } else
         {
             // Die anderen Tiere dürfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der Wüste!
-            if(!gwg->GetDescription().get(tLeft).IsUsableByAnimals()
-               || !gwg->GetDescription().get(tRight).IsUsableByAnimals())
+            if(!worldDesc.get(tLeft).IsUsableByAnimals() || !worldDesc.get(tRight).IsUsableByAnimals())
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein
-            MapPoint dst = gwg->GetNeighbour(pos, dir);
-            noBase* no = gwg->GetNO(dst);
+            const MapPoint dst = gwg->GetNeighbour(pos, dir);
+            const noBase* no = gwg->GetNO(dst);
 
             if(no->GetType() != NodalObjectType::Nothing && no->GetType() != NodalObjectType::Environment
                && no->GetType() != NodalObjectType::Tree)

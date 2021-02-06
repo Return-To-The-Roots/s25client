@@ -1367,10 +1367,9 @@ void GameWorldGame::PlaceAndFixWater()
         }
 
         uint8_t minHumidity = 100;
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const DescIdx<TerrainDesc> tIdx : GetTerrainsAround(pt))
         {
-            DescIdx<TerrainDesc> t = GetRightTerrain(pt, dir);
-            uint8_t curHumidity = GetDescription().get(t).humidity;
+            const uint8_t curHumidity = GetDescription().get(tIdx).humidity;
             if(curHumidity < minHumidity)
             {
                 minHumidity = curHumidity;
