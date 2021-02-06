@@ -34,7 +34,9 @@ struct PathConditionShip
     BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // We must have shippable water on both sides
-        return world.GetDescription().get(world.GetLeftTerrain(fromPt, dir)).Is(ETerrain::Shippable)
-               && world.GetDescription().get(world.GetRightTerrain(fromPt, dir)).Is(ETerrain::Shippable);
+        const auto terrains = world.GetTerrain(fromPt, dir);
+        const TerrainDesc& tLeft = world.GetDescription().get(terrains.left);
+        const TerrainDesc& tRight = world.GetDescription().get(terrains.right);
+        return tLeft.Is(ETerrain::Shippable) && tRight.Is(ETerrain::Shippable);
     }
 };

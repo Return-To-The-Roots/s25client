@@ -122,9 +122,9 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     {
         bool flagPossible = false;
 
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const DescIdx<TerrainDesc> tIdx : GetTerrainsAround(pt))
         {
-            TerrainBQ bq = GetDescription().get(GetRightTerrain(pt, dir)).GetBQ();
+            const TerrainBQ bq = GetDescription().get(tIdx).GetBQ();
             if(bq == TerrainBQ::Danger)
                 return false;
             else if(bq != TerrainBQ::Nothing)

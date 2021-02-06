@@ -274,10 +274,20 @@ DescIdx<TerrainDesc> World::GetRightTerrain(const MapPoint pt, Direction dir) co
     throw std::logic_error("Invalid direction");
 }
 
-DescIdx<TerrainDesc> World::GetLeftTerrain(const MapPoint pt, Direction dir) const
+WalkTerrain World::GetTerrain(MapPoint pt, Direction dir) const
 {
-    // We can find the left terrain by going a bit more left/counter-clockwise and take the right terrain
-    return GetRightTerrain(pt, dir - 1u);
+    return {GetRightTerrain(pt, dir - 1u), GetRightTerrain(pt, dir)};
+}
+
+helpers::EnumArray<DescIdx<TerrainDesc>, Direction> World::GetTerrainsAround(MapPoint pt) const
+{
+    const MapNode& nwNode = GetNeighbourNode(pt, Direction::NorthWest);
+    const MapNode& neNode = GetNeighbourNode(pt, Direction::NorthEast);
+    const MapNode& curNode = GetNode(pt);
+    const MapNode& wNode = GetNeighbourNode(pt, Direction::West);
+    helpers::EnumArray<DescIdx<TerrainDesc>, Direction> result{nwNode.t1,  nwNode.t2,  neNode.t1,
+                                                               curNode.t2, curNode.t1, wNode.t2};
+    return result;
 }
 
 void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)

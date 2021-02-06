@@ -46,9 +46,9 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     unsigned flag_hits = 0;
 
     const WorldDescription& desc = world.GetDescription();
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
     {
-        TerrainBQ bq = desc.get(world.GetRightTerrain(pt, dir)).GetBQ();
+        TerrainBQ bq = desc.get(tIdx).GetBQ();
         if(bq == TerrainBQ::Castle)
             ++building_hits;
         else if(bq == TerrainBQ::Mine)

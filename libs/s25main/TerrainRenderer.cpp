@@ -941,18 +941,19 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
         // else Mountain left or right is a mountain terrain
         // else Upgraded for Donkey roads
         // else Normal
-        const TerrainDesc& lTerrain = desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir));
         uint8_t gfxRoadType;
+        const auto terrain = gwViewer.GetWorld().GetTerrain(pt, targetDir);
+        const TerrainDesc& lTerrain = desc.get(terrain.left);
         if(type == PointRoad::Boat)
         {
             gfxRoadType = getFlatIndex(lTerrain.landscape, LandRoadType::Boat);
         } else
         {
-            if(lTerrain.kind == TerrainKind::Mountain)
+            if(desc.get(terrain.left).kind == TerrainKind::Mountain)
                 gfxRoadType = getFlatIndex(lTerrain.landscape, LandRoadType::Mountain);
             else
             {
-                const TerrainDesc& rTerrain = desc.get(gwViewer.GetWorld().GetRightTerrain(pt, targetDir));
+                const TerrainDesc& rTerrain = desc.get(terrain.right);
                 if(rTerrain.kind == TerrainKind::Mountain)
                     gfxRoadType = getFlatIndex(rTerrain.landscape, LandRoadType::Mountain);
                 else

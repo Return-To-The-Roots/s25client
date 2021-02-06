@@ -38,6 +38,11 @@ class noBase;
 class noBuildingSite;
 enum class ShipDirection : uint8_t;
 
+struct WalkTerrain
+{
+    DescIdx<TerrainDesc> left, right;
+};
+
 /// Base class representing the world itself, no algorithms, handlers etc!
 class World : public MapBase
 {
@@ -153,8 +158,10 @@ public:
     /// Return the terrain to the right when walking from the point in the given direction
     /// 0 = left upper triangle, 1 = triangle above, ..., 4 = triangle below
     DescIdx<TerrainDesc> GetRightTerrain(MapPoint pt, Direction dir) const;
-    /// Return the terrain to the left when walking from the point in the given direction
-    DescIdx<TerrainDesc> GetLeftTerrain(MapPoint pt, Direction dir) const;
+    /// Get left and right terrain from the point in the given direction
+    WalkTerrain GetTerrain(MapPoint pt, Direction dir) const;
+    helpers::EnumArray<DescIdx<TerrainDesc>, Direction> GetTerrainsAround(MapPoint pt) const;
+
     /// Create the FOW-objects, -streets, etc for a point and player
     void SaveFOWNode(MapPoint pt, unsigned player, unsigned curTime);
     unsigned GetNumSeas() const { return seas.size(); }
@@ -270,10 +277,9 @@ template<class T_Predicate>
 inline bool World::IsOfTerrain(const MapPoint pt, T_Predicate predicate) const
 {
     // NOTE: This is '!HasTerrain(pt, !predicate)'
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const DescIdx<TerrainDesc> tIdx : GetTerrainsAround(pt))
     {
-        DescIdx<TerrainDesc> t = GetRightTerrain(pt, dir);
-        if(!predicate(GetDescription().get(t)))
+        if(!predicate(GetDescription().get(tIdx)))
             return false;
     }
     return true;
@@ -282,10 +288,9 @@ inline bool World::IsOfTerrain(const MapPoint pt, T_Predicate predicate) const
 template<class T_Predicate>
 inline bool World::HasTerrain(const MapPoint pt, T_Predicate predicate) const
 {
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const DescIdx<TerrainDesc> tIdx : GetTerrainsAround(pt))
     {
-        DescIdx<TerrainDesc> t = GetRightTerrain(pt, dir);
-        if(predicate(GetDescription().get(t)))
+        if(predicate(GetDescription().get(tIdx)))
             return true;
     }
     return false;
