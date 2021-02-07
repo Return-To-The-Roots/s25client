@@ -19,8 +19,8 @@
 
 #include "notifications/Subscription.h"
 #include <functional>
+#include <list>
 #include <unordered_map>
-#include <vector>
 
 class NotificationManager
 {
@@ -36,9 +36,9 @@ public:
     /// Subscribe to a specific notification.
     /// Unsubscribes when the subscription has no references left
     template<class T_Note>
-    Subscription subscribe(std::function<void(const T_Note&)> callback);
+    Subscription subscribe(std::function<void(const T_Note&)> callback) noexcept;
     /// Manually unsubscribes the callback
-    static void unsubscribe(Subscription& subscription);
+    static void unsubscribe(Subscription& subscription) noexcept;
     /// Call the registred callbacks for the note
     template<class T_Note>
     void publish(const T_Note& notification);
@@ -46,14 +46,13 @@ public:
 private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*
     /// and use a cast based on the NoteId
-    using CallbackList = std::vector<void*>;
-    using SubscriberMap = std::unordered_map<uint32_t, CallbackList>;
-    SubscriberMap noteId2Subscriber;
-    /// True when we are in the publish method (used for error checking)
-    bool isPublishing = false;
+    using CallbackList = std::list<void*>;
+    std::unordered_map<uint32_t, CallbackList> noteId2Subscriber;
+    /// >0 when we are in the publish method
+    unsigned isPublishing = 0;
 
     template<class T_Note>
-    void unsubscribe(NoteCallback<T_Note>* callback);
+    void unsubscribe(NoteCallback<T_Note>* callback) noexcept;
 };
 
 #include "notifications/NotificationManager_impl.h"

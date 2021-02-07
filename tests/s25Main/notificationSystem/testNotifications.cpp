@@ -82,6 +82,26 @@ BOOST_AUTO_TEST_CASE(SubscribeAndNotify)
     BOOST_TEST(notes3[0].value == 42);
 }
 
+BOOST_AUTO_TEST_CASE(PublishBeforeSubscribe)
+{
+    NotificationManager mgr;
+    // No-Ops
+    mgr.publish(StringNote{"Test"});
+    mgr.publish(IntNote{42});
+
+    std::string lastString;
+    const auto sub1 = mgr.subscribe<StringNote>([&lastString](const StringNote& note) { lastString = note.value; });
+    mgr.publish(IntNote{42}); // No-Op
+    BOOST_TEST(lastString.empty());
+
+    int lastValue = 0;
+    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) { lastValue = note.value; });
+    mgr.publish(StringNote{"Test"});
+    mgr.publish(IntNote{42});
+    BOOST_TEST(lastString == "Test");
+    BOOST_TEST(lastValue == 42);
+}
+
 BOOST_AUTO_TEST_CASE(Unsubscribe)
 {
     NotificationManager mgr;
@@ -120,19 +140,88 @@ BOOST_AUTO_TEST_CASE(DestroyManager)
     // But we shall not crash when subscription goes out of scope
 }
 
-BOOST_AUTO_TEST_CASE(SubscribeOrUnsubscribeDuringPublish)
+BOOST_AUTO_TEST_CASE(SubscribeDuringPublish)
 {
     NotificationManager mgr;
-    // Changing the state of the NotificationManager during publish is not possible (ATM)
     {
-        const auto sub = mgr.subscribe<IntNote>([&mgr](const IntNote&) { mgr.subscribe<IntNote>({}); });
-        BOOST_CHECK_THROW(mgr.publish(IntNote{}), std::runtime_error);
+        // Subscribe next callback
+        Subscription sub2, sub3;
+        int called1 = 0, called2 = 0;
+        std::string called3;
+        const auto sub = mgr.subscribe<IntNote>([&](const IntNote&) {
+            if(called1++ == 0)
+                sub2 = mgr.subscribe<IntNote>([&](const IntNote&) {
+                    if(called2++ == 0)
+                        sub3 = mgr.subscribe<StringNote>([&](const StringNote&) { called3 = "1"; });
+                });
+        });
+        mgr.publish(IntNote{});
+        BOOST_TEST(sub2);
+        BOOST_TEST(sub3);
+        BOOST_TEST(called1 == 1);
+        BOOST_TEST(called2 == 1);
+        mgr.publish(IntNote{});
+        BOOST_TEST(called1 == 2);
+        BOOST_TEST(called2 == 2);
+        BOOST_TEST(called3.empty());
+        mgr.publish(StringNote{});
+        BOOST_TEST(called3 == "1");
     }
+}
+BOOST_AUTO_TEST_CASE(UnsubscribeDuringPublish)
+{
+    NotificationManager mgr;
     {
         Subscription sub;
-        sub = mgr.subscribe<IntNote>([&mgr, &sub](const IntNote&) { mgr.unsubscribe(sub); });
-        BOOST_CHECK_THROW(mgr.publish(IntNote{}), std::runtime_error);
+        int called = 0;
+        sub = mgr.subscribe<IntNote>([&](const IntNote&) {
+            called++;
+            // Unsubscribe self
+            mgr.unsubscribe(sub);
+        });
+        mgr.publish(IntNote{});
+        BOOST_TEST(!sub);
+        BOOST_TEST(called == 1);
+        mgr.publish(IntNote{});
+        BOOST_TEST(called == 1);
     }
+    {
+        // Unsubscribe later callback on 2nd call
+        Subscription sub1, sub2;
+        int called1 = 0, called2 = 0;
+        sub1 = mgr.subscribe<IntNote>([&](const IntNote&) {
+            if(called1++)
+                mgr.unsubscribe(sub2);
+        });
+        sub2 = mgr.subscribe<IntNote>([&](const IntNote&) { called2++; });
+        mgr.publish(IntNote{});
+        BOOST_TEST(called1 == 1);
+        BOOST_TEST(called2 == 1);
+        mgr.publish(IntNote{});
+        BOOST_TEST(!sub2);
+        BOOST_TEST(called1 == 2);
+        BOOST_TEST(called2 == 1);
+        mgr.publish(IntNote{});
+        BOOST_TEST(called1 == 3);
+        BOOST_TEST(called2 == 1);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(PublishDuringPublish)
+{
+    NotificationManager mgr;
+    std::string lastString;
+    int lastValue = 0;
+
+    const auto sub1 = mgr.subscribe<StringNote>([&](const StringNote& note) {
+        lastString = note.value;
+        mgr.publish(IntNote{42});
+    });
+    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) { lastValue = note.value; });
+
+    mgr.publish(StringNote{"Test"});
+    BOOST_TEST(lastString == "Test");
+    BOOST_TEST(lastValue == 42);
 }
 
 BOOST_AUTO_TEST_CASE(SendAndReceiveAcrossTranslationUnits)
