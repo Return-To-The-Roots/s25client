@@ -173,8 +173,13 @@ BOOST_AUTO_TEST_CASE(MultiRegularBitmap)
                     expectedColor = color;
             }
         }
-        BOOST_TEST_INFO("Position" << pt);
-        BOOST_TEST(buffer.get(pt.x, pt.y) == expectedColor);
+        if(buffer.get(pt.x, pt.y) != expectedColor)
+        {
+            // LCOV_EXCL_START
+            BOOST_TEST_INFO("Position" << pt);
+            BOOST_TEST(buffer.get(pt.x, pt.y) != expectedColor);
+            // LCOV_EXCL_STOP
+        }
     }
 }
 
@@ -209,8 +214,13 @@ BOOST_AUTO_TEST_CASE(PlayerBitmap)
             } else if(bmpPos.x < bmp->getWidth())
                 expectedColor = bmp->getPixel(bmpPos.x, bmpPos.y);
         }
-        BOOST_TEST_INFO("Position" << pt);
-        BOOST_TEST(buffer.get(pt.x, pt.y) == expectedColor);
+        if(buffer.get(pt.x, pt.y) != expectedColor)
+        {
+            // LCOV_EXCL_START
+            BOOST_TEST_INFO("Position" << pt);
+            BOOST_TEST(buffer.get(pt.x, pt.y) != expectedColor);
+            // LCOV_EXCL_STOP
+        }
     }
 }
 
@@ -271,8 +281,13 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
                     expectedColor = pal->get(bmp->getPlayerColorIdx(bmpPos.x, bmpPos.y) + 128);
             }
         }
-        BOOST_TEST_INFO("Position" << pt);
-        BOOST_TEST_REQUIRE(buffer.get(pt.x, pt.y) == expectedColor);
+        if(buffer.get(pt.x, pt.y) != expectedColor)
+        {
+            // LCOV_EXCL_START
+            BOOST_TEST_INFO("Position" << pt);
+            BOOST_TEST(buffer.get(pt.x, pt.y) != expectedColor);
+            // LCOV_EXCL_STOP
+        }
     }
 }
 
