@@ -50,23 +50,23 @@ inline NotificationManager::~NotificationManager()
 {
     RTTR_Assert(!isPublishing);
     // Unsubscribe all callbacks so we don't get accesses to this class after destruction
-    for(auto& subscribers : noteId2Subscriber)
-        for(auto& callback : subscribers.second)
-            static_cast<NoteCallbackBase*>(callback)->SetUnsubscribed();
+    for(const auto& subscribers : noteId2Subscriber)
+        for(void* callback : subscribers.second)
+        {
+            if(callback)
+                static_cast<NoteCallbackBase*>(callback)->SetUnsubscribed();
+        }
 }
 
-inline void NotificationManager::unsubscribe(Subscription& subscription)
+inline void NotificationManager::unsubscribe(Subscription& subscription) noexcept
 {
     // We can simply call reset as this calls the deleter which releases the subscription
     subscription.reset();
 }
 
 template<class T_Note>
-Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> callback)
+Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> callback) noexcept
 {
-    if(isPublishing)
-        throw std::runtime_error("Cannot subscribe during publishing of messages");
-
     auto* subscriber = new NoteCallback<T_Note>(std::move(callback));
     noteId2Subscriber[T_Note::getNoteId()].push_back(subscriber);
 
@@ -80,16 +80,17 @@ Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> c
 }
 
 template<class T_Note>
-void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback)
+void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback) noexcept
 {
-    if(isPublishing)
-        throw std::runtime_error("Cannot unsubscribe during publishing of messages");
-
     RTTR_Assert(callback->IsSubscribed());
     CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
     auto itEl = std::find(callbacks.begin(), callbacks.end(), callback);
     RTTR_Assert(itEl != callbacks.end());
-    callbacks.erase(itEl);
+    // We can't modify the list while iterating over it
+    if(isPublishing)
+        *itEl = nullptr;
+    else
+        callbacks.erase(itEl);
     // Set only the flag. Actual deletion of the callback must be handled by the shared_ptr deleter
     callback->SetUnsubscribed();
 }
@@ -97,8 +98,25 @@ void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback)
 template<class T_Note>
 void NotificationManager::publish(const T_Note& notification)
 {
-    isPublishing = true;
-    for(auto* cb : noteId2Subscriber[T_Note::getNoteId()])
-        static_cast<NoteCallback<T_Note>*>(cb)->execute(notification);
-    isPublishing = false;
+    ++isPublishing;
+    try
+    {
+        CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
+        for(auto it = callbacks.begin(); it != callbacks.end();)
+        {
+            if(*it)
+            {
+                static_cast<NoteCallback<T_Note>*>(*it)->execute(notification);
+                ++it;
+            } else
+                it = callbacks.erase(it);
+        }
+        RTTR_Assert(isPublishing);
+        --isPublishing;
+    } catch(...)
+    {
+        RTTR_Assert(isPublishing);
+        --isPublishing;
+        throw;
+    }
 }
