@@ -22,6 +22,12 @@
 #include <array>
 #include <stdexcept>
 
+// This was added to Boost 1.71 only
+#ifdef BOOST_MSVC
+#    undef BOOST_UNREACHABLE_RETURN
+#    define BOOST_UNREACHABLE_RETURN(x) __assume(0);
+#endif
+
 Position GetNeighbour(const Position& p, const Direction dir)
 {
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
