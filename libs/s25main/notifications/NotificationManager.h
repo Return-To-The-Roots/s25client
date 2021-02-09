@@ -18,11 +18,9 @@
 #pragma once
 
 #include "notifications/Subscription.h"
-#include <boost/container/flat_map.hpp>
-#include <boost/container/small_vector.hpp>
 #include <deque>
 #include <functional>
-#include <memory>
+#include <unordered_map>
 
 class NotificationManager
 {
@@ -49,20 +47,7 @@ private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*
     /// and use a cast based on the NoteId
     using CallbackList = std::deque<void*>;
-    // This class makes sure we have a stable adress for CallbackList and the ptr is always non-NULL
-    class CallbackListPtr
-    {
-        std::unique_ptr<CallbackList> ptr;
-
-    public:
-        CallbackListPtr() noexcept : ptr(std::make_unique<CallbackList>()) {}
-        CallbackList& operator*() noexcept { return *ptr; }
-        const CallbackList& operator*() const noexcept { return *ptr; }
-        CallbackList* operator->() noexcept { return ptr.get(); }
-        const CallbackList* operator->() const noexcept { return ptr.get(); }
-    };
-    using StorageType = boost::container::small_vector<std::pair<uint32_t, CallbackListPtr>, 16>;
-    boost::container::flat_map<uint32_t, CallbackListPtr, std::less<uint32_t>, StorageType> noteId2Subscriber;
+    std::unordered_map<uint32_t, CallbackList> noteId2Subscriber;
     /// >0 when we are in the publish method
     unsigned isPublishing = 0;
 
