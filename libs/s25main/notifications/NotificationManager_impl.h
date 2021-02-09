@@ -101,6 +101,10 @@ void NotificationManager::publish(const T_Note& notification)
     ++isPublishing;
     try
     {
+        // Note: We have to support subscribe and unsubscribe during the execute call.
+        // - noteId2Subscriber must have elements with stable adresses even on insertion (subscribe)
+        // - CallbackList must not invalidate any iterator on insert
+        // - Since erase usually invalidates iterators unsubscribe only clears the pointer which we have to handle here
         CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
         for(auto it = callbacks.begin(); it != callbacks.end();)
         {
