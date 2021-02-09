@@ -51,7 +51,7 @@ inline NotificationManager::~NotificationManager()
     RTTR_Assert(!isPublishing);
     // Unsubscribe all callbacks so we don't get accesses to this class after destruction
     for(const auto& subscribers : noteId2Subscriber)
-        for(void* callback : *subscribers.second)
+        for(void* callback : subscribers.second)
         {
             if(callback)
                 static_cast<NoteCallbackBase*>(callback)->SetUnsubscribed();
@@ -68,7 +68,7 @@ template<class T_Note>
 Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> callback) noexcept
 {
     auto* subscriber = new NoteCallback<T_Note>(std::move(callback));
-    noteId2Subscriber[T_Note::getNoteId()]->push_back(subscriber);
+    noteId2Subscriber[T_Note::getNoteId()].push_back(subscriber);
 
     return Subscription(subscriber, [this](void* subscription) {
         RTTR_Assert(subscription); // As we use this in a shared_ptr, this can never be nullptr
@@ -83,7 +83,7 @@ template<class T_Note>
 void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback) noexcept
 {
     RTTR_Assert(callback->IsSubscribed());
-    CallbackList& callbacks = *noteId2Subscriber[T_Note::getNoteId()];
+    CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
     auto itEl = std::find(callbacks.begin(), callbacks.end(), callback);
     RTTR_Assert(itEl != callbacks.end());
     // We can't modify the list while iterating over it
@@ -105,7 +105,7 @@ void NotificationManager::publish(const T_Note& notification)
         // - noteId2Subscriber must have elements with stable adresses even on insertion (subscribe)
         // - CallbackList must not invalidate any iterator on insert
         // - Since erase usually invalidates iterators unsubscribe only clears the pointer which we have to handle here
-        CallbackList& callbacks = *noteId2Subscriber[T_Note::getNoteId()];
+        CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
         for(auto it = callbacks.begin(); it != callbacks.end();)
         {
             if(*it)
