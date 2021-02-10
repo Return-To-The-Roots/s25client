@@ -150,10 +150,16 @@ BOOST_AUTO_TEST_CASE(SubscribeDuringPublish)
         std::string called3;
         const auto sub = mgr.subscribe<IntNote>([&](const IntNote&) {
             if(called1++ == 0)
+            {
+                BOOST_TEST_CHECKPOINT("Triggered 1st callback, subscribing 2nd");
                 sub2 = mgr.subscribe<IntNote>([&](const IntNote&) {
                     if(called2++ == 0)
+                    {
+                        BOOST_TEST_CHECKPOINT("Triggered 2nd callback, subscribing 3rd");
                         sub3 = mgr.subscribe<StringNote>([&](const StringNote&) { called3 = "1"; });
+                    }
                 });
+            }
         });
         mgr.publish(IntNote{});
         BOOST_TEST(sub2);
