@@ -47,9 +47,13 @@ private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*
     /// and use a cast based on the NoteId
     using CallbackList = std::deque<void*>;
-    std::unordered_map<uint32_t, CallbackList> noteId2Subscriber;
-    /// >0 when we are in the publish method
-    unsigned isPublishing = 0;
+    struct Subscribers
+    {
+        CallbackList callbacks;
+        /// >0 when we are in the publish method
+        unsigned isPublishing = 0;
+    };
+    std::unordered_map<uint32_t, Subscribers> noteId2Subscriber;
 
     template<class T_Note>
     void unsubscribe(NoteCallback<T_Note>* callback) noexcept;
