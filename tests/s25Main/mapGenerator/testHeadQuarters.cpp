@@ -123,6 +123,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_for_player)
 
     std::vector<MapPoint> area{hq};
     BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, area, MountainDistance::Normal));
+    BOOST_TEST_REQUIRE(map.hqPositions.size() == 1u);
+    BOOST_TEST(map.hqPositions[0] == hq);
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_without_mountain)
@@ -137,6 +139,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_without_mountain)
     map.textures.Resize(size, TexturePair(buildable));
     std::vector<MapPoint> area{hq};
     BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, area, mntDist));
+    BOOST_TEST_REQUIRE(map.hqPositions.size() == 1u);
+    BOOST_TEST(map.hqPositions[0] == hq);
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
@@ -155,7 +159,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
     std::vector<MapPoint> area{hq};
 
     PlaceHeadquarter(map, area, mntDist);
-
+    BOOST_TEST_REQUIRE(map.hqPositions.size() == 1u);
     BOOST_TEST(map.hqPositions[0] == hq);
 }
 
@@ -203,7 +207,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_places_hqs_for_any_player_number_on_suita
 {
     const MapExtent size(28, 32);
     RandomUtility rnd(0);
-    const int players = rttr::test::randomValue(1, 8);
+    const unsigned players = rttr::test::randomValue(1u, 8u);
     Map map = createMap(size, players);
     const TextureMap& textures = map.textureMap;
 
@@ -211,7 +215,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_places_hqs_for_any_player_number_on_suita
     map.textures.Resize(size, textures.Find(IsBuildableLand));
     map.textures[MapPoint(0, 0)] = TexturePair(textures.Find(IsWater));
     PlaceHeadquarters(map, rnd, players, mntDist);
-    for(int index = 0; index < players - 1; index++)
+    BOOST_TEST_REQUIRE(map.hqPositions.size() == players);
+    for(unsigned index = 0; index < players; index++)
     {
         BOOST_TEST_REQUIRE(map.hqPositions[index].isValid());
     }
