@@ -27,7 +27,6 @@
 #include "lua/GameDataLoader.h"
 #include "libsiedler2/libsiedler2.h"
 
-#include <iostream>
 #include <stdexcept>
 
 namespace rttr { namespace mapGenerator {
@@ -36,114 +35,92 @@ namespace rttr { namespace mapGenerator {
     {
         const unsigned combinedSize = size.x + size.y;
         if(combinedSize <= 128)
-        {
             return 32;
-        }
-        if(combinedSize <= 256)
-        {
+        else if(combinedSize <= 256)
             return 64;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 512)
             return 128;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 1024)
             return 150;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 2048)
             return 200;
-        }
-        return 60;
+        else
+            return 60;
     }
 
     unsigned GetCoastline(const MapExtent& size)
     {
         const unsigned combinedSize = size.x + size.y;
         if(combinedSize <= 256)
-        {
             return 1;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 1024)
             return 2;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 2048)
             return 3;
-        }
-        return 4;
+        else
+            return 4;
     }
 
     unsigned GetIslandRadius(const MapExtent& size)
     {
         const unsigned combinedSize = size.x + size.y;
         if(combinedSize <= 256)
-        {
             return 2;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 512)
             return 3;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 1024)
             return 4;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 2048)
             return 5;
-        }
-        return 6;
+        else
+            return 6;
+    }
+
+    unsigned GetIslandSize(const MapExtent& size)
+    {
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 64 * 64)
+            return 200;
+        else if(combinedSize <= 128 * 128)
+            return 800;
+        else if(combinedSize <= 256 * 256)
+            return 1000;
+        else if(combinedSize <= 512 * 512)
+            return 1100;
+        else
+            return 1200;
     }
 
     unsigned GetSmoothRadius(const MapExtent& size)
     {
         const unsigned combinedSize = size.x + size.y;
         if(combinedSize <= 256)
-        {
             return 2;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 512)
             return 3;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 1024)
             return 4;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 2048)
             return 6;
-        }
-        return 7;
+        else
+            return 7;
     }
 
     unsigned GetSmoothIterations(const MapExtent& size)
     {
         const unsigned combinedSize = size.x + size.y;
         if(combinedSize <= 128)
-        {
             return 10;
-        }
-        if(combinedSize <= 256)
-        {
+        else if(combinedSize <= 256)
             return 11;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 512)
             return 9;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 1024)
             return 11;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 2048)
             return 15;
-        }
-        return 13;
+        else
+            return 13;
     }
 
     void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range)
@@ -199,6 +176,20 @@ namespace rttr { namespace mapGenerator {
         return rivers;
     }
 
+    void RandomMap::CreateFreeIslands(unsigned waterNodes)
+    {
+        const auto islandRadius = GetIslandRadius(map_.size);
+        const auto islandAmount = static_cast<double>(settings_.islands) / 100;
+        auto islandNodes = static_cast<unsigned>(islandAmount * waterNodes);
+        auto islandSize = rnd_.RandomValue(200u, GetIslandSize(map_.size));
+        while(islandNodes > islandSize)
+        {
+            islandNodes -= islandSize;
+            CreateIsland(map_, rnd_, islandSize, islandRadius, .2);
+            islandSize = rnd_.RandomValue(200u, GetIslandSize(map_.size));
+        }
+    }
+
     void RandomMap::CreateMixedMap()
     {
         const auto center = rnd_.Point(map_.size);
@@ -219,6 +210,8 @@ namespace rttr { namespace mapGenerator {
 
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
         const auto rivers = CreateRivers(center);
+
+        CreateFreeIslands(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
@@ -251,16 +244,19 @@ namespace rttr { namespace mapGenerator {
         const auto waterNodes = std::count(map_.z.begin(), map_.z.end(), map_.height.minimum);
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
-        const auto islandNodes = static_cast<unsigned>(.5 * waterNodes);
-        const unsigned nodesPerIsland = islandNodes / 8;
+        const auto islandSize = GetIslandSize(map_.size);
         const auto islandRadius = GetIslandRadius(map_.size);
-        const auto distanceToLand = islandRadius;
 
         std::vector<Island> islands(map_.players);
 
         for(unsigned i = 0; i < map_.players; i++)
         {
-            islands[i] = CreateIsland(map_, rnd_, distanceToLand, nodesPerIsland, islandRadius, .2);
+            islands[i] = CreateIsland(map_, rnd_, islandSize, islandRadius, .2);
+        }
+
+        if(waterNodes > map_.players * islandSize)
+        {
+            CreateFreeIslands(waterNodes - map_.players * islandSize);
         }
 
         const auto rivers = CreateRivers(center);

@@ -29,15 +29,13 @@ namespace rttr { namespace mapGenerator {
      *
      * @param map reference to the map to place the island on (manipulates textures and z-values of the map)
      * @param rnd random number generator
-     * @param distanceToLand minimum distance of the island to land textures
      * @param size number of nodes the island should cover (in case there's not sufficient water the island will be
      * smaller)
-     * @param radius radius of the brush to paint the island with
+     * @param minLandDist minimum distance of the island to land textures
      * @param mountainCoverage preferred mountain coverage for the island in percentage (between 0 and 1)
      *
      * @returns a vector of nodes the new island covers.
      */
-    Island CreateIsland(Map& map, RandomUtility& rnd, unsigned distanceToLand, unsigned size, unsigned radius,
-                        double mountainCoverage);
+    Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage);
 
 }} // namespace rttr::mapGenerator

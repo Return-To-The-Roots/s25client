@@ -40,6 +40,14 @@ namespace rttr { namespace mapGenerator {
     };
     constexpr auto maxEnumValue(MountainDistance) { return MountainDistance::VeryFar; }
 
+    enum class IslandAmount : uint8_t
+    {
+        Few = 0,
+        Normal = 10,
+        Many = 30
+    };
+    constexpr auto maxEnumValue(IslandAmount) { return IslandAmount::Many; }
+
     struct MapSettings
     {
         void MakeValid();
@@ -54,6 +62,7 @@ namespace rttr { namespace mapGenerator {
         unsigned short rivers = 15;
         unsigned short trees = 40;
         unsigned short stonePiles = 5;
+        IslandAmount islands = IslandAmount::Few;
         MountainDistance mountainDistance = MountainDistance::Normal;
         DescIdx<LandscapeDesc> type = DescIdx<LandscapeDesc>(0);
         MapStyle style = MapStyle::Mixed;
