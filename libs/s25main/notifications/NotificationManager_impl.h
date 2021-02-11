@@ -112,7 +112,7 @@ void NotificationManager::publish(const T_Note& notification)
         // - Since erase usually invalidates iterators unsubscribe only clears the pointer which we have to handle here
         CallbackList& callbacks = subs.callbacks;
         bool hasEmpty = false;
-        for(unsigned i = 0; i < callbacks.size(); ++i)
+        for(unsigned i = 0; i < callbacks.size(); ++i) // NOLINT(modernize-loop-convert)
         {
             auto* cb = static_cast<NoteCallback<T_Note>*>(callbacks[i]);
             if(cb)
