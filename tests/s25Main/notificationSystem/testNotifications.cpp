@@ -253,4 +253,23 @@ BOOST_AUTO_TEST_CASE(SendAndReceiveAcrossTranslationUnits)
     BOOST_TEST(getLastTestNote2() == 7331);
 }
 
+BOOST_AUTO_TEST_CASE(ThrowDuringPublish)
+{
+    NotificationManager mgr;
+    int called1 = 0, called2 = 0;
+    Subscription sub1 = mgr.subscribe<IntNote>([&](const IntNote&) {
+        if(called1++ == 0)
+            throw std::runtime_error("Something went wrong");
+    });
+    Subscription sub2 = mgr.subscribe<IntNote>([&](const IntNote&) { called2++; });
+    // First publish throws, 2nd note is not called
+    BOOST_CHECK_THROW(mgr.publish(IntNote{}), std::runtime_error);
+    BOOST_TEST(called1 == 1);
+    BOOST_TEST(called2 == 0);
+    // 2nd publish does not and hence both counters are increased
+    mgr.publish(IntNote{});
+    BOOST_TEST(called1 == 2);
+    BOOST_TEST(called2 == 1);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
