@@ -84,7 +84,7 @@ void nofAttacker::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushObject(attacked_goal);
         sgd.PushBool(mayBeHunted);
-        sgd.PushContainer(canPlayerSendAggDefender);
+        helpers::pushContainer(sgd, canPlayerSendAggDefender);
         sgd.PushObject(huntingDefender, true);
         sgd.PushUnsignedShort(radius);
 

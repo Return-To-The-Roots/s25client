@@ -198,7 +198,7 @@ std::unique_ptr<FOWObject> SerializedGameData::Create_FOWObject(const FoW_Type f
 }
 
 SerializedGameData::SerializedGameData()
-    : debugMode(false), gameDataVersion(0), expectedNumObjects(0), em(nullptr), writeEm(nullptr), isReading(false)
+    : debugMode(false), expectedNumObjects(0), em(nullptr), writeEm(nullptr), isReading(false)
 {}
 
 void SerializedGameData::Prepare(bool reading)

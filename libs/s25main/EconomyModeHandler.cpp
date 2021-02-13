@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "EconomyModeHandler.h"
-
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
@@ -24,6 +23,7 @@
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
 #include "helpers/make_array.h"
+#include "helpers/serializeContainers.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldGame.h"
@@ -95,10 +95,10 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
 EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
     : GameObject(sgd, objId), endFrame(sgd.PopUnsignedInt()), gfLastUpdated(0)
 {
-    sgd.PopContainer(goodsToCollect);
+    helpers::popContainer(sgd, goodsToCollect);
 
     std::vector<unsigned> teamBitMasks;
-    sgd.PopContainer(teamBitMasks);
+    helpers::popContainer(sgd, teamBitMasks);
     for(auto& teamMask : teamBitMasks)
     {
         economyModeTeams.emplace_back(teamMask, goodsToCollect.size());
@@ -114,13 +114,13 @@ void EconomyModeHandler::Destroy() {}
 void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(endFrame);
-    sgd.PushContainer(goodsToCollect);
+    helpers::pushContainer(sgd, goodsToCollect);
     std::vector<unsigned> teamBitMasks;
     for(const EconomyModeHandler::EconTeam& curTeam : economyModeTeams)
     {
         teamBitMasks.push_back(curTeam.playersInTeam.to_ulong());
     }
-    sgd.PushContainer(teamBitMasks);
+    helpers::pushContainer(sgd, teamBitMasks);
 }
 
 void EconomyModeHandler::DetermineTeams()
