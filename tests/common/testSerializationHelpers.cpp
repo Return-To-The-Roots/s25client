@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(SerializeResizableIgnoringSize)
     BOOST_TEST(outIntArray == intArray, per_element());
     BOOST_TEST(outU8Array == u8Array, per_element());
     BOOST_TEST(outBoolArray == boolArray, per_element());
-};
+}
 
 BOOST_AUTO_TEST_CASE(SerializePoints)
 {
@@ -169,6 +169,6 @@ BOOST_AUTO_TEST_CASE(SerializePoints)
     BOOST_TEST_REQUIRE(helpers::popPoint<decltype(pt2)>(ser) == pt2);
     BOOST_TEST_REQUIRE(helpers::popPoint<decltype(pt3)>(ser) == pt3);
     BOOST_TEST_REQUIRE(helpers::popPoint<decltype(pt4)>(ser) == pt4);
-};
+}
 
 BOOST_AUTO_TEST_SUITE_END()

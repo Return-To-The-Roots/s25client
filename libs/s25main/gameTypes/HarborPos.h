@@ -24,11 +24,6 @@
 
 struct HarborPos
 {
-    MapPoint pos;
-
-    /// Seas at the neighbor points in each direction
-    helpers::EnumArray<uint16_t, Direction> seaIds;
-
     struct Neighbor
     {
         unsigned id;
@@ -42,6 +37,9 @@ struct HarborPos
         }
     };
 
+    MapPoint pos;
+    /// Seas at the neighbor points in each direction
+    helpers::EnumArray<uint16_t, Direction> seaIds = {};
     helpers::EnumArray<std::vector<Neighbor>, ShipDirection> neighbors;
 
     explicit HarborPos(const MapPoint pt) noexcept : pos(pt) {}

@@ -31,7 +31,7 @@ void pushPoint(Serializer& ser, Point<T> pt)
 }
 
 template<typename PointT>
-PointT popPoint(Serializer& ser)
+auto popPoint(Serializer& ser)
 {
     using ElementType = typename PointT::ElementType;
     std::remove_const_t<PointT> pt;

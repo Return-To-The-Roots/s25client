@@ -85,7 +85,7 @@ namespace detail {
     {
         static constexpr bool is1D = sizeof...(T_ns) == 0;
         using reference = MultiArrayRef<T, T_ns...>;
-        using const_reference = const MultiArrayRef<T, T_ns...>;
+        using const_reference = MultiArrayRef<const T, T_ns...>;
         static constexpr size_t stride = product(T_ns...);
 
         T* elems;
