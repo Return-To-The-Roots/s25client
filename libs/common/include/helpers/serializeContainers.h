@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "GetInsertIterator.hpp"
-#include "ReserveElements.hpp"
 #include "serializeEnums.h"
 #include "s25util/Serializer.h"
 #include <type_traits>
@@ -62,72 +60,54 @@ namespace detail {
         ser.PushRawData(container.data(), container.size());
     }
 
-    template<typename T, bool RequireConversion, bool IsResizeable = isResizableContainer<T>::value, class = void>
-    struct PopContainer
-    {
-        static void pop(Serializer& ser, T& container)
-        {
-            using Type = typename T::value_type;
-            container.clear();
-            const unsigned size = ser.PopVarSize();
-            helpers::ReserveElements<T>::reserve(container, size);
-            auto it = helpers::GetInsertIterator<T>::get(container);
-            for(unsigned i = 0; i < size; ++i)
-            {
-                *it = popEnumOrIntegral<Type>(ser);
-            }
-        }
-    };
+    // If the container is resizable, pop the size and resize it
     template<typename T>
-    struct PopContainer<T, false, true, std::enable_if_t<std::is_pointer<decltype(std::declval<T>().data())>::value>>
+    std::enable_if_t<isResizableContainer<T>::value> maybePopSizeAndResize(Serializer& ser, T& container)
     {
-        static void pop(Serializer& ser, T& container)
-        {
-            container.clear();
-            container.resize(ser.PopVarSize());
-            ser.PopRawData(container.data(), container.size());
-        }
-    };
+        container.resize(ser.PopVarSize());
+    }
+    template<typename T>
+    std::enable_if_t<!isResizableContainer<T>::value> maybePopSizeAndResize(Serializer& ser, T& container)
+    {}
 
     template<typename T>
-    struct PopContainer<T, true, false, void>
+    void popContainer(Serializer& ser, T& container, long)
     {
-        static void pop(Serializer& ser, T& container)
-        {
-            using Type = typename T::value_type;
-            for(auto& el : container)
-                el = popEnumOrIntegral<Type>(ser);
-        }
-    };
+        using Type = typename T::value_type;
+        for(auto& el : container)
+            el = popEnumOrIntegral<Type>(ser);
+    }
     template<typename T>
-    struct PopContainer<T, false, false, void>
+    auto popContainer(Serializer& ser, T& container, int)
+      -> std::enable_if_t<sizeof(*container.data()) == 1u && !std::is_enum<typename T::value_type>::value>
     {
-        static void pop(Serializer& ser, T& container) { ser.PopRawData(container.data(), container.size()); }
-    };
+        ser.PopRawData(container.data(), container.size());
+    }
 
 } // namespace detail
 
 template<typename T>
-void pushContainer(Serializer& ser, const T& container)
+void pushContainer(Serializer& ser, const T& container, bool ignoreSize = false)
 {
     using Type = typename T::value_type;
     static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
                   "Only integral types and enums are possible");
 
-    if(detail::isResizableContainer<T>::value)
+    if(detail::isResizableContainer<T>::value && !ignoreSize)
         ser.PushVarSize(container.size());
     detail::pushContainer(ser, container, int());
 }
 
 template<typename T>
-void popContainer(Serializer& ser, T& result)
+void popContainer(Serializer& ser, T& result, bool ignoreSize = false)
 {
     using Type = typename T::value_type;
     static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
                   "Only integral types and enums are possible");
 
-    constexpr bool requireConversion = sizeof(Type) > 1u || std::is_enum<Type>::value;
-    detail::PopContainer<T, requireConversion>::pop(ser, result);
+    if(!ignoreSize)
+        detail::maybePopSizeAndResize(ser, result);
+    detail::popContainer(ser, result, int());
 }
 template<typename T>
 T popContainer(Serializer& ser)
