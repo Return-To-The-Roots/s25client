@@ -316,22 +316,9 @@ public:
         LOG.writeToFile(">>> NMS_SERVER_ASYNC(%d)\n") % checksums.size();
     }
 
-    void Serialize(Serializer& ser) const override
-    {
-        GameMessage::Serialize(ser);
-        ser.PushUnsignedInt(unsigned(checksums.size()));
-        for(unsigned int checksum : checksums)
-            ser.PushUnsignedInt(checksum);
-    }
+    void Serialize(Serializer& ser) const override;
 
-    void Deserialize(Serializer& ser) override
-    {
-        GameMessage::Deserialize(ser);
-        unsigned size = ser.PopUnsignedInt();
-        checksums.resize(size);
-        for(unsigned i = 0; i < size; ++i)
-            checksums[i] = ser.PopUnsignedInt();
-    }
+    void Deserialize(Serializer& ser) override;
 
     bool Run(GameMessageInterface* callback) const override
     {

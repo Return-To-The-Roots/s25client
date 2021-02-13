@@ -104,7 +104,8 @@
 /// 5: Make RoadPathDirection contiguous and use optional for ware in nofBuildingWorker
 /// 6: Make TradeDirection contiguous, Serialize only nobUsuals in BuildingRegister::buildings,
 ///    include water and fish in geologists resourceFound
-static const unsigned currentGameDataVersion = 6;
+/// 7: Use helpers::push/popContainer (uses var size)
+static const unsigned currentGameDataVersion = 7;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

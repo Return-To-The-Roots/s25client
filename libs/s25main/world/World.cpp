@@ -49,7 +49,7 @@ void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
     GameObject::ResetCounters();
 
     // Dummy so that the harbor "0" might be used for ships with no particular destination
-    harbor_pos.push_back(MapPoint::Invalid());
+    harbor_pos.push_back(HarborPos(MapPoint::Invalid()));
     noNodeObj = std::make_unique<noNothing>();
 }
 
@@ -316,7 +316,7 @@ unsigned World::GetSeaSize(const unsigned seaId) const
 unsigned short World::GetSeaId(const unsigned harborId, const Direction dir) const
 {
     RTTR_Assert(harborId);
-    return harbor_pos[harborId].cps[dir].seaId;
+    return harbor_pos[harborId].seaIds[dir];
 }
 
 /// Grenzt der Hafen an ein bestimmtes Meer an?
@@ -330,11 +330,10 @@ MapPoint World::GetCoastalPoint(const unsigned harborId, const unsigned short se
     RTTR_Assert(harborId);
     RTTR_Assert(seaId);
 
-    for(auto dir : helpers::EnumRange<Direction>{})
+    // Take point at NW last as often there is no path from it if the harbor is north of an island
+    for(auto dir : helpers::enumRange(Direction::NorthEast))
     {
-        // Take point at NW last as often there is no path from it if the harbor is north of an island
-        dir += 2u;
-        if(harbor_pos[harborId].cps[dir].seaId == seaId)
+        if(harbor_pos[harborId].seaIds[dir] == seaId)
             return GetNeighbour(harbor_pos[harborId].pos, dir);
     }
 

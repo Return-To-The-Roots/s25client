@@ -95,13 +95,11 @@ void noShip::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(goal_dir);
     sgd.PushString(name);
     sgd.PushUnsignedInt(curRouteIdx);
-    sgd.PushUnsignedInt(route_.size());
     sgd.PushBool(lost);
     sgd.PushUnsignedInt(remaining_sea_attackers);
     sgd.PushUnsignedInt(home_harbor);
     sgd.PushUnsignedInt(covered_distance);
-    for(auto i : route_)
-        sgd.PushEnum<uint8_t>(i);
+    helpers::pushContainer(sgd, route_);
     sgd.PushObjectContainer(figures);
     sgd.PushObjectContainer(wares, true);
 }
@@ -110,11 +108,11 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(sgd.Pop<State>()), seaId_(sgd.PopUnsignedShort()),
       goal_harborId(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
       name(sgd.GetGameDataVersion() < 2 ? sgd.PopLongString() : sgd.PopString()), curRouteIdx(sgd.PopUnsignedInt()),
-      route_(sgd.PopUnsignedInt()), lost(sgd.PopBool()), remaining_sea_attackers(sgd.PopUnsignedInt()),
-      home_harbor(sgd.PopUnsignedInt()), covered_distance(sgd.PopUnsignedInt())
+      route_(sgd.GetGameDataVersion() < 7 ? sgd.PopUnsignedInt() : 0), lost(sgd.PopBool()),
+      remaining_sea_attackers(sgd.PopUnsignedInt()), home_harbor(sgd.PopUnsignedInt()),
+      covered_distance(sgd.PopUnsignedInt())
 {
-    for(auto& dir : route_)
-        dir = sgd.Pop<Direction>();
+    helpers::popContainer(sgd, route_, sgd.GetGameDataVersion() < 7);
     sgd.PopObjectContainer(figures);
     sgd.PopObjectContainer(wares, GO_Type::Ware);
 }

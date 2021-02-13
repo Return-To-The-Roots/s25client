@@ -21,6 +21,7 @@
 #include <boost/config.hpp>
 #include <array>
 #include <cstddef>
+#include <initializer_list>
 #include <type_traits>
 
 namespace helpers {
@@ -33,32 +34,59 @@ template<typename T, size_t... T_n>
 struct MultiArray;
 
 namespace detail {
-    // TODO: Use C++14 constexpr function when dropping MSVC2015
-    template<size_t... sizes>
-    struct Product;
-
-    template<size_t size, size_t... sizes>
-    struct Product<size, sizes...>
+    constexpr size_t product() { return 1; }
+    template<typename... Args>
+    constexpr size_t product(Args... sizes)
     {
-        static constexpr size_t value = size * Product<sizes...>::value;
-    };
-
-    template<>
-    struct Product<>
-    {
-        static constexpr size_t value = 1;
-    };
+        size_t result = 1;
+        for(size_t i : {sizes...})
+            result *= i;
+        return result;
+    }
 
     template<typename T, size_t... T_ns>
-    struct MultiArrayRef;
+    struct MultiArrayRef
+    {};
 
+    template<typename T, size_t T_n>
+    struct MultiArrayRef<T, T_n>
+    {
+        using value_type = T;
+        using reference = T&;
+        using const_reference = const T&;
+
+        T* elems;
+        constexpr BOOST_FORCEINLINE explicit MultiArrayRef(T* elems) : elems(elems) {}
+        constexpr BOOST_FORCEINLINE explicit MultiArrayRef(T& elems) : elems(&elems) {}
+
+        constexpr size_t size() const { return T_n; }
+        constexpr T* data() { return elems; }
+        constexpr const T* data() const { return elems; }
+
+        constexpr T* begin() { return elems; }
+        constexpr const T* begin() const { return elems; }
+        constexpr T* end() { return elems + size(); }
+        constexpr const T* end() const { return elems + size(); }
+
+        BOOST_FORCEINLINE reference operator[](size_t i)
+        {
+            RTTR_Assert_Msg(i < T_n, "out of range");
+            return reference(elems[i]);
+        }
+
+        BOOST_FORCEINLINE const_reference operator[](size_t i) const
+        {
+            RTTR_Assert_Msg(i < T_n, "out of range");
+            return const_reference(elems[i]);
+        }
+    };
     template<typename T, size_t T_n, size_t... T_ns>
     struct MultiArrayRef<T, T_n, T_ns...>
     {
         static constexpr bool is1D = sizeof...(T_ns) == 0;
-        using reference = std::conditional_t<is1D, T&, MultiArrayRef<T, T_ns...>>;
-        using const_reference = std::add_const_t<reference>;
-        static constexpr size_t stride = Product<T_ns...>::value;
+        using reference = MultiArrayRef<T, T_ns...>;
+        using const_reference = const MultiArrayRef<T, T_ns...>;
+        static constexpr size_t stride = product(T_ns...);
 
         T* elems;
         constexpr BOOST_FORCEINLINE explicit MultiArrayRef(T* elems) : elems(elems) {}
@@ -77,6 +105,7 @@ namespace detail {
             return const_reference(elems[i * stride]);
         }
     };
+
     template<typename T, size_t... T_n>
     struct AddExtents;
     template<typename T, size_t T_n, size_t... T_ns>
@@ -93,10 +122,9 @@ namespace detail {
     using AddExtents_t = typename AddExtents<T, T_ns...>::type;
 
     template<size_t numDims>
-    size_t getFlatIndex(const std::array<size_t, numDims>& idxs, const std::array<size_t, numDims>& shape)
+    constexpr size_t getFlatIndex(const std::array<size_t, numDims>& idxs, const std::array<size_t, numDims>& shape)
     {
         static_assert(numDims > 0, "");
-        RTTR_Assert_Msg(idxs < shape, "out of range");
         size_t result = idxs[0];
         for(size_t i = 1; i < numDims; i++)
         {
@@ -120,7 +148,7 @@ struct MultiArray<T, T_n, T_ns...>
     static_assert(numDims > 1, "Use std::array for 1D arrays");
     static constexpr std::array<size_t, numDims> shape() { return {T_n, T_ns...}; }
     static constexpr size_t size() { return shape()[0]; }
-    static constexpr size_t numElements() { return detail::Product<T_n, T_ns...>::value; }
+    static constexpr size_t numElements() { return detail::product(T_n, T_ns...); }
 
     T* data() { return reinterpret_cast<T*>(elems); }
     constexpr const T* data() const { return reinterpret_cast<const T*>(elems); }
@@ -133,13 +161,17 @@ struct MultiArray<T, T_n, T_ns...>
     template<typename... I>
     std::enable_if_t<sizeof...(I) == numDims, T&> operator()(I... i)
     {
-        return data()[detail::getFlatIndex(std::array<size_t, numDims>{size_t(i)...}, shape())];
+        const size_t idx = detail::getFlatIndex(std::array<size_t, numDims>{size_t(i)...}, shape());
+        RTTR_Assert_Msg(idx < numElements(), "out of range");
+        return data()[idx];
     }
 
     template<typename... I>
     std::enable_if_t<sizeof...(I) == numDims, const T&> operator()(I... i) const
     {
-        return data()[detail::getFlatIndex(std::array<size_t, numDims>{size_t(i)...}, shape())];
+        const size_t idx = detail::getFlatIndex(std::array<size_t, numDims>{size_t(i)...}, shape());
+        RTTR_Assert_Msg(idx < numElements(), "out of range");
+        return data()[idx];
     }
 
     reference operator[](size_t i)

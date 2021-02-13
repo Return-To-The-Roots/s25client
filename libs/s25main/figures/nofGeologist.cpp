@@ -55,9 +55,7 @@ void nofGeologist::Serialize(SerializedGameData& sgd) const
     }
 
     helpers::pushPoint(sgd, node_goal);
-
-    for(const bool found : resAlreadyFound)
-        sgd.PushBool(found);
+    helpers::pushContainer(sgd, resAlreadyFound);
 }
 
 nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
@@ -80,10 +78,7 @@ nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
                 resAlreadyFound[res] = sgd.PopBool();
         }
     } else
-    {
-        for(bool& found : resAlreadyFound)
-            found = sgd.PopBool();
-    }
+        helpers::popContainer(sgd, resAlreadyFound);
 }
 
 void nofGeologist::Draw(DrawPoint drawPt)

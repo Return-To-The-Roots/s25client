@@ -34,11 +34,9 @@ void FoWNode::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushUnsignedInt(last_update_time);
         sgd.PushFOWObject(object.get());
-        for(const PointRoad road : roads)
-            sgd.PushEnum<uint8_t>(road);
+        helpers::pushContainer(sgd, roads);
         sgd.PushUnsignedChar(owner);
-        for(unsigned char boundary_stone : boundary_stones)
-            sgd.PushUnsignedChar(boundary_stone);
+        helpers::pushContainer(sgd, boundary_stones);
     }
 }
 
@@ -50,11 +48,9 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
     {
         last_update_time = sgd.PopUnsignedInt();
         object = sgd.PopFOWObject();
-        for(PointRoad& road : roads)
-            road = sgd.Pop<PointRoad>();
+        helpers::popContainer(sgd, roads);
         owner = sgd.PopUnsignedChar();
-        for(uint8_t& boundary_stone : boundary_stones)
-            boundary_stone = sgd.PopUnsignedChar();
+        helpers::popContainer(sgd, boundary_stones);
     } else
     {
         last_update_time = 0;

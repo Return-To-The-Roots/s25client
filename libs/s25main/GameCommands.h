@@ -18,7 +18,9 @@
 #pragma once
 
 #include "GameCommand.h"
+#include "helpers/serializeContainers.h"
 #include "helpers/serializeEnums.h"
+#include "helpers/serializePoint.h"
 #include "variant.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
@@ -40,27 +42,17 @@ class Coords : public GameCommand
 {
     GC_FRIEND_DECL;
 
-private:
-    static MapPoint PopMapPoint(Serializer& ser)
-    {
-        MapPoint pt;
-        pt.x = ser.PopUnsignedShort();
-        pt.y = ser.PopUnsignedShort();
-        return pt;
-    }
-
 protected:
     /// Koordinaten auf der Map, die dieses Command betreffen
     const MapPoint pt_;
     Coords(const GCType gst, const MapPoint pt) : GameCommand(gst), pt_(pt) {}
-    Coords(const GCType gst, Serializer& ser) : GameCommand(gst), pt_(PopMapPoint(ser)) {}
+    Coords(const GCType gst, Serializer& ser) : GameCommand(gst), pt_(helpers::popPoint<MapPoint>(ser)) {}
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        ser.PushUnsignedShort(pt_.x);
-        ser.PushUnsignedShort(pt_.y);
+        helpers::pushPoint(ser, pt_);
     }
 };
 
@@ -154,18 +146,13 @@ class ChangeDistribution : public GameCommand
 
 protected:
     ChangeDistribution(const Distributions& data) : GameCommand(GCType::ChangeDistribution), data(data) {}
-    ChangeDistribution(Serializer& ser) : GameCommand(GCType::ChangeDistribution)
-    {
-        for(uint8_t& i : data)
-            i = ser.PopUnsignedChar();
-    }
+    ChangeDistribution(Serializer& ser) : GameCommand(GCType::ChangeDistribution) { helpers::popContainer(ser, data); }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned char i : data)
-            ser.PushUnsignedChar(i);
+        helpers::pushContainer(ser, data);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -272,18 +259,13 @@ class ChangeTransport : public GameCommand
 
 protected:
     ChangeTransport(const TransportOrders& data) : GameCommand(GCType::ChangeTransport), data(data) {}
-    ChangeTransport(Serializer& ser) : GameCommand(GCType::ChangeTransport)
-    {
-        for(uint8_t& i : data)
-            i = ser.PopUnsignedChar();
-    }
+    ChangeTransport(Serializer& ser) : GameCommand(GCType::ChangeTransport) { helpers::popContainer(ser, data); }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned char i : data)
-            ser.PushUnsignedChar(i);
+        helpers::pushContainer(ser, data);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -298,18 +280,13 @@ class ChangeMilitary : public GameCommand
 
 protected:
     ChangeMilitary(const MilitarySettings& data) : GameCommand(GCType::ChangeMilitary), data(data) {}
-    ChangeMilitary(Serializer& ser) : GameCommand(GCType::ChangeMilitary)
-    {
-        for(uint8_t& i : data)
-            i = ser.PopUnsignedChar();
-    }
+    ChangeMilitary(Serializer& ser) : GameCommand(GCType::ChangeMilitary) { helpers::popContainer(ser, data); }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned char i : data)
-            ser.PushUnsignedChar(i);
+        helpers::pushContainer(ser, data);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -341,22 +318,16 @@ protected:
 
     ChangeTools(Serializer& ser) : GameCommand(GCType::ChangeTools)
     {
-        for(uint8_t& i : data)
-            i = ser.PopUnsignedChar();
-
-        for(unsigned i = 0; i < NUM_TOOLS; ++i)
-            orders[i] = ser.PopSignedChar();
+        helpers::popContainer(ser, data);
+        helpers::popContainer(ser, orders);
     }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned char i : data)
-            ser.PushUnsignedChar(i);
-
-        for(unsigned i = 0; i < NUM_TOOLS; ++i)
-            ser.PushSignedChar(orders[i]);
+        helpers::pushContainer(ser, data);
+        helpers::pushContainer(ser, orders);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -542,7 +513,7 @@ protected:
         const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
         states.reserve(numStates);
         for(unsigned i = 0; i < numStates; i++)
-            states.push_back(static_cast<InventorySetting>(ser.PopUnsignedChar()));
+            states.push_back(InventorySetting(ser.PopUnsignedChar()));
     }
 
 public:

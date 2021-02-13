@@ -29,17 +29,17 @@ enum class EInventorySetting : unsigned
 
 struct InventorySetting
 {
-    constexpr InventorySetting() = default;
-    constexpr InventorySetting(const EInventorySetting setting) : state(MakeBitField(setting)) {}
-    constexpr explicit InventorySetting(uint8_t state) : state(state) { MakeValid(); }
-    constexpr bool IsSet(EInventorySetting setting) const;
-    constexpr InventorySetting Toggle(EInventorySetting setting);
-    constexpr void MakeValid();
-    constexpr explicit operator uint8_t() const { return state; }
+    constexpr InventorySetting() noexcept = default;
+    constexpr InventorySetting(const EInventorySetting setting) noexcept : state(MakeBitField(setting)) {}
+    constexpr explicit InventorySetting(uint8_t state) noexcept : state(state) { MakeValid(); }
+    constexpr bool IsSet(EInventorySetting setting) const noexcept;
+    constexpr InventorySetting Toggle(EInventorySetting setting) noexcept;
+    constexpr void MakeValid() noexcept;
+    constexpr explicit operator uint8_t() const noexcept { return state; }
     friend constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs);
 
 private:
-    static constexpr uint8_t MakeBitField(EInventorySetting setting);
+    static constexpr uint8_t MakeBitField(EInventorySetting setting) noexcept;
     // Current state as a bitfield!
     uint8_t state = 0;
 };
@@ -48,12 +48,12 @@ private:
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-constexpr bool InventorySetting::IsSet(const EInventorySetting setting) const
+constexpr bool InventorySetting::IsSet(const EInventorySetting setting) const noexcept
 {
     return (state & MakeBitField(setting)) != 0;
 }
 
-constexpr InventorySetting InventorySetting::Toggle(const EInventorySetting setting)
+constexpr InventorySetting InventorySetting::Toggle(const EInventorySetting setting) noexcept
 {
     state ^= MakeBitField(setting);
     // If we changed collect, then allow only collect to be set
@@ -65,12 +65,12 @@ constexpr InventorySetting InventorySetting::Toggle(const EInventorySetting sett
     return *this;
 }
 
-constexpr uint8_t InventorySetting::MakeBitField(const EInventorySetting setting)
+constexpr uint8_t InventorySetting::MakeBitField(const EInventorySetting setting) noexcept
 {
     return static_cast<uint8_t>(1 << static_cast<unsigned>(setting));
 }
 
-constexpr void InventorySetting::MakeValid()
+constexpr void InventorySetting::MakeValid() noexcept
 {
     switch(state)
     {

@@ -32,9 +32,7 @@ MapNode::MapNode()
 
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
 {
-    for(PointRoad road : roads)
-        sgd.PushEnum<uint8_t>(road);
-
+    helpers::pushContainer(sgd, roads);
     sgd.PushUnsignedChar(altitude);
     sgd.PushUnsignedChar(shadow);
     sgd.PushString(desc.get(t1).name);
@@ -42,8 +40,7 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
     sgd.PushUnsignedChar(resources.getValue());
     sgd.PushBool(reserved);
     sgd.PushUnsignedChar(owner);
-    for(unsigned char boundary_stone : boundary_stones)
-        sgd.PushUnsignedChar(boundary_stone);
+    helpers::pushContainer(sgd, boundary_stones);
     sgd.PushEnum<uint8_t>(bq);
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
@@ -57,8 +54,7 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
                           const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains)
 {
-    for(PointRoad& road : roads)
-        road = sgd.Pop<PointRoad>();
+    helpers::popContainer(sgd, roads);
 
     altitude = sgd.PopUnsignedChar();
     shadow = sgd.PopUnsignedChar();
@@ -82,8 +78,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     resources = Resource(sgd.PopUnsignedChar());
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();
-    for(uint8_t& boundary_stone : boundary_stones)
-        boundary_stone = sgd.PopUnsignedChar();
+    helpers::popContainer(sgd, boundary_stones);
     bq = sgd.Pop<BuildingQuality>();
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)

@@ -27,7 +27,7 @@ class SerializedGameData;
 class BurnedWarehouse : public noCoordBase
 {
 public:
-    using PeopleArray = helpers::EnumArray<unsigned, Job>;
+    using PeopleArray = helpers::EnumArray<uint32_t, Job>;
 
     BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& people);
     BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);
