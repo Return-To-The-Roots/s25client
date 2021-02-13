@@ -116,7 +116,7 @@ namespace rttr { namespace mapGenerator {
         else if(combinedSize <= 512)
             return 9;
         else if(combinedSize <= 1024)
-            return 11;
+            return 12;
         else if(combinedSize <= 2048)
             return 15;
         else
@@ -241,7 +241,7 @@ namespace rttr { namespace mapGenerator {
 
         ResetSeaLevel(map_, rnd_, seaLevel);
 
-        const auto waterNodes = std::count(map_.z.begin(), map_.z.end(), map_.height.minimum);
+        const auto waterNodes = static_cast<unsigned>(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
         const auto islandSize = GetIslandSize(map_.size);

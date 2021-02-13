@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = getRandomMapSize(78, 90); // Need enough space for player islands
+    settings.size = getRandomMapSize(83, 100); // Need enough space for player islands
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Water;
 
