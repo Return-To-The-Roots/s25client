@@ -47,7 +47,7 @@ nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
         for(const auto dir : next_dirs_raw)
             next_dirs.push_back(dir == 0xDD ? TradeDirection::ReachedGoal : TradeDirection(dir));
     } else
-        sgd.PopContainer(next_dirs);
+        helpers::popContainer(sgd, next_dirs);
 }
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
@@ -56,7 +56,7 @@ void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 
     sgd.PushObject(successor, true);
     sgd.PushOptionalEnum<uint8_t>(gt);
-    sgd.PushContainer(next_dirs);
+    helpers::pushContainer(sgd, next_dirs);
 }
 
 void nofTradeDonkey::GoalReached()

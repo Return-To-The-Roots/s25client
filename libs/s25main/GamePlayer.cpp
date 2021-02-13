@@ -192,7 +192,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(flagworkers);
     sgd.PushObjectContainer(ships, true);
 
-    sgd.PushContainer(shouldSendDefenderList);
+    helpers::pushContainer(sgd, shouldSendDefenderList);
 
     sgd.PushMapPoint(hqPos);
 

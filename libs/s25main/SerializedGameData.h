@@ -23,6 +23,7 @@
 #include "helpers/MaxEnumValue.h"
 #include "helpers/OptionalEnum.h"
 #include "helpers/ReserveElements.hpp"
+#include "helpers/serializeContainers.h"
 #include "helpers/serializeEnums.h"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
@@ -85,10 +86,6 @@ public:
     /// Write a container of GameObjects
     template<typename T>
     void PushObjectContainer(const T& gos, bool known = false);
-
-    /// Push a container of values. Values must have fixed-width types!
-    template<typename T>
-    void PushContainer(const T& container);
 
     /// FoW-Objekt
     void PushFOWObject(const FOWObject* fowobj);
@@ -238,36 +235,15 @@ void SerializedGameData::PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Typ
 }
 
 template<typename T>
-void SerializedGameData::PushContainer(const T& container)
-{
-    using Type = typename T::value_type;
-    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
-                  "Only integral types and enums are possible");
-    using Integral =
-      typename std::conditional_t<std::is_enum<Type>::value, std::underlying_type<Type>, std::common_type<Type>>::type;
-
-    PushVarSize(container.size());
-    for(const auto el : container)
-    {
-        // Cast also required for bool vector -.-
-        Push(static_cast<Integral>(el));
-    }
-}
-
-template<typename T>
 void SerializedGameData::PopContainer(T& result)
 {
-    using Type = typename T::value_type;
-    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
-                  "Only integral types and enums are possible");
-
-    unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
-    result.clear();
-    helpers::ReserveElements<T>::reserve(result, size);
-    auto it = helpers::GetInsertIterator<T>::get(result);
-    for(unsigned i = 0; i < size; ++i)
+    // Remove this method after raising GameDataVersion
+    if(GetGameDataVersion() >= 2)
+        helpers::popContainer(*this, result);
+    else
     {
-        *it = Pop<Type>();
+        result.resize(PopUnsignedInt());
+        helpers::popContainer(*this, result, true);
     }
 }
 
