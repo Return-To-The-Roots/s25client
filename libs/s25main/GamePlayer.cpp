@@ -74,9 +74,9 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     global_inventory.clear();
 
     // Statistiken mit 0en füllen
-    memset(&statistic, 0, sizeof(statistic));
-    memset(&statisticCurrentData, 0, sizeof(statisticCurrentData));
-    memset(&statisticCurrentMerchandiseData, 0, sizeof(statisticCurrentMerchandiseData));
+    statistic = {};
+    statisticCurrentData = {};
+    statisticCurrentMerchandiseData = {};
 
     RecalcDistribution();
 }
