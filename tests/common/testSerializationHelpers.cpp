@@ -126,4 +126,28 @@ BOOST_AUTO_TEST_CASE(SerializeFixedSizeContainers)
     BOOST_TEST_REQUIRE(helpers::popContainer<decltype(intEnumArray)>(ser) == intEnumArray, per_element());
 }
 
+BOOST_AUTO_TEST_CASE(SerializeResizableIgnoringSize)
+{
+    using rttr::test::randomBool;
+    using rttr::test::randomValue;
+    const std::vector<int> intArray = {randomValue<int>(), randomValue<int>(), randomValue<int>()};
+    const std::vector<uint8_t> u8Array = {randomValue<uint8_t>(), randomValue<uint8_t>(), randomValue<uint8_t>(),
+                                          randomValue<uint8_t>()};
+    const std::array<bool, 6> boolArray = {randomBool(), randomBool(), randomBool(),
+                                           randomBool(), randomBool(), randomBool()};
+    Serializer ser;
+    helpers::pushContainer(ser, intArray, true);
+    helpers::pushContainer(ser, u8Array, true);
+    helpers::pushContainer(ser, boolArray, true);
+    std::vector<int> outIntArray(intArray.size());
+    std::vector<uint8_t> outU8Array(u8Array.size());
+    std::array<bool, 6> outBoolArray;
+    helpers::popContainer(ser, outIntArray, true);
+    helpers::popContainer(ser, outU8Array, true);
+    helpers::popContainer(ser, outBoolArray, true);
+    BOOST_TEST(outIntArray == intArray, per_element());
+    BOOST_TEST(outU8Array == u8Array, per_element());
+    BOOST_TEST(outBoolArray == boolArray, per_element());
+};
+
 BOOST_AUTO_TEST_SUITE_END()
