@@ -109,5 +109,5 @@ private:
     /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
     void AddAttackControls(ctrlGroup* group, unsigned attackers_count);
     void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
-    void DoUpgradeRoad();
+    bool DoUpgradeRoad();
 };

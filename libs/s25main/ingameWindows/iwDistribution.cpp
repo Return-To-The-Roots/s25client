@@ -87,7 +87,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey, LOADER.GetImageN("io", 191),
                    _("Default"));
 
-    UpdateSettings();
+    UpdateSettings(GAMECLIENT.visual_settings.distribution);
 }
 
 iwDistribution::~iwDistribution()
@@ -136,17 +136,17 @@ void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const
 void iwDistribution::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
+    {
         // Im Replay aktualisieren wir die Werte
-        UpdateSettings();
-    else
+        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        UpdateSettings(GAMECLIENT.visual_settings.distribution);
+    } else
         // Im normalen Spielmodus schicken wir den ganzen Spaß ab
         TransmitSettings();
 }
 
-void iwDistribution::UpdateSettings()
+void iwDistribution::UpdateSettings(const Distributions& distribution)
 {
-    if(GAMECLIENT.IsReplayModeOn())
-        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
     unsigned distIdx = 0;
     for(unsigned g = 0; g < groups.size(); ++g)
     {
@@ -155,7 +155,7 @@ void iwDistribution::UpdateSettings()
         ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(g);
         // And correct entry
         for(unsigned i = 0; i < group.entries.size(); ++i, ++distIdx)
-            tab->GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.distribution[distIdx]);
+            tab->GetCtrl<ctrlProgress>(i)->SetPosition(distribution[distIdx]);
     }
     RTTR_Assert(distIdx == std::tuple_size<Distributions>::value);
 }
@@ -179,8 +179,7 @@ void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
         // Default button
         case 10:
         {
-            GAMECLIENT.visual_settings.distribution = GAMECLIENT.default_settings.distribution;
-            UpdateSettings();
+            UpdateSettings(GAMECLIENT.default_settings.distribution);
             settings_changed = true;
         }
         break;

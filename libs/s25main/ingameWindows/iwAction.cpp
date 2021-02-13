@@ -338,12 +338,14 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned& /*x*/, unsigned& width
     }
 }
 
-void iwAction::DoUpgradeRoad()
+bool iwAction::DoUpgradeRoad()
 {
     Direction flag_dir;
     const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
     if(flag)
-        GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
+        return GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
+    else
+        return false;
 }
 
 /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
@@ -548,8 +550,8 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
         case 4: // Angriff!
         {
             auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_ATTACK)->GetCtrl<ctrlOptionGroup>(3);
-            GAMECLIENT.Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1));
-            Close();
+            if(GAMECLIENT.Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1)))
+                Close();
         }
         break;
     }
@@ -585,8 +587,8 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
         case 4: // Angriff!
         {
             auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_SEAATTACK)->GetCtrl<ctrlOptionGroup>(3);
-            GAMECLIENT.SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1));
-            Close();
+            if(GAMECLIENT.SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1)))
+                Close();
         }
         break;
     }
@@ -636,21 +638,21 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
                 Close();
             } else
             {
-                GAMECLIENT.DestroyFlag(selectedPt);
-                Close();
+                if(GAMECLIENT.DestroyFlag(selectedPt))
+                    Close();
             }
         }
         break;
         case 4: // Geologen rufen
         {
-            GAMECLIENT.CallSpecialist(selectedPt, Job::Geologist);
-            Close();
+            if(GAMECLIENT.CallSpecialist(selectedPt, Job::Geologist))
+                Close();
         }
         break;
         case 5: // Späher rufen
         {
-            GAMECLIENT.CallSpecialist(selectedPt, Job::Scout);
-            Close();
+            if(GAMECLIENT.CallSpecialist(selectedPt, Job::Scout))
+                Close();
         }
         break;
     }
@@ -659,34 +661,36 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
 void iwAction::Msg_ButtonClick_TabBuild(const unsigned ctrl_id)
 {
     // Klick auf Gebäudebauicon
-    GAMECLIENT.SetBuildingSite(selectedPt, GetCtrl<ctrlTab>(0)
-                                             ->GetGroup(TAB_BUILD)
-                                             ->GetCtrl<ctrlTab>(1)
-                                             ->GetCurrentGroup()
-                                             ->GetCtrl<ctrlBuildingIcon>(ctrl_id)
-                                             ->GetType());
-
-    // Fenster schließen
-    Close();
+    if(GAMECLIENT.SetBuildingSite(selectedPt, GetCtrl<ctrlTab>(0)
+                                                ->GetGroup(TAB_BUILD)
+                                                ->GetCtrl<ctrlTab>(1)
+                                                ->GetCurrentGroup()
+                                                ->GetCtrl<ctrlBuildingIcon>(ctrl_id)
+                                                ->GetType()))
+        // Fenster schließen
+        Close();
 }
 
 void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
 {
+    bool success = false;
     switch(ctrl_id)
     {
         case 1: // Flagge setzen
-            GAMECLIENT.SetFlag(selectedPt);
+            success = GAMECLIENT.SetFlag(selectedPt);
             break;
         case 2: // Weg aufwerten
-            DoUpgradeRoad();
+            success = DoUpgradeRoad();
             break;
     }
 
-    Close();
+    if(success)
+        Close();
 }
 
 void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
 {
+    bool success = false;
     switch(ctrl_id)
     {
         case 1: // Straße abreißen
@@ -694,15 +698,16 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
             Direction flag_dir;
             const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
             if(flag)
-                GAMECLIENT.DestroyRoad(flag->GetPos(), flag_dir);
+                success = GAMECLIENT.DestroyRoad(flag->GetPos(), flag_dir);
         }
         break;
         case 2: // Straße aufwerten
-            DoUpgradeRoad();
+            success = DoUpgradeRoad();
             break;
     }
 
-    Close();
+    if(success)
+        Close();
 }
 
 void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
@@ -713,18 +718,22 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
             // TODO: bestimen, was an der position selected ist
             WINDOWMANAGER.Show(std::make_unique<iwObservate>(gwv, selectedPt));
             DisableMousePosResetOnClose();
+            Close();
             break;
         case 2: // Häusernamen/Prozent anmachen
             gwv.ToggleShowNamesAndProductivity();
+            Close();
             break;
         case 3: // zum HQ
             gwv.MoveToMapPt(gwv.GetViewer().GetPlayer().GetHQPos());
             DisableMousePosResetOnClose();
+            Close();
             break;
-        case 4: GAMECLIENT.NotifyAlliesOfLocation(selectedPt); break;
+        case 4:
+            if(GAMECLIENT.NotifyAlliesOfLocation(selectedPt))
+                Close();
+            break;
     }
-
-    Close();
 }
 
 void iwAction::DisableMousePosResetOnClose()

@@ -36,8 +36,8 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
 
     // Liste füllen
-    BuildOrders buildOrders = GAMECLIENT.visual_settings.build_order;
-    for(const auto buildOrder : buildOrders)
+    pendingBuildOrder = GAMECLIENT.visual_settings.build_order;
+    for(const auto buildOrder : pendingBuildOrder)
         list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
@@ -52,14 +52,15 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
     // Bild der Auswahl
     AddImage(5, DrawPoint(240, 150),
-             LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + rttr::enum_cast(buildOrders[0]) * 5));
+             LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + rttr::enum_cast(pendingBuildOrder[0]) * 5));
 
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
     combo->AddString(_("After the following order")); // "Nach folgender Reihenfolge"
 
     // Eintrag in Combobox auswählen
-    combo->SetSelection(GAMECLIENT.visual_settings.useCustomBuildOrder ? 1 : 0);
+    useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
+    combo->SetSelection(useCustomBuildOrder ? 1 : 0);
 
     // Standard
     AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TextureColor::Grey, LOADER.GetImageN("io", 191),
@@ -75,8 +76,6 @@ iwBuildOrder::~iwBuildOrder()
 {
     try
     {
-        GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1u;
-
         TransmitSettings();
     } catch(...)
     {
@@ -92,9 +91,13 @@ void iwBuildOrder::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        GAMECLIENT.ChangeBuildOrder(GetCtrl<ctrlComboBox>(6)->GetSelection() != 0u,
-                                    GAMECLIENT.visual_settings.build_order);
-        settings_changed = false;
+        useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() != 0u;
+        if(GAMECLIENT.ChangeBuildOrder(useCustomBuildOrder, pendingBuildOrder))
+        {
+            GAMECLIENT.visual_settings.build_order = pendingBuildOrder;
+            GAMECLIENT.visual_settings.useCustomBuildOrder = useCustomBuildOrder;
+            settings_changed = false;
+        }
     }
 }
 
@@ -118,10 +121,19 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
 
         case 0:
         {
-            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationTex(
-              gwv.GetPlayer().nation, 250 + rttr::enum_cast(GAMECLIENT.visual_settings.build_order[selection]) * 5));
+            GetCtrl<ctrlImage>(5)->SetImage(
+              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + rttr::enum_cast(pendingBuildOrder[selection]) * 5));
         }
         break;
+    }
+}
+
+void iwBuildOrder::Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection)
+{
+    if(ctrl_id == 6)
+    {
+        useCustomBuildOrder = selection != 0u;
+        settings_changed = true;
     }
 }
 
@@ -147,8 +159,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             while(selection > 0)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1],
-                          GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(pendingBuildOrder[selection - 1], pendingBuildOrder[selection]);
                 list->Swap(selection - 1, selection);
                 --selection;
             }
@@ -159,8 +170,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(selection > 0)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1],
-                          GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(pendingBuildOrder[selection - 1], pendingBuildOrder[selection]);
                 list->Swap(selection - 1, selection);
             }
             settings_changed = true;
@@ -170,8 +180,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(selection < numOptions - 1u)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1],
-                          GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(pendingBuildOrder[selection + 1], pendingBuildOrder[selection]);
                 list->Swap(selection + 1, selection);
             }
             settings_changed = true;
@@ -181,8 +190,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             while(selection < numOptions - 1u)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1],
-                          GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(pendingBuildOrder[selection + 1], pendingBuildOrder[selection]);
                 list->Swap(selection + 1, selection);
                 ++selection;
             }
@@ -192,18 +200,18 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         case 10: // Standardwerte
         {
             // Baureihenfolge vom Spieler kopieren
-            GAMECLIENT.visual_settings.build_order = GAMECLIENT.default_settings.build_order;
+            pendingBuildOrder = GAMECLIENT.default_settings.build_order;
 
             auto* list = GetCtrl<ctrlList>(0);
             list->DeleteAllItems();
 
             // Liste füllen
             for(unsigned char i = 0; i < 31; ++i)
-                list->AddString(_(BUILDING_NAMES[GAMECLIENT.default_settings.build_order[i]]));
+                list->AddString(_(BUILDING_NAMES[pendingBuildOrder[i]]));
             list->SetSelection(0);
 
-            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationTex(
-              gwv.GetPlayer().nation, 250 + rttr::enum_cast(GAMECLIENT.visual_settings.build_order[0]) * 5));
+            GetCtrl<ctrlImage>(5)->SetImage(
+              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + rttr::enum_cast(pendingBuildOrder[0]) * 5));
 
             settings_changed = true;
         }
@@ -214,8 +222,12 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
 void iwBuildOrder::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
+    {
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    GetCtrl<ctrlComboBox>(6)->SetSelection(GAMECLIENT.visual_settings.useCustomBuildOrder ? 1 : 0);
+        pendingBuildOrder = GAMECLIENT.visual_settings.build_order;
+        useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
+    }
+    GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
     for(unsigned char i = 0; i < 31; ++i)
-        GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]), i);
+        GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[pendingBuildOrder[i]]), i);
 }

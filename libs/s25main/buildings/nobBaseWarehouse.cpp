@@ -1328,17 +1328,9 @@ bool nobBaseWarehouse::DefendersAvailable() const
     return false;
 }
 
-unsigned nobBaseWarehouse::IncreaseReserveVisual(unsigned rank)
+void nobBaseWarehouse::SetReserveVisual(const unsigned rank, const unsigned count)
 {
-    return ++reserve_soldiers_claimed_visual[rank];
-}
-
-unsigned nobBaseWarehouse::DecreaseReserveVisual(unsigned rank)
-{
-    if(reserve_soldiers_claimed_visual[rank])
-        --reserve_soldiers_claimed_visual[rank];
-
-    return reserve_soldiers_claimed_visual[rank];
+    reserve_soldiers_claimed_visual[rank] = count;
 }
 
 void nobBaseWarehouse::SetRealReserve(const unsigned rank, const unsigned count)

@@ -39,6 +39,8 @@ private:
     static constexpr auto numButtons = std::tuple_size<TransportOrders>::value;
     std::array<ButtonData, numButtons> buttonData;
 
+    TransportOrders pendingOrder;
+
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
     bool settings_changed;
 
@@ -47,7 +49,7 @@ public:
     ~iwTransport() override;
 
 private:
-    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+    /// Updatet die Steuerelemente mit den übergebenen Einstellungen
     void UpdateSettings();
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings();

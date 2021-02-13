@@ -930,8 +930,8 @@ void dskGameInterface::Run()
 
 void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad)
 {
-    // Im Replay und in der Pause keine Straßen bauen
-    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.IsPaused())
+    // Im Replay keine Straßen bauen
+    if(GAMECLIENT.IsReplayModeOn())
         return;
 
     road.mode = waterRoad ? RoadBuildMode::Boat : RoadBuildMode::Normal;
@@ -1079,9 +1079,11 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
 
 void dskGameInterface::GI_BuildRoad()
 {
-    GAMECLIENT.BuildRoad(road.start, road.mode == RoadBuildMode::Boat, road.route);
-    road.mode = RoadBuildMode::Disabled;
-    WINDOWMANAGER.SetCursor(Cursor::Hand);
+    if(GAMECLIENT.BuildRoad(road.start, road.mode == RoadBuildMode::Boat, road.route))
+    {
+        road.mode = RoadBuildMode::Disabled;
+        WINDOWMANAGER.SetCursor(Cursor::Hand);
+    }
 }
 
 void dskGameInterface::GI_WindowClosed(Window* wnd)
@@ -1155,16 +1157,16 @@ void dskGameInterface::CI_GamePaused()
     messenger.AddMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was paused."));
 
     /// Straßenbau ggf. abbrechen, wenn aktiviert
-    if(road.mode != RoadBuildMode::Disabled)
-    {
-        // Fenster schließen
-        if(roadwindow)
-        {
-            roadwindow->Close();
-            roadwindow = nullptr;
-        }
-        GI_CancelRoadBuilding();
-    }
+    /*   if(road.mode != RoadBuildMode::Disabled)
+       {
+           // Fenster schließen
+           if(roadwindow)
+           {
+               roadwindow->Close();
+               roadwindow = nullptr;
+           }
+           GI_CancelRoadBuilding();
+       }*/
 }
 
 void dskGameInterface::CI_GameResumed()

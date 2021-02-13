@@ -79,7 +79,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
                    TextureColor::Grey, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
-    UpdateSettings();
+    UpdateSettings(GAMECLIENT.visual_settings.tools_settings);
 
     // Netzwerk-Übertragungs-Timer
     using namespace std::chrono_literals;
@@ -204,14 +204,13 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
                                              "The higher the value, the more likely this tool is to be produced.")));
                 break;
             case 13: // Standard
-                GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;
-                UpdateSettings();
+                UpdateSettings(GAMECLIENT.default_settings.tools_settings);
                 settings_changed = true;
                 break;
             case 15: // Zero all
-                std::fill(GAMECLIENT.visual_settings.tools_settings.begin(),
-                          GAMECLIENT.visual_settings.tools_settings.end(), 0);
-                UpdateSettings();
+                ToolSettings zero;
+                zero.fill(0);
+                UpdateSettings(zero);
                 settings_changed = true;
                 break;
         }
@@ -227,22 +226,16 @@ void iwTools::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     if(isReplay)
         // Im Replay aktualisieren wir die Werte
-        UpdateSettings();
+        UpdateSettings(GAMECLIENT.visual_settings.tools_settings);
     else
         // Im normalen Spielmodus schicken wir den ganzen Spaß ab
         TransmitSettings();
 }
 
-void iwTools::UpdateSettings()
+void iwTools::UpdateSettings(const ToolSettings& tool_settings)
 {
     if(isReplay)
-    {
-        const GamePlayer& localPlayer = gwv.GetPlayer();
-        for(unsigned i = 0; i < NUM_TOOLS; ++i)
-            GetCtrl<ctrlProgress>(i)->SetPosition(localPlayer.GetToolPriority(i));
-    } else
-    {
-        for(unsigned i = 0; i < NUM_TOOLS; ++i)
-            GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
-    }
+        GAMECLIENT.ResetVisualSettings();
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
+        GetCtrl<ctrlProgress>(i)->SetPosition(tool_settings[i]);
 }

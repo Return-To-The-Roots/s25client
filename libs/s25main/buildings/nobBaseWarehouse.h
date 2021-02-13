@@ -270,9 +270,8 @@ public:
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen könnten?
     bool DefendersAvailable() const override;
 
-    /// Verändert Reserveeinstellung - visuell (nur das geforderte natürlich) und gibt neue Anzahl zurück
-    unsigned IncreaseReserveVisual(unsigned rank);
-    unsigned DecreaseReserveVisual(unsigned rank);
+    /// Verändert Reserveeinstellung
+    void SetReserveVisual(unsigned rank, unsigned count);
     void SetRealReserve(unsigned rank, unsigned count);
 
     /// Versucht, die geforderten Reserve-Soldaten bereitzustellen

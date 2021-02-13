@@ -103,8 +103,8 @@ void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
     // Start trading
     if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->IsVisible() && helpers::fromString(number_str, 0) > 0)
     {
-        gcFactory.TradeOverLand(wh.GetPos(), what, helpers::fromString(number_str, 0));
-        this->Close();
+        if(gcFactory.TradeOverLand(wh.GetPos(), what, helpers::fromString(number_str, 0)))
+            this->Close();
     }
 }
 

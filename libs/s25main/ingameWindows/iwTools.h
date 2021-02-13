@@ -20,6 +20,7 @@
 #include "IngameWindow.h"
 #include "notifications/Subscription.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/SettingsTypes.h"
 #include <array>
 
 class GameCommandFactory;
@@ -44,8 +45,8 @@ private:
     Subscription toolSubscription;
 
     void AddToolSettingSlider(unsigned id, GoodType ware);
-    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-    void UpdateSettings();
+    /// Updatet die Steuerelemente mit den übergebenen Einstellungen
+    void UpdateSettings(const ToolSettings& tool_settings);
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings();
 

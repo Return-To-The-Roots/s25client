@@ -18,6 +18,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "gameTypes/SettingsTypes.h"
 #include <vector>
 
 class GameCommandFactory;
@@ -37,8 +38,8 @@ private:
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
     bool settings_changed;
 
-    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-    void UpdateSettings();
+    /// Updatet die Steuerelemente mit den übergebenen Einstellungen
+    void UpdateSettings(const Distributions& distribution);
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings();
 
