@@ -62,15 +62,13 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
       numGfNotWorking(sgd.PopUnsignedShort()), since_not_working(sgd.PopUnsignedInt()),
       outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
 {
-    for(unsigned i = 0; i < 3; ++i)
-        numWares[i] = sgd.PopUnsignedChar();
+    helpers::popContainer(sgd, numWares);
 
     ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
     for(std::list<Ware*>& orderedWare : ordered_wares)
         sgd.PopObjectContainer(orderedWare, GO_Type::Ware);
-    for(unsigned short& last_productivitie : last_productivities)
-        last_productivitie = sgd.PopUnsignedShort();
+    helpers::popContainer(sgd, last_productivities);
 }
 
 void nobUsual::Serialize(SerializedGameData& sgd) const
@@ -88,12 +86,10 @@ void nobUsual::Serialize(SerializedGameData& sgd) const
     sgd.PushBool(outOfRessourcesMsgSent);
     sgd.PushBool(is_working);
 
-    for(unsigned i = 0; i < 3; ++i)
-        sgd.PushUnsignedChar(numWares[i]);
+    helpers::pushContainer(sgd, numWares);
     for(const std::list<Ware*>& orderedWare : ordered_wares)
         sgd.PushObjectContainer(orderedWare, true);
-    for(unsigned short last_productivitie : last_productivities)
-        sgd.PushUnsignedShort(last_productivitie);
+    helpers::pushContainer(sgd, last_productivities);
 }
 
 nobUsual::~nobUsual() = default;

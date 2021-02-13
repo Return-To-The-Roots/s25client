@@ -130,7 +130,7 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 
         // Hafenplatz?
         if((t1 & libsiedler2::HARBOR_MASK) != 0)
-            world_.harbor_pos.push_back(pt);
+            world_.harbor_pos.push_back(HarborPos(pt));
 
         // Will be set later
         node.harborId = 0;
@@ -449,7 +449,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
             else
                 hasCoastAtSea[seaId] = true;
 
-            it->cps[dir].seaId = seaId;
+            it->seaIds[dir] = seaId;
             if(seaId)
                 foundCoast = true;
         }
@@ -611,8 +611,8 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                         RTTR_Assert(seaId);
                         for(const auto hbDir : helpers::EnumRange<Direction>{})
                         {
-                            if(otherHb.cps[hbDir].seaId == seaId && world.GetNeighbour(otherHb.pos, hbDir) != curPt)
-                                otherHb.cps[hbDir].seaId = 0;
+                            if(otherHb.seaIds[hbDir] == seaId && world.GetNeighbour(otherHb.pos, hbDir) != curPt)
+                                otherHb.seaIds[hbDir] = 0;
                         }
                     }
                 }

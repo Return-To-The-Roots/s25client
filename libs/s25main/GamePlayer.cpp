@@ -193,71 +193,47 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(ships, true);
 
     helpers::pushContainer(sgd, shouldSendDefenderList);
-
     helpers::pushPoint(sgd, hqPos);
 
     for(const Distribution& dist : distribution)
     {
-        for(uint8_t p : dist.percent_buildings)
-            sgd.PushUnsignedChar(p);
-        sgd.PushUnsignedInt(dist.client_buildings.size());
-        for(BuildingType bld : dist.client_buildings)
-            sgd.PushEnum<uint8_t>(bld);
-        sgd.PushUnsignedInt(unsigned(dist.goals.size()));
-        for(BuildingType goal : dist.goals)
-            sgd.PushEnum<uint8_t>(goal);
+        helpers::pushContainer(sgd, dist.percent_buildings);
+        helpers::pushContainer(sgd, dist.client_buildings);
+        helpers::pushContainer(sgd, dist.goals);
         sgd.PushUnsignedInt(dist.selected_goal);
     }
 
     sgd.PushBool(useCustomBuildOrder_);
-
-    for(BuildingType i : build_order)
-        sgd.PushEnum<uint8_t>(i);
-
-    sgd.PushRawData(transportPrio.data(), transportPrio.size());
-
-    for(unsigned char militarySetting : militarySettings_)
-        sgd.PushUnsignedChar(militarySetting);
-
-    for(unsigned char toolsSetting : toolsSettings_)
-        sgd.PushUnsignedChar(toolsSetting);
-
-    // qx:tools
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
-        sgd.PushUnsignedChar(tools_ordered[i]);
-
-    for(const auto i : helpers::enumRange<GoodType>())
-        sgd.PushUnsignedInt(global_inventory[i]);
-    for(const auto i : helpers::enumRange<Job>())
-        sgd.PushUnsignedInt(global_inventory[i]);
+    helpers::pushContainer(sgd, build_order);
+    helpers::pushContainer(sgd, transportPrio);
+    helpers::pushContainer(sgd, militarySettings_);
+    helpers::pushContainer(sgd, toolsSettings_);
+    helpers::pushContainer(sgd, tools_ordered);
+    helpers::pushContainer(sgd, global_inventory.goods);
+    helpers::pushContainer(sgd, global_inventory.people);
 
     // für Statistik
-    for(const auto i : helpers::enumRange<StatisticTime>())
+    for(const Statistic& curStatistic : statistic)
     {
         // normale Statistik
-        for(const auto j : helpers::enumRange<StatisticType>())
-            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
-                sgd.PushUnsignedInt(statistic[i].data[j][k]);
+        for(const auto& curData : curStatistic.data)
+            helpers::pushContainer(sgd, curData);
 
         // Warenstatistik
         for(unsigned j = 0; j < NUM_STAT_MERCHANDISE_TYPES; ++j)
-            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
-                sgd.PushUnsignedShort(statistic[i].merchandiseData[j][k]);
+            helpers::pushContainer(sgd, curStatistic.merchandiseData[j]);
 
-        sgd.PushUnsignedShort(statistic[i].currentIndex);
-        sgd.PushUnsignedShort(statistic[i].counter);
+        sgd.PushUnsignedShort(curStatistic.currentIndex);
+        sgd.PushUnsignedShort(curStatistic.counter);
     }
-    for(const auto i : helpers::enumRange<StatisticType>())
-        sgd.PushUnsignedInt(statisticCurrentData[i]);
-
-    for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
-        sgd.PushUnsignedShort(statisticCurrentMerchandiseData[i]);
+    helpers::pushContainer(sgd, statisticCurrentData);
+    helpers::pushContainer(sgd, statisticCurrentMerchandiseData);
 
     // Serialize Pacts:
-    for(unsigned i = 0; i < MAX_PLAYERS; ++i)
+    for(const auto& playerPacts : pacts)
     {
-        for(const auto u : helpers::enumRange<PactType>())
-            pacts[i][u].Serialize(sgd);
+        for(const Pact& pact : playerPacts)
+            pact.Serialize(sgd);
     }
 
     sgd.PushBool(emergency);
@@ -300,78 +276,59 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     for(Distribution& dist : distribution)
     {
-        for(uint8_t& p : dist.percent_buildings)
-            p = sgd.PopUnsignedChar();
-        dist.client_buildings.resize(sgd.PopUnsignedInt());
-        for(BuildingType& bld : dist.client_buildings)
-            bld = sgd.Pop<BuildingType>();
-        dist.goals.resize(sgd.PopUnsignedInt());
-        for(BuildingType& goal : dist.goals)
-            goal = sgd.Pop<BuildingType>();
+        helpers::popContainer(sgd, dist.percent_buildings);
+        if(sgd.GetGameDataVersion() < 7)
+        {
+            dist.client_buildings.resize(sgd.PopUnsignedInt());
+            helpers::popContainer(sgd, dist.client_buildings, true);
+            dist.goals.resize(sgd.PopUnsignedInt());
+            helpers::popContainer(sgd, dist.goals, true);
+        } else
+        {
+            helpers::popContainer(sgd, dist.client_buildings);
+            helpers::popContainer(sgd, dist.goals);
+        }
         dist.selected_goal = sgd.PopUnsignedInt();
     }
 
     useCustomBuildOrder_ = sgd.PopBool();
 
-    for(auto& i : build_order)
-        i = sgd.Pop<BuildingType>();
-
-    sgd.PopRawData(transportPrio.data(), transportPrio.size());
-
-    for(uint8_t& militarySetting : militarySettings_)
-        militarySetting = sgd.PopUnsignedChar();
-
-// False positive, see https://github.com/Return-To-The-Roots/s25client/issues/1327
-#if defined(__GNUC__) && __GNUC__ == 10
-#    pragma GCC diagnostic push
-#    pragma GCC diagnostic ignored "-Wstringop-overflow"
-#endif
-    for(uint8_t& toolsSetting : toolsSettings_)
-        toolsSetting = sgd.PopUnsignedChar();
-#if defined(__GNUC__) && __GNUC__ == 10
-#    pragma GCC diagnostic pop
-#endif
+    helpers::popContainer(sgd, build_order);
+    helpers::popContainer(sgd, transportPrio);
+    helpers::popContainer(sgd, militarySettings_);
+    helpers::popContainer(sgd, toolsSettings_);
 
     // qx:tools
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
-        tools_ordered[i] = sgd.PopUnsignedChar();
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
-        tools_ordered_delta[i] = 0;
+    helpers::popContainer(sgd, tools_ordered);
+    tools_ordered_delta = {};
 
-    for(const auto i : helpers::enumRange<GoodType>())
-        global_inventory[i] = sgd.PopUnsignedInt();
-    for(const auto i : helpers::enumRange<Job>())
-        global_inventory[i] = sgd.PopUnsignedInt();
+    helpers::popContainer(sgd, global_inventory.goods);
+    helpers::popContainer(sgd, global_inventory.people);
 
     // Visuelle Einstellungen festlegen
 
     // für Statistik
-    for(const auto i : helpers::enumRange<StatisticTime>())
+    for(Statistic& curStatistic : statistic)
     {
         // normale Statistik
-        for(const auto j : helpers::enumRange<StatisticType>())
-            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
-                statistic[i].data[j][k] = sgd.PopUnsignedInt();
+        for(auto& curData : curStatistic.data)
+            helpers::popContainer(sgd, curData);
 
         // Warenstatistik
         for(unsigned j = 0; j < NUM_STAT_MERCHANDISE_TYPES; ++j)
-            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
-                statistic[i].merchandiseData[j][k] = sgd.PopUnsignedShort();
+            helpers::popContainer(sgd, curStatistic.merchandiseData[j]);
 
-        statistic[i].currentIndex = sgd.PopUnsignedShort();
-        statistic[i].counter = sgd.PopUnsignedShort();
+        curStatistic.currentIndex = sgd.PopUnsignedShort();
+        curStatistic.counter = sgd.PopUnsignedShort();
     }
-    for(const auto i : helpers::enumRange<StatisticType>())
-        statisticCurrentData[i] = sgd.PopUnsignedInt();
-
-    for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
-        statisticCurrentMerchandiseData[i] = sgd.PopUnsignedShort();
+    helpers::popContainer(sgd, statisticCurrentData);
+    helpers::popContainer(sgd, statisticCurrentMerchandiseData);
 
     // Deserialize Pacts:
-    for(unsigned i = 0; i < MAX_PLAYERS; ++i)
+    for(auto& playerPacts : pacts)
     {
-        for(const auto u : helpers::enumRange<PactType>())
-            pacts[i][u] = GamePlayer::Pact(sgd);
+        for(Pact& pact : playerPacts)
+            pact = GamePlayer::Pact(sgd);
     }
 
     emergency = sgd.PopBool();

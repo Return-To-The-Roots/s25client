@@ -64,7 +64,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     /// Bestell-Ware-Event
     const GameEvent* orderware_ev;
     /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
-    helpers::EnumArray<unsigned short, Direction> seaIds;
+    helpers::EnumArray<uint16_t, Direction> seaIds;
     /// Liste von Waren, die weggeschifft werden sollen
     std::list<Ware*> wares_for_ships;
     /// Liste von Menschen, die weggeschifft werden sollen

@@ -100,9 +100,12 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
 {
     if(state == CarrierState::BoatcarrierWanderOnWater)
     {
-        shore_path.resize(sgd.PopUnsignedInt());
-        for(auto& it : shore_path)
-            it = sgd.Pop<Direction>();
+        if(sgd.GetGameDataVersion() < 7)
+        {
+            shore_path.resize(sgd.PopUnsignedInt());
+            helpers::popContainer(sgd, shore_path, true);
+        } else
+            helpers::popContainer(sgd, shore_path);
     }
 }
 
@@ -122,9 +125,7 @@ void nofCarrier::Serialize(SerializedGameData& sgd) const
 
     if(state == CarrierState::BoatcarrierWanderOnWater)
     {
-        sgd.PushUnsignedInt(shore_path.size());
-        for(auto it : shore_path)
-            sgd.PushEnum<uint8_t>(it);
+        helpers::pushContainer(sgd, shore_path);
     }
 }
 

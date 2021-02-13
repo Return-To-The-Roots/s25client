@@ -18,6 +18,7 @@
 #include "GameMessages.h"
 #include "JoinPlayerInfo.h"
 #include "enum_cast.hpp"
+#include "helpers/serializeContainers.h"
 
 GameMessage_Player_List::GameMessage_Player_List() : GameMessage(NMS_PLAYER_LIST) {}
 
@@ -58,4 +59,16 @@ bool GameMessage_Player_List::Run(GameMessageInterface* callback) const
           % (playerInfo.isReady ? "true" : "false");
     }
     return callback->OnGameMessage(*this);
+}
+
+void GameMessage_Server_Async::Serialize(Serializer& ser) const
+{
+    GameMessage::Serialize(ser);
+    helpers::pushContainer(ser, checksums);
+}
+
+void GameMessage_Server_Async::Deserialize(Serializer& ser)
+{
+    GameMessage::Deserialize(ser);
+    helpers::popContainer(ser, checksums);
 }

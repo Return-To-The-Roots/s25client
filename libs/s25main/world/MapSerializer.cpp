@@ -51,8 +51,7 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     for(const auto& curHarborPos : world.harbor_pos)
     {
         helpers::pushPoint(sgd, curHarborPos.pos);
-        for(const auto& cp : curHarborPos.cps)
-            sgd.PushUnsignedShort(cp.seaId);
+        helpers::pushContainer(sgd, curHarborPos.seaIds);
         for(const auto& curNeighbors : curHarborPos.neighbors)
         {
             sgd.PushUnsignedInt(curNeighbors.size());
@@ -144,8 +143,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
         RTTR_UNUSED(i);
         world.harbor_pos.emplace_back(sgd.PopMapPoint());
         auto& curHarborPos = world.harbor_pos.back();
-        for(auto& cp : curHarborPos.cps)
-            cp.seaId = sgd.PopUnsignedShort();
+        helpers::popContainer(sgd, curHarborPos.seaIds);
         for(auto& neighbor : curHarborPos.neighbors)
         {
             const unsigned numNeighbors = sgd.PopUnsignedInt();

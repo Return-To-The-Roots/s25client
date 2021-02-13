@@ -71,7 +71,7 @@ class GamePlayer : public GamePlayerInfo
 public:
     struct Statistic
     {
-        helpers::EnumArray<std::array<unsigned, NUM_STAT_STEPS>, StatisticType> data;
+        helpers::EnumArray<std::array<uint32_t, NUM_STAT_STEPS>, StatisticType> data;
         helpers::MultiArray<uint16_t, NUM_STAT_MERCHANDISE_TYPES, NUM_STAT_STEPS> merchandiseData;
         // Index, der gerade 'vorne' (rechts im Statistikfenster) ist
         uint16_t currentIndex;
@@ -397,7 +397,7 @@ private:
     /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
     ToolSettings toolsSettings_;
     // qx:tools
-    std::array<unsigned char, NUM_TOOLS> tools_ordered;
+    std::array<uint8_t, NUM_TOOLS> tools_ordered;
 
     /// Bündnisse mit anderen Spielern
     struct Pact
@@ -412,7 +412,7 @@ private:
         bool want_cancel;
 
         Pact() : duration(0), start(0), accepted(false), want_cancel(false) {}
-        Pact(SerializedGameData& sgd);
+        explicit Pact(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const;
     };
     /// Bündnisse dieses Spielers mit anderen Spielern
@@ -422,8 +422,8 @@ private:
     helpers::EnumArray<Statistic, StatisticTime> statistic;
 
     // Die Statistikwerte die 'aktuell' gemessen werden
-    helpers::EnumArray<int, StatisticType> statisticCurrentData;
-    std::array<int, NUM_STAT_MERCHANDISE_TYPES> statisticCurrentMerchandiseData;
+    helpers::EnumArray<uint32_t, StatisticType> statisticCurrentData;
+    std::array<uint16_t, NUM_STAT_MERCHANDISE_TYPES> statisticCurrentMerchandiseData;
 
     // Notfall-Programm aktiviert ja/nein (Es gehen nur noch Res an Holzfäller- und Sägewerk-Baustellen raus)
     bool emergency;

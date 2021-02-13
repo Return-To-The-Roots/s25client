@@ -169,8 +169,7 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
     expedition.Serialize(sgd);
     exploration_expedition.Serialize(sgd);
     sgd.PushEvent(orderware_ev);
-    for(unsigned short seaId : seaIds)
-        sgd.PushUnsignedShort(seaId);
+    helpers::pushContainer(sgd, seaIds);
     sgd.PushObjectContainer(wares_for_ships, true);
     sgd.PushUnsignedInt(figures_for_ships.size());
     for(const auto& figures_for_ship : figures_for_ships)
@@ -192,8 +191,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
 
-    for(unsigned short& seaId : seaIds)
-        seaId = sgd.PopUnsignedShort();
+    helpers::popContainer(sgd, seaIds);
 
     sgd.PopObjectContainer(wares_for_ships, GO_Type::Ware);
 

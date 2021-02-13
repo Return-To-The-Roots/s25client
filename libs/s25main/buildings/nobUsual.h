@@ -42,7 +42,7 @@ class nobUsual : public noBuilding
     /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
     unsigned char last_ordered_ware;
     /// Rohstoffe, die zur Produktion benötigt werden
-    std::array<unsigned char, 3> numWares;
+    std::array<uint8_t, 3> numWares;
     /// Bestellte Waren
     std::vector<std::list<Ware*>> ordered_wares;
     /// Bestell-Ware-Event
@@ -50,7 +50,7 @@ class nobUsual : public noBuilding
     /// Rechne-Produktivität-aus-Event
     const GameEvent* productivity_ev;
     /// Letzte Produktivitäten (Durchschnitt = Gesamt produktivität), vorne das neuste !
-    std::array<unsigned short, 6> last_productivities;
+    std::array<uint16_t, 6> last_productivities;
     /// How many GFs he did not work since the last productivity calculation
     unsigned short numGfNotWorking;
     /// Since which GF he did not work (0xFFFFFFFF = currently working)

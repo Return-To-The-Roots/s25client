@@ -40,8 +40,7 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
 {
-    for(unsigned& it : people)
-        it = sgd.PopUnsignedInt();
+    helpers::popContainer(sgd, people);
 }
 
 BurnedWarehouse::~BurnedWarehouse() = default;
@@ -58,9 +57,7 @@ void BurnedWarehouse::Serialize(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedInt(go_out_phase);
-
-    for(unsigned it : people)
-        sgd.PushUnsignedInt(it);
+    helpers::pushContainer(sgd, people);
 }
 
 void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
