@@ -47,7 +47,7 @@ private:
 
     /// X,Y relativ zur Baustelle in Pixeln
     /// next ist der angesteuerte Punkt
-    Point<short> offsetSite, nextOffsetSite;
+    Point<int16_t> offsetSite, nextOffsetSite;
 
     /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
     unsigned char building_steps_available;

@@ -50,7 +50,7 @@ void nofHunter::Serialize(SerializedGameData& sgd) const
     if(state != State::FigureWork && state != State::Waiting1)
     {
         sgd.PushObject(animal, true);
-        sgd.PushMapPoint(shootingPos);
+        helpers::pushPoint(sgd, shootingPos);
         sgd.PushEnum<uint8_t>(shooting_dir);
     }
 }

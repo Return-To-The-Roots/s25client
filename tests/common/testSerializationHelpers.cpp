@@ -15,9 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "Point.h"
+#include "PointOutput.h"
 #include "helpers/EnumArray.h"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/serializeContainers.h"
+#include "helpers/serializePoint.h"
 #include <rttr/test/random.hpp>
 #include <s25util/Serializer.h>
 #include <boost/test/unit_test.hpp>
@@ -148,6 +151,24 @@ BOOST_AUTO_TEST_CASE(SerializeResizableIgnoringSize)
     BOOST_TEST(outIntArray == intArray, per_element());
     BOOST_TEST(outU8Array == u8Array, per_element());
     BOOST_TEST(outBoolArray == boolArray, per_element());
+};
+
+BOOST_AUTO_TEST_CASE(SerializePoints)
+{
+    using rttr::test::randomPoint;
+    const auto pt1 = randomPoint<Point<uint8_t>>();
+    const auto pt2 = randomPoint<Point<int16_t>>();
+    const auto pt3 = randomPoint<Point<uint32_t>>();
+    const auto pt4 = randomPoint<Point<int64_t>>();
+    Serializer ser;
+    helpers::pushPoint(ser, pt1);
+    helpers::pushPoint(ser, pt2);
+    helpers::pushPoint(ser, pt3);
+    helpers::pushPoint(ser, pt4);
+    BOOST_TEST_REQUIRE(helpers::popPoint<decltype(pt1)>(ser) == pt1);
+    BOOST_TEST_REQUIRE(helpers::popPoint<decltype(pt2)>(ser) == pt2);
+    BOOST_TEST_REQUIRE(helpers::popPoint<decltype(pt3)>(ser) == pt3);
+    BOOST_TEST_REQUIRE(helpers::popPoint<decltype(pt4)>(ser) == pt4);
 };
 
 BOOST_AUTO_TEST_SUITE_END()

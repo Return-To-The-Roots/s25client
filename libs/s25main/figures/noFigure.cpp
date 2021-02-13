@@ -105,7 +105,7 @@ void noFigure::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushUnsignedShort(wander_way);
         sgd.PushUnsignedShort(wander_tryings);
-        sgd.PushMapPoint(flagPos_);
+        helpers::pushPoint(sgd, flagPos_);
         sgd.PushUnsignedInt(flag_obj_id);
         sgd.PushUnsignedInt(burned_wh_id);
     }

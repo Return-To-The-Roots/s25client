@@ -33,7 +33,7 @@ TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const 
 void TradeRoute::Serialize(SerializedGameData& sgd) const
 {
     path.Serialize(sgd);
-    sgd.PushMapPoint(curPos);
+    helpers::pushPoint(sgd, curPos);
     sgd.PushUnsignedInt(curRouteIdx);
 }
 

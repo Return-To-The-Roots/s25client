@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2021 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,25 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "world/TradePath.h"
-#include "SerializedGameData.h"
+#pragma once
 
-TradePath::TradePath(SerializedGameData& sgd) : start(sgd.PopMapPoint()), goal(sgd.PopMapPoint())
+#include "Point.h"
+#include "s25util/Serializer.h"
+#include <type_traits>
+
+namespace helpers {
+
+template<typename T>
+void pushPoint(Serializer& ser, Point<T> pt)
 {
-    route.resize(sgd.PopUnsignedInt());
-    for(Direction& dir : route)
-    {
-        dir = sgd.Pop<Direction>();
-    }
+    ser.Push(pt.x);
+    ser.Push(pt.y);
 }
 
-void TradePath::Serialize(SerializedGameData& sgd) const
+template<typename PointT>
+PointT popPoint(Serializer& ser)
 {
-    helpers::pushPoint(sgd, start);
-    helpers::pushPoint(sgd, goal);
-    sgd.PushUnsignedInt(route.size());
-    for(const Direction& dir : route)
-    {
-        sgd.PushEnum<uint8_t>(dir);
-    }
+    using ElementType = typename PointT::ElementType;
+    std::remove_const_t<PointT> pt;
+    pt.x = ser.Pop<ElementType>();
+    pt.y = ser.Pop<ElementType>();
+    return pt;
 }
+
+} // namespace helpers

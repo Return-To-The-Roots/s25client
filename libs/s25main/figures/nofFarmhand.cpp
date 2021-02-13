@@ -33,7 +33,7 @@ void nofFarmhand::Serialize(SerializedGameData& sgd) const
 {
     nofBuildingWorker::Serialize(sgd);
 
-    sgd.PushMapPoint(dest);
+    helpers::pushPoint(sgd, dest);
 }
 
 nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id)

@@ -25,6 +25,7 @@
 #include "helpers/ReserveElements.hpp"
 #include "helpers/serializeContainers.h"
 #include "helpers/serializeEnums.h"
+#include "helpers/serializePoint.h"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
 #include "s25util/Serializer.h"
@@ -90,12 +91,6 @@ public:
     /// FoW-Objekt
     void PushFOWObject(const FOWObject* fowobj);
 
-    template<typename T>
-    void PushPoint(const Point<T>& pt);
-
-    /// Point of map coords
-    void PushMapPoint(const MapPoint pt) { PushPoint(pt); }
-
     /// Serialize an enum as T_SavedType which must be the underlying type (as that is what is deserialized by Pop<T>)
     /// Requires MaxEnumValue<T> to be specialized and T_SavedType to be able to hold all enumerators (checked only for
     /// max value)
@@ -142,12 +137,6 @@ public:
     void PopContainer(T& result);
 
     template<typename T>
-    Point<T> PopPoint();
-
-    /// Point of map coords
-    MapPoint PopMapPoint() { return PopPoint<MapPoint::ElementType>(); }
-
-    template<typename T>
     helpers::OptionalEnum<T> PopOptionalEnum();
 
     /// Read a trivial type (integral, enum, ...)
@@ -155,6 +144,8 @@ public:
     std::enable_if_t<std::is_enum<T>::value, T> Pop();
     template<typename T>
     std::enable_if_t<!std::is_enum<T>::value, T> Pop();
+
+    MapPoint PopMapPoint() { return helpers::popPoint<MapPoint>(*this); }
 
     /// Adds a deserialized object to the storage. Must be called exactly once per read GameObject
     void AddObject(GameObject* go);
@@ -245,22 +236,6 @@ void SerializedGameData::PopContainer(T& result)
         result.resize(PopUnsignedInt());
         helpers::popContainer(*this, result, true);
     }
-}
-
-template<typename T>
-void SerializedGameData::PushPoint(const Point<T>& pt)
-{
-    Push(pt.x);
-    Push(pt.y);
-}
-
-template<typename T>
-Point<T> SerializedGameData::PopPoint()
-{
-    Point<T> pt;
-    pt.x = Pop<T>();
-    pt.y = Pop<T>();
-    return pt;
 }
 
 template<typename T>

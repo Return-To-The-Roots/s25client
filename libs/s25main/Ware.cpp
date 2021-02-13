@@ -69,7 +69,7 @@ void Ware::Serialize(SerializedGameData& sgd) const
     sgd.PushObject(location);
     sgd.PushEnum<uint8_t>(type);
     sgd.PushObject(goal);
-    sgd.PushMapPoint(next_harbor);
+    helpers::pushPoint(sgd, next_harbor);
 }
 
 static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
