@@ -39,7 +39,7 @@ nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd)
 
 void nofCatapultMan::PossibleTarget::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushMapPoint(pos);
+    helpers::pushPoint(sgd, pos);
     sgd.PushUnsignedInt(distance);
 }
 

@@ -56,15 +56,16 @@ void nofBuilder::Serialize(SerializedGameData& sgd) const
 
     sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(building_site, true);
-    sgd.PushPoint(offsetSite);
-    sgd.PushPoint(nextOffsetSite);
+    helpers::pushPoint(sgd, offsetSite);
+    helpers::pushPoint(sgd, nextOffsetSite);
     sgd.PushUnsignedChar(building_steps_available);
 }
 
 nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), state(sgd.Pop<BuilderState>()),
-      building_site(sgd.PopObject<noBuildingSite>(GO_Type::Buildingsite)), offsetSite(sgd.PopPoint<short>()),
-      nextOffsetSite(sgd.PopPoint<short>()), building_steps_available(sgd.PopUnsignedChar())
+      building_site(sgd.PopObject<noBuildingSite>(GO_Type::Buildingsite)),
+      offsetSite(helpers::popPoint<Point<int16_t>>(sgd)), nextOffsetSite(helpers::popPoint<Point<int16_t>>(sgd)),
+      building_steps_available(sgd.PopUnsignedChar())
 {}
 
 void nofBuilder::GoalReached()

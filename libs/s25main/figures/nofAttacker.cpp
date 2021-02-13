@@ -91,8 +91,8 @@ void nofAttacker::Serialize(SerializedGameData& sgd) const
         if(state == SoldierState::AttackingWaitingForDefender)
             sgd.PushEvent(blocking_event);
 
-        sgd.PushMapPoint(harborPos);
-        sgd.PushMapPoint(shipPos);
+        helpers::pushPoint(sgd, harborPos);
+        helpers::pushPoint(sgd, shipPos);
         sgd.PushUnsignedInt(ship_obj_id);
     } else
     {

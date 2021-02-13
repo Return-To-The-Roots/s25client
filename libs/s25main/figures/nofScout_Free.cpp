@@ -34,7 +34,7 @@ nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noR
 void nofScout_Free::Serialize(SerializedGameData& sgd) const
 {
     nofFlagWorker::Serialize(sgd);
-    sgd.PushMapPoint(nextPos);
+    helpers::pushPoint(sgd, nextPos);
     sgd.PushUnsignedInt(rest_way);
 }
 

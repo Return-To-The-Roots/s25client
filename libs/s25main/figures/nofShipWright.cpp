@@ -163,7 +163,7 @@ void nofShipWright::Serialize(SerializedGameData& sgd) const
 {
     nofWorkman::Serialize(sgd);
 
-    sgd.PushMapPoint(curShipBuildPos);
+    helpers::pushPoint(sgd, curShipBuildPos);
 }
 
 /// Startet das Laufen zu der Arbeitsstelle, dem Schiff

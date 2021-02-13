@@ -194,7 +194,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
 
     helpers::pushContainer(sgd, shouldSendDefenderList);
 
-    sgd.PushMapPoint(hqPos);
+    helpers::pushPoint(sgd, hqPos);
 
     for(const Distribution& dist : distribution)
     {

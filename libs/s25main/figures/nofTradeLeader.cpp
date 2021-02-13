@@ -51,8 +51,8 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
     tr.Serialize(sgd);
 
     sgd.PushObject(successor, true);
-    sgd.PushMapPoint(homePos);
-    sgd.PushMapPoint(goalPos);
+    helpers::pushPoint(sgd, homePos);
+    helpers::pushPoint(sgd, goalPos);
 }
 
 void nofTradeLeader::GoalReached()

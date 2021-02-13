@@ -44,7 +44,7 @@ void nofActiveSoldier::Serialize(SerializedGameData& sgd) const
 
     sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(enemy);
-    sgd.PushMapPoint(fightSpot_);
+    helpers::pushPoint(sgd, fightSpot_);
 }
 
 nofActiveSoldier::nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id)

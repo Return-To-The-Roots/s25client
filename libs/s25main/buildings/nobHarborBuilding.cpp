@@ -175,13 +175,13 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(figures_for_ships.size());
     for(const auto& figures_for_ship : figures_for_ships)
     {
-        sgd.PushMapPoint(figures_for_ship.dest);
+        helpers::pushPoint(sgd, figures_for_ship.dest);
         sgd.PushObject(figures_for_ship.fig);
     }
     sgd.PushUnsignedInt(soldiers_for_ships.size());
     for(const auto& soldiers_for_ship : soldiers_for_ships)
     {
-        sgd.PushMapPoint(soldiers_for_ship.dest);
+        helpers::pushPoint(sgd, soldiers_for_ship.dest);
         sgd.PushObject(soldiers_for_ship.attacker, true);
     }
 }

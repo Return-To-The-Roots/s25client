@@ -51,10 +51,10 @@ void nofGeologist::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(available_nodes.size());
     for(const auto& available_node : available_nodes)
     {
-        sgd.PushMapPoint(available_node);
+        helpers::pushPoint(sgd, available_node);
     }
 
-    sgd.PushMapPoint(node_goal);
+    helpers::pushPoint(sgd, node_goal);
 
     for(const bool found : resAlreadyFound)
         sgd.PushBool(found);

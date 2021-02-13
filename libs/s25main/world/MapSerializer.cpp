@@ -27,7 +27,7 @@
 void MapSerializer::Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {
     // Headinformationen
-    sgd.PushPoint(world.GetSize());
+    helpers::pushPoint(sgd, world.GetSize());
     sgd.PushString(world.GetDescription().get(world.GetLandscapeType()).name);
 
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
@@ -50,7 +50,7 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     sgd.PushUnsignedInt(world.harbor_pos.size());
     for(const auto& curHarborPos : world.harbor_pos)
     {
-        sgd.PushMapPoint(curHarborPos.pos);
+        helpers::pushPoint(sgd, curHarborPos.pos);
         for(const auto& cp : curHarborPos.cps)
             sgd.PushUnsignedShort(cp.seaId);
         for(const auto& curNeighbors : curHarborPos.neighbors)
@@ -74,7 +74,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
         throw SerializedGameData::Error(_("Failed to load game data!"));
 
     // Headinformationen
-    const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
+    const auto size = helpers::popPoint<MapExtent>(sgd);
     DescIdx<LandscapeDesc> lt(0);
     if(sgd.GetGameDataVersion() < 3)
     {
