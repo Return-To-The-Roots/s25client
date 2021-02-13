@@ -1405,7 +1405,7 @@ void GamePlayer::SetStatisticValue(StatisticType type, unsigned value)
 
 void GamePlayer::ChangeStatisticValue(StatisticType type, int change)
 {
-    assert(statisticCurrentData[type] + change >= 0);
+    RTTR_Assert(change >= 0 || statisticCurrentData[type] >= static_cast<unsigned>(-change));
     statisticCurrentData[type] += change;
 }
 

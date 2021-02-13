@@ -67,14 +67,14 @@ namespace detail {
         container.resize(ser.PopVarSize());
     }
     template<typename T>
-    std::enable_if_t<!isResizableContainer<T>::value> maybePopSizeAndResize(Serializer& ser, T& container)
+    std::enable_if_t<!isResizableContainer<T>::value> maybePopSizeAndResize(Serializer&, T&)
     {}
 
     template<typename T>
-    void popContainer(Serializer& ser, T& container, long)
+    void popContainer(Serializer& ser, T&& container, long)
     {
-        using Type = typename T::value_type;
-        for(auto& el : container)
+        using Type = typename std::remove_reference_t<T>::value_type;
+        for(auto&& el : container) // auto&& required for vector<bool> proxy object
             el = popEnumOrIntegral<Type>(ser);
     }
     template<typename T>
@@ -99,9 +99,9 @@ void pushContainer(Serializer& ser, const T& container, bool ignoreSize = false)
 }
 
 template<typename T>
-void popContainer(Serializer& ser, T& result, bool ignoreSize = false)
+void popContainer(Serializer& ser, T&& result, bool ignoreSize = false)
 {
-    using Type = typename T::value_type;
+    using Type = typename std::remove_reference_t<T>::value_type;
     static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
                   "Only integral types and enums are possible");
 

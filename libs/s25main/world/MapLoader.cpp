@@ -411,7 +411,8 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
 
 bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
 {
-    world.harbor_pos.insert(world.harbor_pos.end(), additionalHarbors.begin(), additionalHarbors.end());
+    for(MapPoint pt : additionalHarbors)
+        world.harbor_pos.push_back(HarborPos(pt));
     // Clear current harbors and seas
     RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
