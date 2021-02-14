@@ -30,9 +30,9 @@
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
-                   LOADER.GetImageN("io", 5)),
-      gcFactory(gcFactory), settings_changed(false)
+    : TransmittingSettingsWindow(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
+                                 LOADER.GetImageN("io", 5)),
+      gcFactory(gcFactory)
 {
     // Einzelne Balken
     const Extent progSize(132, 26);
@@ -65,21 +65,7 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
         GetCtrl<ctrlProgress>(2)->SetVisible(false);
     }
 
-    // Absendetimer, in 2s-Abschnitten wird jeweils das ganze als Netzwerknachricht ggf. abgeschickt
-    using namespace std::chrono_literals;
-    AddTimer(22, 2s);
-    UpdateSettings(GAMECLIENT.visual_settings.military_settings);
-}
-
-iwMilitary::~iwMilitary()
-{
-    try
-    {
-        TransmitSettings();
-    } catch(...)
-    {
-        // Ignore
-    }
+    UpdateSettings();
 }
 
 /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
@@ -104,16 +90,6 @@ void iwMilitary::TransmitSettings()
     }
 }
 
-void iwMilitary::Msg_Timer(const unsigned /*ctrl_id*/)
-{
-    if(GAMECLIENT.IsReplayModeOn())
-        // Im Replay aktualisieren wir die Werte
-        UpdateSettings(GAMECLIENT.visual_settings.military_settings);
-    else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
-        TransmitSettings();
-}
-
 void iwMilitary::Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     // Einstellungen wurden geändert
@@ -126,6 +102,11 @@ void iwMilitary::UpdateSettings(const MilitarySettings& military_settings)
         GAMECLIENT.ResetVisualSettings();
     for(unsigned i = 0; i < military_settings.size(); ++i)
         GetCtrl<ctrlProgress>(i)->SetPosition(military_settings[i]);
+}
+
+void iwMilitary::UpdateSettings()
+{
+    UpdateSettings(GAMECLIENT.visual_settings.military_settings);
 }
 
 void iwMilitary::Msg_ButtonClick(const unsigned ctrl_id)

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "IngameWindow.h"
+#include "TransmittingSettingsWindow.h"
 #include "gameTypes/SettingsTypes.h"
 #include <array>
 
@@ -25,7 +25,7 @@ class ITexture;
 class GameWorldViewer;
 class GameCommandFactory;
 
-class iwTransport : public IngameWindow
+class iwTransport : public TransmittingSettingsWindow
 {
 private:
     struct ButtonData
@@ -41,19 +41,14 @@ private:
 
     TransportOrders pendingOrder;
 
-    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-    bool settings_changed;
-
 public:
     iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-    ~iwTransport() override;
 
 private:
     /// Updatet die Steuerelemente mit den übergebenen Einstellungen
-    void UpdateSettings();
+    void UpdateSettings() override;
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-    void TransmitSettings();
+    void TransmitSettings() override;
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_Timer(unsigned ctrl_id) override;
 };

@@ -29,9 +29,9 @@
 #include "gameData/const_gui_ids.h"
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"),
-                   LOADER.GetImageN("io", 5)),
-      gwv(gwv), gcFactory(gcFactory), settings_changed(false)
+    : TransmittingSettingsWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"),
+                                 LOADER.GetImageN("io", 5)),
+      gwv(gwv), gcFactory(gcFactory)
 {
     AddImageButton(0, DrawPoint(18, 285), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
 
@@ -92,15 +92,6 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
                               _(buttonData[pendingOrder[i]].tooltip));
     }
     group->SetSelection(0);
-
-    // Netzwerk-Übertragungs-Timer
-    using namespace std::chrono_literals;
-    AddTimer(7, 2s);
-}
-
-iwTransport::~iwTransport()
-{
-    TransmitSettings();
 }
 
 void iwTransport::TransmitSettings()
@@ -221,16 +212,6 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         }
         break;
     }
-}
-
-void iwTransport::Msg_Timer(const unsigned /*ctrl_id*/)
-{
-    if(GAMECLIENT.IsReplayModeOn())
-        // Im Replay aktualisieren wir die Werte
-        UpdateSettings();
-    else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
-        TransmitSettings();
 }
 
 void iwTransport::UpdateSettings()

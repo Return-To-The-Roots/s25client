@@ -1658,7 +1658,13 @@ void GameClient::SetPause(bool pause)
         framesinfo.isPaused = pause;
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(IsHost())
-        mainPlayer.sendMsgAsync(new GameMessage_Pause(pause));
+    {
+        // Pause instantly
+   	 GameMessage_Pause* msg = new GameMessage_Pause(pause);
+        if(pause)
+            OnGameMessage(*msg);
+        mainPlayer.sendMsgAsync(msg);
+    }
 }
 
 void GameClient::ToggleReplayFOW()

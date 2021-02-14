@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "IngameWindow.h"
+#include "TransmittingSettingsWindow.h"
 #include "notifications/Subscription.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/SettingsTypes.h"
@@ -26,12 +26,11 @@
 class GameCommandFactory;
 class GameWorldViewer;
 
-/// Fenster mit den Militäreinstellungen.
-class iwTools : public IngameWindow
+/// Tool settings window
+class iwTools : public TransmittingSettingsWindow
 {
 public:
     iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-    ~iwTools() override;
 
 private:
     const GameWorldViewer& gwv;
@@ -39,7 +38,7 @@ private:
     /// How the order for each tool should be changed (pending actual transmission)
     std::array<int8_t, NUM_TOOLS> pendingOrderChanges;
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-    bool settings_changed, ordersChanged;
+    bool ordersChanged;
     bool shouldUpdateTexts;
     bool isReplay;
     Subscription toolSubscription;
@@ -47,12 +46,12 @@ private:
     void AddToolSettingSlider(unsigned id, GoodType ware);
     /// Updatet die Steuerelemente mit den übergebenen Einstellungen
     void UpdateSettings(const ToolSettings& tool_settings);
+    void UpdateSettings() override;
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-    void TransmitSettings();
+    void TransmitSettings() override;
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
-    void Msg_Timer(unsigned ctrl_id) override;
 
     void UpdateTexts();
     void Msg_PaintBefore() override;

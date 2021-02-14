@@ -68,7 +68,7 @@ public:
     void SetPos(DrawPoint newPos);
 
     /// merkt das Fenster zum Schließen vor.
-    void Close();
+    virtual void Close();
     /// soll das Fenster geschlossen werden.
     bool ShouldBeClosed() const { return closeme; }
 

@@ -667,8 +667,10 @@ void iwAction::Msg_ButtonClick_TabBuild(const unsigned ctrl_id)
                                                 ->GetCurrentGroup()
                                                 ->GetCtrl<ctrlBuildingIcon>(ctrl_id)
                                                 ->GetType()))
+    {
         // Fenster schließen
         Close();
+    }
 }
 
 void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)

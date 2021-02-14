@@ -17,34 +17,31 @@
 
 #pragma once
 
-#include "IngameWindow.h"
+#include "TransmittingSettingsWindow.h"
 #include "gameTypes/SettingsTypes.h"
 #include <vector>
 
 class GameCommandFactory;
 class GameWorldViewer;
 
-class iwDistribution : public IngameWindow
+class iwDistribution : public TransmittingSettingsWindow
 {
     struct DistributionGroup;
 
 public:
     iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-    ~iwDistribution() override;
 
 private:
     const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
-    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-    bool settings_changed;
 
     /// Updatet die Steuerelemente mit den übergebenen Einstellungen
     void UpdateSettings(const Distributions& distribution);
+    void UpdateSettings() override;
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-    void TransmitSettings();
+    void TransmitSettings() override;
 
     void Msg_Group_ProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
-    void Msg_Timer(unsigned ctrl_id) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 
     /// Groups for the settings

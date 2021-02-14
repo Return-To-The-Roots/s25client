@@ -18,6 +18,7 @@
 #include "iwBuildOrder.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlList.h"
@@ -26,12 +27,10 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 
-using namespace std::chrono_literals;
-
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
-    : IngameWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300), _("Building sequence"),
-                   LOADER.GetImageN("io", 5)),
-      gwv(gwv), settings_changed(false)
+    : TransmittingSettingsWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300),
+                                 _("Building sequence"), LOADER.GetImageN("io", 5)),
+      gwv(gwv)
 {
     ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
 
@@ -66,21 +65,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TextureColor::Grey, LOADER.GetImageN("io", 191),
                    _("Default"));
 
-    // Absendetimer, in 2s-Abschnitten wird jeweils das ganze als Netzwerknachricht ggf. abgeschickt
-    AddTimer(11, 2s);
-
     list->SetSelection(0);
-}
-
-iwBuildOrder::~iwBuildOrder()
-{
-    try
-    {
-        TransmitSettings();
-    } catch(...)
-    {
-        // Ignored
-    }
 }
 
 void iwBuildOrder::TransmitSettings()
@@ -99,16 +84,6 @@ void iwBuildOrder::TransmitSettings()
             settings_changed = false;
         }
     }
-}
-
-void iwBuildOrder::Msg_Timer(const unsigned /*ctrl_id*/)
-{
-    if(GAMECLIENT.IsReplayModeOn())
-        // Im Replay aktualisieren wir die Werte
-        UpdateSettings();
-    else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
-        TransmitSettings();
 }
 
 void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selection)
