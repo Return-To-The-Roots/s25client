@@ -68,10 +68,8 @@ dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoW
                                 {_("Player"), 200, SRT::String},
                                 {_("Version"), 100, SRT::String},
                                 {_("Ping"), 100, SRT::Number}});
-    // Spieler-Tabelle - "Name", "Punkte", "Version"
     AddTable(ID_tblPlayers, DrawPoint(530, 20), Extent(250, 410), TextureColor::Grey, NormalFont,
-             ctrlTable::Columns{
-               {_("Name"), 500, SRT::String}, {_("Points"), 250, SRT::String}, {_("Version"), 250, SRT::String}});
+             ctrlTable::Columns{{_("Name"), 12, SRT::String}, {_("Version"), 10, SRT::String}});
 
     // Chatfenster
     AddChatCtrl(ID_Chat, DrawPoint(20, 290), Extent(500, 238), TextureColor::Grey, NormalFont);
@@ -371,11 +369,10 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
     {
         if(player.getId() != 0xFFFFFFFF)
         {
-            std::string punkte = helpers::toString(player.getPunkte());
             std::string name = player.getName();
             if(player.isIngame)
                 name += _(" (playing)");
-            playertable->AddRow({name, punkte, player.getVersion()});
+            playertable->AddRow({name, player.getVersion()});
         }
     }
     if(first)
