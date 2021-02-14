@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,17 +17,9 @@
 
 #pragma once
 
-/// Returns the argument of type T unchanged
-template<typename T>
-struct Identity
+#include <utility>
+
+struct ReturnMapPointWithRadius
 {
-    using result_type = T;
-
-    result_type operator()(const result_type& arg) { return arg; }
-
-    template<typename T_Unused>
-    result_type operator()(const result_type& arg, const T_Unused&)
-    {
-        return arg;
-    }
+    constexpr std::pair<MapPoint, unsigned> operator()(const MapPoint pt, unsigned r) const noexcept { return {pt, r}; }
 };

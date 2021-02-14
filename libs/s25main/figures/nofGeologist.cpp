@@ -20,6 +20,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "ReturnMapPointWithRadius.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
@@ -325,19 +326,9 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
            && obj.GetType() != NodalObjectType::Flag && obj.GetType() != NodalObjectType::Tree;
 }
 
-namespace {
-struct GetMapPointWithRadius
-{
-    using result_type = std::pair<MapPoint, unsigned>;
-
-    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
-};
-} // namespace
-
 void nofGeologist::LookForNewNodes()
 {
-    std::vector<GetMapPointWithRadius::result_type> pts =
-      gwg->GetPointsInRadius(flag->GetPos(), 15, GetMapPointWithRadius());
+    const auto pts = gwg->GetPointsInRadius(flag->GetPos(), 15, ReturnMapPointWithRadius{});
     unsigned curMaxRadius = 15;
     bool found = false;
     for(const auto& it : pts)

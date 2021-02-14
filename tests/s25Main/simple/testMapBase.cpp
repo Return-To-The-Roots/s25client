@@ -21,6 +21,7 @@
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
+#include <rttr/test/random.hpp>
 #include <boost/test/unit_test.hpp>
 #include <array>
 
@@ -111,6 +112,22 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
         for(const auto dir : helpers::EnumRange<Direction>{})
             BOOST_TEST(neighbours[rttr::enum_cast(dir)] == world.GetNeighbour(MapPoint(pt), dir));
     }
+}
+
+BOOST_AUTO_TEST_CASE(GetMatchingPointsInRadius)
+{
+    MapBase world;
+    world.Resize(MapExtent(20, 30));
+    const MapPoint center = rttr::test::randomPoint<MapPoint>(0, 19);
+    const std::vector<MapPoint> oddPts =
+      world.GetMatchingPointsInRadius(center, 5, [](const MapPoint pt) { return pt.x % 2 == 1; });
+    const std::vector<MapPoint> evenPts =
+      world.GetMatchingPointsInRadius(center, 5, [](const MapPoint pt) { return pt.x % 2 == 0; });
+    BOOST_TEST_REQUIRE(oddPts.size() + evenPts.size() == 6u + 12u + 18u + 24u + 30u);
+    for(const MapPoint pt : oddPts)
+        BOOST_TEST(pt.x % 2 == 1);
+    for(const MapPoint pt : evenPts)
+        BOOST_TEST(pt.x % 2 == 0);
 }
 
 BOOST_AUTO_TEST_CASE(GetIdx)

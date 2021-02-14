@@ -651,7 +651,7 @@ void nofCarrier::LostWork()
             // Look for the shore
             const unsigned maxNodeDistance = 5;
             std::vector<MapPoint> coastPoints =
-              gwg->GetPointsInRadius<-1>(tmpPos, maxNodeDistance, Identity<MapPoint>(), IsCoastalAndForFigs(*gwg));
+              gwg->GetMatchingPointsInRadius(tmpPos, maxNodeDistance, IsCoastalAndForFigs(*gwg));
             for(const auto& it : coastPoints)
             {
                 // 10x the node distance should be enough, otherwise it would be to far to paddle

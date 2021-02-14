@@ -192,20 +192,15 @@ void AIConstruction::ConstructionsExecuted()
 namespace {
     struct Point2FlagAI
     {
-        using result_type = const noFlag*;
         const GameWorldBase& world_;
-
         Point2FlagAI(const GameWorldBase& world) : world_(world) {}
-
-        result_type operator()(const MapPoint pt, unsigned /*r*/) const { return world_.GetSpecObj<noFlag>(pt); }
+        const noFlag* operator()(const MapPoint pt, unsigned /*r*/) const { return world_.GetSpecObj<noFlag>(pt); }
     };
 
     struct IsValidFlag
     {
         const unsigned playerId_;
-
         IsValidFlag(const unsigned playerId) : playerId_(playerId) {}
-
         bool operator()(const noFlag* const flag) const { return flag && flag->GetPlayer() == playerId_; }
     };
 } // namespace

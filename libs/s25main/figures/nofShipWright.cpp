@@ -67,8 +67,8 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
             {
                 // Wege müssen immer von der Flagge aus berechnet werden
                 MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SouthEast);
-                std::vector<MapPoint> possiblePts =
-                  gwg->GetPointsInRadius<-1>(flagPos, SHIPWRIGHT_RADIUS, Identity<MapPoint>(), IsNotReserved(*gwg));
+                const std::vector<MapPoint> possiblePts =
+                  gwg->GetMatchingPointsInRadius(flagPos, SHIPWRIGHT_RADIUS, IsNotReserved(*gwg));
 
                 // Verfügbare Punkte, die geeignete Plätze darstellen würden
                 std::vector<MapPoint> available_points;
@@ -81,15 +81,12 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                     if(!obj)
                         continue;
 
-                    // Schiff?
-                    if(obj->GetGOT() == GO_Type::Shipbuildingsite)
+                    // Our ship
+                    if(obj->GetGOT() == GO_Type::Shipbuildingsite
+                       && static_cast<noShipBuildingSite*>(obj)->GetPlayer() == player)
                     {
-                        // Platz noch nicht reserviert und gehört das Schiff auch mir?
-                        if(!gwg->GetNode(pos).reserved && static_cast<noShipBuildingSite*>(obj)->GetPlayer() == player)
-                        {
-                            if(gwg->FindHumanPath(flagPos, pt, SHIPWRIGHT_WALKING_DISTANCE))
-                                available_points.push_back(pt);
-                        }
+                        if(gwg->FindHumanPath(flagPos, pt, SHIPWRIGHT_WALKING_DISTANCE))
+                            available_points.push_back(pt);
                     }
                 }
 

@@ -156,7 +156,7 @@ struct IsScoutable
 void nofScout_Free::GoToNewNode()
 {
     std::vector<MapPoint> available_points =
-      gwg->GetPointsInRadius<-1>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
+      gwg->GetMatchingPointsInRadius<-1>(flag->GetPos(), SCOUT_RANGE, IsScoutable(player, *gwg));
     RANDOM_SHUFFLE(available_points);
     for(MapPoint pt : available_points)
     {

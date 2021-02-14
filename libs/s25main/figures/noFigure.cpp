@@ -516,20 +516,15 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 namespace {
 struct Point2Flag
 {
-    using result_type = noFlag*;
     World& gwb;
-
     Point2Flag(World& gwb) : gwb(gwb) {}
-
-    result_type operator()(const MapPoint pt, unsigned /*r*/) const { return gwb.GetSpecObj<noFlag>(pt); }
+    noFlag* operator()(const MapPoint pt, unsigned /*r*/) const { return gwb.GetSpecObj<noFlag>(pt); }
 };
 
 struct IsValidFlag
 {
     const unsigned playerId_;
-
     IsValidFlag(const unsigned playerId) : playerId_(playerId) {}
-
     bool operator()(const noFlag* const flag) const { return flag && flag->GetPlayer() == playerId_; }
 };
 } // namespace
@@ -552,10 +547,10 @@ void noFigure::Wander()
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags =
-          gwg->GetPointsInRadius<-1>(pos, wander_radius, Point2Flag(*gwg), IsValidFlag(player));
+          gwg->GetPointsInRadius(pos, wander_radius, Point2Flag(*gwg), IsValidFlag(player));
 
         unsigned best_way = 0xFFFFFFFF;
-        noFlag const* best_flag = nullptr;
+        const noFlag* best_flag = nullptr;
 
         for(auto* flag : flags)
         {

@@ -171,8 +171,8 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 
     MapPoint FindBldPos(const MapPoint& preferedPos, BuildingQuality reqBQ, unsigned player)
     {
-        std::vector<MapPoint> pts =
-          world.GetPointsInRadius<1>(preferedPos, 2, Identity<MapPoint>(), HasBQ(world, player, reqBQ), true);
+        const std::vector<MapPoint> pts =
+          world.GetMatchingPointsInRadius<1>(preferedPos, 2, HasBQ(world, player, reqBQ), true);
         return pts.at(0);
     }
 

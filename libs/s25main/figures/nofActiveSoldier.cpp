@@ -472,7 +472,7 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
                    || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr));
     };
     const std::vector<MapPoint> pts =
-      gwg->GetPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, Identity<MapPoint>(), isGoodFightingSpot, true);
+      gwg->GetMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);
     if(pts.empty())
         return false;
     *fight_spot = pts.front();
