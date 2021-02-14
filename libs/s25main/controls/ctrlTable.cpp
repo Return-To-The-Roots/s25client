@@ -166,6 +166,9 @@ void ctrlTable::Resize(const Extent& newSize)
 {
     const bool heightIncreased = newSize.y > GetSize().y;
     Window::Resize(newSize);
+    // Make header buttons keep their size
+    for(unsigned i = 1; i <= columns_.size(); ++i)
+        GetCtrl<ctrlButton>(i)->SetHeight(header_height);
 
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
