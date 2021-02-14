@@ -22,7 +22,6 @@
 #include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
 
-class iwLobbyRanking;
 class iwLobbyServerInfo;
 class iwDirectIPCreate;
 class LobbyServerList;
@@ -33,7 +32,6 @@ class dskLobby final : public dskMenuBase, public ClientInterface, public LobbyI
 private:
     iwLobbyServerInfo* serverInfoWnd;
     iwDirectIPCreate* createServerWnd;
-    iwLobbyRanking* lobbyRankingWnd;
 
 public:
     dskLobby();
@@ -52,7 +50,6 @@ public:
     void LC_ServerList(const LobbyServerList& servers) override;
     void LC_PlayerList(const LobbyPlayerList& players) override;
     void LC_ServerInfo(const LobbyServerInfo& info) override;
-    void LC_RankingList(const LobbyPlayerList& players) override;
 
 protected:
     void Msg_Timer(unsigned ctrl_id) override;
