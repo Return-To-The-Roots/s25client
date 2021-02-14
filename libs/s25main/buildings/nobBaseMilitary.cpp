@@ -19,6 +19,7 @@
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "ReturnMapPointWithRadius.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "figures/nofAggressiveDefender.h"
@@ -178,13 +179,6 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
     return nullptr;
 }
 
-struct GetMapPointWithRadius
-{
-    using result_type = std::pair<MapPoint, unsigned>;
-
-    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
-};
-
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
 {
     const MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SouthEast);
@@ -202,14 +196,14 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
     const MapPoint soldierPos = soldier->GetPos();
     // Get points AROUND the flag. Never AT the flag
-    std::vector<GetMapPointWithRadius::result_type> nodes = gwg->GetPointsInRadius(flagPos, 3, GetMapPointWithRadius());
+    const auto nodes = gwg->GetPointsInRadius(flagPos, 3, ReturnMapPointWithRadius{});
 
     // Weg zu allen möglichen Punkten berechnen und den mit den kürzesten Weg nehmen
     // Die bisher kürzeste gefundene Länge
     unsigned min_length = std::numeric_limits<unsigned>::max();
     MapPoint minPt = MapPoint::Invalid();
     ret_radius = 100;
-    for(auto& node : nodes)
+    for(const auto& node : nodes)
     {
         // We found a point with a better radius
         if(node.second > ret_radius)

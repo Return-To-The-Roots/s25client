@@ -114,8 +114,8 @@ struct NodeHasResource
 MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
 {
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
-    std::vector<MapPoint> pts =
-      gwg->GetPointsInRadius<1>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type), true);
+    const std::vector<MapPoint> pts =
+      gwg->GetMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*gwg, type), true);
     if(!pts.empty())
         return pts.front();
 

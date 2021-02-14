@@ -373,7 +373,6 @@ unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, const unsigned origin_
 /// Functor that returns true, when the owner of a point is set and different than the player
 struct IsPointOwnerDifferent
 {
-    using result_type = unsigned char;
     const GameWorldBase& gwb;
     // Owner to compare. Note that owner=0 --> No owner => owner=player+1
     const unsigned char cmpOwner;

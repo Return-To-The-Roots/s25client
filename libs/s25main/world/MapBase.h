@@ -17,15 +17,30 @@
 
 #pragma once
 
-#include "Identity.h"
 #include "RTTR_Assert.h"
-#include "ReturnConst.h"
 #include "helpers/EnumRange.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/ShipDirection.h"
 #include <array>
 #include <vector>
+
+struct AlwaysTrue
+{
+    template<typename T>
+    constexpr bool operator()(T&&) const noexcept
+    {
+        return true;
+    }
+};
+struct ReturnMapPoint
+{
+    constexpr MapPoint operator()(MapPoint pt, unsigned /*radius*/) const noexcept { return pt; }
+};
+namespace detail {
+template<typename T_TransformPt>
+using GetPointsResult_t = std::vector<decltype(std::declval<T_TransformPt>()(MapPoint{}, unsigned{}))>;
+}
 
 /// Base class for a map. A map has a size and functions for getting from one point to another in that map
 class MapBase
@@ -61,14 +76,22 @@ public:
     /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
     /// Number of results is constrained to maxResults (if > 0)
-    template<int T_maxResults = -1, class T_TransformPt = Identity<MapPoint>,
-             class T_IsValidPt = ReturnConst<bool, true>>
-    std::vector<typename T_TransformPt::result_type>
-    GetPointsInRadius(MapPoint pt, unsigned radius, T_TransformPt&& transformPt = T_TransformPt(),
-                      T_IsValidPt&& isValid = T_IsValidPt(), bool includePt = false) const;
+    template<int T_maxResults = -1, class T_TransformPt = ReturnMapPoint, class T_IsValidPt = AlwaysTrue>
+    detail::GetPointsResult_t<T_TransformPt>
+    GetPointsInRadius(MapPoint pt, unsigned radius, T_TransformPt&& transformPt = T_TransformPt{},
+                      T_IsValidPt&& isValid = T_IsValidPt{}, bool includePt = false) const;
+    /// Return all points in the given radius that match the condition
+    template<int T_maxResults = -1, class T_IsValidPt>
+    std::vector<MapPoint> GetMatchingPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid,
+                                                    bool includePt = false) const
+    {
+        return GetPointsInRadius<T_maxResults>(pt, radius, ReturnMapPoint{}, std::forward<T_IsValidPt>(isValid),
+                                               includePt);
+    }
+    /// Convenience method to return all points in the given radious including the center point
     std::vector<MapPoint> GetPointsInRadiusWithCenter(const MapPoint pt, unsigned radius) const
     {
-        return GetPointsInRadius<-1>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>(), true);
+        return GetPointsInRadius(pt, radius, ReturnMapPoint{}, AlwaysTrue{}, true);
     }
     /// Returns true, if the IsValid functor returns true for any point in the given radius
     /// If includePt is true, then the point itself is also checked
@@ -103,19 +126,26 @@ inline unsigned MapBase::GetIdx(const MapPoint pt) const
 }
 
 template<int T_maxResults, class T_TransformPt, class T_IsValidPt>
-inline std::vector<typename T_TransformPt::result_type>
-MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt&& transformPt, T_IsValidPt&& isValid,
-                           bool includePt) const
+detail::GetPointsResult_t<T_TransformPt> MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius,
+                                                                    T_TransformPt&& transformPt, T_IsValidPt&& isValid,
+                                                                    bool includePt) const
 {
-    using Element = typename T_TransformPt::result_type;
-    std::vector<Element> result;
+    detail::GetPointsResult_t<T_TransformPt> result;
+    if(T_maxResults > 0)
+        result.reserve(T_maxResults);
+    else if(std::is_same<T_IsValidPt, AlwaysTrue>::value)
+    {
+        // For every additional radius we get 6 * curRadius more points. Hence we have 6 * sum(1..radius) points + the
+        // center point if requested This can be reduced via the gauss formula to the following:
+        result.reserve((radius * radius + radius) * 3u + (includePt ? 1u : 0u));
+    }
     if(includePt)
     {
-        Element el = transformPt(pt, 0);
+        const auto el = transformPt(pt, 0);
         if(isValid(el))
         {
             result.push_back(el);
-            if(T_maxResults == 1u)
+            if(T_maxResults == 1)
                 return result;
         }
     }
@@ -130,7 +160,7 @@ MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt&& t
         {
             for(unsigned step = 0; step < r; ++step)
             {
-                Element el = transformPt(curPt, r);
+                const auto el = transformPt(curPt, r);
                 if(isValid(el))
                 {
                     result.push_back(el);

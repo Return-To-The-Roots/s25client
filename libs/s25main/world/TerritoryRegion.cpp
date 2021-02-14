@@ -18,6 +18,7 @@
 #include "world/TerritoryRegion.h"
 #include "GamePlayer.h"
 #include "MapGeometry.h"
+#include "ReturnMapPointWithRadius.h"
 #include "buildings/noBaseBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/EnumRange.h"
@@ -144,15 +145,6 @@ bool TerritoryRegion::AdjustCoords(Position& pt) const
     return true;
 }
 
-namespace {
-struct GetMapPointWithRadius
-{
-    using result_type = std::pair<MapPoint, unsigned>;
-
-    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
-};
-} // namespace
-
 void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 {
     unsigned radius = building.GetMilitaryRadius();
@@ -172,8 +164,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     AdjustNode(bldPos, building.GetPlayer(), 0,
                nullptr); // no need to check barriers here. this point is on our territory.
 
-    std::vector<GetMapPointWithRadius::result_type> pts =
-      world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
+    const auto pts = world.GetPointsInRadius(bldPos, radius, ReturnMapPointWithRadius{});
     for(const auto& ptWithRadius : pts)
         AdjustNode(ptWithRadius.first, building.GetPlayer(), ptWithRadius.second, allowedArea);
 }
