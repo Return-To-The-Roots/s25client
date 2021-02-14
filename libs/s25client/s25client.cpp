@@ -180,7 +180,7 @@ void showCrashMessage()
 #endif
 }
 
-void handleException(void* pCtx = nullptr, bool terminate = true) noexcept
+void handleException(void* pCtx = nullptr) noexcept
 {
     std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
@@ -204,20 +204,20 @@ void handleException(void* pCtx = nullptr, bool terminate = true) noexcept
     }
 
     showCrashMessage();
-    if(terminate)
-        terminateProgramm();
 }
 
 #ifdef _MSC_VER
 LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
 {
     handleException(info->ContextRecord);
+    terminateProgramm();
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
 [[noreturn]] void ExceptionHandler(int /*sig*/)
 {
     handleException();
+    terminateProgramm();
 }
 #endif
 
@@ -572,12 +572,12 @@ int main(int argc, char** argv)
     } catch(const std::exception& e)
     {
         bnw::cerr << "An exception occurred: " << e.what() << "\n\n";
-        handleException(nullptr, false);
+        handleException(nullptr);
         result = 1;
     } catch(...)
     {
         bnw::cerr << "An unknown exception occurred\n";
-        handleException(nullptr, false);
+        handleException(nullptr);
         result = 1;
     }
     if(result)
