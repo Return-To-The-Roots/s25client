@@ -1660,7 +1660,7 @@ void GameClient::SetPause(bool pause)
     } else if(IsHost())
     {
         // Pause instantly
-        auto *msg = new GameMessage_Pause(pause);
+        auto* msg = new GameMessage_Pause(pause);
         if(pause)
             OnGameMessage(*msg);
         mainPlayer.sendMsgAsync(msg);
