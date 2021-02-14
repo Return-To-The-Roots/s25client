@@ -32,7 +32,7 @@
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
                    LOADER.GetImageN("io", 5)),
-      gwv(gwv), gcFactory(gcFactory), settings_changed(false)
+      gcFactory(gcFactory), settings_changed(false)
 {
     // Einzelne Balken
     const Extent progSize(132, 26);

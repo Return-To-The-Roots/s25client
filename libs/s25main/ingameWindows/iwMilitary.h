@@ -26,7 +26,6 @@ class GameWorldViewer;
 /// Fenster mit den Militäreinstellungen.
 class iwMilitary : public IngameWindow
 {
-    const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
     bool settings_changed;
