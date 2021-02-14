@@ -27,7 +27,6 @@ public:
     ~iwLobbyConnect() override;
 
     void LC_LoggedIn(const std::string& email) override;
-    void LC_Registered() override;
 
     void LC_Status_Waiting() override;
     void LC_Status_Error(const std::string& error) override;

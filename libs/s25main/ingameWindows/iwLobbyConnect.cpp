@@ -255,17 +255,6 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& /*email*/)
 }
 
 /**
- *  Wir wurden registriert.
- */
-void iwLobbyConnect::LC_Registered()
-{
-    // Registrierung erfolgreich
-    SetText(_("Registration successful!"), COLOR_YELLOW, true);
-
-    GetCtrl<ctrlButton>(ID_btRegister)->SetEnabled(false);
-}
-
-/**
  *  Status: Warten auf Antwort.
  */
 void iwLobbyConnect::LC_Status_Waiting()
