@@ -64,7 +64,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 namespace {
 #ifdef RTTR_USE_WIN_API
 #    ifdef HAVE_DBGHELP_H
-bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
+bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) noexcept
 {
     CONTEXT context;
 #        ifndef _MSC_VER
@@ -140,14 +140,14 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
     return true;
 }
 #    else  // HAVE_DBGHELP_H
-bool captureBacktrace(std::vector<void*>&, void* = nullptr)
+bool captureBacktrace(std::vector<void*>&, void* = nullptr) noexcept
 {
     return false;
 }
 #    endif // HAVE_DBGHELP_H
 
 #else
-void captureBacktrace(std::vector<void*>& stacktrace)
+void captureBacktrace(std::vector<void*>& stacktrace) noexcept
 {
     unsigned num_frames = backtrace(&stacktrace[0], stacktrace.size());
     stacktrace.resize(num_frames);
@@ -191,7 +191,7 @@ DebugInfo::~DebugInfo()
     sock.Close();
 }
 
-std::vector<void*> DebugInfo::GetStackTrace(void* ctx)
+std::vector<void*> DebugInfo::GetStackTrace(void* ctx) noexcept
 {
     std::vector<void*> stacktrace(256);
 #ifdef _MSC_VER
