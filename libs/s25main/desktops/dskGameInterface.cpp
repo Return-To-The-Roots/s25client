@@ -1155,18 +1155,6 @@ void dskGameInterface::CI_ReplayEndReached(const std::string& msg)
 void dskGameInterface::CI_GamePaused()
 {
     messenger.AddMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was paused."));
-
-    /// Straßenbau ggf. abbrechen, wenn aktiviert
-    /*   if(road.mode != RoadBuildMode::Disabled)
-       {
-           // Fenster schließen
-           if(roadwindow)
-           {
-               roadwindow->Close();
-               roadwindow = nullptr;
-           }
-           GI_CancelRoadBuilding();
-       }*/
 }
 
 void dskGameInterface::CI_GameResumed()
