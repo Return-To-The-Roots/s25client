@@ -15,23 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "TransmittingSettingsWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
+
 #include "WindowManager.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include <mygettext/mygettext.h>
 
-TransmittingSettingsWindow::TransmittingSettingsWindow(unsigned id, const DrawPoint& pos, const Extent& size,
-                                                       std::string title, glArchivItem_Bitmap* background, bool modal,
-                                                       bool closeOnRightClick, Window* parent)
+constexpr unsigned TransmitSettingsIgwAdapter::firstCtrlID;
+
+TransmitSettingsIgwAdapter::TransmitSettingsIgwAdapter(unsigned id, const DrawPoint& pos, const Extent& size,
+                                                       const std::string& title, glArchivItem_Bitmap* background,
+                                                       bool modal, bool closeOnRightClick, Window* parent)
     : IngameWindow(id, pos, size, title, background, modal, closeOnRightClick, parent), settings_changed(false)
 {
     // Timer for transmitting changes every 2 seconds
     using namespace std::chrono_literals;
-    AddTimer(1001, 2s);
+    AddTimer(firstCtrlID + 1u, 2s);
 }
 
-void TransmittingSettingsWindow::Close()
+void TransmitSettingsIgwAdapter::Close()
 {
     TransmitSettings();
     if(!settings_changed)
@@ -42,26 +45,18 @@ void TransmittingSettingsWindow::Close()
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(GetTitle(),
                                                       _("The changes could not be applied and will be discarded. A "
                                                         "potential reason for this is that the game is paused."),
-                                                      this, MsgboxButton::OkCancel, MsgboxIcon::ExclamationRed, 1000));
+                                                      this, MsgboxButton::OkCancel, MsgboxIcon::ExclamationRed,
+                                                      firstCtrlID));
     }
 }
 
-void TransmittingSettingsWindow::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void TransmitSettingsIgwAdapter::Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr)
 {
-    switch(msgbox_id)
-    {
-        case 1000: // Close?
-        {
-            if(mbr == MsgboxResult::Ok)
-            {
-                IngameWindow::Close();
-            }
-        }
-        break;
-    }
+    if(msgbox_id == firstCtrlID && mbr == MsgboxResult::Ok)
+        IngameWindow::Close();
 }
 
-void TransmittingSettingsWindow::Msg_Timer(const unsigned /*ctrl_id*/)
+void TransmitSettingsIgwAdapter::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         UpdateSettings();

@@ -17,12 +17,12 @@
 
 #pragma once
 
-#include "TransmittingSettingsWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
 #include "gameTypes/SettingsTypes.h"
 
 class GameWorldViewer;
 
-class iwBuildOrder : public TransmittingSettingsWindow
+class iwBuildOrder : public TransmitSettingsIgwAdapter
 {
     const GameWorldViewer& gwv;
 

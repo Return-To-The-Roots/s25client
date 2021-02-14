@@ -345,7 +345,7 @@ bool iwAction::DoUpgradeRoad()
     if(flag)
         return GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
     else
-        return false;
+        return true;
 }
 
 /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
@@ -692,7 +692,7 @@ void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
 
 void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
 {
-    bool success = false;
+    bool success = true;
     switch(ctrl_id)
     {
         case 1: // Straße abreißen

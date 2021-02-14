@@ -29,7 +29,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : TransmittingSettingsWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"),
+    : TransmitSettingsIgwAdapter(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"),
                                  LOADER.GetImageN("io", 5)),
       gwv(gwv), gcFactory(gcFactory)
 {

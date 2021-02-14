@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include "TransmittingSettingsWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
 #include "gameTypes/SettingsTypes.h"
 
 class GameCommandFactory;
 class GameWorldViewer;
 
 /// Fenster mit den Militäreinstellungen.
-class iwMilitary : public TransmittingSettingsWindow
+class iwMilitary : public TransmitSettingsIgwAdapter
 {
     GameCommandFactory& gcFactory;
 

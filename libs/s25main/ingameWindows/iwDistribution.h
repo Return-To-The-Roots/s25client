@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include "TransmittingSettingsWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
 #include "gameTypes/SettingsTypes.h"
 #include <vector>
 
 class GameCommandFactory;
 class GameWorldViewer;
 
-class iwDistribution : public TransmittingSettingsWindow
+class iwDistribution : public TransmitSettingsIgwAdapter
 {
     struct DistributionGroup;
 

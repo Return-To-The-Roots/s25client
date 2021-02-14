@@ -30,7 +30,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : TransmittingSettingsWindow(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
+    : TransmitSettingsIgwAdapter(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
                                  LOADER.GetImageN("io", 5)),
       gcFactory(gcFactory)
 {
@@ -65,7 +65,7 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
         GetCtrl<ctrlProgress>(2)->SetVisible(false);
     }
 
-    UpdateSettings();
+    iwMilitary::UpdateSettings();
 }
 
 /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden

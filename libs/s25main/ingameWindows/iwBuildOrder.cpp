@@ -28,7 +28,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
-    : TransmittingSettingsWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300),
+    : TransmitSettingsIgwAdapter(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300),
                                  _("Building sequence"), LOADER.GetImageN("io", 5)),
       gwv(gwv)
 {

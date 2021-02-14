@@ -19,26 +19,26 @@
 
 #include "IngameWindow.h"
 
-class TransmittingSettingsWindow : public IngameWindow
+class TransmitSettingsIgwAdapter : public IngameWindow
 {
 protected:
     /// whether any settings where changed after the last successful transmission
     bool settings_changed;
 
+    static constexpr unsigned firstCtrlID = 1000000u;
+
 public:
-    TransmittingSettingsWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
+    TransmitSettingsIgwAdapter(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title,
                                glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true,
                                Window* parent = nullptr);
 
-    virtual ~TransmittingSettingsWindow() {}
-
     /// Updates the control elements with values from visual settings
-    virtual void UpdateSettings() {}
+    virtual void UpdateSettings() = 0;
     /// sends potential changes to the client
-    virtual void TransmitSettings() {}
+    virtual void TransmitSettings() = 0;
 
     void Close() override;
 
-    virtual void Msg_Timer(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_Timer(unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 };

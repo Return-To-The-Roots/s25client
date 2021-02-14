@@ -39,7 +39,7 @@
 #include "s25util/colors.h"
 
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : TransmittingSettingsWindow(
+    : TransmitSettingsIgwAdapter(
       CGI_TOOLS, IngameWindow::posLastOrCenter,
       Extent(166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432), _("Tools"),
       LOADER.GetImageN("io", 5)),

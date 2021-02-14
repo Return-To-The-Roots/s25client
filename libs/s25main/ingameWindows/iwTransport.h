@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "TransmittingSettingsWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
 #include "gameTypes/SettingsTypes.h"
 #include <array>
 
@@ -25,7 +25,7 @@ class ITexture;
 class GameWorldViewer;
 class GameCommandFactory;
 
-class iwTransport : public TransmittingSettingsWindow
+class iwTransport : public TransmitSettingsIgwAdapter
 {
 private:
     struct ButtonData

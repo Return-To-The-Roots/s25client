@@ -44,7 +44,7 @@ std::vector<iwDistribution::DistributionGroup> iwDistribution::groups;
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
 
 iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : TransmittingSettingsWindow(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312),
+    : TransmitSettingsIgwAdapter(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312),
                                  _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
@@ -82,7 +82,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey, LOADER.GetImageN("io", 191),
                    _("Default"));
 
-    UpdateSettings();
+    iwDistribution::UpdateSettings();
 }
 
 void iwDistribution::TransmitSettings()

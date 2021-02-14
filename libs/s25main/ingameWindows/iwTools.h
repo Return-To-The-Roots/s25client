@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "TransmittingSettingsWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
 #include "notifications/Subscription.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/SettingsTypes.h"
@@ -27,7 +27,7 @@ class GameCommandFactory;
 class GameWorldViewer;
 
 /// Tool settings window
-class iwTools : public TransmittingSettingsWindow
+class iwTools : public TransmitSettingsIgwAdapter
 {
 public:
     iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
