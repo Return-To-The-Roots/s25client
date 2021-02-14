@@ -360,7 +360,7 @@ void dskGameInterface::Msg_PaintAfter()
     // Show icons in the upper right corner of the game interface
     DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
 
-    // Draw cheating indicator icon (WINTER) - Single Player only!
+    // Draw cheating indicator icon (WINTER)
     if(isCheatModeOn)
     {
         glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
@@ -777,12 +777,17 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
             } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
             {
-                const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
-                if(player.ps == PlayerState::AI && player.aiInfo.type == AI::Type::Dummy)
-                    GAMECLIENT.RequestSwapToPlayer(playerIdx);
+                // On mutiplayer this currently asyncs, but as this is a debug feature anyway just disable it there.
+                // If this should be enabled again, look into the handling/clearing of accumulated GCs
+                if(game_->world_.IsSinglePlayer())
+                {
+                    const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
+                    if(player.ps == PlayerState::AI && player.aiInfo.type == AI::Type::Dummy)
+                        GAMECLIENT.RequestSwapToPlayer(playerIdx);
+                }
             }
-        }
             return true;
+        }
 
         case 'b': // Zur lezten Position zurückspringen
             gwv.MoveToLastPosition();
