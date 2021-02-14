@@ -59,8 +59,8 @@ void iwHQ::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id
 {
     if(group_id == grpIdReserve)
     {
-   	  RTTR_Assert(ctrl_id >= 11 && ctrl_id < 21);
-   	  unsigned rank = 0, newReserve = 0, oldReserve = 0;
+        RTTR_Assert(ctrl_id >= 11 && ctrl_id < 21);
+        unsigned rank = 0, newReserve = 0, oldReserve = 0;
 
         // Minus-Button
         if(ctrl_id >= 11 && ctrl_id < 16)
