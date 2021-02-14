@@ -126,7 +126,7 @@ void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const
 void iwDistribution::UpdateSettings(const Distributions& distribution)
 {
     if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.ResetVisualSettings();
+        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
     unsigned distIdx = 0;
     for(unsigned g = 0; g < groups.size(); ++g)
     {
