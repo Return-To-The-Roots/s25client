@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     wnd.GetCtrl<ctrlProgress>(CTRL_RIVERS)->SetPosition(expectedRivers);
     wnd.GetCtrl<ctrlProgress>(CTRL_TREES)->SetPosition(expectedTrees);
     wnd.GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->SetPosition(expectedStonePiles);
-    wnd.Window::Msg_ButtonClick(CTRL_BTN_APPLY);
+    wnd.Msg_ButtonClick(CTRL_BTN_APPLY);
 
     BOOST_TEST(settings.numPlayers == expectedNumPlayers);
     BOOST_TEST(settings.type == DescIdx<LandscapeDesc>(expectedMapType));
