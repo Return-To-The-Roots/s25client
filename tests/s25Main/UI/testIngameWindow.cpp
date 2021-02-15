@@ -42,9 +42,9 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     BOOST_TEST_REQUIRE(wnd.GetSize() == oldSize);
 }
 
-BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MapStyle);
-BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MountainDistance);
-BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount);
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MapStyle)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MountainDistance)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount)
 
 BOOST_AUTO_TEST_CASE(IwMapGenerator)
 {
@@ -77,14 +77,14 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
         CTRL_ISLANDS
     };
     const auto expectedNumPlayers = rttr::test::randomValue(2u, 7u);
-    const auto expectedMapType = rttr::test::randomValue(0, 2);
-    const auto expectedGoldRatio = rttr::test::randomValue(0u, 100u);
-    const auto expectedIronRatio = rttr::test::randomValue(0u, 100u);
-    const auto expectedCoalRatio = rttr::test::randomValue(0u, 100u);
-    const auto expectedGraniteRatio = rttr::test::randomValue(0u, 100u);
-    const auto expectedRivers = rttr::test::randomValue(0u, 100u);
-    const auto expectedTrees = rttr::test::randomValue(0u, 100u);
-    const auto expectedStonePiles = rttr::test::randomValue(0u, 100u);
+    const auto expectedMapType = rttr::test::randomValue<uint8_t>(0, 2);
+    const auto expectedGoldRatio = rttr::test::randomValue<unsigned short>(0, 100);
+    const auto expectedIronRatio = rttr::test::randomValue<unsigned short>(0, 100);
+    const auto expectedCoalRatio = rttr::test::randomValue<unsigned short>(0, 100);
+    const auto expectedGraniteRatio = rttr::test::randomValue<unsigned short>(0, 100);
+    const auto expectedRivers = rttr::test::randomValue<unsigned short>(0, 100);
+    const auto expectedTrees = rttr::test::randomValue<unsigned short>(0, 100);
+    const auto expectedStonePiles = rttr::test::randomValue<unsigned short>(0, 100);
 
     uiHelper::initGUITests();
     rttr::mapGenerator::MapSettings settings;
