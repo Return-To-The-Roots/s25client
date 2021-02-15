@@ -18,10 +18,10 @@
 #include "PointOutput.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlProgress.h"
-#include "gameTypes/GameTypesOutput.h"
 #include "ingameWindows/iwHelp.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "uiHelper/uiHelpers.hpp"
+#include "gameTypes/GameTypesOutput.h"
 #include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 
