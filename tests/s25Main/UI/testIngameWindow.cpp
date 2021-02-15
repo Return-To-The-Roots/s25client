@@ -75,11 +75,11 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     rttr::mapGenerator::MapSettings settings;
     iwMapGenerator wnd(settings);
     wnd.GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->SetSelection(2); // 4 players
-    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->SetSelection(2); // LandscapeDesc(2)
-    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->SetSelection(1); // MapStyle::Land
-    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->SetSelection(4); // 1024x1024
+    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->SetSelection(2);      // LandscapeDesc(2)
+    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->SetSelection(1);     // MapStyle::Land
+    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->SetSelection(4);      // 1024x1024
     wnd.GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->SetSelection(3); // MountainDistance::VeryFar
-    wnd.GetCtrl<ctrlComboBox>(CTRL_ISLANDS)->SetSelection(2); // IslandAmount::Many
+    wnd.GetCtrl<ctrlComboBox>(CTRL_ISLANDS)->SetSelection(2);       // IslandAmount::Many
     wnd.GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->SetPosition(25);
     wnd.GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->SetPosition(25);
     wnd.GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->SetPosition(25);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     wnd.GetCtrl<ctrlProgress>(CTRL_RIVERS)->SetPosition(33);
     wnd.GetCtrl<ctrlProgress>(CTRL_TREES)->SetPosition(33);
     wnd.GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->SetPosition(33);
-    wnd.Window::Msg_ButtonClick(CTRL_BTN_APPLY); // press apply button
+    wnd.Window::Msg_ButtonClick(CTRL_BTN_APPLY);
 
     BOOST_TEST(settings.numPlayers == 4);
     BOOST_TEST(settings.type == DescIdx<LandscapeDesc>(2));
