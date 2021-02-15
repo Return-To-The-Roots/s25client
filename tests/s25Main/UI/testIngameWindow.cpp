@@ -18,9 +18,9 @@
 #include "PointOutput.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlProgress.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "ingameWindows/iwHelp.h"
 #include "ingameWindows/iwMapGenerator.h"
-#include "mapGenerator/MapSettings.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
@@ -41,6 +41,10 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     wnd.SetMinimized(false);
     BOOST_TEST_REQUIRE(wnd.GetSize() == oldSize);
 }
+
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MapStyle);
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MountainDistance);
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount);
 
 BOOST_AUTO_TEST_CASE(IwMapGenerator)
 {
