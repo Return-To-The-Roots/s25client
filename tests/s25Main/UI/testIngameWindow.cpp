@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     uiHelper::initGUITests();
     rttr::mapGenerator::MapSettings settings;
     iwMapGenerator wnd(settings);
-    wnd.GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->SetSelection(expectedNumPlayers-2);
+    wnd.GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->SetSelection(expectedNumPlayers - 2);
     wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->SetSelection(expectedMapType);
     wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->SetSelection(1);     // MapStyle::Land
     wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->SetSelection(4);      // 1024x1024
