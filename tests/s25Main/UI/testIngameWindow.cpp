@@ -21,8 +21,8 @@
 #include "ingameWindows/iwHelp.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "mapGenerator/MapSettings.h"
-#include "rttr/test/random.hpp"
 #include "uiHelper/uiHelpers.hpp"
+#include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(IngameWnd)
