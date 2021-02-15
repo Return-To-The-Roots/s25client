@@ -41,8 +41,8 @@ void iwSurrender::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0: // OK
         {
-            GAMECLIENT.Surrender();
-            Close();
+            if(GAMECLIENT.Surrender())
+                Close();
         }
         break;
         case 1: // Abbrechen
@@ -52,8 +52,8 @@ void iwSurrender::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 2: // OK + Alles abbrennen
         {
-            GAMECLIENT.DestroyAll();
-            Close();
+            if(GAMECLIENT.DestroyAll())
+                Close();
         }
         break;
     }

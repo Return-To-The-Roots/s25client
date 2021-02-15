@@ -178,7 +178,13 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
         break;
 
         case ID_DELETE: // Delete
-        case ID_DENY:   // Cross (Deny)
+        {
+            if(!ValidateMessages() || !curMsg)
+                return;
+            postBox.DeleteMsg(curMsg);
+            break;
+        }
+        case ID_DENY: // Cross (Deny)
         {
             if(!ValidateMessages() || !curMsg)
                 return;
@@ -187,9 +193,9 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
             {
                 // If it is a question about a new contract, tell the other player we denied it
                 if(dcurMsg->IsAccept())
-                    GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                    if(GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId()))
+                        postBox.DeleteMsg(curMsg);
             }
-            postBox.DeleteMsg(curMsg);
         }
         break;
 
@@ -201,12 +207,15 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
             const auto* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(GetMsg(curMsgId));
             if(dcurMsg)
             {
+                bool success = false;
                 // New contract?
                 if(dcurMsg->IsAccept())
-                    GAMECLIENT.AcceptPact(dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                    success =
+                      GAMECLIENT.AcceptPact(dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
                 else
-                    GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
-                postBox.DeleteMsg(dcurMsg);
+                    success = GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                if(success)
+                    postBox.DeleteMsg(dcurMsg);
             }
         }
         break;

@@ -1660,9 +1660,10 @@ void GameClient::SetPause(bool pause)
     } else if(IsHost())
     {
         // Pause instantly
+        auto* msg = new GameMessage_Pause(pause);
         if(pause)
-            framesinfo.isPaused = true;
-        mainPlayer.sendMsgAsync(new GameMessage_Pause(pause));
+            OnGameMessage(*msg);
+        mainPlayer.sendMsgAsync(msg);
     }
 }
 

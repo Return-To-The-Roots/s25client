@@ -31,8 +31,6 @@
 #include "gameData/const_gui_ids.h"
 #include <utility>
 
-using namespace std::chrono_literals;
-
 struct iwDistribution::DistributionGroup
 {
     DistributionGroup(std::string name, glArchivItem_Bitmap* img) : name(std::move(name)), img(img) {}
@@ -46,9 +44,9 @@ std::vector<iwDistribution::DistributionGroup> iwDistribution::groups;
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
 
 iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312), _("Distribution of goods"),
-                   LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gcFactory(gcFactory), settings_changed(false)
+    : TransmitSettingsIgwAdapter(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312),
+                                 _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), gcFactory(gcFactory)
 {
     CreateGroups();
 
@@ -76,9 +74,6 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     // Gruppe auswählen
     tab->SetSelection(0);
 
-    // Timer für die Übertragung der Daten via Netzwerk
-    AddTimer(1, 2s);
-
     const Extent btSize(32, 32);
     // Hilfe
     AddImageButton(2, DrawPoint(15, GetSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
@@ -87,12 +82,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey, LOADER.GetImageN("io", 191),
                    _("Default"));
 
-    UpdateSettings();
-}
-
-iwDistribution::~iwDistribution()
-{
-    TransmitSettings();
+    iwDistribution::UpdateSettings();
 }
 
 void iwDistribution::TransmitSettings()
@@ -133,17 +123,7 @@ void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const
     settings_changed = true;
 }
 
-void iwDistribution::Msg_Timer(const unsigned /*ctrl_id*/)
-{
-    if(GAMECLIENT.IsReplayModeOn())
-        // Im Replay aktualisieren wir die Werte
-        UpdateSettings();
-    else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
-        TransmitSettings();
-}
-
-void iwDistribution::UpdateSettings()
+void iwDistribution::UpdateSettings(const Distributions& distribution)
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
@@ -155,9 +135,14 @@ void iwDistribution::UpdateSettings()
         ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(g);
         // And correct entry
         for(unsigned i = 0; i < group.entries.size(); ++i, ++distIdx)
-            tab->GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.distribution[distIdx]);
+            tab->GetCtrl<ctrlProgress>(i)->SetPosition(distribution[distIdx]);
     }
     RTTR_Assert(distIdx == std::tuple_size<Distributions>::value);
+}
+
+void iwDistribution::UpdateSettings()
+{
+    UpdateSettings(GAMECLIENT.visual_settings.distribution);
 }
 
 void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
@@ -179,8 +164,7 @@ void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
         // Default button
         case 10:
         {
-            GAMECLIENT.visual_settings.distribution = GAMECLIENT.default_settings.distribution;
-            UpdateSettings();
+            UpdateSettings(GAMECLIENT.default_settings.distribution);
             settings_changed = true;
         }
         break;

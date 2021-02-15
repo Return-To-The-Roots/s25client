@@ -154,13 +154,16 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
     // Expeditionskommando? (Schiff weiterfahren lassen, Kolonie gründen)
     if(ctrl_id >= 10 && ctrl_id <= 17)
     {
+        bool success = false;
         if(ctrl_id == 10)
-            gcFactory.FoundColony(ship_id);
+            success = gcFactory.FoundColony(ship_id);
         else if(ctrl_id == 11)
-            gcFactory.CancelExpedition(ship_id);
+            success = gcFactory.CancelExpedition(ship_id);
         else
-            gcFactory.TravelToNextSpot(ShipDirection(ctrl_id - 12), ship_id);
-        Close();
+            success = gcFactory.TravelToNextSpot(ShipDirection(ctrl_id - 12), ship_id);
+
+        if(success)
+            Close();
     }
 
     switch(ctrl_id)

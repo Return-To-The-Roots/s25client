@@ -39,10 +39,11 @@
 #include "s25util/colors.h"
 
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_TOOLS, IngameWindow::posLastOrCenter,
-                   Extent(166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432), _("Tools"),
-                   LOADER.GetImageN("io", 5)),
-      gwv(gwv), gcFactory(gcFactory), settings_changed(false), ordersChanged(false), shouldUpdateTexts(false),
+    : TransmitSettingsIgwAdapter(
+      CGI_TOOLS, IngameWindow::posLastOrCenter,
+      Extent(166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432), _("Tools"),
+      LOADER.GetImageN("io", 5)),
+      gwv(gwv), gcFactory(gcFactory), ordersChanged(false), shouldUpdateTexts(false),
       isReplay(GAMECLIENT.IsReplayModeOn())
 {
     // Einzelne Balken
@@ -81,10 +82,6 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     // Einstellungen festlegen
     UpdateSettings();
 
-    // Netzwerk-Übertragungs-Timer
-    using namespace std::chrono_literals;
-    AddTimer(14, 2s);
-
     toolSubscription =
       gwv.GetWorld().GetNotifications().subscribe<ToolNote>([this](auto) { this->shouldUpdateTexts = true; });
 }
@@ -98,17 +95,13 @@ void iwTools::AddToolSettingSlider(unsigned id, GoodType ware)
         el->ActivateControls(false);
 }
 
-iwTools::~iwTools()
-{
-    TransmitSettings();
-}
-
 void iwTools::TransmitSettings()
 {
     if(isReplay)
         return;
     // Wurden Einstellungen verändert?
-    if(settings_changed || ordersChanged)
+    settings_changed |= ordersChanged;
+    if(settings_changed)
     {
         // Einstellungen speichern
         ToolSettings newSettings;
@@ -204,14 +197,13 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
                                              "The higher the value, the more likely this tool is to be produced.")));
                 break;
             case 13: // Standard
-                GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;
-                UpdateSettings();
+                UpdateSettings(GAMECLIENT.default_settings.tools_settings);
                 settings_changed = true;
                 break;
             case 15: // Zero all
-                std::fill(GAMECLIENT.visual_settings.tools_settings.begin(),
-                          GAMECLIENT.visual_settings.tools_settings.end(), 0);
-                UpdateSettings();
+                ToolSettings zero;
+                zero.fill(0);
+                UpdateSettings(zero);
                 settings_changed = true;
                 break;
         }
@@ -223,26 +215,15 @@ void iwTools::Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned shor
     settings_changed = true;
 }
 
-void iwTools::Msg_Timer(const unsigned /*ctrl_id*/)
+void iwTools::UpdateSettings(const ToolSettings& tool_settings)
 {
     if(isReplay)
-        // Im Replay aktualisieren wir die Werte
-        UpdateSettings();
-    else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
-        TransmitSettings();
+        GAMECLIENT.ResetVisualSettings();
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
+        GetCtrl<ctrlProgress>(i)->SetPosition(tool_settings[i]);
 }
 
 void iwTools::UpdateSettings()
 {
-    if(isReplay)
-    {
-        const GamePlayer& localPlayer = gwv.GetPlayer();
-        for(unsigned i = 0; i < NUM_TOOLS; ++i)
-            GetCtrl<ctrlProgress>(i)->SetPosition(localPlayer.GetToolPriority(i));
-    } else
-    {
-        for(unsigned i = 0; i < NUM_TOOLS; ++i)
-            GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
-    }
+    UpdateSettings(GAMECLIENT.visual_settings.tools_settings);
 }

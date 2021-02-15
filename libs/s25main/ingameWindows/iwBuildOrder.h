@@ -17,27 +17,28 @@
 
 #pragma once
 
-#include "IngameWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
+#include "gameTypes/SettingsTypes.h"
 
 class GameWorldViewer;
 
-class iwBuildOrder : public IngameWindow
+class iwBuildOrder : public TransmitSettingsIgwAdapter
 {
     const GameWorldViewer& gwv;
-    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-    bool settings_changed;
+
+    BuildOrders pendingBuildOrder;
+    bool useCustomBuildOrder;
 
 public:
     iwBuildOrder(const GameWorldViewer& gwv);
-    ~iwBuildOrder() override;
 
 private:
-    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-    void UpdateSettings();
+    /// Updates the control elements with the pending build order
+    void UpdateSettings() override;
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-    void TransmitSettings();
+    void TransmitSettings() override;
 
-    void Msg_Timer(unsigned ctrl_id) override;
     void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
 };

@@ -17,30 +17,27 @@
 
 #pragma once
 
-#include "IngameWindow.h"
+#include "TransmitSettingsIgwAdapter.h"
+#include "gameTypes/SettingsTypes.h"
 
 class GameCommandFactory;
 class GameWorldViewer;
 
 /// Fenster mit den Militäreinstellungen.
-class iwMilitary : public IngameWindow
+class iwMilitary : public TransmitSettingsIgwAdapter
 {
-    const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
-    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-    bool settings_changed;
 
 public:
     iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-    ~iwMilitary() override;
 
 private:
-    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-    void UpdateSettings();
+    /// Updatet die Steuerelemente mit den übergebenen Einstellungen
+    void UpdateSettings(const MilitarySettings& military_settings);
+    void UpdateSettings() override;
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-    void TransmitSettings();
+    void TransmitSettings() override;
 
-    void Msg_Timer(unsigned ctrl_id) override;
     void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };

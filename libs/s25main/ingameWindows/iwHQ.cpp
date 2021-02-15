@@ -59,18 +59,27 @@ void iwHQ::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id
 {
     if(group_id == grpIdReserve)
     {
+        RTTR_Assert(ctrl_id >= 11 && ctrl_id < 21);
+        unsigned rank = 0, newReserve = 0, oldReserve = 0;
+
         // Minus-Button
         if(ctrl_id >= 11 && ctrl_id < 16)
         {
-            // Netzwerk-Nachricht generieren
-            GAMECLIENT.ChangeReserve(wh->GetPos(), ctrl_id - 11, wh->DecreaseReserveVisual(ctrl_id - 11));
+            rank = ctrl_id - 11;
+            oldReserve = *(wh->GetReserveClaimedVisualPointer(rank));
+            newReserve = oldReserve > 0 ? oldReserve - 1 : oldReserve;
         }
         // Plus-Button
         else if(ctrl_id >= 16 && ctrl_id < 21)
         {
-            // Netzwerk-Nachricht generieren
-            GAMECLIENT.ChangeReserve(wh->GetPos(), ctrl_id - 16, wh->IncreaseReserveVisual(ctrl_id - 16));
+            rank = ctrl_id - 16;
+            oldReserve = *(wh->GetReserveClaimedVisualPointer(rank));
+            newReserve = oldReserve + 1;
         }
+
+        // Netzwerk-Nachricht generieren
+        if(newReserve != oldReserve && GAMECLIENT.ChangeReserve(wh->GetPos(), rank, newReserve))
+            wh->SetReserveVisual(rank, newReserve);
     }
 
     // an Basis weiterleiten

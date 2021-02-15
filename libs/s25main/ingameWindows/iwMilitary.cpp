@@ -30,9 +30,9 @@
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
-                   LOADER.GetImageN("io", 5)),
-      gwv(gwv), gcFactory(gcFactory), settings_changed(false)
+    : TransmitSettingsIgwAdapter(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
+                                 LOADER.GetImageN("io", 5)),
+      gcFactory(gcFactory)
 {
     // Einzelne Balken
     const Extent progSize(132, 26);
@@ -65,21 +65,7 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
         GetCtrl<ctrlProgress>(2)->SetVisible(false);
     }
 
-    // Absendetimer, in 2s-Abschnitten wird jeweils das ganze als Netzwerknachricht ggf. abgeschickt
-    using namespace std::chrono_literals;
-    AddTimer(22, 2s);
-    UpdateSettings();
-}
-
-iwMilitary::~iwMilitary()
-{
-    try
-    {
-        TransmitSettings();
-    } catch(...)
-    {
-        // Ignore
-    }
+    iwMilitary::UpdateSettings();
 }
 
 /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
@@ -92,23 +78,16 @@ void iwMilitary::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        MilitarySettings& milSettings = GAMECLIENT.visual_settings.military_settings;
+        MilitarySettings milSettings = GAMECLIENT.visual_settings.military_settings;
         for(unsigned char i = 0; i < milSettings.size(); ++i)
             milSettings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        gcFactory.ChangeMilitary(milSettings);
-        settings_changed = false;
+        if(gcFactory.ChangeMilitary(milSettings))
+        {
+            GAMECLIENT.visual_settings.military_settings = milSettings;
+            settings_changed = false;
+        }
     }
-}
-
-void iwMilitary::Msg_Timer(const unsigned /*ctrl_id*/)
-{
-    if(GAMECLIENT.IsReplayModeOn())
-        // Im Replay aktualisieren wir die Werte
-        UpdateSettings();
-    else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
-        TransmitSettings();
 }
 
 void iwMilitary::Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
@@ -117,12 +96,17 @@ void iwMilitary::Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned s
     settings_changed = true;
 }
 
-void iwMilitary::UpdateSettings()
+void iwMilitary::UpdateSettings(const MilitarySettings& military_settings)
 {
     if(GAMECLIENT.IsReplayModeOn())
-        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    for(unsigned i = 0; i < GAMECLIENT.visual_settings.military_settings.size(); ++i)
-        GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.military_settings[i]);
+        GAMECLIENT.ResetVisualSettings();
+    for(unsigned i = 0; i < military_settings.size(); ++i)
+        GetCtrl<ctrlProgress>(i)->SetPosition(military_settings[i]);
+}
+
+void iwMilitary::UpdateSettings()
+{
+    UpdateSettings(GAMECLIENT.visual_settings.military_settings);
 }
 
 void iwMilitary::Msg_ButtonClick(const unsigned ctrl_id)
@@ -148,8 +132,7 @@ void iwMilitary::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 21:
         {
-            GAMECLIENT.visual_settings.military_settings = GAMECLIENT.default_settings.military_settings;
-            UpdateSettings();
+            UpdateSettings(GAMECLIENT.default_settings.military_settings);
             settings_changed = true;
         }
         break;
