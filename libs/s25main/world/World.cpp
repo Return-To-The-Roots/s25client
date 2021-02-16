@@ -276,15 +276,65 @@ DescIdx<TerrainDesc> World::GetRightTerrain(const MapPoint pt, Direction dir) co
 
 WalkTerrain World::GetTerrain(MapPoint pt, Direction dir) const
 {
-    return {GetRightTerrain(pt, dir - 1u), GetRightTerrain(pt, dir)};
+    // Manually inlined code from GetNeighbors. Measured to greatly improve performance
+    const MapExtent size = GetSize();
+    const MapCoord yminus1 = (pt.y == 0 ? size.y : pt.y) - 1;
+    const MapCoord xplus1 = pt.x == size.x - 1 ? 0 : pt.x + 1;
+    const MapCoord xminus1 = (pt.x == 0 ? size.x : pt.x) - 1;
+    const bool isEvenRow = (pt.y & 1) == 0;
+
+    const MapPoint wPt(xminus1, pt.y);
+    const MapPoint nwPt(!isEvenRow ? pt.x : xminus1, yminus1);
+    const MapPoint nePt(isEvenRow ? pt.x : xplus1, yminus1);
+    switch(dir)
+    {
+        case Direction::West:
+        {
+            return {GetNode(wPt).t2, GetNode(nwPt).t1};
+        }
+        case Direction::NorthWest:
+        {
+            const MapNode& node = GetNode(nwPt);
+            return {node.t1, node.t2};
+        }
+        case Direction::NorthEast:
+        {
+            return {GetNode(nwPt).t2, GetNode(nePt).t1};
+        }
+        case Direction::East:
+        {
+            return {GetNode(nePt).t1, GetNode(pt).t2};
+        }
+        case Direction::SouthEast:
+        {
+            const MapNode& node = GetNode(pt);
+            return {node.t2, node.t1};
+        }
+        case Direction::SouthWest:
+        {
+            return {GetNode(pt).t1, GetNode(wPt).t2};
+        }
+    }
+    throw std::logic_error("Invalid direction");
 }
 
 helpers::EnumArray<DescIdx<TerrainDesc>, Direction> World::GetTerrainsAround(MapPoint pt) const
 {
-    const MapNode& nwNode = GetNeighbourNode(pt, Direction::NorthWest);
-    const MapNode& neNode = GetNeighbourNode(pt, Direction::NorthEast);
+    // Manually inlined code from GetNeighbors. Measured to greatly improve performance
+    const MapExtent size = GetSize();
+    const MapCoord yminus1 = (pt.y == 0 ? size.y : pt.y) - 1;
+    const MapCoord xplus1 = pt.x == size.x - 1 ? 0 : pt.x + 1;
+    const MapCoord xminus1 = (pt.x == 0 ? size.x : pt.x) - 1;
+    const bool isEvenRow = (pt.y & 1) == 0;
+
+    const MapPoint wPt(xminus1, pt.y);
+    const MapPoint nwPt(!isEvenRow ? pt.x : xminus1, yminus1);
+    const MapPoint nePt(isEvenRow ? pt.x : xplus1, yminus1);
+
+    const MapNode& nwNode = GetNode(nwPt);
+    const MapNode& neNode = GetNode(nePt);
     const MapNode& curNode = GetNode(pt);
-    const MapNode& wNode = GetNeighbourNode(pt, Direction::West);
+    const MapNode& wNode = GetNode(wPt);
     helpers::EnumArray<DescIdx<TerrainDesc>, Direction> result{nwNode.t1,  nwNode.t2,  neNode.t1,
                                                                curNode.t2, curNode.t1, wNode.t2};
     return result;
