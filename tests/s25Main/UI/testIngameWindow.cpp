@@ -42,9 +42,11 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     BOOST_TEST_REQUIRE(wnd.GetSize() == oldSize);
 }
 
+// LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MapStyle)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MountainDistance)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount)
+// LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_CASE(IwMapGenerator)
 {
