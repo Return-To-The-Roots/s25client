@@ -210,8 +210,9 @@ namespace rttr { namespace mapGenerator {
 
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
         const auto rivers = CreateRivers(center);
+        const auto waterNodes = static_cast<unsigned>(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
 
-        CreateFreeIslands(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
+        CreateFreeIslands(waterNodes);
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
