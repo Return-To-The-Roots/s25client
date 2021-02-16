@@ -72,7 +72,7 @@ public:
     // Convenience functions for the above function
     MapCoord GetXA(MapPoint pt, Direction dir) const;
     // Gets all neighbors (in all directions) for given position
-    helpers::EnumArray<MapPoint, Direction> GetNeighbours(const MapPoint& pt) const;
+    helpers::EnumArray<MapPoint, Direction> GetNeighbours(MapPoint pt) const;
 
     /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
@@ -114,7 +114,6 @@ public:
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-// Convenience functions
 inline MapCoord MapBase::GetXA(const MapPoint pt, Direction dir) const
 {
     return GetNeighbour(pt, dir).x;
