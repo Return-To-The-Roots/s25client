@@ -82,11 +82,11 @@ namespace rttr { namespace mapGenerator {
         if(combinedSize <= 64 * 64)
             return 200;
         else if(combinedSize <= 128 * 128)
-            return 800;
+            return 400;
         else if(combinedSize <= 256 * 256)
-            return 1000;
+            return 600;
         else if(combinedSize <= 512 * 512)
-            return 1100;
+            return 900;
         else
             return 1200;
     }
@@ -231,12 +231,8 @@ namespace rttr { namespace mapGenerator {
         });
         SmoothHeightMap(map_.z, map_.height);
 
-        // 20% of map is center island (100% - 80% water)
-        const double sea = 0.80;
-
-        // 20% of center island is mountain (5% of 20% land)
-        const double mountain = 0.05;
-
+        const double sea = 0.80;      // 20% of map is center island (100% - 80% water)
+        const double mountain = 0.05; // 20% of center island is mountain (5% of 20% land)
         const auto seaLevel = LimitFor(map_.z, sea, map_.height.minimum);
 
         ResetSeaLevel(map_, rnd_, seaLevel);
