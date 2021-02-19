@@ -42,6 +42,7 @@ BOOST_FIXTURE_TEST_SUITE(RNG_Tests, SeedFixture)
 
 BOOST_AUTO_TEST_CASE(RandomTest)
 {
+    const auto GetObjId = []() { return 0u; }; // Fake function for RANDOM_RAND
     for(unsigned seed : seeds)
     {
         RANDOM.Init(seed);
@@ -52,7 +53,7 @@ BOOST_AUTO_TEST_CASE(RandomTest)
             for(std::vector<unsigned>& result : results)
             {
                 // Using .at makes sure we don't exceed the maximum value
-                ++result.at(RANDOM_RAND(0, result.size()));
+                ++result.at(RANDOM_RAND(result.size()));
             }
         }
         // We want a uniform distribution. So all values should occur about the same number of times
@@ -72,13 +73,14 @@ BOOST_AUTO_TEST_CASE(RandomTest)
 
 BOOST_AUTO_TEST_CASE(RandomSameSeq)
 {
+    const auto GetObjId = []() { return 0u; }; // Fake function for RANDOM_RAND
     // The rng must return the same sequence of values for a given seed
     RANDOM.Init(0x1337);
     std::vector<int> results = {623, 453, 927, 305, 478, 933, 230, 491, 968, 623, 418};
     for(int result : results)
     {
-        // std::cout << RANDOM_RAND(0, 1024) << std::endl;
-        BOOST_TEST_REQUIRE(RANDOM_RAND(0, 1024) == result);
+        // std::cout << RANDOM_RAND(1024) << std::endl;
+        BOOST_TEST_REQUIRE(RANDOM_RAND(1024) == result);
     }
 }
 
@@ -125,13 +127,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ValueRangeValid, T_RNG, TestedRNGS)
 
 BOOST_AUTO_TEST_CASE(EmptyRange)
 {
+    const auto GetObjId = []() { return 0u; }; // Fake function for RANDOM_RAND
     for(unsigned seed : seeds)
     {
         RANDOM.Init(seed);
         for(int i = 0; i < 100; i++)
         {
             // Create a random number in [0, 0] is always 0
-            BOOST_TEST_REQUIRE(RANDOM_RAND(1337, 0) == 0);
+            BOOST_TEST_REQUIRE(RANDOM_RAND(0) == 0);
         }
     }
 }
@@ -241,16 +244,34 @@ constexpr auto maxEnumValue(TestEnum)
 
 BOOST_AUTO_TEST_CASE(RandomEnum)
 {
+    const auto GetObjId = []() { return 0u; }; // Fake function for RANDOM_ENUM
     helpers::EnumArray<bool, TestEnum> triggered{};
     for(unsigned seed : seeds)
     {
         RANDOM.Init(seed);
         triggered = {};
         for(int i = 0; i < 30; i++)
-            triggered[RANDOM_ENUM(TestEnum, 1337)] = true;
+            triggered[RANDOM_ENUM(TestEnum)] = true;
         BOOST_TEST(triggered[TestEnum::e1]);
         BOOST_TEST(triggered[TestEnum::e2]);
         BOOST_TEST(triggered[TestEnum::e3]);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(RandomElement)
+{
+    const auto GetObjId = []() { return 0u; }; // Fake function for RANDOM_ENUM
+    std::array<bool, 3> triggered{};
+    const std::array<int, 3> indices{0, 1, 2};
+    for(unsigned seed : seeds)
+    {
+        RANDOM.Init(seed);
+        triggered = {};
+        for(int i = 0; i < 30; i++)
+            triggered[RANDOM_ELEMENT(indices)] = true;
+        BOOST_TEST(triggered[0]);
+        BOOST_TEST(triggered[1]);
+        BOOST_TEST(triggered[2]);
     }
 }
 

@@ -497,7 +497,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     this->burned_wh_id = burned_wh_id;
     // eine bestimmte Strecke rumirren und dann eine Flagge suchen
     // 3x rumirren und eine Flagge suchen, wenn dann keine gefunden wurde, stirbt die Figur
-    wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
+    wander_way = WANDER_WAY_MIN + RANDOM_RAND(WANDER_WAY_MAX - WANDER_WAY_MIN);
     // Soldaten sind härter im Nehmen
     wander_tryings = IsSoldier() ? WANDER_TRYINGS_SOLDIERS : WANDER_TRYINGS;
 
@@ -616,7 +616,7 @@ void noFigure::Wander()
         if(--wander_tryings > 0)
         {
             // von vorne beginnen wieder mit Rumirren
-            wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
+            wander_way = WANDER_WAY_MIN + RANDOM_RAND(WANDER_WAY_MAX - WANDER_WAY_MIN);
         } else
         {
             // Genug rumgeirrt, wir finden halt einfach nichts --> Sterben
@@ -640,11 +640,8 @@ bool noFigure::WalkInRandomDir()
 {
     PathConditionHuman pathChecker(*gwg);
     // Check all dirs starting with a random one and taking the first possible
-    unsigned dirOffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
-    for(auto dir : helpers::EnumRange<Direction>{})
+    for(const Direction dir : helpers::enumRange(RANDOM_ENUM(Direction)))
     {
-        dir += dirOffset;
-
         if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)) && pathChecker.IsEdgeOk(pos, dir))
         {
             StartWalking(dir);

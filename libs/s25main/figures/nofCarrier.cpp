@@ -87,9 +87,9 @@ const helpers::EnumArray<Job, CarrierType> JOB_TYPES = {{Job::Helper, Job::PackD
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace,
                        noRoadNode* const goal)
-    : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CarrierState::FigureWork),
-      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(nullptr),
-      productivity_ev(nullptr), productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
+    : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CarrierState::FigureWork), fat((RANDOM_RAND(2) != 0)),
+      workplace(workplace), carried_ware(nullptr), productivity_ev(nullptr), productivity(0), worked_gf(0),
+      since_working_gf(0xFFFFFFFF), next_animation(0)
 {}
 
 nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)

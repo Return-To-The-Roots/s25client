@@ -23,12 +23,12 @@
 std::ostream& operator<<(std::ostream& os, const RandomEntry& entry)
 {
     static const std::string rttrSrcBaseName = RttrConfig::GetSourceDir().generic_string() + "/";
-    std::string strippedSrcFile = boost::filesystem::path(entry.src_name).generic_string();
+    std::string strippedSrcFile = boost::filesystem::path(entry.srcName).generic_string();
     if(strippedSrcFile.find(rttrSrcBaseName) == 0)
         strippedSrcFile = strippedSrcFile.substr(rttrSrcBaseName.size());
     return os << entry.counter << ":R(" << entry.max << ")=" << entry.GetValue() << ",z=" << std::hex << std::setw(8)
-              << entry.rngState << std::dec << std::setw(0) << "\t| " << strippedSrcFile << "#" << entry.src_line
-              << "\t| id=" << entry.obj_id;
+              << entry.rngState << std::dec << std::setw(0) << "\t| " << strippedSrcFile << "#" << entry.srcLine
+              << "\t| id=" << entry.objId;
 }
 
 void saveRandomLog(const boost::filesystem::path& filepath, const std::vector<RandomEntry>& log)

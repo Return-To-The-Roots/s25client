@@ -156,7 +156,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 {
                     if(!available_point.empty())
                     {
-                        dest = available_point[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_point.size())];
+                        dest = RANDOM_ELEMENT(available_point);
                         break;
                     }
                 }

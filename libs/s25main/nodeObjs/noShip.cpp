@@ -60,10 +60,8 @@ constexpr std::array<helpers::EnumArray<DrawPoint, Direction>, 2> SHIPS_FLAG_POS
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NodalObjectType::Ship, pos), ownerId_(player), state(State::Idle), seaId_(0), goal_harborId(0),
-      goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player).nation]
-                     [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_names[gwg->GetPlayer(player).nation].size())]),
-      curRouteIdx(0), lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
+      goal_dir(0), name(RANDOM_ELEMENT(ship_names[gwg->GetPlayer(player).nation])), curRouteIdx(0), lost(false),
+      remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
     for(const auto dir : helpers::EnumRange<Direction>{})
@@ -1220,7 +1218,7 @@ void noShip::ContinueExplorationExpedition()
         else
         {
             // Choose one randomly
-            goal_harborId = hps[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), hps.size())];
+            goal_harborId = RANDOM_ELEMENT(hps);
         }
     }
 

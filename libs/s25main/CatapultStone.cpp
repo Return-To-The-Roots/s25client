@@ -126,7 +126,7 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist
             if(!gwg->GetSpecObj<noBase>(dest_map))
-                gwg->SetNO(dest_map, new noEnvObject(dest_map, 502 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)));
+                gwg->SetNO(dest_map, new noEnvObject(dest_map, 502 + RANDOM_RAND(2)));
         }
     }
 }

@@ -28,6 +28,13 @@
 #include <vector>
 
 class Serializer;
+/// Struct similar to std::source_location but includes the objId
+struct RandomContext
+{
+    const char* srcName;
+    unsigned srcLine;
+    unsigned objId;
+};
 
 /// Random class for the random values in the game
 /// Guarantees reproducible sequences given same seeds/states
@@ -48,15 +55,14 @@ public:
         unsigned counter;
         int max;
         PRNG rngState;
-        std::string src_name;
-        unsigned src_line;
-        unsigned obj_id;
+        std::string srcName;
+        unsigned srcLine;
+        unsigned objId;
 
-        RandomEntry() : counter(0), max(0), src_line(0), obj_id(0){};
-        RandomEntry(unsigned counter, int max, const PRNG& rngState, std::string src_name, unsigned src_line,
-                    unsigned obj_id)
-            : counter(counter), max(max), rngState(rngState), src_name(std::move(src_name)), src_line(src_line),
-              obj_id(obj_id){};
+        RandomEntry() : counter(0), max(0), srcLine(0), objId(0){};
+        RandomEntry(unsigned counter, int max, const PRNG& rngState, const RandomContext& ctx)
+            : counter(counter), max(max), rngState(rngState), srcName(ctx.srcName), srcLine(ctx.srcLine),
+              objId(ctx.objId){};
 
         void Serialize(Serializer& ser) const;
         void Deserialize(Serializer& ser);
@@ -70,7 +76,7 @@ public:
     /// Reset the Random class to start from a given state
     void ResetState(const PRNG& newState);
     /// Return a random number in the range [0, max)
-    int Rand(const char* src_name, unsigned src_line, unsigned obj_id, int max);
+    int Rand(const RandomContext& context, int max);
 
     /// Get a checksum of the RNG
     unsigned GetChecksum() const;
@@ -97,40 +103,37 @@ using RandomEntry = UsedRandom::RandomEntry;
 ///////////////////////////////////////////////////////////////////////////////
 // Macros / Defines
 #define RANDOM UsedRandom::inst()
+#define RANDOM_CONTEXT() \
+    RandomContext { __FILE__, __LINE__, GetObjId() }
+#define RANDOM_CONTEXT2(objId) \
+    RandomContext { __FILE__, __LINE__, objId }
 /// Shortcut to get a new random value in range [0, maxVal) for a given object id
 /// Note: maxVal has to be small (at least <= 32768)
-#define RANDOM_RAND(objId, maxVal) RANDOM.Rand(__FILE__, __LINE__, objId, maxVal)
+#define RANDOM_RAND(maxVal) RANDOM.Rand(RANDOM_CONTEXT(), maxVal)
+/// Return a random element from the container. Must not be empty
+#define RANDOM_ELEMENT(container) detail::randomElement(container, RANDOM_CONTEXT())
 /// Return a random enumerator of the given type. Requires the <helpers/MaxEnumValue.h> include
-#define RANDOM_ENUM(EnumType, objId) \
-    static_cast<EnumType>(RANDOM.Rand(__FILE__, __LINE__, objId, helpers::NumEnumValues_v<EnumType>))
-
-/// functor using RANDOM.Rand(...) e.g. for std::shuffle
-class RandomFunctor
-{
-    const char* file_;
-    unsigned line_;
-
-public:
-    constexpr RandomFunctor(const char* file, unsigned line) : file_(file), line_(line) {}
-
-    ptrdiff_t operator()(ptrdiff_t max) const
-    {
-        RTTR_Assert(max < std::numeric_limits<int>::max());
-        return RANDOM.Rand(file_, line_, 0, static_cast<int>(max + 1));
-    }
-    template<class T>
-    static void shuffleContainer(T& container, const char* file, unsigned line)
-    {
-        if(container.empty())
-            return;
-        const RandomFunctor getIdx(file, line);
-        for(auto i = container.size() - 1; i > 0; --i)
-        {
-            using std::swap;
-            swap(container[i], container[getIdx(i)]);
-        }
-    }
-};
-
+#define RANDOM_ENUM(EnumType) static_cast<EnumType>(RANDOM_RAND(helpers::NumEnumValues_v<EnumType>))
 /// Shuffle the given container
-#define RANDOM_SHUFFLE(container) RandomFunctor::shuffleContainer(container, __FILE__, __LINE__)
+#define RANDOM_SHUFFLE(container) detail::shuffleContainer(container, RANDOM_CONTEXT())
+#define RANDOM_SHUFFLE2(container, objId) detail::shuffleContainer(container, RANDOM_CONTEXT2(objId))
+
+namespace detail {
+template<typename T>
+auto randomElement(const T& container, const RandomContext& ctx)
+{
+    RTTR_Assert(!container.empty());
+    return container[RANDOM.Rand(ctx, container.size())];
+}
+template<class T>
+static void shuffleContainer(T& container, const RandomContext& ctx)
+{
+    if(container.empty())
+        return;
+    for(int i = container.size() - 1; i > 0; --i)
+    {
+        using std::swap;
+        swap(container[i], container[RANDOM.Rand(ctx, i + 1)]);
+    }
+}
+} // namespace detail

@@ -180,7 +180,7 @@ void nofHunter::TryStartHunting()
     if(!available_animals.empty())
     {
         // Ein Tier zufällig heraussuchen
-        animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_animals.size())];
+        animal = RANDOM_ELEMENT(available_animals);
 
         // Wir jagen es jetzt
         state = State::HunterChasing;
@@ -235,12 +235,11 @@ void nofHunter::HandleStateChasing()
 
         // Nun müssen wir drumherum einen Punkt suchen, von dem wir schießen, der natürlich direkt dem Standort
         // des Tieres gegenüberliegen muss (mit zufälliger Richtung beginnen)
-        unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
         shootingPos = MapPoint::Invalid();
-        for(const auto d : helpers::EnumRange<Direction>{})
+        for(const Direction d : helpers::enumRange(RANDOM_ENUM(Direction)))
         {
             Position delta;
-            switch((d + doffset))
+            switch(d)
             {
                 case Direction::West:
                     delta.x = -4;
@@ -274,7 +273,7 @@ void nofHunter::HandleStateChasing()
             {
                 shootingPos = curShootingPos;
                 // Richtung, in die geschossen wird, bestimmen (natürlich die entgegengesetzte nehmen)
-                shooting_dir = d + doffset + 3u;
+                shooting_dir = d + 3u;
                 break;
             }
         }

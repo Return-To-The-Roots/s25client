@@ -1536,7 +1536,7 @@ bfs::path GameServer::SaveAsyncLog()
             }
             const RandomEntry& curEntry = log.randEntries[i];
             if(curEntry.max != refEntry.max || curEntry.rngState != refEntry.rngState
-               || curEntry.obj_id != refEntry.obj_id)
+               || curEntry.objId != refEntry.objId)
             {
                 isIdentical = false;
                 break;

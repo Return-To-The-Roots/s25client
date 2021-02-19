@@ -36,8 +36,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos, const unsig
                                                  const unsigned add_var_living_time)
     : noCoordBase(NodalObjectType::Environment, pos), disappearing(false)
 {
-    dead_event =
-      GetEvMgr().AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));
+    dead_event = GetEvMgr().AddEvent(this, living_time + RANDOM_RAND(add_var_living_time));
 }
 
 void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const

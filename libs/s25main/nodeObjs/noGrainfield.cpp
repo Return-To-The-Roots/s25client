@@ -32,8 +32,7 @@ const unsigned GROWING_WAITING_LENGTH = 1100;
 const unsigned GROWING_LENGTH = 16;
 
 noGrainfield::noGrainfield(const MapPoint pos)
-    : noCoordBase(NodalObjectType::Grainfield, pos), type(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)),
-      state(State::GrowingWaiting), size(0)
+    : noCoordBase(NodalObjectType::Grainfield, pos), type(RANDOM_RAND(2)), state(State::GrowingWaiting), size(0)
 {
     event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
@@ -122,7 +121,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
                 // bin nun ausgewachsen
                 state = State::Normal;
                 // nach langer Zeit verdorren
-                event = GetEvMgr().AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 1000));
+                event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
             }
         }
         break;
@@ -155,5 +154,5 @@ void noGrainfield::BeginHarvesting()
 void noGrainfield::EndHarvesting()
 {
     // nach langer Zeit verdorren (von neuem)
-    event = GetEvMgr().AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 1000));
+    event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
 }

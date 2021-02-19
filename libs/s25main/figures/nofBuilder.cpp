@@ -255,7 +255,7 @@ void nofBuilder::StartFreewalk()
 
     RTTR_Assert(!possible_directions.empty());
     // Zufällige Richtung von diesen auswählen
-    FaceDir(possible_directions[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possible_directions.size())]);
+    FaceDir(RANDOM_ELEMENT(possible_directions));
 
     // Und dort auch hinlaufen
     current_ev = GetEvMgr().AddEvent(this, (state == BuilderState::WaitingFreewalk) ? 24 : 17, 1);

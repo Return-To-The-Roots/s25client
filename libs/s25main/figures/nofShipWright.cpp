@@ -108,8 +108,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 if(!available_points.empty())
                 {
                     // Einen Punkt zufällig auswählen und dorthin laufen
-                    curShipBuildPos =
-                      available_points[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points.size())];
+                    curShipBuildPos = RANDOM_ELEMENT(available_points);
                     StartWalkingToShip();
                 } else
                 {

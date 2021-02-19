@@ -147,7 +147,7 @@ void nofDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM_ENUM(Direction, GetObjId()));
+    StartWalking(RANDOM_ENUM(Direction));
 }
 
 /// Wenn ein Kampf gewonnen wurde

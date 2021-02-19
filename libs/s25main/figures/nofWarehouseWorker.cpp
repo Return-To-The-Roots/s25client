@@ -28,7 +28,7 @@
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
     : noFigure(Job::Helper, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SouthEast))),
-      carried_ware(ware), shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
+      carried_ware(ware), shouldBringWareIn(task), fat((RANDOM_RAND(2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     gwg->GetPlayer(player).IncreaseInventoryJob(Job::Helper, 1);

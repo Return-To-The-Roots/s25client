@@ -210,7 +210,7 @@ void noFighting::HandleEvent(const unsigned id)
                 // Der Kampf hat gerade begonnen
 
                 // "Auslosen", wer als erstes dran ist mit Angreifen
-                turn = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2));
+                turn = static_cast<unsigned char>(RANDOM_RAND(2));
                 // anfangen anzugreifen
                 StartAttack();
             }
@@ -302,12 +302,12 @@ void noFighting::StartAttack()
         switch(gwg->GetGGS().getSelection(AddonId::ADJUST_MILITARY_STRENGTH))
         {
             case 0: // Maximale Stärke
-                results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 6);
+                results[i] = RANDOM_RAND(soldiers[i]->GetRank() + 6);
                 break;
             case 1: // Mittlere Stärke
-            default: results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 10); break;
+            default: results[i] = RANDOM_RAND(soldiers[i]->GetRank() + 10); break;
             case 2: // Minimale Stärke
-                results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10);
+                results[i] = RANDOM_RAND(10);
                 break;
         }
     }
@@ -317,7 +317,7 @@ void noFighting::StartAttack()
         defending_animation = 3;
     else
         // Der Verteidiger hat diesen Zug gewonnen, zufällige Verteidigungsanimation
-        defending_animation = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 3));
+        defending_animation = static_cast<unsigned char>(RANDOM_RAND(3));
 
     // Entsprechendes Event anmelden
     current_ev = GetEvMgr().AddEvent(this, 15);

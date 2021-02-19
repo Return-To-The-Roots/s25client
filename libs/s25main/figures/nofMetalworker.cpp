@@ -177,7 +177,7 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetOrderedTool()
     if(random_array.empty())
         return boost::none;
 
-    unsigned toolIdx = random_array[RANDOM_RAND(GetObjId(), random_array.size())];
+    unsigned toolIdx = RANDOM_ELEMENT(random_array);
 
     owner.ToolOrderProcessed(toolIdx);
 
@@ -209,10 +209,10 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
         if(gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
             return boost::none;
         else
-            return TOOLS[RANDOM_RAND(GetObjId(), TOOLS.size())];
+            return RANDOM_ELEMENT(TOOLS);
     }
 
-    return TOOLS[random_array[RANDOM_RAND(GetObjId(), random_array.size())]];
+    return TOOLS[RANDOM_ELEMENT(random_array)];
 }
 
 helpers::OptionalEnum<GoodType> nofMetalworker::ProduceWare()

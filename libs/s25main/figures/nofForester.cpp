@@ -26,6 +26,7 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noTree.h"
+#include <boost/container/static_vector.hpp>
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(Job::Forester, pos, player, workplace)
@@ -79,16 +80,12 @@ void nofForester::WorkFinished()
         gwg->DestroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
-        const std::array<unsigned char, 3> NUM_AVAILABLE_TREES = {6, 3, 4};
-        const helpers::MultiArray<unsigned char, 3, 6> AVAILABLE_TREES = {
-          {{0, 1, 2, 6, 7, 8}, {0, 1, 7, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF}}};
-        uint8_t landscapeType = std::min<uint8_t>(gwg->GetLandscapeType().value, 2);
+        const std::array<boost::container::static_vector<unsigned char, 6>, 3> AVAILABLE_TREES = {
+          {{0, 1, 2, 6, 7, 8}, {0, 1, 7}, {0, 1, 6, 8}}};
+        uint8_t landscapeType = std::min<uint8_t>(gwg->GetLandscapeType().value, AVAILABLE_TREES.size() - 1);
 
         // jungen Baum einsetzen
-        gwg->SetNO(pos, new noTree(pos,
-                                   AVAILABLE_TREES[landscapeType][RANDOM.Rand(__FILE__, __LINE__, GetObjId(),
-                                                                              NUM_AVAILABLE_TREES[landscapeType])],
-                                   0));
+        gwg->SetNO(pos, new noTree(pos, RANDOM_ELEMENT(AVAILABLE_TREES[landscapeType]), 0));
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);

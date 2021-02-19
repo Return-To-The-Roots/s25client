@@ -1065,7 +1065,7 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
     else if(cmd == "surrender")
         GAMECLIENT.Surrender();
     else if(cmd == "async")
-        (void)RANDOM.Rand(__FILE__, __LINE__, 0, 255);
+        (void)RANDOM.Rand(RANDOM_CONTEXT2(0), 255);
     else if(cmd == "segfault")
     {
         char* x = nullptr;

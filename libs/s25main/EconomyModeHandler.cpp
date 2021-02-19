@@ -56,14 +56,14 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
 
     while(goodsToCollect.size() < numGoodTypesToCollect - 1)
     {
-        GoodType nextGoodType = commonGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), commonGoodPool.size())];
+        GoodType nextGoodType = RANDOM_ELEMENT(commonGoodPool);
         // No duplicates should be in goodsToCollect, so only add a good if it isn't one of the already found goods
         if(!helpers::contains(goodsToCollect, nextGoodType))
         {
             goodsToCollect.push_back(nextGoodType);
         }
     }
-    goodsToCollect.push_back(specialGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), specialGoodPool.size())]);
+    goodsToCollect.push_back(RANDOM_ELEMENT(specialGoodPool));
 
     // Schedule end game event and trust the event manager to keep track of it
     if(!isInfinite())
