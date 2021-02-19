@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "helpers/EnumArray.h"
 #include "random/DefaultLCG.h"
 #include "random/Random.h"
 #include "random/XorShift.h"
@@ -78,19 +79,6 @@ BOOST_AUTO_TEST_CASE(RandomSameSeq)
     {
         // std::cout << RANDOM_RAND(0, 1024) << std::endl;
         BOOST_TEST_REQUIRE(RANDOM_RAND(0, 1024) == result);
-    }
-}
-
-BOOST_AUTO_TEST_CASE(RandomEmptySeq)
-{
-    for(unsigned seed : seeds)
-    {
-        RANDOM.Init(seed);
-        for(int i = 0; i < 100; i++)
-        {
-            // Create a random number in [0, 0) is always 0 (by definition)
-            BOOST_TEST_REQUIRE(RANDOM_RAND(0, 0) == 0);
-        }
     }
 }
 
@@ -235,6 +223,34 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Discard, T_RNG, TestedRNGS)
             rng();
         rng2.discard(skipCt);
         BOOST_TEST_REQUIRE(rng == rng2);
+    }
+}
+
+namespace {
+enum class TestEnum
+{
+    e1,
+    e2,
+    e3
+};
+constexpr auto maxEnumValue(TestEnum)
+{
+    return TestEnum::e3;
+}
+} // namespace
+
+BOOST_AUTO_TEST_CASE(RandomEnum)
+{
+    helpers::EnumArray<bool, TestEnum> triggered{};
+    for(unsigned seed : seeds)
+    {
+        RANDOM.Init(seed);
+        triggered = {};
+        for(int i = 0; i < 30; i++)
+            triggered[RANDOM_ENUM(TestEnum, 1337)] = true;
+        BOOST_TEST(triggered[TestEnum::e1]);
+        BOOST_TEST(triggered[TestEnum::e2]);
+        BOOST_TEST(triggered[TestEnum::e3]);
     }
 }
 
