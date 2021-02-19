@@ -111,7 +111,7 @@ using RandomEntry = UsedRandom::RandomEntry;
 #define RANDOM_RAND(objId, maxVal) RANDOM.Rand(__FILE__, __LINE__, objId, maxVal)
 /// Return a random enumerator of the given type. Requires the <helpers/MaxEnumValue.h> include
 #define RANDOM_ENUM(EnumType, objId) \
-    static_cast<EnumType>(RANDOM.Rand(__FILE__, __LINE__, objId, helpers::MaxEnumValue_v<EnumType>))
+    static_cast<EnumType>(RANDOM.Rand(__FILE__, __LINE__, objId, helpers::NumEnumValues_v<EnumType>))
 
 /// functor using RANDOM.Rand(...) e.g. for std::shuffle
 class RandomFunctor
