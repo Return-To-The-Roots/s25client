@@ -47,13 +47,12 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
 
     // Every nth tree produces animals, but no palm and pineapple trees
     const std::array<unsigned, 6> TREESPERANIMALSPAWN = {20, 13, 10, 6, 4, 2};
-    produce_animals =
-      (type < 3 || type > 5)
-      && (RANDOM_RAND(GetObjId(), TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
+    produce_animals = (type < 3 || type > 5)
+                      && (RANDOM_RAND(TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
-        produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
+        produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM_RAND(2000), 3);
 }
 
 noTree::~noTree() = default;
@@ -151,7 +150,7 @@ void noTree::HandleEvent(const unsigned id)
         // Neues Tier erzeugen
         ProduceAnimal();
         // nächstes Event anmelden
-        produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
+        produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM_RAND(2000), 3);
 
         return;
     }
@@ -237,8 +236,7 @@ void noTree::ProduceAnimal()
     // neues Tier erzeugen, zufälliger Typ
     static const std::array<Species, 6> possibleSpecies = {
       {Species::RabbitWhite, Species::RabbitGrey, Species::Fox, Species::Stag, Species::Deer, Species::Sheep}};
-    auto* animal =
-      new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
+    auto* animal = new noAnimal(RANDOM_ELEMENT(possibleSpecies), pos);
     // In die Landschaft setzen
     gwg->AddFigure(pos, animal);
     // Und ihm die Pforten geben..

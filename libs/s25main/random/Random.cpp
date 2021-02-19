@@ -48,9 +48,9 @@ void Random<T_PRNG>::ResetState(const PRNG& newState)
 }
 
 template<class T_PRNG>
-int Random<T_PRNG>::Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max)
+int Random<T_PRNG>::Rand(const RandomContext& context, const int max)
 {
-    history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, max, rng_, src_name, src_line, obj_id);
+    history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, max, rng_, context);
     ++numInvocations_;
 
     return calcRandValue(rng_, max);
@@ -119,9 +119,9 @@ void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
     // We save the type a) for double checking and b) for future extension
     ser.PushLongString(T_PRNG::getName());
     rngState.serialize(ser);
-    ser.PushLongString(src_name);
-    ser.PushUnsignedInt(src_line);
-    ser.PushUnsignedInt(obj_id);
+    ser.PushLongString(srcName);
+    ser.PushUnsignedInt(srcLine);
+    ser.PushUnsignedInt(objId);
 }
 
 template<class T_PRNG>
@@ -133,9 +133,9 @@ void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
     if(name != T_PRNG::getName())
         throw std::runtime_error("Wrong random number generator");
     rngState.deserialize(ser);
-    src_name = ser.PopLongString();
-    src_line = ser.PopUnsignedInt();
-    obj_id = ser.PopUnsignedInt();
+    srcName = ser.PopLongString();
+    srcLine = ser.PopUnsignedInt();
+    objId = ser.PopUnsignedInt();
 }
 
 template<class T_PRNG>

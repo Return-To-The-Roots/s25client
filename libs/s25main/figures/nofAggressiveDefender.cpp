@@ -107,7 +107,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM_ENUM(Direction, GetObjId()));
+    StartWalking(RANDOM_ENUM(Direction));
 }
 
 void nofAggressiveDefender::CancelAtAttackedBld()

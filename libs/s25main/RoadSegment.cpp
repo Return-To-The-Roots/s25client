@@ -272,7 +272,7 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat
-    unsigned char first = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2);
+    unsigned char first = RANDOM_RAND(2);
     for(unsigned char i = 0; i < 2; ++i)
     {
         if(carriers_[(i + first) % 2])

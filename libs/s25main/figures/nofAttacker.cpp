@@ -402,7 +402,7 @@ void nofAttacker::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM_ENUM(Direction, GetObjId()));
+    StartWalking(RANDOM_ENUM(Direction));
 }
 
 /// Wenn ein Kampf gewonnen wurde
@@ -679,7 +679,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
         return;
 
     // 20%ige Chance, dass wirklich jemand angreift
-    if(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10) >= 2)
+    if(RANDOM_RAND(10) >= 2)
         return;
 
     OrderAggressiveDefender();

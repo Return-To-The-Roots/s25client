@@ -54,8 +54,7 @@ void nofPlaner::GoalReached()
     state = PlanerState::Walking;
 
     // Zufällig Uhrzeigersinn oder dagegen
-    pd =
-      (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0) ? (PlaningDir::Clockwise) : (PlaningDir::Counterclockwise);
+    pd = (RANDOM_RAND(2) == 0) ? (PlaningDir::Clockwise) : (PlaningDir::Counterclockwise);
 
     // Je nachdem erst nach rechts oder links gehen
     StartWalking((pd == PlaningDir::Clockwise) ? Direction::SouthWest : Direction::East);

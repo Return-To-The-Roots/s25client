@@ -25,7 +25,7 @@
 
 noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NodalObjectType::Environment, pos), type(0)
 {
-    current_event = GetEvMgr().AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
+    current_event = GetEvMgr().AddEvent(this, 15000 + RANDOM_RAND(10000));
 }
 
 noSkeleton::~noSkeleton() = default;
@@ -64,7 +64,7 @@ void noSkeleton::HandleEvent(const unsigned /*id*/)
     {
         // weiter verwesen, dann später sterben nach ner zufälligen Zeit
         type = 1;
-        current_event = GetEvMgr().AddEvent(this, 10000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
+        current_event = GetEvMgr().AddEvent(this, 10000 + RANDOM_RAND(10000));
     } else
     {
         // ganz weg damit

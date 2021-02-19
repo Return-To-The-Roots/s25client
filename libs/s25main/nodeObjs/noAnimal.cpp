@@ -32,8 +32,8 @@
 #include "s25util/colors.h"
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
-    : noMovable(NodalObjectType::Animal, pos), species(species), state(State::Walking),
-      pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(nullptr), sound_moment(0)
+    : noMovable(NodalObjectType::Animal, pos), species(species), state(State::Walking), pause_way(5 + RANDOM_RAND(15)),
+      hunter(nullptr), sound_moment(0)
 {}
 
 void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
@@ -228,8 +228,8 @@ void noAnimal::Walked()
             {
                 // dann stellt es sich hier hin und wartet erstmal eine Weile
                 state = State::Paused;
-                pause_way = 5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15);
-                current_ev = GetEvMgr().AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 50), 1);
+                pause_way = 5 + RANDOM_RAND(15);
+                current_ev = GetEvMgr().AddEvent(this, 50 + RANDOM_RAND(50), 1);
             } else
             {
                 StandardWalking();
@@ -252,12 +252,10 @@ void noAnimal::Walked()
 helpers::OptionalEnum<Direction> noAnimal::FindDir()
 {
     // mit zufälliger Richtung anfangen
-    unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
+    const Direction doffset = RANDOM_ENUM(Direction);
 
-    for(auto dir : helpers::EnumRange<Direction>{})
+    for(const auto dir : helpers::enumRange(doffset))
     {
-        dir += doffset;
-
         DescIdx<TerrainDesc> tLeft = gwg->GetLeftTerrain(pos, dir);
         DescIdx<TerrainDesc> tRight = gwg->GetRightTerrain(pos, dir);
 

@@ -361,7 +361,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         {
             // TODO: Which id is the polar bear?
             case 1:
-                species = (RANDOM.Rand(__FILE__, __LINE__, 0, 2) == 0) ? Species::RabbitWhite : Species::RabbitGrey;
+                species = (RANDOM.Rand(RANDOM_CONTEXT2(0), 2) == 0) ? Species::RabbitWhite : Species::RabbitGrey;
                 break; // Random rabbit
             case 2: species = Species::Fox; break;
             case 3: species = Species::Stag; break;
@@ -391,7 +391,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
     // random locations? -> randomize them :)
     if(randomStartPos)
     {
-        RANDOM_SHUFFLE(hqPositions);
+        RANDOM_SHUFFLE2(hqPositions, 0);
     }
 
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)

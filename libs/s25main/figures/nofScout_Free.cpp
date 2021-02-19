@@ -51,7 +51,7 @@ void nofScout_Free::Draw(DrawPoint drawPt)
 void nofScout_Free::GoalReached()
 {
     /// Bestimmte Anzahl an Punkten abklappern, leicht variieren
-    rest_way = 80 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 20);
+    rest_way = 80 + RANDOM_RAND(20);
 
     state = State::ScoutScouting;
 

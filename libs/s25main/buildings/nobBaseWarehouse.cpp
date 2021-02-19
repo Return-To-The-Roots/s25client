@@ -64,8 +64,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(nullptr),
       empty_event(nullptr), store_event(nullptr)
 {
-    producinghelpers_event = GetEvMgr().AddEvent(
-      this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM_RAND(PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
     reserve_soldiers_available.fill(0);
     reserve_soldiers_claimed_visual.fill(0);
@@ -403,7 +402,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
         return;
 
     // Eine ID zufällig auswählen
-    const auto selectedId = possibleTypes[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleTypes.size())];
+    const auto selectedId = RANDOM_ELEMENT(possibleTypes);
 
     if(holds_alternative<GoodType>(selectedId))
     {
@@ -476,8 +475,7 @@ void nobBaseWarehouse::HandleRecrutingEvent()
     unsigned real_recruits = max_recruits * recruiting_ratio / MILITARY_SETTINGS_SCALE[0];
     // Wurde abgerundet?
     unsigned remainingRecruits = real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0];
-    if(remainingRecruits != 0
-       && unsigned(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), MILITARY_SETTINGS_SCALE[0] - 1)) < remainingRecruits)
+    if(remainingRecruits != 0 && unsigned(RANDOM_RAND(MILITARY_SETTINGS_SCALE[0] - 1)) < remainingRecruits)
         ++real_recruits;
     else if(real_recruits == 0)
         return; // Nothing to do
@@ -537,8 +535,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
         gwg->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
     }
 
-    producinghelpers_event = GetEvMgr().AddEvent(
-      this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM_RAND(PRODUCE_HELPERS_RANDOM_GF), 1);
 
     // Evtl. genau der Gehilfe, der zum Rekrutieren notwendig ist
     TryRecruiting();
@@ -658,8 +655,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
         go_out = false;
 
     if(go_out)
-        leaving_event =
-          GetEvMgr().AddEvent(this, LEAVE_INTERVAL + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), LEAVE_INTERVAL_RAND));
+        leaving_event = GetEvMgr().AddEvent(this, LEAVE_INTERVAL + RANDOM_RAND(LEAVE_INTERVAL_RAND));
 }
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
@@ -1096,8 +1092,7 @@ void nobBaseWarehouse::TryRecruiting()
     if(!recruiting_event)
     {
         if(AreRecruitingConditionsComply())
-            recruiting_event = GetEvMgr().AddEvent(
-              this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RECRUITE_RANDOM_GF), 2);
+            recruiting_event = GetEvMgr().AddEvent(this, RECRUITE_GF + RANDOM_RAND(RECRUITE_RANDOM_GF), 2);
     }
 }
 

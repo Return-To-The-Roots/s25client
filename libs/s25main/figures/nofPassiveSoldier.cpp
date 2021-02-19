@@ -82,9 +82,8 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
                     if(hitpoints < HITPOINTS[GetRank()])
-                        healing_event = GetEvMgr().AddEvent(
-                          this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM),
-                          1);
+                        healing_event =
+                          GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
                 }
             }
         }
@@ -105,8 +104,7 @@ void nofPassiveSoldier::Heal()
     // Ist er verletzt?
     // Dann muss er geheilt werden
     if(hitpoints < HITPOINTS[GetRank()])
-        healing_event = GetEvMgr().AddEvent(
-          this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
+        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
 }
 
 void nofPassiveSoldier::GoalReached()
@@ -124,7 +122,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 
-    StartWalking(RANDOM_ENUM(Direction, GetObjId()));
+    StartWalking(RANDOM_ENUM(Direction));
 }
 
 void nofPassiveSoldier::LeaveBuilding()

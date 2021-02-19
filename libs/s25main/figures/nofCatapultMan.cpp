@@ -156,7 +156,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             workplace->ConsumeWares();
 
             // Eins zufällig auswählen
-            target = possibleTargets[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleTargets.size())];
+            target = RANDOM_ELEMENT(possibleTargets);
 
             // Get distance and direction
             int distX;
@@ -229,7 +229,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // Stein in Bewegung setzen
 
             // Soll das Gebäude getroffen werden (70%)
-            bool hit = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 99) < 70);
+            bool hit = (RANDOM_RAND(99) < 70);
 
             // Radius fürs Treffen und Nicht-Treffen,  (in Pixeln), nur visuell
             const int RADIUS_HIT = 15; // nicht nach unten hin!
@@ -244,7 +244,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             } else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
-                destMap = gwg->GetNeighbour(target.pos, RANDOM_ENUM(Direction, GetObjId()));
+                destMap = gwg->GetNeighbour(target.pos, RANDOM_ENUM(Direction));
             }
 
             unsigned shooting_dir = (7 + wheel_steps) % 6;
@@ -272,10 +272,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // Bei getroffenen den Aufschlagspunkt am Gebäude ein bisschen variieren
             if(hit)
             {
-                dest.x += (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT * 2) - RADIUS_HIT);
+                dest.x += (RANDOM_RAND(RADIUS_HIT * 2) - RADIUS_HIT);
                 // hier nicht nach unten gehen, da die Tür (also Nullpunkt
                 // ja schon ziemlich weit unten ist!
-                dest.y -= RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT);
+                dest.y -= RANDOM_RAND(RADIUS_HIT);
             }
 
             // Stein erzeugen

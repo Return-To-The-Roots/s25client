@@ -138,7 +138,7 @@ void nobHarborBuilding::DestroyBuilding()
 
         figure->Abrogate();
         figure->StartWandering();
-        figure->StartWalking(RANDOM_ENUM(Direction, GetObjId()));
+        figure->StartWalking(RANDOM_ENUM(Direction));
     }
     figures_for_ships.clear();
 
@@ -152,7 +152,7 @@ void nobHarborBuilding::DestroyBuilding()
         RTTR_Assert(soldier->HasNoHome());
         RTTR_Assert(soldier->HasNoGoal());
         soldier->StartWandering();
-        soldier->StartWalking(RANDOM_ENUM(Direction, GetObjId()));
+        soldier->StartWalking(RANDOM_ENUM(Direction));
     }
     soldiers_for_ships.clear();
 

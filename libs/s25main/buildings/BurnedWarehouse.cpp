@@ -67,7 +67,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
-    std::array<Direction, 6> possibleDirs;
+    std::array<Direction, helpers::NumEnumValues_v<Direction>> possibleDirs;
     unsigned possibleDirCt = 0;
 
     // Mögliche Richtungen zählen und speichern
@@ -104,7 +104,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
 
         // In Alle Richtungen verteilen
         // Startrichtung zufällig bestimmen
-        unsigned start_dir = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
+        unsigned start_dir = RANDOM_RAND(helpers::NumEnumValues_v<Direction>);
 
         for(unsigned j = 0; j < possibleDirCt; ++j)
         {
