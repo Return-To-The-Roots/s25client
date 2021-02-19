@@ -53,15 +53,15 @@ public:
     struct RandomEntry
     {
         unsigned counter;
-        int max;
+        int maxExcl;
         PRNG rngState;
         std::string srcName;
         unsigned srcLine;
         unsigned objId;
 
-        RandomEntry() : counter(0), max(0), srcLine(0), objId(0){};
-        RandomEntry(unsigned counter, int max, const PRNG& rngState, const RandomContext& ctx)
-            : counter(counter), max(max), rngState(rngState), srcName(ctx.srcName), srcLine(ctx.srcLine),
+        RandomEntry() : counter(0), maxExcl(0), srcLine(0), objId(0){};
+        RandomEntry(unsigned counter, int maxExcl, const PRNG& rngState, const RandomContext& ctx)
+            : counter(counter), maxExcl(maxExcl), rngState(rngState), srcName(ctx.srcName), srcLine(ctx.srcLine),
               objId(ctx.objId){};
 
         void Serialize(Serializer& ser) const;
@@ -75,8 +75,8 @@ public:
     void Init(const uint64_t& seed);
     /// Reset the Random class to start from a given state
     void ResetState(const PRNG& newState);
-    /// Return a random number in the range [0, max)
-    int Rand(const RandomContext& context, int max);
+    /// Return a random number in the range [0, maxExcl)
+    int Rand(const RandomContext& context, int maxExcl);
 
     /// Get a checksum of the RNG
     unsigned GetChecksum() const;
@@ -109,7 +109,7 @@ using RandomEntry = UsedRandom::RandomEntry;
     RandomContext { __FILE__, __LINE__, objId }
 /// Shortcut to get a new random value in range [0, maxVal) for a given object id
 /// Note: maxVal has to be small (at least <= 32768)
-#define RANDOM_RAND(maxVal) RANDOM.Rand(RANDOM_CONTEXT(), maxVal)
+#define RANDOM_RAND(maxValExcl) RANDOM.Rand(RANDOM_CONTEXT(), maxValExcl)
 /// Return a random element from the container. Must not be empty
 #define RANDOM_ELEMENT(container) detail::randomElement(container, RANDOM_CONTEXT())
 /// Return a random enumerator of the given type. Requires the <helpers/MaxEnumValue.h> include

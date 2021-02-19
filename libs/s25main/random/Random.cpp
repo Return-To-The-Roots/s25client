@@ -20,12 +20,12 @@
 #include <stdexcept>
 
 template<class T_PRNG>
-int calcRandValue(T_PRNG& rng, int max)
+int calcRandValue(T_PRNG& rng, int maxExcl)
 {
     // Special case: [0, 0) makes 0
-    if(max == 0)
+    if(maxExcl == 0)
         return 0;
-    return static_cast<int>(rng() % static_cast<unsigned>(max));
+    return static_cast<int>(rng() % static_cast<unsigned>(maxExcl));
 }
 
 template<class T_PRNG>
@@ -48,12 +48,12 @@ void Random<T_PRNG>::ResetState(const PRNG& newState)
 }
 
 template<class T_PRNG>
-int Random<T_PRNG>::Rand(const RandomContext& context, const int max)
+int Random<T_PRNG>::Rand(const RandomContext& context, const int maxExcl)
 {
-    history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, max, rng_, context);
+    history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, maxExcl, rng_, context);
     ++numInvocations_;
 
-    return calcRandValue(rng_, max);
+    return calcRandValue(rng_, maxExcl);
 }
 
 template<class T_PRNG>
@@ -115,7 +115,7 @@ template<class T_PRNG>
 void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
 {
     ser.PushUnsignedInt(counter);
-    ser.PushSignedInt(max);
+    ser.PushSignedInt(maxExcl);
     // We save the type a) for double checking and b) for future extension
     ser.PushLongString(T_PRNG::getName());
     rngState.serialize(ser);
@@ -128,7 +128,7 @@ template<class T_PRNG>
 void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
 {
     counter = ser.PopUnsignedInt();
-    max = ser.PopSignedInt();
+    maxExcl = ser.PopSignedInt();
     std::string name = ser.PopLongString();
     if(name != T_PRNG::getName())
         throw std::runtime_error("Wrong random number generator");
@@ -142,7 +142,7 @@ template<class T_PRNG>
 int Random<T_PRNG>::RandomEntry::GetValue() const
 {
     PRNG tmpRng(rngState);
-    return calcRandValue(tmpRng, max);
+    return calcRandValue(tmpRng, maxExcl);
 }
 
 // Instantiate the Random class with the used PRNG
