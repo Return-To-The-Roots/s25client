@@ -33,6 +33,7 @@
 #include "network/CreateServerInfo.h"
 #include "network/GameMessages.h"
 #include "ogl/glArchivItem_Map.h"
+#include "random/randomIO.h"
 #include "gameTypes/LanGameInfo.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameData/GameConsts.h"

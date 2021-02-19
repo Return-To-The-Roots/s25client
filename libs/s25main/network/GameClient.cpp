@@ -50,6 +50,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glFont.h"
 #include "random/Random.h"
+#include "random/randomIO.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldView.h"
 #include "gameTypes/RoadBuildState.h"
@@ -832,7 +833,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     const bfs::path filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
     const bfs::path filePathLog =
       RTTRCONFIG.ExpandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
-    RANDOM.SaveLog(filePathLog);
+    saveRandomLog(filePathLog, RANDOM.GetAsyncLog());
     SaveToFile(filePathSave);
     LOG.write(_("Async log saved at \"%s\",\ngame saved at \"%s\"\n")) % filePathLog % filePathSave;
     return true;
