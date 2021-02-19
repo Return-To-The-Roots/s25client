@@ -20,12 +20,9 @@
 #include "RTTR_Assert.h"
 #include "random/XorShift.h"
 #include "s25util/Singleton.h"
-#include <boost/filesystem/path.hpp>
 #include <array>
 #include <cstddef>
-#include <iosfwd>
 #include <limits>
-#include <random>
 #include <string>
 #include <utility>
 #include <vector>
@@ -61,9 +58,6 @@ public:
             : counter(counter), max(max), rngState(rngState), src_name(std::move(src_name)), src_line(src_line),
               obj_id(obj_id){};
 
-        friend std::ostream& operator<<(std::ostream& os, const RandomEntry& entry) { return entry.print(os); }
-        std::ostream& print(std::ostream& os) const;
-
         void Serialize(Serializer& ser) const;
         void Deserialize(Serializer& ser);
 
@@ -86,9 +80,6 @@ public:
     const PRNG& GetCurrentState() const;
 
     std::vector<RandomEntry> GetAsyncLog();
-
-    /// Save the log to a file
-    void SaveLog(const boost::filesystem::path& filepath);
 
 private:
     PRNG rng_; /// the PRNG
@@ -125,7 +116,7 @@ public:
     ptrdiff_t operator()(ptrdiff_t max) const
     {
         RTTR_Assert(max < std::numeric_limits<int>::max());
-        return RANDOM.Rand(file_, line_, 0, static_cast<int>(max));
+        return RANDOM.Rand(file_, line_, 0, static_cast<int>(max + 1));
     }
     template<class T>
     static void shuffleContainer(T& container, const char* file, unsigned line)
@@ -136,10 +127,10 @@ public:
         for(auto i = container.size() - 1; i > 0; --i)
         {
             using std::swap;
-            swap(container[i], container[getIdx(i + 1)]);
+            swap(container[i], container[getIdx(i)]);
         }
     }
 };
 
-/// Shortcut for creating an instance of RandomFunctor
+/// Shuffle the given container
 #define RANDOM_SHUFFLE(container) RandomFunctor::shuffleContainer(container, __FILE__, __LINE__)
