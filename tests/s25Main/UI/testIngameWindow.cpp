@@ -50,34 +50,6 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount)
 
 BOOST_AUTO_TEST_CASE(IwMapGenerator)
 {
-    enum
-    {
-        CTRL_BTN_BACK = 0,
-        CTRL_BTN_APPLY,
-        CTRL_TXT_LANDSCAPE,
-        CTRL_TXT_GOAL,
-        CTRL_TXT_IRON,
-        CTRL_TXT_COAL,
-        CTRL_TXT_GRANITE,
-        CTRL_TXT_RIVERS,
-        CTRL_TXT_MOUNTAIN_DIST,
-        CTRL_TXT_TREES,
-        CTRL_TXT_STONE_PILES,
-        CTRL_TXT_ISLANDS,
-        CTRL_PLAYER_NUMBER,
-        CTRL_MAP_STYLE,
-        CTRL_MAP_SIZE,
-        CTRL_MAP_TYPE,
-        CTRL_RATIO_GOLD,
-        CTRL_RATIO_IRON,
-        CTRL_RATIO_COAL,
-        CTRL_RATIO_GRANITE,
-        CTRL_RIVERS,
-        CTRL_MOUNTAIN_DIST,
-        CTRL_TREES,
-        CTRL_STONE_PILES,
-        CTRL_ISLANDS
-    };
     const auto expectedNumPlayers = rttr::test::randomValue(2u, 7u);
     const auto expectedMapType = rttr::test::randomValue<uint8_t>(0, 2);
     const auto expectedGoldRatio = rttr::test::randomValue<unsigned short>(0, 100);
@@ -91,20 +63,20 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     uiHelper::initGUITests();
     rttr::mapGenerator::MapSettings settings;
     iwMapGenerator wnd(settings);
-    wnd.GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->SetSelection(expectedNumPlayers - 2);
-    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->SetSelection(expectedMapType);
-    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->SetSelection(1);     // MapStyle::Land
-    wnd.GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->SetSelection(4);      // 1024x1024
-    wnd.GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->SetSelection(3); // MountainDistance::VeryFar
-    wnd.GetCtrl<ctrlComboBox>(CTRL_ISLANDS)->SetSelection(2);       // IslandAmount::Many
-    wnd.GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->SetPosition(expectedGoldRatio);
-    wnd.GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->SetPosition(expectedIronRatio);
-    wnd.GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->SetPosition(expectedCoalRatio);
-    wnd.GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(expectedGraniteRatio);
-    wnd.GetCtrl<ctrlProgress>(CTRL_RIVERS)->SetPosition(expectedRivers);
-    wnd.GetCtrl<ctrlProgress>(CTRL_TREES)->SetPosition(expectedTrees);
-    wnd.GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->SetPosition(expectedStonePiles);
-    wnd.Msg_ButtonClick(CTRL_BTN_APPLY);
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_PLAYER_NUMBER)->SetSelection(expectedNumPlayers - 2);
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_TYPE)->SetSelection(expectedMapType);
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_STYLE)->SetSelection(1);     // MapStyle::Land
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_SIZE)->SetSelection(4);      // 1024x1024
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MOUNTAIN_DIST)->SetSelection(3); // VeryFar
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_ISLANDS)->SetSelection(2);       // IslandAmount::Many
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_GOLD)->SetPosition(expectedGoldRatio);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_IRON)->SetPosition(expectedIronRatio);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_COAL)->SetPosition(expectedCoalRatio);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_GRANITE)->SetPosition(expectedGraniteRatio);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RIVERS)->SetPosition(expectedRivers);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_TREES)->SetPosition(expectedTrees);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_STONE_PILES)->SetPosition(expectedStonePiles);
+    wnd.Msg_ButtonClick(iwMapGenerator::CTRL_BTN_APPLY);
 
     BOOST_TEST(settings.numPlayers == expectedNumPlayers);
     BOOST_TEST(settings.type == DescIdx<LandscapeDesc>(expectedMapType));

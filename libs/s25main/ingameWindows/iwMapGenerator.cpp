@@ -28,35 +28,6 @@
 
 using namespace rttr::mapGenerator;
 
-enum
-{
-    CTRL_BTN_BACK = 0,
-    CTRL_BTN_APPLY,
-    CTRL_TXT_LANDSCAPE,
-    CTRL_TXT_GOAL,
-    CTRL_TXT_IRON,
-    CTRL_TXT_COAL,
-    CTRL_TXT_GRANITE,
-    CTRL_TXT_RIVERS,
-    CTRL_TXT_MOUNTAIN_DIST,
-    CTRL_TXT_TREES,
-    CTRL_TXT_STONE_PILES,
-    CTRL_TXT_ISLANDS,
-    CTRL_PLAYER_NUMBER,
-    CTRL_MAP_STYLE,
-    CTRL_MAP_SIZE,
-    CTRL_MAP_TYPE,
-    CTRL_RATIO_GOLD,
-    CTRL_RATIO_IRON,
-    CTRL_RATIO_COAL,
-    CTRL_RATIO_GRANITE,
-    CTRL_RIVERS,
-    CTRL_MOUNTAIN_DIST,
-    CTRL_TREES,
-    CTRL_STONE_PILES,
-    CTRL_ISLANDS
-};
-
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
     : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 520), _("Map Generator"),
                    LOADER.GetImageN("resource", 41), true),

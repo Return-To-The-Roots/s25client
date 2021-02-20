@@ -33,16 +33,16 @@ namespace rttr { namespace mapGenerator {
 
     unsigned GetMaximumHeight(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 128)
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 64 * 64)
             return 32;
-        else if(combinedSize <= 256)
+        else if(combinedSize <= 128 * 128)
             return 64;
-        else if(combinedSize <= 512)
+        else if(combinedSize <= 256 * 256)
             return 128;
-        else if(combinedSize <= 1024)
+        else if(combinedSize <= 512 * 512)
             return 150;
-        else if(combinedSize <= 2048)
+        else if(combinedSize <= 1024 * 1024)
             return 200;
         else
             return 60;
@@ -50,12 +50,12 @@ namespace rttr { namespace mapGenerator {
 
     unsigned GetCoastline(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 256)
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 128 * 128)
             return 1;
-        else if(combinedSize <= 1024)
+        else if(combinedSize <= 512 * 512)
             return 2;
-        else if(combinedSize <= 2048)
+        else if(combinedSize <= 1024 * 1024)
             return 3;
         else
             return 4;
@@ -63,14 +63,14 @@ namespace rttr { namespace mapGenerator {
 
     unsigned GetIslandRadius(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 256)
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 128 * 128)
             return 2;
-        else if(combinedSize <= 512)
+        else if(combinedSize <= 256 * 256)
             return 3;
-        else if(combinedSize <= 1024)
+        else if(combinedSize <= 512 * 512)
             return 4;
-        else if(combinedSize <= 2048)
+        else if(combinedSize <= 1024 * 1024)
             return 5;
         else
             return 6;
@@ -93,14 +93,14 @@ namespace rttr { namespace mapGenerator {
 
     unsigned GetSmoothRadius(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 256)
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 128 * 128)
             return 2;
-        else if(combinedSize <= 512)
+        else if(combinedSize <= 256 * 256)
             return 3;
-        else if(combinedSize <= 1024)
+        else if(combinedSize <= 512 * 512)
             return 4;
-        else if(combinedSize <= 2048)
+        else if(combinedSize <= 1024 * 1024)
             return 6;
         else
             return 7;
@@ -108,16 +108,16 @@ namespace rttr { namespace mapGenerator {
 
     unsigned GetSmoothIterations(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 128)
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 64 * 64)
             return 10;
-        else if(combinedSize <= 256)
+        else if(combinedSize <= 128 * 128)
             return 11;
-        else if(combinedSize <= 512)
+        else if(combinedSize <= 256 * 256)
             return 9;
-        else if(combinedSize <= 1024)
+        else if(combinedSize <= 512 * 512)
             return 12;
-        else if(combinedSize <= 2048)
+        else if(combinedSize <= 1024 * 1024)
             return 15;
         else
             return 13;
@@ -180,13 +180,15 @@ namespace rttr { namespace mapGenerator {
     {
         const auto islandRadius = GetIslandRadius(map_.size);
         const auto islandAmount = static_cast<double>(settings_.islands) / 100;
+        const auto maxIslandSize = GetIslandSize(map_.size);
+        const auto minIslandSize = std::min(200u, maxIslandSize);
         auto islandNodes = static_cast<unsigned>(islandAmount * waterNodes);
-        auto islandSize = rnd_.RandomValue(200u, GetIslandSize(map_.size));
-        while(islandNodes > islandSize)
+        auto islandSize = rnd_.RandomValue(minIslandSize, maxIslandSize);
+        while(islandNodes >= islandSize)
         {
             islandNodes -= islandSize;
             CreateIsland(map_, rnd_, islandSize, islandRadius, .2);
-            islandSize = rnd_.RandomValue(200u, GetIslandSize(map_.size));
+            islandSize = rnd_.RandomValue(minIslandSize, maxIslandSize);
         }
     }
 
