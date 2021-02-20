@@ -27,7 +27,6 @@
 class iwMapGenerator : public IngameWindow
 {
 public:
-
     enum Controls
     {
         CTRL_BTN_BACK,
