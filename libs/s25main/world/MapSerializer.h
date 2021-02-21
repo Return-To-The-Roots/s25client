@@ -17,12 +17,17 @@
 
 #pragma once
 
-class World;
+#include <memory>
+
+class GameWorldBase;
 class SerializedGameData;
+class Game;
+class ILocalGameState;
 
 class MapSerializer
 {
 public:
-    static void Serialize(const World& world, unsigned numPlayers, SerializedGameData& sgd);
-    static void Deserialize(World& world, unsigned numPlayers, SerializedGameData& sgd);
+    static void Serialize(const GameWorldBase& world, SerializedGameData& sgd);
+    static void Deserialize(GameWorldBase& world, SerializedGameData& sgd, std::shared_ptr<Game> game,
+                            ILocalGameState& localgameState);
 };

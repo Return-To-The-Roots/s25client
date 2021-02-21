@@ -18,13 +18,14 @@
 #include "world/MapSerializer.h"
 #include "CatapultStone.h"
 #include "SerializedGameData.h"
+#include "buildings/noBuildingSite.h"
 #include "helpers/Range.h"
 #include "lua/GameDataLoader.h"
-#include "world/World.h"
+#include "world/GameWorldBase.h"
 #include "s25util/warningSuppression.h"
 #include <mygettext/mygettext.h>
 
-void MapSerializer::Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd)
+void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sgd)
 {
     // Headinformationen
     helpers::pushPoint(sgd, world.GetSize());
@@ -33,6 +34,7 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
     // Alle Weltpunkte serialisieren
+    const unsigned numPlayers = world.GetNumPlayers();
     for(const auto& node : world.nodes)
     {
         node.Serialize(sgd, numPlayers, world.GetDescription());
@@ -42,7 +44,7 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     sgd.PushObjectContainer(world.catapult_stones, true);
     // Meeresinformationen serialisieren
     sgd.PushUnsignedInt(world.seas.size());
-    for(auto sea : world.seas)
+    for(const auto& sea : world.seas)
     {
         sgd.PushUnsignedInt(sea.nodes_count);
     }
@@ -63,9 +65,32 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
             }
         }
     }
+
+    sgd.PushObjectContainer(world.harbor_building_sites_from_sea, true);
+
+    if(!world.HasLua())
+        sgd.PushUnsignedInt(0);
+    else
+    {
+        sgd.PushLongString(world.GetLua().getScript());
+        Serializer luaSaveState;
+        try
+        {
+            if(!world.GetLua().Serialize(luaSaveState))
+                throw SerializedGameData::Error(_("Failed to save lua state!"));
+        } catch(std::exception& e)
+        {
+            throw SerializedGameData::Error(std::string(_("Failed to save lua state!")) + _("Error: ") + e.what());
+        }
+        sgd.PushUnsignedInt(0xC0DEBA5E); // Start Lua identifier
+        sgd.PushUnsignedInt(luaSaveState.GetLength());
+        sgd.PushRawData(luaSaveState.GetData(), luaSaveState.GetLength());
+        sgd.PushUnsignedInt(0xC001C0DE); // End Lua identifier
+    }
 }
 
-void MapSerializer::Deserialize(World& world, const unsigned numPlayers, SerializedGameData& sgd)
+void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, std::shared_ptr<Game> game,
+                                ILocalGameState& localgameState)
 {
     // Initialisierungen
     GameDataLoader gdLoader(world.GetDescriptionWriteable());
@@ -108,6 +133,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     }
     // Alle Weltpunkte
     MapPoint curPos(0, 0);
+    const unsigned numPlayers = world.GetNumPlayers();
     for(auto& node : world.nodes)
     {
         node.Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
@@ -156,5 +182,37 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
                 neighbor.emplace_back(id, distance);
             }
         }
+    }
+
+    sgd.PopObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);
+
+    std::string luaScript = sgd.PopLongString();
+    if(!luaScript.empty())
+    {
+        if(sgd.PopUnsignedInt() != 0xC0DEBA5E)
+            throw SerializedGameData::Error(_("Invalid id for lua data"));
+        // If there is a script, there is also save data. Pop that first
+        unsigned luaSaveSize = sgd.PopUnsignedInt();
+        Serializer luaSaveState;
+        sgd.PopRawData(luaSaveState.GetDataWritable(luaSaveSize), luaSaveSize);
+        luaSaveState.SetLength(luaSaveSize);
+        if(sgd.PopUnsignedInt() != 0xC001C0DE)
+            throw SerializedGameData::Error(_("Invalid end-id for lua data"));
+
+        // Now init and load lua
+        auto lua = std::make_unique<LuaInterfaceGame>(std::move(game), localgameState);
+        if(!lua->loadScriptString(luaScript))
+            throw SerializedGameData::Error(_("Lua script failed to load."));
+        if(!lua->CheckScriptVersion())
+            throw SerializedGameData::Error(_("Wrong version for lua script."));
+        try
+        {
+            if(!lua->Deserialize(luaSaveState))
+                throw SerializedGameData::Error(_("Lua load callback returned failure!"));
+        } catch(const std::exception& e)
+        {
+            throw SerializedGameData::Error(std::string(_("Failed to load lua state!")) + _("Error: ") + e.what());
+        }
+        world.SetLua(std::move(lua));
     }
 }

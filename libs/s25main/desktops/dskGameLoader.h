@@ -32,7 +32,7 @@ public:
     ~dskGameLoader() override;
 
     void LC_Status_Error(const std::string& error) override;
-    void CI_GameStarted(const std::shared_ptr<Game>& game) override;
+    void CI_GameStarted() override;
     void CI_Error(ClientError ce) override;
 
 private:

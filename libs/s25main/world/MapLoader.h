@@ -20,16 +20,19 @@
 #include "gameTypes/GameSettingTypes.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/DescIdx.h"
+#include <boost/filesystem/path.hpp>
 #include <vector>
 
 class World;
 class GameWorldBase;
 class glArchivItem_Map;
 struct TerrainDesc;
+class Game;
+class ILocalGameState;
 
 class MapLoader
 {
-    World& world_;
+    GameWorldBase& world_;
     std::vector<MapPoint> hqPositions_;
 
     DescIdx<TerrainDesc> getTerrainFromS2(uint8_t s2Id) const;
@@ -46,11 +49,15 @@ class MapLoader
 
 public:
     /// Construct a loader for the given world.
-    explicit MapLoader(World& world);
+    explicit MapLoader(GameWorldBase& world);
     /// Load the map from the given archive, resetting previous state. Return false on error
     bool Load(const glArchivItem_Map& map, Exploration exploration);
+    /// Load the map from the given filepath
+    bool Load(const boost::filesystem::path& mapFilePath);
+    bool LoadLuaScript(std::shared_ptr<Game> game, ILocalGameState& localgameState,
+                       const boost::filesystem::path& luaFilePath);
     /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
-    bool PlaceHQs(GameWorldBase& world, bool randomStartPos);
+    bool PlaceHQs(bool randomStartPos);
 
     /// Return the position of the players HQ (only valid after successful load)
     MapPoint GetHQPos(unsigned player) const { return hqPositions_[player]; }

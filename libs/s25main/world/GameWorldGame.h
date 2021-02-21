@@ -70,16 +70,14 @@ class GameWorldGame : public GameWorldBase
     void CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeReason reason,
                               const noBaseBuilding& triggerBld) const;
 
-protected:
-    /// Create Trade graphs
-    void CreateTradeGraphs();
-
 public:
     GameWorldGame(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
-    inline GameInterface* GetGameInterface() const { return gi; }
+    GameInterface* GetGameInterface() const { return gi; }
+    TradePathCache& GetTradePathCache();
+    void setEconHandler(std::unique_ptr<EconomyModeHandler> handler) { econHandler = std::move(handler); }
 
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)
     bool IsRoadNodeForFigures(MapPoint pt);
@@ -163,6 +161,8 @@ public:
     // Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
     // Für Spiele ohne Gold.
     void ConvertMineResourceTypes(ResourceType from, ResourceType to);
+    // Setup resources like gold and water after loading a new map
+    void SetupResources();
 
     // Fills water depending on terrain and Addon setting
     void PlaceAndFixWater();
@@ -185,6 +185,9 @@ public:
     MapNode& GetNodeWriteable(MapPoint pt);
     /// Recalculates where border stones should be done after a change in the given region
     void RecalcBorderStones(Position startPt, Extent areaSize);
+
+    /// Create Trade graphs
+    void CreateTradeGraphs() final;
 
 protected:
     void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;

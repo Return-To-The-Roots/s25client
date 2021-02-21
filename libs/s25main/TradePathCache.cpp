@@ -21,49 +21,44 @@
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
-bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal,
-                                const unsigned char player)
+bool TradePathCache::PathExists(const MapPoint start, const MapPoint goal, const unsigned char player)
 {
     RTTR_Assert(start != goal);
 
-    unsigned entryIdx = FindEntry(gwg, start, goal, player);
-    if(entryIdx < curSize)
+    int entryIdx = FindEntry(start, goal, player);
+    if(entryIdx >= 0)
     {
         // Found an entry --> Check if the route is still valid
         MapPoint checkedGoal;
-        if(gwg.CheckTradeRoute(pathes[entryIdx].path.start, pathes[entryIdx].path.route, 0, player, &checkedGoal))
+        if(gwg.CheckTradeRoute(paths[entryIdx].path.start, paths[entryIdx].path.route, 0, player, &checkedGoal))
         {
             RTTR_Assert(checkedGoal == start || checkedGoal == goal);
-            pathes[entryIdx].lastUse = gwg.GetEvMgr().GetCurrentGF();
+            paths[entryIdx].lastUse = gwg.GetEvMgr().GetCurrentGF();
             return true;
         } else
         {
             // TradePath is now invalid -> remove it
-            curSize--;
-            if(entryIdx != curSize)
-                pathes[entryIdx] = pathes[curSize];
+            if(static_cast<unsigned>(entryIdx) != paths.size() - 1u)
+                std::swap(paths[entryIdx], paths.back());
+            paths.pop_back();
         }
     }
 
-    TradePath path;
-    if(!gwg.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &path.route))
+    std::vector<Direction> route;
+    if(!gwg.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &route))
         return false;
 
-    path.start = start;
-    path.goal = goal;
-
-    AddEntry(gwg, path, player);
+    AddEntry(TradePath(start, goal, std::move(route)), player);
     return true;
 }
 
-unsigned TradePathCache::FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal,
-                                   const unsigned char player) const
+int TradePathCache::FindEntry(const MapPoint start, const MapPoint goal, const PlayerIdx player) const
 {
     const GamePlayer& thisPlayer = gwg.GetPlayer(player);
 
-    for(unsigned i = 0; i < curSize; i++)
+    for(unsigned i = 0; i < paths.size(); i++)
     {
-        const Entry& pathEntry = pathes[i];
+        const Entry& pathEntry = paths[i];
         if(pathEntry.path.start != start && pathEntry.path.goal != start)
             continue;
         if(pathEntry.path.goal != goal && pathEntry.path.start != goal)
@@ -72,36 +67,26 @@ unsigned TradePathCache::FindEntry(const GameWorldGame& gwg, const MapPoint& sta
             continue;
         return i;
     }
-    return curSize;
+    return -1;
 }
 
-void TradePathCache::AddEntry(const GameWorldGame& gwg, const TradePath& path, const unsigned char player)
+void TradePathCache::AddEntry(TradePath path, const unsigned char player)
 {
-    // Find the idx of the new entry
-    // First look for an existing entry
-    unsigned idx = FindEntry(gwg, path.start, path.goal, player);
-    if(idx >= curSize)
+    Entry entry{player, gwg.GetEvMgr().GetCurrentGF(), std::move(path)};
+
+    int idx = FindEntry(path.start, path.goal, player);
+    if(idx < 0)
     {
         // None found --> Find a new spot
-        if(curSize < pathes.size())
-            idx = curSize++; // We got space left --> append
+        if(paths.size() < paths.max_size())
+            paths.emplace_back(std::move(entry)); // We got space left --> append
         else
         {
             // No space left --> Replace oldest
-            idx = 0;
-            unsigned minLastUse = pathes[0].lastUse;
-            for(unsigned i = 1; i < curSize; i++)
-            {
-                if(pathes[i].lastUse < minLastUse)
-                {
-                    minLastUse = pathes[i].lastUse;
-                    idx = i;
-                }
-            }
+            const auto itOldesElement = std::min_element(
+              paths.begin(), paths.end(), [](const Entry& rhs, const Entry& lhs) { return rhs.lastUse < lhs.lastUse; });
+            *itOldesElement = std::move(entry);
         }
-    }
-
-    pathes[idx].player = player;
-    pathes[idx].lastUse = gwg.GetEvMgr().GetCurrentGF();
-    pathes[idx].path = path;
+    } else
+        paths[idx] = std::move(entry);
 }

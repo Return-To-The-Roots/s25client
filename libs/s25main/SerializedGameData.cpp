@@ -71,7 +71,7 @@
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
 #include "helpers/toString.h"
-#include "world/GameWorld.h"
+#include "world/MapSerializer.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "nodeObjs/noDisappearingMapEnvObject.h"
@@ -225,11 +225,11 @@ void SerializedGameData::Prepare(bool reading)
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
+void SerializedGameData::MakeSnapshot(const Game& game)
 {
     Prepare(false);
 
-    GameWorld& gw = game->world_;
+    const GameWorldBase& gw = game.world_;
     writeEm = &gw.GetEvMgr();
 
     // Anzahl Objekte reinschreiben (used for safety checks only)
@@ -237,12 +237,12 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
     PushUnsignedInt(expectedNumObjects);
 
     // World and objects
-    gw.Serialize(*this);
+    MapSerializer::Serialize(gw, *this);
     // EventManager
     writeEm->Serialize(*this);
-    if(game->ggs_.objective == GameObjective::EconomyMode)
+    if(game.ggs_.objective == GameObjective::EconomyMode)
     {
-        PushObject(gw.econHandler.get(), true);
+        PushObject(gw.getEconHandler(), true);
     }
     // Spieler serialisieren
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
@@ -271,20 +271,21 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game, ILocalGameState& localGameState)
+void SerializedGameData::ReadSnapshot(std::shared_ptr<Game> game, ILocalGameState& localGameState)
 {
     Prepare(true);
 
-    GameWorld& gw = game->world_;
+    GameWorldGame& gw = game->world_;
     em = &gw.GetEvMgr();
 
     expectedNumObjects = PopUnsignedInt();
 
-    gw.Deserialize(game, localGameState, *this);
+    MapSerializer::Deserialize(gw, *this, std::move(game), localGameState);
     em->Deserialize(*this);
-    if(game->ggs_.objective == GameObjective::EconomyMode)
+    if(gw.GetGGS().objective == GameObjective::EconomyMode)
     {
-        gw.econHandler.reset(PopObject<EconomyModeHandler>(GO_Type::Economymodehandler));
+        gw.setEconHandler(
+          std::unique_ptr<EconomyModeHandler>(PopObject<EconomyModeHandler>(GO_Type::Economymodehandler)));
     }
 
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)

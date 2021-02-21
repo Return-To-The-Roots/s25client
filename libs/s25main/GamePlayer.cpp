@@ -2153,10 +2153,11 @@ std::vector<nobBaseWarehouse*> GamePlayer::GetWarehousesForTrading(const nobBase
 
     const MapPoint goalFlagPos = goalWh.GetFlag()->GetPos();
 
+    TradePathCache& tradePathCache = gwg.GetTradePathCache();
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
-        if(TradePathCache::inst().PathExists(gwg, wh->GetFlag()->GetPos(), goalFlagPos, GetPlayerId()))
+        if(tradePathCache.PathExists(wh->GetFlag()->GetPos(), goalFlagPos, GetPlayerId()))
             result.push_back(wh);
     }
 
@@ -2203,6 +2204,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
 
     std::vector<nobBaseWarehouse*> whs(buildings.GetStorehouses().begin(), buildings.GetStorehouses().end());
     std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, gwg));
+    TradePathCache& tradePathCache = gwg.GetTradePathCache();
     for(nobBaseWarehouse* wh : whs)
     {
         // Get available wares
@@ -2222,7 +2224,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
         if(tr.IsValid())
         {
             // Add to cache for future searches
-            TradePathCache::inst().AddEntry(gwg, tr.GetTradePath(), GetPlayerId());
+            tradePathCache.AddEntry(tr.GetTradePath(), GetPlayerId());
 
             wh->StartTradeCaravane(what, actualCount, tr, goalWh);
             count -= available;

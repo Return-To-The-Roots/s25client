@@ -99,9 +99,10 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo,
+dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<const NWFInfo> nwfInfo,
                                    unsigned playerIdx, bool initOGL)
-    : Desktop(nullptr), game_(game), nwfInfo_(std::move(nwfInfo)), worldViewer(playerIdx, game->world_),
+    : Desktop(nullptr), game_(std::move(game)), nwfInfo_(std::move(nwfInfo)),
+      worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
       actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
       isCheatModeOn(false)
@@ -132,7 +133,7 @@ dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::share
 
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
 
-    game->world_.SetGameInterface(this);
+    const_cast<Game&>(*game_).world_.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(nullptr));
     cbb.loadEdges(LOADER.GetArchive("resource"));
@@ -1076,7 +1077,7 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
         GameDataLoader gdLoader(newDesc);
         if(gdLoader.Load())
         {
-            const_cast<GameWorld&>(game_->world_).GetDescriptionWriteable() = newDesc;
+            const_cast<GameWorldGame&>(game_->world_).GetDescriptionWriteable() = newDesc;
             worldViewer.InitTerrainRenderer();
         }
     }

@@ -33,7 +33,7 @@ enum class ResourceType : uint8_t;
 class LuaInterfaceGame : public LuaInterfaceGameBase
 {
 public:
-    LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILocalGameState& localGameState);
+    LuaInterfaceGame(std::weak_ptr<Game> gameInstance, ILocalGameState& localGameState);
     virtual ~LuaInterfaceGame();
 
     static void Register(kaguya::State& state);

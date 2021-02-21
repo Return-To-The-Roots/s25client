@@ -50,7 +50,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
 {
     const unsigned textcolor[] = {COLOR_GREEN, COLOR_YELLOW, COLOR_RED};
     const GameWorldBase& world = gwv.GetWorld();
-    EconomyModeHandler* eH = world.econHandler.get();
+    const EconomyModeHandler* eH = world.getEconHandler();
 
     // resize window
     Extent size(padding1.x + wareIconSize.x + (std::max((int)eH->GetTeams().size(), 2) + 1) * txtBoxWidth + padding2.x,
@@ -166,7 +166,7 @@ void iwEconomicProgress::Msg_PaintBefore()
     IngameWindow::Msg_PaintBefore();
 
     const GameWorldBase& world = gwv.GetWorld();
-    EconomyModeHandler* eH = world.econHandler.get();
+    EconomyModeHandler* eH = world.getEconHandler();
     const std::vector<EconomyModeHandler::EconTeam>& economyModeTeams = eH->GetTeams();
     const GamePlayer& mainPlayer = gwv.GetPlayer();
 

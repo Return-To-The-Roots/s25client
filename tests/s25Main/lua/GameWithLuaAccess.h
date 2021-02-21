@@ -87,7 +87,7 @@ struct LuaTestsFixture : public rttr::test::LogAccessor, public LuaBaseFixture, 
 {
 public:
     std::shared_ptr<GameWithLuaAccess> game;
-    GameWorld& world;
+    GameWorldGame& world;
     MockLocalGameState localGameState;
     std::vector<MapPoint> hqPositions;
 

@@ -35,7 +35,7 @@ enum class Team : uint8_t;
 class dskHostGame final : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>& gameLobby, unsigned playerId,
+    dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
                 std::unique_ptr<ILobbyClient> lobbyClient);
     ~dskHostGame();
 
@@ -73,7 +73,7 @@ private:
     void CI_NewPlayer(unsigned playerId) override;
     void CI_PlayerLeft(unsigned playerId) override;
 
-    void CI_GameLoading(const std::shared_ptr<Game>& game) override;
+    void CI_GameLoading(std::shared_ptr<Game> game) override;
 
     void CI_PlayerDataChanged(unsigned playerId) override;
     void CI_PingChanged(unsigned playerId, unsigned short ping) override;
@@ -98,7 +98,7 @@ private:
     bool IsSinglePlayer() { return serverType == ServerType::Local; }
 
     const ServerType serverType;
-    std::shared_ptr<GameLobby> gameLobby;
+    std::shared_ptr<GameLobby> gameLobby_;
     unsigned localPlayerId_;
     std::unique_ptr<ILobbyClient> lobbyClient_;
     bool hasCountdown_;
