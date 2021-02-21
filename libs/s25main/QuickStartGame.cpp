@@ -39,9 +39,9 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameLoading(const std::shared_ptr<Game>& game) override
+    void CI_GameLoading(std::shared_ptr<Game> game) override
     {
-        WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game));
+        WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(std::move(game)));
     }
 };
 

@@ -256,7 +256,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     save.ggs = ggs;
     save.start_gf = em.GetCurrentGF();
-    save.sgd.MakeSnapshot(game);
+    save.sgd.MakeSnapshot(*game);
 
     TmpFile tmpFile;
     BOOST_TEST_REQUIRE(tmpFile.isValid());
@@ -310,7 +310,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
             std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
-            GameWorld& newWorld = sharedGame->world_;
+            const World& newWorld = sharedGame->world_;
             MockLocalGameState localGameState;
             save.sgd.ReadSnapshot(sharedGame, localGameState);
             auto& newEm = static_cast<TestEventManager&>(sharedGame->world_.GetEvMgr());
@@ -359,7 +359,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_TEST(hqFlag->GetNumWares() == 1u);
 
             SerializedGameData loadedSgd;
-            loadedSgd.MakeSnapshot(sharedGame);
+            loadedSgd.MakeSnapshot(*sharedGame);
             BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(),
                                             save.sgd.GetData(), save.sgd.GetData() + save.sgd.GetLength());
         }
@@ -493,7 +493,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 
     map.savegame->ggs = ggs;
     map.savegame->start_gf = em.GetCurrentGF();
-    map.savegame->sgd.MakeSnapshot(game);
+    map.savegame->sgd.MakeSnapshot(*game);
 
     Replay replay;
     BOOST_TEST_REQUIRE(!replay.IsValid());

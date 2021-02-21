@@ -18,30 +18,29 @@
 #pragma once
 
 #include "world/TradePath.h"
-#include "s25util/Singleton.h"
-#include <array>
+#include <boost/container/static_vector.hpp>
 
 class GameWorldGame;
 
-class TradePathCache : public Singleton<TradePathCache>
+class TradePathCache
 {
+    using PlayerIdx = unsigned char;
+
     struct Entry
     {
-        unsigned char player;
+        PlayerIdx player;
         unsigned lastUse;
         TradePath path;
     };
 
-    std::array<Entry, 10> pathes; //-V730_NOINIT
-    unsigned curSize;
-
-    unsigned FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal,
-                       unsigned char player) const;
+    const GameWorldGame& gwg;
+    boost::container::static_vector<Entry, 10> paths;
+    int FindEntry(MapPoint start, MapPoint goal, PlayerIdx player) const;
 
 public:
-    TradePathCache() : curSize(0) {}
+    TradePathCache(const GameWorldGame& gwg) : gwg(gwg) {}
 
-    void Clear() { curSize = 0; }
-    bool PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, unsigned char player);
-    void AddEntry(const GameWorldGame& gwg, const TradePath& path, unsigned char player);
+    void Clear() { paths.clear(); }
+    bool PathExists(MapPoint start, MapPoint goal, PlayerIdx player);
+    void AddEntry(TradePath path, PlayerIdx player);
 };

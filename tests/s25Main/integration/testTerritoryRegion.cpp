@@ -23,7 +23,7 @@
 #include "helpers/containerUtils.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
-#include "world/GameWorld.h"
+#include "world/GameWorldGame.h"
 #include "world/TerritoryRegion.h"
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/test/unit_test.hpp>

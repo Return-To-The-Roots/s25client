@@ -18,6 +18,7 @@
 #include "world/MapLoader.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
+#include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
 #include "factories/BuildingFactory.h"
@@ -34,15 +35,18 @@
 #include "gameTypes/ShipDirection.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/TerrainDesc.h"
+#include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/prototypen.h"
 #include "s25util/Log.h"
+#include <boost/filesystem/operations.hpp>
 #include <algorithm>
 #include <map>
 #include <queue>
 
 class noBase;
 
-MapLoader::MapLoader(World& world) : world_(world) {}
+MapLoader::MapLoader(GameWorldBase& world) : world_(world) {}
 
 bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
@@ -79,9 +83,42 @@ bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
     return true;
 }
 
-bool MapLoader::PlaceHQs(GameWorldBase& world, bool randomStartPos)
+bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
 {
-    return PlaceHQs(world, hqPositions_, randomStartPos);
+    // Map laden
+    libsiedler2::Archiv mapArchiv;
+
+    // Karteninformationen laden
+    if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)
+        return false;
+
+    const glArchivItem_Map& map = *static_cast<glArchivItem_Map*>(mapArchiv[0]);
+
+    if(!Load(map, world_.GetGGS().exploration))
+        return false;
+    if(!PlaceHQs(world_.GetGGS().randomStartPosition))
+        return false;
+
+    world_.CreateTradeGraphs();
+
+    return true;
+}
+
+bool MapLoader::LoadLuaScript(std::shared_ptr<Game> game, ILocalGameState& localgameState,
+                              const boost::filesystem::path& luaFilePath)
+{
+    if(!bfs::exists(luaFilePath))
+        return false;
+    auto lua = std::make_unique<LuaInterfaceGame>(std::move(game), localgameState);
+    if(!lua->loadScript(luaFilePath) || !lua->CheckScriptVersion())
+        return false;
+    world_.SetLua(std::move(lua));
+    return true;
+}
+
+bool MapLoader::PlaceHQs(bool randomStartPos)
+{
+    return PlaceHQs(world_, hqPositions_, randomStartPos);
 }
 
 void MapLoader::InitShadows(World& world)

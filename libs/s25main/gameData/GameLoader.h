@@ -38,7 +38,7 @@ public:
 
     /// Execute all steps
     bool load();
-    const std::shared_ptr<Game>& getGame() const { return game; }
+    std::shared_ptr<Game> getGame() const { return game; }
 
 private:
     Loader& loader;

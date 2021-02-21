@@ -35,6 +35,7 @@
 struct LandscapeDesc;
 class CatapultStone;
 class noBase;
+class noBuildingSite;
 enum class ShipDirection : uint8_t;
 
 /// Base class representing the world itself, no algorithms, handlers etc!
@@ -44,9 +45,9 @@ class World : public MapBase
     struct Sea
     {
         /// Anzahl der Knoten, welches sich in diesem Meer befinden
-        unsigned nodes_count;
+        unsigned nodes_count = 0;
 
-        Sea() : nodes_count(0) {}
+        Sea() = default;
         Sea(unsigned nodes_count) : nodes_count(nodes_count) {}
     };
 
@@ -68,6 +69,10 @@ class World : public MapBase
 
     std::unique_ptr<noBase> noNodeObj;
     void Resize(const MapExtent& newSize) override final;
+
+protected:
+    /// harbor building sites created by ships
+    std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
     /// Currently flying catapult stones

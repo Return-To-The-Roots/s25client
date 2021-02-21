@@ -87,7 +87,7 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
     AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 190),
                    _("Diplomacy"));
 
-    if(gwv.GetWorld().econHandler)
+    if(gwv.GetWorld().getEconHandler())
     {
         // Economy Mode
         AddImageButton(12, DrawPoint(124, 166), Extent(53, 44), TextureColor::Grey, LOADER.GetImageN("io", 196),

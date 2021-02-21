@@ -65,6 +65,7 @@ struct TradeFixture : public WorldWithGCExecution3P
 
         // Enable trading
         this->ggs.setSelection(AddonId::TRADE, 1);
+        world.CreateTradeGraphs();
     }
 
     void testExpectedWares() const

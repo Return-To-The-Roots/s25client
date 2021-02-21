@@ -21,6 +21,7 @@
 #include "GlobalGameSettings.h"
 #include "MapGeometry.h"
 #include "RttrForeachPt.h"
+#include "TradePathCache.h"
 #include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"

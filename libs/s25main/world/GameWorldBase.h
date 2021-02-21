@@ -38,6 +38,7 @@ class noFlag;
 class nobHarborBuilding;
 class nofPassiveSoldier;
 class RoadPathFinder;
+class TradePathCache;
 
 constexpr Direction getOppositeDir(const RoadDir roadDir) noexcept
 {
@@ -69,17 +70,14 @@ class GameWorldBase : public World
     const GlobalGameSettings& gameSettings;
     EventManager& em;
 
-public:
-    std::unique_ptr<EconomyModeHandler> econHandler;
-
 private:
     std::unique_ptr<LuaInterfaceGame> lua;
 
 protected:
     /// Interface zum GUI
     GameInterface* gi;
-    /// harbor building sites created by ships
-    std::list<noBuildingSite*> harbor_building_sites_from_sea;
+    std::unique_ptr<EconomyModeHandler> econHandler;
+    std::unique_ptr<TradePathCache> tradePathCache;
 
 public:
     GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em);
@@ -87,11 +85,17 @@ public:
 
     // Grundlegende Initialisierungen
     void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
+    /// Create Trade graphs
+    virtual void CreateTradeGraphs() = 0;
     // Remaining initialization after loading (BQ...)
     void InitAfterLoad();
 
     /// Setzt GameInterface
     void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
+
+    /// Get the economy mode handler if set.
+    /// TODO: Add const correct version, but iwEconomicProgress still needs to be able to call UpdateAmounts
+    EconomyModeHandler* getEconHandler() const { return econHandler.get(); }
 
     /// Can a node be used for a road (no flag/bld, no other road, no danger...)
     /// Should only be used for the points between the 2 flags of a road

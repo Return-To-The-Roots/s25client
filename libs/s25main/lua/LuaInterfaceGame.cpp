@@ -31,9 +31,9 @@
 #include "s25util/Serializer.h"
 #include "s25util/strAlgos.h"
 
-LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILocalGameState& localGameState)
+LuaInterfaceGame::LuaInterfaceGame(std::weak_ptr<Game> gameInstance, ILocalGameState& localGameState)
     : LuaInterfaceGameBase(localGameState), localGameState(localGameState), gw(gameInstance.lock()->world_),
-      game(gameInstance)
+      game(std::move(gameInstance))
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua["BLD_" + s25util::toUpper(#name)] = BuildingType::name

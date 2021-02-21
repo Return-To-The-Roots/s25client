@@ -61,7 +61,7 @@ using FrontierWorldSmall = FrontierWorld<34u, 20u>;
 using FrontierWorldMiddle = FrontierWorld<38u, 20u>;
 using FrontierWorldBig = FrontierWorld<60u, 20u>;
 
-DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
+DescIdx<TerrainDesc> GetWaterTerrain(const World& world)
 {
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)

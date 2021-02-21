@@ -25,7 +25,6 @@
 #include "helpers/make_array.h"
 #include "helpers/serializeContainers.h"
 #include "random/Random.h"
-#include "world/GameWorld.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/GoodConsts.h"

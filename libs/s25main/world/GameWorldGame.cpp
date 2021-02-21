@@ -67,7 +67,6 @@ GameWorldGame::GameWorldGame(const std::vector<PlayerInfo>& players, const Globa
                              EventManager& em)
     : GameWorldBase(CreatePlayers(players, *this), gameSettings, em)
 {
-    TradePathCache::inst().Clear();
     GameObject::AttachWorld(this);
 }
 
@@ -654,6 +653,13 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
     }
 }
 
+void GameWorldGame::CreateTradeGraphs()
+{
+    // Only if trade is enabled
+    if(GetGGS().isEnabled(AddonId::TRADE))
+        tradePathCache = std::make_unique<TradePathCache>(*this);
+}
+
 void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception)
 {
     noBase* no = GetNode(pt).obj;
@@ -862,6 +868,12 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
         destroyAndDelete(pa.soldier);
         counter++;
     }
+}
+
+TradePathCache& GameWorldGame::GetTradePathCache()
+{
+    RTTR_Assert(tradePathCache);
+    return *tradePathCache;
 }
 
 bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
@@ -1311,6 +1323,22 @@ void GameWorldGame::ConvertMineResourceTypes(ResourceType from, ResourceType to)
     }
 }
 
+void GameWorldGame::SetupResources()
+{
+    ResourceType target;
+    switch(GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
+    {
+        case 0:
+        default: target = ResourceType::Gold; break;
+        case 1: target = ResourceType::Nothing; break;
+        case 2: target = ResourceType::Iron; break;
+        case 3: target = ResourceType::Coal; break;
+        case 4: target = ResourceType::Granite; break;
+    }
+    ConvertMineResourceTypes(ResourceType::Gold, target);
+    PlaceAndFixWater();
+}
+
 /**
  * Fills water depending on terrain and Addon setting
  */
@@ -1419,14 +1447,4 @@ void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player, Visibi
     // Minimap Bescheid sagen
     if(gi)
         gi->GI_UpdateMinimap(pt);
-}
-
-/// Create Trade graphs
-void GameWorldGame::CreateTradeGraphs()
-{
-    // Only if trade is enabled
-    if(!GetGGS().isEnabled(AddonId::TRADE))
-        return;
-
-    TradePathCache::inst().Clear();
 }

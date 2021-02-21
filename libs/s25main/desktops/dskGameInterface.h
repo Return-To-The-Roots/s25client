@@ -51,7 +51,7 @@ class dskGameInterface :
     public IChatCmdListener
 {
 public:
-    dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx,
+    dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx,
                      bool initOGL = true);
     ~dskGameInterface() override;
 

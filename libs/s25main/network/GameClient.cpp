@@ -51,8 +51,9 @@
 #include "ogl/glFont.h"
 #include "random/Random.h"
 #include "random/randomIO.h"
-#include "world/GameWorld.h"
+#include "world/GameWorldGame.h"
 #include "world/GameWorldView.h"
+#include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GameConsts.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
@@ -298,7 +299,7 @@ void GameClient::StartGame(const unsigned random_init)
     // Get standard settings before they get overwritten
     GetPlayer(GetPlayerId()).FillVisualSettings(default_settings);
 
-    GameWorld& gameWorld = game->world_;
+    GameWorldGame& gameWorld = game->world_;
     if(mapinfo.savegame)
         mapinfo.savegame->sgd.ReadSnapshot(game, *this);
     else
@@ -308,25 +309,14 @@ void GameClient::StartGame(const unsigned random_init)
         for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
-        if(!gameWorld.LoadMap(game, *this, mapinfo.filepath, mapinfo.luaFilepath))
+        MapLoader loader(gameWorld);
+        if(!loader.Load(mapinfo.filepath)
+           || (!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(game, *this, mapinfo.luaFilepath)))
         {
             OnError(ClientError::InvalidMap);
             return;
         }
-
-        /// Evtl. Goldvorkommen ändern
-        ResourceType target; // löschen
-        switch(game->ggs_.getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
-        {
-            case 0:
-            default: target = ResourceType::Gold; break;
-            case 1: target = ResourceType::Nothing; break;
-            case 2: target = ResourceType::Iron; break;
-            case 3: target = ResourceType::Coal; break;
-            case 4: target = ResourceType::Granite; break;
-        }
-        gameWorld.ConvertMineResourceTypes(ResourceType::Gold, target);
-        gameWorld.PlaceAndFixWater();
+        gameWorld.SetupResources();
     }
     gameWorld.InitAfterLoad();
 
@@ -1372,7 +1362,7 @@ void GameClient::OnGameStart()
         framesinfo.lastTime = FramesInfo::UsedClock::now();
         state = ClientState::Game;
         if(ci)
-            ci->CI_GameStarted(game);
+            ci->CI_GameStarted();
     } else if(state == ClientState::Game && !game->IsStarted())
     {
         framesinfo.isPaused = replayMode;
@@ -1629,7 +1619,7 @@ bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
     try
     {
         // Spiel serialisieren
-        save.sgd.MakeSnapshot(game);
+        save.sgd.MakeSnapshot(*game);
         // Und alles speichern
         return save.Save(filepath, mapinfo.title);
     } catch(std::exception& e)

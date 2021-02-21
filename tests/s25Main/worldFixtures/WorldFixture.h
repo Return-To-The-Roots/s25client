@@ -22,7 +22,7 @@
 #include "PlayerInfo.h"
 #include "TestEventManager.h"
 #include "addons/const_addons.h"
-#include "world/GameWorld.h"
+#include "world/GameWorldGame.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
 #include <boost/test/unit_test.hpp>
@@ -106,7 +106,7 @@ struct WorldFixture
     std::shared_ptr<Game> game;
     TestEventManager& em;
     GlobalGameSettings& ggs;
-    GameWorld& world;
+    GameWorldGame& world;
     T_WorldCreator worldCreator;
     WorldFixture()
         : game(std::make_shared<Game>(GlobalGameSettings(), std::make_unique<TestEventManager>(),

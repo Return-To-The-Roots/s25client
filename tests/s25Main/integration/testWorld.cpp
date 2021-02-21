@@ -77,7 +77,7 @@ struct LoadWorldFromFileCreator : MapTestFixture
         MapLoader loader(world);
         if(!loader.Load(map, Exploration::FogOfWar))
             throw std::runtime_error("Could not load map"); // LCOV_EXCL_LINE
-        if(!loader.PlaceHQs(world, false))
+        if(!loader.PlaceHQs(false))
             throw std::runtime_error("Could not place HQs"); // LCOV_EXCL_LINE
         for(unsigned i = 0; i < world.GetNumPlayers(); i++)
             hqs.push_back(loader.GetHQPos(i));
