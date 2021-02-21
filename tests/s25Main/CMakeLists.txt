@@ -26,6 +26,10 @@ target_include_directories(testWorldFixtures PUBLIC .)
 enable_warnings(testWorldFixtures)
 
 add_subdirectory(audio)
+# Don't include this test when collecting coverage data
+if(NOT RTTR_ENABLE_COVERAGE)
+    add_subdirectory(autoplay)
+endif()
 add_subdirectory(drivers)
 add_subdirectory(integration)
 add_subdirectory(IO)
