@@ -95,6 +95,22 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mixed_map)
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_for_many_islands_returns_valid_map)
+{
+    RandomUtility rnd(0);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.islands = rttr::mapGenerator::IslandAmount::Many;
+    settings.size = getRandomMapSize();
+    settings.numPlayers = 2u;
+    settings.style = MapStyle::Mixed;
+
+    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    ValidateMap(map, settings.size, settings.numPlayers);
+}
+
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
 {
     RandomUtility rnd(0);

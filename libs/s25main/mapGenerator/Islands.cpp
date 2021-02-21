@@ -21,15 +21,14 @@
 
 namespace rttr { namespace mapGenerator {
 
-    Island CreateIsland(Map& map, RandomUtility& rnd, unsigned distanceToLand, unsigned size, unsigned radius,
-                        double mountainCoverage)
+    Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage)
     {
         Island island;
 
         const auto land = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
         const auto distances = DistancesTo(map.size, land);
         const unsigned maxDistance = *std::max_element(distances.begin(), distances.end());
-        const unsigned minDistance = std::min(maxDistance, distanceToLand * 10);
+        const unsigned minDistance = std::min(maxDistance, minLandDist * 10);
         const auto possibleCenters = SelectPoints(
           [&distances, minDistance](const MapPoint& pt) { return distances[pt] >= minDistance; }, distances.GetSize());
         const MapPoint center = rnd.RandomItem(possibleCenters);
@@ -46,8 +45,6 @@ namespace rttr { namespace mapGenerator {
 
         std::priority_queue<MapPoint, std::vector<MapPoint>, decltype(compare)> queue(compare);
 
-        const unsigned minimumDistance = distanceToLand + radius;
-
         queue.push(center);
         island.insert(center);
 
@@ -57,11 +54,11 @@ namespace rttr { namespace mapGenerator {
 
             queue.pop();
 
-            const auto& points = map.z.GetPointsInRadius(currentPoint, radius);
+            const auto& points = map.z.GetPointsInRadius(currentPoint, minLandDist);
 
             for(const MapPoint& pt : points)
             {
-                if(distances[pt] >= minimumDistance)
+                if(distances[pt] >= 2 * minLandDist)
                 {
                     if(island.insert(pt).second)
                     {

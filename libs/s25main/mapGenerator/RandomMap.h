@@ -29,6 +29,7 @@ namespace rttr { namespace mapGenerator {
     unsigned GetMaximumHeight(const MapExtent& size);
     unsigned GetCoastline(const MapExtent& size);
     unsigned GetIslandRadius(const MapExtent& size);
+    unsigned GetIslandSize(const MapExtent& size);
     unsigned GetSmoothRadius(const MapExtent& size);
     unsigned GetSmoothIterations(const MapExtent& size);
 
@@ -43,6 +44,7 @@ namespace rttr { namespace mapGenerator {
         MapSettings settings_;
 
         std::vector<River> CreateRivers(MapPoint source = MapPoint::Invalid());
+        void CreateFreeIslands(unsigned waterNodes);
         void CreateMixedMap();
         void CreateLandMap();
         void CreateWaterMap();

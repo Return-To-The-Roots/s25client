@@ -27,123 +27,100 @@
 #include "lua/GameDataLoader.h"
 #include "libsiedler2/libsiedler2.h"
 
-#include <iostream>
 #include <stdexcept>
 
 namespace rttr { namespace mapGenerator {
 
     unsigned GetMaximumHeight(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 128)
-        {
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 64 * 64)
             return 32;
-        }
-        if(combinedSize <= 256)
-        {
+        else if(combinedSize <= 128 * 128)
             return 64;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 256 * 256)
             return 128;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 512 * 512)
             return 150;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 1024 * 1024)
             return 200;
-        }
-        return 60;
+        else
+            return 60;
     }
 
     unsigned GetCoastline(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 256)
-        {
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 128 * 128)
             return 1;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 512 * 512)
             return 2;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 1024 * 1024)
             return 3;
-        }
-        return 4;
+        else
+            return 4;
     }
 
     unsigned GetIslandRadius(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 256)
-        {
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 128 * 128)
             return 2;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 256 * 256)
             return 3;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 512 * 512)
             return 4;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 1024 * 1024)
             return 5;
-        }
-        return 6;
+        else
+            return 6;
+    }
+
+    unsigned GetIslandSize(const MapExtent& size)
+    {
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 64 * 64)
+            return 200;
+        else if(combinedSize <= 128 * 128)
+            return 400;
+        else if(combinedSize <= 256 * 256)
+            return 600;
+        else if(combinedSize <= 512 * 512)
+            return 900;
+        else
+            return 1200;
     }
 
     unsigned GetSmoothRadius(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 256)
-        {
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 128 * 128)
             return 2;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 256 * 256)
             return 3;
-        }
-        if(combinedSize <= 1024)
-        {
+        else if(combinedSize <= 512 * 512)
             return 4;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 1024 * 1024)
             return 6;
-        }
-        return 7;
+        else
+            return 7;
     }
 
     unsigned GetSmoothIterations(const MapExtent& size)
     {
-        const unsigned combinedSize = size.x + size.y;
-        if(combinedSize <= 128)
-        {
+        const unsigned combinedSize = size.x * size.y;
+        if(combinedSize <= 64 * 64)
             return 10;
-        }
-        if(combinedSize <= 256)
-        {
+        else if(combinedSize <= 128 * 128)
             return 11;
-        }
-        if(combinedSize <= 512)
-        {
+        else if(combinedSize <= 256 * 256)
             return 9;
-        }
-        if(combinedSize <= 1024)
-        {
-            return 11;
-        }
-        if(combinedSize <= 2048)
-        {
+        else if(combinedSize <= 512 * 512)
+            return 12;
+        else if(combinedSize <= 1024 * 1024)
             return 15;
-        }
-        return 13;
+        else
+            return 13;
     }
 
     void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range)
@@ -199,6 +176,22 @@ namespace rttr { namespace mapGenerator {
         return rivers;
     }
 
+    void RandomMap::CreateFreeIslands(unsigned waterNodes)
+    {
+        const auto islandRadius = GetIslandRadius(map_.size);
+        const auto islandAmount = static_cast<double>(settings_.islands) / 100;
+        const auto maxIslandSize = GetIslandSize(map_.size);
+        const auto minIslandSize = std::min(200u, maxIslandSize);
+        auto islandNodes = static_cast<unsigned>(islandAmount * waterNodes);
+        auto islandSize = rnd_.RandomValue(minIslandSize, maxIslandSize);
+        while(islandNodes >= islandSize)
+        {
+            islandNodes -= islandSize;
+            CreateIsland(map_, rnd_, islandSize, islandRadius, .2);
+            islandSize = rnd_.RandomValue(minIslandSize, maxIslandSize);
+        }
+    }
+
     void RandomMap::CreateMixedMap()
     {
         const auto center = rnd_.Point(map_.size);
@@ -219,6 +212,9 @@ namespace rttr { namespace mapGenerator {
 
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
         const auto rivers = CreateRivers(center);
+        const auto waterNodes = static_cast<unsigned>(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
+
+        CreateFreeIslands(waterNodes);
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
@@ -238,29 +234,28 @@ namespace rttr { namespace mapGenerator {
         });
         SmoothHeightMap(map_.z, map_.height);
 
-        // 20% of map is center island (100% - 80% water)
-        const double sea = 0.80;
-
-        // 20% of center island is mountain (5% of 20% land)
-        const double mountain = 0.05;
-
+        const double sea = 0.80;      // 20% of map is center island (100% - 80% water)
+        const double mountain = 0.05; // 20% of center island is mountain (5% of 20% land)
         const auto seaLevel = LimitFor(map_.z, sea, map_.height.minimum);
 
         ResetSeaLevel(map_, rnd_, seaLevel);
 
-        const auto waterNodes = std::count(map_.z.begin(), map_.z.end(), map_.height.minimum);
+        const auto waterNodes = static_cast<unsigned>(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
-        const auto islandNodes = static_cast<unsigned>(.5 * waterNodes);
-        const unsigned nodesPerIsland = islandNodes / 8;
+        const auto islandSize = GetIslandSize(map_.size);
         const auto islandRadius = GetIslandRadius(map_.size);
-        const auto distanceToLand = islandRadius;
 
         std::vector<Island> islands(map_.players);
 
         for(unsigned i = 0; i < map_.players; i++)
         {
-            islands[i] = CreateIsland(map_, rnd_, distanceToLand, nodesPerIsland, islandRadius, .2);
+            islands[i] = CreateIsland(map_, rnd_, islandSize, islandRadius, .2);
+        }
+
+        if(waterNodes > map_.players * islandSize)
+        {
+            CreateFreeIslands(waterNodes - map_.players * islandSize);
         }
 
         const auto rivers = CreateRivers(center);

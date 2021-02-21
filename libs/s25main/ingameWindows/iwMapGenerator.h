@@ -27,6 +27,35 @@
 class iwMapGenerator : public IngameWindow
 {
 public:
+    enum Controls
+    {
+        CTRL_BTN_BACK,
+        CTRL_BTN_APPLY,
+        CTRL_TXT_LANDSCAPE,
+        CTRL_TXT_GOAL,
+        CTRL_TXT_IRON,
+        CTRL_TXT_COAL,
+        CTRL_TXT_GRANITE,
+        CTRL_TXT_RIVERS,
+        CTRL_TXT_MOUNTAIN_DIST,
+        CTRL_TXT_TREES,
+        CTRL_TXT_STONE_PILES,
+        CTRL_TXT_ISLANDS,
+        CTRL_PLAYER_NUMBER,
+        CTRL_MAP_STYLE,
+        CTRL_MAP_SIZE,
+        CTRL_MAP_TYPE,
+        CTRL_RATIO_GOLD,
+        CTRL_RATIO_IRON,
+        CTRL_RATIO_COAL,
+        CTRL_RATIO_GRANITE,
+        CTRL_RIVERS,
+        CTRL_MOUNTAIN_DIST,
+        CTRL_TREES,
+        CTRL_STONE_PILES,
+        CTRL_ISLANDS
+    };
+
     /**
      * Creates a new ingame window to configure the random map generator.
      * @param settings reference to the settings to be manipulated
@@ -35,7 +64,6 @@ public:
 
     ~iwMapGenerator() override;
 
-protected:
     void Msg_ButtonClick(unsigned ctrl_id) override;
 
 private:

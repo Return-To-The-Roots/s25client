@@ -28,35 +28,8 @@
 
 using namespace rttr::mapGenerator;
 
-enum
-{
-    CTRL_BTN_BACK = 0,
-    CTRL_BTN_APPLY,
-    CTRL_TXT_LANDSCAPE,
-    CTRL_TXT_GOAL,
-    CTRL_TXT_IRON,
-    CTRL_TXT_COAL,
-    CTRL_TXT_GRANITE,
-    CTRL_TXT_RIVERS,
-    CTRL_TXT_MOUNTAIN_DIST,
-    CTRL_TXT_TREES,
-    CTRL_TXT_STONE_PILES,
-    CTRL_PLAYER_NUMBER,
-    CTRL_MAP_STYLE,
-    CTRL_MAP_SIZE,
-    CTRL_MAP_TYPE,
-    CTRL_RATIO_GOLD,
-    CTRL_RATIO_IRON,
-    CTRL_RATIO_COAL,
-    CTRL_RATIO_GRANITE,
-    CTRL_RIVERS,
-    CTRL_MOUNTAIN_DIST,
-    CTRL_TREES,
-    CTRL_STONE_PILES
-};
-
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
-    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 470), _("Map Generator"),
+    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 520), _("Map Generator"),
                    LOADER.GetImageN("resource", 41), true),
       mapSettings(settings)
 {
@@ -108,6 +81,14 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString(_("Normal"));
     combo->AddString(_("Far"));
     combo->AddString(_("Very far"));
+
+    curPos.y += 30;
+    AddText(CTRL_TXT_ISLANDS, curPos, _("Islands"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    curPos.y += 20;
+    combo = AddComboBox(CTRL_ISLANDS, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo->AddString(_("Few"));
+    combo->AddString(_("Medium"));
+    combo->AddString(_("Many"));
 
     const int pgrOffset = 120;
     curPos.y += 35;
@@ -192,6 +173,13 @@ void iwMapGenerator::Apply()
         case 4: mapSettings.size = MapExtent::all(1024); break;
         default: break;
     }
+    switch(GetCtrl<ctrlComboBox>(CTRL_ISLANDS)->GetSelection().get())
+    {
+        case 0: mapSettings.islands = IslandAmount::Few; break;
+        case 1: mapSettings.islands = IslandAmount::Normal; break;
+        case 2: mapSettings.islands = IslandAmount::Many; break;
+        default: break;
+    }
     int mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection().get();
     if(mapType >= 0)
         mapSettings.type = DescIdx<LandscapeDesc>(mapType);
@@ -240,6 +228,15 @@ void iwMapGenerator::Reset()
         case 256: combo->SetSelection(2); break;
         case 512: combo->SetSelection(3); break;
         case 1024: combo->SetSelection(4); break;
+        default: break;
+    }
+
+    combo = GetCtrl<ctrlComboBox>(CTRL_ISLANDS);
+    switch(mapSettings.islands)
+    {
+        case IslandAmount::Few: combo->SetSelection(0); break;
+        case IslandAmount::Normal: combo->SetSelection(1); break;
+        case IslandAmount::Many: combo->SetSelection(2); break;
         default: break;
     }
 
