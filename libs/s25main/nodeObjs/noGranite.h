@@ -56,6 +56,10 @@ public:
 
     /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
     void Hew();
+
     /// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
     bool IsSmall() const { return (state == 0); }
+
+    /// Return the size of this pile.
+    unsigned char GetSize() const { return state; }
 };
