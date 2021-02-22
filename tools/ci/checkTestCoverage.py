@@ -21,8 +21,8 @@ def parse_coverage(filepath):
 
 def is_source_line(line):
     line = line.strip()
-    # Ignore empty lines, comments and single brackets
-    return line and not line.startswith('//') and line not in '{}'
+    # Ignore empty lines, comments and single brackets and the boost test macro
+    return line and not line.startswith('//') and line not in '{}' and not line.startswith('BOOST_TEST_DONT_PRINT_LOG_VALUE(')
 
 
 def classify_coverage(src_filepath, line_counts):
