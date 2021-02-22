@@ -38,7 +38,7 @@ struct Fixture : rttr::test::Fixture
 };
 BOOST_GLOBAL_FIXTURE(Fixture);
 
-BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum);
+BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum)
 
 BOOST_AUTO_TEST_CASE(Play200kReplay)
 {
