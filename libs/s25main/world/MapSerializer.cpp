@@ -17,6 +17,7 @@
 
 #include "world/MapSerializer.h"
 #include "CatapultStone.h"
+#include "Game.h"
 #include "SerializedGameData.h"
 #include "buildings/noBuildingSite.h"
 #include "helpers/Range.h"
@@ -186,7 +187,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
 
     sgd.PopObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);
 
-    std::string luaScript = sgd.PopLongString();
+    const std::string luaScript = sgd.PopLongString();
     if(!luaScript.empty())
     {
         if(sgd.PopUnsignedInt() != 0xC0DEBA5E)
@@ -213,6 +214,6 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         {
             throw SerializedGameData::Error(std::string(_("Failed to load lua state!")) + _("Error: ") + e.what());
         }
-        world.SetLua(std::move(lua));
+        game.SetLua(std::move(lua));
     }
 }

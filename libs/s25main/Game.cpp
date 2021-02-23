@@ -63,6 +63,12 @@ void Game::AddAIPlayer(std::unique_ptr<AIPlayer> newAI)
     aiPlayers_.push_back(newAI.release());
 }
 
+void Game::SetLua(std::unique_ptr<LuaInterfaceGame> newLua)
+{
+    lua = std::move(newLua);
+    world_.SetLua(lua.get());
+}
+
 namespace {
 unsigned getNumAlivePlayers(const GameWorldBase& world)
 {

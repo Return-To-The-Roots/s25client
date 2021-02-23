@@ -41,7 +41,7 @@
 
 GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(std::move(players)),
-      gameSettings(gameSettings), em(em), gi(nullptr)
+      gameSettings(gameSettings), em(em), lua(nullptr), gi(nullptr)
 {}
 
 GameWorldBase::~GameWorldBase() = default;

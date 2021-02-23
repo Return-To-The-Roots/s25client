@@ -69,9 +69,7 @@ class GameWorldBase : public World
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
-
-private:
-    std::unique_ptr<LuaInterfaceGame> lua;
+    LuaInterfaceGame* lua;
 
 protected:
     /// Interface zum GUI
@@ -223,7 +221,7 @@ public:
 
     bool HasLua() const { return lua != nullptr; }
     LuaInterfaceGame& GetLua() const { return *lua; }
-    void SetLua(std::unique_ptr<LuaInterfaceGame> newLua) { lua = std::move(newLua); }
+    void SetLua(LuaInterfaceGame* newLua) { lua = newLua; }
 
 protected:
     /// Called when the visibility of point changed for a player

@@ -93,7 +93,7 @@ public:
 
     LuaTestsFixture() : world(game.world_)
     {
-        world.SetLua(std::make_unique<LuaInterfaceGame>(game, localGameState));
+        game.SetLua(std::make_unique<LuaInterfaceGame>(game, localGameState));
         setLua(&world.GetLua());
     }
 
