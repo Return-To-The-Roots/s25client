@@ -44,11 +44,14 @@ public:
     bool IsGameFinished() const { return finished_; }
     AIPlayer* GetAIPlayer(unsigned id);
     void AddAIPlayer(std::unique_ptr<AIPlayer> newAI);
+    void SetLua(std::unique_ptr<LuaInterfaceGame> newLua);
 
 private:
     /// Updates the statistics
     void StatisticStep();
     /// Check if the objective was reached (if set)
     void CheckObjective();
+
     bool started_, finished_;
+    std::unique_ptr<LuaInterfaceGame> lua;
 };

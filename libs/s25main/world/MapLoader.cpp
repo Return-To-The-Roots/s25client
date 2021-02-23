@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "world/MapLoader.h"
+#include "Game.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
 #include "GlobalGameSettings.h"
@@ -111,7 +112,7 @@ bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const
     auto lua = std::make_unique<LuaInterfaceGame>(game, localgameState);
     if(!lua->loadScript(luaFilePath) || !lua->CheckScriptVersion())
         return false;
-    world_.SetLua(std::move(lua));
+    game.SetLua(std::move(lua));
     return true;
 }
 

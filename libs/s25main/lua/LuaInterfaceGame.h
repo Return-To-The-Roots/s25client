@@ -33,7 +33,7 @@ enum class ResourceType : uint8_t;
 class LuaInterfaceGame : public LuaInterfaceGameBase
 {
 public:
-    // Passing Game by reference here relies on LuaInterfaceGame being part of GameWorld* which is part of Game
+    // Passing Game by reference here relies on LuaInterfaceGame being part of Game
     LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGameState);
     virtual ~LuaInterfaceGame();
 
