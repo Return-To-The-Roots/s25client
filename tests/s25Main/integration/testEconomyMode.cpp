@@ -140,10 +140,10 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     std::vector<PlayerInfo> players;
     for(unsigned j = 0; j < 3; j++)
         players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
-    auto sharedGame = std::make_shared<Game>(save.ggs, loadSave.start_gf, players);
-    GameWorldGame& newWorld = sharedGame->world_;
+    Game game(save.ggs, loadSave.start_gf, players);
+    GameWorldGame& newWorld = game.world_;
     MockLocalGameState localGameState;
-    save.sgd.ReadSnapshot(sharedGame, localGameState);
+    save.sgd.ReadSnapshot(game, localGameState);
 
     BOOST_TEST_REQUIRE(newWorld.getEconHandler());
     BOOST_TEST(newWorld.getEconHandler()->GetEndFrame() == world.getEconHandler()->GetEndFrame());

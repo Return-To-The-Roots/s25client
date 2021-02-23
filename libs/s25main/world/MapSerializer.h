@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <memory>
-
 class GameWorldBase;
 class SerializedGameData;
 class Game;
@@ -28,6 +26,5 @@ class MapSerializer
 {
 public:
     static void Serialize(const GameWorldBase& world, SerializedGameData& sgd);
-    static void Deserialize(GameWorldBase& world, SerializedGameData& sgd, std::shared_ptr<Game> game,
-                            ILocalGameState& localgameState);
+    static void Deserialize(GameWorldBase& world, SerializedGameData& sgd, Game& game, ILocalGameState& localgameState);
 };

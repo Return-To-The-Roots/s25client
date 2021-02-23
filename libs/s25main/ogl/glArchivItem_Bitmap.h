@@ -45,8 +45,8 @@ public:
     /// Draw only percent% of the height of the image
     void DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
 
-    virtual Position GetOrigin() const override { return glArchivItem_BitmapBase::GetOrigin(); }
-    virtual Extent GetSize() const override { return glArchivItem_BitmapBase::GetSize(); }
+    Position GetOrigin() const override { return glArchivItem_BitmapBase::GetOrigin(); }
+    Extent GetSize() const override { return glArchivItem_BitmapBase::GetSize(); }
 
 protected:
     /// Draw the texture.

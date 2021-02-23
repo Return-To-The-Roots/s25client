@@ -31,9 +31,8 @@
 #include "s25util/Serializer.h"
 #include "s25util/strAlgos.h"
 
-LuaInterfaceGame::LuaInterfaceGame(std::weak_ptr<Game> gameInstance, ILocalGameState& localGameState)
-    : LuaInterfaceGameBase(localGameState), localGameState(localGameState), gw(gameInstance.lock()->world_),
-      game(std::move(gameInstance))
+LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGameState)
+    : LuaInterfaceGameBase(localGameState), localGameState(localGameState), gw(gameInstance.world_), game(gameInstance)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua["BLD_" + s25util::toUpper(#name)] = BuildingType::name
@@ -384,10 +383,7 @@ bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char cancele
 void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId,
                                         unsigned char targetPlayerId, const unsigned duration)
 {
-    auto gameInst = game.lock();
-    if(!gameInst)
-        return;
-    AIPlayer* ai = gameInst->GetAIPlayer(targetPlayerId);
+    AIPlayer* ai = game.GetAIPlayer(targetPlayerId);
     if(ai != nullptr)
     {
         kaguya::LuaRef onPactCancel = lua["onSuggestPact"];

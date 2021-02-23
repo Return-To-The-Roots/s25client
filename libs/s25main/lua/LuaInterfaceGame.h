@@ -33,7 +33,8 @@ enum class ResourceType : uint8_t;
 class LuaInterfaceGame : public LuaInterfaceGameBase
 {
 public:
-    LuaInterfaceGame(std::weak_ptr<Game> gameInstance, ILocalGameState& localGameState);
+    // Passing Game by reference here relies on LuaInterfaceGame being part of GameWorld* which is part of Game
+    LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGameState);
     virtual ~LuaInterfaceGame();
 
     static void Register(kaguya::State& state);
@@ -73,7 +74,7 @@ public:
 private:
     ILocalGameState& localGameState;
     GameWorldGame& gw;
-    std::weak_ptr<Game> game;
+    Game& game;
     LuaPlayer GetPlayer(int playerIdx);
     LuaWorld GetWorld();
 };

@@ -301,7 +301,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     GameWorldGame& gameWorld = game->world_;
     if(mapinfo.savegame)
-        mapinfo.savegame->sgd.ReadSnapshot(game, *this);
+        mapinfo.savegame->sgd.ReadSnapshot(*game, *this);
     else
     {
         RTTR_Assert(mapinfo.type != MapType::Savegame);
@@ -311,7 +311,7 @@ void GameClient::StartGame(const unsigned random_init)
 
         MapLoader loader(gameWorld);
         if(!loader.Load(mapinfo.filepath)
-           || (!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(game, *this, mapinfo.luaFilepath)))
+           || (!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(*game, *this, mapinfo.luaFilepath)))
         {
             OnError(ClientError::InvalidMap);
             return;

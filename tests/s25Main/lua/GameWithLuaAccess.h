@@ -86,15 +86,15 @@ public:
 struct LuaTestsFixture : public rttr::test::LogAccessor, public LuaBaseFixture, GCExecutor
 {
 public:
-    std::shared_ptr<GameWithLuaAccess> game;
+    GameWithLuaAccess game;
     GameWorldGame& world;
     MockLocalGameState localGameState;
     std::vector<MapPoint> hqPositions;
 
-    LuaTestsFixture() : game(std::make_shared<GameWithLuaAccess>()), world(game->world_)
+    LuaTestsFixture() : world(game.world_)
     {
-        game->world_.SetLua(std::make_unique<LuaInterfaceGame>(game, localGameState));
-        setLua(&game->world_.GetLua());
+        world.SetLua(std::make_unique<LuaInterfaceGame>(game, localGameState));
+        setLua(&world.GetLua());
     }
 
     void initWorld()
@@ -115,9 +115,9 @@ public:
         {
             GamePlayer& player = world.GetPlayer(id);
             if(!player.isHuman() && player.isUsed())
-                game->AddAIPlayer(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
+                game.AddAIPlayer(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
         }
     }
 
-    virtual GameWorldGame& GetWorld() override { return world; }
+    GameWorldGame& GetWorld() override { return world; }
 };

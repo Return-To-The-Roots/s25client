@@ -271,16 +271,16 @@ void SerializedGameData::MakeSnapshot(const Game& game)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(std::shared_ptr<Game> game, ILocalGameState& localGameState)
+void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameState)
 {
     Prepare(true);
 
-    GameWorldGame& gw = game->world_;
+    GameWorldGame& gw = game.world_;
     em = &gw.GetEvMgr();
 
     expectedNumObjects = PopUnsignedInt();
 
-    MapSerializer::Deserialize(gw, *this, std::move(game), localGameState);
+    MapSerializer::Deserialize(gw, *this, game, localGameState);
     em->Deserialize(*this);
     if(gw.GetGGS().objective == GameObjective::EconomyMode)
     {

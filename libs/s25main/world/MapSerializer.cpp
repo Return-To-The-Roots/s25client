@@ -69,7 +69,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
     sgd.PushObjectContainer(world.harbor_building_sites_from_sea, true);
 
     if(!world.HasLua())
-        sgd.PushUnsignedInt(0);
+        sgd.PushLongString("");
     else
     {
         sgd.PushLongString(world.GetLua().getScript());
@@ -89,7 +89,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
     }
 }
 
-void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, std::shared_ptr<Game> game,
+void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, Game& game,
                                 ILocalGameState& localgameState)
 {
     // Initialisierungen
@@ -200,7 +200,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, s
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
         // Now init and load lua
-        auto lua = std::make_unique<LuaInterfaceGame>(std::move(game), localgameState);
+        auto lua = std::make_unique<LuaInterfaceGame>(game, localgameState);
         if(!lua->loadScriptString(luaScript))
             throw SerializedGameData::Error(_("Lua script failed to load."));
         if(!lua->CheckScriptVersion())

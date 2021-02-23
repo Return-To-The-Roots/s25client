@@ -104,12 +104,11 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
     return true;
 }
 
-bool MapLoader::LoadLuaScript(std::shared_ptr<Game> game, ILocalGameState& localgameState,
-                              const boost::filesystem::path& luaFilePath)
+bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath)
 {
     if(!bfs::exists(luaFilePath))
         return false;
-    auto lua = std::make_unique<LuaInterfaceGame>(std::move(game), localgameState);
+    auto lua = std::make_unique<LuaInterfaceGame>(game, localgameState);
     if(!lua->loadScript(luaFilePath) || !lua->CheckScriptVersion())
         return false;
     world_.SetLua(std::move(lua));

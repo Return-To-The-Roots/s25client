@@ -832,7 +832,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
 
     // create alliance and check players state
     player.SuggestPact(1, PactType::TreatyOfAlliance, DURATION_INFINITE);
-    game->executeAICommands();
+    game.executeAICommands();
     BOOST_TEST_REQUIRE(player.IsAlly(1));
     executeLua("assert(player:IsAlly(0))");
     BOOST_TEST_REQUIRE(!player.IsAttackable(1));
@@ -843,7 +843,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
 
     // cancel pact by lua request
     executeLua("player:CancelPact(TREATY_OF_ALLIANCE, 0)");
-    game->executeAICommands();
+    game.executeAICommands();
     player.CancelPact(PactType::TreatyOfAlliance, 1);
     BOOST_TEST_REQUIRE(!player.IsAlly(1));
     executeLua("assert(not player:IsAlly(0))");
@@ -856,7 +856,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     // accept cancel-request via lua callback
     executeLua("function onCancelPactRequest(pt, player, ai) return true end");
     player.SuggestPact(1, PactType::NonAgressionPact, DURATION_INFINITE);
-    game->executeAICommands();
+    game.executeAICommands();
     // non aggression was created
     BOOST_TEST_REQUIRE(!player.IsAttackable(1));
     BOOST_TEST_REQUIRE(getLog() == "Pact created\n");
@@ -869,7 +869,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     const PostBox& postbox = world.GetPostMgr().AddPostBox(0);
     // Suggest Pact from Lua
     executeLua("player:SuggestPact(0, TREATY_OF_ALLIANCE, DURATION_INFINITE)");
-    game->executeAICommands();
+    game.executeAICommands();
     const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox.GetMsg(0));
     this->AcceptPact(msg->GetPactId(), PactType::TreatyOfAlliance, 1);
     BOOST_TEST_REQUIRE(!player.IsAttackable(1));

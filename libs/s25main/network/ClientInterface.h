@@ -47,7 +47,7 @@ public:
     virtual void CI_NewPlayer(unsigned /*playerId*/) {}
     virtual void CI_PlayerLeft(unsigned /*playerId*/) {}
     /// Game entered loading state
-    virtual void CI_GameLoading(std::shared_ptr<Game>) {}
+    virtual void CI_GameLoading(std::shared_ptr<Game>) {} // NOLINT(performance-unnecessary-value-param)
     /// Game is started and running
     virtual void CI_GameStarted() {}
 
