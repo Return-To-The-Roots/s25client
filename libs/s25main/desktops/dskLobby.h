@@ -18,8 +18,6 @@
 #pragma once
 
 #include "desktops/dskMenuBase.h"
-
-#include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
 
 class iwLobbyServerInfo;
@@ -27,7 +25,7 @@ class iwDirectIPCreate;
 class LobbyServerList;
 class LobbyPlayerList;
 
-class dskLobby final : public dskMenuBase, public ClientInterface, public LobbyInterface
+class dskLobby final : public dskMenuBase, public LobbyInterface
 {
 private:
     iwLobbyServerInfo* serverInfoWnd;

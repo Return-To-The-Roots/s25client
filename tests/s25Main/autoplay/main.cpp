@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(Play200kReplay)
     std::vector<PlayerInfo> players;
     for(unsigned i = 0; i < replay.GetNumPlayers(); i++)
         players.emplace_back(replay.GetPlayer(i));
-    Game game(replay.ggs, /*startGF*/ 0, std::move(players));
+    Game game(replay.ggs, /*startGF*/ 0, players);
     RANDOM.Init(replay.random_init);
     GameWorldGame& gameWorld = game.world_;
 

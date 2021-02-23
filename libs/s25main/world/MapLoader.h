@@ -54,8 +54,7 @@ public:
     bool Load(const glArchivItem_Map& map, Exploration exploration);
     /// Load the map from the given filepath
     bool Load(const boost::filesystem::path& mapFilePath);
-    bool LoadLuaScript(std::shared_ptr<Game> game, ILocalGameState& localgameState,
-                       const boost::filesystem::path& luaFilePath);
+    bool LoadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath);
     /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
     bool PlaceHQs(bool randomStartPos);
 

@@ -37,14 +37,14 @@ class Game;
 
 class LuaPlayer : public LuaPlayerBase
 {
-    std::weak_ptr<Game> game;
+    Game& game;
     GamePlayer& player;
 
 protected:
     const BasePlayerInfo& GetPlayer() const override;
 
 public:
-    LuaPlayer(std::weak_ptr<Game> game, GamePlayer& player) : game(std::move(game)), player(player) {}
+    LuaPlayer(Game& game, GamePlayer& player) : game(game), player(player) {}
     static void Register(kaguya::State& state);
 
     void EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify);

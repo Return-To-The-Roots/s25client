@@ -309,11 +309,11 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             std::vector<PlayerInfo> players;
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
-            std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
-            const World& newWorld = sharedGame->world_;
+            Game game(save.ggs, loadSave.start_gf, players);
+            const World& newWorld = game.world_;
             MockLocalGameState localGameState;
-            save.sgd.ReadSnapshot(sharedGame, localGameState);
-            auto& newEm = static_cast<TestEventManager&>(sharedGame->world_.GetEvMgr());
+            save.sgd.ReadSnapshot(game, localGameState);
+            auto& newEm = static_cast<TestEventManager&>(game.world_.GetEvMgr());
 
             BOOST_TEST_REQUIRE(newWorld.GetSize() == world.GetSize());
             BOOST_TEST_REQUIRE(newEm.GetCurrentGF() == em.GetCurrentGF());
@@ -346,7 +346,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 BOOST_TEST_REQUIRE(loadNode.harborId == worldNode.harborId);
                 BOOST_TEST_REQUIRE((loadNode.obj != nullptr) == (worldNode.obj != nullptr));
             }
-            const nobUsual* newUsual = newWorld.GetSpecObj<nobUsual>(usualBldPos);
+            const auto* newUsual = newWorld.GetSpecObj<nobUsual>(usualBldPos);
             BOOST_TEST_REQUIRE(newUsual);
             BOOST_TEST_REQUIRE(newUsual->is_working == usualBld->is_working);
             BOOST_TEST_REQUIRE(newUsual->HasWorker() == usualBld->HasWorker());
@@ -359,7 +359,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_TEST(hqFlag->GetNumWares() == 1u);
 
             SerializedGameData loadedSgd;
-            loadedSgd.MakeSnapshot(*sharedGame);
+            loadedSgd.MakeSnapshot(game);
             BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(),
                                             save.sgd.GetData(), save.sgd.GetData() + save.sgd.GetLength());
         }
@@ -586,12 +586,12 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
         world.AddFigure(hunter2->GetPos(), hunter2);
         world.AddFigure(hunter2->GetPos(), new noAnimal(Species::Deer, hunter2->GetPos()));
         hunter2->TryStartHunting();
-        sgd.MakeSnapshot(game);
+        sgd.MakeSnapshot(*game);
     }
     MockLocalGameState lgs;
     em.Clear();
     world.Unload();
-    sgd.ReadSnapshot(game, lgs);
+    sgd.ReadSnapshot(*game, lgs);
     BOOST_TEST_REQUIRE(world.GetFigures(hunterPos1).size() == 1u);
     BOOST_TEST_REQUIRE(world.GetFigures(hunterPos2).size() == 2u);
     const auto* deserializedHunter1 = dynamic_cast<const nofHunter*>(world.GetFigures(hunterPos1).front());
@@ -602,7 +602,7 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
 
     // Serialize again and compare data
     SerializedGameData sgd2;
-    sgd2.MakeSnapshot(game);
+    sgd2.MakeSnapshot(*game);
     BOOST_CHECK_EQUAL_COLLECTIONS(sgd.GetData(), sgd.GetData() + sgd.GetLength(), sgd2.GetData(),
                                   sgd2.GetData() + sgd2.GetLength());
 }

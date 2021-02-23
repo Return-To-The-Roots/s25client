@@ -74,7 +74,7 @@ void TradePathCache::AddEntry(TradePath path, const unsigned char player)
 {
     Entry entry{player, gwg.GetEvMgr().GetCurrentGF(), std::move(path)};
 
-    int idx = FindEntry(path.start, path.goal, player);
+    int idx = FindEntry(entry.path.start, entry.path.goal, player);
     if(idx < 0)
     {
         // None found --> Find a new spot
@@ -83,9 +83,9 @@ void TradePathCache::AddEntry(TradePath path, const unsigned char player)
         else
         {
             // No space left --> Replace oldest
-            const auto itOldesElement = std::min_element(
+            const auto itOldestElement = std::min_element(
               paths.begin(), paths.end(), [](const Entry& rhs, const Entry& lhs) { return rhs.lastUse < lhs.lastUse; });
-            *itOldesElement = std::move(entry);
+            *itOldestElement = std::move(entry);
         }
     } else
         paths[idx] = std::move(entry);
