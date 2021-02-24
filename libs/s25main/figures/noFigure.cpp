@@ -399,37 +399,26 @@ void noFigure::HandleEvent(const unsigned id)
         WalkFigure();
 
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
-        Direction old_dir = GetCurMoveDir();
+        const Direction old_dir = GetCurMoveDir();
 
-        MapPoint old_pos(pos);
+        const MapPoint old_pos(pos);
 
         switch(fs)
         {
             case FigureState::GoHome:
-            case FigureState::GotToGoal:
-            {
-                WalkToGoal();
-            }
-            break;
+            case FigureState::GotToGoal: WalkToGoal(); break;
 
-            case FigureState::Job:
-            {
-                Walked();
-                break;
-            }
-            case FigureState::Wander:
-            {
-                Wander();
-                break;
-            }
+            case FigureState::Job: Walked(); break;
+            case FigureState::Wander: Wander(); break;
         }
 
         // Ggf. Sichtbereich testen
-        if(GetVisualRange())
+        const unsigned visualRange = GetVisualRange();
+        if(visualRange)
         {
-            // Use old position (don't use this->x/y because it might be different now
+            // Use old position (don't use this->pos because it might be different now
             // Figure could be in a ship etc.)
-            gwg->RecalcMovingVisibilities(old_pos, player, GetVisualRange(), old_dir, nullptr);
+            gwg->RecalcMovingVisibilities(old_pos, player, visualRange, old_dir, nullptr);
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
@@ -938,10 +927,10 @@ void noFigure::StopIfNecessary(const MapPoint pt)
 /// Sichtbarkeiten berechnen für Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
 void noFigure::CalcVisibilities(const MapPoint pt)
 {
-    // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
-    if(GetVisualRange())
+    const unsigned visualRange = GetVisualRange();
+    if(visualRange)
         // An alter Position neu berechnen
-        gwg->RecalcVisibilitiesAroundPoint(pt, GetVisualRange(), player, nullptr);
+        gwg->RecalcVisibilitiesAroundPoint(pt, visualRange, player, nullptr);
 }
 
 /// Informiert die Figur, dass für sie eine Schiffsreise beginnt

@@ -17,12 +17,20 @@
 
 #include "GamePlayer.h"
 #include "PointOutput.h"
+#include "RttrForeachPt.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
 #include "figures/noFigure.h"
+#include "figures/nofGeologist.h"
+#include "figures/nofScout_Free.h"
+#include "notifications/ResourceNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "nodeObjs/noFlag.h"
+#include "nodeObjs/noSign.h"
+#include "gameTypes/GameTypesOutput.h"
+#include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(FigureTests)
 
@@ -82,6 +90,74 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     RTTR_EXEC_TILL(200, flag->GetNumWares() > 0);
     // Destroy wh -> Cancel wares and figures
     this->DestroyFlag(whFlagPos);
+}
+
+using EmptyWorldFixture1PBig = WorldFixture<CreateEmptyWorld, 1, 22, 20>;
+
+BOOST_FIXTURE_TEST_CASE(ScoutScouts, EmptyWorldFixture1PBig)
+{
+    const MapPoint hqFlagPos = world.GetNeighbour(world.GetPlayer(0).GetHQPos(), Direction::SouthEast);
+    auto* scout = new nofScout_Free(hqFlagPos, 0, world.GetSpecObj<noRoadNode>(hqFlagPos));
+    world.AddFigure(hqFlagPos, scout);
+    scout->ActAtFirst();
+    const auto countVisibleNodes = [&]() {
+        unsigned numVisibleNodes = 0;
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        {
+            if(world.CalcVisiblityWithAllies(pt, 0) != Visibility::Invisible)
+                numVisibleNodes++;
+        }
+        return numVisibleNodes;
+    };
+    BOOST_TEST_REQUIRE(countVisibleNodes() < prodOfComponents(world.GetSize())); // Must have scoutable nodes
+    RTTR_SKIP_GFS(600);
+    // All scouted
+    BOOST_TEST(countVisibleNodes() == prodOfComponents(world.GetSize()));
+}
+
+using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+
+BOOST_FIXTURE_TEST_CASE(GeologistPlacesSigns, EmptyWorldFixture1P)
+{
+    const MapPoint hqFlagPos = world.GetNeighbour(world.GetPlayer(0).GetHQPos(), Direction::SouthEast);
+    const MapPoint waterPos = world.GetNeighbour(hqFlagPos, Direction::NorthEast);
+    const MapPoint coalPos = world.GetNeighbour(hqFlagPos, Direction::East);
+    const MapPoint ironPos = world.GetNeighbour(hqFlagPos, Direction::SouthEast);
+    const MapPoint goldPos = world.GetNeighbour(hqFlagPos, Direction::SouthWest);
+    const MapPoint granitePos = world.GetNeighbour2(hqFlagPos, 6); // A bit further
+    world.GetNodeWriteable(waterPos).resources = Resource(ResourceType::Water, rttr::test::randomValue(1u, 15u));
+    world.GetNodeWriteable(coalPos).resources = Resource(ResourceType::Coal, rttr::test::randomValue(1u, 15u));
+    world.GetNodeWriteable(ironPos).resources = Resource(ResourceType::Iron, rttr::test::randomValue(1u, 15u));
+    world.GetNodeWriteable(goldPos).resources = Resource(ResourceType::Gold, rttr::test::randomValue(1u, 15u));
+    world.GetNodeWriteable(granitePos).resources = Resource(ResourceType::Granite, rttr::test::randomValue(1u, 15u));
+    // Add some geologists
+    for(unsigned i = 0; i < 10; i++)
+    {
+        auto* geologist = new nofGeologist(hqFlagPos, 0, world.GetSpecObj<noRoadNode>(hqFlagPos));
+        world.AddFigure(hqFlagPos, geologist);
+        geologist->ActAtFirst();
+    }
+    std::vector<ResourceNote> notes;
+    const auto sub =
+      world.GetNotifications().subscribe<ResourceNote>([&notes](const ResourceNote& note) { notes.push_back(note); });
+
+    RTTR_SKIP_GFS(800);
+    // All discovered
+    BOOST_TEST(notes.size() >= 5u);
+    // All from this player
+    BOOST_TEST(!helpers::contains_if(notes, [](const ResourceNote& note) { return note.player != 0; }));
+    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == waterPos; }));
+    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == coalPos; }));
+    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == ironPos; }));
+    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == goldPos; }));
+    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == granitePos; }));
+    for(const ResourceNote& note : notes)
+    {
+        BOOST_TEST(note.res == world.GetNode(note.pos).resources);
+        const auto* sign = world.GetSpecObj<noSign>(note.pos);
+        BOOST_TEST_REQUIRE(sign);
+        BOOST_TEST(sign->GetResource() == note.res);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
