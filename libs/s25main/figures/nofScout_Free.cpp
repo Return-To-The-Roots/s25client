@@ -64,16 +64,8 @@ void nofScout_Free::Walked()
     switch(state)
     {
         default: break;
-        case State::GoToFlag:
-        {
-            GoToFlag();
-        }
-        break;
-        case State::ScoutScouting:
-        {
-            Scout();
-        }
-        break;
+        case State::GoToFlag: GoToFlag(); break;
+        case State::ScoutScouting: Scout(); break;
     }
 }
 

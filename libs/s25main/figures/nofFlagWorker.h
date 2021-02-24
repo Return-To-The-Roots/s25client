@@ -35,7 +35,7 @@ protected:
         FigureWork, // Zur Flagge und zurückgehen, Rumirren usw
         GoToFlag,   // geht zurück zur Flagge um anschließend nach Hause zu gehen
 
-        GeologistGotonextnode, // Zum nächsten Punkt gehen, um dort zu graben
+        GeologistGotoNextNode, // Zum nächsten Punkt gehen, um dort zu graben
         GeologistDig,          // graben (mit Hammer auf Berg hauen)
         GeologistCheer,        // Jubeln, dass man etwas gefunden hat
 

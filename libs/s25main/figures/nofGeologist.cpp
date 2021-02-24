@@ -93,7 +93,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
     {
         default: break;
         case State::FigureWork:
-        case State::GeologistGotonextnode:
+        case State::GeologistGotoNextNode:
         case State::GoToFlag:
         {
             // normales Laufen zeichnen
@@ -239,7 +239,7 @@ void nofGeologist::GoalReached()
 
 void nofGeologist::Walked()
 {
-    if(state == State::GeologistGotonextnode)
+    if(state == State::GeologistGotoNextNode)
     {
         // Check if the flag still exists (not destroyed) and the goal node is still available (something could be build
         // there)
@@ -413,13 +413,13 @@ void nofGeologist::GoToNextNode()
     if(dir)
     {
         // Wenn es einen Punkt gibt, dann hingehen
-        state = State::GeologistGotonextnode;
+        state = State::GeologistGotoNextNode;
         StartWalking(*dir);
         --signs;
     } else if(node_goal == pos)
     {
         // Already there
-        state = State::GeologistGotonextnode;
+        state = State::GeologistGotoNextNode;
         --signs;
         Walked();
     } else
@@ -481,18 +481,12 @@ void nofGeologist::LostWork()
     {
         default: break;
         // Wenn wir noch hingehen, dann zurückgehen
-        case State::FigureWork:
-        {
-            GoHome();
-        }
-        break;
+        case State::FigureWork: GoHome(); break;
         case State::GoToFlag:
-        {
             // dann sofort rumirren, wenn wir zur Flagge gehen
             StartWandering();
             state = State::FigureWork;
-        }
-        break;
+            break;
     }
 }
 
@@ -506,7 +500,7 @@ struct IsSignOfType
     bool operator()(const MapPoint& pt, unsigned /*distance*/)
     {
         const auto* sign = gwb.GetSpecObj<noSign>(pt);
-        return sign && sign->GetSignType() == type;
+        return sign && sign->GetResource().getType() == type;
     }
 };
 

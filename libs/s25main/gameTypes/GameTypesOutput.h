@@ -105,4 +105,9 @@ std::ostream& operator<<(std::ostream& out, const DescIdx<T>& d)
     return out << d.value;
 }
 
+inline std::ostream& operator<<(std::ostream& out, const Resource r)
+{
+    return out << r.getType() << ":" << unsigned(r.getAmount());
+}
+
 // LCOV_EXCL_STOP

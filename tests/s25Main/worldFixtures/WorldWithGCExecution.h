@@ -37,28 +37,6 @@ protected:
     virtual GameWorldGame& GetWorld() override { return world; }
 };
 
-// Avoid having to use "this->" to access those
-class WorldWithGCExecution1P : public WorldWithGCExecution<1>
-{
-public:
-    using WorldWithGCExecution<1>::world;
-    using WorldWithGCExecution<1>::curPlayer;
-    using WorldWithGCExecution<1>::hqPos;
-};
-
-// Avoid having to use "this->" to access those
-class WorldWithGCExecution2P : public WorldWithGCExecution<2>
-{
-public:
-    using WorldWithGCExecution<2>::world;
-    using WorldWithGCExecution<2>::curPlayer;
-    using WorldWithGCExecution<2>::hqPos;
-};
-
-class WorldWithGCExecution3P : public WorldWithGCExecution<3>
-{
-public:
-    using WorldWithGCExecution<3>::world;
-    using WorldWithGCExecution<3>::curPlayer;
-    using WorldWithGCExecution<3>::hqPos;
-};
+using WorldWithGCExecution1P = WorldWithGCExecution<1>;
+using WorldWithGCExecution2P = WorldWithGCExecution<2>;
+using WorldWithGCExecution3P = WorldWithGCExecution<3>;
