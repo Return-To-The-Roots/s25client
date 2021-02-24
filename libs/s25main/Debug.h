@@ -32,7 +32,7 @@ public:
     DebugInfo();
     ~DebugInfo();
 
-    static std::vector<void*> GetStackTrace(void* ctx = nullptr);
+    static std::vector<void*> GetStackTrace(void* ctx = nullptr) noexcept;
 
     bool Send(const void* buffer, size_t length);
     bool SendSigned(int32_t i);

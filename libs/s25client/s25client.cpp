@@ -130,9 +130,17 @@ void CExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_p
 bool askForDebugData()
 {
 #ifdef _WIN32
-    std::wstring title = boost::nowide::widen(_("Error"));
-    std::wstring text = boost::nowide::widen(_("RttR crashed. Would you like to send debug information to RttR to help "
-                                               "us avoiding this crash in the future? Thank you very much!"));
+    std::string msg = gettext_noop("RttR crashed. Would you like to send debug information to RttR to help "
+                                   "us avoiding this crash in the future? Thank you very much!");
+    std::string errorTxt = gettext_noop("Error");
+    try
+    {
+        msg = _(msg);
+        errorTxt = _(errorTxt);
+    } catch(...)
+    {}
+    std::wstring title = boost::nowide::widen(_(errorTxt));
+    std::wstring text = boost::nowide::widen(_(msg));
     return (MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
             == IDYES);
 #else
@@ -146,11 +154,19 @@ bool shouldSendDebugData()
 
 void showCrashMessage()
 {
-    std::string text = _("RttR crashed. Please restart the application!");
+    std::string text = gettext_noop("RttR crashed. Please restart the application!");
+    std::string errorTxt = gettext_noop("Error");
+    try
+    {
+        text = _(text);
+        errorTxt = _(errorTxt);
+    } catch(...)
+    {}
 #ifdef _WIN32
-    MessageBoxW(nullptr, boost::nowide::widen(text).c_str(), boost::nowide::widen(_("Error")).c_str(),
+    MessageBoxW(nullptr, boost::nowide::widen(text).c_str(), boost::nowide::widen(errorTxt).c_str(),
                 MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 #else
+    RTTR_UNUSED(errorTxt);
     bnw::cerr << text << std::endl;
 #endif
 }
@@ -164,7 +180,7 @@ void showCrashMessage()
 #endif
 }
 
-[[noreturn]] void handleException(void* pCtx = nullptr)
+void handleException(void* pCtx = nullptr) noexcept
 {
     std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
@@ -176,34 +192,32 @@ void showCrashMessage()
         for(void* p : stacktrace)
             ss << p << "\n";
         LOG.write("%1%", target) % ss.str();
+        if(shouldSendDebugData())
+        {
+            DebugInfo di;
+            di.SendReplay();
+            di.SendStackTrace(stacktrace);
+        }
     } catch(...)
     { //-V565
-      // Could not write stacktrace. Ignore errors
-    }
-    if(shouldSendDebugData())
-    {
-        DebugInfo di;
-
-        di.SendReplay();
-        di.SendStackTrace(stacktrace);
+      // Could not write stacktrace or send debug data. Ignore errors
     }
 
-    if(SETTINGS.global.submit_debug_data == 0)
-        showCrashMessage();
-
-    terminateProgramm();
+    showCrashMessage();
 }
 
 #ifdef _MSC_VER
 LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
 {
     handleException(info->ContextRecord);
+    terminateProgramm();
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
 [[noreturn]] void ExceptionHandler(int /*sig*/)
 {
     handleException();
+    terminateProgramm();
 }
 #endif
 
@@ -552,9 +566,19 @@ int main(int argc, char** argv)
     try
     {
         result = RunProgram(options);
-    } catch(RttrExitException& e)
+    } catch(const RttrExitException& e)
     {
         result = e.code;
+    } catch(const std::exception& e)
+    {
+        bnw::cerr << "An exception occurred: " << e.what() << "\n\n";
+        handleException(nullptr);
+        result = 1;
+    } catch(...)
+    {
+        bnw::cerr << "An unknown exception occurred\n";
+        handleException(nullptr);
+        result = 1;
     }
     if(result)
         WaitForEnter();
