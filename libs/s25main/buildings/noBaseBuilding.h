@@ -68,7 +68,7 @@ public:
 
     /// Ermittelt die Flagge, die vor dem Gebäude steht
     noFlag* GetFlag() const;
-    /// Same as GetFlagPos()
+    /// Same as GetFlag()->GetPos()
     MapPoint GetFlagPos() const;
 
     /// Return the offset of the door, which is also where people disappear into the building, the builder is building
