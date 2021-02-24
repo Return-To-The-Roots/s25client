@@ -127,7 +127,12 @@ public:
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
     virtual bool DefendersAvailable() const = 0;
 
+    /// Return the list of all current aggressors, that is enemy soldiers currently attacking this military building.
+    const std::list<nofAttacker*>& GetAggressors() const { return aggressors; }
+
+    /// Return true if the military building is under attack.
     bool IsUnderAttack() const { return !aggressors.empty(); };
+
     /// Return whether this building can be attacked by the given player.
     virtual bool IsAttackable(unsigned playerIdx) const;
 
