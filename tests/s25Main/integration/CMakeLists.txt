@@ -3,4 +3,5 @@
 # Lua related tests are extra
 add_testcase(NAME integration
     LIBS s25Main testHelpers testWorldFixtures testUIHelper
+    COST 50
 )
