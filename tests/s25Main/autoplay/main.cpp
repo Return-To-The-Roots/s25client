@@ -20,6 +20,8 @@
 #include "Game.h"
 #include "GamePlayer.h"
 #include "Replay.h"
+#include "Timer.h"
+#include "helpers/chronoIO.h"
 #include "network/PlayerGameCommands.h"
 #include "ogl/glAllocator.h"
 #include "random/Random.h"
@@ -40,13 +42,8 @@ BOOST_GLOBAL_FIXTURE(Fixture);
 
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum)
 
-BOOST_AUTO_TEST_CASE(Play200kReplay)
+static void playReplay(const boost::filesystem::path& replayPath)
 {
-    // Map: Big Slaughter v2
-    // 7 x Hard KI
-    // 2 KIs each in Teams 1-3, 1 in Team 4
-    // 200k GFs run (+ a bit)
-    const boost::filesystem::path replayPath = rttr::test::rttrBaseDir / "tests" / "testData" / "200kGFs.rpl";
     Replay replay;
     BOOST_TEST_REQUIRE(replay.LoadHeader(replayPath, true));
     MapInfo mapInfo;
@@ -74,6 +71,8 @@ BOOST_AUTO_TEST_CASE(Play200kReplay)
     bool endOfReplay = false;
     unsigned nextGF;
     BOOST_TEST_REQUIRE(replay.ReadGF(&nextGF));
+
+    const Timer timer(true);
     do
     {
         unsigned curGF = game.em_->GetCurrentGF();
@@ -105,8 +104,31 @@ BOOST_AUTO_TEST_CASE(Play200kReplay)
             {
                 endOfReplay = true;
                 break;
-            }
+            } else
+                BOOST_TEST_REQUIRE(nextGF <= replay.GetLastGF());
         }
         game.RunGF();
     } while(!endOfReplay);
+    const auto duration = std::chrono::duration_cast<std::chrono::duration<float>>(timer.getElapsed());
+    std::cout << "Replay " << replayPath.filename() << " took " << helpers::withUnit(duration) << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(Play200kReplay)
+{
+    // Map: Big Slaughter v2
+    // 7 x Hard KI
+    // 2 KIs each in Teams 1-3, 1 in Team 4
+    // 200k GFs run (+ a bit)
+    const boost::filesystem::path replayPath = rttr::test::rttrBaseDir / "tests" / "testData" / "200kGFs.rpl";
+    playReplay(replayPath);
+}
+
+BOOST_AUTO_TEST_CASE(PlaySeaReplay)
+{
+    // Map: Island by Island
+    // 2 x Hard KI + Player KI
+    // No teams, Sea attacks enabled, ships fast
+    // 300k GFs run (+ a bit)
+    const boost::filesystem::path replayPath = rttr::test::rttrBaseDir / "tests" / "testData" / "SeaMap300kGfs.rpl";
+    playReplay(replayPath);
 }
