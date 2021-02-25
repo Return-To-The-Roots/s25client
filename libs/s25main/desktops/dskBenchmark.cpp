@@ -288,9 +288,10 @@ void dskBenchmark::startTest(Benchmark test)
 void dskBenchmark::finishTest()
 {
     using namespace std::chrono;
+    using helpers::withUnit;
     LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enum_cast(curTest_)
-      % duration_cast<duration<float>>(frameCtr_.getCurIntervalLength())
-      % duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames());
+      % withUnit(duration_cast<duration<float>>(frameCtr_.getCurIntervalLength()))
+      % withUnit(duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames()));
     if(testDurations_[curTest_] == milliseconds::zero())
         testDurations_[curTest_] = duration_cast<milliseconds>(frameCtr_.getCurIntervalLength());
     else
@@ -384,16 +385,17 @@ void dskBenchmark::createGame()
 void dskBenchmark::printTimes() const
 {
     using namespace std::chrono;
+
     milliseconds total(0);
     for(const auto i : helpers::enumRange<Benchmark>())
     {
         if(i == Benchmark::None)
             continue;
         LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enum_cast(i)
-          % duration_cast<duration<float>>(testDurations_[i])
-          % duration_cast<milliseconds>(testDurations_[i] / numTestFrames);
+          % helpers::withUnit(duration_cast<duration<float>>(testDurations_[i]))
+          % helpers::withUnit(duration_cast<milliseconds>(testDurations_[i] / numTestFrames));
         total += testDurations_[i];
     }
-    LOG.write("Total benchmark time; %1% -> %2%/frame\n") % duration_cast<duration<float>>(total)
-      % duration_cast<milliseconds>(total / numTestFrames);
+    LOG.write("Total benchmark time; %1% -> %2%/frame\n") % helpers::withUnit(duration_cast<duration<float>>(total))
+      % helpers::withUnit(duration_cast<milliseconds>(total / numTestFrames));
 }

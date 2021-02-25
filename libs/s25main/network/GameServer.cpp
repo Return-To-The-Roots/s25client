@@ -359,7 +359,7 @@ void GameServer::RunStateLoading()
         return;
     }
     LOG.write("SERVER: Game loaded by all players after %1%\n")
-      % std::chrono::duration_cast<std::chrono::seconds>(SteadyClock::now() - loadStartTime);
+      % helpers::withUnit(std::chrono::duration_cast<std::chrono::seconds>(SteadyClock::now() - loadStartTime));
     // The first NWF is ready. Server has to set up "missing" commands so every future command is for the correct NWF as
     // specified with cmdDelay. We have commands for NWF 0. When clients execute this they will send the commands for
     // NWF cmdDelay. So commands for NWF 1..cmdDelay-1 are missing. Do this here and before the NWFDone is sent,
@@ -577,9 +577,9 @@ bool GameServer::StartGame()
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
     framesinfo.nwf_length = CalcNWFLenght(FramesInfo::milliseconds32_t(highest_ping));
 
-    LOG.write("SERVER: Using gameframe length of %d\n") % framesinfo.gf_length;
-    LOG.write("SERVER: Using networkframe length of %u GFs (%u)\n") % framesinfo.nwf_length
-      % (framesinfo.nwf_length * framesinfo.gf_length);
+    LOG.write("SERVER: Using gameframe length of %1%\n") % helpers::withUnit(framesinfo.gf_length);
+    LOG.write("SERVER: Using networkframe length of %u GFs (%1%)\n") % framesinfo.nwf_length
+      % helpers::withUnit(framesinfo.nwf_length * framesinfo.gf_length);
 
     for(unsigned id = 0; id < playerInfos.size(); id++)
     {
@@ -764,8 +764,8 @@ void GameServer::ExecuteNWF()
     nwfInfo.execute(framesinfo);
     if(oldGFLen != framesinfo.gf_length)
     {
-        LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF % oldGFLen
-          % framesinfo.gf_length % framesinfo.nwf_length;
+        LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF
+          % helpers::withUnit(oldGFLen) % helpers::withUnit(framesinfo.gf_length) % framesinfo.nwf_length;
     }
     NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq / FramesInfo::milliseconds32_t(1),
                           lastNWF + framesinfo.nwf_length);
