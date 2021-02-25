@@ -1256,8 +1256,9 @@ void GameClient::ExecuteGameFrame()
                     nwfInfo->execute(framesinfo);
                     if(oldGFLen != framesinfo.gf_length)
                     {
-                        LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen
-                          % framesinfo.gf_length % framesinfo.nwf_length;
+                        LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF
+                          % helpers::withUnit(oldGFLen) % helpers::withUnit(framesinfo.gf_length)
+                          % framesinfo.nwf_length;
                     }
                 }
 

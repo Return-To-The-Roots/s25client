@@ -20,8 +20,41 @@
 #include <rttr/test/MockClock.hpp>
 #include <boost/test/unit_test.hpp>
 #include <helpers/chronoIO.h>
+#include <sstream>
+
+// LCOV_EXCL_START
+namespace boost { namespace test_tools { namespace tt_detail {
+    template<class T, class R>
+    struct print_log_value<std::chrono::duration<T, R>>
+    {
+        void operator()(std::ostream& out, const std::chrono::duration<T, R>& value)
+        {
+            out << helpers::withUnit(value);
+        }
+    };
+}}} // namespace boost::test_tools::tt_detail
+// LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(Timers)
+
+BOOST_AUTO_TEST_CASE(ChronoIO)
+{
+    {
+        std::ostringstream s;
+        s << helpers::withUnit(std::chrono::milliseconds(42));
+        BOOST_TEST(s.str() == "42ms");
+    }
+    {
+        std::ostringstream s;
+        s << helpers::withUnit(std::chrono::seconds(31));
+        BOOST_TEST(s.str() == "31s");
+    }
+    {
+        std::ostringstream s;
+        s << helpers::withUnit(std::chrono::minutes(12));
+        BOOST_TEST(s.str() == "12min");
+    }
+}
 
 BOOST_FIXTURE_TEST_CASE(TimerClass, rttr::test::MockClockFixture)
 {
@@ -117,6 +150,7 @@ BOOST_AUTO_TEST_CASE(FrameCounterRounding)
 BOOST_AUTO_TEST_CASE(FrameTimerBasic)
 {
     using namespace std::chrono;
+
     FrameTimer::clock::time_point time = FrameTimer::clock::now();
     FrameTimer timer_(10, 5, time); // 10 FPS, max 5 frames behind
     milliseconds frameTime(1000 / 10);
