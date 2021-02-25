@@ -578,7 +578,7 @@ bool GameServer::StartGame()
     framesinfo.nwf_length = CalcNWFLenght(FramesInfo::milliseconds32_t(highest_ping));
 
     LOG.write("SERVER: Using gameframe length of %1%\n") % helpers::withUnit(framesinfo.gf_length);
-    LOG.write("SERVER: Using networkframe length of %u GFs (%1%)\n") % framesinfo.nwf_length
+    LOG.write("SERVER: Using networkframe length of %1% GFs (%2%)\n") % framesinfo.nwf_length
       % helpers::withUnit(framesinfo.nwf_length * framesinfo.gf_length);
 
     for(unsigned id = 0; id < playerInfos.size(); id++)
