@@ -25,6 +25,8 @@
 #include "helpers/OptionalEnum.h"
 #include "world/GameWorldBase.h"
 #include "gameTypes/Direction.h"
+#include <memory>
+#include <vector>
 
 class nobHQ;
 class nobShipYard;
@@ -39,11 +41,13 @@ class nobHarborBuilding;
 class nobMilitary;
 class nobUsual;
 struct Inventory;
+class GameMessage_Chat;
 
 class AIInterface : public GameCommandFactory
 {
 public:
     AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, unsigned char playerID);
+    ~AIInterface();
 
     unsigned char GetPlayerId() const { return playerID_; }
     unsigned GetNumPlayers() const { return gwb.GetNumPlayers(); }
@@ -197,6 +201,11 @@ public:
     bool CallSpecialist(const noFlag* flag, Job job);
     using GameCommandFactory::CallSpecialist;
 
+    /// Sends a chat messsage to all players
+    void Chat(const std::string& message);
+
+    std::vector<std::unique_ptr<GameMessage_Chat>> FetchChatMessages();
+
     /// Pointer to GameWorld, containing all information about the world
     const GameWorldBase& gwb;
 
@@ -211,6 +220,7 @@ private:
     const GamePlayer& player_;
     /// Pointer to the game commands queue, to send commands to the game
     std::vector<gc::GameCommandPtr>& gcs;
+    std::vector<std::unique_ptr<GameMessage_Chat>> pendingChatMsgs_;
     /// ID of AI player
     const unsigned char playerID_;
     /// Harbor ids which have at least one other harbor at the same sea

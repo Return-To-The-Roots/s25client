@@ -20,6 +20,7 @@
 #include "AIInfo.h"
 #include "AnimalTypes.h"
 #include "BuildingType.h"
+#include "ChatDestination.h"
 #include "FlagType.h"
 #include "GO_Type.h"
 #include "GameSettingTypes.h"
@@ -60,6 +61,7 @@
 
 RTTR_ENUM_OUTPUT(BorderStonePos, OnPoint, HalfEast, HalfSouthEast, HalfSouthWest)
 RTTR_ENUM_OUTPUT(BuildingQuality, Nothing, Flag, Hut, House, Castle, Mine, Harbor)
+RTTR_ENUM_OUTPUT(ChatDestination, System, All, Allies, Enemies)
 RTTR_ENUM_OUTPUT(Direction, West, NorthWest, NorthEast, East, SouthEast, SouthWest)
 RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
 RTTR_ENUM_OUTPUT(FlagType, Normal, Large, Water)

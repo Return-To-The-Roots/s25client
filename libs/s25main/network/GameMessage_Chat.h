@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,17 +17,23 @@
 
 #pragma once
 
-#include "AIPlayer.h"
-class GameWorldBase;
-class GlobalGameSettings;
+#include "GameMessage.h"
+#include "GameProtocol.h"
+#include "gameTypes/ChatDestination.h"
+#include <string>
 
-/// Dummy AI that does nothing
-class DummyAI final : public AIPlayer
+class GameMessage_Chat : public GameMessageWithPlayer
 {
 public:
-    DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
+    ChatDestination destination;
+    std::string text;
 
-    void RunGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
+    GameMessage_Chat() : GameMessageWithPlayer(NMS_CHAT) {} //-V730
+    GameMessage_Chat(uint8_t player, const ChatDestination destination, std::string text)
+        : GameMessageWithPlayer(NMS_CHAT, player), destination(destination), text(std::move(text))
+    {}
 
-    void OnChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
+    void Serialize(Serializer& ser) const override;
+    void Deserialize(Serializer& ser) override;
+    bool Run(GameMessageInterface* callback) const override;
 };

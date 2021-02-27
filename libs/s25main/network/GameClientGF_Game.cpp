@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "Game.h"
+#include "GameMessage_Chat.h"
 #include "GameMessage_GameCommand.h"
 #include "NWFInfo.h"
 #include "ReplayInfo.h"
@@ -56,6 +57,8 @@ void GameClient::ExecuteNWF()
             gameCommands_.insert(gameCommands_.end(), aiGCs.begin(), aiGCs.end());
         else
             mainPlayer.sendMsgAsync(new GameMessage_GameCommand(ai.GetPlayerId(), checksum, aiGCs));
+        for(auto& msg : ai.getAIInterface().FetchChatMessages())
+            mainPlayer.sendMsgAsync(msg.release());
     }
     mainPlayer.sendMsgAsync(new GameMessage_GameCommand(0xFF, checksum, gameCommands_));
     gameCommands_.clear();

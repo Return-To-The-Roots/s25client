@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "GameMessage_Chat.h"
+#include "GameMessageInterface.h"
+#include "helpers/serializeEnums.h"
+#include "s25util/Serializer.h"
 
-#include "AIPlayer.h"
-class GameWorldBase;
-class GlobalGameSettings;
-
-/// Dummy AI that does nothing
-class DummyAI final : public AIPlayer
+void GameMessage_Chat::Serialize(Serializer& ser) const
 {
-public:
-    DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
+    GameMessageWithPlayer::Serialize(ser);
+    helpers::pushEnum<uint8_t>(ser, destination);
+    ser.PushString(text);
+}
 
-    void RunGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
+void GameMessage_Chat::Deserialize(Serializer& ser)
+{
+    GameMessageWithPlayer::Deserialize(ser);
+    destination = helpers::popEnum<ChatDestination>(ser);
+    text = ser.PopString();
+}
 
-    void OnChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
-};
+bool GameMessage_Chat::Run(GameMessageInterface* callback) const
+{
+    return callback->OnGameMessage(*this);
+}

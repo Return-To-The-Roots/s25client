@@ -19,6 +19,7 @@
 
 #include "AIInterface.h"
 #include "GameCommand.h"
+#include "gameTypes/ChatDestination.h"
 
 class GameWorldBase;
 class GamePlayer;
@@ -37,6 +38,7 @@ public:
 
     /// Called for every GF
     virtual void RunGF(unsigned gf, bool gfisnwf) = 0;
+    virtual void OnChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) = 0;
 
     const std::string& GetPlayerName() const { return player.name; }
     unsigned char GetPlayerId() const { return playerId; }

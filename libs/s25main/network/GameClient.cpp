@@ -765,18 +765,32 @@ bool GameClient::OnGameMessage(const GameMessage_Chat& msg)
         if(replayinfo && replayinfo->replay.IsRecording())
             replayinfo->replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
 
-        GamePlayer& player = game->world_.GetPlayer(msg.player);
+        const GamePlayer& player = game->world_.GetPlayer(msg.player);
 
         // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
         if(player.IsDefeated() && msg.destination != ChatDestination::All)
             return true;
-        // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
-        bool ally = player.IsAlly(GetPlayerId());
 
-        // Chatziel unerscheiden und ggf. nicht senden
-        if(!ally && msg.destination == ChatDestination::Allies)
-            return true;
-        if(ally && msg.destination == ChatDestination::Enemies && msg.player != GetPlayerId())
+        const auto isValidRecipient = [&msg, &player](const unsigned playerId) {
+            // Always send to self
+            if(msg.player == playerId)
+                return true;
+            switch(msg.destination)
+            {
+                case ChatDestination::System:
+                case ChatDestination::All: return true;
+                case ChatDestination::Allies: return player.IsAlly(playerId);
+                case ChatDestination::Enemies: return !player.IsAlly(playerId);
+            }
+            return true; // LCOV_EXCL_LINE
+        };
+        for(AIPlayer& ai : game->aiPlayers_)
+        {
+            if(isValidRecipient(ai.GetPlayerId()))
+                ai.OnChatMessage(msg.player, msg.destination, msg.text);
+        }
+
+        if(!isValidRecipient(GetPlayerId()))
             return true;
     } else if(state == ClientState::Config)
     {
