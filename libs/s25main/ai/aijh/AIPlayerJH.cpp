@@ -31,7 +31,6 @@
 #include "buildings/nobUsual.h"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/containerUtils.h"
-#include "network/GameClient.h"
 #include "network/GameMessages.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
@@ -247,11 +246,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(gf == 100)
     {
         if(aii.GetMilitaryBuildings().empty() && aii.GetStorehouses().size() < 2)
-        {
-            Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
-            // AI doesn't usually crash the game any more :)
-            // Chat(_("And I may crash your game sometimes..."));
-        }
+            aii.Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
     }
 
     if(!nodesWithOutdatedBQ.empty())
@@ -322,6 +317,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         PlanNewBuildings(gf);
     }
 }
+
+void AIPlayerJH::OnChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) {}
 
 void AIPlayerJH::PlanNewBuildings(const unsigned gf)
 {
@@ -406,7 +403,7 @@ bool AIPlayerJH::TestDefeat()
         // LOG.write(("ai defeated player %i \n",playerId);
         defeated = true;
         aii.Surrender();
-        Chat(_("You win"));
+        aii.Chat(_("You win"));
         return true;
     }
     return false;
@@ -1467,11 +1464,6 @@ void AIPlayerJH::MilUpgradeOptim()
         }
         count++;
     }
-}
-
-void AIPlayerJH::Chat(const std::string& message)
-{
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Chat(playerId, ChatDestination::All, message));
 }
 
 bool AIPlayerJH::HasFrontierBuildings()

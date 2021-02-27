@@ -25,6 +25,7 @@
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
 #include "factories/BuildingFactory.h"
+#include "network/GameMessage_Chat.h"
 #include "notifications/NodeNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "nodeObjs/noFlag.h"
@@ -35,8 +36,11 @@
 #include <memory>
 #include <set>
 
+namespace {
 // We need border land
 using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
+using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+using EmptyWorldFixture2P = WorldFixture<CreateEmptyWorld, 2>;
 
 template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
@@ -58,16 +62,26 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
     return !blds.GetBuildings(type).empty();
 }
 
+struct MockAI final : public AIPlayer
+{
+    MockAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
+    // LCOV_EXCL_START
+    void RunGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
+    void OnChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
+    // LCOV_EXCL_STOP
+};
+} // namespace
+
 // Note game command execution is emulated to be like the ones send via network:
 // Run "Network Frame" then execute GCs from last NWF
 // Also use "HARD" AI for faster execution
 BOOST_AUTO_TEST_SUITE(AI)
 
-BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, WorldWithGCExecution<1>)
+BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, EmptyWorldFixture1P)
 {
-    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const GamePlayer& player = world.GetPlayer(0);
     BOOST_TEST(playerHasBld(player, BuildingType::Headquarters));
-    MapPoint pos = hqPos;
+    MapPoint pos = player.GetHQPos();
     for(const auto bld : {BuildingType::Woodcutter, BuildingType::Barracks, BuildingType::Storehouse})
     {
         pos = world.MakeMapPoint(pos + Position(2, 0));
@@ -76,6 +90,32 @@ BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, WorldWithGCExecution<1>)
         BuildingFactory::CreateBuilding(world, bld, pos, player.GetPlayerId(), Nation::Romans);
         BOOST_TEST_INFO(bld);
         BOOST_TEST(playerHasBld(player, bld));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
+{
+    MockAI ai(1, world, AI::Level::Easy);
+    ai.getAIInterface().Chat("Hello players!");
+    ai.getAIInterface().Chat("2nd Message!");
+    const auto msgs = ai.getAIInterface().FetchChatMessages();
+    BOOST_TEST_REQUIRE(msgs.size() == 2u);
+    BOOST_TEST(msgs[0]->player == 1u);
+    BOOST_TEST(msgs[0]->destination == ChatDestination::All);
+    BOOST_TEST(msgs[0]->text == "Hello players!");
+    BOOST_TEST(msgs[1]->player == 1u);
+    BOOST_TEST(msgs[1]->destination == ChatDestination::All);
+    BOOST_TEST(msgs[1]->text == "2nd Message!");
+    // Messages cleared by first call
+    BOOST_TEST(ai.getAIInterface().FetchChatMessages().empty());
+    // Can readd
+    ai.getAIInterface().Chat("Hello again!");
+    // Iterate just like in ExecuteNWF function
+    for(auto& msg : ai.getAIInterface().FetchChatMessages())
+    {
+        BOOST_TEST(msg->player == 1u);
+        BOOST_TEST(msg->destination == ChatDestination::All);
+        BOOST_TEST(msg->text == "Hello again!");
     }
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,16 +17,14 @@
 
 #pragma once
 
-#include <utility>
-
 #include "GameMessage.h"
 #include "GameMessageInterface.h"
+#include "GameMessage_Chat.h"
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
 #include "helpers/serializeEnums.h"
 #include "random/Random.h"
 #include "gameTypes/AIInfo.h"
-#include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapType.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/PlayerState.h"
@@ -34,6 +32,7 @@
 #include "gameTypes/TeamTypes.h"
 #include "s25util/Log.h"
 #include "s25util/Serializer.h"
+#include <utility>
 
 struct JoinPlayerInfo;
 class MessageInterface;
@@ -271,35 +270,6 @@ public:
         GameMessage::Deserialize(ser);
         error = ser.PopBool();
     }
-    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
-};
-
-/// ein/ausgehende Server-Chat-Nachricht
-class GameMessage_Chat : public GameMessageWithPlayer
-{
-public:
-    ChatDestination destination;
-    std::string text;
-
-    GameMessage_Chat() : GameMessageWithPlayer(NMS_CHAT) {} //-V730
-    GameMessage_Chat(uint8_t player, const ChatDestination destination, std::string text)
-        : GameMessageWithPlayer(NMS_CHAT, player), destination(destination), text(std::move(text))
-    {}
-
-    void Serialize(Serializer& ser) const override
-    {
-        GameMessageWithPlayer::Serialize(ser);
-        helpers::pushEnum<uint8_t>(ser, destination);
-        ser.PushString(text);
-    }
-
-    void Deserialize(Serializer& ser) override
-    {
-        GameMessageWithPlayer::Deserialize(ser);
-        destination = helpers::popEnum<ChatDestination>(ser);
-        text = ser.PopString();
-    }
-
     bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 

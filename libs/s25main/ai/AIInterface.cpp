@@ -23,6 +23,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "helpers/containerUtils.h"
+#include "network/GameMessage_Chat.h"
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/PathConditionRoad.h"
 #include "pathfinding/RoadPathFinder.h"
@@ -83,6 +84,8 @@ AIInterface::AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPt
         }
     }
 }
+
+AIInterface::~AIInterface() = default;
 
 AISubSurfaceResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
@@ -339,4 +342,16 @@ bool AIInterface::DestroyFlag(const noFlag* flag)
 bool AIInterface::CallSpecialist(const noFlag* flag, Job job)
 {
     return CallSpecialist(flag->GetPos(), job);
+}
+
+void AIInterface::Chat(const std::string& message)
+{
+    pendingChatMsgs_.push_back(std::make_unique<GameMessage_Chat>(playerID_, ChatDestination::All, message));
+}
+
+std::vector<std::unique_ptr<GameMessage_Chat>> AIInterface::FetchChatMessages()
+{
+    std::vector<std::unique_ptr<GameMessage_Chat>> tmp;
+    std::swap(tmp, pendingChatMsgs_);
+    return tmp;
 }

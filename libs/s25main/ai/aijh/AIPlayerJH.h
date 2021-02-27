@@ -45,7 +45,7 @@ class AIJob;
 Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& bqsToUpdate);
 
 /// Klasse für die besser JH-KI
-class AIPlayerJH : public AIPlayer
+class AIPlayerJH final : public AIPlayer
 {
 public:
     AIPlayerJH(unsigned char playerId, const GameWorldBase& gwb, AI::Level level);
@@ -61,6 +61,7 @@ public:
     unsigned GetNumJobs() const;
 
     void RunGF(unsigned gf, bool gfisnwf) override;
+    void OnChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) override;
 
     /// Test whether the player should resign or not
     bool TestDefeat();
@@ -176,8 +177,6 @@ public:
     void HandleNewColonyFounded(MapPoint pt);
     /// Lost land to another player
     void HandleLostLand(MapPoint pt);
-    /// Sends a chat messsage to all players
-    void Chat(const std::string& message);
     /// check expeditions (order new / cancel)
     void CheckExpeditions();
     /// if we have 1 complete forester but less than 1 military building and less than 2 buildingsites stop production
