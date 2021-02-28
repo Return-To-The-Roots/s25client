@@ -177,39 +177,65 @@ namespace rttr { namespace mapGenerator {
     {
         const auto& textures = map.textureMap;
         auto& resources = map.resources;
+        struct mineableResourceInfo
+        {
+            // The current "budget", that is, how many many are we over, or under, compared to the desired distribution.
+            int budget = 0;
+            // The ratio is the user defined ratio for this resource.
+            int ratio;
+            // The resource encoding
+            libsiedler2::Resource resource;
+            mineableResourceInfo(int ratio, libsiedler2::Resource resource) : ratio(ratio), resource(resource) {}
+        };
+        mineableResourceInfo mRIs[4] = {mineableResourceInfo(settings.ratioCoal, libsiedler2::R_Coal),
+                                        mineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
+                                        mineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
+                                        mineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite)};
         int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             if(textures.All(pt, IsMinableMountain))
             {
+                int ratio = 0;
                 int randomNumber = rnd.RandomValue(1, total);
-                int ratio = settings.ratioGold;
-
-                if(randomNumber < ratio)
+                for(auto mRI : mRIs)
                 {
-                    resources[pt] = libsiedler2::R_Gold + rnd.RandomValue(0, 8);
-                    continue;
-                }
+                    ratio += mRI.ratio;
 
-                ratio += settings.ratioCoal;
-                if(randomNumber < ratio)
-                {
-                    resources[pt] = libsiedler2::R_Coal + rnd.RandomValue(0, 8);
-                    continue;
-                }
+                    // Wrong resource, look further.
+                    if(randomNumber > ratio)
+                        continue;
 
-                ratio += settings.ratioIron;
-                if(randomNumber < ratio)
-                {
-                    resources[pt] = libsiedler2::R_Iron + rnd.RandomValue(0, 8);
-                    continue;
-                }
+                    // Right resource, adjust and check the budget.
+                    ++mRI.budget;
+                    if(mRI.budget <= 0)
+                        break;
 
-                ratio += settings.ratioGranite;
-                if(randomNumber < ratio)
-                {
-                    resources[pt] = libsiedler2::R_Granite + rnd.RandomValue(0, 8);
+                    // Budget is positive, avoid overwriting existing clusters though
+                    if(resources[pt])
+                        continue;
+
+                    // Cluster the resource around the map point.
+                    for(int xd = -4; xd <= 4; ++xd)
+                    {
+                        for(int yd = -4; yd <= 4; ++yd)
+                        {
+                            MapPoint pt_d(pt.x + xd, pt.y + yd);
+                            // Avoid out of bound accesses.
+                            if(pt_d.x >= map.size.x || pt_d.y >= map.size.y)
+                                continue;
+
+                            // Only place it on mines that have no resource yet, adjust the budget for each placed
+                            // resource.
+                            if(textures.All(pt_d, IsMinableMountain) && !resources[pt_d])
+                            {
+                                --mRI.budget;
+                                resources[pt_d] = mRI.resource + rnd.RandomValue(1, 8);
+                            }
+                        }
+                    }
+                    break;
                 }
             } else if(textures.All(pt, IsWater))
             {
