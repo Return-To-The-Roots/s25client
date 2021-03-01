@@ -186,12 +186,12 @@ namespace rttr { namespace mapGenerator {
             int ratio;
             // The resource encoding
             libsiedler2::Resource resource;
-            mineableResourceInfo(int ratio, libsiedler2::Resource resource) : ratio(ratio), resource(resource) {}
+            MineableResourceInfo(int ratio, libsiedler2::Resource resource) : ratio(ratio), resource(resource) {}
         };
-        mineableResourceInfo mRIs[4] = {mineableResourceInfo(settings.ratioCoal, libsiedler2::R_Coal),
-                                        mineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
-                                        mineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
-                                        mineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite)};
+        MineableResourceInfo mRIs[4] = {MineableResourceInfo(settings.ratioCoal, libsiedler2::R_Coal),
+                                        MineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
+                                        MineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
+                                        MineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite)};
         int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
         // Helper to pick an index [0,4) into the mRIs array that identifies a randomly selected resource we should
@@ -217,7 +217,7 @@ namespace rttr { namespace mapGenerator {
                 if(randomMRIindex < 0)
                     continue;
 
-                auto mRI = mRIs[randomMRIindex];
+                auto &mRI = mRIs[randomMRIindex];
 
                 // Adjust and check the budget, if we are over we will not place the resource because we have already in
                 // the past.
