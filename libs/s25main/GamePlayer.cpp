@@ -188,11 +188,11 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     for(JobNeeded job : jobs_wanted)
     {
         sgd.PushEnum<uint8_t>(job.job);
-        sgd.PushObject(job.workplace, false);
+        sgd.PushObject(job.workplace);
     }
 
     sgd.PushObjectContainer(ware_list, true);
-    sgd.PushObjectContainer(flagworkers, false);
+    sgd.PushObjectContainer(flagworkers);
     sgd.PushObjectContainer(ships, true);
 
     sgd.PushContainer(shouldSendDefenderList);
@@ -286,7 +286,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     {
         JobNeeded nj;
         nj.job = sgd.Pop<Job>();
-        nj.workplace = sgd.PopObject<noRoadNode>(GO_Type::Unknown);
+        nj.workplace = sgd.PopObject<noRoadNode>();
         jobs_wanted.push_back(nj);
     }
 
@@ -294,7 +294,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         buildings.Deserialize2(sgd);
 
     sgd.PopObjectContainer(ware_list, GO_Type::Ware);
-    sgd.PopObjectContainer(flagworkers, GO_Type::Unknown);
+    sgd.PopObjectContainer(flagworkers);
     sgd.PopObjectContainer(ships, GO_Type::Ship);
 
     sgd.PopContainer(shouldSendDefenderList);

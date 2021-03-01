@@ -97,7 +97,7 @@ void noFigure::Serialize(SerializedGameData& sgd) const
     sgd.PushBool(on_ship);
 
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
-        sgd.PushObject(goal_, false);
+        sgd.PushObject(goal_);
 
     sgd.PushBool(waiting_for_free_node);
 
@@ -117,7 +117,7 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
       on_ship(sgd.PopBool()), last_id(0xFFFFFFFF)
 {
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
-        goal_ = sgd.PopObject<noRoadNode>(GO_Type::Unknown);
+        goal_ = sgd.PopObject<noRoadNode>();
     else
         goal_ = nullptr;
 

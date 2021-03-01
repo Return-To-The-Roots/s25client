@@ -125,7 +125,7 @@ void nobBaseWarehouse::Serialize(SerializedGameData& sgd) const
 
     sgd.PushObjectContainer(waiting_wares, true);
     sgd.PushBool(fetch_double_protection);
-    sgd.PushObjectContainer(dependent_figures, false);
+    sgd.PushObjectContainer(dependent_figures);
     sgd.PushObjectContainer(dependent_wares, true);
     sgd.PushEvent(producinghelpers_event);
     sgd.PushEvent(recruiting_event);
@@ -157,7 +157,7 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
 {
     sgd.PopObjectContainer(waiting_wares, GO_Type::Ware);
     fetch_double_protection = sgd.PopBool();
-    sgd.PopObjectContainer(dependent_figures, GO_Type::Unknown);
+    sgd.PopObjectContainer(dependent_figures);
     sgd.PopObjectContainer(dependent_wares, GO_Type::Ware);
 
     producinghelpers_event = sgd.PopEvent();

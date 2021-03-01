@@ -102,7 +102,7 @@ void noShip::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(covered_distance);
     for(auto i : route_)
         sgd.PushEnum<uint8_t>(i);
-    sgd.PushObjectContainer(figures, false);
+    sgd.PushObjectContainer(figures);
     sgd.PushObjectContainer(wares, true);
 }
 
@@ -115,7 +115,7 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
 {
     for(auto& dir : route_)
         dir = sgd.Pop<Direction>();
-    sgd.PopObjectContainer(figures, GO_Type::Unknown);
+    sgd.PopObjectContainer(figures);
     sgd.PopObjectContainer(wares, GO_Type::Ware);
 }
 

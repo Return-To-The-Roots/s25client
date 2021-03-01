@@ -96,6 +96,7 @@
 /// If a format change occurred that can still be handled increase this version and handle it in the loading code.
 /// If the change is to big to handle increase the version in Savegame.cpp and remove all code referencing GetGameDataVersion.
 /// Then reset this number to 1.
+/// TODO: Let GO_Type start at 0 again when resetting this
 /// Changelog:
 /// 2: All player buildings together, variable width size for containers and ship names
 /// 3: Landscape and terrain names stored as strings
@@ -174,8 +175,7 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GO_Type::Shipbuildingsite: return new noShipBuildingSite(*this, obj_id);
         case GO_Type::Charburnerpile: return new noCharburnerPile(*this, obj_id);
         case GO_Type::Economymodehandler: return new EconomyModeHandler(*this, obj_id);
-        case GO_Type::Nothing:
-        case GO_Type::Unknown: RTTR_Assert(false); break;
+        case GO_Type::Nothing: RTTR_Assert(false); break;
     }
     throw Error("Invalid GameObjectType " + helpers::toString(got) + " for objId=" + helpers::toString(obj_id)
                 + " found!");
@@ -430,7 +430,7 @@ FOWObject* SerializedGameData::PopFOWObject()
     return Create_FOWObject(type);
 }
 
-GameObject* SerializedGameData::PopObject_(GO_Type got)
+GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
 {
     RTTR_Assert(isReading);
     // Obj-ID holen
@@ -448,11 +448,11 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
         return go;
 
     // Objekt nich bekannt? Dann in den heiligen Schriften lesen
-    if(got == GO_Type::Unknown)
+    if(!got)
         got = Pop<GO_Type>();
 
     // und erzeugen
-    go = Create_GameObject(got, objId);
+    go = Create_GameObject(*got, objId);
 
     // Sicherheitscode auslesen
     unsigned short safety_code = PopUnsignedShort();
@@ -461,7 +461,7 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
     {
         LOG.write(
           "SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n")
-          % objId % rttr::enum_cast(got);
+          % objId % rttr::enum_cast(*got);
         delete go;
         throw Error("Invalid safety code after PopObject");
     }

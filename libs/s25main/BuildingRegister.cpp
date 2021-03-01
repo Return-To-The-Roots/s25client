@@ -30,7 +30,7 @@
 
 void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushObjectContainer(warehouses, false);
+    sgd.PushObjectContainer(warehouses);
     sgd.PushObjectContainer(harbors, true);
     for(const auto bld : helpers::enumRange<BuildingType>())
     {
@@ -43,7 +43,7 @@ void BuildingRegister::Serialize(SerializedGameData& sgd) const
 
 void BuildingRegister::Deserialize(SerializedGameData& sgd)
 {
-    sgd.PopObjectContainer(warehouses, GO_Type::Unknown);
+    sgd.PopObjectContainer(warehouses);
     sgd.PopObjectContainer(harbors, GO_Type::NobHarborbuilding);
 
     if(sgd.GetGameDataVersion() >= 6)

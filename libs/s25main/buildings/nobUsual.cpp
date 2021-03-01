@@ -56,11 +56,11 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 }
 
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
-    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>(GO_Type::Unknown)),
-      productivity(sgd.PopUnsignedShort()), disable_production(sgd.PopBool()),
-      disable_production_virtual(disable_production), last_ordered_ware(sgd.PopUnsignedChar()),
-      orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()), numGfNotWorking(sgd.PopUnsignedShort()),
-      since_not_working(sgd.PopUnsignedInt()), outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
+    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>()), productivity(sgd.PopUnsignedShort()),
+      disable_production(sgd.PopBool()), disable_production_virtual(disable_production),
+      last_ordered_ware(sgd.PopUnsignedChar()), orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()),
+      numGfNotWorking(sgd.PopUnsignedShort()), since_not_working(sgd.PopUnsignedInt()),
+      outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
 {
     for(unsigned i = 0; i < 3; ++i)
         numWares[i] = sgd.PopUnsignedChar();
@@ -77,7 +77,7 @@ void nobUsual::Serialize(SerializedGameData& sgd) const
 {
     noBuilding::Serialize(sgd);
 
-    sgd.PushObject(worker, false);
+    sgd.PushObject(worker);
     sgd.PushUnsignedShort(productivity);
     sgd.PushBool(disable_production);
     sgd.PushUnsignedChar(last_ordered_ware);

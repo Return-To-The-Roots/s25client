@@ -23,8 +23,7 @@
 /// items at the end of the list.
 enum class GO_Type : uint16_t
 {
-    Unknown,
-    Nothing,
+    Nothing = 1, // TODO: Revert to 0 when SaveGameVersion is increased
     NobHq,
     NobMilitary,
     NobStorehouse,

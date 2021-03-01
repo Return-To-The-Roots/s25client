@@ -36,8 +36,8 @@ RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* co
 }
 
 RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), rt(sgd.Pop<RoadType>()), f1(sgd.PopObject<noRoadNode>(GO_Type::Unknown)),
-      f2(sgd.PopObject<noRoadNode>(GO_Type::Unknown)), route(sgd.PopUnsignedShort())
+    : GameObject(sgd, obj_id), rt(sgd.Pop<RoadType>()), f1(sgd.PopObject<noRoadNode>()),
+      f2(sgd.PopObject<noRoadNode>()), route(sgd.PopUnsignedShort())
 {
     carriers_[0] = sgd.PopObject<nofCarrier>(GO_Type::NofCarrier);
     carriers_[1] = sgd.PopObject<nofCarrier>(GO_Type::NofCarrier);
@@ -105,8 +105,8 @@ void RoadSegment::Destroy()
 void RoadSegment::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushEnum<uint8_t>(rt);
-    sgd.PushObject(f1, false);
-    sgd.PushObject(f2, false);
+    sgd.PushObject(f1);
+    sgd.PushObject(f2);
     sgd.PushUnsignedShort(route.size());
     sgd.PushObject(carriers_[0], true);
     sgd.PushObject(carriers_[1], true);
