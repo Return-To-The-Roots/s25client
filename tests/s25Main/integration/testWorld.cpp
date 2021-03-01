@@ -93,6 +93,7 @@ struct WorldLoaded1PFixture : public WorldFixture<LoadWorldFromFileCreator, 1>
 {
     using WorldFixture<LoadWorldFromFileCreator, 1>::world;
 };
+using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1>;
 } // namespace
 
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
@@ -234,6 +235,21 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
             }
         }
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(NONothingOnEmptyNode, WorldFixtureEmpty1P)
+{
+    const MapPoint hqPos = world.GetPlayer(0).GetHQPos();
+    BOOST_TEST(world.GetNode(hqPos).obj != nullptr);
+    BOOST_TEST_REQUIRE(world.GetNO(hqPos));
+    BOOST_TEST(world.GetNO(hqPos)->GetGOT() == GO_Type::NobHq);
+    BOOST_TEST(world.GetGOT(hqPos) == GO_Type::NobHq);
+
+    const MapPoint emptySpot = world.GetNeighbour(hqPos, Direction::SouthWest);
+    BOOST_TEST(world.GetNode(emptySpot).obj == nullptr);
+    BOOST_TEST_REQUIRE(world.GetNO(emptySpot));
+    BOOST_TEST(world.GetNO(emptySpot)->GetGOT() == GO_Type::Nothing);
+    BOOST_TEST(world.GetGOT(emptySpot) == GO_Type::Nothing);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
