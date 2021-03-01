@@ -116,19 +116,9 @@ public:
 
     ~nofCarrier() override;
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofCarrier(SerializedGameData& sgd) const;
+    void Serialize(SerializedGameData& sgd) const override;
 
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofCarrier(sgd); }
-
-    /// Aufräummethoden
-protected:
-    void Destroy_nofCarrier();
-
-public:
-    void Destroy() override { Destroy_nofCarrier(); }
+    void Destroy() override;
 
     GO_Type GetGOT() const override { return GO_Type::NofCarrier; }
 

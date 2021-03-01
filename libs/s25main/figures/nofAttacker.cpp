@@ -65,20 +65,20 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
 nofAttacker::~nofAttacker() = default;
 
-void nofAttacker::Destroy_nofAttacker()
+void nofAttacker::Destroy()
 {
     RTTR_Assert(!attacked_goal);
     RTTR_Assert(!ship_obj_id);
     RTTR_Assert(!huntingDefender);
-    Destroy_nofActiveSoldier();
+    nofActiveSoldier::Destroy();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
     RTTR_Assert(!gwg->GetPlayer(oplayer).GetFirstWH()->Test(this));*/
 }
 
-void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
+void nofAttacker::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofActiveSoldier(sgd);
+    nofActiveSoldier::Serialize(sgd);
 
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {

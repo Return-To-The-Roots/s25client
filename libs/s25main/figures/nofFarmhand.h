@@ -65,19 +65,7 @@ public:
     nofFarmhand(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmhand(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofFarmhand() { Destroy_nofBuildingWorker(); }
-
-public:
-    void Destroy() override { Destroy_nofFarmhand(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofFarmhand(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmhand(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     void HandleDerivedEvent(unsigned id) override;
     /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann

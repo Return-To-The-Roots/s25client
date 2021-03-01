@@ -18,9 +18,9 @@
 #include "noExtension.h"
 #include "SerializedGameData.h"
 
-void noExtension::Serialize_noExtension(SerializedGameData& sgd) const
+void noExtension::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noBase(sgd);
+    noBase::Serialize(sgd);
 
     sgd.PushObject(base, false);
 }

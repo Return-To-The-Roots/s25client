@@ -65,23 +65,12 @@ public:
 
     ~noAnimal() override = default;
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noAnimal(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noAnimal(sgd); }
-
-    /// Aufräummethoden
-protected:
-    void Destroy_noAnimal()
+    void Serialize(SerializedGameData& sgd) const override;
+    void Destroy() override
     {
         RTTR_Assert(!hunter);
         noMovable::Destroy();
     }
-
-public:
-    void Destroy() override { Destroy_noAnimal(); }
 
     GO_Type GetGOT() const override { return GO_Type::Animal; }
     Species GetSpecies() const { return species; }

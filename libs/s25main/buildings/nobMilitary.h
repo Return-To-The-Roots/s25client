@@ -107,10 +107,9 @@ public:
 
 protected:
     void DestroyBuilding() override;
-    void Serialize_nobMilitary(SerializedGameData& sgd) const;
 
 public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nobMilitary(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NobMilitary; }
 

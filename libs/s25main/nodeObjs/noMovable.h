@@ -55,7 +55,6 @@ public:
     noMovable(NodalObjectType nop, MapPoint pos);
     noMovable(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override { noCoordBase::Destroy(); }
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Sets the position. Usually not required as all position changes are done by the walk functions

@@ -27,12 +27,7 @@ class nobStorehouse : public nobBaseWarehouse
     nobStorehouse(MapPoint pos, unsigned char player, Nation nation);
     nobStorehouse(SerializedGameData& sgd, unsigned obj_id);
 
-protected:
-    void Serialize_nobStorehouse(SerializedGameData& sgd) const;
-
 public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nobStorehouse(sgd); }
-
     GO_Type GetGOT() const override { return GO_Type::NobStorehouse; }
     unsigned GetMilitaryRadius() const override { return 0; }
     bool IsAttackable(unsigned /*playerIdx*/) const override { return false; }

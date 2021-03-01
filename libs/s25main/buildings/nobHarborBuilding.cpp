@@ -165,7 +165,7 @@ void nobHarborBuilding::DestroyBuilding()
 
 void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nobBaseWarehouse(sgd);
+    nobBaseWarehouse::Serialize(sgd);
     expedition.Serialize(sgd);
     exploration_expedition.Serialize(sgd);
     sgd.PushEvent(orderware_ev);

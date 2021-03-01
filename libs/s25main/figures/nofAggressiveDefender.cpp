@@ -44,16 +44,16 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
 
 nofAggressiveDefender::~nofAggressiveDefender() = default;
 
-void nofAggressiveDefender::Destroy_nofAggressiveDefender()
+void nofAggressiveDefender::Destroy()
 {
     RTTR_Assert(!attacker);
     RTTR_Assert(!attacked_goal);
-    Destroy_nofActiveSoldier();
+    nofActiveSoldier::Destroy();
 }
 
-void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& sgd) const
+void nofAggressiveDefender::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofActiveSoldier(sgd);
+    nofActiveSoldier::Serialize(sgd);
 
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {

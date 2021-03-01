@@ -53,19 +53,8 @@ public:
 
     ~nofWarehouseWorker() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofWarehouseWorker();
-
-public:
-    void Destroy() override { Destroy_nofWarehouseWorker(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofWarehouseWorker(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofWarehouseWorker(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofWarehouseworker; }
 

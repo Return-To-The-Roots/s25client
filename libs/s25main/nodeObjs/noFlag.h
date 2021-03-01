@@ -33,8 +33,8 @@ public:
     noFlag(SerializedGameData& sgd, unsigned obj_id);
     ~noFlag() override;
 
-    void Destroy() override { Destroy_noFlag(); }
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noFlag(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     inline GO_Type GetGOT() const override { return GO_Type::Flag; }
     inline FlagType GetFlagType() const { return flagtype; }
@@ -69,10 +69,6 @@ public:
     bool IsImpossibleForBWU(unsigned bwu_id) const;
     /// Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
     void ImpossibleForBWU(unsigned bwu_id);
-
-protected:
-    void Destroy_noFlag();
-    void Serialize_noFlag(SerializedGameData& sgd) const;
 
 private:
     unsigned short ani_offset;

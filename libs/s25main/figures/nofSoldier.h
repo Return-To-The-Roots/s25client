@@ -43,23 +43,12 @@ public:
     nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank);
     nofSoldier(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofSoldier()
+    void Destroy() override
     {
         RTTR_Assert(HasNoHome());
-        Destroy_noFigure();
+        noFigure::Destroy();
     }
-
-public:
-    void Destroy() override { Destroy_nofSoldier(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofSoldier(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofSoldier(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     /// Liefert Rang des Soldaten
     unsigned char GetRank() const;

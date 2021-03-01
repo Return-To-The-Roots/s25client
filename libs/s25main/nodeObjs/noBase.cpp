@@ -23,10 +23,8 @@ noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd,
     nop = sgd.Pop<NodalObjectType>();
 }
 
-void noBase::Serialize_noBase(SerializedGameData& sgd) const
+void noBase::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_GameObject(sgd);
-
     sgd.PushEnum<uint8_t>(nop);
 }
 

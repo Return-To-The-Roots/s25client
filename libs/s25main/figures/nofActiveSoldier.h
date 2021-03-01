@@ -110,23 +110,12 @@ public:
     nofActiveSoldier(const nofSoldier& other, SoldierState init_state);
     nofActiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Tidy up
-protected:
-    void Destroy_nofActiveSoldier()
+    void Destroy() override
     {
         RTTR_Assert(!enemy);
-        Destroy_nofSoldier();
+        nofSoldier::Destroy();
     }
-
-public:
-    void Destroy() override { Destroy_nofActiveSoldier(); }
-
-    /// Serializer
-protected:
-    void Serialize_nofActiveSoldier(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofActiveSoldier(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     /// Draw soldier (for all types of soldiers done by this base class!)
     void Draw(DrawPoint drawPt) override;

@@ -44,13 +44,6 @@ public:
     nofScout_LookoutTower(MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofScout_LookoutTower(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_LookoutTower(sgd); }
-
     GO_Type GetGOT() const override { return GO_Type::NofScoutLookouttower; }
 
     void HandleDerivedEvent(unsigned id) override;

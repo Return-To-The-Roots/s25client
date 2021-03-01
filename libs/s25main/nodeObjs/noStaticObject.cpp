@@ -50,18 +50,30 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
     }
 }
 
-void noStaticObject::Serialize_noStaticObject(SerializedGameData& sgd) const
+noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), id(sgd.PopUnsignedShort()), file(sgd.PopUnsignedShort()), size(sgd.PopUnsignedChar())
+{}
+
+void noStaticObject::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedShort(id);
     sgd.PushUnsignedShort(file);
     sgd.PushUnsignedChar(size);
 }
 
-noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), id(sgd.PopUnsignedShort()), file(sgd.PopUnsignedShort()), size(sgd.PopUnsignedChar())
-{}
+void noStaticObject::Destroy()
+{
+    // waren wir ein "Schloss" Objekt?
+    if(GetSize() == 2)
+    {
+        for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
+            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
+    }
+
+    noCoordBase::Destroy();
+}
 
 BlockingManner noStaticObject::GetBM() const
 {
@@ -105,19 +117,4 @@ void noStaticObject::Draw(DrawPoint drawPt)
     // Schatten zeichnen
     if(shadow)
         shadow->DrawFull(drawPt, COLOR_SHADOW);
-}
-
-/**
- *  zerstört das Objekt.
- */
-void noStaticObject::Destroy_noStaticObject()
-{
-    // waren wir ein "Schloss" Objekt?
-    if(GetSize() == 2)
-    {
-        for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
-            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
-    }
-
-    Destroy_noBase();
 }

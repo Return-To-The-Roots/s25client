@@ -86,7 +86,7 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
 
 noBuildingSite::~noBuildingSite() = default;
 
-void noBuildingSite::Destroy_noBuildingSite()
+void noBuildingSite::Destroy()
 {
     // Bauarbeiter/Planierer Bescheid sagen
     if(builder)
@@ -118,7 +118,7 @@ void noBuildingSite::Destroy_noBuildingSite()
     bool expeditionharbor = IsHarborBuildingSiteFromSea();
     gwg->GetPlayer(player).RemoveBuildingSite(this);
 
-    Destroy_noBaseBuilding();
+    noBaseBuilding::Destroy();
 
     // Hafenbaustelle?
     if(expeditionharbor)
@@ -130,9 +130,9 @@ void noBuildingSite::Destroy_noBuildingSite()
     gwg->RecalcBQAroundPointBig(pos);
 }
 
-void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const
+void noBuildingSite::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noBaseBuilding(sgd);
+    noBaseBuilding::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(planer, true);

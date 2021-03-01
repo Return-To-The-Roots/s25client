@@ -80,7 +80,7 @@ noFlag::~noFlag()
         delete ware;
 }
 
-void noFlag::Destroy_noFlag()
+void noFlag::Destroy()
 {
     /// Da ist dann nichts
     gwg->SetNO(pos, nullptr);
@@ -100,12 +100,12 @@ void noFlag::Destroy_noFlag()
     // Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
     gwg->GetPlayer(player).FlagDestroyed(this);
 
-    Destroy_noRoadNode();
+    noRoadNode::Destroy();
 }
 
-void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
+void noFlag::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noRoadNode(sgd);
+    noRoadNode::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(flagtype);
     for(auto* ware : wares)

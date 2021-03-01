@@ -28,23 +28,14 @@ class noSkeleton : public noCoordBase
 public:
     noSkeleton(MapPoint pos);
     noSkeleton(SerializedGameData& sgd, unsigned obj_id);
-
     ~noSkeleton() override;
 
-    void Destroy() override { Destroy_noSkeleton(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noSkeleton(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noSkeleton(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Skeleton; }
 
 protected:
-    void Destroy_noSkeleton();
-
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
 

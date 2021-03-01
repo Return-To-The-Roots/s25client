@@ -119,9 +119,9 @@ void nobBaseWarehouse::DestroyBuilding()
     nobBaseMilitary::DestroyBuilding();
 }
 
-void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData& sgd) const
+void nobBaseWarehouse::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nobBaseMilitary(sgd);
+    nobBaseMilitary::Serialize(sgd);
 
     sgd.PushObjectContainer(waiting_wares, true);
     sgd.PushBool(fetch_double_protection);

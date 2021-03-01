@@ -54,8 +54,6 @@ public:
     virtual std::string ToString() const;
 
 protected:
-    /// Serialisierungsfunktion.
-    void Serialize_GameObject(SerializedGameData& /*sgd*/) const {}
     // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
     static EventManager& GetEvMgr();
     /// Send the msg to given player

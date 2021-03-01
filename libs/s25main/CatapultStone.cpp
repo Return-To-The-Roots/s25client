@@ -44,7 +44,7 @@ CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
 {}
 
 /// Serialisierungsfunktionen
-void CatapultStone::Serialize_CatapultStone(SerializedGameData& sgd) const
+void CatapultStone::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushMapPoint(dest_building);
     sgd.PushMapPoint(dest_map);

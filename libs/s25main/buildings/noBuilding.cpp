@@ -38,12 +38,12 @@ void noBuilding::Destroy()
     // Destroy derived buildings
     DestroyBuilding();
     // Then go further down the chain
-    Destroy_noBaseBuilding();
+    noBaseBuilding::Destroy();
 }
 
-void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
+void noBuilding::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noBaseBuilding(sgd);
+    noBaseBuilding::Serialize(sgd);
 
     sgd.PushSignedChar(opendoor);
 }

@@ -43,9 +43,9 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
     : noFigure(job, pos, player, goalWh), state(State::FigureWork), workplace(nullptr), was_sounding(false)
 {}
 
-void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
+void nofBuildingWorker::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(state);
 

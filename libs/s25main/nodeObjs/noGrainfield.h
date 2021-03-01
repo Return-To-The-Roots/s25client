@@ -50,19 +50,8 @@ public:
 
     ~noGrainfield() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noGrainfield();
-
-public:
-    void Destroy() override { Destroy_noGrainfield(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noGrainfield(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noGrainfield(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Grainfield; }
 

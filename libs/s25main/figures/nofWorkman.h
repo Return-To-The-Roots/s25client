@@ -59,12 +59,5 @@ public:
     nofWorkman(Job job, MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofWorkman(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofWorkman(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
-
     void HandleDerivedEvent(unsigned id) override;
 };

@@ -33,11 +33,6 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
                               GetEvMgr().GetCurrentGF(), _("New storehouse finished"), PostCategory::Economy, *this));
 }
 
-void nobStorehouse::Serialize_nobStorehouse(SerializedGameData& sgd) const
-{
-    Serialize_nobBaseWarehouse(sgd);
-}
-
 nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id) {}
 
 void nobStorehouse::Draw(DrawPoint drawPt)

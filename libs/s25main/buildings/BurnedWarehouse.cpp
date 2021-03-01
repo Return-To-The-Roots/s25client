@@ -52,9 +52,9 @@ void BurnedWarehouse::Destroy()
     noCoordBase::Destroy();
 }
 
-void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
+void BurnedWarehouse::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedInt(go_out_phase);

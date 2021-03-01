@@ -57,15 +57,15 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
 
 noTree::~noTree() = default;
 
-void noTree::Destroy_noTree()
+void noTree::Destroy()
 {
     GetEvMgr().RemoveEvent(produce_animal_event);
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }
 
-void noTree::Serialize_noTree(SerializedGameData& sgd) const
+void noTree::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.PushUnsignedChar(size);

@@ -21,30 +21,22 @@
 class SerializedGameData;
 
 // Große Gebäude erstrecken sich über 4 Felder, die restlichen 3 werden mit dieser Klasse gefüllt
-class noExtension : public noBase
+class noExtension final : public noBase
 {
 public:
     noExtension(noBase* const base) : noBase(NodalObjectType::Extension), base(base) {}
     noExtension(SerializedGameData& sgd, unsigned obj_id);
     ~noExtension() override;
 
-    void Destroy() override { Destroy_noExtension(); }
     noBase* GetBaseObject() const { return base; }
     void Draw(DrawPoint /*drawPt*/) override {}
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noExtension(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noExtension(sgd); }
+    void Destroy() override {}
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Extension; }
 
     BlockingManner GetBM() const override { return BlockingManner::Single; }
-
-protected:
-    void Destroy_noExtension() { Destroy_noBase(); }
 
 private:
     noBase* const base;

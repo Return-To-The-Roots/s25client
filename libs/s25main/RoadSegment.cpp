@@ -57,7 +57,7 @@ bool RoadSegment::GetNodeID(const noRoadNode& rn) const
     return (&rn == f2);
 }
 
-void RoadSegment::Destroy_RoadSegment()
+void RoadSegment::Destroy()
 {
     // This can be the road segment from the flag to the building (always in this order!)
     // Those are not considered "roads" and therefore never registered
@@ -102,10 +102,8 @@ void RoadSegment::Destroy_RoadSegment()
     }
 }
 
-void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
+void RoadSegment::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_GameObject(sgd);
-
     sgd.PushEnum<uint8_t>(rt);
     sgd.PushObject(f1, false);
     sgd.PushObject(f2, false);

@@ -72,10 +72,9 @@ public:
 
 protected:
     void DestroyBuilding() override;
-    void Serialize_nobUsual(SerializedGameData& sgd) const;
 
 public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nobUsual(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NobUsual; }
     unsigned GetMilitaryRadius() const override { return 0; }

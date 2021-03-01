@@ -47,8 +47,8 @@ public:
 
     /// Type zurückgeben.
     NodalObjectType GetType() const { return nop; }
-    /// Serialisierungsfunktion.
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noBase(sgd); }
+
+    void Serialize(SerializedGameData& sgd) const override;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
     virtual FOWObject* CreateFOWObject() const;
@@ -57,11 +57,6 @@ public:
     /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
     virtual bool IsMoving() const;
 
-protected:
-    /// Räumt das Basisobjekt auf.
-    void Destroy_noBase() {}
-    /// serialisiert das Basisobjekt.
-    void Serialize_noBase(SerializedGameData& sgd) const;
-
+private:
     NodalObjectType nop; /// Typ des NodeObjekt ( @see NodalObjectTypes.h )
 };

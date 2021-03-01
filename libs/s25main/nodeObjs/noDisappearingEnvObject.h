@@ -29,7 +29,6 @@ public:
     noDisappearingEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override;
-
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.

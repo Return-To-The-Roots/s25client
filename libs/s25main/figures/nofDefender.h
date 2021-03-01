@@ -36,29 +36,20 @@ class nofDefender : public nofActiveSoldier
     /// The derived classes regain control after a fight of nofActiveSoldier
     [[noreturn]] void FreeFightEnded() override;
 
+protected:
+    void HandleDerivedEvent [[noreturn]] (unsigned) override { throw std::logic_error("No events expected"); }
+
 public:
     nofDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, nofAttacker* attacker);
     nofDefender(nofPassiveSoldier* other, nofAttacker* attacker);
     nofDefender(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofDefender()
+    void Destroy() override
     {
         RTTR_Assert(!attacker);
-        Destroy_nofActiveSoldier();
+        nofActiveSoldier::Destroy();
     }
-
-public:
-    void Destroy() override { Destroy_nofDefender(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofDefender(SerializedGameData& sgd) const;
-    void HandleDerivedEvent [[noreturn]] (unsigned) override { throw std::logic_error("No events expected"); }
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofDefender(sgd); }
+    void Serialize(SerializedGameData& sgd) const;
 
     GO_Type GetGOT() const override { return GO_Type::NofDefender; }
 
