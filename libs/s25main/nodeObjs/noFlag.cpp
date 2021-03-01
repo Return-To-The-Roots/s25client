@@ -143,10 +143,10 @@ void noFlag::Draw(DrawPoint drawPt)
  *  Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung"
  *  für den Fog of War.
  */
-FOWObject* noFlag::CreateFOWObject() const
+std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
 {
     const GamePlayer& owner = gwg->GetPlayer(player);
-    return new fowFlag(owner.color, owner.nation, flagtype);
+    return std::make_unique<fowFlag>(owner.color, owner.nation, flagtype);
 }
 
 /**

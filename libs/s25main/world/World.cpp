@@ -75,14 +75,7 @@ void World::Unload()
 
     // Objekte vernichten
     for(auto& node : nodes)
-    {
         deletePtr(node.obj);
-
-        for(auto& z : node.fow)
-        {
-            deletePtr(z.object);
-        }
-    }
 
     // Figuren vernichten
     for(auto& node : nodes)
@@ -207,7 +200,7 @@ void World::SetVisibility(const MapPoint pt, unsigned char player, Visibility vi
 
     node.visibility = vis;
     if(vis == Visibility::Visible)
-        deletePtr(node.object);
+        node.object.reset();
     else if(vis == Visibility::FogOfWar)
         SaveFOWNode(pt, player, fowTime);
     VisibilityChanged(pt, player, oldVis, vis);
@@ -292,9 +285,7 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
     fow.last_update_time = curTime;
 
     // FOW-Objekt erzeugen
-    noBase* obj = GetNO(pt);
-    deletePtr(fow.object);
-    fow.object = obj->CreateFOWObject();
+    fow.object = GetNO(pt)->CreateFOWObject();
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
     for(const auto dir : helpers::EnumRange<RoadDir>{})
@@ -471,7 +462,7 @@ void World::MakeWholeMapVisibleForAllPlayers()
         for(auto& fowNode : mapNode.fow)
         {
             fowNode.visibility = Visibility::Visible;
-            deletePtr(fowNode.object);
+            fowNode.object.reset();
         }
     }
 }

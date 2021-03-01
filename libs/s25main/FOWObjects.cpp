@@ -38,8 +38,6 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color)
     return MakeColor(0xFF, red, green, blue);
 }
 
-FOWObject::~FOWObject() = default;
-
 ////////////////////////////////////////////////////////////////////////////////////
 // fowBuilding
 

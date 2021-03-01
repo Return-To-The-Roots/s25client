@@ -240,9 +240,9 @@ void noBuildingSite::Draw(DrawPoint drawPt)
 }
 
 /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-FOWObject* noBuildingSite::CreateFOWObject() const
+std::unique_ptr<FOWObject> noBuildingSite::CreateFOWObject() const
 {
-    return new fowBuildingSite(state == BuildingSiteState::Planing, bldType_, nation, build_progress);
+    return std::make_unique<fowBuildingSite>(state == BuildingSiteState::Planing, bldType_, nation, build_progress);
 }
 
 void noBuildingSite::GotWorker(Job /*job*/, noFigure* worker)

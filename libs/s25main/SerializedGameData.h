@@ -134,7 +134,7 @@ public:
     const GameEvent* PopEvent();
 
     /// FoW-Objekt
-    FOWObject* PopFOWObject();
+    std::unique_ptr<FOWObject> PopFOWObject();
 
     /// Read a container of GameObjects
     template<typename T>
@@ -195,9 +195,9 @@ private:
     /// Starts reading or writing according to the param
     void Prepare(bool reading);
     /// Erzeugt GameObject
-    GameObject* Create_GameObject(GO_Type got, unsigned obj_id);
+    std::unique_ptr<GameObject> Create_GameObject(GO_Type got, unsigned obj_id);
     /// Erzeugt FOWObject
-    FOWObject* Create_FOWObject(FoW_Type fowtype);
+    std::unique_ptr<FOWObject> Create_FOWObject(FoW_Type fowtype);
 
     void PushObject_(const GameObject* go, bool known);
     /// Objekt(referenzen) lesen

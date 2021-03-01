@@ -46,7 +46,7 @@ public:
     BlockingManner GetBM() const override { return BlockingManner::Flag; }
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War.
-    FOWObject* CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> CreateFOWObject() const override;
     /// Legt eine Ware an der Flagge ab.
     void AddWare(Ware*& ware) override;
     /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.

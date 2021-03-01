@@ -78,7 +78,7 @@ public:
     void Draw(DrawPoint drawPt) override;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    FOWObject* CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> CreateFOWObject() const override;
 
     void AddWare(Ware*& ware) override;
     void GotWorker(Job job, noFigure* worker) override;

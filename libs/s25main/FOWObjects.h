@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,28 +17,10 @@
 
 #pragma once
 
-#include "DrawPoint.h"
+#include "FoWObject.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/Nation.h"
-#include <cstdint>
-
-class SerializedGameData;
-
-/// Typen für die FOW Objekte
-enum class FoW_Type : uint8_t
-{
-    Nothing,
-    Building,
-    Buildingsite,
-    Flag,
-    Tree,
-    Granite
-};
-constexpr auto maxEnumValue(FoW_Type)
-{
-    return FoW_Type::Granite;
-}
 
 /// Helligkeit der Objekte beim Zeichnen
 const unsigned FOW_DRAW_COLOR_BRIGHTNESS = 0x80;
@@ -47,20 +29,6 @@ const unsigned FOW_DRAW_COLOR = 0xFF808080;
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
 unsigned CalcPlayerFOWDrawColor(unsigned color);
-
-/// Visuelles Objekt im Nebel, nur zur sichtbaren "Erinnerung",
-/// was ein bestimmter Spieler gesehen hat
-class FOWObject
-{
-public:
-    virtual ~FOWObject();
-    /// An x,y zeichnen.
-    virtual void Draw(DrawPoint drawPt) const = 0;
-    /// Serialisierungsfunktion.
-    virtual void Serialize(SerializedGameData& sgd) const = 0;
-    /// Gibt Typ zurück
-    virtual FoW_Type GetType() const = 0;
-};
 
 /// Gebäude im Nebel
 class fowBuilding : public FOWObject

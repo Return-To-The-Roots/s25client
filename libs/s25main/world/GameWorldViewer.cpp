@@ -288,7 +288,7 @@ bool GameWorldViewer::IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) cons
 /// Get the "youngest" FOWObject of all players who share the view with the local player
 const FOWObject* GameWorldViewer::GetYoungestFOWObject(const MapPoint pos) const
 {
-    return GetYoungestFOWNode(pos).object;
+    return GetYoungestFOWNode(pos).object.get();
 }
 
 /// Gets the youngest fow node of all visible objects of all players who are connected

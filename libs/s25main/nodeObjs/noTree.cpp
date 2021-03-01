@@ -213,9 +213,9 @@ void noTree::HandleEvent(const unsigned id)
     }
 }
 
-FOWObject* noTree::CreateFOWObject() const
+std::unique_ptr<FOWObject> noTree::CreateFOWObject() const
 {
-    return new fowTree(type, size);
+    return std::make_unique<fowTree>(type, size);
 }
 
 void noTree::FallSoon()

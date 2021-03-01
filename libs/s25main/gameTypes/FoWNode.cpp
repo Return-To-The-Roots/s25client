@@ -20,7 +20,7 @@
 #include "enum_cast.hpp"
 #include <algorithm>
 
-FoWNode::FoWNode() : last_update_time(0), visibility(Visibility::Invisible), object(nullptr), owner(0)
+FoWNode::FoWNode() : last_update_time(0), visibility(Visibility::Invisible), owner(0)
 {
     std::fill(roads.begin(), roads.end(), PointRoad::None);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
@@ -33,7 +33,7 @@ void FoWNode::Serialize(SerializedGameData& sgd) const
     if(visibility == Visibility::FogOfWar)
     {
         sgd.PushUnsignedInt(last_update_time);
-        sgd.PushFOWObject(object);
+        sgd.PushFOWObject(object.get());
         for(const PointRoad road : roads)
             sgd.PushEnum<uint8_t>(road);
         sgd.PushUnsignedChar(owner);
@@ -58,11 +58,9 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
     } else
     {
         last_update_time = 0;
-        object = nullptr;
-        for(PointRoad& road : roads)
-            road = PointRoad::None;
+        object.reset();
+        std::fill(roads.begin(), roads.end(), PointRoad::None);
         owner = 0;
-        for(uint8_t& boundary_stone : boundary_stones)
-            boundary_stone = 0;
+        std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
     }
 }

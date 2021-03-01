@@ -20,6 +20,7 @@
 #include "DrawPoint.h"
 #include "GameObject.h"
 #include "NodalObjectTypes.h"
+#include <memory>
 
 class FOWObject;
 class SerializedGameData;
@@ -51,7 +52,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    virtual FOWObject* CreateFOWObject() const;
+    virtual std::unique_ptr<FOWObject> CreateFOWObject() const;
 
     virtual BlockingManner GetBM() const;
     /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
