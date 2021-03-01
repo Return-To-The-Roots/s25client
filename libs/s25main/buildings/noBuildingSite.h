@@ -69,19 +69,8 @@ public:
 
     ~noBuildingSite() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noBuildingSite();
-
-public:
-    void Destroy() override { Destroy_noBuildingSite(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noBuildingSite(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noBuildingSite(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Buildingsite; }
     unsigned GetMilitaryRadius() const override;

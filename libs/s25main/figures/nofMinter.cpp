@@ -28,11 +28,6 @@ nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* w
     : nofWorkman(Job::Minter, pos, player, workplace)
 {}
 
-void nofMinter::Serialize_nofMinter(SerializedGameData& sgd) const
-{
-    Serialize_nofWorkman(sgd);
-}
-
 nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofMinter::DrawWorking(DrawPoint drawPt)

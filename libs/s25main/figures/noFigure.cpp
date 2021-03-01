@@ -75,7 +75,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
       wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {}
 
-void noFigure::Destroy_noFigure()
+void noFigure::Destroy()
 {
     RTTR_Assert(HasNoGoal());
     RTTR_Assert(!cur_rs);
@@ -84,7 +84,7 @@ void noFigure::Destroy_noFigure()
     RTTR_Assert(!gwg->GetPlayer(player).IsDependentFigure(this));
 }
 
-void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
+void noFigure::Serialize(SerializedGameData& sgd) const
 {
     noMovable::Serialize(sgd);
 

@@ -22,7 +22,7 @@
 class FOWObject;
 class SerializedGameData;
 
-class noGranite : public noBase
+class noGranite final : public noBase
 {
     GraniteType type;    // Welcher Typ ( gibt 2 )
     unsigned char state; // Status, 0 - 5, von sehr wenig bis sehr viel
@@ -31,19 +31,8 @@ public:
     noGranite(GraniteType type, unsigned char state);
     noGranite(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noGranite() { Destroy_noBase(); }
-
-public:
-    void Destroy() override { Destroy_noGranite(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noGranite(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noGranite(sgd); }
+    void Destroy() override {}
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Granite; }
 

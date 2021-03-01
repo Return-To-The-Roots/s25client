@@ -32,10 +32,9 @@ public:
 
 protected:
     void DestroyBuilding() override;
-    void Serialize_nobHQ(SerializedGameData& sgd) const;
 
 public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nobHQ(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NobHq; }
 

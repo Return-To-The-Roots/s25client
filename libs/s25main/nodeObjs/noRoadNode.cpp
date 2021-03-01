@@ -33,15 +33,15 @@ noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsi
 
 noRoadNode::~noRoadNode() = default;
 
-void noRoadNode::Destroy_noRoadNode()
+void noRoadNode::Destroy()
 {
     DestroyAllRoads();
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }
 
-void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
+void noRoadNode::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(player);
 

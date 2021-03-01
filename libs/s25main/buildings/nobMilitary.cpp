@@ -131,9 +131,9 @@ void nobMilitary::DestroyBuilding()
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, player, pos, bldType_));
 }
 
-void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
+void nobMilitary::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nobBaseMilitary(sgd);
+    nobBaseMilitary::Serialize(sgd);
     sgd.PushBool(new_built);
     sgd.PushUnsignedChar(numCoins);
     sgd.PushBool(coinsDisabled);

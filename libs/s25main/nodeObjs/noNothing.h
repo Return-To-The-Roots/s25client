@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,25 +18,13 @@
 #pragma once
 
 #include "noBase.h"
-class SerializedGameData;
 
-class noNothing : public noBase
+class noNothing final : public noBase
 {
 public:
-    noNothing();
+    noNothing() : noBase(NodalObjectType::Nothing) {}
 
-protected:
-    void Destroy_noNothing() { Destroy_noBase(); }
-
-public:
-    void Destroy() override { Destroy_noNothing(); }
-
-    /// Serialisierungsfunktionen
-
-    void Serialize(SerializedGameData& /*sgd*/) const override {}
-
+    void Destroy() override {}
     GO_Type GetGOT() const override { return GO_Type::Unknown; }
-
-    /// An x,y zeichnen.
-    void Draw(DrawPoint drawPt) override;
+    void Draw(DrawPoint) override {}
 };

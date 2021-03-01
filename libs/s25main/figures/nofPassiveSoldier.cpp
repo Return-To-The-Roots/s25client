@@ -40,15 +40,15 @@ nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char pla
 
 nofPassiveSoldier::~nofPassiveSoldier() = default;
 
-void nofPassiveSoldier::Destroy_nofPassiveSoldier()
+void nofPassiveSoldier::Destroy()
 {
     GetEvMgr().RemoveEvent(healing_event);
-    Destroy_nofSoldier();
+    nofSoldier::Destroy();
 }
 
-void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) const
+void nofPassiveSoldier::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofSoldier(sgd);
+    nofSoldier::Serialize(sgd);
 
     sgd.PushEvent(healing_event);
 }

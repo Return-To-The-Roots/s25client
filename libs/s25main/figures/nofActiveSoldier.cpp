@@ -38,9 +38,9 @@ nofActiveSoldier::nofActiveSoldier(const nofSoldier& other, const SoldierState i
     : nofSoldier(other), state(init_state), enemy(nullptr)
 {}
 
-void nofActiveSoldier::Serialize_nofActiveSoldier(SerializedGameData& sgd) const
+void nofActiveSoldier::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofSoldier(sgd);
+    nofSoldier::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(enemy, false);

@@ -56,12 +56,7 @@ public:
     nofPlaner(MapPoint pos, unsigned char player, noBuildingSite* building_site);
     nofPlaner(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofPlaner(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofPlaner(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofPlaner; }
 

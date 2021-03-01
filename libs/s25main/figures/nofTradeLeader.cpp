@@ -46,7 +46,7 @@ nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
 
 void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     tr.Serialize(sgd);
 

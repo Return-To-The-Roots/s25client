@@ -62,10 +62,8 @@ void Ware::Destroy()
 #endif
 }
 
-void Ware::Serialize_Ware(SerializedGameData& sgd) const
+void Ware::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_GameObject(sgd);
-
     sgd.PushEnum<uint8_t>(next_dir);
     sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(location, false);

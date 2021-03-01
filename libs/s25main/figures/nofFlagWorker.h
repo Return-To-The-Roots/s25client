@@ -52,19 +52,8 @@ public:
     nofFlagWorker(Job job, MapPoint pos, unsigned char player, noRoadNode* goal);
     nofFlagWorker(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofFlagWorker();
-
-public:
-    void Destroy() override { Destroy_nofFlagWorker(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofFlagWorker(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFlagWorker(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
     virtual void LostWork() = 0;

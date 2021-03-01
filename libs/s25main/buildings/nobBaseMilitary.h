@@ -58,10 +58,9 @@ public:
 
 protected:
     void DestroyBuilding() override;
-    void Serialize_nobBaseMilitary(SerializedGameData& sgd) const;
 
 public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nobBaseMilitary(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     const std::list<noFigure*>& GetLeavingFigures() const { return leave_house; }
 

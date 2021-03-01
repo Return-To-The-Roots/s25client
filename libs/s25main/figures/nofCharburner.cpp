@@ -39,7 +39,7 @@ nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
 
 void nofCharburner::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofFarmhand(sgd);
+    nofFarmhand::Serialize(sgd);
 
     sgd.PushBool(harvest);
     sgd.PushEnum<uint8_t>(wt);

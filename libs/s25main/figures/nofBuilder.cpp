@@ -50,9 +50,9 @@ nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noBuildin
     }
 }
 
-void nofBuilder::Serialize_nofBuilder(SerializedGameData& sgd) const
+void nofBuilder::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(building_site, true);

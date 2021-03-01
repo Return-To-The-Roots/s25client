@@ -32,7 +32,7 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const
     : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
 {}
 
-void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const
+void noDisappearingMapEnvObject::Serialize(SerializedGameData& sgd) const
 {
     noDisappearingEnvObject::Serialize(sgd);
 

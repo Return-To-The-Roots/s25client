@@ -106,9 +106,9 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
     }
 }
 
-void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
+void nofCarrier::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(ct);
     sgd.PushEnum<uint8_t>(state);
@@ -134,7 +134,7 @@ nofCarrier::~nofCarrier()
     delete carried_ware;
 }
 
-void nofCarrier::Destroy_nofCarrier()
+void nofCarrier::Destroy()
 {
     RTTR_Assert(!workplace);
     // Ware vernichten (abmelden)
@@ -142,7 +142,7 @@ void nofCarrier::Destroy_nofCarrier()
     LooseWare();
     GetEvMgr().RemoveEvent(productivity_ev);
 
-    Destroy_noFigure();
+    noFigure::Destroy();
 }
 
 void nofCarrier::Draw(DrawPoint drawPt)

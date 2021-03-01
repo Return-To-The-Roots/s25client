@@ -43,9 +43,9 @@ nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* w
     : nofBuildingWorker(Job::Hunter, pos, player, workplace), animal(nullptr), shootingPos(0, 0)
 {}
 
-void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
+void nofHunter::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofBuildingWorker(sgd);
+    nofBuildingWorker::Serialize(sgd);
 
     if(state != State::FigureWork && state != State::Waiting1)
     {

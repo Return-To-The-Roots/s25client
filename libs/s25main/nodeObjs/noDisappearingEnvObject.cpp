@@ -41,7 +41,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos, const unsig
 
 void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushBool(disappearing);
     sgd.PushEvent(dead_event);
@@ -104,5 +104,5 @@ void noDisappearingEnvObject::Destroy()
     if(dead_event)
         GetEvMgr().RemoveEvent(dead_event);
 
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }

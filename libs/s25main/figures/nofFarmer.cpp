@@ -31,9 +31,9 @@ nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* w
     : nofFarmhand(Job::Farmer, pos, player, workplace), harvest(false)
 {}
 
-void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
+void nofFarmer::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofFarmhand(sgd);
+    nofFarmhand::Serialize(sgd);
 
     sgd.PushBool(harvest);
 }

@@ -27,19 +27,7 @@ public:
     noCoordBase(const NodalObjectType nop, const MapPoint pt) : noBase(nop), pos(pt) {}
     noCoordBase(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noCoordBase() { Destroy_noBase(); }
-
-public:
-    void Destroy() override { Destroy_noCoordBase(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noCoordBase(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noCoordBase(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     /// liefert die X-Koordinate.
     MapCoord GetX() const { return pos.x; }

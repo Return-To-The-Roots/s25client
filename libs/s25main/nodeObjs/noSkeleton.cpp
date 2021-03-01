@@ -30,7 +30,7 @@ noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NodalObjectType::Enviro
 
 noSkeleton::~noSkeleton() = default;
 
-void noSkeleton::Destroy_noSkeleton()
+void noSkeleton::Destroy()
 {
     gwg->SetNO(pos, nullptr);
 
@@ -38,12 +38,12 @@ void noSkeleton::Destroy_noSkeleton()
     if(current_event)
         GetEvMgr().RemoveEvent(current_event);
 
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }
 
-void noSkeleton::Serialize_noSkeleton(SerializedGameData& sgd) const
+void noSkeleton::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.PushEvent(current_event);

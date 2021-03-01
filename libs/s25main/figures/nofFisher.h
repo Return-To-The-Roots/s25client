@@ -48,12 +48,7 @@ public:
 
     ~nofFisher() override = default;
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofFisher(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFisher(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofFisher; }
 };

@@ -44,19 +44,19 @@ nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), flag(sgd.PopObject<noFlag>(GO_Type::Flag)), state(sgd.Pop<State>())
 {}
 
-void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
+void nofFlagWorker::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     sgd.PushObject(flag, true);
     sgd.PushEnum<uint8_t>(state);
 }
 
-void nofFlagWorker::Destroy_nofFlagWorker()
+void nofFlagWorker::Destroy()
 {
     RTTR_Assert(!flag);
     RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
-    Destroy_noFigure();
+    noFigure::Destroy();
 }
 
 void nofFlagWorker::AbrogateWorkplace()

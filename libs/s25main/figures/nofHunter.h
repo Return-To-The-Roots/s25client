@@ -69,12 +69,7 @@ public:
         nofBuildingWorker::Destroy();
     }
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofHunter(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofHunter(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofHunter; }
 

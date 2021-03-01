@@ -50,13 +50,7 @@ public:
 
     /// Zerstören
     void Destroy() override;
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_CatapultStone(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_CatapultStone(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     // Zeichnet den fliegenden Stein
     void Draw(DrawPoint drawOffset);

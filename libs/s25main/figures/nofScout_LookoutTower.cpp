@@ -36,11 +36,6 @@ nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsi
     : nofBuildingWorker(sgd, obj_id)
 {}
 
-void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const
-{
-    Serialize_nofBuildingWorker(sgd);
-}
-
 void nofScout_LookoutTower::WalkedDerived() {}
 
 void nofScout_LookoutTower::DrawWorking(DrawPoint /*drawPt*/) {}

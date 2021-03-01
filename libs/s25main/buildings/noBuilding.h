@@ -35,12 +35,7 @@ protected:
 
 public:
     void Destroy() override;
-
-protected:
-    void Serialize_noBuilding(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noBuilding(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     /// Draws the basic building (no fires etc.) with the door
     void DrawBaseBuilding(DrawPoint drawPt) const;

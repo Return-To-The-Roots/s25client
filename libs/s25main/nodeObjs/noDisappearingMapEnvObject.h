@@ -27,12 +27,7 @@ public:
     noDisappearingMapEnvObject(MapPoint pos, unsigned short map_id);
     noDisappearingMapEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noDisappearingMapEnvObject(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Disappearingmapenvobject; }
 

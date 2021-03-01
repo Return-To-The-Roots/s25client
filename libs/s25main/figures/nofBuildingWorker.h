@@ -108,23 +108,12 @@ public:
     nofBuildingWorker(Job job, MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofBuildingWorker(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofBuildingWorker()
+    void Destroy() override
     {
         RTTR_Assert(!workplace);
-        Destroy_noFigure();
+        noFigure::Destroy();
     }
-
-public:
-    void Destroy() override { Destroy_nofBuildingWorker(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofBuildingWorker(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuildingWorker(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     void Draw(DrawPoint drawPt) override;
 

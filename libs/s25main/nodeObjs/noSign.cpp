@@ -43,7 +43,7 @@ noSign::noSign(const MapPoint pos, Resource resource)
         this->resource.setType(ResourceType::Nothing);
 }
 
-void noSign::Serialize_noSign(SerializedGameData& sgd) const
+void noSign::Serialize(SerializedGameData& sgd) const
 {
     noDisappearingEnvObject::Serialize(sgd);
 

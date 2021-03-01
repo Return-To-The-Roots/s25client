@@ -20,9 +20,9 @@
 #include "world/GameWorldGame.h"
 #include "gameData/MapConsts.h"
 
-void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
+void noCoordBase::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noBase(sgd);
+    noBase::Serialize(sgd);
 
     sgd.PushMapPoint(pos);
 }

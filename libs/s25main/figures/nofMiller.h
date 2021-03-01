@@ -42,12 +42,5 @@ public:
     nofMiller(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMiller(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofMiller(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofMiller(sgd); }
-
     GO_Type GetGOT() const override { return GO_Type::NofMiller; }
 };

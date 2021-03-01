@@ -128,19 +128,8 @@ public:
 
     noFigure(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noFigure();
-
-public:
-    void Destroy() override { Destroy_noFigure(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noFigure(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noFigure(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     void HandleEvent(unsigned id) override;
 

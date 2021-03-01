@@ -37,9 +37,9 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
     RTTR_Assert(IsSoldier());
 }
 
-void nofSoldier::Serialize_nofSoldier(SerializedGameData& sgd) const
+void nofSoldier::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
         sgd.PushObject(building, false);

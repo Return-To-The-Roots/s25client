@@ -73,9 +73,9 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
         last_productivitie = sgd.PopUnsignedShort();
 }
 
-void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
+void nobUsual::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noBuilding(sgd);
+    noBuilding::Serialize(sgd);
 
     sgd.PushObject(worker, false);
     sgd.PushUnsignedShort(productivity);

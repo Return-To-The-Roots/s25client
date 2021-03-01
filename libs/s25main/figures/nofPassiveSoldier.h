@@ -49,19 +49,8 @@ public:
 
     ~nofPassiveSoldier() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofPassiveSoldier();
-
-public:
-    void Destroy() override { Destroy_nofPassiveSoldier(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofPassiveSoldier(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofPassiveSoldier(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofPassivesoldier; }
 

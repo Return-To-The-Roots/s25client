@@ -73,12 +73,7 @@ public:
         noFigure::Destroy();
     }
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofBuilder(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuilder(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofBuilder; }
 

@@ -37,7 +37,7 @@ noFire::noFire(const MapPoint pos, bool isBig)
 }
 noFire::~noFire() = default;
 
-void noFire::Destroy_noFire()
+void noFire::Destroy()
 {
     // Just in case
     GetEvMgr().RemoveEvent(dead_event);
@@ -50,12 +50,12 @@ void noFire::Destroy_noFire()
     // Evtl Sounds vernichten
     SOUNDMANAGER.WorkingFinished(this);
 
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }
 
-void noFire::Serialize_noFire(SerializedGameData& sgd) const
+void noFire::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushBool(isBig);
     sgd.PushEvent(dead_event);

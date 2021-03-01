@@ -71,7 +71,6 @@ public:
     EconomyModeHandler(SerializedGameData& sgd, unsigned objId);
 
     void Destroy() override;
-
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Event-Handler

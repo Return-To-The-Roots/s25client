@@ -37,12 +37,12 @@ void noShipBuildingSite::Destroy()
 {
     gwg->SetNO(pos, nullptr);
 
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }
 
 void noShipBuildingSite::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedChar(progress);

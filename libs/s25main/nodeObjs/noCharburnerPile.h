@@ -54,19 +54,8 @@ public:
 
     ~noCharburnerPile() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noCharburnerPile();
-
-public:
-    void Destroy() override { Destroy_noCharburnerPile(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noCharburnerPile(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noCharburnerPile(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Charburnerpile; }
 

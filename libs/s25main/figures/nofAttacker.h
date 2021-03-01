@@ -95,19 +95,8 @@ public:
     nofAttacker(SerializedGameData& sgd, unsigned obj_id);
     ~nofAttacker() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofAttacker();
-
-public:
-    void Destroy() override { Destroy_nofAttacker(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofAttacker(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofAttacker(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofAttacker; }
     const nofAggressiveDefender* GetHuntingDefender() const { return huntingDefender; }

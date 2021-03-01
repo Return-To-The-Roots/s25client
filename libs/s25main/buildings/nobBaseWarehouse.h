@@ -141,10 +141,9 @@ public:
 
 protected:
     void DestroyBuilding() override;
-    void Serialize_nobBaseWarehouse(SerializedGameData& sgd) const;
 
 public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nobBaseWarehouse(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     const Inventory& GetInventory() const;
 

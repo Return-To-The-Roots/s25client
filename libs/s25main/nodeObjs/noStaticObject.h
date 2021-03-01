@@ -27,7 +27,9 @@ public:
                    NodalObjectType type = NodalObjectType::Object);
     noStaticObject(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override { Destroy_noStaticObject(); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
+    GO_Type GetGOT() const override { return GO_Type::Staticobject; }
 
     /// gibt die Item-ID zurück (nr in der jeweiligen File)
     unsigned short GetItemID() const { return id; }
@@ -41,18 +43,7 @@ public:
     /// zeichnet das Objekt.
     void Draw(DrawPoint drawPt) override;
 
-    /// Serialisierungsfunktionen
 protected:
-    void Serialize_noStaticObject(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noStaticObject(sgd); }
-
-    GO_Type GetGOT() const override { return GO_Type::Staticobject; }
-
-protected:
-    void Destroy_noStaticObject();
-
     unsigned short id;
     unsigned short file;
     unsigned char size;

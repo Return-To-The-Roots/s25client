@@ -48,12 +48,7 @@ public:
     nofScout_Free(MapPoint pos, unsigned char player, noRoadNode* goal);
     nofScout_Free(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofScout_Free(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_Free(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofScoutFree; }
 

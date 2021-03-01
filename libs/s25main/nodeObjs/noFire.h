@@ -41,19 +41,8 @@ public:
     noFire(SerializedGameData& sgd, unsigned obj_id);
 
     ~noFire() override;
-    /// Aufräummethoden
-protected:
-    void Destroy_noFire();
-
-public:
-    void Destroy() override { Destroy_noFire(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noFire(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noFire(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Fire; }
 

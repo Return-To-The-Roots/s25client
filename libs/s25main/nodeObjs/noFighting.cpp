@@ -63,9 +63,9 @@ noFighting::~noFighting()
     deletePtr(soldiers[1]);
 }
 
-void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
+void noFighting::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noBase(sgd);
+    noBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(turn);
     sgd.PushUnsignedChar(defending_animation);
@@ -85,11 +85,11 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
         soldier = sgd.PopObject<nofActiveSoldier>(GO_Type::Unknown);
 }
 
-void noFighting::Destroy_noFighting()
+void noFighting::Destroy()
 {
     RTTR_Assert(!soldiers[0]);
     RTTR_Assert(!soldiers[1]);
-    Destroy_noBase();
+    noBase::Destroy();
 }
 
 void noFighting::Draw(DrawPoint drawPt)

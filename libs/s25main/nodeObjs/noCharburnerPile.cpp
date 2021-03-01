@@ -48,19 +48,19 @@ noCharburnerPile::noCharburnerPile(const MapPoint pos)
 
 noCharburnerPile::~noCharburnerPile() = default;
 
-void noCharburnerPile::Destroy_noCharburnerPile()
+void noCharburnerPile::Destroy()
 {
     GetEvMgr().RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
     gwg->RecalcBQAroundPointBig(pos);
 
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }
 
-void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData& sgd) const
+void noCharburnerPile::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(step);

@@ -50,21 +50,10 @@ public:
 
     noRoadNode(NodalObjectType nop, MapPoint pos, unsigned char player);
     noRoadNode(SerializedGameData& sgd, unsigned obj_id);
-
     ~noRoadNode() override;
-    /// Aufräummethoden
-protected:
-    void Destroy_noRoadNode();
 
-public:
-    void Destroy() override { Destroy_noRoadNode(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noRoadNode(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noRoadNode(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     RoadSegment* GetRoute(const Direction dir) const { return routes[dir]; }
     void SetRoute(const Direction dir, RoadSegment* route) { routes[dir] = route; }

@@ -48,6 +48,9 @@ class nofAggressiveDefender : public nofActiveSoldier
     /// The derived classes regain control after a fight of nofActiveSoldier
     void FreeFightEnded() override;
 
+protected:
+    [[noreturn]] void HandleDerivedEvent(unsigned) override { throw std::logic_error("No events expected"); }
+
 public:
     nofAggressiveDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank,
                           nofAttacker* attacker);
@@ -56,20 +59,8 @@ public:
 
     ~nofAggressiveDefender() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_nofAggressiveDefender();
-
-public:
-    void Destroy() override { Destroy_nofAggressiveDefender(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofAggressiveDefender(SerializedGameData& sgd) const;
-    [[noreturn]] void HandleDerivedEvent(unsigned) override { throw std::logic_error("No events expected"); }
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofAggressiveDefender(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofAggressivedefender; }
 

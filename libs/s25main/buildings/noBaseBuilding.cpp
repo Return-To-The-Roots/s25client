@@ -82,7 +82,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
 
 noBaseBuilding::~noBaseBuilding() = default;
 
-void noBaseBuilding::Destroy_noBaseBuilding()
+void noBaseBuilding::Destroy()
 {
     DestroyAllRoads();
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
@@ -148,12 +148,12 @@ void noBaseBuilding::Destroy_noBaseBuilding()
         }
     }
 
-    Destroy_noRoadNode();
+    noRoadNode::Destroy();
 }
 
-void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData& sgd) const
+void noBaseBuilding::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noRoadNode(sgd);
+    noRoadNode::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(bldType_);
     sgd.PushEnum<uint8_t>(nation);

@@ -33,9 +33,9 @@ nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingS
       pd(PlaningDir::NotWorking)
 {}
 
-void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
+void nofPlaner::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(building_site, true);

@@ -46,12 +46,7 @@ public:
     nofFarmer(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmer(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofFarmer(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmer(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofFarmer; }
 };

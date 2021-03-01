@@ -52,19 +52,8 @@ public:
 
     ~noBaseBuilding() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noBaseBuilding();
-
-public:
-    void Destroy() override { Destroy_noBaseBuilding(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noBaseBuilding(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noBaseBuilding(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     /// Eine bestellte Ware konnte doch nicht kommen
     virtual void WareLost(Ware* ware) = 0;

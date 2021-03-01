@@ -39,19 +39,19 @@ noGrainfield::noGrainfield(const MapPoint pos)
 
 noGrainfield::~noGrainfield() = default;
 
-void noGrainfield::Destroy_noGrainfield()
+void noGrainfield::Destroy()
 {
     GetEvMgr().RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
     gwg->RecalcBQAroundPoint(pos);
 
-    Destroy_noCoordBase();
+    noCoordBase::Destroy();
 }
 
-void noGrainfield::Serialize_noGrainfield(SerializedGameData& sgd) const
+void noGrainfield::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.PushEnum<uint8_t>(state);

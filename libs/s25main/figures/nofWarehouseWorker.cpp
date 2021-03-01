@@ -45,16 +45,16 @@ nofWarehouseWorker::~nofWarehouseWorker()
     delete carried_ware;
 }
 
-void nofWarehouseWorker::Destroy_nofWarehouseWorker()
+void nofWarehouseWorker::Destroy()
 {
     // Ware vernichten (abmelden)
     RTTR_Assert(!carried_ware); // TODO Check if this holds true and remove the LooseWare below
     LooseWare();
 }
 
-void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) const
+void nofWarehouseWorker::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noFigure(sgd);
+    noFigure::Serialize(sgd);
 
     sgd.PushObject(carried_ware, true);
     sgd.PushBool(shouldBringWareIn);

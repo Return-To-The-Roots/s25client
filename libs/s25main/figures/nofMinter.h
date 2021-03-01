@@ -22,7 +22,6 @@
 class SerializedGameData;
 class nobUsual;
 
-/// Klasse für den Schreiner
 class nofMinter : public nofWorkman
 {
     /// Zeichnet ihn beim Arbeiten
@@ -35,13 +34,6 @@ class nofMinter : public nofWorkman
 public:
     nofMinter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMinter(SerializedGameData& sgd, unsigned obj_id);
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofMinter(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofMinter(sgd); }
 
     GO_Type GetGOT() const override { return GO_Type::NofMinter; }
 };

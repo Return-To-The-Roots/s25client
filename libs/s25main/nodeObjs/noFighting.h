@@ -47,19 +47,8 @@ public:
     noFighting(SerializedGameData& sgd, unsigned obj_id);
     ~noFighting() override;
 
-    /// Aufräummethoden
-protected:
-    void Destroy_noFighting();
-
-public:
-    void Destroy() override { Destroy_noFighting(); }
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_noFighting(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noFighting(sgd); }
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Fighting; }
 

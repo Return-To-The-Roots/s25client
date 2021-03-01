@@ -36,7 +36,7 @@ noAnimal::noAnimal(const Species species, const MapPoint pos)
       hunter(nullptr), sound_moment(0)
 {}
 
-void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
+void noAnimal::Serialize(SerializedGameData& sgd) const
 {
     noMovable::Serialize(sgd);
 

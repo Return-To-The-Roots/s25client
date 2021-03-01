@@ -34,9 +34,9 @@ nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* w
     : nofFarmhand(Job::Fisher, pos, player, workplace), fishing_dir(Direction::West), successful(false)
 {}
 
-void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
+void nofFisher::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_nofFarmhand(sgd);
+    nofFarmhand::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(fishing_dir);
     sgd.PushBool(successful);

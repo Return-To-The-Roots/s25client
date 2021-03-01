@@ -66,13 +66,7 @@ public:
     ~Ware() override;
 
     void Destroy() override;
-
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_Ware(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_Ware(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::Ware; }
 

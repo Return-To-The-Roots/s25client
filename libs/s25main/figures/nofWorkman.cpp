@@ -31,11 +31,6 @@ nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char pl
     : nofBuildingWorker(job, pos, player, goalWh)
 {}
 
-void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
-{
-    Serialize_nofBuildingWorker(sgd);
-}
-
 nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id) {}
 
 void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)

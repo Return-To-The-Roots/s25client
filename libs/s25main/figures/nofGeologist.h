@@ -67,12 +67,7 @@ public:
     nofGeologist(MapPoint pos, unsigned char player, noRoadNode* goal);
     nofGeologist(SerializedGameData& sgd, unsigned obj_id);
 
-    /// Serialisierungsfunktionen
-protected:
-    void Serialize_nofGeologist(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_nofGeologist(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NofGeologist; }
 
