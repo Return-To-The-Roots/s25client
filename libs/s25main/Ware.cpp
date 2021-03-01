@@ -66,9 +66,9 @@ void Ware::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushEnum<uint8_t>(next_dir);
     sgd.PushEnum<uint8_t>(state);
-    sgd.PushObject(location, false);
+    sgd.PushObject(location);
     sgd.PushEnum<uint8_t>(type);
-    sgd.PushObject(goal, false);
+    sgd.PushObject(goal);
     sgd.PushMapPoint(next_harbor);
 }
 
@@ -90,8 +90,8 @@ static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
 
 Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), next_dir(PopRoadPathDirection(sgd)), state(sgd.Pop<State>()),
-      location(sgd.PopObject<noRoadNode>(GO_Type::Unknown)), type(sgd.Pop<GoodType>()),
-      goal(sgd.PopObject<noBaseBuilding>(GO_Type::Unknown)), next_harbor(sgd.PopMapPoint())
+      location(sgd.PopObject<noRoadNode>()), type(sgd.Pop<GoodType>()), goal(sgd.PopObject<noBaseBuilding>()),
+      next_harbor(sgd.PopMapPoint())
 {}
 
 void Ware::SetGoal(noBaseBuilding* newGoal)

@@ -71,7 +71,7 @@ public:
 
     /// Write a GameObject
     template<class T>
-    void PushObject(const T* go, bool known)
+    void PushObject(const T* go, bool known = false)
     {
         /* The assert below basically checks the virtual function table.
            If the dynamic_cast fails, we tried to push an object of another type or it was deleted */
@@ -84,7 +84,7 @@ public:
 
     /// Write a container of GameObjects
     template<typename T>
-    void PushObjectContainer(const T& gos, bool known);
+    void PushObjectContainer(const T& gos, bool known = false);
 
     /// Push a container of values. Values must have fixed-width types!
     template<typename T>
@@ -126,7 +126,7 @@ public:
     /// Read a GameObject
     template<typename T>
     RTTR_ATTRIBUTE_NO_UBSAN(vptr)
-    T* PopObject(GO_Type got)
+    T* PopObject(helpers::OptionalEnum<GO_Type> got = {})
     {
         return static_cast<T*>(PopObject_(got));
     }
@@ -138,7 +138,7 @@ public:
 
     /// Read a container of GameObjects
     template<typename T>
-    void PopObjectContainer(T& gos, GO_Type got);
+    void PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Type> got = {});
 
     /// Read a container of values.  Values must have fixed-width types!
     template<typename T>
@@ -201,7 +201,7 @@ private:
 
     void PushObject_(const GameObject* go, bool known);
     /// Objekt(referenzen) lesen
-    GameObject* PopObject_(GO_Type got);
+    GameObject* PopObject_(helpers::OptionalEnum<GO_Type> got);
 
     /// Returns the object with the given id when it was read, nullptr otherwise (only valid during reading)
     GameObject* GetReadGameObject(unsigned obj_id) const;
@@ -224,7 +224,7 @@ void SerializedGameData::PushObjectContainer(const T& gos, bool known)
 }
 
 template<typename T>
-void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
+void SerializedGameData::PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Type> got)
 {
     using ObjectPtr = typename T::value_type;
     using Object = std::remove_pointer_t<ObjectPtr>;

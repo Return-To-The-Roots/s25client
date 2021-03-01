@@ -44,7 +44,7 @@ public:
     // LCOV_EXCL_START
     void Destroy() override {}
     void Serialize(SerializedGameData&) const override {}
-    GO_Type GetGOT() const override { return GO_Type::Unknown; }
+    GO_Type GetGOT() const final { return GO_Type::Staticobject; }
     // LCOV_EXCL_STOP
 };
 
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(Reschedule)
     BOOST_TEST_REQUIRE(obj.handledEventIds.size() == 1u);
 }
 
-class TestLogKill : public GameObject
+class TestLogKill final : public GameObject
 {
 public:
     EventManager& em;
@@ -159,7 +159,7 @@ public:
     // LCOV_EXCL_START
     void Destroy() override { destroyNum++; }
     void Serialize(SerializedGameData&) const override {}
-    GO_Type GetGOT() const override { return GO_Type::Unknown; }
+    GO_Type GetGOT() const final { return GO_Type::Staticobject; }
     // LCOV_EXCL_STOP
 };
 

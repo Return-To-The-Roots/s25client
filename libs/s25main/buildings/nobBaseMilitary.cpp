@@ -108,11 +108,11 @@ void nobBaseMilitary::Serialize(SerializedGameData& sgd) const
 {
     noBuilding::Serialize(sgd);
 
-    sgd.PushObjectContainer(leave_house, false);
+    sgd.PushObjectContainer(leave_house);
     sgd.PushEvent(leaving_event);
     sgd.PushBool(go_out);
     sgd.PushUnsignedInt(0); // former age, compatibility with 0.7, remove it in furher versions
-    sgd.PushObjectContainer(troops_on_mission, false);
+    sgd.PushObjectContainer(troops_on_mission);
     sgd.PushObjectContainer(aggressors, true);
     sgd.PushObjectContainer(aggressive_defenders, true);
     sgd.PushObject(defender_, true);
@@ -120,11 +120,11 @@ void nobBaseMilitary::Serialize(SerializedGameData& sgd) const
 
 nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id) : noBuilding(sgd, obj_id)
 {
-    sgd.PopObjectContainer(leave_house, GO_Type::Unknown);
+    sgd.PopObjectContainer(leave_house);
     leaving_event = sgd.PopEvent();
     go_out = sgd.PopBool();
     sgd.PopUnsignedInt(); // former age, compatibility with 0.7, remove it in furher versions
-    sgd.PopObjectContainer(troops_on_mission, GO_Type::Unknown);
+    sgd.PopObjectContainer(troops_on_mission);
     sgd.PopObjectContainer(aggressors, GO_Type::NofAttacker);
     sgd.PopObjectContainer(aggressive_defenders, GO_Type::NofAggressivedefender);
     defender_ = sgd.PopObject<nofDefender>(GO_Type::NofDefender);

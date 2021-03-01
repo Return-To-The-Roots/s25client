@@ -82,7 +82,7 @@ void nofAttacker::Serialize(SerializedGameData& sgd) const
 
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
-        sgd.PushObject(attacked_goal, false);
+        sgd.PushObject(attacked_goal);
         sgd.PushBool(mayBeHunted);
         sgd.PushContainer(canPlayerSendAggDefender);
         sgd.PushObject(huntingDefender, true);
@@ -106,7 +106,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
 {
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
-        attacked_goal = sgd.PopObject<nobBaseMilitary>(GO_Type::Unknown);
+        attacked_goal = sgd.PopObject<nobBaseMilitary>();
         mayBeHunted = sgd.PopBool();
         sgd.PopContainer(canPlayerSendAggDefender);
         RTTR_Assert(canPlayerSendAggDefender.size() == gwg->GetNumPlayers());

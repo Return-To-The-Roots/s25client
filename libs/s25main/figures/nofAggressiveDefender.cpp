@@ -58,7 +58,7 @@ void nofAggressiveDefender::Serialize(SerializedGameData& sgd) const
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
         sgd.PushObject(attacker, true);
-        sgd.PushObject(attacked_goal, false);
+        sgd.PushObject(attacked_goal);
     }
 }
 
@@ -68,7 +68,7 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
         attacker = sgd.PopObject<nofAttacker>(GO_Type::NofAttacker);
-        attacked_goal = sgd.PopObject<nobBaseMilitary>(GO_Type::Unknown);
+        attacked_goal = sgd.PopObject<nobBaseMilitary>();
     } else
     {
         attacker = nullptr;

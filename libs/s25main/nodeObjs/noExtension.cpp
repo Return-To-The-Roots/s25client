@@ -22,11 +22,11 @@ void noExtension::Serialize(SerializedGameData& sgd) const
 {
     noBase::Serialize(sgd);
 
-    sgd.PushObject(base, false);
+    sgd.PushObject(base);
 }
 
 noExtension::noExtension(SerializedGameData& sgd, const unsigned obj_id)
-    : noBase(sgd, obj_id), base(sgd.PopObject<noBase>(GO_Type::Unknown))
+    : noBase(sgd, obj_id), base(sgd.PopObject<noBase>())
 {}
 
 noExtension::~noExtension() = default;

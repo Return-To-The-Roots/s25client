@@ -51,7 +51,7 @@ void nofBuildingWorker::Serialize(SerializedGameData& sgd) const
 
     if(fs != FigureState::GoHome && fs != FigureState::Wander)
     {
-        sgd.PushObject(workplace, false);
+        sgd.PushObject(workplace);
         sgd.PushOptionalEnum<uint8_t>(ware);
         sgd.PushBool(was_sounding);
     }
@@ -62,7 +62,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
 {
     if(fs != FigureState::GoHome && fs != FigureState::Wander)
     {
-        workplace = sgd.PopObject<nobUsual>(GO_Type::Unknown);
+        workplace = sgd.PopObject<nobUsual>();
         if(sgd.GetGameDataVersion() < 5)
         {
             const auto iWare = sgd.PopUnsignedChar();

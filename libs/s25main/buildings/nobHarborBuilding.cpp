@@ -176,7 +176,7 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
     for(const auto& figures_for_ship : figures_for_ships)
     {
         sgd.PushMapPoint(figures_for_ship.dest);
-        sgd.PushObject(figures_for_ship.fig, false);
+        sgd.PushObject(figures_for_ship.fig);
     }
     sgd.PushUnsignedInt(soldiers_for_ships.size());
     for(const auto& soldiers_for_ship : soldiers_for_ships)
@@ -202,7 +202,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     {
         FigureForShip ffs;
         ffs.dest = sgd.PopMapPoint();
-        ffs.fig = sgd.PopObject<noFigure>(GO_Type::Unknown);
+        ffs.fig = sgd.PopObject<noFigure>();
         figures_for_ships.push_back(ffs);
     }
 
