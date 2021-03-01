@@ -29,7 +29,7 @@ public:
 
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
-    GO_Type GetGOT() const override { return GO_Type::Staticobject; }
+    GO_Type GetGOT() const final { return GO_Type::Staticobject; }
 
     /// gibt die Item-ID zurück (nr in der jeweiligen File)
     unsigned short GetItemID() const { return id; }

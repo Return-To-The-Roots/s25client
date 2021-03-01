@@ -29,7 +29,7 @@ public:
     ~noShipBuildingSite() override;
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
-    GO_Type GetGOT() const override { return GO_Type::Shipbuildingsite; }
+    GO_Type GetGOT() const final { return GO_Type::Shipbuildingsite; }
 
     /// Gibt den Eigentümer zurück
     unsigned char GetPlayer() const { return player; }

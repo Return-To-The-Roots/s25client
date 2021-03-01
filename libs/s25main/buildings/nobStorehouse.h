@@ -28,7 +28,7 @@ class nobStorehouse : public nobBaseWarehouse
     nobStorehouse(SerializedGameData& sgd, unsigned obj_id);
 
 public:
-    GO_Type GetGOT() const override { return GO_Type::NobStorehouse; }
+    GO_Type GetGOT() const final { return GO_Type::NobStorehouse; }
     unsigned GetMilitaryRadius() const override { return 0; }
     bool IsAttackable(unsigned /*playerIdx*/) const override { return false; }
 

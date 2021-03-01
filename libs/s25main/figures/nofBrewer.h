@@ -36,5 +36,5 @@ public:
     nofBrewer(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofBrewer(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofBrewer; }
+    GO_Type GetGOT() const final { return GO_Type::NofBrewer; }
 };

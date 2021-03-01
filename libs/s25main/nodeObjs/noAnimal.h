@@ -72,7 +72,7 @@ public:
         noMovable::Destroy();
     }
 
-    GO_Type GetGOT() const override { return GO_Type::Animal; }
+    GO_Type GetGOT() const final { return GO_Type::Animal; }
     Species GetSpecies() const { return species; }
 
     // An x,y zeichnen

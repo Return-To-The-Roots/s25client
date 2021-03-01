@@ -41,5 +41,5 @@ public:
     nofForester(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofForester(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofForester; }
+    GO_Type GetGOT() const final { return GO_Type::NofForester; }
 };

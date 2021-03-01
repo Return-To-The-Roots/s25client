@@ -52,5 +52,5 @@ public:
     nofMetalworker(SerializedGameData& sgd, unsigned obj_id);
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::NofMetalworker; }
+    GO_Type GetGOT() const final { return GO_Type::NofMetalworker; }
 };

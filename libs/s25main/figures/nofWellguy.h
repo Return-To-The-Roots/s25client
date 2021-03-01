@@ -45,5 +45,5 @@ public:
     nofWellguy(MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofWellguy(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofWellguy; }
+    GO_Type GetGOT() const final { return GO_Type::NofWellguy; }
 };

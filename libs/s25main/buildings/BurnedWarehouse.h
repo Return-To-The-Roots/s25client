@@ -37,7 +37,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::Burnedwarehouse; }
+    GO_Type GetGOT() const final { return GO_Type::Burnedwarehouse; }
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
     void HandleEvent(unsigned id) override;

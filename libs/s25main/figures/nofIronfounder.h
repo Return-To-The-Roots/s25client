@@ -36,5 +36,5 @@ public:
     nofIronfounder(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofIronfounder(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofIronfounder; }
+    GO_Type GetGOT() const final { return GO_Type::NofIronfounder; }
 };

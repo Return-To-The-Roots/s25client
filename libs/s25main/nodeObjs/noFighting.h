@@ -50,7 +50,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::Fighting; }
+    GO_Type GetGOT() const final { return GO_Type::Fighting; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;

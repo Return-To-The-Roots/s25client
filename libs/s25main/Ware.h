@@ -68,7 +68,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::Ware; }
+    GO_Type GetGOT() const final { return GO_Type::Ware; }
 
     RoadPathDirection GetNextDir() const { return next_dir; }
     /// Gibt nächsten Hafen zurück, falls vorhanden

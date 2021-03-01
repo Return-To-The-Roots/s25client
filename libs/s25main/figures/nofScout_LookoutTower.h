@@ -44,7 +44,7 @@ public:
     nofScout_LookoutTower(MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofScout_LookoutTower(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofScoutLookouttower; }
+    GO_Type GetGOT() const final { return GO_Type::NofScoutLookouttower; }
 
     void HandleDerivedEvent(unsigned id) override;
 };

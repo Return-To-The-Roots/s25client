@@ -29,7 +29,7 @@ public:
     nofDonkeybreeder(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofDonkeybreeder; }
+    GO_Type GetGOT() const final { return GO_Type::NofDonkeybreeder; }
 
 private:
     /// Zeichnet ihn beim Arbeiten.
