@@ -44,9 +44,9 @@ void noGranite::Draw(DrawPoint drawPt)
     LOADER.granite_cache[type][state].draw(drawPt);
 }
 
-FOWObject* noGranite::CreateFOWObject() const
+std::unique_ptr<FOWObject> noGranite::CreateFOWObject() const
 {
-    return new fowGranite(type, state);
+    return std::make_unique<fowGranite>(type, state);
 }
 
 void noGranite::Hew()

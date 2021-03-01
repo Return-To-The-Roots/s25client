@@ -82,7 +82,7 @@ void noBuilding::CloseDoor()
     --opendoor;
 }
 
-FOWObject* noBuilding::CreateFOWObject() const
+std::unique_ptr<FOWObject> noBuilding::CreateFOWObject() const
 {
-    return new fowBuilding(bldType_, nation);
+    return std::make_unique<fowBuilding>(bldType_, nation);
 }

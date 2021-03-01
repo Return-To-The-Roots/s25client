@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,31 +15,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "noBase.h"
-#include "SerializedGameData.h"
+#pragma once
 
-noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
+#include "DrawPoint.h"
+#include <cstdint>
+
+class SerializedGameData;
+
+/// Type of a FoW object
+enum class FoW_Type : uint8_t
 {
-    nop = sgd.Pop<NodalObjectType>();
+    Nothing,
+    Building,
+    Buildingsite,
+    Flag,
+    Tree,
+    Granite
+};
+constexpr auto maxEnumValue(FoW_Type)
+{
+    return FoW_Type::Granite;
 }
 
-void noBase::Serialize(SerializedGameData& sgd) const
+/// Visual object in the Fog of War which shows what a player has seen there
+class FOWObject
 {
-    sgd.PushEnum<uint8_t>(nop);
-}
-
-std::unique_ptr<FOWObject> noBase::CreateFOWObject() const
-{
-    return nullptr;
-}
-
-BlockingManner noBase::GetBM() const
-{
-    return BlockingManner::None;
-}
-
-/// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-bool noBase::IsMoving() const
-{
-    return false;
-}
+public:
+    virtual ~FOWObject() = default;
+    virtual void Draw(DrawPoint drawPt) const = 0;
+    virtual void Serialize(SerializedGameData& sgd) const = 0;
+    virtual FoW_Type GetType() const = 0;
+};

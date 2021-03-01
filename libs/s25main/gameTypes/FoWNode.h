@@ -18,12 +18,13 @@
 #pragma once
 
 #include "Direction.h"
+#include "FoWObject.h"
 #include "helpers/EnumArray.h"
 #include "gameTypes/MapTypes.h"
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 
-class FOWObject;
 class SerializedGameData;
 
 enum class BorderStonePos
@@ -62,7 +63,7 @@ struct FoWNode
     /// Sichtbarkeit des Punktes
     Visibility visibility;
     /// FOW-Objekt
-    FOWObject* object;
+    std::unique_ptr<FOWObject> object;
     helpers::EnumArray<PointRoad, RoadDir> roads;
     unsigned char owner;
     BoundaryStones boundary_stones;

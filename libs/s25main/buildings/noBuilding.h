@@ -50,5 +50,5 @@ public:
     virtual bool FreePlaceAtFlag() = 0;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    FOWObject* CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> CreateFOWObject() const override;
 };

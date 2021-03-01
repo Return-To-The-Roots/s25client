@@ -41,7 +41,7 @@ public:
     BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    FOWObject* CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> CreateFOWObject() const override;
 
     /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
     void Hew();

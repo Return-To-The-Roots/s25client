@@ -176,12 +176,8 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         // FOW-Zeug initialisieren
         for(auto& fow : node.fow)
         {
-            fow.last_update_time = 0;
+            fow = FoWNode();
             fow.visibility = fowVisibility;
-            fow.object = nullptr;
-            std::fill(fow.roads.begin(), fow.roads.end(), PointRoad::None);
-            fow.owner = 0;
-            std::fill(fow.boundary_stones.begin(), fow.boundary_stones.end(), 0);
         }
 
         node.obj = nullptr; // Will be overwritten later...
