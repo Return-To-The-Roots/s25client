@@ -44,5 +44,5 @@ public:
     nofWoodcutter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofWoodcutter(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofWoodcutter; }
+    GO_Type GetGOT() const final { return GO_Type::NofWoodcutter; }
 };

@@ -62,7 +62,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::NofAggressivedefender; }
+    GO_Type GetGOT() const final { return GO_Type::NofAggressivedefender; }
 
     /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
     void HomeDestroyed() override;

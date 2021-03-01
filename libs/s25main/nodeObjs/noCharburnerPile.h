@@ -57,7 +57,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::Charburnerpile; }
+    GO_Type GetGOT() const final { return GO_Type::Charburnerpile; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;

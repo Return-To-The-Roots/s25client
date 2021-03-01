@@ -46,7 +46,7 @@ public:
     /// Serialisierungsfunktionen
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::NobShipyard; }
+    GO_Type GetGOT() const final { return GO_Type::NobShipyard; }
 
     /// Gibt aktuellen Modus zurück
     Mode GetMode() const { return mode; }

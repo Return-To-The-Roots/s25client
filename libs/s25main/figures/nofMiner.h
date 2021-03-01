@@ -41,5 +41,5 @@ public:
     nofMiner(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMiner(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofMiner; }
+    GO_Type GetGOT() const final { return GO_Type::NofMiner; }
 };

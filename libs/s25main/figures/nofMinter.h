@@ -35,5 +35,5 @@ public:
     nofMinter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMinter(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofMinter; }
+    GO_Type GetGOT() const final { return GO_Type::NofMinter; }
 };

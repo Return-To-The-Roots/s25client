@@ -51,7 +51,7 @@ public:
     }
     void Serialize(SerializedGameData& sgd) const;
 
-    GO_Type GetGOT() const override { return GO_Type::NofDefender; }
+    GO_Type GetGOT() const final { return GO_Type::NofDefender; }
 
     /// Der Verteidiger geht gerade rein und es kommt ein neuer Angreifer an die Flagge, hiermit wird der Ver-
     /// teidiger darüber informiert, damit er dann gleich wieder umdrehen kann

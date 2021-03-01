@@ -52,7 +52,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::NofPassivesoldier; }
+    GO_Type GetGOT() const final { return GO_Type::NofPassivesoldier; }
 
     // Zeichnet den Soldaten
     void Draw(DrawPoint drawPt) override;

@@ -111,7 +111,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::NobMilitary; }
+    GO_Type GetGOT() const final { return GO_Type::NobMilitary; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;

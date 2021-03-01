@@ -42,5 +42,5 @@ public:
     nofMiller(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMiller(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const override { return GO_Type::NofMiller; }
+    GO_Type GetGOT() const final { return GO_Type::NofMiller; }
 };

@@ -36,7 +36,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    inline GO_Type GetGOT() const override { return GO_Type::Flag; }
+    inline GO_Type GetGOT() const final { return GO_Type::Flag; }
     inline FlagType GetFlagType() const { return flagtype; }
     /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
     inline bool IsSpaceForWare() const { return GetNumWares() < wares.size(); }

@@ -146,7 +146,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
     void Destroy() override;
 
-    GO_Type GetGOT() const override { return GO_Type::Ship; }
+    GO_Type GetGOT() const final { return GO_Type::Ship; }
 
     // An x,y zeichnen
     void Draw(DrawPoint drawPt) override;

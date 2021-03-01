@@ -72,7 +72,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::Buildingsite; }
+    GO_Type GetGOT() const final { return GO_Type::Buildingsite; }
     unsigned GetMilitaryRadius() const override;
 
     void Draw(DrawPoint drawPt) override;

@@ -120,7 +120,7 @@ public:
 
     void Destroy() override;
 
-    GO_Type GetGOT() const override { return GO_Type::NofCarrier; }
+    GO_Type GetGOT() const final { return GO_Type::NofCarrier; }
 
     /// Gibt Träger-Typ zurück
     CarrierType GetCarrierType() const { return ct; }
