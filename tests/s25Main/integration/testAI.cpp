@@ -32,6 +32,7 @@
 #include "nodeObjs/noTree.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameData/BuildingProperties.h"
+#include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 #include <memory>
 #include <set>
@@ -97,24 +98,25 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
 {
     MockAI ai(1, world, AI::Level::Easy);
     ai.getAIInterface().Chat("Hello players!");
-    ai.getAIInterface().Chat("2nd Message!");
+    ai.getAIInterface().Chat("2nd Message!", ChatDestination::Allies);
     const auto msgs = ai.getAIInterface().FetchChatMessages();
     BOOST_TEST_REQUIRE(msgs.size() == 2u);
     BOOST_TEST(msgs[0]->player == 1u);
     BOOST_TEST(msgs[0]->destination == ChatDestination::All);
     BOOST_TEST(msgs[0]->text == "Hello players!");
     BOOST_TEST(msgs[1]->player == 1u);
-    BOOST_TEST(msgs[1]->destination == ChatDestination::All);
+    BOOST_TEST(msgs[1]->destination == ChatDestination::Allies);
     BOOST_TEST(msgs[1]->text == "2nd Message!");
     // Messages cleared by first call
     BOOST_TEST(ai.getAIInterface().FetchChatMessages().empty());
     // Can readd
-    ai.getAIInterface().Chat("Hello again!");
+    const auto dest = rttr::test::randomEnum<ChatDestination>();
+    ai.getAIInterface().Chat("Hello again!", dest);
     // Iterate just like in ExecuteNWF function
     for(auto& msg : ai.getAIInterface().FetchChatMessages())
     {
         BOOST_TEST(msg->player == 1u);
-        BOOST_TEST(msg->destination == ChatDestination::All);
+        BOOST_TEST(msg->destination == dest);
         BOOST_TEST(msg->text == "Hello again!");
     }
 }

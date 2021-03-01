@@ -24,6 +24,7 @@
 #include "factories/GameCommandFactory.h"
 #include "helpers/OptionalEnum.h"
 #include "world/GameWorldBase.h"
+#include "gameTypes/ChatDestination.h"
 #include "gameTypes/Direction.h"
 #include <memory>
 #include <vector>
@@ -202,7 +203,7 @@ public:
     using GameCommandFactory::CallSpecialist;
 
     /// Sends a chat messsage to all players
-    void Chat(const std::string& message);
+    void Chat(const std::string& message, ChatDestination destination = ChatDestination::All);
 
     std::vector<std::unique_ptr<GameMessage_Chat>> FetchChatMessages();
 
