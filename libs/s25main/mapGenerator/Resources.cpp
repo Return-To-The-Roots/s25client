@@ -21,6 +21,7 @@
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
+#include "world/MapGeometry.h"
 
 namespace rttr { namespace mapGenerator {
 
@@ -193,49 +194,57 @@ namespace rttr { namespace mapGenerator {
                                         mineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite)};
         int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
+        // Helper to pick an index [0,4) into the mRIs array that identifies a randomly selected resource we should
+        // place. Note that we do not perform budget adjustments and checks here.
+        auto resourcePicker = [&]() {
+            int ratio = 0;
+            int randomNumber = rnd.RandomValue(1, std::max(1, total));
+            for(int i = 0; i < 4; ++i)
+            {
+                ratio += mRIs[i].ratio;
+                if(randomNumber < ratio)
+                    return i;
+            }
+            return -1;
+        };
+
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             if(textures.All(pt, IsMinableMountain))
             {
-                int ratio = 0;
-                int randomNumber = rnd.RandomValue(1, total);
-                for(auto mRI : mRIs)
+                // Pick a random resource, -1 indicates none.
+                int randomMRIindex = resourcePicker();
+                if(randomMRIindex < 0)
+                    continue;
+
+                auto mRI = mRIs[randomMRIindex];
+
+                // Adjust and check the budget, if we are over we will not place the resource because we have already in
+                // the past.
+                ++mRI.budget;
+                if(mRI.budget <= 0)
+                    continue;
+
+                // Budget is positive so we want to place resources, however, we avoid overwriting existing clusters as
+                // this results in sprinkles. If we have a resource on this field we keep the budget and place a cluster
+                // later.
+                if(resources[pt])
+                    continue;
+
+                // Cluster the resource around the map point.
+                for(int xd = -4; xd <= 4; ++xd)
                 {
-                    ratio += mRI.ratio;
-
-                    // Wrong resource, look further.
-                    if(randomNumber > ratio)
-                        continue;
-
-                    // Right resource, adjust and check the budget.
-                    ++mRI.budget;
-                    if(mRI.budget <= 0)
-                        break;
-
-                    // Budget is positive, avoid overwriting existing clusters though
-                    if(resources[pt])
-                        continue;
-
-                    // Cluster the resource around the map point.
-                    for(int xd = -4; xd <= 4; ++xd)
+                    for(int yd = -4; yd <= 4; ++yd)
                     {
-                        for(int yd = -4; yd <= 4; ++yd)
+                        MapPoint pt_d = MakeMapPoint(Position(pt.x + xd, pt.y + yd), map.size);
+                        // Only place it on mines that have no resource yet, adjust the budget for each placed
+                        // resource.
+                        if(textures.All(pt_d, IsMinableMountain) && !resources[pt_d])
                         {
-                            MapPoint pt_d(pt.x + xd, pt.y + yd);
-                            // Avoid out of bound accesses.
-                            if(pt_d.x >= map.size.x || pt_d.y >= map.size.y)
-                                continue;
-
-                            // Only place it on mines that have no resource yet, adjust the budget for each placed
-                            // resource.
-                            if(textures.All(pt_d, IsMinableMountain) && !resources[pt_d])
-                            {
-                                --mRI.budget;
-                                resources[pt_d] = mRI.resource + rnd.RandomValue(1, 8);
-                            }
+                            --mRI.budget;
+                            resources[pt_d] = mRI.resource + rnd.RandomValue(1, 8);
                         }
                     }
-                    break;
                 }
             } else if(textures.All(pt, IsWater))
             {
