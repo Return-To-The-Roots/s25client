@@ -344,9 +344,9 @@ bool AIInterface::CallSpecialist(const noFlag* flag, Job job)
     return CallSpecialist(flag->GetPos(), job);
 }
 
-void AIInterface::Chat(const std::string& message)
+void AIInterface::Chat(const std::string& message, ChatDestination destination)
 {
-    pendingChatMsgs_.push_back(std::make_unique<GameMessage_Chat>(playerID_, ChatDestination::All, message));
+    pendingChatMsgs_.push_back(std::make_unique<GameMessage_Chat>(playerID_, destination, message));
 }
 
 std::vector<std::unique_ptr<GameMessage_Chat>> AIInterface::FetchChatMessages()
