@@ -177,7 +177,7 @@ namespace rttr { namespace mapGenerator {
     {
         const auto& textures = map.textureMap;
         auto& resources = map.resources;
-        struct mineableResourceInfo
+        struct MineableResourceInfo
         {
             // The current "budget", that is, how many many are we over, or under, compared to the desired distribution.
             int budget = 0;
