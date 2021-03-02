@@ -199,7 +199,7 @@ namespace rttr { namespace mapGenerator {
         auto resourcePicker = [&]() {
             int ratio = 0;
             int randomNumber = rnd.RandomValue(1, std::max(1, total));
-            for(int i = 0; i < 4; ++i)
+            for(int i = 0; i < mRIs.size(); ++i)
             {
                 ratio += mRIs[i].ratio;
                 if(randomNumber < ratio)
