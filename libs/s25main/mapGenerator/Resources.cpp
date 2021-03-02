@@ -236,7 +236,7 @@ namespace rttr { namespace mapGenerator {
                 {
                     for(int yd = -4; yd <= 4; ++yd)
                     {
-                        MapPoint pt_d = MakeMapPoint(Position(pt.x + xd, pt.y + yd), map.size);
+                        const MapPoint pt_d = resources.MakeMapPoint(pt + Position(xd, yd));
                         // Only place it on mines that have no resource yet, adjust the budget for each placed
                         // resource.
                         if(textures.All(pt_d, IsMinableMountain) && !resources[pt_d])
