@@ -217,7 +217,7 @@ namespace rttr { namespace mapGenerator {
                 if(randomMRIindex < 0)
                     continue;
 
-                auto &mRI = mRIs[randomMRIindex];
+                auto& mRI = mRIs[randomMRIindex];
 
                 // Adjust and check the budget, if we are over we will not place the resource because we have already in
                 // the past.
