@@ -202,7 +202,7 @@ namespace rttr { namespace mapGenerator {
             for(int i = 0; i < mRIs.size(); ++i)
             {
                 ratio += mRIs[i].ratio;
-                if(randomNumber < ratio)
+                if(randomNumber <= ratio)
                     return i;
             }
             return -1;
