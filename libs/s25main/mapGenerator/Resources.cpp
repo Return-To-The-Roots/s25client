@@ -18,6 +18,7 @@
 #include "mapGenerator/Resources.h"
 #include "RttrForeachPt.h"
 #include "helpers/containerUtils.h"
+#include "helpers/make_array.h"
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
@@ -188,9 +189,9 @@ namespace rttr { namespace mapGenerator {
             MineableResourceInfo(int ratio, libsiedler2::Resource resource) : ratio(ratio), resource(resource) {}
         };
         auto mRIs = helpers::make_array(MineableResourceInfo(settings.ratioCoal, libsiedler2::R_Coal),
-                                                           MineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
-                                                           MineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
-                                                           MineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite));
+                                        MineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
+                                        MineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
+                                        MineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite));
         const int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
         // Helper to pick an index [0,4) into the mRIs array that identifies a randomly selected resource we should
@@ -198,24 +199,26 @@ namespace rttr { namespace mapGenerator {
         auto resourcePicker = [&]() {
             int ratio = 0;
             int randomNumber = rnd.RandomValue(1, std::max(1, total));
-            for(int i = 0; i < mRIs.size(); ++i)
+            for(unsigned i = 0; i < mRIs.size(); ++i)
             {
                 ratio += mRIs[i].ratio;
                 if(randomNumber <= ratio)
                     return i;
             }
-            return -1;
+            RTTR_Assert_Msg(0, "Expected to pick a resource!");
+            return 0u;
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             if(textures.All(pt, IsMinableMountain))
             {
-                // Pick a random resource, -1 indicates none.
-                int randomMRIindex = resourcePicker();
-                if(randomMRIindex < 0)
+                // No mineable resources wanted.
+                if(total == 0)
                     continue;
 
+                // Pick a random resource, -1 indicates none.
+                unsigned randomMRIindex = resourcePicker();
                 auto& mRI = mRIs[randomMRIindex];
 
                 // Adjust and check the budget, if we are over we will not place the resource because we have already in
