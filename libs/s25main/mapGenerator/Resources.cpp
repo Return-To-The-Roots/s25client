@@ -21,7 +21,6 @@
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
-#include "world/MapGeometry.h"
 
 namespace rttr { namespace mapGenerator {
 
