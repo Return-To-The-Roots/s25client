@@ -188,10 +188,10 @@ namespace rttr { namespace mapGenerator {
             libsiedler2::Resource resource;
             MineableResourceInfo(int ratio, libsiedler2::Resource resource) : ratio(ratio), resource(resource) {}
         };
-        MineableResourceInfo mRIs[4] = {MineableResourceInfo(settings.ratioCoal, libsiedler2::R_Coal),
-                                        MineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
-                                        MineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
-                                        MineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite)};
+        auto mRIs = helpers::make_array(MineableResourceInfo(settings.ratioCoal, libsiedler2::R_Coal),
+                                                           MineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
+                                                           MineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
+                                                           MineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite));
         int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
         // Helper to pick an index [0,4) into the mRIs array that identifies a randomly selected resource we should
