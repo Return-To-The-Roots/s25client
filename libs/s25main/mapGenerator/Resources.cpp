@@ -192,7 +192,7 @@ namespace rttr { namespace mapGenerator {
                                                            MineableResourceInfo(settings.ratioGold, libsiedler2::R_Gold),
                                                            MineableResourceInfo(settings.ratioIron, libsiedler2::R_Iron),
                                                            MineableResourceInfo(settings.ratioGranite, libsiedler2::R_Granite));
-        int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
+        const int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
         // Helper to pick an index [0,4) into the mRIs array that identifies a randomly selected resource we should
         // place. Note that we do not perform budget adjustments and checks here.
