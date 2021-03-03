@@ -6,6 +6,7 @@ on:
 
 env:
   BOOST_VERSION: 1.69.0
+  ADDITIONAL_CMAKE_FLAGS: -DRTTR_ENABLE_BENCHMARKS=ON
 
 jobs:
   Linux:
@@ -34,7 +35,7 @@ jobs:
       - run: echo "DEPS_DIR=${{runner.temp}}/.cache" >> $GITHUB_ENV
       - run: echo "BOOST_VERSION=${{matrix.boostVersion}}" >> $GITHUB_ENV
         if: matrix.boostVersion
-      - run: echo "ADDITIONAL_CMAKE_FLAGS=-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON" >> $GITHUB_ENV
+      - run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON" >> $GITHUB_ENV
         if: matrix.externalSanitizer
 
       - uses: actions/checkout@v2
@@ -114,7 +115,7 @@ jobs:
 
       - name: Enable coverage collection
         if: matrix.coverage
-        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
+        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
 
       - name: Setup environment
         run: |
