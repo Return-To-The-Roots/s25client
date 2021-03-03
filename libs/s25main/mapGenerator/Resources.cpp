@@ -217,7 +217,7 @@ namespace rttr { namespace mapGenerator {
                 if(total == 0)
                     continue;
 
-                // Pick a random resource, -1 indicates none.
+                // Pick a random resource
                 unsigned randomMRIindex = resourcePicker();
                 auto& mRI = mRIs[randomMRIindex];
 
