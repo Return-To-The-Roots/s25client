@@ -24,54 +24,40 @@
 /// Just for occasional temporary debugging, all should be covered by tests and this is SLOW
 #define RTTR_SLOW_DEBUG_CHECKS 0
 
-template<typename T>
-class OpenListBinaryHeapBase
+template<typename T, class T_GetKey>
+class OpenListBinaryHeap;
+
+/// Class used to store the position in the heap. Heap elements must inherit from this
+struct BinaryHeapPosMarker
+{
+private:
+    unsigned pos;
+
+    template<typename T, class T_GetKey>
+    friend class OpenListBinaryHeap;
+};
+
+template<typename T, class T_GetKey>
+class OpenListBinaryHeap : T_GetKey
 {
 public:
-    using size_type = unsigned;
+    using size_type = decltype(BinaryHeapPosMarker::pos);
     using value_type = T;
     using key_type = unsigned;
+
+private:
     struct Element
     {
         key_type key;
         value_type* el;
-        Element() = default; //-V730
-        Element(key_type key, value_type* el) : key(key), el(el) {}
+        constexpr Element() = default; //-V730
+        constexpr Element(key_type key, value_type* el) : key(key), el(el) {}
     };
 
-    /// Class used to store the position in the heap
-    struct PosMarker
-    {
-    private:
-        size_type pos;
-
-        friend class OpenListBinaryHeapBase;
-    };
-
+public:
     size_type size() const { return elements.size(); }
     bool empty() const { return elements.empty(); }
     void clear() { elements.clear(); }
-
-protected:
-    boost::container::small_vector<Element, 64> elements;
-    static size_type& GetPos(PosMarker& posMarker) { return posMarker.pos; }
-};
-
-template<class T_Heap>
-struct DefaultGetPosMarker
-{
-    typename T_Heap::PosMarker& operator()(typename T_Heap::value_type* el) { return el->posMarker; }
-};
-
-template<typename T, class T_GetKey, class GetPosMarker = DefaultGetPosMarker<OpenListBinaryHeapBase<T>>>
-class OpenListBinaryHeap : public OpenListBinaryHeapBase<T>
-{
-    using Parent = OpenListBinaryHeapBase<T>;
-    using Element = typename Parent::Element;
-
-public:
-    using size_type = typename Parent::size_type;
-    using key_type = typename Parent::key_type;
 
     T* top() const;
     void push(T* newEl);
@@ -87,9 +73,11 @@ protected:
 
     bool isHeap() const;
     bool arePositionsValid() const;
-    static size_type& GetPos(T* el) { return Parent::GetPos(GetPosMarker()(el)); }
-    static key_type GetKey(T* el) { return T_GetKey()(*el); }
+    static size_type& GetPos(T* el) { return static_cast<BinaryHeapPosMarker*>(el)->pos; }
+    key_type GetKey(T* el) const { return T_GetKey::operator()(*el); }
     key_type GetKey(size_type idx) const { return GetKey(this->elements[idx].el); }
+
+    boost::container::small_vector<Element, 64> elements;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,8 +92,8 @@ protected:
 #    define RTTR_VALIDATE_HEAP() (void)0
 #endif
 
-template<typename T, class T_GetKey, class GetPosMarker>
-bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap() const
+template<typename T, class T_GetKey>
+bool OpenListBinaryHeap<T, T_GetKey>::isHeap() const
 {
     size_type size = this->size();
     for(size_type i = 0; i < size; i++)
@@ -121,8 +109,8 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap() const
     return true;
 }
 
-template<typename T, class T_GetKey, class GetPosMarker>
-bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::arePositionsValid() const
+template<typename T, class T_GetKey>
+bool OpenListBinaryHeap<T, T_GetKey>::arePositionsValid() const
 {
     for(size_type i = 0; i < this->size(); i++)
     {
@@ -132,15 +120,15 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::arePositionsValid() const
     return true;
 }
 
-template<typename T, class T_GetKey, class GetPosMarker>
-inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::top() const
+template<typename T, class T_GetKey>
+inline T* OpenListBinaryHeap<T, T_GetKey>::top() const
 {
     RTTR_Assert(!this->empty());
     return this->elements.front().el;
 }
 
-template<typename T, class T_GetKey, class GetPosMarker>
-inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::push(T* newEl)
+template<typename T, class T_GetKey>
+inline void OpenListBinaryHeap<T, T_GetKey>::push(T* newEl)
 {
     RTTR_VALIDATE_HEAP();
     GetPos(newEl) = this->size();
@@ -148,8 +136,8 @@ inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::push(T* newEl)
     decreasedKey(newEl);
 }
 
-template<typename T, class T_GetKey, class GetPosMarker>
-inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
+template<typename T, class T_GetKey>
+inline void OpenListBinaryHeap<T, T_GetKey>::decreasedKey(T* el)
 {
     size_type i = GetPos(el);
     unsigned elVal = this->elements[i].key = GetKey(el);
@@ -168,8 +156,8 @@ inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
     RTTR_VALIDATE_HEAP();
 }
 
-template<typename T, class T_GetKey, class GetPosMarker>
-inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
+template<typename T, class T_GetKey>
+inline T* OpenListBinaryHeap<T, T_GetKey>::pop()
 {
     RTTR_Assert(!this->empty());
     RTTR_VALIDATE_HEAP();

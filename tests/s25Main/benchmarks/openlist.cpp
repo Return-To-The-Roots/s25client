@@ -24,11 +24,10 @@
 #include <test/testConfig.h>
 
 namespace {
-struct DummyNode
+struct DummyNode : BinaryHeapPosMarker
 {
     unsigned dummy[8]; // Roughly the size of FreePathNode
     unsigned key;
-    OpenListBinaryHeapBase<DummyNode>::PosMarker posMarker;
 };
 struct NodeGetKey
 {

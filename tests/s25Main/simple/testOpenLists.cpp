@@ -24,10 +24,10 @@
 #include <vector>
 
 namespace {
-struct ListEl
+struct ListEl : BinaryHeapPosMarker
 {
     unsigned key;
-    OpenListBinaryHeapBase<ListEl>::PosMarker posMarker;
+    ListEl(unsigned key) : key(key) {}
 };
 
 struct ListGetKey
@@ -35,17 +35,19 @@ struct ListGetKey
     constexpr auto operator()(const ListEl& el) const { return el.key; }
 };
 
-class OpenList : public OpenListBinaryHeap<ListEl, ListGetKey>
+using OpenListBase = OpenListBinaryHeap<ListEl, ListGetKey>;
+
+class OpenList : public OpenListBase
 {
 public:
-    using Parent = OpenListBinaryHeap<ListEl, ListGetKey>;
+    using Parent = OpenListBase;
     using Parent::arePositionsValid;
     using Parent::isHeap;
 };
 auto getSortedVector(unsigned ct, bool ascending)
 {
     std::vector<ListEl> elements;
-    std::generate_n(std::back_inserter(elements), ct, [i = 0u]() mutable { return ListEl{i++, {}}; });
+    std::generate_n(std::back_inserter(elements), ct, [i = 0u]() mutable { return ListEl(i++); });
     if(!ascending)
         std::reverse(elements.begin(), elements.end());
     return elements;
@@ -54,7 +56,7 @@ auto getRandomVector(unsigned ct, unsigned maxVal = 100000)
 {
     std::vector<ListEl> elements;
     std::uniform_int_distribution<unsigned> distr(0, maxVal);
-    std::generate_n(std::back_inserter(elements), ct, [&]() { return ListEl{distr(rttr::test::getRandState()), {}}; });
+    std::generate_n(std::back_inserter(elements), ct, [&]() { return ListEl(distr(rttr::test::getRandState())); });
     return elements;
 }
 } // namespace
