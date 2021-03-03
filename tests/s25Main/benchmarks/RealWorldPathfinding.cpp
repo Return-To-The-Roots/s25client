@@ -19,13 +19,13 @@
 #include "PlayerInfo.h"
 #include "network/GameClient.h"
 #include "ogl/glAllocator.h"
+#include "world/MapLoader.h"
 #include "libsiedler2/libsiedler2.h"
 #include <rttr/test/Fixture.hpp>
 #include <benchmark/benchmark.h>
 #include <array>
 #include <test/testConfig.h>
 #include <utility>
-#include "world/MapLoader.h"
 
 constexpr std::array<std::tuple<const char*, MapPoint, MapPoint>, 7> routes = {{{"Simple 1", {85, 147}, {87, 150}},
                                                                                 {"Simple 2", {85, 147}, {85, 152}},

@@ -44,9 +44,8 @@ struct NewNode
     MapPoint mapPt = {};
 };
 
-struct FreePathNode
+struct FreePathNode : BinaryHeapPosMarker
 {
-    OpenListBinaryHeapBase<FreePathNode>::PosMarker posMarker;
     /// Indicator if node was visited (lastVisited == currentVisit)
     unsigned lastVisited;
     /// Previous node
