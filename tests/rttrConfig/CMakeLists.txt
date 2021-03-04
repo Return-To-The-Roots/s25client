@@ -1,3 +1,3 @@
 add_testcase(NAME rttrConfig
-    LIBS rttrConfig testHelpers
+    LIBS rttrConfig testHelpers rttr::vld
 )

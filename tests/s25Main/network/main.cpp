@@ -22,7 +22,9 @@
 #include <s25util/Socket.h>
 #include <boost/test/unit_test.hpp>
 
-//#include <vld.h>
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
 
 struct NetworkFixture : rttr::test::Fixture
 {

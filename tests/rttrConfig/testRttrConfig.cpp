@@ -25,6 +25,10 @@
 #include <boost/nowide/args.hpp>
 #include <boost/test/unit_test.hpp>
 
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
+
 namespace fs = boost::filesystem;
 
 class ResetWorkDir

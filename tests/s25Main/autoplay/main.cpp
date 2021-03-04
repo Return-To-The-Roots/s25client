@@ -34,6 +34,10 @@
 #include <rttr/test/Fixture.hpp>
 #include <boost/test/unit_test.hpp>
 
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
+
 struct Fixture : rttr::test::Fixture
 {
     Fixture() { libsiedler2::setAllocator(new GlAllocator); }

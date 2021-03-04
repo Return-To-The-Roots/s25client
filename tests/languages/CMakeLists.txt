@@ -1,6 +1,6 @@
 configure_file(languageFiles.h.cmake languageFiles.h)
 add_testcase(NAME LanguageFiles
-    LIBS mygettext s25util::common Boost::filesystem
+    LIBS mygettext s25util::common Boost::filesystem rttr::vld
     INCLUDES ${CMAKE_CURRENT_BINARY_DIR}
     COST 15
 )

@@ -15,7 +15,7 @@ else()
 endif()
 
 add_executable(s25client s25client.cpp commands.cpp ${s25client_RC})
-target_link_libraries(s25client PRIVATE s25Main Boost::program_options Boost::nowide)
+target_link_libraries(s25client PRIVATE s25Main Boost::program_options Boost::nowide rttr::vld)
 add_dependencies(s25client drivers)
 
 if(WIN32)

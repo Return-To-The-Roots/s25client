@@ -25,6 +25,10 @@
 #include <utility>
 #include <vector>
 
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
+
 BOOST_AUTO_TEST_SUITE(Notifications)
 
 struct StringNote
