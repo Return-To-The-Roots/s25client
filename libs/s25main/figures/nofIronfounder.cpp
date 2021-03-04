@@ -46,7 +46,7 @@ void nofIronfounder::DrawWorking(DrawPoint drawPt)
         // Evtl Sound abspielen
         if(now_id % 16 == 3)
         {
-            gwg->GetSoundMgr().playNOSound(58, *this, now_id / 16);
+            world->GetSoundMgr().playNOSound(58, *this, now_id / 16);
             was_sounding = true;
         }
     }

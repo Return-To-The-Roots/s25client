@@ -21,6 +21,8 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include <array>
+#include <memory>
+
 class FOWObject;
 class SerializedGameData;
 class Ware;
@@ -39,7 +41,7 @@ public:
     inline GO_Type GetGOT() const final { return GO_Type::Flag; }
     inline FlagType GetFlagType() const { return flagtype; }
     /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
-    inline bool IsSpaceForWare() const { return GetNumWares() < wares.size(); }
+    inline bool HasSpaceForWare() const { return GetNumWares() < wares.size(); }
 
     void Draw(DrawPoint drawPt) override;
 
@@ -48,12 +50,12 @@ public:
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War.
     std::unique_ptr<FOWObject> CreateFOWObject() const override;
     /// Legt eine Ware an der Flagge ab.
-    void AddWare(Ware*& ware) override;
+    void AddWare(std::unique_ptr<Ware> ware) override;
     /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
     unsigned GetNumWares() const;
     /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie
     /// zurück.
-    Ware* SelectWare(Direction roadDir, bool swap_wares, const noFigure* carrier);
+    std::unique_ptr<Ware> SelectWare(Direction roadDir, bool swap_wares, const noFigure* carrier);
     /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
     unsigned GetNumWaresForRoad(Direction dir) const;
     /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden
@@ -75,7 +77,7 @@ private:
     FlagType flagtype;
 
     /// Die Waren, die an dieser Flagge liegen
-    std::array<Ware*, 8> wares;
+    std::array<std::unique_ptr<Ware>, 8> wares;
 
     /// Wieviele BWU-Teile es maximal geben soll, also wieviele abgebrannte Lagerhausgruppen
     /// gleichzeitig die Flagge als nicht begehbar deklarieren können.

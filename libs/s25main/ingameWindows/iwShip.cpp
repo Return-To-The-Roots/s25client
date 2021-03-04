@@ -218,7 +218,7 @@ void iwShip::DrawCargo()
 
     // Count wares by type
     helpers::EnumArray<unsigned short, GoodType> orderedWares{};
-    for(const auto* ware : ship->GetWares())
+    for(const auto& ware : ship->GetWares())
     {
         orderedWares[ware->type]++;
     }

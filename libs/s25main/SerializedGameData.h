@@ -81,6 +81,11 @@ public:
         RTTR_Assert(dynamic_cast<const T*>(goTmp) == go); //-V547
         PushObject_(goTmp, known);
     }
+    template<class T>
+    void PushObject(const std::unique_ptr<T>& go, bool known = false)
+    {
+        PushObject(go.get(), known);
+    }
 
     void PushEvent(const GameEvent* event);
 
@@ -207,22 +212,22 @@ void SerializedGameData::PushObjectContainer(const T& gos, bool known)
     // Anzahl
     PushVarSize(gos.size());
     // einzelne Objekte
-    for(const auto* go : gos)
+    for(const auto& go : gos)
         PushObject(go, known);
 }
 
 template<typename T>
 void SerializedGameData::PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Type> got)
 {
-    using ObjectPtr = typename T::value_type;
-    using Object = std::remove_pointer_t<ObjectPtr>;
+    using Elements = typename T::value_type;
+    using Object = std::remove_reference_t<decltype(**gos.begin())>;
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
     helpers::ReserveElements<T>::reserve(gos, size);
     auto it = helpers::GetInsertIterator<T>::get(gos);
     for(unsigned i = 0; i < size; ++i)
-        *it = PopObject<Object>(got);
+        *it = Elements(PopObject<Object>(got)); // Conversion required to support unique_ptr
 }
 
 template<typename T>

@@ -95,7 +95,7 @@ void nofWorkman::HandleStateWork()
     // Evtl. Sounds löschen
     if(was_sounding)
     {
-        gwg->GetSoundMgr().stopSounds(*this);
+        world->GetSoundMgr().stopSounds(*this);
         was_sounding = false;
     }
 }

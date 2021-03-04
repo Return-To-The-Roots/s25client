@@ -63,7 +63,7 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(sgd.Pop<FlagType>())
 {
     for(auto& ware : wares)
-        ware = sgd.PopObject<Ware>(GO_Type::Ware);
+        ware.reset(sgd.PopObject<Ware>(GO_Type::Ware));
 
     // BWUs laden
     for(auto& bwu : bwus)
@@ -73,12 +73,7 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     }
 }
 
-noFlag::~noFlag()
-{
-    // Waren vernichten
-    for(auto& ware : wares)
-        delete ware;
-}
+noFlag::~noFlag() = default;
 
 void noFlag::Destroy()
 {
@@ -93,7 +88,7 @@ void noFlag::Destroy()
             // Inventur entsprechend verringern
             ware->WareLost(player);
             ware->Destroy();
-            deletePtr(ware);
+            ware.reset();
         }
     }
 
@@ -108,7 +103,7 @@ void noFlag::Serialize(SerializedGameData& sgd) const
     noRoadNode::Serialize(sgd);
 
     sgd.PushEnum<uint8_t>(flagtype);
-    for(auto* ware : wares)
+    for(const auto& ware : wares)
         sgd.PushObject(ware, true);
 
     // BWUs speichern
@@ -152,16 +147,17 @@ std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
 /**
  *  Legt eine Ware an der Flagge ab.
  */
-void noFlag::AddWare(Ware*& ware)
+void noFlag::AddWare(std::unique_ptr<Ware> ware)
 {
     for(auto& i : wares)
     {
         if(i)
             continue;
 
-        i = ware;
         // Träger Bescheid sagen
         const RoadPathDirection nextDir = ware->GetNextDir();
+        i = std::move(ware);
+
         if(nextDir != RoadPathDirection::None)
             GetRoute(toDirection(nextDir))->AddWareJob(this);
         return;
@@ -174,7 +170,8 @@ void noFlag::AddWare(Ware*& ware)
  */
 unsigned noFlag::GetNumWares() const
 {
-    return static_cast<unsigned>(std::count_if(wares.begin(), wares.end(), [](const auto* ware) { return ware; }));
+    return static_cast<unsigned>(
+      std::count_if(wares.begin(), wares.end(), [](const auto& ware) { return ware != nullptr; }));
 }
 
 /**
@@ -184,12 +181,10 @@ unsigned noFlag::GetNumWares() const
  * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden
  * und somit nicht die Träger benachrichtigt werden müssen.
  */
-Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const noFigure* const carrier)
+std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const noFigure* const carrier)
 {
-    Ware* best_ware = nullptr;
-
     // Index merken, damit wir die enstprechende Ware dann entfernen können
-    unsigned best_ware_index = 0xFF;
+    int best_ware_index = -1;
 
     // Die mit der niedrigsten, d.h. höchsten Priorität wird als erstes transportiert
     for(unsigned i = 0; i < wares.size(); ++i)
@@ -198,30 +193,27 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
             continue;
         if(wares[i]->GetNextDir() == toRoadPathDirection(roadDir))
         {
-            if(best_ware)
+            if(best_ware_index >= 0)
             {
                 if(world->GetPlayer(player).GetTransportPriority(wares[i]->type)
-                   < world->GetPlayer(player).GetTransportPriority(best_ware->type))
+                   < world->GetPlayer(player).GetTransportPriority(wares[best_ware_index]->type))
                 {
-                    best_ware = wares[i];
                     best_ware_index = i;
                 }
             } else
-            {
-                best_ware = wares[i];
                 best_ware_index = i;
-            }
         }
     }
 
     // Ware von der Flagge entfernen
-    if(best_ware)
-        wares[best_ware_index] = nullptr;
+    std::unique_ptr<Ware> bestWare;
+    if(best_ware_index >= 0)
+        bestWare = std::move(wares[best_ware_index]);
 
     // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
     GetRoute(roadDir)->WareJobRemoved(carrier);
 
-    if(!swap_wares && best_ware)
+    if(!swap_wares && bestWare)
     {
         // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
@@ -256,14 +248,14 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
         }
     }
 
-    return best_ware;
+    return bestWare;
 }
 
 unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
 {
     const auto roadDir = toRoadPathDirection(dir);
     return static_cast<unsigned>(std::count_if(
-      wares.cbegin(), wares.cend(), [roadDir](const Ware* ware) { return ware && (ware->GetNextDir() == roadDir); }));
+      wares.cbegin(), wares.cend(), [roadDir](const auto& ware) { return ware && (ware->GetNextDir() == roadDir); }));
 }
 
 /**
@@ -329,7 +321,7 @@ void noFlag::Capture(const unsigned char new_owner)
         {
             ware->WareLost(player);
             ware->Destroy();
-            deletePtr(ware);
+            ware.reset();
         }
     }
 

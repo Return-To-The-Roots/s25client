@@ -54,7 +54,7 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
         {
-            gwg->GetSoundMgr().playNOSound(64, *this, now_id / 8);
+            world->GetSoundMgr().playNOSound(64, *this, now_id / 8);
             was_sounding = true;
         }
 

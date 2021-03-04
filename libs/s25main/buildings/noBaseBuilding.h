@@ -56,7 +56,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Eine bestellte Ware konnte doch nicht kommen
-    virtual void WareLost(Ware* ware) = 0;
+    virtual void WareLost(Ware& ware) = 0;
 
     BuildingQuality GetSize() const;
     BuildingType GetBuildingType() const { return bldType_; }

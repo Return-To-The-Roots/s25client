@@ -86,11 +86,11 @@ public:
     /// Event-Handler
     void HandleEvent(unsigned id) override;
     /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-    void AddWare(Ware*& ware) override;
+    void AddWare(std::unique_ptr<Ware> ware) override;
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
     bool FreePlaceAtFlag() override;
     /// Eine bestellte Ware konnte doch nicht kommen
-    void WareLost(Ware* ware) override;
+    void WareLost(Ware& ware) override;
     /// Wird aufgerufen, wenn ein Arbeiter für das Gebäude gefunden werden konnte
     void GotWorker(Job job, noFigure* worker) override;
     /// Wird vom Arbeiter aufgerufen, wenn er im Gebäude angekommen ist
@@ -105,8 +105,8 @@ public:
     /// Verbraucht Waren
     void ConsumeWares();
 
-    /// Berechnet Punktewertung für Ware type, start ist der Produzent, von dem die Ware kommt
-    unsigned CalcDistributionPoints(noRoadNode* start, GoodType type);
+    /// Berechnet Punktewertung für Ware type
+    unsigned CalcDistributionPoints(GoodType type);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     void TakeWare(Ware* ware) override;

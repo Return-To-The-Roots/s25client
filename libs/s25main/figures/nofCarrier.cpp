@@ -129,11 +129,7 @@ void nofCarrier::Serialize(SerializedGameData& sgd) const
     }
 }
 
-nofCarrier::~nofCarrier()
-{
-    // Ware vernichten (physisch)
-    delete carried_ware;
-}
+nofCarrier::~nofCarrier() = default;
 
 void nofCarrier::Destroy()
 {
@@ -312,7 +308,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)
-                    gwg->GetSoundMgr().playNOSound(84, *this, 0);
+                    world->GetSoundMgr().playNOSound(84, *this, 0);
 
                 last_id = ani_step;
             }
@@ -331,7 +327,7 @@ void nofCarrier::Walked()
 {
     // Bootssounds ggf. löschen
     if(ct == CarrierType::Boat && state != CarrierState::FigureWork)
-        gwg->GetSoundMgr().stopSounds(*this);
+        world->GetSoundMgr().stopSounds(*this);
 
     switch(state)
     {
@@ -413,7 +409,7 @@ void nofCarrier::Walked()
                 {
                     // Ist an der Flagge noch genügend Platz (wenn wir wieder eine Ware mitnehmen, kann sie auch voll
                     // sein)
-                    if(this_flag->IsSpaceForWare())
+                    if(this_flag->HasSpaceForWare())
                     {
                         carried_ware->WaitAtFlag(this_flag);
 
@@ -422,9 +418,8 @@ void nofCarrier::Walked()
                             carried_ware->RecalcRoute();
 
                         // Ware ablegen
-                        this_flag->AddWare(carried_ware);
-                        // Wir tragen erstmal keine Ware mehr
-                        carried_ware = nullptr;
+                        this_flag->AddWare(std::move(carried_ware));
+                        RTTR_Assert(carried_ware == nullptr);
                         // Gibts an den Flaggen etwas, was ich tragen muss, ansonsten wieder in die Mitte gehen und
                         // warten
                         LookForWares();
@@ -434,7 +429,7 @@ void nofCarrier::Walked()
                         // erst ablegen
 
                         // Ware "merken"
-                        Ware* tmp_ware = carried_ware;
+                        auto tmp_ware = std::move(carried_ware);
                         // neue Ware aufnehmen
                         FetchWare(true);
 
@@ -443,7 +438,7 @@ void nofCarrier::Walked()
 
                         if(!calculated)
                             tmp_ware->RecalcRoute();
-                        this_flag->AddWare(tmp_ware);
+                        this_flag->AddWare(std::move(tmp_ware));
                     } else
                     {
                         // wenn kein Platz mehr ist --> wieder umdrehen und zurückgehen
@@ -458,7 +453,7 @@ void nofCarrier::Walked()
                 // Wenn wir fast da sind, gucken, ob an der Flagge noch ein freier Platz ist
                 auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
-                if(this_flag->IsSpaceForWare() || WantInBuilding(nullptr) || cur_rs->AreWareJobs(!rs_dir, ct, true))
+                if(this_flag->HasSpaceForWare() || WantInBuilding(nullptr) || cur_rs->AreWareJobs(!rs_dir, ct, true))
                 {
                     // Es ist Platz, dann zur Flagge laufen
                     StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
@@ -477,9 +472,8 @@ void nofCarrier::Walked()
         case CarrierState::CarryWareToBuilding:
         {
             // Ware ablegen
-            world->GetSpecObj<noRoadNode>(pos)->AddWare(carried_ware);
-            // Ich trag' keine Ware mehr
-            carried_ware = nullptr;
+            world->GetSpecObj<noRoadNode>(pos)->AddWare(std::move(carried_ware));
+            RTTR_Assert(carried_ware == nullptr);
             // Wieder zurück zu meinem Weg laufen
             state = CarrierState::LeaveBuilding;
             StartWalking(Direction::SouthEast);

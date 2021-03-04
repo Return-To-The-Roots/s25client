@@ -45,7 +45,7 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
         {
-            gwg->GetSoundMgr().playNOSound(58, *this, now_id);
+            world->GetSoundMgr().playNOSound(58, *this, now_id);
             was_sounding = true;
         }
     }

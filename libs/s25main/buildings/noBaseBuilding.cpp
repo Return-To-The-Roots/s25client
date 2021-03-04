@@ -121,21 +121,21 @@ void noBaseBuilding::Destroy()
 
             std::array<GoodType, 2> goods = {GoodType::Boards, GoodType::Stones};
             bool which = false;
-            while(flag->IsSpaceForWare() && (boards > 0 || stones > 0))
+            while(flag->HasSpaceForWare() && (boards > 0 || stones > 0))
             {
                 if((!which && boards > 0) || (which && stones > 0))
                 {
                     // Ware erzeugen
-                    auto* ware = new Ware(goods[which], nullptr, flag);
+                    auto ware = std::make_unique<Ware>(goods[which], nullptr, flag);
                     ware->WaitAtFlag(flag);
                     // Inventur anpassen
                     world->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden
-                    ware->SetGoal(world->GetPlayer(player).FindClientForWare(ware));
+                    ware->SetGoal(world->GetPlayer(player).FindClientForWare(*ware));
                     // Ware soll ihren weiteren Weg berechnen
                     ware->RecalcRoute();
                     // Ware ablegen
-                    flag->AddWare(ware);
+                    flag->AddWare(std::move(ware));
 
                     if(!which)
                         --boards;
@@ -220,11 +220,8 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
     if(ware->IsWaitingInWarehouse())
     {
         // Bestellung im Lagerhaus stornieren
+        world->GetPlayer(player).RemoveWare(*ware);
         static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
-        // Ware muss auch noch vernichtet werden!
-        // Inventur entsprechend verringern
-        world->GetPlayer(player).RemoveWare(ware);
-        delete ware;
     } else
         ware->GoalDestroyed();
 }

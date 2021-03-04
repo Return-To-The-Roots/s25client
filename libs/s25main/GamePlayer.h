@@ -161,11 +161,11 @@ public:
 
     /// Sucht für eine (neuproduzierte) Ware einen Abnehmer (wenns keinen gibt, wird ein Lagerhaus gesucht, wenn
     /// es auch dorthin keinen Weg gibt, wird 0 zurückgegeben
-    noBaseBuilding* FindClientForWare(Ware* ware);
+    noBaseBuilding* FindClientForWare(const Ware& ware);
     nobBaseWarehouse* FindWarehouseForWare(const Ware& ware) const;
 
     /// Sucht einen Abnehmer (sprich Militärgebäude), wenn es keinen findet, wird ein Warenhaus zurückgegeben bzw. 0
-    nobBaseMilitary* FindClientForCoin(Ware* ware) const;
+    nobBaseMilitary* FindClientForCoin(const Ware& ware) const;
 
     /// Gibt Priorität der Baustelle zurück (entscheidet selbständig, welche Reihenfolge usw)
     /// je kleiner die Rückgabe, destro größer die Priorität!
@@ -179,14 +179,14 @@ public:
     void ConvertTransportData(const TransportOrders& transport_data);
 
     /// Ware zur globalen Warenliste hinzufügen und entfernen
-    void RegisterWare(Ware* ware) { ware_list.push_back(ware); }
-    void RemoveWare(Ware* ware)
+    void RegisterWare(Ware& ware) { ware_list.push_back(&ware); }
+    void RemoveWare(Ware& ware)
     {
         RTTR_Assert(IsWareRegistred(ware));
-        ware_list.remove(ware);
+        ware_list.remove(&ware);
     }
-    bool IsWareRegistred(Ware* ware);
-    bool IsWareDependent(Ware* ware);
+    bool IsWareRegistred(const Ware& ware);
+    bool IsWareDependent(const Ware& ware);
 
     /// Fügt Waren zur Inventur hinzu
     void IncreaseInventoryWare(GoodType ware, unsigned count);

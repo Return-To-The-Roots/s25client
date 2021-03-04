@@ -25,6 +25,7 @@
 #include <boost/variant.hpp>
 #include <array>
 #include <list>
+#include <memory>
 
 class nofCarrier;
 class noFigure;
@@ -59,7 +60,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 protected:
     // Liste von Waren, die noch rausgebracht werden müssen, was im Moment aber nicht möglich ist,
     // weil die Flagge voll ist vor dem Lagerhaus
-    std::list<Ware*> waiting_wares;
+    std::list<std::unique_ptr<Ware>> waiting_wares;
     // verhindert doppeltes Holen von Waren
     bool fetch_double_protection;
     /// Liste von Figuren, die auf dem Weg zu dem Lagerhaus sind bzw. Soldaten die von ihm kommen
@@ -90,7 +91,7 @@ private:
     bool AreRecruitingConditionsComply();
     /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
     /// (muss in dem Fall true zurückgeben)
-    virtual bool UseWareAtOnce(Ware* ware, noBaseBuilding& goal);
+    virtual bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal);
     /// Dasselbe für Menschen
     virtual bool UseFigureAtOnce(noFigure* fig, noRoadNode& goal);
     /// Prüft verschiedene Verwendungszwecke für eine neuangekommende Ware
@@ -196,7 +197,7 @@ public:
 
     /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen
     /// konnten
-    void AddWaitingWare(Ware*& ware);
+    void AddWaitingWare(std::unique_ptr<Ware> ware);
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
     bool FreePlaceAtFlag() override;
     // Eine Ware liegt vor der Flagge des Warenhauses und will rein --> ein Warenhausmitarbeiter muss kommen und sie
@@ -206,14 +207,14 @@ public:
     void DontFetchNextWare() { fetch_double_protection = true; }
 
     /// Legt eine Ware im Lagerhaus ab
-    void AddWare(Ware*& ware) override;
+    void AddWare(std::unique_ptr<Ware> ware) override;
     /// Eine Figur geht ins Lagerhaus
     virtual void AddFigure(noFigure* figure, bool increase_visual_counts = true);
 
     /// Eine bestellte Ware konnte doch nicht kommen
-    void WareLost(Ware* ware) override;
+    void WareLost(Ware& ware) override;
     /// Bestellte Ware, die sich noch hier drin befindet, storniert ihre Auslieferung
-    void CancelWare(Ware* ware);
+    void CancelWare(Ware*& ware);
     /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
     virtual void CancelFigure(noFigure* figure);
 
@@ -240,13 +241,13 @@ public:
     }
 
     //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
-    void RemoveDependentWare(Ware* ware)
+    void RemoveDependentWare(Ware& ware)
     {
         RTTR_Assert(IsWareDependent(ware));
-        dependent_wares.remove(ware);
+        dependent_wares.remove(&ware);
     }
     /// Überprüft, ob Ware abhängig ist
-    bool IsWareDependent(Ware* ware);
+    bool IsWareDependent(const Ware& ware);
     /// Prüft, ob es Waren zum Auslagern gibt
     bool AreWaresToEmpty() const;
 

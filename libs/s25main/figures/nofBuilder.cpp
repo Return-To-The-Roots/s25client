@@ -205,7 +205,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
         case BuilderState::Build:
         {
             // Sounds abmelden
-            gwg->GetSoundMgr().stopSounds(*this);
+            world->GetSoundMgr().stopSounds(*this);
 
             // ein Bauschritt weniger, Haus um eins höher
             --building_steps_available;
@@ -345,7 +345,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
             LOADER.GetPlayerImage("rom_bobs", texture)
               ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(building_site->GetPlayer()).color);
             if(soundId && index % 4 == 2)
-                gwg->GetSoundMgr().playNOSound(soundId, *this, index, 160 - rand() % 60);
+                world->GetSoundMgr().playNOSound(soundId, *this, index, 160 - rand() % 60);
         }
         break;
     }

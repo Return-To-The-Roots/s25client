@@ -109,7 +109,7 @@ void nofPlaner::LostWork()
         {
             GetEvMgr().RemoveEvent(current_ev);
             /// Sounds abmelden
-            gwg->GetSoundMgr().stopSounds(*this);
+            world->GetSoundMgr().stopSounds(*this);
         }
 
         StartWandering();
@@ -156,10 +156,10 @@ void nofPlaner::Draw(DrawPoint drawPt)
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)
-                gwg->GetSoundMgr().playNOSound(76, *this, now_id, 200);
+                world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
             // Tret-Sound
             else if(now_id == 20 || now_id == 28)
-                gwg->GetSoundMgr().playNOSound(66, *this, now_id, 200);
+                world->GetSoundMgr().playNOSound(66, *this, now_id, 200);
         }
         break;
     }
@@ -173,7 +173,7 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
         if(building_site)
             world->ChangeAltitude(pos, world->GetNode(building_site->GetPos()).altitude);
         /// Sounds abmelden
-        gwg->GetSoundMgr().stopSounds(*this);
+        world->GetSoundMgr().stopSounds(*this);
 
         state = PlanerState::Walking;
 

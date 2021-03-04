@@ -55,7 +55,7 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
 
     if(now_id % 8 == 3)
     {
-        gwg->GetSoundMgr().playNOSound(59, *this, now_id);
+        world->GetSoundMgr().playNOSound(59, *this, now_id);
         was_sounding = true;
     }
 }

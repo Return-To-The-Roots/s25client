@@ -42,7 +42,7 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
 {
     RTTR_Assert(location);
     // Ware in den Index mit eintragen
-    world->GetPlayer(location->GetPlayer()).RegisterWare(this);
+    world->GetPlayer(location->GetPlayer()).RegisterWare(*this);
     if(goal)
         goal->TakeWare(this);
 }
@@ -56,8 +56,8 @@ void Ware::Destroy()
 #if RTTR_ENABLE_ASSERTS
     for(unsigned p = 0; p < world->GetNumPlayers(); p++)
     {
-        RTTR_Assert(!world->GetPlayer(p).IsWareRegistred(this));
-        RTTR_Assert(!world->GetPlayer(p).IsWareDependent(this));
+        RTTR_Assert(!world->GetPlayer(p).IsWareRegistred(*this));
+        RTTR_Assert(!world->GetPlayer(p).IsWareDependent(*this));
     }
 #endif
 }
@@ -164,12 +164,12 @@ void Ware::GoalDestroyed()
         RTTR_Assert(location);
         RTTR_Assert(location->GetGOT() == GO_Type::NobHarborbuilding);
         // This also adds the ware to the harbors inventory
-        static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
+        auto ownedWare = static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
         // Kill the ware
-        world->GetPlayer(location->GetPlayer()).RemoveWare(this);
+        world->GetPlayer(location->GetPlayer()).RemoveWare(*this);
         goal = nullptr;
         location = nullptr;
-        GetEvMgr().AddToKillList(this);
+        GetEvMgr().AddToKillList(ownedWare.release());
     } else
     {
         // Ware ist unterwegs, Lagerhaus finden und Ware dort einliefern
@@ -266,7 +266,7 @@ void Ware::NotifyGoalAboutLostWare()
     // Meinem Ziel Bescheid sagen, dass ich weg vom Fenster bin (falls ich ein Ziel habe!)
     if(goal)
     {
-        goal->WareLost(this);
+        goal->WareLost(*this);
         goal = nullptr;
         next_dir = RoadPathDirection::None;
     }
@@ -281,7 +281,7 @@ void Ware::WareLost(const unsigned char player)
     // Ziel der Ware Bescheid sagen
     NotifyGoalAboutLostWare();
     // Zentrale Registrierung der Ware löschen
-    world->GetPlayer(player).RemoveWare(this);
+    world->GetPlayer(player).RemoveWare(*this);
 }
 
 void Ware::RemoveWareJobForDir(const RoadPathDirection last_next_dir)

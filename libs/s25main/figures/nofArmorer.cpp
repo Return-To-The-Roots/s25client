@@ -61,7 +61,7 @@ void nofArmorer::DrawWorking(DrawPoint drawPt)
 
         if((now_id % 8) == 5)
         {
-            gwg->GetSoundMgr().playNOSound(52, *this, now_id / 8);
+            world->GetSoundMgr().playNOSound(52, *this, now_id / 8);
             was_sounding = true;
         }
     }
