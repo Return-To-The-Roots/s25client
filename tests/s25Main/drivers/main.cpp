@@ -20,7 +20,9 @@
 #include <rttr/test/Fixture.hpp>
 #include <boost/test/unit_test.hpp>
 
-//#include <vld.h>
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
 
 using Fixture = rttr::test::Fixture;
 

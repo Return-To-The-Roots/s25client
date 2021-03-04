@@ -25,6 +25,10 @@
 #include <boost/test/unit_test.hpp>
 #include <map>
 
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
+
 struct FormatProperties
 {
     int numParameters;

@@ -47,7 +47,9 @@
 #include <iostream>
 #include <limits>
 #include <vector>
-//#include <vld.h>
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
 
 #ifdef _WIN32
 #    include <boost/nowide/convert.hpp>

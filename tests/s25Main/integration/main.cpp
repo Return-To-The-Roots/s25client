@@ -21,7 +21,9 @@
 #include <boost/test/unit_test.hpp>
 #include <sstream>
 
-//#include <vld.h>
+#if RTTR_HAS_VLD
+#    include <vld.h>
+#endif
 
 struct Fixture : rttr::test::Fixture
 {};

@@ -1,3 +1,3 @@
 add_testcase(NAME gameData
-    LIBS gamedata legacyTestfiles testHelpers
+    LIBS gamedata legacyTestfiles testHelpers rttr::vld
 )
