@@ -19,6 +19,7 @@
 
 #include "figures/noFigure.h"
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 class RoadSegment;
@@ -67,7 +68,7 @@ private:
     // Weg, auf dem er arbeitet
     RoadSegment* workplace;
     /// Ware, die er gerade trägt (0 = nichts)
-    Ware* carried_ware;
+    std::unique_ptr<Ware> carried_ware;
     /// Rechne-Produktivität-aus-Event
     const GameEvent* productivity_ev;
     // Letzte errechnete Produktivität

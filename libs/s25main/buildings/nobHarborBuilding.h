@@ -66,7 +66,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
     helpers::EnumArray<uint16_t, Direction> seaIds;
     /// Liste von Waren, die weggeschifft werden sollen
-    std::list<Ware*> wares_for_ships;
+    std::list<std::unique_ptr<Ware>> wares_for_ships;
     /// Liste von Menschen, die weggeschifft werden sollen
     struct FigureForShip
     {
@@ -96,7 +96,7 @@ private:
     bool IsExplorationExpeditionReady() const;
     /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
     /// (muss in dem Fall true zurückgeben)
-    bool UseWareAtOnce(Ware* ware, noBaseBuilding& goal) override;
+    bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal) override;
     /// Dasselbe für Menschen
     bool UseFigureAtOnce(noFigure* fig, noRoadNode& goal) override;
     /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
@@ -125,9 +125,9 @@ public:
     void HandleEvent(unsigned id) override;
 
     /// Eine bestellte Ware konnte doch nicht kommen
-    void WareLost(Ware* ware) override;
+    void WareLost(Ware& ware) override;
     /// Legt eine Ware im Lagerhaus ab
-    void AddWare(Ware*& ware) override;
+    void AddWare(std::unique_ptr<Ware> ware) override;
     /// Eine Figur geht ins Lagerhaus
     void AddFigure(noFigure* figure, bool increase_visual_counts) override;
     /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
@@ -135,7 +135,7 @@ public:
     unsigned CalcDistributionPoints(GoodType type) const;
 
     /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
-    void CancelWareForShip(Ware* ware);
+    std::unique_ptr<Ware> CancelWareForShip(Ware* ware);
 
     /// Startet eine Expedition
     void StartExpedition();
@@ -174,7 +174,7 @@ public:
     /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
     void AddFigureForShip(noFigure* fig, MapPoint dest);
     /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
-    void AddWareForShip(Ware*& ware);
+    void AddWareForShip(std::unique_ptr<Ware> ware);
 
     /// A ware changed its route and doesn't want to use the ship anymore
     void WareDontWantToTravelByShip(Ware* ware);
@@ -185,7 +185,7 @@ public:
     int GetNeedForShip(unsigned ships_coming) const;
 
     /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-    void ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<Ware*>& wares);
+    void ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<std::unique_ptr<Ware>>& wares);
 
     nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
 

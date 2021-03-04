@@ -18,6 +18,7 @@
 #pragma once
 
 #include "figures/noFigure.h"
+#include <memory>
 
 class Ware;
 class SerializedGameData;
@@ -30,7 +31,7 @@ class nofWarehouseWorker : public noFigure
 
 private:
     /// Ware currently being carried or nullptr
-    Ware* carried_ware;
+    std::unique_ptr<Ware> carried_ware;
 
     // Aufgabe, die der Warenhaustyp hat (Ware raustragen (0) oder reinholen)
     const bool shouldBringWareIn;
@@ -48,7 +49,7 @@ private:
     void HandleDerivedEvent(unsigned id) override;
 
 public:
-    nofWarehouseWorker(MapPoint pos, unsigned char player, Ware* ware, bool task);
+    nofWarehouseWorker(MapPoint pos, unsigned char player, std::unique_ptr<Ware> ware, bool task);
     nofWarehouseWorker(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofWarehouseWorker() override;

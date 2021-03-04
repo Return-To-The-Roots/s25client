@@ -66,7 +66,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             // Evtl. Sounds löschen
             if(was_sounding)
             {
-                gwg->GetSoundMgr().stopSounds(*this);
+                world->GetSoundMgr().stopSounds(*this);
                 was_sounding = false;
             }
         }

@@ -122,7 +122,7 @@ void noFighting::Draw(DrawPoint drawPt)
 
             // Sterbesound abspielen
             if(curAnimFrame == 6)
-                gwg->GetSoundMgr().playNOSound(104, *this, 2);
+                world->GetSoundMgr().playNOSound(104, *this, 2);
         }
         break;
         case 2:
@@ -171,7 +171,7 @@ void noFighting::Draw(DrawPoint drawPt)
                         if(curAnimFrame == 5
                            && ((soldier.GetRank() < 2 && defending_animation < 2)
                                || (soldier.GetRank() > 1 && defending_animation == 0)))
-                            gwg->GetSoundMgr().playNOSound(101, *this, 1);
+                            world->GetSoundMgr().playNOSound(101, *this, 1);
 
                     } else
                     {
@@ -182,7 +182,7 @@ void noFighting::Draw(DrawPoint drawPt)
                             fightAnim.hit.drawForPlayer(drawPt, owner.color);
 
                             // Treffersound
-                            gwg->GetSoundMgr().playNOSound(105, *this, 1);
+                            world->GetSoundMgr().playNOSound(105, *this, 1);
                         } else
                             // normal dastehen
                             fightAnim.defending[0][0].drawForPlayer(drawPt, owner.color);
@@ -192,7 +192,7 @@ void noFighting::Draw(DrawPoint drawPt)
 
             // Angriffssound
             if(curAnimFrame == 3)
-                gwg->GetSoundMgr().playNOSound(103, *this, 0);
+                world->GetSoundMgr().playNOSound(103, *this, 0);
         }
         break;
     }
@@ -219,7 +219,7 @@ void noFighting::HandleEvent(const unsigned id)
             case 1:
             {
                 // Sounds löschen von der letzten Kampfphase
-                gwg->GetSoundMgr().stopSounds(*this);
+                world->GetSoundMgr().stopSounds(*this);
 
                 // Wurde der eine getroffen?
                 if(defending_animation == 3)
@@ -259,7 +259,7 @@ void noFighting::HandleEvent(const unsigned id)
                 MapPoint pt = soldiers[player_lost]->GetPos();
 
                 // Sounds löschen vom Sterben
-                gwg->GetSoundMgr().stopSounds(*this);
+                world->GetSoundMgr().stopSounds(*this);
 
                 // Kampf ist endgültig beendet
                 GetEvMgr().AddToKillList(this);

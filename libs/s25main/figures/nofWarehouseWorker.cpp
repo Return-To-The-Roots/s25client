@@ -26,9 +26,10 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 
-nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
+nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, std::unique_ptr<Ware> ware,
+                                       const bool task)
     : noFigure(Job::Helper, pos, player, world->GetSpecObj<noFlag>(world->GetNeighbour(pos, Direction::SouthEast))),
-      carried_ware(ware), shouldBringWareIn(task), fat((RANDOM_RAND(2)) != 0)
+      carried_ware(std::move(ware)), shouldBringWareIn(task), fat((RANDOM_RAND(2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     world->GetPlayer(player).IncreaseInventoryJob(Job::Helper, 1);
@@ -39,11 +40,7 @@ nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char p
     rs_dir = true;
 }
 
-nofWarehouseWorker::~nofWarehouseWorker()
-{
-    // Ware vernichten (physisch)
-    delete carried_ware;
-}
+nofWarehouseWorker::~nofWarehouseWorker() = default;
 
 void nofWarehouseWorker::Destroy()
 {
@@ -83,7 +80,7 @@ void nofWarehouseWorker::GoalReached()
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
         // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
         // ( dann ist goal = location )
-        if(world->GetSpecObj<noFlag>(pos)->GetNumWares() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation()
+        if(world->GetSpecObj<noFlag>(pos)->HasSpaceForWare() && carried_ware->GetGoal() != carried_ware->GetLocation()
            && carried_ware->GetGoal() != wh)
         {
             carried_ware->WaitAtFlag(world->GetSpecObj<noFlag>(pos));
@@ -92,10 +89,7 @@ void nofWarehouseWorker::GoalReached()
             carried_ware->RecalcRoute();
 
             // Ware ablegen
-            world->GetSpecObj<noFlag>(pos)->AddWare(carried_ware);
-
-            // Ich trage keine Ware mehr
-            carried_ware = nullptr;
+            world->GetSpecObj<noFlag>(pos)->AddWare(std::move(carried_ware));
         } else
             // ansonsten Ware wieder mit reinnehmen
             carried_ware->Carry(world->GetSpecObj<noRoadNode>(world->GetNeighbour(pos, Direction::NorthWest)));
@@ -127,9 +121,9 @@ void nofWarehouseWorker::Walked()
             {
                 auto* wh = world->GetSpecObj<nobBaseWarehouse>(pos);
                 if(carried_ware->GetGoal() == carried_ware->GetLocation() || carried_ware->GetGoal() == wh)
-                    wh->AddWare(carried_ware);
+                    wh->AddWare(std::move(carried_ware));
                 else
-                    wh->AddWaitingWare(carried_ware);
+                    wh->AddWaitingWare(std::move(carried_ware));
             } else
             {
                 // Lagerhaus abgebrannt --> Ware vernichten
@@ -144,7 +138,7 @@ void nofWarehouseWorker::Walked()
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
             if(world->GetNO(pos)->GetType() == NodalObjectType::Building)
-                world->GetSpecObj<nobBaseWarehouse>(pos)->AddWare(carried_ware);
+                world->GetSpecObj<nobBaseWarehouse>(pos)->AddWare(std::move(carried_ware));
             else
             {
                 // Lagerhaus abgebrannt --> Ware vernichten
@@ -176,7 +170,7 @@ void nofWarehouseWorker::LooseWare()
     {
         carried_ware->WareLost(player);
         carried_ware->Destroy();
-        deletePtr(carried_ware);
+        carried_ware.reset();
     }
 }
 

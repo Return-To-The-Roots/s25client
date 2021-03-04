@@ -559,16 +559,12 @@ void GamePlayer::RoadDestroyed()
         {
             if(!ware->IsRouteToGoal())
             {
-                Ware* ware = *it;
-
-                // Ware aus der Warteliste des Lagerhauses entfernen
-                static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
                 // Das Ziel wird nun nich mehr beliefert
                 ware->NotifyGoalAboutLostWare();
+                // Ware aus der Warteliste des Lagerhauses entfernen
+                static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
                 // Ware aus der Liste raus
                 it = ware_list.erase(it);
-                // And trash it
-                deletePtr(ware);
                 continue;
             }
         } else if(ware->IsWaitingForShip())
@@ -960,21 +956,21 @@ struct ClientForWare
     }
 };
 
-noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
+noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
 {
     // Wenn es eine Goldmünze ist, wird das Ziel auf eine andere Art und Weise berechnet
-    if(ware->type == GoodType::Coins)
+    if(ware.type == GoodType::Coins)
         return FindClientForCoin(ware);
 
     // Warentyp herausfinden
-    GoodType gt = ware->type;
+    GoodType gt = ware.type;
     // All food is considered fish in the distribution table
     Distribution& wareDistribution =
       (gt == GoodType::Bread || gt == GoodType::Meat) ? distribution[GoodType::Fish] : distribution[gt];
 
     std::vector<ClientForWare> possibleClients;
 
-    noRoadNode* start = ware->GetLocation();
+    const noRoadNode* start = ware.GetLocation();
 
     // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
     if(gt == GoodType::Stones || gt == GoodType::Boards)
@@ -999,7 +995,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
             // Bei Baustellen die Extraliste abfragen
             for(noBuildingSite* bldSite : buildings.GetBuildingSites())
             {
-                unsigned points = bldSite->CalcDistributionPoints(ware->GetLocation(), gt);
+                unsigned points = bldSite->CalcDistributionPoints(gt);
                 if(!points)
                     continue;
 
@@ -1012,7 +1008,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
             // Für übrige Gebäude
             for(nobUsual* bld : buildings.GetBuildings(bldType))
             {
-                unsigned points = bld->CalcDistributionPoints(ware->GetLocation(), gt);
+                unsigned points = bld->CalcDistributionPoints(gt);
                 if(!points)
                     continue; // Ware not needed
 
@@ -1083,7 +1079,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bestBld)
-        bestBld = FindWarehouseForWare(*ware);
+        bestBld = FindWarehouseForWare(ware);
 
     return bestBld;
 }
@@ -1105,7 +1101,7 @@ nobBaseWarehouse* GamePlayer::FindWarehouseForWare(const Ware& ware) const
     return wh;
 }
 
-nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
+nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
 {
     nobBaseMilitary* bb = nullptr;
     unsigned best_points = 0, points;
@@ -1120,7 +1116,7 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
         if(points)
         {
             // Weg dorthin berechnen
-            if(world.FindPathForWareOnRoads(*ware->GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
+            if(world.FindPathForWareOnRoads(*ware.GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
             {
                 // Die Wegpunkte noch davon abziehen
                 points -= way_points;
@@ -1136,7 +1132,7 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bb)
-        bb = FindWarehouseForWare(*ware);
+        bb = FindWarehouseForWare(ware);
 
     return bb;
 }
@@ -1740,12 +1736,12 @@ void GamePlayer::MakeStartPacts()
     }
 }
 
-bool GamePlayer::IsWareRegistred(Ware* ware)
+bool GamePlayer::IsWareRegistred(const Ware& ware)
 {
-    return (helpers::contains(ware_list, ware));
+    return helpers::contains(ware_list, &ware);
 }
 
-bool GamePlayer::IsWareDependent(Ware* ware)
+bool GamePlayer::IsWareDependent(const Ware& ware)
 {
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {

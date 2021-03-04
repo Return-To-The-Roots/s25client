@@ -34,6 +34,7 @@
 #include "figures/nofTradeLeader.h"
 #include "figures/nofWarehouseWorker.h"
 #include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "network/GameClient.h"
 #include "nobMilitary.h"
 #include "random/Random.h"
@@ -71,12 +72,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     reserve_soldiers_claimed_real.fill(0);
 }
 
-nobBaseWarehouse::~nobBaseWarehouse()
-{
-    // Waiting Wares löschen
-    for(auto& waiting_ware : waiting_wares)
-        delete waiting_ware;
-}
+nobBaseWarehouse::~nobBaseWarehouse() = default;
 
 void nobBaseWarehouse::DestroyBuilding()
 {
@@ -98,7 +94,7 @@ void nobBaseWarehouse::DestroyBuilding()
     for(auto& waiting_ware : waiting_wares)
     {
         waiting_ware->WareLost(player);
-        delete waiting_ware;
+        waiting_ware->Destroy();
     }
     waiting_wares.clear();
 
@@ -205,9 +201,7 @@ void nobBaseWarehouse::Clear()
     {
         waiting_ware->WareLost(player);
         waiting_ware->Destroy();
-        delete waiting_ware;
     }
-
     waiting_wares.clear();
 }
 
@@ -331,7 +325,7 @@ void nobBaseWarehouse::HandleCollectEvent()
             Ware* ware = wh->OrderWare(i, this);
             if(ware)
             {
-                RTTR_Assert(IsWareDependent(ware));
+                RTTR_Assert(IsWareDependent(*ware));
                 storing_done = true;
                 break;
             }
@@ -380,7 +374,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     std::vector<boost::variant<GoodType, Job>> possibleTypes;
     // Waren und Figuren zum Auslagern zusammensuchen
     // Wenn keine Platz an Flagge, dann keine Waren raus
-    if(GetFlag()->IsSpaceForWare())
+    if(GetFlag()->HasSpaceForWare())
     {
         for(const auto i : helpers::enumRange<GoodType>())
         {
@@ -408,14 +402,14 @@ void nobBaseWarehouse::HandleSendoutEvent()
     {
         // Ware
         const auto goodType = boost::get<GoodType>(selectedId);
-        auto* ware = new Ware(goodType, nullptr, this);
-        noBaseBuilding* wareGoal = world->GetPlayer(player).FindClientForWare(ware);
+        auto ware = std::make_unique<Ware>(goodType, nullptr, this);
+        noBaseBuilding* wareGoal = world->GetPlayer(player).FindClientForWare(*ware);
         if(wareGoal != this)
         {
             ware->SetGoal(wareGoal);
 
             // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
-            waiting_wares.push_back(ware);
+            waiting_wares.push_back(std::move(ware));
 
             AddLeavingEvent();
 
@@ -425,10 +419,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
             // Evtl. kein Schwert/Schild/Bier mehr da, sodass das Rekrutieren gestoppt werden muss
             TryStopRecruiting();
         } else
-        {
-            world->GetPlayer(player).RemoveWare(ware);
-            deletePtr(ware);
-        }
+            world->GetPlayer(player).RemoveWare(*ware);
     } else
     {
         const auto jobType = boost::get<Job>(selectedId);
@@ -631,17 +622,16 @@ void nobBaseWarehouse::HandleLeaveEvent()
         leave_house.pop_front();
     } else
     {
-        // Ist noch Platz an der Flagge?
-        if(GetFlag()->GetNumWares() < 8)
+        if(GetFlag()->HasSpaceForWare())
         {
             // Dann Ware raustragen lassen
-            Ware* ware = waiting_wares.front();
-            auto* worker = new nofWarehouseWorker(pos, player, ware, false);
-            world->AddFigure(pos, worker);
-            inventory.visual.Remove(ConvertShields(ware->type));
-            worker->WalkToGoal();
-            ware->Carry(GetFlag());
+            auto ware = std::move(waiting_wares.front());
             waiting_wares.pop_front();
+            inventory.visual.Remove(ConvertShields(ware->type));
+            ware->Carry(GetFlag());
+            auto* worker = new nofWarehouseWorker(pos, player, std::move(ware), false);
+            world->AddFigure(pos, worker);
+            worker->WalkToGoal();
         } else
         {
             // Kein Platz mehr für Waren --> keiner brauch mehr rauszukommen, und Figuren gibts ja auch keine mehr
@@ -660,7 +650,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
 /// (muss in dem Fall true zurückgeben)
-bool nobBaseWarehouse::UseWareAtOnce(Ware* /*ware*/, noBaseBuilding& /*goal*/)
+bool nobBaseWarehouse::UseWareAtOnce(std::unique_ptr<Ware>& /*ware*/, noBaseBuilding& /*goal*/)
 {
     return false;
 }
@@ -682,32 +672,29 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
         return nullptr;
     }
 
-    auto* ware = new Ware(good, goal, this);
+    auto ware = std::make_unique<Ware>(good, goal, this);
     inventory.Remove(good);
 
-    // Abgeleitete Klasse fragen, ob die irgend etwas besonderes mit dieser Ware anfangen will
+    // Copy pointer so functions below can take ownership
+    Ware* wareRef = ware.get();
+
+    // If we don't want to use the ware right away we add it to the waiting wares
     if(!UseWareAtOnce(ware, *goal))
-    {
-        // Add to wating ware, but use copy of pointer, as AddWaitingWare takes ownership
-        Ware* tmpWare = ware;
-        AddWaitingWare(tmpWare);
-    }
+        AddWaitingWare(std::move(ware));
+    RTTR_Assert(!ware);
 
     // Evtl. keine Waffen/Bier mehr da, sodass das Rekrutieren gestoppt werden muss
     TryStopRecruiting();
 
-    return ware;
+    return wareRef;
 }
 
-void nobBaseWarehouse::AddWaitingWare(Ware*& ware)
+void nobBaseWarehouse::AddWaitingWare(std::unique_ptr<Ware> ware)
 {
-    waiting_wares.push_back(ware);
-    ware->WaitInWarehouse(this);
-    // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
-    AddLeavingEvent();
-    // Die visuelle Warenanzahl wieder erhöhen
     inventory.visual.Add(ConvertShields(ware->type));
-    ware = nullptr; // Take ownership
+    ware->WaitInWarehouse(this);
+    waiting_wares.push_back(std::move(ware));
+    AddLeavingEvent();
 }
 
 bool nobBaseWarehouse::FreePlaceAtFlag()
@@ -728,21 +715,20 @@ bool nobBaseWarehouse::FreePlaceAtFlag()
     }
 }
 
-void nobBaseWarehouse::AddWare(Ware*& ware)
+void nobBaseWarehouse::AddWare(std::unique_ptr<Ware> ware)
 {
     // Ware not dependent anymore (only if we had a goal)
     if(ware->GetGoal())
     {
         RTTR_Assert(ware->GetGoal() == this); // The goal should be here
-        RemoveDependentWare(ware);
+        RemoveDependentWare(*ware);
     } else
-        RTTR_Assert(!IsWareDependent(ware));
+        RTTR_Assert(!IsWareDependent(*ware));
 
     // Die Schilde der verschiedenen Nation in eine "Schild-Sorte" (den der Römer) umwandeln!
     GoodType type = ConvertShields(ware->type);
 
-    world->GetPlayer(player).RemoveWare(ware);
-    deletePtr(ware);
+    world->GetPlayer(player).RemoveWare(*ware);
 
     inventory.Add(type);
 
@@ -860,18 +846,16 @@ void nobBaseWarehouse::FetchWare()
     fetch_double_protection = false;
 }
 
-void nobBaseWarehouse::WareLost(Ware* ware)
+void nobBaseWarehouse::WareLost(Ware& ware)
 {
     RemoveDependentWare(ware);
 }
 
-void nobBaseWarehouse::CancelWare(Ware* ware)
+void nobBaseWarehouse::CancelWare(Ware*& ware)
 {
-    // Ware aus den Waiting-Wares entfernen
-    RTTR_Assert(helpers::contains(waiting_wares, ware));
-    waiting_wares.remove(ware);
-    // Anzahl davon wieder hochsetzen
     inventory.real.Add(ConvertShields(ware->type));
+    helpers::extractPtr(waiting_wares, ware);
+    ware = nullptr;
 }
 
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
@@ -1284,9 +1268,9 @@ void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vect
         store_event = GetEvMgr().AddEvent(this, STORE_INTERVAL, 4);
 }
 
-bool nobBaseWarehouse::IsWareDependent(Ware* ware)
+bool nobBaseWarehouse::IsWareDependent(const Ware& ware)
 {
-    return helpers::contains(dependent_wares, ware);
+    return helpers::contains(dependent_wares, &ware);
 }
 
 bool nobBaseWarehouse::AreWaresToEmpty() const

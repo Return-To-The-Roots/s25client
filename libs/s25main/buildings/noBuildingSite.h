@@ -80,7 +80,7 @@ public:
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
     std::unique_ptr<FOWObject> CreateFOWObject() const override;
 
-    void AddWare(Ware*& ware) override;
+    void AddWare(std::unique_ptr<Ware> ware) override;
     void GotWorker(Job job, noFigure* worker) override;
 
     /// Fordert Baumaterial an
@@ -88,11 +88,11 @@ public:
     /// Wird aufgerufen, wenn der Bauarbeiter kündigt
     void Abrogate();
     /// Eine bestellte Ware konnte doch nicht kommen
-    void WareLost(Ware* ware) override;
+    void WareLost(Ware& ware) override;
     /// Gibt den Bau-Fortschritt zurück
     unsigned char GetBuildProgress(bool percent = true) const;
 
-    unsigned CalcDistributionPoints(noRoadNode* start, GoodType goodtype);
+    unsigned CalcDistributionPoints(GoodType goodtype);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     void TakeWare(Ware* ware) override;

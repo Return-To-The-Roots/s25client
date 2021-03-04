@@ -50,7 +50,7 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
 
         if((nowId - 10) % 8 == 3)
         {
-            gwg->GetSoundMgr().playNOSound(53, *this, nowId);
+            world->GetSoundMgr().playNOSound(53, *this, nowId);
             was_sounding = true;
         }
 
@@ -62,7 +62,7 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
 
         if(nowId == 90)
         {
-            gwg->GetSoundMgr().playNOSound(85, *this, nowId);
+            world->GetSoundMgr().playNOSound(85, *this, nowId);
             was_sounding = true;
         }
     } else if(nowId < 115)

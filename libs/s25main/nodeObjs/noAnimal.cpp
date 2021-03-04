@@ -96,7 +96,7 @@ void noAnimal::Draw(DrawPoint drawPt)
                 {
                     // Play the sound if we unless we missed the timeframe by at least 1s
                     if((now < sound_moment + 1000) && !GAMECLIENT.IsPaused())
-                        gwg->GetSoundMgr().playAnimalSound((species == Species::Sheep) ? 94 : 95);
+                        world->GetSoundMgr().playAnimalSound((species == Species::Sheep) ? 94 : 95);
 
                     // Calc new sound time
                     sound_moment = now + helpers::randomValue(getAnimalRng(), 8000, 13000);

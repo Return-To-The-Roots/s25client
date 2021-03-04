@@ -599,27 +599,27 @@ void nobMilitary::TakeWare(Ware* ware)
     ordered_coins.push_back(ware);
 }
 
-void nobMilitary::AddWare(Ware*& ware)
+void nobMilitary::AddWare(std::unique_ptr<Ware> ware)
 {
     // Ein Golstück mehr
     ++numCoins;
     // aus der Bestellliste raushaun
-    RTTR_Assert(helpers::contains(ordered_coins, ware));
-    ordered_coins.remove(ware);
+    RTTR_Assert(helpers::contains(ordered_coins, ware.get()));
+    ordered_coins.remove(ware.get());
 
     // Ware vernichten
-    world->GetPlayer(player).RemoveWare(ware);
-    deletePtr(ware);
+    world->GetPlayer(player).RemoveWare(*ware);
+    ware.reset();
 
     // Evtl. Soldaten befördern
     PrepareUpgrading();
 }
 
-void nobMilitary::WareLost(Ware* ware)
+void nobMilitary::WareLost(Ware& ware)
 {
     // Ein Goldstück konnte nicht kommen --> aus der Bestellliste entfernen
-    RTTR_Assert(helpers::contains(ordered_coins, ware));
-    ordered_coins.remove(ware);
+    RTTR_Assert(helpers::contains(ordered_coins, &ware));
+    ordered_coins.remove(&ware);
 }
 
 bool nobMilitary::FreePlaceAtFlag()

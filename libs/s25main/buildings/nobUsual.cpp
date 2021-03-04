@@ -288,7 +288,7 @@ void nobUsual::HandleEvent(const unsigned id)
     }
 }
 
-void nobUsual::AddWare(Ware*& ware)
+void nobUsual::AddWare(std::unique_ptr<Ware> ware)
 {
     // Gucken, um was für einen Warentyp es sich handelt und dann dort hinzufügen
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
@@ -297,15 +297,14 @@ void nobUsual::AddWare(Ware*& ware)
         if(ware->type == workDesc.waresNeeded[i])
         {
             ++numWares[i];
-            RTTR_Assert(helpers::contains(ordered_wares[i], ware));
-            ordered_wares[i].remove(ware);
+            RTTR_Assert(helpers::contains(ordered_wares[i], ware.get()));
+            ordered_wares[i].remove(ware.get());
             break;
         }
     }
 
     // Ware vernichten
-    world->GetPlayer(player).RemoveWare(ware);
-    deletePtr(ware);
+    world->GetPlayer(player).RemoveWare(*ware);
 
     // Arbeiter Bescheid sagen, dass es neue Waren gibt
     if(worker)
@@ -321,16 +320,16 @@ bool nobUsual::FreePlaceAtFlag()
         return false;
 }
 
-void nobUsual::WareLost(Ware* ware)
+void nobUsual::WareLost(Ware& ware)
 {
     // Ware konnte nicht kommen --> raus damit
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
     for(unsigned char i = 0; i < workDesc.waresNeeded.size(); ++i)
     {
-        if(ware->type == workDesc.waresNeeded[i])
+        if(ware.type == workDesc.waresNeeded[i])
         {
-            RTTR_Assert(helpers::contains(ordered_wares[i], ware));
-            ordered_wares[i].remove(ware);
+            RTTR_Assert(helpers::contains(ordered_wares[i], &ware));
+            ordered_wares[i].remove(&ware);
             break;
         }
     }
@@ -438,7 +437,7 @@ void nobUsual::ConsumeWares()
     }
 }
 
-unsigned nobUsual::CalcDistributionPoints(noRoadNode* /*start*/, const GoodType type)
+unsigned nobUsual::CalcDistributionPoints(const GoodType type)
 {
     // No production -> nothing needed
     if(disable_production)

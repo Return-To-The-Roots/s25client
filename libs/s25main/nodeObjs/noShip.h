@@ -21,6 +21,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/ShipDirection.h"
 #include <list>
+#include <memory>
 #include <vector>
 
 #define SHIP_CAPACITY 40
@@ -75,7 +76,7 @@ class noShip : public noMovable
     std::vector<Direction> route_;
     /// Ladung des Schiffes
     std::list<noFigure*> figures;
-    std::list<Ware*> wares;
+    std::list<std::unique_ptr<Ware>> wares;
     /// Gibt an, ob das Schiff verlassen auf dem Meer auf einen Anlegeplatz wartet,
     /// um sein Zeug auszuladen
     bool lost;
@@ -185,7 +186,7 @@ public:
     bool IsLoading() const;
     bool IsUnloading() const;
     /// Gibt Liste der Waren an Bord zurück
-    const std::list<Ware*>& GetWares() const { return wares; }
+    const std::list<std::unique_ptr<Ware>>& GetWares() const { return wares; }
     /// Gibt Liste der Menschen an Bord zurück
     const std::list<noFigure*>& GetFigures() const { return figures; }
     /// Gibt Sichtradius dieses Schiffes zurück
@@ -220,7 +221,7 @@ public:
 
     /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
     void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures,
-                          const std::list<Ware*>& wares);
+                          std::list<std::unique_ptr<Ware>> wares);
 
     /// Belädt das Schiff mit Schiffs-Angreifern
     void PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures);

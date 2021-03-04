@@ -136,7 +136,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 // Evtl. Sounds löschen
                 if(was_sounding)
                 {
-                    gwg->GetSoundMgr().stopSounds(*this);
+                    world->GetSoundMgr().stopSounds(*this);
                     was_sounding = false;
                 }
             }
@@ -323,11 +323,11 @@ void nofShipWright::DrawWorking(DrawPoint drawPt)
             // Steh-Hammer-Sound
             if(graphics_id == 300)
             {
-                gwg->GetSoundMgr().playNOSound(78, *this, id, 160 - rand() % 60);
+                world->GetSoundMgr().playNOSound(78, *this, id, 160 - rand() % 60);
                 was_sounding = true;
             } else if(graphics_id == 303 || graphics_id == 307)
             {
-                gwg->GetSoundMgr().playNOSound(72, *this, id - id % 2, 160 - rand() % 60);
+                world->GetSoundMgr().playNOSound(72, *this, id - id % 2, 160 - rand() % 60);
                 was_sounding = true;
             }
         }

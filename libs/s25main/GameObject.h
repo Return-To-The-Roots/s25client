@@ -101,3 +101,10 @@ void destroyAndDelete(T*& obj)
     obj->Destroy();
     deletePtr(obj);
 }
+/// Same but for smart pointers
+template<typename T>
+void destroyAndDelete(T& obj)
+{
+    obj->Destroy();
+    obj.reset();
+}

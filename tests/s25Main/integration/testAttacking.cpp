@@ -693,10 +693,10 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // Add 2 coins for the bld
     for(unsigned i = 0; i < 2; i++)
     {
-        auto* coin = new Ware(GoodType::Coins, milBld1, flag);
+        auto coin = std::make_unique<Ware>(GoodType::Coins, milBld1, flag);
         coin->WaitAtFlag(flag);
         coin->RecalcRoute();
-        flag->AddWare(coin);
+        flag->AddWare(std::move(coin));
     }
     world.GetPlayer(1).IncreaseInventoryWare(GoodType::Coins, 2);
     carrierIn->ActAtFirst();
@@ -730,10 +730,10 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     world.AddFigure(flagPosE, carrierInE);
     rsE->setCarrier(0, carrierInE);
     // He also gets 1 coin
-    auto* coin = new Ware(GoodType::Coins, milBld1, flagE);
+    auto coin = std::make_unique<Ware>(GoodType::Coins, milBld1, flagE);
     coin->WaitAtFlag(flagE);
     coin->RecalcRoute();
-    flagE->AddWare(coin);
+    flagE->AddWare(std::move(coin));
     world.GetPlayer(1).IncreaseInventoryWare(GoodType::Coins, 1);
     carrierInE->ActAtFirst();
     // Picked up

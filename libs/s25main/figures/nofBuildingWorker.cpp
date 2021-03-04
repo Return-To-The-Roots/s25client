@@ -128,7 +128,7 @@ void nofBuildingWorker::Walked()
             {
                 // dann war draußen kein Platz --> ist jetzt evtl Platz?
                 state = State::WaitForWareSpace;
-                if(workplace->GetFlag()->GetNumWares() < 8)
+                if(workplace->GetFlag()->HasSpaceForWare())
                     FreePlaceAtFlag();
                 // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
                 workplace->StartNotWorking();
@@ -159,20 +159,20 @@ void nofBuildingWorker::WorkingReady()
     {
         noFlag* flag = workplace->GetFlag();
         // Ist noch Platz an der Fahne?
-        if(flag->GetNumWares() < 8)
+        if(flag->HasSpaceForWare())
         {
             // Ware erzeugen
-            auto* real_ware = new Ware(*ware, nullptr, flag);
+            auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
             real_ware->WaitAtFlag(flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
             world->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
             // Abnehmer für Ware finden
-            real_ware->SetGoal(world->GetPlayer(player).FindClientForWare(real_ware));
+            real_ware->SetGoal(world->GetPlayer(player).FindClientForWare(*real_ware));
             // Ware soll ihren weiteren Weg berechnen
             real_ware->RecalcRoute();
             // Ware ablegen
-            flag->AddWare(real_ware);
+            flag->AddWare(std::move(real_ware));
             // Warenstatistik erhöhen
             world->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
             // Tragen nun keine Ware mehr
@@ -273,7 +273,7 @@ void nofBuildingWorker::LostWork()
             Wander();
 
             // Evtl. Sounds löschen
-            gwg->GetSoundMgr().stopSounds(*this);
+            world->GetSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }
@@ -295,7 +295,7 @@ void nofBuildingWorker::LostWork()
             StartWandering();
 
             // Evtl. Sounds löschen
-            gwg->GetSoundMgr().stopSounds(*this);
+            world->GetSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }

@@ -267,7 +267,7 @@ void noBuildingSite::Abrogate()
     world->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
 }
 
-unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const GoodType goodtype)
+unsigned noBuildingSite::CalcDistributionPoints(const GoodType goodtype)
 {
     // Beim Planieren brauchen wir noch gar nichts
     if(state == BuildingSiteState::Planing)
@@ -309,43 +309,42 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
     return points;
 }
 
-void noBuildingSite::AddWare(Ware*& ware)
+void noBuildingSite::AddWare(std::unique_ptr<Ware> ware)
 {
     RTTR_Assert(state == BuildingSiteState::Building);
 
     if(ware->type == GoodType::Boards)
     {
-        RTTR_Assert(helpers::contains(ordered_boards, ware));
-        ordered_boards.remove(ware);
+        RTTR_Assert(helpers::contains(ordered_boards, ware.get()));
+        ordered_boards.remove(ware.get());
         ++boards;
     } else if(ware->type == GoodType::Stones)
     {
-        RTTR_Assert(helpers::contains(ordered_stones, ware));
-        ordered_stones.remove(ware);
+        RTTR_Assert(helpers::contains(ordered_stones, ware.get()));
+        ordered_stones.remove(ware.get());
         ++stones;
     } else
         throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
 
     // Inventur entsprechend verringern
     world->GetPlayer(player).DecreaseInventoryWare(ware->type, 1);
-    world->GetPlayer(player).RemoveWare(ware);
-    deletePtr(ware);
+    world->GetPlayer(player).RemoveWare(*ware);
 }
 
-void noBuildingSite::WareLost(Ware* ware)
+void noBuildingSite::WareLost(Ware& ware)
 {
     RTTR_Assert(state == BuildingSiteState::Building);
 
-    if(ware->type == GoodType::Boards)
+    if(ware.type == GoodType::Boards)
     {
-        RTTR_Assert(helpers::contains(ordered_boards, ware));
-        ordered_boards.remove(ware);
-    } else if(ware->type == GoodType::Stones)
+        RTTR_Assert(helpers::contains(ordered_boards, &ware));
+        ordered_boards.remove(&ware);
+    } else if(ware.type == GoodType::Stones)
     {
-        RTTR_Assert(helpers::contains(ordered_stones, ware));
-        ordered_stones.remove(ware);
+        RTTR_Assert(helpers::contains(ordered_stones, &ware));
+        ordered_stones.remove(&ware);
     } else
-        throw std::logic_error("Wrong ware type lost " + helpers::toString(ware->type));
+        throw std::logic_error("Wrong ware type lost " + helpers::toString(ware.type));
 
     OrderConstructionMaterial();
 }

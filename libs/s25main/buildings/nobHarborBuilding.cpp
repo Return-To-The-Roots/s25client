@@ -26,6 +26,7 @@
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
 #include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "network/GameClient.h"
 #include "nobMilitary.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -126,7 +127,6 @@ void nobHarborBuilding::DestroyBuilding()
     {
         wares_for_ship->WareLost(player);
         wares_for_ship->Destroy();
-        delete wares_for_ship;
     }
     wares_for_ships.clear();
 
@@ -488,7 +488,7 @@ void nobHarborBuilding::OrderExpeditionWares()
             ware = world->GetPlayer(player).OrderWare(GoodType::Boards, this);
             if(ware)
             {
-                RTTR_Assert(IsWareDependent(ware));
+                RTTR_Assert(IsWareDependent(*ware));
                 --todo_boards;
             }
         } while(ware && todo_boards);
@@ -504,7 +504,7 @@ void nobHarborBuilding::OrderExpeditionWares()
             ware = world->GetPlayer(player).OrderWare(GoodType::Stones, this);
             if(ware)
             {
-                RTTR_Assert(IsWareDependent(ware));
+                RTTR_Assert(IsWareDependent(*ware));
                 --todo_stones;
             }
         } while(ware && todo_stones);
@@ -516,11 +516,11 @@ void nobHarborBuilding::OrderExpeditionWares()
 }
 
 /// Eine bestellte Ware konnte doch nicht kommen
-void nobHarborBuilding::WareLost(Ware* ware)
+void nobHarborBuilding::WareLost(Ware& ware)
 {
     RTTR_Assert(!IsBeingDestroyedNow());
     // ggf. neue Waren für Expedition bestellen
-    if(expedition.active && (ware->type == GoodType::Boards || ware->type == GoodType::Stones))
+    if(expedition.active && (ware.type == GoodType::Boards || ware.type == GoodType::Stones))
         OrderExpeditionWares();
     nobBaseWarehouse::WareLost(ware);
 }
@@ -592,7 +592,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 break;
             }
         }
-        for(const auto* wareForShip : wares_for_ships)
+        for(const auto& wareForShip : wares_for_ships)
         {
             noBase* nb = world->GetNO(wareForShip->GetNextHarbor());
             if(nb->GetGOT() == GO_Type::NobHarborbuilding
@@ -627,28 +627,28 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
             }
 
             // Und noch die Waren auswählen
-            std::list<Ware*> wares;
+            std::list<std::unique_ptr<Ware>> wares;
             for(auto it = wares_for_ships.begin();
                 it != wares_for_ships.end() && figures.size() + wares.size() < SHIP_CAPACITY;)
             {
                 if((*it)->GetNextHarbor() == dest)
                 {
-                    wares.push_back(*it);
                     (*it)->StartShipJourney();
                     inventory.visual.Remove(ConvertShields((*it)->type));
+                    wares.push_back(std::move(*it));
                     it = wares_for_ships.erase(it);
                 } else
                     ++it;
             }
 
             // Und das Schiff starten lassen
-            ship->PrepareTransport(GetHarborPosID(), dest, figures, wares);
+            ship->PrepareTransport(GetHarborPosID(), dest, figures, std::move(wares));
         }
     }
 }
 
 /// Legt eine Ware im Lagerhaus ab
-void nobHarborBuilding::AddWare(Ware*& ware)
+void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
 {
     if(ware->GetGoal() && ware->GetGoal() != this)
     {
@@ -659,13 +659,13 @@ void nobHarborBuilding::AddWare(Ware*& ware)
         if(ware->GetNextDir() == RoadPathDirection::Ship)
         {
             // Dann fügen wir die mal bei uns hinzu
-            AddWareForShip(ware);
+            AddWareForShip(std::move(ware));
             return;
         } else if(ware->GetNextDir() != RoadPathDirection::None)
         {
             // Travel on roads -> Carry out
             RTTR_Assert(ware->GetGoal() != this);
-            AddWaitingWare(ware);
+            AddWaitingWare(std::move(ware));
             return;
         } else
         {
@@ -689,10 +689,9 @@ void nobHarborBuilding::AddWare(Ware*& ware)
 
             // Ware nicht mehr abhängig
             if(ware->GetGoal())
-                RemoveDependentWare(ware);
+                RemoveDependentWare(*ware);
             // Dann zweigen wir die einfach mal für die Expedition ab
-            world->GetPlayer(player).RemoveWare(ware);
-            deletePtr(ware);
+            world->GetPlayer(player).RemoveWare(*ware);
 
             // Ggf. ist jetzt alles benötigte da
             CheckExpeditionReady();
@@ -700,7 +699,7 @@ void nobHarborBuilding::AddWare(Ware*& ware)
         }
     }
 
-    nobBaseWarehouse::AddWare(ware);
+    nobBaseWarehouse::AddWare(std::move(ware));
 }
 
 /// Eine Figur geht ins Lagerhaus
@@ -882,12 +881,12 @@ void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
 }
 
 /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
-void nobHarborBuilding::AddWareForShip(Ware*& ware)
+void nobHarborBuilding::AddWareForShip(std::unique_ptr<Ware> ware)
 {
-    wares_for_ships.push_back(ware);
     // Anzahl visuell erhöhen
     inventory.visual.Add(ConvertShields(ware->type));
     ware->WaitForShip(this);
+    wares_for_ships.push_back(std::move(ware));
     OrderShip();
     // Take ownership
     ware = nullptr;
@@ -919,7 +918,7 @@ unsigned nobHarborBuilding::GetNumNeededShips() const
             }
         }
 
-        for(auto* wares_for_ship : wares_for_ships)
+        for(const auto& wares_for_ship : wares_for_ships)
         {
             if(!helpers::contains(destinations, wares_for_ship->GetNextHarbor()))
             {
@@ -993,7 +992,7 @@ void nobHarborBuilding::OrderShip()
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
 /// (muss in dem Fall true zurückgeben)
-bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
+bool nobHarborBuilding::UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal)
 {
     // If the ware is coming to us, there is nothing to do
     if(&goal == this)
@@ -1007,7 +1006,7 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
     if(ware->GetNextDir() == RoadPathDirection::Ship)
     {
         // Dann fügen wir die mal bei uns hinzu
-        AddWareForShip(ware);
+        AddWareForShip(std::move(ware));
         return true;
     } else
         return false;
@@ -1043,7 +1042,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
 }
 
 /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<Ware*>& wares)
+void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<std::unique_ptr<Ware>>& wares)
 {
     // Menschen zur Ausgehliste hinzufügen
     for(auto* figure : figures)
@@ -1089,7 +1088,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
     for(auto& ware : wares)
     {
         ware->ShipJorneyEnded(this);
-        AddWare(ware);
+        AddWare(std::move(ware));
     }
     wares.clear();
 }
@@ -1110,14 +1109,11 @@ nofAggressiveDefender* nobHarborBuilding::SendAggressiveDefender(nofAttacker* at
 }
 
 /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
-void nobHarborBuilding::CancelWareForShip(Ware* ware)
+std::unique_ptr<Ware> nobHarborBuilding::CancelWareForShip(Ware* ware)
 {
-    // Ware aus der Liste entfernen
-    RTTR_Assert(helpers::contains(wares_for_ships, ware));
-    wares_for_ships.remove(ware);
     // Ware zur Inventur hinzufügen
-    // Anzahl davon wieder hochsetzen
     inventory.real.Add(ConvertShields(ware->type));
+    return helpers::extractPtr(wares_for_ships, ware);
 }
 
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
@@ -1312,12 +1308,10 @@ void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
     if(world->GetGOT(pos) != GO_Type::NobHarborbuilding)
         return;
 
-    RTTR_Assert(helpers::contains(wares_for_ships, ware));
-    // Ware aus unserer Liste streichen
-    wares_for_ships.remove(ware);
-    // Carry out. If it would want to go back to this building, then this will be handled by the carrier
-    waiting_wares.push_back(ware);
+    // Move to waiting_wares
+    waiting_wares.push_back(helpers::extractPtr(wares_for_ships, ware));
     ware->WaitInWarehouse(this);
+    // Carry out. If it would want to go back to this building, then this will be handled by the carrier
     AddLeavingEvent();
 }
 

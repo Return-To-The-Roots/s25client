@@ -80,8 +80,6 @@ noShip::~noShip()
     // Delete everything on board
     for(noFigure* figure : figures)
         deletePtr(figure);
-    for(Ware* ware : wares)
-        deletePtr(ware);
 }
 
 void noShip::Serialize(SerializedGameData& sgd) const
@@ -121,8 +119,7 @@ void noShip::Destroy()
 {
     for(const noFigure* figure : figures)
         RTTR_Assert(!figure);
-    for(const Ware* ware : wares)
-        RTTR_Assert(!ware);
+    RTTR_Assert(wares.empty());
     world->GetNotifications().publish(ShipNote(ShipNote::Destroyed, ownerId_, pos));
     // Schiff wieder abmelden
     world->GetPlayer(ownerId_).RemoveShip(this);
@@ -883,7 +880,7 @@ bool noShip::IsGoingToHarbor(const nobHarborBuilding& hb) const
 
 /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
 void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures,
-                              const std::list<Ware*>& wares)
+                              std::list<std::unique_ptr<Ware>> wares)
 {
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == world->GetCoastalPoint(homeHarborId, seaId_));
@@ -894,7 +891,7 @@ void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::l
     this->goal_harborId = static_cast<nobHarborBuilding*>(nb)->GetHarborPosID();
 
     this->figures = figures;
-    this->wares = wares;
+    this->wares = std::move(wares);
 
     state = State::TransportLoading;
     current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);

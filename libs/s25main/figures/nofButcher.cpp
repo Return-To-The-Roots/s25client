@@ -41,7 +41,7 @@ void nofButcher::DrawWorking(DrawPoint drawPt)
 
     if(now_id % 6 == 5)
     {
-        gwg->GetSoundMgr().playNOSound(66, *this, now_id / 6);
+        world->GetSoundMgr().playNOSound(66, *this, now_id / 6);
         was_sounding = true;
     }
 

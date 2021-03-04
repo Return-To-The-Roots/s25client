@@ -89,7 +89,7 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
         {
-            gwg->GetSoundMgr().playNOSound(68, *this, now_id);
+            world->GetSoundMgr().playNOSound(68, *this, now_id);
             was_sounding = true;
         }
     }
@@ -105,7 +105,7 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
         {
-            gwg->GetSoundMgr().playNOSound(68, *this, now_id);
+            world->GetSoundMgr().playNOSound(68, *this, now_id);
             was_sounding = true;
         }
     }

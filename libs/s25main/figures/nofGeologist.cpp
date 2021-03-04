@@ -187,7 +187,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             }
 
             if(sound)
-                gwg->GetSoundMgr().playNOSound((sound == 1) ? 81 : 56, *this, sound_id);
+                world->GetSoundMgr().playNOSound((sound == 1) ? 81 : 56, *this, sound_id);
         }
         break;
         case State::GeologistCheer:
@@ -206,7 +206,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             }
 
             if(i == 4)
-                gwg->GetSoundMgr().playNOSound(107, *this, 12); // yippy
+                world->GetSoundMgr().playNOSound(107, *this, 12); // yippy
         }
         break;
     }
@@ -307,7 +307,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
             /// Punkt wieder freigeben
             world->SetReserved(pos, false);
             /// Sounds evtl löschen
-            gwg->GetSoundMgr().stopSounds(*this);
+            world->GetSoundMgr().stopSounds(*this);
             // Und weiterlaufen
             GoToNextNode();
         }

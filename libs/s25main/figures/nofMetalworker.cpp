@@ -90,17 +90,17 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
     {
-        gwg->GetSoundMgr().playNOSound(72, *this, now_id, 100);
+        world->GetSoundMgr().playNOSound(72, *this, now_id, 100);
         was_sounding = true;
     }
     // Säge-Sound 1
     else if(now_id % 23 == 9)
     {
-        gwg->GetSoundMgr().playNOSound(54, *this, now_id);
+        world->GetSoundMgr().playNOSound(54, *this, now_id);
         was_sounding = true;
     } else if(now_id % 23 == 17)
     {
-        gwg->GetSoundMgr().playNOSound(55, *this, now_id);
+        world->GetSoundMgr().playNOSound(55, *this, now_id);
         was_sounding = true;
     }
 

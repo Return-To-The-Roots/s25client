@@ -44,7 +44,7 @@ void nofBrewer::DrawWorking(DrawPoint drawPt)
 
     if(now_id == 5)
     {
-        gwg->GetSoundMgr().playNOSound(51, *this, 0);
+        world->GetSoundMgr().playNOSound(51, *this, 0);
         was_sounding = true;
     }
     last_id = now_id;

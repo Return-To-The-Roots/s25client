@@ -42,7 +42,7 @@ void nofCarpenter::DrawWorking(DrawPoint drawPt)
     // Evtl Sound abspielen
     if(now_id % 8 == 3 || now_id % 8 == 7)
     {
-        gwg->GetSoundMgr().playNOSound(54 + ((now_id) % 8) / 4, *this, now_id / 4);
+        world->GetSoundMgr().playNOSound(54 + ((now_id) % 8) / 4, *this, now_id / 4);
         was_sounding = true;
     }
 

@@ -257,13 +257,13 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     // Do this after running GFs to keep the state
     // Add ware to flag
-    auto* ware = new Ware(GoodType::Flour, usualBld, hqFlag);
+    auto ware = std::make_unique<Ware>(GoodType::Flour, usualBld, hqFlag);
     ware->WaitAtFlag(hqFlag);
     ware->RecalcRoute();
-    hqFlag->AddWare(ware);
+    hqFlag->AddWare(std::move(ware));
     // Add a ware waiting in a warehouse. See https://github.com/Return-To-The-Roots/s25client/issues/1293
-    ware = new Ware(GoodType::Flour, usualBld, hq);
-    hq->AddWaitingWare(ware);
+    ware = std::make_unique<Ware>(GoodType::Flour, usualBld, hq);
+    hq->AddWaitingWare(std::move(ware));
 
     Savegame save;
 
