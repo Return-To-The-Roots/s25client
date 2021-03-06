@@ -137,6 +137,8 @@ public:
     using World::GetNodeInt;
 
 protected:
+    // LCOV_EXCL_START
     void AltitudeChanged(MapPoint) override {}
     void VisibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
+    // LCOV_EXCL_STOP
 };

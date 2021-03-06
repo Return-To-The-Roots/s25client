@@ -20,6 +20,7 @@
 #include "network/GameClient.h"
 #include "pathfinding/OpenListBinaryHeap.h"
 #include "rttr/test/random.hpp"
+#include "s25util/warningSuppression.h"
 #include <benchmark/benchmark.h>
 #include <test/testConfig.h>
 
@@ -74,7 +75,10 @@ static void BM_PopElements(benchmark::State& state)
         benchmark::DoNotOptimize(list);
         state.ResumeTiming();
         for(auto& node : nodes)
+        {
             list.pop();
+            RTTR_UNUSED(node);
+        }
         benchmark::DoNotOptimize(list);
     }
     state.SetItemsProcessed(state.iterations() * state.range(0));
