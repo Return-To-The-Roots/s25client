@@ -50,7 +50,7 @@ static void BM_World(benchmark::State& state)
     if(!loader.Load(rttr::test::rttrBaseDir / "data/RTTR/MAPS/NEW/AM_FANGDERZEIT.SWD"))
         state.SkipWithError("Map failed to load");
 
-    const auto& curValues = routes[state.range()];
+    const auto& curValues = routes[static_cast<size_t>(state.range())];
     state.SetLabel(std::get<0>(curValues));
     const MapPoint start = std::get<1>(curValues);
     const MapPoint goal = std::get<2>(curValues);

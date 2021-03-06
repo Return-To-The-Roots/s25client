@@ -27,7 +27,7 @@ namespace {
 struct ListEl : BinaryHeapPosMarker
 {
     unsigned key;
-    ListEl(unsigned key) : key(key) {}
+    ListEl(unsigned key) : BinaryHeapPosMarker(), key(key) {}
 };
 
 struct ListGetKey
@@ -155,9 +155,9 @@ BOOST_AUTO_TEST_CASE(RearrangeMakesTheHeapValidAgain)
     // Random vector with some duplicate elements
     auto elements = getRandomVector(rttr::test::randomValue(30u, 70u), 20);
     std::multiset<unsigned> keys;
-    for(unsigned i = 0; i < elements.size(); ++i)
+    for(auto& el : elements)
     {
-        list.push(&elements[i]);
+        list.push(&el);
         // Just to be sure, actually already tested
         BOOST_TEST_REQUIRE(list.isHeap());
         BOOST_TEST_REQUIRE(list.arePositionsValid());
