@@ -93,15 +93,16 @@ void iwMilitaryBuilding::Draw_()
     }
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>> soldiers(building->GetTroops().begin(),
-                                                                              building->GetTroops().end());
-    for(const noFigure* fig : building->GetLeavingFigures())
+    boost::container::flat_set<const nofSoldier*, ComparatorSoldiersByRank> soldiers;
+    for(const auto& soldier : building->GetTroops())
+        soldiers.insert(&soldier);
+    for(const noFigure& fig : building->GetLeavingFigures())
     {
-        const GO_Type figType = fig->GetGOT();
+        const GO_Type figType = fig.GetGOT();
         if(figType == GO_Type::NofAttacker || figType == GO_Type::NofAggressivedefender
            || figType == GO_Type::NofDefender || figType == GO_Type::NofPassivesoldier)
         {
-            soldiers.insert(static_cast<const nofSoldier*>(fig));
+            soldiers.insert(static_cast<const nofSoldier*>(&fig));
         }
     }
 

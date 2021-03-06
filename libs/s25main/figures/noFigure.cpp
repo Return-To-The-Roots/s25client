@@ -81,7 +81,7 @@ void noFigure::Destroy()
     RTTR_Assert(!cur_rs);
     noMovable::Destroy();
 
-    RTTR_Assert(!world->GetPlayer(player).IsDependentFigure(this));
+    RTTR_Assert(!world->GetPlayer(player).IsDependentFigure(*this));
 }
 
 void noFigure::Serialize(SerializedGameData& sgd) const
@@ -163,13 +163,11 @@ void noFigure::ActAtFirst()
             // rausgehen!
             if(goal_->GetPos() == pos)
             {
-                world->RemoveFigure(pos, this);
-                RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
-                auto* wh = static_cast<nobBaseWarehouse*>(goal_);
+                auto* wh = checkedCast<nobBaseWarehouse*>(goal_);
                 goal_ = nullptr;
                 cur_rs = nullptr;
-                wh->AddFigure(this);
+                wh->AddFigure(world->RemoveFigure(pos, *this));
             } else
                 // ansonsten ganz normal rausgehen
                 WalkToGoal();
@@ -316,8 +314,7 @@ void noFigure::WalkToGoal()
             if(fs == FigureState::GoHome)
             {
                 // Mann im Lagerhaus angekommen
-                world->RemoveFigure(pos, this);
-                static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
+                static_cast<nobBaseWarehouse*>(goal)->AddFigure(world->RemoveFigure(pos, *this));
             } else
             {
                 // abgeleiteter Klasse sagen, dass das Ziel erreicht wurde
@@ -368,8 +365,7 @@ void noFigure::WalkToGoal()
                 {
                     // Uns in den Hafen einquartieren
                     cur_rs = nullptr; // wir laufen nicht mehr auf einer Straße
-                    world->RemoveFigure(pos, this);
-                    static_cast<nobHarborBuilding*>(hb)->AddFigureForShip(this, next_harbor);
+                    static_cast<nobHarborBuilding*>(hb)->AddFigureForShip(world->RemoveFigure(pos, *this), next_harbor);
                 }
             } else
             {
@@ -423,7 +419,7 @@ void noFigure::HandleEvent(const unsigned id)
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
-            if(!helpers::contains(world->GetFigures(old_pos), this))
+            if(!world->HasFigureAt(old_pos, *this))
                 CalcVisibilities(old_pos);
         }
     }
@@ -460,7 +456,7 @@ void noFigure::GoHome(noRoadNode* goal)
     {
         fs = FigureState::GoHome;
         // Lagerhaus Bescheid sagen
-        static_cast<nobBaseWarehouse*>(this->goal_)->AddDependentFigure(this);
+        static_cast<nobBaseWarehouse*>(this->goal_)->AddDependentFigure(*this);
 
         // Wenn wir stehen, zusätzlich noch loslaufen!
         if(waiting_for_free_node)
@@ -468,7 +464,7 @@ void noFigure::GoHome(noRoadNode* goal)
             waiting_for_free_node = false;
             WalkToGoal();
             // anderen Leuten noch ggf Bescheid sagen
-            world->RoadNodeAvailable(this->pos);
+            world->RoadNodeAvailable(pos);
         }
     } else
     {
@@ -666,7 +662,7 @@ void noFigure::WanderToFlag()
             cur_rs = nullptr;
             rs_pos = 0;
             fs = FigureState::GoHome;
-            wh->AddDependentFigure(this);
+            wh->AddDependentFigure(*this);
             WalkToGoal();
             return;
         } else
@@ -823,8 +819,7 @@ void noFigure::DrawWalking(DrawPoint drawPt)
 void noFigure::Die()
 {
     // Weg mit mir
-    world->RemoveFigure(pos, this);
-    GetEvMgr().AddToKillList(this);
+    GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
     // ggf. Leiche hinlegen, falls da nix ist
     if(!world->GetSpecObj<noBase>(pos))
         world->SetNO(pos, new noSkeleton(pos));
@@ -849,8 +844,7 @@ void noFigure::RemoveFromInventory()
 void noFigure::DieFailedTrade()
 {
     // Weg mit mir
-    world->RemoveFigure(pos, this);
-    GetEvMgr().AddToKillList(this);
+    GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
     // ggf. Leiche hinlegen, falls da nix ist
     if(!world->GetSpecObj<noBase>(pos))
         world->SetNO(pos, new noSkeleton(pos));
@@ -888,8 +882,7 @@ void noFigure::Abrogate()
         // goal might by nullptr if goal was a harbor that got destroyed during sea travel
         if(goal_)
         {
-            RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
-            static_cast<nobBaseWarehouse*>(goal_)->RemoveDependentFigure(this);
+            checkedCast<nobBaseWarehouse*>(goal_)->RemoveDependentFigure(*this);
             goal_ = nullptr;
         } else
         {
@@ -938,7 +931,7 @@ void noFigure::CalcVisibilities(const MapPoint pt)
 void noFigure::StartShipJourney()
 {
     // We should not be in the world, as we start the journey from a harbor -> We are in that harbor
-    RTTR_Assert(!helpers::contains(world->GetFigures(pos), this));
+    RTTR_Assert(!world->HasFigureAt(pos, *this));
     RTTR_Assert(!on_ship);
 
     pos = MapPoint::Invalid();

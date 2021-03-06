@@ -18,6 +18,7 @@
 #pragma once
 
 #include "enum_cast.hpp"
+#include "helpers/PtrSpan.h"
 #include "world/MapBase.h"
 #include "world/MilitarySquares.h"
 #include "gameTypes/Direction.h"
@@ -74,6 +75,9 @@ class World : public MapBase
 
     std::unique_ptr<noBase> noNodeObj;
     void Resize(const MapExtent& newSize) override final;
+    noBase& AddFigureImpl(MapPoint pt, std::unique_ptr<noBase> fig);
+    /// Implementation of RemoveFigure. Returned pointer must be wrapped in an owning pointer
+    noBase* RemoveFigureImpl(MapPoint pt, noBase& fig);
 
 protected:
     /// harbor building sites created by ships
@@ -103,8 +107,19 @@ public:
     /// Return the neighboring node
     const MapNode& GetNeighbourNode(MapPoint pt, Direction dir) const;
 
-    void AddFigure(MapPoint pt, noBase* fig);
-    void RemoveFigure(MapPoint pt, noBase* fig);
+    // Add a figure to a node (taking ownership) and returns a reference to it
+    template<typename T>
+    T& AddFigure(MapPoint pt, std::unique_ptr<T> fig)
+    {
+        return static_cast<T&>(AddFigureImpl(pt, std::move(fig)));
+    }
+    template<typename T>
+    std::unique_ptr<T> RemoveFigure(MapPoint pt, T& fig)
+    {
+        return std::unique_ptr<T>(static_cast<T*>(RemoveFigureImpl(pt, fig)));
+    }
+    template<typename T>
+    std::unique_ptr<T> RemoveFigure(MapPoint pt, T*& fig) = delete;
     /// Return the NO from that point or a "nothing"-object if there is none
     noBase* GetNO(MapPoint pt);
     /// Return the NO from that point or a "nothing"-object if there is none
@@ -140,7 +155,8 @@ public:
     BuildingQuality AdjustBQ(MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 
     /// Return the figures currently on the node
-    const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
+    auto GetFigures(const MapPoint pt) const { return helpers::nonNullPtrSpan(GetNode(pt).figures); }
+    bool HasFigureAt(MapPoint pt, const noBase& figure) const;
 
     /// Return a specific object or nullptr
     template<typename T>

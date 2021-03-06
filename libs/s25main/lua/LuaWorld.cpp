@@ -90,7 +90,5 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
 void LuaWorld::AddAnimal(int x, int y, lua::SafeEnum<Species> species)
 {
     MapPoint pos = gw.MakeMapPoint(Position(x, y));
-    auto* animal = new noAnimal(species, pos);
-    gw.AddFigure(pos, animal);
-    animal->StartLiving();
+    gw.AddFigure(pos, std::make_unique<noAnimal>(species, pos)).StartLiving();
 }

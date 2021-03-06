@@ -74,8 +74,7 @@ void nofTradeDonkey::GoalReached()
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
-    world->RemoveFigure(pos, this);
-    wh->AddFigure(this);
+    wh->AddFigure(world->RemoveFigure(pos, *this));
 }
 
 void nofTradeDonkey::Walked()

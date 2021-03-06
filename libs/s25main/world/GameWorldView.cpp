@@ -117,10 +117,10 @@ float GameWorldView::GetCurrentTargetZoomFactor() const
 
 struct ObjectBetweenLines
 {
-    noBase* obj;
+    noBase& obj;
     DrawPoint pos; // Zeichenposition
 
-    ObjectBetweenLines(noBase* obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
+    ObjectBetweenLines(noBase& obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
 };
 
 void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water)
@@ -200,7 +200,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
         // Figuren zwischen den Zeilen zeichnen
         for(auto& between_line : between_lines)
-            between_line.obj->Draw(between_line.pos);
+            between_line.obj.Draw(between_line.pos);
     }
 
     if(show_names || show_productivity)
@@ -435,22 +435,21 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
 void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
                                 std::vector<ObjectBetweenLines>& between_lines) const
 {
-    const std::list<noBase*>& figures = GetWorld().GetFigures(pt);
-    for(noBase* figure : figures)
+    for(noBase& figure : GetWorld().GetFigures(pt))
     {
-        if(figure->IsMoving())
+        if(figure.IsMoving())
         {
             // Drawn from above
-            Direction curMoveDir = static_cast<noMovable*>(figure)->GetCurMoveDir();
+            Direction curMoveDir = static_cast<noMovable&>(figure).GetCurMoveDir();
             if(curMoveDir == Direction::NorthEast || curMoveDir == Direction::NorthWest)
                 continue;
             // Draw later
             between_lines.push_back(ObjectBetweenLines(figure, curPos));
-        } else if(figure->GetGOT() == GO_Type::Ship)
+        } else if(figure.GetGOT() == GO_Type::Ship)
             between_lines.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
         else
             // Ansonsten jetzt schon zeichnen
-            figure->Draw(curPos);
+            figure.Draw(curPos);
     }
 }
 
@@ -467,10 +466,9 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
         MapPoint curPt = terrainRenderer.ConvertCoords(GetNeighbour(curPos, dir + 3u), &curOffset);
         Position figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
-        const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
-        for(noBase* figure : figures)
+        for(noBase& figure : GetWorld().GetFigures(curPt))
         {
-            if(figure->IsMoving() && static_cast<noMovable*>(figure)->GetCurMoveDir() == dir)
+            if(figure.IsMoving() && static_cast<noMovable&>(figure).GetCurMoveDir() == dir)
                 between_lines.push_back(ObjectBetweenLines(figure, figPos));
         }
     }

@@ -18,6 +18,7 @@
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
@@ -262,11 +263,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         {
             milBlds[j] = world.GetSpecObj<nobBaseMilitary>(milBldPos[j]);
             MapPoint flagPt = milBlds[j]->GetFlagPos();
-            auto* sld =
-              new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
-                                    static_cast<nobBaseMilitary*>(milBlds[j]), 0);
-            world.AddFigure(flagPt, sld);
-            sld->ActAtFirst();
+            auto sld = std::make_unique<nofPassiveSoldier>(flagPt, milBlds[j]->GetPlayer(), milBlds[j],
+                                                           static_cast<nobMilitary*>(milBlds[j]), 0);
+            world.AddFigure(flagPt, std::move(sld)).ActAtFirst();
         }
         milBlds[3] = world.GetSpecObj<nobBaseMilitary>(world.GetPlayer(0).GetHQPos());
         milBlds[4] = world.GetSpecObj<nobBaseMilitary>(world.GetPlayer(1).GetHQPos());
@@ -314,9 +313,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
             world.DestroyNO(pt);
             world.DestroyNO(pt); // Destroy fire
             // Pause figure
-            for(noBase* sld : world.GetFigures(pt))
+            for(const noBase& sld : world.GetFigures(pt))
             {
-                std::vector<const GameEvent*> evts = em.GetObjEvents(*sld);
+                std::vector<const GameEvent*> evts = em.GetObjEvents(sld);
                 for(const GameEvent* ev : evts)
                     em.RescheduleEvent(ev, em.GetCurrentGF() + 10000);
             }

@@ -21,6 +21,7 @@
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "gameData/MilitaryConsts.h"
@@ -34,7 +35,7 @@ nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(sol
 }
 
 nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
-                                     nobBaseMilitary* const home, const unsigned char rank)
+                                     nobMilitary* const home, const unsigned char rank)
     : nofSoldier(pos, player, goal, home, rank), healing_event(nullptr)
 {}
 
@@ -109,20 +110,7 @@ void nofPassiveSoldier::Heal()
 
 void nofPassiveSoldier::GoalReached()
 {
-    world->RemoveFigure(pos, this);
-    static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
-}
-
-void nofPassiveSoldier::InBuildingDestroyed()
-{
-    building = nullptr;
-
-    // Auf die Karte setzen
-    world->AddFigure(pos, this);
-    // Erstmal in zufällige Richtung rammeln
-    StartWandering();
-
-    StartWalking(RANDOM_ENUM(Direction));
+    static_cast<nobMilitary*>(building)->AddPassiveSoldier(world->RemoveFigure(pos, *this));
 }
 
 void nofPassiveSoldier::LeaveBuilding()
@@ -138,10 +126,8 @@ void nofPassiveSoldier::LeaveBuilding()
 
 void nofPassiveSoldier::Upgrade()
 {
-    RTTR_Assert(!building
-                || !helpers::contains(
-                  static_cast<nobMilitary*>(building)->GetTroops(),
-                  this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
+    // We must not be in the buildings list while upgrading. This would destroy the ordered list
+    RTTR_Assert(!building || !static_cast<nobMilitary*>(building)->IsInTroops(*this));
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 
@@ -163,4 +149,9 @@ void nofPassiveSoldier::NotNeeded()
 {
     building = nullptr;
     GoHome();
+}
+
+nobMilitary* nofPassiveSoldier::getHome() const
+{
+    return checkedCast<nobMilitary*>(building);
 }

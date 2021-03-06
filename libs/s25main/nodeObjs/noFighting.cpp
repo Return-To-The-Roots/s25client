@@ -32,36 +32,29 @@
 #include "world/GameWorld.h"
 #include "gameData/MilitaryConsts.h"
 
-noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NodalObjectType::Fighting)
+noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) : noBase(NodalObjectType::Fighting)
 {
-    RTTR_Assert(soldier1->GetPlayer() != soldier2->GetPlayer());
+    RTTR_Assert(soldier1.GetPlayer() != soldier2.GetPlayer());
+    const MapPoint pos = soldier1.GetPos();
 
-    soldiers[0] = soldier1;
-    soldiers[1] = soldier2;
+    soldiers[0] = world->RemoveFigure(pos, soldier1);
+    soldiers[1] = world->RemoveFigure(pos, soldier2);
     turn = 2;
     defending_animation = 0;
     player_won = 0xFF;
-
-    // Die beiden Soldaten erstmal aus der Liste hauen
-    world->RemoveFigure(soldier1->GetPos(), soldier1);
-    world->RemoveFigure(soldier1->GetPos(), soldier2);
 
     // Beginn-Event Anmelden (Soldaten gehen auf ihre Seiten)
     current_ev = GetEvMgr().AddEvent(this, 15);
 
     // anderen Leute, die auf diesem Punkt zulaufen, stoppen
-    world->StopOnRoads(soldier1->GetPos());
+    world->StopOnRoads(pos);
 
     // Sichtradius behalten
-    world->MakeVisibleAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier1->GetPlayer());
-    world->MakeVisibleAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier2->GetPlayer());
+    world->MakeVisibleAroundPoint(pos, VISUALRANGE_SOLDIER, soldier1.GetPlayer());
+    world->MakeVisibleAroundPoint(pos, VISUALRANGE_SOLDIER, soldier2.GetPlayer());
 }
 
-noFighting::~noFighting()
-{
-    deletePtr(soldiers[0]);
-    deletePtr(soldiers[1]);
-}
+noFighting::~noFighting() = default;
 
 void noFighting::Serialize(SerializedGameData& sgd) const
 {
@@ -72,7 +65,7 @@ void noFighting::Serialize(SerializedGameData& sgd) const
     sgd.PushEvent(current_ev);
     sgd.PushUnsignedChar(player_won);
 
-    for(auto* soldier : soldiers)
+    for(const auto& soldier : soldiers)
         sgd.PushObject(soldier);
 }
 
@@ -82,7 +75,7 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
 
 {
     for(auto& soldier : soldiers)
-        soldier = sgd.PopObject<nofActiveSoldier>();
+        soldier.reset(sgd.PopObject<nofActiveSoldier>());
 }
 
 void noFighting::Destroy()
@@ -232,15 +225,20 @@ void noFighting::HandleEvent(const unsigned id)
                         // Soldat Bescheid sagen, dass er stirbt
                         soldiers[1 - turn]->LostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
-                        world->AddFigure(soldiers[turn]->GetPos(), soldiers[turn]);
-                        soldiers[turn]->WonFighting();
-                        soldiers[turn] = nullptr;
+                        const MapPoint pos = soldiers[turn]->GetPos();
+                        // TODO(Replay): Remove this hack and set the turn before the WonFighting so the winning soldier
+                        // can fight here again
+                        auto& winningSoldier =
+                          world->AddFigure(pos, std::unique_ptr<nofActiveSoldier>(soldiers[turn].get()));
+                        winningSoldier.WonFighting();
+                        // TODO(Replay): 2nd part of replay compat hack
+                        RTTR_UNUSED(soldiers[turn].release());
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
                         turn = 3 + (1 - turn);
                         // Event zum Sterben des einen Soldaten anmelden
                         current_ev = GetEvMgr().AddEvent(this, 30);
                         // Umstehenden Figuren Bescheid Bescheid sagen
-                        world->RoadNodeAvailable(soldiers[turn - 3]->GetPos());
+                        world->RoadNodeAvailable(pos);
 
                         // In die Statistik eintragen
                         world->GetPlayer(player_won).ChangeStatisticValue(StatisticType::Vanquished, 1);
@@ -262,8 +260,7 @@ void noFighting::HandleEvent(const unsigned id)
                 world->GetSoundMgr().stopSounds(*this);
 
                 // Kampf ist endgültig beendet
-                GetEvMgr().AddToKillList(this);
-                world->RemoveFigure(pt, this);
+                GetEvMgr().AddToKillList(world->RemoveFigure(pt, *this));
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
                 NodalObjectType noType = world->GetNO(pt)->GetType();
@@ -283,7 +280,7 @@ void noFighting::HandleEvent(const unsigned id)
                 world->GetPlayer(soldiers[player_lost]->GetPlayer())
                   .DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);
                 soldiers[player_lost]->Destroy();
-                deletePtr(soldiers[player_lost]);
+                soldiers[player_lost].reset();
             }
             break;
         }
@@ -330,7 +327,7 @@ bool noFighting::IsActive() const
 
 bool noFighting::IsSoldierOfPlayer(const unsigned char player) const
 {
-    for(const nofSoldier* soldier : soldiers)
+    for(const std::unique_ptr<nofActiveSoldier>& soldier : soldiers)
     {
         if(soldier && soldier->GetPlayer() == player)
             return true;

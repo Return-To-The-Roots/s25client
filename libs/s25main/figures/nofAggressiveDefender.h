@@ -52,9 +52,9 @@ protected:
     [[noreturn]] void HandleDerivedEvent(unsigned) override { throw std::logic_error("No events expected"); }
 
 public:
-    nofAggressiveDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank,
-                          nofAttacker* attacker);
-    nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* attacker);
+    nofAggressiveDefender(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank,
+                          nofAttacker& attacker);
+    nofAggressiveDefender(const nofPassiveSoldier& other, nofAttacker& attacker);
     nofAggressiveDefender(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofAggressiveDefender() override;

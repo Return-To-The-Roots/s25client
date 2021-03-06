@@ -22,6 +22,7 @@
 #include "GameObject.h"
 #include "random/Random.h"
 #include "s25util/Serializer.h"
+#include <ostream>
 
 AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0), eventCt(0), evInstanceCt(0) {}
 
@@ -59,4 +60,10 @@ AsyncChecksum AsyncChecksum::create(const Game& game)
 {
     return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(),
                          game.em_->GetNumActiveEvents(), game.em_->GetEventInstanceCtr());
+}
+
+std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)
+{
+    return os << "RandCS = " << checksum.randChecksum << ",\tobjects/ID = " << checksum.objCt << "/" << checksum.objIdCt
+              << ",\tevents/ID = " << checksum.eventCt << "/" << checksum.evInstanceCt;
 }

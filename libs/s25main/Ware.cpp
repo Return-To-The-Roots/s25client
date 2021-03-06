@@ -169,7 +169,7 @@ void Ware::GoalDestroyed()
         world->GetPlayer(location->GetPlayer()).RemoveWare(*this);
         goal = nullptr;
         location = nullptr;
-        GetEvMgr().AddToKillList(ownedWare.release());
+        GetEvMgr().AddToKillList(std::move(ownedWare));
     } else
     {
         // Ware ist unterwegs, Lagerhaus finden und Ware dort einliefern

@@ -72,12 +72,11 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
       state(BuildingSiteState::Building), planer(nullptr), boards(BUILDING_COSTS[BuildingType::HarborBuilding].boards),
       stones(BUILDING_COSTS[BuildingType::HarborBuilding].stones), used_boards(0), used_stones(0), build_progress(0)
 {
-    builder = new nofBuilder(pos, player, this);
     GamePlayer& owner = world->GetPlayer(player);
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     owner.AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
-    world->AddFigure(pos, builder);
+    builder = &world->AddFigure(pos, std::make_unique<nofBuilder>(pos, player, this));
 
     // Baumaterialien in der Inventur verbuchen
     owner.DecreaseInventoryWare(GoodType::Boards, boards);
@@ -245,17 +244,17 @@ std::unique_ptr<FOWObject> noBuildingSite::CreateFOWObject() const
     return std::make_unique<fowBuildingSite>(state == BuildingSiteState::Planing, bldType_, nation, build_progress);
 }
 
-void noBuildingSite::GotWorker(Job /*job*/, noFigure* worker)
+void noBuildingSite::GotWorker(Job /*job*/, noFigure& worker)
 {
     // Aha, wir haben nen Planierer/Bauarbeiter bekommen
     if(state == BuildingSiteState::Planing)
     {
-        RTTR_Assert(worker->GetGOT() == GO_Type::NofPlaner);
-        planer = static_cast<nofPlaner*>(worker);
+        RTTR_Assert(worker.GetGOT() == GO_Type::NofPlaner);
+        planer = static_cast<nofPlaner*>(&worker);
     } else
     {
-        RTTR_Assert(worker->GetGOT() == GO_Type::NofBuilder);
-        builder = static_cast<nofBuilder*>(worker);
+        RTTR_Assert(worker.GetGOT() == GO_Type::NofBuilder);
+        builder = static_cast<nofBuilder*>(&worker);
     }
 }
 

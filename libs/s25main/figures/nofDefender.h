@@ -40,8 +40,8 @@ protected:
     void HandleDerivedEvent [[noreturn]] (unsigned) override { throw std::logic_error("No events expected"); }
 
 public:
-    nofDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, nofAttacker* attacker);
-    nofDefender(nofPassiveSoldier* other, nofAttacker* attacker);
+    nofDefender(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank, nofAttacker& attacker);
+    nofDefender(const nofPassiveSoldier& other, nofAttacker& attacker);
     nofDefender(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override
@@ -55,7 +55,7 @@ public:
 
     /// Der Verteidiger geht gerade rein und es kommt ein neuer Angreifer an die Flagge, hiermit wird der Ver-
     /// teidiger darüber informiert, damit er dann gleich wieder umdrehen kann
-    void NewAttacker(nofAttacker* attacker) { this->attacker = attacker; }
+    void NewAttacker(nofAttacker& attacker) { this->attacker = &attacker; }
     /// Der Angreifer konnte nicht mehr an die Flagge kommen
     void AttackerArrested();
 

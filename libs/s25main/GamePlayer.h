@@ -241,11 +241,11 @@ public:
     void FlagDestroyed(noFlag* flag);
 
     /// Registriert ein Schiff beim Einwohnermeldeamt
-    void RegisterShip(noShip* ship);
+    void RegisterShip(noShip& ship);
     /// Meldet das Schiff wieder ab
     void RemoveShip(noShip* ship);
     /// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
-    void GetJobForShip(noShip* ship);
+    void GetJobForShip(noShip& ship);
     /// Schiff für Hafen bestellen. Wenn ein Schiff kommt, true.
     bool OrderShip(nobHarborBuilding& hb);
     /// Gibt die ID eines Schiffes zurück
@@ -341,7 +341,7 @@ public:
     /// Testet ob der Spieler noch mehr Katapulte bauen darf
     bool CanBuildCatapult() const;
     /// For debug only
-    bool IsDependentFigure(noFigure* fig);
+    bool IsDependentFigure(const noFigure& fig);
 
     void FillVisualSettings(VisualSettings& visualSettings) const;
 

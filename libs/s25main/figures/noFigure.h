@@ -208,7 +208,7 @@ public:
     unsigned char GetPlayer() const { return player; }
 
     /// Macht die Figur Job-Arbeiten?
-    bool DoJobWorks() const { return (fs == FigureState::Job); }
+    bool DoJobWorks() const { return fs == FigureState::Job; }
 
     void Abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 

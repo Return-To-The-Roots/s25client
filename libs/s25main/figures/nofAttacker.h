@@ -88,10 +88,9 @@ public:
 
     void RemoveFromAttackedGoal();
 
-    /// Normaler Konstruktor für Angreifer
-    nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* attacked_goal);
-    /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
-    nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* attacked_goal, const nobHarborBuilding* harbor);
+    /// Create an attacker from a passive soldier, if harbor is set, the soldier will first walk there for a sea attack
+    nofAttacker(const nofPassiveSoldier& other, nobBaseMilitary& attacked_goal,
+                const nobHarborBuilding* harbor = nullptr);
     nofAttacker(SerializedGameData& sgd, unsigned obj_id);
     ~nofAttacker() override;
 

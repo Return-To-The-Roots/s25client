@@ -70,7 +70,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     /// Liste von Menschen, die weggeschifft werden sollen
     struct FigureForShip
     {
-        noFigure* fig;
+        std::unique_ptr<noFigure> fig;
         MapPoint dest;
     };
     std::list<FigureForShip> figures_for_ships;
@@ -78,7 +78,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     /// Liste von angreifenden Soldaten, die verschifft werden sollen
     struct SoldierForShip
     {
-        nofAttacker* attacker;
+        std::unique_ptr<nofAttacker> attacker;
         MapPoint dest;
     };
     std::list<SoldierForShip> soldiers_for_ships;
@@ -98,14 +98,14 @@ private:
     /// (muss in dem Fall true zurückgeben)
     bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal) override;
     /// Dasselbe für Menschen
-    bool UseFigureAtOnce(noFigure* fig, noRoadNode& goal) override;
+    bool UseFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNode& goal) override;
     /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
     void CancelFigure(noFigure* figure) override;
     /// Bestellt ein Schiff zum Hafen, sofern dies nötig ist
     void OrderShip();
 
     /// Stellt Verteidiger zur Verfügung
-    nofDefender* ProvideDefender(nofAttacker* attacker) override;
+    std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) override;
 
     friend class SerializedGameData;
     friend class BuildingFactory;
@@ -129,7 +129,7 @@ public:
     /// Legt eine Ware im Lagerhaus ab
     void AddWare(std::unique_ptr<Ware> ware) override;
     /// Eine Figur geht ins Lagerhaus
-    void AddFigure(noFigure* figure, bool increase_visual_counts) override;
+    void AddFigure(std::unique_ptr<noFigure> figure, bool increase_visual_counts) override;
     /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
     /// benötigt!)
     unsigned CalcDistributionPoints(GoodType type) const;
@@ -150,13 +150,13 @@ public:
     /// Ist Erkundungs-Expedition in Vorbereitung?
     bool IsExplorationExpeditionActive() const { return exploration_expedition.active; }
     /// Schiff ist angekommen
-    void ShipArrived(noShip* ship);
+    void ShipArrived(noShip& ship);
     /// Schiff konnte nicht mehr kommen
     void ShipLost(noShip* ship);
 
     /// Abfangen, wenn ein Mann nicht mehr kommen kann --> könnte ein Bauarbeiter sein und
     /// wenn wir einen benötigen, müssen wir einen neuen bestellen
-    void RemoveDependentFigure(noFigure* figure) override;
+    void RemoveDependentFigure(noFigure& figure) override;
 
     /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
     unsigned GetHarborPosID() const;
@@ -172,7 +172,7 @@ public:
     std::vector<ShipConnection> GetShipConnections() const;
 
     /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
-    void AddFigureForShip(noFigure* fig, MapPoint dest);
+    void AddFigureForShip(std::unique_ptr<noFigure> fig, MapPoint dest);
     /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
     void AddWareForShip(std::unique_ptr<Ware> ware);
 
@@ -185,9 +185,9 @@ public:
     int GetNeedForShip(unsigned ships_coming) const;
 
     /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-    void ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<std::unique_ptr<Ware>>& wares);
+    void ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>>& figures, std::list<std::unique_ptr<Ware>>& wares);
 
-    nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
+    nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;
 
     struct SeaAttackerBuilding
     {
@@ -215,7 +215,7 @@ public:
     std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaIdAttack();
 
     /// Fügt einen Schiffs-Angreifer zum Hafen hinzu
-    void AddSeaAttacker(nofAttacker* attacker);
+    void AddSeaAttacker(std::unique_ptr<nofAttacker> attacker);
     /// Attacker does not want to attack anymore
     void CancelSeaAttacker(nofAttacker* attacker);
 

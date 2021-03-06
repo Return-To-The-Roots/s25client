@@ -335,9 +335,9 @@ void nobUsual::WareLost(Ware& ware)
     }
 }
 
-void nobUsual::GotWorker(Job /*job*/, noFigure* worker)
+void nobUsual::GotWorker(Job /*job*/, noFigure& worker)
 {
-    this->worker = static_cast<nofBuildingWorker*>(worker);
+    this->worker = checkedCast<nofBuildingWorker*>(&worker);
 
     if(!BLD_WORK_DESC[bldType_].waresNeeded.empty())
         // erste Ware bestellen

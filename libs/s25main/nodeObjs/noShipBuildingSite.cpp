@@ -97,8 +97,7 @@ void noShipBuildingSite::MakeBuildStep()
         // Replace me by ship
         GetEvMgr().AddToKillList(this);
         world->SetNO(pos, nullptr);
-        auto* ship = new noShip(pos, player);
-        world->AddFigure(pos, ship);
+        auto& ship = world->AddFigure(pos, std::make_unique<noShip>(pos, player));
 
         // Schiff registrieren lassen
         world->GetPlayer(player).RegisterShip(ship);
@@ -108,7 +107,7 @@ void noShipBuildingSite::MakeBuildStep()
 
         // Spieler über Fertigstellung benachrichtigen
         SendPostMessage(player, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(), _("A new ship is ready"),
-                                                              PostCategory::Economy, *ship));
+                                                              PostCategory::Economy, ship));
         world->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
     }
 }

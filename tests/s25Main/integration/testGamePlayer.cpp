@@ -38,10 +38,9 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     MapPoint milBldPos = world.MakeMapPoint(world.GetPlayer(0).GetFirstWH()->GetPos() + Position(4, 0)); //-V522
     auto* milBld = dynamic_cast<nobMilitary*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBldPos, 0, Nation::Babylonians));
-    auto* sld = new nofPassiveSoldier(milBldPos, 0, milBld, milBld, 0);
-    world.AddFigure(milBldPos, sld);
+    auto& sld = world.AddFigure(milBldPos, std::make_unique<nofPassiveSoldier>(milBldPos, 0, milBld, milBld, 0));
     milBld->GotWorker(Job::Private, sld);
-    sld->WalkToGoal();
+    sld.WalkToGoal();
     world.DestroyNO(world.GetPlayer(0).GetHQPos());
     BOOST_TEST_REQUIRE(!world.GetPlayer(0).IsDefeated());
     // Destroy this -> defeated

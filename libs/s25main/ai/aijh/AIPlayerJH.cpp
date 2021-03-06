@@ -1244,17 +1244,15 @@ void AIPlayerJH::HandleExpedition(const MapPoint pt)
 {
     const noShip* ship = nullptr;
 
-    for(const noBase* obj : gwb.GetFigures(pt))
+    for(const noBase& obj : gwb.GetFigures(pt))
     {
-        if(obj->GetGOT() == GO_Type::Ship)
+        if(obj.GetGOT() == GO_Type::Ship)
         {
-            if(static_cast<const noShip*>(obj)->GetPlayerId() == playerId)
+            const auto& curShip = static_cast<const noShip&>(obj);
+            if(curShip.GetPlayerId() == playerId && curShip.IsWaitingForExpeditionInstructions())
             {
-                if(static_cast<const noShip*>(obj)->IsWaitingForExpeditionInstructions())
-                {
-                    ship = static_cast<const noShip*>(obj);
-                    break;
-                }
+                ship = &curShip;
+                break;
             }
         }
     }
@@ -2016,20 +2014,16 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
     {
         for(p2.x = fx; p2.x <= lx; ++p2.x)
         {
-            // Gibts hier was bewegliches?
-            if(gwb.GetFigures(p2).empty())
-                continue;
-            const std::list<noBase*>& figures = gwb.GetFigures(p2);
-            // Dann nach Tieren suchen
-            for(const noBase* fig : figures)
+            // Search for animals
+            for(const noBase& fig : gwb.GetFigures(p2))
             {
-                if(fig->GetType() == NodalObjectType::Animal)
+                if(fig.GetType() == NodalObjectType::Animal)
                 {
                     // Ist das Tier überhaupt zum Jagen geeignet?
-                    if(!static_cast<const noAnimal*>(fig)->CanHunted())
+                    if(!static_cast<const noAnimal&>(fig).CanHunted())
                         continue;
                     // Und komme ich hin?
-                    if(gwb.FindHumanPath(pt, static_cast<const noAnimal*>(fig)->GetPos(), maxrange))
+                    if(gwb.FindHumanPath(pt, static_cast<const noAnimal&>(fig).GetPos(), maxrange))
                     // Dann nehmen wir es
                     {
                         if(++huntablecount >= min)

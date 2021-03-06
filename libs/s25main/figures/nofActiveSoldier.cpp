@@ -28,7 +28,7 @@
 #include "s25util/Log.h"
 #include <stdexcept>
 
-nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
+nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
                                    const unsigned char rank, const SoldierState init_state)
     : nofSoldier(pos, player, home, rank), state(init_state), enemy(nullptr)
 
@@ -73,10 +73,7 @@ void nofActiveSoldier::GoalReached()
             throw std::runtime_error("No building found for soldier");
         }
     }
-    building->AddActiveSoldier(this);
-
-    // And remove myself from the map
-    world->RemoveFigure(pos, this);
+    building->AddActiveSoldier(world->RemoveFigure(pos, *this));
 }
 
 void nofActiveSoldier::ReturnHome()
@@ -113,9 +110,7 @@ void nofActiveSoldier::WalkingHome()
     if(GetPos() == building->GetPos())
     {
         // We're there!
-        building->AddActiveSoldier(this);
-        // Remove myself from the map
-        world->RemoveFigure(pos, this);
+        building->AddActiveSoldier(world->RemoveFigure(pos, *this));
         return;
     }
     const auto dir = world->FindHumanPath(pos, building->GetFlagPos(), 100);
@@ -186,27 +181,25 @@ void nofActiveSoldier::ExpelEnemies()
     std::vector<noFigure*> figures;
 
     // At the position of the soldier
-    const std::list<noBase*>& fieldFigures = world->GetFigures(pos);
-    for(auto* fieldFigure : fieldFigures)
+    for(noBase& fieldFigure : world->GetFigures(pos))
     {
-        if(fieldFigure->GetType() == NodalObjectType::Figure)
-            figures.push_back(static_cast<noFigure*>(fieldFigure));
+        if(fieldFigure.GetType() == NodalObjectType::Figure)
+            figures.push_back(static_cast<noFigure*>(&fieldFigure));
     }
 
     // And around this point
     for(const MapPoint nb : world->GetNeighbours(pos))
     {
-        const std::list<noBase*>& fieldFigures = world->GetFigures(nb);
-        for(auto* fieldFigure : fieldFigures)
+        for(noBase& fieldFigure : world->GetFigures(nb))
         {
             // Normal settler?
             // Don't disturb hedgehogs and rabbits!
-            if(fieldFigure->GetType() == NodalObjectType::Figure)
+            if(fieldFigure.GetType() == NodalObjectType::Figure)
             {
-                auto* fig = static_cast<noFigure*>(fieldFigure);
+                auto& fig = static_cast<noFigure&>(fieldFigure);
                 // The people have to be either on the point itself or they have to walk there
-                if(fig->GetPos() == pos || fig->GetDestinationForCurrentMove() == pos)
-                    figures.push_back(fig);
+                if(fig.GetPos() == pos || fig.GetDestinationForCurrentMove() == pos)
+                    figures.push_back(&fig);
             }
         }
     }
@@ -258,9 +251,9 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 
     for(const auto& curPos : pts)
     {
-        for(noBase* object : world->GetFigures(curPos))
+        for(noBase& object : world->GetFigures(curPos))
         {
-            auto* soldier = dynamic_cast<nofActiveSoldier*>(object);
+            auto* soldier = dynamic_cast<nofActiveSoldier*>(&object);
             if(!soldier || soldier->GetPlayer() == excludedOwner)
                 continue;
             if(soldier->IsReadyForFight() && !world->GetPlayer(soldier->GetPlayer()).IsAlly(player))
@@ -334,7 +327,7 @@ void nofActiveSoldier::MeetingEnemy()
         if(enemy->GetPos() == fightSpot_ && enemy->GetState() == SoldierState::WaitingForFight)
         {
             // Start fighting
-            world->AddFigure(pos, new noFighting(enemy, this));
+            world->AddFigure(pos, std::make_unique<noFighting>(*enemy, *this));
 
             enemy->FightingStarted();
             FightingStarted();
@@ -467,9 +460,9 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
     const auto isGoodFightingSpot = [world = this->world, pos = this->pos, other](const auto& pt) {
         // Did we find a good spot?
         return world->ValidPointForFighting(pt, true, nullptr)
-               && (pos == pt || world->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr))
+               && (pos == pt || world->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false))
                && (other->GetPos() == pt
-                   || world->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr));
+                   || world->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false));
     };
     const std::vector<MapPoint> pts =
       world->GetMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);

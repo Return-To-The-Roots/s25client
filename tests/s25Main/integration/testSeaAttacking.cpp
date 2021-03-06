@@ -121,8 +121,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), 1);
             shipPos = world.MakeMapPoint(Position(shipPos) + (Position(shipPos) - Position(harborPos[i])) * 8);
             BOOST_TEST_REQUIRE(shipPos.isValid());
-            auto* ship = new noShip(shipPos, i);
-            world.AddFigure(shipPos, ship);
+            auto& ship = world.AddFigure(shipPos, std::make_unique<noShip>(shipPos, i));
             world.GetPlayer(i).RegisterShip(ship);
         }
 
@@ -201,12 +200,12 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         const unsigned oldNumSoldiers = bld->GetNumTroops();
         for(unsigned i = 0; i < numSoldiers; i++)
         {
-            auto* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), bld, bld, rank);
-            world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier->GetJobType(), 1);
-            world.AddFigure(bldPos, soldier);
-            // Let him "walk" to goal -> Already reached -> Added
-            soldier->WalkToGoal();
-            BOOST_TEST_REQUIRE(soldier->HasNoGoal());
+            auto& soldier =
+              world.AddFigure(bldPos, std::make_unique<nofPassiveSoldier>(bldPos, bld->GetPlayer(), bld, bld, rank));
+            world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier.GetJobType(), 1);
+            // Let him "walk" to goal -> Already reached -> Added and all internal states set correctly
+            soldier.WalkToGoal();
+            BOOST_TEST_REQUIRE(soldier.HasNoGoal());
         }
         BOOST_TEST_REQUIRE(bld->GetNumTroops() == oldNumSoldiers + numSoldiers);
     }
@@ -231,12 +230,12 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
     /// Asserts that the milBld2 contains the given amount of strong/weak soldiers
     void TestTroopCt(unsigned numStrong, unsigned numWeak) const
     {
-        std::vector<nofPassiveSoldier*> soldiers(milBld2->GetTroops().begin(), milBld2->GetTroops().end());
-        BOOST_TEST_REQUIRE(soldiers.size() == numStrong + numWeak);
-        for(unsigned i = 0; i < numWeak; i++)
-            BOOST_TEST_REQUIRE(soldiers[i]->GetRank() == 0u);
-        for(unsigned i = numWeak; i < soldiers.size(); i++)
-            BOOST_TEST_REQUIRE(soldiers[i]->GetRank() == 4u);
+        BOOST_TEST_REQUIRE(milBld2->GetNumTroops() == numStrong + numWeak);
+        auto itTroops = milBld2->GetTroops().begin();
+        for(unsigned i = 0; i < numWeak; i++, ++itTroops)
+            BOOST_TEST_REQUIRE(itTroops->GetRank() == 0u);
+        for(unsigned i = 0; i < numStrong; i++, ++itTroops)
+            BOOST_TEST_REQUIRE(itTroops->GetRank() == 4u);
     }
 };
 
@@ -492,9 +491,9 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     BOOST_TEST_REQUIRE(numSoldiersForAttack >= 2u);
     // Note: This might be off by one if the ship arrived in the same GF a soldier arrived. But this is unlikely
     BOOST_TEST_REQUIRE(ship.GetFigures().size() == numSoldiersForAttack); //-V807
-    for(const noFigure* attacker : ship.GetFigures())
+    for(const noFigure& attacker : ship.GetFigures())
     {
-        BOOST_TEST_REQUIRE(!dynamic_cast<const nofAttacker&>(*attacker).IsSeaAttackCompleted());
+        BOOST_TEST_REQUIRE(!dynamic_cast<const nofAttacker&>(attacker).IsSeaAttackCompleted());
     }
 
     // Ship loads, then starts driving (currently 200GF)
@@ -545,34 +544,32 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     // Collect remaining attackers, so we know how many survived
     std::vector<MapPoint> pts = world.GetPointsInRadius(harborPos[1], 5);
     pts.push_back(harborPos[1]);
-    std::vector<nofAttacker*> attackers;
     std::vector<unsigned> attackerIds;
     for(const MapPoint& pt : pts)
     {
-        for(noBase* fig : world.GetFigures(pt))
+        for(const noBase& fig : world.GetFigures(pt))
         {
-            auto* attacker = dynamic_cast<nofAttacker*>(fig);
+            const auto* attacker = dynamic_cast<const nofAttacker*>(&fig);
             if(attacker)
             {
                 BOOST_TEST_REQUIRE(attacker->GetPlayer() == 2u);
-                attackers.push_back(attacker);
                 // Save those for later, as attackers get deleted
                 attackerIds.push_back(attacker->GetObjId());
             }
         }
     }
     // We must have at least 1 and at most the start count of soldiers remaining
-    BOOST_TEST_REQUIRE(attackers.size() >= 1u);
-    BOOST_TEST_REQUIRE(attackers.size() <= numSoldiersForAttack);
+    BOOST_TEST_REQUIRE(attackerIds.size() >= 1u);
+    BOOST_TEST_REQUIRE(attackerIds.size() <= numSoldiersForAttack);
 
     // Ship waits till all attackers have returned and leaves then
     RTTR_EXEC_TILL(100, ship.IsMoving());
     BOOST_TEST_REQUIRE(ship.IsOnAttackMission());
     BOOST_TEST_REQUIRE(ship.IsGoingToHarbor(hbSrc));
-    BOOST_TEST_REQUIRE(ship.GetFigures().size() == attackers.size());
-    for(const noFigure* attacker : ship.GetFigures())
+    BOOST_TEST_REQUIRE(ship.GetFigures().size() == attackerIds.size());
+    for(const noFigure& attacker : ship.GetFigures())
     {
-        BOOST_TEST_REQUIRE(dynamic_cast<const nofAttacker&>(*attacker).IsSeaAttackCompleted());
+        BOOST_TEST_REQUIRE(dynamic_cast<const nofAttacker&>(attacker).IsSeaAttackCompleted());
     }
 
     // Ship returns home and starts unloading
@@ -587,20 +584,16 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     // Finally troops should return home (and missing ones replaced by HQ)
     RTTR_EXEC_TILL(1000, milBld2->GetNumTroops() == 6u);
     // All troups should have returned home
-    std::vector<nofPassiveSoldier*> soldiers(milBld2->GetTroops().begin(), milBld2->GetTroops().end());
     unsigned numTroopsFound = 0;
-    for(const nofPassiveSoldier* soldier : soldiers)
+    for(const nofPassiveSoldier& soldier : milBld2->GetTroops())
     {
-        if(helpers::contains(attackerIds, soldier->GetObjId()))
+        if(helpers::contains(attackerIds, soldier.GetObjId()))
             numTroopsFound++;
     }
     BOOST_TEST_REQUIRE(numTroopsFound == attackerIds.size());
     // Make sure we don't have duplicate IDs (soldiers get converted active<->passive)
-    for(unsigned i = 0; i < soldiers.size(); i++)
-    {
-        for(unsigned j = i + 1; j < soldiers.size(); j++)
-            BOOST_TEST_REQUIRE(soldiers[i]->GetObjId() != soldiers[j]->GetObjId());
-    }
+    helpers::makeUnique(attackerIds);
+    BOOST_TEST_REQUIRE(attackerIds.size() == numTroopsFound);
 
     // All soldiers should have left
     BOOST_TEST_REQUIRE(hbSrc.GetNumVisualFigures(Job::Private) == 0u);

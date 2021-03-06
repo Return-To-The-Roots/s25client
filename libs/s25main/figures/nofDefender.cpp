@@ -28,13 +28,13 @@
 #include "nodeObjs/noFighting.h"
 #include "gameData/BuildingProperties.h"
 
-nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
-                         const unsigned char rank, nofAttacker* const attacker)
-    : nofActiveSoldier(pos, player, home, rank, SoldierState::DefendingWalkingTo), attacker(attacker)
+nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
+                         const unsigned char rank, nofAttacker& attacker)
+    : nofActiveSoldier(pos, player, home, rank, SoldierState::DefendingWalkingTo), attacker(&attacker)
 {}
 
-nofDefender::nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
-    : nofActiveSoldier(*other, SoldierState::DefendingWalkingTo), attacker(attacker)
+nofDefender::nofDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
+    : nofActiveSoldier(other, SoldierState::DefendingWalkingTo), attacker(&attacker)
 {}
 
 void nofDefender::Serialize(SerializedGameData& sgd) const
@@ -62,7 +62,7 @@ void nofDefender::Walked()
         case SoldierState::DefendingWalkingTo:
         {
             // Mit Angreifer den Kampf beginnen
-            world->AddFigure(pos, new noFighting(attacker, this));
+            world->AddFigure(pos, std::make_unique<noFighting>(*attacker, *this));
             state = SoldierState::Fighting;
             attacker->FightVsDefenderStarted();
         }
@@ -89,12 +89,9 @@ void nofDefender::Walked()
                 StartWalking(Direction::SouthEast);
             } else
             {
-                // mich von der Landkarte tilgen
-                world->RemoveFigure(pos, this);
                 nobBaseMilitary* bld = building;
-                // mich zum Gebäude wieder hinzufügen
                 RTTR_Assert(bld->GetDefender() == this); // I should be the defender
-                bld->AddActiveSoldier(this);
+                bld->AddActiveSoldier(world->RemoveFigure(pos, *this));
                 RTTR_Assert(!bld->GetDefender()); // No defender anymore
             }
         }

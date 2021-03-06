@@ -18,7 +18,6 @@
 #pragma once
 
 #include "figures/noFigure.h"
-#include <boost/container/flat_set.hpp>
 
 class nobBaseMilitary;
 class SerializedGameData;
@@ -40,7 +39,7 @@ protected:
 
 public:
     nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobBaseMilitary* home, unsigned char rank);
-    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank);
+    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank);
     nofSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override
@@ -56,21 +55,15 @@ public:
     bool HasNoHome() const { return building == nullptr; }
 };
 
-/// Comparator to sort soldiers by rank (and ID for ties)
-/// Template arguments defines the sort order: True for weak ones first, false for strong ones first
-template<bool T_SortAsc>
+/// Comparator to sort soldiers by rank (and ID for ties), weak ones first
 struct ComparatorSoldiersByRank
 {
-    bool operator()(const nofSoldier* left, const nofSoldier* right) const
+    template<typename TSoldierPtr>
+    bool operator()(const TSoldierPtr& left, const TSoldierPtr& right) const
     {
         if(left->GetRank() == right->GetRank())
-            return (T_SortAsc) ? left->GetObjId() < right->GetObjId() : left->GetObjId() > right->GetObjId();
-        else if(T_SortAsc)
-            return left->GetRank() < right->GetRank();
+            return left->GetObjId() < right->GetObjId();
         else
-            return left->GetRank() > right->GetRank();
+            return left->GetRank() < right->GetRank();
     }
 };
-
-class nofPassiveSoldier;
-using SortedTroops = boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true>>;

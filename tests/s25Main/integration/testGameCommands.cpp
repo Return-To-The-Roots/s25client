@@ -470,11 +470,11 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     RTTR_SKIP_GFS(numGFtillAllArrive);
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 6u); //-V522
-    auto itTroops = bld->GetTroops().cbegin();     //-V807
+    auto itTroops = bld->GetTroops().begin();
     for(unsigned i = 0; i < 4; i++, ++itTroops)
-        BOOST_TEST_REQUIRE((*itTroops)->GetRank() == i);
+        BOOST_TEST_REQUIRE(itTroops->GetRank() == i);
     for(unsigned i = 0; i < 2; i++, ++itTroops)
-        BOOST_TEST_REQUIRE((*itTroops)->GetRank() == 4);
+        BOOST_TEST_REQUIRE(itTroops->GetRank() == 4);
     // End preparation
 
     unsigned expectedTroopCt = 6u;
@@ -486,7 +486,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         BOOST_TEST_REQUIRE(bld->GetNumTroops() == expectedTroopCt);
         itTroops = bld->GetTroops().begin();
         for(unsigned i = 0; i < expectedTroopCt; i++, ++itTroops)
-            BOOST_TEST_REQUIRE((*itTroops)->GetRank() == i);
+            BOOST_TEST_REQUIRE(itTroops->GetRank() == i);
     }
     // One low rank is left
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 1u);
@@ -501,7 +501,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 6u);
     itTroops = bld->GetTroops().begin();
     for(unsigned i = 0; i < 6; i++, ++itTroops)
-        BOOST_TEST_REQUIRE((*itTroops)->GetRank() == 0u);
+        BOOST_TEST_REQUIRE(itTroops->GetRank() == 0u);
 
     // Send 5 of them home
     this->SendSoldiersHome(milPt);
@@ -527,9 +527,9 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 6u);
     itTroops = bld->GetTroops().begin();
     for(unsigned i = 0; i < 3; i++, ++itTroops)
-        BOOST_TEST_REQUIRE((*itTroops)->GetRank() == 0u);
+        BOOST_TEST_REQUIRE(itTroops->GetRank() == 0u);
     for(unsigned i = 1; i < 3; i++, ++itTroops)
-        BOOST_TEST_REQUIRE((*itTroops)->GetRank() == i);
+        BOOST_TEST_REQUIRE(itTroops->GetRank() == i);
 }
 
 BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
@@ -549,10 +549,10 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SouthEast), false,
                     std::vector<Direction>((milPt.x - hqPos.x), Direction::East));
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
-    nofPassiveSoldier* soldier = nullptr;
-    for(noFigure* fig : hq->GetLeavingFigures())
+    const nofPassiveSoldier* soldier = nullptr;
+    for(const noFigure& fig : hq->GetLeavingFigures())
     {
-        soldier = dynamic_cast<nofPassiveSoldier*>(fig);
+        soldier = dynamic_cast<const nofPassiveSoldier*>(&fig);
         if(soldier)
             break;
     }
@@ -607,7 +607,7 @@ void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodTyp
     worldFixture.CallSpecialist(flagPt, workerJob);
     BOOST_TEST_REQUIRE(wh->GetNumRealFigures(workerJob) + 1 == startFigureCt);
     BOOST_TEST_REQUIRE(wh->GetLeavingFigures().size() == 1u);
-    BOOST_TEST_REQUIRE(wh->GetLeavingFigures().front()->GetJobType() == workerJob);
+    BOOST_TEST_REQUIRE(wh->GetLeavingFigures().front().GetJobType() == workerJob);
 
     // Call remaining ones
     for(unsigned i = 1; i < startFigureCt; i++)

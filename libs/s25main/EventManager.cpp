@@ -277,5 +277,10 @@ void EventManager::AddToKillList(GameObject* obj)
 {
     RTTR_Assert(obj);
     RTTR_Assert(!IsObjectInKillList(*obj));
-    killList.push_back(obj);
+    killList.emplace_back(obj);
+}
+
+void EventManager::AddToKillList(std::unique_ptr<GameObject> obj)
+{
+    AddToKillList(obj.release());
 }

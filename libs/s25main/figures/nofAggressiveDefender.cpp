@@ -24,22 +24,21 @@
 #include "random/Random.h"
 #include "world/GameWorld.h"
 
-nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
-                                             nobBaseMilitary* const home, const unsigned char rank,
-                                             nofAttacker* const attacker)
+nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
+                                             const unsigned char rank, nofAttacker& attacker)
     : nofActiveSoldier(pos, player, home, rank, SoldierState::AggressivedefendingWalkingToAggressor),
-      attacker(attacker), attacked_goal(attacker->GetAttackedGoal())
+      attacker(&attacker), attacked_goal(attacker.GetAttackedGoal())
 {
     // Angegriffenem Gebäude Bescheid sagen
-    attacked_goal->LinkAggressiveDefender(this);
+    attacked_goal->LinkAggressiveDefender(*this);
 }
 
-nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
-    : nofActiveSoldier(*other, SoldierState::AggressivedefendingWalkingToAggressor), attacker(attacker),
-      attacked_goal(attacker->GetAttackedGoal())
+nofAggressiveDefender::nofAggressiveDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
+    : nofActiveSoldier(other, SoldierState::AggressivedefendingWalkingToAggressor), attacker(&attacker),
+      attacked_goal(attacker.GetAttackedGoal())
 {
     // Angegriffenem Gebäude Bescheid sagen
-    attacked_goal->LinkAggressiveDefender(this);
+    attacked_goal->LinkAggressiveDefender(*this);
 }
 
 nofAggressiveDefender::~nofAggressiveDefender() = default;
@@ -114,7 +113,7 @@ void nofAggressiveDefender::CancelAtAttackedBld()
 {
     if(attacked_goal)
     {
-        attacked_goal->UnlinkAggressiveDefender(this);
+        attacked_goal->UnlinkAggressiveDefender(*this);
         attacked_goal = nullptr;
     }
 }

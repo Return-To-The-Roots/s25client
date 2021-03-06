@@ -105,7 +105,7 @@ private:
     unsigned GetVisualRange() const override;
 
 public:
-    nofActiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank,
+    nofActiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank,
                      SoldierState init_state);
     nofActiveSoldier(const nofSoldier& other, SoldierState init_state);
     nofActiveSoldier(SerializedGameData& sgd, unsigned obj_id);

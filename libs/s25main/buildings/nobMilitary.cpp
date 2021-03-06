@@ -31,6 +31,7 @@
 #include "figures/nofDefender.h"
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "helpers/reverse.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -82,12 +83,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
     }
 }
 
-nobMilitary::~nobMilitary()
-{
-    // Soldaten vernichten
-    for(auto& troop : troops)
-        delete troop;
-}
+nobMilitary::~nobMilitary() = default;
 
 size_t nobMilitary::GetTotalSoldiers() const
 {
@@ -108,7 +104,12 @@ void nobMilitary::DestroyBuilding()
 
     // Soldaten rausschicken
     for(auto& troop : troops)
-        troop->InBuildingDestroyed();
+    {
+        troop->LeftBuilding();
+        auto& soldier = world->AddFigure(pos, std::move(troop));
+        soldier.StartWandering();
+        soldier.StartWalking(RANDOM_ENUM(Direction));
+    }
     troops.clear();
 
     // Inform far-away capturers
@@ -227,11 +228,10 @@ void nobMilitary::HandleEvent(const unsigned id)
             if(!leave_house.empty())
             {
                 // Dann raus mit denen
-                noFigure* soldier = *leave_house.begin();
-                world->AddFigure(pos, soldier);
-
-                soldier->ActAtFirst();
+                noFigure& soldier = world->AddFigure(pos, std::move(leave_house.front()));
                 leave_house.pop_front();
+
+                soldier.ActAtFirst();
             }
 
             // Wenn noch weitere drin sind, die müssen auch noch raus
@@ -261,34 +261,35 @@ void nobMilitary::HandleEvent(const unsigned id)
             // Von hinten durchgehen
             // Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
             // wird dieser ebenfalls befördert usw.!
-            std::vector<nofPassiveSoldier*> upgradedSoldiers;
-            // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang
+            std::vector<std::unique_ptr<nofPassiveSoldier>> soldiersToUpgrade;
+            // Rang des letzten beförderten Soldaten, MaxRank am Anfang setzen, damit keiner über den maximalen Rang
             // befördert wird
-            unsigned char last_rank = world->GetGGS().GetMaxMilitaryRank();
+            uint8_t last_rank = world->GetGGS().GetMaxMilitaryRank();
             for(auto it = troops.rbegin(); it != troops.rend();)
             {
+                auto& soldier = *it;
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
                 // als der letzte haben, damit er auch noch befördert werden kann
-                if((*it)->GetRank() < last_rank)
+                if(soldier->GetRank() < last_rank)
                 {
-                    nofPassiveSoldier* soldier = *it;
                     // Rang merken
                     last_rank = soldier->GetRank();
                     // Remove from sorted container as changing it breaks sorting
+                    soldiersToUpgrade.push_back(std::move(soldier));
                     it = helpers::erase_reverse(troops, it);
-                    // Dann befördern
-                    soldier->Upgrade();
-                    upgradedSoldiers.push_back(soldier);
                 } else
                     ++it;
             }
 
             // Wurde jemand befördert?
-            if(!upgradedSoldiers.empty())
+            if(!soldiersToUpgrade.empty())
             {
                 // Reinsert upgraded soldiers
-                for(auto& upgradedSoldier : upgradedSoldiers)
-                    troops.insert(upgradedSoldier);
+                for(auto& upgradedSoldier : soldiersToUpgrade)
+                {
+                    upgradedSoldier->Upgrade();
+                    troops.insert(std::move(upgradedSoldier));
+                }
 
                 // Goldmünze verbrauchen
                 --numCoins;
@@ -455,7 +456,7 @@ void nobMilitary::RegulateTroops()
                 for(auto it = troops.begin(); diff && troops.size() > 1; ++diff)
                 {
                     (*it)->LeaveBuilding();
-                    AddLeavingFigure(*it);
+                    AddLeavingFigure(std::move(*it));
                     it = troops.erase(it);
                 }
             }
@@ -465,7 +466,7 @@ void nobMilitary::RegulateTroops()
                 for(auto it = troops.rbegin(); diff && troops.size() > 1; ++diff)
                 {
                     (*it)->LeaveBuilding();
-                    AddLeavingFigure(*it);
+                    AddLeavingFigure(std::move(*it));
                     it = helpers::erase_reverse(troops, it);
                 }
             }
@@ -533,7 +534,7 @@ void nobMilitary::SendSoldiersHome()
                                               // send no more troops out
                 return;
             (*it)->LeaveBuilding();
-            AddLeavingFigure(*it);
+            AddLeavingFigure(std::move(*it));
             it = helpers::erase_reverse(troops, it);
         }
     }
@@ -592,6 +593,11 @@ bool nobMilitary::IsAttackable(unsigned playerIdx) const
     return nobBaseMilitary::IsAttackable(playerIdx) && !IsBeingCaptured() && !IsNewBuilt();
 }
 
+bool nobMilitary::IsInTroops(const nofPassiveSoldier& soldier) const
+{
+    return helpers::containsPtr(troops, &soldier);
+}
+
 void nobMilitary::TakeWare(Ware* ware)
 {
     // Goldmünze in Bestellliste aufnehmen
@@ -626,12 +632,12 @@ bool nobMilitary::FreePlaceAtFlag()
 {
     return false;
 }
-void nobMilitary::GotWorker(Job /*job*/, noFigure* worker)
+void nobMilitary::GotWorker(Job /*job*/, noFigure& worker)
 {
-    RTTR_Assert(dynamic_cast<nofPassiveSoldier*>(worker));
-    auto* soldier = static_cast<nofPassiveSoldier*>(worker);
-    RTTR_Assert(soldier->GetPlayer() == player);
-    ordered_troops.insert(soldier);
+    RTTR_Assert(dynamic_cast<nofPassiveSoldier*>(&worker));
+    auto& soldier = static_cast<nofPassiveSoldier&>(worker);
+    RTTR_Assert(soldier.GetPlayer() == player);
+    ordered_troops.insert(&soldier);
 }
 
 void nobMilitary::CancelOrders()
@@ -649,45 +655,43 @@ void nobMilitary::CancelOrders()
     ordered_coins.clear();
 }
 
-void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
+void nobMilitary::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
 {
     // aktiver Soldat, eingetroffen werden --> dieser muss erst in einen passiven Soldaten
     // umoperiert werden (neu erzeugt und alter zerstört) werden
-    auto* passive_soldier = new nofPassiveSoldier(*soldier);
+    AddPassiveSoldier(std::make_unique<nofPassiveSoldier>(*soldier));
 
-    // neuen Soldaten einhängen
-    AddPassiveSoldier(passive_soldier);
-
-    // alten Soldaten später vernichten
     soldier->ResetHome();
-    GetEvMgr().AddToKillList(soldier);
 
     RTTR_Assert(soldier->GetPlayer() == player);
 
     // Returned home
-    if(soldier == defender_)
+    if(soldier.get() == defender_)
         NoDefender();
-    else if(helpers::contains(troops_on_mission, soldier))
+    else if(helpers::contains(troops_on_mission, soldier.get()))
     {
-        troops_on_mission.remove(soldier);
-    } else if(IsBeingCaptured() || IsFarAwayCapturer(dynamic_cast<nofAttacker*>(soldier)))
+        troops_on_mission.remove(soldier.get());
+    } else
     {
-        RTTR_Assert(dynamic_cast<nofAttacker*>(soldier));
-        return;
+        RTTR_Assert(dynamic_cast<nofAttacker*>(soldier.get()));
+        if(IsBeingCaptured() || IsFarAwayCapturer(static_cast<const nofAttacker&>(*soldier)))
+        {
+            GetEvMgr().AddToKillList(std::move(soldier));
+            return;
+        }
     }
+    GetEvMgr().AddToKillList(std::move(soldier));
     // Do only if not capturing
     RegulateTroops();
 }
 
-void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
+void nobMilitary::AddPassiveSoldier(std::unique_ptr<nofPassiveSoldier> soldier)
 {
     RTTR_Assert(soldier->GetPlayer() == player);
     RTTR_Assert(troops.size() < GetMaxTroopsCt());
 
-    troops.insert(soldier);
-
-    // und aus den bestllten Truppen raushauen, da er ja jetzt hier ist
-    ordered_troops.erase(soldier);
+    ordered_troops.erase(soldier.get());
+    troops.insert(std::move(soldier));
 
     // Wurde dieses Gebäude zum ersten Mal besetzt?
     if(new_built)
@@ -729,13 +733,15 @@ void nobMilitary::SoldierLost(nofSoldier* soldier)
     RegulateTroops();
 }
 
-void nobMilitary::SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActiveSoldier* active_soldier)
+void nobMilitary::SendAttacker(nofPassiveSoldier*& passive_soldier, nobBaseMilitary& goal,
+                               const nobHarborBuilding* harbor)
 {
-    // Aus der Besatzungsliste raushauen, aber noch mit merken
-    troops.erase(passive_soldier);
+    auto attacker = std::make_unique<nofAttacker>(*passive_soldier, goal, harbor);
     passive_soldier->LeftBuilding();
-    troops_on_mission.push_back(active_soldier);
-    AddLeavingFigure(active_soldier);
+    helpers::extractPtr(troops, passive_soldier)->Destroy();
+    passive_soldier = nullptr;
+    troops_on_mission.push_back(attacker.get());
+    AddLeavingFigure(std::move(attacker));
 }
 
 nofPassiveSoldier* nobMilitary::ChooseSoldier()
@@ -753,7 +759,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
         if(!candidates[troop->GetRank()])
         {
             ++rank_count;
-            candidates[troop->GetRank()] = troop;
+            candidates[troop->GetRank()] = troop.get();
         }
     }
 
@@ -778,7 +784,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     return nullptr;
 }
 
-nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker)
+nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker& attacker)
 {
     // Don't send last soldier
     if(GetNumTroops() <= 1)
@@ -787,12 +793,13 @@ nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker
     if(soldier)
     {
         // neuen aggressiven Verteidiger daraus erzeugen
-        auto* defender = new nofAggressiveDefender(soldier, attacker);
-        SoldierOnMission(soldier, defender);
-        // alten passiven Soldaten vernichten
-        destroyAndDelete(soldier);
-
-        return defender;
+        auto defender = std::make_unique<nofAggressiveDefender>(*soldier, attacker);
+        soldier->LeftBuilding();
+        helpers::extractPtr(troops, soldier)->Destroy();
+        troops_on_mission.push_back(defender.get());
+        nofAggressiveDefender* result = defender.get();
+        AddLeavingFigure(std::move(defender));
+        return result;
     } else
         return nullptr;
 }
@@ -835,10 +842,10 @@ std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint
 {
     std::vector<nofPassiveSoldier*> soldiers;
     unsigned soldiers_count = GetNumSoldiersForAttack(dest);
-    for(auto* sld : helpers::reverse(troops))
+    for(const auto& sld : helpers::reverse(troops))
     {
         if(soldiers_count--)
-            soldiers.push_back(sld);
+            soldiers.push_back(sld.get());
         else
             break;
     }
@@ -853,7 +860,7 @@ unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, unsigned
     soldiers_count = GetNumSoldiersForAttack(dest);
     unsigned numRemainingSoldiers = soldiers_count;
 
-    for(const auto* sld : helpers::reverse(troops))
+    for(const auto& sld : helpers::reverse(troops))
     {
         if(numRemainingSoldiers--)
             strength += HITPOINTS[sld->GetRank()];
@@ -868,13 +875,10 @@ unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, unsigned
 unsigned nobMilitary::GetSoldiersStrength() const
 {
     unsigned strength = 0;
-
-    for(auto* troop : troops)
-    {
+    for(const auto& troop : troops)
         strength += HITPOINTS[troop->GetRank()];
-    }
 
-    return (strength);
+    return strength;
 }
 
 /// is there a max rank soldier in the building?
@@ -882,10 +886,10 @@ bool nobMilitary::HasMaxRankSoldier() const
 {
     const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();
     return helpers::contains_if(helpers::reverse(troops),
-                                [maxRank](const auto* it) { return it->GetRank() >= maxRank; });
+                                [maxRank](const auto& it) { return it->GetRank() >= maxRank; });
 }
 
-nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
+std::unique_ptr<nofDefender> nobMilitary::ProvideDefender(nofAttacker& attacker)
 {
     nofPassiveSoldier* soldier = ChooseSoldier();
     if(!soldier)
@@ -898,16 +902,11 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
             return nullptr;
     }
 
-    // neuen Verteidiger erzeugen
-    auto* defender = new nofDefender(soldier, attacker);
+    auto defender = std::make_unique<nofDefender>(*soldier, attacker);
 
-    // aus der Liste entfernen
-    troops.erase(soldier);
-    soldier->LeftBuilding();
-
-    // und vernichten
-    soldier->Destroy();
-    delete soldier;
+    auto oldSoldier = helpers::extractPtr(troops, soldier);
+    oldSoldier->LeftBuilding();
+    oldSoldier->Destroy();
 
     return defender;
 }
@@ -968,16 +967,15 @@ void nobMilitary::Capture(const unsigned char new_owner)
     std::array<MapPoint, 2> coords = {pos, world->GetNeighbour(pos, Direction::SouthEast)};
     for(const auto& coord : coords)
     {
-        const std::list<noBase*>& figures = world->GetFigures(coord);
-        for(auto* figure : figures)
+        for(noBase& baseFigure : world->GetFigures(coord))
         {
-            if(figure->GetType() == NodalObjectType::Figure)
+            if(baseFigure.GetType() == NodalObjectType::Figure)
             {
-                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == GetRoute(Direction::SouthEast)
-                   && static_cast<noFigure*>(figure)->GetPlayer() != new_owner)
+                auto& figure = static_cast<noFigure&>(baseFigure);
+                if(figure.GetCurrentRoad() == GetRoute(Direction::SouthEast) && figure.GetPlayer() != new_owner)
                 {
-                    static_cast<noFigure*>(figure)->Abrogate();
-                    static_cast<noFigure*>(figure)->StartWandering();
+                    figure.Abrogate();
+                    figure.StartWandering();
                 }
             }
         }
@@ -1148,7 +1146,7 @@ unsigned nobMilitary::CalcCoinsPoints() const
 
     const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();
     // Beförderbare Soldaten zählen
-    for(const nofPassiveSoldier* soldier : troops)
+    for(const auto& soldier : troops)
     {
         // Solange es kein Max Rank ist, kann der Soldat noch befördert werden
         if(soldier->GetRank() < maxRank)
@@ -1232,13 +1230,12 @@ void nobMilitary::HitOfCatapultStone()
     // Ein Soldat weniger, falls es noch welche gibt
     if(!troops.empty())
     {
-        nofPassiveSoldier* soldier = *troops.begin();
+        std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
         helpers::pop_front(troops);
         // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
         soldier->RemoveFromInventory();
         soldier->LeftBuilding();
         soldier->Destroy();
-        deletePtr(soldier);
     }
 
     // If there are troops left, order some more, else this will be destroyed
@@ -1279,11 +1276,11 @@ bool nobMilitary::IsDemolitionAllowed() const
     return true;
 }
 
-void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
+void nobMilitary::UnlinkAggressor(nofAttacker& soldier)
 {
     RTTR_Assert(IsAggressor(soldier) || IsFarAwayCapturer(soldier));
-    aggressors.remove(soldier);
-    far_away_capturers.remove(soldier);
+    aggressors.remove(&soldier);
+    far_away_capturers.remove(&soldier);
 
     if(aggressors.empty())
         RegulateTroops();
@@ -1308,15 +1305,15 @@ void nobMilitary::CapturingSoldierArrived()
 }
 
 /// A far-away capturer arrived at the building/flag and starts the capturing
-void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker* attacker)
+void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker& attacker)
 {
     RTTR_Assert(IsFarAwayCapturer(attacker));
     if(IsBeingCaptured())
     {
         // If we are still capturing just re-add this soldier to the aggressors
         // one of the currently capturing soldiers will notify him
-        far_away_capturers.remove(attacker);
-        aggressors.push_back(attacker);
+        far_away_capturers.remove(&attacker);
+        aggressors.push_back(&attacker);
     } else
     {
         // Otherwise we are in a kind of "normal" working state of the building and will just add him when he gets in
@@ -1325,20 +1322,20 @@ void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker* attacker)
     }
 }
 
-bool nobMilitary::IsFarAwayCapturer(nofAttacker* attacker)
+bool nobMilitary::IsFarAwayCapturer(const nofAttacker& attacker)
 {
-    return helpers::contains(far_away_capturers, attacker);
+    return helpers::contains(far_away_capturers, &attacker);
 }
 
-void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
+void nobMilitary::CallNextFarAwayCapturer(nofAttacker& attacker)
 {
     const MapPoint flagPos = GetFlagPos();
     unsigned minLength = std::numeric_limits<unsigned>::max();
     nofAttacker* bestAttacker = nullptr;
-    for(auto& far_away_capturer : far_away_capturers)
+    for(auto* far_away_capturer : far_away_capturers)
     {
         // Skip us and possible capturers at the building
-        if(far_away_capturer == attacker || far_away_capturer->GetPos() == pos)
+        if(far_away_capturer == &attacker || far_away_capturer->GetPos() == pos)
             continue;
         if(!far_away_capturer->IsAttackerReady())
             continue;

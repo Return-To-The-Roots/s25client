@@ -47,7 +47,6 @@ BurnedWarehouse::~BurnedWarehouse() = default;
 
 void BurnedWarehouse::Destroy()
 {
-    world->RemoveFigure(pos, this);
     noCoordBase::Destroy();
 }
 
@@ -79,7 +78,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     if(possibleDirCt == 0)
     {
         // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
-        GetEvMgr().AddToKillList(this);
+        GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
         // restliche Leute von der Inventur abziehen
         for(const auto i : helpers::enumRange<Job>())
             world->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
@@ -118,12 +117,10 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             for(unsigned z = 0; z < numPeopleInDir; ++z)
             {
                 // Job erzeugen
-                auto* figure = new nofPassiveWorker(job, pos, player, nullptr);
-                // Auf die Map setzen
-                world->AddFigure(pos, figure);
+                auto& figure = world->AddFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
                 // Losrumirren in die jeweilige Richtung
-                figure->StartWandering(GetObjId());
-                figure->StartWalking(dir);
+                figure.StartWandering(GetObjId());
+                figure.StartWalking(dir);
             }
         }
     }
@@ -135,7 +132,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     if(go_out_phase == GO_OUT_PHASES)
     {
         // fertig, sich selbst töten
-        GetEvMgr().AddToKillList(this);
+        GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
         for(unsigned int it : people)
             RTTR_Assert(it == 0);

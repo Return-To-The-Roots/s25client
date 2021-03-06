@@ -25,6 +25,7 @@
 #include "RoadSegment.h"
 #include "enum_cast.hpp"
 #include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainDesc.h"
 #include <memory>
@@ -79,13 +80,7 @@ void World::Unload()
 
     // Figuren vernichten
     for(auto& node : nodes)
-    {
-        std::list<noBase*>& nodeFigures = node.figures;
-        for(auto& nodeFigure : nodeFigures)
-            delete nodeFigure;
-
-        nodeFigures.clear();
-    }
+        node.figures.clear();
 
     catapult_stones.clear();
     harbor_pos.clear();
@@ -106,25 +101,25 @@ void World::Resize(const MapExtent& newSize)
     }
 }
 
-void World::AddFigure(const MapPoint pt, noBase* fig)
+noBase& World::AddFigureImpl(const MapPoint pt, std::unique_ptr<noBase> fig)
 {
-    if(!fig)
-        return;
+    RTTR_Assert(fig);
 
-    std::list<noBase*>& figures = GetNodeInt(pt).figures;
-    RTTR_Assert(!helpers::contains(figures, fig));
-    figures.push_back(fig);
-
+    auto& figures = GetNodeInt(pt).figures;
 #if RTTR_ENABLE_ASSERTS
+    RTTR_Assert(!helpers::containsPtr(figures, fig.get()));
     for(const MapPoint nb : GetNeighbours(pt))
-        RTTR_Assert(!helpers::contains(GetNode(nb).figures, fig)); // Added figure that is in surrounding?
+        RTTR_Assert(!helpers::containsPtr(GetNode(nb).figures, fig.get())); // Added figure that is in surrounding?
 #endif
+
+    noBase& result = *fig;
+    figures.push_back(std::move(fig));
+    return result;
 }
 
-void World::RemoveFigure(const MapPoint pt, noBase* fig)
+noBase* World::RemoveFigureImpl(const MapPoint pt, noBase& fig)
 {
-    RTTR_Assert(helpers::contains(GetNode(pt).figures, fig));
-    GetNodeInt(pt).figures.remove(fig);
+    return helpers::extractPtr(GetNodeInt(pt).figures, &fig).release();
 }
 
 noBase* World::GetNO(const MapPoint pt)
@@ -255,6 +250,11 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
         return BuildingQuality::Flag;
     } else
         return nodeBQ;
+}
+
+bool World::HasFigureAt(const MapPoint pt, const noBase& figure) const
+{
+    return helpers::containsPtr(GetNode(pt).figures, &figure);
 }
 
 WalkTerrain World::GetTerrain(MapPoint pt, Direction dir) const

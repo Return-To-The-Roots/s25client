@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <iosfwd>
+
 class Game;
 class Serializer;
 
@@ -49,3 +51,5 @@ inline bool AsyncChecksum::operator!=(const AsyncChecksum& rhs) const
 {
     return !(*this == rhs);
 }
+
+std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum);

@@ -19,6 +19,7 @@
 
 #include <list>
 #include <map>
+#include <memory>
 #include <vector>
 
 class SerializedGameData;
@@ -51,6 +52,7 @@ public:
     void RemoveEvent(const GameEvent*& ep);
     /// Add an object to be destroyed after current GF
     void AddToKillList(GameObject* obj);
+    void AddToKillList(std::unique_ptr<GameObject> obj);
 
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(SerializedGameData& sgd);

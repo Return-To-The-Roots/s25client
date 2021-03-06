@@ -35,10 +35,9 @@ void nofPassiveWorker::Walked() {}
 void nofPassiveWorker::GoalReached()
 {
     // Mich hier einquartieren
-    world->RemoveFigure(pos, this);
     auto* wh = world->GetSpecObj<nobBaseWarehouse>(pos);
     RTTR_Assert(wh);
-    wh->AddFigure(this);
+    wh->AddFigure(world->RemoveFigure(pos, *this));
 }
 
 void nofPassiveWorker::AbrogateWorkplace() {}

@@ -31,6 +31,7 @@ std::string Replay::GetSignature() const
 uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
+    /// Search for "TODO(Replay)" when increasing this (breaking Replay compatibility)
     return 6;
 }
 

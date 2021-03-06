@@ -84,7 +84,7 @@ void nofDonkeybreeder::WorkFinished()
     RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(workplace, &flag_goal);
 
     // Esel erzeugen und zum Ziel beordern
-    auto* donkey = new nofCarrier(CarrierType::Donkey, pos, player, road, flag_goal);
+    auto donkey = std::make_unique<nofCarrier>(CarrierType::Donkey, pos, player, road, flag_goal);
     world->GetPlayer(player).IncreaseInventoryJob(Job::PackDonkey, 1);
     donkey->InitializeRoadWalking(world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast), 0, true);
 
@@ -93,11 +93,8 @@ void nofDonkeybreeder::WorkFinished()
         donkey->GoHome();
     else
         // ansonsten Arbeitsplatz Bescheid sagen
-        road->GotDonkey(donkey);
+        road->GotDonkey(donkey.get());
 
     // Esel absetzen
-    world->AddFigure(pos, donkey);
-
-    // In die neue Welt laufen
-    donkey->ActAtFirst();
+    world->AddFigure(pos, std::move(donkey)).ActAtFirst();
 }

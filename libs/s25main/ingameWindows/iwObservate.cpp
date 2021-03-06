@@ -103,11 +103,9 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
                         if(view->GetViewer().GetVisibility(curPt) != Visibility::Visible)
                             continue;
 
-                        const std::list<noBase*>& figures = view->GetWorld().GetFigures(curPt);
-
-                        for(const noBase* obj : figures)
+                        for(const noBase& obj : view->GetWorld().GetFigures(curPt))
                         {
-                            const auto* movable = dynamic_cast<const noMovable*>(obj);
+                            const auto* movable = dynamic_cast<const noMovable*>(&obj);
                             if(!movable)
                                 continue;
 
@@ -223,16 +221,15 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
 {
     if(view->GetViewer().GetVisibility(ptToCheck) != Visibility::Visible)
         return false;
-    const std::list<noBase*>& curObjs = view->GetWorld().GetFigures(ptToCheck);
-    for(const noBase* obj : curObjs)
+    for(const noBase& obj : view->GetWorld().GetFigures(ptToCheck))
     {
-        if(obj->GetObjId() == followMovableId)
+        if(obj.GetObjId() == followMovableId)
         {
-            const auto* followMovable = static_cast<const noMovable*>(obj);
+            const auto& followMovable = static_cast<const noMovable&>(obj);
             DrawPoint drawPt = view->GetWorld().GetNodePos(ptToCheck);
 
-            if(followMovable->IsMoving())
-                drawPt += followMovable->CalcWalkingRelative();
+            if(followMovable.IsMoving())
+                drawPt += followMovable.CalcWalkingRelative();
 
             view->MoveTo(drawPt - view->GetSize() / 2u, true);
             return true;

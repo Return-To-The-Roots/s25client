@@ -55,9 +55,9 @@ noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
 void noMovable::Walk()
 {
     moving = false;
-    world->RemoveFigure(pos, this);
+    const MapPoint oldPos = pos;
     pos = world->GetNeighbour(pos, curMoveDir);
-    world->AddFigure(pos, this);
+    world->AddFigure(pos, world->RemoveFigure(oldPos, *this));
 }
 
 void noMovable::FaceDir(Direction newDir)

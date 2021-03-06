@@ -92,7 +92,7 @@ public:
     /// Eine bestellte Ware konnte doch nicht kommen
     void WareLost(Ware& ware) override;
     /// Wird aufgerufen, wenn ein Arbeiter für das Gebäude gefunden werden konnte
-    void GotWorker(Job job, noFigure* worker) override;
+    void GotWorker(Job job, noFigure& worker) override;
     /// Wird vom Arbeiter aufgerufen, wenn er im Gebäude angekommen ist
     void WorkerArrived();
     /// Wird vom Arbeiter aufgerufen, wenn er nicht (mehr) zur Arbeit kommen kann

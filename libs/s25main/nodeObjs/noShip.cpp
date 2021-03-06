@@ -29,6 +29,7 @@
 #include "figures/nofAttacker.h"
 #include "helpers/EnumArray.h"
 #include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "network/GameClient.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/ShipNote.h"
@@ -75,12 +76,7 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
     RTTR_Assert(seaId_ > 0);
 }
 
-noShip::~noShip()
-{
-    // Delete everything on board
-    for(noFigure* figure : figures)
-        deletePtr(figure);
-}
+noShip::~noShip() = default;
 
 void noShip::Serialize(SerializedGameData& sgd) const
 {
@@ -117,8 +113,7 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
 
 void noShip::Destroy()
 {
-    for(const noFigure* figure : figures)
-        RTTR_Assert(!figure);
+    RTTR_Assert(figures.empty());
     RTTR_Assert(wares.empty());
     world->GetNotifications().publish(ShipNote(ShipNote::Destroyed, ownerId_, pos));
     // Schiff wieder abmelden
@@ -276,7 +271,7 @@ void noShip::HandleEvent(const unsigned id)
                     static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();
-                    world->GetPlayer(ownerId_).GetJobForShip(this);
+                    world->GetPlayer(ownerId_).GetJobForShip(*this);
                 } else
                 {
                     // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
@@ -300,7 +295,7 @@ void noShip::HandleEvent(const unsigned id)
                     static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();
-                    world->GetPlayer(ownerId_).GetJobForShip(this);
+                    world->GetPlayer(ownerId_).GetJobForShip(*this);
                 } else
                 {
                     // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
@@ -328,14 +323,14 @@ void noShip::HandleEvent(const unsigned id)
 
                     state = State::TransportUnloading;
                     // Hafen bescheid sagen, dass er das Schiff nun nutzen kann
-                    static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
+                    static_cast<nobHarborBuilding*>(hb)->ShipArrived(*this);
 
                     // Hafen hat keinen Job für uns?
                     if(state == State::TransportUnloading)
                     {
                         // Wieder idlen und ggf. neuen Job suchen
                         StartIdling();
-                        world->GetPlayer(ownerId_).GetJobForShip(this);
+                        world->GetPlayer(ownerId_).GetJobForShip(*this);
                     }
                 } else
                 {
@@ -354,18 +349,17 @@ void noShip::HandleEvent(const unsigned id)
                 if(figures.empty())
                     break;
 
-                auto* attacker = static_cast<nofAttacker*>(figures.front());
                 // Evtl. ist ein Angreifer schon fertig und wieder an Board gegangen
                 // der darf dann natürlich nicht noch einmal raus, sonst kann die schöne Reise
                 // böse enden
-                if(attacker->IsSeaAttackCompleted())
+                if(static_cast<nofAttacker&>(*figures.front()).IsSeaAttackCompleted())
                     break;
 
+                auto& attacker = world->AddFigure(pos, std::move(figures.front()));
                 figures.pop_front();
-                world->AddFigure(pos, attacker);
 
                 current_ev = GetEvMgr().AddEvent(this, 30, 1);
-                attacker->StartAttackOnOtherIsland(pos, GetObjId());
+                static_cast<nofAttacker&>(attacker).StartAttackOnOtherIsland(pos, GetObjId());
                 break;
             }
         }
@@ -416,6 +410,11 @@ bool noShip::IsUnloading() const
 {
     return state == State::ExpeditionUnloading || state == State::ExplorationexpeditionUnloading
            || state == State::TransportUnloading || state == State::SeaattackUnloading;
+}
+
+bool noShip::IsOnBoard(const noFigure& figure) const
+{
+    return helpers::containsPtr(figures, &figure);
 }
 
 /// Gibt Sichtradius dieses Schiffes zurück
@@ -618,7 +617,7 @@ void noShip::FoundColony()
         // Dann idlen wir wieder
         StartIdling();
         // Neue Arbeit suchen
-        world->GetPlayer(ownerId_).GetJobForShip(this);
+        world->GetPlayer(ownerId_).GetJobForShip(*this);
     } else // colony founding FAILED
         world->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, ownerId_, pos));
 }
@@ -645,7 +644,7 @@ void noShip::HandleState_GoToHarbor()
             // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
             noBase* hb = goal.isValid() ? world->GetNO(goal) : nullptr;
             if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
-                static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
+                static_cast<nobHarborBuilding*>(hb)->ShipArrived(*this);
         }
         break;
         case Result::NoRouteFound:
@@ -879,7 +878,7 @@ bool noShip::IsGoingToHarbor(const nobHarborBuilding& hb) const
 }
 
 /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures,
+void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, std::list<std::unique_ptr<noFigure>> figures,
                               std::list<std::unique_ptr<Ware>> wares)
 {
     RTTR_Assert(homeHarborId);
@@ -890,7 +889,7 @@ void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::l
     RTTR_Assert(nb->GetGOT() == GO_Type::NobHarborbuilding);
     this->goal_harborId = static_cast<nobHarborBuilding*>(nb)->GetHarborPosID();
 
-    this->figures = figures;
+    this->figures = std::move(figures);
     this->wares = std::move(wares);
 
     state = State::TransportLoading;
@@ -898,19 +897,20 @@ void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::l
 }
 
 /// Belädt das Schiff mit Schiffs-Angreifern
-void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures)
+void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, std::vector<std::unique_ptr<nofAttacker>> attackers)
 {
     // Heimathafen merken
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == world->GetCoastalPoint(homeHarborId, seaId_));
-    this->home_harbor = homeHarborId;
-    this->goal_harborId = world->GetHarborPointID(goal);
+    home_harbor = homeHarborId;
+    goal_harborId = world->GetHarborPointID(goal);
     RTTR_Assert(goal_harborId);
-    this->figures = figures;
-    for(auto& figure : this->figures)
+    figures.clear();
+    for(auto& attacker : attackers)
     {
-        static_cast<nofAttacker*>(figure)->StartShipJourney();
-        static_cast<nofAttacker*>(figure)->SeaAttackStarted();
+        attacker->StartShipJourney();
+        attacker->SeaAttackStarted();
+        figures.push_back(std::move(attacker));
     }
     state = State::SeaattackLoading;
     current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
@@ -936,10 +936,7 @@ void noShip::AbortSeaAttack()
         // -> tell the soldiers we go back (like after an attack)
         goal_harborId = home_harbor;
         for(auto& figure : figures)
-        {
-            RTTR_Assert(dynamic_cast<nofAttacker*>(figure));
-            static_cast<nofAttacker*>(figure)->StartReturnViaShip(*this);
-        }
+            checkedCast<nofAttacker*>(figure.get())->StartReturnViaShip(*this);
         if(state == State::SeaattackLoading)
         {
             // We are still loading (loading event must be active)
@@ -957,10 +954,7 @@ void noShip::AbortSeaAttack()
         // attack failed and we cannot go back to our home harbor
         // -> Tell figures that they won't go to their planned destination
         for(auto& figure : figures)
-        {
-            RTTR_Assert(dynamic_cast<nofAttacker*>(figure));
-            static_cast<nofAttacker*>(figure)->CancelSeaAttack();
-        }
+            checkedCast<nofAttacker*>(figure.get())->CancelSeaAttack();
 
         if(state == State::SeaattackLoading)
         {
@@ -1177,17 +1171,17 @@ void noShip::SeaAttackerWishesNoReturn()
         {
             // Wenn keine Soldaten mehr da sind können wir auch erstmal idlen
             StartIdling();
-            world->GetPlayer(ownerId_).GetJobForShip(this);
+            world->GetPlayer(ownerId_).GetJobForShip(*this);
         }
     }
 }
 
 /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
-void noShip::AddReturnedAttacker(nofAttacker* attacker)
+void noShip::AddReturnedAttacker(std::unique_ptr<nofAttacker> attacker)
 {
-    RTTR_Assert(!helpers::contains(figures, attacker));
+    RTTR_Assert(!helpers::containsPtr(figures, attacker.get()));
 
-    figures.push_back(attacker);
+    figures.push_back(std::move(attacker));
     // Nun brauchen wir quasi einen Angreifer weniger
     SeaAttackerWishesNoReturn();
 }
