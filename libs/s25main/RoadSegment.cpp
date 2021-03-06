@@ -82,14 +82,15 @@ void RoadSegment::Destroy()
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
             // Figuren sammeln
-            for(noBase* object : world->GetFigures(pt))
+            for(noBase& object : world->GetFigures(pt))
             {
-                if(object->GetType() == NodalObjectType::Figure)
+                if(object.GetType() == NodalObjectType::Figure)
                 {
-                    if(static_cast<noFigure*>(object)->GetCurrentRoad() == this)
+                    auto& figure = static_cast<noFigure&>(object);
+                    if(figure.GetCurrentRoad() == this)
                     {
-                        static_cast<noFigure*>(object)->Abrogate();
-                        static_cast<noFigure*>(object)->StartWandering();
+                        figure.Abrogate();
+                        figure.StartWandering();
                     }
                 }
             }
@@ -169,13 +170,13 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
-        const std::list<noBase*>& figures = world->GetFigures(t);
-        for(auto* figure : figures)
+        for(noBase& object : world->GetFigures(t))
         {
-            if(figure->GetType() == NodalObjectType::Figure)
+            if(object.GetType() == NodalObjectType::Figure)
             {
-                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == this)
-                    static_cast<noFigure*>(figure)->CorrectSplitData(second);
+                auto& figure = static_cast<noFigure&>(object);
+                if(figure.GetCurrentRoad() == this)
+                    figure.CorrectSplitData(second);
             }
         }
 

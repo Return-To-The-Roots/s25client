@@ -110,7 +110,7 @@ void nobBaseWarehouse::DestroyBuilding()
     }
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
-    world->AddFigure(pos, new BurnedWarehouse(pos, player, inventory.real.people));
+    world->AddFigure(pos, std::make_unique<BurnedWarehouse>(pos, player, inventory.real.people));
 
     nobBaseMilitary::DestroyBuilding();
 }
@@ -215,12 +215,12 @@ void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
     if(isBoatRequired)
         RTTR_Assert(inventory[GoodType::Boat]);
 
-    auto* carrier =
-      new nofCarrier(isBoatRequired ? CarrierType::Boat : CarrierType::Normal, pos, player, &workplace, &goal);
-    workplace.setCarrier(0, carrier);
+    std::unique_ptr<noFigure> carrier = std::make_unique<nofCarrier>(
+      isBoatRequired ? CarrierType::Boat : CarrierType::Normal, pos, player, &workplace, &goal);
+    workplace.setCarrier(0, static_cast<nofCarrier*>(carrier.get()));
 
     if(!UseFigureAtOnce(carrier, goal))
-        AddLeavingFigure(carrier);
+        AddLeavingFigure(std::move(carrier));
 
     inventory.real.Remove(Job::Helper);
     if(isBoatRequired)
@@ -240,17 +240,17 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
             return false;
     }
 
-    noFigure* fig = JobFactory::CreateJob(job, pos, player, goal);
+    std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, goal);
+    // TODO(Replay): Move the GotWorker part before the UseFigureAtOnce and remove figRef
+    noFigure& figRef = *fig;
+
     // Wenn Figur nicht sofort von abgeleiteter Klasse verwenet wird, fügen wir die zur Leave-Liste hinzu
     if(!UseFigureAtOnce(fig, *goal))
-        AddLeavingFigure(fig);
+        AddLeavingFigure(std::move(fig));
 
     // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
     if(goal->GetType() != NodalObjectType::Flag)
-    {
-        RTTR_Assert(dynamic_cast<noBaseBuilding*>(goal));
-        static_cast<noBaseBuilding*>(goal)->GotWorker(job, fig);
-    }
+        checkedCast<noBaseBuilding*>(goal)->GotWorker(job, figRef);
 
     inventory.real.Remove(job);
 
@@ -266,11 +266,12 @@ nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment* road, noRoadNode* const g
     if(!inventory[Job::PackDonkey])
         return nullptr;
 
-    auto* donkey = new nofCarrier(CarrierType::Donkey, pos, player, road, goal_flag);
-    AddLeavingFigure(donkey);
+    auto donkey = std::make_unique<nofCarrier>(CarrierType::Donkey, pos, player, road, goal_flag);
+    nofCarrier* donkeyRef = donkey.get();
+    AddLeavingFigure(std::move(donkey));
     inventory.real.Remove(Job::PackDonkey);
 
-    return donkey;
+    return donkeyRef;
 }
 
 void nobBaseWarehouse::HandleBaseEvent(const unsigned id)
@@ -427,14 +428,14 @@ void nobBaseWarehouse::HandleSendoutEvent()
           world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(jobType), true, false);
         if(wh != this)
         {
-            auto* fig = new nofPassiveWorker(jobType, pos, player, nullptr);
+            auto fig = std::make_unique<nofPassiveWorker>(jobType, pos, player, nullptr);
 
             if(wh)
                 fig->GoHome(wh);
             else
                 fig->StartWandering();
 
-            AddLeavingFigure(fig);
+            AddLeavingFigure(std::move(fig));
 
             // Person aus Inventar entfernen
             inventory.real.Remove(jobType);
@@ -570,7 +571,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
         // there's a fight
 
         // try to find a defender
-        const auto it = std::find_if(leave_house.begin(), leave_house.end(), [](const auto* sld) {
+        const auto it = helpers::find_if(leave_house, [](const auto& sld) {
             return sld->GetGOT() == GO_Type::NofAggressivedefender || sld->GetGOT() == GO_Type::NofDefender;
         });
         // no defender found? trigger next leaving event :)
@@ -582,44 +583,41 @@ void nobBaseWarehouse::HandleLeaveEvent()
         }
         // and make him leave the house first
         // remove defender from list, insert him again in front of all others
-        leave_house.push_front(*it);
+        leave_house.push_front(std::move(*it));
         leave_house.erase(it);
     }
 
     // Figuren kommen zuerst raus
     if(!leave_house.empty())
     {
-        noFigure* fig = leave_house.front();
-
-        world->AddFigure(pos, fig);
+        noFigure& fig = world->AddFigure(pos, std::move(leave_house.front()));
+        leave_house.pop_front();
 
         // Init road walking for figures walking on roads
-        if(fig->IsWalkingOnRoad())
-            fig->InitializeRoadWalking(GetRoute(Direction::SouthEast), 0, true);
+        if(fig.IsWalkingOnRoad())
+            fig.InitializeRoadWalking(GetRoute(Direction::SouthEast), 0, true);
 
-        fig->ActAtFirst();
+        fig.ActAtFirst();
         // Bei Lagerhausarbeitern das nicht abziehen!
-        if(!fig->MemberOfWarehouse())
+        if(!fig.MemberOfWarehouse())
         {
             // War das ein Boot-Träger?
-            if(fig->GetJobType() == Job::BoatCarrier)
+            if(fig.GetJobType() == Job::BoatCarrier)
             {
                 // Remove helper and boat separately
                 inventory.visual.Remove(Job::Helper);
                 inventory.visual.Remove(GoodType::Boat);
             } else
-                inventory.visual.Remove(fig->GetJobType());
+                inventory.visual.Remove(fig.GetJobType());
 
-            if(fig->GetGOT() == GO_Type::NofTradedonkey)
+            if(fig.GetGOT() == GO_Type::NofTradedonkey)
             {
                 // Trade donkey carrying wares?
-                const auto& carriedWare = static_cast<nofTradeDonkey*>(fig)->GetCarriedWare();
+                const auto& carriedWare = static_cast<nofTradeDonkey&>(fig).GetCarriedWare();
                 if(carriedWare)
                     inventory.visual.Remove(*carriedWare);
             }
         }
-
-        leave_house.pop_front();
     } else
     {
         if(GetFlag()->HasSpaceForWare())
@@ -629,9 +627,8 @@ void nobBaseWarehouse::HandleLeaveEvent()
             waiting_wares.pop_front();
             inventory.visual.Remove(ConvertShields(ware->type));
             ware->Carry(GetFlag());
-            auto* worker = new nofWarehouseWorker(pos, player, std::move(ware), false);
-            world->AddFigure(pos, worker);
-            worker->WalkToGoal();
+            world->AddFigure(pos, std::make_unique<nofWarehouseWorker>(pos, player, std::move(ware), false))
+              .WalkToGoal();
         } else
         {
             // Kein Platz mehr für Waren --> keiner brauch mehr rauszukommen, und Figuren gibts ja auch keine mehr
@@ -656,7 +653,7 @@ bool nobBaseWarehouse::UseWareAtOnce(std::unique_ptr<Ware>& /*ware*/, noBaseBuil
 }
 
 /// Dasselbe für Menschen
-bool nobBaseWarehouse::UseFigureAtOnce(noFigure* /*fig*/, noRoadNode& /*goal*/)
+bool nobBaseWarehouse::UseFigureAtOnce(std::unique_ptr<noFigure>& /*fig*/, noRoadNode& /*goal*/)
 {
     return false;
 }
@@ -803,7 +800,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
     CheckOuthousing(job);
 }
 
-void nobBaseWarehouse::AddFigure(noFigure* figure, const bool increase_visual_counts)
+void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool increase_visual_counts)
 {
     // Warenhausarbeiter werden nicht gezählt!
     if(!figure->MemberOfWarehouse())
@@ -831,17 +828,17 @@ void nobBaseWarehouse::AddFigure(noFigure* figure, const bool increase_visual_co
 
     // Check if we were actually waiting for this figure or if it was just added (e.g. builder that constructed it) to
     // not confuse implementations of Remove...
-    if(IsDependentFigure(figure))
-        RemoveDependentFigure(figure);
-    GetEvMgr().AddToKillList(figure);
+    if(IsDependentFigure(*figure))
+        RemoveDependentFigure(*figure);
 
     CheckJobsForNewFigure(figure->GetJobType());
+    GetEvMgr().AddToKillList(std::move(figure));
 }
 
 void nobBaseWarehouse::FetchWare()
 {
     if(!fetch_double_protection)
-        AddLeavingFigure(new nofWarehouseWorker(pos, player, nullptr, true));
+        AddLeavingFigure(std::make_unique<nofWarehouseWorker>(pos, player, nullptr, true));
 
     fetch_double_protection = false;
 }
@@ -861,14 +858,12 @@ void nobBaseWarehouse::CancelWare(Ware*& ware)
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobBaseWarehouse::CancelFigure(noFigure* figure)
 {
-    auto it = std::find(leave_house.begin(), leave_house.end(), figure);
-    RTTR_Assert(it != leave_house.end()); // TODO: Is this true in all cases? If yes, remove the check below
+    auto it = helpers::findPtr(leave_house, figure);
+    RTTR_Assert(it != leave_house.end());
 
     // Figure aus den Waiting-Wares entfernen
-    if(it != leave_house.end())
-        leave_house.erase(it);
-
-    AddFigure(figure, false);
+    AddFigure(std::move(*it), false);
+    leave_house.erase(it);
 }
 
 void nobBaseWarehouse::TakeWare(Ware* ware)
@@ -891,10 +886,10 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count, bool ignor
             // Vertreter der Ränge ggf rausschicken
             while(inventory[curRank] && count)
             {
-                nofSoldier* soldier = new nofPassiveSoldier(pos, player, goal, goal, i - 1);
+                auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, goal, goal, i - 1);
                 inventory.real.Remove(curRank);
-                AddLeavingFigure(soldier);
-                goal->GotWorker(curRank, soldier);
+                goal->GotWorker(curRank, *soldier);
+                AddLeavingFigure(std::move(soldier));
                 --count;
             }
         }
@@ -908,17 +903,17 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count, bool ignor
             // Vertreter der Ränge ggf rausschicken
             while(inventory[curRank] && count)
             {
-                nofSoldier* soldier = new nofPassiveSoldier(pos, player, goal, goal, i - 1);
+                auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, goal, goal, i - 1);
                 inventory.real.Remove(curRank);
-                AddLeavingFigure(soldier);
-                goal->GotWorker(curRank, soldier);
+                goal->GotWorker(curRank, *soldier);
+                AddLeavingFigure(std::move(soldier));
                 --count;
             }
         }
     }
 }
 
-nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker* attacker)
+nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker& attacker)
 {
     // Sind noch Soldaten da?
     unsigned char rank;
@@ -933,13 +928,14 @@ nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker* att
         return nullptr;
 
     // Dann den Stärksten rausschicken
-    auto* soldier = new nofAggressiveDefender(pos, player, this, rank - 1, attacker);
+    auto soldier = std::make_unique<nofAggressiveDefender>(pos, player, *this, rank - 1, attacker);
+    nofAggressiveDefender& soldierRef = *soldier;
     inventory.real.Remove(SOLDIER_JOBS[rank - 1]);
-    AddLeavingFigure(soldier);
+    AddLeavingFigure(std::move(soldier));
 
-    troops_on_mission.push_back(soldier);
+    troops_on_mission.push_back(&soldierRef);
 
-    return soldier;
+    return &soldierRef;
 }
 
 void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
@@ -950,7 +946,7 @@ void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
     troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
 }
 
-void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
+void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
 {
     // Add soldier. If he is still in the leave-queue, then don't add him to the visual settings again
     if(helpers::contains(leave_house, soldier))
@@ -965,21 +961,21 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
     world->GetPlayer(player).RegulateAllTroops();
 
     // Returned home
-    if(soldier == defender_)
+    if(soldier.get() == defender_)
         NoDefender();
     else
     {
         // Ggf. war er auf Mission
-        RTTR_Assert(helpers::contains(troops_on_mission, soldier));
-        troops_on_mission.remove(soldier);
+        RTTR_Assert(helpers::contains(troops_on_mission, soldier.get()));
+        troops_on_mission.remove(soldier.get());
     }
 
     // und Soldat vernichten
     soldier->ResetHome();
-    GetEvMgr().AddToKillList(soldier);
+    GetEvMgr().AddToKillList(std::move(soldier));
 }
 
-nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
+std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& attacker)
 {
     // Ränge zählen
     unsigned rank_count = 0;
@@ -1006,8 +1002,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
                 {
                     // diesen Soldaten wollen wir
                     inventory.real.Remove(SOLDIER_JOBS[i]);
-                    auto* soldier = new nofDefender(pos, player, this, i, attacker);
-                    return soldier;
+                    return std::make_unique<nofDefender>(pos, player, *this, i, attacker);
                 }
                 ++r;
             }
@@ -1021,8 +1016,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
                     // bei der visuellen Warenanzahl wieder hinzufügen, da er dann wiederrum von der abgezogen wird,
                     // wenn er rausgeht und es so ins minus rutschen würde
                     inventory.visual.Add(SOLDIER_JOBS[i]);
-                    auto* soldier = new nofDefender(pos, player, this, i, attacker);
-                    return soldier;
+                    return std::make_unique<nofDefender>(pos, player, *this, i, attacker);
                 }
                 ++r;
             }
@@ -1036,18 +1030,18 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
         // Soldat?
         if((*it)->GetGOT() == GO_Type::NofAggressivedefender)
         {
-            auto* aggDefender = static_cast<nofAggressiveDefender*>(*it);
+            auto* aggDefender = static_cast<nofAggressiveDefender*>(it->get());
             aggDefender->NeedForHomeDefence();
             soldier = aggDefender;
         } else if((*it)->GetGOT() == GO_Type::NofPassivesoldier)
-            soldier = static_cast<nofPassiveSoldier*>(*it);
+            soldier = static_cast<nofPassiveSoldier*>(it->get());
         else
             continue;
 
         leave_house.erase(it); // Only allowed in the loop as we return now
         soldier->Abrogate();
 
-        auto* defender = new nofDefender(pos, player, this, soldier->GetRank(), attacker);
+        auto defender = std::make_unique<nofDefender>(pos, player, *this, soldier->GetRank(), attacker);
         soldier->Destroy();
         delete soldier;
         return defender;
@@ -1378,9 +1372,9 @@ void nobBaseWarehouse::CheckOuthousing(const boost::variant<GoodType, Job>& what
 }
 
 /// For debug only
-bool nobBaseWarehouse::IsDependentFigure(noFigure* fig) const
+bool nobBaseWarehouse::IsDependentFigure(const noFigure& fig) const
 {
-    return helpers::contains(dependent_figures, fig);
+    return helpers::contains(dependent_figures, &fig);
 }
 
 /// Available goods of a specific type that can be used for trading
@@ -1410,22 +1404,23 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& what, const unsigned count,
                                           const TradeRoute& tr, nobBaseWarehouse* goal)
 {
-    auto* tl = new nofTradeLeader(pos, player, tr, this->GetPos(), goal->GetPos());
-    AddLeavingFigure(tl);
+    auto tlOwned = std::make_unique<nofTradeLeader>(pos, player, tr, this->GetPos(), goal->GetPos());
+    auto& tl = *tlOwned;
+    AddLeavingFigure(std::move(tlOwned));
 
     // Create the donkeys or other people
     nofTradeDonkey* last = nullptr;
     for(unsigned i = 0; i < count; ++i)
     {
-        auto* next = new nofTradeDonkey(pos, player, what);
+        auto next = std::make_unique<nofTradeDonkey>(pos, player, what);
 
         if(last)
-            last->SetSuccessor(next);
+            last->SetSuccessor(next.get());
         else
-            tl->SetSuccessor(next);
+            tl.SetSuccessor(next.get());
 
-        last = next;
-        AddLeavingFigure(next);
+        last = next.get();
+        AddLeavingFigure(std::move(next));
     }
 
     GamePlayer& owner = world->GetPlayer(player);

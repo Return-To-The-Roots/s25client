@@ -234,11 +234,7 @@ void noTree::DontFall()
 void noTree::ProduceAnimal()
 {
     // neues Tier erzeugen, zufälliger Typ
-    static const std::array<Species, 6> possibleSpecies = {
+    constexpr std::array<Species, 6> possibleSpecies = {
       {Species::RabbitWhite, Species::RabbitGrey, Species::Fox, Species::Stag, Species::Deer, Species::Sheep}};
-    auto* animal = new noAnimal(RANDOM_ELEMENT(possibleSpecies), pos);
-    // In die Landschaft setzen
-    world->AddFigure(pos, animal);
-    // Und ihm die Pforten geben..
-    animal->StartLiving();
+    world->AddFigure(pos, std::make_unique<noAnimal>(RANDOM_ELEMENT(possibleSpecies), pos)).StartLiving();
 }

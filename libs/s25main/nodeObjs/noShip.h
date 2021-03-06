@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "helpers/PtrSpan.h"
 #include "noMovable.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/ShipDirection.h"
@@ -75,7 +76,7 @@ class noShip : public noMovable
     unsigned curRouteIdx;
     std::vector<Direction> route_;
     /// Ladung des Schiffes
-    std::list<noFigure*> figures;
+    std::list<std::unique_ptr<noFigure>> figures;
     std::list<std::unique_ptr<Ware>> wares;
     /// Gibt an, ob das Schiff verlassen auf dem Meer auf einen Anlegeplatz wartet,
     /// um sein Zeug auszuladen
@@ -186,9 +187,10 @@ public:
     bool IsLoading() const;
     bool IsUnloading() const;
     /// Gibt Liste der Waren an Bord zurück
-    const std::list<std::unique_ptr<Ware>>& GetWares() const { return wares; }
+    auto GetWares() const { return helpers::nonNullPtrSpan(wares); }
     /// Gibt Liste der Menschen an Bord zurück
-    const std::list<noFigure*>& GetFigures() const { return figures; }
+    auto GetFigures() const { return helpers::nonNullPtrSpan(figures); }
+    bool IsOnBoard(const noFigure& figure) const;
     /// Gibt Sichtradius dieses Schiffes zurück
     unsigned GetVisualRange() const;
 
@@ -220,15 +222,15 @@ public:
     bool IsGoingToHarbor(const nobHarborBuilding& hb) const;
 
     /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-    void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures,
+    void PrepareTransport(unsigned homeHarborId, MapPoint goal, std::list<std::unique_ptr<noFigure>> figures,
                           std::list<std::unique_ptr<Ware>> wares);
 
     /// Belädt das Schiff mit Schiffs-Angreifern
-    void PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures);
+    void PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, std::vector<std::unique_ptr<nofAttacker>> attackers);
     /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
     void SeaAttackerWishesNoReturn();
     /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
-    void AddReturnedAttacker(nofAttacker* attacker);
+    void AddReturnedAttacker(std::unique_ptr<nofAttacker> attacker);
 
     /// Sagt dem Schiff, das ein bestimmter Hafen zerstört wurde
     void HarborDestroyed(nobHarborBuilding* hb);

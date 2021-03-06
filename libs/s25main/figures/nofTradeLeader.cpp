@@ -82,8 +82,7 @@ void nofTradeLeader::GoalReached()
     }
 
     world->GetPlayer(targetWarehouse->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
-    world->RemoveFigure(pos, this);
-    targetWarehouse->AddFigure(this);
+    targetWarehouse->AddFigure(world->RemoveFigure(pos, *this));
 }
 
 void nofTradeLeader::Walked()

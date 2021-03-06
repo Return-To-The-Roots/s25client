@@ -59,110 +59,111 @@
 #include "nodeObjs/noFlag.h"
 #include <stdexcept>
 
-noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsigned char player, noRoadNode* const goal)
+std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsigned char player,
+                                                noRoadNode* const goal)
 {
     switch(job_id)
     {
         case Job::Builder:
             if(!goal)
-                return new nofBuilder(pt, player, nullptr);
+                return std::make_unique<nofBuilder>(pt, player, nullptr);
             else if(goal->GetGOT() != GO_Type::Buildingsite)
-                return new nofPassiveWorker(Job::Builder, pt, player, goal);
+                return std::make_unique<nofPassiveWorker>(Job::Builder, pt, player, goal);
             else
-                return new nofBuilder(pt, player, static_cast<noBuildingSite*>(goal));
+                return std::make_unique<nofBuilder>(pt, player, static_cast<noBuildingSite*>(goal));
         case Job::Planer:
             RTTR_Assert(dynamic_cast<noBuildingSite*>(goal));
-            return new nofPlaner(pt, player, static_cast<noBuildingSite*>(goal));
+            return std::make_unique<nofPlaner>(pt, player, static_cast<noBuildingSite*>(goal));
         case Job::Carpenter:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofCarpenter(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofCarpenter>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Armorer:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofArmorer(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofArmorer>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Stonemason:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofStonemason(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofStonemason>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Brewer:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofBrewer(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofBrewer>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Minter:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofMinter(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofMinter>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Butcher:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofButcher(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofButcher>(pt, player, static_cast<nobUsual*>(goal));
         case Job::IronFounder:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofIronfounder(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofIronfounder>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Miller:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofMiller(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofMiller>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Metalworker:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofMetalworker(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofMetalworker>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Baker:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofBaker(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofBaker>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Helper:
             // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
             if(!goal)
-                return new nofWellguy(pt, player, static_cast<nobUsual*>(nullptr));
+                return std::make_unique<nofWellguy>(pt, player, static_cast<nobUsual*>(nullptr));
             else if(goal->GetGOT() == GO_Type::NobStorehouse || goal->GetGOT() == GO_Type::NobHarborbuilding
                     || goal->GetGOT() == GO_Type::NobHq)
-                return new nofWellguy(pt, player, static_cast<nobBaseWarehouse*>(goal));
+                return std::make_unique<nofWellguy>(pt, player, static_cast<nobBaseWarehouse*>(goal));
             else if(goal->GetGOT() == GO_Type::NobUsual)
             {
                 auto* goalBld = static_cast<nobUsual*>(goal);
                 if(goalBld->GetBuildingType() == BuildingType::Well)
-                    return new nofWellguy(pt, player, goalBld);
+                    return std::make_unique<nofWellguy>(pt, player, goalBld);
                 else if(goalBld->GetBuildingType() == BuildingType::Catapult)
-                    return new nofCatapultMan(pt, player, goalBld);
+                    return std::make_unique<nofCatapultMan>(pt, player, goalBld);
             }
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job "
                                      + helpers::toString(job_id));
         case Job::Geologist:
             RTTR_Assert(dynamic_cast<noFlag*>(goal));
-            return new nofGeologist(pt, player, static_cast<noFlag*>(goal));
+            return std::make_unique<nofGeologist>(pt, player, static_cast<noFlag*>(goal));
         case Job::Scout:
             // Im Spähturm arbeitet ein anderer Späher-Typ
             // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
             if(!goal)
-                return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(nullptr));
+                return std::make_unique<nofScout_LookoutTower>(pt, player, static_cast<nobUsual*>(nullptr));
             else if(goal->GetGOT() == GO_Type::NobHarborbuilding || goal->GetGOT() == GO_Type::NobStorehouse
                     || goal->GetGOT() == GO_Type::NobHq)
-                return new nofPassiveWorker(Job::Scout, pt, player, goal);
+                return std::make_unique<nofPassiveWorker>(Job::Scout, pt, player, goal);
             else if(goal->GetGOT() == GO_Type::NobUsual) // Spähturm / Lagerhaus?
             {
                 RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-                return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(goal));
+                return std::make_unique<nofScout_LookoutTower>(pt, player, static_cast<nobUsual*>(goal));
             } else if(goal->GetGOT() == GO_Type::Flag)
-                return new nofScout_Free(pt, player, goal);
+                return std::make_unique<nofScout_Free>(pt, player, goal);
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job "
                                      + helpers::toString(job_id));
         case Job::Miner:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofMiner(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofMiner>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Farmer:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofFarmer(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofFarmer>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Forester:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofForester(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofForester>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Woodcutter:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofWoodcutter(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofWoodcutter>(pt, player, static_cast<nobUsual*>(goal));
         case Job::PigBreeder:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofPigbreeder(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofPigbreeder>(pt, player, static_cast<nobUsual*>(goal));
         case Job::DonkeyBreeder:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofDonkeybreeder(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofDonkeybreeder>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Hunter:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofHunter(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofHunter>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Fisher:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofFisher(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofFisher>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Private:
         case Job::PrivateFirstClass:
         case Job::Sergeant:
@@ -170,18 +171,18 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         case Job::General:
             // TODO: Is this ever called? If yes, then why is the home here set to nullptr?
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(goal));
-            return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), nullptr,
-                                         getSoldierRank(job_id));
-        case Job::PackDonkey: return new nofCarrier(CarrierType::Donkey, pt, player, nullptr, goal);
+            return std::make_unique<nofPassiveSoldier>(pt, player, static_cast<nobBaseMilitary*>(goal), nullptr,
+                                                       getSoldierRank(job_id));
+        case Job::PackDonkey: return std::make_unique<nofCarrier>(CarrierType::Donkey, pt, player, nullptr, goal);
         case Job::Shipwright:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofShipWright(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofShipWright>(pt, player, static_cast<nobUsual*>(goal));
         case Job::CharBurner:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-            return new nofCharburner(pt, player, static_cast<nobUsual*>(goal));
+            return std::make_unique<nofCharburner>(pt, player, static_cast<nobUsual*>(goal));
         case Job::BoatCarrier:
-            throw std::runtime_error("Cannot create a boat carrier job (try creating Job::Helper).");
+            throw std::logic_error("Cannot create a boat carrier job (try creating Job::Helper).");
             break;
     }
-    throw std::runtime_error("Invalid job type " + helpers::toString(job_id));
+    throw std::logic_error("Invalid job type " + helpers::toString(job_id));
 }

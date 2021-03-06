@@ -50,7 +50,6 @@
 #include <memory>
 
 // LCOV_EXCL_START
-BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(Resource)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AddonId)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(nofBuildingWorker::State)
@@ -599,12 +598,12 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
           world, BuildingType::Hunter, hunterPos1, 0, rttr::test::randomEnum<Nation>()));
         auto* hunterBld2 = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(
           world, BuildingType::Hunter, hunterPos2, 0, rttr::test::randomEnum<Nation>()));
-        auto* hunter1 = new nofHunter(hunterPos1, rttr::test::randomValue(0u, 10u), hunterBld1);
-        world.AddFigure(hunter1->GetPos(), hunter1);
-        auto* hunter2 = new nofHunter(hunterPos2, rttr::test::randomValue(0u, 10u), hunterBld2);
-        world.AddFigure(hunter2->GetPos(), hunter2);
-        world.AddFigure(hunter2->GetPos(), new noAnimal(Species::Deer, hunter2->GetPos()));
-        hunter2->TryStartHunting();
+        world.AddFigure(hunterPos1,
+                        std::make_unique<nofHunter>(hunterPos1, rttr::test::randomValue(0u, 10u), hunterBld1));
+        auto& hunter2 = world.AddFigure(
+          hunterPos2, std::make_unique<nofHunter>(hunterPos2, rttr::test::randomValue(0u, 10u), hunterBld2));
+        world.AddFigure(hunterPos2, std::make_unique<noAnimal>(Species::Deer, hunterPos2));
+        hunter2.TryStartHunting();
         sgd.MakeSnapshot(*game);
     }
     MockLocalGameState lgs;
@@ -613,8 +612,8 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     sgd.ReadSnapshot(*game, lgs);
     BOOST_TEST_REQUIRE(world.GetFigures(hunterPos1).size() == 1u);
     BOOST_TEST_REQUIRE(world.GetFigures(hunterPos2).size() == 2u);
-    const auto* deserializedHunter1 = dynamic_cast<const nofHunter*>(world.GetFigures(hunterPos1).front());
-    const auto* deserializedHunter2 = dynamic_cast<const nofHunter*>(world.GetFigures(hunterPos2).front());
+    const auto* deserializedHunter1 = dynamic_cast<const nofHunter*>(&world.GetFigures(hunterPos1).front());
+    const auto* deserializedHunter2 = dynamic_cast<const nofHunter*>(&world.GetFigures(hunterPos2).front());
     BOOST_TEST_REQUIRE(deserializedHunter1);
     BOOST_TEST_REQUIRE(deserializedHunter2);
     BOOST_TEST(deserializedHunter1->GetState() != deserializedHunter2->GetState());

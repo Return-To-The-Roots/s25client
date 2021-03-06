@@ -412,10 +412,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
                 continue;
         }
 
-        auto* animal = new noAnimal(species, pt);
-        world_.AddFigure(pt, animal);
-        // Loslaufen
-        animal->StartLiving();
+        world_.AddFigure(pt, std::make_unique<noAnimal>(species, pt)).StartLiving();
     }
 }
 

@@ -212,10 +212,9 @@ const noShip* GameWorldViewer::GetShip(const MapPoint pt) const
     };
     const auto& world = GetWorld();
     auto checkPointForShips = [&world, checkShip](const MapPoint curPt, auto /*radius*/) {
-        const std::list<noBase*>& figures = world.GetFigures(curPt);
-        for(const auto* figure : figures)
+        for(const auto& figure : world.GetFigures(curPt))
         {
-            if(figure->GetGOT() == GO_Type::Ship && checkShip(static_cast<const noShip&>(*figure)))
+            if(figure.GetGOT() == GO_Type::Ship && checkShip(static_cast<const noShip&>(figure)))
                 return true;
         }
         return false;

@@ -18,6 +18,8 @@
 #pragma once
 
 #include "noBase.h"
+#include <array>
+#include <memory>
 
 class nofActiveSoldier;
 class SerializedGameData;
@@ -27,7 +29,7 @@ class GameEvent;
 class noFighting : public noBase
 {
     /// die kämpfenden Soldaten
-    nofActiveSoldier* soldiers[2];
+    std::array<std::unique_ptr<nofActiveSoldier>, 2> soldiers;
     // Wer ist an der Reihe mit angreifen (2 = Beginn des Kampfes)
     unsigned char turn;
     /// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
@@ -43,7 +45,7 @@ private:
     void StartAttack();
 
 public:
-    noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
+    noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2);
     noFighting(SerializedGameData& sgd, unsigned obj_id);
     ~noFighting() override;
 
@@ -57,7 +59,7 @@ public:
 
     /// Dürfen andern Figuren diesen Kampf schon durchqueren?
     bool IsActive() const;
-    bool IsFighter(nofActiveSoldier* as) { return as == soldiers[0] || as == soldiers[1]; }
+    bool IsFighter(const nofActiveSoldier& as) const { return &as == soldiers[0].get() || &as == soldiers[1].get(); }
 
     /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
     bool IsSoldierOfPlayer(unsigned char player) const;

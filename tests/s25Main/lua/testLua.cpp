@@ -630,16 +630,16 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_TEST_REQUIRE(obj2->GetGOT() == GO_Type::Envobject);
 
     MapPoint animalPos(20, 12);
-    const std::list<noBase*>& figs = world.GetFigures(animalPos);
+    const auto figs = world.GetFigures(animalPos);
     BOOST_TEST_REQUIRE(figs.empty());
     executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_DEER)") % animalPos.x % animalPos.y);
     BOOST_TEST_REQUIRE(figs.size() == 1u);
-    const noAnimal* animal = dynamic_cast<noAnimal*>(figs.front());
+    const noAnimal* animal = dynamic_cast<noAnimal*>(&*figs.begin());
     BOOST_TEST_REQUIRE(animal);
     BOOST_TEST_REQUIRE(animal->GetSpecies() == Species::Deer); //-V522
     executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_FOX)") % animalPos.x % animalPos.y);
     BOOST_TEST_REQUIRE(figs.size() == 2u);
-    animal = dynamic_cast<noAnimal*>(figs.back());
+    animal = dynamic_cast<noAnimal*>(&*(++figs.begin()));
     BOOST_TEST_REQUIRE(animal);
     BOOST_TEST_REQUIRE(animal->GetSpecies() == Species::Fox);
 }

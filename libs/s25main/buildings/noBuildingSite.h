@@ -81,7 +81,7 @@ public:
     std::unique_ptr<FOWObject> CreateFOWObject() const override;
 
     void AddWare(std::unique_ptr<Ware> ware) override;
-    void GotWorker(Job job, noFigure* worker) override;
+    void GotWorker(Job job, noFigure& worker) override;
 
     /// Fordert Baumaterial an
     void OrderConstructionMaterial();

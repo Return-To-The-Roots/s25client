@@ -30,6 +30,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
 #include "helpers/containerUtils.h"
+#include "helpers/reverse.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
@@ -706,10 +707,10 @@ void GameWorld::RoadNodeAvailable(const MapPoint pt)
             continue;
 
         // Figuren Bescheid sagen
-        for(noBase* object : GetFigures(nb))
+        for(noBase& object : GetFigures(nb))
         {
-            if(object->GetType() == NodalObjectType::Figure)
-                static_cast<noFigure*>(object)->NodeFreed(pt);
+            if(object.GetType() == NodalObjectType::Figure)
+                static_cast<noFigure&>(object).NodeFreed(pt);
         }
     }
 }
@@ -733,89 +734,70 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
     // Liste von verfügbaren Soldaten, geordnet einfügen, damit man dann starke oder schwache Soldaten nehmen kann
-    std::list<PotentialAttacker> soldiers;
+    std::list<PotentialAttacker> potentialAttackers;
 
-    for(auto& building : buildings)
+    for(const auto* building : buildings)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if(building->GetPlayer() != player_attacker || !BuildingProperties::IsMilitary(building->GetBuildingType()))
             continue;
 
-        unsigned soldiers_count = static_cast<nobMilitary*>(building)->GetNumSoldiersForAttack(pt);
-        if(!soldiers_count)
+        const auto& milBld = static_cast<const nobMilitary&>(*building);
+        unsigned numSoldiersForCurrentBld = milBld.GetNumSoldiersForAttack(pt);
+        if(!numSoldiersForCurrentBld)
             continue;
 
         // Take soldier(s)
-        unsigned i = 0;
-        const SortedTroops& troops = static_cast<nobMilitary*>(building)->GetTroops();
+        unsigned curNumSoldiers = 0;
         const unsigned distance = CalcDistance(building->GetPos(), pt);
         if(strong_soldiers)
         {
             // Strong soldiers first
-            for(auto it2 = troops.crbegin(); it2 != troops.crend() && i < soldiers_count; ++it2, ++i) //-V127
+            for(auto& curSoldier : helpers::reverse(milBld.GetTroops()))
             {
-                bool inserted = false;
-                for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
-                {
-                    /* Insert new soldier before current one if:
-                            new soldiers rank is greater
-                            OR new soldiers rank is equal AND new soldiers distance is smaller */
-                    if(it3->soldier->GetRank() < (*it2)->GetRank()
-                       || (it3->soldier->GetRank() == (*it2)->GetRank() && it3->distance > distance))
-                    {
-                        PotentialAttacker pa = {*it2, distance};
-                        soldiers.insert(it3, pa);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if(!inserted)
-                {
-                    PotentialAttacker pa = {*it2, distance};
-                    soldiers.push_back(pa);
-                }
+                if(curNumSoldiers >= numSoldiersForCurrentBld)
+                    break;
+                ++curNumSoldiers;
+                /* Insert new soldier before current one if:
+                        new soldiers rank is greater
+                        OR new soldiers rank is equal AND new soldiers distance is smaller */
+                const auto itInsertPos = helpers::find_if(
+                  potentialAttackers, [curRank = curSoldier.GetRank(), distance](const PotentialAttacker& pa) {
+                      return pa.soldier->GetRank() < curRank
+                             || (pa.soldier->GetRank() == curRank && pa.distance > distance);
+                  });
+                potentialAttackers.emplace(itInsertPos, PotentialAttacker{&curSoldier, distance});
             }
         } else
         {
             // Weak soldiers first
-            for(auto it2 = troops.cbegin(); it2 != troops.cend() && i < soldiers_count; ++it2, ++i) //-V127
+            for(auto& curSoldier : milBld.GetTroops())
             {
-                bool inserted = false;
-                for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
-                {
-                    /* Insert new soldier before current one if:
-                            new soldiers rank is less
-                            OR new soldiers rank is equal AND new soldiers distance is smaller */
-                    if(it3->soldier->GetRank() > (*it2)->GetRank()
-                       || (it3->soldier->GetRank() == (*it2)->GetRank() && it3->distance > distance))
-                    {
-                        PotentialAttacker pa = {*it2, distance};
-                        soldiers.insert(it3, pa);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if(!inserted)
-                {
-                    PotentialAttacker pa = {*it2, distance};
-                    soldiers.push_back(pa);
-                }
+                if(curNumSoldiers >= numSoldiersForCurrentBld)
+                    break;
+                ++curNumSoldiers;
+                /* Insert new soldier before current one if:
+                           new soldiers rank is less
+                           OR new soldiers rank is equal AND new soldiers distance is smaller */
+                const auto itInsertPos = helpers::find_if(
+                  potentialAttackers, [curRank = curSoldier.GetRank(), distance](const PotentialAttacker& pa) {
+                      return pa.soldier->GetRank() > curRank
+                             || (pa.soldier->GetRank() == curRank && pa.distance > distance);
+                  });
+                potentialAttackers.emplace(itInsertPos, PotentialAttacker{&curSoldier, distance});
             }
         } // End weak/strong check
     }
 
     // Send the soldiers to attack
-    unsigned short i = 0;
+    unsigned curNumSoldiers = 0;
 
-    for(PotentialAttacker& pa : soldiers)
+    for(PotentialAttacker& pa : potentialAttackers)
     {
-        if(i >= soldiers_count)
+        if(curNumSoldiers >= soldiers_count)
             break;
-        // neuen Angreifer-Soldaten erzeugen
-        new nofAttacker(pa.soldier, attacked_building);
-        // passiven Soldaten entsorgen
-        destroyAndDelete(pa.soldier);
-        i++;
+        pa.soldier->getHome()->SendAttacker(pa.soldier, *attacked_building);
+        curNumSoldiers++;
     }
 }
 
@@ -851,16 +833,13 @@ void GameWorld::AttackViaSea(const unsigned char player_attacker, const MapPoint
     else
         std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<>>());
 
-    auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    auto& attacked_building = *GetSpecObj<nobBaseMilitary>(pt);
     unsigned counter = 0;
     for(GameWorldBase::PotentialSeaAttacker& pa : attackers)
     {
         if(counter >= soldiers_count)
             break;
-        // neuen Angreifer-Soldaten erzeugen
-        new nofAttacker(pa.soldier, attacked_building, pa.harbor);
-        // passiven Soldaten entsorgen
-        destroyAndDelete(pa.soldier);
+        pa.soldier->getHome()->SendAttacker(pa.soldier, attacked_building, pa.harbor);
         counter++;
     }
 }
@@ -880,7 +859,7 @@ void GameWorld::setEconHandler(std::unique_ptr<EconomyModeHandler> handler)
 bool GameWorld::IsRoadNodeForFigures(const MapPoint pt)
 {
     // Figuren durchgehen, bei Kämpfen und wartenden Angreifern sowie anderen wartenden Figuren stoppen!
-    for(noBase* object : GetFigures(pt))
+    for(const noBase& object : GetFigures(pt))
     {
         // andere wartende Figuren
         /*
@@ -896,16 +875,13 @@ bool GameWorld::IsRoadNodeForFigures(const MapPoint pt)
                 }*/
 
         // Kampf
-        if(object->GetGOT() == GO_Type::Fighting)
+        if(object.GetGOT() == GO_Type::Fighting)
         {
-            if(static_cast<noFighting*>(object)->IsActive())
+            if(static_cast<const noFighting&>(object).IsActive())
                 return false;
-        }
-
-        //// wartende Angreifer
-        if(object->GetGOT() == GO_Type::NofAttacker)
+        } else if(object.GetGOT() == GO_Type::NofAttacker) // wartende Angreifer
         {
-            if(static_cast<nofAttacker*>(object)->IsBlockingRoads())
+            if(static_cast<const nofAttacker&>(object).IsBlockingRoads())
                 return false;
         }
     }
@@ -921,18 +897,20 @@ void GameWorld::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<Direc
     std::vector<noFigure*> figures;
 
     // Auch vom Ausgangspunkt aus, da sie im GameWorld wegem Zeichnen auch hier hängen können!
-    const std::list<noBase*>& fieldFigures = GetFigures(pt);
-    for(auto* fieldFigure : fieldFigures)
-        if(fieldFigure->GetType() == NodalObjectType::Figure)
-            figures.push_back(static_cast<noFigure*>(fieldFigure));
+    for(auto& fieldFigure : GetFigures(pt))
+    {
+        if(fieldFigure.GetType() == NodalObjectType::Figure)
+            figures.push_back(static_cast<noFigure*>(&fieldFigure));
+    }
 
     // Und natürlich in unmittelbarer Umgebung suchen
     for(const MapPoint nb : GetNeighbours(pt))
     {
-        const std::list<noBase*>& fieldFigures = GetFigures(nb);
-        for(auto* fieldFigure : fieldFigures)
-            if(fieldFigure->GetType() == NodalObjectType::Figure)
-                figures.push_back(static_cast<noFigure*>(fieldFigure));
+        for(auto& fieldFigure : GetFigures(nb))
+        {
+            if(fieldFigure.GetType() == NodalObjectType::Figure)
+                figures.push_back(static_cast<noFigure*>(&fieldFigure));
+        }
     }
 
     for(auto& figure : figures)
@@ -981,21 +959,20 @@ bool GameWorld::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* 
         return false;
 
     // Objekte, die sich hier befinden durchgehen
-    const std::list<noBase*>& figures = GetFigures(pt);
-    for(auto* figure : figures)
+    for(const auto& figure : GetFigures(pt))
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
-        if(figure->GetGOT() == GO_Type::NofAttacker || figure->GetGOT() == GO_Type::NofAggressivedefender
-           || figure->GetGOT() == GO_Type::NofDefender)
+        if(figure.GetGOT() == GO_Type::NofAttacker || figure.GetGOT() == GO_Type::NofAggressivedefender
+           || figure.GetGOT() == GO_Type::NofDefender)
         {
-            if(static_cast<nofActiveSoldier*>(figure)->GetState() == nofActiveSoldier::SoldierState::WaitingForFight
-               || static_cast<nofActiveSoldier*>(figure)->GetState()
-                    == nofActiveSoldier::SoldierState::AttackingWaitingAroundBuilding)
+            const auto state = static_cast<const nofActiveSoldier&>(figure).GetState();
+            if(state == nofActiveSoldier::SoldierState::WaitingForFight
+               || state == nofActiveSoldier::SoldierState::AttackingWaitingAroundBuilding)
                 return false;
         }
 
         // Oder ein Kampf, der hier tobt?
-        if(figure->GetGOT() == GO_Type::Fighting)
+        if(figure.GetGOT() == GO_Type::Fighting)
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
@@ -1014,16 +991,15 @@ bool GameWorld::ValidPointForFighting(const MapPoint pt, const bool avoid_milita
     }
 
     // Objekte, die sich hier befinden durchgehen
-    const std::list<noBase*>& figures = GetFigures(pt);
-    for(auto* figure : figures)
+    for(const auto& figure : GetFigures(pt))
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
-        if(figure->GetGOT() == GO_Type::NofAttacker || figure->GetGOT() == GO_Type::NofAggressivedefender
-           || figure->GetGOT() == GO_Type::NofDefender)
+        if(figure.GetGOT() == GO_Type::NofAttacker || figure.GetGOT() == GO_Type::NofAggressivedefender
+           || figure.GetGOT() == GO_Type::NofDefender)
         {
-            if(static_cast<nofActiveSoldier*>(figure) == exception)
+            if(static_cast<const nofActiveSoldier*>(&figure) == exception)
                 continue;
-            switch(static_cast<nofActiveSoldier*>(figure)->GetState())
+            switch(static_cast<const nofActiveSoldier&>(figure).GetState())
             {
                 default: break;
                 case nofActiveSoldier::SoldierState::WaitingForFight:
@@ -1034,9 +1010,10 @@ bool GameWorld::ValidPointForFighting(const MapPoint pt, const bool avoid_milita
         }
 
         // Oder ein Kampf, der hier tobt?
-        if(figure->GetGOT() == GO_Type::Fighting)
+        if(figure.GetGOT() == GO_Type::Fighting)
         {
-            if(static_cast<noFighting*>(figure)->IsActive() && !static_cast<noFighting*>(figure)->IsFighter(exception))
+            const auto& fight = static_cast<const noFighting&>(figure);
+            if(fight.IsActive() && (!exception || !fight.IsFighter(*exception)))
                 return false;
         }
     }
@@ -1109,14 +1086,14 @@ bool GameWorld::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, unsi
     static_assert(VISUALRANGE_SCOUT >= VISUALRANGE_SOLDIER, "Visual range changed. Check loop below!");
 
     // Späher/Soldaten in der Nähe prüfen und direkt auf dem Punkt
-    for(noBase* obj : GetFigures(pt))
+    for(const noBase& obj : GetFigures(pt))
     {
-        const GO_Type got = obj->GetGOT();
+        const GO_Type got = obj.GetGOT();
         // Check for scout. Note: no need to check for distance as scouts have higher distance than soldiers
         if(got == GO_Type::NofScoutFree)
         {
             // Prüfen, ob er auch am Erkunden ist und an der Position genau und ob es vom richtigen Spieler ist
-            if(static_cast<nofScout_Free*>(obj)->GetPlayer() == player)
+            if(static_cast<const nofScout_Free&>(obj).GetPlayer() == player)
                 return true;
             else
                 continue;
@@ -1125,14 +1102,14 @@ bool GameWorld::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, unsi
             // Soldaten?
             if(got == GO_Type::NofAttacker || got == GO_Type::NofAggressivedefender)
             {
-                if(static_cast<nofActiveSoldier*>(obj)->GetPlayer() == player)
+                if(static_cast<const nofActiveSoldier&>(obj).GetPlayer() == player)
                     return true;
             }
             // Kämpfe (wo auch Soldaten drin sind)
             else if(got == GO_Type::Fighting)
             {
                 // Prüfen, ob da ein Soldat vom angegebenen Spieler dabei ist
-                if(static_cast<noFighting*>(obj)->IsSoldierOfPlayer(player))
+                if(static_cast<const noFighting&>(obj).IsSoldierOfPlayer(player))
                     return true;
             }
         }

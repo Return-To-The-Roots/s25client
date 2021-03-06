@@ -26,6 +26,7 @@
 #include "gameData/MaxPlayers.h"
 #include <array>
 #include <list>
+#include <memory>
 #include <vector>
 
 class noBase;
@@ -64,9 +65,13 @@ struct MapNode
     /// Objekt, welches sich dort befindet
     noBase* obj;
     /// Figures or fights on this node
-    std::list<noBase*> figures;
+    std::list<std::unique_ptr<noBase>> figures;
 
     MapNode();
+    MapNode(const MapNode&) = delete;
+    MapNode(MapNode&&) = default;
+    MapNode& operator=(const MapNode&) = delete;
+    MapNode& operator=(MapNode&&) = default;
     void Serialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc) const;
     void Deserialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc,
                      const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains);

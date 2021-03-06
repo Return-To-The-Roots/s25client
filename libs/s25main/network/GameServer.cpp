@@ -55,12 +55,6 @@
 #include <iterator>
 #include <mygettext/mygettext.h>
 
-inline std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)
-{
-    return os << "RandCS = " << checksum.randChecksum << ",\tobjects/ID = " << checksum.objCt << "/" << checksum.objIdCt
-              << ",\tevents/ID = " << checksum.eventCt << "/" << checksum.evInstanceCt;
-}
-
 struct GameServer::AsyncLog
 {
     uint8_t playerId;

@@ -157,15 +157,14 @@ void nofHunter::TryStartHunting()
         for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
         {
             MapPoint curMapPos = world->MakeMapPoint(curPos);
-            const std::list<noBase*>& figures = world->GetFigures(curMapPos);
 
             // nach Tieren suchen
-            for(auto* figure : figures)
+            for(auto& figure : world->GetFigures(curMapPos))
             {
-                if(figure->GetType() != NodalObjectType::Animal)
+                if(figure.GetType() != NodalObjectType::Animal)
                     continue;
                 // Ist das Tier überhaupt zum Jagen geeignet?
-                auto& animal = static_cast<noAnimal&>(*figure);
+                auto& animal = static_cast<noAnimal&>(figure);
                 if(!animal.CanHunted())
                     continue;
 
@@ -391,11 +390,11 @@ void nofHunter::HandleStateEviscerating()
         was_sounding = false;
     }
     // Tier verschwinden lassen
-    world->RemoveFigure(pos, animal);
+    auto ownedAnimal = world->RemoveFigure(pos, *animal);
+    animal = nullptr;
     // Tier vernichten
-    animal->Eviscerated();
-    animal->Destroy();
-    deletePtr(animal);
+    ownedAnimal->Eviscerated();
+    ownedAnimal->Destroy();
     // Fleisch in die Hand nehmen
     ware = GoodType::Meat;
     // und zurück zur Hütte

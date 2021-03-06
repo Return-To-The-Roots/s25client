@@ -19,6 +19,7 @@
 
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/MapCoordinates.h"
+#include <memory>
 
 class noFigure;
 class noRoadNode;
@@ -30,5 +31,5 @@ public:
     JobFactory() = delete;
 
     // Erstellt Job anhand der job-id
-    static noFigure* CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode* goal);
+    static std::unique_ptr<noFigure> CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode* goal);
 };

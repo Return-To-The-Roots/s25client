@@ -213,15 +213,13 @@ void iwShip::DrawCargo()
 
     // Count figures by type
     helpers::EnumArray<unsigned short, Job> orderedFigures{};
-    for(const auto* figure : ship->GetFigures())
-        orderedFigures[figure->GetJobType()]++;
+    for(const noFigure& figure : ship->GetFigures())
+        orderedFigures[figure.GetJobType()]++;
 
     // Count wares by type
     helpers::EnumArray<unsigned short, GoodType> orderedWares{};
-    for(const auto& ware : ship->GetWares())
-    {
-        orderedWares[ware->type]++;
-    }
+    for(const Ware& ware : ship->GetWares())
+        orderedWares[ware.type]++;
 
     // Special cases: expeditions
     if(ship->IsOnExpedition())

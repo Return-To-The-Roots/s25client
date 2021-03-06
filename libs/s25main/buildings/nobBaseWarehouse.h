@@ -93,7 +93,7 @@ private:
     /// (muss in dem Fall true zurückgeben)
     virtual bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal);
     /// Dasselbe für Menschen
-    virtual bool UseFigureAtOnce(noFigure* fig, noRoadNode& goal);
+    virtual bool UseFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNode& goal);
     /// Prüft verschiedene Verwendungszwecke für eine neuangekommende Ware
     void CheckUsesForNewWare(GoodType gt);
     /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
@@ -117,7 +117,7 @@ private:
 
 protected:
     /// Stellt Verteidiger zur Verfügung
-    nofDefender* ProvideDefender(nofAttacker* attacker) override;
+    std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) override;
 
     void HandleBaseEvent(unsigned id);
 
@@ -209,7 +209,7 @@ public:
     /// Legt eine Ware im Lagerhaus ab
     void AddWare(std::unique_ptr<Ware> ware) override;
     /// Eine Figur geht ins Lagerhaus
-    virtual void AddFigure(noFigure* figure, bool increase_visual_counts = true);
+    virtual void AddFigure(std::unique_ptr<noFigure> figure, bool increase_visual_counts = true);
 
     /// Eine bestellte Ware konnte doch nicht kommen
     void WareLost(Ware& ware) override;
@@ -222,22 +222,22 @@ public:
     void TakeWare(Ware* ware) override;
 
     /// Fügt eine Figur hinzu, die auf dem Weg zum Lagerhaus ist
-    void AddDependentFigure(noFigure* figure)
+    void AddDependentFigure(noFigure& figure)
     {
         RTTR_Assert(!IsDependentFigure(figure));
-        dependent_figures.push_back(figure);
+        dependent_figures.push_back(&figure);
     }
     //// Entfernt eine abhängige Figur wieder aus der Liste
-    virtual void RemoveDependentFigure(noFigure* figure)
+    virtual void RemoveDependentFigure(noFigure& figure)
     {
         RTTR_Assert(IsDependentFigure(figure));
-        dependent_figures.remove(figure);
+        dependent_figures.remove(&figure);
     }
     /// Wird aufgerufen, wenn ein Arbeiter hierher kommt
-    void GotWorker(Job /*job*/, noFigure* worker) override
+    void GotWorker(Job /*job*/, noFigure& worker) override
     {
         RTTR_Assert(!IsDependentFigure(worker));
-        dependent_figures.push_back(worker);
+        dependent_figures.push_back(&worker);
     }
 
     //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
@@ -252,7 +252,7 @@ public:
     bool AreWaresToEmpty() const;
 
     /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
-    void AddActiveSoldier(nofActiveSoldier* soldier) override;
+    void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier) override;
     /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
     unsigned GetNumSoldiers() const
     {
@@ -263,7 +263,7 @@ public:
     void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);
 
     /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-    nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
+    nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;
     /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
     void SoldierLost(nofSoldier* soldier) override;
 
@@ -294,5 +294,5 @@ public:
                             nobBaseWarehouse* goal);
 
     /// For debug only
-    bool IsDependentFigure(noFigure* fig) const;
+    bool IsDependentFigure(const noFigure& fig) const;
 };

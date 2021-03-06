@@ -21,6 +21,7 @@
 
 class SerializedGameData;
 class nobBaseMilitary;
+class nobMilitary;
 
 /// Soldaten, die nur in Militärgebäude warten bzw. vom HQ dareinkommen und noch keine spezielle Funktion
 /// übernehmen
@@ -43,8 +44,7 @@ private:
 
 public:
     nofPassiveSoldier(const nofSoldier& soldier);
-    nofPassiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobBaseMilitary* home,
-                      unsigned char rank);
+    nofPassiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobMilitary* home, unsigned char rank);
     nofPassiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofPassiveSoldier() override;
@@ -57,8 +57,6 @@ public:
     // Zeichnet den Soldaten
     void Draw(DrawPoint drawPt) override;
 
-    /// wenn Militärgebäude abgerissen wurde und sich der Soldat im Gebäude befand
-    void InBuildingDestroyed();
     /// Sagt einem in einem Militärgebäude sitzenden Soldaten, dass er raus nach Hause gehen soll
     void LeaveBuilding();
 
@@ -69,4 +67,5 @@ public:
     void NotNeeded();
     /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
     void LeftBuilding() { building = nullptr; }
+    nobMilitary* getHome() const;
 };

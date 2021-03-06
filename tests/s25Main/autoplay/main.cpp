@@ -44,8 +44,6 @@ struct Fixture : rttr::test::Fixture
 };
 BOOST_GLOBAL_FIXTURE(Fixture);
 
-BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum)
-
 static void playReplay(const boost::filesystem::path& replayPath)
 {
     Replay replay;

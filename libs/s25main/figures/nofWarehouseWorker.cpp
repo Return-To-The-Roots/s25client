@@ -150,8 +150,7 @@ void nofWarehouseWorker::Walked()
     }
 
     // dann mich killen
-    world->RemoveFigure(pos, this);
-    GetEvMgr().AddToKillList(this);
+    GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
 
     // Von der Inventur wieder abziehen
     world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);

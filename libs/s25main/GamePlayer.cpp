@@ -1763,9 +1763,9 @@ void GamePlayer::DecreaseInventoryWare(const GoodType ware, const unsigned count
 }
 
 /// Registriert ein Schiff beim Einwohnermeldeamt
-void GamePlayer::RegisterShip(noShip* ship)
+void GamePlayer::RegisterShip(noShip& ship)
 {
-    ships.push_back(ship);
+    ships.push_back(&ship);
     // Evtl bekommt das Schiffchen gleich was zu tun?
     GetJobForShip(ship);
 }
@@ -1824,22 +1824,22 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
         if(it.estimate >= best_distance)
             break;
 
-        noShip* ship = it.ship;
+        noShip& ship = *it.ship;
 
-        MapPoint dest = world.GetCoastalPoint(hb.GetHarborPosID(), ship->GetSeaID());
+        MapPoint dest = world.GetCoastalPoint(hb.GetHarborPosID(), ship.GetSeaID());
 
         // ship already there?
-        if(ship->GetPos() == dest)
+        if(ship.GetPos() == dest)
         {
             hb.ShipArrived(ship);
             return (true);
         }
 
-        if(world.FindShipPathToHarbor(ship->GetPos(), hb.GetHarborPosID(), ship->GetSeaID(), &route, &distance))
+        if(world.FindShipPathToHarbor(ship.GetPos(), hb.GetHarborPosID(), ship.GetSeaID(), &route, &distance))
         {
             if(distance < best_distance)
             {
-                best_ship = ship;
+                best_ship = &ship;
                 best_distance = distance;
                 best_route = route;
             }
@@ -1871,7 +1871,7 @@ void GamePlayer::RemoveShip(noShip* ship)
 }
 
 /// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
-void GamePlayer::GetJobForShip(noShip* ship)
+void GamePlayer::GetJobForShip(noShip& ship)
 {
     // Evtl. steht irgendwo eine Expedition an und das Schiff kann diese übernehmen
     nobHarborBuilding* best = nullptr;
@@ -1893,12 +1893,12 @@ void GamePlayer::GetJobForShip(noShip* ship)
             continue;
 
         // liegen wir am gleichen Meer?
-        if(world.IsHarborAtSea(harbor->GetHarborPosID(), ship->GetSeaID()))
+        if(world.IsHarborAtSea(harbor->GetHarborPosID(), ship.GetSeaID()))
         {
-            const MapPoint coastPt = world.GetCoastalPoint(harbor->GetHarborPosID(), ship->GetSeaID());
+            const MapPoint coastPt = world.GetCoastalPoint(harbor->GetHarborPosID(), ship.GetSeaID());
 
             // Evtl. sind wir schon da?
-            if(ship->GetPos() == coastPt)
+            if(ship.GetPos() == coastPt)
             {
                 harbor->ShipArrived(ship);
                 return;
@@ -1907,7 +1907,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
             unsigned length;
             std::vector<Direction> route;
 
-            if(world.FindShipPathToHarbor(ship->GetPos(), harbor->GetHarborPosID(), ship->GetSeaID(), &route, &length))
+            if(world.FindShipPathToHarbor(ship.GetPos(), harbor->GetHarborPosID(), ship.GetSeaID(), &route, &length))
             {
                 // Punkte ausrechnen
                 int points = harbor->GetNeedForShip(ships_coming) - length;
@@ -1924,7 +1924,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
     // Einen Hafen gefunden?
     if(best)
         // Dann bekommt das gleich der Hafen
-        ship->GoToHarbor(*best, best_route);
+        ship.GoToHarbor(*best, best_route);
 }
 
 /// Gibt die ID eines Schiffes zurück
@@ -2131,7 +2131,7 @@ bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 }
 
 /// For debug only
-bool GamePlayer::IsDependentFigure(noFigure* fig)
+bool GamePlayer::IsDependentFigure(const noFigure& fig)
 {
     for(const nobBaseWarehouse* wh : buildings.GetStorehouses())
     {

@@ -265,13 +265,12 @@ void dskBenchmark::startTest(Benchmark test)
                     if(bldType == BuildingType::Barracks)
                     {
                         auto* mil = static_cast<nobMilitary*>(bld);
-                        auto* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);
-                        mil->AddPassiveSoldier(sld);
+                        mil->AddPassiveSoldier(std::make_unique<nofPassiveSoldier>(pt, i, mil, mil, 0));
                     }
-                    auto* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, nullptr);
-                    game_->world_.AddFigure(flagPt, figure);
-                    figure->StartWandering();
-                    figure->StartWalking(Direction(getDir(rng)));
+                    auto& figure = game_->world_.AddFigure(
+                      flagPt, std::make_unique<nofPassiveWorker>(Job(getJob(rng)), flagPt, i, nullptr));
+                    figure.StartWandering();
+                    figure.StartWalking(Direction(getDir(rng)));
                 }
             }
             break;

@@ -173,8 +173,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         if(!world.IsSeaPoint(shipPos))
             shipPos.y += 6;
         BOOST_TEST_REQUIRE(world.IsSeaPoint(shipPos));
-        auto* ship = new noShip(shipPos, curPlayer);
-        world.AddFigure(ship->GetPos(), ship);
+        auto& ship = world.AddFigure(shipPos, std::make_unique<noShip>(shipPos, curPlayer));
         player.RegisterShip(ship);
 
         BOOST_TEST_REQUIRE(player.GetNumShips() == 1u);
@@ -522,8 +521,7 @@ public:
         MapPoint hbPos = world.GetHarborPoint(1);
         MapPoint shipPos = world.MakeMapPoint(hbPos - Position(2, 0));
         BOOST_TEST_REQUIRE(world.IsSeaPoint(shipPos));
-        auto* ship = new noShip(shipPos, curPlayer);
-        world.AddFigure(ship->GetPos(), ship);
+        auto& ship = world.AddFigure(shipPos, std::make_unique<noShip>(shipPos, curPlayer));
         player.RegisterShip(ship);
 
         BOOST_TEST_REQUIRE(player.GetNumShips() == 1u);
@@ -536,14 +534,14 @@ void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
     // Remove fire
     world.DestroyNO(pos);
     // Remove burned wh if existing
-    for(noBase* fig : world.GetFigures(pos))
+    for(noBase& fig : world.GetFigures(pos))
     {
-        if(fig->GetGOT() == GO_Type::Burnedwarehouse)
+        if(fig.GetGOT() == GO_Type::Burnedwarehouse)
         {
             // Remove go-out event (not automatically done as the burned wh is never removed)
-            const GameEvent* ev = static_cast<TestEventManager&>(world.GetEvMgr()).GetObjEvents(*fig).front();
+            const GameEvent* ev = static_cast<TestEventManager&>(world.GetEvMgr()).GetObjEvents(fig).front();
             world.GetEvMgr().RemoveEvent(ev);
-            destroyAndDelete(fig);
+            world.RemoveFigure(pos, fig)->Destroy();
             break;
         }
     }

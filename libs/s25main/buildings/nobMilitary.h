@@ -19,18 +19,20 @@
 
 #include "figures/nofSoldier.h"
 #include "nobBaseMilitary.h"
+#include <boost/container/flat_set.hpp>
 #include <list>
 #include <vector>
 
-class nofPassiveSoldier;
-class nofActiveSoldier;
-class nofAttacker;
-class nofAggressiveDefender;
-class nofDefender;
-class Ware;
-class SerializedGameData;
-class noFigure;
 class GameEvent;
+class nobHarborBuilding;
+class nofActiveSoldier;
+class nofAggressiveDefender;
+class nofAttacker;
+class nofDefender;
+class noFigure;
+class nofPassiveSoldier;
+class SerializedGameData;
+class Ware;
 
 /// Distance to the next enemy border
 enum class FrontierDistance : uint8_t
@@ -48,7 +50,9 @@ constexpr auto maxEnumValue(FrontierDistance)
 /// Stellt ein Militärgebäude beliebiger Größe (also von Baracke bis Festung) dar
 class nobMilitary : public nobBaseMilitary
 {
-public:
+    using OwnedSortedTroops = boost::container::flat_set<std::unique_ptr<nofPassiveSoldier>, ComparatorSoldiersByRank>;
+    using SortedTroops = boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank>;
+
 private:
     /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet
     /// werden?)
@@ -79,14 +83,14 @@ private:
     /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
     bool is_regulating_troops;
     /// Soldatenbesatzung
-    SortedTroops troops;
+    OwnedSortedTroops troops;
 
     /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
     void CancelOrders();
     /// Wählt je nach Militäreinstellungen (Verteidigerstärke) einen passenden Soldaten aus
     nofPassiveSoldier* ChooseSoldier();
     /// Stellt Verteidiger zur Verfügung
-    nofDefender* ProvideDefender(nofAttacker* attacker) override;
+    std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) override;
     /// Will/kann das Gebäude noch Münzen bekommen?
     bool WantCoins() const;
     /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
@@ -95,7 +99,7 @@ private:
     /// Gets the total amount of soldiers (ordered, stationed, on mission)
     size_t GetTotalSoldiers() const;
     /// Looks for the next far-away-capturer waiting around and calls it to the flag
-    void CallNextFarAwayCapturer(nofAttacker* attacker);
+    void CallNextFarAwayCapturer(nofAttacker& attacker);
 
     friend class SerializedGameData;
     friend class BuildingFactory;
@@ -144,7 +148,8 @@ public:
     void RegulateTroops();
     /// Gibt aktuelle Besetzung zurück
     unsigned GetNumTroops() const { return troops.size(); }
-    const SortedTroops& GetTroops() const { return troops; }
+    auto GetTroops() const { return helpers::nonNullPtrSpan(troops); }
+    bool IsInTroops(const nofPassiveSoldier& soldier) const;
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
     void TakeWare(Ware* ware) override;
@@ -159,18 +164,19 @@ public:
     unsigned CalcCoinsPoints() const;
 
     /// Wird aufgerufen, wenn ein Soldat kommt
-    void GotWorker(Job job, noFigure* worker) override;
+    void GotWorker(Job job, noFigure& worker) override;
     /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
-    void AddActiveSoldier(nofActiveSoldier* soldier) override;
+    void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier) override;
     /// Fügt passiven Soldaten (der aus einem Lagerhaus kommt) zum Militärgebäude hinzu
-    void AddPassiveSoldier(nofPassiveSoldier* soldier);
+    void AddPassiveSoldier(std::unique_ptr<nofPassiveSoldier> soldier);
     /// Soldat konnte nicht kommen
     void SoldierLost(nofSoldier* soldier) override;
-    /// Soldat ist jetzt auf Mission
-    void SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActiveSoldier* active_soldier);
+    /// Send the given passive soldier from this building to attack the goal, optionally via the given harbor
+    void SendAttacker(nofPassiveSoldier*& passive_soldier, nobBaseMilitary& goal,
+                      const nobHarborBuilding* harbor = nullptr);
 
     /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-    nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
+    nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;
 
     /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
     unsigned GetNumSoldiersForAttack(MapPoint dest) const;
@@ -206,9 +212,9 @@ public:
     /// Sagt, dass ein erobernder Soldat das Militärgebäude erreicht hat
     void CapturingSoldierArrived();
     /// A far-away capturer arrived around the building and starts waiting
-    void FarAwayCapturerReachedGoal(nofAttacker* attacker);
+    void FarAwayCapturerReachedGoal(nofAttacker& attacker);
 
-    bool IsFarAwayCapturer(nofAttacker* attacker);
+    bool IsFarAwayCapturer(const nofAttacker& attacker);
 
     /// Stoppt/Erlaubt Goldzufuhr (visuell)
     void ToggleCoinsVirtual() { coinsDisabledVirtual = !coinsDisabledVirtual; }
@@ -229,7 +235,7 @@ public:
     void HitOfCatapultStone();
 
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
-    bool DefendersAvailable() const override { return (GetNumTroops() > 0); }
+    bool DefendersAvailable() const override { return GetNumTroops() > 0; }
 
     /// send all soldiers of the highest rank home (if highest=lowest keep 1)
     void SendSoldiersHome();
@@ -239,5 +245,5 @@ public:
     /// Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
     bool IsDemolitionAllowed() const;
 
-    void UnlinkAggressor(nofAttacker* soldier) override;
+    void UnlinkAggressor(nofAttacker& soldier) override;
 };

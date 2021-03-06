@@ -55,7 +55,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(wh->GetLeavingFigures().size() == 0u);
 
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::West));
-    const noFigure* fig = wh->GetLeavingFigures().front();
+    const noFigure* fig = &wh->GetLeavingFigures().front();
     // Destroy wh -> Worker released
     this->DestroyFlag(whFlagPos);
     BOOST_TEST_REQUIRE(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper] == numHelpers);
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     this->BuildRoad(flagPos, false, std::vector<Direction>(2, Direction::West));
     wh = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     BOOST_TEST_REQUIRE(wh->GetLeavingFigures().size() == 1u);
-    fig = wh->GetLeavingFigures().front();
+    fig = &wh->GetLeavingFigures().front();
     // Destroy wh -> Worker released
     this->DestroyFlag(flagPos);
     BOOST_TEST_REQUIRE(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper] == numHelpers);
@@ -97,9 +97,9 @@ using EmptyWorldFixture1PBig = WorldFixture<CreateEmptyWorld, 1, 22, 20>;
 BOOST_FIXTURE_TEST_CASE(ScoutScouts, EmptyWorldFixture1PBig)
 {
     const MapPoint hqFlagPos = world.GetNeighbour(world.GetPlayer(0).GetHQPos(), Direction::SouthEast);
-    auto* scout = new nofScout_Free(hqFlagPos, 0, world.GetSpecObj<noRoadNode>(hqFlagPos));
-    world.AddFigure(hqFlagPos, scout);
-    scout->ActAtFirst();
+    auto& scout = world.AddFigure(
+      hqFlagPos, std::make_unique<nofScout_Free>(hqFlagPos, 0, world.GetSpecObj<noRoadNode>(hqFlagPos)));
+    scout.ActAtFirst();
     const auto countVisibleNodes = [&]() {
         unsigned numVisibleNodes = 0;
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -132,11 +132,10 @@ BOOST_FIXTURE_TEST_CASE(GeologistPlacesSigns, EmptyWorldFixture1P)
     world.GetNodeWriteable(granitePos).resources = Resource(ResourceType::Granite, rttr::test::randomValue(1u, 15u));
     // Add some geologists
     for(unsigned i = 0; i < 10; i++)
-    {
-        auto* geologist = new nofGeologist(hqFlagPos, 0, world.GetSpecObj<noRoadNode>(hqFlagPos));
-        world.AddFigure(hqFlagPos, geologist);
-        geologist->ActAtFirst();
-    }
+        world
+          .AddFigure(hqFlagPos, std::make_unique<nofGeologist>(hqFlagPos, 0, world.GetSpecObj<noRoadNode>(hqFlagPos)))
+          .ActAtFirst();
+
     std::vector<ResourceNote> notes;
     const auto sub =
       world.GetNotifications().subscribe<ResourceNote>([&notes](const ResourceNote& note) { notes.push_back(note); });

@@ -82,7 +82,7 @@ public:
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     virtual void TakeWare(Ware* ware) = 0;
     /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde
-    virtual void GotWorker(Job /*job*/, noFigure* /*worker*/){};
+    virtual void GotWorker(Job /*job*/, noFigure& /*worker*/){};
 
     /// Gibt ein Bild zurück für das normale Gebäude
     ITexture& GetBuildingImage() const;

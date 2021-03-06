@@ -30,9 +30,8 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
     RTTR_Assert(IsSoldier());
 }
 
-nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
-                       const unsigned char rank)
-    : noFigure(SOLDIER_JOBS[rank], pos, player), building(home), hitpoints(HITPOINTS[rank])
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank)
+    : noFigure(SOLDIER_JOBS[rank], pos, player), building(&home), hitpoints(HITPOINTS[rank])
 {
     RTTR_Assert(IsSoldier());
 }

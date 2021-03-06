@@ -17,30 +17,32 @@
 
 #pragma once
 
+#include <iterator>
+
 namespace helpers {
 
 template<typename T>
 struct ReverseAdapter
 {
-    T& range;
+    T range;
 };
 
 template<typename T>
 constexpr auto begin(ReverseAdapter<T> w)
 {
-    return w.range.rbegin();
+    return std::make_reverse_iterator(w.range.end());
 }
 
 template<typename T>
 constexpr auto end(ReverseAdapter<T> w)
 {
-    return w.range.rend();
+    return std::make_reverse_iterator(w.range.begin());
 }
 
 /// Reverse a range: for(auto i: reverse(container))
 template<typename T>
 constexpr ReverseAdapter<T> reverse(T&& range)
 {
-    return {range};
+    return {std::forward<T>(range)};
 }
 } // namespace helpers

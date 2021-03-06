@@ -31,6 +31,7 @@
 #include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
+#include "s25util/dynamicUniqueCast.h"
 #include <limits>
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player,
@@ -38,11 +39,7 @@ nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, co
     : noBuilding(type, pos, player, nation), leaving_event(nullptr), go_out(false), defender_(nullptr)
 {}
 
-nobBaseMilitary::~nobBaseMilitary()
-{
-    for(auto& it : leave_house)
-        delete it;
-}
+nobBaseMilitary::~nobBaseMilitary() = default;
 
 void nobBaseMilitary::DestroyBuilding()
 {
@@ -77,19 +74,19 @@ void nobBaseMilitary::DestroyBuilding()
     GetEvMgr().RemoveEvent(leaving_event);
 
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
-    for(auto& it : leave_house)
+    for(auto& fig : leave_house)
     {
-        world->AddFigure(pos, it);
+        noFigure& figRef = world->AddFigure(pos, std::move(fig));
 
-        if(it->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(it))
+        if(figRef.DoJobWorks() && dynamic_cast<nofActiveSoldier*>(&figRef))
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch
             // Bescheid gesagt werden!
-            static_cast<nofActiveSoldier*>(it)->HomeDestroyedAtBegin();
+            static_cast<nofActiveSoldier&>(figRef).HomeDestroyedAtBegin();
         else
         {
-            it->Abrogate();
-            it->StartWandering();
-            it->StartWalking(RANDOM_ENUM(Direction));
+            figRef.Abrogate();
+            figRef.StartWandering();
+            figRef.StartWalking(RANDOM_ENUM(Direction));
         }
     }
 
@@ -141,10 +138,10 @@ void nobBaseMilitary::AddLeavingEvent()
     }
 }
 
-void nobBaseMilitary::AddLeavingFigure(noFigure* fig)
+void nobBaseMilitary::AddLeavingFigure(std::unique_ptr<noFigure> fig)
 {
     AddLeavingEvent();
-    leave_house.push_back(fig);
+    leave_house.push_back(std::move(fig));
 }
 
 nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
@@ -235,7 +232,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
     return minPt;
 }
 
-bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
+bool nobBaseMilitary::CallDefender(nofAttacker& attacker)
 {
     // Ist noch ein Verteidiger draußen (der z.B. grad wieder reingeht?
     if(defender_)
@@ -249,19 +246,20 @@ bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
         return true;
     }
     // ansonsten einen neuen aus dem Gebäude holen
-    else if((defender_ = ProvideDefender(attacker)))
+    else
     {
+        auto defender = ProvideDefender(attacker);
+        if(!defender)
+            return false; // Building empty -> Can be conquered
+
         // Leute, die aus diesem Gebäude zum Angriff/aggressiver Verteidigung rauskommen wollen,
         // blocken
         CancelJobs();
         // Soldat muss noch rauskommen
-        AddLeavingFigure(defender_);
+        defender_ = defender.get();
+        AddLeavingFigure(std::move(defender));
 
         return true;
-    } else
-    {
-        // Gebäude ist leer, dann kann es erobert werden
-        return false;
     }
 }
 
@@ -350,19 +348,19 @@ bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
     return world->GetPlayer(player).IsAttackable(playerIdx);
 }
 
-bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const
+bool nobBaseMilitary::IsAggressor(const nofAttacker& attacker) const
 {
-    return helpers::contains(aggressors, attacker);
+    return helpers::contains(aggressors, &attacker);
 }
 
-bool nobBaseMilitary::IsAggressiveDefender(nofAggressiveDefender* soldier) const
+bool nobBaseMilitary::IsAggressiveDefender(const nofAggressiveDefender& soldier) const
 {
-    return helpers::contains(aggressive_defenders, soldier);
+    return helpers::contains(aggressive_defenders, &soldier);
 }
 
-bool nobBaseMilitary::IsOnMission(nofActiveSoldier* soldier) const
+bool nobBaseMilitary::IsOnMission(const nofActiveSoldier& soldier) const
 {
-    return helpers::contains(troops_on_mission, soldier);
+    return helpers::contains(troops_on_mission, &soldier);
 }
 
 /// Bricht einen aktuell von diesem Haus gestarteten Angriff/aggressive Verteidigung ab, d.h. setzt die Soldaten
@@ -376,13 +374,13 @@ void nobBaseMilitary::CancelJobs()
         // sollen zum Kampf
         if((*it)->DoJobWorks() && (*it)->GetGOT() != GO_Type::NofDefender)
         {
-            auto* soldier = dynamic_cast<nofActiveSoldier*>(*it);
+            auto soldier = libutil::dynamicUniqueCast<nofActiveSoldier>(std::move(*it));
             RTTR_Assert(soldier);
 
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
             soldier->InformTargetsAboutCancelling();
             // Wieder in das Haus verfrachten
-            this->AddActiveSoldier(soldier);
+            this->AddActiveSoldier(std::move(soldier));
             it = leave_house.erase(it);
         } else
             ++it;
