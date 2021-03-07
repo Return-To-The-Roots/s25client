@@ -573,7 +573,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
 {
     SerializedGameData sgd;
-    const auto hunterPos1 = rttr::test::randomPoint<MapPoint>(0, std::min(world.GetSize().x, world.GetSize().y) - 1);
+    const auto hunterPos1 = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + rttr::test::randomPoint<Position>(2, 4));
     const auto hunterPos2 = world.MakeMapPoint(hunterPos1 + Position(2, 0));
     {
         auto* hunterBld1 = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(
