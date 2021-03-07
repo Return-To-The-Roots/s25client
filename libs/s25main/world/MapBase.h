@@ -164,7 +164,7 @@ detail::GetPointsResult_t<T_TransformPt> MapBase::GetPointsInRadius(const MapPoi
                 if(isValid(el))
                 {
                     result.push_back(el);
-                    if(T_maxResults > 0 && static_cast<int>(result.size()) > T_maxResults)
+                    if(T_maxResults > 0 && static_cast<int>(result.size()) >= T_maxResults)
                         return result;
                 }
                 curPt = GetNeighbour(curPt, dir);

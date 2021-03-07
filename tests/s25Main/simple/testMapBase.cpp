@@ -127,6 +127,10 @@ BOOST_AUTO_TEST_CASE(GetMatchingPointsInRadius)
         BOOST_TEST(pt.x % 2 == 1);
     for(const MapPoint pt : evenPts)
         BOOST_TEST(pt.x % 2 == 0);
+    const std::vector<MapPoint> firstEvenPt =
+      world.GetMatchingPointsInRadius<1>(center, 5, [](const MapPoint pt) { return pt.x % 2 == 0; });
+    BOOST_TEST_REQUIRE(firstEvenPt.size() == 1u);
+    BOOST_TEST(firstEvenPt.front() == evenPts.front());
 }
 
 BOOST_AUTO_TEST_CASE(GetIdx)
