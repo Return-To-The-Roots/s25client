@@ -254,14 +254,17 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
             LOG.write("Done serializing player %1% at %2%\n") % i % GetLength();
     }
 
-    static boost::format evCtError("Event count mismatch. Expected: %1%, written: %2%");
-    static boost::format objCtError("Object count mismatch. Expected: %1%, written: %2%");
-
     if(writtenEventIds.size() != writeEm->GetNumActiveEvents())
-        throw Error((evCtError % writeEm->GetNumActiveEvents() % writtenEventIds.size()).str());
+    {
+        throw Error(helpers::format("Event count mismatch. Expected: %1%, written: %2%", writeEm->GetNumActiveEvents(),
+                                    writtenEventIds.size()));
+    }
     // If this check fails, we missed some objects or some objects were destroyed without decreasing the obj count
     if(expectedNumObjects != writtenObjIds.size() + 1) // "Nothing" nodeObj does not get serialized
-        throw Error((objCtError % expectedNumObjects % (writtenObjIds.size() + 1)).str());
+    {
+        throw Error(helpers::format("Object count mismatch. Expected: %1%, written: %2%", expectedNumObjects,
+                                    writtenObjIds.size() + 1));
+    }
 
     writeEm = nullptr;
     writtenObjIds.clear();
@@ -287,17 +290,22 @@ void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game, ILocalG
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Deserialize(*this);
 
-    static boost::format evCtError("Event count mismatch. Expected: %1%, read: %2%");
-    static boost::format objCtError("Object count mismatch. Expected: %1%, Existing: %2%");
-    static boost::format objCtError2("Object count mismatch. Expected: %1%, read: %2%");
-
     // If this check fails, we did not serialize all objects or there was an async
     if(readEvents.size() != em->GetNumActiveEvents())
-        throw Error((evCtError % em->GetNumActiveEvents() % readEvents.size()).str());
+    {
+        throw Error(helpers::format("Event count mismatch. Expected: %1%, read: %2%", em->GetNumActiveEvents(),
+                                    readEvents.size()));
+    }
     if(expectedNumObjects != GameObject::GetNumObjs())
-        throw Error((objCtError % expectedNumObjects % GameObject::GetNumObjs()).str());
+    {
+        throw Error(helpers::format("Object count mismatch. Expected: %1%, Existing: %2%", expectedNumObjects,
+                                    GameObject::GetNumObjs()));
+    }
     if(expectedNumObjects != readObjects.size() + 1) // "Nothing" nodeObj does not get serialized
-        throw Error((objCtError2 % expectedNumObjects % (readObjects.size() + 1)).str());
+    {
+        throw Error(helpers::format("Object count mismatch. Expected: %1%, read: %2%", expectedNumObjects,
+                                    readObjects.size() + 1));
+    }
 
     em = nullptr;
     readObjects.clear();
