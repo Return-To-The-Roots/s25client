@@ -103,7 +103,7 @@ void nofActiveSoldier::WalkingHome()
     // Walking home to our military building
 
     // Are we already at the flag?
-    if(GetPos() == building->GetFlag()->GetPos())
+    if(GetPos() == building->GetFlagPos())
     {
         // Enter via the door
         StartWalking(Direction::NorthWest);
@@ -118,7 +118,7 @@ void nofActiveSoldier::WalkingHome()
         gwg->RemoveFigure(pos, this);
         return;
     }
-    const auto dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100);
+    const auto dir = gwg->FindHumanPath(pos, building->GetFlagPos(), 100);
     if(dir)
     {
         // Find all sorts of enemies (attackers, aggressive defenders..) nearby

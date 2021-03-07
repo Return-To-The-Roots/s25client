@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "RttrForeachPt.h"
+#include "TradePathCache.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "postSystem/PostBox.h"
@@ -27,8 +28,6 @@
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/variant/variant.hpp>
-
-BOOST_AUTO_TEST_SUITE(GameCommandSuite)
 
 struct TradeFixture : public WorldWithGCExecution3P
 {
@@ -95,7 +94,9 @@ struct TradeFixture : public WorldWithGCExecution3P
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
+BOOST_FIXTURE_TEST_SUITE(GameCommandSuite, TradeFixture)
+
+BOOST_AUTO_TEST_CASE(TradeWares)
 {
     initGameRNG();
 
@@ -145,7 +146,7 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     testExpectedWares();
 }
 
-BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
+BOOST_AUTO_TEST_CASE(TradeFigures)
 {
     initGameRNG();
 
@@ -187,7 +188,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
     testExpectedWares();
 }
 
-BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
+BOOST_AUTO_TEST_CASE(TradeToMuch)
 {
     initGameRNG();
 
@@ -217,7 +218,7 @@ BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
     testAfterLeaving(20);
 }
 
-BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
+BOOST_AUTO_TEST_CASE(TradeFail)
 {
     initGameRNG();
 
@@ -264,7 +265,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     testExpectedWares();
 }
 
-BOOST_FIXTURE_TEST_CASE(TradeFailDie, TradeFixture)
+BOOST_AUTO_TEST_CASE(TradeFailDie)
 {
     initGameRNG();
 
@@ -293,7 +294,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFailDie, TradeFixture)
     testExpectedWares();
 }
 
-BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
+BOOST_AUTO_TEST_CASE(TradeMessages)
 {
     initGameRNG();
     const PostBox& postbox = world.GetPostMgr().AddPostBox(0);
@@ -331,4 +332,67 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
     BOOST_TEST_REQUIRE(msg2->GetText().find(_(WARE_NAMES[GoodType::Boards])) != std::string::npos);
     BOOST_TEST_REQUIRE(msg2->GetText().find(players[1]->name) != std::string::npos);
 }
+
+BOOST_AUTO_TEST_CASE(GetWarehousesForTrading)
+{
+    std::array<const nobBaseWarehouse*, 3> hqs{};
+    for(unsigned i = 0; i < players.size(); i++)
+        hqs[i] = world.GetSpecObj<nobBaseWarehouse>(players[i]->GetHQPos());
+
+    for(int i = 0; i < 2; i++)
+    { // Run the same test twice
+        for(unsigned iStart = 0; iStart < players.size(); iStart++)
+        {
+            for(unsigned iGoal = 0; iGoal < players.size(); iGoal++)
+            {
+                const std::vector<nobBaseWarehouse*> possibleWhs =
+                  players[iStart]->GetWarehousesForTrading(*hqs[iGoal]);
+                if(iStart == iGoal) // Trade to self is not possible
+                    BOOST_TEST(possibleWhs.empty());
+                else if(iStart == 2 || iGoal == 2) // Player 2 has no ally -> no trade
+                    BOOST_TEST(possibleWhs.empty());
+                else
+                { // Other player --> Only wh is the HQ
+                    BOOST_TEST_REQUIRE(possibleWhs.size() == 1u);
+                    BOOST_TEST(possibleWhs[0] == hqs[iStart]);
+                }
+            }
+        }
+        if(i == 0)
+        {
+            // Poison the tradepath cache with invalid entries. This is possible if e.g. a route is no longer possible
+            // or a wh was destroyed
+            TradePathCache& cache = world.GetTradePathCache();
+            const unsigned oldCacheSize = cache.size();
+            // The above should have added 1 entry for the connection of player 1 and 2 whs
+            BOOST_TEST(oldCacheSize == 1u);
+            cache.addEntry(
+              TradePath(MapPoint(2, 2), MapPoint(5, 1), {Direction::East, Direction::East, Direction::NorthEast}), 0);
+            BOOST_TEST(cache.size() == oldCacheSize + 1u);
+            // Adding the reverse of an allied player does not add a new entry
+            cache.addEntry(
+              TradePath(MapPoint(5, 1), MapPoint(2, 2), {Direction::West, Direction::West, Direction::SouthWest}), 1);
+            BOOST_TEST(cache.size() == oldCacheSize + 1u);
+            // Adding the same route for an enemy player does add a new entry
+            cache.addEntry(
+              TradePath(MapPoint(2, 2), MapPoint(5, 1), {Direction::East, Direction::East, Direction::NorthEast}), 2);
+            BOOST_TEST(cache.size() == oldCacheSize + 2u);
+
+            // Add a few more until the cache is full
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(3, 2), std::vector<Direction>(1, Direction::East)), 0);
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(4, 2), std::vector<Direction>(2, Direction::East)), 0);
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(5, 2), std::vector<Direction>(3, Direction::East)), 0);
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(6, 2), std::vector<Direction>(4, Direction::East)), 0);
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(7, 2), std::vector<Direction>(5, Direction::East)), 0);
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(8, 2), std::vector<Direction>(6, Direction::East)), 0);
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(9, 2), std::vector<Direction>(7, Direction::East)), 0);
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(10, 2), std::vector<Direction>(8, Direction::East)), 0);
+            BOOST_TEST(cache.size() == 10u);
+            // Cache is full so this replaces the oldest entry
+            cache.addEntry(TradePath(MapPoint(2, 2), MapPoint(11, 2), std::vector<Direction>(9, Direction::East)), 0);
+            BOOST_TEST(cache.size() == 10u);
+        }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

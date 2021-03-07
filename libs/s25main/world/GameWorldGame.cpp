@@ -876,6 +876,12 @@ TradePathCache& GameWorldGame::GetTradePathCache()
     return *tradePathCache;
 }
 
+void GameWorldGame::setEconHandler(std::unique_ptr<EconomyModeHandler> handler)
+{
+    RTTR_Assert_Msg(!econHandler, "Can't reset the economy mode handler ATM");
+    econHandler = std::move(handler);
+}
+
 bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
 {
     // Figuren durchgehen, bei Kämpfen und wartenden Angreifern sowie anderen wartenden Figuren stoppen!

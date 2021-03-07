@@ -357,7 +357,7 @@ Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
     {
         // in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back
         // because non-warehouses cannot just carry in new wares they need a helper to do this
-        if(possibledir == RoadPathDirection::NorthWest && newgoal.GetFlag()->GetPos() == location->GetPos())
+        if(possibledir == RoadPathDirection::NorthWest && newgoal.GetFlagPos() == location->GetPos())
         {
             for(const auto dir : helpers::EnumRange<Direction>{})
             {

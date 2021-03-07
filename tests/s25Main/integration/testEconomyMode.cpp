@@ -20,6 +20,7 @@
 #include "GamePlayer.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"
+#include "addons/AddonEconomyModeGameLength.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
@@ -62,6 +63,9 @@ public:
 
 BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
 {
+    game->Start(false);
+    BOOST_TEST(world.getEconHandler()); // Just test that we have any
+
     constexpr auto amountsToAdd = helpers::make_array(63, 100, 85);
 
     EconomyModeHandler econHandler(4);
@@ -115,7 +119,9 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
 
 BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
 {
-    world.setEconHandler(std::make_unique<EconomyModeHandler>(rttr::test::randomValue(10u, 50u)));
+    ggs.setSelection(AddonId::ECONOMY_MODE_GAME_LENGTH,
+                     rttr::test::randomValue<unsigned>(1, AddonEconomyModeGameLengthList.size() - 1));
+    game->Start(false);
     const auto& goodsToCollect = world.getEconHandler()->GetGoodTypesToCollect();
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
@@ -140,10 +146,10 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     std::vector<PlayerInfo> players;
     for(unsigned j = 0; j < 3; j++)
         players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
-    Game game(save.ggs, loadSave.start_gf, players);
-    GameWorldGame& newWorld = game.world_;
+    Game newGame(save.ggs, loadSave.start_gf, players);
+    GameWorldGame& newWorld = newGame.world_;
     MockLocalGameState localGameState;
-    save.sgd.ReadSnapshot(game, localGameState);
+    save.sgd.ReadSnapshot(newGame, localGameState);
 
     BOOST_TEST_REQUIRE(newWorld.getEconHandler());
     BOOST_TEST(newWorld.getEconHandler()->GetEndFrame() == world.getEconHandler()->GetEndFrame());

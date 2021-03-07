@@ -77,7 +77,7 @@ public:
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
     GameInterface* GetGameInterface() const { return gi; }
     TradePathCache& GetTradePathCache();
-    void setEconHandler(std::unique_ptr<EconomyModeHandler> handler) { econHandler = std::move(handler); }
+    void setEconHandler(std::unique_ptr<EconomyModeHandler> handler);
 
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)
     bool IsRoadNodeForFigures(MapPoint pt);

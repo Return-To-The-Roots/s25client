@@ -21,11 +21,11 @@
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
-bool TradePathCache::PathExists(const MapPoint start, const MapPoint goal, const unsigned char player)
+bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const unsigned char player)
 {
     RTTR_Assert(start != goal);
 
-    int entryIdx = FindEntry(start, goal, player);
+    int entryIdx = findEntry(start, goal, player);
     if(entryIdx >= 0)
     {
         // Found an entry --> Check if the route is still valid
@@ -48,11 +48,11 @@ bool TradePathCache::PathExists(const MapPoint start, const MapPoint goal, const
     if(!gwg.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &route))
         return false;
 
-    AddEntry(TradePath(start, goal, std::move(route)), player);
+    addEntry(TradePath(start, goal, std::move(route)), player);
     return true;
 }
 
-int TradePathCache::FindEntry(const MapPoint start, const MapPoint goal, const PlayerIdx player) const
+int TradePathCache::findEntry(const MapPoint start, const MapPoint goal, const PlayerIdx player) const
 {
     const GamePlayer& thisPlayer = gwg.GetPlayer(player);
 
@@ -70,11 +70,11 @@ int TradePathCache::FindEntry(const MapPoint start, const MapPoint goal, const P
     return -1;
 }
 
-void TradePathCache::AddEntry(TradePath path, const unsigned char player)
+void TradePathCache::addEntry(TradePath path, const unsigned char player)
 {
     Entry entry{player, gwg.GetEvMgr().GetCurrentGF(), std::move(path)};
 
-    int idx = FindEntry(entry.path.start, entry.path.goal, player);
+    int idx = findEntry(entry.path.start, entry.path.goal, player);
     if(idx < 0)
     {
         // None found --> Find a new spot

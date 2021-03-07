@@ -159,7 +159,7 @@ void nofAttacker::Walked()
                 return;
             }
 
-            MapPoint goalFlagPos = attacked_goal->GetFlag()->GetPos();
+            MapPoint goalFlagPos = attacked_goal->GetFlagPos();
             // RTTR_Assert(enemy->GetGOT() == GOT_NOF_DEFENDER);
             // Are we at the flag?
 
@@ -444,7 +444,7 @@ void nofAttacker::ContinueAtFlag()
     RTTR_Assert(attacked_goal);
     // Greifen wir grad ein Gebäude an?
     if(state == SoldierState::AttackingFightingVsDefender
-       || (state == SoldierState::Fighting && attacked_goal->GetFlag()->GetPos() == pos))
+       || (state == SoldierState::Fighting && attacked_goal->GetFlagPos() == pos))
     {
         // Dann neuen Verteidiger rufen
         if(attacked_goal->CallDefender(this)) //-V522
@@ -580,7 +580,7 @@ void nofAttacker::MissAttackingWalk()
 void nofAttacker::ReachedDestination()
 {
     // Sind wir direkt an der Flagge?
-    if(pos == attacked_goal->GetFlag()->GetPos())
+    if(pos == attacked_goal->GetFlagPos())
     {
         // Building already captured? Continue capturing
         // This can only be a far away attacker
@@ -623,7 +623,7 @@ void nofAttacker::ReachedDestination()
         state = SoldierState::AttackingWaitingAroundBuilding;
         // zur Flagge hin ausrichten
         Direction dir(Direction::West);
-        MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
+        MapPoint attFlagPos = attacked_goal->GetFlagPos();
         if(pos.y == attFlagPos.y && pos.x <= attFlagPos.x)
             dir = Direction::East;
         else if(pos.y == attFlagPos.y && pos.x > attFlagPos.x)
@@ -764,7 +764,7 @@ void nofAttacker::AttackedGoalDestroyed()
 bool nofAttacker::AttackFlag(nofDefender* /*defender*/)
 {
     // Zur Flagge laufen, findet er einen Weg?
-    const auto dir = gwg->FindHumanPath(pos, attacked_goal->GetFlag()->GetPos(), 3, true);
+    const auto dir = gwg->FindHumanPath(pos, attacked_goal->GetFlagPos(), 3, true);
 
     if(dir)
     {
@@ -816,7 +816,7 @@ void nofAttacker::CapturingWalking()
     }
     RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
 
-    MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
+    MapPoint attFlagPos = attacked_goal->GetFlagPos();
 
     // Sind wir schon im Gebäude?
     if(pos == attacked_goal->GetPos())
