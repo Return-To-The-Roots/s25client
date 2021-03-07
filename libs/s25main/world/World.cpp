@@ -257,20 +257,6 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
         return nodeBQ;
 }
 
-DescIdx<TerrainDesc> World::GetRightTerrain(const MapPoint pt, Direction dir) const
-{
-    switch(dir)
-    {
-        case Direction::West: return GetNeighbourNode(pt, Direction::NorthWest).t1;
-        case Direction::NorthWest: return GetNeighbourNode(pt, Direction::NorthWest).t2;
-        case Direction::NorthEast: return GetNeighbourNode(pt, Direction::NorthEast).t1;
-        case Direction::East: return GetNode(pt).t2;
-        case Direction::SouthEast: return GetNode(pt).t1;
-        case Direction::SouthWest: return GetNeighbourNode(pt, Direction::West).t2;
-    }
-    throw std::logic_error("Invalid direction");
-}
-
 WalkTerrain World::GetTerrain(MapPoint pt, Direction dir) const
 {
     // Manually inlined code from GetNeighbors. Measured to greatly improve performance
