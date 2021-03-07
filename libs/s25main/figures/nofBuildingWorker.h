@@ -102,7 +102,7 @@ protected:
     virtual void DrawOtherStates(DrawPoint drawPt);
 
 public:
-    State GetState() { return state; }
+    State GetState() const { return state; }
 
     nofBuildingWorker(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofBuildingWorker(Job job, MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);

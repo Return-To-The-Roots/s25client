@@ -182,7 +182,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(roads, true);
 
     sgd.PushUnsignedInt(jobs_wanted.size());
-    for(JobNeeded job : jobs_wanted)
+    for(const JobNeeded& job : jobs_wanted)
     {
         sgd.PushEnum<uint8_t>(job.job);
         sgd.PushObject(job.workplace);
@@ -254,13 +254,11 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     sgd.PopObjectContainer(roads, GO_Type::Roadsegment);
 
-    unsigned list_size = sgd.PopUnsignedInt();
-    for(unsigned i = 0; i < list_size; ++i)
+    jobs_wanted.resize(sgd.PopUnsignedInt());
+    for(JobNeeded& job : jobs_wanted)
     {
-        JobNeeded nj;
-        nj.job = sgd.Pop<Job>();
-        nj.workplace = sgd.PopObject<noRoadNode>();
-        jobs_wanted.push_back(nj);
+        job.job = sgd.Pop<Job>();
+        job.workplace = sgd.PopObject<noRoadNode>();
     }
 
     if(sgd.GetGameDataVersion() < 2)

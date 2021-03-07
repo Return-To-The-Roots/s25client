@@ -29,10 +29,12 @@
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "factories/GameCommandFactory.h"
+#include "figures/nofHunter.h"
 #include "network/PlayerGameCommands.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
+#include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noFire.h"
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/GameTypesOutput.h"
@@ -48,6 +50,7 @@
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AsyncChecksum)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(Resource)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AddonId)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(nofBuildingWorker::State)
 
 namespace boost { namespace test_tools { namespace tt_detail {
     template<>
@@ -59,6 +62,7 @@ namespace boost { namespace test_tools { namespace tt_detail {
 // LCOV_EXCL_STOP
 
 namespace {
+using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
 struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
 {
     RandWorldFixture()
@@ -564,6 +568,43 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 
         CheckReplayCmds(loadReplay, cmds);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
+{
+    SerializedGameData sgd;
+    const auto hunterPos1 = rttr::test::randomPoint<MapPoint>(0, std::min(world.GetSize().x, world.GetSize().y) - 1);
+    const auto hunterPos2 = world.MakeMapPoint(hunterPos1 + Position(2, 0));
+    {
+        auto* hunterBld1 = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(
+          world, BuildingType::Hunter, hunterPos1, 0, rttr::test::randomEnum<Nation>()));
+        auto* hunterBld2 = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(
+          world, BuildingType::Hunter, hunterPos2, 0, rttr::test::randomEnum<Nation>()));
+        auto* hunter1 = new nofHunter(hunterPos1, rttr::test::randomValue(0u, 10u), hunterBld1);
+        world.AddFigure(hunter1->GetPos(), hunter1);
+        auto* hunter2 = new nofHunter(hunterPos2, rttr::test::randomValue(0u, 10u), hunterBld2);
+        world.AddFigure(hunter2->GetPos(), hunter2);
+        world.AddFigure(hunter2->GetPos(), new noAnimal(Species::Deer, hunter2->GetPos()));
+        hunter2->TryStartHunting();
+        sgd.MakeSnapshot(game);
+    }
+    MockLocalGameState lgs;
+    em.Clear();
+    world.Unload();
+    sgd.ReadSnapshot(game, lgs);
+    BOOST_TEST_REQUIRE(world.GetFigures(hunterPos1).size() == 1u);
+    BOOST_TEST_REQUIRE(world.GetFigures(hunterPos2).size() == 2u);
+    const auto* deserializedHunter1 = dynamic_cast<const nofHunter*>(world.GetFigures(hunterPos1).front());
+    const auto* deserializedHunter2 = dynamic_cast<const nofHunter*>(world.GetFigures(hunterPos2).front());
+    BOOST_TEST_REQUIRE(deserializedHunter1);
+    BOOST_TEST_REQUIRE(deserializedHunter2);
+    BOOST_TEST(deserializedHunter1->GetState() != deserializedHunter2->GetState());
+
+    // Serialize again and compare data
+    SerializedGameData sgd2;
+    sgd2.MakeSnapshot(game);
+    BOOST_CHECK_EQUAL_COLLECTIONS(sgd.GetData(), sgd.GetData() + sgd.GetLength(), sgd2.GetData(),
+                                  sgd2.GetData() + sgd2.GetLength());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
