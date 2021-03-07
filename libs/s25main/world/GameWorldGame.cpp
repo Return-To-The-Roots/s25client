@@ -327,9 +327,9 @@ void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
 #ifdef PREVENT_BORDER_STONE_BLOCKING
             // Count number of border nodes with same owner
             int idx = pt.y * width + pt.x;
-            for(const auto dir : helpers::EnumRange<Direction>{})
+            for(const MapPoint nb : GetNeighbours(curMapPt))
             {
-                if(GetNeighbourNode(curMapPt, dir).boundary_stones[0] == owner)
+                if(GetNode(nb).boundary_stones[0] == owner)
                     ++neighbors[idx];
             }
 #endif
@@ -422,9 +422,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         // Do not destroy the triggering building or its flag
         // TODO: What about this point?
         const uint8_t owner = GetNode(curMapPt).owner;
-        for(Direction dir : helpers::EnumRange<Direction>{})
+        for(const MapPoint neighbourPt : GetNeighbours(curMapPt))
         {
-            MapPoint neighbourPt = GetNeighbour(curMapPt, dir);
             if(ptsHandled.insert(neighbourPt).second)
                 DestroyPlayerRests(neighbourPt, owner, &building);
         }
@@ -523,9 +522,9 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
         if(GetDescription().get(node.t1).Is(ETerrain::Walkable) && GetDescription().get(node.t2).Is(ETerrain::Walkable))
             return true;
         // also check neighboring nodes since border will still count as player territory but not allow any buildings!
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const MapPoint neighbourPt : GetNeighbours(curMapPt))
         {
-            const MapNode& nNode = GetNeighbourNode(curMapPt, dir);
+            const MapNode& nNode = GetNode(neighbourPt);
             if(GetDescription().get(nNode.t1).Is(ETerrain::Walkable)
                || GetDescription().get(nNode.t2).Is(ETerrain::Walkable))
                 return true;
@@ -701,14 +700,11 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner
 void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
 {
     // Figuren direkt daneben
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : GetNeighbours(pt))
     {
         // Nochmal prüfen, ob er nun wirklich verfügbar ist (evtl blocken noch mehr usw.)
         if(!IsRoadNodeForFigures(pt))
             continue;
-
-        // Koordinaten um den Punkt herum
-        MapPoint nb = GetNeighbour(pt, dir);
 
         // Figuren Bescheid sagen
         for(noBase* object : GetFigures(nb))
@@ -932,9 +928,9 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<D
             figures.push_back(static_cast<noFigure*>(fieldFigure));
 
     // Und natürlich in unmittelbarer Umgebung suchen
-    for(Direction dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : GetNeighbours(pt))
     {
-        const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, dir));
+        const std::list<noBase*>& fieldFigures = GetFigures(nb);
         for(auto* fieldFigure : fieldFigures)
             if(fieldFigure->GetType() == NodalObjectType::Figure)
                 figures.push_back(static_cast<noFigure*>(fieldFigure));

@@ -238,6 +238,11 @@ void GameWorldViewer::ChangePlayer(unsigned player, bool updateVisualData /* = t
     }
 }
 
+helpers::EnumArray<MapPoint, Direction> GameWorldViewer::GetNeighbours(const MapPoint pt) const
+{
+    return GetWorld().GetNeighbours(pt);
+}
+
 void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
 {
     // If visibility changed for us, or our team mate if shared view is on -> Update renderer

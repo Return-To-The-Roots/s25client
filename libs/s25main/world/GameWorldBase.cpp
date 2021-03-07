@@ -174,9 +174,9 @@ bool GameWorldBase::IsOnRoad(const MapPoint& pt) const
 
 bool GameWorldBase::IsFlagAround(const MapPoint& pt) const
 {
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : GetNeighbours(pt))
     {
-        if(GetNO(GetNeighbour(pt, dir))->GetBM() == BlockingManner::Flag)
+        if(GetNO(nb)->GetBM() == BlockingManner::Flag)
             return true;
     }
     return false;
@@ -283,8 +283,8 @@ void GameWorldBase::AltitudeChanged(const MapPoint pt)
 void GameWorldBase::RecalcBQAroundPoint(const MapPoint pt)
 {
     RecalcBQ(pt);
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        RecalcBQ(GetNeighbour(pt, dir));
+    for(const MapPoint nb : GetNeighbours(pt))
+        RecalcBQ(nb);
 }
 
 void GameWorldBase::RecalcBQAroundPointBig(const MapPoint pt)
