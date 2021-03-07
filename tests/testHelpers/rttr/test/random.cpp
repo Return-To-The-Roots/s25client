@@ -49,17 +49,25 @@ namespace rttr { namespace test {
         void test_unit_finish(boost::unit_test::test_unit const& test, unsigned long) override
         {
             if(test.p_type == boost::unit_test::TUT_CASE && failedLastTest)
+            {
                 std::cerr << "Random seed was " << lastSeed << std::endl;
+                std::cerr << "Decorate the test with *boost::unit_test::label(\"seed=" << lastSeed
+                          << "\") to reproduce this\n";
+            }
         }
         RTTR_IGNORE_OVERLOADED_VIRTUAL
         void assertion_result(boost::unit_test::assertion_result ar) override
         {
             if(ar != boost::unit_test::AR_PASSED)
-            {
                 failedLastTest = true;
-            }
         }
         RTTR_POP_DIAGNOSTIC
+
+        void test_unit_aborted(boost::unit_test::test_unit const& test) override
+        {
+            if(test.p_type == boost::unit_test::TUT_CASE)
+                failedLastTest = true;
+        }
 
         std::mt19937 randState;
         uint64_t lastSeed = 0;
