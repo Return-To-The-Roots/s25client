@@ -590,9 +590,8 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint> toCheck)
         MapPoint curPt = toCheck.front();
 
         // Coordinates to test around this reachable coordinate
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const MapPoint curNeighbour : aiMap.GetNeighbours(curPt))
         {
-            MapPoint curNeighbour = aiMap.GetNeighbour(curPt, dir);
             Node& node = aiMap[curNeighbour];
 
             // already reached, don't test again
@@ -2326,28 +2325,21 @@ unsigned AIPlayerJH::AmountInStorage(::Job job) const
 bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
 {
     unsigned max_radius = 5;
-    for(MapCoord tx = gwb.GetXA(pt, Direction::West), r = 1; r <= max_radius;
-        tx = gwb.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
-            {
-                if(gwb.GetNode(t2).resources.has(ResourceType::Fish)) // fish on current spot?
-                {
-                    // LOG.write(("found fish at %i,%i ",t2);
-                    // try to find a path to a neighboring node on the coast
-                    for(const auto j : helpers::EnumRange<Direction>{})
-                    {
-                        if(gwb.FindHumanPath(pt, gwb.GetNeighbour(t2, j), 10))
-                            return true;
-                    }
-                }
-            }
-        }
-    }
-    return false;
+    return gwb.CheckPointsInRadius(
+      pt, max_radius,
+      [this, pt](const MapPoint curPt, unsigned) {
+          if(gwb.GetNode(curPt).resources.has(ResourceType::Fish)) // fish on current spot?
+          {
+              // try to find a path to a neighboring node on the coast
+              for(const MapPoint nb : gwb.GetNeighbours(curPt))
+              {
+                  if(gwb.FindHumanPath(pt, nb, 10))
+                      return true;
+              }
+          }
+          return false;
+      },
+      false);
 }
 
 unsigned AIPlayerJH::GetNumAIRelevantSeaIds() const

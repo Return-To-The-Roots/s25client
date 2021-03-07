@@ -116,11 +116,8 @@ void World::AddFigure(const MapPoint pt, noBase* fig)
     figures.push_back(fig);
 
 #if RTTR_ENABLE_ASSERTS
-    for(const auto dir : helpers::EnumRange<Direction>{})
-    {
-        MapPoint nb = GetNeighbour(pt, dir);
+    for(const MapPoint nb : GetNeighbours(pt))
         RTTR_Assert(!helpers::contains(GetNode(nb).figures, fig)); // Added figure that is in surrounding?
-    }
 #endif
 }
 
@@ -213,8 +210,8 @@ void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
 
     // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
     RecalcShadow(pt);
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        RecalcShadow(GetNeighbour(pt, dir));
+    for(const MapPoint nb : GetNeighbours(pt))
+        RecalcShadow(nb);
 
     // Abgeleiteter Klasse Bescheid sagen
     AltitudeChanged(pt);
@@ -228,9 +225,9 @@ bool World::IsPlayerTerritory(const MapPoint pt, const unsigned char owner) cons
         return false;
 
     // Neighbour nodes must belong to this player
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : GetNeighbours(pt))
     {
-        if(GetNeighbourNode(pt, dir).owner != ptOwner)
+        if(GetNode(nb).owner != ptOwner)
             return false;
     }
 
@@ -473,9 +470,9 @@ unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const
         return 0;
 
     // Surrounding must be valid sea
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : GetNeighbours(pt))
     {
-        unsigned short seaId = GetNeighbourNode(pt, dir).seaId;
+        unsigned short seaId = GetNode(nb).seaId;
         if(seaId)
         {
             // Check size (TODO: Others checks like harbor spots?)

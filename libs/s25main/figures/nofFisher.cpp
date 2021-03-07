@@ -140,9 +140,9 @@ nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
         return PointQuality::NotPossible;
 
     // irgendwo drumherum muss es Fisch geben
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : gwg->GetNeighbours(pt))
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, dir)).resources.has(ResourceType::Fish))
+        if(gwg->GetNode(nb).resources.has(ResourceType::Fish))
             return PointQuality::Class1;
     }
 

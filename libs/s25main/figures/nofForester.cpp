@@ -117,9 +117,9 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     }
 
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : gwg->GetNeighbours(pt))
     {
-        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() == NodalObjectType::Building)
+        if(gwg->GetNO(nb)->GetType() == NodalObjectType::Building)
             return PointQuality::NotPossible;
     }
 

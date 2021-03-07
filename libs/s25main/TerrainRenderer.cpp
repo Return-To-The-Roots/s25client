@@ -1056,23 +1056,23 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& 
     UpdateVertexPos(pt, gwv);
     UpdateVertexColor(pt, gwv);
 
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        UpdateVertexColor(gwv.GetNeighbour(pt, dir), gwv);
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
+        UpdateVertexColor(nb, gwv);
 
     // und für die Ränder
     UpdateBorderVertex(pt);
 
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        UpdateBorderVertex(gwv.GetNeighbour(pt, dir));
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
+        UpdateBorderVertex(nb);
 
     // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
     UpdateTrianglePos(pt, true);
     UpdateTriangleColor(pt, true);
 
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
     {
-        UpdateTrianglePos(gwv.GetNeighbour(pt, dir), true);
-        UpdateTriangleColor(gwv.GetNeighbour(pt, dir), true);
+        UpdateTrianglePos(nb, true);
+        UpdateTriangleColor(nb, true);
     }
 
     // Auch im zweiten Kreis drumherum die Dreiecke neu berechnen, da die durch die Schattenänderung der umliegenden
@@ -1084,10 +1084,10 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& 
     UpdateBorderTrianglePos(pt, true);
     UpdateBorderTriangleColor(pt, true);
 
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
     {
-        UpdateBorderTrianglePos(gwv.GetNeighbour(pt, dir), true);
-        UpdateBorderTriangleColor(gwv.GetNeighbour(pt, dir), true);
+        UpdateBorderTrianglePos(nb, true);
+        UpdateBorderTriangleColor(nb, true);
     }
 
     for(unsigned i = 0; i < 12; ++i)
@@ -1101,23 +1101,23 @@ void TerrainRenderer::VisibilityChanged(const MapPoint pt, const GameWorldViewer
         return;
 
     UpdateVertexColor(pt, gwv);
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        UpdateVertexColor(gwv.GetNeighbour(pt, dir), gwv);
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
+        UpdateVertexColor(nb, gwv);
 
     // und für die Ränder
     UpdateBorderVertex(pt);
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        UpdateBorderVertex(gwv.GetNeighbour(pt, dir));
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
+        UpdateBorderVertex(nb);
 
     // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
     UpdateTriangleColor(pt, true);
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        UpdateTriangleColor(gwv.GetNeighbour(pt, dir), true);
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
+        UpdateTriangleColor(nb, true);
 
     // und für die Ränder
     UpdateBorderTriangleColor(pt, true);
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        UpdateBorderTriangleColor(gwv.GetNeighbour(pt, dir), true);
+    for(const MapPoint nb : gwv.GetNeighbours(pt))
+        UpdateBorderTriangleColor(nb, true);
 }
 
 void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)

@@ -194,9 +194,9 @@ void nofActiveSoldier::ExpelEnemies()
     }
 
     // And around this point
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint nb : gwg->GetNeighbours(pos))
     {
-        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, dir));
+        const std::list<noBase*>& fieldFigures = gwg->GetFigures(nb);
         for(auto* fieldFigure : fieldFigures)
         {
             // Normal settler?

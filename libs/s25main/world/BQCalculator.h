@@ -86,9 +86,9 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         else
         {
             // Direct neighbours: Flag for altitude diff > 3
-            for(const auto dir : helpers::EnumRange<Direction>{})
+            for(const MapPoint nb : world.GetNeighbours(pt))
             {
-                otherAltitude = world.GetNeighbourNode(pt, dir).altitude;
+                otherAltitude = world.GetNode(nb).altitude;
                 if(safeDiff(curAltitude, otherAltitude) > 3)
                 {
                     curBQ = BuildingQuality::Flag;
@@ -123,8 +123,9 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
 
     // Blocking manners of neighbours (cache for reuse)
     helpers::EnumArray<BlockingManner, Direction> neighbourBlocks;
+    const auto neighbours = world.GetNeighbours(pt);
     for(const auto dir : helpers::EnumRange<Direction>{})
-        neighbourBlocks[dir] = world.GetNO(world.GetNeighbour(pt, dir))->GetBM();
+        neighbourBlocks[dir] = world.GetNO(neighbours[dir])->GetBM();
 
     // Don't build anything around charburner piles
     for(const auto dir : helpers::EnumRange<Direction>{})
@@ -212,7 +213,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            if(isOnRoad(world.GetNeighbour(pt, i)))
+            if(isOnRoad(neighbours[i]))
             {
                 curBQ = BuildingQuality::House;
                 break;
@@ -248,7 +249,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         return curBQ;
 
     // If we can build the house flag -> OK
-    if((*this)(world.GetNeighbour(pt, Direction::SouthEast), isOnRoad, true) != BuildingQuality::Nothing)
+    if((*this)(neighbours[Direction::SouthEast], isOnRoad, true) != BuildingQuality::Nothing)
         return curBQ;
 
     // If not, we could still build a flag, unless there is another one around

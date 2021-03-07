@@ -100,6 +100,8 @@ public:
     /// Makes this a viewer for another player
     void ChangePlayer(unsigned player, bool updateVisualData = true);
 
+    helpers::EnumArray<MapPoint, Direction> GetNeighbours(MapPoint pt) const;
+
 private:
     /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency
     struct VisualMapNode

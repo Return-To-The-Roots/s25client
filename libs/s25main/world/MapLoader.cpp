@@ -683,9 +683,8 @@ unsigned MapLoader::MeasureSea(World& world, const MapPoint start, unsigned shor
         RTTR_Assert(visited[world.GetIdx(p)]);
         world.GetNodeInt(p).seaId = seaId;
 
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const MapPoint neighbourPt : world.GetNeighbours(p))
         {
-            MapPoint neighbourPt = world.GetNeighbour(p, dir);
             if(visited[world.GetIdx(neighbourPt)])
                 continue;
             visited[world.GetIdx(neighbourPt)] = true;

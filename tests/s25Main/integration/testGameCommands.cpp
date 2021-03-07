@@ -101,9 +101,8 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(world.GetSpecObj<noRoadNode>(flagPt) == flag);
 
     // Place flag at neighbour
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    for(const MapPoint curPt : world.GetNeighbours(flagPt))
     {
-        MapPoint curPt = world.GetNeighbour(flagPt, dir);
         this->SetFlag(curPt);
         // Should not work
         BOOST_TEST_REQUIRE(!world.GetSpecObj<noRoadNode>(curPt));
@@ -116,8 +115,8 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     // Removed from game
     BOOST_TEST_REQUIRE(GameObject::GetNumObjs() == objCt - 1);
     // And everything clear now
-    for(const auto dir : helpers::EnumRange<Direction>{})
-        BOOST_TEST_REQUIRE(world.GetNeighbourNode(flagPt, dir).bq == BuildingQuality::Castle);
+    for(const MapPoint nb : world.GetNeighbours(flagPt))
+        BOOST_TEST_REQUIRE(world.GetNode(nb).bq == BuildingQuality::Castle);
 }
 
 BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
