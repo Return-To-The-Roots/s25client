@@ -519,7 +519,7 @@ void GamePlayer::RoadDestroyed()
             noRoadNode& wareLocation = *ware->GetLocation();
             noBaseBuilding* wareGoal = ware->GetGoal();
             if(wareGoal && ware->GetNextDir() == RoadPathDirection::NorthWest
-               && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos()
+               && wareLocation.GetPos() == wareGoal->GetFlagPos()
                && ((wareGoal->GetBuildingType() != BuildingType::Storehouse
                     && wareGoal->GetBuildingType() != BuildingType::Headquarters
                     && wareGoal->GetBuildingType() != BuildingType::HarborBuilding)
@@ -2151,13 +2151,13 @@ std::vector<nobBaseWarehouse*> GamePlayer::GetWarehousesForTrading(const nobBase
     if(goalWh.GetPlayer() == GetPlayerId())
         return result;
 
-    const MapPoint goalFlagPos = goalWh.GetFlag()->GetPos();
+    const MapPoint goalFlagPos = goalWh.GetFlagPos();
 
     TradePathCache& tradePathCache = gwg.GetTradePathCache();
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
-        if(tradePathCache.PathExists(wh->GetFlag()->GetPos(), goalFlagPos, GetPlayerId()))
+        if(tradePathCache.pathExists(wh->GetFlagPos(), goalFlagPos, GetPlayerId()))
             result.push_back(wh);
     }
 
@@ -2200,7 +2200,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
     if(!IsAlly(goalWh->GetPlayer()))
         return;
 
-    const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
+    const MapPoint goalFlagPos = goalWh->GetFlagPos();
 
     std::vector<nobBaseWarehouse*> whs(buildings.GetStorehouses().begin(), buildings.GetStorehouses().end());
     std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, gwg));
@@ -2218,13 +2218,13 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
         const unsigned actualCount = std::min(available, count);
 
         // Find a trade path from flag to flag
-        TradeRoute tr(gwg, GetPlayerId(), wh->GetFlag()->GetPos(), goalFlagPos);
+        TradeRoute tr(gwg, GetPlayerId(), wh->GetFlagPos(), goalFlagPos);
 
         // Found a path?
         if(tr.IsValid())
         {
             // Add to cache for future searches
-            tradePathCache.AddEntry(tr.GetTradePath(), GetPlayerId());
+            tradePathCache.addEntry(tr.GetTradePath(), GetPlayerId());
 
             wh->StartTradeCaravane(what, actualCount, tr, goalWh);
             count -= available;

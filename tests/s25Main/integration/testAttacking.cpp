@@ -422,7 +422,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     RTTR_EXEC_TILL(300, milBld1->GetNumTroops() == 0);
     // Defender deployed, attacker at flag
     BOOST_TEST_REQUIRE(milBld1->GetDefender());
-    const std::list<noBase*>& figures = world.GetFigures(milBld1->GetFlag()->GetPos());
+    const std::list<noBase*>& figures = world.GetFigures(milBld1->GetFlagPos());
     BOOST_TEST_REQUIRE(figures.size() == 1u);
     BOOST_TEST_REQUIRE(dynamic_cast<nofAttacker*>(figures.front()));
     BOOST_TEST_REQUIRE(static_cast<nofAttacker*>(figures.front())->GetPlayer() == curPlayer);

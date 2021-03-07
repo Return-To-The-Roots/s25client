@@ -18,30 +18,36 @@
 #pragma once
 
 #include "AddonList.h"
+#include "RTTR_Assert.h"
+#include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
+#include "helpers/make_array.h"
 #include "mygettext/mygettext.h"
-#include <boost/format.hpp>
 
 /**
  *  Addon allows users to adjust the game length (for Economy Mode)
  */
-const unsigned int AddonEconomyModeGameLengthList[] = {0, 15, 30, 60, 90, 120, 150, 180, 240, 480}; // length in minutes
+constexpr auto AddonEconomyModeGameLengthList =
+  helpers::make_array(0, 15, 30, 60, 90, 120, 150, 180, 240, 480); // length in minutes
 
 class AddonEconomyModeGameLength : public AddonList
 {
+    static std::vector<std::string> makeOptions()
+    {
+        std::vector<std::string> result = {_("unlimited")};
+        for(const int duration : AddonEconomyModeGameLengthList)
+            result.push_back(helpers::format(_("%1%min"), duration));
+        return result;
+    }
+
 public:
     AddonEconomyModeGameLength()
         : AddonList(AddonId::ECONOMY_MODE_GAME_LENGTH, AddonGroup::Economy | AddonGroup::GamePlay,
                     _("Economy Mode: Game Length"),
-                    _("Adjust the time after which the economy mode victory condition is checked."),
-                    {_("unlimited"), (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[1]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[2]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[3]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[4]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[5]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[6]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[7]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[8]).str(),
-                     (boost::format(_("%1%min")) % AddonEconomyModeGameLengthList[9]).str()},
-                    5)
-    {}
+                    _("Adjust the time after which the economy mode victory condition is checked."), makeOptions(),
+                    helpers::indexOf(AddonEconomyModeGameLengthList, 120))
+
+    {
+        RTTR_Assert(getDefaultStatus() != unsigned(-1));
+    }
 };

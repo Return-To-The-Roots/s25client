@@ -24,6 +24,7 @@
 #include "lua/GameDataLoader.h"
 #include "ogl/glArchivItem_Map.h"
 #include "worldFixtures/CreateEmptyWorld.h"
+#include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
@@ -65,10 +66,23 @@ struct UninitializedWorldCreator
 
 struct LoadWorldFromFileCreator : MapTestFixture
 {
-    glArchivItem_Map map;
     std::vector<MapPoint> hqs;
 
-    explicit LoadWorldFromFileCreator(const MapExtent&) {}
+    explicit LoadWorldFromFileCreator(MapExtent) {}
+    bool operator()(GameWorldBase& world)
+    {
+        MapLoader loader(world);
+        BOOST_TEST_REQUIRE(loader.Load(testMapPath));
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+            hqs.push_back(loader.GetHQPos(i));
+        return true;
+    }
+};
+struct LoadWorldAndS2MapCreator : MapTestFixture
+{
+    glArchivItem_Map map;
+
+    explicit LoadWorldAndS2MapCreator(MapExtent) {}
     bool operator()(GameWorldBase& world)
     {
         bnw::ifstream mapFile(testMapPath, std::ios::binary);
@@ -77,22 +91,12 @@ struct LoadWorldFromFileCreator : MapTestFixture
         MapLoader loader(world);
         if(!loader.Load(map, Exploration::FogOfWar))
             throw std::runtime_error("Could not load map"); // LCOV_EXCL_LINE
-        if(!loader.PlaceHQs(false))
-            throw std::runtime_error("Could not place HQs"); // LCOV_EXCL_LINE
-        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-            hqs.push_back(loader.GetHQPos(i));
         return true;
     }
 };
 
-struct WorldLoadedFixture : public WorldFixture<LoadWorldFromFileCreator>
-{
-    using WorldFixture<LoadWorldFromFileCreator>::world;
-};
-struct WorldLoaded1PFixture : public WorldFixture<LoadWorldFromFileCreator, 1>
-{
-    using WorldFixture<LoadWorldFromFileCreator, 1>::world;
-};
+using WorldLoadedWithS2MapFixture = WorldFixture<LoadWorldAndS2MapCreator>;
+using WorldLoaded1PFixture = WorldFixture<LoadWorldFromFileCreator, 1>;
 using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1>;
 } // namespace
 
@@ -108,12 +112,12 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     BOOST_TEST(header.getNumPlayers() == 4);
 
     MapLoader loader(world);
-    BOOST_TEST_REQUIRE(loader.Load(map, Exploration::FogOfWar));
+    BOOST_TEST_REQUIRE(loader.Load(fixture.testMapPath));
     BOOST_TEST(world.GetWidth() == map.getHeader().getWidth());
     BOOST_TEST(world.GetHeight() == map.getHeader().getHeight());
 }
 
-BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedFixture)
+BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedWithS2MapFixture)
 {
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -121,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedFixture)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
+BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
 {
     // Init BQ
     world.InitAfterLoad();
@@ -199,12 +203,12 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
 
     // And a node of water nearby so we do have a coast
     std::vector<MapPoint> waterPts;
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SouthWest), Direction::SouthWest));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SouthEast), Direction::SouthEast));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[3], Direction::NorthEast), Direction::NorthEast));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[5], Direction::East), Direction::East));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[7], Direction::SouthWest), Direction::SouthWest));
-    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[9], Direction::SouthEast), Direction::SouthEast));
+    waterPts.push_back(world.GetNeighbour2(hbPos[0], 10));
+    waterPts.push_back(world.GetNeighbour2(hbPos[0], 8));
+    waterPts.push_back(world.GetNeighbour2(hbPos[3], 4));
+    waterPts.push_back(world.GetNeighbour2(hbPos[5], 6));
+    waterPts.push_back(world.GetNeighbour2(hbPos[7], 10));
+    waterPts.push_back(world.GetNeighbour2(hbPos[9], 8));
 
     for(const MapPoint& pt : waterPts)
     {
@@ -250,6 +254,25 @@ BOOST_FIXTURE_TEST_CASE(NONothingOnEmptyNode, WorldFixtureEmpty1P)
     BOOST_TEST_REQUIRE(world.GetNO(emptySpot));
     BOOST_TEST(world.GetNO(emptySpot)->GetGOT() == GO_Type::Nothing);
     BOOST_TEST(world.GetGOT(emptySpot) == GO_Type::Nothing);
+}
+
+BOOST_FIXTURE_TEST_CASE(LoadLua, WorldFixture<UninitializedWorldCreator>)
+{
+    MapLoader loader(world);
+    MockLocalGameState lgs;
+    TmpFile invalidLuaFile(".lua");
+    invalidLuaFile.getStream() << "-- No getRequiredLuaVersion\n";
+    invalidLuaFile.close();
+    BOOST_TEST_REQUIRE(!loader.LoadLuaScript(*game, lgs, invalidLuaFile.filePath));
+    BOOST_TEST(!world.HasLua());
+
+    TmpFile validLuaFile(".lua");
+    validLuaFile.getStream() << "function getRequiredLuaVersion()\n return " << LuaInterfaceGameBase::GetVersion()
+                             << "\n end";
+    validLuaFile.close();
+
+    BOOST_TEST_REQUIRE(loader.LoadLuaScript(*game, lgs, validLuaFile.filePath));
+    BOOST_TEST(world.HasLua());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

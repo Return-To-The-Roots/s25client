@@ -35,12 +35,13 @@ class TradePathCache
 
     const GameWorldGame& gwg;
     boost::container::static_vector<Entry, 10> paths;
-    int FindEntry(MapPoint start, MapPoint goal, PlayerIdx player) const;
+    int findEntry(MapPoint start, MapPoint goal, PlayerIdx player) const;
 
 public:
     TradePathCache(const GameWorldGame& gwg) : gwg(gwg) {}
 
-    void Clear() { paths.clear(); }
-    bool PathExists(MapPoint start, MapPoint goal, PlayerIdx player);
-    void AddEntry(TradePath path, PlayerIdx player);
+    void clear() { paths.clear(); }
+    unsigned size() const { return paths.size(); }
+    bool pathExists(MapPoint start, MapPoint goal, PlayerIdx player);
+    void addEntry(TradePath path, PlayerIdx player);
 };

@@ -30,10 +30,12 @@
 #include "factories/BuildingFactory.h"
 #include "factories/GameCommandFactory.h"
 #include "figures/nofHunter.h"
+#include "helpers/format.hpp"
 #include "network/PlayerGameCommands.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
+#include "world/MapLoader.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noFire.h"
 #include "nodeObjs/noFlag.h"
@@ -219,6 +221,19 @@ BOOST_AUTO_TEST_CASE(SerializeGGS)
 
 BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 {
+    MockLocalGameState lgsGame;
+    const std::string luaScript = helpers::format(
+      "-- Hello World\n function getRequiredLuaVersion()\n return %1%\n end", LuaInterfaceGameBase::GetVersion());
+    {
+        MapLoader loader(world);
+        TmpFile validLuaFile(".lua");
+        validLuaFile.getStream() << luaScript;
+        validLuaFile.close();
+
+        BOOST_TEST_REQUIRE(loader.LoadLuaScript(*game, lgsGame, validLuaFile.filePath));
+        BOOST_TEST(world.HasLua());
+    }
+
     const MapPoint hqPos = world.GetPlayer(0).GetHQPos();
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     auto* hqFlag = hq->GetFlag();
@@ -357,6 +372,9 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             hqFlag = hq->GetFlag();
             BOOST_TEST_REQUIRE(hqFlag);
             BOOST_TEST(hqFlag->GetNumWares() == 1u);
+
+            BOOST_TEST_REQUIRE(world.HasLua());
+            BOOST_TEST(world.GetLua().getScript() == luaScript);
 
             SerializedGameData loadedSgd;
             loadedSgd.MakeSnapshot(game);

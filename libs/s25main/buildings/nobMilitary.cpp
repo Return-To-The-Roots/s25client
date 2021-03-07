@@ -1332,7 +1332,7 @@ bool nobMilitary::IsFarAwayCapturer(nofAttacker* attacker)
 
 void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
 {
-    const MapPoint flagPos = GetFlag()->GetPos();
+    const MapPoint flagPos = GetFlagPos();
     unsigned minLength = std::numeric_limits<unsigned>::max();
     nofAttacker* bestAttacker = nullptr;
     for(auto& far_away_capturer : far_away_capturers)
