@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_land_map)
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = getRandomMapSize();
+    settings.size = getRandomMapSize(32, 32);
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Land;
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = getRandomMapSize(78, 90); // Need enough space for player islands
+    settings.size = getRandomMapSize(80, 90); // Need enough space for player islands
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Water;
 
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
     loadGameData(worldDesc);
     MapSettings settings;
 
-    settings.size = getRandomMapSize();
+    settings.size = getRandomMapSize(38);
     settings.numPlayers = MAX_PLAYERS;
     settings.style = MapStyle::Land;
 
