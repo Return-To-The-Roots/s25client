@@ -155,11 +155,9 @@ public:
         return dynamic_cast<const T*>(GetNode(pt).obj);
     }
 
-    /// Return the terrain to the right when walking from the point in the given direction
-    /// 0 = left upper triangle, 1 = triangle above, ..., 4 = triangle below
-    DescIdx<TerrainDesc> GetRightTerrain(MapPoint pt, Direction dir) const;
     /// Get left and right terrain from the point in the given direction
     WalkTerrain GetTerrain(MapPoint pt, Direction dir) const;
+    /// Return all terrains around the given point. The per-direction entry is the terrain to the right
     helpers::EnumArray<DescIdx<TerrainDesc>, Direction> GetTerrainsAround(MapPoint pt) const;
 
     /// Create the FOW-objects, -streets, etc for a point and player
