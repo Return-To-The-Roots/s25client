@@ -31,6 +31,7 @@
 #include "factories/GameCommandFactory.h"
 #include "figures/nofHunter.h"
 #include "helpers/format.hpp"
+#include "network/GameMessage_Chat.h"
 #include "network/PlayerGameCommands.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/MockLocalGameState.h"
@@ -623,6 +624,21 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     sgd2.MakeSnapshot(*game);
     BOOST_CHECK_EQUAL_COLLECTIONS(sgd.GetData(), sgd.GetData() + sgd.GetLength(), sgd2.GetData(),
                                   sgd2.GetData() + sgd2.GetLength());
+}
+
+BOOST_AUTO_TEST_CASE(SerializeGameMessageChat)
+{
+    GameMessage_Chat msg(rttr::test::randomValue(0u, 10u), rttr::test::randomEnum<ChatDestination>(), "Hello");
+    Serializer ser;
+    msg.Serialize(ser);
+    std::unique_ptr<Message> newMsg(GameMessage::create_game(msg.getId()));
+    BOOST_TEST_REQUIRE(!!newMsg);
+    newMsg->Deserialize(ser);
+    const auto* newMsgChat = dynamic_cast<GameMessage_Chat*>(newMsg.get());
+    BOOST_TEST_REQUIRE(newMsgChat);
+    BOOST_TEST(newMsgChat->player == msg.player);
+    BOOST_TEST(newMsgChat->destination == msg.destination);
+    BOOST_TEST(newMsgChat->text == msg.text);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
