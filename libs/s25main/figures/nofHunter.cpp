@@ -165,7 +165,7 @@ void nofHunter::TryStartHunting()
                 if(figure->GetType() != NodalObjectType::Animal)
                     continue;
                 // Ist das Tier überhaupt zum Jagen geeignet?
-                noAnimal& animal = static_cast<noAnimal&>(*figure);
+                auto& animal = static_cast<noAnimal&>(*figure);
                 if(!animal.CanHunted())
                     continue;
 
