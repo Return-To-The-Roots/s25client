@@ -89,6 +89,7 @@ void World::Unload()
 
     catapult_stones.clear();
     harbor_pos.clear();
+    description_ = WorldDescription();
     noNodeObj.reset();
     Resize(MapExtent::all(0));
 }

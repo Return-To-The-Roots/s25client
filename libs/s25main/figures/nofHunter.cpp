@@ -40,7 +40,8 @@
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 
 nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(Job::Hunter, pos, player, workplace), animal(nullptr), shootingPos(0, 0)
+    : nofBuildingWorker(Job::Hunter, pos, player, workplace), animal(nullptr), shootingPos(MapPoint::Invalid()),
+      shooting_dir(Direction::West)
 {}
 
 void nofHunter::Serialize(SerializedGameData& sgd) const
@@ -69,6 +70,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
     {
         animal = nullptr;
         shootingPos = MapPoint::Invalid();
+        shooting_dir = Direction::West;
     }
 }
 
@@ -163,14 +165,15 @@ void nofHunter::TryStartHunting()
                 if(figure->GetType() != NodalObjectType::Animal)
                     continue;
                 // Ist das Tier überhaupt zum Jagen geeignet?
-                if(!static_cast<noAnimal*>(figure)->CanHunted())
+                noAnimal& animal = static_cast<noAnimal&>(*figure);
+                if(!animal.CanHunted())
                     continue;
 
                 // Und komme ich hin?
-                if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(figure)->GetPos(), MAX_HUNTING_DISTANCE))
+                if(pos == animal.GetPos() || gwg->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
                 {
                     // Dann nehmen wir es
-                    available_animals.push_back(static_cast<noAnimal*>(figure));
+                    available_animals.push_back(&animal);
                 }
             }
         }
