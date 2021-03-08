@@ -57,6 +57,7 @@ public:
 
     RoadSegment* GetRoute(const Direction dir) const { return routes[dir]; }
     void SetRoute(const Direction dir, RoadSegment* route) { routes[dir] = route; }
+    const auto& getRoutes() const { return routes; }
     noRoadNode* GetNeighbour(Direction dir) const;
 
     void DestroyRoad(Direction dir);

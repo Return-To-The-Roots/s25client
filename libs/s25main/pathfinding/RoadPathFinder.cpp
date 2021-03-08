@@ -152,10 +152,11 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         currentVisit = 1;
     }
 
-    // Anfangsknoten einf�gen
+    // Add start node
     todo.clear();
 
-    start.targetDistance = gwb_.CalcDistance(start.GetPos(), goal.GetPos());
+    const MapPoint goalPos = goal.GetPos();
+    start.targetDistance = gwb_.CalcDistance(start.GetPos(), goalPos);
     start.estimate = start.targetDistance;
     start.last_visit = currentVisit;
     start.prev = nullptr;
@@ -166,13 +167,12 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 
     while(!todo.empty())
     {
-        // Knoten mit den geringsten Wegkosten ausw�hlen
+        // Get node with current least estimate
         const noRoadNode& best = *todo.pop();
 
-        // Ziel erreicht?
+        // Reached goal
         if(&best == &goal)
         {
-            // Jeweils die einzelnen Angaben zur�ckgeben, falls gew�nscht (Pointer �bergeben)
             if(length)
                 *length = best.cost;
 
@@ -194,22 +194,25 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             return true;
         }
 
+        const helpers::EnumArray<RoadSegment*, Direction> routes = best.getRoutes();
+
         // Nachbarflagge bzw. Wege in allen 6 Richtungen verfolgen
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            // Gibt es auch einen solchen Weg bzw. Nachbarflagge?
-            noRoadNode* neighbour = best.GetNeighbour(dir);
-
-            // Wenn nicht, brauchen wir mit dieser Richtung gar nicht weiter zu machen
-            if(!neighbour)
+            const auto route = routes[dir];
+            if(!route)
                 continue;
 
+            // Check the 2 flags, one is the current node, so we need the other
+            noRoadNode* neighbour = route->GetF1();
+            if(neighbour == &best)
+                neighbour = route->GetF2();
+
             // this eliminates 1/6 of all nodes and avoids cost calculation and further checks,
-            // therefore - and because the profiler says so - it is more efficient that way
             if(neighbour == best.prev)
                 continue;
 
-            // No pathes over buildings
+            // No paths over buildings
             if((dir == Direction::NorthWest) && (neighbour != &goal))
             {
                 // Flags and harbors are allowed
@@ -219,11 +222,10 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             }
 
             // evtl verboten?
-            if(!isSegmentAllowed(*best.GetRoute(dir)))
+            if(!isSegmentAllowed(*route))
                 continue;
 
-            // Neuer Weg für diesen neuen Knoten berechnen
-            unsigned cost = best.cost + best.GetRoute(dir)->GetLength();
+            unsigned cost = best.cost + route->GetLength();
             cost += addCosts(best, dir);
 
             if(cost > max)
@@ -232,7 +234,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             // Was node already visited?
             if(neighbour->last_visit == currentVisit)
             {
-                // Dann nur ggf. Weg und Vorg�nger korrigieren, falls der Weg k�rzer ist
+                // Update node if costs are lower
                 if(cost < neighbour->cost)
                 {
                     neighbour->cost = cost;
@@ -249,22 +251,21 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 neighbour->dir_ = toRoadPathDirection(dir);
                 neighbour->prev = &best;
 
-                neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(), goal.GetPos());
+                neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(), goalPos);
                 neighbour->estimate = neighbour->targetDistance + cost;
 
                 todo.push(neighbour);
             }
         }
 
-        // Stehen wir hier auf einem Hafenplatz
+        // For harbors also consider ship connections
         if(best.GetGOT() == GO_Type::NobHarborbuilding)
         {
             std::vector<nobHarborBuilding::ShipConnection> scs =
               static_cast<const nobHarborBuilding&>(best).GetShipConnections();
 
-            for(auto& sc : scs)
+            for(const auto& sc : scs)
             {
-                // Neuer Weg für diesen neuen Knoten berechnen
                 unsigned cost = best.cost + sc.way_costs;
 
                 if(cost > max)
@@ -274,7 +275,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 // Was node already visited?
                 if(dest.last_visit == currentVisit)
                 {
-                    // Dann nur ggf. Weg und Vorg�nger korrigieren, falls der Weg k�rzer ist
+                    // Update node if costs are lower
                     if(cost < dest.cost)
                     {
                         dest.dir_ = RoadPathDirection::Ship;
@@ -292,7 +293,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                     dest.prev = &best;
                     dest.cost = cost;
 
-                    dest.targetDistance = gwb_.CalcDistance(dest.GetPos(), goal.GetPos());
+                    dest.targetDistance = gwb_.CalcDistance(dest.GetPos(), goalPos);
                     dest.estimate = dest.targetDistance + cost;
 
                     todo.push(&dest);
