@@ -149,20 +149,18 @@ std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
  */
 void noFlag::AddWare(std::unique_ptr<Ware> ware)
 {
-    for(auto& i : wares)
+    if(wares.back())
     {
-        if(i)
-            continue;
-
-        // Träger Bescheid sagen
-        const RoadPathDirection nextDir = ware->GetNextDir();
-        i = std::move(ware);
-
-        if(nextDir != RoadPathDirection::None)
-            GetRoute(toDirection(nextDir))->AddWareJob(this);
-        return;
+        auto it = helpers::find(wares, nullptr);
+        std::move(it + 1, wares.end(), it);
     }
-    RTTR_Assert(false); // No place found???
+
+    // Träger Bescheid sagen
+    const RoadPathDirection nextDir = ware->GetNextDir();
+    wares.back() = std::move(ware);
+
+    if(nextDir != RoadPathDirection::None)
+        GetRoute(toDirection(nextDir))->AddWareJob(this);
 }
 
 /**
