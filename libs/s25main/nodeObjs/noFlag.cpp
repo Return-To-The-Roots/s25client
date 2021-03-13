@@ -251,14 +251,15 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     // Waren zählen, die in diese Richtung transportiert werden müssen
     unsigned points = GetNumWaresForRoad(dir) * 2;
 
-    // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
     const RoadSegment* routeInDir = GetRoute(dir);
-    if(!routeInDir->isOccupied())
-        points += 500;
-    else if(routeInDir->hasCarrier(0) && routeInDir->getCarrier(0)->GetCarrierState() == CarrierState::FigureWork
-            && !routeInDir->hasCarrier(
-              1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
-        points += 50;
+    const nofCarrier* humanCarrier = routeInDir->getCarrier(0);
+    if(humanCarrier)
+    {
+        // normal carrier has been ordered from the warehouse but has not yet arrived and no donkey
+        if(humanCarrier->GetCarrierState() == CarrierState::FigureWork && !routeInDir->hasCarrier(1))
+            points += 50;
+    } else if(!routeInDir->hasCarrier(1))
+        points += 500; // No carrier at all -> Large penalty
 
     return points;
 }
