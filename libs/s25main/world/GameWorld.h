@@ -142,9 +142,9 @@ public:
     void Armageddon(unsigned char player);
 
     /// Ist der Punkt ein geeigneter Platz zum Warten vor dem Militärgebäude
-    bool ValidWaitingAroundBuildingPoint(MapPoint pt, nofAttacker* attacker, MapPoint center);
-    /// Geeigneter Punkt für Kämpfe?
-    bool ValidPointForFighting(MapPoint pt, bool avoid_military_building_flags, nofActiveSoldier* exception = nullptr);
+    bool ValidWaitingAroundBuildingPoint(MapPoint pt, MapPoint center);
+    /// Is this point a valid point for the given soldier to fight?
+    bool IsValidPointForFighting(MapPoint pt, const nofActiveSoldier& soldier, bool avoid_military_building_flags);
 
     /// Berechnet die Sichtbarkeiten neu um einen Punkt mit radius
     void RecalcVisibilitiesAroundPoint(MapPoint pt, MapCoord radius, unsigned char player,

@@ -242,16 +242,13 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
     }
 
     std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, goal);
-    // TODO(Replay): Move the GotWorker part before the UseFigureAtOnce and remove figRef
-    noFigure& figRef = *fig;
+    // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
+    if(goal->GetType() != NodalObjectType::Flag)
+        checkedCast<noBaseBuilding*>(goal)->GotWorker(job, *fig);
 
     // Wenn Figur nicht sofort von abgeleiteter Klasse verwenet wird, fügen wir die zur Leave-Liste hinzu
     if(!UseFigureAtOnce(fig, *goal))
         AddLeavingFigure(std::move(fig));
-
-    // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
-    if(goal->GetType() != NodalObjectType::Flag)
-        checkedCast<noBaseBuilding*>(goal)->GotWorker(job, figRef);
 
     inventory.real.Remove(job);
 

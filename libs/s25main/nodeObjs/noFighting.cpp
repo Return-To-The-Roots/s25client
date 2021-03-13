@@ -226,15 +226,12 @@ void noFighting::HandleEvent(const unsigned id)
                         soldiers[1 - turn]->LostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
                         const MapPoint pos = soldiers[turn]->GetPos();
-                        // TODO(Replay): Remove this hack and set the turn before the WonFighting so the winning soldier
-                        // can fight here again
-                        auto& winningSoldier =
-                          world->AddFigure(pos, std::unique_ptr<nofActiveSoldier>(soldiers[turn].get()));
-                        winningSoldier.WonFighting();
-                        // TODO(Replay): 2nd part of replay compat hack
-                        RTTR_UNUSED(soldiers[turn].release());
+                        auto& winningSoldier = world->AddFigure(pos, std::move(soldiers[turn]));
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
+                        // Do this before calling WonFighting so this fight doesn't block the soldier looking for a new
+                        // fight spot
                         turn = 3 + (1 - turn);
+                        winningSoldier.WonFighting();
                         // Event zum Sterben des einen Soldaten anmelden
                         current_ev = GetEvMgr().AddEvent(this, 30);
                         // Umstehenden Figuren Bescheid Bescheid sagen
