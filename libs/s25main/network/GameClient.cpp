@@ -212,6 +212,8 @@ void GameClient::Stop()
 
     if(replayinfo)
     {
+        if(replayinfo->replay.IsRecording())
+            replayinfo->replay.StopRecording();
         replayinfo->replay.Close();
         replayinfo.reset();
     }
@@ -278,7 +280,7 @@ void GameClient::StartGame(const unsigned random_init)
     unsigned startGF = (mapinfo.type == MapType::Savegame) ? mapinfo.savegame->start_gf : 0;
     // Create the game
     game =
-      std::make_shared<Game>(gameLobby->getSettings(), startGF,
+      std::make_shared<Game>(std::move(gameLobby->getSettings()), startGF,
                              std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end()));
     if(!IsReplayModeOn())
     {
@@ -898,13 +900,14 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
        && CreateLobby())
     {
         mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum);
-        if(mapinfo.mapData.data.size() == msg.mapCompressedLen && mapinfo.mapData.length == msg.mapLen)
+        if(mapinfo.mapData.data.size() == msg.mapCompressedLen && mapinfo.mapData.uncompressedLength == msg.mapLen)
         {
             bool ok = true;
             if(!mapinfo.luaFilepath.empty())
             {
                 mapinfo.luaData.CompressFromFile(mapinfo.luaFilepath, &mapinfo.luaChecksum);
-                ok = (mapinfo.luaData.data.size() == msg.luaCompressedLen && mapinfo.luaData.length == msg.luaLen);
+                ok = (mapinfo.luaData.data.size() == msg.luaCompressedLen
+                      && mapinfo.luaData.uncompressedLength == msg.luaLen);
             }
 
             if(ok)
@@ -915,8 +918,8 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
         }
         gameLobby.reset();
     }
-    mapinfo.mapData.length = msg.mapLen;
-    mapinfo.luaData.length = msg.luaLen;
+    mapinfo.mapData.uncompressedLength = msg.mapLen;
+    mapinfo.luaData.uncompressedLength = msg.luaLen;
     mapinfo.mapData.data.resize(msg.mapCompressedLen);
     mapinfo.luaData.data.resize(msg.luaCompressedLen);
     mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
@@ -1416,7 +1419,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
         replayinfo.reset();
         return false;
     }
-    replayinfo->filename = replayinfo->replay.GetFile().getFilePath().filename();
+    replayinfo->filename = path.filename();
 
     gameLobby = std::make_shared<GameLobby>(true, true, replayinfo->replay.GetNumPlayers());
 
@@ -1465,7 +1468,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
                 OnError(ClientError::MapTransmission);
                 return false;
             }
-            if(mapinfo.luaData.length)
+            if(mapinfo.luaData.uncompressedLength)
             {
                 mapinfo.luaFilepath = mapFilePath.replace_extension("lua");
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
