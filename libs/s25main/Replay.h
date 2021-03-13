@@ -61,7 +61,7 @@ public:
     bool IsReplaying() const { return !isRecording && file.IsValid(); }
 
     /// Loads the header and optionally the mapInfo (former "extended header")
-    bool LoadHeader(const boost::filesystem::path& filepath, bool loadSettings);
+    bool LoadHeader(const boost::filesystem::path& filepath);
     bool LoadGameData(MapInfo& mapInfo);
 
     /// Fügt ein Chat-Kommando hinzu (schreibt)

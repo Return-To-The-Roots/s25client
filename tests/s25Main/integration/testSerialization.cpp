@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     for(const bool loadSettings : {false, true})
     {
         Replay loadReplay;
-        BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath, loadSettings));
+        BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
         BOOST_TEST_REQUIRE(loadReplay.GetSaveTime() == replay.GetSaveTime());
         BOOST_TEST_REQUIRE(loadReplay.GetMapName() == "MapTitle");
         BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames().size() == 3u);
@@ -457,6 +457,8 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
             BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 0u);
             continue;
         }
+        MapInfo newMap;
+        BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
         BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 4u);
         for(unsigned j = 0; j < 4; j++)
         {
@@ -473,8 +475,6 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
             }
         }
         BOOST_TEST_REQUIRE(loadReplay.ggs.speed == replay.ggs.speed);
-        MapInfo newMap;
-        BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
         BOOST_TEST_REQUIRE(loadReplay.random_init == replay.random_init);
         BOOST_TEST_REQUIRE(newMap.type == map.type);
         BOOST_TEST_REQUIRE(newMap.title == map.title);
@@ -542,7 +542,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     for(const bool loadSettings : {false, true})
     {
         Replay loadReplay;
-        BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath, loadSettings));
+        BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
         BOOST_TEST_REQUIRE(loadReplay.GetSaveTime() == replay.GetSaveTime());
         BOOST_TEST_REQUIRE(loadReplay.GetMapName() == "MapTitle");
         BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames().size() == 3u);
@@ -556,6 +556,8 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
             BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 0u);
             continue;
         }
+        MapInfo newMap;
+        BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
         BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 4u);
         for(unsigned j = 0; j < 4; j++)
         {
@@ -572,8 +574,6 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
             }
         }
         BOOST_TEST_REQUIRE(loadReplay.ggs.speed == replay.ggs.speed);
-        MapInfo newMap;
-        BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
         BOOST_TEST_REQUIRE(loadReplay.random_init == replay.random_init);
         BOOST_TEST_REQUIRE(newMap.type == map.type);
         BOOST_TEST_REQUIRE(newMap.title == map.title);
