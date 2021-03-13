@@ -105,7 +105,8 @@
 /// 6: Make TradeDirection contiguous, Serialize only nobUsuals in BuildingRegister::buildings,
 ///    include water and fish in geologists resourceFound
 /// 7: Use helpers::push/popContainer (uses var size)
-static const unsigned currentGameDataVersion = 7;
+/// 8: noFlag::Wares converted to static_vector
+static const unsigned currentGameDataVersion = 8;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
