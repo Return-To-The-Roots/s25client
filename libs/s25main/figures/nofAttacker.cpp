@@ -521,7 +521,7 @@ void nofAttacker::MissAttackingWalk()
     }*/
 
     // Eine Position rund um das Militärgebäude suchen
-    MapPoint goal = attacked_goal->FindAnAttackerPlace(radius, this);
+    MapPoint goal = attacked_goal->FindAnAttackerPlace(radius, *this);
 
     // Keinen Platz mehr gefunden?
     if(!goal.isValid())

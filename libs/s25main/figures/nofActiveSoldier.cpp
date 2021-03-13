@@ -337,7 +337,7 @@ void nofActiveSoldier::MeetingEnemy()
         {
             // Is the fighting point still valid (could be another fight there already e.g.)?
             // And the enemy still on the way?
-            if(!world->ValidPointForFighting(pos, false, this) || enemy->GetState() != SoldierState::MeetEnemy)
+            if(!world->IsValidPointForFighting(pos, *this, false) || enemy->GetState() != SoldierState::MeetEnemy)
             {
                 // No
                 // Abort the whole fighting fun with the enemy
@@ -457,9 +457,9 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
     }
     RTTR_Assert(world->CalcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
 
-    const auto isGoodFightingSpot = [world = this->world, pos = this->pos, other](const auto& pt) {
+    const auto isGoodFightingSpot = [world = this->world, pos = this->pos, this, other](MapPoint pt) {
         // Did we find a good spot?
-        return world->ValidPointForFighting(pt, true, nullptr)
+        return world->IsValidPointForFighting(pt, *this, true)
                && (pos == pt || world->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false))
                && (other->GetPos() == pt
                    || world->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false));

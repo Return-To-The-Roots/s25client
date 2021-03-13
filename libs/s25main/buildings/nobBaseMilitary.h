@@ -106,7 +106,7 @@ public:
     nofAttacker* FindAggressor(nofAggressiveDefender* defender);
     /// Sucht für einen Angreifer den nächsten (bzw. genau den) Platz zur Fahne, damit die sich darum postieren und
     /// warten
-    MapPoint FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier);
+    MapPoint FindAnAttackerPlace(unsigned short& ret_radius, const nofAttacker& soldier);
     /// Sucht einen Nachrücker, der weiter hinten steht, auf diesen Posten und schickt diesen auch los
     bool SendSuccessor(MapPoint pt, unsigned short radius);
 

@@ -952,7 +952,7 @@ void GameWorld::Armageddon(const unsigned char player)
     }
 }
 
-bool GameWorld::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* /*attacker*/, const MapPoint center)
+bool GameWorld::ValidWaitingAroundBuildingPoint(const MapPoint pt, const MapPoint center)
 {
     // Gültiger Punkt für Figuren?
     if(!PathConditionHuman(*this).IsNodeOk(pt))
@@ -979,8 +979,8 @@ bool GameWorld::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* 
     return FindHumanPath(pt, center, CalcDistance(pt, center)) != boost::none;
 }
 
-bool GameWorld::ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags,
-                                      nofActiveSoldier* exception)
+bool GameWorld::IsValidPointForFighting(MapPoint pt, const nofActiveSoldier& soldier,
+                                        bool avoid_military_building_flags)
 {
     // Is this a flag of a military building?
     if(avoid_military_building_flags && GetNO(pt)->GetGOT() == GO_Type::Flag)
@@ -993,11 +993,11 @@ bool GameWorld::ValidPointForFighting(const MapPoint pt, const bool avoid_milita
     // Objekte, die sich hier befinden durchgehen
     for(const auto& figure : GetFigures(pt))
     {
-        // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
-        if(figure.GetGOT() == GO_Type::NofAttacker || figure.GetGOT() == GO_Type::NofAggressivedefender
-           || figure.GetGOT() == GO_Type::NofDefender)
+        // Ist hier ein anderer Soldat, der hier ebenfalls wartet ?
+        const GO_Type got = figure.GetGOT();
+        if(got == GO_Type::NofAttacker || got == GO_Type::NofAggressivedefender || got == GO_Type::NofDefender)
         {
-            if(static_cast<const nofActiveSoldier*>(&figure) == exception)
+            if(static_cast<const nofActiveSoldier*>(&figure) == &soldier)
                 continue;
             switch(static_cast<const nofActiveSoldier&>(figure).GetState())
             {
@@ -1007,13 +1007,12 @@ bool GameWorld::ValidPointForFighting(const MapPoint pt, const bool avoid_milita
                 case nofActiveSoldier::SoldierState::AttackingWaitingForDefender:
                 case nofActiveSoldier::SoldierState::DefendingWaiting: return false;
             }
-        }
-
-        // Oder ein Kampf, der hier tobt?
-        if(figure.GetGOT() == GO_Type::Fighting)
+        } else if(got == GO_Type::Fighting) // Oder ein Kampf, der hier tobt?
         {
             const auto& fight = static_cast<const noFighting&>(figure);
-            if(fight.IsActive() && (!exception || !fight.IsFighter(*exception)))
+            // A soldier currently fighting shouldn't look for a new fighting spot
+            RTTR_Assert(!fight.IsFighter(soldier));
+            if(fight.IsActive())
                 return false;
         }
     }

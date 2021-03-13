@@ -176,7 +176,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
     return nullptr;
 }
 
-MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
+MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const nofAttacker& soldier)
 {
     const MapPoint flagPos = world->GetNeighbour(pos, Direction::SouthEast);
 
@@ -185,13 +185,13 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
     bool capturing =
       (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
-    if(!capturing && world->ValidPointForFighting(flagPos, false))
+    if(!capturing && world->IsValidPointForFighting(flagPos, soldier, false))
     {
         ret_radius = 0;
         return flagPos;
     }
 
-    const MapPoint soldierPos = soldier->GetPos();
+    const MapPoint soldierPos = soldier.GetPos();
     // Get points AROUND the flag. Never AT the flag
     const auto nodes = world->GetPointsInRadius(flagPos, 3, ReturnMapPointWithRadius{});
 
@@ -206,7 +206,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
         if(node.second > ret_radius)
             break;
 
-        if(!world->ValidWaitingAroundBuildingPoint(node.first, soldier, pos))
+        if(!world->ValidWaitingAroundBuildingPoint(node.first, pos))
             continue;
 
         // Derselbe Punkt? Dann können wir gleich abbrechen, finden ja sowieso keinen kürzeren Weg mehr
