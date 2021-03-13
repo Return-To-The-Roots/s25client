@@ -47,7 +47,7 @@ BOOST_GLOBAL_FIXTURE(Fixture);
 static void playReplay(const boost::filesystem::path& replayPath)
 {
     Replay replay;
-    BOOST_TEST_REQUIRE(replay.LoadHeader(replayPath, true));
+    BOOST_TEST_REQUIRE(replay.LoadHeader(replayPath));
     MapInfo mapInfo;
     BOOST_TEST_REQUIRE(replay.LoadGameData(mapInfo));
     BOOST_TEST_REQUIRE(!mapInfo.savegame); // Must be from start

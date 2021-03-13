@@ -1408,7 +1408,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     mapinfo.Clear();
     replayinfo = std::make_unique<ReplayInfo>();
 
-    if(!replayinfo->replay.LoadHeader(path, true) || !replayinfo->replay.LoadGameData(mapinfo)) //-V807
+    if(!replayinfo->replay.LoadHeader(path) || !replayinfo->replay.LoadGameData(mapinfo)) //-V807
     {
         LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
           % (replayinfo->replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo->replay.GetLastErrorMsg());

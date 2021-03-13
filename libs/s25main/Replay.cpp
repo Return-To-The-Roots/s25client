@@ -111,7 +111,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     return true;
 }
 
-bool Replay::LoadHeader(const boost::filesystem::path& filepath, bool loadSettings)
+bool Replay::LoadHeader(const boost::filesystem::path& filepath)
 {
     // Datei öffnen
     if(!file.Open(filepath, OFM_READ))
@@ -140,12 +140,6 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath, bool loadSettin
         }
 
         lastGF_ = file.ReadUnsignedInt();
-
-        if(loadSettings)
-        {
-            ReadPlayerData(file);
-            ReadGGS(file);
-        }
     } catch(std::runtime_error& e)
     {
         lastErrorMsg = e.what();
@@ -159,6 +153,8 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
 {
     try
     {
+        ReadPlayerData(file);
+        ReadGGS(file);
         random_init = file.ReadUnsignedInt();
 
         mapInfo.Clear();

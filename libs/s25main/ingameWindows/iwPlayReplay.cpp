@@ -99,7 +99,7 @@ void iwPlayReplay::PopulateTable()
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(path, false))
+        if(!replay.LoadHeader(path))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
@@ -217,7 +217,7 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         for(const auto& it : replays)
         {
             Replay replay;
-            if(!replay.LoadHeader(it, false))
+            if(!replay.LoadHeader(it))
             {
                 replay.Close();
                 boost::system::error_code ec;
