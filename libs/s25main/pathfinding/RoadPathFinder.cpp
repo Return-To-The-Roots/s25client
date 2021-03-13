@@ -195,11 +195,12 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         }
 
         const helpers::EnumArray<RoadSegment*, Direction> routes = best.getRoutes();
+        const noRoadNode* prevNode = best.prev;
 
         // Nachbarflagge bzw. Wege in allen 6 Richtungen verfolgen
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const auto route = routes[dir];
+            const auto* route = routes[dir];
             if(!route)
                 continue;
 
@@ -209,11 +210,11 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 neighbour = route->GetF2();
 
             // this eliminates 1/6 of all nodes and avoids cost calculation and further checks,
-            if(neighbour == best.prev)
+            if(neighbour == prevNode)
                 continue;
 
             // No paths over buildings
-            if((dir == Direction::NorthWest) && (neighbour != &goal))
+            if(dir == Direction::NorthWest && neighbour != &goal)
             {
                 // Flags and harbors are allowed
                 const GO_Type got = neighbour->GetGOT();
@@ -238,66 +239,59 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 if(cost < neighbour->cost)
                 {
                     neighbour->cost = cost;
-                    neighbour->prev = &best;
                     neighbour->estimate = neighbour->targetDistance + cost;
-                    todo.rearrange(neighbour);
+                    neighbour->prev = &best;
                     neighbour->dir_ = toRoadPathDirection(dir);
+                    todo.rearrange(neighbour);
                 }
             } else
             {
                 // Not visited yet -> Add to list
-                neighbour->last_visit = currentVisit;
                 neighbour->cost = cost;
-                neighbour->dir_ = toRoadPathDirection(dir);
-                neighbour->prev = &best;
-
                 neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(), goalPos);
                 neighbour->estimate = neighbour->targetDistance + cost;
+                neighbour->last_visit = currentVisit;
+                neighbour->prev = &best;
+                neighbour->dir_ = toRoadPathDirection(dir);
 
                 todo.push(neighbour);
             }
         }
 
         // For harbors also consider ship connections
-        if(best.GetGOT() == GO_Type::NobHarborbuilding)
+        if(best.GetGOT() != GO_Type::NobHarborbuilding)
+            continue;
+        for(const auto& sc : static_cast<const nobHarborBuilding&>(best).GetShipConnections())
         {
-            std::vector<nobHarborBuilding::ShipConnection> scs =
-              static_cast<const nobHarborBuilding&>(best).GetShipConnections();
+            unsigned cost = best.cost + sc.way_costs;
 
-            for(const auto& sc : scs)
+            if(cost > max)
+                continue;
+
+            noRoadNode& dest = *sc.dest;
+            // Was node already visited?
+            if(dest.last_visit == currentVisit)
             {
-                unsigned cost = best.cost + sc.way_costs;
-
-                if(cost > max)
-                    continue;
-
-                noRoadNode& dest = *sc.dest;
-                // Was node already visited?
-                if(dest.last_visit == currentVisit)
+                // Update node if costs are lower
+                if(cost < dest.cost)
                 {
-                    // Update node if costs are lower
-                    if(cost < dest.cost)
-                    {
-                        dest.dir_ = RoadPathDirection::Ship;
-                        dest.cost = cost;
-                        dest.prev = &best;
-                        dest.estimate = dest.targetDistance + cost;
-                        todo.rearrange(&dest);
-                    }
-                } else
-                {
-                    // Not visited yet -> Add to list
-                    dest.last_visit = currentVisit;
-
-                    dest.dir_ = RoadPathDirection::Ship;
-                    dest.prev = &best;
                     dest.cost = cost;
-
-                    dest.targetDistance = gwb_.CalcDistance(dest.GetPos(), goalPos);
                     dest.estimate = dest.targetDistance + cost;
-
-                    todo.push(&dest);
+                    dest.prev = &best;
+                    dest.dir_ = RoadPathDirection::Ship;
+                    todo.rearrange(&dest);
                 }
+            } else
+            {
+                // Not visited yet -> Add to list
+                dest.cost = cost;
+                dest.targetDistance = gwb_.CalcDistance(dest.GetPos(), goalPos);
+                dest.estimate = dest.targetDistance + cost;
+                dest.last_visit = currentVisit;
+                dest.prev = &best;
+                dest.dir_ = RoadPathDirection::Ship;
+
+                todo.push(&dest);
             }
         }
     }

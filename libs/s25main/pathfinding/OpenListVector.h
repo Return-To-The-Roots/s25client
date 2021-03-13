@@ -37,8 +37,6 @@ class OpenListVector
     std::vector<T> elements;
 
 public:
-    using iterator = typename std::vector<T>::iterator;
-
     OpenListVector() { elements.reserve(255); }
 
     T pop()
@@ -67,8 +65,8 @@ public:
             }
         }
         T best = elements[bestIdx];
-        elements[bestIdx] = elements[size - 1];
-        elements.resize(size - 1);
+        elements[bestIdx] = elements.back();
+        elements.pop_back();
         return best;
     }
 
