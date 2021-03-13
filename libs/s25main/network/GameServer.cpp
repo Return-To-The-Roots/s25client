@@ -1162,8 +1162,8 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
     if(msg.requestInfo)
     {
         player->sendMsgAsync(new GameMessage_Map_Info(mapinfo.filepath.filename().string(), mapinfo.type,
-                                                      mapinfo.mapData.length, mapinfo.mapData.data.size(),
-                                                      mapinfo.luaData.length, mapinfo.luaData.data.size()));
+                                                      mapinfo.mapData.uncompressedLength, mapinfo.mapData.data.size(),
+                                                      mapinfo.luaData.uncompressedLength, mapinfo.luaData.data.size()));
     } else if(player->isMapSending())
     {
         // Don't send again
@@ -1184,7 +1184,7 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 
         // And lua data (if there is any)
         RTTR_Assert(mapinfo.luaFilepath.empty() == mapinfo.luaData.data.empty());
-        RTTR_Assert(mapinfo.luaData.data.empty() == (mapinfo.luaData.length == 0));
+        RTTR_Assert(mapinfo.luaData.data.empty() == (mapinfo.luaData.uncompressedLength == 0));
         curPos = 0;
         remainingSize = mapinfo.luaData.data.size();
         while(remainingSize)

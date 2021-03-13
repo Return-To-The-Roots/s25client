@@ -72,7 +72,6 @@ public:
     s25util::time64_t GetSaveTime() const { return saveTime_; }
     const std::vector<std::string>& GetPlayerNames() const { return playerNames_; }
 
-    /// GGS
     GlobalGameSettings ggs;
 
 protected:

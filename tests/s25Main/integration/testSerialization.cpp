@@ -384,28 +384,36 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     }
 }
 
-BOOST_AUTO_TEST_CASE(ReplayWithMap)
+struct ReplayMapFixture
 {
     MapInfo map;
-    map.type = MapType::OldMap;
-    map.title = "MapTitle";
-    map.filepath = "Map.swd";
-    map.luaFilepath = "Map.lua";
-    map.mapData.data = std::vector<char>(42, 0x42);
-    map.mapData.length = 50;
-    map.luaData.data = std::vector<char>(21, 0x21);
-    map.luaData.length = 40;
-    std::vector<PlayerInfo> players(4);
-    players[0].ps = PlayerState::Occupied;
-    players[0].name = "Human";
-    players[1].ps = PlayerState::AI;
-    players[1].aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
-    players[1].name = "PlAI";
-    players[2].ps = PlayerState::Locked;
-    players[3].ps = PlayerState::AI;
-    players[3].aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
-    players[3].name = "PlAI2";
+    std::vector<PlayerInfo> players;
 
+    ReplayMapFixture() : players(4)
+    {
+        map.type = MapType::OldMap;
+        map.title = "MapTitle";
+        map.filepath = "Map.swd";
+        map.luaFilepath = "Map.lua";
+        map.mapData.data = std::vector<char>(rttr::test::randomValue(30, 60), rttr::test::randomValue<int8_t>());
+        map.mapData.uncompressedLength = rttr::test::randomValue(20, 50);
+        map.luaData.data = std::vector<char>(rttr::test::randomValue(30, 60), rttr::test::randomValue<int8_t>());
+        map.luaData.uncompressedLength = rttr::test::randomValue(20, 50);
+
+        players[0].ps = PlayerState::Occupied;
+        players[0].name = "Human";
+        players[1].ps = PlayerState::AI;
+        players[1].aiInfo = AI::Info(rttr::test::randomEnum<AI::Type>(), rttr::test::randomEnum<AI::Level>());
+        players[1].name = "PlAI";
+        players[2].ps = PlayerState::Locked;
+        players[3].ps = PlayerState::AI;
+        players[3].aiInfo = AI::Info(rttr::test::randomEnum<AI::Type>(), rttr::test::randomEnum<AI::Level>());
+        players[3].name = "PlAI2";
+    }
+};
+
+BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
+{
     Replay replay;
     BOOST_TEST_REQUIRE(!replay.IsValid());
     BOOST_TEST_REQUIRE(!replay.IsRecording());
@@ -427,16 +435,17 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     bfs::remove(tmpFile.filePath);
     s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_TEST_REQUIRE(replay.StartRecording(tmpFile.filePath, map));
-    BOOST_TEST_REQUIRE(replay.GetSaveTime() - saveTime <= 20); // 20s difference max
+    BOOST_TEST(replay.GetSaveTime() - saveTime <= 20); // 20s difference max
     BOOST_TEST_REQUIRE(replay.IsValid());
     BOOST_TEST_REQUIRE(replay.IsRecording());
     BOOST_TEST_REQUIRE(!replay.IsReplaying());
 
-    GlobalGameSettings ggs;
+    GlobalGameSettings ggs = replay.ggs;
     Game game(ggs, 0u, players);
     PlayerGameCommands cmds = GetTestCommands().create(game).result;
     AddReplayCmds(replay, cmds);
-    replay.StopRecording();
+    BOOST_TEST(replay.GetLastGF() == 5u);
+    BOOST_TEST_REQUIRE(replay.StopRecording());
     BOOST_TEST_REQUIRE(!replay.IsValid());
     BOOST_TEST_REQUIRE(!replay.IsRecording());
 
@@ -444,17 +453,17 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     {
         Replay loadReplay;
         BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
-        BOOST_TEST_REQUIRE(loadReplay.GetSaveTime() == replay.GetSaveTime());
-        BOOST_TEST_REQUIRE(loadReplay.GetMapName() == "MapTitle");
+        BOOST_TEST(loadReplay.GetSaveTime() == replay.GetSaveTime());
+        BOOST_TEST(loadReplay.GetMapName() == "MapTitle");
         BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames().size() == 3u);
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames()[0] == "Human");
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames()[1] == "PlAI");
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames()[2] == "PlAI2");
+        BOOST_TEST(loadReplay.GetPlayerNames()[0] == "Human");
+        BOOST_TEST(loadReplay.GetPlayerNames()[1] == "PlAI");
+        BOOST_TEST(loadReplay.GetPlayerNames()[2] == "PlAI2");
         BOOST_TEST_REQUIRE(loadReplay.GetLastGF() == 5u);
         if(!loadSettings)
         {
             // Not loaded
-            BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 0u);
+            BOOST_TEST(loadReplay.GetNumPlayers() == 0u);
             continue;
         }
         MapInfo newMap;
@@ -474,17 +483,77 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
                 BOOST_TEST_REQUIRE(loadPlayer.aiInfo.level == worldPlayer.aiInfo.level);
             }
         }
-        BOOST_TEST_REQUIRE(loadReplay.ggs.speed == replay.ggs.speed);
-        BOOST_TEST_REQUIRE(loadReplay.random_init == replay.random_init);
-        BOOST_TEST_REQUIRE(newMap.type == map.type);
-        BOOST_TEST_REQUIRE(newMap.title == map.title);
-        BOOST_TEST_REQUIRE(newMap.filepath == map.filepath);
-        BOOST_TEST_REQUIRE(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
-        BOOST_TEST_REQUIRE(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
+        BOOST_TEST(loadReplay.ggs.speed == replay.ggs.speed);
+        BOOST_TEST(loadReplay.random_init == replay.random_init);
+        BOOST_TEST(newMap.type == map.type);
+        BOOST_TEST(newMap.title == map.title);
+        BOOST_TEST(newMap.filepath == map.filepath);
+        BOOST_TEST(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
+        BOOST_TEST(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
         BOOST_TEST_REQUIRE(loadReplay.IsReplaying());
 
         CheckReplayCmds(loadReplay, cmds);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
+{
+    GlobalGameSettings ggs;
+    ggs.speed = GameSpeed::VeryFast;
+    Game game(ggs, 0u, players);
+    const PlayerGameCommands cmds = GetTestCommands().create(game).result;
+    TmpFile tmpFile;
+    BOOST_TEST_REQUIRE(tmpFile.isValid());
+    tmpFile.close();
+    bfs::remove(tmpFile.filePath);
+
+    const auto randomInit = rttr::test::randomValue<unsigned>();
+    s25util::time64_t saveTime;
+    {
+        Replay replay;
+        for(const BasePlayerInfo& player : players)
+            replay.AddPlayer(player);
+        replay.ggs.speed = GameSpeed::VeryFast;
+        replay.random_init = randomInit;
+
+        BOOST_TEST_REQUIRE(replay.StartRecording(tmpFile.filePath, map));
+        saveTime = replay.GetSaveTime();
+        BOOST_TEST_REQUIRE(replay.IsRecording());
+        AddReplayCmds(replay, cmds);
+        BOOST_TEST(replay.GetLastGF() == 5u);
+        // Assume an exception/crash here so Replay is simply destroyed without Close or StopRecording
+    }
+
+    Replay loadReplay;
+    BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
+    BOOST_TEST(loadReplay.GetSaveTime() == saveTime);
+    BOOST_TEST(loadReplay.GetMapName() == map.title);
+    BOOST_TEST(loadReplay.GetPlayerNames().size() == 3u);
+    BOOST_TEST(loadReplay.GetPlayerNames()[0] == "Human");
+    BOOST_TEST(loadReplay.GetPlayerNames()[1] == "PlAI");
+    BOOST_TEST(loadReplay.GetPlayerNames()[2] == "PlAI2");
+    BOOST_TEST(loadReplay.GetLastGF() == 5u);
+    MapInfo newMap;
+    BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
+    BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 4u);
+    for(unsigned j = 0; j < 4; j++)
+    {
+        const BasePlayerInfo& loadPlayer = loadReplay.GetPlayer(j);
+        const BasePlayerInfo& worldPlayer = players[j];
+        BOOST_TEST_REQUIRE(loadPlayer.ps == worldPlayer.ps);
+        if(loadPlayer.isUsed())
+            BOOST_TEST_REQUIRE(loadPlayer.name == worldPlayer.name);
+    }
+    BOOST_TEST(loadReplay.ggs.speed == ggs.speed);
+    BOOST_TEST(loadReplay.random_init == randomInit);
+    BOOST_TEST(newMap.type == map.type);
+    BOOST_TEST(newMap.title == map.title);
+    BOOST_TEST(newMap.filepath == map.filepath);
+    BOOST_TEST(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
+    BOOST_TEST(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
+    BOOST_TEST(loadReplay.IsReplaying());
+
+    CheckReplayCmds(loadReplay, cmds);
 }
 
 BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
@@ -535,7 +604,8 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 
     PlayerGameCommands cmds = GetTestCommands().create(*game).result;
     AddReplayCmds(replay, cmds);
-    replay.StopRecording();
+    BOOST_TEST(replay.GetLastGF() == 5u);
+    BOOST_TEST_REQUIRE(replay.StopRecording());
     BOOST_TEST_REQUIRE(!replay.IsValid());
     BOOST_TEST_REQUIRE(!replay.IsRecording());
 
@@ -543,17 +613,17 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     {
         Replay loadReplay;
         BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
-        BOOST_TEST_REQUIRE(loadReplay.GetSaveTime() == replay.GetSaveTime());
-        BOOST_TEST_REQUIRE(loadReplay.GetMapName() == "MapTitle");
+        BOOST_TEST(loadReplay.GetSaveTime() == replay.GetSaveTime());
+        BOOST_TEST(loadReplay.GetMapName() == "MapTitle");
         BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames().size() == 3u);
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames()[0] == "PlAI");
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames()[1] == "Human");
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames()[2] == "PlAI2");
-        BOOST_TEST_REQUIRE(loadReplay.GetLastGF() == 5u);
+        BOOST_TEST(loadReplay.GetPlayerNames()[0] == "PlAI");
+        BOOST_TEST(loadReplay.GetPlayerNames()[1] == "Human");
+        BOOST_TEST(loadReplay.GetPlayerNames()[2] == "PlAI2");
+        BOOST_TEST(loadReplay.GetLastGF() == 5u);
         if(!loadSettings)
         {
             // Not loaded
-            BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 0u);
+            BOOST_TEST(loadReplay.GetNumPlayers() == 0u);
             continue;
         }
         MapInfo newMap;
@@ -573,11 +643,11 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
                 BOOST_TEST_REQUIRE(loadPlayer.aiInfo.level == worldPlayer.aiInfo.level);
             }
         }
-        BOOST_TEST_REQUIRE(loadReplay.ggs.speed == replay.ggs.speed);
-        BOOST_TEST_REQUIRE(loadReplay.random_init == replay.random_init);
-        BOOST_TEST_REQUIRE(newMap.type == map.type);
-        BOOST_TEST_REQUIRE(newMap.title == map.title);
-        BOOST_TEST_REQUIRE(newMap.filepath == map.filepath);
+        BOOST_TEST(loadReplay.ggs.speed == replay.ggs.speed);
+        BOOST_TEST(loadReplay.random_init == replay.random_init);
+        BOOST_TEST(newMap.type == map.type);
+        BOOST_TEST(newMap.title == map.title);
+        BOOST_TEST(newMap.filepath == map.filepath);
 
         BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.GetData(),                                    //-V807
                                         newMap.savegame->sgd.GetData() + newMap.savegame->sgd.GetLength(), //-V807

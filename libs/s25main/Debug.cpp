@@ -292,15 +292,17 @@ bool DebugInfo::SendReplay()
 
         if(!rpl || !rpl->IsRecording())
             return true;
+        const auto replayPath = rpl->GetPath();
+        rpl->Close();
 
-        BinaryFile& f = rpl->GetFile();
-
-        f.Flush();
-
-        if(!SendString("Replay"))
-            return false;
-        if(SendFile(f))
-            return true;
+        BinaryFile f;
+        if(f.Open(replayPath, OpenFileMode::OFM_READ))
+        {
+            if(!SendString("Replay"))
+                return false;
+            if(SendFile(f))
+                return true;
+        }
         // Empty replay
         SendUnsigned(0);
         return false;

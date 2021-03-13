@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "Savegame.h"
+#include "gameTypes/CompressedData.h"
 #include "s25util/BinaryFile.h"
 
 std::string Savegame::GetSignature() const
@@ -26,7 +27,7 @@ std::string Savegame::GetSignature() const
 uint16_t Savegame::GetVersion() const
 {
     // Note: If you increase the version, reset currentGameDataVersion in SerializedGameData.cpp (see note there)
-    // Note2: Also remove the workaround for the team in BasePlayerInfo
+    // Note2: Also remove the workaround for the team in BasePlayerInfo & CompressedFlag here
     return 4; // SaveGameVersion -- Updater signature, do NOT remove
 }
 
@@ -104,11 +105,34 @@ bool Savegame::ReadExtHeader(BinaryFile& file)
 
 void Savegame::WriteGameData(BinaryFile& file)
 {
-    sgd.WriteToFile(file);
+    file.WriteUnsignedInt(1); // Compressed flag for compatibility
+    std::vector<char> data(sgd.GetData(), sgd.GetData() + sgd.GetLength());
+    const unsigned uncompressedLength = data.size();
+    data = CompressedData::compress(data);
+    file.WriteUnsignedInt(uncompressedLength);
+    file.WriteUnsignedInt(data.size());
+    file.WriteRawData(data.data(), data.size());
 }
 
 bool Savegame::ReadGameData(BinaryFile& file)
 {
-    sgd.ReadFromFile(file);
+    std::vector<char> data;
+    const auto compressedFlagOrSize = file.ReadUnsignedInt();
+    if(compressedFlagOrSize == 1u)
+    {
+        const auto uncompressedLength = file.ReadUnsignedInt();
+        const auto compressedLength = file.ReadUnsignedInt();
+        data.resize(compressedLength);
+        file.ReadRawData(data.data(), data.size());
+        data = CompressedData::decompress(data, uncompressedLength);
+    } else
+    { // Old savegames have a size here which is always bigger than 1
+        RTTR_Assert(compressedFlagOrSize > 1u);
+        data.resize(compressedFlagOrSize);
+        file.ReadRawData(data.data(), data.size());
+    }
+
+    sgd.Clear();
+    sgd.PushRawData(data.data(), data.size());
     return true;
 }

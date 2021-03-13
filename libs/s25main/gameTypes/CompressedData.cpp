@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,13 +17,14 @@
 
 #include "CompressedData.h"
 #include "FileChecksum.h"
+#include "helpers/format.hpp"
 #include "s25util/Log.h"
 #include <boost/nowide/fstream.hpp>
 #include <bzlib.h>
 #include <cmath>
-#include <memory>
+#include <stdexcept>
 
-bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, unsigned* checksum)
+bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, unsigned* checksum) const
 {
     boost::nowide::ofstream file(filePath, std::ios::binary);
 
@@ -33,31 +34,23 @@ bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, u
         return false;
     }
 
-    auto uncompressedData = std::unique_ptr<char[]>(new char[length]);
-
-    unsigned outLength = length;
-
-    int err = BZ2_bzBuffToBuffDecompress(uncompressedData.get(), &outLength, &data[0], data.size(), 0, 0);
-    if(err != BZ_OK)
+    try
     {
-        LOG.write("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n") % err;
+        const auto uncompressedData = decompress(data, uncompressedLength);
+
+        if(!file.write(uncompressedData.data(), uncompressedData.size()))
+        {
+            LOG.write("FATAL ERROR: Writing to %s failed\n") % filePath;
+            return false;
+        }
+
+        if(checksum)
+            *checksum = CalcChecksumOfBuffer(uncompressedData);
+    } catch(const std::runtime_error& err)
+    {
+        LOG.write("FATAL ERROR: 1%\n") % err.what();
         return false;
     }
-
-    if(outLength != length)
-    {
-        LOG.write("FATAL ERROR: Length mismatch after decompressing. Expected: %u, got %u\n") % length % outLength;
-        return false;
-    }
-
-    if(!file.write(uncompressedData.get(), length))
-    {
-        LOG.write("FATAL ERROR: Writing to %s failed\n") % filePath;
-        return false;
-    }
-
-    if(checksum)
-        *checksum = CalcChecksumOfBuffer(uncompressedData.get(), length);
 
     return true;
 }
@@ -65,29 +58,58 @@ bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, u
 bool CompressedData::CompressFromFile(const boost::filesystem::path& filePath, unsigned* checksum /* = nullptr */)
 {
     boost::nowide::ifstream file(filePath, std::ios::binary | std::ios::ate);
-    length = static_cast<unsigned>(file.tellg());
-    data.resize(static_cast<int>(std::ceil(length * 1.1))
-                + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
+    uncompressedLength = static_cast<unsigned>(file.tellg());
     file.seekg(0);
 
-    auto uncompressedData = std::unique_ptr<char[]>(new char[length]);
-
-    if(!file.read(uncompressedData.get(), length))
+    std::vector<char> uncompressedData(uncompressedLength);
+    if(!file.read(uncompressedData.data(), uncompressedLength))
     {
         LOG.write("Could not read from %s\n") % filePath;
         return false;
     }
 
-    unsigned compressedLen = data.size();
-    int err = BZ2_bzBuffToBuffCompress(&data[0], &compressedLen, uncompressedData.get(), length, 9, 0, 250);
-    if(err != BZ_OK)
+    try
     {
-        LOG.write("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n") % err;
+        data = compress(uncompressedData);
+    } catch(const std::runtime_error& err)
+    {
+        LOG.write("FATAL ERROR: 1%\n") % err.what();
         return false;
     }
-    data.resize(compressedLen);
 
     if(checksum)
-        *checksum = CalcChecksumOfBuffer(uncompressedData.get(), length);
+        *checksum = CalcChecksumOfBuffer(uncompressedData);
     return true;
+}
+
+std::vector<char> CompressedData::compress(const std::vector<char>& data)
+{
+    // Buffer should be at most 1% bigger + 600 Bytes according to docu
+    auto compressedLen = static_cast<unsigned>(std::ceil(data.size() * 1.01)) + 600u;
+    std::vector<char> compressedData(compressedLen);
+
+    const int err = BZ2_bzBuffToBuffCompress(compressedData.data(), &compressedLen, const_cast<char*>(data.data()),
+                                             data.size(), 9, 0, 250);
+    if(err != BZ_OK)
+        throw std::runtime_error(helpers::format("BZ2_bzBuffToBuffCompress failed with error: %1%", err));
+    compressedData.resize(compressedLen);
+    return compressedData;
+}
+
+std::vector<char> CompressedData::decompress(const std::vector<char>& data, size_t const uncompressedSize)
+{
+    std::vector<char> uncompressedData(uncompressedSize);
+
+    unsigned outLength = uncompressedSize;
+
+    const int err = BZ2_bzBuffToBuffDecompress(uncompressedData.data(), &outLength, const_cast<char*>(data.data()),
+                                               data.size(), 0, 0);
+    if(err != BZ_OK)
+        throw std::runtime_error(helpers::format("BZ2_bzBuffToBuffDecompress failed with error: %1%", err));
+
+    if(outLength != uncompressedSize)
+        throw std::runtime_error(
+          helpers::format("Length mismatch after decompressing. Expected: %1%, got %2%", uncompressedSize, outLength));
+
+    return uncompressedData;
 }
