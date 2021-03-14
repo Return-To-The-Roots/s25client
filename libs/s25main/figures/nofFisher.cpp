@@ -28,7 +28,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(Job::Fisher, pos, player, workplace), fishing_dir(Direction::West), successful(false)
@@ -93,7 +93,7 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
         }
     }
 
-    LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+    LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     DrawShadow(drawPt, 0, Direction(fishing_dir));
 }
 
@@ -109,13 +109,14 @@ void nofFisher::WorkStarted()
     for(Direction dir : helpers::enumRange(RANDOM_ENUM(Direction)))
     {
         fishing_dir = dir;
-        Resource neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources;
+        Resource neighbourRes = world->GetNode(world->GetNeighbour(pos, fishing_dir)).resources;
         if(neighbourRes.has(ResourceType::Fish))
             break;
     }
 
     // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources.getAmount()) * 10;
+    unsigned short probability =
+      40 + (world->GetNode(world->GetNeighbour(pos, fishing_dir)).resources.getAmount()) * 10;
     successful = (RANDOM_RAND(100) < probability);
 }
 
@@ -125,8 +126,8 @@ void nofFisher::WorkFinished()
     // Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
     if(successful)
     {
-        if(!gwg->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
-            gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
+        if(!world->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
+            world->ReduceResource(world->GetNeighbour(pos, fishing_dir));
         ware = GoodType::Fish;
     } else
         ware = boost::none;
@@ -136,13 +137,13 @@ void nofFisher::WorkFinished()
 nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
 {
     // Der Punkt muss passierbar sein für Figuren
-    if(!PathConditionHuman(*gwg).IsNodeOk(pt))
+    if(!PathConditionHuman(*world).IsNodeOk(pt))
         return PointQuality::NotPossible;
 
     // irgendwo drumherum muss es Fisch geben
-    for(const MapPoint nb : gwg->GetNeighbours(pt))
+    for(const MapPoint nb : world->GetNeighbours(pt))
     {
-        if(gwg->GetNode(nb).resources.has(ResourceType::Fish))
+        if(world->GetNode(nb).resources.has(ResourceType::Fish))
             return PointQuality::Class1;
     }
 

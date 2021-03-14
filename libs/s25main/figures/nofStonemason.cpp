@@ -23,7 +23,7 @@
 #include "SoundManager.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noGranite.h"
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -39,7 +39,7 @@ void nofStonemason::DrawWorking(DrawPoint drawPt)
 
     // Stein hauen
     LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
-      ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+      ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
 
     if(now_id % 8 == 5)
     {
@@ -60,20 +60,20 @@ void nofStonemason::WorkStarted() {}
 void nofStonemason::WorkFinished()
 {
     // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
-    if(gwg->GetSpecObj<noGranite>(pos)->IsSmall())
+    if(world->GetSpecObj<noGranite>(pos)->IsSmall())
     {
         // Granitklötzchen löschen
-        gwg->DestroyNO(pos);
+        world->DestroyNO(pos);
 
         // Minimap Bescheid geben (Granitglötzchen muss weg)
-        if(gwg->GetGameInterface())
-            gwg->GetGameInterface()->GI_UpdateMinimap(pos);
+        if(world->GetGameInterface())
+            world->GetGameInterface()->GI_UpdateMinimap(pos);
 
         // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-        gwg->RecalcBQAroundPoint(pos);
+        world->RecalcBQAroundPoint(pos);
     } else
         // ansonsten wird er um 1 kleiner
-        gwg->GetSpecObj<noGranite>(pos)->Hew();
+        world->GetSpecObj<noGranite>(pos)->Hew();
 
     // Stein in die Hand nehmen
     ware = GoodType::Stones;
@@ -83,5 +83,6 @@ void nofStonemason::WorkFinished()
 nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt) const
 {
     // An dieser Position muss es nur Stein geben
-    return ((gwg->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PointQuality::Class1 : PointQuality::NotPossible);
+    return ((world->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PointQuality::Class1 :
+                                                                        PointQuality::NotPossible);
 }

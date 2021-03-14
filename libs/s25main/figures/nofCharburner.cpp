@@ -24,7 +24,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "gameData/TerrainDesc.h"
 #include <stdexcept>
@@ -65,10 +65,11 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
         else
             draw_id = 9 + 12 + (now_id - 36);
 
-        LOADER.GetPlayerImage("charburner_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.GetPlayerImage("charburner_bobs", draw_id)
+          ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     } else
         LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)
-          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+          ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
 }
 
 unsigned short nofCharburner::GetCarryID() const
@@ -82,7 +83,7 @@ void nofCharburner::WorkStarted() {}
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofCharburner::WorkFinished()
 {
-    noBase* no = gwg->GetNO(pos);
+    noBase* no = world->GetNO(pos);
 
     // Is a charburner pile is already there?
     if(no->GetGOT() == GO_Type::Charburnerpile)
@@ -106,12 +107,12 @@ void nofCharburner::WorkFinished()
 
         if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
-            gwg->DestroyNO(pos, false);
+            world->DestroyNO(pos, false);
             // Plant charburner pile
-            gwg->SetNO(pos, new noCharburnerPile(pos));
+            world->SetNO(pos, new noCharburnerPile(pos));
 
             // BQ drumrum neu berechnen
-            gwg->RecalcBQAroundPointBig(pos);
+            world->RecalcBQAroundPointBig(pos);
         }
     }
 }
@@ -119,7 +120,7 @@ void nofCharburner::WorkFinished()
 /// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht, den z.B. der Holzfäller braucht
 nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) const
 {
-    noBase* no = gwg->GetNO(pt);
+    noBase* no = world->GetNO(pt);
 
     // Is a charburner pile already here?
     if(no->GetGOT() == GO_Type::Charburnerpile)
@@ -151,32 +152,32 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
         return PointQuality::NotPossible;
 
     // Der Platz muss frei sein
-    BlockingManner bm = gwg->GetNO(pt)->GetBM();
+    BlockingManner bm = world->GetNO(pt)->GetBM();
 
     if(bm != BlockingManner::None)
         return PointQuality::NotPossible;
 
     // Kein Grenzstein darf da stehen
-    if(gwg->GetNode(pt).boundary_stones[BorderStonePos::OnPoint])
+    if(world->GetNode(pt).boundary_stones[BorderStonePos::OnPoint])
         return PointQuality::NotPossible;
 
-    for(const MapPoint nb : gwg->GetNeighbours(pt))
+    for(const MapPoint nb : world->GetNeighbours(pt))
     {
         // Don't set it next to buildings and other charburner piles and grain fields
-        BlockingManner bm = gwg->GetNO(nb)->GetBM();
+        BlockingManner bm = world->GetNO(nb)->GetBM();
         if(bm != BlockingManner::None)
             return PointQuality::NotPossible;
         // darf außerdem nicht neben einer Straße liegen
         for(const auto dir2 : helpers::EnumRange<Direction>{})
         {
-            if(gwg->GetPointRoad(nb, dir2) != PointRoad::None)
+            if(world->GetPointRoad(nb, dir2) != PointRoad::None)
                 return PointQuality::NotPossible;
         }
     }
 
     // Terrain untersuchen (need walkable land)
-    if(gwg->IsOfTerrain(pt,
-                        [](const auto& desc) { return desc.Is(ETerrain::Walkable) && desc.kind == TerrainKind::Land; }))
+    if(world->IsOfTerrain(
+         pt, [](const auto& desc) { return desc.Is(ETerrain::Walkable) && desc.kind == TerrainKind::Land; }))
         return PointQuality::Class3;
     else
         return PointQuality::NotPossible;
@@ -185,7 +186,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
 /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
 void nofCharburner::WalkingStarted()
 {
-    noBase* nob = gwg->GetNO(dest);
+    noBase* nob = world->GetNO(dest);
     if(nob->GetGOT() == GO_Type::Charburnerpile)
         harvest = !(static_cast<noCharburnerPile*>(nob)->GetState() == noCharburnerPile::State::Wood);
     else

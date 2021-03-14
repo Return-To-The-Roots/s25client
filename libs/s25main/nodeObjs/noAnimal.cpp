@@ -24,7 +24,7 @@
 #include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
 
@@ -174,7 +174,7 @@ void noAnimal::HandleEvent(const unsigned id)
         case 3:
         {
             // von der Karte tilgen
-            gwg->RemoveFigure(pos, this);
+            world->RemoveFigure(pos, this);
             GetEvMgr().AddToKillList(this);
         }
         break;
@@ -253,11 +253,11 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
 {
     // mit zufälliger Richtung anfangen
     const Direction doffset = RANDOM_ENUM(Direction);
-    const WorldDescription& worldDesc = gwg->GetDescription();
+    const WorldDescription& worldDesc = world->GetDescription();
 
     for(const auto dir : helpers::enumRange(doffset))
     {
-        const auto terrains = gwg->GetTerrain(pos, dir);
+        const auto terrains = world->GetTerrain(pos, dir);
         const DescIdx<TerrainDesc> tLeft = terrains.left;
         const DescIdx<TerrainDesc> tRight = terrains.right;
 
@@ -278,21 +278,21 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein
-            const MapPoint dst = gwg->GetNeighbour(pos, dir);
-            const noBase* no = gwg->GetNO(dst);
+            const MapPoint dst = world->GetNeighbour(pos, dir);
+            const noBase* no = world->GetNO(dst);
 
             if(no->GetType() != NodalObjectType::Nothing && no->GetType() != NodalObjectType::Environment
                && no->GetType() != NodalObjectType::Tree)
                 continue;
 
             // Schließlich auch möglichst keine anderen Figuren bzw. Tiere
-            if(!gwg->GetFigures(dst).empty())
+            if(!world->GetFigures(dst).empty())
                 continue;
 
             // Und möglichst auch keine Straßen
             for(const auto dir2 : helpers::EnumRange<Direction>{})
             {
-                if(gwg->GetPointRoad(dst, dir2) != PointRoad::None)
+                if(world->GetPointRoad(dst, dir2) != PointRoad::None)
                     return boost::none;
             }
             return dir;
@@ -328,7 +328,7 @@ MapPoint noAnimal::HunterIsNear()
     {
         // ansonsten nach dem Laufen stehenbleiben und die Koordinaten zurückgeben von dem Punkt, der erreicht wird
         state = State::WalkingUntilWaitingForHunter;
-        return gwg->GetNeighbour(pos, GetCurMoveDir());
+        return world->GetNeighbour(pos, GetCurMoveDir());
     }
 }
 

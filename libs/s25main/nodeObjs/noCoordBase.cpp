@@ -17,7 +17,7 @@
 
 #include "noCoordBase.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/MapConsts.h"
 
 void noCoordBase::Serialize(SerializedGameData& sgd) const

@@ -20,7 +20,7 @@
 #include "SerializedGameData.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
@@ -115,7 +115,7 @@ void nofScout_Free::Scout()
     } else
     {
         // Weg suchen
-        const auto dir = gwg->FindHumanPath(pos, nextPos, 30);
+        const auto dir = world->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
         if(dir)
@@ -134,13 +134,14 @@ namespace {
 struct IsScoutable
 {
     const unsigned char player;
-    const GameWorldGame& gwg;
-    IsScoutable(const unsigned char player, const GameWorldGame& gwg) : player(player), gwg(gwg) {}
+    const GameWorld& world;
+    IsScoutable(const unsigned char player, const GameWorld& world) : player(player), world(world) {}
 
     bool operator()(const MapPoint& pt) const
     {
         // Liegt Punkt im Nebel und für Figuren begehbar?
-        return gwg.CalcVisiblityWithAllies(pt, player) != Visibility::Visible && PathConditionHuman(gwg).IsNodeOk(pt);
+        return world.CalcVisiblityWithAllies(pt, player) != Visibility::Visible
+               && PathConditionHuman(world).IsNodeOk(pt);
     }
 };
 } // namespace
@@ -148,14 +149,14 @@ struct IsScoutable
 void nofScout_Free::GoToNewNode()
 {
     std::vector<MapPoint> available_points =
-      gwg->GetMatchingPointsInRadius<-1>(flag->GetPos(), SCOUT_RANGE, IsScoutable(player, *gwg));
+      world->GetMatchingPointsInRadius<-1>(flag->GetPos(), SCOUT_RANGE, IsScoutable(player, *world));
     RANDOM_SHUFFLE(available_points);
     for(MapPoint pt : available_points)
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)
-        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2)
-           && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
+        if(world->FindHumanPath(pos, pt, SCOUT_RANGE * 2)
+           && world->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
         {
             // Take it
             nextPos = pt;

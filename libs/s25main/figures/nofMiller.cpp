@@ -25,7 +25,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofMiller::nofMiller(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miller, pos, player, workplace), last_sound(0), next_interval(0)
@@ -51,39 +51,39 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     {
         LOADER.building_cache[nation][BuildingType::Mill].door.DrawFull(drawPt);
         LOADER.getBobSprite(nation, Job::Miller, Direction::SouthEast, now_id % 8)
-          .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
+          .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, world->GetPlayer(player).color);
         rotate_sails = false;
     }
     if((now_id >= 4) && (now_id < 8)) // hinauslaufen teil 2
     {
         LOADER.getBobSprite(nation, Job::Miller, Direction::East, now_id % 8)
-          .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
+          .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, world->GetPlayer(player).color);
     }
     if((now_id >= 8) && (now_id < 16)) // hinsetzen
     {
         LOADER.GetPlayerImage("rom_bobs", 166 + (now_id % 8))
-          ->DrawFull(drawPt + offsets_sitdown[nation], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets_sitdown[nation], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
     }
     if((now_id >= 16) && (now_id < max_id - 16)) // schlafen
     {
         LOADER.GetPlayerImage("rom_bobs", 174 + (now_id % 8))
-          ->DrawFull(drawPt + offsets[nation], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets[nation], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
     }
     if((now_id >= max_id - 16) && (now_id < max_id - 8)) // aufstehn
     {
         LOADER.GetPlayerImage("rom_bobs", 166 + 7 - (now_id % 8))
-          ->DrawFull(drawPt + offsets_sitdown[nation], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets_sitdown[nation], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
     }
     if((now_id >= max_id - 8) && (now_id < max_id - 4)) // zurücklaufen teil 1
     {
         LOADER.getBobSprite(nation, Job::Miller, Direction::West, now_id % 8)
-          .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
+          .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, world->GetPlayer(player).color);
     }
     if((now_id >= max_id - 4) && (now_id < max_id)) // zurücklaufen teil 2
     {
         LOADER.building_cache[nation][BuildingType::Mill].door.DrawFull(drawPt);
         LOADER.getBobSprite(nation, Job::Miller, Direction::NorthWest, now_id % 8)
-          .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
+          .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, world->GetPlayer(player).color);
         rotate_sails = false;
     }
 

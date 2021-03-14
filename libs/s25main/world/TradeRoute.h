@@ -23,12 +23,12 @@
 #include "gameTypes/TradeDirection.h"
 
 class SerializedGameData;
-class GameWorldGame;
+class GameWorld;
 
 /// active route for trading. Has a state and supports automatic recalculation of the path
 class TradeRoute
 {
-    const GameWorldGame& gwg;
+    const GameWorld& world;
     const unsigned char player;
     TradePath path;
     MapPoint curPos;
@@ -37,8 +37,8 @@ class TradeRoute
     helpers::OptionalEnum<TradeDirection> RecalcRoute();
 
 public:
-    TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal);
-    TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, unsigned char player);
+    TradeRoute(const GameWorld& world, unsigned char player, const MapPoint& start, const MapPoint& goal);
+    TradeRoute(SerializedGameData& sgd, const GameWorld& world, unsigned char player);
 
     void Serialize(SerializedGameData& sgd) const;
 

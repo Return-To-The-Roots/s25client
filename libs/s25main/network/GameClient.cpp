@@ -51,7 +51,7 @@
 #include "ogl/glFont.h"
 #include "random/Random.h"
 #include "random/randomIO.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/GameWorldView.h"
 #include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
@@ -299,7 +299,7 @@ void GameClient::StartGame(const unsigned random_init)
     // Get standard settings before they get overwritten
     GetPlayer(GetPlayerId()).FillVisualSettings(default_settings);
 
-    GameWorldGame& gameWorld = game->world_;
+    GameWorld& gameWorld = game->world_;
     if(mapinfo.savegame)
         mapinfo.savegame->sgd.ReadSnapshot(*game, *this);
     else

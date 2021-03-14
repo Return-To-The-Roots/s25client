@@ -22,7 +22,7 @@
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
                                              nobBaseMilitary* const home, const unsigned char rank,
@@ -123,7 +123,7 @@ void nofAggressiveDefender::CancelAtAttackedBld()
 void nofAggressiveDefender::WonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
-    if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+    if(world->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
         IncreaseRank();
 
     // Ist evtl. unser Heimatgebäude zerstört?
@@ -249,7 +249,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     RTTR_Assert(pos != attacker->GetPos()); // If so, why was it not found?
 
     // Calc next walking direction
-    const auto dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
+    const auto dir = world->FindHumanPath(pos, attacker->GetPos(), 100, true);
 
     if(dir)
     {

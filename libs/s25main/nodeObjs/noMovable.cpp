@@ -22,7 +22,7 @@
 #include "SerializedGameData.h"
 #include "enum_cast.hpp"
 #include "network/GameClient.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/MapConsts.h"
 #include "s25util/Log.h"
 
@@ -55,9 +55,9 @@ noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
 void noMovable::Walk()
 {
     moving = false;
-    gwg->RemoveFigure(pos, this);
-    pos = gwg->GetNeighbour(pos, curMoveDir);
-    gwg->AddFigure(pos, this);
+    world->RemoveFigure(pos, this);
+    pos = world->GetNeighbour(pos, curMoveDir);
+    world->AddFigure(pos, this);
 }
 
 void noMovable::FaceDir(Direction newDir)
@@ -85,7 +85,7 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
 
     // Steigung ermitteln, muss entsprechend langsamer (hoch) bzw. schneller (runter) laufen
     // runter natürlich nich so viel schneller werden wie langsamer hoch
-    switch(int(gwg->GetNeighbourNode(pos, dir).altitude) - int(gwg->GetNode(pos).altitude))
+    switch(int(world->GetNeighbourNode(pos, dir).altitude) - int(world->GetNode(pos).altitude))
     {
         default: ascent = 3; break; // gerade
         case 1:
@@ -158,7 +158,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
     RTTR_Assert(curTimePassed <= duration);
 
     // Check for map border crossing
-    const Position mapDrawSize = gwg->GetSize() * Position(TR_W, TR_H);
+    const Position mapDrawSize = world->GetSize() * Position(TR_W, TR_H);
     if(std::abs(nextPt.x - curPt.x) >= mapDrawSize.x / 2)
     {
         // So we need to get closer to nextPt
@@ -181,8 +181,8 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
 DrawPoint noMovable::CalcWalkingRelative() const
 {
-    Position curPt = gwg->GetNodePos(pos);
-    Position nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir));
+    Position curPt = world->GetNodePos(pos);
+    Position nextPt = world->GetNodePos(world->GetNeighbour(pos, curMoveDir));
 
     return CalcRelative(curPt, nextPt);
 }
@@ -209,7 +209,7 @@ MapPoint noMovable::GetDestinationForCurrentMove() const
     // Bewegt sich das Ding gerade?
     if(IsMoving())
         // Dann unsere Zielrichtung zur Berechnung verwenden
-        return gwg->GetNeighbour(pos, curMoveDir);
+        return world->GetNeighbour(pos, curMoveDir);
 
     return pos;
 }

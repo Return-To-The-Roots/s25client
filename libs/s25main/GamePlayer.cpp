@@ -40,7 +40,7 @@
 #include "postSystem/PostManager.h"
 #include "random/Random.h"
 #include "variant.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/TradeRoute.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
@@ -58,8 +58,8 @@
 #include "s25util/Log.h"
 #include <limits>
 
-GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg)
-    : GamePlayerInfo(playerId, playerInfo), gwg(gwg), hqPos(MapPoint::Invalid()), emergency(false)
+GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorld& world)
+    : GamePlayerInfo(playerId, playerInfo), world(world), hqPos(MapPoint::Invalid()), emergency(false)
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
@@ -358,13 +358,13 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
 
         // now check if there is at least a chance that the next wh is closer than current best because pathfinding
         // takes time
-        if(gwg.CalcDistance(start.GetPos(), wh->GetPos()) > best_length)
+        if(world.CalcDistance(start.GetPos(), wh->GetPos()) > best_length)
             continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll
         // start <-> ziel tauschen bei der wegfindung
         unsigned tlength;
-        if(gwg.GetRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length,
-                                            forbidden, &tlength))
+        if(world.GetRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length,
+                                              forbidden, &tlength))
         {
             if(tlength < best_length || !best)
             {
@@ -732,7 +732,7 @@ void GamePlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 
 void GamePlayer::SendPostMessage(std::unique_ptr<PostMsg> msg)
 {
-    gwg.GetPostMgr().SendMsg(GetPlayerId(), std::move(msg));
+    world.GetPostMgr().SendMsg(GetPlayerId(), std::move(msg));
 }
 
 unsigned GamePlayer::GetToolsOrderedVisual(unsigned toolIdx) const
@@ -770,7 +770,7 @@ void GamePlayer::ToolOrderProcessed(unsigned toolIdx)
     if(tools_ordered[toolIdx])
     {
         --tools_ordered[toolIdx];
-        gwg.GetNotifications().publish(ToolNote(ToolNote::OrderCompleted, GetPlayerId()));
+        world.GetNotifications().publish(ToolNote(ToolNote::OrderCompleted, GetPlayerId()));
     }
 }
 
@@ -897,9 +897,9 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
             noRoadNode* current_best_goal = nullptr;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg)
+            bool isF1Reachable = world.FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg)
                                  != RoadPathDirection::None;
-            bool isF2Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg)
+            bool isF2Reachable = world.FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg)
                                  != RoadPathDirection::None;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
@@ -986,7 +986,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
                 continue;
 
             points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
-            unsigned distance = gwg.CalcDistance(start->GetPos(), harbor->GetPos()) / 2;
+            unsigned distance = world.CalcDistance(start->GetPos(), harbor->GetPos()) / 2;
             possibleClients.push_back(ClientForWare(harbor, points > distance ? points - distance : 0, points));
         }
     }
@@ -1004,7 +1004,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
                     continue;
 
                 points += wareDistribution.percent_buildings[BuildingType::Headquarters] * 30;
-                unsigned distance = gwg.CalcDistance(start->GetPos(), bldSite->GetPos()) / 2;
+                unsigned distance = world.CalcDistance(start->GetPos(), bldSite->GetPos()) / 2;
                 possibleClients.push_back(ClientForWare(bldSite, points > distance ? points - distance : 0, points));
             }
         } else
@@ -1027,7 +1027,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
                         points = 0;
                 }
 
-                unsigned distance = gwg.CalcDistance(start->GetPos(), bld->GetPos()) / 2;
+                unsigned distance = world.CalcDistance(start->GetPos(), bld->GetPos()) / 2;
                 possibleClients.push_back(ClientForWare(bld, points > distance ? points - distance : 0, points));
             }
         }
@@ -1061,8 +1061,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a
         // better score. This eliminates the worst case scenario where all nodes in a split road network would be hit by
         // the pathfinding only to conclude that there is no possible path.
-        if(gwg.FindPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr,
-                                      (possibleClient.points - best_points) * 2 - 1)
+        if(world.FindPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr,
+                                        (possibleClient.points - best_points) * 2 - 1)
            != RoadPathDirection::None)
         {
             unsigned score = possibleClient.points - (path_length / 2);
@@ -1120,7 +1120,7 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
         if(points)
         {
             // Weg dorthin berechnen
-            if(gwg.FindPathForWareOnRoads(*ware->GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
+            if(world.FindPathForWareOnRoads(*ware->GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
             {
                 // Die Wegpunkte noch davon abziehen
                 points -= way_points;
@@ -1269,7 +1269,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 
 void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
-    auto* flag = gwg.GetSpecObj<noFlag>(pt);
+    auto* flag = world.GetSpecObj<noFlag>(pt);
     if(!flag)
         return;
     /// Find wh with given job type (e.g. geologist, scout, ...)
@@ -1330,7 +1330,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
     const bool settingsChanged = toolsSettings_ != tools_settings;
     toolsSettings_ = tools_settings;
     if(settingsChanged)
-        gwg.GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
+        world.GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
 
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
@@ -1341,7 +1341,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
         {
             LOG.write(">> Committing an order of %d for tool #%d(%s)\n", LogTarget::File) % (int)orderChanges[i] % i
               % _(WARE_NAMES[TOOLS[i]]);
-            gwg.GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
+            world.GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
         }
     }
 }
@@ -1392,8 +1392,8 @@ void GamePlayer::Surrender()
     isDefeated = true;
 
     // GUI Bescheid sagen
-    if(gwg.GetGameInterface())
-        gwg.GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
+    if(world.GetGameInterface())
+        world.GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
 }
 
 void GamePlayer::SetStatisticValue(StatisticType type, unsigned value)
@@ -1550,8 +1550,8 @@ void GamePlayer::PactChanged(const PactType pt)
     // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
     if(pt == PactType::TreatyOfAlliance)
     {
-        if(gwg.GetGameInterface())
-            gwg.GetGameInterface()->GI_TreatyOfAllianceChanged(GetPlayerId());
+        if(world.GetGameInterface())
+            world.GetGameInterface()->GI_TreatyOfAllianceChanged(GetPlayerId());
     }
 }
 
@@ -1565,13 +1565,13 @@ void GamePlayer::SuggestPact(const unsigned char targetPlayerId, const PactType 
     {
         pacts[targetPlayerId][pt].accepted = false;
         pacts[targetPlayerId][pt].duration = duration;
-        pacts[targetPlayerId][pt].start = gwg.GetEvMgr().GetCurrentGF();
-        GamePlayer targetPlayer = gwg.GetPlayer(targetPlayerId);
+        pacts[targetPlayerId][pt].start = world.GetEvMgr().GetCurrentGF();
+        GamePlayer targetPlayer = world.GetPlayer(targetPlayerId);
         if(targetPlayer.isHuman())
             targetPlayer.SendPostMessage(std::make_unique<DiplomacyPostQuestion>(
-              gwg.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
-        else if(gwg.HasLua())
-            gwg.GetLua().EventSuggestPact(pt, GetPlayerId(), targetPlayerId, duration);
+              world.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
+        else if(world.HasLua())
+            world.GetLua().EventSuggestPact(pt, GetPlayerId(), targetPlayerId, duration);
     }
 }
 
@@ -1580,11 +1580,11 @@ void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned
     if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].duration > 0 && pacts[targetPlayer][pt].start == id)
     {
         MakePact(pt, targetPlayer, pacts[targetPlayer][pt].duration);
-        gwg.GetPlayer(targetPlayer).MakePact(pt, GetPlayerId(), pacts[targetPlayer][pt].duration);
+        world.GetPlayer(targetPlayer).MakePact(pt, GetPlayerId(), pacts[targetPlayer][pt].duration);
         PactChanged(pt);
-        gwg.GetPlayer(targetPlayer).PactChanged(pt);
-        if(gwg.HasLua())
-            gwg.GetLua().EventPactCreated(pt, GetPlayerId(), targetPlayer, pacts[targetPlayer][pt].duration);
+        world.GetPlayer(targetPlayer).PactChanged(pt);
+        if(world.HasLua())
+            world.GetLua().EventPactCreated(pt, GetPlayerId(), targetPlayer, pacts[targetPlayer][pt].duration);
     }
 }
 
@@ -1592,11 +1592,12 @@ void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned
 void GamePlayer::MakePact(const PactType pt, const unsigned char other_player, const unsigned duration)
 {
     pacts[other_player][pt].accepted = true;
-    pacts[other_player][pt].start = gwg.GetEvMgr().GetCurrentGF();
+    pacts[other_player][pt].start = world.GetEvMgr().GetCurrentGF();
     pacts[other_player][pt].duration = duration;
     pacts[other_player][pt].want_cancel = false;
 
-    SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(other_player), true));
+    SendPostMessage(
+      std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(), pt, world.GetPlayer(other_player), true));
 }
 
 /// Zeigt an, ob ein Pakt besteht
@@ -1609,7 +1610,7 @@ PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_
             return PactState::InProgress;
 
         if(pacts[other_player][pt].duration == DURATION_INFINITE
-           || gwg.GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
+           || world.GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
             return PactState::Accepted;
     }
 
@@ -1619,11 +1620,11 @@ PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_
 /// all allied players get a letter with the location
 void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {
-    for(unsigned i = 0; i < gwg.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         if(i != GetPlayerId() && IsAlly(i))
-            gwg.GetPlayer(i).SendPostMessage(std::make_unique<PostMsg>(
-              gwg.GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"),
+            world.GetPlayer(i).SendPostMessage(std::make_unique<PostMsg>(
+              world.GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"),
               PostCategory::Diplomacy, pt));
     }
 }
@@ -1637,9 +1638,9 @@ unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char
         {
             if(pacts[other_player][pt].duration == DURATION_INFINITE)
                 return DURATION_INFINITE;
-            else if(gwg.GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
+            else if(world.GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
                 return ((pacts[other_player][pt].start + pacts[other_player][pt].duration)
-                        - gwg.GetEvMgr().GetCurrentGF());
+                        - world.GetEvMgr().GetCurrentGF());
         }
     }
 
@@ -1661,7 +1662,7 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
         pacts[otherPlayerIdx][pt].want_cancel = true;
 
         // Will der andere Spieler das Bündnis auch auflösen?
-        GamePlayer& otherPlayer = gwg.GetPlayer(otherPlayerIdx);
+        GamePlayer& otherPlayer = world.GetPlayer(otherPlayerIdx);
         if(otherPlayer.pacts[GetPlayerId()][pt].want_cancel)
         {
             // Dann wird das Bündnis aufgelöst
@@ -1674,21 +1675,21 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
             otherPlayer.pacts[GetPlayerId()][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            gwg.GetPlayer(otherPlayerIdx)
-              .SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, *this, false));
+            world.GetPlayer(otherPlayerIdx)
+              .SendPostMessage(std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(), pt, *this, false));
             SendPostMessage(
-              std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(otherPlayerIdx), false));
+              std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(), pt, world.GetPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
-            if(gwg.HasLua())
-                gwg.GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
+            if(world.HasLua())
+                world.GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
         } else
         {
             // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
             if(otherPlayer.isHuman())
                 otherPlayer.SendPostMessage(std::make_unique<DiplomacyPostQuestion>(
-                  gwg.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
-            else if(!gwg.HasLua() || gwg.GetLua().EventCancelPactRequest(pt, GetPlayerId(), otherPlayerIdx))
+                  world.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
+            else if(!world.HasLua() || world.GetLua().EventCancelPactRequest(pt, GetPlayerId(), otherPlayerIdx))
             {
                 // AI accepts cancels, if there is no lua-interace
                 pacts[otherPlayerIdx][pt].accepted = false;
@@ -1699,8 +1700,8 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
                 otherPlayer.pacts[GetPlayerId()][pt].duration = 0;
                 otherPlayer.pacts[GetPlayerId()][pt].want_cancel = false;
 
-                if(gwg.HasLua())
-                    gwg.GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
+                if(world.HasLua())
+                    world.GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
             }
         }
     } else
@@ -1713,7 +1714,7 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
 void GamePlayer::MakeStartPacts()
 {
     // Reset pacts
-    for(unsigned i = 0; i < gwg.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         for(const auto z : helpers::enumRange<PactType>())
             pacts[i][z] = Pact();
@@ -1725,9 +1726,9 @@ void GamePlayer::MakeStartPacts()
     RTTR_Assert(isTeam(team));
 
     // Create ally- and non-aggression-pact for all players of same team
-    for(unsigned i = 0; i < gwg.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
-        if(team != gwg.GetPlayer(i).team)
+        if(team != world.GetPlayer(i).team)
             continue;
         for(const auto z : helpers::enumRange<PactType>())
         {
@@ -1796,17 +1797,17 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     {
         for(noShip* ship : ships)
         {
-            if(ship->IsIdling() && gwg.IsHarborAtSea(gwg.GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
-                sfh.push_back(ShipForHarbor(ship, gwg.CalcDistance(hb.GetPos(), ship->GetPos())));
+            if(ship->IsIdling() && world.IsHarborAtSea(world.GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
+                sfh.push_back(ShipForHarbor(ship, world.CalcDistance(hb.GetPos(), ship->GetPos())));
         }
     } else
     {
         for(noShip* ship : ships)
         {
-            if((ship->IsIdling() && gwg.IsHarborAtSea(gwg.GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
+            if((ship->IsIdling() && world.IsHarborAtSea(world.GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
                || ship->IsGoingToHarbor(hb))
             {
-                sfh.push_back(ShipForHarbor(ship, gwg.CalcDistance(hb.GetPos(), ship->GetPos())));
+                sfh.push_back(ShipForHarbor(ship, world.CalcDistance(hb.GetPos(), ship->GetPos())));
             }
         }
     }
@@ -1829,7 +1830,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 
         noShip* ship = it.ship;
 
-        MapPoint dest = gwg.GetCoastalPoint(hb.GetHarborPosID(), ship->GetSeaID());
+        MapPoint dest = world.GetCoastalPoint(hb.GetHarborPosID(), ship->GetSeaID());
 
         // ship already there?
         if(ship->GetPos() == dest)
@@ -1838,7 +1839,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
             return (true);
         }
 
-        if(gwg.FindShipPathToHarbor(ship->GetPos(), hb.GetHarborPosID(), ship->GetSeaID(), &route, &distance))
+        if(world.FindShipPathToHarbor(ship->GetPos(), hb.GetHarborPosID(), ship->GetSeaID(), &route, &distance))
         {
             if(distance < best_distance)
             {
@@ -1896,9 +1897,9 @@ void GamePlayer::GetJobForShip(noShip* ship)
             continue;
 
         // liegen wir am gleichen Meer?
-        if(gwg.IsHarborAtSea(harbor->GetHarborPosID(), ship->GetSeaID()))
+        if(world.IsHarborAtSea(harbor->GetHarborPosID(), ship->GetSeaID()))
         {
-            const MapPoint coastPt = gwg.GetCoastalPoint(harbor->GetHarborPosID(), ship->GetSeaID());
+            const MapPoint coastPt = world.GetCoastalPoint(harbor->GetHarborPosID(), ship->GetSeaID());
 
             // Evtl. sind wir schon da?
             if(ship->GetPos() == coastPt)
@@ -1910,7 +1911,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
             unsigned length;
             std::vector<Direction> route;
 
-            if(gwg.FindShipPathToHarbor(ship->GetPos(), harbor->GetHarborPosID(), ship->GetSeaID(), &route, &length))
+            if(world.FindShipPathToHarbor(ship->GetPos(), harbor->GetHarborPosID(), ship->GetSeaID(), &route, &length))
             {
                 // Punkte ausrechnen
                 int points = harbor->GetNeedForShip(ships_coming) - length;
@@ -1957,7 +1958,7 @@ void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildin
         if(helpers::contains(harbor_buildings, harbor))
             continue;
 
-        if(gwg.IsHarborAtSea(harbor->GetHarborPosID(), seaId))
+        if(world.IsHarborAtSea(harbor->GetHarborPosID(), seaId))
             harbor_buildings.push_back(harbor);
     }
 }
@@ -1990,11 +1991,11 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
             continue;
 
         // Prüfen, ob Hafen an das Meer, wo sich das Schiff gerade befindet, angrenzt
-        if(!gwg.IsHarborAtSea(hb->GetHarborPosID(), ship->GetSeaID()))
+        if(!world.IsHarborAtSea(hb->GetHarborPosID(), ship->GetSeaID()))
             continue;
 
         // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natürlich auch über Kartenränder fahren
-        unsigned distance = gwg.CalcDistance(ship->GetPos(), hb->GetPos());
+        unsigned distance = world.CalcDistance(ship->GetPos(), hb->GetPos());
 
         // Kürzerer Weg als bisher bestes Ziel?
         if(distance < best_distance)
@@ -2010,9 +2011,9 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
         // Weg dorthin suchen
         route->clear();
         *goal_harborId = best->GetHarborPosID();
-        const MapPoint coastPt = gwg.GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
+        const MapPoint coastPt = world.GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
         if(start == coastPt
-           || gwg.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
+           || world.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
             return true;
     }
 
@@ -2047,7 +2048,7 @@ void GamePlayer::TestForEmergencyProgramm()
         {
             emergency = true;
             SendPostMessage(std::make_unique<PostMsg>(
-              gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
+              world.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
         }
     } else
     {
@@ -2055,8 +2056,9 @@ void GamePlayer::TestForEmergencyProgramm()
         if(emergency)
         {
             emergency = false;
-            SendPostMessage(std::make_unique<PostMsg>(
-              gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PostCategory::Economy));
+            SendPostMessage(std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(),
+                                                      _("The emergency program has been deactivated."),
+                                                      PostCategory::Economy));
             FindMaterialForBuildingSites();
         }
     }
@@ -2065,7 +2067,7 @@ void GamePlayer::TestForEmergencyProgramm()
 /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 void GamePlayer::TestPacts()
 {
-    for(unsigned i = 0; i < gwg.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         if(i == GetPlayerId())
             continue;
@@ -2079,7 +2081,7 @@ void GamePlayer::TestPacts()
             {
                 // Pact was running but is expired -> Cancel for both players
                 pacts[i][pact].duration = 0;
-                GamePlayer& otherPlayer = gwg.GetPlayer(i);
+                GamePlayer& otherPlayer = world.GetPlayer(i);
                 RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].duration);
                 otherPlayer.pacts[GetPlayerId()][pact].duration = 0;
                 // And notify
@@ -2093,22 +2095,22 @@ void GamePlayer::TestPacts()
 bool GamePlayer::CanBuildCatapult() const
 {
     // Wenn AddonId::LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
-    if(!gwg.GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
+    if(!world.GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
         return true;
 
     BuildingCount bc = buildings.GetBuildingNums();
 
     unsigned max = 0;
     // proportional?
-    if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
+    if(world.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {
         max = int(bc.buildings[BuildingType::Barracks] * 0.125 + bc.buildings[BuildingType::Guardhouse] * 0.25
                   + bc.buildings[BuildingType::Watchtower] * 0.5 + bc.buildings[BuildingType::Fortress]
                   + 0.111); // to avoid rounding errors
-    } else if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
+    } else if(world.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
         const std::array<unsigned, 6> limits = {{0, 3, 5, 10, 20, 30}};
-        max = limits[gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
+        max = limits[world.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
     }
 
     return bc.buildings[BuildingType::Catapult] + bc.buildingSites[BuildingType::Catapult] < max;
@@ -2122,7 +2124,7 @@ bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
     // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
     for(const auto& enemies_discovered_by_ship : enemies_discovered_by_ships)
     {
-        if(gwg.CalcDistance(enemies_discovered_by_ship, location) < 30)
+        if(world.CalcDistance(enemies_discovered_by_ship, location) < 30)
             return false;
     }
 
@@ -2153,7 +2155,7 @@ std::vector<nobBaseWarehouse*> GamePlayer::GetWarehousesForTrading(const nobBase
 
     const MapPoint goalFlagPos = goalWh.GetFlagPos();
 
-    TradePathCache& tradePathCache = gwg.GetTradePathCache();
+    TradePathCache& tradePathCache = world.GetTradePathCache();
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
@@ -2169,10 +2171,10 @@ struct WarehouseDistanceComparator
     // Reference warehouse position, to which we want to calc the distance
     const MapPoint refWareHousePos_;
     /// GameWorld
-    const GameWorldGame& gwg_;
+    const GameWorld& gwg_;
 
-    WarehouseDistanceComparator(const nobBaseWarehouse& refWareHouse, const GameWorldGame& gwg)
-        : refWareHousePos_(refWareHouse.GetPos()), gwg_(gwg)
+    WarehouseDistanceComparator(const nobBaseWarehouse& refWareHouse, const GameWorld& world)
+        : refWareHousePos_(refWareHouse.GetPos()), gwg_(world)
     {}
 
     bool operator()(nobBaseWarehouse* const wh1, nobBaseWarehouse* const wh2) const
@@ -2186,7 +2188,7 @@ struct WarehouseDistanceComparator
 /// Send wares to warehouse wh
 void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, Job>& what, unsigned count) const
 {
-    if(!gwg.GetGGS().isEnabled(AddonId::TRADE))
+    if(!world.GetGGS().isEnabled(AddonId::TRADE))
         return;
 
     if(count == 0)
@@ -2203,8 +2205,8 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
     const MapPoint goalFlagPos = goalWh->GetFlagPos();
 
     std::vector<nobBaseWarehouse*> whs(buildings.GetStorehouses().begin(), buildings.GetStorehouses().end());
-    std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, gwg));
-    TradePathCache& tradePathCache = gwg.GetTradePathCache();
+    std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, world));
+    TradePathCache& tradePathCache = world.GetTradePathCache();
     for(nobBaseWarehouse* wh : whs)
     {
         // Get available wares
@@ -2218,7 +2220,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
         const unsigned actualCount = std::min(available, count);
 
         // Find a trade path from flag to flag
-        TradeRoute tr(gwg, GetPlayerId(), wh->GetFlagPos(), goalFlagPos);
+        TradeRoute tr(world, GetPlayerId(), wh->GetFlagPos(), goalFlagPos);
 
         // Found a path?
         if(tr.IsValid())

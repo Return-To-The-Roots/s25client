@@ -275,7 +275,7 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
 {
     Prepare(true);
 
-    GameWorldGame& gw = game.world_;
+    GameWorld& gw = game.world_;
     em = &gw.GetEvMgr();
 
     expectedNumObjects = PopUnsignedInt();

@@ -24,7 +24,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "s25util/colors.h"
 
 nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
@@ -41,7 +41,7 @@ void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
     const Nation nation = workplace->GetNation();
     constexpr helpers::EnumArray<DrawPoint, Nation> walk_start = {{{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}}};
     const helpers::EnumArray<int8_t, Nation> walk_length = {22, 19, 19, 23, 19};
-    const unsigned color = gwg->GetPlayer(player).color;
+    const unsigned color = world->GetPlayer(player).color;
 
     unsigned now_id = GAMECLIENT.Interpolate(9600, current_ev);
     DrawPoint walkBasePos = drawPt + walk_start[nation];
@@ -81,12 +81,12 @@ void nofDonkeybreeder::WorkFinished()
 {
     // Straße und Zielflagge für Esel suchen
     noRoadNode* flag_goal;
-    RoadSegment* road = gwg->GetPlayer(player).FindRoadForDonkey(workplace, &flag_goal);
+    RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(workplace, &flag_goal);
 
     // Esel erzeugen und zum Ziel beordern
     auto* donkey = new nofCarrier(CarrierType::Donkey, pos, player, road, flag_goal);
-    gwg->GetPlayer(player).IncreaseInventoryJob(Job::PackDonkey, 1);
-    donkey->InitializeRoadWalking(gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast), 0, true);
+    world->GetPlayer(player).IncreaseInventoryJob(Job::PackDonkey, 1);
+    donkey->InitializeRoadWalking(world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast), 0, true);
 
     // Wenn keine Straße gefunden wurde, muss er nach Hause gehen
     if(!road)
@@ -96,7 +96,7 @@ void nofDonkeybreeder::WorkFinished()
         road->GotDonkey(donkey);
 
     // Esel absetzen
-    gwg->AddFigure(pos, donkey);
+    world->AddFigure(pos, donkey);
 
     // In die neue Welt laufen
     donkey->ActAtFirst();

@@ -21,18 +21,18 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/DescIdx.h"
 
-class GameWorldGame;
+class GameWorld;
 struct TerrainDesc;
 
 /// Creates an empty world, with meadow terrain and the given number of players
 struct CreateEmptyWorld
 {
     explicit CreateEmptyWorld(const MapExtent& size);
-    bool operator()(GameWorldGame& world) const;
+    bool operator()(GameWorld& world) const;
 
 private:
     MapExtent size_;
 };
 
-void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
-void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
+void setRightTerrain(GameWorld& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
+void setLeftTerrain(GameWorld& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);

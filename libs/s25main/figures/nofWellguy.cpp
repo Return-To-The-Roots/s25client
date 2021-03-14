@@ -26,7 +26,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Helper, pos, player, workplace)
@@ -64,7 +64,7 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     unsigned max_id = 112;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     const Nation wpNation = workplace->GetNation();
-    unsigned plColor = gwg->GetPlayer(player).color;
+    unsigned plColor = world->GetPlayer(player).color;
 
     // position zum rauslaufen berechnen
     DrawPoint walkOutPos = drawPt + walkoffsets[wpNation][now_id % 8];
@@ -143,7 +143,7 @@ bool nofWellguy::StartWorking()
     MapPoint resPt = FindPointWithResource(ResourceType::Water);
     if(!resPt.isValid())
         return false;
-    if(gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)
-        gwg->ReduceResource(resPt);
+    if(world->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)
+        world->ReduceResource(resPt);
     return nofWorkman::StartWorking();
 }

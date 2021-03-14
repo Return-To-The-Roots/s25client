@@ -25,7 +25,7 @@
 #include "commonDefines.h"
 #include "nofTradeDonkey.h"
 #include "postSystem/PostMsgWithBuilding.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/GoodConsts.h"
@@ -40,7 +40,7 @@ nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, T
 {}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), tr(sgd, *gwg, player), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
+    : noFigure(sgd, obj_id), tr(sgd, *world, player), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
       homePos(sgd.PopMapPoint()), goalPos(sgd.PopMapPoint())
 {}
 
@@ -57,7 +57,7 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 
 void nofTradeLeader::GoalReached()
 {
-    noBase* nob = gwg->GetNO(goalPos);
+    noBase* nob = world->GetNO(goalPos);
     auto* targetWarehouse = checkedCast<nobBaseWarehouse*>(nob);
     if(successor)
     {
@@ -70,7 +70,7 @@ void nofTradeLeader::GoalReached()
             amountWares++;
             successorDonkey = successorDonkey->GetSuccessor();
         }
-        GamePlayer& owner = gwg->GetPlayer(player);
+        GamePlayer& owner = world->GetPlayer(player);
         std::string waresName = _(!goodType ? JOB_NAMES[jobType] : WARE_NAMES[*goodType]);
         std::string text = str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares
                                % waresName % owner.name);
@@ -81,14 +81,14 @@ void nofTradeLeader::GoalReached()
         successor = nullptr;
     }
 
-    gwg->GetPlayer(targetWarehouse->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
-    gwg->RemoveFigure(pos, this);
+    world->GetPlayer(targetWarehouse->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
+    world->RemoveFigure(pos, this);
     targetWarehouse->AddFigure(this);
 }
 
 void nofTradeLeader::Walked()
 {
-    noBase* nob = gwg->GetNO(goalPos);
+    noBase* nob = world->GetNO(goalPos);
 
     // Does target still exist?
     if(nob->GetType() != NodalObjectType::Building
@@ -145,14 +145,14 @@ bool nofTradeLeader::TryToGoHome()
 
     goalPos = homePos;
 
-    noBase* homeWh = gwg->GetNO(goalPos);
+    noBase* homeWh = world->GetNO(goalPos);
     // Does target still exist?
     if(homeWh->GetType() != NodalObjectType::Building
        || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(homeWh)->GetBuildingType()))
         return false;
 
     // Find a way back home
-    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, Direction::SouthEast);
+    MapPoint homeFlagPos = world->GetNeighbour(homePos, Direction::SouthEast);
     tr.AssignNewGoal(this->GetPos(), homeFlagPos);
     return tr.IsValid();
 }

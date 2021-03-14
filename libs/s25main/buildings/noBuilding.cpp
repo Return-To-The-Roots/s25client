@@ -21,7 +21,7 @@
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFire.h"
 #include "s25util/Log.h"
 
@@ -33,8 +33,8 @@ void noBuilding::Destroy()
 {
     // First we have to remove the building from the map and the player
     // Replace by fire (huts and mines become small fire, rest big)
-    gwg->SetNO(pos, new noFire(pos, GetSize() != BuildingQuality::Hut && GetSize() != BuildingQuality::Mine), true);
-    gwg->GetPlayer(player).RemoveBuilding(this, bldType_);
+    world->SetNO(pos, new noFire(pos, GetSize() != BuildingQuality::Hut && GetSize() != BuildingQuality::Mine), true);
+    world->GetPlayer(player).RemoveBuilding(this, bldType_);
     // Destroy derived buildings
     DestroyBuilding();
     // Then go further down the chain

@@ -45,5 +45,5 @@ protected:
         return true;
     }
 
-    virtual GameWorldGame& GetWorld() = 0;
+    virtual GameWorld& GetWorld() = 0;
 };

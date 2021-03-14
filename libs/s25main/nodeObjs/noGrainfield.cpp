@@ -23,7 +23,7 @@
 #include "network/GameClient.h"
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "s25util/colors.h"
 
 /// Länge des Wachs-Wartens
@@ -44,7 +44,7 @@ void noGrainfield::Destroy()
     GetEvMgr().RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
-    gwg->RecalcBQAroundPoint(pos);
+    world->RecalcBQAroundPoint(pos);
 
     noCoordBase::Destroy();
 }
@@ -136,7 +136,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
         {
             // Selbst zerstören
             event = nullptr;
-            gwg->SetNO(pos, nullptr);
+            world->SetNO(pos, nullptr);
             GetEvMgr().AddToKillList(this);
         }
         break;

@@ -30,7 +30,7 @@
 #include "worldFixtures/GCExecutor.h"
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/initGameRNG.hpp"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/MapLoader.h"
 #include "s25util/AvoidDuplicatesWriter.h"
 #include "s25util/Log.h"
@@ -87,7 +87,7 @@ struct LuaTestsFixture : public rttr::test::LogAccessor, public LuaBaseFixture, 
 {
 public:
     GameWithLuaAccess game;
-    GameWorldGame& world;
+    GameWorld& world;
     MockLocalGameState localGameState;
     std::vector<MapPoint> hqPositions;
 
@@ -119,5 +119,5 @@ public:
         }
     }
 
-    GameWorldGame& GetWorld() override { return world; }
+    GameWorld& GetWorld() override { return world; }
 };

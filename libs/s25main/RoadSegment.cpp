@@ -22,7 +22,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/BuildingProperties.h"
@@ -67,7 +67,7 @@ void RoadSegment::Destroy()
     // Those are not considered "roads" and therefore never registered
     RTTR_Assert(f1->GetGOT() == GO_Type::Flag);
     if(f2->GetGOT() == GO_Type::Flag)
-        gwg->GetPlayer(f1->GetPlayer()).DeleteRoad(this);
+        world->GetPlayer(f1->GetPlayer()).DeleteRoad(this);
 
     if(carriers_[0])
         carriers_[0]->LostWork();
@@ -82,7 +82,7 @@ void RoadSegment::Destroy()
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
             // Figuren sammeln
-            for(noBase* object : gwg->GetFigures(pt))
+            for(noBase* object : world->GetFigures(pt))
             {
                 if(object->GetType() == NodalObjectType::Figure)
                 {
@@ -94,11 +94,11 @@ void RoadSegment::Destroy()
                 }
             }
 
-            gwg->RoadNodeAvailable(pt);
+            world->RoadNodeAvailable(pt);
 
             if(i != route.size())
             {
-                pt = gwg->GetNeighbour(pt, route[i]);
+                pt = world->GetNeighbour(pt, route[i]);
             }
         }
 
@@ -135,7 +135,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         if(t == splitflag->GetPos())
             break;
 
-        t = gwg->GetNeighbour(t, route[length1]);
+        t = world->GetNeighbour(t, route[length1]);
     }
 
     length2 = this->route.size() - length1;
@@ -169,7 +169,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
-        const std::list<noBase*>& figures = gwg->GetFigures(t);
+        const std::list<noBase*>& figures = world->GetFigures(t);
         for(auto* figure : figures)
         {
             if(figure->GetType() == NodalObjectType::Figure)
@@ -181,11 +181,11 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
         if(i != old_route.size())
         {
-            t = gwg->GetNeighbour(t, old_route[i]);
+            t = world->GetNeighbour(t, old_route[i]);
         }
     }
 
-    gwg->GetPlayer(f1->GetPlayer()).AddRoad(second);
+    world->GetPlayer(f1->GetPlayer()).AddRoad(second);
 
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -194,7 +194,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         else if(i == 0)
             // Die Straße war vorher unbesetzt? Dann 2. Straßenteil zu den unoccupied rodes
             // (1. ist ja schon drin)
-            gwg->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(second);
+            world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(second);
     }
 }
 
@@ -311,8 +311,8 @@ void RoadSegment::UpgradeDonkeyRoad()
     MapPoint pt = f1->GetPos();
     for(auto i : route)
     {
-        gwg->SetPointRoad(pt, i, PointRoad::Donkey);
-        pt = gwg->GetNeighbour(pt, i);
+        world->SetPointRoad(pt, i, PointRoad::Donkey);
+        pt = world->GetNeighbour(pt, i);
     }
 
     // Flaggen auf beiden Seiten upgraden
@@ -333,7 +333,7 @@ void RoadSegment::TryGetDonkey()
 {
     // Nur rufen, falls es eine Eselstraße ist, noch kein Esel da ist, aber schon ein Träger da ist
     if(NeedDonkey())
-        carriers_[1] = gwg->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
+        carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
 }
 
 /**
@@ -346,11 +346,11 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
         this->carriers_[0] = nullptr;
-        gwg->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(this);
+        world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(this);
     } else
     {
         // Kein Esel mehr da, versuchen, neuen zu bestellen
-        this->carriers_[1] = gwg->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
+        this->carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
     }
 }
 /**

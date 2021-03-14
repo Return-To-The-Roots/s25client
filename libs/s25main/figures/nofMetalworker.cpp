@@ -31,14 +31,14 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/PostMsg.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/ToolConsts.h"
 #include "s25util/Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Metalworker, pos, player, workplace)
 {
-    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
+    toolOrderSub = world->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
         if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged)
            && note.player == this->player)
             CheckForOrders();
@@ -65,7 +65,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
         state = State::WaitingForWaresOrProductionStopped;
         current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }
-    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
+    toolOrderSub = world->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
         if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged)
            && note.player == this->player)
             CheckForOrders();
@@ -85,7 +85,7 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
     LOADER.GetPlayerImage("rom_bobs", 190 + (now_id % 23))
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
 
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
@@ -118,7 +118,7 @@ unsigned short nofMetalworker::GetCarryID() const
 
 bool nofMetalworker::HasToolOrder() const
 {
-    const GamePlayer& owner = gwg->GetPlayer(player);
+    const GamePlayer& owner = world->GetPlayer(player);
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         if(owner.GetToolsOrdered(i) > 0u)
@@ -132,13 +132,13 @@ bool nofMetalworker::AreWaresAvailable() const
     if(!nofWorkman::AreWaresAvailable())
         return false;
     // If produce nothing on zero is disabled we will always produce something ->OK
-    if(gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 0)
+    if(world->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 0)
         return true;
     // Any tool order?
     if(HasToolOrder())
         return true;
     // Any non-zero priority?
-    const GamePlayer& owner = gwg->GetPlayer(player);
+    const GamePlayer& owner = world->GetPlayer(player);
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         if(owner.GetToolPriority(i) > 0u)
@@ -165,7 +165,7 @@ void nofMetalworker::CheckForOrders()
 
 helpers::OptionalEnum<GoodType> nofMetalworker::GetOrderedTool()
 {
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     std::vector<uint8_t> random_array;
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
@@ -191,7 +191,7 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetOrderedTool()
 
 helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
 {
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
 
     // Fill array where the # of occurrences of a tool is its priority
     // Drawing a random entry will make higher priority items more likely
@@ -206,7 +206,7 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
     if(random_array.empty())
     {
         // do nothing if addon is enabled, otherwise produce random ware (orig S2 behavior)
-        if(gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
+        if(world->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
             return boost::none;
         else
             return RANDOM_ELEMENT(TOOLS);

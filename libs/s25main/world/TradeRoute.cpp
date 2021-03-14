@@ -17,17 +17,17 @@
 
 #include "world/TradeRoute.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/GameConsts.h"
 
-TradeRoute::TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal)
-    : gwg(gwg), player(player)
+TradeRoute::TradeRoute(const GameWorld& world, unsigned char player, const MapPoint& start, const MapPoint& goal)
+    : world(world), player(player)
 {
     AssignNewGoal(start, goal);
 }
 
-TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player)
-    : gwg(gwg), player(player), path(sgd), curPos(sgd.PopMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
+TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorld& world, const unsigned char player)
+    : world(world), player(player), path(sgd), curPos(sgd.PopMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
 {}
 
 void TradeRoute::Serialize(SerializedGameData& sgd) const
@@ -48,7 +48,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::GetNextDir()
 
     Direction nextDir;
     // Check if the route is still valid
-    if(gwg.CheckTradeRoute(curPos, path.route, curRouteIdx, player))
+    if(world.CheckTradeRoute(curPos, path.route, curRouteIdx, player))
         nextDir = path.route[curRouteIdx];
     else
     {
@@ -62,7 +62,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::GetNextDir()
 
     RTTR_Assert(nextDir == path.route[curRouteIdx]);
     curRouteIdx++;
-    curPos = gwg.GetNeighbour(curPos, nextDir);
+    curPos = world.GetNeighbour(curPos, nextDir);
     return TradeDirection(rttr::enum_cast(nextDir));
 }
 
@@ -76,7 +76,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::RecalcRoute()
     path.start = curPos;
     path.route.clear();
     const auto nextDir =
-      gwg.FindTradePath(path.start, path.goal, player, std::numeric_limits<unsigned>::max(), false, &path.route);
+      world.FindTradePath(path.start, path.goal, player, std::numeric_limits<unsigned>::max(), false, &path.route);
     curRouteIdx = 0;
     if(nextDir)
         return TradeDirection(rttr::enum_cast(*nextDir));

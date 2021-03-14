@@ -29,7 +29,7 @@
 #include "noDisappearingMapEnvObject.h"
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include <array>
 
 unsigned short noTree::DRAW_COUNTER = 0;
@@ -48,7 +48,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
     // Every nth tree produces animals, but no palm and pineapple trees
     const std::array<unsigned, 6> TREESPERANIMALSPAWN = {20, 13, 10, 6, 4, 2};
     produce_animals = (type < 3 || type > 5)
-                      && (RANDOM_RAND(TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
+                      && (RANDOM_RAND(TREESPERANIMALSPAWN[world->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
@@ -201,12 +201,12 @@ void noTree::HandleEvent(const unsigned id)
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
             event = nullptr;
             GetEvMgr().AddToKillList(this);
-            gwg->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
-            gwg->RecalcBQAroundPoint(pos);
+            world->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
+            world->RecalcBQAroundPoint(pos);
 
             // Minimap Bescheid geben (Baum gefallen)
-            if(gwg->GetGameInterface())
-                gwg->GetGameInterface()->GI_UpdateMinimap(pos);
+            if(world->GetGameInterface())
+                world->GetGameInterface()->GI_UpdateMinimap(pos);
         }
         break;
         default: break;
@@ -238,7 +238,7 @@ void noTree::ProduceAnimal()
       {Species::RabbitWhite, Species::RabbitGrey, Species::Fox, Species::Stag, Species::Deer, Species::Sheep}};
     auto* animal = new noAnimal(RANDOM_ELEMENT(possibleSpecies), pos);
     // In die Landschaft setzen
-    gwg->AddFigure(pos, animal);
+    world->AddFigure(pos, animal);
     // Und ihm die Pforten geben..
     animal->StartLiving();
 }

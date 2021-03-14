@@ -17,7 +17,7 @@
 
 #include "LuaWorld.h"
 #include "lua/LuaHelpers.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"

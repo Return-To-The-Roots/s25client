@@ -26,7 +26,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
 #include "helpers/MaxEnumValue.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
@@ -166,15 +166,15 @@ void nofBuildingWorker::WorkingReady()
             real_ware->WaitAtFlag(flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
-            gwg->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
+            world->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
             // Abnehmer für Ware finden
-            real_ware->SetGoal(gwg->GetPlayer(player).FindClientForWare(real_ware));
+            real_ware->SetGoal(world->GetPlayer(player).FindClientForWare(real_ware));
             // Ware soll ihren weiteren Weg berechnen
             real_ware->RecalcRoute();
             // Ware ablegen
             flag->AddWare(real_ware);
             // Warenstatistik erhöhen
-            gwg->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
+            world->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
             // Tragen nun keine Ware mehr
             ware = boost::none;
         }

@@ -19,7 +19,7 @@
 #include "EventManager.h"
 #include "buildings/nobUsual.h"
 #include "postSystem/PostMsgWithBuilding.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/MilitaryConsts.h"
 class SerializedGameData;
 class nobBaseWarehouse;
@@ -45,13 +45,13 @@ void nofScout_LookoutTower::HandleDerivedEvent(const unsigned /*id*/) {}
 void nofScout_LookoutTower::WorkAborted()
 {
     // Im enstprechenden Radius alles neu berechnen
-    gwg->RecalcVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player, workplace);
+    world->RecalcVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player, workplace);
 }
 
 void nofScout_LookoutTower::WorkplaceReached()
 {
     // Im enstprechenden Radius alles sichtbar machen
-    gwg->MakeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
+    world->MakeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
     SendPostMessage(player,

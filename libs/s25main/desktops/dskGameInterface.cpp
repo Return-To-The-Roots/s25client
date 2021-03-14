@@ -1077,7 +1077,7 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
         GameDataLoader gdLoader(newDesc);
         if(gdLoader.Load())
         {
-            const_cast<GameWorldGame&>(game_->world_).GetDescriptionWriteable() = newDesc;
+            const_cast<GameWorld&>(game_->world_).GetDescriptionWriteable() = newDesc;
             worldViewer.InitTerrainRenderer();
         }
     }

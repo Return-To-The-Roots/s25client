@@ -23,7 +23,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::IronFounder, pos, player, workplace)
@@ -41,7 +41,7 @@ void nofIronfounder::DrawWorking(DrawPoint drawPt)
     {
         LOADER.GetPlayerImage("rom_bobs", 100 + (now_id % 8))
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     gwg->GetPlayer(workplace->GetPlayer()).color);
+                     world->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 16 == 3)

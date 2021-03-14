@@ -21,7 +21,7 @@
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NodalObjectType::Environment, pos), type(0)
 {
@@ -32,7 +32,7 @@ noSkeleton::~noSkeleton() = default;
 
 void noSkeleton::Destroy()
 {
-    gwg->SetNO(pos, nullptr);
+    world->SetNO(pos, nullptr);
 
     // ggf Event abmelden
     if(current_event)

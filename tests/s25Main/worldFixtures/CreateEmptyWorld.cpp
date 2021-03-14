@@ -19,7 +19,7 @@
 #include "RttrForeachPt.h"
 #include "initGameRNG.hpp"
 #include "lua/GameDataLoader.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/MapLoader.h"
 #include "gameData/TerrainDesc.h"
 #include <cmath>
@@ -27,7 +27,7 @@
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}
 
-bool CreateEmptyWorld::operator()(GameWorldGame& world) const
+bool CreateEmptyWorld::operator()(GameWorld& world) const
 {
     // For consistent results
     initGameRNG(0);
@@ -78,7 +78,7 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
     return true;
 }
 
-void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
+void setRightTerrain(GameWorld& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
 {
     switch(dir)
     {
@@ -91,7 +91,7 @@ void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, De
     }
 }
 
-void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
+void setLeftTerrain(GameWorld& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
 {
     setRightTerrain(world, pt, dir - 1u, t);
 }

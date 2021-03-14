@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
@@ -54,33 +54,32 @@
 #include <set>
 #include <stdexcept>
 
-inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
+inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorld& world)
 {
     std::vector<GamePlayer> players;
     players.reserve(playerInfos.size());
     for(unsigned i = 0; i < playerInfos.size(); ++i)
-        players.push_back(GamePlayer(i, playerInfos[i], gwg));
+        players.push_back(GamePlayer(i, playerInfos[i], world));
     return players;
 }
 
-GameWorldGame::GameWorldGame(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings,
-                             EventManager& em)
+GameWorld::GameWorld(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em)
     : GameWorldBase(CreatePlayers(players, *this), gameSettings, em)
 {
     GameObject::AttachWorld(this);
 }
 
-GameWorldGame::~GameWorldGame()
+GameWorld::~GameWorld()
 {
     GameObject::DetachWorld(this);
 }
 
-MilitarySquares& GameWorldGame::GetMilitarySquares()
+MilitarySquares& GameWorld::GetMilitarySquares()
 {
     return militarySquares;
 }
 
-void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player)
+void GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
 {
     if(GetBQ(pt, player) == BuildingQuality::Nothing)
         return;
@@ -98,7 +97,7 @@ void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player)
     }
 }
 
-void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
+void GameWorld::DestroyFlag(const MapPoint pt, unsigned char playerId)
 {
     // Let's see if there is a flag
     if(GetNO(pt)->GetType() == NodalObjectType::Flag)
@@ -129,7 +128,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
         gi->GI_FlagDestroyed(pt);
 }
 
-void GameWorldGame::SetPointRoad(MapPoint pt, const Direction dir, const PointRoad type)
+void GameWorld::SetPointRoad(MapPoint pt, const Direction dir, const PointRoad type)
 {
     const RoadDir rDir = toRoadDir(pt, dir);
     SetRoad(pt, rDir, type);
@@ -138,7 +137,7 @@ void GameWorldGame::SetPointRoad(MapPoint pt, const Direction dir, const PointRo
         gi->GI_UpdateMinimap(pt);
 }
 
-void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player)
+void GameWorld::SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player)
 {
     if(!GetPlayer(player).IsBuildingEnabled(type))
         return;
@@ -170,7 +169,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
     RecalcBQAroundPointBig(pt);
 }
 
-void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char player)
+void GameWorld::DestroyBuilding(const MapPoint pt, const unsigned char player)
 {
     // Steht da auch ein Gebäude oder eine Baustelle, nicht dass wir aus Verzögerung Feuer abreißen wollen, das geht
     // schief
@@ -196,8 +195,8 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
     }
 }
 
-void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start,
-                              const std::vector<Direction>& route)
+void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start,
+                          const std::vector<Direction>& route)
 {
     // No routes with less than 2 parts. Actually invalid!
     if(route.size() < 2)
@@ -279,7 +278,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
 }
 
-bool GameWorldGame::HasRemovableObjForRoad(const MapPoint pt) const
+bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const
 {
     const auto* obj = GetSpecObj<noStaticObject>(pt);
     return obj && obj->GetSize() == 0;
@@ -290,7 +289,7 @@ bool GameWorldGame::HasRemovableObjForRoad(const MapPoint pt) const
 // tries to fix
 //#define PREVENT_BORDER_STONE_BLOCKING
 
-void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
+void GameWorld::RecalcBorderStones(Position startPt, Extent areaSize)
 {
     // Add a bit extra space as this influences also border stones around the region
     // But not so much we wrap completely around the map (+1 to round up, /2 to have extra space centered)
@@ -379,7 +378,7 @@ void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
 #endif
 }
 
-void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason)
+void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason)
 {
     // Additional radius to eliminate border stones or odd remaining territory parts
     static const int ADD_RADIUS = 2;
@@ -499,7 +498,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     }
 }
 
-bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& building) const
+bool GameWorld::DoesDestructionChangeTerritory(const noBaseBuilding& building) const
 {
     // Get the military radius this building affects. Bld is either a military building or a harbor building site
     RTTR_Assert(
@@ -533,8 +532,8 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
     return false;
 }
 
-TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius,
-                                                     TerritoryChangeReason reason) const
+TerritoryRegion GameWorld::CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius,
+                                                 TerritoryChangeReason reason) const
 {
     const MapPoint bldPos = building.GetPos();
 
@@ -570,8 +569,8 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
     return region;
 }
 
-void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeReason reason,
-                                         const noBaseBuilding& triggerBld) const
+void GameWorld::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeReason reason,
+                                     const noBaseBuilding& triggerBld) const
 {
     if(GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH))
     {
@@ -652,14 +651,14 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
     }
 }
 
-void GameWorldGame::CreateTradeGraphs()
+void GameWorld::CreateTradeGraphs()
 {
     // Only if trade is enabled
     if(GetGGS().isEnabled(AddonId::TRADE))
         tradePathCache = std::make_unique<TradePathCache>(*this);
 }
 
-void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception)
+void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception)
 {
     noBase* no = GetNode(pt).obj;
     if(!no || no == exception)
@@ -697,7 +696,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner
     DestroyNO(pt, false);
 }
 
-void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
+void GameWorld::RoadNodeAvailable(const MapPoint pt)
 {
     // Figuren direkt daneben
     for(const MapPoint nb : GetNeighbours(pt))
@@ -723,8 +722,8 @@ struct PotentialAttacker
     unsigned distance;
 };
 
-void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count,
-                           const bool strong_soldiers)
+void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count,
+                       const bool strong_soldiers)
 {
     auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
@@ -838,8 +837,8 @@ struct CmpSeaAttacker : private T_RankCmp
     }
 };
 
-void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapPoint pt,
-                                 const unsigned short soldiers_count, const bool strong_soldiers)
+void GameWorld::AttackViaSea(const unsigned char player_attacker, const MapPoint pt,
+                             const unsigned short soldiers_count, const bool strong_soldiers)
 {
     // Verfügbare Soldaten herausfinden
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetSoldiersForSeaAttack(player_attacker, pt);
@@ -866,19 +865,19 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
     }
 }
 
-TradePathCache& GameWorldGame::GetTradePathCache()
+TradePathCache& GameWorld::GetTradePathCache()
 {
     RTTR_Assert(tradePathCache);
     return *tradePathCache;
 }
 
-void GameWorldGame::setEconHandler(std::unique_ptr<EconomyModeHandler> handler)
+void GameWorld::setEconHandler(std::unique_ptr<EconomyModeHandler> handler)
 {
     RTTR_Assert_Msg(!econHandler, "Can't reset the economy mode handler ATM");
     econHandler = std::move(handler);
 }
 
-bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
+bool GameWorld::IsRoadNodeForFigures(const MapPoint pt)
 {
     // Figuren durchgehen, bei Kämpfen und wartenden Angreifern sowie anderen wartenden Figuren stoppen!
     for(noBase* object : GetFigures(pt))
@@ -916,12 +915,12 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
 }
 
 /// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
-void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<Direction> dir)
+void GameWorld::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<Direction> dir)
 {
     // Figuren drumherum sammeln (auch von dem Punkt hier aus)
     std::vector<noFigure*> figures;
 
-    // Auch vom Ausgangspunkt aus, da sie im GameWorldGame wegem Zeichnen auch hier hängen können!
+    // Auch vom Ausgangspunkt aus, da sie im GameWorld wegem Zeichnen auch hier hängen können!
     const std::list<noBase*>& fieldFigures = GetFigures(pt);
     for(auto* fieldFigure : fieldFigures)
         if(fieldFigure->GetType() == NodalObjectType::Figure)
@@ -949,7 +948,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<D
     }
 }
 
-void GameWorldGame::Armageddon()
+void GameWorld::Armageddon()
 {
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
@@ -962,7 +961,7 @@ void GameWorldGame::Armageddon()
     }
 }
 
-void GameWorldGame::Armageddon(const unsigned char player)
+void GameWorld::Armageddon(const unsigned char player)
 {
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
@@ -975,7 +974,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
     }
 }
 
-bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* /*attacker*/, const MapPoint center)
+bool GameWorld::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* /*attacker*/, const MapPoint center)
 {
     // Gültiger Punkt für Figuren?
     if(!PathConditionHuman(*this).IsNodeOk(pt))
@@ -1003,8 +1002,8 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttack
     return FindHumanPath(pt, center, CalcDistance(pt, center)) != boost::none;
 }
 
-bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags,
-                                          nofActiveSoldier* exception)
+bool GameWorld::ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags,
+                                      nofActiveSoldier* exception)
 {
     // Is this a flag of a military building?
     if(avoid_military_building_flags && GetNO(pt)->GetGOT() == GO_Type::Flag)
@@ -1046,8 +1045,8 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
     return bm == BlockingManner::None || bm == BlockingManner::Tree || bm == BlockingManner::Flag;
 }
 
-bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char player,
-                                             const noBaseBuilding* exception) const
+bool GameWorld::IsPointCompletelyVisible(const MapPoint& pt, unsigned char player,
+                                         const noBaseBuilding* exception) const
 {
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
@@ -1105,7 +1104,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     return IsPointScoutedByShip(pt, player);
 }
 
-bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, unsigned distance) const
+bool GameWorld::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, unsigned distance) const
 {
     static_assert(VISUALRANGE_SCOUT >= VISUALRANGE_SOLDIER, "Visual range changed. Check loop below!");
 
@@ -1142,7 +1141,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, 
     return false;
 }
 
-bool GameWorldGame::IsPointScoutedByShip(const MapPoint& pt, unsigned player) const
+bool GameWorld::IsPointScoutedByShip(const MapPoint& pt, unsigned player) const
 {
     const std::vector<noShip*>& ships = GetPlayer(player).GetShips();
     for(const noShip* ship : ships)
@@ -1154,8 +1153,7 @@ bool GameWorldGame::IsPointScoutedByShip(const MapPoint& pt, unsigned player) co
     return false;
 }
 
-void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char player,
-                                     const noBaseBuilding* const exception)
+void GameWorld::RecalcVisibility(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception)
 {
     /// Zustand davor merken
     Visibility visibility_before = GetNode(pt).fow[player].visibility;
@@ -1190,13 +1188,13 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     }
 }
 
-void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
+void GameWorld::MakeVisible(const MapPoint pt, const unsigned char player)
 {
     SetVisibility(pt, player, Visibility::Visible);
 }
 
-void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
-                                                  const noBaseBuilding* const exception)
+void GameWorld::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
+                                              const noBaseBuilding* const exception)
 {
     std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& pt : pts)
@@ -1204,7 +1202,7 @@ void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCo
 }
 
 /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
-void GameWorldGame::MakeVisibleAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
+void GameWorld::MakeVisibleAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
 {
     std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
@@ -1213,8 +1211,8 @@ void GameWorldGame::MakeVisibleAroundPoint(const MapPoint pt, const MapCoord rad
 
 /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an
 /// den Rändern neu
-void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,
-                                             const Direction moving_dir, MapPoint* enemy_territory)
+void GameWorld::RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,
+                                         const Direction moving_dir, MapPoint* enemy_territory)
 {
     // Neue Sichtbarkeiten zuerst setzen
     // Zum Eckpunkt der beiden neuen sichtbaren Kanten gehen
@@ -1297,7 +1295,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     }
 }
 
-bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char owner) const
+bool GameWorld::IsBorderNode(const MapPoint pt, const unsigned char owner) const
 {
     return (GetNode(pt).owner == owner && !IsPlayerTerritory(pt, owner));
 }
@@ -1306,7 +1304,7 @@ bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char owner) c
  *  Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
  *  Für Spiele ohne Gold.
  */
-void GameWorldGame::ConvertMineResourceTypes(ResourceType from, ResourceType to)
+void GameWorld::ConvertMineResourceTypes(ResourceType from, ResourceType to)
 {
     // LOG.write(("Convert map resources from %i to %i\n", from, to);
     if(from == to)
@@ -1325,7 +1323,7 @@ void GameWorldGame::ConvertMineResourceTypes(ResourceType from, ResourceType to)
     }
 }
 
-void GameWorldGame::SetupResources()
+void GameWorld::SetupResources()
 {
     ResourceType target;
     switch(GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
@@ -1344,7 +1342,7 @@ void GameWorldGame::SetupResources()
 /**
  * Fills water depending on terrain and Addon setting
  */
-void GameWorldGame::PlaceAndFixWater()
+void GameWorld::PlaceAndFixWater()
 {
     bool waterEverywhere = GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
 
@@ -1384,7 +1382,7 @@ void GameWorldGame::PlaceAndFixWater()
 }
 
 /// Gründet vom Schiff aus eine neue Kolonie
-bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId)
+bool GameWorld::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId)
 {
     // Ist es hier überhaupt noch möglich, eine Kolonie zu gründen?
     if(!IsHarborAtSea(harbor_point, seaId) || !IsHarborPointFree(harbor_point, player))
@@ -1410,19 +1408,19 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     return true;
 }
 
-void GameWorldGame::RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site)
+void GameWorld::RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site)
 {
     RTTR_Assert(building_site->GetBuildingType() == BuildingType::HarborBuilding);
     harbor_building_sites_from_sea.remove(building_site);
 }
 
-bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const
+bool GameWorld::IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const
 {
     return helpers::contains(harbor_building_sites_from_sea, building_site);
 }
 
-std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hbIdToSkip, const unsigned seaId,
-                                                               unsigned playerId) const
+std::vector<unsigned> GameWorld::GetUnexploredHarborPoints(const unsigned hbIdToSkip, const unsigned seaId,
+                                                           unsigned playerId) const
 {
     std::vector<unsigned> hps;
     for(unsigned i = 1; i <= GetNumHarborPoints(); ++i)
@@ -1435,12 +1433,12 @@ std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hb
     return hps;
 }
 
-MapNode& GameWorldGame::GetNodeWriteable(const MapPoint pt)
+MapNode& GameWorld::GetNodeWriteable(const MapPoint pt)
 {
     return GetNodeInt(pt);
 }
 
-void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
+void GameWorld::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
 {
     GameWorldBase::VisibilityChanged(pt, player, oldVis, newVis);
     if(oldVis == Visibility::Invisible && newVis == Visibility::Visible && HasLua())

@@ -17,7 +17,7 @@
 
 #include "nofPassiveWorker.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 class SerializedGameData;
 class noRoadNode;
 
@@ -35,8 +35,8 @@ void nofPassiveWorker::Walked() {}
 void nofPassiveWorker::GoalReached()
 {
     // Mich hier einquartieren
-    gwg->RemoveFigure(pos, this);
-    auto* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
+    world->RemoveFigure(pos, this);
+    auto* wh = world->GetSpecObj<nobBaseWarehouse>(pos);
     RTTR_Assert(wh);
     wh->AddFigure(this);
 }

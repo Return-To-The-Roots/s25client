@@ -19,7 +19,7 @@
 #include "RttrForeachPt.h"
 #include "initGameRNG.hpp"
 #include "lua/GameDataLoader.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/MapLoader.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/test/test_tools.hpp>
@@ -58,7 +58,7 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
 }
 } // namespace
 
-bool CreateSeaWorld::operator()(GameWorldGame& world) const
+bool CreateSeaWorld::operator()(GameWorld& world) const
 {
     // For consistent results
     initGameRNG(0);
@@ -187,7 +187,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
 
 CreateWaterWorld::CreateWaterWorld(const MapExtent& size) : size_(size) {}
 
-bool CreateWaterWorld::operator()(GameWorldGame& world) const
+bool CreateWaterWorld::operator()(GameWorld& world) const
 {
     // Only 2 players supported
     RTTR_Assert(world.GetNumPlayers() <= 2u);

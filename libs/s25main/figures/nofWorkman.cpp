@@ -19,7 +19,7 @@
 #include "EventManager.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
@@ -103,11 +103,11 @@ void nofWorkman::HandleStateWork()
 namespace {
 struct NodeHasResource
 {
-    const GameWorldGame& gwg;
+    const GameWorld& world;
     const ResourceType res;
-    NodeHasResource(const GameWorldGame& gwg, const ResourceType res) : gwg(gwg), res(res) {}
+    NodeHasResource(const GameWorld& world, const ResourceType res) : world(world), res(res) {}
 
-    bool operator()(const MapPoint pt) { return gwg.GetNode(pt).resources.has(res); }
+    bool operator()(const MapPoint pt) { return world.GetNode(pt).resources.has(res); }
 };
 } // namespace
 
@@ -115,7 +115,7 @@ MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
 {
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
     const std::vector<MapPoint> pts =
-      gwg->GetMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*gwg, type), true);
+      world->GetMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
     if(!pts.empty())
         return pts.front();
 

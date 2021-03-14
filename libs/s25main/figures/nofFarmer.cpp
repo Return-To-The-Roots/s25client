@@ -23,7 +23,7 @@
 #include "SoundManager.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
 
@@ -49,7 +49,7 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
     if(harvest)
     {
         LOADER.GetPlayerImage("rom_bobs", 140 + (now_id = GAMECLIENT.Interpolate(88, current_ev)) % 8)
-          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+          ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
@@ -61,7 +61,7 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
     } else
     {
         LOADER.GetPlayerImage("rom_bobs", 132 + GAMECLIENT.Interpolate(88, current_ev) % 8)
-          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+          ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     }
 }
 
@@ -74,11 +74,11 @@ unsigned short nofFarmer::GetCarryID() const
 void nofFarmer::WorkStarted()
 {
     // Wenn ich zu einem Getreidefeld gehe, ernte ich es ab, ansonsten sähe ich
-    harvest = (gwg->GetNO(pos)->GetType() == NodalObjectType::Grainfield);
+    harvest = (world->GetNO(pos)->GetType() == NodalObjectType::Grainfield);
 
     // Getreidefeld Bescheid sagen, damits nicht plötzlich verschwindet, während wir arbeiten
     if(harvest)
-        gwg->GetSpecObj<noGrainfield>(pos)->BeginHarvesting();
+        world->GetSpecObj<noGrainfield>(pos)->BeginHarvesting();
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
@@ -88,13 +88,13 @@ void nofFarmer::WorkFinished()
     {
         // Getreidefeld vernichten und vorher noch die ID von dem abgeernteten Feld holen, was dann als
         // normales Zierobjekt gesetzt wird
-        noBase* nob = gwg->GetNO(pos);
+        noBase* nob = world->GetNO(pos);
         // Check if there is still a grain field at this position
         if(nob->GetGOT() != GO_Type::Grainfield)
             return;
         unsigned mapLstId = static_cast<noGrainfield*>(nob)->GetHarvestMapLstID();
-        gwg->DestroyNO(pos);
-        gwg->SetNO(pos, new noEnvObject(pos, mapLstId));
+        world->DestroyNO(pos);
+        world->SetNO(pos, new noEnvObject(pos, mapLstId));
 
         // Getreide, was wir geerntet haben, in die Hand nehmen
         ware = GoodType::Grain;
@@ -105,14 +105,14 @@ void nofFarmer::WorkFinished()
             return;
 
         // Was stand hier vorher?
-        NodalObjectType noType = gwg->GetNO(pos)->GetType();
+        NodalObjectType noType = world->GetNO(pos)->GetType();
 
         // Nur Zierobjekte und Schilder dürfen weggerissen werden
         if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
-            gwg->DestroyNO(pos, false);
+            world->DestroyNO(pos, false);
             // neues Getreidefeld setzen
-            gwg->SetNO(pos, new noGrainfield(pos));
+            world->SetNO(pos, new noGrainfield(pos));
         }
 
         // Wir haben nur gesäht (gar nichts in die Hand nehmen)
@@ -120,16 +120,16 @@ void nofFarmer::WorkFinished()
     }
 
     // BQ drumrum neu berechnen
-    gwg->RecalcBQAroundPoint(pos);
+    world->RecalcBQAroundPoint(pos);
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
 nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
 {
     // Entweder gibts ein Getreidefeld, das wir abernten können...
-    if(gwg->GetNO(pt)->GetType() == NodalObjectType::Grainfield)
+    if(world->GetNO(pt)->GetType() == NodalObjectType::Grainfield)
     {
-        if(gwg->GetSpecObj<noGrainfield>(pt)->IsHarvestable())
+        if(world->GetSpecObj<noGrainfield>(pt)->IsHarvestable())
             return PointQuality::Class1;
         else
             return PointQuality::NotPossible;
@@ -140,23 +140,23 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         // Nicht auf Straßen bauen!
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(gwg->GetPointRoad(pt, dir) != PointRoad::None)
+            if(world->GetPointRoad(pt, dir) != PointRoad::None)
                 return PointQuality::NotPossible;
         }
 
         // Terrain untersuchen
-        if(!gwg->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
+        if(!world->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
             return PointQuality::NotPossible;
 
         // Ist Platz frei?
-        NodalObjectType noType = gwg->GetNO(pt)->GetType();
+        NodalObjectType noType = world->GetNO(pt)->GetType();
         if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
             return PointQuality::NotPossible;
 
-        for(const MapPoint nb : gwg->GetNeighbours(pt))
+        for(const MapPoint nb : world->GetNeighbours(pt))
         {
             // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
-            noType = gwg->GetNO(nb)->GetType();
+            noType = world->GetNO(nb)->GetType();
             if(noType == NodalObjectType::Grainfield || noType == NodalObjectType::Building
                || noType == NodalObjectType::Buildingsite)
                 return PointQuality::NotPossible;
@@ -171,5 +171,5 @@ void nofFarmer::WorkAborted()
     nofFarmhand::WorkAborted();
     // dem Getreidefeld Bescheid sagen, damit es wieder verdorren kann, wenn wir abernten
     if(harvest && state == State::Work)
-        gwg->GetSpecObj<noGrainfield>(pos)->EndHarvesting();
+        world->GetSpecObj<noGrainfield>(pos)->EndHarvesting();
 }

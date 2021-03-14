@@ -18,7 +18,7 @@
 #include "TradePathCache.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/GameConsts.h"
 
 bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const unsigned char player)
@@ -30,10 +30,10 @@ bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const
     {
         // Found an entry --> Check if the route is still valid
         MapPoint checkedGoal;
-        if(gwg.CheckTradeRoute(paths[entryIdx].path.start, paths[entryIdx].path.route, 0, player, &checkedGoal))
+        if(world.CheckTradeRoute(paths[entryIdx].path.start, paths[entryIdx].path.route, 0, player, &checkedGoal))
         {
             RTTR_Assert(checkedGoal == start || checkedGoal == goal);
-            paths[entryIdx].lastUse = gwg.GetEvMgr().GetCurrentGF();
+            paths[entryIdx].lastUse = world.GetEvMgr().GetCurrentGF();
             return true;
         } else
         {
@@ -45,7 +45,7 @@ bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const
     }
 
     std::vector<Direction> route;
-    if(!gwg.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &route))
+    if(!world.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &route))
         return false;
 
     addEntry(TradePath(start, goal, std::move(route)), player);
@@ -54,7 +54,7 @@ bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const
 
 int TradePathCache::findEntry(const MapPoint start, const MapPoint goal, const PlayerIdx player) const
 {
-    const GamePlayer& thisPlayer = gwg.GetPlayer(player);
+    const GamePlayer& thisPlayer = world.GetPlayer(player);
 
     for(unsigned i = 0; i < paths.size(); i++)
     {
@@ -72,7 +72,7 @@ int TradePathCache::findEntry(const MapPoint start, const MapPoint goal, const P
 
 void TradePathCache::addEntry(TradePath path, const unsigned char player)
 {
-    Entry entry{player, gwg.GetEvMgr().GetCurrentGF(), std::move(path)};
+    Entry entry{player, world.GetEvMgr().GetCurrentGF(), std::move(path)};
 
     int idx = findEntry(entry.path.start, entry.path.goal, player);
     if(idx < 0)

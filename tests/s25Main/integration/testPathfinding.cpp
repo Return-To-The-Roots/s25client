@@ -39,7 +39,7 @@ using WorldFixtureEmpty0P = WorldFixture<CreateEmptyWorld, 0>;
 using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1>;
 
 /// Sets all terrain to the given terrain
-void clearWorld(GameWorldGame& world, DescIdx<TerrainDesc> terrain)
+void clearWorld(GameWorld& world, DescIdx<TerrainDesc> terrain)
 {
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -48,8 +48,7 @@ void clearWorld(GameWorldGame& world, DescIdx<TerrainDesc> terrain)
     }
 }
 
-void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tBlue,
-                    DescIdx<TerrainDesc> tWhite)
+void setupTestcase1(GameWorld& world, const MapPoint& startPt, DescIdx<TerrainDesc> tBlue, DescIdx<TerrainDesc> tWhite)
 {
     // test case 1: Everything is covered in blue terrain (e.g. water) which is walkable on the shore
     // so the white terrain creates all possible shore orientations
@@ -69,7 +68,7 @@ void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, DescIdx<Terra
     world.GetNodeWriteable(curPt).t2 = tWhite;
 }
 
-void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tWalkable,
+void setupTestcase2to4(GameWorld& world, const MapPoint& startPt, DescIdx<TerrainDesc> tWalkable,
                        DescIdx<TerrainDesc> tOther, bool bothTerrain, Direction dir)
 {
     // test cases 2-4: Everything covered in walkable terrain (white) and we want to walk 3 steps into a specified

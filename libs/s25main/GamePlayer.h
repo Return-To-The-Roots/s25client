@@ -34,7 +34,7 @@
 #include <memory>
 
 enum class Direction : uint8_t;
-class GameWorldGame;
+class GameWorld;
 class noBaseBuilding;
 class noBuildingSite;
 class noFigure;
@@ -92,7 +92,7 @@ public:
         unsigned selected_goal;
     };
 
-    GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg);
+    GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorld& world);
     ~GamePlayer();
 
     /// Serialisieren
@@ -100,8 +100,8 @@ public:
     // Deserialisieren
     void Deserialize(SerializedGameData& sgd);
 
-    GameWorldGame& GetGameWorld() { return gwg; }
-    const GameWorldGame& GetGameWorld() const { return gwg; }
+    GameWorld& GetGameWorld() { return world; }
+    const GameWorld& GetGameWorld() const { return world; }
 
     const MapPoint& GetHQPos() const { return hqPos; }
     void AddBuilding(noBuilding* bld, BuildingType bldType);
@@ -349,7 +349,7 @@ public:
 
 private:
     /// Access to the world
-    GameWorldGame& gwg;
+    GameWorld& world;
     /// List of all buildings
     BuildingRegister buildings; //-V730_NOINIT
 

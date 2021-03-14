@@ -28,7 +28,7 @@
 #include "helpers/containerUtils.h"
 #include "nobMilitary.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include <limits>
@@ -79,7 +79,7 @@ void nobBaseMilitary::DestroyBuilding()
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
     for(auto& it : leave_house)
     {
-        gwg->AddFigure(pos, it);
+        world->AddFigure(pos, it);
 
         if(it->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(it))
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch
@@ -97,7 +97,7 @@ void nobBaseMilitary::DestroyBuilding()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
+    sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
     for(auto& building : buildings)
     {
         if(building->GetPlayer() != player && BuildingProperties::IsMilitary(building->GetBuildingType()))
@@ -165,10 +165,10 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
             return aggressor;
         }
         // Check roughly the distance
-        if(gwg->CalcDistance(attackerPos, defenderPos) <= 5)
+        if(world->CalcDistance(attackerPos, defenderPos) <= 5)
         {
             // Check it further (e.g. if they have to walk around a river...)
-            if(gwg->FindHumanPath(attackerPos, defenderPos, 5))
+            if(world->FindHumanPath(attackerPos, defenderPos, 5))
             {
                 aggressor->LetsFight(defender);
                 return aggressor;
@@ -181,14 +181,14 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
 
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
 {
-    const MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SouthEast);
+    const MapPoint flagPos = world->GetNeighbour(pos, Direction::SouthEast);
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
     bool capturing =
       (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
-    if(!capturing && gwg->ValidPointForFighting(flagPos, false))
+    if(!capturing && world->ValidPointForFighting(flagPos, false))
     {
         ret_radius = 0;
         return flagPos;
@@ -196,7 +196,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
     const MapPoint soldierPos = soldier->GetPos();
     // Get points AROUND the flag. Never AT the flag
-    const auto nodes = gwg->GetPointsInRadius(flagPos, 3, ReturnMapPointWithRadius{});
+    const auto nodes = world->GetPointsInRadius(flagPos, 3, ReturnMapPointWithRadius{});
 
     // Weg zu allen möglichen Punkten berechnen und den mit den kürzesten Weg nehmen
     // Die bisher kürzeste gefundene Länge
@@ -209,7 +209,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
         if(node.second > ret_radius)
             break;
 
-        if(!gwg->ValidWaitingAroundBuildingPoint(node.first, soldier, pos))
+        if(!world->ValidWaitingAroundBuildingPoint(node.first, soldier, pos))
             continue;
 
         // Derselbe Punkt? Dann können wir gleich abbrechen, finden ja sowieso keinen kürzeren Weg mehr
@@ -221,7 +221,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
         unsigned length = 0;
         // Gültiger Weg gefunden
-        if(gwg->FindHumanPath(soldierPos, node.first, 100, false, &length))
+        if(world->FindHumanPath(soldierPos, node.first, 100, false, &length))
         {
             // Kürzer als bisher kürzester Weg? --> Dann nehmen wir diesen Punkt (vorerst)
             if(length < min_length)
@@ -303,7 +303,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
         {
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SouthEast), 5, false))
+            if(world->FindHumanPath(aggressor->GetPos(), world->GetNeighbour(pos, Direction::SouthEast), 5, false))
             {
                 // dann kann der zur Flagge gehen
                 aggressor->AttackFlag();
@@ -324,7 +324,7 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
             if(aggressor->GetRadius() > radius)
             {
                 // Und findet er einen zu diesem Punkt?
-                if(gwg->FindHumanPath(aggressor->GetPos(), pt, 50, false))
+                if(world->FindHumanPath(aggressor->GetPos(), pt, 50, false))
                 {
                     // dann soll er dorthin gehen
                     aggressor->StartSucceeding(pt, radius);
@@ -340,14 +340,14 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
 bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
 {
     // If we are in peaceful mode -> not attackable
-    if(gwg->GetGGS().getSelection(AddonId::PEACEFULMODE))
+    if(world->GetGGS().getSelection(AddonId::PEACEFULMODE))
         return false;
 
     // If we cannot be seen by the player -> not attackable
-    if(gwg->CalcVisiblityWithAllies(pos, playerIdx) != Visibility::Visible)
+    if(world->CalcVisiblityWithAllies(pos, playerIdx) != Visibility::Visible)
         return false;
     // Else it depends on the team settings
-    return gwg->GetPlayer(player).IsAttackable(playerIdx);
+    return world->GetPlayer(player).IsAttackable(playerIdx);
 }
 
 bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const

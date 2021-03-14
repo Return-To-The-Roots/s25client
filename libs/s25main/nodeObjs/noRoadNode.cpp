@@ -20,7 +20,7 @@
 #include "GamePlayer.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "s25util/warningSuppression.h"
 
 noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)
@@ -90,9 +90,9 @@ void noRoadNode::DestroyRoad(const Direction dir)
     MapPoint t = route->GetF1()->GetPos();
     for(unsigned z = 0; z < route->GetLength(); ++z)
     {
-        gwg->SetPointRoad(t, route->GetRoute(z), PointRoad::None);
-        gwg->RecalcBQForRoad(t);
-        t = gwg->GetNeighbour(t, route->GetRoute(z));
+        world->SetPointRoad(t, route->GetRoute(z), PointRoad::None);
+        world->RecalcBQForRoad(t);
+        t = world->GetNeighbour(t, route->GetRoute(z));
     }
 
     noRoadNode* otherFlag;
@@ -117,7 +117,7 @@ void noRoadNode::DestroyRoad(const Direction dir)
     delete route;
 
     // Spieler Bescheid sagen
-    gwg->GetPlayer(player).RoadDestroyed();
+    world->GetPlayer(player).RoadDestroyed();
 }
 
 /// Vernichtet Alle Straße um diesen Knoten

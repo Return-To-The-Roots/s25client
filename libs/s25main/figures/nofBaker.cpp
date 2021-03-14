@@ -24,7 +24,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameTypes/Direction.h"
 
 nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -57,7 +57,7 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     unsigned max_id = 120;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     const Nation wpNation = workplace->GetNation();
-    unsigned plColor = gwg->GetPlayer(player).color;
+    unsigned plColor = world->GetPlayer(player).color;
 
     // position zum rauslaufen berechnen
     DrawPoint walkOutPos = drawPt + walkOffsets[wpNation][now_id % 8];

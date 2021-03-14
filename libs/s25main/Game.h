@@ -18,7 +18,7 @@
 #pragma once
 
 #include "GlobalGameSettings.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <memory>
 
@@ -34,7 +34,7 @@ public:
 
     const GlobalGameSettings ggs_;
     std::unique_ptr<EventManager> em_;
-    GameWorldGame world_;
+    GameWorld world_;
     boost::ptr_vector<AIPlayer> aiPlayers_;
 
     /// Does the remaining initializations for starting the game

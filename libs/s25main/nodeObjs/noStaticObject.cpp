@@ -23,7 +23,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include <stdexcept>
 
 /**
@@ -43,9 +43,9 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
     {
         for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            MapPoint nb = gwg->GetNeighbour(pos, dir);
-            gwg->DestroyNO(nb, false);
-            gwg->SetNO(nb, new noExtension(this));
+            MapPoint nb = world->GetNeighbour(pos, dir);
+            world->DestroyNO(nb, false);
+            world->SetNO(nb, new noExtension(this));
         }
     }
 }
@@ -69,7 +69,7 @@ void noStaticObject::Destroy()
     if(GetSize() == 2)
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
-            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
+            world->DestroyNO(world->GetNeighbour(pos, i));
     }
 
     noCoordBase::Destroy();
