@@ -79,6 +79,34 @@ void SoundManager::stopSounds(const noBase& obj)
     }
 }
 
+void SoundManager::playAnimalSound(unsigned soundLstId)
+{
+    // Count how often this sound is already played and also remove finished ones
+    unsigned numPlayedCt = 0;
+    for(auto it = animalSounds.begin(); it != animalSounds.end();)
+    {
+        if(it->soundId == soundLstId)
+        {
+            if(AUDIODRIVER.IsEffectPlaying(it->playId))
+                ++numPlayedCt;
+            else
+            {
+                it = animalSounds.erase(it);
+                continue;
+            }
+        }
+        ++it;
+    }
+    if(numPlayedCt >= maxPlayCtPerSound)
+        return;
+
+    const unsigned volume = helpers::randomValue(getSoundRng(), 50u, 70u);
+    EffectPlayId playId = LOADER.GetSoundN("sound", soundLstId)->Play(volume, false);
+
+    if(playId != EffectPlayId::Invalid)
+        animalSounds.push_back(AnimalSound{soundLstId, playId});
+}
+
 void SoundManager::playBirdSounds(const unsigned treeCount)
 {
     if(!SETTINGS.sound.effectsEnabled)
@@ -141,4 +169,8 @@ void SoundManager::stopAll()
 
     for(auto& sound : noSounds)
         AUDIODRIVER.StopEffect(sound.playId);
+    noSounds.clear();
+    for(auto& sound : animalSounds)
+        AUDIODRIVER.StopEffect(sound.playId);
+    animalSounds.clear();
 }

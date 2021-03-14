@@ -21,6 +21,7 @@
 #include "driver/EffectPlayId.h"
 #include <cstdint>
 #include <list>
+#include <vector>
 
 class noBase;
 
@@ -40,9 +41,15 @@ class SoundManager
         /// Reference ID to the played sound
         EffectPlayId playId;
     };
+    struct AnimalSound
+    {
+        unsigned soundId;
+        EffectPlayId playId;
+    };
 
     /// Currently active node sounds
     std::list<NOSound> noSounds;
+    std::vector<AnimalSound> animalSounds;
     /// Earliest timepoint of the next bird sound
     Clock::time_point minNextBirdSound;
     /// Play ids of the ambient sounds
@@ -56,6 +63,8 @@ public:
     void playNOSound(unsigned soundLstId, const noBase& obj, unsigned id, uint8_t volume = 255);
     /// Stop all sounds from this object, usually when the work of it is finished
     void stopSounds(const noBase& obj);
+    /// Play the sound of an animal
+    void playAnimalSound(unsigned soundLstId);
 
     /// Play the bird sound effect which is influenced by the number of trees
     void playBirdSounds(unsigned treeCount);
