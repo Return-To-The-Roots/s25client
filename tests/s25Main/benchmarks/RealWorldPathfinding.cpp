@@ -43,8 +43,7 @@ static void BM_World(benchmark::State& state)
     std::vector<PlayerInfo> players(2);
     for(auto& player : players)
         player.ps = PlayerState::Occupied;
-    GlobalGameSettings ggs;
-    auto game = std::make_shared<Game>(ggs, 0, players);
+    auto game = std::make_shared<Game>(GlobalGameSettings(), 0, players);
     GameWorld& world = game->world_;
     MapLoader loader(world);
     if(!loader.Load(rttr::test::rttrBaseDir / "data/RTTR/MAPS/NEW/AM_FANGDERZEIT.SWD"))

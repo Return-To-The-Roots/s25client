@@ -859,7 +859,7 @@ public:
     GlobalGameSettings ggs;
 
     GameMessage_GGSChange() : GameMessage(NMS_GGS_CHANGE) {}
-    GameMessage_GGSChange(const GlobalGameSettings& ggs) : GameMessage(NMS_GGS_CHANGE), ggs(ggs)
+    GameMessage_GGSChange(GlobalGameSettings ggs) : GameMessage(NMS_GGS_CHANGE), ggs(std::move(ggs))
     {
         LOG.writeToFile(">>> NMS_GGS_CHANGE\n");
     }

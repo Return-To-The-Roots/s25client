@@ -30,9 +30,11 @@ class GlobalGameSettings
 public:
     GlobalGameSettings();
     GlobalGameSettings(const GlobalGameSettings& ggs);
+    GlobalGameSettings(GlobalGameSettings&&) noexcept;
     ~GlobalGameSettings();
 
     GlobalGameSettings& operator=(const GlobalGameSettings& ggs);
+    GlobalGameSettings& operator=(GlobalGameSettings&&) noexcept;
 
     /// Serialisierung und Deserialisierung
     void Serialize(Serializer& ser) const;

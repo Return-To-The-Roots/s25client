@@ -24,6 +24,8 @@
 #include "gameData/MilitaryConsts.h"
 #include "s25util/Log.h"
 #include "s25util/Serializer.h"
+#include <boost/mp11/algorithm.hpp>
+#include <boost/mp11/list.hpp>
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -44,6 +46,8 @@ GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
         setSelection(addon.addon->getId(), addon.status);
 }
 
+GlobalGameSettings::GlobalGameSettings(GlobalGameSettings&&) noexcept = default;
+
 GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
 {
     if(this == &ggs)
@@ -61,62 +65,61 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
     return *this;
 }
 
+GlobalGameSettings& GlobalGameSettings::operator=(GlobalGameSettings&&) noexcept = default;
+
 GlobalGameSettings::~GlobalGameSettings() = default;
 
 void GlobalGameSettings::registerAllAddons()
 {
-    registerAddon(std::make_unique<AddonLimitCatapults>());
-    registerAddon(std::make_unique<AddonInexhaustibleMines>());
-    registerAddon(std::make_unique<AddonRefundMaterials>());
-    registerAddon(std::make_unique<AddonExhaustibleWater>());
-    registerAddon(std::make_unique<AddonRefundOnEmergency>());
-    registerAddon(std::make_unique<AddonManualRoadEnlargement>());
-    registerAddon(std::make_unique<AddonCatapultGraphics>());
-    registerAddon(std::make_unique<AddonMetalworksBehaviorOnZero>());
-
-    registerAddon(std::make_unique<AddonDemolitionProhibition>());
-    registerAddon(std::make_unique<AddonCharburner>());
-    registerAddon(std::make_unique<AddonTrade>());
-
-    registerAddon(std::make_unique<AddonChangeGoldDeposits>());
-    registerAddon(std::make_unique<AddonMaxWaterwayLength>());
-    registerAddon(std::make_unique<AddonCustomBuildSequence>());
-    registerAddon(std::make_unique<AddonStatisticsVisibility>());
-
-    registerAddon(std::make_unique<AddonDefenderBehavior>());
-    registerAddon(std::make_unique<AddonAIDebugWindow>());
-
-    registerAddon(std::make_unique<AddonNoCoinsDefault>());
-
-    registerAddon(std::make_unique<AddonAdjustMilitaryStrength>());
-
-    registerAddon(std::make_unique<AddonToolOrdering>());
-
-    registerAddon(std::make_unique<AddonMilitaryAid>());
-    registerAddon(std::make_unique<AddonInexhaustibleGraniteMines>());
-    registerAddon(std::make_unique<AddonMaxRank>());
-    registerAddon(std::make_unique<AddonSeaAttack>());
-    registerAddon(std::make_unique<AddonInexhaustibleFish>());
-
-    registerAddon(std::make_unique<AddonShipSpeed>());
-    registerAddon(std::make_unique<AddonMoreAnimals>());
-    registerAddon(std::make_unique<AddonBurnDuration>());
-    registerAddon(std::make_unique<AddonNoAlliedPush>());
-    registerAddon(std::make_unique<AddonBattlefieldPromotion>());
-    registerAddon(std::make_unique<AddonHalfCostMilEquip>());
-    registerAddon(std::make_unique<AddonMilitaryControl>());
-
-    registerAddon(std::make_unique<AddonMilitaryHitpoints>());
-
-    registerAddon(std::make_unique<AddonNumScoutsExploration>());
-
-    registerAddon(std::make_unique<AddonFrontierDistanceReachable>());
-    registerAddon(std::make_unique<AddonCoinsCapturedBld>());
-    registerAddon(std::make_unique<AddonDemolishBldWORes>());
-
-    registerAddon(std::make_unique<AddonPeacefulMode>());
-    registerAddon(std::make_unique<AddonDurableGeologistSigns>());
-    registerAddon(std::make_unique<AddonEconomyModeGameLength>());
+    // clang-format off
+    using AllAddons = boost::mp11::mp_list<
+        AddonAdjustMilitaryStrength,
+        AddonAIDebugWindow,
+        AddonBattlefieldPromotion,
+        AddonBurnDuration,
+        AddonCatapultGraphics,
+        AddonChangeGoldDeposits,
+        AddonCharburner,
+        AddonCoinsCapturedBld,
+        AddonCustomBuildSequence,
+        AddonDefenderBehavior,
+        AddonDemolishBldWORes,
+        AddonDemolitionProhibition,
+        AddonDurableGeologistSigns,
+        AddonEconomyModeGameLength,
+        AddonExhaustibleWater,
+        AddonFrontierDistanceReachable,
+        AddonHalfCostMilEquip,
+        AddonInexhaustibleFish,
+        AddonInexhaustibleGraniteMines,
+        AddonInexhaustibleMines,
+        AddonLimitCatapults,
+        AddonManualRoadEnlargement,
+        AddonMaxRank,
+        AddonMaxWaterwayLength,
+        AddonMetalworksBehaviorOnZero,
+        AddonMilitaryAid,
+        AddonMilitaryControl,
+        AddonMilitaryHitpoints,
+        AddonMoreAnimals,
+        AddonNoAlliedPush,
+        AddonNoCoinsDefault,
+        AddonNumScoutsExploration,
+        AddonPeacefulMode,
+        AddonRefundMaterials,
+        AddonRefundOnEmergency,
+        AddonSeaAttack,
+        AddonShipSpeed,
+        AddonStatisticsVisibility,
+        AddonToolOrdering,
+        AddonTrade
+    >;
+    // clang-format on
+    using namespace boost::mp11;
+    mp_for_each<mp_transform<mp_identity, AllAddons>>([this](auto addonType) {
+        using AddonType = typename decltype(addonType)::type;
+        this->registerAddon(std::make_unique<AddonType>());
+    });
 }
 
 void GlobalGameSettings::resetAddons()
@@ -244,15 +247,11 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     resetAddons();
 
-    // LOG.writeToFile("<<< Addon Status:\n");
-
     for(unsigned i = 0; i < count; ++i)
     {
         auto addon = static_cast<AddonId>(ser.PopUnsignedInt());
         unsigned status = ser.PopUnsignedInt();
         setSelection(addon, status);
-
-        // LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(addon) % status;
     }
 }
 
