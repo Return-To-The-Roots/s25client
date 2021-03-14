@@ -54,18 +54,6 @@ jobs:
         with:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
-      - name: Cache CCache
-        uses: actions/cache@v2
-        with:
-          path: .ccache
-          key: ${{matrix.os}}-${{matrix.compiler}}-ccache
-      - name: Setup CCache
-        run: |
-          echo "CCACHE_BASEDIR=$PWD" >> $GITHUB_ENV
-          echo "CCACHE_DIR=$PWD/.ccache" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESS=true" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=6" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=400M" >> $GITHUB_ENV
 
       - name: Install Compiler
         if: "!startsWith(runner.os, 'macos')"
@@ -94,12 +82,18 @@ jobs:
         if: "!startsWith(runner.os, 'macos')"
         run: |
           sudo apt update
-          sudo apt install ccache gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev
+          sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev
       - name: Install system packages (OSX)
         if: startsWith(runner.os, 'macos')
         run: |
-          brew install ccache cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
+          brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
           echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
+
+      - name: Setup CCache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{matrix.os}}-${{matrix.compiler}}
+          max-size: 200M
 
       - name: Install dependencies
         run: |
