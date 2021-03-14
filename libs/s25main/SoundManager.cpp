@@ -127,10 +127,10 @@ void SoundManager::playBirdSounds(const unsigned treeCount)
         if(treeCount > 0)
         {
             const unsigned soundIdx = helpers::randomValue(getSoundRng(), 87u, 91u);
-            const unsigned volume = helpers::randomValue(getSoundRng(), 50u, 80u);
+            const unsigned volume = helpers::randomValue(getSoundRng(), 50u, 70u);
             birdPlayId = LOADER.GetSoundN("sound", soundIdx)->Play(volume, false);
         }
-        minNextBirdSound = now + milliseconds(helpers::randomValue(getSoundRng(), 0u, 1000u));
+        minNextBirdSound = now + milliseconds(helpers::randomValue(getSoundRng(), 150u, 1000u));
     }
 }
 
