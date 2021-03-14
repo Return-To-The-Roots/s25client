@@ -30,7 +30,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/JobConsts.h"
@@ -197,14 +197,14 @@ void nofCarrier::Draw(DrawPoint drawPt)
                               .GetPlayerImage(
                                 "rom_bobs",
                                 ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
-                              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                              ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                         } else // Silvesteregg
                         {
                             glArchivItem_Bitmap_Player* bmp =
                               LOADER.GetPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
 
                             if(bmp)
-                                bmp->DrawFull(drawPt - DrawPoint(26, 104), COLOR_WHITE, gwg->GetPlayer(player).color);
+                                bmp->DrawFull(drawPt - DrawPoint(26, 104), COLOR_WHITE, world->GetPlayer(player).color);
                             else
                             {
                                 SetNewAnimationMoment();
@@ -216,8 +216,8 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 if(!animation)
                 {
-                    LOADER.getCarrierBobSprite(gwg->GetPlayer(player).nation, fat, GetCurMoveDir(), 2)
-                      .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                    LOADER.getCarrierBobSprite(world->GetPlayer(player).nation, fat, GetCurMoveDir(), 2)
+                      .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 } else
                     // Steht und wartet (ohne Ware)
                     DrawShadow(drawPt, 0, GetCurMoveDir());
@@ -226,7 +226,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             {
                 // Steht und wartet (mit Ware)
                 LOADER.getCarrierSprite(carried_ware->type, fat, GetCurMoveDir(), 2)
-                  .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
             } else
             {
                 // Läuft normal mit oder ohne Ware
@@ -285,11 +285,13 @@ void nofCarrier::Draw(DrawPoint drawPt)
             } else if(state == CarrierState::WaitForWare
                       || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
-                LOADER.getBoatCarrierSprite(GetCurMoveDir(), 0).draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                LOADER.getBoatCarrierSprite(GetCurMoveDir(), 0)
+                  .draw(drawPt, 0xFFFFFFFF, world->GetPlayer(player).color);
             } else if(state == CarrierState::WaitForWareSpace
                       || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))
             {
-                LOADER.getBoatCarrierSprite(GetCurMoveDir(), 0).draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                LOADER.getBoatCarrierSprite(GetCurMoveDir(), 0)
+                  .draw(drawPt, 0xFFFFFFFF, world->GetPlayer(player).color);
 
                 // Ware im Boot zeichnen
                 LOADER.GetWareDonkeyTex(carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
@@ -301,7 +303,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 // ruderndes Boot zeichnen
                 LOADER.getBoatCarrierSprite(GetCurMoveDir(), ani_step)
-                  .draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                  .draw(drawPt, 0xFFFFFFFF, world->GetPlayer(player).color);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
@@ -475,7 +477,7 @@ void nofCarrier::Walked()
         case CarrierState::CarryWareToBuilding:
         {
             // Ware ablegen
-            gwg->GetSpecObj<noRoadNode>(pos)->AddWare(carried_ware);
+            world->GetSpecObj<noRoadNode>(pos)->AddWare(carried_ware);
             // Ich trag' keine Ware mehr
             carried_ware = nullptr;
             // Wieder zurück zu meinem Weg laufen
@@ -539,10 +541,10 @@ void nofCarrier::GoalReached()
     // Wir arbeiten schonmal
     StartWorking();
 
-    auto* rn = gwg->GetSpecObj<noRoadNode>(pos);
+    auto* rn = world->GetSpecObj<noRoadNode>(pos);
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        // noRoadNode * rn = gwg->GetSpecObj<noRoadNode>(x,y);
+        // noRoadNode * rn = world->GetSpecObj<noRoadNode>(x,y);
         if(rn->GetRoute(dir) == workplace)
         {
             // Am neuen Arbeitsplatz angekommen
@@ -646,18 +648,18 @@ void nofCarrier::LostWork()
             {
                 // If we are walking choose the destination point as start point
                 // for the pathfinding!
-                tmpPos = gwg->GetNeighbour(tmpPos, GetCurMoveDir());
+                tmpPos = world->GetNeighbour(tmpPos, GetCurMoveDir());
             }
 
             // Look for the shore
             const unsigned maxNodeDistance = 5;
             std::vector<MapPoint> coastPoints =
-              gwg->GetMatchingPointsInRadius(tmpPos, maxNodeDistance, IsCoastalAndForFigs(*gwg));
+              world->GetMatchingPointsInRadius(tmpPos, maxNodeDistance, IsCoastalAndForFigs(*world));
             for(const auto& it : coastPoints)
             {
                 // 10x the node distance should be enough, otherwise it would be to far to paddle
                 const unsigned maxDistance = maxNodeDistance * 10;
-                if(gwg->FindShipPath(tmpPos, it, maxDistance, &shore_path, nullptr))
+                if(world->FindShipPath(tmpPos, it, maxDistance, &shore_path, nullptr))
                 {
                     // Ok let's paddle to the coast
                     rs_pos = 0;
@@ -736,9 +738,9 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         RTTR_Assert(otherRoad->getCarrier(carrierNr) == nullptr); // No carrier expected
 
     if(ct == CarrierType::Normal)
-        gwg->GetPlayer(player).FindCarrierForRoad(otherRoad);
+        world->GetPlayer(player).FindCarrierForRoad(otherRoad);
     else if(ct == CarrierType::Donkey)
-        otherRoad->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(otherRoad));
+        otherRoad->setCarrier(1, world->GetPlayer(player).OrderDonkey(otherRoad));
 }
 
 void nofCarrier::HandleDerivedEvent(const unsigned id)
@@ -844,7 +846,7 @@ void nofCarrier::RemoveWareJob()
 void nofCarrier::FetchWare(const bool swap_wares)
 {
     // Ware aufnehmnen
-    carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(GetCurMoveDir() + 3u, swap_wares, this);
+    carried_ware = world->GetSpecObj<noFlag>(pos)->SelectWare(GetCurMoveDir() + 3u, swap_wares, this);
 
     if(carried_ware)
     {

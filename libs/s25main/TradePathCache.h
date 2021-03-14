@@ -20,7 +20,7 @@
 #include "world/TradePath.h"
 #include <boost/container/static_vector.hpp>
 
-class GameWorldGame;
+class GameWorld;
 
 class TradePathCache
 {
@@ -33,12 +33,12 @@ class TradePathCache
         TradePath path;
     };
 
-    const GameWorldGame& gwg;
+    const GameWorld& world;
     boost::container::static_vector<Entry, 10> paths;
     int findEntry(MapPoint start, MapPoint goal, PlayerIdx player) const;
 
 public:
-    TradePathCache(const GameWorldGame& gwg) : gwg(gwg) {}
+    TradePathCache(const GameWorld& world) : world(world) {}
 
     void clear() { paths.clear(); }
     unsigned size() const { return paths.size(); }

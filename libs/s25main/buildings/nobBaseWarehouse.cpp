@@ -38,7 +38,7 @@
 #include "nobMilitary.h"
 #include "random/Random.h"
 #include "variant.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/JobConsts.h"
 #include "gameData/SettingTypeConv.h"
@@ -104,17 +104,17 @@ void nobBaseWarehouse::DestroyBuilding()
 
     // restliche Warenbestände von der Inventur wieder abziehen
     for(const auto good : helpers::enumRange<GoodType>())
-        gwg->GetPlayer(player).DecreaseInventoryWare(good, inventory[good]);
+        world->GetPlayer(player).DecreaseInventoryWare(good, inventory[good]);
 
     // move soldiers from reserve to inventory.
-    for(unsigned rank = 0; rank < gwg->GetGGS().GetMaxMilitaryRank(); ++rank)
+    for(unsigned rank = 0; rank < world->GetGGS().GetMaxMilitaryRank(); ++rank)
     {
         if(reserve_soldiers_available[rank] > 0)
             inventory.real.Add(SOLDIER_JOBS[rank], reserve_soldiers_available[rank]);
     }
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
-    gwg->AddFigure(pos, new BurnedWarehouse(pos, player, inventory.real.people));
+    world->AddFigure(pos, new BurnedWarehouse(pos, player, inventory.real.people));
 
     nobBaseMilitary::DestroyBuilding();
 }
@@ -192,7 +192,7 @@ void nobBaseWarehouse::Clear()
         inventory.Add(SOLDIER_JOBS[i], reserve_soldiers_available[i]);
     reserve_soldiers_available.fill(0);
 
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     for(const auto i : helpers::enumRange<GoodType>())
         owner.DecreaseInventoryWare(i, inventory[i]);
 
@@ -323,7 +323,7 @@ void nobBaseWarehouse::HandleCollectEvent()
         storing_wanted = true;
 
         // Lagerhaus suchen, das diese Ware enthält
-        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasWareButNoCollect(i), false, false);
+        nobBaseWarehouse* wh = world->GetPlayer(player).FindWarehouse(*this, FW::HasWareButNoCollect(i), false, false);
         // Gefunden?
         if(wh)
         {
@@ -351,7 +351,7 @@ void nobBaseWarehouse::HandleCollectEvent()
 
             // Lagerhaus suchen, das diesen Job enthält
             nobBaseWarehouse* wh =
-              gwg->GetPlayer(player).FindWarehouse(*this, FW::HasFigureButNoCollect(i, false), false, false);
+              world->GetPlayer(player).FindWarehouse(*this, FW::HasFigureButNoCollect(i, false), false, false);
             // Gefunden?
             if(wh)
             {
@@ -371,7 +371,7 @@ void nobBaseWarehouse::HandleCollectEvent()
 void nobBaseWarehouse::HandleSendoutEvent()
 {
     // Fight or something in front of the house? Try again later!
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SouthEast)))
+    if(!world->IsRoadNodeForFigures(world->GetNeighbour(pos, Direction::SouthEast)))
     {
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
         return;
@@ -409,7 +409,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
         // Ware
         const auto goodType = boost::get<GoodType>(selectedId);
         auto* ware = new Ware(goodType, nullptr, this);
-        noBaseBuilding* wareGoal = gwg->GetPlayer(player).FindClientForWare(ware);
+        noBaseBuilding* wareGoal = world->GetPlayer(player).FindClientForWare(ware);
         if(wareGoal != this)
         {
             ware->SetGoal(wareGoal);
@@ -426,14 +426,14 @@ void nobBaseWarehouse::HandleSendoutEvent()
             TryStopRecruiting();
         } else
         {
-            gwg->GetPlayer(player).RemoveWare(ware);
+            world->GetPlayer(player).RemoveWare(ware);
             deletePtr(ware);
         }
     } else
     {
         const auto jobType = boost::get<Job>(selectedId);
         nobBaseWarehouse* wh =
-          gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(jobType), true, false);
+          world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(jobType), true, false);
         if(wh != this)
         {
             auto* fig = new nofPassiveWorker(jobType, pos, player, nullptr);
@@ -470,7 +470,7 @@ void nobBaseWarehouse::HandleRecrutingEvent()
     max_recruits = std::min(inventory[GoodType::Beer], max_recruits);
     max_recruits = std::min(inventory[Job::Helper], max_recruits);
 
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     const unsigned recruiting_ratio = owner.GetMilitarySetting(0);
     unsigned real_recruits = max_recruits * recruiting_ratio / MILITARY_SETTINGS_SCALE[0];
     // Wurde abgerundet?
@@ -516,7 +516,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
     {
         inventory.Add(Job::Helper);
 
-        GamePlayer& owner = gwg->GetPlayer(player);
+        GamePlayer& owner = world->GetPlayer(player);
         owner.IncreaseInventoryJob(Job::Helper, 1);
 
         if(inventory[Job::Helper] == 1)
@@ -532,7 +532,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
         // Bei Überbevölkerung Träger vernichten
         inventory.Remove(Job::Helper);
 
-        gwg->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
+        world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
     }
 
     producinghelpers_event = GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM_RAND(PRODUCE_HELPERS_RANDOM_GF), 1);
@@ -574,7 +574,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
     }
 
     // Fight or something in front of the house and we are not defending?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SouthEast)))
+    if(!world->IsRoadNodeForFigures(world->GetNeighbour(pos, Direction::SouthEast)))
     {
         // there's a fight
 
@@ -600,7 +600,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
     {
         noFigure* fig = leave_house.front();
 
-        gwg->AddFigure(pos, fig);
+        world->AddFigure(pos, fig);
 
         // Init road walking for figures walking on roads
         if(fig->IsWalkingOnRoad())
@@ -637,7 +637,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
             // Dann Ware raustragen lassen
             Ware* ware = waiting_wares.front();
             auto* worker = new nofWarehouseWorker(pos, player, ware, false);
-            gwg->AddFigure(pos, worker);
+            world->AddFigure(pos, worker);
             inventory.visual.Remove(ConvertShields(ware->type));
             worker->WalkToGoal();
             ware->Carry(GetFlag());
@@ -741,7 +741,7 @@ void nobBaseWarehouse::AddWare(Ware*& ware)
     // Die Schilde der verschiedenen Nation in eine "Schild-Sorte" (den der Römer) umwandeln!
     GoodType type = ConvertShields(ware->type);
 
-    gwg->GetPlayer(player).RemoveWare(ware);
+    world->GetPlayer(player).RemoveWare(ware);
     deletePtr(ware);
 
     inventory.Add(type);
@@ -758,13 +758,13 @@ void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
         for(const auto job : helpers::EnumRange<Job>{})
         {
             if(JOB_CONSTS[job].tool == gt)
-                gwg->GetPlayer(player).FindWarehouseForAllJobs(job);
+                world->GetPlayer(player).FindWarehouseForAllJobs(job);
         }
     }
 
     // Wars Baumaterial? Dann den Baustellen Bescheid sagen
     if(gt == GoodType::Boards || gt == GoodType::Stones)
-        gwg->GetPlayer(player).FindMaterialForBuildingSites();
+        world->GetPlayer(player).FindMaterialForBuildingSites();
 
     // Evtl wurden Bier oder Waffen reingetragen --> versuchen zu rekrutieren
     TryRecruiting();
@@ -787,7 +787,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         if(inventory[job] > 0)
         {
             // Truppen prüfen in allen Häusern
-            gwg->GetPlayer(player).NewSoldiersAvailable(inventory[job]);
+            world->GetPlayer(player).NewSoldiersAvailable(inventory[job]);
         }
     } else
     {
@@ -795,12 +795,12 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         {
             // Straße für Esel suchen
             noRoadNode* goal;
-            if(RoadSegment* road = gwg->GetPlayer(player).FindRoadForDonkey(this, &goal))
+            if(RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(this, &goal))
                 road->GotDonkey(OrderDonkey(road, goal));
         } else
         {
             // Evtl. Abnehmer für die Figur wieder finden
-            GamePlayer& owner = gwg->GetPlayer(player);
+            GamePlayer& owner = world->GetPlayer(player);
             owner.FindWarehouseForAllJobs(job);
             // Wenns ein Träger war, auch Wege prüfen
             if(job == Job::Helper && inventory[Job::Helper] == 1)
@@ -899,7 +899,7 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count, bool ignor
     // Soldaten durchgehen und count rausschicken
 
     // Ränge durchgehen, absteigend, starke zuerst
-    if(gwg->GetPlayer(player).GetMilitarySetting(1) >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
+    if(world->GetPlayer(player).GetMilitarySetting(1) >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
     {
         for(unsigned i = SOLDIER_JOBS.size(); i && count; --i)
         {
@@ -978,7 +978,7 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
     RefreshReserve(soldier->GetRank());
 
     // Truppen prüfen in allen Häusern
-    gwg->GetPlayer(player).RegulateAllTroops();
+    world->GetPlayer(player).RegulateAllTroops();
 
     // Returned home
     if(soldier == defender_)
@@ -1009,7 +1009,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
     if(rank_count)
     {
         // Gewünschten Rang an Hand der Militäreinstellungen ausrechnen, je nachdem wie stark verteidigt werden soll
-        unsigned rank = (rank_count - 1) * gwg->GetPlayer(player).GetMilitarySetting(1) / MILITARY_SETTINGS_SCALE[1];
+        unsigned rank = (rank_count - 1) * world->GetPlayer(player).GetMilitarySetting(1) / MILITARY_SETTINGS_SCALE[1];
 
         // Gewünschten Rang suchen
         unsigned r = 0;
@@ -1075,7 +1075,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
 bool nobBaseWarehouse::AreRecruitingConditionsComply()
 {
     // Mindestanzahl der Gehilfen die vorhanden sein müssen anhand der 1. Militäreinstellung ausrechnen
-    unsigned needed_helpers = 100 - 10 * gwg->GetPlayer(player).GetMilitarySetting(0);
+    unsigned needed_helpers = 100 - 10 * world->GetPlayer(player).GetMilitarySetting(0);
 
     // einer muss natürlich mindestens vorhanden sein!
     if(!needed_helpers)
@@ -1116,7 +1116,7 @@ const Inventory& nobBaseWarehouse::GetInventory() const
 
 void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
 {
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     for(const auto i : helpers::enumRange<GoodType>())
     {
         if(!goods[i])
@@ -1146,7 +1146,7 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
 
 void nobBaseWarehouse::AddToInventory()
 {
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     for(const auto i : helpers::enumRange<GoodType>())
         owner.IncreaseInventoryWare(i, inventory[i]);
 
@@ -1170,7 +1170,7 @@ bool nobBaseWarehouse::TryRecruitJob(const Job job)
     if(!CanRecruit(job))
         return false;
 
-    auto& owner = gwg->GetPlayer(player);
+    auto& owner = world->GetPlayer(player);
 
     const GoodType requiredTool = JOB_CONSTS[job].tool.get(); // Validity checked in CanRecruit
     if(requiredTool != GoodType::Nothing)
@@ -1235,7 +1235,7 @@ void nobBaseWarehouse::SetInventorySetting(const boost::variant<GoodType, Job>& 
        && !state.IsSet(EInventorySetting::Stop))
     {
         // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
-        gwg->GetPlayer(player).FindClientForLostWares();
+        world->GetPlayer(player).FindClientForLostWares();
     } // No else here!
     if(!oldState.IsSet(EInventorySetting::Send) && state.IsSet(EInventorySetting::Send))
     {
@@ -1273,7 +1273,7 @@ void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vect
 
     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
     if(isUnstopped)
-        gwg->GetPlayer(player).FindClientForLostWares();
+        world->GetPlayer(player).FindClientForLostWares();
     // no else!
     // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues
     // anmelden
@@ -1369,7 +1369,7 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
         // if the rank is supposed to be send away, do it!
         CheckOuthousing(SOLDIER_JOBS[rank]);
         // Ggf. Truppen in die Militärgebäude schicken
-        gwg->GetPlayer(player).RegulateAllTroops();
+        world->GetPlayer(player).RegulateAllTroops();
     }
     // ansonsten ists gleich und alles ist in Ordnung!
 }
@@ -1444,7 +1444,7 @@ void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& w
         AddLeavingFigure(next);
     }
 
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     // Remove leader
     inventory.real.Remove(Job::Helper);
     owner.DecreaseInventoryJob(Job::Helper, 1);

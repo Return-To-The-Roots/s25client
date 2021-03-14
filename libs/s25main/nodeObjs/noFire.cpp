@@ -26,14 +26,14 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 noFire::noFire(const MapPoint pos, bool isBig)
     : noCoordBase(NodalObjectType::Fire, pos), isBig(isBig), was_sounding(false), last_sound(0), next_interval(0)
 {
     // Bestimmte Zeit lang brennen
     const std::array<unsigned, 7> FIREDURATION = {3700, 2775, 1850, 925, 370, 5550, 7400};
-    dead_event = GetEvMgr().AddEvent(this, FIREDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]);
+    dead_event = GetEvMgr().AddEvent(this, FIREDURATION[world->GetGGS().getSelection(AddonId::BURN_DURATION)]);
 }
 noFire::~noFire() = default;
 
@@ -43,9 +43,9 @@ void noFire::Destroy()
     GetEvMgr().RemoveEvent(dead_event);
 
     // nix mehr hier
-    gwg->SetNO(pos, nullptr);
+    world->SetNO(pos, nullptr);
     // Bauplätze drumrum neu berechnen
-    gwg->RecalcBQAroundPoint(pos);
+    world->RecalcBQAroundPoint(pos);
 
     // Evtl Sounds vernichten
     gwg->GetSoundMgr().stopSounds(*this);
@@ -71,9 +71,9 @@ void noFire::Draw(DrawPoint drawPt)
     //// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
     const std::array<unsigned, 7> FIREANIMATIONDURATION = {1000, 750, 500, 250, 100, 1500, 2000};
     unsigned id =
-      GAMECLIENT.Interpolate(FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
+      GAMECLIENT.Interpolate(FIREANIMATIONDURATION[world->GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
 
-    if(id < FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)] * 2 / 3)
+    if(id < FIREANIMATIONDURATION[world->GetGGS().getSelection(AddonId::BURN_DURATION)] * 2 / 3)
     {
         // Loderndes Feuer
         LOADER.GetMapImageN(2500 + (isBig ? 8 : 0) + id % 8)->DrawFull(drawPt);

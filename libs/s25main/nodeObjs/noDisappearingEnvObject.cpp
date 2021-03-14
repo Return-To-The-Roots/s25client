@@ -21,7 +21,7 @@
 #include "SerializedGameData.h"
 #include "network/GameClient.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "s25util/colors.h"
 
 /**
@@ -98,7 +98,7 @@ void noDisappearingEnvObject::HandleEvent(const unsigned id)
 void noDisappearingEnvObject::Destroy()
 {
     // Feld räumen, wenn ich sterbe
-    gwg->SetNO(pos, nullptr);
+    world->SetNO(pos, nullptr);
 
     // ggf Event abmelden
     if(dead_event)

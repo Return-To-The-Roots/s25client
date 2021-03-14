@@ -25,7 +25,7 @@
 #include "helpers/make_array.h"
 #include "helpers/serializeContainers.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
@@ -74,7 +74,7 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
     maxAmountsATeamCollected.resize(goodsToCollect.size());
 
     // Send Mission Goal
-    for(unsigned p = 0; p < gwg->GetNumPlayers(); ++p)
+    for(unsigned p = 0; p < world->GetNumPlayers(); ++p)
     {
         std::string goalText = _("Economy Mode: Collect as much as you can of the following good types: ");
         for(unsigned i = 0; i < numGoodTypesToCollect; i++)
@@ -87,7 +87,7 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
         goalText += _("Tools in the hands of workers are also counted. So are weapons, and beer, that soldiers have in "
                       "use. For an updating tally of the collected goods see the economic progress window.");
 
-        gwg->GetPostMgr().SetMissionGoal(p, goalText);
+        world->GetPostMgr().SetMissionGoal(p, goalText);
     }
 }
 
@@ -125,9 +125,9 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
 void EconomyModeHandler::DetermineTeams()
 {
     RTTR_Assert(economyModeTeams.empty());
-    for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world->GetNumPlayers(); ++i)
     {
-        if(gwg->GetPlayer(i).isUsed())
+        if(world->GetPlayer(i).isUsed())
         {
             bool foundTeam = false;
             for(const auto& team : economyModeTeams)
@@ -140,12 +140,12 @@ void EconomyModeHandler::DetermineTeams()
             }
             if(!foundTeam)
             {
-                const GamePlayer& player = gwg->GetPlayer(i);
+                const GamePlayer& player = world->GetPlayer(i);
                 std::bitset<MAX_PLAYERS> newTeam;
                 newTeam.set(i);
-                for(unsigned j = i + 1; j < gwg->GetNumPlayers(); ++j)
+                for(unsigned j = i + 1; j < world->GetNumPlayers(); ++j)
                 {
-                    if(gwg->GetPlayer(j).isUsed() && player.IsAlly(j))
+                    if(world->GetPlayer(j).isUsed() && player.IsAlly(j))
                     {
                         newTeam.set(j);
                     }
@@ -190,9 +190,9 @@ void EconomyModeHandler::UpdateAmounts()
     }
 
     // Sum up goods
-    for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world->GetNumPlayers(); ++i)
     {
-        const GamePlayer& player = gwg->GetPlayer(i);
+        const GamePlayer& player = world->GetPlayer(i);
         Inventory playerInventory = player.GetInventory();
         for(unsigned g = 0; g < goodsToCollect.size(); g++)
         {
@@ -205,7 +205,7 @@ void EconomyModeHandler::UpdateAmounts()
     for(auto& team : economyModeTeams)
     {
         std::fill(team.amountsTheTeamCollected.begin(), team.amountsTheTeamCollected.end(), 0);
-        for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
+        for(unsigned i = 0; i < world->GetNumPlayers(); ++i)
         {
             if(team.containsPlayer(i))
             {
@@ -265,23 +265,23 @@ void EconomyModeHandler::HandleEvent(const unsigned)
 
     // Let players know who won
     if(bestMask.count() > 1)
-        gwg->GetGameInterface()->GI_TeamWinner(bestMask.to_ulong());
+        world->GetGameInterface()->GI_TeamWinner(bestMask.to_ulong());
     else
-        for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
+        for(unsigned i = 0; i < world->GetNumPlayers(); ++i)
         {
             if(bestMask[i])
             {
-                gwg->GetGameInterface()->GI_Winner(i);
+                world->GetGameInterface()->GI_Winner(i);
             }
         }
 
-    gwg->MakeWholeMapVisibleForAllPlayers();
-    gwg->GetGameInterface()->GI_UpdateMapVisibility();
+    world->MakeWholeMapVisibleForAllPlayers();
+    world->GetGameInterface()->GI_UpdateMapVisibility();
 }
 
 bool EconomyModeHandler::isOver() const
 {
-    return gwg->GetGGS().objective == GameObjective::EconomyMode && !isInfinite()
+    return world->GetGGS().objective == GameObjective::EconomyMode && !isInfinite()
            && endFrame < GetEvMgr().GetCurrentGF();
 }
 

@@ -20,7 +20,7 @@
 #include "GamePlayer.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 
 nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
@@ -33,7 +33,7 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
         if(goal->GetGOT() == GO_Type::Flag)
         {
             this->flag = static_cast<noFlag*>(goal);
-            gwg->GetPlayer(player).RegisterFlagWorker(this);
+            world->GetPlayer(player).RegisterFlagWorker(this);
         } else
             this->flag = nullptr;
     } else
@@ -55,7 +55,7 @@ void nofFlagWorker::Serialize(SerializedGameData& sgd) const
 void nofFlagWorker::Destroy()
 {
     RTTR_Assert(!flag);
-    RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
+    RTTR_Assert(!world->GetPlayer(player).IsFlagWorker(this));
     noFigure::Destroy();
 }
 
@@ -64,10 +64,10 @@ void nofFlagWorker::AbrogateWorkplace()
     if(flag)
     {
         /// uns entfernen, da wir wieder umdrehen müssen
-        gwg->GetPlayer(player).RemoveFlagWorker(this);
+        world->GetPlayer(player).RemoveFlagWorker(this);
         flag = nullptr;
     } else
-        RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
+        RTTR_Assert(!world->GetPlayer(player).IsFlagWorker(this));
 }
 
 /// Geht wieder zurück zur Flagge und dann nach Hause
@@ -79,7 +79,7 @@ void nofFlagWorker::GoToFlag()
     if(pos == flag->GetPos())
     {
         // nach Hause gehen
-        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*flag, FW::AcceptsFigure(job_), true, false);
+        nobBaseWarehouse* wh = world->GetPlayer(player).FindWarehouse(*flag, FW::AcceptsFigure(job_), true, false);
         if(wh)
         {
             GoHome(wh);
@@ -97,13 +97,13 @@ void nofFlagWorker::GoToFlag()
 
         // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
         // "abmelden"
-        gwg->GetPlayer(player).RemoveFlagWorker(this);
+        world->GetPlayer(player).RemoveFlagWorker(this);
         state = State::FigureWork;
         flag = nullptr;
     } else
     {
         // Weg suchen
-        const auto dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
+        const auto dir = world->FindHumanPath(pos, flag->GetPos(), 40);
 
         // Wenns keinen gibt, rumirren, ansonsten hinlaufen
         if(dir)

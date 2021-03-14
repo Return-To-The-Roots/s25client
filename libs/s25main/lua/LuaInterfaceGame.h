@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-class GameWorldGame;
+class GameWorld;
 class LuaPlayer;
 class LuaWorld;
 class Serializer;
@@ -73,7 +73,7 @@ public:
 
 private:
     ILocalGameState& localGameState;
-    GameWorldGame& gw;
+    GameWorld& gw;
     Game& game;
     LuaPlayer GetPlayer(int playerIdx);
     LuaWorld GetWorld();

@@ -23,7 +23,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "variant.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
@@ -61,10 +61,10 @@ void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 
 void nofTradeDonkey::GoalReached()
 {
-    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
+    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(world->GetNO(pos)));
     successor = nullptr;
-    auto* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
-    GamePlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
+    auto* wh = static_cast<nobBaseWarehouse*>(world->GetNO(pos));
+    GamePlayer& whOwner = world->GetPlayer(wh->GetPlayer());
 
     if(gt)
     {
@@ -74,7 +74,7 @@ void nofTradeDonkey::GoalReached()
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
-    gwg->RemoveFigure(pos, this);
+    world->RemoveFigure(pos, this);
     wh->AddFigure(this);
 }
 
@@ -94,7 +94,7 @@ void nofTradeDonkey::Walked()
     if(nextDir == TradeDirection::ReachedGoal)
     {
         // Does target still exist?
-        noBase* nob = gwg->GetNO(pos);
+        noBase* nob = world->GetNO(pos);
         if(nob->GetType() == NodalObjectType::Building
            && BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
             GoalReached();

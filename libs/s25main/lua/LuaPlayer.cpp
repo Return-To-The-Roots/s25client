@@ -28,7 +28,7 @@
 #include "lua/LuaInterfaceBase.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsgWithBuilding.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/TerritoryRegion.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingConsts.h"
@@ -179,7 +179,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
 
 bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
 {
-    const GameWorldGame& world = player.GetGameWorld();
+    const GameWorld& world = player.GetGameWorld();
     lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
     lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
     return TerritoryRegion::IsPointValid(world.GetSize(), player.GetRestrictedArea(), MapPoint(x, y));
@@ -259,7 +259,7 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<Buildi
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
         return false;
-    GameWorldGame& world = player.GetGameWorld();
+    GameWorld& world = player.GetGameWorld();
     lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
     lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
     world.GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.GetPlayerId(), MapPoint(x, y), bld));

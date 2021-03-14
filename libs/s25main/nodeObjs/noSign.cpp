@@ -23,7 +23,7 @@
 #include "addons/const_addons.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include <algorithm>
 
 /**
@@ -35,7 +35,7 @@
  */
 noSign::noSign(const MapPoint pos, Resource resource)
     : noDisappearingEnvObject(
-      pos, 8500 * (signDurabilityFactor[gwg->GetGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
+      pos, 8500 * (signDurabilityFactor[world->GetGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
       resource(resource)
 {
     // As this is only for drawing we set the type to nothing if the resource is depleted

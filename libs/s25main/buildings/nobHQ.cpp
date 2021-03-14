@@ -22,7 +22,7 @@
 #include "SerializedGameData.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/MilitaryConsts.h"
 #include <numeric>
 
@@ -30,7 +30,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     : nobBaseWarehouse(BuildingType::Headquarters, pos, player, nation), isTent_(isTent)
 {
     // StartWaren setzen
-    switch(gwg->GetGGS().startWares)
+    switch(world->GetGGS().startWares)
     {
         case StartWares::VLow:
             inventory.visual.goods[GoodType::Beer] = 0;
@@ -317,7 +317,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     AddToInventory();
 
     // Take 1 as the reserve per rank
-    for(unsigned i = 0; i <= gwg->GetGGS().GetMaxMilitaryRank(); ++i)
+    for(unsigned i = 0; i <= world->GetGGS().GetMaxMilitaryRank(); ++i)
     {
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = 1;
         RefreshReserve(i);
@@ -327,17 +327,17 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     TryRecruiting();
 
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquares().Add(this);
-    gwg->RecalcTerritory(*this, TerritoryChangeReason::Build);
+    world->GetMilitarySquares().Add(this);
+    world->RecalcTerritory(*this, TerritoryChangeReason::Build);
 }
 
 void nobHQ::DestroyBuilding()
 {
     nobBaseWarehouse::DestroyBuilding();
     // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetMilitarySquares().Remove(this);
+    world->GetMilitarySquares().Remove(this);
     // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
-    gwg->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
+    world->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
 
 void nobHQ::Serialize(SerializedGameData& sgd) const
@@ -348,7 +348,7 @@ void nobHQ::Serialize(SerializedGameData& sgd) const
 
 nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.PopBool())
 {
-    gwg->GetMilitarySquares().Add(this);
+    world->GetMilitarySquares().Add(this);
 }
 
 void nobHQ::Draw(DrawPoint drawPt)
@@ -368,7 +368,7 @@ void nobHQ::Draw(DrawPoint drawPt)
             glArchivItem_Bitmap_Player* bitmap =
               LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
             if(bitmap)
-                bitmap->DrawFull(flagsPos + DrawPoint(0, (i - 1) * 3), COLOR_WHITE, gwg->GetPlayer(player).color);
+                bitmap->DrawFull(flagsPos + DrawPoint(0, (i - 1) * 3), COLOR_WHITE, world->GetPlayer(player).color);
         }
     }
 }

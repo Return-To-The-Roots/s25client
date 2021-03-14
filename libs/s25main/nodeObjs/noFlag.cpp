@@ -29,7 +29,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/TerrainDesc.h"
 #include <algorithm>
 
@@ -47,13 +47,13 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player)
 
     // Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
     Direction dir;
-    noFlag* flag = gwg->GetRoadFlag(pos, dir);
+    noFlag* flag = world->GetRoadFlag(pos, dir);
 
     if(flag && flag->GetRoute(dir))
         flag->GetRoute(dir)->SplitRoad(this);
 
     // auf Wasseranteile prüfen
-    if(gwg->HasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::Water; }))
+    if(world->HasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::Water; }))
         flagtype = FlagType::Water;
     else
         flagtype = FlagType::Normal;
@@ -83,7 +83,7 @@ noFlag::~noFlag()
 void noFlag::Destroy()
 {
     /// Da ist dann nichts
-    gwg->SetNO(pos, nullptr);
+    world->SetNO(pos, nullptr);
 
     // Waren vernichten
     for(auto& ware : wares)
@@ -98,7 +98,7 @@ void noFlag::Destroy()
     }
 
     // Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
-    gwg->GetPlayer(player).FlagDestroyed(this);
+    world->GetPlayer(player).FlagDestroyed(this);
 
     noRoadNode::Destroy();
 }
@@ -127,8 +127,8 @@ void noFlag::Draw(DrawPoint drawPt)
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
-    LOADER.flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF,
-                                                                              gwg->GetPlayer(player).color);
+    LOADER.flag_cache[world->GetPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF,
+                                                                                world->GetPlayer(player).color);
 
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = wares.size(); i; --i)
@@ -145,7 +145,7 @@ void noFlag::Draw(DrawPoint drawPt)
  */
 std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
 {
-    const GamePlayer& owner = gwg->GetPlayer(player);
+    const GamePlayer& owner = world->GetPlayer(player);
     return std::make_unique<fowFlag>(owner.color, owner.nation, flagtype);
 }
 
@@ -200,8 +200,8 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
         {
             if(best_ware)
             {
-                if(gwg->GetPlayer(player).GetTransportPriority(wares[i]->type)
-                   < gwg->GetPlayer(player).GetTransportPriority(best_ware->type))
+                if(world->GetPlayer(player).GetTransportPriority(wares[i]->type)
+                   < world->GetPlayer(player).GetTransportPriority(best_ware->type))
                 {
                     best_ware = wares[i];
                     best_ware_index = i;
@@ -235,10 +235,10 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
             {
                 // Gebäude?
 
-                if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, Direction::NorthWest))->GetType()
+                if(world->GetSpecObj<noBase>(world->GetNeighbour(pos, Direction::NorthWest))->GetType()
                    == NodalObjectType::Building)
                 {
-                    if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NorthWest))->FreePlaceAtFlag())
+                    if(world->GetSpecObj<noBuilding>(world->GetNeighbour(pos, Direction::NorthWest))->FreePlaceAtFlag())
                         break;
                 }
             } else
@@ -293,7 +293,7 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 void noFlag::DestroyAttachedBuilding()
 {
     // Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
-    noBase* no = gwg->GetNO(gwg->GetNeighbour(pos, Direction::NorthWest));
+    noBase* no = world->GetNO(world->GetNeighbour(pos, Direction::NorthWest));
     if(no->GetType() == NodalObjectType::Buildingsite || no->GetType() == NodalObjectType::Building)
     {
         no->Destroy();

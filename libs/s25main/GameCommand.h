@@ -22,7 +22,7 @@
 #include <cstdint>
 
 class Serializer;
-class GameWorldGame;
+class GameWorld;
 class GameCommandFactory;
 
 namespace gc {
@@ -102,7 +102,7 @@ public:
     virtual void Serialize(Serializer& ser) const;
 
     /// Execute this GameCommand
-    virtual void Execute(GameWorldGame& gwg, uint8_t playerId) = 0;
+    virtual void Execute(GameWorld& world, uint8_t playerId) = 0;
 
 protected:
     GameCommand(const GCType gcType) : gcType(gcType), refCounter_(0) {}

@@ -31,7 +31,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/PostMsgWithBuilding.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include <numeric>
@@ -48,7 +48,7 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
 
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     // New building gets half the average productivity from all buildings of the same type
     productivity = owner.GetBuildingRegister().CalcAverageProductivity(type) / 2u;
     // Set last productivities to current to avoid resetting it on first recalculation event
@@ -102,7 +102,7 @@ void nobUsual::DestroyBuilding()
         worker->LostWork();
         worker = nullptr;
     } else
-        gwg->GetPlayer(player).JobNotWanted(this);
+        world->GetPlayer(player).JobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
     for(std::list<Ware*>& orderedWare : ordered_wares)
@@ -121,7 +121,7 @@ void nobUsual::DestroyBuilding()
     {
         const GoodType ware = BLD_WORK_DESC[bldType_].waresNeeded[i];
         RTTR_Assert(ware != GoodType::Nothing);
-        gwg->GetPlayer(player).DecreaseInventoryWare(ware, numWares[i]);
+        world->GetPlayer(player).DecreaseInventoryWare(ware, numWares[i]);
     }
 }
 
@@ -273,7 +273,7 @@ void nobUsual::HandleEvent(const unsigned id)
 
             if(numWares[last_ordered_ware] + ordered_wares[last_ordered_ware].size() < wareSpaces)
             {
-                Ware* w = gwg->GetPlayer(player).OrderWare(workDesc.waresNeeded[last_ordered_ware], this);
+                Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[last_ordered_ware], this);
                 if(w)
                     RTTR_Assert(helpers::contains(ordered_wares[last_ordered_ware], w));
             }
@@ -304,7 +304,7 @@ void nobUsual::AddWare(Ware*& ware)
     }
 
     // Ware vernichten
-    gwg->GetPlayer(player).RemoveWare(ware);
+    world->GetPlayer(player).RemoveWare(ware);
     deletePtr(ware);
 
     // Arbeiter Bescheid sagen, dass es neue Waren gibt
@@ -363,7 +363,7 @@ void nobUsual::WorkerLost()
 
     // neuen Arbeiter bestellen
     worker = nullptr;
-    gwg->GetPlayer(player).AddJobWanted(BLD_WORK_DESC[bldType_].job.value(), this);
+    world->GetPlayer(player).AddJobWanted(BLD_WORK_DESC[bldType_].job.value(), this);
 }
 
 bool nobUsual::WaresAvailable()
@@ -417,7 +417,7 @@ void nobUsual::ConsumeWares()
         numWaresNeeded = 1;
     }
 
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     for(unsigned i = 0; i < numWaresNeeded; i++)
     {
         RTTR_Assert(numWares[wareIdxToUse] != 0);
@@ -429,7 +429,7 @@ void nobUsual::ConsumeWares()
         // try to get ware from warehouses
         if(numWares[wareIdxToUse] < 2)
         {
-            Ware* w = gwg->GetPlayer(player).OrderWare(workDesc.waresNeeded[wareIdxToUse], this);
+            Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[wareIdxToUse], this);
             if(w)
                 RTTR_Assert(helpers::contains(ordered_wares[wareIdxToUse], w));
         }
@@ -547,9 +547,9 @@ void nobUsual::OnOutOfResources()
 
     SendPostMessage(
       player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), error, PostCategory::Economy, *this));
-    gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, GetPos(), GetBuildingType()));
+    world->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, GetPos(), GetBuildingType()));
 
-    if(GAMECLIENT.GetPlayerId() == player && gwg->GetGGS().isEnabled(AddonId::DEMOLISH_BLD_WO_RES))
+    if(GAMECLIENT.GetPlayerId() == player && world->GetGGS().isEnabled(AddonId::DEMOLISH_BLD_WO_RES))
     {
         GAMECLIENT.DestroyBuilding(GetPos());
     }

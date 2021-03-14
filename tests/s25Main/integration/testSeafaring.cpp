@@ -498,7 +498,7 @@ public:
     using Parent = WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height>;
     using Parent::world;
 
-    GameWorldGame& GetWorld() override { return world; }
+    GameWorld& GetWorld() override { return world; }
 
     nobHarborBuilding& createHarbor(unsigned hbPosId)
     {

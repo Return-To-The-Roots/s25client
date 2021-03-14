@@ -30,7 +30,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 
@@ -153,17 +153,17 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 state = BuilderState::FigureWork;
 
                 // Baustelle abmelden
-                GamePlayer& owner = gwg->GetPlayer(player);
+                GamePlayer& owner = world->GetPlayer(player);
                 owner.RemoveBuildingSite(building_site);
-                if(gwg->IsHarborBuildingSiteFromSea(building_site))
-                    gwg->RemoveHarborBuildingSiteFromSea(building_site);
+                if(world->IsHarborBuildingSiteFromSea(building_site))
+                    world->RemoveHarborBuildingSiteFromSea(building_site);
 
                 // Remove buildingsite, but don't destroy!
-                gwg->SetNO(building_site->GetPos(), nullptr);
+                world->SetNO(building_site->GetPos(), nullptr);
                 deletePtr(building_site);
 
-                noBuilding* bld = BuildingFactory::CreateBuilding(*gwg, building_type, pos, player, building_nation);
-                gwg->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
+                noBuilding* bld = BuildingFactory::CreateBuilding(*world, building_type, pos, player, building_nation);
+                world->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
 
                 // Special handling for warehouses
                 if(BuildingProperties::IsWareHouse(building_type))
@@ -171,7 +171,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                     auto* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
                     wh->AddFigure(this);
-                    gwg->RemoveFigure(pos, this);
+                    world->RemoveFigure(pos, this);
 
                     // Evtl Träger aus dem HQ wieder verwenden
                     owner.FindCarrierForAllRoads();
@@ -185,7 +185,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 // Nach Hause laufen bzw. auch rumirren
                 rs_pos = 0;
                 rs_dir = true;
-                cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
+                cur_rs = world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
 
                 GoHome();
                 StartWalking(Direction::SouthEast);
@@ -307,7 +307,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
             LOADER
               .getBobSprite(building_site->GetNation(), Job::Builder, GetCurMoveDir(),
                             GAMECLIENT.Interpolate(12, current_ev) % 8u)
-              .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+              .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
         }
         break;
         case BuilderState::Build:
@@ -343,7 +343,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
             }
             drawPt += building_site->GetDoorPoint() + DrawPoint(offsetSite);
             LOADER.GetPlayerImage("rom_bobs", texture)
-              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+              ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(building_site->GetPlayer()).color);
             if(soundId && index % 4 == 2)
                 gwg->GetSoundMgr().playNOSound(soundId, *this, index, 160 - rand() % 60);
         }

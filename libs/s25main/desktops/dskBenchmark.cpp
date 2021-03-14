@@ -34,7 +34,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/IRenderer.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
@@ -337,7 +337,7 @@ void dskBenchmark::createGame()
     p.color = PLAYER_COLORS[1];
     players.push_back(p);
     game_ = std::make_shared<Game>(GlobalGameSettings(), 0u, players);
-    GameWorldGame& world = game_->world_;
+    GameWorld& world = game_->world_;
     try
     {
         loadGameData(world.GetDescriptionWriteable());

@@ -22,7 +22,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofCarpenter::nofCarpenter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Carpenter, pos, player, workplace)
@@ -37,7 +37,7 @@ void nofCarpenter::DrawWorking(DrawPoint drawPt)
     unsigned now_id;
 
     LOADER.GetPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.Interpolate(136, current_ev)) % 8))
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
 
     // Evtl Sound abspielen
     if(now_id % 8 == 3 || now_id % 8 == 7)

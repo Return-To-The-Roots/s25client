@@ -25,7 +25,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noEnvObject.h"
 #include "gameData/MapConsts.h"
 
@@ -59,7 +59,7 @@ void CatapultStone::Destroy() {}
 
 void CatapultStone::Draw(DrawPoint drawOffset)
 {
-    const DrawPoint worldSize = DrawPoint(gwg->GetWidth() * TR_W, gwg->GetHeight() * TR_H);
+    const DrawPoint worldSize = DrawPoint(world->GetWidth() * TR_W, world->GetHeight() * TR_H);
 
     if(explode)
     {
@@ -102,7 +102,7 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
     if(explode)
     {
         // Explodiert --> mich zerstören
-        gwg->RemoveCatapultStone(this);
+        world->RemoveCatapultStone(this);
         GetEvMgr().AddToKillList(this);
     } else
     {
@@ -114,20 +114,20 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
         if(dest_building == dest_map)
         {
             // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
-            auto* milBld = gwg->GetSpecObj<nobMilitary>(dest_building);
+            auto* milBld = world->GetSpecObj<nobMilitary>(dest_building);
             if(milBld)
             {
                 milBld->HitOfCatapultStone();
                 // If there are no troops left, destroy it
                 if(milBld->GetNumTroops() == 0)
-                    gwg->DestroyNO(milBld->GetPos());
+                    world->DestroyNO(milBld->GetPos());
             }
         } else
         {
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist
-            if(!gwg->GetSpecObj<noBase>(dest_map))
-                gwg->SetNO(dest_map, new noEnvObject(dest_map, 502 + RANDOM_RAND(2)));
+            if(!world->GetSpecObj<noBase>(dest_map))
+                world->SetNO(dest_map, new noEnvObject(dest_map, 502 + RANDOM_RAND(2)));
         }
     }
 }

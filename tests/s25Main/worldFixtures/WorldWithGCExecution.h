@@ -34,7 +34,7 @@ public:
     WorldWithGCExecution() : hqPos(world.GetPlayer(curPlayer).GetHQPos()) {}
 
 protected:
-    GameWorldGame& GetWorld() override { return world; }
+    GameWorld& GetWorld() override { return world; }
 };
 
 using WorldWithGCExecution1P = WorldWithGCExecution<1>;

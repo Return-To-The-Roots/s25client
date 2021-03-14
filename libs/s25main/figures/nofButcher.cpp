@@ -22,7 +22,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Butcher, pos, player, workplace)
@@ -37,7 +37,7 @@ void nofButcher::DrawWorking(DrawPoint drawPt)
     unsigned now_id;
 
     LOADER.GetPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.Interpolate(136, current_ev)) % 6)
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id % 6 == 5)
     {

@@ -25,7 +25,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/JobConsts.h"
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
@@ -73,7 +73,7 @@ void nofPlaner::Walked()
         // Nach Hause laufen bzw. auch rumirren
         rs_pos = 0;
         rs_dir = true;
-        cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
+        cur_rs = world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
         building_site = nullptr;
 
         GoHome();
@@ -152,7 +152,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
             else
                 bobId = 253 + now_id - 55;
             LOADER.GetPlayerImage("rom_bobs", bobId)
-              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+              ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(building_site->GetPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)
@@ -171,7 +171,7 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
     {
         // Planieren (falls Baustelle noch existiert)
         if(building_site)
-            gwg->ChangeAltitude(pos, gwg->GetNode(building_site->GetPos()).altitude);
+            world->ChangeAltitude(pos, world->GetNode(building_site->GetPos()).altitude);
         /// Sounds abmelden
         gwg->GetSoundMgr().stopSounds(*this);
 

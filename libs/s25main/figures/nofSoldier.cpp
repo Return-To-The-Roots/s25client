@@ -19,7 +19,7 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/MilitaryConsts.h"
 
@@ -61,7 +61,7 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 
 void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
 {
-    const GamePlayer& owner = gwg->GetPlayer(player);
+    const GamePlayer& owner = world->GetPlayer(player);
     LOADER.getBobSprite(owner.nation, job_, GetCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
 }
 

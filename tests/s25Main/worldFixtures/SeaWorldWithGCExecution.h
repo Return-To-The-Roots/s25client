@@ -29,5 +29,5 @@ public:
     using WorldFixture<CreateSeaWorld, T_numPlayers, T_width, T_height>::world;
 
 protected:
-    GameWorldGame& GetWorld() override { return world; }
+    GameWorld& GetWorld() override { return world; }
 };

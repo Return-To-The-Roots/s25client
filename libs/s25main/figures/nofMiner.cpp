@@ -23,7 +23,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace)
@@ -92,12 +92,12 @@ bool nofMiner::StartWorking()
     MapPoint resPt = FindPointWithResource(GetRequiredResType());
     if(!resPt.isValid())
         return false;
-    const GlobalGameSettings& settings = gwg->GetGGS();
+    const GlobalGameSettings& settings = world->GetGGS();
     bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
                             || (workplace->GetBuildingType() == BuildingType::GraniteMine
                                 && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
     if(!inexhaustibleRes)
-        gwg->ReduceResource(resPt);
+        world->ReduceResource(resPt);
     return nofWorkman::StartWorking();
 }
 

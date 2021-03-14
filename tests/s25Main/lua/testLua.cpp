@@ -320,8 +320,7 @@ struct CatchConstructionNote
     std::unique_ptr<BuildingNote> note_;
     Subscription sub;
 
-    CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(std::ref(*this)))
-    {}
+    CatchConstructionNote(GameWorld& world) : sub(world.GetNotifications().subscribe<BuildingNote>(std::ref(*this))) {}
 
     void operator()(const BuildingNote& note) { note_ = std::make_unique<BuildingNote>(note); }
 };

@@ -32,7 +32,7 @@
 #include "pathfinding/PathConditionHuman.h"
 #include "postSystem/PostMsg.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noSign.h"
 #include "gameData/GameConsts.h"
@@ -103,7 +103,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
 
             if(i < 6)
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + i)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 324 + i)
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 if(i == 4)
                 {
                     sound = 1;
@@ -112,7 +113,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             } else if(i < 16)
             {
                 LOADER.GetPlayerImage("rom_bobs", 314 + i - 6)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 if(i == 14)
                 {
                     sound = 2;
@@ -121,7 +122,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             } else if(i < 28)
             {
                 LOADER.GetPlayerImage("rom_bobs", 324 + (i - 16) % 6)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 if(i == 20)
                 {
                     sound = 1;
@@ -134,7 +135,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             } else if(i < 38)
             {
                 LOADER.GetPlayerImage("rom_bobs", 314 + i - 28)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 if(i == 36)
                 {
                     sound = 2;
@@ -143,7 +144,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             } else if(i < 50)
             {
                 LOADER.GetPlayerImage("rom_bobs", 324 + (i - 38) % 6)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 if(i == 42)
                 {
                     sound = 1;
@@ -156,7 +157,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             } else if(i < 60)
             {
                 LOADER.GetPlayerImage("rom_bobs", 314 + i - 50)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 if(i == 58)
                 {
                     sound = 2;
@@ -165,7 +166,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
             } else
             {
                 LOADER.GetPlayerImage("rom_bobs", 324 + (i - 60) % 6)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 if(i == 64)
                 {
                     sound = 1;
@@ -195,12 +196,13 @@ void nofGeologist::Draw(DrawPoint drawPt)
 
             if(i < 7)
             {
-                LOADER.GetPlayerImage("rom_bobs", 357 + i)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 357 + i)
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
             } else
             {
                 std::array<unsigned char, 9> ids = {1, 0, 1, 2, 1, 0, 1, 2, 1};
                 LOADER.GetPlayerImage("rom_bobs", 361 + ids[i - 7])
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                  ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
             }
 
             if(i == 4)
@@ -241,7 +243,7 @@ void nofGeologist::Walked()
         if(!flag || !IsNodeGood(node_goal))
         {
             // alten Punkt wieder freigeben
-            gwg->SetReserved(node_goal, false);
+            world->SetReserved(node_goal, false);
             // wenn nicht, dann zu einem neuen Punkt gehen
             GoToNextNode();
             return;
@@ -256,7 +258,7 @@ void nofGeologist::Walked()
         } else
         {
             // Weg zum nächsten Punkt suchen
-            const auto dir = gwg->FindHumanPath(pos, node_goal, 20);
+            const auto dir = world->FindHumanPath(pos, node_goal, 20);
 
             // Wenns keinen gibt
             if(!dir)
@@ -278,7 +280,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
         case State::GeologistDig:
         {
             // Check what is here
-            Resource foundRes = gwg->GetNode(pos).resources;
+            Resource foundRes = world->GetNode(pos).resources;
             // We don't care for fish (and most likely never find it)
             if(foundRes.getType() == ResourceType::Fish)
                 foundRes.setType(ResourceType::Nothing);
@@ -293,7 +295,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
                 // leeres Schild hinstecken und ohne Jubel weiterziehen
                 SetSign(foundRes);
                 /// Punkt wieder freigeben
-                gwg->SetReserved(pos, false);
+                world->SetReserved(pos, false);
                 GoToNextNode();
             }
         }
@@ -301,9 +303,9 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
         case State::GeologistCheer:
         {
             // Schild reinstecken
-            SetSign(gwg->GetNode(pos).resources);
+            SetSign(world->GetNode(pos).resources);
             /// Punkt wieder freigeben
-            gwg->SetReserved(pos, false);
+            world->SetReserved(pos, false);
             /// Sounds evtl löschen
             gwg->GetSoundMgr().stopSounds(*this);
             // Und weiterlaufen
@@ -316,14 +318,14 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
 bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
-    const noBase& obj = *gwg->GetNO(pt);
-    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GO_Type::Sign
+    const noBase& obj = *world->GetNO(pt);
+    return PathConditionHuman(*world).IsNodeOk(pt) && obj.GetGOT() != GO_Type::Sign
            && obj.GetType() != NodalObjectType::Flag && obj.GetType() != NodalObjectType::Tree;
 }
 
 void nofGeologist::LookForNewNodes()
 {
-    const auto pts = gwg->GetPointsInRadius(flag->GetPos(), 15, ReturnMapPointWithRadius{});
+    const auto pts = world->GetPointsInRadius(flag->GetPos(), 15, ReturnMapPointWithRadius{});
     unsigned curMaxRadius = 15;
     bool found = false;
     for(const auto& it : pts)
@@ -345,7 +347,7 @@ void nofGeologist::LookForNewNodes()
 
 bool nofGeologist::IsValidTargetNode(const MapPoint pt) const
 {
-    return (IsNodeGood(pt) && !gwg->GetNode(pt).reserved && (pos == pt || gwg->FindHumanPath(pos, pt, 20)));
+    return (IsNodeGood(pt) && !world->GetNode(pt).reserved && (pos == pt || world->FindHumanPath(pos, pt, 20)));
 }
 
 helpers::OptionalEnum<Direction> nofGeologist::GetNextNode()
@@ -368,18 +370,18 @@ helpers::OptionalEnum<Direction> nofGeologist::GetNextNode()
             // und aus der Liste entfernen
             available_nodes.erase(available_nodes.begin() + randNode);
             // Gucken, ob er gut ist und ob man hingehen kann und ob er noch nicht reserviert wurde!
-            if(!IsNodeGood(node_goal) || gwg->GetNode(node_goal).reserved)
+            if(!IsNodeGood(node_goal) || world->GetNode(node_goal).reserved)
                 continue;
 
             helpers::OptionalEnum<Direction> ret_dir;
             if(pos != node_goal)
             {
-                ret_dir = gwg->FindHumanPath(pos, node_goal, 20);
+                ret_dir = world->FindHumanPath(pos, node_goal, 20);
                 if(!ret_dir)
                     continue;
             }
             // Reservieren
-            gwg->SetReserved(node_goal, true);
+            world->SetReserved(node_goal, true);
             return ret_dir;
         }
 
@@ -430,13 +432,13 @@ void nofGeologist::SetSign(Resource resources)
     RTTR_Assert(resources.getType() != ResourceType::Fish); // Shall never happen
 
     // Bestimmte Objekte können gelöscht werden
-    NodalObjectType noType = gwg->GetNO(pos)->GetType();
+    NodalObjectType noType = world->GetNO(pos)->GetType();
     if(noType != NodalObjectType::Nothing && noType != NodalObjectType::Environment)
         return;
-    gwg->DestroyNO(pos, false);
+    world->DestroyNO(pos, false);
 
     // Schild setzen
-    gwg->SetNO(pos, new noSign(pos, resources));
+    world->SetNO(pos, new noSign(pos, resources));
 
     // If nothing found, there is nothing left to do
     if(resources.getAmount() == 0u)
@@ -455,15 +457,15 @@ void nofGeologist::SetSign(Resource resources)
             default: RTTR_Assert(false); return;
         }
 
-        if(resources.getType() != ResourceType::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1)
+        if(resources.getType() != ResourceType::Water || world->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1)
         {
             SendPostMessage(player,
                             std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
         }
 
-        gwg->GetNotifications().publish(ResourceNote(player, pos, resources));
-        if(gwg->HasLua())
-            gwg->GetLua().EventResourceFound(this->player, pos, resources.getType(), resources.getAmount());
+        world->GetNotifications().publish(ResourceNote(player, pos, resources));
+        if(world->HasLua())
+            world->GetLua().EventResourceFound(this->player, pos, resources.getType(), resources.getAmount());
     }
     resAlreadyFound[resources.getType()] = true;
 }
@@ -501,5 +503,5 @@ struct IsSignOfType
 
 bool nofGeologist::IsSignInArea(ResourceType type) const
 {
-    return gwg->CheckPointsInRadius(pos, 7, IsSignOfType(type, *gwg), false);
+    return world->CheckPointsInRadius(pos, 7, IsSignOfType(type, *world), false);
 }

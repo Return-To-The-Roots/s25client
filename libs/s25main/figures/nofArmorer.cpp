@@ -26,7 +26,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
@@ -54,7 +54,7 @@ void nofArmorer::DrawWorking(DrawPoint drawPt)
     if(now_id < 200)
     {
         const Nation wpNation = workplace->GetNation();
-        const unsigned plColor = gwg->GetPlayer(player).color;
+        const unsigned plColor = world->GetPlayer(player).color;
 
         LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
           ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
@@ -74,7 +74,7 @@ unsigned short nofArmorer::GetCarryID() const
     else
     {
         // Je nach Nation einen bestimmtem Schild fertigen
-        switch(gwg->GetPlayer(player).nation)
+        switch(world->GetPlayer(player).nation)
         {
             case Nation::Africans: return 60; //-V525
             case Nation::Japanese: return 58;
@@ -93,7 +93,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
     {
         case State::Waiting1:
         {
-            if(!gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
+            if(!world->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
             {
                 // LOG.write(("armorer handlewait1 - consume wares %i \n",player);
                 nofWorkman::HandleStateWaiting1();
@@ -123,7 +123,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
 
 bool nofArmorer::AreWaresAvailable() const
 {
-    return workplace->WaresAvailable() || (gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
+    return workplace->WaresAvailable() || (world->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
 }
 
 helpers::OptionalEnum<GoodType> nofArmorer::ProduceWare()
@@ -133,5 +133,5 @@ helpers::OptionalEnum<GoodType> nofArmorer::ProduceWare()
     if(sword_shield)
         return GoodType::Sword;
     else
-        return SHIELD_TYPES[gwg->GetPlayer(player).nation];
+        return SHIELD_TYPES[world->GetPlayer(player).nation];
 }

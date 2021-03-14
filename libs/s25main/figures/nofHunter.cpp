@@ -30,7 +30,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
@@ -76,7 +76,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
 
 void nofHunter::DrawWorking(DrawPoint drawPt)
 {
-    const GamePlayer& owner = gwg->GetPlayer(player);
+    const GamePlayer& owner = world->GetPlayer(player);
     switch(state)
     {
         default: break;
@@ -156,8 +156,8 @@ void nofHunter::TryStartHunting()
     {
         for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
         {
-            MapPoint curMapPos = gwg->MakeMapPoint(curPos);
-            const std::list<noBase*>& figures = gwg->GetFigures(curMapPos);
+            MapPoint curMapPos = world->MakeMapPoint(curPos);
+            const std::list<noBase*>& figures = world->GetFigures(curMapPos);
 
             // nach Tieren suchen
             for(auto* figure : figures)
@@ -170,7 +170,7 @@ void nofHunter::TryStartHunting()
                     continue;
 
                 // Und komme ich hin?
-                if(pos == animal.GetPos() || gwg->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
+                if(pos == animal.GetPos() || world->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
                 {
                     // Dann nehmen wir es
                     available_animals.push_back(&animal);
@@ -202,7 +202,7 @@ void nofHunter::TryStartHunting()
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-        gwg->GetNotifications().publish(
+        world->GetNotifications().publish(
           BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
         workplace->StartNotWorking();
     }
@@ -225,13 +225,13 @@ void nofHunter::WalkedDerived()
 bool nofHunter::IsShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return PathConditionHuman(*gwg).IsNodeOk(pt) && gwg->FindHumanPath(this->pos, pt, 6) != boost::none;
+    return PathConditionHuman(*world).IsNodeOk(pt) && world->FindHumanPath(this->pos, pt, 6) != boost::none;
 }
 
 void nofHunter::HandleStateChasing()
 {
     // Sind wir in der Nähe des Tieres?
-    if(gwg->CalcDistance(pos, animal->GetPos()) < 7)
+    if(world->CalcDistance(pos, animal->GetPos()) < 7)
     {
         // Dann bitten wir es mal, schonmal anzuhalten und bekommen seine Koordinaten, wo es dann steht
         Position animalPos(animal->HunterIsNear());
@@ -271,8 +271,8 @@ void nofHunter::HandleStateChasing()
                 default: throw std::logic_error("Wrong value?");
             }
 
-            MapPoint curShootingPos = gwg->MakeMapPoint(animalPos + delta);
-            if(curShootingPos == pos || gwg->FindHumanPath(pos, curShootingPos, 6))
+            MapPoint curShootingPos = world->MakeMapPoint(animalPos + delta);
+            if(curShootingPos == pos || world->FindHumanPath(pos, curShootingPos, 6))
             {
                 shootingPos = curShootingPos;
                 // Richtung, in die geschossen wird, bestimmen (natürlich die entgegengesetzte nehmen)
@@ -296,7 +296,7 @@ void nofHunter::HandleStateChasing()
     } else
     {
         // Weg dorthin suchen
-        const auto dir = gwg->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE);
+        const auto dir = world->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE);
         if(dir)
         {
             // Weg gefunden, dann hinlaufen
@@ -319,7 +319,7 @@ void nofHunter::HandleStateFindingShootingPoint()
     } else
     {
         // Weg dorthin suchen
-        const auto dir = gwg->FindHumanPath(pos, shootingPos, 6);
+        const auto dir = world->FindHumanPath(pos, shootingPos, 6);
         if(dir)
         {
             // Weg gefunden, dann hinlaufen
@@ -369,7 +369,7 @@ void nofHunter::HandleStateWalkingToCadaver()
     } else
     {
         // Weg dorthin suchen
-        const auto dir = gwg->FindHumanPath(pos, animal->GetPos(), 6);
+        const auto dir = world->FindHumanPath(pos, animal->GetPos(), 6);
         if(dir)
         {
             // Weg gefunden, dann hinlaufen
@@ -391,7 +391,7 @@ void nofHunter::HandleStateEviscerating()
         was_sounding = false;
     }
     // Tier verschwinden lassen
-    gwg->RemoveFigure(pos, animal);
+    world->RemoveFigure(pos, animal);
     // Tier vernichten
     animal->Eviscerated();
     animal->Destroy();
@@ -414,7 +414,7 @@ void nofHunter::StartWalkingHome()
 void nofHunter::HandleStateWalkingHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
-    MapPoint homeFlagPos = gwg->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
+    MapPoint homeFlagPos = world->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
     if(pos == homeFlagPos)
     {
         // Weiteres übernimmt nofBuildingWorker
@@ -424,7 +424,7 @@ void nofHunter::HandleStateWalkingHome()
 
     // Weg suchen und ob wir überhaupt noch nach Hause kommen (Toleranz bei dem Weg mit einberechnen,
     // damit er nicht einfach rumirrt und wegstirbt, wenn er einmal ein paar Felder zu weit gelaufen ist)
-    const auto dir = gwg->FindHumanPath(pos, homeFlagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4);
+    const auto dir = world->FindHumanPath(pos, homeFlagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4);
     if(dir)
     {
         // All good, let's start walking there

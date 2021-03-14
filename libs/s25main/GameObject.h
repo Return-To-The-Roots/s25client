@@ -23,7 +23,7 @@
 #include <string>
 
 class SerializedGameData;
-class GameWorldGame;
+class GameWorld;
 class EventManager;
 class PostMsg;
 
@@ -65,9 +65,9 @@ private:
     // Static members
 public:
     /// Set the currently active world for all game objects
-    static void AttachWorld(GameWorldGame* gameWorld);
+    static void AttachWorld(GameWorld* gameWorld);
     /// Remove the world from all game objects
-    static void DetachWorld(GameWorldGame* gameWorld);
+    static void DetachWorld(GameWorld* gameWorld);
     /// Return the number of objects alive
     static unsigned GetNumObjs() { return objCounter_; }
     /// Gibt Obj-ID-Counter zurück
@@ -87,7 +87,7 @@ public:
 
 protected:
     /// Zugriff auf übrige Spielwelt
-    static GameWorldGame* gwg;
+    static GameWorld* world;
 
 private:
     static unsigned objIdCounter_; /// Objekt-ID-Counter (number of objects created)

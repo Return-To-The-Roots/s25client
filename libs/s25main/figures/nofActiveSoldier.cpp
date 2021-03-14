@@ -21,7 +21,7 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/MilitaryConsts.h"
@@ -60,7 +60,7 @@ void nofActiveSoldier::GoalReached()
     if(!building)
     {
         RTTR_Assert(false);
-        building = gwg->GetSpecObj<nobMilitary>(this->GetPos());
+        building = world->GetSpecObj<nobMilitary>(this->GetPos());
         if(building)
             LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position "
                       "(%i,%i) (gf: %u)\n")
@@ -76,7 +76,7 @@ void nofActiveSoldier::GoalReached()
     building->AddActiveSoldier(this);
 
     // And remove myself from the map
-    gwg->RemoveFigure(pos, this);
+    world->RemoveFigure(pos, this);
 }
 
 void nofActiveSoldier::ReturnHome()
@@ -115,10 +115,10 @@ void nofActiveSoldier::WalkingHome()
         // We're there!
         building->AddActiveSoldier(this);
         // Remove myself from the map
-        gwg->RemoveFigure(pos, this);
+        world->RemoveFigure(pos, this);
         return;
     }
-    const auto dir = gwg->FindHumanPath(pos, building->GetFlagPos(), 100);
+    const auto dir = world->FindHumanPath(pos, building->GetFlagPos(), 100);
     if(dir)
     {
         // Find all sorts of enemies (attackers, aggressive defenders..) nearby
@@ -186,7 +186,7 @@ void nofActiveSoldier::ExpelEnemies()
     std::vector<noFigure*> figures;
 
     // At the position of the soldier
-    const std::list<noBase*>& fieldFigures = gwg->GetFigures(pos);
+    const std::list<noBase*>& fieldFigures = world->GetFigures(pos);
     for(auto* fieldFigure : fieldFigures)
     {
         if(fieldFigure->GetType() == NodalObjectType::Figure)
@@ -194,9 +194,9 @@ void nofActiveSoldier::ExpelEnemies()
     }
 
     // And around this point
-    for(const MapPoint nb : gwg->GetNeighbours(pos))
+    for(const MapPoint nb : world->GetNeighbours(pos))
     {
-        const std::list<noBase*>& fieldFigures = gwg->GetFigures(nb);
+        const std::list<noBase*>& fieldFigures = world->GetFigures(nb);
         for(auto* fieldFigure : fieldFigures)
         {
             // Normal settler?
@@ -217,7 +217,7 @@ void nofActiveSoldier::ExpelEnemies()
     {
         // Enemy of us and no soldier?
         // And he has to walking on the road (don't disturb free workers like woodcutters etc.)
-        if(!gwg->GetPlayer(player).IsAlly(fig->GetPlayer()) && !fig->IsSoldier() && fig->IsWalkingOnRoad())
+        if(!world->GetPlayer(player).IsAlly(fig->GetPlayer()) && !fig->IsSoldier() && fig->IsWalkingOnRoad())
         {
             // Then he should start wandering around
             fig->Abrogate();
@@ -254,16 +254,16 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     enemy = nullptr;
 
     // Get all points in a radius of 2
-    std::vector<MapPoint> pts = gwg->GetPointsInRadiusWithCenter(pos, 2);
+    std::vector<MapPoint> pts = world->GetPointsInRadiusWithCenter(pos, 2);
 
     for(const auto& curPos : pts)
     {
-        for(noBase* object : gwg->GetFigures(curPos))
+        for(noBase* object : world->GetFigures(curPos))
         {
             auto* soldier = dynamic_cast<nofActiveSoldier*>(object);
             if(!soldier || soldier->GetPlayer() == excludedOwner)
                 continue;
-            if(soldier->IsReadyForFight() && !gwg->GetPlayer(soldier->GetPlayer()).IsAlly(player))
+            if(soldier->IsReadyForFight() && !world->GetPlayer(soldier->GetPlayer()).IsAlly(player))
             {
                 enemy = soldier;
                 break;
@@ -306,14 +306,14 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 void nofActiveSoldier::IncreaseRank()
 {
     // max rank reached? -> dont increase!
-    if(GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
+    if(GetRank() >= world->GetGGS().GetMaxMilitaryRank())
         return;
 
     // Einen Rang höher
     // Inventur entsprechend erhöhen und verringern
-    gwg->GetPlayer(player).DecreaseInventoryJob(job_, 1);
+    world->GetPlayer(player).DecreaseInventoryJob(job_, 1);
     job_ = Job(unsigned(job_) + 1);
-    gwg->GetPlayer(player).IncreaseInventoryJob(job_, 1);
+    world->GetPlayer(player).IncreaseInventoryJob(job_, 1);
 }
 
 /// Handle state "meet enemy" after each walking step
@@ -334,7 +334,7 @@ void nofActiveSoldier::MeetingEnemy()
         if(enemy->GetPos() == fightSpot_ && enemy->GetState() == SoldierState::WaitingForFight)
         {
             // Start fighting
-            gwg->AddFigure(pos, new noFighting(enemy, this));
+            world->AddFigure(pos, new noFighting(enemy, this));
 
             enemy->FightingStarted();
             FightingStarted();
@@ -344,7 +344,7 @@ void nofActiveSoldier::MeetingEnemy()
         {
             // Is the fighting point still valid (could be another fight there already e.g.)?
             // And the enemy still on the way?
-            if(!gwg->ValidPointForFighting(pos, false, this) || enemy->GetState() != SoldierState::MeetEnemy)
+            if(!world->ValidPointForFighting(pos, false, this) || enemy->GetState() != SoldierState::MeetEnemy)
             {
                 // No
                 // Abort the whole fighting fun with the enemy
@@ -365,7 +365,7 @@ void nofActiveSoldier::MeetingEnemy()
     // Not at the fighting spot yet, continue walking there
     else
     {
-        const auto dir = gwg->FindHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
+        const auto dir = world->FindHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
         if(dir)
         {
             StartWalking(*dir);
@@ -435,7 +435,7 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
 bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight_spot)
 {
     // Calc middle between the two soldiers and use this as origin spot for the search of more fight spots
-    MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetCurMoveDir());
+    MapPoint otherPos = world->GetNeighbour(other->GetPos(), other->GetCurMoveDir());
     MapPoint middle((pos + otherPos) / 2u);
 
     // The point is supposed to be in the middle between the 2 soldiers (and guaranteed to be inside the map)
@@ -443,8 +443,8 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
     // --> maximum distance between each point and the middle is mapSize/4
     // So if we see, that this is not the case, we take the "middle" point on the other half of the map
 
-    const unsigned short mapWidth = gwg->GetWidth();
-    const unsigned short mapHeight = gwg->GetHeight();
+    const unsigned short mapWidth = world->GetWidth();
+    const unsigned short mapHeight = world->GetHeight();
 
     if(std::abs(otherPos.x - middle.x) > mapWidth / 4)
     {
@@ -462,17 +462,17 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
         else
             middle.y += halfMapHeight;
     }
-    RTTR_Assert(gwg->CalcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
+    RTTR_Assert(world->CalcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
 
-    const auto isGoodFightingSpot = [gwg = this->gwg, pos = this->pos, other](const auto& pt) {
+    const auto isGoodFightingSpot = [world = this->world, pos = this->pos, other](const auto& pt) {
         // Did we find a good spot?
-        return gwg->ValidPointForFighting(pt, true, nullptr)
-               && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr))
+        return world->ValidPointForFighting(pt, true, nullptr)
+               && (pos == pt || world->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr))
                && (other->GetPos() == pt
-                   || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr));
+                   || world->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr));
     };
     const std::vector<MapPoint> pts =
-      gwg->GetMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);
+      world->GetMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);
     if(pts.empty())
         return false;
     *fight_spot = pts.front();

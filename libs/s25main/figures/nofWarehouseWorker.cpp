@@ -22,16 +22,16 @@
 #include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
-    : noFigure(Job::Helper, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SouthEast))),
+    : noFigure(Job::Helper, pos, player, world->GetSpecObj<noFlag>(world->GetNeighbour(pos, Direction::SouthEast))),
       carried_ware(ware), shouldBringWareIn(task), fat((RANDOM_RAND(2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
-    gwg->GetPlayer(player).IncreaseInventoryJob(Job::Helper, 1);
+    world->GetPlayer(player).IncreaseInventoryJob(Job::Helper, 1);
 
     /// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
     cur_rs = static_cast<noFlag*>(GetGoal())->GetRoute(Direction::NorthWest);
@@ -77,35 +77,35 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 
 void nofWarehouseWorker::GoalReached()
 {
-    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, Direction::NorthWest));
+    const nobBaseWarehouse* wh = world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest));
     if(!shouldBringWareIn)
     {
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
         // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
         // ( dann ist goal = location )
-        if(gwg->GetSpecObj<noFlag>(pos)->GetNumWares() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation()
+        if(world->GetSpecObj<noFlag>(pos)->GetNumWares() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation()
            && carried_ware->GetGoal() != wh)
         {
-            carried_ware->WaitAtFlag(gwg->GetSpecObj<noFlag>(pos));
+            carried_ware->WaitAtFlag(world->GetSpecObj<noFlag>(pos));
 
             // Ware soll ihren weiteren Weg berechnen
             carried_ware->RecalcRoute();
 
             // Ware ablegen
-            gwg->GetSpecObj<noFlag>(pos)->AddWare(carried_ware);
+            world->GetSpecObj<noFlag>(pos)->AddWare(carried_ware);
 
             // Ich trage keine Ware mehr
             carried_ware = nullptr;
         } else
             // ansonsten Ware wieder mit reinnehmen
-            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NorthWest)));
+            carried_ware->Carry(world->GetSpecObj<noRoadNode>(world->GetNeighbour(pos, Direction::NorthWest)));
     } else
     {
         // Ware aufnehmen
-        carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(Direction::NorthWest, false, this);
+        carried_ware = world->GetSpecObj<noFlag>(pos)->SelectWare(Direction::NorthWest, false, this);
 
         if(carried_ware)
-            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NorthWest)));
+            carried_ware->Carry(world->GetSpecObj<noRoadNode>(world->GetNeighbour(pos, Direction::NorthWest)));
     }
 
     // Wieder ins Schloss gehen
@@ -123,9 +123,9 @@ void nofWarehouseWorker::Walked()
         if(carried_ware)
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
-            if(gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
+            if(world->GetNO(pos)->GetType() == NodalObjectType::Building)
             {
-                auto* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
+                auto* wh = world->GetSpecObj<nobBaseWarehouse>(pos);
                 if(carried_ware->GetGoal() == carried_ware->GetLocation() || carried_ware->GetGoal() == wh)
                     wh->AddWare(carried_ware);
                 else
@@ -143,8 +143,8 @@ void nofWarehouseWorker::Walked()
         if(carried_ware)
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
-            if(gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
-                gwg->GetSpecObj<nobBaseWarehouse>(pos)->AddWare(carried_ware);
+            if(world->GetNO(pos)->GetType() == NodalObjectType::Building)
+                world->GetSpecObj<nobBaseWarehouse>(pos)->AddWare(carried_ware);
             else
             {
                 // Lagerhaus abgebrannt --> Ware vernichten
@@ -156,11 +156,11 @@ void nofWarehouseWorker::Walked()
     }
 
     // dann mich killen
-    gwg->RemoveFigure(pos, this);
+    world->RemoveFigure(pos, this);
     GetEvMgr().AddToKillList(this);
 
     // Von der Inventur wieder abziehen
-    gwg->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
+    world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
 }
 
 void nofWarehouseWorker::AbrogateWorkplace()

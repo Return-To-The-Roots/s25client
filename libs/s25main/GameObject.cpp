@@ -19,7 +19,7 @@
 #include "EventManager.h"
 #include "SerializedGameData.h"
 #include "postSystem/PostMsg.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include <iostream>
 
 /**
@@ -28,7 +28,7 @@
 unsigned GameObject::objIdCounter_ = 0;
 unsigned GameObject::objCounter_ = 0;
 
-GameWorldGame* GameObject::gwg = nullptr;
+GameWorld* GameObject::world = nullptr;
 
 GameObject::GameObject() : objId(++objIdCounter_)
 {
@@ -53,31 +53,31 @@ void GameObject::Destroy() {}
 
 GameObject::~GameObject()
 {
-    // RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(*this));
-    RTTR_Assert(!gwg || !GetEvMgr().IsObjectInKillList(*this));
+    // RTTR_Assert(!world || !GetEvMgr().ObjectHasEvents(*this));
+    RTTR_Assert(!world || !GetEvMgr().IsObjectInKillList(*this));
     // ein Objekt weniger
     --objCounter_;
 }
 
 EventManager& GameObject::GetEvMgr()
 {
-    return gwg->GetEvMgr();
+    return world->GetEvMgr();
 }
 
 void GameObject::SendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg)
 {
-    gwg->GetPostMgr().SendMsg(player, std::move(msg));
+    world->GetPostMgr().SendMsg(player, std::move(msg));
 }
 
-void GameObject::DetachWorld(GameWorldGame* gameWorld)
+void GameObject::DetachWorld(GameWorld* gameWorld)
 {
-    if(gwg == gameWorld)
-        gwg = nullptr;
+    if(world == gameWorld)
+        world = nullptr;
 }
 
-void GameObject::AttachWorld(GameWorldGame* gameWorld)
+void GameObject::AttachWorld(GameWorld* gameWorld)
 {
-    gwg = gameWorld;
+    world = gameWorld;
 }
 
 std::string GameObject::ToString() const

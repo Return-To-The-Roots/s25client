@@ -22,7 +22,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Minter, pos, player, workplace)
@@ -40,7 +40,7 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
     {
         LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     gwg->GetPlayer(workplace->GetPlayer()).color);
+                     world->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
@@ -55,6 +55,6 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofMinter::ProduceWare()
 {
-    gwg->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
+    world->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
     return GoodType::Coins;
 }

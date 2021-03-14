@@ -25,7 +25,7 @@
 #include "buildings/nobUsual.h"
 #include "world/GameWorldBase.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt,
+noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const BuildingType type, const MapPoint pt,
                                             const unsigned char player, const Nation nation)
 {
     noBuilding* bld;
@@ -41,9 +41,9 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& gwg, const BuildingTy
         case BuildingType::Shipyard: bld = new nobShipYard(pt, player, nation); break;
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
-    gwg.SetNO(pt, bld);
+    world.SetNO(pt, bld);
     // Don't do this in ctor as building might not be fully initialized yet
-    gwg.GetPlayer(player).AddBuilding(bld, type);
+    world.GetPlayer(player).AddBuilding(bld, type);
 
     return bld;
 }

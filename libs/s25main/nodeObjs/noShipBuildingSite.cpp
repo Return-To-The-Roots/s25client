@@ -25,7 +25,7 @@
 #include "notifications/ShipNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "postSystem/ShipPostMsg.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
     : noCoordBase(NodalObjectType::Environment, pos), player(player), progress(0)
@@ -35,7 +35,7 @@ noShipBuildingSite::~noShipBuildingSite() = default;
 
 void noShipBuildingSite::Destroy()
 {
-    gwg->SetNO(pos, nullptr);
+    world->SetNO(pos, nullptr);
 
     noCoordBase::Destroy();
 }
@@ -96,19 +96,19 @@ void noShipBuildingSite::MakeBuildStep()
     {
         // Replace me by ship
         GetEvMgr().AddToKillList(this);
-        gwg->SetNO(pos, nullptr);
+        world->SetNO(pos, nullptr);
         auto* ship = new noShip(pos, player);
-        gwg->AddFigure(pos, ship);
+        world->AddFigure(pos, ship);
 
         // Schiff registrieren lassen
-        gwg->GetPlayer(player).RegisterShip(ship);
+        world->GetPlayer(player).RegisterShip(ship);
 
         // BQ neu berechnen, da Schiff nicht mehr blockiert
-        gwg->RecalcBQAroundPointBig(pos);
+        world->RecalcBQAroundPointBig(pos);
 
         // Spieler über Fertigstellung benachrichtigen
         SendPostMessage(player, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(), _("A new ship is ready"),
                                                               PostCategory::Economy, *ship));
-        gwg->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
+        world->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
     }
 }

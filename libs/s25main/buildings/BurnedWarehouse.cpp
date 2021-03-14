@@ -23,7 +23,7 @@
 #include "figures/nofPassiveWorker.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 /// Anzahl der Rausgeh-Etappen
 const unsigned GO_OUT_PHASES = 10;
@@ -47,7 +47,7 @@ BurnedWarehouse::~BurnedWarehouse() = default;
 
 void BurnedWarehouse::Destroy()
 {
-    gwg->RemoveFigure(pos, this);
+    world->RemoveFigure(pos, this);
     noCoordBase::Destroy();
 }
 
@@ -68,10 +68,10 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     unsigned possibleDirCt = 0;
 
     // Mögliche Richtungen zählen und speichern
-    PathConditionHuman pathChecker(*gwg);
+    PathConditionHuman pathChecker(*world);
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)))
+        if(pathChecker.IsNodeOk(world->GetNeighbour(pos, dir)))
             possibleDirs[possibleDirCt++] = dir;
     }
 
@@ -82,7 +82,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         GetEvMgr().AddToKillList(this);
         // restliche Leute von der Inventur abziehen
         for(const auto i : helpers::enumRange<Job>())
-            gwg->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
+            world->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
 
         return;
     }
@@ -120,7 +120,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
                 // Job erzeugen
                 auto* figure = new nofPassiveWorker(job, pos, player, nullptr);
                 // Auf die Map setzen
-                gwg->AddFigure(pos, figure);
+                world->AddFigure(pos, figure);
                 // Losrumirren in die jeweilige Richtung
                 figure->StartWandering(GetObjId());
                 figure->StartWalking(dir);

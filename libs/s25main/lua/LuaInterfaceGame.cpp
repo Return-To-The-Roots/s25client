@@ -26,7 +26,7 @@
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "postSystem/PostMsg.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameTypes/Resource.h"
 #include "s25util/Serializer.h"
 #include "s25util/strAlgos.h"

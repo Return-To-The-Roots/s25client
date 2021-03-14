@@ -22,7 +22,7 @@
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/MilitaryConsts.h"
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(nullptr)
@@ -109,7 +109,7 @@ void nofPassiveSoldier::Heal()
 
 void nofPassiveSoldier::GoalReached()
 {
-    gwg->RemoveFigure(pos, this);
+    world->RemoveFigure(pos, this);
     static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
 }
 
@@ -118,7 +118,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
     building = nullptr;
 
     // Auf die Karte setzen
-    gwg->AddFigure(pos, this);
+    world->AddFigure(pos, this);
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 
@@ -146,7 +146,7 @@ void nofPassiveSoldier::Upgrade()
     job_ = Job(unsigned(job_) + 1);
 
     // wieder heilen bzw. Hitpoints anpasen
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     hitpoints = HITPOINTS[GetRank()];
 
     // Inventur entsprechend erhöhen und verringern

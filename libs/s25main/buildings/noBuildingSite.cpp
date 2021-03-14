@@ -27,7 +27,7 @@
 #include "helpers/toString.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "s25util/colors.h"
@@ -42,7 +42,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
        || GetSize() == BuildingQuality::Harbor)
     {
         // Höhe auf dem Punkt, wo die Baustelle steht
-        int altitude = gwg->GetNode(pos).altitude;
+        int altitude = world->GetNode(pos).altitude;
 
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
@@ -50,20 +50,20 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
             if(dir != Direction::SouthEast)
             {
                 // Gibt es da Differenzen?
-                if(altitude - gwg->GetNeighbourNode(pos, dir).altitude != 0)
+                if(altitude - world->GetNeighbourNode(pos, dir).altitude != 0)
                     state = BuildingSiteState::Planing;
             }
         }
     }
 
     // Wir hätten gerne einen Planierer/Bauarbeiter...
-    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
+    world->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
 
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
-    gwg->GetPlayer(player).AddBuildingSite(this);
+    world->GetPlayer(player).AddBuildingSite(this);
 }
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
@@ -73,11 +73,11 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
       stones(BUILDING_COSTS[BuildingType::HarborBuilding].stones), used_boards(0), used_stones(0), build_progress(0)
 {
     builder = new nofBuilder(pos, player, this);
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     owner.AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
-    gwg->AddFigure(pos, builder);
+    world->AddFigure(pos, builder);
 
     // Baumaterialien in der Inventur verbuchen
     owner.DecreaseInventoryWare(GoodType::Boards, boards);
@@ -98,7 +98,7 @@ void noBuildingSite::Destroy()
         planer->LostWork();
         planer = nullptr;
     } else
-        gwg->GetPlayer(player).JobNotWanted(this);
+        world->GetPlayer(player).JobNotWanted(this);
 
     RTTR_Assert(!builder);
     RTTR_Assert(!planer);
@@ -112,22 +112,22 @@ void noBuildingSite::Destroy()
     ordered_stones.clear();
 
     // und Feld wird leer
-    gwg->SetNO(pos, nullptr);
+    world->SetNO(pos, nullptr);
 
     // Baustelle wieder aus der Liste entfernen - dont forget about expedition harbor status
     bool expeditionharbor = IsHarborBuildingSiteFromSea();
-    gwg->GetPlayer(player).RemoveBuildingSite(this);
+    world->GetPlayer(player).RemoveBuildingSite(this);
 
     noBaseBuilding::Destroy();
 
     // Hafenbaustelle?
     if(expeditionharbor)
     {
-        gwg->RemoveHarborBuildingSiteFromSea(this);
+        world->RemoveHarborBuildingSiteFromSea(this);
         // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
-        gwg->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
+        world->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
     }
-    gwg->RecalcBQAroundPointBig(pos);
+    world->RecalcBQAroundPointBig(pos);
 }
 
 void noBuildingSite::Serialize(SerializedGameData& sgd) const
@@ -163,7 +163,7 @@ void noBuildingSite::OrderConstructionMaterial()
         return;
 
     // Bretter
-    GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = world->GetPlayer(player);
     for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[bldType_].boards; ++i)
     {
         Ware* w = owner.OrderWare(GoodType::Boards, this);
@@ -193,13 +193,13 @@ void noBuildingSite::Draw(DrawPoint drawPt)
     if(state == BuildingSiteState::Planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 450)->DrawFull(drawPt);
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.GetNationImage(world->GetPlayer(player).nation, 450)->DrawFull(drawPt);
+        LOADER.GetNationImage(world->GetPlayer(player).nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
     } else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 455)->DrawFull(drawPt);
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.GetNationImage(world->GetPlayer(player).nation, 455)->DrawFull(drawPt);
+        LOADER.GetNationImage(world->GetPlayer(player).nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
 
         // Waren auf der Baustelle
 
@@ -264,7 +264,7 @@ void noBuildingSite::Abrogate()
     planer = nullptr;
     builder = nullptr;
 
-    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
+    world->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
 }
 
 unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const GoodType goodtype)
@@ -297,7 +297,7 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
     points -= (BUILDING_COSTS[bldType_].stones - curStones) * 20;
 
     // Baupriorität mit einberechnen (niedriger = höhere Priorität, daher - !)
-    const unsigned buildingSitePrio = gwg->GetPlayer(player).GetBuidingSitePriority(this) * 30;
+    const unsigned buildingSitePrio = world->GetPlayer(player).GetBuidingSitePriority(this) * 30;
 
     if(points > buildingSitePrio)
         points -= buildingSitePrio;
@@ -327,8 +327,8 @@ void noBuildingSite::AddWare(Ware*& ware)
         throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
 
     // Inventur entsprechend verringern
-    gwg->GetPlayer(player).DecreaseInventoryWare(ware->type, 1);
-    gwg->GetPlayer(player).RemoveWare(ware);
+    world->GetPlayer(player).DecreaseInventoryWare(ware->type, 1);
+    world->GetPlayer(player).RemoveWare(ware);
     deletePtr(ware);
 }
 
@@ -391,7 +391,7 @@ void noBuildingSite::PlaningFinished()
     planer = nullptr;
 
     // Wir hätten gerne einen Bauarbeiter...
-    gwg->GetPlayer(player).AddJobWanted(Job::Builder, this);
+    world->GetPlayer(player).AddJobWanted(Job::Builder, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
@@ -401,7 +401,7 @@ void noBuildingSite::PlaningFinished()
 bool noBuildingSite::IsHarborBuildingSiteFromSea() const
 {
     if(this->bldType_ == BuildingType::HarborBuilding)
-        return gwg->IsHarborBuildingSiteFromSea(this);
+        return world->IsHarborBuildingSiteFromSea(this);
     else
         return false;
 }

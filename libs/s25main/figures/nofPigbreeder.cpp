@@ -25,7 +25,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::PigBreeder, pos, player, workplace)
@@ -41,7 +41,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
     unsigned max_id = 240;
     int now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     const Nation wpNation = workplace->GetNation();
-    unsigned plColor = gwg->GetPlayer(player).color;
+    unsigned plColor = world->GetPlayer(player).color;
     int walksteps = 16;
 
     if(now_id < 16)

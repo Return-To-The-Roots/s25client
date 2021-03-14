@@ -22,7 +22,7 @@
 #include "buildings/nobUsual.h"
 #include "notifications/BuildingNote.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/JobConsts.h"
 
 nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -59,7 +59,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             // fertig mit Arbeiten --> dann müssen die "Folgen des Arbeitens" ausgeführt werden
             WorkFinished();
             // Objekt wieder freigeben
-            gwg->SetReserved(pos, false);
+            world->SetReserved(pos, false);
             // Wieder nach Hause gehen
             StartWalkingHome();
 
@@ -113,8 +113,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
 
             helpers::EnumArray<std::vector<MapPoint>, PointQuality> available_points;
 
-            for(MapCoord tx = gwg->GetXA(pos, Direction::West), r = 1; r <= max_radius;
-                tx = gwg->GetXA(MapPoint(tx, pos.y), Direction::West), ++r)
+            for(MapCoord tx = world->GetXA(pos, Direction::West), r = 1; r <= max_radius;
+                tx = world->GetXA(MapPoint(tx, pos.y), Direction::West), ++r)
             {
                 // Wurde ein Punkt in diesem Radius gefunden?
                 bool found_in_radius = false;
@@ -122,11 +122,11 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 MapPoint t2(tx, pos.y);
                 for(const auto dir : helpers::enumRange(Direction::NorthEast))
                 {
-                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2, dir), ++r2)
+                    for(MapCoord r2 = 0; r2 < r; t2 = world->GetNeighbour(t2, dir), ++r2)
                     {
                         if(IsPointAvailable(t2))
                         {
-                            if(!gwg->GetNode(t2).reserved)
+                            if(!world->GetNode(t2).reserved)
                             {
                                 available_points[GetPointQuality(t2)].push_back(MapPoint(t2));
                                 found_in_radius = true;
@@ -168,7 +168,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 workplace->StopNotWorking();
 
                 // Punkt für uns reservieren
-                gwg->SetReserved(dest, true);
+                world->SetReserved(dest, true);
 
                 // Anfangen zu laufen (erstmal aus dem Haus raus!)
                 StartWalking(Direction::SouthEast);
@@ -187,7 +187,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     case Job::Stonemason:
                     case Job::Fisher: workplace->OnOutOfResources(); break;
                     case Job::Woodcutter:
-                        gwg->GetNotifications().publish(BuildingNote(
+                        world->GetNotifications().publish(BuildingNote(
                           BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
                         break;
                     default: break;
@@ -210,7 +210,7 @@ bool nofFarmhand::IsPointAvailable(const MapPoint pt) const
     if(GetPointQuality(pt) != PointQuality::NotPossible)
     {
         // Gucken, ob ein Weg hinführt
-        return gwg->FindHumanPath(this->pos, pt, 20) != boost::none;
+        return world->FindHumanPath(this->pos, pt, 20) != boost::none;
     } else
         return false;
 }
@@ -228,11 +228,11 @@ void nofFarmhand::WalkToWorkpoint()
     }
 
     // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    const auto dir = gwg->FindHumanPath(pos, dest, 20);
+    const auto dir = world->FindHumanPath(pos, dest, 20);
     if(!dir || GetPointQuality(dest) == PointQuality::NotPossible)
     {
         // Punkt freigeben
-        gwg->SetReserved(dest, false);
+        world->SetReserved(dest, false);
         // Kein Weg führt mehr zum Ziel oder Punkt ist nich mehr in Ordnung --> wieder nach Hause gehen
         StartWalkingHome();
     } else
@@ -246,7 +246,7 @@ void nofFarmhand::StartWalkingHome()
 {
     state = State::WalkingHome;
     // Fahne vor dem Gebäude anpeilen
-    dest = gwg->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
+    dest = world->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
 
     // Zu Laufen anfangen
     WalkHome();
@@ -262,7 +262,7 @@ void nofFarmhand::WalkHome()
         return;
     }
 
-    const auto dir = gwg->FindHumanPath(pos, dest, 40);
+    const auto dir = world->FindHumanPath(pos, dest, 40);
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
     if(!dir)
     {
@@ -281,7 +281,7 @@ void nofFarmhand::WorkAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if(state == State::Work || state == State::WalkToWorkpoint)
-        gwg->SetReserved(dest, false);
+        world->SetReserved(dest, false);
 }
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen

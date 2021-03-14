@@ -27,7 +27,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
 
@@ -119,19 +119,19 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // Liste von potentiellen Zielen
             std::vector<PossibleTarget> possibleTargets;
 
-            sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
+            sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
             for(auto& building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
                 if(building->GetGOT() == GO_Type::NobMilitary
-                   && gwg->GetPlayer(player).IsAttackable(building->GetPlayer()))
+                   && world->GetPlayer(player).IsAttackable(building->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
-                    if(gwg->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible
+                    if(world->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible
                        && !static_cast<nobMilitary*>(building)->IsNewBuilt())
                     {
                         // Entfernung ausrechnen
-                        unsigned distance = gwg->CalcDistance(pos, building->GetPos());
+                        unsigned distance = world->CalcDistance(pos, building->GetPos());
 
                         // Entfernung nicht zu hoch?
                         if(distance < 14)
@@ -171,9 +171,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 targetIsRight = false;
             }
             // Distance over map border is closer (max distance is size/2 due to wrap around)
-            if(distX > gwg->GetWidth() / 2)
+            if(distX > world->GetWidth() / 2)
             {
-                distX -= gwg->GetWidth() / 2;
+                distX -= world->GetWidth() / 2;
                 targetIsRight = !targetIsRight; // Reverse direction
             }
 
@@ -190,9 +190,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 targetIsDown = false;
             }
             // Distance over map border is closer (max distance is size/2 due to wrap around)
-            if(distY > gwg->GetHeight() / 2)
+            if(distY > world->GetHeight() / 2)
             {
-                distY -= gwg->GetHeight() / 2;
+                distY -= world->GetHeight() / 2;
                 targetIsDown = !targetIsDown; // Reverse direction
             }
 
@@ -244,19 +244,19 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             } else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
-                destMap = gwg->GetNeighbour(target.pos, RANDOM_ENUM(Direction));
+                destMap = world->GetNeighbour(target.pos, RANDOM_ENUM(Direction));
             }
 
             unsigned shooting_dir = (7 + wheel_steps) % 6;
 
             // Größe der Welt in Pixeln bestimmen
-            int worldWidth = gwg->GetWidth() * TR_W;
-            int worldHeight = gwg->GetHeight() * TR_H;
+            int worldWidth = world->GetWidth() * TR_W;
+            int worldHeight = world->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Position start = gwg->GetNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
+            Position start = world->GetNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
             // (Visuellen) Aufschlagpunkt bestimmen
-            Position dest = gwg->GetNodePos(destMap);
+            Position dest = world->GetNodePos(destMap);
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen
@@ -279,7 +279,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             }
 
             // Stein erzeugen
-            gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
+            world->AddCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
             current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);

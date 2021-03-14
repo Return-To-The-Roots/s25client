@@ -25,7 +25,7 @@
 #include "network/PlayerGameCommands.h"
 #include "ogl/glAllocator.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "test/testConfig.h"
@@ -58,7 +58,7 @@ static void playReplay(const boost::filesystem::path& replayPath)
         players.emplace_back(replay.GetPlayer(i));
     Game game(replay.ggs, /*startGF*/ 0, players);
     RANDOM.Init(replay.random_init);
-    GameWorldGame& gameWorld = game.world_;
+    GameWorld& gameWorld = game.world_;
 
     for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
         gameWorld.GetPlayer(i).MakeStartPacts();

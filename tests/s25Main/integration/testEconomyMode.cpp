@@ -25,7 +25,7 @@
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
 #include "worldFixtures/WorldWithGCExecution.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameTypes/GO_Type.h"
 #include "s25util/tmpFile.h"
 #include <rttr/test/random.hpp>
@@ -147,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     for(unsigned j = 0; j < 3; j++)
         players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
     Game newGame(save.ggs, loadSave.start_gf, players);
-    GameWorldGame& newWorld = newGame.world_;
+    GameWorld& newWorld = newGame.world_;
     MockLocalGameState localGameState;
     save.sgd.ReadSnapshot(newGame, localGameState);
 

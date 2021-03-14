@@ -42,7 +42,7 @@ enum class TerritoryChangeReason
 };
 
 /// "Interface-Klasse" für das Spiel
-class GameWorldGame : public GameWorldBase
+class GameWorld : public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
     void DestroyPlayerRests(MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception);
@@ -71,8 +71,8 @@ class GameWorldGame : public GameWorldBase
                               const noBaseBuilding& triggerBld) const;
 
 public:
-    GameWorldGame(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em);
-    ~GameWorldGame() override;
+    GameWorld(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    ~GameWorld() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
     GameInterface* GetGameInterface() const { return gi; }

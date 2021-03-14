@@ -22,7 +22,7 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Brewer, pos, player, workplace)
@@ -40,7 +40,7 @@ void nofBrewer::DrawWorking(DrawPoint drawPt)
     if(now_id < 16)
         LOADER.GetPlayerImage("rom_bobs", now_id)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     gwg->GetPlayer(workplace->GetPlayer()).color);
+                     world->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id == 5)
     {

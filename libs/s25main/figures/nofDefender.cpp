@@ -24,7 +24,7 @@
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
 #include "random/Random.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noFighting.h"
 #include "gameData/BuildingProperties.h"
 
@@ -62,7 +62,7 @@ void nofDefender::Walked()
         case SoldierState::DefendingWalkingTo:
         {
             // Mit Angreifer den Kampf beginnen
-            gwg->AddFigure(pos, new noFighting(attacker, this));
+            world->AddFigure(pos, new noFighting(attacker, this));
             state = SoldierState::Fighting;
             attacker->FightVsDefenderStarted();
         }
@@ -90,7 +90,7 @@ void nofDefender::Walked()
             } else
             {
                 // mich von der Landkarte tilgen
-                gwg->RemoveFigure(pos, this);
+                world->RemoveFigure(pos, this);
                 nobBaseMilitary* bld = building;
                 // mich zum Gebäude wieder hinzufügen
                 RTTR_Assert(bld->GetDefender() == this); // I should be the defender
@@ -154,7 +154,7 @@ void nofDefender::HomeDestroyedAtBegin()
 void nofDefender::WonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
-    if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+    if(world->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
         IncreaseRank();
     // Angreifer tot
     attacker = nullptr;

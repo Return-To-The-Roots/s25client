@@ -25,7 +25,7 @@
 #include "addons/const_addons.h"
 #include "nobBaseWarehouse.h"
 #include "notifications/BuildingNote.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "nodeObjs/noExtension.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingConsts.h"
@@ -35,33 +35,33 @@
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos,
                                const unsigned char player)
-    : noRoadNode(nop, pos, player), bldType_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),
-      door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
+    : noRoadNode(nop, pos, player), bldType_(type), nation(world->GetPlayer(player).nation), door_point_x(1000000),
+      door_point_y(DOOR_CONSTS[world->GetPlayer(player).nation][type])
 {
     MapPoint flagPt = GetFlagPos();
     // Evtl Flagge setzen, wenn noch keine da ist
-    if(gwg->GetNO(flagPt)->GetType() != NodalObjectType::Flag)
+    if(world->GetNO(flagPt)->GetType() != NodalObjectType::Flag)
     {
-        gwg->DestroyNO(flagPt, false);
-        gwg->SetNO(flagPt, new noFlag(flagPt, player));
+        world->DestroyNO(flagPt, false);
+        world->SetNO(flagPt, new noFlag(flagPt, player));
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(gwg->GetPointRoad(pos, Direction::SouthEast) == PointRoad::None)
+    if(world->GetPointRoad(pos, Direction::SouthEast) == PointRoad::None)
     {
-        gwg->SetPointRoad(pos, Direction::SouthEast, PointRoad::Normal);
+        world->SetPointRoad(pos, Direction::SouthEast, PointRoad::Normal);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)
         std::vector<Direction> route(1, Direction::NorthWest);
         // Straße zuweisen
-        auto* rs = new RoadSegment(RoadType::Normal, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
-        gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NorthWest, rs); // der Flagge
-        SetRoute(Direction::SouthEast, rs);                                      // dem Gebäude
+        auto* rs = new RoadSegment(RoadType::Normal, world->GetSpecObj<noRoadNode>(flagPt), this, route);
+        world->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NorthWest, rs); // der Flagge
+        SetRoute(Direction::SouthEast, rs);                                        // dem Gebäude
     } else
     {
         // vorhandene Straße der Flagge nutzen
-        auto* flag = gwg->GetSpecObj<noFlag>(flagPt);
+        auto* flag = world->GetSpecObj<noFlag>(flagPt);
 
         RTTR_Assert(flag->GetRoute(Direction::NorthWest));
         SetRoute(Direction::SouthEast, flag->GetRoute(Direction::NorthWest));
@@ -73,9 +73,9 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            MapPoint pos2 = gwg->GetNeighbour(pos, i);
-            gwg->DestroyNO(pos2, false);
-            gwg->SetNO(pos2, new noExtension(this));
+            MapPoint pos2 = world->GetNeighbour(pos, i);
+            world->DestroyNO(pos2, false);
+            world->SetNO(pos2, new noExtension(this));
         }
     }
 }
@@ -85,16 +85,16 @@ noBaseBuilding::~noBaseBuilding() = default;
 void noBaseBuilding::Destroy()
 {
     DestroyAllRoads();
-    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
+    world->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
 
-    if(gwg->GetGameInterface())
-        gwg->GetGameInterface()->GI_UpdateMinimap(pos);
+    if(world->GetGameInterface())
+        world->GetGameInterface()->GI_UpdateMinimap(pos);
 
     // evtl Anbauten wieder abreißen
     DestroyBuildingExtensions();
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
-    const GlobalGameSettings& settings = gwg->GetGGS();
+    const GlobalGameSettings& settings = world->GetGGS();
     if((GetGOT() != GO_Type::Buildingsite)
        && (settings.isEnabled(AddonId::REFUND_MATERIALS) || settings.isEnabled(AddonId::REFUND_ON_EMERGENCY)))
     {
@@ -108,7 +108,7 @@ void noBaseBuilding::Destroy()
             if(settings.isEnabled(AddonId::REFUND_MATERIALS))
                 percent_index = settings.getSelection(AddonId::REFUND_MATERIALS);
             // wenn Rückerstattung bei Notprogramm aktiv ist, 50% zurückerstatten
-            else if(gwg->GetPlayer(player).hasEmergency() && settings.isEnabled(AddonId::REFUND_ON_EMERGENCY))
+            else if(world->GetPlayer(player).hasEmergency() && settings.isEnabled(AddonId::REFUND_ON_EMERGENCY))
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?
@@ -129,9 +129,9 @@ void noBaseBuilding::Destroy()
                     auto* ware = new Ware(goods[which], nullptr, flag);
                     ware->WaitAtFlag(flag);
                     // Inventur anpassen
-                    gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
+                    world->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden
-                    ware->SetGoal(gwg->GetPlayer(player).FindClientForWare(ware));
+                    ware->SetGoal(world->GetPlayer(player).FindClientForWare(ware));
                     // Ware soll ihren weiteren Weg berechnen
                     ware->RecalcRoute();
                     // Ware ablegen
@@ -174,14 +174,14 @@ int noBaseBuilding::GetDoorPointX()
         // The door is on the line between the building and flag point. The position of the line is set by the y-offset
         // this is why we need the x-offset here according to the equation x = m*y + n
         // with n=0 (as door point is relative to building pos) and m = dx/dy
-        const Position bldPos = gwg->GetNodePos(pos);
-        const Position flagPos = gwg->GetNodePos(GetFlagPos());
+        const Position bldPos = world->GetNodePos(pos);
+        const Position flagPos = world->GetNodePos(GetFlagPos());
         Position diff = flagPos - bldPos;
 
         // We could have crossed the map border which results in unreasonable diffs
         // clamp the diff to [-w/2,w/2],[-h/2, h/2] (maximum diffs)
-        const int mapWidth = gwg->GetWidth() * TR_W;
-        const int mapHeight = gwg->GetHeight() * TR_H;
+        const int mapWidth = world->GetWidth() * TR_W;
+        const int mapHeight = world->GetHeight() * TR_H;
 
         if(diff.x < -mapWidth / 2)
             diff.x += mapWidth;
@@ -200,12 +200,12 @@ int noBaseBuilding::GetDoorPointX()
 
 noFlag* noBaseBuilding::GetFlag() const
 {
-    return gwg->GetSpecObj<noFlag>(GetFlagPos());
+    return world->GetSpecObj<noFlag>(GetFlagPos());
 }
 
 MapPoint noBaseBuilding::GetFlagPos() const
 {
-    return gwg->GetNeighbour(pos, Direction::SouthEast);
+    return world->GetNeighbour(pos, Direction::SouthEast);
 }
 
 void noBaseBuilding::WareNotNeeded(Ware* ware)
@@ -223,7 +223,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
         static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
         // Ware muss auch noch vernichtet werden!
         // Inventur entsprechend verringern
-        gwg->GetPlayer(player).RemoveWare(ware);
+        world->GetPlayer(player).RemoveWare(ware);
         delete ware;
     } else
         ware->GoalDestroyed();
@@ -236,7 +236,7 @@ void noBaseBuilding::DestroyBuildingExtensions()
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
+            world->DestroyNO(world->GetNeighbour(pos, i));
         }
     }
 }

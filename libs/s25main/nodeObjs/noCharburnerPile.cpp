@@ -24,7 +24,7 @@
 #include "noEnvObject.h"
 #include "noFire.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 
 /// Length of the smoldering
 const unsigned SMOLDERING_LENGTH = 3000;
@@ -53,7 +53,7 @@ void noCharburnerPile::Destroy()
     GetEvMgr().RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
-    gwg->RecalcBQAroundPointBig(pos);
+    world->RecalcBQAroundPointBig(pos);
 
     noCoordBase::Destroy();
 }
@@ -141,8 +141,8 @@ void noCharburnerPile::HandleEvent(const unsigned /*id*/)
     {
         // selfdestruct!
         event = nullptr;
-        gwg->SetNO(pos, new noFire(pos, false), true);
-        gwg->RecalcBQAroundPoint(pos);
+        world->SetNO(pos, new noFire(pos, false), true);
+        world->RecalcBQAroundPoint(pos);
         GetEvMgr().AddToKillList(this);
     }
 }
@@ -207,11 +207,11 @@ void noCharburnerPile::NextStep()
                 if(step == 6)
                 {
                     // Add an empty pile as environmental object
-                    gwg->SetNO(pos, new noEnvObject(pos, 40, 6), true);
+                    world->SetNO(pos, new noEnvObject(pos, 40, 6), true);
                     GetEvMgr().AddToKillList(this);
 
                     // BQ drumrum neu berechnen
-                    gwg->RecalcBQAroundPoint(pos);
+                    world->RecalcBQAroundPoint(pos);
                 }
             }
         }

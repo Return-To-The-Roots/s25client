@@ -19,7 +19,7 @@
 
 #include "gameTypes/MapCoordinates.h"
 
-class GameWorldGame;
+class GameWorld;
 
 struct SeaWorldDefault
 {
@@ -56,7 +56,7 @@ struct SmallSeaWorldDefault<1>
 struct CreateSeaWorld
 {
     explicit CreateSeaWorld(const MapExtent& size);
-    bool operator()(GameWorldGame& world) const;
+    bool operator()(GameWorld& world) const;
 
 private:
     MapExtent size_;
@@ -67,7 +67,7 @@ private:
 struct CreateWaterWorld
 {
     explicit CreateWaterWorld(const MapExtent& size);
-    bool operator()(GameWorldGame& world) const;
+    bool operator()(GameWorld& world) const;
 
 private:
     MapExtent size_;
