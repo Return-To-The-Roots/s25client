@@ -26,12 +26,13 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 
-class GamePlayer;
 class FOWObject;
+class GamePlayer;
 class GameWorldBase;
-struct MapNode;
-struct FoWNode;
 class noShip;
+class SoundManager;
+struct FoWNode;
+struct MapNode;
 struct RoadNote;
 
 /// This is a players View(er) on the GameWorld
@@ -48,6 +49,7 @@ public:
     /// Return non-const world (TODO: Remove, this is a view only!)
     GameWorldBase& GetWorldNonConst() { return gwb; }
     const TerrainRenderer& GetTerrainRenderer() const { return tr; }
+    SoundManager& GetSoundMgr();
     /// Get the player instance for this view
     const GamePlayer& GetPlayer() const;
     /// Get the ID of the views player

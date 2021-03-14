@@ -22,11 +22,12 @@
 #include "gameTypes/MapTypes.h"
 #include <vector>
 
-class GameWorldViewer;
 class GameWorldBase;
-struct RoadBuildState;
-class TerrainRenderer;
+class GameWorldViewer;
 class noBaseBuilding;
+class SoundManager;
+class TerrainRenderer;
+struct RoadBuildState;
 
 class IDrawNodeCallback
 {
@@ -83,6 +84,7 @@ public:
 
     const GameWorldViewer& GetViewer() const { return gwv; }
     const GameWorldBase& GetWorld() const;
+    SoundManager& GetSoundMgr();
 
     void SetPos(const Position& newPos) { origin_ = newPos; }
     Position GetPos() const { return origin_; }

@@ -30,14 +30,15 @@
 
 class EventManager;
 class FreePathFinder;
-class GamePlayer;
 class GameInterface;
+class GamePlayer;
 class GlobalGameSettings;
+class nobHarborBuilding;
 class noBuildingSite;
 class noFlag;
-class nobHarborBuilding;
 class nofPassiveSoldier;
 class RoadPathFinder;
+class SoundManager;
 class TradePathCache;
 
 constexpr Direction getOppositeDir(const RoadDir roadDir) noexcept
@@ -69,6 +70,7 @@ class GameWorldBase : public World
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
+    std::unique_ptr<SoundManager> soundManager;
     LuaInterfaceGame* lua;
 
 protected:
@@ -168,6 +170,7 @@ public:
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
     EventManager& GetEvMgr() { return em; }
     const EventManager& GetEvMgr() const { return em; }
+    SoundManager& GetSoundMgr() { return *soundManager; }
     PostManager& GetPostMgr() { return postManager; }
     const PostManager& GetPostMgr() const { return postManager; }
     NotificationManager& GetNotifications() const

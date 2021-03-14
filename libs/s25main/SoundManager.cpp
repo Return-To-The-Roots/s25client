@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,139 +16,129 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SoundManager.h"
-
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "network/GameClient.h"
+#include "helpers/random.h"
 #include "ogl/SoundEffectItem.h"
 
-SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(EffectPlayId::Invalid) {}
-
-SoundManager::~SoundManager() = default;
-
-void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume)
+namespace {
+auto& getSoundRng()
 {
-    if(GAMECLIENT.IsPaused())
-        return;
+    static auto soundRng = helpers::getRandomGenerator();
+    return soundRng;
+}
+} // namespace
 
+SoundManager::SoundManager()
+    : minNextBirdSound(Clock::now()), oceanPlayId(EffectPlayId::Invalid), birdPlayId(EffectPlayId::Invalid)
+{}
+
+SoundManager::~SoundManager()
+{
+    stopAll();
+}
+
+void SoundManager::playNOSound(unsigned soundLstId, const noBase& obj, unsigned id, uint8_t volume)
+{
     if(!SETTINGS.sound.effectsEnabled)
         return;
 
-    // Wird Sound schon gespielt?
+    // Check how many times this sound is already played
     unsigned numPlayedCt = 0;
-    for(auto& no_sound : no_sounds)
+    for(auto& sound : noSounds)
     {
-        if(no_sound.id == id)
+        if(sound.soundId == soundLstId)
         {
-            if(no_sound.obj == obj)
+            // if the object is playing it itself already, ignore
+            if(sound.obj == &obj && sound.objSoundId == id)
                 return;
             numPlayedCt++;
         }
     }
-    // Play same sound only 3 times at once
-    if(numPlayedCt >= 3)
+    if(numPlayedCt >= maxPlayCtPerSound)
         return;
 
-    // Sound wird noch nicht gespielt --> hinzufügen und abspielen
-    EffectPlayId play_id = LOADER.GetSoundN("sound", sound_lst_id)->Play(volume, false);
+    EffectPlayId playId = LOADER.GetSoundN("sound", soundLstId)->Play(volume, false);
 
-    // Konnte er auch abgespielt werden?
-
-    if(play_id != EffectPlayId::Invalid)
-    {
-        // Dann hinzufügen zur abgespielt-Liste
-        no_sounds.push_back(NOSound{obj, id, play_id});
-    }
+    if(playId != EffectPlayId::Invalid)
+        noSounds.push_back(NOSound{soundLstId, &obj, id, playId});
 }
 
-void SoundManager::WorkingFinished(noBase* const obj)
+void SoundManager::stopSounds(const noBase& obj)
 {
-    if(GAMECLIENT.IsPaused())
-        return;
-
-    if(!SETTINGS.sound.effectsEnabled)
-        return;
-    // Alle Sounds von diesem Objekt stoppen und löschen
-    for(auto it = no_sounds.begin(); it != no_sounds.end();)
+    // Stop and remove all sounds of this object
+    for(auto it = noSounds.begin(); it != noSounds.end();)
     {
-        if(it->obj == obj)
+        if(it->obj == &obj)
         {
-            AUDIODRIVER.StopEffect(it->play_id);
-            it = no_sounds.erase(it);
+            AUDIODRIVER.StopEffect(it->playId);
+            it = noSounds.erase(it);
         } else
             ++it;
     }
 }
 
-void SoundManager::PlayBirdSounds(const unsigned short tree_count)
+void SoundManager::playBirdSounds(const unsigned treeCount)
 {
-    if(GAMECLIENT.IsPaused())
-        return;
-
     if(!SETTINGS.sound.effectsEnabled)
         return;
 
-    // Abstände zwischen den Vogelsounds berechnen (je nachdem wieviel Bäume)
-    unsigned interval;
-    if(1000 > tree_count * 10)
-        interval = 1000 - tree_count * 10;
-    else
-        interval = 200;
+    using namespace std::chrono;
+    using namespace std::chrono_literals;
 
-    interval += bird_interval;
+    // Depending on the number of trees the next sound will be played a bit later (more trees -> earlier)
+    constexpr milliseconds maxTreeInterval = 1s;
+    const milliseconds intervalReduction = treeCount * 10ms;
+    const auto nextBirdSoundTime = minNextBirdSound + std::max(0ms, maxTreeInterval - intervalReduction);
 
-    // Nach einiger Zeit neuen Sound abspielen
-    if(VIDEODRIVER.GetTickCount() - last_bird > interval)
+    const auto now = Clock::now();
+    if(now >= nextBirdSoundTime)
     {
-        // ohne baum - kein vogel
-        if(tree_count > 0)
-            LOADER.GetSoundN("sound", 87 + rand() % 5)->Play(80 - rand() % 30, false);
-        last_bird = VIDEODRIVER.GetTickCount();
-        bird_interval = rand() % 1000;
-    }
-}
-
-void SoundManager::PlayOceanBrawling(const unsigned water_percent)
-{
-    if(GAMECLIENT.IsPaused())
-        return;
-
-    if(!SETTINGS.sound.effectsEnabled)
-        return;
-
-    // Ist genug Wasser da zum Rauschen?
-    if(water_percent > 10)
-    {
-        // Wird schon ein Sound gespielt?
-        if(!AUDIODRIVER.IsEffectPlaying(ocean_play_id))
+        // no trees -> no birds
+        if(treeCount > 0)
         {
-            // SDL Mixer may return false values here. Therefore,
-            // we make sure the old effect is stopped.
-            // DO NOT REMOVE - THIS PREVENTS A BUG!
-            if(ocean_play_id != EffectPlayId::Invalid)
-                AUDIODRIVER.StopEffect(ocean_play_id);
-
-            // Wenn nicht --> neuen abspielen
-            ocean_play_id = LOADER.GetSoundN("sound", 98 + rand() % 3)->Play(255, true);
+            const unsigned soundIdx = helpers::randomValue(getSoundRng(), 87u, 91u);
+            const unsigned volume = helpers::randomValue(getSoundRng(), 50u, 80u);
+            birdPlayId = LOADER.GetSoundN("sound", soundIdx)->Play(volume, false);
         }
-
-        // Lautstärke setzen
-        AUDIODRIVER.ChangeVolume(ocean_play_id, water_percent * 2 + 55);
-    } else
-    {
-        // Rauschen ggf. stoppen
-        if(ocean_play_id != EffectPlayId::Invalid)
-            AUDIODRIVER.StopEffect(ocean_play_id);
+        minNextBirdSound = now + milliseconds(helpers::randomValue(getSoundRng(), 0u, 1000u));
     }
 }
 
-void SoundManager::StopAll()
+void SoundManager::playOceanBrawling(const unsigned waterPercent)
 {
-    if(ocean_play_id != EffectPlayId::Invalid)
-        AUDIODRIVER.StopEffect(ocean_play_id);
+    RTTR_Assert(waterPercent <= 100u);
 
-    last_bird = VIDEODRIVER.GetTickCount();
-    bird_interval = 0;
+    if(!SETTINGS.sound.effectsEnabled)
+        return;
+
+    // Play ocean sound for at least 10% water
+    if(waterPercent >= 10)
+    {
+        const unsigned volume = waterPercent * 2u + 55u;
+        if(!AUDIODRIVER.IsEffectPlaying(oceanPlayId))
+        {
+            // SDL Mixer may wrongly return that the sound is not playing, so make sure the old effect is stopped.
+            // DO NOT REMOVE - THIS PREVENTS A BUG!
+            if(oceanPlayId != EffectPlayId::Invalid)
+                AUDIODRIVER.StopEffect(oceanPlayId);
+
+            const unsigned soundIdx = helpers::randomValue(getSoundRng(), 98u, 100u);
+            oceanPlayId = LOADER.GetSoundN("sound", soundIdx)->Play(volume, true);
+        } else
+            AUDIODRIVER.ChangeVolume(oceanPlayId, volume);
+    } else if(oceanPlayId != EffectPlayId::Invalid)
+        AUDIODRIVER.StopEffect(oceanPlayId);
+}
+
+void SoundManager::stopAll()
+{
+    if(oceanPlayId != EffectPlayId::Invalid)
+        AUDIODRIVER.StopEffect(oceanPlayId);
+    if(birdPlayId != EffectPlayId::Invalid)
+        AUDIODRIVER.StopEffect(birdPlayId);
+
+    for(auto& sound : noSounds)
+        AUDIODRIVER.StopEffect(sound.playId);
 }

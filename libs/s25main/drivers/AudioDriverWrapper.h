@@ -60,8 +60,8 @@ public:
 
     /// Spielt einen Sound
     EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop);
-    /// Stoppt einen Sound
-    void StopEffect(EffectPlayId play_id);
+    /// Stops a sound and resets the id to "Invalid"
+    void StopEffect(EffectPlayId& playId);
 
     /// Spielt Midi ab
     void PlayMusic(const SoundHandle& sound, int repeats);

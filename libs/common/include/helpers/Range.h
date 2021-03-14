@@ -23,10 +23,10 @@
 namespace helpers {
 /// Can be used in range-based for loops to iterate over each value in [0, endValue)
 /// Requires: T must be an integral
-template<class T>
+template<typename T>
 struct Range
 {
-    static_assert(std::is_integral<T>::value, "Must be an enum!");
+    static_assert(std::is_integral<T>::value, "Must be an integral!");
     class iterator
     {
         T value;
@@ -43,4 +43,11 @@ struct Range
 
     const T endValue;
 };
+
+template<typename T>
+constexpr Range<T> range(T endValue)
+{
+    return {endValue};
+}
+
 } // namespace helpers

@@ -204,7 +204,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 30: // Optionen
         {
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>(gwv.GetSoundMgr()));
         }
         break;
     }

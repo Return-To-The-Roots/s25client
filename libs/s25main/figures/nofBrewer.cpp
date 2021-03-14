@@ -44,7 +44,7 @@ void nofBrewer::DrawWorking(DrawPoint drawPt)
 
     if(now_id == 5)
     {
-        SOUNDMANAGER.PlayNOSound(51, this, 0);
+        gwg->GetSoundMgr().playNOSound(51, *this, 0);
         was_sounding = true;
     }
     last_id = now_id;

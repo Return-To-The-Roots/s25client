@@ -58,9 +58,10 @@ enum
 };
 }
 
-iwOptionsWindow::iwOptionsWindow()
+iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"),
-                   LOADER.GetImageN("resource", 41))
+                   LOADER.GetImageN("resource", 41)),
+      soundManager(soundManager)
 {
     // Der Soldat oben
     AddImage(ID_imgSoldier, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
@@ -134,7 +135,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
               ->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effectsEnabled));
 
             if(!SETTINGS.sound.effectsEnabled)
-                SOUNDMANAGER.StopAll();
+                soundManager.stopAll();
             break;
 
         case ID_btMusic:

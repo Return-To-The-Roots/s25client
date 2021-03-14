@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
+#include "helpers/random.h"
 #include <limits>
 #include <random>
 #include <string>
@@ -29,16 +29,12 @@ namespace rttr { namespace test {
     template<typename T>
     T randomValue(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max())
     {
-        // 1 byte types are not supported, expand to 2 bytes instead
-        using IntDistribution = std::uniform_int_distribution<std::conditional_t<sizeof(T) == 1, int16_t, T>>;
-        std::conditional_t<std::is_floating_point<T>::value, std::uniform_real_distribution<T>, IntDistribution> distr(
-          min, max);
-        return static_cast<T>(distr(getRandState()));
+        return helpers::randomValue(getRandState(), min, max);
     }
     template<typename T>
     T randomEnum()
     {
-        return T(randomValue<std::underlying_type_t<T>>(0, helpers::MaxEnumValue_v<T>));
+        return helpers::randomEnum<T>(getRandState());
     }
     inline bool randomBool() { return randomValue(0, 1) == 0; }
     template<typename T>

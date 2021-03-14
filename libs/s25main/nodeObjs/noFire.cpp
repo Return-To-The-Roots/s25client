@@ -48,7 +48,7 @@ void noFire::Destroy()
     gwg->RecalcBQAroundPoint(pos);
 
     // Evtl Sounds vernichten
-    SOUNDMANAGER.WorkingFinished(this);
+    gwg->GetSoundMgr().stopSounds(*this);
 
     noCoordBase::Destroy();
 }
@@ -82,7 +82,7 @@ void noFire::Draw(DrawPoint drawPt)
         // Feuersound abspielen in zufälligen Intervallen
         if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
         {
-            SOUNDMANAGER.PlayNOSound(96, this, id);
+            gwg->GetSoundMgr().playNOSound(96, *this, id);
             was_sounding = true;
 
             last_sound = VIDEODRIVER.GetTickCount();

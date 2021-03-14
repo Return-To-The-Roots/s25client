@@ -63,7 +63,7 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
 
         if(id / 2 == 1)
         {
-            SOUNDMANAGER.PlayNOSound(62, this, 0);
+            gwg->GetSoundMgr().playNOSound(62, *this, 0);
             was_sounding = true;
         }
     } else if(id < 216)
@@ -88,7 +88,7 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
 
         if((id - 216) / 2 == 1)
         {
-            SOUNDMANAGER.PlayNOSound(62, this, 1);
+            gwg->GetSoundMgr().playNOSound(62, *this, 1);
             was_sounding = true;
         }
     }

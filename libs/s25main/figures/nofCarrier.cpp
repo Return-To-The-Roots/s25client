@@ -310,7 +310,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)
-                    SOUNDMANAGER.PlayNOSound(84, this, 0);
+                    gwg->GetSoundMgr().playNOSound(84, *this, 0);
 
                 last_id = ani_step;
             }
@@ -329,7 +329,7 @@ void nofCarrier::Walked()
 {
     // Bootssounds ggf. löschen
     if(ct == CarrierType::Boat && state != CarrierState::FigureWork)
-        SOUNDMANAGER.WorkingFinished(this);
+        gwg->GetSoundMgr().stopSounds(*this);
 
     switch(state)
     {

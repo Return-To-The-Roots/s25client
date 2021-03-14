@@ -273,7 +273,7 @@ void nofBuildingWorker::LostWork()
             Wander();
 
             // Evtl. Sounds löschen
-            SOUNDMANAGER.WorkingFinished(this);
+            gwg->GetSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }
@@ -295,7 +295,7 @@ void nofBuildingWorker::LostWork()
             StartWandering();
 
             // Evtl. Sounds löschen
-            SOUNDMANAGER.WorkingFinished(this);
+            gwg->GetSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }

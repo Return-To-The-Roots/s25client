@@ -724,7 +724,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
         case KeyType::F12: // Optionsfenster
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>(gwv.GetSoundMgr()));
             return true;
     }
 
@@ -921,14 +921,14 @@ void dskGameInterface::Run()
     gwv.Draw(road, actionwindow != nullptr ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse,
              &water_percent);
 
-    // Evtl Meeresrauschen-Sounds abspieln
-    SOUNDMANAGER.PlayOceanBrawling(water_percent);
-    SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
-
     // Indicate that the game is paused by darkening the screen (dark semi-transparent overlay)
     if(GAMECLIENT.IsPaused())
-    {
         DrawRectangle(Rect(DrawPoint(0, 0), VIDEODRIVER.GetRenderSize()), COLOR_SHADOW);
+    else
+    {
+        // Play ambient sounds if game is not paused
+        worldViewer.GetSoundMgr().playOceanBrawling(water_percent);
+        worldViewer.GetSoundMgr().playBirdSounds(noTree::QueryDrawCounter());
     }
 
     messenger.Draw();

@@ -54,7 +54,7 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
         {
-            SOUNDMANAGER.PlayNOSound(64, this, now_id / 8);
+            gwg->GetSoundMgr().playNOSound(64, *this, now_id / 8);
             was_sounding = true;
         }
 
