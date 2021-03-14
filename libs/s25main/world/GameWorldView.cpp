@@ -59,6 +59,11 @@ const GameWorldBase& GameWorldView::GetWorld() const
     return gwv.GetWorld();
 }
 
+SoundManager& GameWorldView::GetSoundMgr()
+{
+    return const_cast<GameWorldViewer&>(gwv).GetSoundMgr();
+}
+
 void GameWorldView::SetNextZoomFactor()
 {
     if(zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step //-V550

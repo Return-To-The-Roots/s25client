@@ -44,13 +44,13 @@ void nofForester::DrawWorking(DrawPoint drawPt)
     // Schaufel-Sound
     if(now_id == 7 || now_id == 18)
     {
-        SOUNDMANAGER.PlayNOSound(76, this, (now_id == 7) ? 0 : 1, 200);
+        gwg->GetSoundMgr().playNOSound(76, *this, (now_id == 7) ? 0 : 1, 200);
         was_sounding = true;
     }
     // Baum-Einpflanz-Sound
     else if(now_id == 35)
     {
-        SOUNDMANAGER.PlayNOSound(57, this, 2);
+        gwg->GetSoundMgr().playNOSound(57, *this, 2);
         was_sounding = true;
     }
 }

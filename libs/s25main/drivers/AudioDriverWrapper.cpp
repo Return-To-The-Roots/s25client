@@ -176,10 +176,11 @@ EffectPlayId AudioDriverWrapper::PlayEffect(const SoundHandle& sound, uint8_t vo
     return audiodriver_->PlayEffect(sound.getRawHandle(), volume, loop);
 }
 
-void AudioDriverWrapper::StopEffect(const EffectPlayId play_id)
+void AudioDriverWrapper::StopEffect(EffectPlayId& playId)
 {
     if(audiodriver_)
-        audiodriver_->StopEffect(play_id);
+        audiodriver_->StopEffect(playId);
+    playId = EffectPlayId::Invalid;
 }
 
 void AudioDriverWrapper::Msg_MusicFinished()

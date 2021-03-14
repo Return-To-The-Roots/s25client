@@ -93,7 +93,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
 
                 if(id == 12)
                 {
-                    SOUNDMANAGER.PlayNOSound(74, this, 0);
+                    gwg->GetSoundMgr().playNOSound(74, *this, 0);
                     was_sounding = true;
                 }
             } else
@@ -104,7 +104,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
 
                 if(id == 7)
                 {
-                    SOUNDMANAGER.PlayNOSound(74, this, 0);
+                    gwg->GetSoundMgr().playNOSound(74, *this, 0);
                     was_sounding = true;
                 }
             }
@@ -387,7 +387,7 @@ void nofHunter::HandleStateEviscerating()
     // Evtl. Sounds löschen
     if(was_sounding)
     {
-        SOUNDMANAGER.WorkingFinished(this);
+        gwg->GetSoundMgr().stopSounds(*this);
         was_sounding = false;
     }
     // Tier verschwinden lassen

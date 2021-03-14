@@ -43,7 +43,7 @@ void nofStonemason::DrawWorking(DrawPoint drawPt)
 
     if(now_id % 8 == 5)
     {
-        SOUNDMANAGER.PlayNOSound(56, this, now_id);
+        gwg->GetSoundMgr().playNOSound(56, *this, now_id);
         was_sounding = true;
     }
 }

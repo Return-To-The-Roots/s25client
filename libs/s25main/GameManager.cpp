@@ -21,7 +21,6 @@
 #include "RTTR_Assert.h"
 #include "RttrConfig.h"
 #include "Settings.h"
-#include "SoundManager.h"
 #include "WindowManager.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskMainMenu.h"
@@ -192,7 +191,6 @@ bool GameManager::ShowMenu()
 {
     GAMECLIENT.Stop();
     GAMESERVER.Stop();
-    SOUNDMANAGER.StopAll();
 
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen

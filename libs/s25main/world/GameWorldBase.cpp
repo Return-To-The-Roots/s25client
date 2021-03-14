@@ -21,6 +21,7 @@
 #include "GlobalGameSettings.h"
 #include "MapGeometry.h"
 #include "RttrForeachPt.h"
+#include "SoundManager.h"
 #include "TradePathCache.h"
 #include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
@@ -41,7 +42,7 @@
 
 GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(std::move(players)),
-      gameSettings(gameSettings), em(em), lua(nullptr), gi(nullptr)
+      gameSettings(gameSettings), em(em), soundManager(std::make_unique<SoundManager>()), lua(nullptr), gi(nullptr)
 {}
 
 GameWorldBase::~GameWorldBase() = default;

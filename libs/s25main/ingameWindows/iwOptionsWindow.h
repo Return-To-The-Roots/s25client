@@ -19,10 +19,14 @@
 
 #include "IngameWindow.h"
 
+class SoundManager;
+
 class iwOptionsWindow : public IngameWindow
 {
+    SoundManager& soundManager;
+
 public:
-    iwOptionsWindow();
+    iwOptionsWindow(SoundManager& soundManager);
 
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;

@@ -69,6 +69,11 @@ void GameWorldViewer::InitTerrainRenderer()
     });
 }
 
+SoundManager& GameWorldViewer::GetSoundMgr()
+{
+    return gwb.GetSoundMgr();
+}
+
 const GamePlayer& GameWorldViewer::GetPlayer() const
 {
     return GetWorld().GetPlayer(playerId_);

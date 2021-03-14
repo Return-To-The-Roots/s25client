@@ -55,7 +55,7 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
         // Schaufel-Sound
         if(now_id == 6 || now_id == 18 || now_id == 30)
         {
-            SOUNDMANAGER.PlayNOSound(76, this, now_id / 12, 200);
+            gwg->GetSoundMgr().playNOSound(76, *this, now_id / 12, 200);
             was_sounding = true;
         }
 

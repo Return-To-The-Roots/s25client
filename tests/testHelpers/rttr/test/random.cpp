@@ -45,10 +45,11 @@ namespace rttr { namespace test {
             }
             randState.seed(static_cast<decltype(randState)::result_type>(lastSeed));
             failedLastTest = false;
+            testUsedRandom = false;
         }
         void test_unit_finish(boost::unit_test::test_unit const& test, unsigned long) override
         {
-            if(test.p_type == boost::unit_test::TUT_CASE && failedLastTest)
+            if(testUsedRandom && test.p_type == boost::unit_test::TUT_CASE && failedLastTest)
             {
                 std::cerr << "Random seed was " << lastSeed << std::endl;
                 std::cerr << "Decorate the test with *boost::unit_test::label(\"seed=" << lastSeed
@@ -71,6 +72,7 @@ namespace rttr { namespace test {
 
         std::mt19937 randState;
         uint64_t lastSeed = 0;
+        bool testUsedRandom = false;
         bool failedLastTest = false;
 
     public:
@@ -81,7 +83,11 @@ namespace rttr { namespace test {
                 test_unit_start(boost::unit_test::framework::current_test_case());
         }
         ~randomObserver() { boost::unit_test::framework::deregister_observer(*this); }
-        std::mt19937& getState() { return randState; }
+        std::mt19937& getState()
+        {
+            testUsedRandom = true;
+            return randState;
+        }
     };
 
     std::mt19937& getRandState()

@@ -62,7 +62,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
         // Evtl Sound abspielen
         if((now_id - 16) == 10)
         {
-            SOUNDMANAGER.PlayNOSound(65, this, 0);
+            gwg->GetSoundMgr().playNOSound(65, *this, 0);
             was_sounding = true;
         }
     } else if(now_id < 56)
@@ -89,7 +89,7 @@ void nofPigbreeder::MakePigSounds()
     if(GetEvMgr().GetCurrentGF() - last_id > timeDiffSound)
     {
         // "Oink"
-        SOUNDMANAGER.PlayNOSound(86, this, 1);
+        gwg->GetSoundMgr().playNOSound(86, *this, 1);
         last_id = GetEvMgr().GetCurrentGF();
     }
 }

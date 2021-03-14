@@ -15,9 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "Settings.h"
+#include "LoadMockupAudio.h"
 #include "drivers/AudioDriverWrapper.h"
-#include "mockupDrivers/MockupAudioDriver.h"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glAllocator.h"
@@ -39,36 +38,6 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(driver::SoundType)
 BOOST_AUTO_TEST_SUITE(SoundTests)
 
 using driver::SoundType;
-
-struct LoadMockupAudio
-{
-    std::unique_ptr<MockAudioDriverCallback> audioCallbackMock;
-    MockupAudioDriver* audioDriverMock;
-    LoadMockupAudio() : audioCallbackMock(std::make_unique<MockAudioDriverCallback>())
-    {
-        libsiedler2::setAllocator(new GlAllocator);
-        SETTINGS.sound.effectsEnabled = true;
-        SETTINGS.sound.musicEnabled = true;
-        auto driver = std::make_unique<MockupAudioDriver>(audioCallbackMock.get());
-        audioDriverMock = driver.get();
-        AUDIODRIVER.LoadDriver(std::move(driver));
-        BOOST_TEST_REQUIRE(AUDIODRIVER.GetName() != "");
-    }
-    ~LoadMockupAudio() { AUDIODRIVER.UnloadDriver(); }
-    /// Return a callable to be used with MOCK_EXPECT(...).calls(...) that loads a sound of the given type
-    auto makeDoLoad(SoundType type)
-    {
-        return [=](auto&&...) { return audioDriverMock->doLoad(type); };
-    };
-    auto makeUnloadHandle(SoundType type)
-    {
-        // Check that the type matches and delete the driver data
-        return [=](const driver::RawSoundHandle& handle) {
-            BOOST_TEST(type == handle.getType());
-            delete static_cast<MockupSoundData*>(handle.getDriverData());
-        };
-    };
-};
 
 BOOST_AUTO_TEST_CASE(DefaultConstructedSoundHandleIsInvalid)
 {
@@ -144,6 +113,7 @@ BOOST_FIXTURE_TEST_CASE(SoundHandlesCanBeUnloadedByDriver, LoadMockupAudio)
 
 BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
 {
+    libsiedler2::setAllocator(new GlAllocator);
     {
         libsiedler2::Archiv snd;
         BOOST_TEST_REQUIRE(libsiedler2::Load(rttr::test::libsiedler2TestFilesDir / "testMono.wav", snd) == 0);
@@ -170,9 +140,11 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
         // Stop playing
         MOCK_EXPECT(audioDriverMock->doStopEffect).in(s).once().with(channel);
         MOCK_EXPECT(audioDriverMock->IsEffectPlaying).in(s).once().with(id).returns(false);
+        const auto idCopy = id;
         AUDIODRIVER.StopEffect(id);
-        BOOST_TEST_REQUIRE(audioDriverMock->GetEffectChannel(id) == -1);
-        BOOST_TEST_REQUIRE(!AUDIODRIVER.IsEffectPlaying(id));
+        BOOST_TEST(id == EffectPlayId::Invalid);
+        BOOST_TEST_REQUIRE(audioDriverMock->GetEffectChannel(idCopy) == -1);
+        BOOST_TEST_REQUIRE(!AUDIODRIVER.IsEffectPlaying(idCopy));
 
         // Unload when effect goes out of scope
         MOCK_EXPECT(audioDriverMock->doUnloadSound).in(s).once().calls(makeUnloadHandle(SoundType::Effect));
