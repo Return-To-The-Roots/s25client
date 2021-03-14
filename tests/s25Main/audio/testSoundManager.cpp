@@ -221,4 +221,41 @@ BOOST_FIXTURE_TEST_CASE(BirdSounds, LoadMockupAudioWithSounds)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(AnimalSounds, LoadMockupAudioWithSounds)
+{
+    {
+        SoundManager manager;
+        // Check that the same sound is played as long as allowed
+        int channel = 0;
+        MOCK_EXPECT(audioDriverMock->doPlayEffect).exactly(SoundManager::maxPlayCtPerSound).returns(std::ref(channel));
+        for(unsigned i : helpers::range(SoundManager::maxPlayCtPerSound))
+        {
+            // All previously added sounds are checked
+            if(i)
+                MOCK_EXPECT(audioDriverMock->IsEffectPlaying).exactly(i).returns(true);
+            manager.playAnimalSound(50);
+            ++channel;
+        }
+        // Do not play the same sound again
+        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).exactly(SoundManager::maxPlayCtPerSound).returns(true);
+        manager.playAnimalSound(50);
+        mock::verify();
+
+        // Can play another sound
+        MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(channel++);
+        manager.playAnimalSound(51);
+        mock::verify();
+
+        // If one sound has ended, we can play another one
+        MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(channel++);
+        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().returns(false);
+        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).exactly(SoundManager::maxPlayCtPerSound - 1u).returns(true);
+        manager.playAnimalSound(50);
+        mock::verify();
+
+        // Sounds are stopped once the manager gets destroyed
+        MOCK_EXPECT(audioDriverMock->doStopEffect).exactly(SoundManager::maxPlayCtPerSound + 1);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

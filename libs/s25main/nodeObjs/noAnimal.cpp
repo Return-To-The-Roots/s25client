@@ -19,17 +19,26 @@
 #include "EventManager.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "SoundManager.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "figures/nofHunter.h"
+#include "helpers/random.h"
 #include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
+#include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
-
-#include "ogl/glSmartBitmap.h"
 #include "s25util/colors.h"
+
+namespace {
+auto& getAnimalRng()
+{
+    static auto soundRng = helpers::getRandomGenerator();
+    return soundRng;
+}
+} // namespace
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
     : noMovable(NodalObjectType::Animal, pos), species(species), state(State::Walking), pause_way(5 + RANDOM_RAND(15)),
@@ -81,16 +90,16 @@ void noAnimal::Draw(DrawPoint drawPt)
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == Species::Duck || species == Species::Sheep)
             {
-                unsigned now = VIDEODRIVER.GetTickCount();
+                const unsigned now = VIDEODRIVER.GetTickCount();
                 // Wurde der Soundzeitpunkt schon überschritten?
                 if(now > sound_moment)
                 {
-                    // Wenns in dem jeweiligen Rahmen liegt, Sound abspielen
+                    // Play the sound if we unless we missed the timeframe by at least 1s
                     if((now < sound_moment + 1000) && !GAMECLIENT.IsPaused())
-                        LOADER.GetSoundN("sound", (species == Species::Sheep) ? 94 : 95)->Play(50 + rand() % 70, false);
+                        gwg->GetSoundMgr().playAnimalSound((species == Species::Sheep) ? 94 : 95);
 
-                    // Neuen Zeitpunkt errechnen
-                    sound_moment = now + 8000 + rand() % 5000;
+                    // Calc new sound time
+                    sound_moment = now + helpers::randomValue(getAnimalRng(), 8000, 13000);
                 }
             }
         }
@@ -238,11 +247,10 @@ void noAnimal::Walked()
             // Bei Enten und Schafen: Soundzeitpunkt ggf. setzen
             if(species == Species::Duck || species == Species::Sheep)
             {
-                unsigned now = VIDEODRIVER.GetTickCount();
+                const unsigned now = VIDEODRIVER.GetTickCount();
                 // Wurde der Soundzeitpunkt schon überschritten?
                 if(now > sound_moment)
-                    // Neuen Zeitpunkt errechnen
-                    sound_moment = now + 8000 + rand() % 5000;
+                    sound_moment = now + helpers::randomValue(getAnimalRng(), 8000, 13000);
             }
         }
         break;
