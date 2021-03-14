@@ -214,6 +214,11 @@ BOOST_FIXTURE_TEST_CASE(BirdSounds, LoadMockupAudioWithSounds)
             mockClock.currentTime += 1s;
             MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(0);
             manager.playBirdSounds(10000);
+            // Do not play right after or within a few ms
+            manager.playBirdSounds(10000);
+            mockClock.currentTime += 50ms;
+            manager.playBirdSounds(10000);
+            mockClock.currentTime -= 50ms;
         }
 
         // Stop the bird sound on destroy
