@@ -27,12 +27,12 @@
 #include "gameData/GameConsts.h"
 #include <boost/optional.hpp>
 
-Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
-    : Game(settings, std::make_unique<EventManager>(startGF), players)
+Game::Game(GlobalGameSettings settings, unsigned startGF, const std::vector<PlayerInfo>& players)
+    : Game(std::move(settings), std::make_unique<EventManager>(startGF), players)
 {}
 
-Game::Game(const GlobalGameSettings& settings, std::unique_ptr<EventManager> em, const std::vector<PlayerInfo>& players)
-    : ggs_(settings), em_(std::move(em)), world_(players, ggs_, *em_), started_(false), finished_(false)
+Game::Game(GlobalGameSettings settings, std::unique_ptr<EventManager> em, const std::vector<PlayerInfo>& players)
+    : ggs_(std::move(settings)), em_(std::move(em)), world_(players, ggs_, *em_), started_(false), finished_(false)
 {}
 
 Game::~Game() = default;

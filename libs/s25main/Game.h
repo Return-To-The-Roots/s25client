@@ -28,8 +28,8 @@ class AIPlayer;
 class Game
 {
 public:
-    Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players);
-    Game(const GlobalGameSettings& settings, std::unique_ptr<EventManager> em, const std::vector<PlayerInfo>& players);
+    Game(GlobalGameSettings settings, unsigned startGF, const std::vector<PlayerInfo>& players);
+    Game(GlobalGameSettings settings, std::unique_ptr<EventManager> em, const std::vector<PlayerInfo>& players);
     ~Game();
 
     const GlobalGameSettings ggs_;
