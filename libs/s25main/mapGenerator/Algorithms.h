@@ -18,9 +18,9 @@
 #pragma once
 
 #include "RttrForeachPt.h"
+#include "helpers/containerUtils.h"
 #include "mapGenerator/NodeMapUtilities.h"
 #include "world/NodeMapBase.h"
-
 #include <cmath>
 #include <queue>
 #include <set>
@@ -265,9 +265,7 @@ namespace rttr { namespace mapGenerator {
         {
             previousNodes = currentNodes;
             currentNodes =
-              static_cast<unsigned>(std::count_if(values.begin(), values.end(), [minimum, limit](const T value) {
-                  return value >= minimum && value <= limit;
-              }));
+              helpers::count_if(values, [minimum, limit](const T value) { return value >= minimum && value <= limit; });
             limit++;
         }
 
@@ -316,10 +314,9 @@ namespace rttr { namespace mapGenerator {
         while(currentNodes < expectedNodes && limit <= maximum)
         {
             previousNodes = currentNodes;
-            currentNodes = static_cast<unsigned>(
-              std::count_if(area.begin(), area.end(), [&values, minimum, limit](const MapPoint& pt) {
-                  return values[pt] >= minimum && values[pt] <= limit;
-              }));
+            currentNodes = helpers::count_if(area, [&values, minimum, limit](const MapPoint& pt) {
+                return values[pt] >= minimum && values[pt] <= limit;
+            });
             limit++;
         }
 

@@ -158,4 +158,20 @@ BOOST_AUTO_TEST_CASE(RemoveIf)
     BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
 }
 
+BOOST_AUTO_TEST_CASE(Count)
+{
+    std::vector<int> values = {1, 2, 2, 4, 4, 4};
+    BOOST_TEST(helpers::count(values, 1) == 1u);
+    BOOST_TEST(helpers::count(values, 2) == 2u);
+    BOOST_TEST(helpers::count(values, 3) == 0u);
+    BOOST_TEST(helpers::count(values, 4) == 3u);
+}
+
+BOOST_AUTO_TEST_CASE(CountIf)
+{
+    std::vector<int> values = {1, 2, 3, 4, 5};
+    const auto isEven = [](int i) { return i % 2 == 0; };
+    BOOST_TEST(helpers::count_if(values, isEven) == 2u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

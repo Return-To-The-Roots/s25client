@@ -212,7 +212,7 @@ namespace rttr { namespace mapGenerator {
 
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
         const auto rivers = CreateRivers(center);
-        const auto waterNodes = static_cast<unsigned>(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
+        const unsigned waterNodes = helpers::count(map_.z, map_.height.minimum);
 
         CreateFreeIslands(waterNodes);
 
@@ -240,7 +240,7 @@ namespace rttr { namespace mapGenerator {
 
         ResetSeaLevel(map_, rnd_, seaLevel);
 
-        const auto waterNodes = static_cast<unsigned>(std::count(map_.z.begin(), map_.z.end(), map_.height.minimum));
+        const unsigned waterNodes = helpers::count(map_.z, map_.height.minimum);
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
         const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
         const auto islandSize = GetIslandSize(map_.size);
