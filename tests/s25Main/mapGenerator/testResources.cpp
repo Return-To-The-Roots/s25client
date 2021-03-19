@@ -137,19 +137,24 @@ BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
 
     AddResources(map, rnd, settings);
 
+    unsigned numMountainWithRes = 0;
+    unsigned numMountainWithoutRes = 0;
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
         if(map.textureMap.All(pt, IsMinableMountain))
         {
-            BOOST_TEST_REQUIRE(map.resources[pt] != R_None);
+            if(map.resources[pt] == R_None)
+                numMountainWithoutRes++; // LCOV_EXCL_LINE
+            else
+                numMountainWithRes++;
         } else if(map.textureMap.All(pt, IsWater))
-        {
             BOOST_TEST_REQUIRE(map.resources[pt] == R_Fish);
-        } else
-        {
+        else
             BOOST_TEST_REQUIRE(map.resources[pt] == R_Water);
-        }
     }
+    BOOST_TEST(numMountainWithRes > 0u);
+    // TODO: How much do we actually want?
+    BOOST_TEST(numMountainWithRes > 4u * numMountainWithoutRes);
 }
 
 BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
