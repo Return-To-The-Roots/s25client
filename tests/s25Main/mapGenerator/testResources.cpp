@@ -55,29 +55,19 @@ struct ResourceTestFixture : MapGenFixture
         for(unsigned y = 0; y < map.size.y; y++)
         {
             for(unsigned x = 0; x < 2; x++)
-            {
                 map.textures[MapPoint(x, y)] = TexturePair(water);
-            }
 
             for(unsigned x = 2; x < 6; x++)
-            {
                 map.textures[MapPoint(x, y)] = TexturePair(land);
-            }
 
             for(unsigned x = 6; x < 10; x++)
-            {
                 map.textures[MapPoint(x, y)] = TexturePair(mountain);
-            }
 
             for(unsigned x = 10; x < 14; x++)
-            {
                 map.textures[MapPoint(x, y)] = TexturePair(land);
-            }
 
             for(unsigned x = 14; x < 16; x++)
-            {
                 map.textures[MapPoint(x, y)] = TexturePair(water);
-            }
         }
     }
 };
@@ -128,15 +118,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
     MapSettings settings;
 
     auto countObjects = [this]() {
-        unsigned objects = 0;
-        RTTR_FOREACH_PT(MapPoint, map.size)
-        {
-            if(map.objectInfos[pt] != OI_Empty)
-            {
-                objects++;
-            }
-        }
-        return objects;
+        return helpers::count_if(map.objectInfos, [](const auto o) { return o != OI_Empty; });
     };
 
     const unsigned objectsBefore = countObjects();
@@ -183,9 +165,7 @@ BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
             BOOST_TEST_REQUIRE(
               (map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck || map.animals[pt] == Animal::Duck2));
         } else
-        {
             BOOST_TEST_REQUIRE((map.animals[pt] != Animal::Duck && map.animals[pt] != Animal::Duck2));
-        }
     }
 }
 

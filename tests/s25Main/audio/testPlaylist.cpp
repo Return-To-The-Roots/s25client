@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(RandomPlaylistPlaysEachSongNumRepeatsTimes)
     BOOST_TEST(pl.getCurrentSong().empty());
     for(const auto& song : songs)
     {
-        const auto numPlayed = static_cast<unsigned>(std::count(playedSongs.cbegin(), playedSongs.cend(), song));
+        const unsigned numPlayed = helpers::count(playedSongs, song);
         BOOST_TEST(numPlayed == numRepeats);
     }
 }

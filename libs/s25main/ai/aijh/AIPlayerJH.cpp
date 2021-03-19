@@ -1046,7 +1046,7 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
         // return aiMap[curPt].res == res;
         return CalcResource(curPt) == res;
     };
-    const unsigned numGoodPts = static_cast<unsigned>(std::count_if(pts.begin(), pts.end(), hasResource));
+    const unsigned numGoodPts = helpers::count_if(pts, hasResource);
     return (numGoodPts * 100) / numAllPTs;
 }
 

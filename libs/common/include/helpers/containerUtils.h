@@ -122,6 +122,23 @@ bool contains_if(const T& container, T_Predicate&& predicate)
     return find_if(container, std::forward<T_Predicate>(predicate)) != end(container);
 }
 
+/// Count the number of occurences of the given value. Returns an unsigned value
+template<typename T, typename U>
+size_t count(const T& container, const U& value)
+{
+    const auto result = std::count(container.begin(), container.end(), value);
+    return static_cast<std::make_unsigned_t<decltype(result)>>(result);
+}
+
+/// Count the number of items for which the predicate returns true.
+/// Returns an unsigned value
+template<typename T, class T_Predicate>
+size_t count_if(const T& container, T_Predicate&& predicate)
+{
+    const auto result = std::count_if(container.begin(), container.end(), std::forward<T_Predicate>(predicate));
+    return static_cast<std::make_unsigned_t<decltype(result)>>(result);
+}
+
 /// Remove duplicate values from the given sorted container
 template<class T>
 void makeUniqueSorted(T& container)

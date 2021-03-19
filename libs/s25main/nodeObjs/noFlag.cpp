@@ -254,8 +254,7 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
 unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
 {
     const auto roadDir = toRoadPathDirection(dir);
-    return static_cast<unsigned>(std::count_if(
-      wares.cbegin(), wares.cend(), [roadDir](const auto& ware) { return ware && (ware->GetNextDir() == roadDir); }));
+    return helpers::count_if(wares, [roadDir](const auto& ware) { return ware && (ware->GetNextDir() == roadDir); });
 }
 
 /**
