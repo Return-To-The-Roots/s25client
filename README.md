@@ -43,8 +43,8 @@ Putting RttR in a symlinked folder should work though.
 - C++14 compatible compiler (e.g. GCC-6)
 - cmake
 - git
-- libboost-dev (at least v1.64.0, i.e <http://www.boost.org/>)
-  or only: libboost-test-dev libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libboost-program-options-dev (at least v1.64.0)
+- libboost-dev (at least v1.69.0, i.e <http://www.boost.org/>)
+  or only: libboost-test-dev libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libboost-program-options-dev (at least v1.69.0)
 - libsdl2-dev
 - libsdl2-mixer-dev
 - libcurl-dev (in libcurl4-openssl-dev)
