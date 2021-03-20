@@ -3,4 +3,12 @@ coverage:
     ignore:
         - external/**/*
         - tests/**/*
+    status:
+      # Project coverage changes should not make PRs fail. Patch coverage is still checked
+      # Reasoning: Removing lines by moving stuff in functions can reduce the amount of covered lines but actually improve code
+      project:
+        default:
+          target: auto
+          informational: true
+          
 comment: false
