@@ -49,7 +49,7 @@ Putting RttR in a symlinked folder should work though.
 - libsdl2-mixer-dev
 - libcurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
-- lua5.2-dev
+- lua5.2-dev (Lua 5.1 to 5.3 are supported)
 - gettext
 - libminiupnpc-dev
 
