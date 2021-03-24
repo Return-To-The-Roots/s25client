@@ -111,7 +111,7 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN ON CACHE BOOL "Inline symbol visibility")
 # ClangFormat
 ################################################################################
 
-find_package(ClangFormat 10)
+find_package(ClangFormat 10 EXACT)
 
 ################################################################################
 # Set paths.
