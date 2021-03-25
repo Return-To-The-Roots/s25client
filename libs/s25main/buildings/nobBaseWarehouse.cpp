@@ -1026,15 +1026,14 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
     // Kein Soldat gefunden, als letzten Hoffnung die Soldaten nehmen, die ggf in der Warteschlange noch hängen
     for(auto it = leave_house.begin(); it != leave_house.end(); ++it)
     {
-        nofSoldier* soldier;
+        std::unique_ptr<nofSoldier> soldier;
         // Soldat?
         if((*it)->GetGOT() == GO_Type::NofAggressivedefender)
         {
-            auto* aggDefender = static_cast<nofAggressiveDefender*>(it->get());
-            aggDefender->NeedForHomeDefence();
-            soldier = aggDefender;
+            soldier.reset(static_cast<nofSoldier*>(it->release()));
+            static_cast<nofAggressiveDefender&>(*soldier).NeedForHomeDefence();
         } else if((*it)->GetGOT() == GO_Type::NofPassivesoldier)
-            soldier = static_cast<nofPassiveSoldier*>(it->get());
+            soldier.reset(static_cast<nofSoldier*>(it->release()));
         else
             continue;
 
@@ -1043,7 +1042,6 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
 
         auto defender = std::make_unique<nofDefender>(pos, player, *this, soldier->GetRank(), attacker);
         soldier->Destroy();
-        delete soldier;
         return defender;
     }
 
