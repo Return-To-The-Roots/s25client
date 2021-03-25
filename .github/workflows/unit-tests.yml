@@ -92,7 +92,7 @@ jobs:
       - name: Setup CCache
         uses: hendrikmuhs/ccache-action@v1
         with:
-          key: ${{matrix.os}}-${{matrix.compiler}}
+          key: ${{matrix.os}}-${{matrix.compiler}}-${{matrix.buildType}}-${{matrix.boostVersion}}
           max-size: 200M
 
       - name: Install dependencies
