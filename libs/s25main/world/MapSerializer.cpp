@@ -216,4 +216,5 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         }
         game.SetLua(std::move(lua));
     }
+    world.CreateTradeGraphs();
 }
