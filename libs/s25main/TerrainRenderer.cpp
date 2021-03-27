@@ -32,7 +32,6 @@
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "s25util/Log.h"
-#include "s25util/dynamicUniqueCast.h"
 #include <glad/glad.h>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
@@ -145,7 +144,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
                 for(unsigned i = 0; i < textures->size(); i++)
                 {
                     terrainTextures[curIdx.value].textures.push_back(
-                      libutil::dynamicUniqueCast<glArchivItem_Bitmap>(textures->release(i)).release());
+                      dynamic_cast<glArchivItem_Bitmap*>(textures->release(i).release()));
                 }
             }
         } else

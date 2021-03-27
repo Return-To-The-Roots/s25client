@@ -45,6 +45,7 @@
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
 #include "s25util/Log.h"
+#include <boost/pointer_cast.hpp>
 #include <algorithm>
 
 /// Intervall für Ausleerung (in gf)
@@ -1030,10 +1031,10 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
         // Soldat?
         if((*it)->GetGOT() == GO_Type::NofAggressivedefender)
         {
-            soldier.reset(static_cast<nofSoldier*>(it->release()));
+            soldier = boost::static_pointer_cast<nofSoldier>(std::move(*it));
             static_cast<nofAggressiveDefender&>(*soldier).NeedForHomeDefence();
         } else if((*it)->GetGOT() == GO_Type::NofPassivesoldier)
-            soldier.reset(static_cast<nofSoldier*>(it->release()));
+            soldier = boost::static_pointer_cast<nofSoldier>(std::move(*it));
         else
             continue;
 

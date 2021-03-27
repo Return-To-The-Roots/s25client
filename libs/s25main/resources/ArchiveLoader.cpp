@@ -30,6 +30,7 @@
 #include "s25util/Log.h"
 #include "s25util/strAlgos.h"
 #include <boost/filesystem.hpp>
+#include <boost/pointer_cast.hpp>
 #include <chrono>
 #include <sstream>
 #include <stdexcept>
@@ -67,7 +68,7 @@ std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, con
         {
             if(txtItem)
                 throw LoadError(_("Bob-like file contained multiple text entries: %s\n"), filepath);
-            txtItem.reset(static_cast<libsiedler2::ArchivItem_Text*>(entry.release()));
+            txtItem = boost::static_pointer_cast<libsiedler2::ArchivItem_Text>(std::move(entry));
         }
     }
     if(!txtItem)

@@ -52,9 +52,9 @@
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "s25util/Log.h"
-#include "s25util/dynamicUniqueCast.h"
 #include "s25util/utf8.h"
 #include <boost/filesystem/operations.hpp>
+#include <boost/pointer_cast.hpp>
 #include <stdexcept>
 #include <utility>
 
@@ -200,7 +200,7 @@ static std::unique_ptr<glArchivItem_Map> loadAndVerifyMap(const std::string& pat
     libsiedler2::Archiv archive;
     if(int ec = libsiedler2::loader::LoadMAP(path, archive))
         throw std::runtime_error(libsiedler2::getErrorString(ec));
-    auto map = libutil::dynamicUniqueCast<glArchivItem_Map>(archive.release(0));
+    auto map = boost::dynamic_pointer_cast<glArchivItem_Map>(archive.release(0));
     if(!map)
         throw std::runtime_error(_("Unexpected dynamic type of map"));
     if(map->getHeader().getWidth() > MAX_MAP_SIZE || map->getHeader().getHeight() > MAX_MAP_SIZE)
