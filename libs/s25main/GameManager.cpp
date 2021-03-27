@@ -33,9 +33,9 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/Archiv.h"
-#include "s25util//dynamicUniqueCast.h"
 #include "s25util/Log.h"
 #include "s25util/error.h"
+#include <boost/pointer_cast.hpp>
 
 GameManager::GameManager(Log& log, Settings& settings, VideoDriverWrapper& videoDriver, AudioDriverWrapper& audioDriver,
                          WindowManager& windowManager)
@@ -174,7 +174,7 @@ bool GameManager::ShowSplashscreen()
     libsiedler2::Archiv arSplash;
     if(!LOADER.Load(arSplash, RTTRCONFIG.ExpandPath(s25::files::splash)))
         return false;
-    auto image = libutil::dynamicUniqueCast<glArchivItem_Bitmap>(arSplash.release(0));
+    auto image = boost::dynamic_pointer_cast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
     {
         s25util::error(_("Splash screen couldn't be loaded!\n"));

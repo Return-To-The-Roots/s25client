@@ -56,9 +56,9 @@
 #include "s25util/Log.h"
 #include "s25util/StringConversion.h"
 #include "s25util/System.h"
-#include "s25util/dynamicUniqueCast.h"
 #include "s25util/strAlgos.h"
 #include <boost/filesystem.hpp>
+#include <boost/pointer_cast.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <algorithm>
 #include <chrono>
@@ -257,7 +257,7 @@ bool Loader::LoadSounds()
         try
         {
             libsiedler2::Archiv sng = archiveLoader_->loadFileOrDir(oggFile);
-            auto music = libutil::dynamicUniqueCast<MusicItem>(sng.release(0));
+            auto music = boost::dynamic_pointer_cast<MusicItem>(sng.release(0));
             if(music)
                 sng_lst.emplace_back(std::move(music));
             else

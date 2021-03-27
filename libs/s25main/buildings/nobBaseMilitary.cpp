@@ -31,7 +31,7 @@
 #include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
-#include "s25util/dynamicUniqueCast.h"
+#include <boost/pointer_cast.hpp>
 #include <limits>
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player,
@@ -374,7 +374,7 @@ void nobBaseMilitary::CancelJobs()
         // sollen zum Kampf
         if((*it)->DoJobWorks() && (*it)->GetGOT() != GO_Type::NofDefender)
         {
-            auto soldier = libutil::dynamicUniqueCast<nofActiveSoldier>(std::move(*it));
+            auto soldier = boost::dynamic_pointer_cast<nofActiveSoldier>(std::move(*it));
             RTTR_Assert(soldier);
 
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
