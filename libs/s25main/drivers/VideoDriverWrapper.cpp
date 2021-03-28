@@ -113,10 +113,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    const std::string title = RTTR_Version::GetTitle() + " - " + RTTR_Version::GetReadableVersion();
-
-    // Fenster erstellen
-    if(!videodriver->CreateScreen(title, size, fullscreen))
+    if(!videodriver->CreateScreen(RTTR_Version::GetTitle(), size, fullscreen))
     {
         s25util::fatal_error("Could not create window!\n");
         return false;

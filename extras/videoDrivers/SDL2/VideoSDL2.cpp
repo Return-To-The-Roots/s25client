@@ -19,6 +19,7 @@
 #include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
+#include "enum_cast.hpp"
 #include "helpers/LSANUtils.h"
 #include "helpers/containerUtils.h"
 #include "icon.h"
@@ -32,7 +33,6 @@
 #    include <boost/nowide/convert.hpp>
 #    include <SDL_syswm.h>
 #endif // _WIN32
-#include "enum_cast.hpp"
 
 #define CHECK_SDL(call)                 \
     do                                  \
