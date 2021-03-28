@@ -35,5 +35,6 @@ private:
     bool Msg_LeftDown(const MouseCoords& mc) override;
     void LoadFiles();
 
+    std::unique_ptr<glArchivItem_Bitmap> splashImg;
     bool isLoading, isLoaded;
 };

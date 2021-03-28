@@ -35,7 +35,7 @@
 using namespace std::chrono_literals;
 
 dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg)
-    : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
+    : Desktop(splashImg.get()), splashImg(std::move(splashImg)), isLoading(false), isLoaded(false)
 {
     background->setInterpolateTexture(false);
     WINDOWMANAGER.SetCursor(Cursor::None);
@@ -43,8 +43,6 @@ dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg)
 
 dskSplash::~dskSplash()
 {
-    // We took ownership!
-    delete background;
     WINDOWMANAGER.SetCursor();
 }
 

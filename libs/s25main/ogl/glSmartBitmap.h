@@ -20,6 +20,7 @@
 #include "DrawPoint.h"
 #include "ITexture.h"
 #include <array>
+#include <memory>
 #include <vector>
 
 namespace libsiedler2 {
@@ -77,7 +78,8 @@ public:
     /// Draw the bitmap(s) to the specified buffer at the position starting at bufOffset (must be positive)
     void drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& bufOffset = Extent(0, 0)) const;
 
-    void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
-    void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);
-    void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
+    void add(libsiedler2::baseArchivItem_Bitmap* bmp);
+    void add(std::unique_ptr<libsiedler2::baseArchivItem_Bitmap> bmp);
+    void add(libsiedler2::ArchivItem_Bitmap_Player* bmp);
+    void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp);
 };

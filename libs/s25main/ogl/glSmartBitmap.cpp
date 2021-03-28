@@ -62,27 +62,35 @@ Extent glSmartBitmap::getRequiredTexSize() const
     return texSize;
 }
 
-void glSmartBitmap::add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership /*= false*/)
+void glSmartBitmap::add(libsiedler2::ArchivItem_Bitmap_Player* bmp)
 {
     if(!bmp)
         return;
-    items.push_back(glBitmapItem(bmp, transferOwnership));
+    items.push_back(glBitmapItem(bmp));
     calcDimensions();
 }
 
-void glSmartBitmap::add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership /*= false*/)
+void glSmartBitmap::add(libsiedler2::baseArchivItem_Bitmap* bmp)
 {
     if(!bmp)
         return;
-    items.push_back(glBitmapItem(bmp, false, transferOwnership));
+    items.push_back(glBitmapItem(bmp));
     calcDimensions();
 }
 
-void glSmartBitmap::addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership /*= false*/)
+void glSmartBitmap::add(std::unique_ptr<libsiedler2::baseArchivItem_Bitmap> bmp)
 {
     if(!bmp)
         return;
-    items.push_back(glBitmapItem(bmp, true, transferOwnership));
+    items.push_back(glBitmapItem(bmp.release(), false, true));
+    calcDimensions();
+}
+
+void glSmartBitmap::addShadow(libsiedler2::baseArchivItem_Bitmap* bmp)
+{
+    if(!bmp)
+        return;
+    items.push_back(glBitmapItem(bmp, true));
     calcDimensions();
 }
 

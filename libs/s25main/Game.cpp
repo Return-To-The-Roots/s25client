@@ -60,7 +60,7 @@ void Game::Start(bool startFromSave)
 
 void Game::AddAIPlayer(std::unique_ptr<AIPlayer> newAI)
 {
-    aiPlayers_.push_back(newAI.release());
+    aiPlayers_.push_back(std::move(newAI));
 }
 
 void Game::SetLua(std::unique_ptr<LuaInterfaceGame> newLua)

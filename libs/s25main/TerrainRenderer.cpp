@@ -33,6 +33,7 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "s25util/Log.h"
 #include <glad/glad.h>
+#include <boost/pointer_cast.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
 #include <set>
@@ -134,8 +135,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BobType::PaletteAnim)
             {
                 LOG.write("Invalid palette animation '%1%' for '%2%'") % unsigned(cur.palAnimIdx) % cur.name;
-                terrainTextures[curIdx.value].textures.push_back(
-                  LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
+                terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
             } else
             {
                 auto& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
@@ -144,13 +144,12 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
                 for(unsigned i = 0; i < textures->size(); i++)
                 {
                     terrainTextures[curIdx.value].textures.push_back(
-                      dynamic_cast<glArchivItem_Bitmap*>(textures->release(i).release()));
+                      boost::dynamic_pointer_cast<glArchivItem_Bitmap>(textures->release(i)));
                 }
             }
         } else
         {
-            terrainTextures[curIdx.value].textures.push_back(
-              LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
+            terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
         }
         // Initialize OpenGL textures
         for(glArchivItem_Bitmap& bmp : terrainTextures[curIdx.value].textures)
