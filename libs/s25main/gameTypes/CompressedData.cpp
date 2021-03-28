@@ -30,7 +30,7 @@ bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, u
 
     if(!file)
     {
-        LOG.write("FATAL ERROR: can't write to %s\n") % filePath;
+        LOG.write("FATAL ERROR: can't write to %1%\n") % filePath;
         return false;
     }
 
@@ -40,7 +40,7 @@ bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, u
 
         if(!file.write(uncompressedData.data(), uncompressedData.size()))
         {
-            LOG.write("FATAL ERROR: Writing to %s failed\n") % filePath;
+            LOG.write("FATAL ERROR: Writing to %1% failed\n") % filePath;
             return false;
         }
 
@@ -48,7 +48,7 @@ bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, u
             *checksum = CalcChecksumOfBuffer(uncompressedData);
     } catch(const std::runtime_error& err)
     {
-        LOG.write("FATAL ERROR: 1%\n") % err.what();
+        LOG.write("FATAL ERROR: %1%\n") % err.what();
         return false;
     }
 
@@ -64,7 +64,7 @@ bool CompressedData::CompressFromFile(const boost::filesystem::path& filePath, u
     std::vector<char> uncompressedData(uncompressedLength);
     if(!file.read(uncompressedData.data(), uncompressedLength))
     {
-        LOG.write("Could not read from %s\n") % filePath;
+        LOG.write("Could not read from %1%\n") % filePath;
         return false;
     }
 
@@ -73,7 +73,7 @@ bool CompressedData::CompressFromFile(const boost::filesystem::path& filePath, u
         data = compress(uncompressedData);
     } catch(const std::runtime_error& err)
     {
-        LOG.write("FATAL ERROR: 1%\n") % err.what();
+        LOG.write("FATAL ERROR: %1%\n") % err.what();
         return false;
     }
 
