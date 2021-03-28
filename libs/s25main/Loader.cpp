@@ -833,7 +833,7 @@ void Loader::fillCaches()
                 bitmap->setNx(image->getNx());
                 bitmap->setNy(image->getNy());
 
-                bmp.add(bitmap.release(), true);
+                bmp.add(std::move(bitmap));
                 bmp.addShadow(shadow);
 
                 stp->add(bmp);
