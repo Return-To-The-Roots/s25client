@@ -841,7 +841,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
       RTTRCONFIG.ExpandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
     saveRandomLog(filePathLog, RANDOM.GetAsyncLog());
     SaveToFile(filePathSave);
-    LOG.write(_("Async log saved at \"%s\",\ngame saved at \"%s\"\n")) % filePathLog % filePathSave;
+    LOG.write(_("Async log saved at %1%,\ngame saved at %2%\n")) % filePathLog % filePathSave;
     return true;
 }
 
@@ -1001,7 +1001,7 @@ bool GameClient::CreateLobby()
             // Karteninformationen laden
             if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
             {
-                LOG.write("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n") % mapinfo.filepath;
+                LOG.write("GameClient::OnMapData: ERROR: Map %1%, couldn't load header!\n") % mapinfo.filepath;
                 return false;
             }
 

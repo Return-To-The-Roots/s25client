@@ -73,7 +73,7 @@ void MusicPlayer::PlayNext()
     // in "sng" speichern, daher evtl. altes Stück erstmal löschen
     sng.clear();
 
-    LOG.write(_("Loading \"%s\": ")) % song;
+    LOG.write(_("Loading \"%1%\": ")) % song;
 
     // Neues Stück laden
     if(int ec = libsiedler2::loader::LoadSND(song, sng))

@@ -151,7 +151,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
             // Karteninformationen laden
             if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
             {
-                LOG.write("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n") % mapinfo.filepath;
+                LOG.write("GameServer::Start: ERROR: Map %1%, couldn't load header!\n") % mapinfo.filepath;
                 return false;
             }
             const libsiedler2::ArchivItem_Map_Header& header =
@@ -191,7 +191,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
 
     if(playerInfos.empty())
     {
-        LOG.write("Map \"%s\" has no players!\n") % mapinfo.filepath;
+        LOG.write("Map %1% has no players!\n") % mapinfo.filepath;
         return false;
     }
 
@@ -1579,11 +1579,11 @@ bfs::path GameServer::SaveAsyncLog()
             }
         }
 
-        LOG.write(_("Async log saved at \"%s\"\n")) % filePath;
+        LOG.write(_("Async log saved at %1%\n")) % filePath;
         return filePath;
     } else
     {
-        LOG.write(_("Failed to save async log at \"%s\"\n")) % filePath;
+        LOG.write(_("Failed to save async log at %1%\n")) % filePath;
         return "";
     }
 }

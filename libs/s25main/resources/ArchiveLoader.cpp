@@ -82,7 +82,7 @@ std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, con
 libsiedler2::Archiv ArchiveLoader::loadFile(const fs::path& filePath,
                                             const libsiedler2::ArchivItem_Palette* palette) const
 {
-    logger_.write(_("Loading \"%s\": ")) % filePath;
+    logger_.write(_("Loading %1%: ")) % filePath;
 
     libsiedler2::Archiv archive;
     if(int ec = libsiedler2::Load(filePath, archive, palette))
