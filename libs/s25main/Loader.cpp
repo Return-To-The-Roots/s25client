@@ -271,8 +271,7 @@ bool Loader::LoadSounds()
     if(sng_lst.empty())
     {
         logger_.write(_("WARNING: Did not find the music files.\n\tYou have to run the updater once or copy the .ogg "
-                        "files manually to \"%1%\" or you "
-                        "won't be able to hear the music.\n"))
+                        "files manually to %1% or you won't be able to hear the music.\n"))
           % oggPath;
     }
 

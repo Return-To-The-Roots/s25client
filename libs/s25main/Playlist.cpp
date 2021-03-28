@@ -86,7 +86,7 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
     if(filepath.empty())
         return false;
 
-    logger.write(_("Loading \"%s\"\n")) % filepath;
+    logger.write(_("Loading %1%\n")) % filepath;
 
     bnw::ifstream in(filepath);
 
