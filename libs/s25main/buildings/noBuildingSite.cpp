@@ -103,10 +103,10 @@ void noBuildingSite::Destroy()
     RTTR_Assert(!planer);
 
     // Bestellte Waren Bescheid sagen
-    for(auto& ordered_board : ordered_boards)
+    for(Ware* ordered_board : ordered_boards)
         WareNotNeeded(ordered_board);
     ordered_boards.clear();
-    for(auto& ordered_stone : ordered_stones)
+    for(Ware* ordered_stone : ordered_stones)
         WareNotNeeded(ordered_stone);
     ordered_stones.clear();
 

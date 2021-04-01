@@ -34,7 +34,7 @@ EventManager::~EventManager()
 
 void EventManager::Clear()
 {
-    for(auto& event : events)
+    for(const auto& event : events)
     {
         for(const GameEvent* ev : event.second)
         {
@@ -46,7 +46,7 @@ void EventManager::Clear()
     events.clear();
     RTTR_Assert(numActiveEvents == 0u);
 
-    for(auto& it : killList)
+    for(auto* it : killList)
     {
         GameObject* obj = it;
         it = nullptr;
@@ -211,7 +211,7 @@ void EventManager::Deserialize(SerializedGameData& sgd)
 
 bool EventManager::ObjectHasEvents(const GameObject& obj)
 {
-    for(auto& event : events)
+    for(const auto& event : events)
     {
         for(const GameEvent* ev : event.second)
         {

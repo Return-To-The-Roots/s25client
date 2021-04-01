@@ -35,6 +35,6 @@ void DataChangedObservable::RemoveListener(IDataChangedListener* listener)
 
 void DataChangedObservable::NotifyListeners(unsigned changeId)
 {
-    for(auto& listener : listeners)
+    for(auto* listener : listeners)
         listener->OnChange(changeId);
 }

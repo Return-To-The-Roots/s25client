@@ -120,7 +120,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             std::vector<PossibleTarget> possibleTargets;
 
             sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
-            for(auto& building : buildings)
+            for(auto* building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
                 if(building->GetGOT() == GO_Type::NobMilitary

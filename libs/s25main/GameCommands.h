@@ -173,7 +173,7 @@ protected:
     {}
     ChangeBuildOrder(Serializer& ser) : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
     {
-        for(auto& i : data)
+        for(BuildingType& i : data)
             i = helpers::popEnum<BuildingType>(ser);
     }
 

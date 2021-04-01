@@ -46,20 +46,20 @@ void nobBaseMilitary::DestroyBuilding()
     // Soldaten Bescheid sagen, die evtl auf Mission sind
     // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
     std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
-    for(auto& it : tmpTroopsOnMission)
+    for(auto* it : tmpTroopsOnMission)
         it->HomeDestroyed();
     troops_on_mission.clear();
 
     // Und die, die das Gebäude evtl gerade angreifen
     // ATTENTION: iterators can be deleted in AttackedGoalDestroyed, -> copy first
     std::vector<nofAttacker*> tmpAggressors(aggressors.begin(), aggressors.end());
-    for(auto& tmpAggressor : tmpAggressors)
+    for(auto* tmpAggressor : tmpAggressors)
         tmpAggressor->AttackedGoalDestroyed();
     aggressors.clear();
 
     // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen können
     std::vector<nofAggressiveDefender*> tmpDefenders(aggressive_defenders.begin(), aggressive_defenders.end());
-    for(auto& tmpDefender : tmpDefenders)
+    for(auto* tmpDefender : tmpDefenders)
         tmpDefender->AttackedGoalDestroyed();
     aggressive_defenders.clear();
 
@@ -95,7 +95,7 @@ void nobBaseMilitary::DestroyBuilding()
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
     sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
-    for(auto& building : buildings)
+    for(auto* building : buildings)
     {
         if(building->GetPlayer() != player && BuildingProperties::IsMilitary(building->GetBuildingType()))
             static_cast<nobMilitary*>(building)->LookForEnemyBuildings(this);
@@ -147,7 +147,7 @@ void nobBaseMilitary::AddLeavingFigure(std::unique_ptr<noFigure> fig)
 nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
 {
     // Look for other attackers on this building that are close and ready to fight
-    for(auto& aggressor : aggressors)
+    for(nofAttacker* aggressor : aggressors)
     {
         // The attacker must be ready to fight and must not already have another hunting defender
         if(!aggressor->IsReadyForFight() || aggressor->GetHuntingDefender())
@@ -294,7 +294,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
 
 void nobBaseMilitary::CheckArrestedAttackers()
 {
-    for(auto& aggressor : aggressors)
+    for(nofAttacker* aggressor : aggressors)
     {
         // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum)?
         if(aggressor->IsAttackerReady())
@@ -313,7 +313,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
 
 bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius)
 {
-    for(auto& aggressor : aggressors)
+    for(nofAttacker* aggressor : aggressors)
     {
         // Wartet der Soldat überhaupt um die Flagge?
         if(aggressor->IsAttackerReady())

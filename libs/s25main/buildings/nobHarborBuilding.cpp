@@ -795,7 +795,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure& figure)
     {
         // Alle Figuren durchkommen, die noch hierher kommen wollen und gucken, ob ein
         // Bauarbeiter dabei ist
-        for(auto& dependent_figure : dependent_figures)
+        for(noFigure* dependent_figure : dependent_figures)
         {
             if(dependent_figure->GetJobType() == Job::Builder)
                 // Brauchen keinen bestellen, also raus
@@ -810,7 +810,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure& figure)
     else if(figure.GetJobType() == Job::Scout && exploration_expedition.active)
     {
         unsigned scouts_coming = 0;
-        for(auto& dependent_figure : dependent_figures)
+        for(noFigure* dependent_figure : dependent_figures)
         {
             if(dependent_figure->GetJobType() == Job::Scout)
                 ++scouts_coming;
@@ -1139,7 +1139,7 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     sortedMilitaryBlds all_buildings = world->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(auto& all_building : all_buildings)
+    for(nobBaseMilitary* all_building : all_buildings)
     {
         if(all_building->GetGOT() != GO_Type::NobMilitary)
             continue;
@@ -1170,7 +1170,7 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     sortedMilitaryBlds all_buildings = world->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(auto& all_building : all_buildings)
+    for(nobBaseMilitary* all_building : all_buildings)
     {
         if(all_building->GetGOT() != GO_Type::NobMilitary)
             continue;

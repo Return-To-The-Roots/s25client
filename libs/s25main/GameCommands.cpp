@@ -44,7 +44,7 @@ void DestroyFlag::Execute(GameWorld& world, uint8_t playerId)
 BuildRoad::BuildRoad(Serializer& ser)
     : Coords(GCType::BuildRoad, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
 {
-    for(auto& i : route)
+    for(Direction& i : route)
         i = helpers::popEnum<Direction>(ser);
 }
 
