@@ -120,13 +120,13 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selecti
             if(selection == 0)
             {
                 // Add ware names
-                for(auto& ware : wares)
+                for(GoodType ware : wares)
                     names->AddString(_(WARE_NAMES[ware]));
 
             } else
             {
                 // Add job names
-                for(auto& job : jobs)
+                for(Job job : jobs)
                     names->AddString(_(JOB_NAMES[job]));
             }
             names->SetSelection(0);

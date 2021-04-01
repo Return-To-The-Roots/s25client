@@ -428,7 +428,7 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
     ChangeStatisticValue(StatisticType::Buildings, -1);
     if(bldType == BuildingType::HarborBuilding)
     { // Schiffen Bescheid sagen
-        for(auto& ship : ships)
+        for(noShip* ship : ships)
             ship->HarborDestroyed(static_cast<nobHarborBuilding*>(bld));
     } else if(bldType == BuildingType::Headquarters)
     {

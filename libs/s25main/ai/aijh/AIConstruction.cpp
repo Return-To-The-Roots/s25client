@@ -597,7 +597,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
     const auto* mainflag = aii.gwb.GetSpecObj<noFlag>(t);
 
     // Jede Flagge testen...
-    for(auto& i : flags)
+    for(const noFlag* i : flags)
     {
         const noFlag& curFlag = *i;
         // When the current flag is the end of the main route, we skip it as crossing the main route is dissallowed by

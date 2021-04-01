@@ -98,7 +98,7 @@ EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
 
     std::vector<unsigned> teamBitMasks;
     helpers::popContainer(sgd, teamBitMasks);
-    for(auto& teamMask : teamBitMasks)
+    for(const unsigned teamMask : teamBitMasks)
     {
         economyModeTeams.emplace_back(teamMask, goodsToCollect.size());
     }

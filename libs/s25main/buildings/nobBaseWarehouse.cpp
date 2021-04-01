@@ -78,10 +78,10 @@ nobBaseWarehouse::~nobBaseWarehouse() = default;
 void nobBaseWarehouse::DestroyBuilding()
 {
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
-    for(auto& dependent_figure : dependent_figures)
+    for(noFigure* dependent_figure : dependent_figures)
         dependent_figure->GoHome();
     dependent_figures.clear();
-    for(auto& dependent_ware : dependent_wares)
+    for(Ware* dependent_ware : dependent_wares)
         WareNotNeeded(dependent_ware);
     dependent_wares.clear();
 

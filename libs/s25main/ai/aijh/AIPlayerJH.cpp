@@ -360,7 +360,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
         std::advance(it, randomStore);
         const MapPoint whPos = (*it)->GetPos();
         UpdateNodesAround(whPos, 15); // update the area we want to build in first
-        for(auto& i : bldToTest)
+        for(const BuildingType i : bldToTest)
         {
             if(construction->Wanted(i))
             {
@@ -1867,7 +1867,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
     std::vector<const noFlag*> flags = construction->FindFlags(pt, 25);
     // Jede Flagge testen...
     std::vector<const noFlag*> reconnectflags;
-    for(auto& flag : flags)
+    for(const noFlag* flag : flags)
     {
         if(RemoveUnusedRoad(*flag, boost::none, true, false))
             reconnectflags.push_back(flag);
