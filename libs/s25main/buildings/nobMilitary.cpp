@@ -113,7 +113,7 @@ void nobMilitary::DestroyBuilding()
     troops.clear();
 
     // Inform far-away capturers
-    for(auto& far_away_capturer : far_away_capturers)
+    for(auto* far_away_capturer : far_away_capturers)
         far_away_capturer->AttackedGoalDestroyed();
     far_away_capturers.clear();
 
@@ -329,7 +329,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 
     const bool frontierDistanceCheck = world->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE);
 
-    for(auto& building : buildings)
+    for(auto* building : buildings)
     {
         // feindliches Militärgebäude?
         if(building != exception && building->GetPlayer() != player
@@ -441,7 +441,7 @@ void nobMilitary::RegulateTroops()
         }
 
         // send the not-needed-soldiers away
-        for(auto& notNeededSoldier : notNeededSoldiers)
+        for(auto* notNeededSoldier : notNeededSoldiers)
         {
             notNeededSoldier->NotNeeded();
         }
@@ -643,13 +643,13 @@ void nobMilitary::GotWorker(Job /*job*/, noFigure& worker)
 void nobMilitary::CancelOrders()
 {
     // Soldaten zurückschicken
-    for(auto& ordered_troop : ordered_troops)
+    for(auto* ordered_troop : ordered_troops)
         ordered_troop->NotNeeded();
 
     ordered_troops.clear();
 
     // Goldmünzen zurückschicken
-    for(auto& ordered_coin : ordered_coins)
+    for(auto* ordered_coin : ordered_coins)
         WareNotNeeded(ordered_coin);
 
     ordered_coins.clear();
@@ -769,7 +769,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     unsigned r = 0;
 
     // richtigen Rang suchen
-    for(auto& candidate : candidates)
+    for(auto* candidate : candidates)
     {
         if(candidate)
         {
@@ -920,15 +920,17 @@ void nobMilitary::Capture(const unsigned char new_owner)
     world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
 
     // Soldaten, die auf Mission sind, Bescheid sagen
-    for(auto& it : troops_on_mission)
+    for(auto* it : troops_on_mission)
         it->HomeDestroyed();
 
     // Bestellungen die hierher unterwegs sind canceln
     CancelOrders();
 
-    // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen können
-    for(auto& aggressive_defender : aggressive_defenders)
-        aggressive_defender->AttackedGoalDestroyed();
+    // Tell agressive defending soldiers and far away capturers that their goal is gone
+    for(auto* soldier : aggressive_defenders)
+        soldier->AttackedGoalDestroyed();
+    for(auto* soldier : far_away_capturers)
+        soldier->AttackedGoalDestroyed();
 
     troops_on_mission.clear();
     aggressive_defenders.clear();
@@ -954,7 +956,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     LookForEnemyBuildings();
     // und von den Verbündeten (da ja ein Feindgebäude weg ist)!
     sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 4);
-    for(auto& building : buildings)
+    for(auto* building : buildings)
     {
         // verbündetes Gebäude?
         if(world->GetPlayer(building->GetPlayer()).IsAttackable(old_player)
@@ -1036,7 +1038,7 @@ void nobMilitary::NeedOccupyingTroops()
     if(needed_soldiers > currentSoldiers)
     {
         // Soldaten absuchen
-        for(auto& aggressor : aggressors)
+        for(auto* aggressor : aggressors)
         {
             // Is the soldier standing around and owned by the player?
             if(!aggressor->IsAttackerReady() || aggressor->GetPlayer() != player)
@@ -1304,8 +1306,7 @@ void nobMilitary::CapturingSoldierArrived()
     }
 }
 
-/// A far-away capturer arrived at the building/flag and starts the capturing
-void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker& attacker)
+void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker& attacker, bool walkingIntoBld)
 {
     RTTR_Assert(IsFarAwayCapturer(attacker));
     if(IsBeingCaptured())
@@ -1314,10 +1315,11 @@ void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker& attacker)
         // one of the currently capturing soldiers will notify him
         far_away_capturers.remove(&attacker);
         aggressors.push_back(&attacker);
-    } else
+    } else if(walkingIntoBld)
     {
         // Otherwise we are in a kind of "normal" working state of the building and will just add him when he gets in
-        // Call the next one
+        // Call the next one unless we are not actually walking into the building, i.e. we ware only waiting until we
+        // can do so Avoids e.g. https://github.com/Return-To-The-Roots/s25client/issues/1405
         CallNextFarAwayCapturer(attacker);
     }
 }

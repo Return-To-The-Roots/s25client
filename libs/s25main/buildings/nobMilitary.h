@@ -211,8 +211,8 @@ public:
     }
     /// Sagt, dass ein erobernder Soldat das Militärgebäude erreicht hat
     void CapturingSoldierArrived();
-    /// A far-away capturer arrived around the building and starts waiting
-    void FarAwayCapturerReachedGoal(nofAttacker& attacker);
+    /// A far-away capturer arrived at the flag and starts the capturing or is waiting around it
+    void FarAwayCapturerReachedGoal(nofAttacker& attacker, bool walkingIntoBld);
 
     bool IsFarAwayCapturer(const nofAttacker& attacker);
 

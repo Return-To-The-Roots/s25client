@@ -577,7 +577,7 @@ void nofAttacker::ReachedDestination()
             // Start walking first so the flag is free
             StartWalking(Direction::NorthWest);
             // Then tell the building
-            goal->FarAwayCapturerReachedGoal(*this);
+            goal->FarAwayCapturerReachedGoal(*this, true);
             return;
         }
 
@@ -648,7 +648,7 @@ void nofAttacker::ReachedDestination()
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             auto* goal = static_cast<nobMilitary*>(attacked_goal);
             if(goal->IsFarAwayCapturer(*this))
-                goal->FarAwayCapturerReachedGoal(*this);
+                goal->FarAwayCapturerReachedGoal(*this, false);
         }
     }
 }
