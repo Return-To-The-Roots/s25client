@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
 BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 {
     auto land = map.textureMap.Find(IsBuildableLand);
-    map.textures.Resize(map.size, land);
+    map.getTextures().Resize(map.size, land);
     const MapPoint source(3, 2);
     const int length = 7;
 

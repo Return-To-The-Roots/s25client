@@ -26,10 +26,10 @@ using namespace rttr::mapGenerator;
 class TextureMapFixture : private MapGenFixture
 {
 public:
-    NodeMapBase<TexturePair> textures;
     TextureMap textureMap;
+    NodeMapBase<TexturePair>& textures;
 
-    TextureMapFixture() : textureMap(worldDesc, landscape, textures)
+    TextureMapFixture() : textureMap(worldDesc, landscape, MapExtent(0,0)), textures(textureMap.textures_)
     {
         const MapExtent size(6, 8);
         textures.Resize(size);

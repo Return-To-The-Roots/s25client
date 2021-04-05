@@ -62,7 +62,7 @@ namespace rttr { namespace mapGenerator {
                 currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
             }
 
-            currentNode = map.textures.GetNeighbour(currentNode, lastDir);
+            currentNode = map.getTextures().GetNeighbour(currentNode, lastDir);
 
             if(rnd.ByChance(splitRate))
             {

@@ -71,7 +71,7 @@ namespace rttr { namespace mapGenerator {
         const auto isCoast = [&map](const MapPoint& pt) {
             const auto allWater = [&map](const MapPoint& p) { return map.textureMap.All(p, IsWater); };
             return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater)
-                   && helpers::contains_if(map.textures.GetNeighbours(pt), allWater);
+                   && helpers::contains_if(map.getTextures().GetNeighbours(pt), allWater);
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
@@ -80,7 +80,7 @@ namespace rttr { namespace mapGenerator {
             {
                 if(isCoast(pt))
                 {
-                    const auto coast = Collect(map.textures, pt, isCoast);
+                    const auto coast = Collect(map.getTextures(), pt, isCoast);
                     coasts.push_back(coast);
                     visited.insert(coast.begin(), coast.end());
                 }
@@ -114,10 +114,11 @@ namespace rttr { namespace mapGenerator {
 
             const auto distanceToHarbors = [&map, &harbors, maxDistance](const MapPoint& pt) {
                 const auto calcDistance = [pt, &map](const MapPoint& hp1, const MapPoint& hp2) {
-                    return map.textures.CalcDistance(hp1, pt) < map.textures.CalcDistance(hp2, pt);
+                    return map.getTextures().CalcDistance(hp1, pt) < map.getTextures().CalcDistance(hp2, pt);
                 };
                 const auto closestHarbor = std::min_element(harbors.begin(), harbors.end(), calcDistance);
-                return closestHarbor == harbors.end() ? maxDistance : map.textures.CalcDistance(pt, *closestHarbor);
+                return closestHarbor == harbors.end() ? maxDistance :
+                                                        map.getTextures().CalcDistance(pt, *closestHarbor);
             };
             const auto compareHarbors = [&distanceToHarbors](const MapPoint& p1, const MapPoint& p2) {
                 return distanceToHarbors(p1) < distanceToHarbors(p2);

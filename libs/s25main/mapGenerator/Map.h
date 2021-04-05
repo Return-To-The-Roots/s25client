@@ -33,11 +33,9 @@ namespace rttr { namespace mapGenerator {
     {
     private:
         std::vector<DescIdx<TerrainDesc>> terrains_;
-        DescIdx<LandscapeDesc> landscape_;
 
     public:
         NodeMapBase<uint8_t> z;
-        NodeMapBase<TexturePair> textures;
         NodeMapBase<uint8_t> objectTypes;
         NodeMapBase<uint8_t> objectInfos;
         NodeMapBase<uint8_t> resources;
@@ -61,6 +59,9 @@ namespace rttr { namespace mapGenerator {
          * @return a new archiv containing the information of this map
          */
         libsiedler2::Archiv CreateArchiv() const;
+
+        NodeMapBase<TexturePair>& getTextures() { return textureMap.textures_; }
+        const NodeMapBase<TexturePair>& getTextures() const { return textureMap.textures_; }
     };
 
 }} // namespace rttr::mapGenerator

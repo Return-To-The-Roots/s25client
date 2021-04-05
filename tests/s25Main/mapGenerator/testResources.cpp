@@ -51,23 +51,23 @@ struct ResourceTestFixture : MapGenFixture
          * W W L L L L M M M M L L L L W W
          * W W L L L L M M M M L L L L W W
          */
-
+        auto& textureTriangles = map.getTextures();
         for(unsigned y = 0; y < map.size.y; y++)
         {
             for(unsigned x = 0; x < 2; x++)
-                map.textures[MapPoint(x, y)] = TexturePair(water);
+                textureTriangles[MapPoint(x, y)] = TexturePair(water);
 
             for(unsigned x = 2; x < 6; x++)
-                map.textures[MapPoint(x, y)] = TexturePair(land);
+                textureTriangles[MapPoint(x, y)] = TexturePair(land);
 
             for(unsigned x = 6; x < 10; x++)
-                map.textures[MapPoint(x, y)] = TexturePair(mountain);
+                textureTriangles[MapPoint(x, y)] = TexturePair(mountain);
 
             for(unsigned x = 10; x < 14; x++)
-                map.textures[MapPoint(x, y)] = TexturePair(land);
+                textureTriangles[MapPoint(x, y)] = TexturePair(land);
 
             for(unsigned x = 14; x < 16; x++)
-                map.textures[MapPoint(x, y)] = TexturePair(water);
+                textureTriangles[MapPoint(x, y)] = TexturePair(water);
         }
     }
 };

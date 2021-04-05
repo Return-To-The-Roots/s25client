@@ -30,14 +30,14 @@ namespace rttr { namespace mapGenerator {
         auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsBuildableLand); };
 
         auto partiallyConnected = [&map, &partiallyBuildable](const MapPoint& pt) {
-            return helpers::contains_if(map.textures.GetNeighbours(pt), partiallyBuildable);
+            return helpers::contains_if(map.getTextures().GetNeighbours(pt), partiallyBuildable);
         };
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             if(visited.insert(pt).second)
             {
-                auto area = Collect(map.textures, pt, partiallyConnected);
+                auto area = Collect(map.getTextures(), pt, partiallyConnected);
 
                 visited.insert(area.begin(), area.end());
 
