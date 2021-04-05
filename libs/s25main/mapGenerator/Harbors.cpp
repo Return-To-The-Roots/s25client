@@ -25,24 +25,9 @@ namespace rttr { namespace mapGenerator {
 
     void PlaceHarborPosition(Map& map, const MapPoint& position)
     {
-        auto& z = map.z;
+        FlattenForCastleBuilding(map.z, position);
+
         auto& textures = map.textureMap;
-
-        const auto& neighbors = z.GetNeighbours(position);
-        const auto& farNeighbors = z.GetPointsInRadius(position, 2);
-
-        auto compareHeight = [&z](const MapPoint& p1, const MapPoint& p2) { return z[p1] < z[p2]; };
-
-        auto lowestPoint = *std::min_element(neighbors.begin(), neighbors.end(), compareHeight);
-        auto lowestHeight = std::min(z[position], z[lowestPoint]);
-
-        for(const MapPoint& farNeighbor : farNeighbors)
-        {
-            z[farNeighbor] = std::min(static_cast<unsigned>(z[farNeighbor]), static_cast<unsigned>(lowestHeight + 1));
-        }
-
-        z[position] = lowestHeight;
-        SetValues(z, neighbors, lowestHeight);
 
         auto harborTexture = textures.Find(IsBuildableCoast);
         auto triangles = GetTriangles(position, map.size);

@@ -29,7 +29,7 @@ public:
     TextureMap textureMap;
     NodeMapBase<TexturePair>& textures;
 
-    TextureMapFixture() : textureMap(worldDesc, landscape, MapExtent(0,0)), textures(textureMap.textures_)
+    TextureMapFixture() : textureMap(worldDesc, landscape, MapExtent(0, 0)), textures(textureMap.textures_)
     {
         const MapExtent size(6, 8);
         textures.Resize(size);

@@ -41,28 +41,34 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
         const auto neighbors = map.z.GetNeighbours(hqPos);
         for(const MapPoint pt : neighbors)
         {
-            BOOST_TEST_REQUIRE(map.textureMap.All(pt, [](const TerrainDesc& terrain) { return terrain.GetBQ() == TerrainBQ::Castle; }));
+            BOOST_TEST_REQUIRE(
+              map.textureMap.All(pt, [](const TerrainDesc& terrain) { return terrain.GetBQ() == TerrainBQ::Castle; }),
+              "At point " << pt);
         }
+        // All direct neighbors must have the same height as the hqPos
+        for(const MapPoint pt : neighbors)
+            BOOST_TEST_REQUIRE(map.z[pt] == map.z[hqPos], "At point " << pt);
 
         const auto neighbors2 = map.z.GetPointsInRadiusWithCenter(hqPos, 2);
 
         const auto compareHeight = [&](const MapPoint& p1, const MapPoint& p2) { return map.z[p1] < map.z[p2]; };
         const MapPoint lowestPoint = *std::min_element(neighbors2.begin(), neighbors2.end(), compareHeight);
         const MapPoint highestPoint = *std::max_element(neighbors2.begin(), neighbors2.end(), compareHeight);
-        // Height difference must be at most 1
-        BOOST_TEST(absDiff(map.z[lowestPoint], map.z[highestPoint]) <= 1);
+        // Height difference must be at most 2
+        BOOST_TEST(absDiff(map.z[hqPos], map.z[lowestPoint]) <= 2);
+        BOOST_TEST(absDiff(map.z[hqPos], map.z[highestPoint]) <= 2);
         // No objects around
         for(const MapPoint pt : neighbors2)
         {
             if(pt == hqPos) // This is the HQ
                 continue;
-            BOOST_TEST_REQUIRE(map.objectTypes[pt] == libsiedler2::OT_Empty);
+            BOOST_TEST_REQUIRE(map.objectTypes[pt] == libsiedler2::OT_Empty, "At point " << pt);
         }
     };
     for(unsigned index = 0; index < players; index++)
     {
         BOOST_TEST_REQUIRE(map.hqPositions[index].isValid());
-        validateHqPos(map.hqPositions[index]);
+        BOOST_TEST_CONTEXT("Player " << index) { validateHqPos(map.hqPositions[index]); }
     }
 }
 
