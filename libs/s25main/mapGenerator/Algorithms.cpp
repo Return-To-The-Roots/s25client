@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/Algorithms.h"
+#include "helpers/mathFuncs.h"
 
 namespace rttr { namespace mapGenerator {
 
@@ -43,6 +44,29 @@ namespace rttr { namespace mapGenerator {
                 }
             }
         }
+    }
+
+    void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos)
+    {
+        const auto& neighbors = heightMap.GetNeighbours(pos);
+        const auto& farNeighbors = heightMap.GetPointsInRadius(pos, 2);
+
+        const auto compareHeight = [&heightMap](const MapPoint& p1, const MapPoint& p2) {
+            return heightMap[p1] < heightMap[p2];
+        };
+
+        const auto lowestPoint = *std::min_element(neighbors.begin(), neighbors.end(), compareHeight);
+        const auto lowestHeight = std::min(heightMap[pos], heightMap[lowestPoint]);
+
+        for(const MapPoint& farNeighbor : farNeighbors)
+        {
+            // Max diff of 2
+            heightMap[farNeighbor] =
+              helpers::clamp(heightMap[farNeighbor], std::max(0, lowestHeight - 2), lowestHeight + 2);
+        }
+
+        heightMap[pos] = lowestHeight;
+        SetValues(heightMap, neighbors, lowestHeight);
     }
 
 }} // namespace rttr::mapGenerator

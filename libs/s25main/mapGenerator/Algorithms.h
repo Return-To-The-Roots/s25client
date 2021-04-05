@@ -75,6 +75,9 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
+    /// Flatten the height map so a castle sized building can be placed at pos
+    void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos);
+
     /**
      * Maps the values to the specified range [minimum, maximum].
      *

@@ -42,9 +42,7 @@ namespace rttr { namespace mapGenerator {
                 visited.insert(area.begin(), area.end());
 
                 if(area.size() > connectedArea.size())
-                {
                     connectedArea = area;
-                }
             }
         }
 
@@ -88,9 +86,9 @@ namespace rttr { namespace mapGenerator {
         }
 
         if(!success)
-        {
             throw std::runtime_error("Could not find any valid HQ position!");
-        }
+        for(const MapPoint hqPos : map.hqPositions)
+            FlattenForCastleBuilding(map.z, hqPos);
     }
 
 }} // namespace rttr::mapGenerator

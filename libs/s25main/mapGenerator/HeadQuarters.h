@@ -126,9 +126,8 @@ namespace rttr { namespace mapGenerator {
     {
         const auto positions = FindHqPositions(map, area, distance);
         if(positions.empty())
-        {
             throw std::runtime_error("Could not find any valid HQ position!");
-        }
+        FlattenForCastleBuilding(map.z, positions.front());
         map.hqPositions.push_back(positions.front());
     }
 
