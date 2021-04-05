@@ -82,7 +82,7 @@ void ctrlPreviewMinimap::SetMap(const libsiedler2::ArchivItem_Map* const s2map)
         {
             using libsiedler2::MapLayer;
             // Startposition eines Spielers an dieser Stelle?
-            if(s2map->getMapDataAt(MapLayer::ObjectType, x, y) != libsiedler2::OI_HeadquarterMask)
+            if(s2map->getMapDataAt(MapLayer::ObjectType, x, y) != libsiedler2::OT_HeadquarterMask)
                 continue;
             const unsigned player = s2map->getMapDataAt(MapLayer::ObjectIndex, x, y);
             if(player < players.size())
