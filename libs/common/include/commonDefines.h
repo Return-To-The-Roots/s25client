@@ -32,7 +32,7 @@ inline void deletePtr(T*& ptr)
 
 /// Calculate |a-b| of 2 unsigned values
 template<typename T>
-inline T safeDiff(T a, T b)
+inline T absDiff(T a, T b)
 {
     return (a > b) ? a - b : b - a;
 }

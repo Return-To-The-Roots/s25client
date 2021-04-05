@@ -70,8 +70,8 @@ VideoMode VideoDriver::FindClosestVideoMode(const VideoMode& mode) const
     VideoMode best = avModes.front();
     for(const VideoMode& current : avModes)
     {
-        const auto dw = safeDiff(current.width, mode.width);
-        const auto dh = safeDiff(current.height, mode.height);
+        const auto dw = absDiff(current.width, mode.width);
+        const auto dh = absDiff(current.height, mode.height);
         unsigned sizeDiff = dw * dw + dh * dh;
         if(sizeDiff < minSizeDiff)
         {

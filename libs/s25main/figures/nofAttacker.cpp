@@ -622,15 +622,15 @@ void nofAttacker::ReachedDestination()
             dir = Direction::NorthWest;
         else /* (pos.x ==  attFlagPos.x)*/
         {
-            if(pos.y < attFlagPos.y && !(safeDiff(pos.y, attFlagPos.y) & 1))
+            if(pos.y < attFlagPos.y && !(absDiff(pos.y, attFlagPos.y) & 1))
                 dir = Direction::SouthEast;
-            else if(pos.y < attFlagPos.y && (safeDiff(pos.y, attFlagPos.y) & 1))
+            else if(pos.y < attFlagPos.y && (absDiff(pos.y, attFlagPos.y) & 1))
             {
                 if(pos.y & 1)
                     dir = Direction::SouthWest;
                 else
                     dir = Direction::SouthEast;
-            } else if(pos.y > attFlagPos.y && !(safeDiff(pos.y, attFlagPos.y) & 1))
+            } else if(pos.y > attFlagPos.y && !(absDiff(pos.y, attFlagPos.y) & 1))
                 dir = Direction::NorthEast;
             else /* (pos.y > attFlagPos.y && (safeDiff(pos.y, attFlagPos.y) & 1))*/
             {

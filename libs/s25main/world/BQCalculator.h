@@ -89,7 +89,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
             for(const MapPoint nb : world.GetNeighbours(pt))
             {
                 otherAltitude = world.GetNode(nb).altitude;
-                if(safeDiff(curAltitude, otherAltitude) > 3)
+                if(absDiff(curAltitude, otherAltitude) > 3)
                 {
                     curBQ = BuildingQuality::Flag;
                     break;
@@ -102,7 +102,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
                 for(unsigned i = 0; i < 12; ++i)
                 {
                     otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
-                    if(safeDiff(curAltitude, otherAltitude) > 2)
+                    if(absDiff(curAltitude, otherAltitude) > 2)
                     {
                         curBQ = BuildingQuality::Hut;
                         break;
