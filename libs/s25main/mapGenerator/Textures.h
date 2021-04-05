@@ -103,14 +103,14 @@ namespace rttr { namespace mapGenerator {
 
     class TextureMap : public TextureOperator
     {
-    private:
-        NodeMapBase<TexturePair>& textures_;
-
     public:
-        TextureMap(const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape,
-                   NodeMapBase<TexturePair>& textures)
-            : TextureOperator(worldDesc, landscape), textures_(textures)
-        {}
+        NodeMapBase<TexturePair> textures_;
+
+        TextureMap(const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape, const MapExtent& size)
+            : TextureOperator(worldDesc, landscape)
+        {
+            textures_.Resize(size);
+        }
 
         template<class T_Predicate>
         bool Check(const Triangle& triangle, T_Predicate predicate) const

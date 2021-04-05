@@ -77,7 +77,7 @@ namespace rttr { namespace mapGenerator {
         {
             if(harborOrHeadquarter(pt))
             {
-                auto suroundingArea = map.textures.GetPointsInRadiusWithCenter(pt, 5);
+                auto suroundingArea = map.getTextures().GetPointsInRadiusWithCenter(pt, 5);
                 excludedArea.insert(suroundingArea.begin(), suroundingArea.end());
             } else if(map.textureMap.Any(pt, IsSnowOrLava))
             {

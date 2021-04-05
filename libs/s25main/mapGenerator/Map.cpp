@@ -24,12 +24,11 @@ namespace rttr { namespace mapGenerator {
 
     Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
              DescIdx<LandscapeDesc> landscape, uint8_t maxHeight)
-        : textureMap(TextureMap(worldDesc, landscape, textures)), name("Random"), author("Auto"), height(0, maxHeight),
+        : textureMap(TextureMap(worldDesc, landscape, size)), name("Random"), author("Auto"), height(0, maxHeight),
           players(players), size(size)
     {
         z.Resize(size);
-        textures.Resize(size);
-        objectTypes.Resize(size, libsiedler2::OI_Empty);
+        objectTypes.Resize(size, libsiedler2::OT_Empty);
         objectInfos.Resize(size, libsiedler2::OI_Empty);
         resources.Resize(size, libsiedler2::R_None);
         animals.Resize(size, libsiedler2::Animal::None);
@@ -75,10 +74,11 @@ namespace rttr { namespace mapGenerator {
         resource.assign(this->resources.begin(), this->resources.end());
 
         const unsigned numNodes = size.x * size.y;
+        const auto& textureTriangles = getTextures();
         for(unsigned i = 0; i < numNodes; i++)
         {
-            rsu[i] = textureMap.GetTextureId(this->textures[i].rsu);
-            lsd[i] = textureMap.GetTextureId(this->textures[i].lsd);
+            rsu[i] = textureMap.GetTextureId(textureTriangles[i].rsu);
+            lsd[i] = textureMap.GetTextureId(textureTriangles[i].lsd);
             animal[i] = static_cast<uint8_t>(this->animals[i]);
         }
 

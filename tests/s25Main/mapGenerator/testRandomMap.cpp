@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "PointOutput.h"
+#include "commonDefines.h"
 #include "lua/GameDataLoader.h"
 #include "mapGenerator/RandomMap.h"
 #include "gameData/MaxPlayers.h"
@@ -35,9 +36,33 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
     BOOST_TEST_REQUIRE(map.players == players);
     BOOST_TEST(map.size == size);
 
+    const auto validateHqPos = [&](const MapPoint hqPos) {
+        // All textures around the point must allow a castle
+        const auto neighbors = map.z.GetNeighbours(hqPos);
+        for(const MapPoint pt : neighbors)
+        {
+            BOOST_TEST_REQUIRE(map.textureMap.All(pt, [](const TerrainDesc& terrain) { return terrain.GetBQ() == TerrainBQ::Castle; }));
+        }
+
+        const auto neighbors2 = map.z.GetPointsInRadiusWithCenter(hqPos, 2);
+
+        const auto compareHeight = [&](const MapPoint& p1, const MapPoint& p2) { return map.z[p1] < map.z[p2]; };
+        const MapPoint lowestPoint = *std::min_element(neighbors2.begin(), neighbors2.end(), compareHeight);
+        const MapPoint highestPoint = *std::max_element(neighbors2.begin(), neighbors2.end(), compareHeight);
+        // Height difference must be at most 1
+        BOOST_TEST(absDiff(map.z[lowestPoint], map.z[highestPoint]) <= 1);
+        // No objects around
+        for(const MapPoint pt : neighbors2)
+        {
+            if(pt == hqPos) // This is the HQ
+                continue;
+            BOOST_TEST_REQUIRE(map.objectTypes[pt] == libsiedler2::OT_Empty);
+        }
+    };
     for(unsigned index = 0; index < players; index++)
     {
         BOOST_TEST_REQUIRE(map.hqPositions[index].isValid());
+        validateHqPos(map.hqPositions[index]);
     }
 }
 

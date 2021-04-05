@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
     Map map = createMap(MapExtent(6, 8));
     auto land = TexturePair(map.textureMap.Find(IsBuildableLand));
 
-    map.textures.Resize(map.size, land);
+    map.getTextures().Resize(map.size, land);
 
     MapPoint position(3, 4);
 
@@ -62,22 +62,20 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_applies_buildable_terrain_around_positi
     auto coast = TexturePair(map.textureMap.Find(IsCoastTerrain));
     auto buildable = map.textureMap.Find(IsBuildableCoast);
 
-    map.textures.Resize(map.size, coast);
+    map.getTextures().Resize(map.size, coast);
 
     MapPoint position(3, 4);
 
     PlaceHarborPosition(map, position);
 
     auto triangles = GetTriangles(position, map.size);
-    for(auto triangle : triangles)
+    const auto& textureTriangles = map.getTextures();
+    for(const rttr::mapGenerator::Triangle& triangle : triangles)
     {
         if(triangle.rsu)
-        {
-            BOOST_TEST(map.textures[triangle.position].rsu == buildable);
-        } else
-        {
-            BOOST_TEST(map.textures[triangle.position].lsd == buildable);
-        }
+            BOOST_TEST(textureTriangles[triangle.position].rsu == buildable);
+        else
+            BOOST_TEST(textureTriangles[triangle.position].lsd == buildable);
     }
 }
 
@@ -88,7 +86,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbors_on_coast_below_minimum_size)
 
     auto water = TexturePair(map.textureMap.Find(IsWater));
 
-    map.textures.Resize(map.size, water);
+    map.getTextures().Resize(map.size, water);
 
     auto coast = map.textureMap.Find(IsCoastTerrain);
     map.textureMap.Set(island, coast);
@@ -105,7 +103,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_harbor_on_suitable_island)
 
     auto water = TexturePair(map.textureMap.Find(IsWater));
 
-    map.textures.Resize(map.size, water);
+    map.getTextures().Resize(map.size, water);
 
     auto coast = map.textureMap.Find(IsCoastTerrain);
     map.textureMap.Set(island, coast);
@@ -122,7 +120,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbor_near_river)
 
     auto water = TexturePair(map.textureMap.Find(IsWater));
 
-    map.textures.Resize(map.size, water);
+    map.getTextures().Resize(map.size, water);
 
     auto coast = map.textureMap.Find(IsCoastTerrain);
     map.textureMap.Set(island, coast);

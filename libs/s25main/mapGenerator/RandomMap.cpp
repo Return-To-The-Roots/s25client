@@ -133,7 +133,7 @@ namespace rttr { namespace mapGenerator {
     }
 
     RandomMap::RandomMap(RandomUtility& rnd, Map& map)
-        : rnd_(rnd), map_(map), texturizer_(map.z, map.textures, map.textureMap)
+        : rnd_(rnd), map_(map), texturizer_(map.z, map.getTextures(), map.textureMap)
     {}
 
     void RandomMap::Create(const MapSettings& settings)
