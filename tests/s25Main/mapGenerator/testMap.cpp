@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_CASE(Constructor_resizes_all_maps)
     const Map map = createMap(MapExtent(14, 6));
     BOOST_TEST(map.z.GetSize() == map.size);
     BOOST_TEST(map.textures.GetSize() == map.size);
-    BOOST_TEST(map.objectInfos.GetSize() == map.size);
     BOOST_TEST(map.objectTypes.GetSize() == map.size);
+    BOOST_TEST(map.objectInfos.GetSize() == map.size);
     BOOST_TEST(map.resources.GetSize() == map.size);
     BOOST_TEST(map.animals.GetSize() == map.size);
 }

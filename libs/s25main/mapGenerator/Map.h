@@ -38,8 +38,8 @@ namespace rttr { namespace mapGenerator {
     public:
         NodeMapBase<uint8_t> z;
         NodeMapBase<TexturePair> textures;
-        NodeMapBase<uint8_t> objectInfos;
         NodeMapBase<uint8_t> objectTypes;
+        NodeMapBase<uint8_t> objectInfos;
         NodeMapBase<uint8_t> resources;
         NodeMapBase<libsiedler2::Animal> animals;
         std::vector<Triangle> harbors;

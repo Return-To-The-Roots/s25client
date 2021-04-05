@@ -29,8 +29,8 @@ namespace rttr { namespace mapGenerator {
     {
         z.Resize(size);
         textures.Resize(size);
+        objectTypes.Resize(size, libsiedler2::OI_Empty);
         objectInfos.Resize(size, libsiedler2::OI_Empty);
-        objectTypes.Resize(size, libsiedler2::OT_Empty);
         resources.Resize(size, libsiedler2::R_None);
         animals.Resize(size, libsiedler2::Animal::None);
     }
@@ -86,8 +86,8 @@ namespace rttr { namespace mapGenerator {
         {
             if(hqPositions[i].isValid())
             {
-                objectInfo[this->objectInfos.GetIdx(hqPositions[i])] = libsiedler2::OI_HeadquarterMask;
-                objectType[this->objectTypes.GetIdx(hqPositions[i])] = i;
+                objectType[this->objectTypes.GetIdx(hqPositions[i])] = libsiedler2::OT_HeadquarterMask;
+                objectInfo[this->objectInfos.GetIdx(hqPositions[i])] = i;
             }
         }
 

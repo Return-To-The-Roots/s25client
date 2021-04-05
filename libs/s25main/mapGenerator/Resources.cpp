@@ -29,15 +29,15 @@ namespace rttr { namespace mapGenerator {
     {
         const auto landscapeId = textures.GetLandscapeId();
 
-        Tree pineApple(libsiedler2::OI_Palm, libsiedler2::OT_Tree1_Begin);
-        Tree palm1(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_Palm_Begin);
-        Tree palm2(libsiedler2::OI_Palm, libsiedler2::OT_TreeOrPalm_Begin);
-        Tree fir(libsiedler2::OI_Palm + 1, libsiedler2::OT_TreeOrPalm_Begin);
-        Tree oak(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_Tree2_Begin);
-        Tree birch(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_Tree1_Begin);
-        Tree cherry(libsiedler2::OI_Palm, libsiedler2::OT_Palm_Begin);
-        Tree pine(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_TreeOrPalm_Begin);
-        Tree cypress(libsiedler2::OI_Palm, libsiedler2::OT_Tree2_Begin);
+        Tree pineApple(libsiedler2::OT_Palm, libsiedler2::OI_Tree1_Begin);
+        Tree palm1(libsiedler2::OT_TreeOrPalm, libsiedler2::OI_Palm_Begin);
+        Tree palm2(libsiedler2::OT_Palm, libsiedler2::OI_TreeOrPalm_Begin);
+        Tree fir(libsiedler2::OT_Palm + 1, libsiedler2::OI_TreeOrPalm_Begin);
+        Tree oak(libsiedler2::OT_TreeOrPalm, libsiedler2::OI_Tree2_Begin);
+        Tree birch(libsiedler2::OT_TreeOrPalm, libsiedler2::OI_Tree1_Begin);
+        Tree cherry(libsiedler2::OT_Palm, libsiedler2::OI_Palm_Begin);
+        Tree pine(libsiedler2::OT_TreeOrPalm, libsiedler2::OI_TreeOrPalm_Begin);
+        Tree cypress(libsiedler2::OT_Palm, libsiedler2::OI_Tree2_Begin);
 
         if(landscapeId == 0x0) // greenland
         {
@@ -158,8 +158,8 @@ namespace rttr { namespace mapGenerator {
             const bool canPlaceStonePile = waterDistance[pt] > 0 && distanceToExcludedArea[pt] > 0;
             if(canPlaceStonePile && rnd.ByChance(settings.stonePiles))
             {
-                map.objectInfos[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
-                map.objectTypes[pt] = rnd.RandomValue(1, 6);
+                map.objectTypes[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
+                map.objectInfos[pt] = rnd.RandomValue(1, 6);
                 continue;
             }
 
@@ -168,8 +168,8 @@ namespace rttr { namespace mapGenerator {
             {
                 auto tree = treeForPoint(pt);
 
-                map.objectInfos[pt] = tree.type;
-                map.objectTypes[pt] = tree.index + rnd.RandomValue(0, 7);
+                map.objectTypes[pt] = tree.type;
+                map.objectInfos[pt] = tree.index + rnd.RandomValue(0, 7);
             }
         }
     }
