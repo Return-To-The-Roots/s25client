@@ -44,10 +44,10 @@
 #include "mapGenerator/RandomMap.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Map.h"
 #include "gameData/MapConsts.h"
 #include "gameData/WorldDescription.h"
 #include "liblobby/LobbyClient.h"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
@@ -195,12 +195,12 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
 }
 
 /// Load a map, throw on error
-static std::unique_ptr<glArchivItem_Map> loadAndVerifyMap(const std::string& path)
+static std::unique_ptr<libsiedler2::ArchivItem_Map> loadAndVerifyMap(const std::string& path)
 {
     libsiedler2::Archiv archive;
     if(int ec = libsiedler2::loader::LoadMAP(path, archive))
         throw std::runtime_error(libsiedler2::getErrorString(ec));
-    auto map = boost::dynamic_pointer_cast<glArchivItem_Map>(archive.release(0));
+    auto map = boost::dynamic_pointer_cast<libsiedler2::ArchivItem_Map>(archive.release(0));
     if(!map)
         throw std::runtime_error(_("Unexpected dynamic type of map"));
     if(map->getHeader().getWidth() > MAX_MAP_SIZE || map->getHeader().getHeight() > MAX_MAP_SIZE)
@@ -236,7 +236,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::opti
         {
             try
             {
-                std::unique_ptr<glArchivItem_Map> map = loadAndVerifyMap(path);
+                std::unique_ptr<libsiedler2::ArchivItem_Map> map = loadAndVerifyMap(path);
                 RTTR_Assert(map);
                 preview.SetMap(map.get());
                 txtMapName.SetText(s25util::ansiToUTF8(map->getHeader().getName()));
@@ -462,7 +462,8 @@ void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
             continue;
         }
 
-        const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map[0])->getHeader();
+        const libsiedler2::ArchivItem_Map_Header& header =
+          checkedCast<const libsiedler2::ArchivItem_Map*>(map[0])->getHeader();
 
         const bfs::path luaFilepath = bfs::path(filePath).replace_extension("lua");
         const bool hasLua = bfs::is_regular_file(luaFilepath);

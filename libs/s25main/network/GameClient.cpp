@@ -47,7 +47,6 @@
 #include "network/GameServer.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Map.h"
 #include "ogl/glFont.h"
 #include "random/Random.h"
 #include "random/randomIO.h"
@@ -56,6 +55,7 @@
 #include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GameConsts.h"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
 #include "s25util/SocketSet.h"
@@ -1006,7 +1006,7 @@ bool GameClient::CreateLobby()
             }
 
             const libsiedler2::ArchivItem_Map_Header& header =
-              checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
+              checkedCast<const libsiedler2::ArchivItem_Map*>(map.get(0))->getHeader();
             numPlayers = header.getNumPlayers();
             mapinfo.title = s25util::ansiToUTF8(header.getName());
         }

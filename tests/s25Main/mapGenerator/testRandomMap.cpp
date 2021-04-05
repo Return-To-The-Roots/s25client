@@ -141,17 +141,16 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)
     BOOST_TEST_REQUIRE(libsiedler2::Load(mapPath, archive) == 0);
     const auto* map = dynamic_cast<const libsiedler2::ArchivItem_Map*>(archive[0]);
     BOOST_TEST_REQUIRE(map);
-    const auto* mapHeader = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(map->get(0));
-    BOOST_TEST_REQUIRE(mapHeader);
-    BOOST_TEST(mapHeader->getWidth() == settings.size.x);
-    BOOST_TEST(mapHeader->getHeight() == settings.size.y);
-    BOOST_TEST(mapHeader->getNumPlayers() == settings.numPlayers);
+    const auto& mapHeader = map->getHeader();
+    BOOST_TEST(mapHeader.getWidth() == settings.size.x);
+    BOOST_TEST(mapHeader.getHeight() == settings.size.y);
+    BOOST_TEST(mapHeader.getNumPlayers() == settings.numPlayers);
     // Must have unique HQ positions
     std::vector<MapPoint> hqs;
-    for(unsigned i = 0; i < std::min(unsigned(mapHeader->maxPlayers), settings.numPlayers); i++)
+    for(unsigned i = 0; i < std::min(unsigned(mapHeader.maxPlayers), settings.numPlayers); i++)
     {
         Point<uint16_t> hqPos;
-        mapHeader->getPlayerHQ(i, hqPos.x, hqPos.y);
+        mapHeader.getPlayerHQ(i, hqPos.x, hqPos.y);
         BOOST_TEST(!helpers::contains(hqs, MapPoint(hqPos)));
         hqs.emplace_back(hqPos);
     }

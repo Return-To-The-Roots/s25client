@@ -22,13 +22,13 @@
 #include "RttrForeachPt.h"
 #include "files.h"
 #include "lua/GameDataLoader.h"
-#include "ogl/glArchivItem_Map.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "s25util/tmpFile.h"
 #include <boost/filesystem/path.hpp>
@@ -42,20 +42,6 @@ struct MapTestFixture
 };
 
 BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)
-
-BOOST_AUTO_TEST_CASE(LoadSaveMap)
-{
-    // Check that loading and saving a map does not alter it
-    glArchivItem_Map map;
-    bnw::ifstream mapFile(testMapPath, std::ios::binary);
-    BOOST_TEST_REQUIRE(map.load(mapFile, false) == 0);
-    TmpFile outMap(".swd");
-    BOOST_TEST_REQUIRE(outMap.isValid());
-    BOOST_TEST_REQUIRE(map.write(outMap.getStream()) == 0);
-    mapFile.close();
-    outMap.close();
-    BOOST_TEST_REQUIRE(CalcChecksumOfFile(testMapPath) == CalcChecksumOfFile(outMap.filePath));
-}
 
 namespace {
 struct UninitializedWorldCreator
@@ -80,7 +66,7 @@ struct LoadWorldFromFileCreator : MapTestFixture
 };
 struct LoadWorldAndS2MapCreator : MapTestFixture
 {
-    glArchivItem_Map map;
+    libsiedler2::ArchivItem_Map map;
 
     explicit LoadWorldAndS2MapCreator(MapExtent) {}
     bool operator()(GameWorldBase& world)
@@ -103,7 +89,7 @@ using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1>;
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 {
     MapTestFixture fixture;
-    glArchivItem_Map map;
+    libsiedler2::ArchivItem_Map map;
     bnw::ifstream mapFile(fixture.testMapPath, std::ios::binary);
     BOOST_TEST_REQUIRE(map.load(mapFile, false) == 0);
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
@@ -119,20 +105,22 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 
 BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedWithS2MapFixture)
 {
+    using libsiedler2::MapLayer;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_TEST_REQUIRE(world.GetNode(pt).altitude == worldCreator.map.GetMapDataAt(MapLayer::Altitude, pt.x, pt.y));
+        BOOST_TEST_REQUIRE(world.GetNode(pt).altitude == worldCreator.map.getMapDataAt(MapLayer::Altitude, pt.x, pt.y));
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
 {
+    using libsiedler2::MapLayer;
     // Init BQ
     world.InitAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         BOOST_TEST_INFO("pt " << pt);
-        const auto original = worldCreator.map.GetMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y);
+        const auto original = worldCreator.map.getMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y);
         BOOST_TEST_INFO(" original: " << original);
         auto s2BQ = BuildingQuality(original & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;

@@ -145,7 +145,7 @@ constexpr auto prodOfComponents(const Point<T>& pt) noexcept
 {
     // Let the compiler handle conversion to at least 32 bits keeping float types
     using op_type = decltype(T{} * uint32_t{});
-    using ResultType = detail::make_signed_if_t<std::is_signed<T>::value, op_type>;
+    using ResultType = ::detail::make_signed_if_t<std::is_signed<T>::value, op_type>;
     return static_cast<ResultType>(pt.x * pt.y);
 }
 
@@ -156,7 +156,7 @@ constexpr auto prodOfComponents(const Point<T>& pt) noexcept
 template<typename T>
 constexpr auto operator-(const Point<T>& pt) noexcept
 {
-    using Res = detail::make_signed_if_t<true, T>;
+    using Res = ::detail::make_signed_if_t<true, T>;
     return Point<Res>(-static_cast<Res>(pt.x), -static_cast<Res>(pt.y));
 }
 
@@ -170,7 +170,7 @@ constexpr auto operator-(const Point<T>& pt) noexcept
     template<typename T, typename U>                                                \
     constexpr auto operator op(const Point<T>& lhs, const Point<U>& rhs) noexcept   \
     {                                                                               \
-        using Res = detail::mixed_type_t<T, U>;                                     \
+        using Res = ::detail::mixed_type_t<T, U>;                                   \
         return Point<Res>(lhs) op Point<Res>(rhs);                                  \
     }                                                                               \
                                                                                     \

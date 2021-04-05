@@ -21,7 +21,6 @@
 #include "glArchivItem_Bitmap_Raw.h"
 #include "glArchivItem_Bitmap_Shadow.h"
 #include "glArchivItem_Bob.h"
-#include "glArchivItem_Map.h"
 #include "glArchivItem_Sound_Midi.h"
 #include "glArchivItem_Sound_Other.h"
 #include "glArchivItem_Sound_Wave.h"
@@ -60,8 +59,6 @@ std::unique_ptr<libsiedler2::ArchivItem> GlAllocator::create(libsiedler2::BobTyp
             return std::make_unique<glArchivItem_Bitmap_Player>();
         case libsiedler2::BobType::BitmapShadow: // Schatten
             return std::make_unique<glArchivItem_Bitmap_Shadow>();
-        case libsiedler2::BobType::Map: // Map
-            return std::make_unique<glArchivItem_Map>();
         case libsiedler2::BobType::Bitmap: // unkomprimiertes Bitmap
             return std::make_unique<glArchivItem_Bitmap_Raw>();
         default: break;

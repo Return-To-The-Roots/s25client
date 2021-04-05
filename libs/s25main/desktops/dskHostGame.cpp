@@ -46,10 +46,10 @@
 #include "lua/LuaInterfaceSettings.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Map.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyPlayerInfo.h"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "s25util/Log.h"
@@ -252,7 +252,7 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
                                          MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
         } else
         {
-            auto* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
+            auto* map = static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, DrawPoint(560, 40), Extent(220, 220), map);
 
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach

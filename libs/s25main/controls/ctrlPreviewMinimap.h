@@ -41,7 +41,8 @@ class ctrlPreviewMinimap : public ctrlMinimap
     std::array<Player, MAX_PLAYERS> players;
 
 public:
-    ctrlPreviewMinimap(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* s2map);
+    ctrlPreviewMinimap(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
+                       libsiedler2::ArchivItem_Map* s2map);
 
     /// Zeichnet die MapPreview
     void Draw_() override;
@@ -50,5 +51,5 @@ public:
     /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
     void SetPlayerColor(unsigned id, unsigned color) { players[id].color = color; }
 
-    void SetMap(const glArchivItem_Map* s2map);
+    void SetMap(const libsiedler2::ArchivItem_Map* s2map);
 };

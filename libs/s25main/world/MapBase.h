@@ -130,7 +130,7 @@ detail::GetPointsResult_t<T_TransformPt> MapBase::GetPointsInRadius(const MapPoi
                                                                     T_TransformPt&& transformPt, T_IsValidPt&& isValid,
                                                                     bool includePt) const
 {
-    detail::GetPointsResult_t<T_TransformPt> result;
+    ::detail::GetPointsResult_t<T_TransformPt> result;
     if(T_maxResults > 0)
         result.reserve(T_maxResults);
     else if(std::is_same<T_IsValidPt, AlwaysTrue>::value)

@@ -25,7 +25,6 @@
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
 #include "helpers/mathFuncs.h"
-#include "ogl/glArchivItem_Map.h"
 #include "ogl/glFont.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
@@ -66,17 +65,14 @@ static std::unique_ptr<glFont> createMockFont(const std::vector<char32_t>& chars
 
 BOOST_AUTO_TEST_SUITE(Controls)
 
-static void resizeMap(glArchivItem_Map& glMap, const Extent& size)
+static void resizeMap(libsiedler2::ArchivItem_Map& glMap, const Extent& size)
 {
     libsiedler2::ArchivItem_Map map;
     auto header = std::make_unique<libsiedler2::ArchivItem_Map_Header>();
     header->setWidth(size.x);
     header->setHeight(size.y);
     header->setNumPlayers(2);
-    map.push(std::move(header));
-    for(int i = 0; i <= rttr::enum_cast(MapLayer::Type); i++)
-        map.push(std::make_unique<libsiedler2::ArchivItem_Raw>(std::vector<uint8_t>(prodOfComponents(size))));
-    glMap.load(map);
+    glMap.init(std::move(header));
 }
 
 BOOST_FIXTURE_TEST_CASE(PreviewMinimap, uiHelper::Fixture)
@@ -89,7 +85,7 @@ BOOST_FIXTURE_TEST_CASE(PreviewMinimap, uiHelper::Fixture)
     // Remove padding
     mm.SetPadding(Extent::all(0));
     BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize() == Extent::all(0));
-    glArchivItem_Map map;
+    libsiedler2::ArchivItem_Map map;
     resizeMap(map, size);
     mm.SetMap(&map);
     BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().x <= size.x); //-V807

@@ -460,7 +460,7 @@ ctrlVarText* Window::AddVarText(unsigned id, const DrawPoint& pos, const std::st
 }
 
 ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id, const DrawPoint& pos, const Extent& size,
-                                              glArchivItem_Map* const map)
+                                              libsiedler2::ArchivItem_Map* const map)
 {
     return AddCtrl(new ctrlPreviewMinimap(this, id, ScaleIf(pos), ScaleIf(size), map));
 }

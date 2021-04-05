@@ -32,7 +32,6 @@
 #include "helpers/random.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameMessages.h"
-#include "ogl/glArchivItem_Map.h"
 #include "random/randomIO.h"
 #include "gameTypes/LanGameInfo.h"
 #include "gameTypes/TeamTypes.h"
@@ -40,6 +39,7 @@
 #include "gameData/LanDiscoveryCfg.h"
 #include "gameData/MaxPlayers.h"
 #include "liblobby/LobbyClient.h"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
 #include "s25util/SocketSet.h"
@@ -155,7 +155,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
                 return false;
             }
             const libsiedler2::ArchivItem_Map_Header& header =
-              checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
+              checkedCast<const libsiedler2::ArchivItem_Map*>(map.get(0))->getHeader();
 
             playerInfos.resize(header.getNumPlayers());
             mapinfo.title = s25util::ansiToUTF8(header.getName());
