@@ -20,7 +20,9 @@
 #include "Minimap.h"
 #include <map>
 
-class glArchivItem_Map;
+namespace libsiedler2 {
+class ArchivItem_Map;
+}
 
 class PreviewMinimap : public Minimap
 {
@@ -28,9 +30,9 @@ class PreviewMinimap : public Minimap
     std::map<uint8_t, uint32_t> terrain2Clr;
 
 public:
-    explicit PreviewMinimap(const glArchivItem_Map* s2map);
+    explicit PreviewMinimap(const libsiedler2::ArchivItem_Map* s2map);
 
-    void SetMap(const glArchivItem_Map& s2map);
+    void SetMap(const libsiedler2::ArchivItem_Map& s2map);
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)

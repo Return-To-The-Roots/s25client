@@ -43,10 +43,11 @@ class ctrlEdit;
 class ctrlGroup;
 class ctrlImage;
 class ctrlList;
-class ctrlPreviewMinimap;
 class ctrlMultiline;
+class ctrlMultiSelectGroup;
 class ctrlOptionGroup;
 class ctrlPercent;
+class ctrlPreviewMinimap;
 class ctrlProgress;
 class ctrlScrollBar;
 class ctrlTab;
@@ -55,18 +56,18 @@ class ctrlText;
 class ctrlTimer;
 class ctrlVarDeepening;
 class ctrlVarText;
-class ctrlMultiSelectGroup;
-struct TableColumn;
-
 class glArchivItem_Bitmap;
-class glArchivItem_Map;
 class glFont;
 class ITexture;
-
-struct KeyEvent;
 class MouseCoords;
-struct ScreenResizeEvent;
 enum class GroupSelectType : unsigned;
+struct KeyEvent;
+struct ScreenResizeEvent;
+struct TableColumn;
+
+namespace libsiedler2 {
+class ArchivItem_Map;
+}
 
 /// Die Basisklasse der Fenster.
 class Window
@@ -200,7 +201,8 @@ public:
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
     ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color,
                             FontStyle format, const glFont* font, unsigned parameters, ...);
-    ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* map);
+    ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size,
+                                          libsiedler2::ArchivItem_Map* map);
 
     /// Draw a 3D rectangle (e.g. button)
     static void Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,

@@ -37,13 +37,8 @@ namespace rttr { namespace mapGenerator {
 
     libsiedler2::Archiv Map::CreateArchiv() const
     {
-        libsiedler2::Archiv info;
-
-        const unsigned numNodes = size.x * size.y;
-        auto map = std::make_unique<libsiedler2::ArchivItem_Map>();
-        auto header = std::make_unique<libsiedler2::ArchivItem_Map_Header>();
-
         // create header information for the archiv
+        auto header = std::make_unique<libsiedler2::ArchivItem_Map_Header>();
         header->setName(name);
         header->setAuthor(author);
         header->setWidth(size.x);
@@ -62,29 +57,29 @@ namespace rttr { namespace mapGenerator {
             header->setPlayerHQ(i, hqPositions[i].x, hqPositions[i].y);
         }
 
-        std::vector<uint8_t> z(numNodes);
-        std::vector<uint8_t> rsu(numNodes);
-        std::vector<uint8_t> lsd(numNodes);
-        std::vector<uint8_t> road(numNodes);
-        std::vector<uint8_t> objectType(numNodes);
-        std::vector<uint8_t> objectInfo(numNodes);
-        std::vector<uint8_t> animal(numNodes);
-        std::vector<uint8_t> unknown1(numNodes);
-        std::vector<uint8_t> build(numNodes);
-        std::vector<uint8_t> unknown2(numNodes);
-        std::vector<uint8_t> unknown3(numNodes);
-        std::vector<uint8_t> resource(numNodes);
-        std::vector<uint8_t> unknown5(numNodes);
+        auto map = std::make_unique<libsiedler2::ArchivItem_Map>();
+        map->init(std::move(header));
 
+        using libsiedler2::MapLayer;
+        auto& z = map->getLayer(MapLayer::Altitude);
+        auto& rsu = map->getLayer(MapLayer::Terrain1);
+        auto& lsd = map->getLayer(MapLayer::Terrain2);
+        auto& objectType = map->getLayer(MapLayer::ObjectType);
+        auto& objectInfo = map->getLayer(MapLayer::ObjectIndex);
+        auto& animal = map->getLayer(MapLayer::Animals);
+        auto& resource = map->getLayer(MapLayer::Resources);
+
+        z.assign(this->z.begin(), this->z.end());
+        objectType.assign(this->objectTypes.begin(), this->objectTypes.end());
+        objectInfo.assign(this->objectInfos.begin(), this->objectInfos.end());
+        resource.assign(this->resources.begin(), this->resources.end());
+
+        const unsigned numNodes = size.x * size.y;
         for(unsigned i = 0; i < numNodes; i++)
         {
-            z[i] = this->z[i];
             rsu[i] = textureMap.GetTextureId(this->textures[i].rsu);
             lsd[i] = textureMap.GetTextureId(this->textures[i].lsd);
-            objectType[i] = this->objectTypes[i];
-            objectInfo[i] = this->objectInfos[i];
             animal[i] = static_cast<uint8_t>(this->animals[i]);
-            resource[i] = this->resources[i];
         }
 
         for(unsigned i = 0; i < hqPositions.size(); i++)
@@ -92,30 +87,19 @@ namespace rttr { namespace mapGenerator {
             if(hqPositions[i].isValid())
             {
                 objectInfo[this->objectInfos.GetIdx(hqPositions[i])] = libsiedler2::OI_HeadquarterMask;
-                objectType[this->objectTypes.GetIdx(hqPositions[i])] = libsiedler2::ObjectType(i);
+                objectType[this->objectTypes.GetIdx(hqPositions[i])] = i;
             }
         }
 
         for(const Triangle& t : harbors)
         {
             if(t.rsu)
-            {
                 rsu[t.position.x + t.position.y * size.y] |= libsiedler2::HARBOR_MASK;
-            } else
-            {
+            else
                 lsd[t.position.x + t.position.y * size.y] |= libsiedler2::HARBOR_MASK;
-            }
         }
 
-        map->push(std::move(header));
-        for(const auto& cur :
-            {z, rsu, lsd, road, objectType, objectInfo, animal, unknown1, build, unknown2, unknown3, resource})
-        {
-            map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(cur));
-        }
-        map->push(nullptr); // No shading
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown5));
-
+        libsiedler2::Archiv info;
         info.push(std::move(map));
 
         return info;

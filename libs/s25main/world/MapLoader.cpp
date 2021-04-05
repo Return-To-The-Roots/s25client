@@ -24,7 +24,6 @@
 #include "RttrForeachPt.h"
 #include "factories/BuildingFactory.h"
 #include "lua/GameDataLoader.h"
-#include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
 #include "world/World.h"
@@ -37,6 +36,7 @@
 #include "gameData/MaxPlayers.h"
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/Archiv.h"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
 #include "s25util/Log.h"
@@ -49,7 +49,7 @@ class noBase;
 
 MapLoader::MapLoader(GameWorldBase& world) : world_(world) {}
 
-bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
+bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
 {
     GameDataLoader gdLoader(world_.GetDescriptionWriteable());
     if(!gdLoader.Load())
@@ -93,7 +93,7 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
     if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)
         return false;
 
-    const glArchivItem_Map& map = *static_cast<glArchivItem_Map*>(mapArchiv[0]);
+    const libsiedler2::ArchivItem_Map& map = *static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv[0]);
 
     if(!Load(map, world_.GetGGS().exploration))
         return false;
@@ -153,17 +153,18 @@ DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
     return DescIdx<TerrainDesc>();
 }
 
-bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
+bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
 {
+    using libsiedler2::MapLayer;
     // Init node data (everything except the objects and figures)
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         MapNode& node = world_.GetNodeInt(pt);
 
         std::fill(node.roads.begin(), node.roads.end(), PointRoad::None);
-        node.altitude = map.GetMapDataAt(MapLayer::Altitude, pt.x, pt.y);
-        unsigned char t1 = map.GetMapDataAt(MapLayer::Terrain1, pt.x, pt.y),
-                      t2 = map.GetMapDataAt(MapLayer::Terrain2, pt.x, pt.y);
+        node.altitude = map.getMapDataAt(MapLayer::Altitude, pt.x, pt.y);
+        unsigned char t1 = map.getMapDataAt(MapLayer::Terrain1, pt.x, pt.y),
+                      t2 = map.getMapDataAt(MapLayer::Terrain2, pt.x, pt.y);
 
         // Hafenplatz?
         if((t1 & libsiedler2::HARBOR_MASK) != 0)
@@ -177,7 +178,7 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         if(!node.t1 || !node.t2)
             return false;
 
-        unsigned char mapResource = map.GetMapDataAt(MapLayer::Resources, pt.x, pt.y);
+        unsigned char mapResource = map.getMapDataAt(MapLayer::Resources, pt.x, pt.y);
         Resource resource;
         // Wasser?
         if(mapResource == 0x20 || mapResource == 0x21)
@@ -223,16 +224,17 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
     return true;
 }
 
-void MapLoader::PlaceObjects(const glArchivItem_Map& map)
+void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
 {
     hqPositions_.clear();
 
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
-        unsigned char lc = map.GetMapDataAt(MapLayer::Landscape, pt.x, pt.y);
+        using libsiedler2::MapLayer;
+        unsigned char lc = map.getMapDataAt(MapLayer::ObjectIndex, pt.x, pt.y);
         noBase* obj = nullptr;
 
-        switch(map.GetMapDataAt(MapLayer::Type, pt.x, pt.y))
+        switch(map.getMapDataAt(MapLayer::ObjectType, pt.x, pt.y))
         {
             // Player Startpos (provisorisch)
             case 0x80:
@@ -374,7 +376,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 
             default:
 #ifndef NDEBUG
-                unsigned unknownObj = map.GetMapDataAt(MapLayer::Type, pt.x, pt.y);
+                unsigned unknownObj = map.getMapDataAt(MapLayer::ObjectType, pt.x, pt.y);
                 LOG.write(_("Unknown object at %1%: (0x%2$x: 0x%3$x)\n")) % pt % unknownObj % unsigned(lc);
 #endif // !NDEBUG
                 break;
@@ -384,13 +386,14 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
     }
 }
 
-void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
+void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
 {
     // Tiere auslesen
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         Species species;
-        switch(map.GetMapDataAt(MapLayer::Animals, pt.x, pt.y))
+        using libsiedler2::MapLayer;
+        switch(map.getMapDataAt(MapLayer::Animals, pt.x, pt.y))
         {
             // TODO: Which id is the polar bear?
             case 1:
@@ -406,7 +409,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
                 continue;
             default:
 #ifndef NDEBUG
-                unsigned unknownAnimal = map.GetMapDataAt(MapLayer::Animals, pt.x, pt.y);
+                unsigned unknownAnimal = map.getMapDataAt(MapLayer::Animals, pt.x, pt.y);
                 LOG.write(_("Unknown animal species at %1%: (0x%2$x)\n")) % pt % unknownAnimal;
 #endif // !NDEBUG
                 continue;

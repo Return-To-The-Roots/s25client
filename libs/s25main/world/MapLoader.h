@@ -23,12 +23,15 @@
 #include <boost/filesystem/path.hpp>
 #include <vector>
 
-class World;
-class GameWorldBase;
-class glArchivItem_Map;
-struct TerrainDesc;
 class Game;
+class GameWorldBase;
 class ILocalGameState;
+class World;
+struct TerrainDesc;
+
+namespace libsiedler2 {
+class ArchivItem_Map;
+}
 
 class MapLoader
 {
@@ -37,10 +40,10 @@ class MapLoader
 
     DescIdx<TerrainDesc> getTerrainFromS2(uint8_t s2Id) const;
     /// Initialize the nodes according to the map data
-    bool InitNodes(const glArchivItem_Map& map, Exploration exploration);
+    bool InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration);
     /// Place all objects on the nodes according to the map data.
-    void PlaceObjects(const glArchivItem_Map& map);
-    void PlaceAnimals(const glArchivItem_Map& map);
+    void PlaceObjects(const libsiedler2::ArchivItem_Map& map);
+    void PlaceAnimals(const libsiedler2::ArchivItem_Map& map);
 
     /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
     /// Wasserpunkte mit der gleichen seaId belegt und die Anzahl zurückgibt
@@ -51,7 +54,7 @@ public:
     /// Construct a loader for the given world.
     explicit MapLoader(GameWorldBase& world);
     /// Load the map from the given archive, resetting previous state. Return false on error
-    bool Load(const glArchivItem_Map& map, Exploration exploration);
+    bool Load(const libsiedler2::ArchivItem_Map& map, Exploration exploration);
     /// Load the map from the given filepath
     bool Load(const boost::filesystem::path& mapFilePath);
     bool LoadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath);

@@ -20,34 +20,36 @@
 #include "helpers/mathFuncs.h"
 #include "lua/GameDataLoader.h"
 #include "mygettext/mygettext.h"
-#include "ogl/glArchivItem_Map.h"
 #include "world/MapGeometry.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "s25util/Log.h"
 
-PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
+PreviewMinimap::PreviewMinimap(const libsiedler2::ArchivItem_Map* const s2map)
 {
     if(s2map)
         SetMap(*s2map);
 }
 
-void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
+void PreviewMinimap::SetMap(const libsiedler2::ArchivItem_Map& s2map)
 {
     const libsiedler2::ArchivItem_Map_Header& header = s2map.getHeader();
     mapSize.x = header.getWidth();
     mapSize.y = header.getHeight();
 
+    using libsiedler2::MapLayer;
+
     unsigned char gfxSet = header.getGfxSet();
-    objects = s2map.GetLayer(MapLayer::Type);
-    terrain1 = s2map.GetLayer(MapLayer::Terrain1);
-    terrain2 = s2map.GetLayer(MapLayer::Terrain2);
-    if(s2map.HasLayer(MapLayer::Shadows))
-        shadows = s2map.GetLayer(MapLayer::Shadows);
+    objects = s2map.getLayer(MapLayer::ObjectType);
+    terrain1 = s2map.getLayer(MapLayer::Terrain1);
+    terrain2 = s2map.getLayer(MapLayer::Terrain2);
+    if(s2map.hasLayer(MapLayer::Shadows))
+        shadows = s2map.getLayer(MapLayer::Shadows);
     else
-        CalcShadows(s2map.GetLayer(MapLayer::Altitude));
+        CalcShadows(s2map.getLayer(MapLayer::Altitude));
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
