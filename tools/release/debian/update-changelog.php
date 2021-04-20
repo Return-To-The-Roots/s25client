@@ -26,7 +26,7 @@ foreach ( $git_log_bits as $log )
 {
 	$log = trim($log);
 	$bits = explode(PHP_EOL, $log);
-	
+
 	if ( count($bits) > 1 )
 	{
 		$commit  = $bits[0];
@@ -37,7 +37,7 @@ foreach ( $git_log_bits as $log )
 		$body    = "";
 		if ( count($bits) > 5 )
 			$body    = $bits[5];
-		
+
 		$changelog[] = array(
 			'commit'  => $commit,
 			'date'    => $date,
@@ -51,7 +51,7 @@ foreach ( $git_log_bits as $log )
 
 reset($changelog);
 
-foreach ( $changelog as $entry ) 
+foreach ( $changelog as $entry )
 {
 	$day  = date("Ymd", $entry['date']);
 
@@ -63,7 +63,7 @@ foreach ( $changelog as $entry )
 	$body    = $entry['body'];
 
 	fwrite(STDERR, "processing $commit\n");
-	
+
 	echo "$project ($day-$commit) precise; urgency=low".PHP_EOL;
 	echo "".PHP_EOL;
 	echo "  * $subject".PHP_EOL;
