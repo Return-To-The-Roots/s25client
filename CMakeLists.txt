@@ -242,7 +242,6 @@ if(NOT WIN32)
     configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake" . start.sh)
 endif()
 
-file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
 ################################################################################
