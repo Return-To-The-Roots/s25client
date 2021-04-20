@@ -1,3 +1,8 @@
+# Copyright (C) 2009 - 2010 Ryan Pavlik <rpavlik@iastate.edu> <abiryan@ryand.net>
+# Copyright (C) 2009 - 2010 Iowa State University
+#
+# SPDX-License-Identifier: BSL-1.0
+
 # - Returns a version string from Git
 #
 # These functions force a re-configure on each git commit so that you can
@@ -25,16 +30,6 @@
 # Does not regard untracked files.
 #
 # Requires CMake 2.6 or newer (uses the 'function' command)
-#
-# Original Author:
-# 2009-2010 Ryan Pavlik <rpavlik@iastate.edu> <abiryan@ryand.net>
-# http://academic.cleardefinition.com
-# Iowa State University HCI Graduate Program/VRAC
-#
-# Copyright Iowa State University 2009-2010.
-# Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or copy at
-# http://www.boost.org/LICENSE_1_0.txt)
 
 if(__get_git_revision_description)
     return()

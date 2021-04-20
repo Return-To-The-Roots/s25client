@@ -1,4 +1,8 @@
 #!/bin/sh
+#Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+#SPDX-License-Identifier: GPL-2.0-or-later
+
 # postinst script for s25rttr
 #
 # see: dh_installdeb(1)
@@ -29,7 +33,7 @@ copyuppercase()
 	find /usr/share/s25rttr/S2 -type f -exec chmod 0644 {} \; || true
 	find /usr/share/s25rttr/S2 -type d -exec chmod 0755 {} \; || true
 	find /usr/share/s25rttr/S2 -exec chown root.games {} \; || true
-	
+
 	return 0
 }
 
@@ -61,7 +65,7 @@ case "$1" in
 					db_go || true
 					break;
 				fi
-				
+
 				echo "Trying $CDPATH: " >&2
 				if [ -d "$CDPATH" ] ; then
 					if [ -d "$CDPATH/s2/data" ] && [ -d "$CDPATH/s2/gfx" ] ; then
@@ -78,7 +82,7 @@ case "$1" in
 				fi
 
 				echo "invalid" >&2
-				
+
 				db_input high s25rttr-common/invalidpath || true
 				db_go || true
 			done

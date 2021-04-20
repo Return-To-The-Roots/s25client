@@ -1,4 +1,8 @@
 #!/bin/sh
+#Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+#SPDX-License-Identifier: GPL-2.0-or-later
+
 # postrm script for test
 #
 # see: dh_installdeb(1)
@@ -26,7 +30,7 @@ case "$1" in
 		rm -rf /usr/share/s25rttr/S2/DATA
 		rm -rf /usr/share/s25rttr/S2/GFX
 	;;
-	
+
 	abort-upgrade|failed-upgrade|upgrade)
 	;;
 

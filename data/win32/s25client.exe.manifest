@@ -1,4 +1,9 @@
 <?xml version="1.0"?>
+<!--
+Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+
+SPDX-License-Identifier: CC0-1.0
+-->
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" >
   <asmv3:application>
     <asmv3:windowsSettings>
