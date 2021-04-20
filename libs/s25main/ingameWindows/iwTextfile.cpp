@@ -1,5 +1,5 @@
-// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
-// Copyright (c) 2013 Nevik Rehnel (hai.kataker at gmx.de)
+// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2013 - 2021 Nevik Rehnel (hai.kataker at gmx.de)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2020 Settlers Freaks ( helpers::toString(gameInfo.info.curNumPlayers)
+// Copyright (C) 2005 - 2021 Settlers Freaks ( helpers::toString(gameInfo.info.curNumPlayers)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
