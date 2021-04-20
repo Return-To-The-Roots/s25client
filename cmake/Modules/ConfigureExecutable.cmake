@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Configures the given input file and copies it to the output_dir/output_name with executable permissions
 # output_dir has to be a path relative to CMAKE_CURRENT_BINARY_DIR
 function(configure_executable input_file output_dir output_name)

@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Library interface to be consumed by users
 add_library(driver INTERFACE)
 target_include_directories(driver INTERFACE include)

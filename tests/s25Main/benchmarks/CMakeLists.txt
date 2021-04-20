@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 option(RTTR_USE_SYSTEM_BENCHMARK "Use system installed google benchmark. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 if(RTTR_USE_SYSTEM_BENCHMARK)
   find_package(benchmark REQUIRED)

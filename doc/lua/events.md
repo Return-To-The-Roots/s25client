@@ -1,3 +1,9 @@
+<!--
+Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+-->
+
 # Events
 
 This lists all events, that is functions your script can implement and which are called at specific times,

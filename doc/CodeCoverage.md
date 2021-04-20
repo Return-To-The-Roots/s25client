@@ -1,3 +1,9 @@
+<!--
+Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+-->
+
 # Code coverage
 
 We use code coverage to make help writing good tests.

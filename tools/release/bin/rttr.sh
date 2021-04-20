@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 DIR=$(cd ${0%/*} && pwd -P)
 
 chmod 0755 $DIR/../bin/rttr.sh $DIR/../libexec/s25rttr/s25update $DIR/../bin/s25client $DIR/../bin/s25edit >/dev/null 2>/dev/null

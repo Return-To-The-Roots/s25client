@@ -1,3 +1,7 @@
+// Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+//
+// SPDX-License-Identifier: CC0-1.0
+
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by s25client.rc

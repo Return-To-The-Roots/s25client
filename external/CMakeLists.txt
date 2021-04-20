@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 include(RttrTestingCfg)
 option(RTTR_EXTERNAL_BUILD_TESTING "Enable tests of external dependencies" OFF)
 set(BUILD_TESTING ${RTTR_EXTERNAL_BUILD_TESTING})
