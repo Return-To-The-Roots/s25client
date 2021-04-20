@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Arm specific configs. Values taken from https://gist.github.com/fm4dd/c663217935dc17f0fc73c9c81b0aa845
 #
 # Functions: get_arm_tune (cpu as tune target), get_arm_fpu (fpu target), get_arm_flags (full arm-specific optimization)

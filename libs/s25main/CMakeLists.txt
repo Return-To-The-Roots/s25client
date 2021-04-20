@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 find_package(BZip2 1.0.6 REQUIRED)
 gather_dll(BZIP2)
 

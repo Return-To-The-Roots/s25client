@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 set(RTTR_Assert_Enabled 2 CACHE STRING "Status of RTTR assertions: 0=Disabled, 1=Enabled, 2=Default(Enabled only in debug)")
 
 file(GLOB COMMON_SRC src/*.cpp)

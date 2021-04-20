@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 coverage:
     range: "55..95"
     ignore:
@@ -10,5 +14,5 @@ coverage:
         default:
           target: auto
           informational: true
-          
+
 comment: false

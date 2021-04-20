@@ -1,3 +1,9 @@
+<!--
+Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+-->
+
 # Return To The Roots
 
 "Return To The Roots" is a fan-project, which aims to renew the original The Settlers 2.

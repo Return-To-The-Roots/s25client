@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import argparse
 from collections import namedtuple
 import re

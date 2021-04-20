@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 export LD_LIBRARY_PATH=libsiedler2/src
 export EF_ALLOW_MALLOC_0=1
 export EF_PROTECT_FREE=0

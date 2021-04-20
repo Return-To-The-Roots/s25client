@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 set(CMAKE_SYSTEM_NAME Windows)
 # Default to Win10 if not set on command line
 if(NOT CMAKE_SYSTEM_VERSION)

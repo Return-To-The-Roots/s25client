@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # This is a util script intended to be included by darwin toolchains
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR NOT CMAKE_SYSTEM_PROCESSOR)
     message(FATAL_ERROR "Cannot use this toolchain file directly. You have to set CMAKE_SYSTEM_* first!")

@@ -1,3 +1,7 @@
+# Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Note: Sources and headers are generated using http://glad.dav1d.de/ on 07.07.2018
 # See glad.h for details
 
