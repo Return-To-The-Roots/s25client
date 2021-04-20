@@ -37,6 +37,10 @@ jobs:
         with:
           args: --ignore data/RTTR/MAPS .
           ignore: external
+      - name: Check licensing
+        run:
+          pip install --user reuse
+          reuse lint
 
   Clang-Tidy:
     runs-on: ubuntu-20.04
