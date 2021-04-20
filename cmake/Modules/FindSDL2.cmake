@@ -1,3 +1,9 @@
+# Copyright (C) 2015 Ryan Pavlik <ryan.pavlik@gmail.com> <abiryan@ryand.net>
+# Copyright (C) 2015 Sensics, Inc.
+# Copyright (C) 2019 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+# SPDX-License-Identifier: BSL-1.0
+
 # - Find SDL2
 # Find the SDL2 headers and libraries
 #
@@ -5,13 +11,6 @@
 #  SDL2::SDL2main - Imported interface target to use if you want SDL2main.
 #  SDL2_FOUND - True if SDL2 was found.
 #  SDL2_DYNAMIC - If we found a DLL version of SDL (meaning you might want to copy a DLL from SDL2::SDL2)
-#
-# Original Author:
-# 2015 Ryan Pavlik <ryan.pavlik@gmail.com> <abiryan@ryand.net>
-#
-# Copyright Sensics, Inc. 2015.
-# Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(sdl2_extra_required "")
 

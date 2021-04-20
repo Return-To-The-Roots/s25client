@@ -1,3 +1,7 @@
+// Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+//
+// SPDX-License-Identifier: BSL-1.0
+
 #define BOOST_AUTO_TEST_CASE(name) class name: public BOOST_AUTO_TEST_CASE_FIXTURE{ void testMethod(); }; void name::testMethod()
 #define BOOST_FIXTURE_TEST_CASE(name, fixture) class name: public fixture, public BOOST_AUTO_TEST_CASE_FIXTURE{ void testMethod(); }; void name::testMethod()
 #define BOOST_AUTO_TEST_SUITE(name) namespace name{

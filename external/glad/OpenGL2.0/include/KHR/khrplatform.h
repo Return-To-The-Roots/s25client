@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 #ifndef __khrplatform_h_
 #define __khrplatform_h_
 

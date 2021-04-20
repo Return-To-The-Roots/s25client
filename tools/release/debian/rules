@@ -1,4 +1,7 @@
 #!/usr/bin/make -f
+#Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+#
+#SPDX-License-Identifier: GPL-2.0-or-later
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -30,7 +33,7 @@ build/Makefile:
 # and make
 build: build-stamp
 
-build-stamp: build/Makefile 
+build-stamp: build/Makefile
 	dh_testdir
 
 	# Add here commands to compile the package.
@@ -39,15 +42,15 @@ build-stamp: build/Makefile
 	touch $@
 
 # clean up
-clean: 
+clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp 
+	rm -f build-stamp
 
 	# Add here commands to clean up after the build process.
 	rm -rf build
 
-	dh_clean 
+	dh_clean
 
 # install
 install: build
@@ -58,15 +61,15 @@ install: build
 
 	# Add here commands to install the package into debian/s25rttr.
 	$(MAKE) -C build DESTDIR=$(CURDIR)/debian/s25rttr install
-	
+
 	# copy menu items
 	mkdir -vp $(CURDIR)/debian/s25rttr/usr/share/pixmaps $(CURDIR)/debian/s25rttr/usr/share/applications
 	cp -v $(CURDIR)/debian/s25rttr.png $(CURDIR)/debian/s25rttr/usr/share/pixmaps/
 	cp -v $(CURDIR)/debian/s25rttr.desktop $(CURDIR)/debian/s25rttr/usr/share/applications/
-	
+
 	# remove updater
 	rm -vf $(CURDIR)/debian/s25rttr/usr/bin/s25update
-	
+
 	# move maps to maps-package
 	mkdir -vp $(CURDIR)/debian/s25rttr-maps/usr/share/s25rttr/RTTR
 	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/MAPS $(CURDIR)/debian/s25rttr-maps/usr/share/s25rttr/RTTR
@@ -87,7 +90,7 @@ binary-indep: install
 binary-arch: install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs 
+	dh_installchangelogs
 #	dh_installdocs
 #	dh_installexamples
 #	dh_install
@@ -115,4 +118,4 @@ binary-arch: install
 	dh_builddeb
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install 
+.PHONY: build clean binary-indep binary-arch binary install
