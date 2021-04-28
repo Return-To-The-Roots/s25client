@@ -2362,20 +2362,21 @@ void AIPlayerJH::AdjustSettings()
     ToolSettings toolsettings;
     const Inventory& inventory = aii.GetInventory();
     // Saw
-    toolsettings[2] = (inventory.goods[GoodType::Saw] + inventory.people[Job::Carpenter] < 2) ?
+    toolsettings[3] = (inventory.goods[GoodType::Saw] + inventory.people[Job::Carpenter] < 2) ?
                         4 :
                         inventory.goods[GoodType::Saw] < 1 ? 1 : 0;
+
     // Pickaxe
-    toolsettings[3] = (inventory.goods[GoodType::PickAxe] < 1) ? 1 : 0;
+    toolsettings[4] = (inventory.goods[GoodType::PickAxe] < 1) ? 1 : 0;
     // Hammer
-    toolsettings[4] = (inventory.goods[GoodType::Hammer] < 1) ? 1 : 0;
+    toolsettings[1] = (inventory.goods[GoodType::Hammer] < 1) ? 1 : 0;
     // Crucible
     toolsettings[6] = (inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder]
                        < bldPlanner->GetNumBuildings(BuildingType::Ironsmelter) + 1) ?
                         1 :
                         0;
     // Scythe
-    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1
+    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[1] < 1
                        && (inventory.goods[GoodType::Scythe] < 1)) ?
                         1 :
                         0;
@@ -2385,12 +2386,12 @@ void AIPlayerJH::AdjustSettings()
                          1 :
                          0;
     // Shovel
-    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1
+    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[1] < 1
                        && (inventory.goods[GoodType::Shovel] < 1)) ?
                         1 :
                         0;
     // Axe
-    toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1
+    toolsettings[2] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[1] < 1
                        && (inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter] < 12)
                        && inventory.goods[GoodType::Axe] < 1) ?
                         1 :
