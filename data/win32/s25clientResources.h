@@ -1,4 +1,4 @@
-// Copyright (C) 2018 - 2021 Settlers Freaks <sf-team at siedler25.org>
+// Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 //
 // SPDX-License-Identifier: CC0-1.0
 

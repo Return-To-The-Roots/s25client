@@ -4,21 +4,21 @@ Upstream-Contact: Settlers Freaks <sf-team at siedler25.org>
 Source: https://www.rttr.info
 
 Files: tools/release/debian/*
-Copyright: 2013 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright: 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 License: GPL-2.0-or-later
 
 Files: data/RTTR/assets/*
-Copyright: 2013 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright: 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 License: GPL-2.0-or-later
 
 Files: data/RTTR/texte/*
-Copyright: 2013 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright: 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 License: GPL-2.0-or-later
 
 Files: data/RTTR/MUSIC/S2_Standard.pll
-Copyright: 2013 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright: 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 License: GPL-2.0-or-later
 
 Files: data/RTTR/MUSIC/SNG/*
-Copyright: 2013 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright: 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 License: CC0-1.0
