@@ -357,6 +357,8 @@ NationResourcesSource getNationResourcesSource(const Nation nation, bool isWinte
     if(isWinter)
         buildingsFilename.insert(buildingsFilename.begin(), 'W');
     bfs::path nationFolder;
+    // The original ("native") nations ise uppercase file names while we use lowercase names for the new ones
+    // Especially relevant for case sensitive file systems
     if(rttr::enum_cast(nation) < NUM_NATIVE_NATIONS)
     {
         nationFolder = config.ExpandPath(s25::folders::mbob);
