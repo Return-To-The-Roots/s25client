@@ -343,6 +343,38 @@ void Loader::LoadDummyGUIFiles()
     }
 }
 
+namespace {
+struct NationResourcesSource
+{
+    bfs::path buildingsFilePath, iconsFilePath;
+};
+
+NationResourcesSource getNationResourcesSource(const Nation nation, bool isWinter, const RttrConfig& config)
+{
+    const auto shortName = std::string(NationNames[nation], 0, 3);
+    auto buildingsFilename = shortName + "_Z.LST";
+    auto iconsFilename = shortName + "_ICON.LST";
+    if(isWinter)
+        buildingsFilename.insert(buildingsFilename.begin(), 'W');
+    bfs::path nationFolder;
+    if(rttr::enum_cast(nation) < NUM_NATIVE_NATIONS)
+    {
+        nationFolder = config.ExpandPath(s25::folders::mbob);
+        buildingsFilename = s25util::toUpper(buildingsFilename);
+        iconsFilename = s25util::toUpper(iconsFilename);
+    } else
+    {
+        nationFolder = config.ExpandPath(s25::folders::assetsNations) / NationNames[nation];
+        buildingsFilename = s25util::toLower(buildingsFilename);
+        iconsFilename = s25util::toLower(iconsFilename);
+    }
+    NationResourcesSource result;
+    result.buildingsFilePath = nationFolder / buildingsFilename;
+    result.iconsFilePath = nationFolder / iconsFilename;
+    return result;
+}
+} // namespace
+
 /**
  *  Load files required during a game
  *
@@ -369,19 +401,13 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     // Load nation building and icon graphics
     nation_gfx = nationIcons_ = {};
-    const std::string natPrefix = isWinterGFX ? "W" : "";
     for(Nation nation : nations)
     {
-        const bfs::path nationFolder = (rttr::enum_cast(nation) < NUM_NATIVE_NATIONS) ?
-                                         config_.ExpandPath(s25::folders::mbob) :
-                                         config_.ExpandPath(s25::folders::assetsNations) / NationNames[nation];
-        const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
-        const bfs::path buildingsFilePath = nationFolder / (natPrefix + shortName + "_Z.LST");
-        const bfs::path iconsFilePath = nationFolder / (shortName + "_ICON.LST");
-        if(!Load(buildingsFilePath, pal5) || !Load(iconsFilePath, pal5))
+        const auto resourceSource = getNationResourcesSource(nation, isWinterGFX, config_);
+        if(!Load(resourceSource.buildingsFilePath, pal5) || !Load(resourceSource.iconsFilePath, pal5))
             return false;
-        nation_gfx[nation] = &files_[ResourceId::make(buildingsFilePath)].archive;
-        nationIcons_[nation] = &files_[ResourceId::make(iconsFilePath)].archive;
+        nation_gfx[nation] = &files_[ResourceId::make(resourceSource.buildingsFilePath)].archive;
+        nationIcons_[nation] = &files_[ResourceId::make(resourceSource.iconsFilePath)].archive;
     }
 
     // TODO: Move to addon folder and make it overwrite existing file
