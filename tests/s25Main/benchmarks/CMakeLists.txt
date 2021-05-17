@@ -10,7 +10,7 @@ else()
     FetchContent_Declare(
         GoogleBenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.5.2
+        GIT_TAG v1.5.3
     )
     set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "")
     set(BENCHMARK_ENABLE_INSTALL  OFF CACHE BOOL "")
