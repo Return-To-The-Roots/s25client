@@ -2346,59 +2346,45 @@ unsigned AIPlayerJH::GetNumAIRelevantSeaIds() const
 void AIPlayerJH::AdjustSettings()
 {
     // update tool creation settings
-    ToolSettings toolsettings;
+    ToolSettings toolsettings{};
     const Inventory& inventory = aii.GetInventory();
-    // Saw
-    toolsettings[3] = (inventory.goods[GoodType::Saw] + inventory.people[Job::Carpenter] < 2) ?
-                        4 :
-                        inventory.goods[GoodType::Saw] < 1 ? 1 : 0;
-
-    // Pickaxe
-    toolsettings[4] = (inventory.goods[GoodType::PickAxe] < 1) ? 1 : 0;
-    // Hammer
-    toolsettings[1] = (inventory.goods[GoodType::Hammer] < 1) ? 1 : 0;
-    // Crucible
-    toolsettings[6] = (inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder]
-                       < bldPlanner->GetNumBuildings(BuildingType::Ironsmelter) + 1) ?
-                        1 :
-                        0;
-    // Scythe
-    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[1] < 1
-                       && (inventory.goods[GoodType::Scythe] < 1)) ?
-                        1 :
-                        0;
-    // Rollingpin
-    toolsettings[10] = (inventory.goods[GoodType::Rollingpin] + inventory.people[Job::Baker]
-                        < bldPlanner->GetNumBuildings(BuildingType::Bakery) + 1) ?
-                         1 :
-                         0;
-    // Shovel
-    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[1] < 1
-                       && (inventory.goods[GoodType::Shovel] < 1)) ?
-                        1 :
-                        0;
-    // Axe
-    toolsettings[2] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[1] < 1
-                       && (inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter] < 12)
-                       && inventory.goods[GoodType::Axe] < 1) ?
-                        1 :
-                        0;
-    // Tongs(metalworks)
-    toolsettings[0] =
-      0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii.GetInventory().goods[GoodType::Tongs]<1))?1:0;
-    // cleaver
-    toolsettings[9] =
+    toolsettings[Tool::Saw] = (inventory.goods[GoodType::Saw] + inventory.people[Job::Carpenter] < 2) ?
+                                4 :
+                                inventory.goods[GoodType::Saw] < 1 ? 1 : 0;
+    toolsettings[Tool::PickAxe] = (inventory.goods[GoodType::PickAxe] < 1) ? 1 : 0;
+    toolsettings[Tool::Hammer] = (inventory.goods[GoodType::Hammer] < 1) ? 1 : 0;
+    toolsettings[Tool::Crucible] = (inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder]
+                                    < bldPlanner->GetNumBuildings(BuildingType::Ironsmelter) + 1) ?
+                                     1 :
+                                     0;
+    // Only if we haven't ordered any basic tool, we may order other tools
+    const bool hasBasicToolsOrder = toolsettings[Tool::PickAxe] != 0 || toolsettings[Tool::Saw] != 0
+                                    || toolsettings[Tool::Crucible] != 0 || toolsettings[Tool::Hammer] != 0;
+    toolsettings[Tool::Scythe] = (!hasBasicToolsOrder && inventory.goods[GoodType::Scythe] < 1) ? 1 : 0;
+    toolsettings[Tool::Rollingpin] = (inventory.goods[GoodType::Rollingpin] + inventory.people[Job::Baker]
+                                      < bldPlanner->GetNumBuildings(BuildingType::Bakery) + 1) ?
+                                       1 :
+                                       0;
+    toolsettings[Tool::Shovel] = (!hasBasicToolsOrder && inventory.goods[GoodType::Shovel] < 1) ? 1 : 0;
+    toolsettings[Tool::Axe] =
+      (!hasBasicToolsOrder && inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter] < 12
+       && inventory.goods[GoodType::Axe] < 1) ?
+        1 :
+        0;
+    toolsettings[Tool::Tongs] = 0; //(!hasBasicToolsOrder&&(aii.GetInventory().goods[GoodType::Tongs]<1))?1:0;
+    toolsettings[Tool::Cleaver] =
       0; //(aii.GetInventory().goods[GoodType::Cleaver]+aii.GetInventory().people[Job::Butcher]<construction->GetNumBuildings(BuildingType::Slaughterhouse)+1)?1:0;
-    // rod & line
-    toolsettings[7] = 0;
-    // bow
-    toolsettings[11] = 0;
-    for(unsigned i = 0; i < toolsettings.size(); i++)
-        if(toolsettings[i] != player.GetToolPriority(i))
+    toolsettings[Tool::RodAndLine] = 0;
+    toolsettings[Tool::Bow] = 0;
+
+    for(const auto tool : helpers::enumRange<Tool>())
+    {
+        if(toolsettings[tool] != player.GetToolPriority(tool))
         {
             aii.ChangeTools(toolsettings);
             break;
         }
+    }
 
     // Set military settings to some currently required values
     MilitarySettings milSettings;

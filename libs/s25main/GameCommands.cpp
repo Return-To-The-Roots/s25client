@@ -14,6 +14,7 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include <algorithm>
 #include <stdexcept>
 
 namespace gc {
@@ -113,6 +114,13 @@ void ChangeTransport::Execute(GameWorld& world, uint8_t playerId)
 void ChangeMilitary::Execute(GameWorld& world, uint8_t playerId)
 {
     world.GetPlayer(playerId).ChangeMilitarySettings(data);
+}
+
+ChangeTools::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
+    : GameCommand(GCType::ChangeTools), data(data), orders()
+{
+    if(order_delta != nullptr)
+        std::copy_n(order_delta, orders.size(), orders.begin());
 }
 
 void ChangeTools::Execute(GameWorld& world, uint8_t playerId)

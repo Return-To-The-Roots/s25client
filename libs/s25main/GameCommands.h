@@ -286,23 +286,10 @@ class ChangeTools : public GameCommand
     /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
     ToolSettings data;
 
-    std::array<int8_t, NUM_TOOLS> orders;
+    helpers::EnumArray<int8_t, Tool> orders;
 
 protected:
-    ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr)
-        : GameCommand(GCType::ChangeTools), data(data)
-    {
-        if(order_delta != nullptr)
-        {
-            for(unsigned i = 0; i < NUM_TOOLS; ++i)
-                orders[i] = order_delta[i];
-        } else
-        {
-            for(unsigned i = 0; i < NUM_TOOLS; ++i)
-                orders[i] = 0;
-        }
-    }
-
+    ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr);
     ChangeTools(Serializer& ser) : GameCommand(GCType::ChangeTools)
     {
         helpers::popContainer(ser, data);

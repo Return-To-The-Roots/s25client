@@ -110,7 +110,7 @@ template<typename T>
 auto randomElement(const T& container, const RandomContext& ctx)
 {
     RTTR_Assert(!container.empty());
-    return container[RANDOM.Rand(ctx, container.size())];
+    return *(container.begin() + RANDOM.Rand(ctx, container.size()));
 }
 template<class T>
 static void shuffleContainer(T& container, const RandomContext& ctx)

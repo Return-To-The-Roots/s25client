@@ -28,7 +28,7 @@ using BuildOrders = std::array<BuildingType, helpers::NumEnumValues_v<BuildingTy
 using TransportOrders = std::array<uint8_t, 14>;
 using TransportPriorities = helpers::EnumArray<uint8_t, GoodType>;
 /// Priority of each tool
-using ToolSettings = std::array<uint8_t, NUM_TOOLS>;
+using ToolSettings = helpers::EnumArray<uint8_t, Tool>;
 /// Value of each military slider
 /// 0: Recruiting ratio (to max possible recruits)
 /// 1: Defender strength (ratio to max available rank)

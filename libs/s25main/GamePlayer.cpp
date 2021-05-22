@@ -73,25 +73,22 @@ void GamePlayer::LoadStandardToolSettings()
     // metalwork tool request
 
     // manually
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
-    {
-        tools_ordered[i] = 0;
-        tools_ordered_delta[i] = 0;
-    }
+    std::fill(tools_ordered.begin(), tools_ordered.end(), 0u);
+    std::fill(tools_ordered_delta.begin(), tools_ordered_delta.end(), 0);
 
     // percentage (tool-settings-window-slider, in 10th percent)
-    toolsSettings_[0] = 1;
-    toolsSettings_[1] = 4;
-    toolsSettings_[2] = 2;
-    toolsSettings_[3] = 5;
-    toolsSettings_[4] = 7;
-    toolsSettings_[5] = 1;
-    toolsSettings_[6] = 3;
-    toolsSettings_[7] = 1;
-    toolsSettings_[8] = 2;
-    toolsSettings_[9] = 1;
-    toolsSettings_[10] = 2;
-    toolsSettings_[11] = 1;
+    toolsSettings_[Tool::Tongs] = 1;
+    toolsSettings_[Tool::Hammer] = 4;
+    toolsSettings_[Tool::Axe] = 2;
+    toolsSettings_[Tool::Saw] = 5;
+    toolsSettings_[Tool::PickAxe] = 7;
+    toolsSettings_[Tool::Shovel] = 1;
+    toolsSettings_[Tool::Crucible] = 3;
+    toolsSettings_[Tool::RodAndLine] = 1;
+    toolsSettings_[Tool::Scythe] = 2;
+    toolsSettings_[Tool::Cleaver] = 1;
+    toolsSettings_[Tool::Rollingpin] = 2;
+    toolsSettings_[Tool::Bow] = 1;
 }
 
 void GamePlayer::LoadStandardMilitarySettings()
@@ -718,41 +715,37 @@ void GamePlayer::SendPostMessage(std::unique_ptr<PostMsg> msg)
     world.GetPostMgr().SendMsg(GetPlayerId(), std::move(msg));
 }
 
-unsigned GamePlayer::GetToolsOrderedVisual(unsigned toolIdx) const
+unsigned GamePlayer::GetToolsOrderedVisual(Tool tool) const
 {
-    RTTR_Assert(toolIdx < tools_ordered.size());
-    return std::max(0, int(tools_ordered[toolIdx] + tools_ordered_delta[toolIdx]));
+    return std::max(0, int(tools_ordered[tool] + tools_ordered_delta[tool]));
 }
 
-unsigned GamePlayer::GetToolsOrdered(unsigned toolIdx) const
+unsigned GamePlayer::GetToolsOrdered(Tool tool) const
 {
-    RTTR_Assert(toolIdx < tools_ordered.size());
-    return tools_ordered[toolIdx];
+    return tools_ordered[tool];
 }
 
-bool GamePlayer::ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const
+bool GamePlayer::ChangeToolOrderVisual(Tool tool, int changeAmount) const
 {
     if(std::abs(changeAmount) > 100)
         return false;
-    int newOrderAmount = int(GetToolsOrderedVisual(toolIdx)) + changeAmount;
+    int newOrderAmount = int(GetToolsOrderedVisual(tool)) + changeAmount;
     if(newOrderAmount < 0 || newOrderAmount > 100)
         return false;
-    tools_ordered_delta[toolIdx] += changeAmount;
+    tools_ordered_delta[tool] += changeAmount;
     return true;
 }
 
-unsigned GamePlayer::GetToolPriority(unsigned toolIdx) const
+unsigned GamePlayer::GetToolPriority(Tool tool) const
 {
-    RTTR_Assert(toolIdx < toolsSettings_.size());
-    return toolsSettings_[toolIdx];
+    return toolsSettings_[tool];
 }
 
-void GamePlayer::ToolOrderProcessed(unsigned toolIdx)
+void GamePlayer::ToolOrderProcessed(Tool tool)
 {
-    RTTR_Assert(toolIdx < tools_ordered.size());
-    if(tools_ordered[toolIdx])
+    if(tools_ordered[tool])
     {
-        --tools_ordered[toolIdx];
+        --tools_ordered[tool];
         world.GetNotifications().publish(ToolNote(ToolNote::OrderCompleted, GetPlayerId()));
     }
 }
@@ -1308,22 +1301,22 @@ void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_setting
 
 /// Setzt neue Werkzeugeinstellungen
 void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
-                                     const std::array<int8_t, NUM_TOOLS>& orderChanges)
+                                     const helpers::EnumArray<int8_t, Tool>& orderChanges)
 {
     const bool settingsChanged = toolsSettings_ != tools_settings;
     toolsSettings_ = tools_settings;
     if(settingsChanged)
         world.GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
 
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
+    for(const auto tool : helpers::enumRange<Tool>())
     {
-        tools_ordered[i] = helpers::clamp(tools_ordered[i] + orderChanges[i], 0, 100);
-        tools_ordered_delta[i] -= orderChanges[i];
+        tools_ordered[tool] = helpers::clamp(tools_ordered[tool] + orderChanges[tool], 0, 100);
+        tools_ordered_delta[tool] -= orderChanges[tool];
 
-        if(orderChanges[i] != 0)
+        if(orderChanges[tool] != 0)
         {
-            LOG.write(">> Committing an order of %d for tool #%d(%s)\n", LogTarget::File) % (int)orderChanges[i] % i
-              % _(WARE_NAMES[TOOLS[i]]);
+            LOG.write(">> Committing an order of %1% for tool #%2%(%3%)\n", LogTarget::File) % (int)orderChanges[tool]
+              % static_cast<unsigned>(tool) % _(WARE_NAMES[TOOL_TO_GOOD[tool]]);
             world.GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
         }
     }

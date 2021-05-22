@@ -95,20 +95,20 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
 }
 
 // Mapping of indices in TOOLS to IDs in JOBS.BOB
-constexpr std::array<uint8_t, NUM_TOOLS> CARRYTOOLS_IDS = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 86};
+constexpr helpers::EnumArray<uint8_t, Tool> CARRYTOOLS_IDS = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 86};
 
 unsigned short nofMetalworker::GetCarryID() const
 {
-    const int toolIdx = helpers::indexOf(TOOLS, ware);
-    return (toolIdx >= 0) ? CARRYTOOLS_IDS[toolIdx] : 0;
+    const int toolIdx = helpers::indexOf(TOOL_TO_GOOD, ware);
+    return (toolIdx >= 0) ? CARRYTOOLS_IDS[static_cast<Tool>(toolIdx)] : 0;
 }
 
 bool nofMetalworker::HasToolOrder() const
 {
     const GamePlayer& owner = world->GetPlayer(player);
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
+    for(const auto tool : helpers::enumRange<Tool>())
     {
-        if(owner.GetToolsOrdered(i) > 0u)
+        if(owner.GetToolsOrdered(tool) > 0u)
             return true;
     }
     return false;
@@ -126,9 +126,9 @@ bool nofMetalworker::AreWaresAvailable() const
         return true;
     // Any non-zero priority?
     const GamePlayer& owner = world->GetPlayer(player);
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
+    for(const auto tool : helpers::enumRange<Tool>())
     {
-        if(owner.GetToolPriority(i) > 0u)
+        if(owner.GetToolPriority(tool) > 0u)
             return true;
     }
     return false;
@@ -153,27 +153,29 @@ void nofMetalworker::CheckForOrders()
 helpers::OptionalEnum<GoodType> nofMetalworker::GetOrderedTool()
 {
     GamePlayer& owner = world->GetPlayer(player);
-    std::vector<uint8_t> random_array;
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
+    std::vector<Tool> random_array;
+    for(const auto tool : helpers::enumRange<Tool>())
     {
-        if(owner.GetToolsOrdered(i) == 0)
+        if(owner.GetToolsOrdered(tool) == 0)
             continue;
-        unsigned toolPriority = std::max(owner.GetToolPriority(i), 1u);
-        random_array.insert(random_array.end(), toolPriority, i);
+        unsigned toolPriority = std::max(owner.GetToolPriority(tool), 1u);
+        random_array.insert(random_array.end(), toolPriority, tool);
     }
     if(random_array.empty())
         return boost::none;
 
-    unsigned toolIdx = RANDOM_ELEMENT(random_array);
+    const Tool tool = RANDOM_ELEMENT(random_array);
 
-    owner.ToolOrderProcessed(toolIdx);
+    owner.ToolOrderProcessed(tool);
 
     if(!HasToolOrder())
+    {
         SendPostMessage(player,
                         std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(),
                                                   _("Completed the ordered amount of tools."), PostCategory::Economy));
+    }
 
-    return TOOLS[toolIdx];
+    return TOOL_TO_GOOD[tool];
 }
 
 helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
@@ -182,11 +184,11 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
 
     // Fill array where the # of occurrences of a tool is its priority
     // Drawing a random entry will make higher priority items more likely
-    std::vector<uint8_t> random_array;
-    random_array.reserve(TOOLS.size());
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
+    std::vector<Tool> random_array;
+    random_array.reserve(helpers::NumEnumValues_v<Tool>);
+    for(const auto tool : helpers::enumRange<Tool>())
     {
-        random_array.insert(random_array.end(), owner.GetToolPriority(i), i);
+        random_array.insert(random_array.end(), owner.GetToolPriority(tool), tool);
     }
 
     // if they're all zero
@@ -196,10 +198,10 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
         if(world->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
             return boost::none;
         else
-            return RANDOM_ELEMENT(TOOLS);
+            return RANDOM_ELEMENT(TOOL_TO_GOOD);
     }
 
-    return TOOLS[RANDOM_ELEMENT(random_array)];
+    return TOOL_TO_GOOD[RANDOM_ELEMENT(random_array)];
 }
 
 helpers::OptionalEnum<GoodType> nofMetalworker::ProduceWare()

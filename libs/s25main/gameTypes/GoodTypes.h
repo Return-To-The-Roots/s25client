@@ -53,8 +53,28 @@ constexpr auto maxEnumValue(GoodType)
 {
     return GoodType::ShieldJapanese;
 }
-// Number of tools
-constexpr unsigned NUM_TOOLS = 12;
+
+/// List of all tools (correspond to buttons at IO:140-163)
+enum class Tool
+{
+    Tongs,
+    Hammer,
+    Axe,
+    Saw,
+    PickAxe,
+    Shovel,
+    Crucible,
+    RodAndLine,
+    Scythe,
+    Cleaver,
+    Rollingpin,
+    Bow
+};
+constexpr auto maxEnumValue(Tool)
+{
+    return Tool::Bow;
+}
+
 /// Offset into the map image archive to get the ware stack (lying on ground) texture
 constexpr unsigned WARE_STACK_TEX_MAP_OFFSET = 2200;
 /// Offset into the map image archive to get the ware texture
