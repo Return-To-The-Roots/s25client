@@ -187,7 +187,7 @@ public:
     /// Setzt neue Militäreinstellungen
     void ChangeMilitarySettings(const MilitarySettings& military_settings);
     /// Setzt neue Werkzeugeinstellungen
-    void ChangeToolsSettings(const ToolSettings& tools_settings, const std::array<int8_t, NUM_TOOLS>& orderChanges);
+    void ChangeToolsSettings(const ToolSettings& tools_settings, const helpers::EnumArray<int8_t, Tool>& orderChanges);
     /// Setzt neue Verteilungseinstellungen
     void ChangeDistribution(const Distributions& distribution_settings);
     /// Setzt neue Baureihenfolge-Einstellungen
@@ -294,14 +294,14 @@ public:
     void SendPostMessage(std::unique_ptr<PostMsg> msg);
 
     /// Returns number of tools ordered for the given tool including visual orders (not yet committed)
-    unsigned GetToolsOrderedVisual(unsigned toolIdx) const;
-    unsigned GetToolsOrdered(unsigned toolIdx) const;
+    unsigned GetToolsOrderedVisual(Tool tool) const;
+    unsigned GetToolsOrdered(Tool tool) const;
     /// Changes the current visual tool order by the given amount. Return true if anything was changed (tool order is
     /// clamped to [0,100])
-    bool ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const;
-    unsigned GetToolPriority(unsigned toolIdx) const;
+    bool ChangeToolOrderVisual(Tool tool, int changeAmount) const;
+    unsigned GetToolPriority(Tool tool) const;
     /// Called when a ordered tool was finished
-    void ToolOrderProcessed(unsigned toolIdx);
+    void ToolOrderProcessed(Tool tool);
 
     /// Get a military setting. TODO: Use named type instead of index
     unsigned char GetMilitarySetting(unsigned type) const { return militarySettings_[type]; }
@@ -384,7 +384,7 @@ private:
     /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
     ToolSettings toolsSettings_;
     // qx:tools
-    std::array<uint8_t, NUM_TOOLS> tools_ordered;
+    helpers::EnumArray<uint8_t, Tool> tools_ordered;
 
     /// Bündnisse mit anderen Spielern
     struct Pact
@@ -439,5 +439,5 @@ private:
     helpers::EnumArray<bool, BuildingType> building_enabled;
 
     // TODO: Move to viewer. Mutable as a work-around
-    mutable std::array<int8_t, NUM_TOOLS> tools_ordered_delta;
+    mutable helpers::EnumArray<int8_t, Tool> tools_ordered_delta;
 };

@@ -23,7 +23,7 @@ private:
     const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
     /// How the order for each tool should be changed (pending actual transmission)
-    std::array<int8_t, NUM_TOOLS> pendingOrderChanges;
+    helpers::EnumArray<int8_t, Tool> pendingOrderChanges;
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
     bool ordersChanged;
     bool shouldUpdateTexts;

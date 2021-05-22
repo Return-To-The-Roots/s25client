@@ -40,7 +40,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SouthEast), false,
                     std::vector<Direction>(2, Direction::East));
 
-    std::array<signed char, NUM_TOOLS> toolOrder;
+    helpers::EnumArray<int8_t, Tool> toolOrder;
     ToolSettings toolSettings;
     std::fill(toolOrder.begin(), toolOrder.end(), 0);
     std::fill(toolSettings.begin(), toolSettings.end(), 0);
@@ -48,16 +48,16 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     // Get wares and workers in
     RTTR_SKIP_GFS(1000);
 
-    toolOrder[0] = 1;
-    toolOrder[1] = 1;
-    toolOrder[2] = 1;
+    toolOrder[Tool::Tongs] = 1;
+    toolOrder[Tool::Cleaver] = 1;
+    toolOrder[Tool::Rollingpin] = 1;
     PostBox& postbox = world.GetPostMgr().AddPostBox(0);
     postbox.Clear();
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     Inventory expectedInventory = curInventory;
-    expectedInventory.Add(TOOLS[0], toolOrder[0]);
-    expectedInventory.Add(TOOLS[1], toolOrder[1]);
-    expectedInventory.Add(TOOLS[2], toolOrder[2]);
+    expectedInventory.Add(GoodType::Tongs, toolOrder[Tool::Tongs]);
+    expectedInventory.Add(GoodType::Cleaver, toolOrder[Tool::Cleaver]);
+    expectedInventory.Add(GoodType::Rollingpin, toolOrder[Tool::Rollingpin]);
     // Place order
     this->ChangeTools(toolSettings, toolOrder.data());
     RTTR_REQUIRE_LOG_CONTAINS("Committing an order", true);
@@ -67,9 +67,9 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     // Stop it and wait till goods are produced
     this->SetProductionEnabled(bldPos, false);
     this->SetProductionEnabled(bldPos2, false);
-    RTTR_EXEC_TILL(2000, curInventory[TOOLS[0]] == expectedInventory[TOOLS[0]]
-                           && curInventory[TOOLS[1]] == expectedInventory[TOOLS[1]]
-                           && curInventory[TOOLS[2]] == expectedInventory[TOOLS[2]]);
+    RTTR_EXEC_TILL(2000, curInventory[GoodType::Tongs] == expectedInventory[GoodType::Tongs]
+                           && curInventory[GoodType::Cleaver] == expectedInventory[GoodType::Cleaver]
+                           && curInventory[GoodType::Rollingpin] == expectedInventory[GoodType::Rollingpin]);
 }
 
 BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
@@ -95,10 +95,10 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     RTTR_EXEC_TILL(3000, mw->GetNumWares(1) == 6);
     // No order -> not working
     BOOST_TEST_REQUIRE(!mw->is_working);
-    std::array<int8_t, NUM_TOOLS> orders;
+    helpers::EnumArray<int8_t, Tool> orders;
     std::fill(orders.begin(), orders.end(), 0);
-    orders[0] = 1;
-    this->ChangeTools(settings, &orders.front());
+    orders[Tool::Bow] = 1;
+    this->ChangeTools(settings, orders.data());
     RTTR_EXEC_TILL(1300, mw->is_working);
 }
 

@@ -357,7 +357,7 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
             BOOST_TEST_REQUIRE(player.GetTransportPriority(i) == GetTransportPrioFromOrdering(inTransportOrder, i));
         for(unsigned i = 0; i < militarySettings.size(); i++)
             BOOST_TEST_REQUIRE(player.GetMilitarySetting(i) == militarySettings[i]);
-        for(unsigned i = 0; i < toolPrios.size(); i++)
+        for(const auto i : helpers::enumRange<Tool>())
             BOOST_TEST_REQUIRE(player.GetToolPriority(i) == toolPrios[i]);
     }
 }

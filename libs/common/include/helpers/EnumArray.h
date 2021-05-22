@@ -10,7 +10,7 @@
 
 namespace helpers {
 
-/// Array that is meant to be index with enum values instead of integrals
+/// Array that is meant to be indexed with enum values instead of integrals
 /// <typeparam name="T_Elements">Type of the elements</typeparam>
 /// <typeparam name="T_Index">Type of the indices</typeparam>
 template<typename T_Elements, typename T_Index>
@@ -23,6 +23,7 @@ struct EnumArray
     constexpr T_Elements* data() { return elems; }
     constexpr const T_Elements* data() const { return elems; }
     static constexpr unsigned size() { return helpers::MaxEnumValue_v<T_Index> + 1u; }
+    constexpr bool empty() const { return false; }
 
     T_Elements& operator[](T_Index idx) noexcept { return elems[rttr::enum_cast(idx)]; }
     constexpr const T_Elements& operator[](T_Index idx) const noexcept { return elems[rttr::enum_cast(idx)]; }

@@ -7,12 +7,28 @@
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/Resource.h"
 #include "gameData/JobConsts.h"
+#include "gameData/ToolConsts.h"
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameTypes)
+
+BOOST_AUTO_TEST_CASE(ToolMappingMatches)
+{
+#define TEST_TOOLMAP_SINGLE(s, _, Enumerator)                             \
+    static_assert(TOOL_TO_GOOD[Tool::Enumerator] == GoodType::Enumerator, \
+                  "Mismatch for " BOOST_PP_STRINGIZE(Enumerator));
+    // Generate a static assert for each enumerator
+#define TEST_TOOLMAP(...) BOOST_PP_SEQ_FOR_EACH(TEST_TOOLMAP_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+
+    TEST_TOOLMAP(Tongs, Hammer, Axe, Saw, PickAxe, Shovel, Crucible, RodAndLine, Scythe, Cleaver, Rollingpin, Bow);
+    BOOST_TEST(true);
+
+#undef TEST_TOOLMAP_SINGLE
+#undef TEST_TOOLMAP
+}
 
 BOOST_AUTO_TEST_CASE(ResourceValues)
 {
