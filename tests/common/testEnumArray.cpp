@@ -16,15 +16,33 @@ enum class TestEnum
     Value3,
     Value4,
 };
-
 constexpr auto maxEnumValue(TestEnum)
 {
     return TestEnum::Value4;
 }
 
+enum class TestEnumSmall
+{
+    Entry
+};
+constexpr auto maxEnumValue(TestEnumSmall)
+{
+    return TestEnumSmall::Entry;
+}
+
 } // namespace
 
 BOOST_AUTO_TEST_SUITE(EnumArraySuite)
+
+BOOST_AUTO_TEST_CASE(SizeAndEmpty)
+{
+    const helpers::EnumArray<int, TestEnum> values{};
+    const helpers::EnumArray<int, TestEnumSmall> values2{};
+    BOOST_TEST(values.size() == 5u);
+    BOOST_TEST(!values.empty());
+    BOOST_TEST(values2.size() == 1u);
+    BOOST_TEST(!values2.empty());
+}
 
 BOOST_AUTO_TEST_CASE(ConvertedValuesAreCorrect)
 {
