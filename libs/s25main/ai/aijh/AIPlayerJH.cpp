@@ -2347,20 +2347,11 @@ unsigned AIPlayerJH::GetNumAIRelevantSeaIds() const
 
 void AIPlayerJH::AdjustSettings()
 {
-    // update tool creation settings
-    ToolSettings toolsettings{};
     const Inventory& inventory = aii.GetInventory();
-    // Basic tools to produce stone, boards and iron are very important to have
-    toolsettings[Tool::Saw] =
-      (inventory[GoodType::Saw] + inventory[Job::Carpenter] < 2) ? 10 : inventory[GoodType::Saw] == 0 ? 7 : 0;
-    toolsettings[Tool::PickAxe] = (inventory[GoodType::PickAxe] == 0) ? 7 : 0;
-    toolsettings[Tool::Crucible] = (inventory[GoodType::Crucible] + inventory[Job::IronFounder]
-                                    < bldPlanner->GetNumBuildings(BuildingType::Ironsmelter) + 1) ?
-                                     7 :
-                                     0;
-    // Only if we haven't ordered any basic tool, we may order other tools
-    if(toolsettings[Tool::PickAxe] == 0 && toolsettings[Tool::Saw] == 0 && toolsettings[Tool::Crucible] == 0)
+    // update tool creation settings
+    if(bldPlanner->GetNumBuildings(BuildingType::Metalworks) > 0u)
     {
+        ToolSettings toolsettings{};
         const auto calcToolPriority = [&](const Tool tool) {
             const GoodType good = TOOL_TO_GOOD[tool];
             unsigned numToolsAvailable = inventory[good];
@@ -2387,34 +2378,47 @@ void AIPlayerJH::AdjustSettings()
             }
             return 0;
         };
-        // Order those as required for existing and planned buildings
-        for(const Tool tool : {Tool::Hammer, Tool::Axe, Tool::Scythe, Tool::Rollingpin, Tool::Shovel, Tool::Tongs,
-                               Tool::Cleaver, Tool::RodAndLine, Tool::Bow})
-        {
+        // Basic tools to produce stone, boards and iron are very important to have, do those first
+        for(const Tool tool : {Tool::Axe, Tool::Saw, Tool::PickAxe, Tool::Crucible})
             toolsettings[tool] = calcToolPriority(tool);
-        }
-        // Always have at least one of those in stock for other stuff
-        for(const Tool tool : {Tool::Hammer, Tool::Shovel, Tool::Tongs})
+        // Set some minima
+        if(inventory[GoodType::Saw] + inventory[Job::Carpenter] < 2)
+            toolsettings[Tool::Saw] = 10;
+        if(inventory[GoodType::Axe] + inventory[Job::Woodcutter] < 2)
+            toolsettings[Tool::Axe] = 10;
+        if(inventory[GoodType::PickAxe] + inventory[Job::Stonemason] < 2)
+            toolsettings[Tool::PickAxe] = 7;
+        // Only if we haven't ordered any basic tool, we may order other tools
+        if(toolsettings[Tool::Axe] == 0 && toolsettings[Tool::PickAxe] == 0 && toolsettings[Tool::Saw] == 0
+           && toolsettings[Tool::Crucible] == 0)
         {
-            if(inventory[TOOL_TO_GOOD[tool]] == 0)
-                toolsettings[tool] = std::max<unsigned>(toolsettings[tool], 1u);
+            // Order those as required for existing and planned buildings
+            for(const Tool tool : {Tool::Hammer, Tool::Scythe, Tool::Rollingpin, Tool::Shovel, Tool::Tongs,
+                                   Tool::Cleaver, Tool::RodAndLine, Tool::Bow})
+            {
+                toolsettings[tool] = calcToolPriority(tool);
+            }
+            // Always have at least one of those in stock for other stuff
+            for(const Tool tool : {Tool::Hammer, Tool::Shovel, Tool::Tongs})
+            {
+                if(inventory[TOOL_TO_GOOD[tool]] == 0)
+                    toolsettings[tool] = std::max<unsigned>(toolsettings[tool], 1u);
+            }
+            // We want about 12 woodcutters, so if we don't have axes produce some
+            if(inventory[GoodType::Axe] == 0 && inventory[Job::Woodcutter] < 12)
+            {
+                // Higher priority if we can't meet the building requirements as calculated above
+                toolsettings[Tool::Axe] = (toolsettings[Tool::Axe] == 0) ? 4 : 7;
+            }
         }
-        // Axes ared need for woodcutters, so increase priority (stays 0 if not required)
-        toolsettings[Tool::Axe] *= 2;
-        // We want about 12 woodcutters, so if we don't have axes produce some
-        if(inventory[GoodType::Axe] == 0 && inventory[Job::Woodcutter] < 12)
-        {
-            // Higher priority if we can't meet the building requirements as calculated above
-            toolsettings[Tool::Axe] = (toolsettings[Tool::Axe] == 0) ? 2 : 7;
-        }
-    }
 
-    for(const auto tool : helpers::enumRange<Tool>())
-    {
-        if(toolsettings[tool] != player.GetToolPriority(tool))
+        for(const auto tool : helpers::enumRange<Tool>())
         {
-            aii.ChangeTools(toolsettings);
-            break;
+            if(toolsettings[tool] != player.GetToolPriority(tool))
+            {
+                aii.ChangeTools(toolsettings);
+                break;
+            }
         }
     }
 
