@@ -11,7 +11,7 @@ class GameCommandFactory;
 class GameWorldViewer;
 
 /// Fenster mit den Militäreinstellungen.
-class iwMilitary : public TransmitSettingsIgwAdapter
+class iwMilitary final : public TransmitSettingsIgwAdapter
 {
     GameCommandFactory& gcFactory;
 

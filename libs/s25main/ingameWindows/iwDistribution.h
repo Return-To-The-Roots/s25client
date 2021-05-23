@@ -11,7 +11,7 @@
 class GameCommandFactory;
 class GameWorldViewer;
 
-class iwDistribution : public TransmitSettingsIgwAdapter
+class iwDistribution final : public TransmitSettingsIgwAdapter
 {
     struct DistributionGroup;
 

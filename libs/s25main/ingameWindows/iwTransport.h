@@ -12,7 +12,7 @@ class ITexture;
 class GameWorldViewer;
 class GameCommandFactory;
 
-class iwTransport : public TransmitSettingsIgwAdapter
+class iwTransport final : public TransmitSettingsIgwAdapter
 {
 private:
     struct ButtonData
