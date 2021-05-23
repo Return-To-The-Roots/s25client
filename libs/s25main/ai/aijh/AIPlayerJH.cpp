@@ -33,7 +33,9 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
+#include "gameData/JobConsts.h"
 #include "gameData/TerrainDesc.h"
+#include "gameData/ToolConsts.h"
 #include <algorithm>
 #include <array>
 #include <memory>
@@ -2348,34 +2350,64 @@ void AIPlayerJH::AdjustSettings()
     // update tool creation settings
     ToolSettings toolsettings{};
     const Inventory& inventory = aii.GetInventory();
-    toolsettings[Tool::Saw] = (inventory.goods[GoodType::Saw] + inventory.people[Job::Carpenter] < 2) ?
-                                4 :
-                                inventory.goods[GoodType::Saw] < 1 ? 1 : 0;
-    toolsettings[Tool::PickAxe] = (inventory.goods[GoodType::PickAxe] < 1) ? 1 : 0;
-    toolsettings[Tool::Hammer] = (inventory.goods[GoodType::Hammer] < 1) ? 1 : 0;
-    toolsettings[Tool::Crucible] = (inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder]
+    // Basic tools to produce stone, boards and iron are very important to have
+    toolsettings[Tool::Saw] =
+      (inventory[GoodType::Saw] + inventory[Job::Carpenter] < 2) ? 10 : inventory[GoodType::Saw] == 0 ? 7 : 0;
+    toolsettings[Tool::PickAxe] = (inventory[GoodType::PickAxe] == 0) ? 7 : 0;
+    toolsettings[Tool::Crucible] = (inventory[GoodType::Crucible] + inventory[Job::IronFounder]
                                     < bldPlanner->GetNumBuildings(BuildingType::Ironsmelter) + 1) ?
-                                     1 :
+                                     7 :
                                      0;
     // Only if we haven't ordered any basic tool, we may order other tools
-    const bool hasBasicToolsOrder = toolsettings[Tool::PickAxe] != 0 || toolsettings[Tool::Saw] != 0
-                                    || toolsettings[Tool::Crucible] != 0 || toolsettings[Tool::Hammer] != 0;
-    toolsettings[Tool::Scythe] = (!hasBasicToolsOrder && inventory.goods[GoodType::Scythe] < 1) ? 1 : 0;
-    toolsettings[Tool::Rollingpin] = (inventory.goods[GoodType::Rollingpin] + inventory.people[Job::Baker]
-                                      < bldPlanner->GetNumBuildings(BuildingType::Bakery) + 1) ?
-                                       1 :
-                                       0;
-    toolsettings[Tool::Shovel] = (!hasBasicToolsOrder && inventory.goods[GoodType::Shovel] < 1) ? 1 : 0;
-    toolsettings[Tool::Axe] =
-      (!hasBasicToolsOrder && inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter] < 12
-       && inventory.goods[GoodType::Axe] < 1) ?
-        1 :
-        0;
-    toolsettings[Tool::Tongs] = 0; //(!hasBasicToolsOrder&&(aii.GetInventory().goods[GoodType::Tongs]<1))?1:0;
-    toolsettings[Tool::Cleaver] =
-      0; //(aii.GetInventory().goods[GoodType::Cleaver]+aii.GetInventory().people[Job::Butcher]<construction->GetNumBuildings(BuildingType::Slaughterhouse)+1)?1:0;
-    toolsettings[Tool::RodAndLine] = 0;
-    toolsettings[Tool::Bow] = 0;
+    if(toolsettings[Tool::PickAxe] == 0 && toolsettings[Tool::Saw] == 0 && toolsettings[Tool::Crucible] == 0)
+    {
+        const auto calcToolPriority = [&](const Tool tool) {
+            const GoodType good = TOOL_TO_GOOD[tool];
+            unsigned numToolsAvailable = inventory[good];
+            // Find missing jobs for buildings
+            for(const auto job : helpers::enumRange<Job>())
+            {
+                if(JOB_CONSTS[job].tool != good)
+                    continue;
+                unsigned numBuildingsRequiringWorker = 0;
+                for(const auto bld : helpers::enumRange<BuildingType>())
+                {
+                    if(BLD_WORK_DESC[bld].job == job)
+                        numBuildingsRequiringWorker += bldPlanner->GetNumBuildings(bld);
+                }
+                if(numBuildingsRequiringWorker > inventory[job])
+                {
+                    const unsigned requiredTools = numBuildingsRequiringWorker - inventory[job];
+                    // When we are missing tools produce some.
+                    // Slightly higher priority if we don't have any tool at all.
+                    if(requiredTools > inventory[good])
+                        return (inventory[good] == 0) ? 4 : 2;
+                    numToolsAvailable -= requiredTools;
+                }
+            }
+            return 0;
+        };
+        // Order those as required for existing and planned buildings
+        for(const Tool tool : {Tool::Hammer, Tool::Axe, Tool::Scythe, Tool::Rollingpin, Tool::Shovel, Tool::Tongs,
+                               Tool::Cleaver, Tool::RodAndLine, Tool::Bow})
+        {
+            toolsettings[tool] = calcToolPriority(tool);
+        }
+        // Always have at least one of those in stock for other stuff
+        for(const Tool tool : {Tool::Hammer, Tool::Shovel, Tool::Tongs})
+        {
+            if(inventory[TOOL_TO_GOOD[tool]] == 0)
+                toolsettings[tool] = std::max<unsigned>(toolsettings[tool], 1u);
+        }
+        // Axes ared need for woodcutters, so increase priority (stays 0 if not required)
+        toolsettings[Tool::Axe] *= 2;
+        // We want about 12 woodcutters, so if we don't have axes produce some
+        if(inventory[GoodType::Axe] == 0 && inventory[Job::Woodcutter] < 12)
+        {
+            // Higher priority if we can't meet the building requirements as calculated above
+            toolsettings[Tool::Axe] = (toolsettings[Tool::Axe] == 0) ? 2 : 7;
+        }
+    }
 
     for(const auto tool : helpers::enumRange<Tool>())
     {
@@ -2396,8 +2428,8 @@ void AIPlayerJH::AdjustSettings()
     milSettings[3] = 5;
     // interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
     milSettings[4] = UpdateUpgradeBuilding() >= 0
-                         && (inventory.goods[GoodType::Coins] > 0
-                             || (inventory.goods[GoodType::Gold] > 0 && inventory.goods[GoodType::Coal] > 0
+                         && (inventory[GoodType::Coins] > 0
+                             || (inventory[GoodType::Gold] > 0 && inventory[GoodType::Coal] > 0
                                  && !aii.GetBuildings(BuildingType::Mint).empty())) ?
                        8 :
                        0;
