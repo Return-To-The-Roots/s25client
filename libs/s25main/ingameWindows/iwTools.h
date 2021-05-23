@@ -14,7 +14,7 @@ class GameCommandFactory;
 class GameWorldViewer;
 
 /// Tool settings window
-class iwTools : public TransmitSettingsIgwAdapter
+class iwTools final : public TransmitSettingsIgwAdapter
 {
 public:
     iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);

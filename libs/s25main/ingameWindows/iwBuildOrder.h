@@ -9,7 +9,7 @@
 
 class GameWorldViewer;
 
-class iwBuildOrder : public TransmitSettingsIgwAdapter
+class iwBuildOrder final : public TransmitSettingsIgwAdapter
 {
     const GameWorldViewer& gwv;
 
