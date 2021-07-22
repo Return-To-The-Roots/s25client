@@ -50,11 +50,13 @@ mkdir -p $updater_dir
 for artifact in $artifacts ; do
     echo "Processing file $artifact"
 
-    VERSION=$(echo $(basename $artifact) | cut -f2- -d '_' | cut -f 1-2 -d '.')
-    PLATFORM=$(echo $VERSION | cut -f 3 -d '-')
-
+    _file=$(echo $(basename $artifact) | cut -f2- -d '_')
+	VERSION=$(echo $_file | cut -f 1 -d '-')
+	PLATFORM=$(echo $_file | cut -f 3 -d '-' | cut -f 1-2 -d '.')
+	
     arch_dir=$PLATFORM
 
+    echo "- Version:  $VERSION"
     echo "- Platform: $arch_dir"
     echo ""
 
