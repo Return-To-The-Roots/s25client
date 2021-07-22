@@ -25,6 +25,7 @@ jobs:
           echo "::set-output name=devTools::s25client_dev-tools_${{steps.get_tag.outputs.tag}}.tar.gz"
       - name: Create source distribution
         run: |
+            set -x
             git submodule update --init
             git rev-parse HEAD > revision.txt
             NAME="s25client_${{steps.get_tag.outputs.tag}}"
@@ -33,7 +34,7 @@ jobs:
             mv "/tmp/$NAME" .
             # Cleanup
             rm -r "$NAME"/{appveyor.yml,codecov.yml,Jenkinsfile,tools/ci}
-            find "$NAME" -name '.git*' -exec rm -r {} \;
+            find "$NAME" -name '.git*' -exec rm -rv {} \;
 
             tar -czf ${{steps.filenames.outputs.devTools}} "$NAME/external/dev-tools"
             rm -r "$NAME/external/dev-tools"/*
