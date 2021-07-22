@@ -51,9 +51,9 @@ rm -rf _CPack_Packages *.tar.bz2 *.zip CMakeFiles CMakeCache.txt
 
 RTTR_VERSION=OFF
 if [ "$deploy_to" == "stable" ] ; then
-    GIT_TAG=$(git describe --exact-match 2>/dev/null || true)
+    GIT_TAG=$(git -C $src_dir describe --exact-match 2>/dev/null || true)
     if [ -z "$GIT_TAG" ] || [[ ! "$GIT_TAG" =~ v[0-9]+\.[0-9]+\.[0-9]+ ]] ; then
-        echo "Tried to publish to stable, but no Git TAG 'vX.Y.Z' was found" >&2
+        echo "Tried to publish to stable, but no Git TAG 'vX.Y.Z' was found: $(git -C $src_dir describe --exact-match 2>&1)" >&2
         exit 1
     fi
     RTTR_VERSION=${GIT_TAG#"v"}
