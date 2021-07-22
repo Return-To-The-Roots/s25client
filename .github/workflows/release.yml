@@ -34,7 +34,7 @@ jobs:
             mv "/tmp/$NAME" .
             # Cleanup
             rm -r "$NAME"/{appveyor.yml,codecov.yml,Jenkinsfile,tools/ci}
-            find "$NAME" -name '.git*' -exec rm -rv {} \;
+            find "$NAME" -name '.git*' -exec rm -rv {} \; || true
 
             tar -czf ${{steps.filenames.outputs.devTools}} "$NAME/external/dev-tools"
             rm -r "$NAME/external/dev-tools"/*
