@@ -2,12 +2,14 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+include(ConfigureExecutable)
+
 # Start script
 if(WIN32)
-    install(PROGRAMS "bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
+    configure_executable("bin/rttr.bat.cmake" ${CMAKE_CURRENT_BINARY_DIR} rttr.bat)
+    install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/rttr.bat" DESTINATION "${RTTR_BINDIR}")
     if(PLATFORM_ARCH)
-        include(ConfigureExecutable)
-        configure_executable("bundleWinFiles.sh.cmake" . bundleWinFiles.sh)
+        configure_executable("bundleWinFiles.sh.cmake" ${CMAKE_CURRENT_BINARY_DIR} bundleWinFiles.sh)
 
         install(CODE "
             set(ENV{CMAKE_INSTALL_PREFIX} \${CMAKE_INSTALL_PREFIX})
@@ -52,7 +54,8 @@ elseif(APPLE)
         )
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
-    install(PROGRAMS "bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
+    configure_executable("bin/rttr.sh.cmake" ${CMAKE_CURRENT_BINARY_DIR} rttr.sh)
+    install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/rttr.sh" DESTINATION "${RTTR_BINDIR}")
     # copy miniupnpc
     get_filename_component(MINIUPNPC_DIR ${MINIUPNPC_LIBRARY} DIRECTORY)
     find_library(MINIUPNPC_BIN NAMES miniupnpc.so libminiupnpc.so HINTS ${MINIUPNPC_DIR})

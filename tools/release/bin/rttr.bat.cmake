@@ -8,7 +8,7 @@ IF EXIST RTTR\s25update.exe GOTO UPDATE
 GOTO START
 
 :UPDATE
-RTTR\s25update.exe --dir %CD%
+RTTR\s25update.exe --dir %CD% @STABLE_PARAM@
 
 :START
 s25client.exe

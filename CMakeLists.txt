@@ -56,6 +56,13 @@ if(NOT RTTR_VERSION)
     string(TIMESTAMP RTTR_VERSION "%Y%m%d")
 endif()
 
+# stable build? then set rttr.bat/rttr.sh parameter
+set(STABLE_PARAM)
+if(${RTTR_VERSION} MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+	message(STATUS "Creating a stable version ${RTTR_VERSION}")
+	set(STABLE_PARAM "--stable")
+endif()
+
 if(checkSubmodules)
     include(CheckGitSubmodules)
     check_git_submodules()
@@ -393,7 +400,7 @@ if(WIN32)
 endif()
 
 # stable build?
-if(${RTTR_VERSION} MATCHES "([0-9]+)\.([0-9]+)\.([0-9]+)")
+if(${RTTR_VERSION} MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
     set(CPACK_PACKAGE_VERSION_MAJOR "${CMAKE_MATCH_1}")
     set(CPACK_PACKAGE_VERSION_MINOR "${CMAKE_MATCH_2}")
     set(CPACK_PACKAGE_VERSION_PATCH "${CMAKE_MATCH_3}")
