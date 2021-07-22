@@ -57,6 +57,7 @@ if [ "$deploy_to" == "stable" ] ; then
         exit 1
     fi
     RTTR_VERSION=${GIT_TAG#"v"}
+    echo "Using RTTR_VERSION from GIT_TAG: $RTTR_VERSION" >&2
 fi
 
 cmake \
