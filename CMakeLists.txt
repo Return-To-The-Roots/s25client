@@ -10,7 +10,11 @@ if (POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW) # find_package uses <PackageName>_ROOT variables
 endif()
 
-project(s25client)
+if(NOT RTTR_VERSION)
+    string(TIMESTAMP RTTR_VERSION "%Y%m%d")
+endif()
+
+project(s25client VERSION ${RTTR_VERSION})
 
 message(STATUS "Using CMake ${CMAKE_VERSION}")
 
@@ -52,13 +56,11 @@ if(NOT RTTR_REVISION)
         endif()
     endif()
 endif()
-if(NOT RTTR_VERSION)
-    string(TIMESTAMP RTTR_VERSION "%Y%m%d")
-endif()
+
 
 # stable build? then set rttr.bat/rttr.sh parameter
-set(STABLE_PARAM)
-if(${RTTR_VERSION} MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+set(STABLE_PARAM "")
+if(RTTR_VERSION MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
 	message(STATUS "Creating a stable version ${RTTR_VERSION}")
 	set(STABLE_PARAM "--stable")
 endif()
@@ -397,13 +399,6 @@ MESSAGE(STATUS "RTTR Version will be: ${RTTR_VERSION}-${RTTR_REVISION}")
 set(CPACK_GENERATOR "TBZ2")
 if(WIN32)
     set(CPACK_GENERATOR "ZIP")
-endif()
-
-# stable build?
-if(${RTTR_VERSION} MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
-    set(CPACK_PACKAGE_VERSION_MAJOR "${CMAKE_MATCH_1}")
-    set(CPACK_PACKAGE_VERSION_MINOR "${CMAKE_MATCH_2}")
-    set(CPACK_PACKAGE_VERSION_PATCH "${CMAKE_MATCH_3}")
 endif()
 
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
