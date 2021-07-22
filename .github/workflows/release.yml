@@ -32,8 +32,8 @@ jobs:
             cp -r * .clang-format .clang-tidy "/tmp/$NAME"
             mv "/tmp/$NAME" .
             # Cleanup
-            rm -r "$NAME"/{appveyor.yml,codecov.yml,Jenkinsfile,tools/ci,.github}
-            find "$NAME" -type f -name '.git*' -delete
+            rm -r "$NAME"/{appveyor.yml,codecov.yml,Jenkinsfile,tools/ci}
+            find "$NAME" -name '.git*' -exec rm -r {} \;
 
             tar -czf ${{steps.filenames.outputs.devTools}} "$NAME/external/dev-tools"
             rm -r "$NAME/external/dev-tools"/*
