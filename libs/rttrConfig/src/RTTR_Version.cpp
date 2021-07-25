@@ -5,33 +5,20 @@
 #include "RTTR_Version.h"
 #include "build_version_defines.h"
 
-std::string RTTR_Version::GetTitle()
-{
-    return "Return To The Roots";
-}
+namespace rttr { namespace version {
 
-std::string RTTR_Version::GetVersionDate()
-{
-    return WINDOW_VERSION;
-}
+    std::string GetTitle() { return "Return To The Roots"; }
 
-std::string RTTR_Version::GetRevision()
-{
-    return WINDOW_REVISION;
-}
+    std::string GetVersion() { return rttr::VERSION; }
 
-std::string RTTR_Version::GetShortRevision()
-{
-    return std::string(WINDOW_REVISION).substr(0, 7);
-}
+    std::string GetBuildDate() { return rttr::BUILD_DATE; }
 
-std::string RTTR_Version::GetYear()
-{
-    // nasty but works, if versioning principle changes, we should make it use date function
-    return std::string(WINDOW_VERSION).substr(0, 4);
-}
+    std::string GetRevision() { return rttr::REVISION; }
 
-std::string RTTR_Version::GetReadableVersion()
-{
-    return "v" + GetVersionDate() + " - " + GetShortRevision();
-}
+    std::string GetShortRevision() { return GetRevision().substr(0, 7); }
+
+    std::string GetYear() { return GetBuildDate().substr(0, 4); }
+
+    std::string GetReadableVersion() { return "v" + GetVersion() + " - " + GetShortRevision(); }
+
+}} // namespace rttr::version

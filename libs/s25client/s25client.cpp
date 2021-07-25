@@ -94,8 +94,7 @@ void WaitForEnter()
 std::string GetProgramDescription()
 {
     std::stringstream s;
-    s << RTTR_Version::GetTitle() << " v" << RTTR_Version::GetVersionDate() << "-" << RTTR_Version::GetRevision()
-      << "\n"
+    s << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-" << rttr::version::GetRevision() << "\n"
       << "Compiled with " << System::getCompilerName() << " for " << System::getOSName();
     return s.str();
 }

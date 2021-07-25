@@ -153,7 +153,7 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     const GameInfo& game = openGames[selectedId];
-    if(game.info.revision == RTTR_Version::GetRevision())
+    if(game.info.revision == rttr::version::GetRevision())
     {
         auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);

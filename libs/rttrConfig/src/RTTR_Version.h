@@ -6,13 +6,12 @@
 
 #include <string>
 
-class RTTR_Version
-{
-public:
-    static std::string GetTitle();
-    static std::string GetVersionDate();
-    static std::string GetRevision();
-    static std::string GetShortRevision();
-    static std::string GetYear();
-    static std::string GetReadableVersion();
-};
+namespace rttr { namespace version {
+    std::string GetTitle();
+    std::string GetVersion();
+    std::string GetBuildDate();
+    std::string GetRevision();
+    std::string GetShortRevision();
+    std::string GetYear();
+    std::string GetReadableVersion();
+}} // namespace rttr::version

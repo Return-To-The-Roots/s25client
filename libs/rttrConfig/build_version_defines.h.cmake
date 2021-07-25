@@ -4,5 +4,9 @@
 
 #pragma once
 
-#define WINDOW_VERSION "@RTTR_VERSION@"
-#define WINDOW_REVISION "@RTTR_REVISION@"
+namespace rttr
+{
+	constexpr const char* BUILD_DATE = "@RTTR_BUILD_DATE@";
+	constexpr const char* VERSION = "@RTTR_VERSION@";
+	constexpr const char* REVISION = "@RTTR_REVISION@";
+}

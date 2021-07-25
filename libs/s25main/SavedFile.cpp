@@ -15,7 +15,7 @@
 
 SavedFile::SavedFile() : saveTime_(0)
 {
-    const std::string rev = RTTR_Version::GetRevision();
+    const std::string rev = rttr::version::GetRevision();
     std::copy(rev.begin(), rev.begin() + revision.size(), revision.begin());
 }
 

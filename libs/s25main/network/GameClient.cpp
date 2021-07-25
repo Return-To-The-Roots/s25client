@@ -388,7 +388,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
     mainPlayer.playerId = msg.player;
 
     // Server-Typ senden
-    mainPlayer.sendMsgAsync(new GameMessage_Server_Type(clientconfig.servertyp, RTTR_Version::GetRevision()));
+    mainPlayer.sendMsgAsync(new GameMessage_Server_Type(clientconfig.servertyp, rttr::version::GetRevision()));
     return true;
 }
 
