@@ -176,7 +176,7 @@ void Settings::Load()
         // global
         // {
         // stimmt die Spielrevision überein?
-        if(iniGlobal->getValue("gameversion") != RTTR_Version::GetRevision())
+        if(iniGlobal->getValue("gameversion") != rttr::version::GetRevision())
             s25util::warning("Your application version has changed - please recheck your settings!\n");
 
         global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
@@ -321,7 +321,7 @@ void Settings::Save()
     // global
     // {
     iniGlobal->setValue("version", VERSION);
-    iniGlobal->setValue("gameversion", RTTR_Version::GetRevision());
+    iniGlobal->setValue("gameversion", rttr::version::GetRevision());
     iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
     iniGlobal->setValue("use_upnp", global.use_upnp);
     iniGlobal->setValue("smartCursor", global.smartCursor ? 1 : 0);

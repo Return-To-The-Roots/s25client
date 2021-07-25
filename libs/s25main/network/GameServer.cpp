@@ -240,8 +240,8 @@ void GameServer::AnnounceStatusChange()
         info.maxNumPlayers = playerInfos.size();
         info.port = config.port;
         info.isIPv6 = config.ipv6;
-        info.version = RTTR_Version::GetReadableVersion();
-        info.revision = RTTR_Version::GetRevision();
+        info.version = rttr::version::GetReadableVersion();
+        info.revision = rttr::version::GetRevision();
         Serializer ser;
         info.Serialize(ser);
         lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
@@ -915,7 +915,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
     int typeok = 0;
     if(msg.type != config.servertype)
         typeok = 1;
-    else if(msg.revision != RTTR_Version::GetRevision())
+    else if(msg.revision != rttr::version::GetRevision())
         typeok = 2;
 
     player->sendMsgAsync(new GameMessage_Server_TypeOK(typeok));

@@ -218,7 +218,7 @@ bool dskLobby::ConnectToSelectedGame()
         std::string serverRevision = itServer->getVersion();
         if(!serverRevision.empty() && serverRevision[0] == 'v')
             serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
-        if(serverRevision == RTTR_Version::GetShortRevision())
+        if(serverRevision == rttr::version::GetShortRevision())
         {
             auto connect = std::make_unique<iwDirectIPConnect>(ServerType::Lobby);
             connect->Connect(itServer->getHost(), itServer->getPort(), false, itServer->hasPassword());

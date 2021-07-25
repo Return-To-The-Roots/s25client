@@ -80,7 +80,7 @@ iwLobbyConnect::iwLobbyConnect()
     AddTextButton(ID_btConnect, DrawPoint(20, 190), btSize, TextureColor::Red1, _("Connect"), NormalFont);
     AddTextButton(ID_btRegister, DrawPoint(260, 190), btSize, TextureColor::Green2, _("Register"), NormalFont);
 
-    LOBBYCLIENT.SetProgramVersion(RTTR_Version::GetReadableVersion());
+    LOBBYCLIENT.SetProgramVersion(rttr::version::GetReadableVersion());
     LOBBYCLIENT.AddListener(this);
 }
 

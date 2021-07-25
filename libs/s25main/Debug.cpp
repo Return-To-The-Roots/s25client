@@ -166,8 +166,8 @@ DebugInfo::DebugInfo()
     // Bits
     SendUnsigned(sizeof(void*) * 8u);
 
-    SendString(RTTR_Version::GetVersionDate());
-    SendString(RTTR_Version::GetRevision());
+    SendString(rttr::version::GetVersion());
+    SendString(rttr::version::GetRevision());
 
     SendUnsigned(GAMECLIENT.GetGFNumber());
 }

@@ -54,13 +54,13 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     AddImage(ID_imgSoldier, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     AddText(ID_txtRttr, DrawPoint(150, 60), "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddText(ID_txtVersion, DrawPoint(150, 77), RTTR_Version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER,
+    AddText(ID_txtVersion, DrawPoint(150, 77), rttr::version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER,
             NormalFont);
     AddFormattedText(ID_txtCopyright, DrawPoint(150, 94),
                      "\xC2\xA9"
                      "2005 - %s Settlers Freaks",
                      COLOR_YELLOW, FontStyle::CENTER, NormalFont)
-      % RTTR_Version::GetYear();
+      % rttr::version::GetYear();
 
     AddImageButton(ID_btKeyboardLayout, DrawPoint(35, 120), Extent(35, 35), TextureColor::Green2,
                    LOADER.GetImageN("io", 79));
