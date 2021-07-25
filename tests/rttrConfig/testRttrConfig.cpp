@@ -4,11 +4,13 @@
 
 #define BOOST_TEST_MODULE RTTR_Config
 
+#include "RTTR_Version.h"
 #include "RttrConfig.h"
 #include "s25util/System.h"
 #include <rttr/test/BaseFixture.hpp>
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/nowide/args.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -55,4 +57,24 @@ BOOST_FIXTURE_TEST_CASE(PrefixPath, rttr::test::BaseFixture)
         BOOST_TEST_REQUIRE(RTTRCONFIG.Init());
         BOOST_TEST(prefixPath == fs::current_path());
     }
+}
+
+BOOST_AUTO_TEST_CASE(YearIsValid)
+{
+    const std::string year = rttr::version::GetYear();
+    BOOST_TEST(year.length() == 4u);
+    int iYear;
+    BOOST_TEST_REQUIRE(boost::conversion::try_lexical_convert(year, iYear));
+    BOOST_TEST(iYear >= 2000);
+    BOOST_TEST(iYear < 3000);
+}
+
+BOOST_AUTO_TEST_CASE(BuildDateIsValid)
+{
+    const std::string date = rttr::version::GetBuildDate();
+    BOOST_TEST(date.length() == 8u);
+    int iDate;
+    BOOST_TEST_REQUIRE(boost::conversion::try_lexical_convert(date, iDate));
+    BOOST_TEST(iDate >= 20000000);
+    BOOST_TEST(iDate < 30000000);
 }
