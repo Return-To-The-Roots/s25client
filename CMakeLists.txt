@@ -14,7 +14,7 @@ if(NOT RTTR_VERSION)
     string(TIMESTAMP RTTR_VERSION "%Y%m%d")
 endif()
 
-project(s25client VERSION ${RTTR_VERSION})
+project(RTTR VERSION ${RTTR_VERSION})
 
 message(STATUS "Using CMake ${CMAKE_VERSION}")
 
