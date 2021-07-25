@@ -161,7 +161,7 @@ Then just run (tests or application) as usual.
     - Enter boost installation path for "Value"
     - Press ok
   - Press generate
-- Open and use build/s25client.sln
+- Open and use build/RTTR.sln
 
 --
 
