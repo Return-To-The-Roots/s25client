@@ -8,6 +8,7 @@
 #include <libsiedler2/ArchivItem_Sound_Wave.h>
 #include <libsiedler2/loadMapping.h>
 #include <s25util/StringConversion.h>
+#include <algorithm>
 #include <cmath>
 #include <samplerate.hpp>
 #include <sstream>
