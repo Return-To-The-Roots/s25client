@@ -329,7 +329,8 @@ void Settings::LoadIngame()
         // ingame windows
         for(const auto& window : persistentWindows)
         {
-            auto iniWindow = static_cast<const libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second.name));
+            const auto* iniWindow =
+              static_cast<const libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second.name));
             if(!iniWindow)
                 continue;
             windows.persistentSettings[window.first].lastPos.x = iniWindow->getValueI("pos_x");
@@ -470,7 +471,7 @@ void Settings::SaveIngame()
         i++;
     }
 
-    libsiedler2::ArchivItem_Ini* iniIngame = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find("ingame"));
+    auto* iniIngame = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find("ingame"));
 
     RTTR_Assert(iniIngame);
 
@@ -485,7 +486,7 @@ void Settings::SaveIngame()
     // ingame windows
     for(const auto& window : persistentWindows)
     {
-        auto iniWindow = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second.name));
+        auto* iniWindow = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second.name));
         if(!iniWindow)
             continue;
         iniWindow->setValue("pos_x", windows.persistentSettings[window.first].lastPos.x);
