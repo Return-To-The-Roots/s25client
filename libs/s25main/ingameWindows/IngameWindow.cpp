@@ -15,6 +15,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glFont.h"
 #include "gameData/const_gui_ids.h"
+#include "s25util/error.h"
 #include <algorithm>
 #include <utility>
 
@@ -59,12 +60,17 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
 
 IngameWindow::~IngameWindow()
 {
-    // Possibly save our old position
-    auto settings = SETTINGS.windows.persistentSettings.find(GetGUIID());
-    if(settings != SETTINGS.windows.persistentSettings.end())
+    try
     {
-        settings->second.lastPos = GetPos();
-        settings->second.isOpen = !closeme;
+        // Possibly save our old position
+        auto& settings = SETTINGS.windows.persistentSettings.at(GetGUIID());
+        settings.lastPos = GetPos();
+        settings.isOpen = !closeme;
+    } catch(const std::out_of_range& oor)
+    { // Window is not persistent, no problem
+    } catch(std::runtime_error& err)
+    { // SETTINGS was probably destroyed already, don't save but print a warning
+        s25util::warning(std::string("Could not save ingame windows settings. Reason: ") + err.what());
     }
 }
 

@@ -9,6 +9,7 @@
 #include "controls/ctrlIngameMinimap.h"
 #include "helpers/containerUtils.h"
 #include "gameData/const_gui_ids.h"
+#include "s25util/error.h"
 
 /// (maximum) size of the minimap
 const Extent MINIMAP_SIZE = Extent::all(170);
@@ -48,7 +49,13 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
 
 iwMinimap::~iwMinimap()
 {
-    SETTINGS.ingame.minimapExtended = extended;
+    try
+    {
+        SETTINGS.ingame.minimapExtended = extended;
+    } catch(std::runtime_error& err)
+    { // SETTINGS was probably destroyed already, don't save but print a warning
+        s25util::warning(std::string("Could not save minimap extension settings. Reason: ") + err.what());
+    }
 }
 
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu

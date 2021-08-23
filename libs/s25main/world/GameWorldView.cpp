@@ -28,6 +28,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
+#include "s25util/error.h"
 #include "s25util/warningSuppression.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
@@ -43,9 +44,15 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
 
 GameWorldView::~GameWorldView()
 {
-    SETTINGS.ingame.showBQ = show_bq;
-    SETTINGS.ingame.showNames = show_names;
-    SETTINGS.ingame.showProductivity = show_productivity;
+    try
+    {
+        SETTINGS.ingame.showBQ = show_bq;
+        SETTINGS.ingame.showNames = show_names;
+        SETTINGS.ingame.showProductivity = show_productivity;
+    } catch(std::runtime_error& err)
+    { // SETTINGS was probably destroyed already, don't save but print a warning
+        s25util::warning(std::string("Could not save ingame settings. Reason: ") + err.what());
+    }
 }
 
 const GameWorldBase& GameWorldView::GetWorld() const
