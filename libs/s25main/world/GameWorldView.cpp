@@ -49,7 +49,7 @@ GameWorldView::~GameWorldView()
         SETTINGS.ingame.showBQ = show_bq;
         SETTINGS.ingame.showNames = show_names;
         SETTINGS.ingame.showProductivity = show_productivity;
-    } catch(std::runtime_error& err)
+    } catch(const std::runtime_error& err)
     { // SETTINGS was probably destroyed already, don't save but print a warning
         s25util::warning(std::string("Could not save ingame settings. Reason: ") + err.what());
     }

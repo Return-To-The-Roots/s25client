@@ -52,7 +52,7 @@ iwMinimap::~iwMinimap()
     try
     {
         SETTINGS.ingame.minimapExtended = extended;
-    } catch(std::runtime_error& err)
+    } catch(const std::runtime_error& err)
     { // SETTINGS was probably destroyed already, don't save but print a warning
         s25util::warning(std::string("Could not save minimap extension settings. Reason: ") + err.what());
     }
