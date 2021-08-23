@@ -46,9 +46,9 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     // Load last position or center the window
     if(pos == posLastOrCenter)
     {
-        auto& settings = SETTINGS.windows.persistentSettings;
-        if(helpers::contains(settings, GetGUIID()) && settings[GetGUIID()].lastPos.isValid())
-            SetPos(settings[GetGUIID()].lastPos);
+        const auto settings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+        if(settings != SETTINGS.windows.persistentSettings.cend() && settings->second.lastPos.isValid())
+            SetPos(settings->second.lastPos);
         else
             MoveToCenter();
     } else if(pos == posCenter)
@@ -60,10 +60,11 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
 IngameWindow::~IngameWindow()
 {
     // Possibly save our old position
-    if(helpers::contains(SETTINGS.windows.persistentSettings, GetGUIID()))
+    auto settings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+    if(settings != SETTINGS.windows.persistentSettings.end())
     {
-        SETTINGS.windows.persistentSettings[GetGUIID()].lastPos = GetPos();
-        SETTINGS.windows.persistentSettings[GetGUIID()].isOpen = !closeme;
+        settings->second.lastPos = GetPos();
+        settings->second.isOpen = !closeme;
     }
 }
 
