@@ -4,7 +4,6 @@
 
 #include "IngameWindow.h"
 #include "CollisionDetection.h"
-#include "IngameWindows.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "driver/MouseCoords.h"
@@ -48,8 +47,8 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     if(pos == posLastOrCenter)
     {
         auto& settings = SETTINGS.windows.persistentSettings;
-        if(helpers::contains(persistentWindows, GetID()) && settings[GetID()].lastPos.isValid())
-            SetPos(settings[GetID()].lastPos);
+        if(helpers::contains(settings, GetGUIID()) && settings[GetGUIID()].lastPos.isValid())
+            SetPos(settings[GetGUIID()].lastPos);
         else
             MoveToCenter();
     } else if(pos == posCenter)
@@ -61,10 +60,10 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
 IngameWindow::~IngameWindow()
 {
     // Possibly save our old position
-    if(helpers::contains(persistentWindows, GetID()))
+    if(helpers::contains(SETTINGS.windows.persistentSettings, GetGUIID()))
     {
-        SETTINGS.windows.persistentSettings[GetID()].lastPos = GetPos();
-        SETTINGS.windows.persistentSettings[GetID()].isOpen = !closeme;
+        SETTINGS.windows.persistentSettings[GetGUIID()].lastPos = GetPos();
+        SETTINGS.windows.persistentSettings[GetGUIID()].isOpen = !closeme;
     }
 }
 
@@ -73,7 +72,6 @@ void IngameWindow::Resize(const Extent& newSize)
     DrawPoint iSize(newSize);
     iSize = elMax(DrawPoint(0, 0), iSize - DrawPoint(contentOffset + contentOffsetEnd));
     SetIwSize(Extent(iSize));
-    SetPos(GetPos());
 }
 
 void IngameWindow::SetIwSize(const Extent& newSize)

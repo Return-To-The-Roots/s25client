@@ -10,7 +10,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/strUtils.h"
-#include "ingameWindows/IngameWindows.h"
 #include "languages.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/ArchivItem_Ini.h"
@@ -27,6 +26,24 @@ const std::array<std::string, 10> Settings::SECTION_NAMES = {
 
 const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {
   {-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
+
+const std::map<GUI_ID, std::string> persistentWindows = {{CGI_CHAT, "wnd_chat"},
+                                                         {CGI_POSTOFFICE, "wnd_postoffice"},
+                                                         {CGI_DISTRIBUTION, "wnd_distribution"},
+                                                         {CGI_BUILDORDER, "wnd_buildorder"},
+                                                         {CGI_TRANSPORT, "wnd_transport"},
+                                                         {CGI_MILITARY, "wnd_military"},
+                                                         {CGI_TOOLS, "wnd_tools"},
+                                                         {CGI_INVENTORY, "wnd_inventory"},
+                                                         {CGI_MINIMAP, "wnd_minimap"},
+                                                         {CGI_BUILDINGS, "wnd_buildings"},
+                                                         {CGI_BUILDINGSPRODUCTIVITY, "wnd_buildingsproductivity"},
+                                                         {CGI_MUSICPLAYER, "wnd_musicplayer"},
+                                                         {CGI_STATISTICS, "wnd_statistics"},
+                                                         {CGI_ECONOMICPROGRESS, "wnd_economicprogress"},
+                                                         {CGI_DIPLOMACY, "wnd_diplomacy"},
+                                                         {CGI_SHIP, "wnd_ship"},
+                                                         {CGI_MERCHANDISE_STATISTICS, "wnd_merchandise_statistics"}};
 
 namespace validate {
 boost::optional<uint16_t> checkPort(const std::string& port)
@@ -139,6 +156,7 @@ void Settings::LoadIngameDefaults()
     ingame.showBQ = false;
     ingame.showNames = false;
     ingame.showProductivity = false;
+    ingame.minimapExtended = false;
     // }
 
     // windows
@@ -316,30 +334,24 @@ void Settings::LoadIngame()
         const libsiedler2::ArchivItem_Ini* iniIngame =
           static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find("ingame"));
         if(!iniIngame)
-        {
             throw std::runtime_error("Missing section");
-        }
         // ingame
         // {
         ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") != 0);
         ingame.showBQ = (iniIngame->getValueI("show_building_quality") != 0);
         ingame.showNames = (iniIngame->getValueI("show_names") != 0);
         ingame.showProductivity = (iniIngame->getValueI("show_productivity") != 0);
+        ingame.minimapExtended = (iniIngame->getValueI("minimap_extended") != 0);
         // }
         // ingame windows
         for(const auto& window : persistentWindows)
         {
-            const auto* iniWindow =
-              static_cast<const libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second.name));
+            const auto* iniWindow = static_cast<const libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
             if(!iniWindow)
                 continue;
             windows.persistentSettings[window.first].lastPos.x = iniWindow->getValueI("pos_x");
             windows.persistentSettings[window.first].lastPos.y = iniWindow->getValueI("pos_y");
             windows.persistentSettings[window.first].isOpen = iniWindow->getValueI("is_open");
-            if(!window.second.optionName.empty())
-            {
-                windows.persistentSettings[window.first].option = iniWindow->getValueI(window.second.optionName);
-            }
         }
     } catch(std::runtime_error& e)
     {
@@ -355,10 +367,8 @@ void Settings::LoadIngame()
 void Settings::Save()
 {
     libsiedler2::Archiv settings;
-    unsigned totalSize = SECTION_NAMES.size();
-    settings.alloc(totalSize);
-    unsigned i;
-    for(i = 0; i < SECTION_NAMES.size(); ++i)
+    settings.alloc(SECTION_NAMES.size());
+    for(unsigned i = 0; i < SECTION_NAMES.size(); ++i)
         settings.set(i, std::make_unique<libsiedler2::ArchivItem_Ini>(SECTION_NAMES[i]));
 
     libsiedler2::ArchivItem_Ini* iniGlobal = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
@@ -467,7 +477,7 @@ void Settings::SaveIngame()
     unsigned i = 1;
     for(const auto& window : persistentWindows)
     {
-        settingsIngame.set(i, std::make_unique<libsiedler2::ArchivItem_Ini>(window.second.name));
+        settingsIngame.set(i, std::make_unique<libsiedler2::ArchivItem_Ini>(window.second));
         i++;
     }
 
@@ -481,21 +491,18 @@ void Settings::SaveIngame()
     iniIngame->setValue("show_building_quality", (ingame.showBQ ? 1 : 0));
     iniIngame->setValue("show_names", (ingame.showNames ? 1 : 0));
     iniIngame->setValue("show_productivity", (ingame.showProductivity ? 1 : 0));
+    iniIngame->setValue("minimap_extended", (ingame.minimapExtended ? 1 : 0));
     // }
 
     // ingame windows
     for(const auto& window : persistentWindows)
     {
-        auto* iniWindow = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second.name));
+        auto* iniWindow = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
         if(!iniWindow)
             continue;
         iniWindow->setValue("pos_x", windows.persistentSettings[window.first].lastPos.x);
         iniWindow->setValue("pos_y", windows.persistentSettings[window.first].lastPos.y);
         iniWindow->setValue("is_open", windows.persistentSettings[window.first].isOpen);
-        if(!window.second.optionName.empty())
-        {
-            iniWindow->setValue(window.second.optionName, windows.persistentSettings[window.first].option);
-        }
     }
 
     bfs::path settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);

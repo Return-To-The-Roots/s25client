@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwMinimap.h"
-#include "IngameWindows.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "controls/ctrlImageButton.h"
@@ -28,7 +27,7 @@ const unsigned short BUTTON_WINDOW_SPACE = 5;
 iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"),
                    LOADER.GetImageN("resource", 41)),
-      extended(SETTINGS.windows.persistentSettings[GetID()].option)
+      extended(SETTINGS.ingame.minimapExtended)
 {
     AddCtrl(new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE),
                                   Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
@@ -49,11 +48,7 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
 
 iwMinimap::~iwMinimap()
 {
-    // Possibly save our old position
-    if(helpers::contains(persistentWindows, GetID()))
-    {
-        SETTINGS.windows.persistentSettings[GetID()].option = (unsigned)extended;
-    }
+    SETTINGS.ingame.minimapExtended = extended;
 }
 
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu

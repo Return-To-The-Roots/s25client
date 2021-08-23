@@ -25,12 +25,9 @@ struct PersistentWindowSettings
 {
     DrawPoint lastPos;
     bool isOpen;
-    unsigned option;
 
-    PersistentWindowSettings(DrawPoint lastPos, bool isOpen, unsigned option)
-        : lastPos(lastPos), isOpen(isOpen), option(option)
-    {}
-    PersistentWindowSettings() : lastPos(DrawPoint::Invalid()), isOpen(false), option(0) {}
+    PersistentWindowSettings(DrawPoint lastPos, bool isOpen) : lastPos(lastPos), isOpen(isOpen) {}
+    PersistentWindowSettings() : lastPos(DrawPoint::Invalid()), isOpen(false) {}
 };
 
 /// Configuration class
@@ -117,6 +114,7 @@ public:
         bool showNames;
         bool showProductivity;
         bool showBQ;
+        bool minimapExtended;
     } ingame;
 
     struct

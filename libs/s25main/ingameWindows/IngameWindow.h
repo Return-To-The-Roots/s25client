@@ -73,7 +73,7 @@ public:
     void MouseLeftUp(const MouseCoords& mc);
     void MouseMove(const MouseCoords& mc);
 
-    GUI_ID GetID() const { return static_cast<GUI_ID>(Window::GetID()); }
+    GUI_ID GetGUIID() const { return static_cast<GUI_ID>(Window::GetID()); }
 
 protected:
     void Draw_() override;

@@ -41,7 +41,12 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
     MoveTo(0, 0);
 }
 
-GameWorldView::~GameWorldView() = default;
+GameWorldView::~GameWorldView()
+{
+    SETTINGS.ingame.showBQ = show_bq;
+    SETTINGS.ingame.showNames = show_names;
+    SETTINGS.ingame.showProductivity = show_productivity;
+}
 
 const GameWorldBase& GameWorldView::GetWorld() const
 {

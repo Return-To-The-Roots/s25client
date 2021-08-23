@@ -107,11 +107,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
 
 BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
 {
-    ggs.setSelection(AddonId::ECONOMY_MODE_GAME_LENGTH,
-                     rttr::test::randomValue<unsigned>(1, AddonEconomyModeGameLengthList.size() - 1));
-    world.setEconHandler(
-      std::make_unique<EconomyModeHandler>(game->ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH)));
-    game->Start(false);
+    world.setEconHandler(std::make_unique<EconomyModeHandler>(1000));
     const auto& goodsToCollect = world.getEconHandler()->GetGoodTypesToCollect();
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
