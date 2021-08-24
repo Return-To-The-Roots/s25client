@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Game.h"
+#include "EconomyModeHandler.h"
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "addons/AddonEconomyModeGameLength.h"
-#include "EconomyModeHandler.h"
 #include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
