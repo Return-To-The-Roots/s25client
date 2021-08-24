@@ -63,11 +63,12 @@ IngameWindow::~IngameWindow()
     try
     {
         // Possibly save our old position
-        auto& settings = SETTINGS.windows.persistentSettings.at(GetGUIID());
-        settings.lastPos = GetPos();
-        settings.isOpen = !closeme;
-    } catch(const std::out_of_range&)
-    { // Window is not persistent, no problem
+        auto settings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+        if(settings != SETTINGS.windows.persistentSettings.end())
+        {
+            settings->second.lastPos = GetPos();
+            settings->second.isOpen = !closeme;
+        }
     } catch(const std::runtime_error& err)
     { // SETTINGS was probably destroyed already, don't save but print a warning
         s25util::warning(std::string("Could not save ingame windows settings. Reason: ") + err.what());

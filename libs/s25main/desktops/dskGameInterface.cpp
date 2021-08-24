@@ -141,8 +141,6 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
     if(initOGL)
         worldViewer.InitTerrainRenderer();
 
-    ShowPersistentWindowsAfterSwitch();
-
     VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync); // Use requested setting for ingame
 }
 
@@ -199,7 +197,11 @@ void dskGameInterface::SetActive(bool activate)
         GAMECLIENT.SetInterface(this);
         LOBBYCLIENT.AddListener(this);
         if(!game_->IsStarted())
+        {
             GAMECLIENT.OnGameStart();
+
+            ShowPersistentWindowsAfterSwitch();
+        }
     }
 }
 

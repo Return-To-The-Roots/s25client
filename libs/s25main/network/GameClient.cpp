@@ -20,8 +20,6 @@
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "Settings.h"
-#include "addons/AddonEconomyModeGameLength.h"
-#include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"
@@ -307,13 +305,6 @@ void GameClient::StartGame(const unsigned random_init)
             return;
         }
         gameWorld.SetupResources();
-
-        if(game->ggs_.objective == GameObjective::EconomyMode)
-        {
-            unsigned int selection = game->ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
-            gameWorld.setEconHandler(std::make_unique<EconomyModeHandler>(AddonEconomyModeGameLengthList[selection]
-                                                                          / SPEED_GF_LENGTHS[referenceSpeed]));
-        }
     }
     gameWorld.InitAfterLoad();
 
