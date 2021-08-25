@@ -85,7 +85,7 @@ protected:
     /// Weiterleitung von Nachrichten erlaubt oder nicht?
     bool IsMessageRelayAllowed() const override;
 
-    void SaveOpenStatus(bool isOpen);
+    void SaveOpenStatus(bool isOpen) const;
 
     unsigned short iwHeight;
     std::string title_;

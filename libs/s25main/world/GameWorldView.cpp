@@ -637,7 +637,7 @@ void GameWorldView::Resize(const Extent& newSize)
     CalcFxLx();
 }
 
-void GameWorldView::SaveIngameSettingsValues()
+void GameWorldView::SaveIngameSettingsValues() const
 {
     auto& ingameSettings = SETTINGS.ingame;
     ingameSettings.showBQ = show_bq;

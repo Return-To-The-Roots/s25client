@@ -379,7 +379,7 @@ Rect IngameWindow::GetRightButtonRect() const
     return Rect(GetPos().x + GetSize().x - 16, GetPos().y, 16, 16);
 }
 
-void IngameWindow::SaveOpenStatus(bool isOpen)
+void IngameWindow::SaveOpenStatus(bool isOpen) const
 {
     auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
     if(windowSettings != SETTINGS.windows.persistentSettings.cend())

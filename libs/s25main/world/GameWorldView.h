@@ -143,5 +143,5 @@ private:
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
 
-    void SaveIngameSettingsValues();
+    void SaveIngameSettingsValues() const;
 };
