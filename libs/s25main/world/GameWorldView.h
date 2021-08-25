@@ -67,7 +67,6 @@ class GameWorldView
 
 public:
     GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size);
-    ~GameWorldView();
 
     const GameWorldViewer& GetViewer() const { return gwv; }
     const GameWorldBase& GetWorld() const;
@@ -82,11 +81,23 @@ public:
     void SetNextZoomFactor();
 
     /// Bauqualitäten anzeigen oder nicht
-    void ToggleShowBQ() { show_bq = !show_bq; }
+    void ToggleShowBQ()
+    {
+        show_bq = !show_bq;
+        SaveIngameSettingsValues();
+    }
     /// Gebäudenamen zeigen oder nicht
-    void ToggleShowNames() { show_names = !show_names; }
+    void ToggleShowNames()
+    {
+        show_names = !show_names;
+        SaveIngameSettingsValues();
+    }
     /// Produktivität zeigen oder nicht
-    void ToggleShowProductivity() { show_productivity = !show_productivity; };
+    void ToggleShowProductivity()
+    {
+        show_productivity = !show_productivity;
+        SaveIngameSettingsValues();
+    };
     /// Schaltet Produktivitäten/Namen komplett aus oder an
     void ToggleShowNamesAndProductivity();
 
@@ -131,4 +142,6 @@ private:
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
+
+    void SaveIngameSettingsValues();
 };

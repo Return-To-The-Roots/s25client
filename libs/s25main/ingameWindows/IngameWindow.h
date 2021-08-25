@@ -29,7 +29,6 @@ public:
     IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
                  glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true,
                  Window* parent = nullptr);
-    ~IngameWindow() override;
 
     /// setzt den Hintergrund.
     void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
@@ -85,6 +84,8 @@ protected:
 
     /// Weiterleitung von Nachrichten erlaubt oder nicht?
     bool IsMessageRelayAllowed() const override;
+
+    void SaveOpenStatus(bool isOpen);
 
     unsigned short iwHeight;
     std::string title_;

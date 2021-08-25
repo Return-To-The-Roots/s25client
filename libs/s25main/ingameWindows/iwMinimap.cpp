@@ -47,17 +47,6 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     Resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
 }
 
-iwMinimap::~iwMinimap()
-{
-    try
-    {
-        SETTINGS.ingame.minimapExtended = extended;
-    } catch(const std::runtime_error& err)
-    { // SETTINGS was probably destroyed already, don't save but print a warning
-        s25util::warning(std::string("Could not save minimap extension settings. Reason: ") + err.what());
-    }
-}
-
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu
 void iwMinimap::Resize(const Extent& newSize)
 {
@@ -100,6 +89,7 @@ void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)
         {
             // Fenster vergrößern/verkleinern
             this->extended = !extended;
+            SETTINGS.ingame.minimapExtended = extended;
 
             Resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
         }

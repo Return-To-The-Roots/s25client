@@ -42,19 +42,6 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
     MoveTo(0, 0);
 }
 
-GameWorldView::~GameWorldView()
-{
-    try
-    {
-        SETTINGS.ingame.showBQ = show_bq;
-        SETTINGS.ingame.showNames = show_names;
-        SETTINGS.ingame.showProductivity = show_productivity;
-    } catch(const std::runtime_error& err)
-    { // SETTINGS was probably destroyed already, don't save but print a warning
-        s25util::warning(std::string("Could not save ingame settings. Reason: ") + err.what());
-    }
-}
-
 const GameWorldBase& GameWorldView::GetWorld() const
 {
     return gwv.GetWorld();
@@ -552,6 +539,7 @@ void GameWorldView::ToggleShowNamesAndProductivity()
         show_productivity = show_names = false;
     else
         show_productivity = show_names = true;
+    SaveIngameSettingsValues();
 }
 
 /**
@@ -647,4 +635,12 @@ void GameWorldView::Resize(const Extent& newSize)
 {
     size_ = newSize;
     CalcFxLx();
+}
+
+void GameWorldView::SaveIngameSettingsValues()
+{
+    auto& ingameSettings = SETTINGS.ingame;
+    ingameSettings.showBQ = show_bq;
+    ingameSettings.showNames = show_names;
+    ingameSettings.showProductivity = show_productivity;
 }

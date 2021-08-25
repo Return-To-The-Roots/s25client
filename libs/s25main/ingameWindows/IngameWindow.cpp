@@ -44,35 +44,21 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     Window::Resize(elMax(contentOffset + contentOffsetEnd, GetSize()));
     iwHeight = GetSize().y - contentOffset.y - contentOffsetEnd.y;
 
+    // Save to settings that window is open
+    SaveOpenStatus(true);
+
     // Load last position or center the window
     if(pos == posLastOrCenter)
     {
-        const auto settings = SETTINGS.windows.persistentSettings.find(GetGUIID());
-        if(settings != SETTINGS.windows.persistentSettings.cend() && settings->second.lastPos.isValid())
-            SetPos(settings->second.lastPos);
+        const auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+        if(windowSettings != SETTINGS.windows.persistentSettings.cend() && windowSettings->second.lastPos.isValid())
+            SetPos(windowSettings->second.lastPos);
         else
             MoveToCenter();
     } else if(pos == posCenter)
         MoveToCenter();
     else if(pos == posAtMouse)
         MoveNextToMouse();
-}
-
-IngameWindow::~IngameWindow()
-{
-    try
-    {
-        // Possibly save our old position
-        auto settings = SETTINGS.windows.persistentSettings.find(GetGUIID());
-        if(settings != SETTINGS.windows.persistentSettings.end())
-        {
-            settings->second.lastPos = GetPos();
-            settings->second.isOpen = !closeme;
-        }
-    } catch(const std::runtime_error& err)
-    { // SETTINGS was probably destroyed already, don't save but print a warning
-        s25util::warning(std::string("Could not save ingame windows settings. Reason: ") + err.what());
-    }
 }
 
 void IngameWindow::Resize(const Extent& newSize)
@@ -120,11 +106,19 @@ void IngameWindow::SetPos(DrawPoint newPos)
     else if(newPos.y + GetSize().y > screenSize.y)
         newPos.y = screenSize.y - GetSize().y;
 
+    // if possible save the position to settings
+    const auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+    if(windowSettings != SETTINGS.windows.persistentSettings.cend())
+    {
+        windowSettings->second.lastPos = newPos;
+    }
+
     Window::SetPos(newPos);
 }
 
 void IngameWindow::Close()
 {
+    SaveOpenStatus(false);
     closeme = true;
 }
 
@@ -383,4 +377,13 @@ Rect IngameWindow::GetLeftButtonRect() const
 Rect IngameWindow::GetRightButtonRect() const
 {
     return Rect(GetPos().x + GetSize().x - 16, GetPos().y, 16, 16);
+}
+
+void IngameWindow::SaveOpenStatus(bool isOpen)
+{
+    auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+    if(windowSettings != SETTINGS.windows.persistentSettings.cend())
+    {
+        windowSettings->second.isOpen = isOpen;
+    }
 }
