@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Settings.h"
+#include "DrawPoint.h"
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
 #include "drivers/AudioDriverWrapper.h"
@@ -10,6 +11,7 @@
 #include "files.h"
 #include "helpers/strUtils.h"
 #include "languages.h"
+#include "gameData/const_gui_ids.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libsiedler2/libsiedler2.h"
@@ -19,11 +21,29 @@
 #include <boost/filesystem/operations.hpp>
 
 const int Settings::VERSION = 13;
-const std::array<std::string, 11> Settings::SECTION_NAMES = {
-  {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "ingame", "addons"}};
+const std::array<std::string, 10> Settings::SECTION_NAMES = {
+  {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "addons"}};
 
 const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {
   {-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
+
+const std::map<GUI_ID, std::string> persistentWindows = {{CGI_CHAT, "wnd_chat"},
+                                                         {CGI_POSTOFFICE, "wnd_postoffice"},
+                                                         {CGI_DISTRIBUTION, "wnd_distribution"},
+                                                         {CGI_BUILDORDER, "wnd_buildorder"},
+                                                         {CGI_TRANSPORT, "wnd_transport"},
+                                                         {CGI_MILITARY, "wnd_military"},
+                                                         {CGI_TOOLS, "wnd_tools"},
+                                                         {CGI_INVENTORY, "wnd_inventory"},
+                                                         {CGI_MINIMAP, "wnd_minimap"},
+                                                         {CGI_BUILDINGS, "wnd_buildings"},
+                                                         {CGI_BUILDINGSPRODUCTIVITY, "wnd_buildingsproductivity"},
+                                                         {CGI_MUSICPLAYER, "wnd_musicplayer"},
+                                                         {CGI_STATISTICS, "wnd_statistics"},
+                                                         {CGI_ECONOMICPROGRESS, "wnd_economicprogress"},
+                                                         {CGI_DIPLOMACY, "wnd_diplomacy"},
+                                                         {CGI_SHIP, "wnd_ship"},
+                                                         {CGI_MERCHANDISE_STATISTICS, "wnd_merchandise_statistics"}};
 
 namespace validate {
 boost::optional<uint16_t> checkPort(const std::string& port)
@@ -120,14 +140,29 @@ void Settings::LoadDefaults()
     interface.revert_mouse = false;
     // }
 
-    // ingame
-    // {
-    ingame.scale_statistics = false;
-    // }
-
     // addons
     // {
     addons.configuration.clear();
+    // }
+
+    LoadIngameDefaults();
+}
+
+void Settings::LoadIngameDefaults()
+{
+    // ingame
+    // {
+    ingame.scale_statistics = false;
+    ingame.showBQ = false;
+    ingame.showNames = false;
+    ingame.showProductivity = false;
+    ingame.minimapExtended = false;
+    // }
+
+    // windows
+    // {
+    for(const auto& window : persistentWindows)
+        windows.persistentSettings[window.first] = PersistentWindowSettings();
     // }
 }
 
@@ -139,7 +174,7 @@ void Settings::Load()
     const auto settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
     try
     {
-        if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SECTION_NAMES.size())
+        if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() < SECTION_NAMES.size())
             throw std::runtime_error("File missing or invalid");
 
         const libsiedler2::ArchivItem_Ini* iniGlobal =
@@ -156,14 +191,12 @@ void Settings::Load()
         const libsiedler2::ArchivItem_Ini* iniProxy = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("proxy"));
         const libsiedler2::ArchivItem_Ini* iniInterface =
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
-        const libsiedler2::ArchivItem_Ini* iniIngame =
-          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("ingame"));
         const libsiedler2::ArchivItem_Ini* iniAddons =
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
         // ist eine der Kategorien nicht vorhanden?
         if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy
-           || !iniInterface || !iniIngame || !iniAddons)
+           || !iniInterface || !iniAddons)
         {
             throw std::runtime_error("Missing section");
         }
@@ -267,11 +300,6 @@ void Settings::Load()
         interface.revert_mouse = (iniInterface->getValueI("revert_mouse") != 0);
         // }
 
-        // ingame
-        // {
-        ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") != 0);
-        // }
-
         // addons
         // {
         for(unsigned addon = 0; addon < iniAddons->size(); ++addon)
@@ -282,14 +310,55 @@ void Settings::Load()
                 addons.configuration.insert(std::make_pair(s25util::fromStringClassic<unsigned>(item->getName()),
                                                            s25util::fromStringClassic<unsigned>(item->getText())));
         }
-        // }
 
+        LoadIngame();
+        // }
     } catch(std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\", using default values. Reason: " + e.what());
         LoadDefaults();
         Save();
+    }
+}
+
+void Settings::LoadIngame()
+{
+    libsiedler2::Archiv settingsIngame;
+    const auto settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);
+    try
+    {
+        if(libsiedler2::Load(settingsPathIngame, settingsIngame) != 0)
+            throw std::runtime_error("File missing");
+
+        const libsiedler2::ArchivItem_Ini* iniIngame =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find("ingame"));
+        if(!iniIngame)
+            throw std::runtime_error("Missing section");
+        // ingame
+        // {
+        ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") != 0);
+        ingame.showBQ = (iniIngame->getValueI("show_building_quality") != 0);
+        ingame.showNames = (iniIngame->getValueI("show_names") != 0);
+        ingame.showProductivity = (iniIngame->getValueI("show_productivity") != 0);
+        ingame.minimapExtended = (iniIngame->getValueI("minimap_extended") != 0);
+        // }
+        // ingame windows
+        for(const auto& window : persistentWindows)
+        {
+            const auto* iniWindow = static_cast<const libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
+            if(!iniWindow)
+                continue;
+            windows.persistentSettings[window.first].lastPos.x = iniWindow->getValueI("pos_x");
+            windows.persistentSettings[window.first].lastPos.y = iniWindow->getValueI("pos_y");
+            windows.persistentSettings[window.first].isOpen = iniWindow->getValueI("is_open");
+        }
+    } catch(std::runtime_error& e)
+    {
+        s25util::warning(std::string("Could not use ingame settings from \"") + settingsPathIngame.string()
+                         + "\", using default values. Reason: " + e.what());
+        LoadIngameDefaults();
+        SaveIngame();
     }
 }
 
@@ -311,12 +380,11 @@ void Settings::Save()
     libsiedler2::ArchivItem_Ini* iniServer = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("server"));
     libsiedler2::ArchivItem_Ini* iniProxy = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("proxy"));
     libsiedler2::ArchivItem_Ini* iniInterface = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
-    libsiedler2::ArchivItem_Ini* iniIngame = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("ingame"));
     libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
     // ist eine der Kategorien nicht vorhanden?
     RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy
-                && iniInterface && iniIngame && iniAddons);
+                && iniInterface && iniAddons);
 
     // global
     // {
@@ -387,11 +455,6 @@ void Settings::Save()
     iniInterface->setValue("revert_mouse", (interface.revert_mouse ? 1 : 0));
     // }
 
-    // ingame
-    // {
-    iniIngame->setValue("scale_statistics", (ingame.scale_statistics ? 1 : 0));
-    // }
-
     // addons
     // {
     iniAddons->clear();
@@ -402,4 +465,47 @@ void Settings::Save()
     bfs::path settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
     if(libsiedler2::Write(settingsPath, settings) == 0)
         bfs::permissions(settingsPath, bfs::owner_read | bfs::owner_write);
+
+    SaveIngame();
+}
+
+void Settings::SaveIngame()
+{
+    libsiedler2::Archiv settingsIngame;
+    settingsIngame.alloc(1 + persistentWindows.size());
+    settingsIngame.set(0, std::make_unique<libsiedler2::ArchivItem_Ini>("ingame"));
+    unsigned i = 1;
+    for(const auto& window : persistentWindows)
+    {
+        settingsIngame.set(i, std::make_unique<libsiedler2::ArchivItem_Ini>(window.second));
+        i++;
+    }
+
+    auto* iniIngame = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find("ingame"));
+
+    RTTR_Assert(iniIngame);
+
+    // ingame
+    // {
+    iniIngame->setValue("scale_statistics", (ingame.scale_statistics ? 1 : 0));
+    iniIngame->setValue("show_building_quality", (ingame.showBQ ? 1 : 0));
+    iniIngame->setValue("show_names", (ingame.showNames ? 1 : 0));
+    iniIngame->setValue("show_productivity", (ingame.showProductivity ? 1 : 0));
+    iniIngame->setValue("minimap_extended", (ingame.minimapExtended ? 1 : 0));
+    // }
+
+    // ingame windows
+    for(const auto& window : persistentWindows)
+    {
+        auto* iniWindow = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
+        if(!iniWindow)
+            continue;
+        iniWindow->setValue("pos_x", windows.persistentSettings[window.first].lastPos.x);
+        iniWindow->setValue("pos_y", windows.persistentSettings[window.first].lastPos.y);
+        iniWindow->setValue("is_open", windows.persistentSettings[window.first].isOpen);
+    }
+
+    bfs::path settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);
+    if(libsiedler2::Write(settingsPathIngame, settingsIngame) == 0)
+        bfs::permissions(settingsPathIngame, bfs::owner_read | bfs::owner_write);
 }

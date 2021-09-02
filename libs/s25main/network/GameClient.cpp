@@ -20,7 +20,6 @@
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "Settings.h"
-#include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"

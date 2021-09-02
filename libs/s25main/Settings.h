@@ -4,11 +4,13 @@
 
 #pragma once
 
+#include "DrawPoint.h"
 #include "driver/VideoMode.h"
 #include "s25util/ProxySettings.h"
 #include "s25util/Singleton.h"
 #include <boost/optional.hpp>
 #include <array>
+#include <gameData/const_gui_ids.h>
 #include <map>
 #include <string>
 
@@ -18,6 +20,15 @@ namespace validate {
 boost::optional<uint16_t> checkPort(const std::string& port);
 bool checkPort(int port);
 } // namespace validate
+
+struct PersistentWindowSettings
+{
+    DrawPoint lastPos;
+    bool isOpen;
+
+    PersistentWindowSettings(DrawPoint lastPos, bool isOpen) : lastPos(lastPos), isOpen(isOpen) {}
+    PersistentWindowSettings() : lastPos(DrawPoint::Invalid()), isOpen(false) {}
+};
 
 /// Configuration class
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
@@ -32,6 +43,10 @@ public:
 
 protected:
     void LoadDefaults();
+    void LoadIngameDefaults();
+
+    void LoadIngame();
+    void SaveIngame();
 
 public:
     struct
@@ -96,7 +111,16 @@ public:
     struct
     {
         bool scale_statistics;
+        bool showNames;
+        bool showProductivity;
+        bool showBQ;
+        bool minimapExtended;
     } ingame;
+
+    struct
+    {
+        std::map<GUI_ID, PersistentWindowSettings> persistentSettings;
+    } windows;
 
     struct
     {
@@ -107,7 +131,7 @@ public:
 
 private:
     static const int VERSION;
-    static const std::array<std::string, 11> SECTION_NAMES;
+    static const std::array<std::string, 10> SECTION_NAMES;
 };
 
 #define SETTINGS Settings::inst()

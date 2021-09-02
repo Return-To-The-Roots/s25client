@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Game.h"
+#include "EconomyModeHandler.h"
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"

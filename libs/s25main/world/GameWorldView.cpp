@@ -9,6 +9,7 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "MapGeometry.h"
+#include "Settings.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
@@ -27,19 +28,19 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
+#include "s25util/error.h"
 #include "s25util/warningSuppression.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
-    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0),
-      gwv(gwv), origin_(pos), size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
+    : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
+      show_productivity(SETTINGS.ingame.showProductivity), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
+      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
 }
-
-GameWorldView::~GameWorldView() = default;
 
 const GameWorldBase& GameWorldView::GetWorld() const
 {
@@ -538,6 +539,7 @@ void GameWorldView::ToggleShowNamesAndProductivity()
         show_productivity = show_names = false;
     else
         show_productivity = show_names = true;
+    SaveIngameSettingsValues();
 }
 
 /**
@@ -633,4 +635,12 @@ void GameWorldView::Resize(const Extent& newSize)
 {
     size_ = newSize;
     CalcFxLx();
+}
+
+void GameWorldView::SaveIngameSettingsValues() const
+{
+    auto& ingameSettings = SETTINGS.ingame;
+    ingameSettings.showBQ = show_bq;
+    ingameSettings.showNames = show_names;
+    ingameSettings.showProductivity = show_productivity;
 }

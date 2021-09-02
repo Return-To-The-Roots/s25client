@@ -5,18 +5,20 @@
 #include "IngameWindow.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "Settings.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/MultiArray.h"
+#include "helpers/containerUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glFont.h"
 #include "gameData/const_gui_ids.h"
+#include "s25util/error.h"
 #include <algorithm>
 #include <utility>
 
-std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid());
 const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(),
                                               std::numeric_limits<DrawPoint::ElementType>::max());
 const DrawPoint IngameWindow::posCenter(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
@@ -42,24 +44,21 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     Window::Resize(elMax(contentOffset + contentOffsetEnd, GetSize()));
     iwHeight = GetSize().y - contentOffset.y - contentOffsetEnd.y;
 
+    // Save to settings that window is open
+    SaveOpenStatus(true);
+
     // Load last position or center the window
     if(pos == posLastOrCenter)
     {
-        if(id < last_pos.size() && last_pos[id].isValid())
-            SetPos(last_pos[id]);
+        const auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+        if(windowSettings != SETTINGS.windows.persistentSettings.cend() && windowSettings->second.lastPos.isValid())
+            SetPos(windowSettings->second.lastPos);
         else
             MoveToCenter();
     } else if(pos == posCenter)
         MoveToCenter();
     else if(pos == posAtMouse)
         MoveNextToMouse();
-}
-
-IngameWindow::~IngameWindow()
-{
-    // Possibly save our old position
-    if(GetID() < last_pos.size())
-        last_pos[GetID()] = GetPos();
 }
 
 void IngameWindow::Resize(const Extent& newSize)
@@ -107,11 +106,19 @@ void IngameWindow::SetPos(DrawPoint newPos)
     else if(newPos.y + GetSize().y > screenSize.y)
         newPos.y = screenSize.y - GetSize().y;
 
+    // if possible save the position to settings
+    const auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+    if(windowSettings != SETTINGS.windows.persistentSettings.cend())
+    {
+        windowSettings->second.lastPos = newPos;
+    }
+
     Window::SetPos(newPos);
 }
 
 void IngameWindow::Close()
 {
+    SaveOpenStatus(false);
     closeme = true;
 }
 
@@ -370,4 +377,13 @@ Rect IngameWindow::GetLeftButtonRect() const
 Rect IngameWindow::GetRightButtonRect() const
 {
     return Rect(GetPos().x + GetSize().x - 16, GetPos().y, 16, 16);
+}
+
+void IngameWindow::SaveOpenStatus(bool isOpen) const
+{
+    auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
+    if(windowSettings != SETTINGS.windows.persistentSettings.cend())
+    {
+        windowSettings->second.isOpen = isOpen;
+    }
 }

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Window.h"
+#include "gameData/const_gui_ids.h"
 #include <array>
 #include <vector>
 
@@ -15,9 +16,6 @@ struct Point;
 
 class IngameWindow : public Window
 {
-    /// For each id we save the last position of the window
-    static std::vector<DrawPoint> last_pos;
-
 public:
     /// Special position that gets translated to the last know position or screen center when passed to the ctor
     static const DrawPoint posLastOrCenter;
@@ -31,7 +29,6 @@ public:
     IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
                  glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true,
                  Window* parent = nullptr);
-    ~IngameWindow() override;
 
     /// setzt den Hintergrund.
     void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
@@ -75,6 +72,8 @@ public:
     void MouseLeftUp(const MouseCoords& mc);
     void MouseMove(const MouseCoords& mc);
 
+    GUI_ID GetGUIID() const { return static_cast<GUI_ID>(Window::GetID()); }
+
 protected:
     void Draw_() override;
 
@@ -85,6 +84,8 @@ protected:
 
     /// Weiterleitung von Nachrichten erlaubt oder nicht?
     bool IsMessageRelayAllowed() const override;
+
+    void SaveOpenStatus(bool isOpen) const;
 
     unsigned short iwHeight;
     std::string title_;
