@@ -22,6 +22,9 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
     message(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 endif()
 
+set(CMAKE_CXX_STANDARD 14)
+set(CXX_STANDARD_REQUIRED ON)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
 if(CMAKE_VERSION VERSION_LESS 3.14)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/libutil/cmake/cmake_3.14")
