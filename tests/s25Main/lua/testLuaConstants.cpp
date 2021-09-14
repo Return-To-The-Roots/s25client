@@ -23,6 +23,16 @@ struct LuaConstsTestsFixture : public LuaTestsFixture
                 return f, t, 0
             end
         )LUA");
+#if LUA_VERSION_NUM < 502
+        executeLua(R"LUA(
+            function table.pack(...)
+                -- Returns a new table with parameters stored into an array, with field "n" being the total number of parameters
+                local t = {...}
+                t.n = #t
+                return t
+            end
+        )LUA");
+#endif
     }
 };
 
