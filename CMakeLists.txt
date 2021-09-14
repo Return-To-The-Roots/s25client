@@ -320,8 +320,8 @@ endif()
 
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 
-if(Boost_VERSION_MINOR GREATER_EQUAL "73" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
-  # Boost 1.73 contains Boost.Nowide.
+if(Boost_VERSION_MINOR GREATER_EQUAL "74" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
+  # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
   find_package(Boost COMPONENTS nowide)
 endif()
 # Prefer system version, either as part of Boost or preinstalled
