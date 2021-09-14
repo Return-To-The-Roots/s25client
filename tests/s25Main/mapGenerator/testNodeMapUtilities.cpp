@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
 BOOST_AUTO_TEST_CASE(SelectPoints_returns_all_points_which_fulfill_predicate)
 {
     MapExtent size(16, 8);
-    auto result = SelectPoints([](const MapPoint& pt) { return pt.x == 0; }, size);
+    auto result = SelectPoints([](const MapPoint& pt) noexcept { return pt.x == 0; }, size);
     std::vector<MapPoint> expectedResult;
     for(unsigned y = 0; y < size.y; y++)
     {
