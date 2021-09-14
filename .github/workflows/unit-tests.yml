@@ -25,13 +25,15 @@ jobs:
           # GCC 9 is known to show a few warnings that GCC 10 has "fixed", make sure this doesn't happen for us
           - { compiler: gcc-9,    os: ubuntu-18.04, buildType: Debug }
           # Latest GCC
-          - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Debug }
-          - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Release }
+          - { compiler: gcc-11,   os: ubuntu-18.04, buildType: Debug, cxxStandard: 14 }
+          - { compiler: gcc-11,   os: ubuntu-18.04, buildType: Debug, cxxStandard: 17 }
+          - { compiler: gcc-11,   os: ubuntu-18.04, buildType: Release }
           # Latest Clang with externals
-          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug, externalSanitizer: true }
-          - { compiler: clang-10, os: ubuntu-18.04, buildType: Release }
+          - { compiler: clang-12, os: ubuntu-18.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
+          - { compiler: clang-12, os: ubuntu-18.04, buildType: Debug, cxxStandard: 17 }
+          - { compiler: clang-12, os: ubuntu-18.04, buildType: Release }
           # Latest Clang with latest boost
-          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug, boostVersion: 1.75.0, externalSanitizer: true }
+          - { compiler: clang-12, os: ubuntu-18.04, buildType: Debug, boostVersion: 1.77.0, externalSanitizer: true }
 
     runs-on: ${{matrix.os}}
 
@@ -114,6 +116,10 @@ jobs:
       - name: Enable coverage collection
         if: matrix.coverage
         run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
+
+      - name: Set C++ standard
+        if: matrix.cxxStandard
+        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DCMAKE_CXX_STANDARD=${{matrix.cxxStandard}}" >> $GITHUB_ENV
 
       - name: Setup environment
         run: |
