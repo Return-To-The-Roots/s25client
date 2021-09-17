@@ -28,7 +28,7 @@ target_link_libraries(gamedata PUBLIC
     mygettext
     s25Common
     kaguya
-    ${LUA_LIBRARIES}
+    ${LUA_LIBRARIES} ${CMAKE_DL_LIBS}
     PRIVATE rttrConfig Boost::nowide
 )
 include(EnableWarnings)

@@ -17,7 +17,7 @@ int& lastValue()
 void subscribeTestNote1(NotificationManager& mgr)
 {
     static Subscription sub;
-    sub = mgr.subscribe<TestNote1>([](TestNote1 note) { lastValue() = note.value; });
+    sub = mgr.subscribe<TestNote1>([](TestNote1 note) noexcept { lastValue() = note.value; });
 }
 
 int getLastTestNote1()

@@ -38,6 +38,10 @@ if(NOT RTTR_REVISION)
     # Get git commit hash. Note: CMake will reconfigure if the git hash changes
     get_git_head_revision(RTTR_GIT_REF RTTR_REVISION)
     if(RTTR_REVISION)
+        string(LENGTH "${RTTR_REVISION}" revisionLen)
+        if(NOT revisionLen EQUAL "40")
+            message(FATAL_ERROR "get_git_head_revision returned a wrong revision: '${RTTR_REVISION}'")
+        endif()
         set(checkSubmodules TRUE)
     else()
         set(revisionFile "${CMAKE_CURRENT_LIST_DIR}/revision.txt")
@@ -46,7 +50,7 @@ if(NOT RTTR_REVISION)
             string(STRIP "${revision}" revision)
             string(LENGTH "${revision}" revisionLen)
             if(NOT revision MATCHES "^[0-9a-f]+$" OR NOT revisionLen EQUAL "40")
-                message(FATAL_ERROR "Contents of ${revisionFile} do not contain a valid revision")
+                message(FATAL_ERROR "Contents of ${revisionFile} do not contain a valid revision: '${RTTR_REVISION}'")
             endif()
             set(RTTR_REVISION ${revision})
             # Reconfigure if the file changes
@@ -61,8 +65,8 @@ endif()
 # stable build? then set rttr.bat/rttr.sh parameter
 set(STABLE_PARAM "")
 if(RTTR_VERSION MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
-	message(STATUS "Creating a stable version ${RTTR_VERSION}")
-	set(STABLE_PARAM "--stable")
+    message(STATUS "Creating a stable version ${RTTR_VERSION}")
+    set(STABLE_PARAM "--stable")
 endif()
 
 if(checkSubmodules)
@@ -320,8 +324,8 @@ endif()
 
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 
-if(Boost_VERSION_MINOR GREATER_EQUAL "73" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
-  # Boost 1.73 contains Boost.Nowide.
+if(Boost_VERSION_MINOR GREATER_EQUAL "74" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
+  # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
   find_package(Boost COMPONENTS nowide)
 endif()
 # Prefer system version, either as part of Boost or preinstalled

@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(ConversionWorks)
 
     std::fill(output2.begin(), output2.end(), 0.f);
     size_t curInputPos = 0;
-    samplerate::StateCallback cbState(samplerate::Converter::Linear, 1, [&](float*& data) {
+    samplerate::StateCallback cbState(samplerate::Converter::Linear, 1, [&](float*& data) noexcept {
         data = &input[curInputPos];
         const auto size = std::min<size_t>(200u, input.size() - curInputPos);
         curInputPos += size;

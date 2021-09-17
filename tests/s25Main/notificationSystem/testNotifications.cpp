@@ -81,12 +81,13 @@ BOOST_AUTO_TEST_CASE(PublishBeforeSubscribe)
     mgr.publish(IntNote{42});
 
     std::string lastString;
-    const auto sub1 = mgr.subscribe<StringNote>([&lastString](const StringNote& note) { lastString = note.value; });
+    const auto sub1 =
+      mgr.subscribe<StringNote>([&lastString](const StringNote& note) noexcept { lastString = note.value; });
     mgr.publish(IntNote{42}); // No-Op
     BOOST_TEST(lastString.empty());
 
     int lastValue = 0;
-    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) { lastValue = note.value; });
+    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) noexcept { lastValue = note.value; });
     mgr.publish(StringNote{"Test"});
     mgr.publish(IntNote{42});
     BOOST_TEST(lastString == "Test");
@@ -171,7 +172,7 @@ BOOST_AUTO_TEST_CASE(UnsubscribeDuringPublish)
     {
         Subscription sub;
         int called = 0;
-        sub = mgr.subscribe<IntNote>([&](const IntNote&) {
+        sub = mgr.subscribe<IntNote>([&](const IntNote&) noexcept {
             called++;
             // Unsubscribe self
             mgr.unsubscribe(sub);
@@ -186,11 +187,11 @@ BOOST_AUTO_TEST_CASE(UnsubscribeDuringPublish)
         // Unsubscribe later callback on 2nd call
         Subscription sub1, sub2;
         int called1 = 0, called2 = 0;
-        sub1 = mgr.subscribe<IntNote>([&](const IntNote&) {
+        sub1 = mgr.subscribe<IntNote>([&](const IntNote&) noexcept {
             if(called1++)
                 mgr.unsubscribe(sub2);
         });
-        sub2 = mgr.subscribe<IntNote>([&](const IntNote&) { called2++; });
+        sub2 = mgr.subscribe<IntNote>([&](const IntNote&) noexcept { called2++; });
         mgr.publish(IntNote{});
         BOOST_TEST(called1 == 1);
         BOOST_TEST(called2 == 1);
@@ -214,7 +215,7 @@ BOOST_AUTO_TEST_CASE(PublishDuringPublish)
         lastString = note.value;
         mgr.publish(IntNote{42});
     });
-    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) { lastValue = note.value; });
+    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) noexcept { lastValue = note.value; });
 
     mgr.publish(StringNote{"Test"});
     BOOST_TEST(lastString == "Test");
@@ -226,8 +227,9 @@ BOOST_AUTO_TEST_CASE(SendAndReceiveAcrossTranslationUnits)
     NotificationManager mgr;
     std::string lastString;
     int lastValue = 0;
-    const auto sub1 = mgr.subscribe<StringNote>([&lastString](const StringNote& note) { lastString = note.value; });
-    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) { lastValue = note.value; });
+    const auto sub1 =
+      mgr.subscribe<StringNote>([&lastString](const StringNote& note) noexcept { lastString = note.value; });
+    const auto sub2 = mgr.subscribe<IntNote>([&lastValue](const IntNote& note) noexcept { lastValue = note.value; });
     subscribeTestNote1(mgr);
     subscribeTestNote2(mgr);
 
@@ -252,7 +254,7 @@ BOOST_AUTO_TEST_CASE(ThrowDuringPublish)
         if(called1++ == 0)
             throw std::runtime_error("Something went wrong");
     });
-    Subscription sub2 = mgr.subscribe<IntNote>([&](const IntNote&) { called2++; });
+    Subscription sub2 = mgr.subscribe<IntNote>([&](const IntNote&) noexcept { called2++; });
     // First publish throws, 2nd note is not called
     BOOST_CHECK_THROW(mgr.publish(IntNote{}), std::runtime_error);
     BOOST_TEST(called1 == 1);

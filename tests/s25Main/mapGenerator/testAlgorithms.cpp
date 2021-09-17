@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(DistancesTo_with_predicate_returns_expected_distance_for_ea
       // clang-format on
     };
 
-    auto distances = DistancesTo(size, [](MapPoint pt) {
+    auto distances = DistancesTo(size, [](MapPoint pt) noexcept {
         return pt == MapPoint(3, 5); // compute distance to P(4/3)
     });
 

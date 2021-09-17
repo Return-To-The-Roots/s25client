@@ -104,7 +104,9 @@ BOOST_FIXTURE_TEST_CASE(StopWorkingRemovesAllSoundsOfObj, LoadMockupAudioWithSou
 {
     SoundManager manager;
     DummyNO obj1, obj2, obj3;
-    MOCK_EXPECT(audioDriverMock->doPlayEffect).exactly(3).calls([channel = 0](auto&&...) mutable { return ++channel; });
+    MOCK_EXPECT(audioDriverMock->doPlayEffect).exactly(3).calls([channel = 0](auto&&...) mutable noexcept {
+        return ++channel;
+    });
     manager.playNOSound(50, obj1, 10u);
     manager.playNOSound(51, obj1, 10u);
     manager.playNOSound(50, obj2, 10u);

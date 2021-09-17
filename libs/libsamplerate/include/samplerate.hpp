@@ -152,7 +152,7 @@ class State : public detail::StateBase
 {
     static SRC_STATE* createOrThrow(Converter converter, int channels)
     {
-        if (channels <= 0)
+        if(channels <= 0)
             throw std::runtime_error("Channel count must be >= 1.");
         int error;
         auto* state = src_new(static_cast<int>(converter), channels, &error);
@@ -176,7 +176,7 @@ class StateCallback : public detail::StateBase
 {
     static SRC_STATE* createOrThrow(Converter converter, int channels, src_callback_t func, void* data)
     {
-        if (channels <= 0)
+        if(channels <= 0)
             throw std::runtime_error("Channel count must be >= 1.");
         int error;
         auto* state = src_callback_new(func, static_cast<int>(converter), channels, &error, data);
