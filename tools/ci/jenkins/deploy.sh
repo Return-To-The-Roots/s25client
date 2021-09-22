@@ -27,6 +27,7 @@ fi
 ###############################################################################
 
 deploy_to="%deploy_to%"
+force_deploy="%force_deploy%"
 
 result_dir=$(pwd)/result
 archive_dir=/srv/backup/www/s25client/$deploy_to/$(date +%Y)
@@ -63,13 +64,13 @@ for artifact in $artifacts ; do
     set -x
 
     _changed=1
-    if [ -f $updater_dir/$arch_dir/revision ] && [ -f $arch_dir/revision ] ; then
+    if [ "$force_deploy" != "true" ] && [ -f $updater_dir/$arch_dir/revision ] && [ -f $arch_dir/revision ] ; then
         diff -qrN $updater_dir/$arch_dir/revision $arch_dir/revision && _changed=0 || _changed=1
     fi
 
     set +x
 
-    if [ $_changed -eq 0 ] ; then
+    if [ $_changed -eq 0 ]; then
         echo "- Skipping rotation. Nothing has been changed."
     else
         echo "- Rotating tree."
