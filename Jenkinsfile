@@ -98,7 +98,7 @@ pipeline {
                     def parallel_map = [:]
                     def buildScript = readTrusted("tools/ci/jenkins/build.sh")
                     buildScript = buildScript.replace("%deploy_to%", params.DEPLOY_TO)
-                    buildScript = buildScript.replace("%force_deploy%", params.FORCE_DEPLOY)
+                    buildScript = buildScript.replace("%force_deploy%", params.FORCE_DEPLOY.toString())
 
                     dockerImages.each { architecture, image ->
                         echo "Adding Job ${architecture} (${image})"
@@ -121,12 +121,12 @@ pipeline {
                 script {
                     def prepareDeployScript = readTrusted("tools/ci/jenkins/prepare-deploy.sh")
                     prepareDeployScript = prepareDeployScript.replace("%deploy_to%", params.DEPLOY_TO)
-                    prepareDeployScript = prepareDeployScript.replace("%force_deploy%", params.FORCE_DEPLOY)
+                    prepareDeployScript = prepareDeployScript.replace("%force_deploy%", params.FORCE_DEPLOY.toString())
                     sh prepareDeployScript
 
                     def deployScript = readTrusted("tools/ci/jenkins/deploy.sh")
                     deployScript = deployScript.replace("%deploy_to%", params.DEPLOY_TO)
-                    deployScript = deployScript.replace("%force_deploy%", params.FORCE_DEPLOY)
+                    deployScript = deployScript.replace("%force_deploy%", params.FORCE_DEPLOY.toString())
                     sh deployScript
                 }
             }
