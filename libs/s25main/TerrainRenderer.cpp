@@ -762,21 +762,21 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
     if(water)
     {
-        unsigned water_count = 0;
         const WorldDescription& desc = gwv.GetWorld().GetDescription();
+        unsigned water_count = 0;
         for(DescIdx<TerrainDesc> t(0); t.value < sorted_textures.size(); ++t.value)
         {
-            if(desc.get(t).kind != TerrainKind::Water)
-                continue;
-            for(const MapTile& tile : sorted_textures[t.value])
-                water_count += tile.count;
+            if(desc.get(t).kind == TerrainKind::Water)
+            {
+                for(const MapTile& tile : sorted_textures[t.value])
+                    water_count += tile.count;
+            }
         }
 
-        Position diff = lastPt - firstPt;
-        if(diff.x && diff.y)
-            *water = 50 * water_count / (diff.x * diff.y);
-        else
-            *water = 0;
+        Position diff = lastPt - firstPt + Position(1, 1); // Number of points checked in X and Y, including(!) the last one
+        // For each point there are 2 tiles added (USD, RSU) so we have 2 times the tiles as the number of points.
+        // Calculate the percentage of water tiles
+        *water = 100 * water_count / (2 * prodOfComponents(diff));
     }
 
     lastOffset = Position(0, 0);
