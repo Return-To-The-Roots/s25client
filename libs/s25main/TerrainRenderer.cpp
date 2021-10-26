@@ -291,6 +291,12 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     const GameWorldBase& world = gwv.GetWorld();
     Init(world.GetSize());
 
+    maxNodeAltitude_ = 0;
+    RTTR_FOREACH_PT(MapPoint, size_)
+    {
+        maxNodeAltitude_ = std::max(maxNodeAltitude_, world.GetNode(pt).altitude);
+    }
+
     GenerateVertices(gwv);
     const WorldDescription& desc = world.GetDescription();
     LoadTextures(desc);
@@ -1037,6 +1043,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
 void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv)
 {
+    maxNodeAltitude_ = std::max(maxNodeAltitude_, gwv.GetWorld().GetNode(pt).altitude);
     // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
     UpdateVertexPos(pt, gwv);
     UpdateVertexColor(pt, gwv);
