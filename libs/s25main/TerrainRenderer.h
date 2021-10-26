@@ -57,6 +57,8 @@ public:
     /// Recalculates all colors on the map
     void UpdateAllColors(const GameWorldViewer& gwv);
 
+    uint8_t getMaxNodeAltitude() const { return maxNodeAltitude_; }
+
 private:
     struct MapTile
     {
@@ -123,6 +125,8 @@ private:
 
     /// Size of the map
     MapExtent size_;
+    /// Max height of any node
+    uint8_t maxNodeAltitude_;
     /// Map sized array of vertex related data
     std::vector<Vertex> vertices;
     /// Map sized array with terrain indices/textures (bottom, bottom right of node)
