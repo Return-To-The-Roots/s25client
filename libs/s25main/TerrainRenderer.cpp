@@ -773,7 +773,8 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
             }
         }
 
-        Position diff = lastPt - firstPt + Position(1, 1); // Number of points checked in X and Y, including(!) the last one
+        Position diff =
+          lastPt - firstPt + Position(1, 1); // Number of points checked in X and Y, including(!) the last one
         // For each point there are 2 tiles added (USD, RSU) so we have 2 times the tiles as the number of points.
         // Calculate the percentage of water tiles
         *water = 100 * water_count / (2 * prodOfComponents(diff));
