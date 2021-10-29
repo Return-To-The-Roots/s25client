@@ -10,6 +10,7 @@
 #include "GameEvent.h"
 #include "GameObject.h"
 #include "GamePlayer.h"
+#include "PointOutput.h"
 #include "RoadSegment.h"
 #include "Ware.h"
 #include "buildings/BurnedWarehouse.h"
@@ -294,6 +295,16 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
     {
         throw Error(helpers::format("Object count mismatch. Expected: %1%, read: %2%", expectedNumObjects,
                                     readObjects.size() + 1));
+    }
+
+    // Sanity check for flag workers. See bug #1449
+    for(const auto& entry : readObjects)
+    {
+        const auto* worker = dynamic_cast<const nofFlagWorker*>(entry.second);
+        if(worker && worker->GetFlag() && worker->GetPlayer() != worker->GetFlag()->GetPlayer())
+        {
+            throw Error(helpers::format("Invalid flag worker at %1%", worker->GetPos()));
+        }
     }
 
     em = nullptr;

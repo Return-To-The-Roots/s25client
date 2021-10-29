@@ -1256,7 +1256,7 @@ void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
         wh->OrderJob(job, flag, true);
 }
 
-bool GamePlayer::IsFlagWorker(nofFlagWorker* flagworker)
+bool GamePlayer::IsFlagWorker(const nofFlagWorker* flagworker)
 {
     return helpers::contains(flagworkers, flagworker);
 }
