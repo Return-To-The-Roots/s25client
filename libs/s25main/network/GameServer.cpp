@@ -912,15 +912,15 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
     if(!player)
         return true;
 
-    int typeok = 0;
+    auto typeok = GameMessage_Server_TypeOK::StatusCode::Ok;
     if(msg.type != config.servertype)
-        typeok = 1;
+        typeok = GameMessage_Server_TypeOK::StatusCode::InvalidServerType;
     else if(msg.revision != rttr::version::GetRevision())
-        typeok = 2;
+        typeok = GameMessage_Server_TypeOK::StatusCode::WrongVersion;
 
-    player->sendMsgAsync(new GameMessage_Server_TypeOK(typeok));
+    player->sendMsg(GameMessage_Server_TypeOK(typeok, rttr::version::GetRevision()));
 
-    if(typeok != 0)
+    if(typeok != GameMessage_Server_TypeOK::StatusCode::Ok)
         KickPlayer(msg.senderPlayerID, KickReason::ConnectionLost, __LINE__);
     return true;
 }

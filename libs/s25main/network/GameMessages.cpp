@@ -6,6 +6,7 @@
 #include "JoinPlayerInfo.h"
 #include "enum_cast.hpp"
 #include "helpers/serializeContainers.h"
+#include "helpers/serializeEnums.h"
 
 GameMessage_Player_List::GameMessage_Player_List() : GameMessage(NMS_PLAYER_LIST) {}
 
@@ -58,4 +59,18 @@ void GameMessage_Server_Async::Deserialize(Serializer& ser)
 {
     GameMessage::Deserialize(ser);
     helpers::popContainer(ser, checksums);
+}
+
+void GameMessage_Server_TypeOK::Serialize(Serializer& ser) const
+{
+    GameMessage::Serialize(ser);
+    helpers::pushEnum<uint32_t>(ser, err_code);
+    ser.PushString(version);
+}
+
+void GameMessage_Server_TypeOK::Deserialize(Serializer& ser)
+{
+    GameMessage::Deserialize(ser);
+    err_code = helpers::popEnum<StatusCode>(ser);
+    version = ser.PopString();
 }

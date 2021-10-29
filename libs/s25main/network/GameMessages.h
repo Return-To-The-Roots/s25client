@@ -95,23 +95,25 @@ public:
 class GameMessage_Server_TypeOK : public GameMessage
 {
 public:
+    enum class StatusCode : uint32_t
+    {
+        Ok,
+        InvalidServerType,
+        WrongVersion
+    };
+    friend constexpr auto maxEnumValue(StatusCode) { return StatusCode::WrongVersion; }
+
     /// Vom Server akzeptiert?
-    uint32_t err_code;
+    StatusCode err_code;
+    std::string version;
 
     GameMessage_Server_TypeOK() : GameMessage(NMS_SERVER_TYPEOK) {} //-V730
-    GameMessage_Server_TypeOK(const uint32_t err_code) : GameMessage(NMS_SERVER_TYPEOK), err_code(err_code) {}
+    GameMessage_Server_TypeOK(const StatusCode err_code, std::string version)
+        : GameMessage(NMS_SERVER_TYPEOK), err_code(err_code), version(std::move(version))
+    {}
 
-    void Serialize(Serializer& ser) const override
-    {
-        GameMessage::Serialize(ser);
-        ser.PushUnsignedInt(err_code);
-    }
-
-    void Deserialize(Serializer& ser) override
-    {
-        GameMessage::Deserialize(ser);
-        err_code = ser.PopUnsignedInt();
-    }
+    void Serialize(Serializer& ser) const override;
+    void Deserialize(Serializer& ser) override;
 
     bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };

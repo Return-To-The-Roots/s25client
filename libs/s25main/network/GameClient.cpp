@@ -647,21 +647,23 @@ bool GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
     if(state != ClientState::Connect)
         return true;
 
+    using StatusCode = GameMessage_Server_TypeOK::StatusCode;
     switch(msg.err_code)
     {
-        case 0: // ok
-            break;
+        case StatusCode::Ok: break;
 
         default:
-        case 1:
+        case StatusCode::InvalidServerType:
         {
             OnError(ClientError::InvalidServerType);
             return true;
         }
         break;
 
-        case 2:
+        case StatusCode::WrongVersion:
         {
+            LOG.write(_("Version mismatch. Server version: %1%, your version %2%")) % msg.version
+              % rttr::version::GetRevision();
             OnError(ClientError::WrongVersion);
             return true;
         }
