@@ -47,8 +47,6 @@ public:
 
     void LC_Status_ConnectionLost() override;
     void LC_Status_Error(const std::string& error) override;
-    /// Called whenever Settings are changed ingame
-    void SettingsChanged();
 
     RoadBuildMode GetRoadMode() const { return road.mode; }
 
