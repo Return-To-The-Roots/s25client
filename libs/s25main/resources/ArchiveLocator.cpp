@@ -104,8 +104,11 @@ ResolvedFile ArchiveLocator::resolve(const boost::filesystem::path& filepath) co
                 logger_.write(_("Skipping removed file %1% when checking for files to load for %2%\n")) % fullFilePath
                   % resId;
             else if(helpers::contains(result, fullFilePath))
-                logger_.write(_("Skipping duplicate override file %1% for %2%\n")) % fullFilePath % resId;
-            else
+            {
+                // Don't log a message if we directly load an "override" file. E.g. for the Babylonians
+                if(fullFilePath != filepath)
+                    logger_.write(_("Skipping duplicate override file %1% for %2%\n")) % fullFilePath % resId;
+            } else
                 result.push_back(fullFilePath);
         }
     }
