@@ -921,6 +921,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     troops_on_mission.clear();
     aggressive_defenders.clear();
+    far_away_capturers.clear();
 
     // Alten Besitzer merken
     unsigned char old_player = player;
