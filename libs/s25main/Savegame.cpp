@@ -5,6 +5,8 @@
 #include "Savegame.h"
 #include "gameTypes/CompressedData.h"
 #include "s25util/BinaryFile.h"
+#include <boost/filesystem/operations.hpp>
+#include <boost/nowide/fstream.hpp>
 
 std::string Savegame::GetSignature() const
 {
@@ -112,6 +114,12 @@ bool Savegame::ReadGameData(BinaryFile& file)
         data.resize(compressedLength);
         file.ReadRawData(data.data(), data.size());
         data = CompressedData::decompress(data, uncompressedLength);
+#ifndef NDEBUG
+        // In debug builds write uncompressed game data to temporary file
+        const auto gameDataPath = boost::filesystem::temp_directory_path() / "rttrGameData.raw";
+        boost::nowide::ofstream f(gameDataPath, std::ios::binary);
+        f.write(data.data(), data.size());
+#endif
     } else
     { // Old savegames have a size here which is always bigger than 1
         RTTR_Assert(compressedFlagOrSize > 1u);

@@ -28,5 +28,5 @@ ResourceId ResourceId::make(const boost::filesystem::path& filepath)
 
 std::ostream& operator<<(std::ostream& os, const ResourceId& resId)
 {
-    return os << resId.name_;
+    return os.write(resId.name_, resId.length_);
 }

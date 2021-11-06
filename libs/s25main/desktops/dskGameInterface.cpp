@@ -259,8 +259,6 @@ void dskGameInterface::ShowPersistentWindowsAfterSwitch()
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMerchandiseStatistics>(gwv.GetViewer().GetPlayer()));
 }
 
-void dskGameInterface::SettingsChanged() {}
-
 void dskGameInterface::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
