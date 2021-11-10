@@ -6,6 +6,7 @@
 #include "helpers/containerUtils.h"
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "uiHelper/uiHelpers.hpp"
+#include "rttr/test/LogAccessor.hpp"
 #include <rttr/test/stubFunction.hpp>
 #include <s25util/warningSuppression.h>
 #include <glad/glad.h>
@@ -62,8 +63,12 @@ RTTR_POP_DIAGNOSTIC
 BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
 {
     // Fresh start
-    VIDEODRIVER.DestroyScreen();
-    VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+    {
+        rttr::test::LogAccessor logAcc;
+        VIDEODRIVER.DestroyScreen();
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        logAcc.clearLog();
+    }
 
     RTTR_STUB_FUNCTION(glGenTextures, rttrOglMock2::glGenTextures);
     RTTR_STUB_FUNCTION(glDeleteTextures, rttrOglMock2::glDeleteTextures);
@@ -71,12 +76,20 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
     for(unsigned i = 1u; i <= 5u; ++i)
         BOOST_TEST(VIDEODRIVER.GenerateTexture() == i);
     BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.size() == 5u);
-    VIDEODRIVER.DestroyScreen();
+    {
+        rttr::test::LogAccessor logAcc;
+        VIDEODRIVER.DestroyScreen();
+        logAcc.clearLog();
+    }
     BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.empty());
     // Next cleanup call is a no-op (validated inside glDeleteTextures)
     VIDEODRIVER.CleanUp();
 
-    VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+    {
+        rttr::test::LogAccessor logAcc;
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        logAcc.clearLog();
+    }
     glGenTextures = rttrOglMock2::glGenTextures;
     glDeleteTextures = rttrOglMock2::glDeleteTextures;
     for(unsigned i = 1u; i <= 5u; ++i)

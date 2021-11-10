@@ -14,6 +14,7 @@ void initGUITests();
 struct Fixture
 {
     Fixture() { initGUITests(); }
+    ~Fixture();
 };
 
 /// Return the video driver. Initializes the GUI tests if required

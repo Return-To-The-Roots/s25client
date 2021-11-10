@@ -117,13 +117,12 @@ bool WindowManager::IsDesktopActive()
 /// Sendet eine Tastaturnachricht an die Fenster.
 void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
-    // ist der Desktop gültig?
+    // When there is no desktop, don't check it or any window
     if(!curDesktop)
         return;
-    // ist der Desktop aktiv?
     if(curDesktop->IsActive())
     {
-        // Ja, dann Nachricht an Desktop weiterleiten
+        // Desktop active -> relay msg to desktop
         CALL_MEMBER_FN(*curDesktop, msg)(ke);
         curDesktop->RelayKeyboardMessage(msg, ke);
         return;
@@ -132,18 +131,20 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
     if(windows.empty())
         return; // No windows -> nothing to do
 
-    // Letztes Fenster schließen? (Escape oder Alt-W)
+    // ESC or ALT+W closes the active window
     if(ke.kt == KeyType::Escape || (ke.c == 'w' && ke.alt))
     {
-        Close(GetTopMostWindow());
-        return;
-    }
-    // Nein, dann Nachricht an letztes Fenster weiterleiten
-    if(!CALL_MEMBER_FN(*windows.back(), msg)(ke))
+        // Find one which isn't yet marked for closing so multiple ESC in between draw calls can close multiple windows
+        const auto itActiveWnd =
+          std::find_if(windows.rbegin(), windows.rend(), [](const auto& wnd) { return !wnd->ShouldBeClosed(); });
+        if(itActiveWnd != windows.rend())
+            (*itActiveWnd)->Close();
+    } else if(!CALL_MEMBER_FN(*windows.back(), msg)(ke)) // send to active window
     {
+        // If not handled yet, relay to active window
         if(!windows.back()->RelayKeyboardMessage(msg, ke))
         {
-            // Falls Nachrichten nicht behandelt wurden, an Desktop wieder senden
+            // If message was not handled send to desktop
             CALL_MEMBER_FN(*curDesktop, msg)(ke);
             curDesktop->RelayKeyboardMessage(msg, ke);
         }
@@ -649,7 +650,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     }
 }
 
-const IngameWindow* WindowManager::GetTopMostWindow() const
+IngameWindow* WindowManager::GetTopMostWindow() const
 {
     if(windows.empty())
         return nullptr;
@@ -657,20 +658,16 @@ const IngameWindow* WindowManager::GetTopMostWindow() const
         return windows.back().get();
 }
 
-void WindowManager::Close(const IngameWindow* window)
+void WindowManager::DoClose(IngameWindow* window)
 {
-    // ist das Fenster gültig?
-    if(!window)
-        return;
-
     const auto it =
       std::find_if(windows.begin(), windows.end(), [window](const auto& it) { return it.get() == window; });
-    if(it == windows.end())
-        return; // Window already closed -> Out
+
+    RTTR_Assert(it != windows.end());
 
     SetToolTip(nullptr, "");
 
-    // War es an vorderster Stelle?
+    // Store if this was the active window
     const bool isActiveWnd = window == GetTopMostWindow();
 
     // Remove from list and notify parent, hold onto it till parent is notified
@@ -689,21 +686,26 @@ void WindowManager::Close(const IngameWindow* window)
 /**
  *  Closes _ALL_ windows with the given ID
  *
- *  @param[in] id ID des/der Fenster(s) welche(s) geschlossen werden soll
+ *  @param[in] id ID of the window to be closed
  */
 void WindowManager::Close(unsigned id)
 {
-    auto isId = [id](const auto& curWnd) { return curWnd->GetID() == id; };
-    auto it = std::find_if(windows.begin(), windows.end(), isId);
-    while(it != windows.end())
+    for(auto& wnd : windows)
     {
-        Close(it->get());
-        it = std::find_if(windows.begin(), windows.end(), isId);
+        if(wnd->GetID() == id && !wnd->ShouldBeClosed())
+            wnd->Close();
     }
 }
 
+void WindowManager::CloseNow(IngameWindow* window)
+{
+    if(!window->ShouldBeClosed())
+        window->Close();
+    DoClose(window);
+}
+
 /**
- *  wechselt den Desktop in den neuen Desktop
+ *  Actually process the desktop change
  */
 void WindowManager::DoDesktopSwitch()
 {
@@ -712,14 +714,11 @@ void WindowManager::DoDesktopSwitch()
 
     SetToolTip(nullptr, "");
 
-    // haben wir einen aktuell gültigen Desktop?
+    // If we have a current desktop close all windows
     if(curDesktop)
-    {
-        // Alle (alten) Fenster zumachen
         windows.clear();
-    }
 
-    // Desktop auf Neuen umstellen
+    // Do the switch
     curDesktop = std::move(nextdesktop);
     curDesktop->SetActive(true);
 
@@ -740,7 +739,7 @@ void WindowManager::CloseMarkedIngameWnds()
     auto it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
     while(it != windows.end())
     {
-        Close(it->get());
+        DoClose(it->get());
         it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
     }
 }

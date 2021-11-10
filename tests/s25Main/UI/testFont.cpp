@@ -5,6 +5,7 @@
 #include "Loader.h"
 #include "ogl/glFont.h"
 #include "uiHelper/uiHelpers.hpp"
+#include "rttr/test/LogAccessor.hpp"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(Font)
@@ -12,7 +13,11 @@ BOOST_AUTO_TEST_SUITE(Font)
 BOOST_FIXTURE_TEST_CASE(WrapInfoVaryingLen, uiHelper::Fixture)
 {
     LOADER.initResourceFolders();
-    BOOST_TEST(LOADER.LoadFonts());
+    {
+        rttr::test::LogAccessor logAcc;
+        BOOST_TEST(LOADER.LoadFonts());
+        logAcc.clearLog();
+    }
     const auto& font = *SmallFont;
     std::string input = "a\naa\naaa\naaaa\naaaaa\naa";
     auto output = std::vector<std::string>{"a", "aa", "aaa", "aaaa", "aaaa", "a", "aa"};

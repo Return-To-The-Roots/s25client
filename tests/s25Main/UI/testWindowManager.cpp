@@ -7,6 +7,7 @@
 #include "desktops/Desktop.h"
 #include "helpers/containerUtils.h"
 #include "ingameWindows/IngameWindow.h"
+#include "ingameWindows/TransmitSettingsIgwAdapter.h"
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "gameData/const_gui_ids.h"
@@ -39,7 +40,7 @@ MOCK_BASE_CLASS(TestDesktop, Desktop)
 };
 /* clang-format on */
 
-struct WMFixture
+struct WMFixture : mock::cleanup
 {
     MockupVideoDriver* video;
     TestDesktop* dsk;
@@ -87,6 +88,7 @@ BOOST_FIXTURE_TEST_CASE(LeftClick, WMFixture)
     video->tickCount_ += 3000;
     WINDOWMANAGER.Msg_LeftDown(mc1);
     WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    mock::verify();
 }
 
 BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
@@ -131,6 +133,7 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
     video->tickCount_ += DOUBLE_CLICK_INTERVAL - 1;
     WINDOWMANAGER.Msg_LeftDown(mc2);
     WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    mock::verify();
 }
 
 namespace {
@@ -200,8 +203,10 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
 
     // Close by ID
     WINDOWMANAGER.Close(wnd2->GetID());
+    WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd2);
     BOOST_TEST(WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    mock::verify();
 }
 
 BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
@@ -245,6 +250,7 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
     REQUIRE_WINDOW_ACTIVE(wnd2);
     wnd->Close();
     wnd2->Close();
+    mock::verify();
 }
 
 BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
@@ -299,6 +305,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     REQUIRE_WINDOW_ALIVE(wnd2);
     wnd->Close();
     wnd2->Close();
+    mock::verify();
 }
 
 BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
@@ -349,15 +356,109 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     // proceed
     mock::sequence s;
     for(TestIngameWnd* curWnd : expectedOrder)
+    {
         MOCK_EXPECT(curWnd->Msg_KeyDown).once().in(s).returns(true);
+        MOCK_EXPECT(curWnd->Draw_); // Ignore all draw calls
+    }
     // Way outside any window, should still be handled
     KeyEvent ke{KeyType::Char, 'a', false, false, false};
     for(TestIngameWnd* curWnd : expectedOrder)
     {
         REQUIRE_WINDOW_ACTIVE(curWnd);
         WINDOWMANAGER.Msg_KeyDown(ke);
-        WINDOWMANAGER.Close(curWnd);
+        curWnd->Close();
+        WINDOWMANAGER.Draw();
     }
+    mock::verify();
+}
+
+BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
+{
+    auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+    KeyEvent evEsc{KeyType::Escape, 0, false, false, false};
+    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    WINDOWMANAGER.Draw();
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+    BOOST_TEST(helpers::contains(TestIngameWnd::closed, wnd));
+
+    // Multiple escapes close multiple windows
+    auto* wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wnd3 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    MOCK_EXPECT(wnd1->Draw_).once();
+    WINDOWMANAGER.Draw();
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    BOOST_TEST(helpers::contains(TestIngameWnd::closed, wnd2));
+    BOOST_TEST(helpers::contains(TestIngameWnd::closed, wnd3));
+}
+
+MOCK_BASE_CLASS(MockSettingsWnd, TransmitSettingsIgwAdapter)
+{
+    static int activeWnds;
+    MockSettingsWnd(unsigned id)
+        : TransmitSettingsIgwAdapter(id, IngameWindow::posCenter, Extent(256, 256), "", nullptr)
+    {
+        activeWnds++;
+    }
+    ~MockSettingsWnd() { activeWnds--; }
+    MOCK_NON_CONST_METHOD(UpdateSettings, 0); // LCOV_EXCL_LINE
+    MOCK_NON_CONST_METHOD(TransmitSettings, 0);
+};
+
+int MockSettingsWnd::activeWnds = 0;
+
+BOOST_FIXTURE_TEST_CASE(TestTransmitSettingsAdapter, uiHelper::Fixture)
+{
+    auto* wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
+    BOOST_TEST_REQUIRE(wnd);
+    {
+        // Save settings on close via Wnd method
+        MOCK_EXPECT(wnd->TransmitSettings).once();
+        wnd->Close();
+        WINDOWMANAGER.Draw();
+        BOOST_TEST(MockSettingsWnd::activeWnds == 0);
+    }
+    {
+        // Save settings on close via ID
+        wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
+        MOCK_EXPECT(wnd->TransmitSettings).once();
+        WINDOWMANAGER.Close(CGI_TOOLS);
+        WINDOWMANAGER.Draw();
+        BOOST_TEST(MockSettingsWnd::activeWnds == 0);
+    }
+    {
+        // Save settings on closeNow
+        wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
+        MOCK_EXPECT(wnd->TransmitSettings).once();
+        WINDOWMANAGER.CloseNow(wnd);
+        BOOST_TEST(MockSettingsWnd::activeWnds == 0);
+    }
+    {
+        // Save settings on ESC
+        wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+        MOCK_EXPECT(wnd->TransmitSettings).once();
+        KeyEvent ev{KeyType::Escape, 0, false, false, false};
+        WINDOWMANAGER.Msg_KeyDown(ev);
+        WINDOWMANAGER.Draw();
+        BOOST_TEST(MockSettingsWnd::activeWnds == 0);
+        BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+    }
+    {
+        // Save settings on ALT+W
+        wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+        MOCK_EXPECT(wnd->TransmitSettings).once();
+        KeyEvent ev{KeyType::Escape, 'w', false, false, true};
+        WINDOWMANAGER.Msg_KeyDown(ev);
+        WINDOWMANAGER.Draw();
+        BOOST_TEST(MockSettingsWnd::activeWnds == 0);
+        BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+    }
+    mock::verify();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -72,7 +72,8 @@ private:
 public:
     iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos,
              Params params, bool military_buildings);
-    ~iwAction() override;
+
+    void Close() override;
 
     /// Gibt zurück, auf welchen Punkt es sich bezieht
     const MapPoint& GetSelectedPt() const { return selectedPt; }
