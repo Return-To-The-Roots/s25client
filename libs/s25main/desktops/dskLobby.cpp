@@ -154,13 +154,8 @@ void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const boost::optiona
 
             if(boost::lexical_cast<unsigned>(item.c_str()) != 0)
             {
-                if(serverInfoWnd)
-                {
-                    if(serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item))
-                        return; // raus
-
-                    WINDOWMANAGER.Close(serverInfoWnd);
-                }
+                if(serverInfoWnd && serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item))
+                    return; // Already open -> Nothing to do
 
                 serverInfoWnd = &WINDOWMANAGER.ReplaceWindow(
                   std::make_unique<iwLobbyServerInfo>(boost::lexical_cast<unsigned>(item)));

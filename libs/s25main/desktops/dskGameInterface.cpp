@@ -658,7 +658,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         // Bisheriges Actionfenster schließen, falls es eins gab
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
-        WINDOWMANAGER.Close(actionwindow);
+        if(actionwindow)
+            actionwindow->Close();
         VIDEODRIVER.SetMousePos(mc.GetPos());
 
         ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
@@ -1153,7 +1154,7 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
     if(actionwindow)
     {
         if(actionwindow->GetSelectedPt() == pt)
-            WINDOWMANAGER.Close(actionwindow);
+            actionwindow->Close();
     }
 }
 

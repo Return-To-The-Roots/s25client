@@ -376,7 +376,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
     }
 }
 
-iwAction::~iwAction()
+void iwAction::Close()
 {
     if(mousePosAtOpen_.isValid())
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);

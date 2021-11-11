@@ -51,4 +51,14 @@ MockupVideoDriver* GetVideoDriver()
     return video;
 }
 
+Fixture::~Fixture()
+{
+    if(!dynamic_cast<DummyDesktop*>(WINDOWMANAGER.GetCurrentDesktop()) || WINDOWMANAGER.GetTopMostWindow())
+    {
+        // Switch back to new, empty desktop to clean up active windows
+        WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
+        WINDOWMANAGER.Draw();
+    }
+}
+
 } // namespace uiHelper

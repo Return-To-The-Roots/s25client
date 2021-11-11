@@ -79,10 +79,10 @@ public:
     }
     /// Registers a window to be shown after a desktop switch
     IngameWindow* ShowAfterSwitch(std::unique_ptr<IngameWindow> window);
-    /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
-    void Close(const IngameWindow* window);
     /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
     void Close(unsigned id);
+    /// Close the window right away and free it.
+    void CloseNow(IngameWindow* window);
     /// merkt einen Desktop zum Wechsel vor.
     Desktop* Switch(std::unique_ptr<Desktop> desktop);
     /// Verarbeitung des Drückens der Linken Maustaste.
@@ -111,7 +111,7 @@ public:
     void Msg_ScreenResize(const Extent& newSize);
 
     /// Return the window currently on the top (probably active)
-    const IngameWindow* GetTopMostWindow() const;
+    IngameWindow* GetTopMostWindow() const;
     IngameWindow* FindWindowAtPos(const Position& pos) const;
     IngameWindow* FindNonModalWindow(unsigned id) const;
 
@@ -133,6 +133,8 @@ private:
     void DoDesktopSwitch();
     /// Actually close all ingame windows marked for closing
     void CloseMarkedIngameWnds();
+    /// Close the window and remove it from the window list
+    void DoClose(IngameWindow* window);
 
     Cursor cursor_;
     std::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop
