@@ -294,6 +294,8 @@ void noFlag::Capture(const unsigned char new_owner)
     }
     wares.clear();
 
+    // Unregister this flag in the players flags
+    world->GetPlayer(player).FlagDestroyed(this);
     this->player = new_owner;
 }
 

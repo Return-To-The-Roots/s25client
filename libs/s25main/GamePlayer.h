@@ -222,7 +222,7 @@ public:
         RTTR_Assert(IsFlagWorker(flagworker));
         flagworkers.remove(flagworker);
     }
-    bool IsFlagWorker(nofFlagWorker* flagworker);
+    bool IsFlagWorker(const nofFlagWorker* flagworker);
 
     /// Wird aufgerufen, wenn eine Flagge abgerissen wurde, damit das den Flaggen-Arbeitern gesagt werden kann
     void FlagDestroyed(noFlag* flag);
