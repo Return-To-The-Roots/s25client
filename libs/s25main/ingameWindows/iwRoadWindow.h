@@ -16,7 +16,6 @@ private:
 
 public:
     iwRoadWindow(GameInterface& gi, bool flagpossible, const Position& mousePos);
-    ~iwRoadWindow() override;
 
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;

@@ -12,9 +12,8 @@
 #include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE(IngameWnd)
+BOOST_FIXTURE_TEST_CASE(IngameWnd, uiHelper::Fixture)
 {
-    uiHelper::initGUITests();
     iwHelp wnd("Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
     const Extent oldSize = wnd.GetSize();
     BOOST_TEST_REQUIRE(oldSize.x > 50u);
@@ -35,7 +34,7 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MountainDistance)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount)
 // LCOV_EXCL_STOP
 
-BOOST_AUTO_TEST_CASE(IwMapGenerator)
+BOOST_FIXTURE_TEST_CASE(IwMapGenerator, uiHelper::Fixture)
 {
     const auto expectedNumPlayers = rttr::test::randomValue(2u, 7u);
     const auto expectedMapType = rttr::test::randomValue<uint8_t>(0, 2);
@@ -47,7 +46,6 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     const auto expectedTrees = rttr::test::randomValue<unsigned short>(0, 100);
     const auto expectedStonePiles = rttr::test::randomValue<unsigned short>(0, 100);
 
-    uiHelper::initGUITests();
     rttr::mapGenerator::MapSettings settings;
     iwMapGenerator wnd(settings);
     wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_PLAYER_NUMBER)->SetSelection(expectedNumPlayers - 2);

@@ -32,11 +32,6 @@ iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, const Position&
     VIDEODRIVER.SetMousePos(defaultBt->GetDrawPos() + DrawPoint(defaultBt->GetSize()) / 2);
 }
 
-iwRoadWindow::~iwRoadWindow()
-{
-    gi.GI_WindowClosed(this);
-}
-
 void iwRoadWindow::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)

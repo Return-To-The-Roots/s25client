@@ -30,8 +30,6 @@ public:
     virtual void GI_Winner(unsigned playerId) = 0;
     virtual void GI_TeamWinner(unsigned playerId) = 0;
 
-    /// An important window was closed (currently iwAction, iwRoad)
-    virtual void GI_WindowClosed(Window* wnd) = 0;
     /// Changes into road building mode
     virtual void GI_StartRoadBuilding(MapPoint startPt, bool waterRoad) = 0;
     /// Cancels the road building mode

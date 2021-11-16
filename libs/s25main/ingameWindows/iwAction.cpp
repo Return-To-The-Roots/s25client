@@ -383,7 +383,6 @@ void iwAction::Close()
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);
-    gi.GI_WindowClosed(this);
 }
 
 void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)

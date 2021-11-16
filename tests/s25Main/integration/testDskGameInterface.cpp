@@ -34,15 +34,16 @@ struct dskGameInterfaceMock : public dskGameInterface
     {}
     void Msg_PaintBefore() override {}
     void Msg_PaintAfter() override {}
+    using dskGameInterface::actionwindow;
 };
 struct GameInterfaceFixture : uiHelper::Fixture
 {
     WorldFixture<CreateEmptyWorld, 1> worldFixture;
-    dskGameInterface* gameDesktop;
+    dskGameInterfaceMock* gameDesktop;
     const GameWorldView* view;
     GameInterfaceFixture()
     {
-        gameDesktop = static_cast<dskGameInterface*>(
+        gameDesktop = static_cast<dskGameInterfaceMock*>(
           WINDOWMANAGER.Switch(std::make_unique<dskGameInterfaceMock>(worldFixture.game)));
         WINDOWMANAGER.Draw();
         view = &gameDesktop->GetView();
@@ -185,6 +186,18 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWithCtrl, GameInterfaceFixture)
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Hand);
     BOOST_TEST_REQUIRE(view->GetOffset() == pos);
     checkNotScrolling(*view);
+}
+
+BOOST_FIXTURE_TEST_CASE(IwActionClose, GameInterfaceFixture)
+{
+    gameDesktop->ShowActionWindow(iwAction::Tabs{}, MapPoint(0, 1), DrawPoint(42, 37), false);
+    WINDOWMANAGER.Draw();
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == gameDesktop->actionwindow);
+    WINDOWMANAGER.GetTopMostWindow()->Close();
+    WINDOWMANAGER.Draw();
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+    BOOST_TEST_REQUIRE(gameDesktop->actionwindow == nullptr);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
