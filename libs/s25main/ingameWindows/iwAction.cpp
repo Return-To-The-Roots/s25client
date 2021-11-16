@@ -378,6 +378,9 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 
 void iwAction::Close()
 {
+    if(ShouldBeClosed())
+        return;
+    IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);
     gi.GI_WindowClosed(this);
