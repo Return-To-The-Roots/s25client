@@ -94,7 +94,8 @@
 ///    include water and fish in geologists resourceFound
 /// 7: Use helpers::push/popContainer (uses var size)
 /// 8: noFlag::Wares converted to static_vector
-static const unsigned currentGameDataVersion = 8;
+/// 9: Drop serialization of node BQ
+static const unsigned currentGameDataVersion = 9;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
