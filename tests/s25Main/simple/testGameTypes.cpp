@@ -173,8 +173,8 @@ BOOST_AUTO_TEST_CASE(CanUseBqWOrks)
     // Harbor spot is a large spot which also allows harbors
     bqAllowed[BuildingQuality::Harbor] = bqAllowed[BuildingQuality::Castle];
     bqAllowed[BuildingQuality::Harbor][BuildingQuality::Harbor] = true;
-    // Mine only allows mine, not even nothing (to simplify the code)
-    bqAllowed[BuildingQuality::Mine][BuildingQuality::Nothing] = false;
+    // Mine only allows mine and flag
+    bqAllowed[BuildingQuality::Mine][BuildingQuality::Flag] = true;
     // Nothing allows nothing, same BQ already set
 
     for(const auto bqIs : helpers::EnumRange<BuildingQuality>{})

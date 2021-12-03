@@ -6,16 +6,16 @@
 
 #include <cstdint>
 
-/// Buildingqualities
+/// Building qualities
 enum class BuildingQuality : uint8_t
 {
     Nothing,
     Flag,
+    Mine,
     Hut,
     House,
     Castle,
-    Mine,
-    Harbor
+    Harbor,
 };
 constexpr auto maxEnumValue(BuildingQuality)
 {
@@ -26,13 +26,9 @@ constexpr auto maxEnumValue(BuildingQuality)
 /// node
 inline bool canUseBq(BuildingQuality bqIs, BuildingQuality bqRequired)
 {
-    // Exact match -> OK
-    if(bqIs == bqRequired)
-        return true;
-    // Harbor spots allows everything but mines
-    if(bqIs == BuildingQuality::Harbor)
-        return bqRequired != BuildingQuality::Mine;
-    // Not a special bq (mine/harbor) and we require less then we have -> OK
-    return static_cast<uint8_t>(bqIs) < static_cast<uint8_t>(BuildingQuality::Mine)
-           && static_cast<uint8_t>(bqRequired) < static_cast<uint8_t>(bqIs);
+    // Mines can only be build at mine spots
+    if(bqRequired == BuildingQuality::Mine)
+        return bqIs == BuildingQuality::Mine;
+    // No mine required and we require at most what we have -> OK (mine is placed above flag!)
+    return bqRequired <= bqIs;
 }

@@ -462,12 +462,25 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
     }
 }
 
+constexpr auto getBqImgs()
+{
+    helpers::EnumArray<unsigned, BuildingQuality> imgs{};
+    imgs[BuildingQuality::Flag] = 50;
+    imgs[BuildingQuality::Hut] = 51;
+    imgs[BuildingQuality::House] = 52;
+    imgs[BuildingQuality::Castle] = 53;
+    imgs[BuildingQuality::Mine] = 54;
+    imgs[BuildingQuality::Harbor] = 55;
+    return imgs;
+}
+
 void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos)
 {
     BuildingQuality bq = gwv.GetBQ(pt);
     if(bq != BuildingQuality::Nothing)
     {
-        auto* bm = LOADER.GetMapTexture(49 + rttr::enum_cast(bq));
+        constexpr auto bqImgs = getBqImgs();
+        glArchivItem_Bitmap* bm = LOADER.GetMapTexture(bqImgs[bq]);
         // Draw building quality icon
         bm->DrawFull(curPos);
         // Show ability to construct military buildings
