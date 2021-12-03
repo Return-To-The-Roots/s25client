@@ -29,6 +29,9 @@ inline bool canUseBq(BuildingQuality bqIs, BuildingQuality bqRequired)
     // Exact match -> OK
     if(bqIs == bqRequired)
         return true;
+    // Harbor spots allows everything but mines
+    if(bqIs == BuildingQuality::Harbor)
+        return bqRequired != BuildingQuality::Mine;
     // Not a special bq (mine/harbor) and we require less then we have -> OK
     return static_cast<uint8_t>(bqIs) < static_cast<uint8_t>(BuildingQuality::Mine)
            && static_cast<uint8_t>(bqRequired) < static_cast<uint8_t>(bqIs);

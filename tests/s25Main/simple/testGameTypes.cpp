@@ -152,4 +152,40 @@ BOOST_AUTO_TEST_CASE(AIResourcesMatchValues)
     BOOST_TEST(true);
 }
 
+BOOST_AUTO_TEST_CASE(CanUseBqWOrks)
+{
+    helpers::EnumArray<helpers::EnumArray<bool, BuildingQuality>, BuildingQuality> bqAllowed{};
+    // Mapping: Is, Wanted
+    for(const auto bq : helpers::EnumRange<BuildingQuality>{})
+    {
+        bqAllowed[bq][bq] = true;                       // Can use same BQ
+        bqAllowed[bq][BuildingQuality::Nothing] = true; // If nothing required, allow
+    }
+    // Small spot
+    bqAllowed[BuildingQuality::Hut][BuildingQuality::Flag] = true;
+    // Medium spot
+    bqAllowed[BuildingQuality::House][BuildingQuality::Flag] = true;
+    bqAllowed[BuildingQuality::House][BuildingQuality::Hut] = true;
+    // Large spot
+    bqAllowed[BuildingQuality::Castle][BuildingQuality::Flag] = true;
+    bqAllowed[BuildingQuality::Castle][BuildingQuality::Hut] = true;
+    bqAllowed[BuildingQuality::Castle][BuildingQuality::House] = true;
+    // Harbor spot is a large spot which also allows harbors
+    bqAllowed[BuildingQuality::Harbor] = bqAllowed[BuildingQuality::Castle];
+    bqAllowed[BuildingQuality::Harbor][BuildingQuality::Harbor] = true;
+    // Mine only allows mine, not even nothing (to simplify the code)
+    bqAllowed[BuildingQuality::Mine][BuildingQuality::Nothing] = false;
+    // Nothing allows nothing, same BQ already set
+
+    for(const auto bqIs : helpers::EnumRange<BuildingQuality>{})
+        BOOST_TEST_CONTEXT("bqIs=" << bqIs)
+        {
+            for(const auto bqWanted : helpers::EnumRange<BuildingQuality>{})
+                BOOST_TEST_CONTEXT("bqWanted=" << bqWanted)
+                {
+                    BOOST_TEST(canUseBq(bqIs, bqWanted) == bqAllowed[bqIs][bqWanted]);
+                }
+        }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
