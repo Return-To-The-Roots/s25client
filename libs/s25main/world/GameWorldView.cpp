@@ -480,7 +480,7 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
     if(bq != BuildingQuality::Nothing)
     {
         constexpr auto bqImgs = getBqImgs();
-        glArchivItem_Bitmap* bm = LOADER.GetMapTexture(bqImgs[bq]);
+        auto* bm = LOADER.GetMapTexture(bqImgs[bq]);
         // Draw building quality icon
         bm->DrawFull(curPos);
         // Show ability to construct military buildings
