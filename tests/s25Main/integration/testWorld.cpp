@@ -107,12 +107,12 @@ inline auto convertS2Bq(const uint8_t s2Bq)
         case 0: return BuildingQuality::Nothing;
         case 1: return BuildingQuality::Flag;
         case 2: return BuildingQuality::Hut;
-        case 3: return BuildingQuality::House;
+        case 3: return BuildingQuality::House; // LCOV_EXCL_LINE
         case 4: return BuildingQuality::Castle;
         case 5: return BuildingQuality::Mine;
     }
-    BOOST_TEST_FAIL("Unknown value");
-    return BuildingQuality::Nothing;
+    BOOST_TEST_FAIL("Unknown value"); // LCOV_EXCL_LINE
+    return BuildingQuality::Nothing;  // LCOV_EXCL_LINE
 }
 
 BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
