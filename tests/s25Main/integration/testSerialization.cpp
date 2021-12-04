@@ -227,6 +227,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     const MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
     auto* usualBld = static_cast<nobUsual*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Bakery, usualBldPos, 0, Nation::Vikings));
+    world.RecalcBQAroundPointBig(usualBldPos);
     world.BuildRoad(0, false, hqFlag->GetPos(), std::vector<Direction>(3, Direction::East));
     usualBld->is_working = true;
 
@@ -236,6 +237,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
         const auto pt = world.MakeMapPoint(hqPos + offset);
         BOOST_TEST_REQUIRE(!world.GetNode(pt).obj);
         world.SetNO(pt, new noFire(pt, false));
+        world.RecalcBQAroundPoint(pt);
     }
 
     for(unsigned i = 0; i < 100; i++)
@@ -312,9 +314,10 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
             Game game(save.ggs, loadSave.start_gf, players);
-            const World& newWorld = game.world_;
             MockLocalGameState localGameState;
             save.sgd.ReadSnapshot(game, localGameState);
+            game.world_.InitAfterLoad();
+            const World& newWorld = game.world_;
             auto& newEm = static_cast<TestEventManager&>(game.world_.GetEvMgr());
 
             BOOST_TEST_REQUIRE(newWorld.GetSize() == world.GetSize());
@@ -332,22 +335,23 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 BOOST_TEST_REQUIRE(worldEvs[j]->id == loadEvs[j]->id);
             }
             RTTR_FOREACH_PT(MapPoint, world.GetSize())
-            {
-                const MapNode& worldNode = world.GetNode(pt);
-                const MapNode& loadNode = newWorld.GetNode(pt);
-                BOOST_TEST_REQUIRE(loadNode.roads == worldNode.roads, boost::test_tools::per_element());
-                BOOST_TEST_REQUIRE(loadNode.altitude == worldNode.altitude);
-                BOOST_TEST_REQUIRE(loadNode.shadow == worldNode.shadow);
-                BOOST_TEST_REQUIRE(loadNode.t1 == worldNode.t1);
-                BOOST_TEST_REQUIRE(loadNode.t2 == worldNode.t2);
-                BOOST_TEST_REQUIRE(loadNode.resources == worldNode.resources);
-                BOOST_TEST_REQUIRE(loadNode.reserved == worldNode.reserved);
-                BOOST_TEST_REQUIRE(loadNode.owner == worldNode.owner);
-                BOOST_TEST_REQUIRE(loadNode.bq == worldNode.bq);
-                BOOST_TEST_REQUIRE(loadNode.seaId == worldNode.seaId);
-                BOOST_TEST_REQUIRE(loadNode.harborId == worldNode.harborId);
-                BOOST_TEST_REQUIRE((loadNode.obj != nullptr) == (worldNode.obj != nullptr));
-            }
+                BOOST_TEST_CONTEXT("Point " << pt)
+                {
+                    const MapNode& worldNode = world.GetNode(pt);
+                    const MapNode& loadNode = newWorld.GetNode(pt);
+                    BOOST_TEST_REQUIRE(loadNode.roads == worldNode.roads, boost::test_tools::per_element());
+                    BOOST_TEST_REQUIRE(loadNode.altitude == worldNode.altitude);
+                    BOOST_TEST_REQUIRE(loadNode.shadow == worldNode.shadow);
+                    BOOST_TEST_REQUIRE(loadNode.t1 == worldNode.t1);
+                    BOOST_TEST_REQUIRE(loadNode.t2 == worldNode.t2);
+                    BOOST_TEST_REQUIRE(loadNode.resources == worldNode.resources);
+                    BOOST_TEST_REQUIRE(loadNode.reserved == worldNode.reserved);
+                    BOOST_TEST_REQUIRE(loadNode.owner == worldNode.owner);
+                    BOOST_TEST_REQUIRE(loadNode.bq == worldNode.bq);
+                    BOOST_TEST_REQUIRE(loadNode.seaId == worldNode.seaId);
+                    BOOST_TEST_REQUIRE(loadNode.harborId == worldNode.harborId);
+                    BOOST_TEST_REQUIRE((loadNode.obj != nullptr) == (worldNode.obj != nullptr));
+                }
             const auto* newUsual = newWorld.GetSpecObj<nobUsual>(usualBldPos);
             BOOST_TEST_REQUIRE(newUsual);
             BOOST_TEST_REQUIRE(newUsual->is_working == usualBld->is_working);

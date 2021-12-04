@@ -17,6 +17,7 @@
 #include "gameTypes/GameTypesOutput.h"
 #include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
+#include "rttr/test/LogAccessor.hpp"
 #include "s25util/tmpFile.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>
@@ -99,6 +100,21 @@ BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedWithS2MapFixture)
     }
 }
 
+inline auto convertS2Bq(const uint8_t s2Bq)
+{
+    switch(s2Bq & 0x7)
+    {
+        case 0: return BuildingQuality::Nothing;
+        case 1: return BuildingQuality::Flag;
+        case 2: return BuildingQuality::Hut;
+        case 3: return BuildingQuality::House;
+        case 4: return BuildingQuality::Castle;
+        case 5: return BuildingQuality::Mine;
+    }
+    BOOST_TEST_FAIL("Unknown value");
+    return BuildingQuality::Nothing;
+}
+
 BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
 {
     using libsiedler2::MapLayer;
@@ -108,10 +124,10 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
     {
         BOOST_TEST_INFO("pt " << pt);
         const auto original = worldCreator.map.getMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y);
-        BOOST_TEST_INFO(" original: " << original);
-        auto s2BQ = BuildingQuality(original & 0x7);
+        BOOST_TEST_INFO(" original: " << static_cast<unsigned>(original));
+
         BuildingQuality bq = world.GetNode(pt).bq;
-        BOOST_TEST(bq == s2BQ);
+        BOOST_TEST(bq == convertS2Bq(original));
     }
 }
 
@@ -238,8 +254,12 @@ BOOST_FIXTURE_TEST_CASE(LoadLua, WorldFixture<UninitializedWorldCreator>)
     TmpFile invalidLuaFile(".lua");
     invalidLuaFile.getStream() << "-- No getRequiredLuaVersion\n";
     invalidLuaFile.close();
-    BOOST_TEST_REQUIRE(!loader.LoadLuaScript(*game, lgs, invalidLuaFile.filePath));
-    BOOST_TEST(!world.HasLua());
+    {
+        rttr::test::LogAccessor logAcc;
+        BOOST_TEST_REQUIRE(!loader.LoadLuaScript(*game, lgs, invalidLuaFile.filePath));
+        BOOST_TEST(!world.HasLua());
+        RTTR_REQUIRE_LOG_CONTAINS("getRequiredLuaVersion()", false); // Should show a warning
+    }
 
     TmpFile validLuaFile(".lua");
     validLuaFile.getStream() << "function getRequiredLuaVersion()\n return " << LuaInterfaceGameBase::GetVersion()
