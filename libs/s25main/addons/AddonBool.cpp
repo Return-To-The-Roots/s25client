@@ -25,6 +25,8 @@ AddonBool::Gui::Gui(const Addon& addon, Window& window, bool readonly) : AddonGu
 {
     DrawPoint cbPos(430, 0);
     window.AddCheckBox(2, cbPos, Extent(220, 20), TextureColor::Grey, _("Use"), NormalFont, readonly);
+    if(readonly)
+        window.AddImage(3, cbPos - DrawPoint(1, 0), LOADER.GetImageN("io_new", 14), _("Locked"));
 }
 
 void AddonBool::Gui::setStatus(Window& window, unsigned status)
