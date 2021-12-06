@@ -52,7 +52,7 @@ const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_W
   {Job::Woodcutter, GoodType::Wood},
   {Job::Fisher, GoodType::Fish},
   {Job::Stonemason, GoodType::Stones},
-  {Job::Forester}, // Produces trees
+  {Job::Forester, GoodType::Nothing}, // Produces trees
   {Job::Butcher, GoodType::Meat, WaresNeeded(GoodType::Ham)},
   {Job::Hunter, GoodType::Meat},
   {Job::Brewer, GoodType::Beer, WaresNeeded(GoodType::Grain, GoodType::Water)},

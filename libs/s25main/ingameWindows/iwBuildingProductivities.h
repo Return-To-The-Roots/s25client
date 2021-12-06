@@ -7,23 +7,22 @@
 #include "IngameWindow.h"
 #include "helpers/EnumArray.h"
 #include "gameTypes/BuildingType.h"
+#include <array>
 
 class GamePlayer;
 
-/// Fenster, welches die Anzahl aller Gebäude und der Baustellen auflistet
 class iwBuildingProductivities : public IngameWindow
 {
     const GamePlayer& player;
-    /// Prozentzahlen der einzelnen Gebäude
     helpers::EnumArray<uint16_t, BuildingType> percents;
 
 public:
+    // Icons shown (in this order)
+    static const std::array<BuildingType, 24> icons;
+
     iwBuildingProductivities(const GamePlayer& player);
 
 private:
-    /// Aktualisieren der Prozente
     void UpdatePercents();
-
-    /// Produktivitäts-Progressbars aktualisieren
     void Msg_PaintAfter() override;
 };

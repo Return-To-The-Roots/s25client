@@ -20,6 +20,7 @@ class GameEvent;
 // Gewöhnliches Gebäude mit einem Arbeiter und Waren
 class nobUsual : public noBuilding
 {
+protected:
     /// Der Typ, der hier arbeitet
     nofBuildingWorker* worker;
     /// Produktivität
@@ -45,11 +46,12 @@ class nobUsual : public noBuilding
     /// Did we notify the player that we are out of resources?
     bool outOfRessourcesMsgSent;
 
-protected:
     friend class SerializedGameData;
     friend class BuildingFactory;
     nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation);
     nobUsual(SerializedGameData& sgd, unsigned obj_id);
+
+    void DestroyBuilding() override;
 
 public:
     /// Wird gerade gearbeitet oder nicht?
@@ -57,10 +59,6 @@ public:
 
     ~nobUsual() override;
 
-protected:
-    void DestroyBuilding() override;
-
-public:
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NobUsual; }
