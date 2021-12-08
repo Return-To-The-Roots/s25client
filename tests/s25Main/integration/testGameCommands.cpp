@@ -771,17 +771,17 @@ BOOST_AUTO_TEST_CASE(InventorySettingType)
     // Test all 3 single types
     setting = EInventorySetting::Stop;
     BOOST_TEST_REQUIRE(setting.IsSet(EInventorySetting::Stop));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::Send));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::Collect));
+    BOOST_TEST(!setting.IsSet(EInventorySetting::Send));
+    BOOST_TEST(!setting.IsSet(EInventorySetting::Collect));
 
     setting = EInventorySetting::Send;
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::Stop));
+    BOOST_TEST(!setting.IsSet(EInventorySetting::Stop));
     BOOST_TEST_REQUIRE(setting.IsSet(EInventorySetting::Send));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::Collect));
+    BOOST_TEST(!setting.IsSet(EInventorySetting::Collect));
 
     setting = EInventorySetting::Collect;
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::Stop));
-    BOOST_CHECK(!setting.IsSet(EInventorySetting::Send));
+    BOOST_TEST(!setting.IsSet(EInventorySetting::Stop));
+    BOOST_TEST(!setting.IsSet(EInventorySetting::Send));
     BOOST_TEST_REQUIRE(setting.IsSet(EInventorySetting::Collect));
 
     // Reset and test toggle
