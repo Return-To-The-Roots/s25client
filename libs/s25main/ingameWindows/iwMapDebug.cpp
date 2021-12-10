@@ -152,7 +152,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
 
     ctrlCheck* cbShowCoords = AddCheckBox(ID_cbShowCoordinates, DrawPoint(15, 25), Extent(200, 20), TextureColor::Grey,
                                           _("Show coordinates"), NormalFont);
-    cbShowCoords->SetCheck(true);
+    cbShowCoords->setChecked(true);
     ctrlComboBox* cbCheckEvents =
       AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TextureColor::Grey, NormalFont, 100);
     cbCheckEvents->AddString(_("BQ check disabled"));
@@ -198,7 +198,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         SetIwSize(iwSize);
     }
 
-    printer->showCoords = cbShowCoords->GetCheck();
+    printer->showCoords = cbShowCoords->isChecked();
 }
 
 iwMapDebug::~iwMapDebug()

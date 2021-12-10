@@ -17,6 +17,8 @@ public:
 
     void Resize(const Extent& newSize) override;
 
+    bool isReadOnly() const { return readonly; }
+
     void AddString(const std::string& text);
     void DeleteAllItems();
 

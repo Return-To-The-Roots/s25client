@@ -849,11 +849,11 @@ void dskGameLobby::UpdateGGS()
     // Aufklärung
     ggs.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection().get());
     // Teams gesperrt
-    ggs.lockedTeams = GetCtrl<ctrlCheck>(20)->GetCheck();
+    ggs.lockedTeams = GetCtrl<ctrlCheck>(20)->isChecked();
     // Team sicht
-    ggs.teamView = GetCtrl<ctrlCheck>(19)->GetCheck();
+    ggs.teamView = GetCtrl<ctrlCheck>(19)->isChecked();
     // random locations
-    ggs.randomStartPosition = GetCtrl<ctrlCheck>(23)->GetCheck();
+    ggs.randomStartPosition = GetCtrl<ctrlCheck>(23)->isChecked();
 
     // An Server übermitteln
     lobbyHostController->ChangeGlobalGameSettings(ggs);
@@ -870,7 +870,7 @@ void dskGameLobby::ChangeReady(const unsigned player, const bool ready)
 {
     auto* check = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlCheck>(6);
     if(check)
-        check->SetCheck(ready);
+        check->setChecked(ready);
 
     if(player == localPlayerId_)
     {
@@ -989,11 +989,11 @@ void dskGameLobby::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
     // Aufklärung
     GetCtrl<ctrlComboBox>(40)->SetSelection(static_cast<unsigned short>(ggs.exploration));
     // Teams
-    GetCtrl<ctrlCheck>(20)->SetCheck(ggs.lockedTeams);
+    GetCtrl<ctrlCheck>(20)->setChecked(ggs.lockedTeams);
     // Team-Sicht
-    GetCtrl<ctrlCheck>(19)->SetCheck(ggs.teamView);
+    GetCtrl<ctrlCheck>(19)->setChecked(ggs.teamView);
     // random location
-    GetCtrl<ctrlCheck>(23)->SetCheck(ggs.randomStartPosition);
+    GetCtrl<ctrlCheck>(23)->setChecked(ggs.randomStartPosition);
 
     SetPlayerReady(localPlayerId_, false);
 }

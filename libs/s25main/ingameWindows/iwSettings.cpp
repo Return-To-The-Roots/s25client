@@ -22,7 +22,7 @@ iwSettings::iwSettings()
     AddText(46, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddText(47, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddCheckBox(4, DrawPoint(200, 124), Extent(150, 26), TextureColor::Grey, _("Statistics Scale"), NormalFont, false);
-    GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
+    GetCtrl<ctrlCheck>(4)->setChecked(SETTINGS.ingame.scale_statistics);
 
     // "Vollbild"
     ctrlOptionGroup* optiongroup = AddOptionGroup(3, GroupSelectType::Check);

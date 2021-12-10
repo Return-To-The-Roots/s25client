@@ -33,12 +33,12 @@ void AddonBool::Gui::setStatus(Window& window, unsigned status)
 {
     auto* cb = window.GetCtrl<ctrlCheck>(2);
     RTTR_Assert(cb);
-    cb->SetCheck(status != 0);
+    cb->setChecked(status != 0);
 }
 
 unsigned AddonBool::Gui::getStatus(const Window& window)
 {
     const auto* cb = window.GetCtrl<ctrlCheck>(2);
     RTTR_Assert(cb);
-    return cb->GetCheck() ? 1 : 0;
+    return cb->isChecked() ? 1 : 0;
 }
