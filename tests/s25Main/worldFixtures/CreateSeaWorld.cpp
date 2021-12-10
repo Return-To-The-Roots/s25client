@@ -41,7 +41,7 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
             }
         }
     }
-    return false;
+    return false; // LCOV_EXCL_LINE
 }
 } // namespace
 
@@ -81,14 +81,21 @@ bool CreateSeaWorld::operator()(GameWorld& world) const
      * WWWWWWWWWWWWWWWWWWWWWWW  Height of water: Offset
      * WWWWWWWWWWWWWWWWWWWWWWW
      */
+    const auto minMapSide = std::min(size_.x, size_.y);
     // Init some land stripes of size 15 (a bit less than the HQ radius)
-    const MapCoord offset = 7;
-    const MapCoord landSize = 15;
+    MapCoord offset = 7;
+    MapCoord landSize = 15;
     // We need the offset at each side, the land on each side
     // and at least the same amount of water between the land
-    const MapCoord minSize = landSize * 3 + offset * 2;
-    if(size_.x < minSize || size_.y < minSize)
-        throw std::runtime_error("World to small"); // LCOV_EXCL_LINE
+    MapCoord minSize = landSize * 3 + offset * 2;
+    if(minMapSide < minSize)
+    {
+        offset /= 2;
+        landSize /= 2;
+        minSize = landSize * 3 + offset * 2;
+        if(minMapSide < minSize)
+            throw std::runtime_error("World to small"); // LCOV_EXCL_LINE
+    }
     t = DescIdx<TerrainDesc>(0);
     for(; t.value < desc.terrain.size(); t.value++)
     {
@@ -125,28 +132,23 @@ bool CreateSeaWorld::operator()(GameWorld& world) const
     }
 
     // Place HQs at top, left, right, bottom
-    std::vector<MapPoint> hqPositions;
-    hqPositions.push_back(MapPoint(size_.x / 2, offset + landSize / 2));
-    hqPositions.push_back(MapPoint(offset + landSize / 2, size_.y / 2));
-    hqPositions.push_back(MapPoint(size_.x - offset - landSize / 2, size_.y / 2));
-    hqPositions.push_back(MapPoint(size_.x / 2, size_.y - offset - landSize / 2));
+    std::vector<MapPoint> hqPositions{
+      MapPoint(size_.x / 2, offset + landSize / 2), MapPoint(offset + landSize / 2, size_.y / 2),
+      MapPoint(size_.x - offset - landSize / 2, size_.y / 2), MapPoint(size_.x / 2, size_.y - offset - landSize / 2)};
 
     std::vector<MapPoint> harbors;
-    // Place harbors
-    for(MapPoint pt : hqPositions)
+    // Place harbors (top HQ)
+    BOOST_TEST_REQUIRE(PlaceHarbor(hqPositions[0] - MapPoint(0, landSize / 2), world, harbors));
+    BOOST_TEST_REQUIRE(PlaceHarbor(hqPositions[0] + MapPoint(0, landSize / 2), world, harbors));
+    // Place harbors (left&right HQs)
+    for(MapPoint pt : {hqPositions[1], hqPositions[2]})
     {
-        unsigned harborsPlaced = 0;
-        if(PlaceHarbor(pt - MapPoint(landSize / 2, 0), world, harbors))
-            ++harborsPlaced;
-        if(PlaceHarbor(pt + MapPoint(landSize / 2, 0), world, harbors))
-            ++harborsPlaced;
-        if(PlaceHarbor(pt - MapPoint(0, landSize / 2), world, harbors))
-            ++harborsPlaced;
-        if(PlaceHarbor(pt + MapPoint(0, landSize / 2), world, harbors))
-            ++harborsPlaced;
-        // Exactly 2 harbors should be placed per HQ (left and right or above and below)
-        RTTR_Assert(harborsPlaced == 2);
+        BOOST_TEST_REQUIRE(PlaceHarbor(pt - MapPoint(landSize / 2, 0), world, harbors));
+        BOOST_TEST_REQUIRE(PlaceHarbor(pt + MapPoint(landSize / 2, 0), world, harbors));
     }
+    // Place harbors (bottom HQ)
+    BOOST_TEST_REQUIRE(PlaceHarbor(hqPositions[3] - MapPoint(0, landSize / 2), world, harbors));
+    BOOST_TEST_REQUIRE(PlaceHarbor(hqPositions[3] + MapPoint(0, landSize / 2), world, harbors));
 
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
 

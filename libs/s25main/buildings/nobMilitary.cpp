@@ -360,7 +360,8 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
         }
     }
     // check for harbor points
-    if(frontier_distance <= FrontierDistance::Mid && world->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
+    if(frontier_distance <= FrontierDistance::Mid && world->GetGGS().isEnabled(AddonId::SEA_ATTACK)
+       && world->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
         frontier_distance = FrontierDistance::Harbor;
 
     // send troops

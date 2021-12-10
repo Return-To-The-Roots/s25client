@@ -616,7 +616,7 @@ GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, cons
 {
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers;
     // sea attack abgeschaltet per addon?
-    if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
+    if(!GetGGS().isEnabled(AddonId::SEA_ATTACK))
         return attackers;
     // Do we have an attackble military building?
     const auto* milBld = GetSpecObj<nobBaseMilitary>(pt);
