@@ -5,6 +5,7 @@
 #include "SavedFile.h"
 #include "BasePlayerInfo.h"
 #include "RTTR_Version.h"
+#include "enum_cast.hpp"
 #include "libendian/ConvertEndianess.h"
 #include "s25util/BinaryFile.h"
 #include "s25util/Serializer.h"
@@ -131,7 +132,15 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     const unsigned playerCt = ser.PopUnsignedChar();
     players.reserve(playerCt);
     for(unsigned i = 0; i < playerCt; i++)
-        AddPlayer(BasePlayerInfo(ser, true));
+    {
+        BasePlayerInfo player(ser, true);
+        // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
+        if(player.team > Team::Team4)
+            player.team = Team(rttr::enum_cast(player.team) - 3); // Was random team 2-4
+        else if(player.team == Team::Random)
+            player.team = Team::Team1; // Was random team 1
+        AddPlayer(player);
+    }
 }
 
 /**

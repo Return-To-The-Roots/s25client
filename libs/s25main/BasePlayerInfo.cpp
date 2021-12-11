@@ -24,16 +24,7 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
         name = ser.PopLongString();
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
-        // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
-        auto tmpTeam = ser.Pop<uint8_t>();
-        if(tmpTeam > static_cast<uint8_t>(Team::Team4))
-            tmpTeam -= 3; // Was random team 2-4
-        else if(tmpTeam > helpers::MaxEnumValue_v<Team>)
-            throw helpers::makeOutOfRange(tmpTeam, helpers::MaxEnumValue_v<Team>);
-        team = Team(tmpTeam);
-        if(team == Team::Random)
-            team = Team::Team1; // Was random team 1
-        // team = helpers::popEnum<Team>(ser);
+        team = helpers::popEnum<Team>(ser);
     }
 }
 
