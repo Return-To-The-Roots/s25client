@@ -7,9 +7,10 @@
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/PlayerState.h"
 #include "rttr/test/random.hpp"
+#include "s25util/boostTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 
-bool operator==(const JoinPlayerInfo& lhs, const JoinPlayerInfo& rhs)
+static bool operator==(const JoinPlayerInfo& lhs, const JoinPlayerInfo& rhs)
 {
     const auto getMembers = [](const JoinPlayerInfo& info) {
         return std::tie(info.ps, info.aiInfo, info.name, info.name, info.color, info.team, info.isHost, info.ping,
@@ -21,7 +22,6 @@ bool operator==(const JoinPlayerInfo& lhs, const JoinPlayerInfo& rhs)
 // LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AI::Info)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(JoinPlayerInfo)
-BOOST_TEST_DONT_PRINT_LOG_VALUE(std::unique_ptr<GameMessage>)
 
 template<typename T>
 static std::enable_if_t<std::is_enum<T>::value, std::ostream&> operator<<(std::ostream& os, T enumVal)
