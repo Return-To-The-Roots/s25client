@@ -5,10 +5,14 @@
 #pragma once
 
 // Servertypen
-enum class ServerType
+enum class ServerType : uint16_t
 {
     Lobby,
     Direct,
     Local,
     LAN
 };
+constexpr auto maxEnumValue(ServerType)
+{
+    return ServerType::LAN;
+}
