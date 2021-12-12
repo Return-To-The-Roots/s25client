@@ -8,6 +8,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{format('tests-{0}:{1}', github.repository, github.ref)}}
+  cancel-in-progress: true
+
 env:
   BOOST_VERSION: 1.69.0
   ADDITIONAL_CMAKE_FLAGS: -DRTTR_ENABLE_BENCHMARKS=ON
