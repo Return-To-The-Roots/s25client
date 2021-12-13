@@ -343,6 +343,47 @@ void Loader::LoadDummyGUIFiles()
     }
 }
 
+void Loader::LoadDummyMapFiles()
+{
+    libsiedler2::Archiv& map = files_["map_0_z"].archive;
+    if(!map.empty())
+        return;
+    const auto pushRange = [&map](unsigned from, unsigned to) {
+        map.alloc_inc(to - map.size() + 1);
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
+        for(unsigned i = from; i <= to; i++)
+        {
+            auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
+            bmp->create(buffer);
+            map.set(i, std::move(bmp));
+        };
+    };
+    map_gfx = &map;
+
+    // Some ID ranges as found in map_0_z.lst
+    pushRange(20, 23);
+    pushRange(40, 46);
+    pushRange(50, 55);
+    pushRange(59, 67);
+    pushRange(200, 282);
+    pushRange(290, 334);
+    pushRange(350, 432);
+    pushRange(440, 484);
+    pushRange(500, 527);
+
+    for(int j = 0; j <= 5; j++)
+    {
+        libsiedler2::Archiv& bobs = files_[ResourceId("mis" + std::to_string(j) + "bobs")].archive;
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
+        for(unsigned i = 0; i <= 10; i++)
+        {
+            auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
+            bmp->create(buffer);
+            bobs.push(std::move(bmp));
+        }
+    }
+}
+
 namespace {
 struct NationResourcesSource
 {

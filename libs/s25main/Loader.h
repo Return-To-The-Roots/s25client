@@ -85,6 +85,7 @@ public:
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
+    void LoadDummyMapFiles();
     /// Load a file and save it into the loader repo
     bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
