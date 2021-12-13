@@ -5,9 +5,10 @@
 #pragma once
 
 #include "DrawPoint.h"
+#include "ITexture.h"
 #include "libsiedler2/ArchivItem_BitmapBase.h"
 
-class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase //-V690
+class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase, public ITexture //-V690
 {
 public:
     glArchivItem_BitmapBase();
@@ -23,8 +24,8 @@ public:
     virtual void setInterpolateTexture(bool interpolate);
 
     /// Return the "Null point"
-    DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
-    Extent GetSize() const { return Extent(getWidth(), getHeight()); }
+    DrawPoint GetOrigin() const override { return DrawPoint(nx_, ny_); }
+    Extent GetSize() const override { return Extent(getWidth(), getHeight()); }
     Extent GetTexSize() const;
 
 private:

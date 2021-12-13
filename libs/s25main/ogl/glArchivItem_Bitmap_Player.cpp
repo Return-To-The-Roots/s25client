@@ -32,6 +32,11 @@ void glArchivItem_Bitmap_Player::DrawFull(const DrawPoint& dst, unsigned color, 
     DrawFull(Rect(dst, GetSize()), color, player_color);
 }
 
+void glArchivItem_Bitmap_Player::DrawFull(const Position& dstPos, unsigned color)
+{
+    DrawFull(dstPos, color, COLOR_WHITE);
+}
+
 void glArchivItem_Bitmap_Player::drawForPlayer(const DrawPoint& dst, unsigned playerColor)
 {
     DrawFull(dst, COLOR_WHITE, playerColor);

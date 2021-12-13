@@ -12,10 +12,7 @@
 #include "s25util/colors.h"
 
 /// Basisklasse für GL-Bitmapitems.
-class glArchivItem_Bitmap :
-    public virtual libsiedler2::baseArchivItem_Bitmap,
-    public glArchivItem_BitmapBase,
-    public ITexture
+class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase
 {
 public:
     glArchivItem_Bitmap();
@@ -31,9 +28,6 @@ public:
     void DrawPart(const Rect& destArea, unsigned color = COLOR_WHITE);
     /// Draw only percent% of the height of the image
     void DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
-
-    Position GetOrigin() const override { return glArchivItem_BitmapBase::GetOrigin(); }
-    Extent GetSize() const override { return glArchivItem_BitmapBase::GetSize(); }
 
 protected:
     /// Draw the texture.
