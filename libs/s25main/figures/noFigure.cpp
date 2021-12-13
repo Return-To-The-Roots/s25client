@@ -236,7 +236,7 @@ void noFigure::StartWalking(const Direction dir)
 
 void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Direction dir)
 {
-    glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + rttr::enum_cast(dir + 3u) * 8 + anistep);
+    auto* bitmap = LOADER.GetMapTexture(900 + rttr::enum_cast(dir + 3u) * 8 + anistep);
     if(bitmap)
         bitmap->DrawFull(drawPt, COLOR_SHADOW);
 }
@@ -793,9 +793,9 @@ void noFigure::DrawWalking(DrawPoint drawPt)
             drawPt = InterpolateWalkDrawPos(drawPt);
 
             // Esel
-            LOADER.GetMapImageN(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
+            LOADER.GetMapTexture(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
             // Schatten des Esels
-            LOADER.GetMapImageN(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
+            LOADER.GetMapTexture(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
         }
         break;
         case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;

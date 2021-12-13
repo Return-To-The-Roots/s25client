@@ -173,13 +173,13 @@ void nobMilitary::Draw(DrawPoint drawPt)
     {
         const unsigned flagTexture = 3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i);
         LOADER.GetMapPlayerImage(flagTexture)
-          ->DrawFull(drawPt + TROOPS_FLAG_OFFSET[nation][size] + DrawPoint(0, i * 3), COLOR_WHITE,
-                     world->GetPlayer(player).color);
+          ->drawForPlayer(drawPt + TROOPS_FLAG_OFFSET[nation][size] + DrawPoint(0, i * 3),
+                          world->GetPlayer(player).color);
     }
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
     FrontierDistance frontier_distance_tmp = frontier_distance;
-    glArchivItem_Bitmap_Player* bitmap = nullptr;
+    ITexture* bitmap = nullptr;
     unsigned animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
     if(new_built)
     {
@@ -187,19 +187,19 @@ void nobMilitary::Draw(DrawPoint drawPt)
     } else if(frontier_distance_tmp == FrontierDistance::Harbor)
     {
         // todo Hafenflagge
-        bitmap = LOADER.GetPlayerImage("map_new", 3150 + animationFrame);
+        bitmap = LOADER.GetTextureN("map_new", 3150 + animationFrame);
     } else
     {
         if(frontier_distance_tmp == FrontierDistance::Near)
             frontier_distance_tmp = FrontierDistance::Harbor;
-        bitmap = LOADER.GetMapPlayerImage(3150 + rttr::enum_cast(frontier_distance_tmp) * 4 + animationFrame);
+        bitmap = LOADER.GetMapTexture(3150 + rttr::enum_cast(frontier_distance_tmp) * 4 + animationFrame);
     }
     if(bitmap)
         bitmap->DrawFull(drawPt + BORDER_FLAG_OFFSET[nation][size]);
 
     // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(coinsDisabledVirtual)
-        LOADER.GetMapImageN(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
+        LOADER.GetMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 }
 
 void nobMilitary::HandleEvent(const unsigned id)

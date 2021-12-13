@@ -27,9 +27,9 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
     for(unsigned i = 0; i < 5; ++i)
     {
         // Bildhintergrund
-        reserve.AddImage(1 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.GetMapImageN(2298));
+        reserve.AddImage(1 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.GetMapTexture(2298));
         // Rang-Bild
-        reserve.AddImage(6 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.GetMapImageN(2321 + i));
+        reserve.AddImage(6 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.GetMapTexture(2321 + i));
         // Minus-Button
         reserve.AddImageButton(11 + i, DrawPoint(54, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Red1,
                                LOADER.GetImageN("io", 139), _("Less"));

@@ -225,14 +225,14 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
           ->DrawFull(drawPt + FIRE_POS[nation]);
     } else if(nation == Nation::Africans || nation == Nation::Vikings)
     {
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
+        LOADER.GetMapTexture(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
           ->DrawFull(drawPt + FIRE_POS[nation]);
     }
 
     if(nation == Nation::Romans)
     {
         // Zusätzliches Feuer
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
+        LOADER.GetMapTexture(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
           ->DrawFull(drawPt + EXTRAFIRE_POS[nation]);
     }
 
@@ -244,12 +244,12 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
-            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
+            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
               ->DrawFull(boardsPos - DrawPoint(0, i * 4));
         DrawPoint stonesPos = drawPt + STONES_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
-            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
+            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
               ->DrawFull(stonesPos - DrawPoint(0, i * 4));
 
         // Und den Bauarbeiter, falls er schon da ist

@@ -248,7 +248,7 @@ void iwShip::DrawCargo()
             orderedFigures[job]--;
 
             if(job == Job::PackDonkey)
-                LOADER.GetMapImageN(2016)->DrawFull(drawPt);
+                LOADER.GetMapTexture(2016)->DrawFull(drawPt);
             else if(job == Job::BoatCarrier)
                 LOADER.GetBob("carrier")->Draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
                                                drawPt, owner.color);
@@ -279,7 +279,7 @@ void iwShip::DrawCargo()
 
             const auto draw_id = convertShieldToNation(ware, owner.nation);
 
-            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(draw_id))->DrawFull(drawPt);
+            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(draw_id))->DrawFull(drawPt);
             drawPt.x += xStep;
             lineCounter++;
         }

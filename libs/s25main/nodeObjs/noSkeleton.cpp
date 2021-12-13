@@ -42,7 +42,7 @@ noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id)
 
 void noSkeleton::Draw(DrawPoint drawPt)
 {
-    LOADER.GetMapImageN(547 + type)->DrawFull(drawPt);
+    LOADER.GetMapTexture(547 + type)->DrawFull(drawPt);
 }
 
 void noSkeleton::HandleEvent(const unsigned /*id*/)

@@ -117,7 +117,7 @@ void noFlag::Draw(DrawPoint drawPt)
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = wares.size(); i > 0; --i)
     {
-        LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(wares[i - 1]->type))
+        LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(wares[i - 1]->type))
           ->DrawFull(drawPt + WARES_POS[i - 1]);
     }
 }

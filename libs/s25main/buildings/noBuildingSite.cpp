@@ -192,11 +192,11 @@ void noBuildingSite::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint doorPos = drawPt + DrawPoint(GetDoorPointX(), GetDoorPointY());
         for(unsigned char i = 0; i < boards; ++i)
-            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
+            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
               ->DrawFull(doorPos - DrawPoint(5, 10 + i * 4));
         // Steine
         for(unsigned char i = 0; i < stones; ++i)
-            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
+            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
               ->DrawFull(doorPos + DrawPoint(8, -12 - i * 4));
 
         // bis dahin gebautes Haus zeichnen

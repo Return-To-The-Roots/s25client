@@ -119,7 +119,7 @@ void nobUsual::Draw(DrawPoint drawPt)
 
     // Wenn Produktion gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(disable_production_virtual)
-        LOADER.GetMapImageN(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
+        LOADER.GetMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 
     // Rauch zeichnen
 
@@ -128,8 +128,8 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         // Dann Qualm zeichnen (damit Qualm nicht synchron ist, x- und y- Koordinate als Unterscheidung
         LOADER
-          .GetMapImageN(692 + BUILDING_SMOKE_CONSTS[nation][bldType_].type * 8
-                        + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (GetX() + GetY()) * 100))
+          .GetMapTexture(692 + BUILDING_SMOKE_CONSTS[nation][bldType_].type * 8
+                         + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (GetX() + GetY()) * 100))
           ->DrawFull(drawPt + BUILDING_SMOKE_CONSTS[nation][bldType_].offset, 0x99EEEEEE);
     }
 
@@ -169,7 +169,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         {
             unsigned animationFrame = DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(
               DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2) + GetY() * i)];
-            LOADER.GetMapImageN(2180 + animationFrame)->DrawFull(drawPt + DONKEY_OFFSETS[nation][i]);
+            LOADER.GetMapTexture(2180 + animationFrame)->DrawFull(drawPt + DONKEY_OFFSETS[nation][i]);
         }
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
@@ -192,8 +192,8 @@ void nobUsual::Draw(DrawPoint drawPt)
         }};
 
         /// Großes Schwein zeichnen
-        LOADER.GetMapImageN(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][0], COLOR_SHADOW);
-        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))
+        LOADER.GetMapTexture(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][0], COLOR_SHADOW);
+        LOADER.GetMapTexture(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))
           ->DrawFull(drawPt + PIG_POSITIONS[nation][0]);
 
         // Die 4 kleinen Schweinchen, je nach Produktivität
@@ -206,8 +206,8 @@ void nobUsual::Draw(DrawPoint drawPt)
               2, 0, 0, 2, 2, 0, 1, 0, 3, 1, 2, 0, 1, 2, 2, 0, 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0};
             const unsigned short animpos =
               GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
-            LOADER.GetMapImageN(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][i], COLOR_SHADOW);
-            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)
+            LOADER.GetMapTexture(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][i], COLOR_SHADOW);
+            LOADER.GetMapTexture(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)
               ->DrawFull(drawPt + PIG_POSITIONS[nation][i]);
         }
 
@@ -226,7 +226,7 @@ void nobUsual::Draw(DrawPoint drawPt)
             case BuildingType::GoldMine: offset = NUBIAN_MINE_FIRE[3]; break;
             default: RTTR_Assert_Msg(false, "Not a mine");
         }
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
+        LOADER.GetMapTexture(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
           ->DrawFull(drawPt + offset);
     }
 }

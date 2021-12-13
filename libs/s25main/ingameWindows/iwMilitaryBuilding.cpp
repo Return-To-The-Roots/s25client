@@ -33,11 +33,11 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert
-    AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
+    AddImage(0, DrawPoint(28, 39), LOADER.GetMapTexture(2298));
     AddImage(1, DrawPoint(28, 39), LOADER.GetWareTex(GoodType::Sword));
 
     // Schild
-    AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
+    AddImage(2, DrawPoint(196, 39), LOADER.GetMapTexture(2298));
     AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(GoodType::ShieldRomans));
 
     // Hilfe
@@ -75,7 +75,7 @@ void iwMilitaryBuilding::Draw_()
     goldPos += DrawPoint(12, 12);
     for(unsigned short i = 0; i < maxCoinCt; ++i)
     {
-        LOADER.GetMapImageN(2278)->DrawFull(goldPos, (i >= building->GetNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
+        LOADER.GetMapTexture(2278)->DrawFull(goldPos, (i >= building->GetNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
         goldPos.x += 22;
     }
 
@@ -102,7 +102,7 @@ void iwMilitaryBuilding::Draw_()
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
     for(const auto* soldier : soldiers)
     {
-        LOADER.GetMapImageN(2321 + soldier->GetRank())->DrawFull(curTroopsPos);
+        LOADER.GetMapTexture(2321 + soldier->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
     }
 

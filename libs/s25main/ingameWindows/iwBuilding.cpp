@@ -34,7 +34,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Arbeitersymbol
-    AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
+    AddImage(0, DrawPoint(28, 39), LOADER.GetMapTexture(2298));
 
     if(const auto job = BLD_WORK_DESC[building->GetBuildingType()].job)
         AddImage(13, DrawPoint(28, 39), LOADER.GetJobTex(*job));
@@ -46,7 +46,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     const auto producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
     if(producedWare && producedWare != GoodType::Nothing)
     {
-        AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
+        AddImage(2, DrawPoint(196, 39), LOADER.GetMapTexture(2298));
         AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(*producedWare));
     }
 

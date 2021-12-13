@@ -75,7 +75,7 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    glArchivItem_Bitmap *bitmap = nullptr, *shadow = nullptr;
+    ITexture *bitmap = nullptr, *shadow = nullptr;
 
     if((file == 0xFFFF) && (id == 561))
     {
@@ -83,16 +83,16 @@ void noStaticObject::Draw(DrawPoint drawPt)
         return;
     } else if(file == 0xFFFF)
     {
-        bitmap = LOADER.GetMapImageN(id);
-        shadow = LOADER.GetMapImageN(id + 100);
+        bitmap = LOADER.GetMapTexture(id);
+        shadow = LOADER.GetMapTexture(id + 100);
     } else if(file < 7)
     {
         static const std::array<ResourceId, 7> files = {"mis0bobs", "mis1bobs", "mis2bobs",       "mis3bobs",
                                                         "mis4bobs", "mis5bobs", "charburner_bobs"};
-        bitmap = LOADER.GetImageN(files[file], id);
+        bitmap = LOADER.GetTextureN(files[file], id);
         // Use only shadows where available
         if(file < 6)
-            shadow = LOADER.GetImageN(files[file], id + 1);
+            shadow = LOADER.GetTextureN(files[file], id + 1);
     } else
         throw std::runtime_error("Invalid file number for static object");
 

@@ -30,7 +30,7 @@ void ctrlIngameMinimap::Draw_()
     DrawPoint middle_corrected(MakeMapPoint(middlePt, minimap.GetMapSize()));
 
     // Scroll-Auswahl-Bild holen
-    glArchivItem_Bitmap* image = LOADER.GetMapImageN(23);
+    glArchivItem_Bitmap* image = LOADER.GetMapImage(23);
 
     // Position (relativ zum angezeigten Anfang der Karte) berechnen
     DrawPoint pos = middle_corrected * DrawPoint(GetCurMapSize()) / DrawPoint(minimap.GetMapSize()) + DrawPoint(2, 2);
