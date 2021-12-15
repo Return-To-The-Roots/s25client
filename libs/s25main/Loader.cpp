@@ -163,12 +163,12 @@ glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(Nation nation, unsigned
     return checkedCast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr));
 }
 
-glArchivItem_Bitmap* Loader::GetMapImageN(unsigned nr)
+glArchivItem_Bitmap* Loader::GetMapImage(unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap*>(map_gfx->get(nr));
 }
 
-ITexture* Loader::GetMapTexN(unsigned nr)
+ITexture* Loader::GetMapTexture(unsigned nr)
 {
     return convertChecked<ITexture*>(map_gfx->get(nr));
 }
@@ -343,6 +343,47 @@ void Loader::LoadDummyGUIFiles()
     }
 }
 
+void Loader::LoadDummyMapFiles()
+{
+    libsiedler2::Archiv& map = files_["map_0_z"].archive;
+    if(!map.empty())
+        return;
+    const auto pushRange = [&map](unsigned from, unsigned to) {
+        map.alloc_inc(to - map.size() + 1);
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
+        for(unsigned i = from; i <= to; i++)
+        {
+            auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
+            bmp->create(buffer);
+            map.set(i, std::move(bmp));
+        };
+    };
+    map_gfx = &map;
+
+    // Some ID ranges as found in map_0_z.lst
+    pushRange(20, 23);
+    pushRange(40, 46);
+    pushRange(50, 55);
+    pushRange(59, 67);
+    pushRange(200, 282);
+    pushRange(290, 334);
+    pushRange(350, 432);
+    pushRange(440, 484);
+    pushRange(500, 527);
+
+    for(int j = 0; j <= 5; j++)
+    {
+        libsiedler2::Archiv& bobs = files_[ResourceId("mis" + std::to_string(j) + "bobs")].archive;
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
+        for(unsigned i = 0; i <= 10; i++)
+        {
+            auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
+            bmp->create(buffer);
+            bobs.push(std::move(bmp));
+        }
+    }
+}
+
 namespace {
 struct NationResourcesSource
 {
@@ -473,17 +514,17 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id
-                                     + ANIMALCONSTS[species].animation_steps * rttr::enum_cast(dir + 3u) + ani_step));
+                bmp.add(GetMapImage(ANIMALCONSTS[species].walking_id
+                                    + ANIMALCONSTS[species].animation_steps * rttr::enum_cast(dir + 3u) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
                     if(species == Species::Duck)
                         // Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
-                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id));
+                        bmp.addShadow(GetMapImage(ANIMALCONSTS[species].shadow_id));
                     else
                         // ansonsten immer pro Richtung einen Schatten
-                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id + rttr::enum_cast(dir + 3u)));
+                        bmp.addShadow(GetMapImage(ANIMALCONSTS[species].shadow_id + rttr::enum_cast(dir + 3u)));
                 }
 
                 stp->add(bmp);
@@ -496,11 +537,11 @@ void Loader::fillCaches()
 
         if(ANIMALCONSTS[species].dead_id)
         {
-            bmp.add(GetMapImageN(ANIMALCONSTS[species].dead_id));
+            bmp.add(GetMapImage(ANIMALCONSTS[species].dead_id));
 
             if(ANIMALCONSTS[species].shadow_dead_id)
             {
-                bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
+                bmp.addShadow(GetMapImage(ANIMALCONSTS[species].shadow_dead_id));
             }
 
             stp->add(bmp);
@@ -593,7 +634,7 @@ void Loader::fillCaches()
                       bob_jobs->getBody(spriteData.isFat(), imgDir, ani_step)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
                       bob_jobs->getOverlay(spriteData.getBobId(Nation(nation)), spriteData.isFat(), imgDir, ani_step)));
-                    bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -611,7 +652,7 @@ void Loader::fillCaches()
 
                 bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getBody(true, imgDir, ani_step)));
                 bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getOverlay(0, true, imgDir, ani_step)));
-                bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                 stp->add(bmp);
             }
@@ -681,10 +722,10 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(GetMapImageN(3162+ani_step)));
+            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(GetMapTexture(3162+ani_step)));
 
             int a, b, c, d;
-            static_cast<glArchivItem_Bitmap_Player *>(GetMapImageN(3162+ani_step))->getVisibleArea(a, b, c, d);
+            static_cast<glArchivItem_Bitmap_Player *>(GetMapTexture(3162+ani_step))->getVisibleArea(a, b, c, d);
             fprintf(stderr, "%i,%i (%ix%i)\n", a, b, c, d);
 
 
@@ -700,8 +741,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImageN(200 + type * 15 + ani_step));
-            bmp.addShadow(GetMapImageN(350 + type * 15 + ani_step));
+            bmp.add(GetMapImage(200 + type * 15 + ani_step));
+            bmp.addShadow(GetMapImage(350 + type * 15 + ani_step));
 
             stp->add(bmp);
         }
@@ -716,8 +757,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImageN(516 + rttr::enum_cast(type) * 6 + size));
-            bmp.addShadow(GetMapImageN(616 + rttr::enum_cast(type) * 6 + size));
+            bmp.add(GetMapImage(516 + rttr::enum_cast(type) * 6 + size));
+            bmp.addShadow(GetMapImage(616 + rttr::enum_cast(type) * 6 + size));
 
             stp->add(bmp);
         }
@@ -732,8 +773,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImageN(532 + type * 5 + size));
-            bmp.addShadow(GetMapImageN(632 + type * 5 + size));
+            bmp.add(GetMapImage(532 + type * 5 + size));
+            bmp.addShadow(GetMapImage(632 + type * 5 + size));
 
             stp->add(bmp);
         }
@@ -748,8 +789,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImageN(2000 + rttr::enum_cast(dir + 3u) * 8 + ani_step));
-            bmp.addShadow(GetMapImageN(2048 + rttr::enum_cast(dir) % 3));
+            bmp.add(GetMapImage(2000 + rttr::enum_cast(dir + 3u) * 8 + ani_step));
+            bmp.addShadow(GetMapImage(2048 + rttr::enum_cast(dir) % 3));
 
             stp->add(bmp);
         }
@@ -765,7 +806,7 @@ void Loader::fillCaches()
             bmp.reset();
 
             bmp.add(GetPlayerImage("boat", rttr::enum_cast(dir + 3u) * 8 + ani_step));
-            bmp.addShadow(GetMapImageN(2048 + rttr::enum_cast(dir) % 3));
+            bmp.addShadow(GetMapImage(2048 + rttr::enum_cast(dir) % 3));
 
             stp->add(bmp);
         }
@@ -796,7 +837,7 @@ void Loader::fillCaches()
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
                     bmp.add(
                       dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
-                    bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -810,8 +851,8 @@ void Loader::fillCaches()
         const unsigned char color_count = 4;
 
         libsiedler2::ArchivItem_Palette* palette = GetPaletteN("pal5");
-        glArchivItem_Bitmap* image = GetMapImageN(561);
-        glArchivItem_Bitmap* shadow = GetMapImageN(661);
+        auto* image = GetMapImage(561);
+        auto* shadow = GetMapImage(661);
 
         if((image) && (shadow) && (palette))
         {

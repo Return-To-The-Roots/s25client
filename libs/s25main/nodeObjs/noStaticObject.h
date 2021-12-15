@@ -5,11 +5,17 @@
 #pragma once
 
 #include "noCoordBase.h"
+#include "ogl/ITexture.h"
 class SerializedGameData;
 
 class noStaticObject : public noCoordBase
 {
 public:
+    struct Textures
+    {
+        ITexture *bmp, *shadow;
+    };
+
     noStaticObject(MapPoint pos, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 1,
                    NodalObjectType type = NodalObjectType::Object);
     noStaticObject(SerializedGameData& sgd, unsigned obj_id);
@@ -30,8 +36,11 @@ public:
     /// zeichnet das Objekt.
     void Draw(DrawPoint drawPt) override;
 
+    static Textures getTextures(unsigned short file, unsigned short id);
+
 protected:
     unsigned short id;
     unsigned short file;
     unsigned char size;
+    Textures textures{};
 };

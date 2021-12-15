@@ -2,12 +2,16 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+name: Create Release
+
 on:
   push:
     tags:
       - 'v*'
 
-name: Create Release
+concurrency:
+  group: ${{format('release-{0}:{1}', github.repository, github.ref)}}
+  cancel-in-progress: true
 
 jobs:
   release:

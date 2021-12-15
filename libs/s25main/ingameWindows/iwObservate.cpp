@@ -173,7 +173,7 @@ void iwObservate::Draw_()
         view->Draw(road, parentView.GetSelectedPt(), false);
         // Draw indicator for center point
         if(!followMovableId)
-            LOADER.GetMapImageN(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);
+            LOADER.GetMapTexture(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);
     }
 
     return IngameWindow::Draw_();

@@ -259,12 +259,12 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                         default: break;
                     }
                 }
-                LOADER.GetMapImageN(mid)->DrawFull(curPos);
+                LOADER.GetMapTexture(mid)->DrawFull(curPos);
             }
 
             // Currently selected point
             if(selectedPt == curPt)
-                LOADER.GetMapImageN(20)->DrawFull(curPos);
+                LOADER.GetMapTexture(20)->DrawFull(curPos);
 
             // not building roads, no further action needed
             if(rb.mode == RoadBuildMode::Disabled)
@@ -278,7 +278,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             // highlight current route pt
             if(rb.point == curPt)
             {
-                LOADER.GetMapImageN(21)->DrawFull(curPos);
+                LOADER.GetMapTexture(21)->DrawFull(curPos);
                 continue;
             }
 
@@ -295,7 +295,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             // render special icon for route revert
             if(!rb.route.empty() && road_points[rb.route.back() + 3u] == curPt)
             {
-                LOADER.GetMapImageN(67)->DrawFull(curPos);
+                LOADER.GetMapTexture(67)->DrawFull(curPos);
                 continue;
             }
 
@@ -320,13 +320,13 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     default: id = 60; break;
                 }
                 if(!targetFlag)
-                    LOADER.GetMapImageN(id)->DrawFull(curPos);
+                    LOADER.GetMapTexture(id)->DrawFull(curPos);
                 else
                 {
                     DrawPoint lastPos = GetWorld().GetNodePos(rb.point) - offset + curOffset;
                     DrawPoint halfWayPos = (curPos + lastPos) / 2;
-                    LOADER.GetMapImageN(id)->DrawFull(halfWayPos);
-                    LOADER.GetMapImageN(20)->DrawFull(curPos);
+                    LOADER.GetMapTexture(id)->DrawFull(halfWayPos);
+                    LOADER.GetMapTexture(20)->DrawFull(curPos);
                 }
             }
         }
@@ -467,7 +467,7 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
     BuildingQuality bq = gwv.GetBQ(pt);
     if(bq != BuildingQuality::Nothing)
     {
-        glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + rttr::enum_cast(bq));
+        auto* bm = LOADER.GetMapTexture(49 + rttr::enum_cast(bq));
         // Draw building quality icon
         bm->DrawFull(curPos);
         // Show ability to construct military buildings
@@ -476,7 +476,7 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
             if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId())
                && (bq == BuildingQuality::Hut || bq == BuildingQuality::House || bq == BuildingQuality::Castle
                    || bq == BuildingQuality::Harbor))
-                LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->getHeight() + 5));
+                LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->GetSize().y + 5));
         }
     }
 }

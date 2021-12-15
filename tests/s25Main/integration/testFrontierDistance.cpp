@@ -2,9 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "GamePlayer.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
-#include "worldFixtures/WorldWithGCExecution.h"
+#include "worldFixtures/CreateEmptyWorld.h"
+#include "worldFixtures/CreateSeaWorld.h"
+#include "worldFixtures/WorldFixture.h"
+#include "world/MapLoader.h"
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
 
@@ -19,10 +23,10 @@ BOOST_AUTO_TEST_SUITE(FrontierDistanceSuite)
 
 namespace {
 
-template<unsigned T_width, unsigned T_height>
-struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
+template<unsigned T_width, unsigned T_height, class T_WorldCreator = CreateEmptyWorld>
+struct FrontierWorld : public WorldFixture<T_WorldCreator, 2, T_width, T_height>
 {
-    using WorldWithGCExecution<2, T_width, T_height>::world;
+    using WorldFixture<T_WorldCreator, 2, T_width, T_height>::world;
 
     MapPoint milBld0Pos, milBld1Pos;
     nobMilitary *milBld0, *milBld1;
@@ -33,9 +37,11 @@ struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
         const GamePlayer& p1 = world.GetPlayer(1);
         milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
         milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
-        // Assumed by distributions and sizes
-        BOOST_TEST_REQUIRE(milBld0Pos.y == milBld1Pos.y);
-        // Destroy HQs so only blds are checked
+        if(std::is_same<T_WorldCreator, CreateEmptyWorld>::value)
+        { // Assumed by distributions and sizes
+            BOOST_TEST_REQUIRE(milBld0Pos.y == milBld1Pos.y);
+        }
+        // Destroy HQs so only buildings are checked
         world.DestroyNO(p0.GetHQPos());
         world.DestroyNO(p1.GetHQPos());
         milBld0 = dynamic_cast<nobMilitary*>(
@@ -47,6 +53,7 @@ struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
 using FrontierWorldSmall = FrontierWorld<34u, 20u>;
 using FrontierWorldMiddle = FrontierWorld<38u, 20u>;
 using FrontierWorldBig = FrontierWorld<60u, 20u>;
+using FrontierWorldSea = FrontierWorld<SmallSeaWorldDefault<2>::width, SmallSeaWorldDefault<2>::height, CreateSeaWorld>;
 
 DescIdx<TerrainDesc> GetWaterTerrain(const World& world)
 {
@@ -193,9 +200,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
                 continue;
             }
 
-            MapNode& mapPoint = world.GetNodeWriteable(curPoint);
-            mapPoint.t1 = tWater;
-            mapPoint.t2 = tWater;
+            MapNode& node = world.GetNodeWriteable(curPoint);
+            node.t1 = node.t2 = tWater;
         }
     }
 
@@ -209,8 +215,23 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
         FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
         BOOST_TEST_REQUIRE(distance0 == distance1);
-        BOOST_TEST_REQUIRE(distance0 == FrontierDistance::Far); // everytime inland
+        BOOST_TEST_REQUIRE(distance0 == FrontierDistance::Far); // every time inland
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceHarbor, FrontierWorldSea)
+{
+    // With sea attacks
+    this->ggs.setSelection(AddonId::SEA_ATTACK, 0);
+    milBld0->LookForEnemyBuildings(milBld1);
+    BOOST_TEST(milBld0->GetFrontierDistance() == FrontierDistance::Harbor);
+    this->ggs.setSelection(AddonId::SEA_ATTACK, 1);
+    milBld0->LookForEnemyBuildings(milBld1);
+    BOOST_TEST(milBld0->GetFrontierDistance() == FrontierDistance::Harbor);
+    // With sea attacks disabled
+    this->ggs.setSelection(AddonId::SEA_ATTACK, 2);
+    milBld0->LookForEnemyBuildings(milBld1);
+    BOOST_TEST(milBld0->GetFrontierDistance() == FrontierDistance::Far);
 }
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
@@ -274,7 +295,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 //  |                   ||                      |
 //  ---------------------------------------------
 //
-using WorldBig = WorldWithGCExecution<2u, 60u, 60u>;
+using WorldBig = WorldFixture<CreateEmptyWorld, 2, 60u, 60u>;
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 {
     this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, 1);

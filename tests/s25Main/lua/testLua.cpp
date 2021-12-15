@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GameWithLuaAccess.h"
+#include "Loader.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
 #include "buildings/noBuildingSite.h"
@@ -557,6 +558,7 @@ BOOST_AUTO_TEST_CASE(World)
 {
     LogAccessor logAcc;
     initWorld();
+    LOADER.LoadDummyMapFiles();
     executeLua("world = rttr:GetWorld()");
 
     const MapPoint envPt(15, 12);
@@ -564,46 +566,54 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 500)") % envPt.x % envPt.y);
     const noEnvObject* obj = world.GetSpecObj<noEnvObject>(envPt);
     BOOST_TEST_REQUIRE(obj);
-    BOOST_TEST_REQUIRE(obj->GetItemID() == 500u);
-    BOOST_TEST_REQUIRE(obj->GetItemFile() == 0xFFFFu);
+    BOOST_TEST(obj->GetItemID() == 500u);
+    BOOST_TEST(obj->GetItemFile() == 0xFFFFu);
     // Replace and test wrap around (envPt2==envPt1)
     const Position envPt2(envPt.x + world.GetWidth(), envPt.y - world.GetHeight());
     BOOST_TEST_REQUIRE(world.MakeMapPoint(envPt2) == envPt);
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % envPt2.x % envPt2.y);
     obj = world.GetSpecObj<noEnvObject>(envPt);
     BOOST_TEST_REQUIRE(obj);
-    BOOST_TEST_REQUIRE(obj->GetItemID() == 1u);
-    BOOST_TEST_REQUIRE(obj->GetItemFile() == 2u);
+    BOOST_TEST(obj->GetItemID() == 1u);
+    BOOST_TEST(obj->GetItemFile() == 2u);
 
     // ID only
     const MapPoint envPt3(envPt.x + 5, envPt.y);
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 501)") % envPt3.x % envPt3.y);
     const noStaticObject* obj2 = world.GetSpecObj<noStaticObject>(envPt3);
     BOOST_TEST_REQUIRE(obj2);
-    BOOST_TEST_REQUIRE(obj2->GetGOT() == GO_Type::Staticobject);
-    BOOST_TEST_REQUIRE(obj2->GetItemID() == 501u);
-    BOOST_TEST_REQUIRE(obj2->GetItemFile() == 0xFFFFu);
-    BOOST_TEST_REQUIRE(obj2->GetSize() == 1u);
+    BOOST_TEST(obj2->GetGOT() == GO_Type::Staticobject);
+    BOOST_TEST(obj2->GetItemID() == 501u);
+    BOOST_TEST(obj2->GetItemFile() == 0xFFFFu);
+    BOOST_TEST(obj2->GetSize() == 1u);
     // ID and File (replace env obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_TEST_REQUIRE(obj2);
-    BOOST_TEST_REQUIRE(obj2->GetGOT() == GO_Type::Staticobject);
-    BOOST_TEST_REQUIRE(obj2->GetItemID() == 5u);
-    BOOST_TEST_REQUIRE(obj2->GetItemFile() == 3u);
-    BOOST_TEST_REQUIRE(obj2->GetSize() == 1u);
+    BOOST_TEST(obj2->GetGOT() == GO_Type::Staticobject);
+    BOOST_TEST(obj2->GetItemID() == 5u);
+    BOOST_TEST(obj2->GetItemFile() == 3u);
+    BOOST_TEST(obj2->GetSize() == 1u);
     // ID, File and Size (replace static obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 2)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_TEST_REQUIRE(obj2);
-    BOOST_TEST_REQUIRE(obj2->GetGOT() == GO_Type::Staticobject);
-    BOOST_TEST_REQUIRE(obj2->GetItemID() == 5u);
-    BOOST_TEST_REQUIRE(obj2->GetItemFile() == 3u);
-    BOOST_TEST_REQUIRE(obj2->GetSize() == 2u);
+    BOOST_TEST(obj2->GetGOT() == GO_Type::Staticobject);
+    BOOST_TEST(obj2->GetItemID() == 5u);
+    BOOST_TEST(obj2->GetItemFile() == 3u);
+    BOOST_TEST(obj2->GetSize() == 2u);
     // Invalid Size
-    BOOST_REQUIRE_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y),
-                        std::runtime_error);
+    BOOST_CHECK_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y),
+                      std::runtime_error);
     RTTR_REQUIRE_LOG_CONTAINS("Invalid size", false);
+    // Invalid File
+    BOOST_CHECK_THROW(executeLua(boost::format("world:AddEnvObject(%1%, %2%, 5, 7)") % envPt2.x % envPt2.y),
+                      std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("Invalid object ", false);
+    // Invalid Id
+    BOOST_CHECK_THROW(executeLua(boost::format("world:AddEnvObject(%1%, %2%, 50000)") % envPt2.x % envPt2.y),
+                      std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("Invalid object ", false);
 
     // Can't replace buildings
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
@@ -614,7 +624,7 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_TEST_REQUIRE(obj2);
-    BOOST_TEST_REQUIRE(obj2->GetGOT() == GO_Type::Envobject);
+    BOOST_TEST(obj2->GetGOT() == GO_Type::Envobject);
 
     MapPoint animalPos(20, 12);
     const auto figs = world.GetFigures(animalPos);
@@ -623,12 +633,12 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_TEST_REQUIRE(figs.size() == 1u);
     const noAnimal* animal = dynamic_cast<noAnimal*>(&*figs.begin());
     BOOST_TEST_REQUIRE(animal);
-    BOOST_TEST_REQUIRE(animal->GetSpecies() == Species::Deer); //-V522
+    BOOST_TEST(animal->GetSpecies() == Species::Deer); //-V522
     executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_FOX)") % animalPos.x % animalPos.y);
     BOOST_TEST_REQUIRE(figs.size() == 2u);
     animal = dynamic_cast<noAnimal*>(&*(++figs.begin()));
     BOOST_TEST_REQUIRE(animal);
-    BOOST_TEST_REQUIRE(animal->GetSpecies() == Species::Fox);
+    BOOST_TEST(animal->GetSpecies() == Species::Fox);
 }
 
 BOOST_AUTO_TEST_CASE(WorldEvents)

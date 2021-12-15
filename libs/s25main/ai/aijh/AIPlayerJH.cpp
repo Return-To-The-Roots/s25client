@@ -268,7 +268,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if((gf + 41 + playerId * 17) % attack_interval == 0)
     {
-        if(ggs.getSelection(AddonId::SEA_ATTACK) < 2) // not deactivated by addon? -> go ahead
+        if(ggs.isEnabled(AddonId::SEA_ATTACK))
             TrySeaAttack();
     }
 
@@ -2438,7 +2438,7 @@ void AIPlayerJH::AdjustSettings()
                        8 :
                        0;
     milSettings[6] =
-      ggs.getSelection(AddonId::SEA_ATTACK) == 2 ? 0 : 8; // harbor flag: no sea attacks?->no soldiers else 50% to 100%
+      ggs.isEnabled(AddonId::SEA_ATTACK) ? 8 : 0; // harbor flag: no sea attacks?->no soldiers else 50% to 100%
     milSettings[5] = CalcMilSettings(); // inland 1bar min 50% max 100% depending on how many soldiers are available
     milSettings[7] = 8;                 // front: 100%
     if(player.GetMilitarySetting(5) != milSettings[5] || player.GetMilitarySetting(6) != milSettings[6]
@@ -2465,7 +2465,7 @@ unsigned AIPlayerJH::CalcMilSettings()
     for(const nobMilitary* milBld : militaryBuildings)
     {
         if(milBld->GetFrontierDistance() == FrontierDistance::Near
-           || (milBld->GetFrontierDistance() == FrontierDistance::Harbor && ggs.getSelection(AddonId::SEA_ATTACK) != 2)
+           || milBld->GetFrontierDistance() == FrontierDistance::Harbor
            || (milBld->GetFrontierDistance() == FrontierDistance::Far
                && (militaryBuildings.size() < (unsigned)count + numShouldStayConnected
                    || count == uun))) // front or connected interior

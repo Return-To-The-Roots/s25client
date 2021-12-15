@@ -59,8 +59,8 @@ void noSign::Draw(DrawPoint drawPt)
         default: return;
     }
     imgId += std::min(resource.getAmount() / 3u, 2u);
-    LOADER.GetMapPlayerImage(imgId)->DrawFull(drawPt, GetDrawColor());
+    LOADER.GetMapTexture(imgId)->DrawFull(drawPt, GetDrawColor());
 
     // Schatten des Schildes
-    LOADER.GetMapImageN(700)->DrawFull(drawPt, GetDrawShadowColor());
+    LOADER.GetMapTexture(700)->DrawFull(drawPt, GetDrawShadowColor());
 }

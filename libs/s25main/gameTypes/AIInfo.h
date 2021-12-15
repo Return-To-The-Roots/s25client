@@ -36,5 +36,7 @@ struct Info
     Info(Type t = Type::Dummy, Level l = Level::Easy) : type(t), level(l) {}
     Info(Serializer& ser);
     void serialize(Serializer& ser) const;
+
+    bool operator==(const Info& rhs) const { return type == rhs.type && level == rhs.level; }
 };
 } // namespace AI

@@ -31,8 +31,8 @@ enum
 
 class iwAIDebug::DebugPrinter : public IDrawNodeCallback
 {
-    helpers::EnumArray<glArchivItem_Bitmap*, BuildingQuality> bqImgs;
-    std::array<glArchivItem_Bitmap*, 2> ticks;
+    helpers::EnumArray<ITexture*, BuildingQuality> bqImgs;
+    std::array<ITexture*, 2> ticks;
     glFont& font;
 
 public:
@@ -41,10 +41,10 @@ public:
         // Cache images
         for(const auto i : helpers::enumRange<BuildingQuality>())
         {
-            bqImgs[i] = LOADER.GetMapImageN(49 + rttr::enum_cast(i));
+            bqImgs[i] = LOADER.GetMapTexture(49 + rttr::enum_cast(i));
         }
-        ticks[0] = LOADER.GetImageN("io", 40);
-        ticks[1] = LOADER.GetImageN("io", 32);
+        ticks[0] = LOADER.GetTextureN("io", 40);
+        ticks[1] = LOADER.GetTextureN("io", 32);
         bqImgs[BuildingQuality::Nothing] = nullptr;
         bqImgs[BuildingQuality::Harbor] = ticks[0]; // Invalid marker
     }
@@ -58,7 +58,7 @@ public:
             return;
         if(overlay == 1)
         {
-            glArchivItem_Bitmap* img = bqImgs[ai->GetAINode(pt).bq];
+            auto* img = bqImgs[ai->GetAINode(pt).bq];
             if(img)
                 img->DrawFull(curPos);
         } else if(overlay == 2)

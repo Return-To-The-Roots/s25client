@@ -85,6 +85,7 @@ public:
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
+    void LoadDummyMapFiles();
     /// Load a file and save it into the loader repo
     bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
@@ -117,22 +118,26 @@ public:
     /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
     ITexture* GetNationTex(Nation nation, unsigned nr);
     glArchivItem_Bitmap_Player* GetNationPlayerImage(Nation nation, unsigned nr);
-    glArchivItem_Bitmap* GetMapImageN(unsigned nr);
-    /// Same as GetMapImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
-    ITexture* GetMapTexN(unsigned nr);
+    /// Return the map texture with the given number
+    ITexture* GetMapTexture(unsigned nr);
+    /// Return the more specialized map image. Note: Prefer GetMapTexture which also handles (pseudo) player bitmaps
+    glArchivItem_Bitmap* GetMapImage(unsigned nr);
     /// Get the ware symbol texture
-    ITexture* GetWareTex(GoodType ware) { return GetMapTexN(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware)); }
+    ITexture* GetWareTex(GoodType ware) { return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware)); }
     /// Get the ware stack texture (lying on ground)
-    ITexture* GetWareStackTex(GoodType ware) { return GetMapTexN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware)); }
+    ITexture* GetWareStackTex(GoodType ware)
+    {
+        return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+    }
     /// Get the ware texture when carried by donky
     ITexture* GetWareDonkeyTex(GoodType ware)
     {
-        return GetMapTexN(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
     }
     /// Get job symbol texture
     ITexture* GetJobTex(Job job)
     {
-        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexN(2300 + rttr::enum_cast(job));
+        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
     }
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
 

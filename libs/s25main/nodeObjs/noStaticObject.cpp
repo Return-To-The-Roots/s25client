@@ -75,33 +75,39 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    glArchivItem_Bitmap *bitmap = nullptr, *shadow = nullptr;
+    if(!textures.bmp)
+    {
+        textures = getTextures(file, id);
+        RTTR_Assert(textures.bmp);
+    }
 
-    if((file == 0xFFFF) && (id == 561))
+    // Bild zeichnen
+    textures.bmp->DrawFull(drawPt);
+
+    // Schatten zeichnen
+    if(textures.shadow)
+        textures.shadow->DrawFull(drawPt, COLOR_SHADOW);
+}
+
+noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsigned short id)
+{
+    Textures textures{};
+    if(file == 0xFFFF)
     {
-        LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(drawPt);
-        return;
-    } else if(file == 0xFFFF)
-    {
-        bitmap = LOADER.GetMapImageN(id);
-        shadow = LOADER.GetMapImageN(id + 100);
+        if(id == 561)
+            textures.bmp = &LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1];
+        else
+            textures = {LOADER.GetMapTexture(id), LOADER.GetMapTexture(id + 100)};
     } else if(file < 7)
     {
         static const std::array<ResourceId, 7> files = {"mis0bobs", "mis1bobs", "mis2bobs",       "mis3bobs",
                                                         "mis4bobs", "mis5bobs", "charburner_bobs"};
-        bitmap = LOADER.GetImageN(files[file], id);
+        textures.bmp = LOADER.GetTextureN(files[file], id);
         // Use only shadows where available
         if(file < 6)
-            shadow = LOADER.GetImageN(files[file], id + 1);
+            textures.shadow = LOADER.GetTextureN(files[file], id + 1);
     } else
         throw std::runtime_error("Invalid file number for static object");
 
-    RTTR_Assert(bitmap);
-
-    // Bild zeichnen
-    bitmap->DrawFull(drawPt);
-
-    // Schatten zeichnen
-    if(shadow)
-        shadow->DrawFull(drawPt, COLOR_SHADOW);
+    return textures;
 }

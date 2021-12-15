@@ -144,12 +144,12 @@ void fowTree::Draw(DrawPoint drawPt) const
     if(size == 3)
     {
         // Ausgewachsen
-        LOADER.GetMapImageN(200 + type * 15)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetMapImageN(350 + type * 15)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.GetMapTexture(200 + type * 15)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.GetMapTexture(350 + type * 15)->DrawFull(drawPt, COLOR_SHADOW);
     } else
     {
-        LOADER.GetMapImageN(208 + type * 15 + size)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetMapImageN(358 + type * 15 + size)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.GetMapTexture(208 + type * 15 + size)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.GetMapTexture(358 + type * 15 + size)->DrawFull(drawPt, COLOR_SHADOW);
     }
 }
 

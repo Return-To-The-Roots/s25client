@@ -8,6 +8,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{format('staticAna-{0}:{1}', github.repository, github.ref)}}
+  cancel-in-progress: true
+
 env:
   CC: clang-10
   CXX: clang++-10

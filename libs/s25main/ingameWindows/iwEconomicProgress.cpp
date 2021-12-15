@@ -72,7 +72,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     {
         GoodType good = goodsToCollect[i];
 
-        AddImage(100 + i, curBoxPos + wareIconSize / 2, LOADER.GetMapImageN(2298), _(WARE_NAMES[good]));
+        AddImage(100 + i, curBoxPos + wareIconSize / 2, LOADER.GetMapTexture(2298), _(WARE_NAMES[good]));
         const DrawPoint warePos = curBoxPos + wareIconSize / 2;
         AddImage(200 + i, warePos, LOADER.GetWareTex(good));
 

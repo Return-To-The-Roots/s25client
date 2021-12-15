@@ -36,8 +36,21 @@ void LuaWorld::Register(kaguya::State& state)
                               .addFunction("AddAnimal", &LuaWorld::AddAnimal));
 }
 
+static bool isValidObject(unsigned file, unsigned id)
+{
+    try
+    {
+        return noStaticObject::getTextures(file, id).bmp != nullptr;
+    } catch(const std::runtime_error&)
+    {
+        return false;
+    }
+}
+
 bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */)
 {
+    lua::assertTrue(isValidObject(file, id), "Invalid object (file/id)");
+
     MapPoint pt = gw.MakeMapPoint(Position(x, y));
     noBase* obj = gw.GetNode(pt).obj;
     if(obj)
@@ -57,6 +70,7 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
 bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 1 */)
 {
     lua::assertTrue(size <= 2, "Invalid size");
+    lua::assertTrue(isValidObject(file, id), "Invalid object (file/id)");
 
     MapPoint pt = gw.MakeMapPoint(Position(x, y));
     noBase* obj = gw.GetNode(pt).obj;

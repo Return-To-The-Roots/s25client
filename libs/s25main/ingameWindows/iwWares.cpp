@@ -27,14 +27,14 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
     if(allow_outhousing)
     {
         ctrlButton* b =
-          page.AddImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.GetMapImageN(2298), name);
+          page.AddImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.GetMapTexture(2298), name);
         b->SetBorder(false);
     } else
-        page.AddImage(100 + idOffset, btPos + btSize / 2, LOADER.GetMapImageN(2298), name);
+        page.AddImage(100 + idOffset, btPos + btSize / 2, LOADER.GetMapTexture(2298), name);
 
     // Background image for the amount
     const DrawPoint bgCtPos = btPos + DrawPoint(btSize.x / 2, 32);
-    page.AddImage(200 + idOffset, bgCtPos, LOADER.GetMapImageN(2299));
+    page.AddImage(200 + idOffset, bgCtPos, LOADER.GetMapTexture(2299));
 
     // The actual image for the element
     const DrawPoint warePos = btPos + btSize / 2;

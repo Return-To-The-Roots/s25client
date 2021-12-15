@@ -17,6 +17,7 @@
 #include "PactTypes.h"
 #include "PlayerState.h"
 #include "Resource.h"
+#include "ServerType.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
@@ -65,6 +66,7 @@ RTTR_ENUM_OUTPUT(Species, PolarBear, RabbitWhite, RabbitGrey, Fox, Stag, Deer, D
 RTTR_ENUM_OUTPUT(StartWares, VLow, Low, Normal, ALot)
 RTTR_ENUM_OUTPUT(Visibility, Invisible, FogOfWar, Visible)
 RTTR_ENUM_OUTPUT(Team, None, Random, Team1, Team2, Team3, Team4, Random1To2, Random1To3, Random1To4)
+RTTR_ENUM_OUTPUT(ServerType, Lobby, Direct, Local, LAN)
 
 namespace AI {
 RTTR_ENUM_OUTPUT(Type, Dummy, Default)

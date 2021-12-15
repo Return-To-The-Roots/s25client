@@ -74,14 +74,14 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushUnsignedShort(static_cast<unsigned short>(type));
+        helpers::pushEnum<uint16_t>(ser, type);
         ser.PushLongString(revision);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
-        type = static_cast<ServerType>(ser.PopUnsignedShort());
+        type = helpers::popEnum<ServerType>(ser);
         revision = ser.PopLongString();
     }
 
