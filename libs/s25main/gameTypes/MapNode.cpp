@@ -28,7 +28,6 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
     sgd.PushBool(reserved);
     sgd.PushUnsignedChar(owner);
     helpers::pushContainer(sgd, boundary_stones);
-    sgd.PushEnum<uint8_t>(bq);
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Serialize(sgd);
@@ -66,7 +65,8 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();
     helpers::popContainer(sgd, boundary_stones);
-    bq = sgd.Pop<BuildingQuality>();
+    if(sgd.GetGameDataVersion() < 9)
+        bq = sgd.Pop<BuildingQuality>();
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Deserialize(sgd);

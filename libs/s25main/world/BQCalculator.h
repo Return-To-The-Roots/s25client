@@ -5,6 +5,7 @@
 #pragma once
 
 #include "World.h"
+#include "helpers/containerUtils.h"
 #include "gameData/TerrainDesc.h"
 
 struct BQCalculator
@@ -19,7 +20,7 @@ private:
 };
 
 template<typename T_IsOnRoad>
-BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly /*= false*/) const
+BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad, const bool flagOnly /*= false*/) const
 {
     // Cannot build on blocking objects
     if(world.GetNO(pt)->GetBM() != BlockingManner::None)
@@ -33,47 +34,65 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     unsigned flag_hits = 0;
 
     const WorldDescription& desc = world.GetDescription();
-    for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
+    BuildingQuality curBQ;
+    if(flagOnly)
     {
-        TerrainBQ bq = desc.get(tIdx).GetBQ();
-        if(bq == TerrainBQ::Castle)
-            ++building_hits;
-        else if(bq == TerrainBQ::Mine)
-            ++mine_hits;
-        else if(bq == TerrainBQ::Flag)
-            ++flag_hits;
-        else if(bq == TerrainBQ::Danger)
+        bool flagPossible = false;
+        for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
+        {
+            TerrainBQ bq = desc.get(tIdx).GetBQ();
+            if(bq == TerrainBQ::Danger)
+                return BuildingQuality::Nothing;
+            else if(bq != TerrainBQ::Nothing)
+                flagPossible = true;
+        }
+        if(flagPossible)
+            curBQ = BuildingQuality::Flag;
+        else
+            return BuildingQuality::Nothing;
+    } else
+    {
+        for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
+        {
+            TerrainBQ bq = desc.get(tIdx).GetBQ();
+            if(bq == TerrainBQ::Castle)
+                ++building_hits;
+            else if(bq == TerrainBQ::Mine)
+                ++mine_hits;
+            else if(bq == TerrainBQ::Flag)
+                ++flag_hits;
+            else if(bq == TerrainBQ::Danger)
+                return BuildingQuality::Nothing;
+        }
+
+        if(mine_hits == 6)
+            curBQ = BuildingQuality::Mine;
+        else if(building_hits == 6)
+            curBQ = BuildingQuality::Castle;
+        else if(flag_hits || mine_hits || building_hits)
+            curBQ = BuildingQuality::Flag;
+        else
             return BuildingQuality::Nothing;
     }
-
-    BuildingQuality curBQ;
-    if(mine_hits == 6)
-        curBQ = BuildingQuality::Mine;
-    else if(building_hits == 6)
-        curBQ = BuildingQuality::Castle;
-    else if(flag_hits || mine_hits || building_hits)
-        curBQ = BuildingQuality::Flag;
-    else
-        return BuildingQuality::Nothing;
-
     RTTR_Assert(curBQ == BuildingQuality::Flag || curBQ == BuildingQuality::Mine || curBQ == BuildingQuality::Castle);
+    const auto neighbours = world.GetNeighbours(pt);
 
     //////////////////////////////////////////////////////////////////////////
     // 2. Reduce BQ based on altitude
 
-    unsigned char curAltitude = world.GetNode(pt).altitude;
     // Restraints for buildings
     if(curBQ == BuildingQuality::Castle)
     {
+        const unsigned char curAltitude = world.GetNode(pt).altitude;
         // First check the height of the (possible) buildings flag
         // flag point more than 1 higher? -> Flag
-        unsigned char otherAltitude = world.GetNeighbourNode(pt, Direction::SouthEast).altitude;
+        unsigned char otherAltitude = world.GetNode(neighbours[Direction::SouthEast]).altitude;
         if(otherAltitude > curAltitude + 1)
             curBQ = BuildingQuality::Flag;
         else
         {
-            // Direct neighbours: Flag for altitude diff > 3
-            for(const MapPoint nb : world.GetNeighbours(pt))
+            // Direct neighbours: Flag for altitude difference > 3
+            for(const MapPoint nb : neighbours)
             {
                 otherAltitude = world.GetNode(nb).altitude;
                 if(absDiff(curAltitude, otherAltitude) > 3)
@@ -85,7 +104,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
 
             if(curBQ == BuildingQuality::Castle)
             {
-                // Radius-2 neighbours: Hut for altitude diff > 2
+                // Radius-2 neighbours: Hut for altitude difference > 2
                 for(unsigned i = 0; i < 12; ++i)
                 {
                     otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
@@ -99,7 +118,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         }
 
     } else if(curBQ == BuildingQuality::Mine
-              && world.GetNeighbourNode(pt, Direction::SouthEast).altitude > curAltitude + 3)
+              && world.GetNode(neighbours[Direction::SouthEast]).altitude > world.GetNode(pt).altitude + 3)
     {
         // Mines only possible till altitude diff of 3
         curBQ = BuildingQuality::Flag;
@@ -110,26 +129,19 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
 
     // Blocking manners of neighbours (cache for reuse)
     helpers::EnumArray<BlockingManner, Direction> neighbourBlocks;
-    const auto neighbours = world.GetNeighbours(pt);
     for(const auto dir : helpers::EnumRange<Direction>{})
         neighbourBlocks[dir] = world.GetNO(neighbours[dir])->GetBM();
 
     // Don't build anything around charburner piles
-    for(const auto dir : helpers::EnumRange<Direction>{})
-    {
-        if(neighbourBlocks[dir] == BlockingManner::NothingAround)
-            return BuildingQuality::Nothing;
-    }
+    if(helpers::contains(neighbourBlocks, BlockingManner::NothingAround))
+        return BuildingQuality::Nothing;
 
     if(flagOnly)
     {
         // Only remaining check for flags is for neighbouring flags
         // So do this there and skip the rest
-        for(const auto dir : helpers::EnumRange<Direction>{})
-        {
-            if(neighbourBlocks[dir] == BlockingManner::Flag)
-                return BuildingQuality::Nothing;
-        }
+        if(helpers::contains(neighbourBlocks, BlockingManner::Flag))
+            return BuildingQuality::Nothing;
 
         return BuildingQuality::Flag;
     }
@@ -142,34 +154,19 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     //////////////////////////////////////////////////////////////////////////
     // 4. Potentially reduce BQ if some objects are nearby
 
-    // Trees allow only huts and mines around
-    if(curBQ > BuildingQuality::Hut && curBQ != BuildingQuality::Mine)
-    {
-        for(const auto dir : helpers::EnumRange<Direction>{})
-        {
-            if(neighbourBlocks[dir] == BlockingManner::Tree)
-            {
-                curBQ = BuildingQuality::Hut;
-                break;
-            }
-        }
-    }
-
     // Granite type block (stones, fire, grain fields) -> Flag around
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    if(helpers::contains(neighbourBlocks, BlockingManner::FlagsAround))
+        curBQ = BuildingQuality::Flag;
+    else if(curBQ > BuildingQuality::Hut && helpers::contains(neighbourBlocks, BlockingManner::Tree))
     {
-        if(neighbourBlocks[dir] == BlockingManner::FlagsAround)
-        {
-            curBQ = BuildingQuality::Flag;
-            break;
-        }
-    }
-
-    // Castle-sized buildings have extensions -> Need non-blocking object there so it can be removed
-    // Note: S2 allowed blocking environment objects here which leads to visual bugs and problems as we can't place the
-    // extensions
-    if(curBQ == BuildingQuality::Castle)
+        static_assert(BuildingQuality::Hut > BuildingQuality::Mine, "Used this assumption for above check");
+        // Trees allow only huts and mines around
+        curBQ = BuildingQuality::Hut;
+    } else if(curBQ == BuildingQuality::Castle)
     {
+        // Castle-sized buildings have extensions -> Need non-blocking object there so it can be removed
+        // Note: S2 allowed blocking environment objects here which leads to visual bugs and problems as we can't place
+        // the extensions
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
             if(neighbourBlocks[i] != BlockingManner::None)
@@ -215,11 +212,8 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     if(curBQ == BuildingQuality::Flag)
     {
         // If any neighbour is a flag -> Flag is impossible
-        for(const auto dir : helpers::EnumRange<Direction>{})
-        {
-            if(neighbourBlocks[dir] == BlockingManner::Flag)
-                return BuildingQuality::Nothing;
-        }
+        if(helpers::contains(neighbourBlocks, BlockingManner::Flag))
+            return BuildingQuality::Nothing;
         // Else -> Flag
         return BuildingQuality::Flag;
     }
@@ -240,10 +234,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         return curBQ;
 
     // If not, we could still build a flag, unless there is another one around
-    for(const auto dir : helpers::EnumRange<Direction>{})
-    {
-        if(neighbourBlocks[dir] == BlockingManner::Flag)
-            return BuildingQuality::Nothing;
-    }
+    if(helpers::contains(neighbourBlocks, BlockingManner::Flag))
+        return BuildingQuality::Nothing;
     return BuildingQuality::Flag;
 }

@@ -580,17 +580,17 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         {
             const BuildingQuality bq = worldViewer.GetBQ(cSel);
             // Kann hier was gebaut werden?
-            if(bq >= BuildingQuality::Hut)
+            if(bq >= BuildingQuality::Mine)
             {
                 action_tabs.build = true;
 
                 // Welches Gebäude kann gebaut werden?
                 switch(bq)
                 {
+                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::BuildTab::Mine; break;
                     case BuildingQuality::Hut: action_tabs.build_tabs = iwAction::BuildTab::Hut; break;
                     case BuildingQuality::House: action_tabs.build_tabs = iwAction::BuildTab::House; break;
                     case BuildingQuality::Castle: action_tabs.build_tabs = iwAction::BuildTab::Castle; break;
-                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::BuildTab::Mine; break;
                     case BuildingQuality::Harbor: action_tabs.build_tabs = iwAction::BuildTab::Harbor; break;
                     default: break;
                 }

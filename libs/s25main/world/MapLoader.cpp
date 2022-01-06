@@ -143,7 +143,7 @@ DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
 bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
 {
     using libsiedler2::MapLayer;
-    // Init node data (everything except the objects and figures)
+    // Init node data (everything except the objects, figures and BQ)
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         MapNode& node = world_.GetNodeInt(pt);
@@ -185,7 +185,6 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
         node.reserved = false;
         node.owner = 0;
         std::fill(node.boundary_stones.begin(), node.boundary_stones.end(), 0);
-        node.bq = BuildingQuality::Nothing;
         node.seaId = 0;
 
         Visibility fowVisibility;
@@ -205,7 +204,6 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
             fow.visibility = fowVisibility;
         }
 
-        node.obj = nullptr; // Will be overwritten later...
         RTTR_Assert(node.figures.empty());
     }
     return true;
