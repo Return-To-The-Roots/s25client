@@ -18,14 +18,20 @@
  */
 constexpr auto AddonEconomyModeGameLengthList =
   helpers::make_array<std::chrono::minutes>(0, 15, 30, 60, 90, 120, 150, 180, 240, 480);
+// note that the game length of 0 is used internally for unlimited game length
 
 class AddonEconomyModeGameLength : public AddonList
 {
     static std::vector<std::string> makeOptions()
     {
-        std::vector<std::string> result = {_("unlimited")};
+        std::vector<std::string> result;
         for(const auto duration : AddonEconomyModeGameLengthList)
-            result.push_back(helpers::format("%1%", helpers::withUnit(duration)));
+        {
+            if(duration.count() == 0)
+                result.push_back("unlimited");
+            else
+                result.push_back(helpers::format("%1%", helpers::withUnit(duration)));
+        }
         return result;
     }
 
