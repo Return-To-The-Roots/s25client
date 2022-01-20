@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "helpers/EnumRange.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ToolConsts.h"
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -46,6 +49,21 @@ BOOST_AUTO_TEST_CASE(NationSpecificJobBobs)
                != JOB_SPRITE_CONSTS[Job::Scout].getBobId(Nation::Africans));
     BOOST_TEST(JOB_SPRITE_CONSTS[Job::Scout].getBobId(Nation::Vikings)
                < JOB_SPRITE_CONSTS[Job::Scout].getBobId(Nation::Babylonians));
+}
+
+BOOST_AUTO_TEST_CASE(ProductionBuildingsAreNobUsual)
+{
+    for(const auto bld : helpers::enumRange<BuildingType>())
+    {
+        if(!BuildingProperties::IsValid(bld))
+            continue;
+        // Only nobUsuals can produce wares (though not all do)
+        if(BLD_WORK_DESC[bld].producedWare)
+        {
+            BOOST_TEST_INFO("bld: " << bld);
+            BOOST_TEST(BuildingProperties::IsUsual(bld));
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
