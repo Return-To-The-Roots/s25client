@@ -17,7 +17,7 @@ class iwBuildingProductivities : public IngameWindow
     helpers::EnumArray<uint16_t, BuildingType> percents;
 
 public:
-    // Icons shown (in this order)
+    /// Icons shown (in this order)
     static const std::array<BuildingType, 24> icons;
 
     iwBuildingProductivities(const GamePlayer& player);
