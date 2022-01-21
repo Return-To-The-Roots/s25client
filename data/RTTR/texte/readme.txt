@@ -379,5 +379,5 @@ E. Summary: Updates and changelog
   - Everything! ;-)
 
 --------------------------------------------------------------------------------
-http://www.siedler25.org                 Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org                Copyright (C) 2005-2022 Settlers Freaks
 --------------------------------------------------------------------------------

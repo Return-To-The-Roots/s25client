@@ -1,4 +1,4 @@
-                  SIEDLER II.5 - RETURN TO THE ROOTS
+                          RETURN TO THE ROOTS
 ------------------------------------------------------------------------
 Global keyboard layout in game:
 
@@ -46,5 +46,5 @@ J:.................... Go to specific GF
 P:.................... Pause/Resume (also after GF jump)
 1-7:.................. Change to other player
 ------------------------------------------------------------------------
-http://www.siedler25.org    Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org        Copyright (C) 2005-2022 Settlers Freaks
 ------------------------------------------------------------------------

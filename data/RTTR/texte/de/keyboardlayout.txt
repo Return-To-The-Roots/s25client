@@ -1,4 +1,4 @@
-                  SIEDLER II.5 - RETURN TO THE ROOTS
+                          RETURN TO THE ROOTS
 ------------------------------------------------------------------------
 Globale Tastaturbelegung im Spiel:
 
@@ -47,6 +47,6 @@ P:.................... Pause/Fortsetzen (Auch nach GF Sprung)
 1-7:.................. Spielerwechsel
 
 ------------------------------------------------------------------------
-http://www.siedler25.org    Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org        Copyright (C) 2005-2022 Settlers Freaks
 ------------------------------------------------------------------------
 

@@ -393,5 +393,5 @@ E. Übersicht: Updates und Änderungen
   - alles ;-)
 
 --------------------------------------------------------------------------------
-http://www.siedler25.org                 Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org                Copyright (C) 2005-2022 Settlers Freaks
 --------------------------------------------------------------------------------
