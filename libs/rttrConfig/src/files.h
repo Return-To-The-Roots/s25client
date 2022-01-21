@@ -18,7 +18,7 @@ namespace folders {
     constexpr auto assetsNations = "<RTTR_RTTR>/assets/nations";     // Addon specific assets
     constexpr auto assetsOverrides = "<RTTR_RTTR>/assets/overrides"; // Assets overriding S2 files
     constexpr auto assetsUserOverrides = "<RTTR_USERDATA>/LSTS";     // User overrides for assets
-    constexpr auto config = "<RTTR_CONFIG>";
+    constexpr auto config = "<RTTR_USERDATA>";
     constexpr auto data = "<RTTR_GAME>/DATA"; // S2 game data
     constexpr auto driver = "<RTTR_DRIVER>";
     constexpr auto gamedata = "<RTTR_RTTR>/gamedata";   // Path to the gamedata
@@ -55,8 +55,8 @@ namespace resources {
     constexpr auto boat = "<RTTR_GAME>/DATA/BOBS/BOAT.LST";
     constexpr auto boot_z = "<RTTR_GAME>/DATA/BOOT_Z.LST";
     constexpr auto carrier = "<RTTR_GAME>/DATA/BOBS/CARRIER.BOB";
-    constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI"; // main config file
-    constexpr auto ingameOptions = "<RTTR_CONFIG>/IngameOptions.ini";
+    constexpr auto config = "<RTTR_USERDATA>/CONFIG.INI"; // main config file
+    constexpr auto ingameOptions = "<RTTR_USERDATA>/IngameOptions.ini";
     constexpr auto io = "<RTTR_GAME>/DATA/IO/IO.DAT";
     constexpr auto jobs = "<RTTR_GAME>/DATA/BOBS/JOBS.BOB";
     constexpr auto mis0bobs = "<RTTR_GAME>/DATA/MIS0BOBS.LST";
