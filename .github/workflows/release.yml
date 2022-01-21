@@ -43,6 +43,21 @@ jobs:
             tar -czf ${{steps.filenames.outputs.devTools}} "$NAME/external/dev-tools"
             rm -r "$NAME/external/dev-tools"/*
             tar -czf ${{steps.filenames.outputs.src}} "$NAME"
+      - name: Get tag message
+        run: |
+          tagName=${{steps.get_tag.outputs.tag}}
+          tagType=$(git cat-file -t $tagName)
+          if [[ "$tagType" == "tag" ]]; then
+            tagMsg="$(git tag -l --format='%(contents)' $tagName)"
+            # Make sure to keep newlines and add an empty line before and after the message for better formatting
+            echo "TAG_MSG<<EOF" >> $GITHUB_ENV
+            echo "" >> $GITHUB_ENV
+            echo "$tagMsg" >> $GITHUB_ENV
+            echo "" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "TAG_MSG=" >> $GITHUB_ENV
+          fi
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -53,7 +68,7 @@ jobs:
           release_name: Release ${{ github.ref }}
           body: |
             Return To The Roots (Settlers II(R) Clone)
-
+            ${{ env.TAG_MSG }}
             - ${{steps.filenames.outputs.src}} contains all source files including the submodules
             - ${{steps.filenames.outputs.devTools}} contains optional binaries for development. Extract over the source folder if required
           draft: false
