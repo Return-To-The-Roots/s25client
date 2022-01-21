@@ -395,6 +395,9 @@ bool InitDirectories()
             return false;
         }
     }
+    LOG.write("Directory for user data (config etc.): %1%\n", LogTarget::Stdout)
+      % RTTRCONFIG.ExpandPath(s25::folders::config);
+
     // Write this to file too, after folders are created
     LOG.setLogFilepath(RTTRCONFIG.ExpandPath(s25::folders::logs));
     try
