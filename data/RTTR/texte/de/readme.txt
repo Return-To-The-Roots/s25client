@@ -1,4 +1,4 @@
-2017                          RETURN TO THE ROOTS                          0.8.2
+                              RETURN TO THE ROOTS
 --------------------------------------------------------------------------------
 
 A. Allgemeine Hinweise
@@ -248,12 +248,23 @@ D. Abstürze und Fehler
 
 E. Übersicht: Updates und Änderungen
 
-  * 0.8.3 - TBD
+  * 0.9.4 - 06.01.2022
+  ------------------------------------------------------------------------------
+  - Verschiedene Fixes für Bugs, die nicht-ladbare Savegames und Crashes verursachten
+  - Fix für bisuelle glitches bei hohem Terrain
+  - Drücken von ESC speichert die Einstellungen vor dem Schließen des Fensters
+  - Fix für das nicht-schließbar Action-Window
+  - Bei Spielstart werden die zuletzt geöffneten Fesnter wieder geöffnet und deren Position wiederhergestellt
+  - Fix fehlerhafte Behandlung der Versionen (behebt Anzeigefehler und Fehler bei Beitritt zu anderen Spielern)
+
+  * 0.9.1 - 24.07.2021
   ------------------------------------------------------------------------------
   - Vollbild Modus für alle Treiber und Betriebssystem
   - Random map generator
   - Sonderzeichen im Benutzernamen werden unterstüzt
-  - Einige Fehler und Abstürze behoben
+  - Einige Fehler, Abstürze und Asyncs behoben
+  - Map editor
+  - Performanceverbesserungen
 
   * 0.8.2 - 22.08.2017
   ------------------------------------------------------------------------------
@@ -382,5 +393,5 @@ E. Übersicht: Updates und Änderungen
   - alles ;-)
 
 --------------------------------------------------------------------------------
-http://www.siedler25.org                 Copyright (C) 2005-2017 Settlers Freaks
+http://www.siedler25.org                 Copyright (C) 2005-2022 Settlers Freaks
 --------------------------------------------------------------------------------
