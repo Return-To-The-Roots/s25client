@@ -12,6 +12,7 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
+#include "controls/ctrlText.h"
 #include "desktops/dskLobby.h"
 #include "files.h"
 #include "helpers/make_array.h"
@@ -182,6 +183,9 @@ iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(0, _("Load game!")), csi(std::
 {
     AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont);
     AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TextureColor::Green2, LOADER.GetImageN("io", 48));
+    auto* text = AddText(3, DrawPoint(20, 375), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
+                         FontStyle::TOP, SmallFont);
+    text->setMaxWidth(510);
     // Tabelle ausfüllen beim Start
     RefreshTable();
 }

@@ -17,9 +17,11 @@ public:
              FontStyle format, const glFont* font);
 
     Rect GetBoundaryRect() const override;
+    void setMaxWidth(unsigned short maxWidth) { maxWidth_ = maxWidth; }
 
 protected:
     void Draw_() override;
 
-    FontStyle format;
+    FontStyle format_;
+    unsigned short maxWidth_;
 };

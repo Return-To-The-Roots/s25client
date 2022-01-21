@@ -166,10 +166,9 @@ inline void glFont::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint
  *                      @p FontStyle::TOP     - Text oben ( standard )
  *                      @p FontStyle::VCENTER - Text vertikal zentriert
  *                      @p FontStyle::BOTTOM  - Text unten
- *  @param[in] color  Farbe des Textes
- *  @param[in] length Länge des Textes
- *  @param[in] max    maximale Länge
- *  @param     end    Suffix for displaying a truncation of the text (...)
+ *  @param[in] color    Farbe des Textes
+ *  @param[in] maxWidth maximale Länge
+ *  @param     end      Suffix for displaying a truncation of the text (...)
  */
 void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
                   const std::string& end) const
