@@ -617,7 +617,7 @@ void GameWorldView::CalcFxLx()
     firstPt.x = offset.x / TR_W - 1;
     firstPt.y = offset.y / TR_H - 1;
     lastPt.x = (offset.x + size_.x) / TR_W + 1;
-    const auto maxAltitude = gwv.GetTerrainRenderer().getMaxNodeAltitude();
+    const auto maxAltitude = gwv.getMaxNodeAltitude();
     lastPt.y = (offset.y + size_.y + maxAltitude * HEIGHT_FACTOR) / TR_H + 1;
 
     if(zoomFactor_ != 1.f) //-V550
