@@ -133,25 +133,26 @@ static bool isReadonlyPlaylist(const std::string& name)
     return name == boost::filesystem::path(s25::files::defaultPlaylist).stem();
 }
 
-iwMusicPlayer::~iwMusicPlayer()
+void iwMusicPlayer::Close()
 {
-    try
+    IngameWindow::Close();
+
+    if(SaveCurrentPlaylist())
     {
-        SaveCurrentPlaylist();
-    } catch(...)
-    {}
+        const auto& selection = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelection();
+        if(selection)
+        {
+            SETTINGS.sound.playlist =
+              GetFullPlaylistPath(GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection)).string();
+        }
+    }
 
-    const auto& selection = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelection();
-
-    if(selection)
-        SETTINGS.sound.playlist =
-          GetFullPlaylistPath(GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection)).string();
-
-    // Werte in Musikplayer bringen
+    // Update the player if anything has changed
     if(changed)
     {
         MUSICPLAYER.SetPlaylist(MakePlaylist());
         MUSICPLAYER.Play();
+        changed = false;
     }
 }
 
@@ -175,13 +176,13 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsign
 
 void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
-    // Werte in Musikplayer bringen
+    // (Re)create playlist with selected song as start song set in musicplayer
     Playlist pl = MakePlaylist();
     pl.SetStartSong(selection);
     MUSICPLAYER.SetPlaylist(std::move(pl));
     MUSICPLAYER.Play();
 
-    // Wir haben ab jetzt quasi keine Veränderungen mehr --> damit Musik nicht neugestartet werden muss
+    // No changes anymore
     changed = false;
 }
 
@@ -217,7 +218,7 @@ void iwMusicPlayer::UpdateFromPlaylist(const Playlist& playlist)
     for(const auto& song : playlist.getSongs())
         lstSongs->AddString(song);
 
-    const auto currentSong = playlist.getCurrentSong();
+    const auto& currentSong = playlist.getCurrentSong();
     if(!currentSong.empty())
     {
         for(const auto i : helpers::Range<unsigned>{lstSongs->GetNumLines()})
@@ -313,8 +314,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btDecRepeat:
         {
             unsigned repeats = GetRepeats();
-
-            if(repeats)
+            if(repeats > 0u)
             {
                 --repeats;
                 SetRepeats(repeats);
@@ -323,19 +323,13 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         }
         break;
         case ID_btIncRepeat:
-        {
-            unsigned repeats = GetRepeats();
-            ++repeats;
-            SetRepeats(repeats);
+            SetRepeats(GetRepeats() + 1);
             changed = true;
-        }
-        break;
+            break;
         case ID_btRandom:
-        {
             SetRandomPlayback(!GetRandomPlayback());
             changed = true;
-        }
-        break;
+            break;
         case ID_btSave:
             if(SaveCurrentPlaylist())
             {

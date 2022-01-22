@@ -12,29 +12,32 @@
 
 class Log;
 
-/// Speichert die Daten über eine Playlist und verwaltet diese
+/// List of songs with meta data.
+/// Also controls which song is played (next)
+/// After all songs have been played the playlist is restarted (reshuffled if needed)
 class Playlist
 {
 public:
     Playlist() = default;
     Playlist(std::vector<std::string> songs, unsigned numRepeats, bool random);
 
-    /// liefert den Dateinamen des aktuellen Songs
-    std::string getCurrentSong() const;
+    /// Get the currently played song, or an empty string if none
+    const std::string& getCurrentSong() const { return currentSong_; };
 
-    /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-    std::string getNextSong();
+    /// Switches to the next song and returns its name
+    const std::string& getNextSong();
 
-    /// Playlist in Datei speichern
+    /// Save playlist to file
     bool SaveAs(const boost::filesystem::path& filepath) const;
-    /// Playlist laden
+    /// Load playlist from file
     bool Load(Log& logger, const boost::filesystem::path& filepath);
 
     const auto& getSongs() const { return songs_; }
     unsigned getNumRepeats() const { return numRepeats_; }
     bool isRandomized() const { return random_; }
 
-    /// Wählt den Start-Song aus
+    /// Moves the song with the given index (in the songs_ array) to the front of the list of songs to be played
+    /// Has no effect if the song is not in the queue (anymore), e.g. if it was already played
     void SetStartSong(unsigned id);
 
 private:
@@ -42,7 +45,7 @@ private:
     void Prepare();
 
     std::vector<std::string> songs_; /// Filenames of titles to play
-    unsigned numRepeats_ = 1;        /// How often to repeat all songs
+    unsigned numRepeats_ = 1;        /// How often to repeat each song
     bool random_ = false;            /// True for random order, else in-order
     std::vector<unsigned> order_;    /// Actual order of the songs, indices into songs
     std::string currentSong_;
