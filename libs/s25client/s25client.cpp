@@ -365,15 +365,15 @@ bool InitDirectories()
 {
     // Note: Do not use logger yet. Filepath may not exist
     const auto curPath = bfs::current_path();
-    LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
-
-    // diverse dirs anlegen
-    const std::array<std::string, 10> dirs = {
-      {s25::folders::config, s25::folders::mapsOwn, s25::folders::logs, s25::folders::mapsPlayed, s25::folders::replays,
-       s25::folders::save, s25::folders::assetsUserOverrides, s25::folders::screenshots, s25::folders::playlists}};
+    LOG.write("Starting in %1%\n", LogTarget::Stdout) % curPath;
 
     if(!MigrateFilesAndDirectories())
         return false;
+
+    // Create all required/useful folders
+    const std::array<std::string, 10> dirs = {
+      {s25::folders::config, s25::folders::logs, s25::folders::mapsOwn, s25::folders::mapsPlayed, s25::folders::replays,
+       s25::folders::save, s25::folders::assetsUserOverrides, s25::folders::screenshots, s25::folders::playlists}};
 
     for(const std::string& rawDir : dirs)
     {
@@ -395,13 +395,16 @@ bool InitDirectories()
             return false;
         }
     }
+    LOG.write("Directory for user data (config etc.): %1%\n", LogTarget::Stdout)
+      % RTTRCONFIG.ExpandPath(s25::folders::config);
+
     // Write this to file too, after folders are created
     LOG.setLogFilepath(RTTRCONFIG.ExpandPath(s25::folders::logs));
     try
     {
         LOG.open();
         LOG.write("%1%\n\n", LogTarget::File) % GetProgramDescription();
-        LOG.write("Starting in %s\n", LogTarget::File) % curPath;
+        LOG.write("Starting in %1%\n", LogTarget::File) % curPath;
     } catch(const std::exception& e)
     {
         LOG.write("Error initializing log: %1%\nSystem reports: %2%\n", LogTarget::Stderr) % e.what()

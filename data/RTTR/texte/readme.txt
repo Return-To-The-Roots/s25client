@@ -1,4 +1,4 @@
-2017                          RETURN TO THE ROOTS                          0.8.2
+                              RETURN TO THE ROOTS
 --------------------------------------------------------------------------------
 
 A. Reference Note
@@ -225,9 +225,9 @@ D. Crash and bugs
   communication between you and us, e.g. when we need more information
   from you.
 
-  Alternatively you can post the bug in the forum or visit us on IRC
-  channel: irc.freenode.net:6667/#siedler2.5
-  You can also join the irc-channel by visiting our homepage.
+  Alternatively you can post the bug in the forum or visit us on Discord:
+  https://discord.gg/kyTQsSx
+  You can also join the IRC-channel and Discord by visiting our homepage.
 
   Thanks a lot
 
@@ -238,12 +238,23 @@ D. Crash and bugs
 
 E. Summary: Updates and changelog
 
-  * 0.8.3 - TBD
+  * 0.9.4 - 06.01.2022
+  ------------------------------------------------------------------------------
+  - Various fixes for bugs leading to unloadable savegames and crashes
+  - Fix drawing issues related to high terrain
+  - Pressing ESC now does no longer discard pending changes of setting windows
+  - Fix uncloseable action window
+  - On game start reopen windows opened in last game and restorr their positions
+  - Fix faulty version handling (visual issues and unable to join other players)
+
+  * 0.9.1 - 24.07.2021
   ------------------------------------------------------------------------------
   - Fullscreen mode on all drivers and OSs
   - Random map generator
   - Allow special chars in user name
-  - Fix some bugs and crashes
+  - Fix some bugs, crashes and asyncs
+  - Map editor included
+  - Improved performance
 
   * 0.8.2 - 22.08.2017
   ------------------------------------------------------------------------------
@@ -368,5 +379,5 @@ E. Summary: Updates and changelog
   - Everything! ;-)
 
 --------------------------------------------------------------------------------
-http://www.siedler25.org                 Copyright (C) 2005-2017 Settlers Freaks
+https://www.siedler25.org                Copyright (C) 2005-2022 Settlers Freaks
 --------------------------------------------------------------------------------

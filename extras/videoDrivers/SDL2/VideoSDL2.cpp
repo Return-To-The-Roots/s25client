@@ -390,7 +390,7 @@ bool VideoSDL2::MessageLoop()
                 // Handle only 1st mouse move
                 if(!mouseMoved)
                 {
-                    mouse_xy.pos = Position(ev.button.x, ev.button.y);
+                    mouse_xy.pos = Position(ev.motion.x, ev.motion.y);
 
                     CallBack->Msg_MouseMove(mouse_xy);
                     mouseMoved = true;

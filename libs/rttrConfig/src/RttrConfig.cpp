@@ -17,13 +17,16 @@ namespace bfs = boost::filesystem;
 #    error "At least one of the RTTR_*DIR is undefined!"
 #endif
 
-#ifndef RTTR_SETTINGSDIR
+// Folder for user data, formerly "SETTINGSDIR" or "CONFIG"
+#ifdef RTTR_SETTINGSDIR
+#    define RTTR_USERDATADIR RTTR_SETTINGSDIR
+#elif !defined(RTTR_USERDATADIR)
 #    if defined(_WIN32)
-#        define RTTR_SETTINGSDIR "~/Return To The Roots"
+#        define RTTR_USERDATADIR "~/Return To The Roots"
 #    elif defined(__APPLE__)
-#        define RTTR_SETTINGSDIR "~/Library/Application Support/Return To The Roots"
+#        define RTTR_USERDATADIR "~/Library/Application Support/Return To The Roots"
 #    else
-#        define RTTR_SETTINGSDIR "~/.s25rttr"
+#        define RTTR_USERDATADIR "~/.s25rttr"
 #    endif
 #endif // !RTTR_SETTINGSDIR
 
@@ -127,7 +130,6 @@ bool RttrConfig::Init()
     pathMappings["LIB"] = RTTR_LIBDIR;
     pathMappings["DRIVER"] = RTTR_DRIVERDIR;
     pathMappings["RTTR"] = RTTR_DATADIR "/RTTR";
-    pathMappings["CONFIG"] = RTTR_SETTINGSDIR;
-    pathMappings["USERDATA"] = RTTR_SETTINGSDIR;
+    pathMappings["USERDATA"] = RTTR_USERDATADIR;
     return true;
 }
