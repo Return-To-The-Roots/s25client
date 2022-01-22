@@ -39,7 +39,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
       show_productivity(SETTINGS.ingame.showProductivity), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
       size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
-    MoveTo(0, 0);
+    MoveBy({0, 0});
 }
 
 const GameWorldBase& GameWorldView::GetWorld() const
@@ -555,21 +555,14 @@ void GameWorldView::ToggleShowNamesAndProductivity()
     SaveIngameSettingsValues();
 }
 
-/**
- *  verschiebt das Bild zu einer bestimmten Stelle.
- */
-void GameWorldView::MoveTo(int x, int y, bool absolute)
+void GameWorldView::MoveBy(const DrawPoint& numPixels)
 {
-    MoveTo(DrawPoint(x, y), absolute);
+    MoveTo(offset + numPixels);
 }
 
-void GameWorldView::MoveTo(const DrawPoint& newPos, bool absolute)
+void GameWorldView::MoveTo(const DrawPoint& newPos)
 {
-    if(absolute)
-        offset = newPos;
-    else
-        offset += newPos;
-
+    offset = newPos;
     DrawPoint size(GetWorld().GetWidth() * TR_W, GetWorld().GetHeight() * TR_H);
     if(size.x && size.y)
     {
@@ -593,15 +586,14 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
     lastOffset = offset;
     Position nodePos = GetWorld().GetNodePos(pt);
 
-    MoveTo(nodePos - GetSize() / 2u, true);
+    MoveTo(nodePos - GetSize() / 2u);
 }
 
-/// Springt zur letzten Position, bevor man "weggesprungen" ist
 void GameWorldView::MoveToLastPosition()
 {
     Position newLastOffset = offset;
 
-    MoveTo(lastOffset.x, lastOffset.y, true);
+    MoveTo(lastOffset);
 
     lastOffset = newLastOffset;
 }

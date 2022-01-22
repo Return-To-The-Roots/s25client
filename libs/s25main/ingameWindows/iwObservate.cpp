@@ -218,7 +218,7 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
             if(followMovable.IsMoving())
                 drawPt += followMovable.CalcWalkingRelative();
 
-            view->MoveTo(drawPt - view->GetSize() / 2u, true);
+            view->MoveTo(drawPt - view->GetSize() / 2u);
             return true;
         }
     }
@@ -234,7 +234,7 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
         if(SETTINGS.interface.revert_mouse)
             acceleration = -acceleration;
 
-        view->MoveTo((mc.GetPos() - scrollOrigin) * acceleration);
+        view->MoveBy((mc.GetPos() - scrollOrigin) * acceleration);
         VIDEODRIVER.SetMousePos(scrollOrigin);
     }
 
