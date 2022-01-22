@@ -26,7 +26,6 @@ public:
     glFont(const libsiedler2::ArchivItem_Font&);
 
     /// Draw the the text at the given position with format (alignment) and color.
-    /// If length is given, only that many chars (not glyphs!) will be used
     /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is
     /// appended (included in maxWidth)
     void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE,

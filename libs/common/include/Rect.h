@@ -39,6 +39,12 @@ struct RectBase
     void setSize(const extent_type& newSize);
     void move(const position_type& offset);
     static RectBase move(RectBase rect, const position_type& offset);
+
+    constexpr bool operator==(const RectBase& rhs) const
+    {
+        return left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom;
+    }
+    constexpr bool operator!=(const RectBase& rhs) const { return !(*this == rhs); }
 };
 
 using Rect = RectBase<int>;

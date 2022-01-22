@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
+#include "RectOutput.h"
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlPreviewMinimap.h"
 #include "controls/ctrlTable.h"
+#include "controls/ctrlText.h"
 #include "controls/ctrlTextButton.h"
 #include "controls/ctrlTextDeepening.h"
 #include "driver/KeyEvent.h"
@@ -232,6 +234,58 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
         const auto numChars = rttr::test::randomValue(1u, 20u);
         txt.ResizeForMaxChars(numChars);
         BOOST_TEST(txt.GetSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(TextControlWorks)
+{
+    auto font = createMockFont({'?', 'a', 'z'});
+    const auto parentPos = rttr::test::randomPoint<DrawPoint>();
+    Window parent(nullptr, 0, parentPos);
+    const auto pos = rttr::test::randomPoint<DrawPoint>();
+    const auto* testText = "a?z?a?z?a?z?a?z?a?z?";
+    ctrlText text(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle{}, font.get());
+
+    // Test positioning
+    BOOST_TEST(text.GetPos() == pos);
+    const auto origBoundaryRect = text.GetBoundaryRect();
+    BOOST_TEST(origBoundaryRect.getOrigin() == pos + parentPos);
+    const auto fullTextWidth = font->getWidth(testText);
+    BOOST_TEST(origBoundaryRect.getSize() == Extent(fullTextWidth, font->getHeight()));
+
+    // Test alignment
+    {
+        const Position origSize(origBoundaryRect.getSize()); // Convert to signed type
+        ctrlText textRight(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::RIGHT, font.get());
+        BOOST_TEST(textRight.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(-origSize.x, 0)));
+        ctrlText textCenter(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::CENTER, font.get());
+        BOOST_TEST(textCenter.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(-origSize.x / 2, 0)));
+        ctrlText textBottom(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::BOTTOM, font.get());
+        BOOST_TEST(textBottom.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(0, -origSize.y)));
+        ctrlText textVCenter(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::VCENTER, font.get());
+        BOOST_TEST(textVCenter.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(0, -origSize.y / 2)));
+        ctrlText textFullCenter(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER,
+                                font.get());
+        BOOST_TEST(textFullCenter.GetBoundaryRect()
+                   == Rect::move(origBoundaryRect, Position(-origSize.x / 2, -origSize.y / 2)));
+        ctrlText textBottomRight(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM,
+                                 font.get());
+        BOOST_TEST(textBottomRight.GetBoundaryRect()
+                   == Rect::move(origBoundaryRect, Position(-origSize.x, -origSize.y)));
+    }
+
+    // Test maxWidth
+    {
+        text.setMaxWidth(fullTextWidth); // Limit width without actually limiting it
+        BOOST_TEST(text.GetBoundaryRect() == origBoundaryRect);
+        // Limit width truncating the text
+        const auto maxWidth = rttr::test::randomValue(font->getDx(), fullTextWidth - 1u);
+        text.setMaxWidth(maxWidth);
+        const auto newBoundaryRect = text.GetBoundaryRect();
+        BOOST_TEST(newBoundaryRect.getOrigin() == origBoundaryRect.getOrigin());
+        // TODO: Test that with a maxWidth of x-1 the width matches that of the last few chars replaced by dots
+        BOOST_TEST(newBoundaryRect.getSize().x <= maxWidth);
+        BOOST_TEST(newBoundaryRect.getSize().y == origBoundaryRect.getSize().y);
     }
 }
 
