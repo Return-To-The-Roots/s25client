@@ -13,10 +13,11 @@ namespace helpers {
 int gcd(int a, int b) noexcept;
 /// Returns the result of "dividend / divisor" rounded to the nearest integer value
 unsigned roundedDiv(unsigned dividend, unsigned divisor) noexcept;
+/// Return ceil(dividend / divisor)
 constexpr unsigned divCeil(unsigned dividend, unsigned divisor) noexcept
 {
-    return (dividend + divisor - 1)
-           / divisor; // Standard trick using truncating division for smalish values (no overflow)
+    // Standard trick using truncating division for smallish values (no overflow)
+    return (dividend + divisor - 1) / divisor;
 }
 /// Clamp the value into [min, max]
 template<typename T>

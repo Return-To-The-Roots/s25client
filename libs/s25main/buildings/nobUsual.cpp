@@ -23,14 +23,20 @@
 #include "gameData/BuildingProperties.h"
 #include <numeric>
 
+/// Number of GFs after which the productivity is recalculated, i.e. productivity is averaged over intervals of this
+/// length
+constexpr unsigned numProductivityGFs = 400u;
+/// Marker for sinceNotWorking to mark the working state for productivity purposes
+constexpr unsigned isWorkingMarker = 0xFFFFFFFF;
+
 nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation)
-    : noBuilding(type, pos, player, nation), worker(nullptr), disable_production(false),
-      disable_production_virtual(false), last_ordered_ware(0), orderware_ev(nullptr), productivity_ev(nullptr),
-      numGfNotWorking(0), since_not_working(0xFFFFFFFF), outOfRessourcesMsgSent(false), is_working(false)
+    : noBuilding(type, pos, player, nation), worker(nullptr), disableProduction(false), disableProductionVirtual(false),
+      lastOrderedWare(0), orderware_ev(nullptr), productivity_ev(nullptr), numGfNotWorking(0),
+      sinceNotWorking(isWorkingMarker), outOfRessourcesMsgSent(false), is_working(false)
 {
     std::fill(numWares.begin(), numWares.end(), 0);
 
-    ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
+    orderedWares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
@@ -39,23 +45,23 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
     // New building gets half the average productivity from all buildings of the same type
     productivity = owner.GetBuildingRegister().CalcAverageProductivity(type) / 2u;
     // Set last productivities to current to avoid resetting it on first recalculation event
-    std::fill(last_productivities.begin(), last_productivities.end(), productivity);
+    std::fill(lastProductivities.begin(), lastProductivities.end(), productivity);
 }
 
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
     : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>()), productivity(sgd.PopUnsignedShort()),
-      disable_production(sgd.PopBool()), disable_production_virtual(disable_production),
-      last_ordered_ware(sgd.PopUnsignedChar()), orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()),
-      numGfNotWorking(sgd.PopUnsignedShort()), since_not_working(sgd.PopUnsignedInt()),
+      disableProduction(sgd.PopBool()), disableProductionVirtual(disableProduction),
+      lastOrderedWare(sgd.PopUnsignedChar()), orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()),
+      numGfNotWorking(sgd.PopUnsignedShort()), sinceNotWorking(sgd.PopUnsignedInt()),
       outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
 {
     helpers::popContainer(sgd, numWares);
 
-    ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
+    orderedWares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
-    for(std::list<Ware*>& orderedWare : ordered_wares)
+    for(std::list<Ware*>& orderedWare : orderedWares)
         sgd.PopObjectContainer(orderedWare, GO_Type::Ware);
-    helpers::popContainer(sgd, last_productivities);
+    helpers::popContainer(sgd, lastProductivities);
 }
 
 void nobUsual::Serialize(SerializedGameData& sgd) const
@@ -64,19 +70,19 @@ void nobUsual::Serialize(SerializedGameData& sgd) const
 
     sgd.PushObject(worker);
     sgd.PushUnsignedShort(productivity);
-    sgd.PushBool(disable_production);
-    sgd.PushUnsignedChar(last_ordered_ware);
+    sgd.PushBool(disableProduction);
+    sgd.PushUnsignedChar(lastOrderedWare);
     sgd.PushEvent(orderware_ev);
     sgd.PushEvent(productivity_ev);
     sgd.PushUnsignedShort(numGfNotWorking);
-    sgd.PushUnsignedInt(since_not_working);
+    sgd.PushUnsignedInt(sinceNotWorking);
     sgd.PushBool(outOfRessourcesMsgSent);
     sgd.PushBool(is_working);
 
     helpers::pushContainer(sgd, numWares);
-    for(const std::list<Ware*>& orderedWare : ordered_wares)
+    for(const std::list<Ware*>& orderedWare : orderedWares)
         sgd.PushObjectContainer(orderedWare, true);
-    helpers::pushContainer(sgd, last_productivities);
+    helpers::pushContainer(sgd, lastProductivities);
 }
 
 nobUsual::~nobUsual() = default;
@@ -92,7 +98,7 @@ void nobUsual::DestroyBuilding()
         world->GetPlayer(player).JobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
-    for(std::list<Ware*>& orderedWare : ordered_wares)
+    for(std::list<Ware*>& orderedWare : orderedWares)
     {
         for(Ware* ware : orderedWare)
             WareNotNeeded(ware);
@@ -118,7 +124,7 @@ void nobUsual::Draw(DrawPoint drawPt)
     DrawBaseBuilding(drawPt);
 
     // Wenn Produktion gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
-    if(disable_production_virtual)
+    if(disableProductionVirtual)
         LOADER.GetMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 
     // Rauch zeichnen
@@ -235,39 +241,38 @@ void nobUsual::HandleEvent(const unsigned id)
 {
     if(id)
     {
-        const unsigned short current_productivity = CalcProductivity();
+        const unsigned short currentProductivity = CalcCurrentProductivity();
         // Sum over all last productivities and current (as start value)
-        productivity = std::accumulate(last_productivities.begin(), last_productivities.end(), current_productivity);
-        // Produktivität "verrücken"
-        for(unsigned short i = last_productivities.size() - 1; i >= 1; --i)
-            last_productivities[i] = last_productivities[i - 1];
-        last_productivities[0] = current_productivity;
+        productivity = std::accumulate(lastProductivities.begin(), lastProductivities.end(), currentProductivity);
+        // And average over those N+1 values
+        productivity /= lastProductivities.size() + 1u;
 
-        // Durschnitt ausrechnen der letzten Produktivitäten PLUS der aktuellen!
-        productivity /= (last_productivities.size() + 1);
+        // Move productivities to the right (removing the last element)
+        std::copy_backward(lastProductivities.begin(), lastProductivities.end() - 1, lastProductivities.end());
+        lastProductivities.front() = currentProductivity;
 
-        // Event für nächste Abrechnung
-        productivity_ev = GetEvMgr().AddEvent(this, 400, 1);
+        // Add next event
+        productivity_ev = GetEvMgr().AddEvent(this, numProductivityGFs, 1);
     } else
     {
         // Ware bestellen (falls noch Platz ist) und nicht an Betriebe, die stillgelegt wurden!
-        if(!disable_production)
+        if(!disableProduction)
         {
             const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
-            RTTR_Assert(last_ordered_ware < workDesc.waresNeeded.size());
+            RTTR_Assert(lastOrderedWare < workDesc.waresNeeded.size());
             // How many wares can we have of each type?
             unsigned wareSpaces = workDesc.numSpacesPerWare;
 
-            if(numWares[last_ordered_ware] + ordered_wares[last_ordered_ware].size() < wareSpaces)
+            if(numWares[lastOrderedWare] + orderedWares[lastOrderedWare].size() < wareSpaces)
             {
-                Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[last_ordered_ware], this);
+                Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[lastOrderedWare], this);
                 if(w)
-                    RTTR_Assert(helpers::contains(ordered_wares[last_ordered_ware], w));
+                    RTTR_Assert(helpers::contains(orderedWares[lastOrderedWare], w));
             }
 
-            ++last_ordered_ware;
-            if(last_ordered_ware >= workDesc.waresNeeded.size())
-                last_ordered_ware = 0;
+            ++lastOrderedWare;
+            if(lastOrderedWare >= workDesc.waresNeeded.size())
+                lastOrderedWare = 0;
         }
 
         // Nach ner bestimmten Zeit dann nächste Ware holen
@@ -284,8 +289,8 @@ void nobUsual::AddWare(std::unique_ptr<Ware> ware)
         if(ware->type == workDesc.waresNeeded[i])
         {
             ++numWares[i];
-            RTTR_Assert(helpers::contains(ordered_wares[i], ware.get()));
-            ordered_wares[i].remove(ware.get());
+            RTTR_Assert(helpers::contains(orderedWares[i], ware.get()));
+            orderedWares[i].remove(ware.get());
             break;
         }
     }
@@ -315,8 +320,8 @@ void nobUsual::WareLost(Ware& ware)
     {
         if(ware.type == workDesc.waresNeeded[i])
         {
-            RTTR_Assert(helpers::contains(ordered_wares[i], &ware));
-            ordered_wares[i].remove(&ware);
+            RTTR_Assert(helpers::contains(orderedWares[i], &ware));
+            orderedWares[i].remove(&ware);
             break;
         }
     }
@@ -417,7 +422,7 @@ void nobUsual::ConsumeWares()
         {
             Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[wareIdxToUse], this);
             if(w)
-                RTTR_Assert(helpers::contains(ordered_wares[wareIdxToUse], w));
+                RTTR_Assert(helpers::contains(orderedWares[wareIdxToUse], w));
         }
         // Set to value of next iteration. Note: It might have been not 0 for useOneWareEach == false
         wareIdxToUse = i + 1;
@@ -427,7 +432,7 @@ void nobUsual::ConsumeWares()
 unsigned nobUsual::CalcDistributionPoints(const GoodType type)
 {
     // No production -> nothing needed
-    if(disable_production)
+    if(disableProduction)
         return 0;
 
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
@@ -444,7 +449,7 @@ unsigned nobUsual::CalcDistributionPoints(const GoodType type)
         return 0;
 
     // Got enough? -> Don't request more
-    if(numWares[id] + ordered_wares[id].size() == workDesc.numSpacesPerWare)
+    if(numWares[id] + orderedWares[id].size() == workDesc.numSpacesPerWare)
         return 0;
 
     // 10000 as base points then subtract some
@@ -453,7 +458,7 @@ unsigned nobUsual::CalcDistributionPoints(const GoodType type)
 
     // Every ware we have or is on the way reduces rating
     // Note: maxValue is numSpacesPerWare * 30 which is <= 60*30=1800 (< 10000 base value)
-    points -= (numWares[id] + ordered_wares[id].size()) * 30;
+    points -= (numWares[id] + orderedWares[id].size()) * 30;
 
     RTTR_Assert(points <= 10000);
 
@@ -468,30 +473,34 @@ void nobUsual::TakeWare(Ware* ware)
     {
         if(ware->type == workDesc.waresNeeded[i])
         {
-            RTTR_Assert(!helpers::contains(ordered_wares[i], ware));
-            ordered_wares[i].push_back(ware);
+            RTTR_Assert(!helpers::contains(orderedWares[i], ware));
+            orderedWares[i].push_back(ware);
             return;
         }
     }
 }
 
+bool nobUsual::AreThereAnyOrderedWares() const
+{
+    return helpers::contains_if(orderedWares, [](const auto& wareList) { return !wareList.empty(); });
+}
+
 void nobUsual::WorkerArrived()
 {
-    // Produktivität in 400 gf ausrechnen
-    productivity_ev = GetEvMgr().AddEvent(this, 400, 1);
+    productivity_ev = GetEvMgr().AddEvent(this, numProductivityGFs, 1);
 }
 
 void nobUsual::SetProductionEnabled(const bool enabled)
 {
-    if(disable_production == !enabled)
+    if(disableProduction == !enabled)
         return;
     // Umstellen
-    disable_production = !enabled;
+    disableProduction = !enabled;
     // Wenn das von einem fremden Spieler umgestellt wurde (oder vom Replay), muss auch das visuelle umgestellt werden
     if(GAMECLIENT.GetPlayerId() != player || GAMECLIENT.IsReplayModeOn())
-        disable_production_virtual = disable_production;
+        disableProductionVirtual = disableProduction;
 
-    if(disable_production)
+    if(disableProduction)
     {
         // Wenn sie deaktiviert wurde, dem Arbeiter Bescheid sagen, damit er entsprechend stoppt, falls er schon
         // auf die Arbeit warteet
@@ -517,7 +526,7 @@ void nobUsual::OnOutOfResources()
         return;
     outOfRessourcesMsgSent = true;
     productivity = 0;
-    std::fill(last_productivities.begin(), last_productivities.end(), 0);
+    std::fill(lastProductivities.begin(), lastProductivities.end(), 0);
 
     const char* error;
     if(GetBuildingType() == BuildingType::Well)
@@ -543,38 +552,40 @@ void nobUsual::OnOutOfResources()
 
 void nobUsual::StartNotWorking()
 {
-    // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
-    if(since_not_working == 0xFFFFFFFF)
-        since_not_working = GetEvMgr().GetCurrentGF();
+    // If we haven't stopped working already, then this is the GF since we are not working anymore
+    if(sinceNotWorking == isWorkingMarker)
+        sinceNotWorking = GetEvMgr().GetCurrentGF();
 }
 
 void nobUsual::StopNotWorking()
 {
-    // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
-    if(since_not_working != 0xFFFFFFFF)
+    // Record the number of GFs we haven't worked, if any
+    if(sinceNotWorking != isWorkingMarker)
     {
-        numGfNotWorking += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
-        since_not_working = 0xFFFFFFFF;
+        numGfNotWorking += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - sinceNotWorking);
+        sinceNotWorking = isWorkingMarker;
     }
 }
 
-unsigned short nobUsual::CalcProductivity()
+unsigned short nobUsual::CalcCurrentProductivity()
 {
     if(outOfRessourcesMsgSent)
         return 0;
-    // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
-    if(since_not_working != 0xFFFFFFFF)
+    // Possibly add the number of GFs we haven't worked until now
+    if(sinceNotWorking != isWorkingMarker)
     {
-        // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
-        numGfNotWorking += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
-        // Zähler zurücksetzen
-        since_not_working = GetEvMgr().GetCurrentGF();
+        const auto currentGF = GetEvMgr().GetCurrentGF();
+        numGfNotWorking += static_cast<unsigned short>(currentGF - sinceNotWorking);
+        // Reset marker
+        sinceNotWorking = currentGF;
     }
 
-    // Produktivität ausrechnen
-    unsigned short curProductivity = (400 - numGfNotWorking) / 4;
+    RTTR_Assert(numGfNotWorking <= numProductivityGFs);
+    // Calculate the productivity
+    static_assert(numProductivityGFs / 100u == 4u, "Cannot use simplified percentage calculation");
+    const unsigned short curProductivity = (numProductivityGFs - numGfNotWorking) / 4u;
 
-    // Zähler zurücksetzen
+    // Reset counter
     numGfNotWorking = 0;
 
     return curProductivity;

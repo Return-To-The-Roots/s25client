@@ -1134,11 +1134,11 @@ void dskGameInterface::GI_BuildRoad()
     }
 }
 
-void dskGameInterface::GI_WindowClosed(Window* wnd)
+void dskGameInterface::Msg_WindowClosed(IngameWindow& wnd)
 {
-    if(actionwindow == wnd)
+    if(actionwindow == &wnd)
         actionwindow = nullptr;
-    else if(roadwindow == wnd)
+    else if(roadwindow == &wnd)
         roadwindow = nullptr;
 }
 

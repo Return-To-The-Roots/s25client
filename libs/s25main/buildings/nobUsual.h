@@ -20,36 +20,38 @@ class GameEvent;
 // Gewöhnliches Gebäude mit einem Arbeiter und Waren
 class nobUsual : public noBuilding
 {
+protected:
     /// Der Typ, der hier arbeitet
     nofBuildingWorker* worker;
     /// Produktivität
     unsigned short productivity;
     /// Produktion eingestellt? (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
-    bool disable_production, disable_production_virtual;
+    bool disableProduction, disableProductionVirtual;
     /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
-    unsigned char last_ordered_ware;
+    unsigned char lastOrderedWare;
     /// Rohstoffe, die zur Produktion benötigt werden
     std::array<uint8_t, 3> numWares;
     /// Bestellte Waren
-    std::vector<std::list<Ware*>> ordered_wares;
+    std::vector<std::list<Ware*>> orderedWares;
     /// Bestell-Ware-Event
     const GameEvent* orderware_ev;
     /// Rechne-Produktivität-aus-Event
     const GameEvent* productivity_ev;
     /// Letzte Produktivitäten (Durchschnitt = Gesamt produktivität), vorne das neuste !
-    std::array<uint16_t, 6> last_productivities;
+    std::array<uint16_t, 6> lastProductivities;
     /// How many GFs he did not work since the last productivity calculation
     unsigned short numGfNotWorking;
     /// Since which GF he did not work (0xFFFFFFFF = currently working)
-    unsigned since_not_working;
+    unsigned sinceNotWorking;
     /// Did we notify the player that we are out of resources?
     bool outOfRessourcesMsgSent;
 
-protected:
     friend class SerializedGameData;
     friend class BuildingFactory;
     nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation);
     nobUsual(SerializedGameData& sgd, unsigned obj_id);
+
+    void DestroyBuilding() override;
 
 public:
     /// Wird gerade gearbeitet oder nicht?
@@ -57,10 +59,6 @@ public:
 
     ~nobUsual() override;
 
-protected:
-    void DestroyBuilding() override;
-
-public:
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GO_Type::NobUsual; }
@@ -99,13 +97,7 @@ public:
     void TakeWare(Ware* ware) override;
 
     /// Bestellte Waren
-    bool AreThereAnyOrderedWares() const
-    {
-        for(const auto& ordered_ware : ordered_wares)
-            if(!ordered_ware.empty())
-                return true;
-        return false;
-    }
+    bool AreThereAnyOrderedWares() const;
 
     /// Gibt Pointer auf Produktivität zurück
     const unsigned short* GetProductivityPointer() const { return &productivity; }
@@ -113,13 +105,13 @@ public:
     const nofBuildingWorker* GetWorker() const { return worker; }
 
     /// Stoppt/Erlaubt Produktion (visuell)
-    void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
+    void ToggleProductionVirtual() { disableProductionVirtual = !disableProductionVirtual; }
     /// Stoppt/Erlaubt Produktion (real)
     void SetProductionEnabled(bool enabled);
     /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
-    bool IsProductionDisabledVirtual() const { return disable_production_virtual; }
+    bool IsProductionDisabledVirtual() const { return disableProductionVirtual; }
     /// Fragt ab, ob Produktion ausgeschaltet ist (real)
-    bool IsProductionDisabled() const { return disable_production; }
+    bool IsProductionDisabled() const { return disableProduction; }
     /// Called when there are no more resources
     void OnOutOfResources();
     /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
@@ -129,5 +121,5 @@ public:
 
 private:
     /// Calculates the productivity and resets the counter
-    unsigned short CalcProductivity();
+    unsigned short CalcCurrentProductivity();
 };

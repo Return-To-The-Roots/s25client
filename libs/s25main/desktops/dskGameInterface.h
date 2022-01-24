@@ -81,7 +81,6 @@ public:
     void GI_CancelRoadBuilding() override;
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
     void GI_BuildRoad() override;
-    void GI_WindowClosed(Window* wnd) override;
 
     // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
     // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
@@ -104,7 +103,7 @@ public:
 
     void OnChatCommand(const std::string& cmd) override;
 
-private:
+protected:
     /// Initializes player specific stuff after start or player swap
     void InitPlayer();
 
@@ -127,6 +126,8 @@ private:
     bool Msg_WheelUp(const MouseCoords& mc) override;
     bool Msg_WheelDown(const MouseCoords& mc) override;
     void WheelZoom(float step);
+
+    void Msg_WindowClosed(IngameWindow& wnd) override;
 
     void OnBuildingNote(const BuildingNote& note);
 

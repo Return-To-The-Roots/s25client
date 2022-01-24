@@ -152,10 +152,11 @@ unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
     if(!BLD_WORK_DESC[bldType].producedWare)
         return 0;
     unsigned productivity = 0;
-    unsigned numBlds = GetBuildings(bldType).size();
+    const auto& buildings = GetBuildings(bldType);
+    const unsigned numBlds = buildings.size();
     if(numBlds > 0)
     {
-        for(const nobUsual* bld : GetBuildings(bldType))
+        for(const nobUsual* bld : buildings)
             productivity += bld->GetProductivity();
         productivity /= numBlds;
     }
@@ -171,10 +172,10 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
         if(!BLD_WORK_DESC[bldType].producedWare)
             continue;
 
-        for(const nobUsual* bld : GetBuildings(bldType))
+        const auto& buildings = GetBuildings(bldType);
+        numBlds += buildings.size();
+        for(const nobUsual* bld : buildings)
             totalProductivity += bld->GetProductivity();
-
-        numBlds += GetBuildings(bldType).size();
     }
     if(numBlds == 0)
         return 0;
