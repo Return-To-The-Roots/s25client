@@ -240,9 +240,9 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
 BOOST_AUTO_TEST_CASE(TextControlWorks)
 {
     auto font = createMockFont({'?', 'a', 'z'});
-    const auto parentPos = rttr::test::randomPoint<DrawPoint>();
+    const auto parentPos = rttr::test::randomPoint<DrawPoint>(-1000, 1000);
     Window parent(nullptr, 0, parentPos);
-    const auto pos = rttr::test::randomPoint<DrawPoint>();
+    const auto pos = rttr::test::randomPoint<DrawPoint>(-1000, 1000);
     const auto* testText = "a?z?a?z?a?z?a?z?a?z?";
     ctrlText text(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle{}, font.get());
 

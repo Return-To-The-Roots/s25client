@@ -36,6 +36,7 @@ public:
     /// Return non-const world (TODO: Remove, this is a view only!)
     GameWorldBase& GetWorldNonConst() { return gwb; }
     const TerrainRenderer& GetTerrainRenderer() const { return tr; }
+    auto getMaxNodeAltitude() const { return maxNodeAltitude_; }
     SoundManager& GetSoundMgr();
     /// Get the player instance for this view
     const GamePlayer& GetPlayer() const;
@@ -104,6 +105,8 @@ private:
     TerrainRenderer tr;
     Subscription evVisibilityChanged, evAltitudeChanged, evRoadConstruction, evBQChanged;
     NodeMapBase<VisualMapNode> visualNodes;
+    /// Max height of any node
+    uint8_t maxNodeAltitude_ = 0;
 
     void InitVisualData();
     inline void VisibilityChanged(const MapPoint& pt, unsigned player);

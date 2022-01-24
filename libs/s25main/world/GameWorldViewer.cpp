@@ -20,6 +20,17 @@
 GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : playerId_(playerId), gwb(gwb)
 {
     InitVisualData();
+    maxNodeAltitude_ = 0;
+    RTTR_FOREACH_PT(MapPoint, gwb.GetSize())
+    {
+        maxNodeAltitude_ = std::max(maxNodeAltitude_, gwb.GetNode(pt).altitude);
+    }
+    evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
+        if(note.type == NodeNote::Altitude)
+        {
+            maxNodeAltitude_ = std::max(maxNodeAltitude_, this->gwb.GetNode(note.pos).altitude);
+        }
+    });
 }
 
 void GameWorldViewer::InitVisualData()
@@ -47,7 +58,10 @@ void GameWorldViewer::InitTerrainRenderer()
     // Notify renderer about altitude changes
     evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
         if(note.type == NodeNote::Altitude)
+        {
+            maxNodeAltitude_ = std::max(maxNodeAltitude_, gwb.GetNode(note.pos).altitude);
             tr.AltitudeChanged(note.pos, *this);
+        }
     });
     // And visibility changes
     evVisibilityChanged = gwb.GetNotifications().subscribe<PlayerNodeNote>([this](const PlayerNodeNote& note) {

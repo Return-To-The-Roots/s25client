@@ -688,7 +688,7 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     if(SETTINGS.interface.revert_mouse)
         acceleration = -acceleration;
 
-    gwv.MoveTo((mc.GetPos() - startScrollPt) * acceleration);
+    gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
     VIDEODRIVER.SetMousePos(startScrollPt);
 
     if(!SETTINGS.global.smartCursor)
@@ -726,16 +726,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
 
         case KeyType::Left: // Nach Links Scrollen
-            gwv.MoveToX(-30);
+            gwv.MoveBy({-30, 0});
             return true;
         case KeyType::Right: // Nach Rechts Scrollen
-            gwv.MoveToX(30);
+            gwv.MoveBy({30, 0});
             return true;
         case KeyType::Up: // Nach Oben Scrollen
-            gwv.MoveToY(-30);
+            gwv.MoveBy({0, -30});
             return true;
         case KeyType::Down: // Nach Unten Scrollen
-            gwv.MoveToY(30);
+            gwv.MoveBy({0, 30});
             return true;
 
         case KeyType::F2: // Spiel speichern

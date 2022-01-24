@@ -103,16 +103,15 @@ public:
 
     void Draw(const RoadBuildState& rb, MapPoint selected, bool drawMouse, unsigned* water = nullptr);
 
-    /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
-    void MoveTo(int x, int y, bool absolute = false);
-    void MoveTo(const DrawPoint& newPos, bool absolute = false);
+    /// Moves the map view by the given offset in pixels
+    void MoveBy(const DrawPoint& numPixels);
+    /// Moves a position on the map in pixels
+    void MoveTo(const DrawPoint& newPos);
     /// Zentriert den Bildschirm auf ein bestimmtes Map-Object
     void MoveToMapPt(MapPoint pt);
     /// Springt zur letzten Position, bevor man "weggesprungen" ist
     void MoveToLastPosition();
 
-    void MoveToX(int x, bool absolute = false) { MoveTo((absolute ? 0 : offset.x) + x, offset.y, true); }
-    void MoveToY(int y, bool absolute = false) { MoveTo(offset.x, (absolute ? 0 : offset.y) + y, true); }
     DrawPoint GetOffset() const { return offset; }
 
     /// Add a debug node printer
