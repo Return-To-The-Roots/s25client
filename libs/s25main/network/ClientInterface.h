@@ -16,10 +16,15 @@ class GlobalGameSettings;
 /// Verbindungsstatus beim Verbinden zum Server
 enum class ConnectState
 {
-    WaitForAnswer,
+    Initiated,
+    VerifyServer,
     QueryPw,
-    QueryMapName,
+    QueryMapInfo,
+    ReceiveMap,
+    VerifyMap,
+    QueryServerName,
     QueryPlayerList,
+    QuerySettings,
     Finished
 };
 
@@ -29,6 +34,7 @@ public:
     virtual ~ClientInterface() = default;
 
     virtual void CI_NextConnectState(ConnectState) {}
+    virtual void CI_MapPartReceived(uint32_t /*bytesReceived*/, uint32_t /*bytesTotal*/) {}
     virtual void CI_Error(ClientError) {}
 
     virtual void CI_NewPlayer(unsigned /*playerId*/) {}

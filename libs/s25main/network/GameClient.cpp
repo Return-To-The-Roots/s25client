@@ -103,9 +103,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     }
 
     state = ClientState::Connect;
-
-    if(ci)
-        ci->CI_NextConnectState(ConnectState::WaitForAnswer);
+    AdvanceState(ConnectState::Initiated);
 
     // Es wird kein Replay abgespielt, sondern dies ist ein richtiges Spiel
     replayMode = false;
@@ -375,7 +373,7 @@ bool GameClient::OnGameMessage(const GameMessage_Ping& /*msg*/)
  */
 bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 {
-    if(state != ClientState::Connect)
+    if(!VerifyState(ConnectState::Initiated))
         return true;
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
     if(msg.player == GameMessageWithPlayer::NO_PLAYER_ID)
@@ -388,6 +386,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 
     // Server-Typ senden
     mainPlayer.sendMsgAsync(new GameMessage_Server_Type(clientconfig.servertyp, rttr::version::GetRevision()));
+    AdvanceState(ConnectState::VerifyServer);
     return true;
 }
 
@@ -396,22 +395,21 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 {
-    if(state != ClientState::Connect && state != ClientState::Config)
+    if(state != ClientState::Config && !VerifyState(ConnectState::QueryPlayerList))
         return true;
     RTTR_Assert(gameLobby);
     RTTR_Assert(gameLobby->getNumPlayers() == msg.playerInfos.size());
     if(gameLobby->getNumPlayers() != msg.playerInfos.size())
+    {
+        OnError(ClientError::InvalidMessage);
         return true;
+    }
 
     for(unsigned i = 0; i < gameLobby->getNumPlayers(); ++i)
         gameLobby->getPlayer(i) = msg.playerInfos[i];
 
-    if(state != ClientState::Config)
-    {
-        state = ClientState::Config;
-        if(ci)
-            ci->CI_NextConnectState(ConnectState::Finished);
-    }
+    if(state == ClientState::Connect)
+        AdvanceState(ConnectState::QuerySettings);
     return true;
 }
 
@@ -644,7 +642,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
 {
-    if(state != ClientState::Connect)
+    if(!VerifyState(ConnectState::VerifyServer))
         return true;
 
     using StatusCode = GameMessage_Server_TypeOK::StatusCode;
@@ -672,8 +670,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
 
     mainPlayer.sendMsgAsync(new GameMessage_Server_Password(clientconfig.password));
 
-    if(ci)
-        ci->CI_NextConnectState(ConnectState::QueryPw);
+    AdvanceState(ConnectState::QueryPw);
     return true;
 }
 
@@ -682,7 +679,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
 {
-    if(state != ClientState::Connect)
+    if(!VerifyState(ConnectState::QueryPw))
         return true;
 
     if(msg.password != "true")
@@ -694,8 +691,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
     mainPlayer.sendMsgAsync(new GameMessage_Player_Name(0xFF, SETTINGS.lobby.name));
     mainPlayer.sendMsgAsync(new GameMessage_MapRequest(true));
 
-    if(ci)
-        ci->CI_NextConnectState(ConnectState::QueryMapName);
+    AdvanceState(ConnectState::QueryMapInfo);
     return true;
 }
 
@@ -704,12 +700,11 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Server_Name& msg)
 {
-    if(state != ClientState::Connect)
+    if(!VerifyState(ConnectState::QueryServerName))
         return true;
     clientconfig.gameName = msg.name;
 
-    if(ci)
-        ci->CI_NextConnectState(ConnectState::QueryPlayerList);
+    AdvanceState(ConnectState::QueryPlayerList);
     return true;
 }
 
@@ -865,7 +860,7 @@ bool GameClient::OnGameMessage(const GameMessage_CancelCountdown& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 {
-    if(state != ClientState::Connect)
+    if(!VerifyState(ConnectState::QueryMapInfo))
         return true;
 
     // full path
@@ -908,6 +903,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
             if(ok)
             {
                 mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
+                AdvanceState(ConnectState::VerifyMap);
                 return true;
             }
         }
@@ -918,6 +914,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     mapinfo.mapData.data.resize(msg.mapCompressedLen);
     mapinfo.luaData.data.resize(msg.luaCompressedLen);
     mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
+    AdvanceState(ConnectState::ReceiveMap);
     return true;
 }
 
@@ -926,7 +923,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
 {
-    if(state != ClientState::Connect)
+    if(!VerifyState(ConnectState::ReceiveMap))
         return true;
 
     LOG.writeToFile("<<< NMS_MAP_DATA(%u)\n") % msg.data.size();
@@ -935,14 +932,18 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
     else
         std::copy(msg.data.begin(), msg.data.end(), mapinfo.luaData.data.begin() + msg.offset);
 
-    const unsigned curSize = msg.offset + msg.data.size();
-    bool isCompleted;
-    if(msg.isMapData)
-        isCompleted = mapinfo.luaFilepath.empty() && curSize == mapinfo.mapData.data.size();
-    else
-        isCompleted = curSize == mapinfo.luaData.data.size();
+    uint32_t totalSize = mapinfo.mapData.data.size();
+    uint32_t receivedSize = msg.offset + msg.data.size();
+    if(!mapinfo.luaFilepath.empty())
+    {
+        totalSize += mapinfo.luaData.data.size();
+        if(!msg.isMapData)
+            receivedSize = mapinfo.mapData.data.size();
+    }
+    if(ci)
+        ci->CI_MapPartReceived(receivedSize, totalSize);
 
-    if(isCompleted)
+    if(receivedSize == totalSize)
     {
         if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {
@@ -963,6 +964,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
         }
 
         mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
+        AdvanceState(ConnectState::VerifyMap);
     }
     return true;
 }
@@ -979,6 +981,23 @@ void GameClient::OnError(ClientError error)
     if(ci)
         ci->CI_Error(error);
     Stop();
+}
+
+void GameClient::AdvanceState(ConnectState newState)
+{
+    connectState = newState;
+    if(ci)
+        ci->CI_NextConnectState(connectState);
+}
+
+bool GameClient::VerifyState(ConnectState expectedState)
+{
+    if(state != ClientState::Connect || connectState != expectedState)
+    {
+        OnError(ClientError::InvalidMessage);
+        return false;
+    }
+    return true;
 }
 
 bool GameClient::CreateLobby()
@@ -1029,16 +1048,20 @@ bool GameClient::CreateLobby()
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 {
-    if(state != ClientState::Connect)
+    if(!VerifyState(ConnectState::VerifyMap))
         return true;
     LOG.writeToFile("<<< NMS_MAP_CHECKSUM(%d)\n") % (msg.correct ? 1 : 0);
 
-    if(!msg.correct)
+    if(msg.correct)
+        AdvanceState(ConnectState::QueryServerName);
+    else
     {
         gameLobby.reset();
         if(msg.retryAllowed)
+        {
             mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
-        else
+            AdvanceState(ConnectState::ReceiveMap);
+        } else
             OnError(ClientError::MapTransmission);
     }
     return true;
@@ -1049,13 +1072,17 @@ bool GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_GGSChange& msg)
 {
-    if(state != ClientState::Config)
+    if(state != ClientState::Config && !VerifyState(ConnectState::QuerySettings))
         return true;
     LOG.writeToFile("<<< NMS_GGS_CHANGE\n");
 
     gameLobby->getSettings() = msg.ggs;
 
-    if(ci)
+    if(state == ClientState::Connect)
+    {
+        state = ClientState::Config;
+        AdvanceState(ConnectState::Finished);
+    } else if(ci)
         ci->CI_GGSChanged(msg.ggs);
     return true;
 }

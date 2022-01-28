@@ -209,9 +209,9 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case ConnectState::WaitForAnswer: SetStatus(_("Waiting for Reply..."), COLOR_YELLOW); break;
+        case ConnectState::Initiated: SetStatus(_("Waiting for Reply..."), COLOR_YELLOW); break;
         case ConnectState::QueryPw: SetStatus(_("Checking Password..."), COLOR_YELLOW); break;
-        case ConnectState::QueryMapName: SetStatus(_("Checking Map..."), COLOR_YELLOW); break;
+        case ConnectState::QueryMapInfo: SetStatus(_("Checking Map..."), COLOR_YELLOW); break;
         case ConnectState::QueryPlayerList: SetStatus(_("Waiting for Playerinfo..."), COLOR_YELLOW); break;
 
         case ConnectState::Finished: // Wir wurden verbunden
