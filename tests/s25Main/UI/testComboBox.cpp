@@ -19,15 +19,13 @@
 using namespace rttr::test;
 
 namespace {
-/* clang-format off */
-    MOCK_BASE_CLASS(TestWindow, Window)
-    {
-    public:
-        TestWindow() : Window(nullptr, randomValue<unsigned>(), DrawPoint(0,0)) {}
-        MOCK_METHOD(Msg_ComboSelectItem, 2)
-        MOCK_METHOD(Msg_ListSelectItem, 2)
-    };
-/* clang-format on */
+MOCK_BASE_CLASS(TestWindow, Window)
+{
+public:
+    TestWindow() : Window(nullptr, randomValue<unsigned>(), DrawPoint(0, 0)) {}
+    MOCK_METHOD(Msg_ComboSelectItem, 2)
+    MOCK_METHOD(Msg_ListSelectItem, 2)
+};
 } // namespace
 
 BOOST_FIXTURE_TEST_SUITE(ComboBox, uiHelper::Fixture)

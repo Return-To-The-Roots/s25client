@@ -19,7 +19,6 @@
 
 BOOST_AUTO_TEST_SUITE(UI)
 
-/* clang-format off */
 MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 {
     MOCK_METHOD(IsLoggedIn, 0);
@@ -28,7 +27,6 @@ MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
     MOCK_METHOD(SendServerJoinRequest, 0);
     MOCK_METHOD(SendChat, 1);
 };
-/* clang-format on */
 
 BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
 {

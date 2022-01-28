@@ -166,6 +166,8 @@ Standard:        c++14
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
+  - MOCK_BASE_CLASS
+  - MOCK_METHOD
 TabWidth:        4
 UseCRLF:         false
 UseTab:          Never

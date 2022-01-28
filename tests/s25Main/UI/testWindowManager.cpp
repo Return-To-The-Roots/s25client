@@ -30,15 +30,13 @@ inline std::ostream& operator<<(std::ostream& s, const MouseCoords& mc)
 }
 
 namespace {
-/* clang-format off */
 MOCK_BASE_CLASS(TestDesktop, Desktop)
 {
-    TestDesktop(): Desktop(nullptr){}
+    TestDesktop() : Desktop(nullptr) {}
     MOCK_METHOD(Msg_LeftDown, 1)
     MOCK_METHOD(Msg_LeftUp, 1)
     MOCK_METHOD(Msg_MouseMove, 1)
 };
-/* clang-format on */
 
 struct WMFixture : mock::cleanup
 {
@@ -137,22 +135,19 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
 }
 
 namespace {
-/* clang-format off */
 MOCK_BASE_CLASS(TestIngameWnd, IngameWindow)
 {
-    explicit TestIngameWnd(unsigned id, bool isModal = false): IngameWindow(id, DrawPoint(0,0), Extent(100, 100), "", nullptr, isModal){
+    explicit TestIngameWnd(unsigned id, bool isModal = false)
+        : IngameWindow(id, DrawPoint(0, 0), Extent(100, 100), "", nullptr, isModal)
+    {
         closed.erase(std::remove(closed.begin(), closed.end(), this), closed.end());
     }
-    ~TestIngameWnd() override
-    {
-        closed.push_back(this);
-    }
+    ~TestIngameWnd() override { closed.push_back(this); }
     MOCK_METHOD(Draw_, 0, void())
     MOCK_METHOD(Msg_KeyDown, 1)
     static std::vector<TestIngameWnd*> closed;
 };
 std::vector<TestIngameWnd*> TestIngameWnd::closed;
-/* clang-format on */
 
 #define REQUIRE_WINDOW_ALIVE(wnd) BOOST_TEST_REQUIRE(!helpers::contains(TestIngameWnd::closed, wnd))
 #define REQUIRE_WINDOW_ACTIVE(wnd) \

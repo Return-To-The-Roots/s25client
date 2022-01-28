@@ -63,18 +63,16 @@ struct LobbyFixture
 };
 
 namespace {
-/* clang-format off */
-    MOCK_BASE_CLASS(MockLobbyInterface, LobbyInterface)
-    {
-    public:
-        MockLobbyInterface() { LOBBYCLIENT.AddListener(this); }
-        ~MockLobbyInterface() override { LOBBYCLIENT.RemoveListener(this); }
-        MOCK_METHOD(LC_Chat, 2)
-        MOCK_METHOD(LC_LoggedIn, 1)
-        MOCK_METHOD(LC_Connected, 0)
-    };
-/* clang-format on */
-}
+MOCK_BASE_CLASS(MockLobbyInterface, LobbyInterface)
+{
+public:
+    MockLobbyInterface() { LOBBYCLIENT.AddListener(this); }
+    ~MockLobbyInterface() override { LOBBYCLIENT.RemoveListener(this); }
+    MOCK_METHOD(LC_Chat, 2)
+    MOCK_METHOD(LC_LoggedIn, 1)
+    MOCK_METHOD(LC_Connected, 0)
+};
+} // namespace
 
 BOOST_FIXTURE_TEST_SUITE(Lobby, LobbyFixture)
 
