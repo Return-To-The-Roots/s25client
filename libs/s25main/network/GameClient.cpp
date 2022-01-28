@@ -874,6 +874,12 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     {
         LOG.write("Invalid filename received!\n");
         OnError(ClientError::InvalidMap);
+        return true;
+    }
+    if(!MapInfo::verifySize(msg.mapLen, msg.luaLen, msg.mapCompressedLen, msg.luaCompressedLen))
+    {
+        OnError(ClientError::InvalidMap);
+        return true;
     }
     mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / portFilename;
     mapinfo.type = msg.mt;
@@ -884,6 +890,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     else
         mapinfo.luaFilepath.clear();
 
+    // We have the map locally already, so prepare and ask if this is the same as the one on the server
     if(bfs::exists(mapinfo.filepath) && (mapinfo.luaFilepath.empty() || bfs::exists(mapinfo.luaFilepath))
        && CreateLobby())
     {
@@ -1278,13 +1285,8 @@ void GameClient::ExecuteGameFrame()
 
         } catch(LuaExecutionError& e)
         {
-            if(ci)
-            {
-                SystemChat(
-                  (boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
-                ci->CI_Error(ClientError::InvalidMap);
-            }
-            Stop();
+            SystemChat((boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
+            OnError(ClientError::InvalidMap);
         }
         if(skiptogf == GetGFNumber())
             skiptogf = 0;

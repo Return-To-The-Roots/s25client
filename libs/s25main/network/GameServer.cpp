@@ -194,6 +194,12 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
     } else
         RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
+    if(!mapinfo.verifySize())
+    {
+        LOG.write("Map %1% is to large!\n") % mapinfo.filepath;
+        return false;
+    }
+
     // ab in die Konfiguration
     state = ServerState::Config;
 

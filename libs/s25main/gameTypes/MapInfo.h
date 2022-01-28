@@ -19,6 +19,11 @@ public:
     ~MapInfo();
     void Clear();
 
+    /// Return true if the currently present data sizes (compressed and uncompressed) are valid (especially fit into
+    /// uint32)
+    bool verifySize() const;
+    static bool verifySize(size_t mapLen, size_t mapLenCompressed, size_t luaLen, size_t luaLenCompressed);
+
     /// Type of the map (savegame, old map)
     MapType type;
     /// Name of the map
