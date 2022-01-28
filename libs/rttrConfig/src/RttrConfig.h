@@ -12,7 +12,7 @@
 class RttrConfig : public Singleton<RttrConfig>
 {
     boost::filesystem::path prefixPath_, homePath;
-    std::map<std::string, std::string> pathMappings;
+    std::map<std::string, boost::filesystem::path> pathMappings;
 
 public:
     bool Init();
@@ -22,6 +22,8 @@ public:
     static boost::filesystem::path GetSourceDir();
     /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
     boost::filesystem::path ExpandPath(const std::string& path) const;
+    /// Overwrite a given path mapping
+    void overridePathMapping(const std::string& id, const boost::filesystem::path& path);
 };
 
 #define RTTRCONFIG RttrConfig::inst()
