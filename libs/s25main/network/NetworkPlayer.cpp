@@ -40,10 +40,7 @@ void NetworkPlayer::sendMsg(const Message& msg)
 void NetworkPlayer::executeMsgs(MessageInterface& msgHandler)
 {
     while(!recvQueue.empty())
-    {
-        recvQueue.front()->run(&msgHandler, playerId);
-        recvQueue.pop();
-    }
+        recvQueue.pop()->run(&msgHandler, playerId);
 }
 
 void swap(NetworkPlayer& lhs, NetworkPlayer& rhs)

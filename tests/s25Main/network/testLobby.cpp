@@ -25,10 +25,7 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
         {
             Connection& con = connections[id];
             while(!con.recvQueue.empty())
-            {
-                std::unique_ptr<Message> msg(con.recvQueue.popFront());
-                BOOST_TEST(msg->run(this, id));
-            }
+                BOOST_TEST(con.recvQueue.pop()->run(this, id));
         }
     }
 
