@@ -15,7 +15,7 @@
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskDirectIP.h"
-#include "desktops/dskHostGame.h"
+#include "desktops/dskGameLobby.h"
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
@@ -387,8 +387,8 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(csi.type == ServerType::Lobby)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(csi.type, GAMECLIENT.GetGameLobby(),
-                                                               GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
+            WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(csi.type, GAMECLIENT.GetGameLobby(),
+                                                                GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
             break;
         }
         default: break;

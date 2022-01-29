@@ -11,7 +11,7 @@
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
-#include "desktops/dskHostGame.h"
+#include "desktops/dskGameLobby.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
@@ -219,8 +219,8 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(server_type == ServerType::Lobby)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(server_type, GAMECLIENT.GetGameLobby(),
-                                                               GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
+            WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(server_type, GAMECLIENT.GetGameLobby(),
+                                                                GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
         }
         break;
         default: break;
