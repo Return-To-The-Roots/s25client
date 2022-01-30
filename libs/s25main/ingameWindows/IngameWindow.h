@@ -27,7 +27,7 @@ public:
     static const Extent borderSize;
 
     IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
-                 glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true,
+                 glArchivItem_Bitmap* background, bool modal = false, bool isUserClosable = true,
                  Window* parent = nullptr);
 
     /// setzt den Hintergrund.
@@ -61,11 +61,11 @@ public:
     /// ist das Fenster minimiert?
     bool IsMinimized() const { return isMinimized_; }
 
-    /// Can we close the window on right-click?
-    /// If this is false and the window is modal the close button at the title bar will be hidden
-    bool GetCloseOnRightClick() const { return closeOnRightClick_; }
+    /// Can the user close the window (e.g. right-click, ESC)
+    /// If this is false the close button at the title bar will be hidden
+    bool isUserClosable() const { return isUserClosable_; }
 
-    /// ist das Fenster ein modales Fenster?
+    /// Modal windows cannot be minimized and stay on top of non-modal ones
     bool IsModal() const { return isModal_; }
 
     void MouseLeftDown(const MouseCoords& mc);
@@ -108,5 +108,5 @@ private:
     bool closeme;
     bool isMinimized_;
     bool isMoving;
-    bool closeOnRightClick_;
+    bool isUserClosable_;
 };

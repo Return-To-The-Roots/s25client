@@ -5,6 +5,7 @@
 #include "PointOutput.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlProgress.h"
+#include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwHelp.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "uiHelper/uiHelpers.hpp"
@@ -12,7 +13,15 @@
 #include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_CASE(IngameWnd, uiHelper::Fixture)
+// LCOV_EXCL_START
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MapStyle)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MountainDistance)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount)
+// LCOV_EXCL_STOP
+
+BOOST_FIXTURE_TEST_SUITE(IngameWindows, uiHelper::Fixture)
+
+BOOST_AUTO_TEST_CASE(MinimizeWindow)
 {
     iwHelp wnd("Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
     const Extent oldSize = wnd.GetSize();
@@ -28,13 +37,7 @@ BOOST_FIXTURE_TEST_CASE(IngameWnd, uiHelper::Fixture)
     BOOST_TEST_REQUIRE(wnd.GetSize() == oldSize);
 }
 
-// LCOV_EXCL_START
-BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MapStyle)
-BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MountainDistance)
-BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount)
-// LCOV_EXCL_STOP
-
-BOOST_FIXTURE_TEST_CASE(IwMapGenerator, uiHelper::Fixture)
+BOOST_AUTO_TEST_CASE(IwMapGenerator)
 {
     const auto expectedNumPlayers = rttr::test::randomValue(2u, 7u);
     const auto expectedMapType = rttr::test::randomValue<uint8_t>(0, 2);
@@ -77,3 +80,13 @@ BOOST_FIXTURE_TEST_CASE(IwMapGenerator, uiHelper::Fixture)
     BOOST_TEST(settings.trees == expectedTrees);
     BOOST_TEST(settings.stonePiles == expectedStonePiles);
 }
+
+BOOST_AUTO_TEST_CASE(ConnectingWindow)
+{
+    iwConnecting wnd(ServerType::Local, nullptr);
+    // Modal and doesn't react on right-click
+    BOOST_TEST(wnd.IsModal());
+    BOOST_TEST(!wnd.isUserClosable());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
