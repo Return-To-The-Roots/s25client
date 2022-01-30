@@ -5,6 +5,7 @@
 #include "JoinPlayerInfo.h"
 #include "RttrConfig.h"
 #include "TestServer.h"
+#include "files.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "network/GameMessage.h"
@@ -15,9 +16,12 @@
 #include "s25util/boostTestHelpers.h"
 #include "s25util/tmpFile.h"
 #include <turtle/mock.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/nowide/cstdio.hpp>
 #include <boost/pointer_cast.hpp>
 #include <boost/test/unit_test.hpp>
+
+namespace bfs = boost::filesystem;
 
 // LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(ClientState)
@@ -83,15 +87,14 @@ BOOST_AUTO_TEST_CASE(ClientFollowsConnectProtocol)
     }
     const boost::filesystem::path testMapPath =
       rttr::test::rttrBaseDir / "tests" / "testData" / "maps" / "LuaFunctions.SWD";
-    TmpFile mapFile;
-    mapFile.close();
     MapInfo mapInfo;
     mapInfo.mapData.CompressFromFile(testMapPath, &mapInfo.mapChecksum);
-    boost::nowide::remove(mapFile.filePath.string().c_str());
-    RTTRCONFIG.overridePathMapping("RTTR_USERDATA", mapFile.filePath.parent_path());
+    TmpFolder tmpUserdata(rttr::test::rttrTestDataDirOut);
+    RTTRCONFIG.overridePathMapping("USERDATA", tmpUserdata);
+    bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
     {
         MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::ReceiveMap).once();
-        clientMsgInterface.OnGameMessage(GameMessage_Map_Info(mapFile.filePath.filename().string(), MapType::OldMap,
+        clientMsgInterface.OnGameMessage(GameMessage_Map_Info(testMapPath.filename().string(), MapType::OldMap,
                                                               mapInfo.mapData.uncompressedLength,
                                                               mapInfo.mapData.data.size(), 0, 0));
         const auto msg = boost::dynamic_pointer_cast<GameMessage_MapRequest>(client.GetMainPlayer().sendQueue.pop());
@@ -112,6 +115,7 @@ BOOST_AUTO_TEST_CASE(ClientFollowsConnectProtocol)
         BOOST_TEST_REQUIRE(msg);
         BOOST_TEST(msg->mapChecksum == mapInfo.mapChecksum);
         BOOST_TEST(msg->luaChecksum == 0u);
+        BOOST_TEST(bfs::exists(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / testMapPath.filename()));
     }
     {
         MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::QueryServerName).once();
