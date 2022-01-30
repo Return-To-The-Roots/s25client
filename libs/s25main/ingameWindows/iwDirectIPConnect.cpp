@@ -11,8 +11,8 @@
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
-#include "desktops/dskGameLobby.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "iwConnecting.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
@@ -20,55 +20,58 @@
 #include "s25util/StringConversion.h"
 #include "s25util/colors.h"
 
-iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
+namespace {
+enum : unsigned
+{
+    ID_txtIp,
+    ID_edtIp,
+    ID_txtPort,
+    ID_edtPort,
+    ID_txtPw,
+    ID_edtPw,
+    ID_txtIpv6,
+    ID_grpIpv6,
+    ID_txtStatus,
+    ID_btConnect,
+    ID_btBack,
+};
+}
+
+iwDirectIPConnect::iwDirectIPConnect(ServerType serverType)
     : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"),
                    LOADER.GetImageN("resource", 41), true),
-      server_type(server_type)
+      serverType_(serverType)
 {
-    ctrlEdit *host, *port;
+    AddText(ID_txtIp, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlEdit* host = AddEdit(ID_edtIp, DrawPoint(20, 45), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false,
+                             (serverType != ServerType::Direct), true);
 
-    // "IP - Adresse vom Host"
-    AddText(0, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false,
-                   (server_type != ServerType::Direct), true);
+    AddText(ID_txtPort, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlEdit* port = AddEdit(ID_edtPort, DrawPoint(20, 95), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false,
+                             (serverType != ServerType::Direct), true);
 
-    // "Server-Port"
-    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false,
-                   (server_type != ServerType::Direct), true);
+    AddText(ID_txtPw, DrawPoint(20, 130), _("Password (if needed):"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddEdit(ID_edtIp, DrawPoint(20, 145), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
-    // "Passwort (falls vorhanden)"
-    AddText(4, DrawPoint(20, 130), _("Password (if needed):"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
+    AddText(ID_txtIpv6, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
-    // ipv6 oder ipv4 benutzen
-    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-
-    ctrlOptionGroup* ipv6 = AddOptionGroup(12, GroupSelectType::Check);
+    ctrlOptionGroup* ipv6 = AddOptionGroup(ID_grpIpv6, GroupSelectType::Check);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TextureColor::Green2, _("IPv4"), NormalFont);
     ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TextureColor::Green2, _("IPv6"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
-    // Status
-    AddText(6, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
-
-    // "Verbinden"
-    AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TextureColor::Green2, _("Connect"), NormalFont);
-
-    // "Zurück"
-    AddTextButton(8, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
+    AddText(ID_txtStatus, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
+    AddTextButton(ID_btConnect, DrawPoint(20, 240), Extent(125, 22), TextureColor::Green2, _("Connect"), NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     host->SetFocus();
     host->SetText(SETTINGS.server.last_ip);
     port->SetText(SETTINGS.server.localPort);
-
-    // Client unser Window geben, damit er uns benachrichtigen kann
-    GAMECLIENT.SetInterface(this);
 }
 
 void iwDirectIPConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
-    // Statustext resetten
+    // Reset status
     SetStatus("", COLOR_RED);
 }
 
@@ -76,31 +79,17 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 1:
-        {
-            auto* host = GetCtrl<ctrlEdit>(1);
-            auto* port = GetCtrl<ctrlEdit>(3);
-            auto* pass = GetCtrl<ctrlEdit>(5);
-            host->SetFocus(false);
-            port->SetFocus(true);
-            pass->SetFocus(false);
-        }
-        break;
-        case 3:
-        {
-            auto* host = GetCtrl<ctrlEdit>(1);
-            auto* port = GetCtrl<ctrlEdit>(3);
-            auto* pass = GetCtrl<ctrlEdit>(5);
-            host->SetFocus(false);
-            port->SetFocus(false);
-            pass->SetFocus(true);
-        }
-        break;
-        case 5:
-        {
-            Msg_ButtonClick(7);
-        }
-        break;
+        case ID_edtIp:
+            GetCtrl<ctrlEdit>(ID_edtIp)->SetFocus(false);
+            GetCtrl<ctrlEdit>(ID_edtPort)->SetFocus(true);
+            GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(false);
+            break;
+        case ID_edtPort:
+            GetCtrl<ctrlEdit>(ID_edtIp)->SetFocus(false);
+            GetCtrl<ctrlEdit>(ID_edtPort)->SetFocus(false);
+            GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(true);
+            break;
+        case ID_edtPw: Msg_ButtonClick(ID_btConnect); break;
     }
 }
 
@@ -108,11 +97,11 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 7: // "Verbinden"
+        case ID_btConnect:
         {
-            auto* edtHost = GetCtrl<ctrlEdit>(1);
-            auto* edtPort = GetCtrl<ctrlEdit>(3);
-            auto* edtPw = GetCtrl<ctrlEdit>(5);
+            auto* edtHost = GetCtrl<ctrlEdit>(ID_edtIp);
+            auto* edtPort = GetCtrl<ctrlEdit>(ID_edtPort);
+            auto* edtPw = GetCtrl<ctrlEdit>(ID_edtPw);
             boost::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
             if(!port)
             {
@@ -123,51 +112,44 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
                 break;
             }
 
-            // einstellung speichern
+            // save settings
             SETTINGS.server.last_ip = edtHost->GetText();
 
-            // Text auf "Verbinde mit Host..." setzen und Button deaktivieren
-            SetStatus(_("Connecting with Host..."), COLOR_RED);
-
-            GAMECLIENT.Stop();
-            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, *port, false,
+            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), serverType_, *port, false,
                                    SETTINGS.server.ipv6))
             {
-                // Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
                 SetStatus(_("Connection failed!"), COLOR_RED);
             } else
-                GetCtrl<ctrlButton>(ctrl_id)->SetEnabled(false);
+            {
+                SetStatus(_("Connecting with Host..."), COLOR_RED);
+                GetCtrl<ctrlButton>(ID_btConnect)->SetEnabled(false);
+                std::unique_ptr<ILobbyClient> lobbyClient;
+                if(serverType_ == ServerType::Lobby)
+                    lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
+                iwConnecting& wnd =
+                  WINDOWMANAGER.Show(std::make_unique<iwConnecting>(serverType_, std::move(lobbyClient)));
+                onErrorConnection_ = wnd.onError.connect([this](ClientError error) {
+                    SetStatus(ClientErrorToStr(error), COLOR_RED);
+                    this->GetCtrl<ctrlButton>(ID_btConnect)->SetEnabled();
+                });
+            }
         }
         break;
-        case 8:
-        {
-            Close();
-        }
-        break;
+        case ID_btBack: Close(); break;
     }
 }
 
 void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
-    switch(ctrl_id)
-    {
-        case 12: // IPv6 Ja/Nein
-        {
-            SETTINGS.server.ipv6 = (selection == 1);
-        }
-        break;
-    }
+    if(ctrl_id == ID_grpIpv6)
+        SETTINGS.server.ipv6 = (selection == 1);
 }
 
-/**
- *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
- *  Buttons.
- */
 void iwDirectIPConnect::SetStatus(const std::string& text, unsigned color)
 {
-    // Text setzen
-    GetCtrl<ctrlText>(6)->SetTextColor(color);
-    GetCtrl<ctrlText>(6)->SetText(text);
+    auto* txtStatus = GetCtrl<ctrlText>(ID_txtStatus);
+    txtStatus->SetTextColor(color);
+    txtStatus->SetText(text);
 }
 
 /**
@@ -175,8 +157,7 @@ void iwDirectIPConnect::SetStatus(const std::string& text, unsigned color)
  */
 void iwDirectIPConnect::SetHost(const std::string& hostIp)
 {
-    auto* host = GetCtrl<ctrlEdit>(1);
-    host->SetText(hostIp);
+    GetCtrl<ctrlEdit>(ID_edtIp)->SetText(hostIp);
 }
 
 void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6,
@@ -184,11 +165,11 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
 {
     SetHost(hostOrIp);
     SetPort(port);
-    GetCtrl<ctrlOptionGroup>(12)->SetSelection(isIPv6 ? 1 : 0, true);
-    auto* btConnect = GetCtrl<ctrlButton>(7);
+    GetCtrl<ctrlOptionGroup>(ID_grpIpv6)->SetSelection(isIPv6 ? 1 : 0, true);
+    auto* btConnect = GetCtrl<ctrlButton>(ID_btConnect);
     VIDEODRIVER.SetMousePos(btConnect->GetDrawPos() + DrawPoint(btConnect->GetSize()) / 2);
     if(!hasPwd)
-        Msg_ButtonClick(7);
+        Msg_ButtonClick(ID_btConnect);
 }
 
 /**
@@ -196,33 +177,5 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
  */
 void iwDirectIPConnect::SetPort(unsigned short port)
 {
-    GetCtrl<ctrlEdit>(3)->SetText(s25util::toStringClassic(port));
-}
-
-void iwDirectIPConnect::CI_Error(const ClientError ce)
-{
-    SetStatus(ClientErrorToStr(ce), COLOR_RED);
-    GetCtrl<ctrlButton>(7)->SetEnabled();
-}
-
-void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
-{
-    switch(cs)
-    {
-        case ConnectState::Initiated: SetStatus(_("Waiting for Reply..."), COLOR_YELLOW); break;
-        case ConnectState::QueryPw: SetStatus(_("Checking Password..."), COLOR_YELLOW); break;
-        case ConnectState::QueryMapInfo: SetStatus(_("Checking Map..."), COLOR_YELLOW); break;
-        case ConnectState::QueryPlayerList: SetStatus(_("Waiting for Playerinfo..."), COLOR_YELLOW); break;
-
-        case ConnectState::Finished: // Wir wurden verbunden
-        {
-            std::unique_ptr<ILobbyClient> lobbyClient;
-            if(server_type == ServerType::Lobby)
-                lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(server_type, GAMECLIENT.GetGameLobby(),
-                                                                GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
-        }
-        break;
-        default: break;
-    }
+    GetCtrl<ctrlEdit>(ID_edtPort)->SetText(s25util::toStringClassic(port));
 }

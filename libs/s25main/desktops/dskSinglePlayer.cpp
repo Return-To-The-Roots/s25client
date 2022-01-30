@@ -13,9 +13,9 @@
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"
 #include "files.h"
+#include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPlayReplay.h"
-#include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
@@ -89,7 +89,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
                 if(GAMECLIENT.HostGame(csi, mostRecentFilepath, MapType::Savegame))
-                    WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
+                    WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
                 else
                 {
                     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
