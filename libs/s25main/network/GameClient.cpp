@@ -114,6 +114,13 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
 bool GameClient::HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type)
 {
     std::string hostPw = createRandString(20);
+    // Copy the map to the played map folders to avoid having to transmit it from the (local) server
+    const auto playedMapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map_path.filename();
+    if(playedMapPath != map_path)
+    {
+        boost::system::error_code ignoredEc;
+        copy_file(map_path, playedMapPath, boost::filesystem::copy_option::overwrite_if_exists, ignoredEc);
+    }
     return GAMESERVER.Start(csi, map_path, map_type, hostPw)
            && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
 }
