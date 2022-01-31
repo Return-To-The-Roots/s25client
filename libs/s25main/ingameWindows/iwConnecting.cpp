@@ -32,7 +32,8 @@ iwConnecting::iwConnecting(ServerType serverType, std::unique_ptr<ILobbyClient> 
 
     AddText(ID_txtStatus, DrawPoint(150, 30), _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     AddPercent(ID_prgLoad, DrawPoint(20, 50), Extent(260, 26), TextureColor::Grey, COLOR_YELLOW, SmallFont,
-               &downloadProgress_);
+               &downloadProgress_)
+      ->SetVisible(false);
     AddTextButton(ID_btAbort, DrawPoint(87, 80), Extent(125, 22), TextureColor::Red1, _("Abort"), NormalFont);
 
     GAMECLIENT.SetInterface(this);

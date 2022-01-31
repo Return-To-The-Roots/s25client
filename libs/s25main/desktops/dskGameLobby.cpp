@@ -71,6 +71,10 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
       localPlayerId_(playerId), lobbyClient_(std::move(lobbyClient)), hasCountdown_(false), wasActivated(false),
       gameChat(nullptr), lobbyChat(nullptr), lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
+    // If no lobby don't do anything else
+    if(!gameLobby_)
+        return;
+
     if(gameLobby_->isHost())
         lobbyHostController = std::make_unique<GameLobbyController>(gameLobby_, GAMECLIENT.GetMainPlayer());
 

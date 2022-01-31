@@ -3,14 +3,20 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
+#include "WindowManager.h"
+#include "controls/ctrlButton.h"
 #include "controls/ctrlComboBox.h"
+#include "controls/ctrlPercent.h"
 #include "controls/ctrlProgress.h"
+#include "desktops/dskGameLobby.h"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwHelp.h"
 #include "ingameWindows/iwMapGenerator.h"
+#include "ingameWindows/iwMsgbox.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "gameTypes/GameTypesOutput.h"
 #include "rttr/test/random.hpp"
+#include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
@@ -83,10 +89,59 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
 
 BOOST_AUTO_TEST_CASE(ConnectingWindow)
 {
-    iwConnecting wnd(ServerType::Local, nullptr);
-    // Modal and doesn't react on right-click
-    BOOST_TEST(wnd.IsModal());
-    BOOST_TEST(!wnd.isUserClosable());
+    MOCK_FUNCTOR(onError, void(ClientError));
+    {
+        iwConnecting wnd(ServerType::Local, nullptr);
+        ClientInterface& ci = wnd;
+        boost::signals2::scoped_connection _ = wnd.onError.connect(onError);
+        // Modal and doesn't react on right-click
+        BOOST_TEST(wnd.IsModal());
+        BOOST_TEST(!wnd.isUserClosable());
+        ctrlPercent& progressBar = *wnd.GetCtrls<ctrlPercent>().at(0);
+        BOOST_TEST(!progressBar.IsVisible()); // Initially hidden
+        for(auto st :
+            {ConnectState::Initiated, ConnectState::VerifyServer, ConnectState::QueryPw, ConnectState::QueryMapInfo})
+        {
+            ci.CI_NextConnectState(st);
+            BOOST_TEST(!progressBar.IsVisible()); // Still hidden
+        }
+        ci.CI_NextConnectState(ConnectState::ReceiveMap);
+        BOOST_TEST(progressBar.IsVisible()); // Shown
+        BOOST_TEST(progressBar.getPercentage() == 0u);
+        ci.CI_MapPartReceived(499, 1000);
+        BOOST_TEST(progressBar.IsVisible());
+        BOOST_TEST(progressBar.getPercentage() == 50u);
+        ci.CI_MapPartReceived(1000, 1000);
+        BOOST_TEST(progressBar.IsVisible());
+        BOOST_TEST(progressBar.getPercentage() == 100u);
+        for(auto st : {ConnectState::VerifyMap, ConnectState::QueryServerName, ConnectState::QueryPlayerList,
+                       ConnectState::QuerySettings})
+        {
+            ci.CI_NextConnectState(st);
+            BOOST_TEST(!progressBar.IsVisible()); // Hidden again
+        }
+        BOOST_TEST(!wnd.ShouldBeClosed());
+        ci.CI_NextConnectState(ConnectState::Finished);
+        BOOST_TEST(wnd.ShouldBeClosed());
+        WINDOWMANAGER.Draw();
+        BOOST_TEST((dynamic_cast<dskGameLobby*>(WINDOWMANAGER.GetCurrentDesktop()) != nullptr));
+    }
+    {
+        iwConnecting wnd(ServerType::Local, nullptr);
+        ClientInterface& ci = wnd;
+        boost::signals2::scoped_connection _ = wnd.onError.connect(onError);
+        // CI_ERROR sends the onError signal and closes the window
+        MOCK_EXPECT(onError).once().with(ClientError::ServerFull);
+        ci.CI_Error(ClientError::ServerFull);
+        BOOST_TEST(wnd.ShouldBeClosed());
+    }
+    {
+        iwConnecting wnd(ServerType::Local, nullptr);
+        // Clicking the button sends the onError signal (or if not set opens an error window) and closes the window
+        wnd.Msg_ButtonClick(wnd.GetCtrls<ctrlButton>().at(0)->GetID());
+        BOOST_TEST(wnd.ShouldBeClosed());
+        BOOST_TEST((dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow())));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

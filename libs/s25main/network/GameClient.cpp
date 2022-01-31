@@ -224,8 +224,7 @@ void GameClient::Stop()
 
 std::shared_ptr<GameLobby> GameClient::GetGameLobby()
 {
-    RTTR_Assert(state == ClientState::Config);
-    RTTR_Assert(gameLobby);
+    RTTR_Assert(state != ClientState::Config || gameLobby);
     return gameLobby;
 }
 
