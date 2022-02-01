@@ -31,7 +31,7 @@ class iwMusicPlayer final : public IngameWindow
 
 public:
     iwMusicPlayer();
-    ~iwMusicPlayer() override;
+    void Close() override;
 
 private:
     /// Get the full path to a playlist by its name

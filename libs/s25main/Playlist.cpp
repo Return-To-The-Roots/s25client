@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Playlist.h"
+#include "helpers/containerUtils.h"
 #include "mygettext/mygettext.h"
 #include "s25util/Log.h"
 #include "s25util/StringConversion.h"
@@ -12,81 +13,64 @@
 #include <algorithm>
 #include <random>
 #include <sstream>
+#include <stdexcept>
 
 namespace bnw = boost::nowide;
 
 Playlist::Playlist(std::vector<std::string> songs, unsigned numRepeats, bool random)
     : songs_(std::move(songs)), numRepeats_(numRepeats), random_(random)
 {
-    Prepare();
+    if(helpers::contains(songs_, std::string{}))
+        throw std::invalid_argument("Empty song passed");
 }
 
-/**
- *  startet das Abspielen der Playlist.
- */
 void Playlist::Prepare()
 {
     currentSong_.clear();
-    // Add one entry per song repeated if required
-    order_.resize(songs_.size() * numRepeats_);
+    order_.clear();
 
-    for(unsigned i = 0; i < songs_.size() * numRepeats_; ++i)
-        order_[i] = i % songs_.size();
+    // Add one entry per song repeated if required
+    order_.reserve(songs_.size() * (numRepeats_ + 1u));
+    for(unsigned i = 0; i < songs_.size(); ++i)
+        order_.insert(order_.end(), numRepeats_ + 1u, i);
 
     // Shuffle if requested
     if(random_)
         std::shuffle(order_.begin(), order_.end(), std::mt19937(std::random_device()()));
 }
 
-std::string Playlist::getCurrentSong() const
-{
-    return currentSong_;
-}
-
-/**
- *  Playlist in Datei speichern
- */
 bool Playlist::SaveAs(const boost::filesystem::path& filepath) const
 {
     s25util::ClassicImbuedStream<bnw::ofstream> out(filepath);
-    if(!out.good())
+    if(!out)
         return false;
 
     out << numRepeats_ << " ";
     out << (random_ ? "random" : "ordered") << std::endl;
 
-    // songs reinschreiben
     for(const auto& song : songs_)
         out << song << "\n";
 
-    out.close();
-
-    return true;
+    return static_cast<bool>(out);
 }
 
-/**
- *  Playlist laden
- */
 bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
 {
     songs_.clear();
+    order_.clear();
     if(filepath.empty())
         return false;
 
     logger.write(_("Loading %1%\n")) % filepath;
 
     bnw::ifstream in(filepath);
-
-    if(in.fail())
+    if(!in)
         return false;
 
     std::string line, random_str;
-    s25util::ClassicImbuedStream<std::stringstream> sline;
-
     if(!std::getline(in, line))
         return false;
-    sline.clear();
-    sline << line;
+    s25util::ClassicImbuedStream<std::istringstream> sline(line);
     if(!(sline >> numRepeats_ >> random_str))
         return false;
 
@@ -95,40 +79,32 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
     while(std::getline(in, line))
     {
         boost::algorithm::trim_if(line, [](char c) { return c == '\r' || c == '\n'; });
-        if(line.empty())
-            break;
-        songs_.push_back(line);
+        if(!line.empty())
+            songs_.push_back(line);
     }
 
-    if(in.bad())
-        return false;
-
-    // geladen, also zum Abspielen vorbereiten
-    Prepare();
-    return true;
+    return in.eof();
 }
 
-// Wählt den Start-Song aus
 void Playlist::SetStartSong(const unsigned id)
 {
-    for(auto& i : order_)
-    {
-        if(i == id)
-        {
-            std::swap(order_.front(), i);
-            return;
-        }
-    }
+    const auto itEl = helpers::find(order_, id);
+    if(itEl != order_.end())
+        std::swap(order_.front(), *itEl);
 }
 
-/// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-std::string Playlist::getNextSong()
+const std::string& Playlist::getNextSong()
 {
+    // Playlist not started, yet or full played?
+    if(order_.empty())
+        Prepare();
+
+    // Still no songs? (I.e. empty playlist)
     if(order_.empty())
         currentSong_.clear();
     else
     {
-        currentSong_ = songs_.at(order_.front());
+        currentSong_ = songs_[order_.front()];
         order_.erase(order_.begin());
     }
     return currentSong_;
