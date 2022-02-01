@@ -6,6 +6,7 @@
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
+#include "RttrLobbyClient.hpp"
 #include "Savegame.h"
 #include "Settings.h"
 #include "WindowManager.h"
@@ -17,7 +18,7 @@
 #include "files.h"
 #include "helpers/make_array.h"
 #include "helpers/toString.h"
-#include "iwPleaseWait.h"
+#include "iwConnecting.h"
 #include "network/GameClient.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
@@ -99,8 +100,6 @@ void iwSaveLoad::RefreshTable()
     GetCtrl<ctrlTable>(0)->SortRows(2, TableSortDir::Descending);
     loadedOnce = true;
 }
-
-void iwSaveLoad::FillSaveTable(const boost::filesystem::path&, void*) {}
 
 void iwSave::SaveLoad()
 {
@@ -200,19 +199,18 @@ void iwLoad::SaveLoad()
     if(!table->GetSelection())
         return;
 
-    if(!GAMECLIENT.HostGame(csi, table->GetItemText(*table->GetSelection(), 4), MapType::Savegame))
+    if(GAMECLIENT.HostGame(csi, table->GetItemText(*table->GetSelection(), 4), MapType::Savegame))
     {
-        // Server starten
-        if(LOBBYCLIENT.IsLoggedIn())
-            // Lobby zeigen, wenn wenn das nich ging und man im Lobby-Modus ist
-            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
-        else
-            // Ansonsten schließen
-            Close();
+        std::unique_ptr<ILobbyClient> lobbyClient;
+        if(csi.type == ServerType::Lobby)
+            lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
+        WINDOWMANAGER.Show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
     } else
     {
-        // Verbindungsfenster anzeigen
-        WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
+        if(LOBBYCLIENT.IsLoggedIn())
+            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
+        else
+            Close();
     }
 }
 

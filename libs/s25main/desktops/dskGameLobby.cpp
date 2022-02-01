@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "dskHostGame.h"
+#include "dskGameLobby.h"
 #include "GameLobby.h"
 #include "GameLobbyController.h"
 #include "ILobbyClient.hpp"
@@ -65,12 +65,16 @@ constexpr T nextEnumValue(T value)
 }
 } // namespace
 
-dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
-                         std::unique_ptr<ILobbyClient> lobbyClient)
+dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
+                           std::unique_ptr<ILobbyClient> lobbyClient)
     : Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby_(std::move(gameLobby)),
       localPlayerId_(playerId), lobbyClient_(std::move(lobbyClient)), hasCountdown_(false), wasActivated(false),
       gameChat(nullptr), lobbyChat(nullptr), lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
+    // If no lobby don't do anything else
+    if(!gameLobby_)
+        return;
+
     if(gameLobby_->isHost())
         lobbyHostController = std::make_unique<GameLobbyController>(gameLobby_, GAMECLIENT.GetMainPlayer());
 
@@ -285,7 +289,7 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
     GAMECLIENT.SetInterface(this);
 }
 
-dskHostGame::~dskHostGame()
+dskGameLobby::~dskGameLobby()
 {
     if(lobbyClient_)
         lobbyClient_->RemoveListener(this);
@@ -295,7 +299,7 @@ dskHostGame::~dskHostGame()
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  */
-void dskHostGame::Resize(const Extent& newSize)
+void dskGameLobby::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
 
@@ -311,7 +315,7 @@ void dskHostGame::Resize(const Extent& newSize)
     }
 }
 
-void dskHostGame::SetActive(bool activate /*= true*/)
+void dskGameLobby::SetActive(bool activate /*= true*/)
 {
     Desktop::SetActive(activate);
     if(activate && !wasActivated && lua && gameLobby_->isHost())
@@ -330,7 +334,7 @@ void dskHostGame::SetActive(bool activate /*= true*/)
     }
 }
 
-void dskHostGame::UpdatePlayerRow(const unsigned row)
+void dskGameLobby::UpdatePlayerRow(const unsigned row)
 {
     const JoinPlayerInfo& player = gameLobby_->getPlayer(row);
 
@@ -457,7 +461,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 /**
  *  Methode vor dem Zeichnen
  */
-void dskHostGame::Msg_PaintBefore()
+void dskGameLobby::Msg_PaintBefore()
 {
     Desktop::Msg_PaintBefore();
     // Chatfenster Fokus geben
@@ -465,7 +469,7 @@ void dskHostGame::Msg_PaintBefore()
         GetCtrl<ctrlEdit>(ID_CHAT_INPUT)->SetFocus();
 }
 
-void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     unsigned playerId = group_id - ID_PLAYER_GROUP_START;
 
@@ -555,7 +559,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
     }
 }
 
-void dskHostGame::Msg_Group_CheckboxChange(const unsigned group_id, const unsigned /*ctrl_id*/, const bool checked)
+void dskGameLobby::Msg_Group_CheckboxChange(const unsigned group_id, const unsigned /*ctrl_id*/, const bool checked)
 {
     unsigned playerId = group_id - ID_PLAYER_GROUP_START;
 
@@ -564,8 +568,8 @@ void dskHostGame::Msg_Group_CheckboxChange(const unsigned group_id, const unsign
         SetPlayerReady(playerId, checked);
 }
 
-void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned /*ctrl_id*/,
-                                            const unsigned selection)
+void dskGameLobby::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned /*ctrl_id*/,
+                                             const unsigned selection)
 {
     if(!gameLobby_->isHost())
         return;
@@ -588,7 +592,7 @@ void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsig
         lobbyHostController->SwapPlayers(playerId, static_cast<unsigned>(player2));
 }
 
-void dskHostGame::GoBack()
+void dskGameLobby::GoBack()
 {
     if(IsSinglePlayer())
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
@@ -600,7 +604,7 @@ void dskHostGame::GoBack()
         WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
 }
 
-void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
+void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id >= ID_SWAP_BUTTON && ctrl_id < ID_SWAP_BUTTON + MAX_PLAYERS)
     {
@@ -661,7 +665,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
+void dskGameLobby::Msg_EditEnter(const unsigned ctrl_id)
 {
     if(ctrl_id != ID_CHAT_INPUT)
         return;
@@ -674,7 +678,7 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
         lobbyClient_->SendChat(msg);
 }
 
-void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
+void dskGameLobby::CI_Countdown(unsigned remainingTimeInSec)
 {
     if(IsSinglePlayer())
         return;
@@ -694,7 +698,7 @@ void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
     gameChat->AddMessage("", "", 0, message, 0xFFFFBB00);
 }
 
-void dskHostGame::CI_CancelCountdown(bool error)
+void dskGameLobby::CI_CancelCountdown(bool error)
 {
     if(hasCountdown_)
     {
@@ -718,7 +722,7 @@ void dskHostGame::CI_CancelCountdown(bool error)
     }
 }
 
-void dskHostGame::FlashGameChat()
+void dskGameLobby::FlashGameChat()
 {
     if(!gameChat->IsVisible())
     {
@@ -729,7 +733,7 @@ void dskHostGame::FlashGameChat()
     }
 }
 
-void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void dskGameLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     switch(msgbox_id)
     {
@@ -776,7 +780,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     }
 }
 
-void dskHostGame::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*selection*/)
+void dskGameLobby::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
     switch(ctrl_id)
     {
@@ -794,7 +798,7 @@ void dskHostGame::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*s
     }
 }
 
-void dskHostGame::Msg_CheckboxChange(const unsigned ctrl_id, const bool /*checked*/)
+void dskGameLobby::Msg_CheckboxChange(const unsigned ctrl_id, const bool /*checked*/)
 {
     switch(ctrl_id)
     {
@@ -810,7 +814,7 @@ void dskHostGame::Msg_CheckboxChange(const unsigned ctrl_id, const bool /*checke
     }
 }
 
-void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void dskGameLobby::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == ID_CHAT_TAB)
     {
@@ -830,7 +834,7 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned s
     }
 }
 
-void dskHostGame::UpdateGGS()
+void dskGameLobby::UpdateGGS()
 {
     RTTR_Assert(gameLobby_->isHost());
 
@@ -855,14 +859,14 @@ void dskHostGame::UpdateGGS()
     lobbyHostController->ChangeGlobalGameSettings(ggs);
 }
 
-void dskHostGame::ChangeTeam(const unsigned player, const Team team)
+void dskGameLobby::ChangeTeam(const unsigned player, const Team team)
 {
     constexpr helpers::EnumArray<const char*, Team> teams = {"-", "?", "1", "2", "3", "4", "1-2", "1-3", "1-4"};
 
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseText>(5)->SetText(teams[team]);
 }
 
-void dskHostGame::ChangeReady(const unsigned player, const bool ready)
+void dskGameLobby::ChangeReady(const unsigned player, const bool ready)
 {
     auto* check = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlCheck>(6);
     if(check)
@@ -878,12 +882,12 @@ void dskHostGame::ChangeReady(const unsigned player, const bool ready)
     }
 }
 
-void dskHostGame::ChangeNation(const unsigned player, const Nation nation)
+void dskGameLobby::ChangeNation(const unsigned player, const Nation nation)
 {
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseText>(3)->SetText(_(NationNames[nation]));
 }
 
-void dskHostGame::ChangePing(unsigned playerId)
+void dskGameLobby::ChangePing(unsigned playerId)
 {
     unsigned color = COLOR_RED;
 
@@ -897,7 +901,7 @@ void dskHostGame::ChangePing(unsigned playerId)
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + playerId)->GetCtrl<ctrlVarDeepening>(7)->SetTextColor(color);
 }
 
-void dskHostGame::ChangeColor(const unsigned player, const unsigned color)
+void dskGameLobby::ChangeColor(const unsigned player, const unsigned color)
 {
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseColor>(4)->SetColor(color);
 
@@ -906,7 +910,7 @@ void dskHostGame::ChangeColor(const unsigned player, const unsigned color)
         GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(player, color);
 }
 
-void dskHostGame::SetPlayerReady(unsigned char player, bool ready)
+void dskGameLobby::SetPlayerReady(unsigned char player, bool ready)
 {
     if(player != localPlayerId_)
         return;
@@ -920,7 +924,7 @@ void dskHostGame::SetPlayerReady(unsigned char player, bool ready)
     ChangeReady(player, ready);
 }
 
-void dskHostGame::CI_NewPlayer(const unsigned playerId)
+void dskGameLobby::CI_NewPlayer(const unsigned playerId)
 {
     // Spielername setzen
     UpdatePlayerRow(playerId);
@@ -929,30 +933,30 @@ void dskHostGame::CI_NewPlayer(const unsigned playerId)
         lua->EventPlayerJoined(playerId);
 }
 
-void dskHostGame::CI_PlayerLeft(const unsigned playerId)
+void dskGameLobby::CI_PlayerLeft(const unsigned playerId)
 {
     UpdatePlayerRow(playerId);
     if(lua && gameLobby_->isHost())
         lua->EventPlayerLeft(playerId);
 }
 
-void dskHostGame::CI_GameLoading(std::shared_ptr<Game> game)
+void dskGameLobby::CI_GameLoading(std::shared_ptr<Game> game)
 {
     // Desktop wechseln
     WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(std::move(game)));
 }
 
-void dskHostGame::CI_PlayerDataChanged(unsigned playerId)
+void dskGameLobby::CI_PlayerDataChanged(unsigned playerId)
 {
     UpdatePlayerRow(playerId);
 }
 
-void dskHostGame::CI_PingChanged(const unsigned playerId, const unsigned short /*ping*/)
+void dskGameLobby::CI_PingChanged(const unsigned playerId, const unsigned short /*ping*/)
 {
     ChangePing(playerId);
 }
 
-void dskHostGame::CI_ReadyChanged(const unsigned playerId, const bool ready)
+void dskGameLobby::CI_ReadyChanged(const unsigned playerId, const bool ready)
 {
     ChangeReady(playerId, ready);
     // Event only called for other players (host ready is done in start game)
@@ -961,7 +965,7 @@ void dskHostGame::CI_ReadyChanged(const unsigned playerId, const bool ready)
         lua->EventPlayerReady(playerId);
 }
 
-void dskHostGame::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
+void dskGameLobby::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
 {
     if(player1 == localPlayerId_)
         localPlayerId_ = player2;
@@ -972,7 +976,7 @@ void dskHostGame::CI_PlayersSwapped(const unsigned player1, const unsigned playe
     UpdatePlayerRow(player2);
 }
 
-void dskHostGame::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
+void dskGameLobby::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
 {
     const GlobalGameSettings& ggs = gameLobby_->getSettings();
 
@@ -994,7 +998,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
     SetPlayerReady(localPlayerId_, false);
 }
 
-void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/, const std::string& msg)
+void dskGameLobby::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/, const std::string& msg)
 {
     if((playerId != 0xFFFFFFFF) && !IsSinglePlayer())
     {
@@ -1006,7 +1010,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
     }
 }
 
-void dskHostGame::CI_Error(const ClientError ce)
+void dskGameLobby::CI_Error(const ClientError ce)
 {
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MsgboxButton::Ok,
                                                   MsgboxIcon::ExclamationRed, 0));
@@ -1015,13 +1019,13 @@ void dskHostGame::CI_Error(const ClientError ce)
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  */
-void dskHostGame::LC_Status_Error(const std::string& error)
+void dskGameLobby::LC_Status_Error(const std::string& error)
 {
     WINDOWMANAGER.Show(
       std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
 }
 
-void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
+void dskGameLobby::LC_Chat(const std::string& player, const std::string& text)
 {
     if(!lobbyChat)
         return;
@@ -1035,7 +1039,7 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
     }
 }
 
-bool dskHostGame::checkOptions()
+bool dskGameLobby::checkOptions()
 {
     if(forceOptions)
         return true;

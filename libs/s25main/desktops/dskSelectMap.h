@@ -6,10 +6,10 @@
 
 #include "Desktop.h"
 #include "mapGenerator/MapSettings.h"
-#include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "liblobby/LobbyInterface.h"
 #include <boost/filesystem/path.hpp>
+#include <boost/signals2/connection.hpp>
 #include <set>
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@ namespace boost {
 class thread;
 }
 
-class dskSelectMap final : public Desktop, public ClientInterface, public LobbyInterface
+class dskSelectMap final : public Desktop, public LobbyInterface
 {
 public:
     dskSelectMap(CreateServerInfo csi);
@@ -34,9 +34,6 @@ private:
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
     void Msg_TableSelectItem(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
-
-    void CI_NextConnectState(ConnectState cs) override;
-    void CI_Error(ClientError ce) override;
 
     void LC_Status_Error(const std::string& error) override;
 
@@ -67,4 +64,5 @@ private:
     std::map<uint8_t, std::string> landscapeNames;
     /// Maps that we already know are broken
     std::set<boost::filesystem::path> brokenMapPaths;
+    boost::signals2::scoped_connection onErrorConnection_;
 };

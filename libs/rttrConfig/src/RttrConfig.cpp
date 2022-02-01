@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "RttrConfig.h"
+#include "RTTR_Assert.h"
 #include "s25util/Log.h"
 #include "s25util/System.h"
 #include <boost/filesystem.hpp>
@@ -112,6 +113,12 @@ boost::filesystem::path RttrConfig::ExpandPath(const std::string& path) const
 
     outPath = bfs::absolute(outPath, prefixPath_).lexically_normal();
     return outPath.make_preferred();
+}
+
+void RttrConfig::overridePathMapping(const std::string& id, const boost::filesystem::path& path)
+{
+    RTTR_Assert(pathMappings.count(id) > 0);
+    pathMappings[id] = path;
 }
 
 bool RttrConfig::Init()

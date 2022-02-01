@@ -27,16 +27,17 @@ struct Info;
 
 class AIPlayer;
 class ClientInterface;
-class SavedFile;
-class GamePlayer;
+class Game;
 class GameEvent;
 class GameLobby;
+class GamePlayer;
 class GameWorldView;
-class Game;
-class Replay;
-struct PlayerGameCommands;
 class NWFInfo;
+class Replay;
+class SavedFile;
+enum class ConnectState;
 struct CreateServerInfo;
+struct PlayerGameCommands;
 struct ReplayInfo;
 
 enum class ClientState
@@ -236,6 +237,12 @@ private:
 
     /// Report the error and stop
     void OnError(ClientError error);
+    /// Advance to new connect state
+    void AdvanceState(ConnectState newState);
+    /// Verifies that the current connect state matches the expected one
+    /// On error the error is reported and the connection terminated as likely the server is faulty
+    bool VerifyState(ConnectState expectedState);
+
     bool CreateLobby();
 
     /// Wird aufgerufen, wenn der Server gegangen ist (Verbindung verloren, ungültige Nachricht etc.)
@@ -259,6 +266,7 @@ private:
     NetworkPlayer mainPlayer;
 
     ClientState state;
+    ConnectState connectState;
 
     /// Game state itself (valid during LOADING and GAME state)
     std::shared_ptr<Game> game;

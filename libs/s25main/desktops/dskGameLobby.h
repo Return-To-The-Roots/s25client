@@ -19,12 +19,12 @@ class ILobbyClient;
 enum class Team : uint8_t;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
-class dskHostGame final : public Desktop, public ClientInterface, public LobbyInterface
+class dskGameLobby final : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
-                std::unique_ptr<ILobbyClient> lobbyClient);
-    ~dskHostGame();
+    dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
+                 std::unique_ptr<ILobbyClient> lobbyClient);
+    ~dskGameLobby();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
     void Resize(const Extent& newSize) override;

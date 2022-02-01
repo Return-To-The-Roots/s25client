@@ -8,7 +8,7 @@
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
-#include "desktops/dskHostGame.h"
+#include "desktops/dskGameLobby.h"
 #include "uiHelper/uiHelpers.hpp"
 #include <rttr/test/LogAccessor.hpp>
 #include <turtle/mock.hpp>
@@ -19,7 +19,6 @@
 
 BOOST_AUTO_TEST_SUITE(UI)
 
-/* clang-format off */
 MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 {
     MOCK_METHOD(IsLoggedIn, 0);
@@ -28,7 +27,6 @@ MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
     MOCK_METHOD(SendServerJoinRequest, 0);
     MOCK_METHOD(SendChat, 1);
 };
-/* clang-format on */
 
 BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
 {
@@ -48,10 +46,10 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
     MOCK_EXPECT(client->SendChat).exactly(1);
 
-    // TODO: How to trigger through dskHostGame?
+    // TODO: How to trigger through dskGameLobby?
     client->SendChat("");
 
-    auto* desktop = WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(
+    auto* desktop = WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(
       ServerType::Lobby, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));
     auto* ci = dynamic_cast<ClientInterface*>(desktop);
     auto* li = dynamic_cast<LobbyInterface*>(desktop);

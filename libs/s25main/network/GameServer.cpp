@@ -194,6 +194,12 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
     } else
         RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
+    if(!mapinfo.verifySize())
+    {
+        LOG.write("Map %1% is to large!\n") % mapinfo.filepath;
+        return false;
+    }
+
     // ab in die Konfiguration
     state = ServerState::Config;
 
@@ -825,7 +831,7 @@ void GameServer::WaitForClients()
         if(!socket.isValid())
             return;
 
-        unsigned newPlayerId = 0xFFFFFFFF;
+        unsigned newPlayerId = GameMessageWithPlayer::NO_PLAYER_ID;
         // Geeigneten Platz suchen
         for(unsigned playerId = 0; playerId < playerInfos.size(); ++playerId)
         {
@@ -1222,27 +1228,22 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
             KickPlayer(msg.senderPlayerID, KickReason::InvalidMsg, __LINE__);
         else
         {
-            // den anderen Spielern mitteilen das wir einen neuen haben
+            // Inform others about a new player
             SendToAll(GameMessage_Player_New(msg.senderPlayerID, playerInfo.name));
 
             LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n") % unsigned(msg.senderPlayerID)
               % playerInfo.name;
 
-            // belegt markieren
+            // Mark as used and assign a unique color
+            // Do this before sending the player list to avoid sending useless updates
             playerInfo.ps = PlayerState::Occupied;
-            player->setActive();
-
-            // Servername senden
-            player->sendMsgAsync(new GameMessage_Server_Name(config.gamename));
-
-            // Spielerliste senden
-            player->sendMsgAsync(new GameMessage_Player_List(playerInfos));
-
-            // Assign unique color
             CheckAndSetColor(msg.senderPlayerID, playerInfo.color);
 
-            // GGS senden
+            // Send remaining data and mark as active
+            player->sendMsgAsync(new GameMessage_Server_Name(config.gamename));
+            player->sendMsgAsync(new GameMessage_Player_List(playerInfos));
             player->sendMsgAsync(new GameMessage_GGSChange(ggs_));
+            player->setActive();
         }
         AnnounceStatusChange();
     }

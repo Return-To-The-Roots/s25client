@@ -28,10 +28,10 @@ const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementT
 
 const Extent IngameWindow::borderSize(1, 1);
 IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
-                           glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
+                           glArchivItem_Bitmap* background, bool modal, bool isUserClosable, Window* parent)
     : Window(parent, id, pos, size), title_(std::move(title)), background(background), lastMousePos(0, 0),
       last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false),
-      closeOnRightClick_(closeOnRightClick)
+      isUserClosable_(isUserClosable)
 {
     std::fill(button_state.begin(), button_state.end(), ButtonState::Up);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
@@ -170,7 +170,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
         button_state[i] = ButtonState::Up;
         if(IsPointInRect(mc.GetPos(), rec[i]))
         {
-            if(i == 0 && (!IsModal() || closeOnRightClick_))
+            if(i == 0 && isUserClosable_)
                 Close();
             else if(i == 1 && !IsModal())
             {
@@ -253,7 +253,7 @@ void IngameWindow::Draw_()
     static constexpr std::array<helpers::EnumArray<uint16_t, ButtonState>, 2> ids = {{{47, 55, 50}, {48, 56, 52}}};
 
     // Titelleiste
-    if(closeOnRightClick_ || !IsModal())
+    if(isUserClosable_)
         LOADER.GetImageN("resource", ids[0][button_state[0]])->DrawFull(GetPos());
     if(!IsModal())
         LOADER.GetImageN("resource", ids[1][button_state[1]])->DrawFull(GetPos() + DrawPoint(GetSize().x - 16, 0));

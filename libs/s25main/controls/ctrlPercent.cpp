@@ -19,8 +19,7 @@ ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, cons
  */
 void ctrlPercent::Draw_()
 {
-    // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstürzen!
-    unsigned short percentage = (this->percentage_ ? *this->percentage_ : 0);
+    unsigned short percentage = getPercentage();
 
     if(percentage > 100)
         percentage = 100;

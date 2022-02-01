@@ -43,16 +43,14 @@ BOOST_AUTO_TEST_CASE(Victory)
 }
 
 namespace {
-/* clang-format off */
-    MOCK_BASE_CLASS(TestWindow, Window)
-    {
-    public:
-        TestWindow(Window* parent, unsigned id, const DrawPoint& position): Window(parent, id, position) {}
-        MOCK_METHOD(Msg_PaintBefore, 0)
-        MOCK_METHOD(Msg_PaintAfter, 0)
-        MOCK_METHOD(Draw_, 0, void())
-    };
-/* clang-format on */
+MOCK_BASE_CLASS(TestWindow, Window)
+{
+public:
+    TestWindow(Window * parent, unsigned id, const DrawPoint& position) : Window(parent, id, position) {}
+    MOCK_METHOD(Msg_PaintBefore, 0)
+    MOCK_METHOD(Msg_PaintAfter, 0)
+    MOCK_METHOD(Draw_, 0, void())
+};
 } // namespace
 
 BOOST_AUTO_TEST_CASE(DrawOrder)

@@ -15,7 +15,6 @@
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskDirectIP.h"
-#include "desktops/dskHostGame.h"
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
@@ -23,6 +22,7 @@
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
 #include "helpers/toString.h"
+#include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
@@ -46,6 +46,7 @@
 #include <utility>
 
 namespace bfs = boost::filesystem;
+constexpr unsigned ID_msgBoxError = 0;
 
 /**
  *  Konstruktor von @p dskSelectMap.
@@ -130,7 +131,6 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
     optiongroup->SetSelection(5, true);
 
     LOBBYCLIENT.AddListener(this);
-    GAMECLIENT.SetInterface(this);
 }
 
 dskSelectMap::~dskSelectMap()
@@ -138,7 +138,6 @@ dskSelectMap::~dskSelectMap()
     // if(mapGenThread)
     //    mapGenThread->join();
     LOBBYCLIENT.RemoveListener(this);
-    GAMECLIENT.RemoveInterface(this);
 }
 
 void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
@@ -355,15 +354,22 @@ void dskSelectMap::StartServer()
             GoBack();
         else
         {
-            // Verbindungsfenster anzeigen
-            WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
+            std::unique_ptr<ILobbyClient> lobbyClient;
+            if(csi.type == ServerType::Lobby)
+                lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
+            iwConnecting& wnd = WINDOWMANAGER.Show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
+            onErrorConnection_ = wnd.onError.connect([this](ClientError error) {
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(error), this,
+                                                              MsgboxButton::Ok, MsgboxIcon::ExclamationRed,
+                                                              ID_msgBoxError));
+            });
         }
     }
 }
 
 void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
-    if(msgbox_id == 0) // Verbindung zu Server verloren?
+    if(msgbox_id == ID_msgBoxError)
     {
         GAMECLIENT.Stop();
 
@@ -378,36 +384,13 @@ void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     }
 }
 
-void dskSelectMap::CI_NextConnectState(const ConnectState cs)
-{
-    switch(cs)
-    {
-        case ConnectState::Finished:
-        {
-            std::unique_ptr<ILobbyClient> lobbyClient;
-            if(csi.type == ServerType::Lobby)
-                lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(csi.type, GAMECLIENT.GetGameLobby(),
-                                                               GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
-            break;
-        }
-        default: break;
-    }
-}
-
-void dskSelectMap::CI_Error(const ClientError ce)
-{
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MsgboxButton::Ok,
-                                                  MsgboxIcon::ExclamationRed, 0));
-}
-
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  */
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(
-      std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed,
+                                                  ID_msgBoxError));
 }
 
 void dskSelectMap::Draw_()

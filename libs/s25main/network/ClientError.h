@@ -8,7 +8,7 @@
 /// Fehler, die vom Client gemeldet werden
 enum class ClientError
 {
-    IncompleteMessage,
+    InvalidMessage,
     ServerFull,
     WrongPassword,
     ConnectionLost,

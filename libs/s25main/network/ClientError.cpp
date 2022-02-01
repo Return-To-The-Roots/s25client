@@ -9,7 +9,7 @@ const char* ClientErrorToStr(ClientError error)
 {
     switch(error)
     {
-        case ClientError::IncompleteMessage: return _("Too short Message received!");
+        case ClientError::InvalidMessage: return _("Server sent an invalid message!");
         case ClientError::ServerFull: return _("This Server is full!");
         case ClientError::WrongPassword: return _("Wrong Password!");
         case ClientError::ConnectionLost: return _("Lost connection to server!");

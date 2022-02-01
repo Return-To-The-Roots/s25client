@@ -4,6 +4,7 @@
 
 #include "TestServer.h"
 #include "RTTR_Assert.h"
+#include "rttr/test/random.hpp"
 #include "s25util/Message.h"
 #include "s25util/SocketSet.h"
 
@@ -75,4 +76,15 @@ Connection TestServer::acceptConnection(unsigned /*id*/, const Socket& so)
 bool TestServer::listen(int16_t port)
 {
     return socket.Listen(port, false, false);
+}
+
+int TestServer::tryListen(const unsigned maxTries)
+{
+    for(unsigned i = 0; i < maxTries; i++)
+    {
+        const auto curPort = rttr::test::randomValue(1024, 49151);
+        if(listen(curPort))
+            return curPort;
+    }
+    return -1; // LCOV_EXCL_LINE
 }

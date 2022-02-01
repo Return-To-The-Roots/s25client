@@ -22,6 +22,8 @@ class TestServer
 public:
     virtual ~TestServer() = default;
     bool listen(int16_t port);
+    // Try to find a free port and return it or negative for error
+    int tryListen(unsigned maxTries = 10);
     bool run(bool waitForConnection = false);
     bool stop();
     virtual void handleMessages() {}

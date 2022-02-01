@@ -10,8 +10,8 @@
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
+#include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMusicPlayer.h"
-#include "ingameWindows/iwPleaseWait.h"
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
@@ -59,7 +59,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singleP
     if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::Savegame))
        || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap)))
     {
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else
     {
