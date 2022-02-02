@@ -265,17 +265,17 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     BOOST_TEST_REQUIRE(players[1].nation == Nation::Babylonians);
 
     // Check some properties
-    BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
-    BOOST_CHECK(isLuaEqual("player:IsHuman()", "true"));
-    BOOST_CHECK(isLuaEqual("player:IsAI()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
+    BOOST_TEST(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
+    BOOST_TEST(isLuaEqual("player:IsHuman()", "true"));
+    BOOST_TEST(isLuaEqual("player:IsAI()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsClosed()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsFree()", "false"));
 
     executeLua("player:SetTeam(TM_TEAM2)");
     BOOST_TEST_REQUIRE(players[0].team == Team::Team2);
 
     executeLua("player:SetName(\"Foo\")");
-    BOOST_CHECK(isLuaEqual("player:GetName()", "'Foo'"));
+    BOOST_TEST(isLuaEqual("player:GetName()", "'Foo'"));
 
     executeLua("player:SetColor(2)");
     BOOST_TEST_REQUIRE(players[0].color == PLAYER_COLORS[2]);

@@ -33,6 +33,8 @@ AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly) : Add
     auto* cb = window.AddComboBox(2, cbPos, Extent(220, 20), TextureColor::Grey, NormalFont, 100, readonly);
     for(const auto& option : addon.options)
         cb->AddString(option);
+    if(readonly)
+        window.AddImage(3, cbPos - DrawPoint(1, 0), LOADER.GetImageN("io_new", 14), _("Locked"));
 }
 
 void AddonList::Gui::setStatus(Window& window, unsigned status)

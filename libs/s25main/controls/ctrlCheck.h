@@ -14,10 +14,10 @@ public:
     ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, std::string text,
               const glFont* font, bool readonly);
 
-    void SetCheck(bool check) { this->check = check; }
-    bool GetCheck() const { return check; }
-    void SetReadOnly(bool readonly) { this->readonly = readonly; }
-    bool GetReadOnly() const { return readonly; }
+    void setChecked(bool checked) { this->check = checked; }
+    bool isChecked() const { return check; }
+    void setReadOnly(bool readonly) { this->readonly = readonly; }
+    bool isReadOnly() const { return readonly; }
 
     bool Msg_LeftDown(const MouseCoords& mc) override;
 

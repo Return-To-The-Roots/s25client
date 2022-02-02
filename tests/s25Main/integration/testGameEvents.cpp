@@ -47,9 +47,9 @@ BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
     BOOST_TEST_REQUIRE(ev->length == 5u);
     BOOST_TEST_REQUIRE(ev->id == 42u);
     BOOST_TEST_REQUIRE(ev->GetTargetGF() == startGF + ev->length);
-    BOOST_CHECK(evMgr.IsEventActive(obj, 42));
-    BOOST_CHECK(!evMgr.IsEventActive(obj, 43));
-    BOOST_CHECK(evMgr.ObjectHasEvents(obj));
+    BOOST_TEST(evMgr.IsEventActive(obj, 42));
+    BOOST_TEST(!evMgr.IsEventActive(obj, 43));
+    BOOST_TEST(evMgr.ObjectHasEvents(obj));
     // Check that event is not executed before it is due
     for(unsigned i = startGF + 1; i < ev->GetTargetGF(); i++)
     {
@@ -63,8 +63,8 @@ BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
     BOOST_TEST_REQUIRE(obj.handledEventIds.size() == 1u);
     BOOST_TEST_REQUIRE(obj.handledEventIds.front() == 42u);
     // And nothing should be left
-    BOOST_CHECK(!evMgr.IsEventActive(obj, 42));
-    BOOST_CHECK(!evMgr.ObjectHasEvents(obj));
+    BOOST_TEST(!evMgr.IsEventActive(obj, 42));
+    BOOST_TEST(!evMgr.ObjectHasEvents(obj));
 }
 
 BOOST_AUTO_TEST_CASE(AddSuspendedEvent)
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(RemoveEvent)
     evMgr.ExecuteNextGF();
     BOOST_TEST_REQUIRE(obj.handledEventIds.size() == 2u);
     BOOST_TEST_REQUIRE(obj.handledEventIds[1] == 42u);
-    BOOST_CHECK(!evMgr.ObjectHasEvents(obj));
+    BOOST_TEST(!evMgr.ObjectHasEvents(obj));
 }
 
 #if RTTR_ENABLE_ASSERTS

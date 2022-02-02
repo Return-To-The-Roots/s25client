@@ -104,16 +104,16 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
                % LuaInterfaceGameBase::GetVersion());
     BOOST_TEST_REQUIRE(lua.CheckScriptVersion());
 
-    BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
+    BOOST_TEST(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
 
     MOCK_EXPECT(localGameState.IsHost).once().returns(true);
-    BOOST_CHECK(isLuaEqual("rttr:IsHost()", "true"));
+    BOOST_TEST(isLuaEqual("rttr:IsHost()", "true"));
     MOCK_EXPECT(localGameState.IsHost).once().returns(false);
-    BOOST_CHECK(isLuaEqual("rttr:IsHost()", "false"));
-    BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
+    BOOST_TEST(isLuaEqual("rttr:IsHost()", "false"));
+    BOOST_TEST(isLuaEqual("rttr:GetNumPlayers()", "3"));
 
     MOCK_EXPECT(localGameState.GetPlayerId).once().returns(1);
-    BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
+    BOOST_TEST(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
 }
 
 BOOST_AUTO_TEST_CASE(Translations)
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
 
     for(unsigned i = 0; i < 2; i++)
     {
-        BOOST_CHECK(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.GetEvMgr().GetCurrentGF())));
+        BOOST_TEST(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.GetEvMgr().GetCurrentGF())));
         world.GetEvMgr().ExecuteNextGF();
     }
 
@@ -266,40 +266,40 @@ BOOST_AUTO_TEST_CASE(MissionGoal)
 BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
 {
     executeLua("player = rttr:GetPlayer(0)");
-    BOOST_CHECK(isLuaEqual("player:GetName()", "'Player1'"));
-    BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_VIKINGS"));
-    BOOST_CHECK(isLuaEqual("player:GetTeam()", "TM_TEAM1"));
-    BOOST_CHECK(isLuaEqual("player:GetColor()", "5"));
-    BOOST_CHECK(isLuaEqual("player:IsHuman()", "true"));
-    BOOST_CHECK(isLuaEqual("player:IsAI()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
-    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "-1"));
+    BOOST_TEST(isLuaEqual("player:GetName()", "'Player1'"));
+    BOOST_TEST(isLuaEqual("player:GetNation()", "NAT_VIKINGS"));
+    BOOST_TEST(isLuaEqual("player:GetTeam()", "TM_TEAM1"));
+    BOOST_TEST(isLuaEqual("player:GetColor()", "5"));
+    BOOST_TEST(isLuaEqual("player:IsHuman()", "true"));
+    BOOST_TEST(isLuaEqual("player:IsAI()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsClosed()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsFree()", "false"));
+    BOOST_TEST(isLuaEqual("player:GetAILevel()", "-1"));
 
     executeLua("player = rttr:GetPlayer(1)");
     BasePlayerInfo& player = world.GetPlayer(1);
-    BOOST_CHECK(isLuaEqual("player:GetName()", "'PlayerAI'"));
-    BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
-    BOOST_CHECK(isLuaEqual("player:GetTeam()", "TM_TEAM2"));
-    BOOST_CHECK(isLuaEqual("player:GetColor()", s25util::toStringClassic(0xFFFF0000)));
-    BOOST_CHECK(isLuaEqual("player:IsHuman()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsAI()", "true"));
-    BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
+    BOOST_TEST(isLuaEqual("player:GetName()", "'PlayerAI'"));
+    BOOST_TEST(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
+    BOOST_TEST(isLuaEqual("player:GetTeam()", "TM_TEAM2"));
+    BOOST_TEST(isLuaEqual("player:GetColor()", s25util::toStringClassic(0xFFFF0000)));
+    BOOST_TEST(isLuaEqual("player:IsHuman()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsAI()", "true"));
+    BOOST_TEST(isLuaEqual("player:IsClosed()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsFree()", "false"));
     player.aiInfo = AI::Info(AI::Type::Dummy, AI::Level::Medium);
-    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "0"));
+    BOOST_TEST(isLuaEqual("player:GetAILevel()", "0"));
     player.aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
-    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "1"));
+    BOOST_TEST(isLuaEqual("player:GetAILevel()", "1"));
     player.aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
-    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "2"));
+    BOOST_TEST(isLuaEqual("player:GetAILevel()", "2"));
     player.aiInfo = AI::Info(AI::Type::Default, AI::Level::Hard);
-    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "3"));
+    BOOST_TEST(isLuaEqual("player:GetAILevel()", "3"));
 
     executeLua("player = rttr:GetPlayer(2)");
-    BOOST_CHECK(isLuaEqual("player:IsHuman()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsAI()", "false"));
-    BOOST_CHECK(isLuaEqual("player:IsClosed()", "true"));
-    BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsHuman()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsAI()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsClosed()", "true"));
+    BOOST_TEST(isLuaEqual("player:IsFree()", "false"));
 }
 
 namespace {
@@ -418,20 +418,20 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_CHECK_THROW(executeLua("player:AddPeople({[9999]=8})"), std::runtime_error);
     BOOST_TEST_REQUIRE(getLog() != "");
 
-    BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_HAMMER)", "8"));
-    BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_AXE)", "6"));
+    BOOST_TEST(isLuaEqual("player:GetNumWares(GD_HAMMER)", "8"));
+    BOOST_TEST(isLuaEqual("player:GetNumWares(GD_AXE)", "6"));
 
-    BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_HELPER)", "33"));
-    BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_FORESTER)", "2"));
+    BOOST_TEST(isLuaEqual("player:GetNumPeople(JOB_HELPER)", "33"));
+    BOOST_TEST(isLuaEqual("player:GetNumPeople(JOB_FORESTER)", "2"));
 
-    BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
-    BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_HEADQUARTERS)", "1"));
-    BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_HEADQUARTERS)", "0"));
-    BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "0"));
+    BOOST_TEST(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
+    BOOST_TEST(isLuaEqual("player:GetNumBuildings(BLD_HEADQUARTERS)", "1"));
+    BOOST_TEST(isLuaEqual("player:GetNumBuildingSites(BLD_HEADQUARTERS)", "0"));
+    BOOST_TEST(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "0"));
     world.SetNO(hq->GetPos() + MapPoint(4, 0),
                 new noBuildingSite(BuildingType::Woodcutter, hq->GetPos() + MapPoint(4, 0), 1));
-    BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
-    BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "1"));
+    BOOST_TEST(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
+    BOOST_TEST(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "1"));
 
     CatchConstructionNote note(world);
     // Closed or non-AI player
@@ -461,15 +461,15 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_TEST_REQUIRE(!hq->IsTent());
 
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_CHECK(isLuaEqual("hqX", s25util::toStringClassic(hq->GetPos().x)));
-    BOOST_CHECK(isLuaEqual("hqY", s25util::toStringClassic(hq->GetPos().y)));
+    BOOST_TEST(isLuaEqual("hqX", s25util::toStringClassic(hq->GetPos().x)));
+    BOOST_TEST(isLuaEqual("hqY", s25util::toStringClassic(hq->GetPos().y)));
 
     // Destroy players HQ
     world.DestroyNO(hq->GetPos());
     // HQ-Pos is invalid
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_CHECK(isLuaEqual("hqX", s25util::toStringClassic(MapPoint::Invalid().x)));
-    BOOST_CHECK(isLuaEqual("hqY", s25util::toStringClassic(MapPoint::Invalid().y)));
+    BOOST_TEST(isLuaEqual("hqX", s25util::toStringClassic(MapPoint::Invalid().x)));
+    BOOST_TEST(isLuaEqual("hqY", s25util::toStringClassic(MapPoint::Invalid().y)));
     // Adding wares/people returns false
     executeLua("assert(player:AddWares(wares) == false)");
     executeLua("assert(player:AddPeople(people) == false)");
@@ -482,10 +482,10 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_TEST_REQUIRE(hqPos.isValid());
     BOOST_TEST_REQUIRE(world.GetSpecObj<nobHQ>(hqPos));
     BOOST_TEST_REQUIRE(!player0.IsDefeated());
-    BOOST_CHECK(isLuaEqual("player:IsDefeated()", "false"));
+    BOOST_TEST(isLuaEqual("player:IsDefeated()", "false"));
     executeLua("player:Surrender(false)");
     BOOST_TEST_REQUIRE(player0.IsDefeated());
-    BOOST_CHECK(isLuaEqual("player:IsDefeated()", "true"));
+    BOOST_TEST(isLuaEqual("player:IsDefeated()", "true"));
     // HQ should still be there
     BOOST_TEST_REQUIRE(player0.GetHQPos().isValid());
     BOOST_TEST_REQUIRE(world.GetSpecObj<nobHQ>(hqPos));

@@ -27,7 +27,8 @@ BOOST_AUTO_TEST_CASE(Point_returns_points_within_map_size)
     MapExtent size(12, 8);
     RandomUtility rnd(0u);
     MapPoint result = rnd.Point(size);
-    BOOST_REQUIRE(result.x < size.x && result.y < size.y);
+    BOOST_TEST(result.x < size.x);
+    BOOST_TEST(result.y < size.y);
 }
 
 BOOST_AUTO_TEST_CASE(RandomInt_returns_value_within_thresholds)
