@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
     BOOST_TEST(offsetLastPt.y > origLastPt.y);
     // Relative move
     {
-        const auto offset = rttr::test::randomPoint<Position>(-100, 100);
+        const auto offset = rttr::test::randomPoint<Position>(-100, 70); // Smallish max offset to not exceed map size
         view.MoveBy(offset);
         BOOST_TEST_REQUIRE(view.GetOffset() == newOffset + offset);
     }
