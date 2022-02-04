@@ -60,6 +60,14 @@ void ctrlEdit::SetFocus(bool focus)
     {
         focus_ = focus;
         txtCtrl->SetTextColor(focus_ ? 0xFFFFA000 : COLOR_YELLOW);
+        if(focus && GetParent())
+        {
+            for(auto* edit : GetParent()->GetCtrls<ctrlEdit>())
+            {
+                if(edit != this)
+                    edit->SetFocus(false);
+            }
+        }
     }
 }
 

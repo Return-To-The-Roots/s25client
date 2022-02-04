@@ -79,17 +79,9 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_edtIp:
-            GetCtrl<ctrlEdit>(ID_edtIp)->SetFocus(false);
-            GetCtrl<ctrlEdit>(ID_edtPort)->SetFocus(true);
-            GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(false);
-            break;
-        case ID_edtPort:
-            GetCtrl<ctrlEdit>(ID_edtIp)->SetFocus(false);
-            GetCtrl<ctrlEdit>(ID_edtPort)->SetFocus(false);
-            GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(true);
-            break;
-        case ID_edtPw: Msg_ButtonClick(ID_btConnect); break;
+        case ID_edtIp: GetCtrl<ctrlEdit>(ID_edtPort)->SetFocus(true); break;
+        case ID_edtPort: GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(true); break;
+        case ID_edtPw: GetCtrl<ctrlEdit>(ID_btConnect)->SetFocus(true); break;
     }
 }
 
