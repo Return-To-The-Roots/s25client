@@ -6,16 +6,20 @@
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlComboBox.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlProgress.h"
 #include "desktops/dskGameLobby.h"
 #include "ingameWindows/iwConnecting.h"
+#include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwHelp.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "gameTypes/GameTypesOutput.h"
 #include "rttr/test/random.hpp"
+#include "s25util/StringConversion.h"
 #include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -85,6 +89,30 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     BOOST_TEST(settings.rivers == expectedRivers);
     BOOST_TEST(settings.trees == expectedTrees);
     BOOST_TEST(settings.stonePiles == expectedStonePiles);
+}
+
+BOOST_AUTO_TEST_CASE(ConnectWindow)
+{
+    iwDirectIPConnect wnd(ServerType::Local);
+    const auto edts = wnd.GetCtrls<ctrlEdit>();
+    // Should have (at least) 3 fields: IP, port, password (in this order)
+    const auto& edtIp = *edts.at(0);
+    const auto& edtPort = *edts.at(1);
+    const auto& edtPw = *edts.at(2);
+    // And an option group to choose IPv6 vs IPv4
+    auto& ipGrp = *wnd.GetCtrls<ctrlOptionGroup>().at(0);
+    const auto testHost = rttr::test::randString(10);
+    const auto testPort = rttr::test::randomValue(10, 10000);
+    const auto testIsIpv6 = rttr::test::randomBool();
+    wnd.Connect(testHost, testPort, testIsIpv6,
+                true); // When the server has a password, the window shouldn't initiate the connection process
+    BOOST_TEST_REQUIRE(!wnd.ShouldBeClosed()); // No error or anything, window still open
+    // Fields filled and password field has focus
+    BOOST_TEST(edtIp.GetText() == testHost);
+    BOOST_TEST(edtPort.GetText() == s25util::toStringClassic(testPort));
+    BOOST_TEST(edtPw.GetText().empty());
+    BOOST_TEST(edtPw.HasFocus());
+    BOOST_TEST(ipGrp.GetSelection() == static_cast<unsigned>(testIsIpv6));
 }
 
 BOOST_AUTO_TEST_CASE(ConnectingWindow)
