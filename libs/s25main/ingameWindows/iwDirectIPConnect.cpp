@@ -113,7 +113,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
                 SetStatus(_("Connection failed!"), COLOR_RED);
             } else
             {
-                SetStatus(_("Connecting with Host..."), COLOR_RED);
+                SetStatus(_("Connecting with Host..."), COLOR_YELLOW);
                 GetCtrl<ctrlButton>(ID_btConnect)->SetEnabled(false);
                 std::unique_ptr<ILobbyClient> lobbyClient;
                 if(serverType_ == ServerType::Lobby)
