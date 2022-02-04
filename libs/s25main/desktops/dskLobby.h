@@ -12,6 +12,9 @@ class iwDirectIPCreate;
 class LobbyServerList;
 class LobbyPlayerList;
 
+/// Check if we can connect to this server, i.e. the version is valid
+bool isServerVersionValid(const LobbyServerInfo& serverInfo);
+
 class dskLobby final : public dskMenuBase, public LobbyInterface
 {
 private:

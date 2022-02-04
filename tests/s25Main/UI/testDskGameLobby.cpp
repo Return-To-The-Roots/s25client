@@ -5,11 +5,14 @@
 #include "GameLobby.h"
 #include "ILobbyClient.hpp"
 #include "JoinPlayerInfo.h"
+#include "RTTR_Version.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "desktops/dskGameLobby.h"
+#include "desktops/dskLobby.h"
 #include "uiHelper/uiHelpers.hpp"
+#include "liblobby/LobbyServerInfo.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
@@ -72,6 +75,31 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     }
     // Free desktop etc to trigger mock verification
     WINDOWMANAGER.CleanUp();
+}
+
+BOOST_AUTO_TEST_CASE(CheckServerVersionValidity)
+{
+    LobbyServerInfo info;
+    // Empty is invalid
+    info.setVersion("");
+    BOOST_TEST(!isServerVersionValid(info));
+    // Exact match
+    info.setVersion(rttr::version::GetReadableVersion());
+    BOOST_TEST(isServerVersionValid(info));
+    // Build with same revision but on 30.07.2012
+    info.setVersion("v20120730 - " + rttr::version::GetShortRevision());
+    BOOST_TEST(isServerVersionValid(info));
+    // Build with same revision on a tag
+    info.setVersion("v0.8.9 - " + rttr::version::GetShortRevision());
+    BOOST_TEST(isServerVersionValid(info));
+    // Wrong revision (purposely non-hex char to avoid accidental match)
+    info.setVersion("v0.8.9 - a1b2z3d");
+    BOOST_TEST(!isServerVersionValid(info));
+    rttr::test::LogAccessor logAcc;
+    // Invalid format (can't get revision)
+    info.setVersion("v20120730 " + rttr::version::GetShortRevision());
+    BOOST_TEST(!isServerVersionValid(info));
+    RTTR_REQUIRE_LOG_CONTAINS("Can't get server revision", true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

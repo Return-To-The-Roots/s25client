@@ -194,6 +194,23 @@ void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
         createServerWnd = nullptr;
 }
 
+bool isServerVersionValid(const LobbyServerInfo& serverInfo)
+{
+    // The server version is/should be rttr::version::GetReadableVersion()
+    if(serverInfo.getVersion() == rttr::version::GetReadableVersion())
+        return true;
+    // If we don't have an exact match we allow at least the same revision.
+    // The short revision is the part after " - "
+    const auto pos = serverInfo.getVersion().rfind(" - ");
+    if(pos != std::string::npos)
+        return serverInfo.getVersion().substr(pos + 3) == rttr::version::GetShortRevision();
+    else
+    {
+        LOG.writeToFile("Can't get server revision from version %1%") % serverInfo.getVersion();
+        return false;
+    }
+}
+
 bool dskLobby::ConnectToSelectedGame()
 {
     const auto* table = GetCtrl<ctrlTable>(ID_tblGames);
@@ -210,10 +227,8 @@ bool dskLobby::ConnectToSelectedGame()
                                                       MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     } else
     {
-        std::string serverRevision = itServer->getVersion();
-        if(!serverRevision.empty() && serverRevision[0] == 'v')
-            serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
-        if(serverRevision == rttr::version::GetShortRevision())
+        // Preliminary check of the server version. It will be checked thoroughly during the connection process
+        if(isServerVersionValid(*itServer))
         {
             auto connect = std::make_unique<iwDirectIPConnect>(ServerType::Lobby);
             connect->Connect(itServer->getHost(), itServer->getPort(), false, itServer->hasPassword());
