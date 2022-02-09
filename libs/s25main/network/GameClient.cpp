@@ -933,18 +933,22 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
         return true;
 
     LOG.writeToFile("<<< NMS_MAP_DATA(%u)\n") % msg.data.size();
-    if(msg.isMapData)
-        std::copy(msg.data.begin(), msg.data.end(), mapinfo.mapData.data.begin() + msg.offset);
-    else
-        std::copy(msg.data.begin(), msg.data.end(), mapinfo.luaData.data.begin() + msg.offset);
+    std::vector<char>& targetData = (msg.isMapData) ? mapinfo.mapData.data : mapinfo.luaData.data;
+    if(msg.data.size() > targetData.size() || msg.offset > targetData.size() - msg.data.size())
+    {
+        OnError(ClientError::MapTransmission);
+        return true;
+    }
+    std::copy(msg.data.begin(), msg.data.end(), targetData.begin() + msg.offset);
 
     uint32_t totalSize = mapinfo.mapData.data.size();
     uint32_t receivedSize = msg.offset + msg.data.size();
     if(!mapinfo.luaFilepath.empty())
     {
         totalSize += mapinfo.luaData.data.size();
+        // Assumes lua data comes after the map data
         if(!msg.isMapData)
-            receivedSize = mapinfo.mapData.data.size();
+            receivedSize += mapinfo.mapData.data.size();
     }
     if(ci)
         ci->CI_MapPartReceived(receivedSize, totalSize);
