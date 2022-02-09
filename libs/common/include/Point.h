@@ -24,10 +24,11 @@ struct Point //-V690
     T x, y;
     constexpr Point() noexcept : x(getInvalidValue()), y(getInvalidValue()) {}
     constexpr Point(const T x, const T y) noexcept : x(x), y(y) {}
-    constexpr Point(const Point&) = default;
     template<typename U>
     constexpr explicit Point(const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
+    constexpr Point(const Point&) = default;
+    constexpr Point& operator=(const Point&) = default;
 
     static constexpr Point Invalid() noexcept { return Point(); }
     /// Create a new point with all coordinates set to value
