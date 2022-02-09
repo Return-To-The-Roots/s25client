@@ -12,6 +12,7 @@
 #include "network/GameMessages.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "test/testConfig.h"
+#include "rttr/test/LogAccessor.hpp"
 #include "rttr/test/random.hpp"
 #include "s25util/boostTestHelpers.h"
 #include "s25util/tmpFile.h"
@@ -19,6 +20,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/nowide/cstdio.hpp>
 #include <boost/pointer_cast.hpp>
+#include <boost/test/data/test_case.hpp>
 #include <boost/test/unit_test.hpp>
 
 namespace bfs = boost::filesystem;
@@ -48,7 +50,8 @@ MOCK_BASE_CLASS(MockClientInterface, ClientInterface)
 
 } // namespace
 
-BOOST_AUTO_TEST_CASE(ClientFollowsConnectProtocol)
+static constexpr std::array<bool, 2> usesLuaScriptValues{false, true};
+BOOST_DATA_TEST_CASE(ClientFollowsConnectProtocol, usesLuaScriptValues, usesLuaScript)
 {
     GameClient client;
     GameMessageInterface& clientMsgInterface = client;
@@ -87,35 +90,60 @@ BOOST_AUTO_TEST_CASE(ClientFollowsConnectProtocol)
     }
     const boost::filesystem::path testMapPath =
       rttr::test::rttrBaseDir / "tests" / "testData" / "maps" / "LuaFunctions.SWD";
+    const boost::filesystem::path testLuaPath = boost::filesystem::path(testMapPath).replace_extension("lua");
     MapInfo mapInfo;
     mapInfo.mapData.CompressFromFile(testMapPath, &mapInfo.mapChecksum);
+    if(usesLuaScript)
+        mapInfo.luaData.CompressFromFile(testLuaPath, &mapInfo.luaChecksum);
     TmpFolder tmpUserdata(rttr::test::rttrTestDataDirOut);
     RTTRCONFIG.overridePathMapping("USERDATA", tmpUserdata);
     bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
+    const auto mapDataSize = mapInfo.mapData.data.size();
+    const auto luaDataSize = (usesLuaScript) ? mapInfo.luaData.data.size() : 0u;
     {
         MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::ReceiveMap).once();
         clientMsgInterface.OnGameMessage(GameMessage_Map_Info(testMapPath.filename().string(), MapType::OldMap,
-                                                              mapInfo.mapData.uncompressedLength,
-                                                              mapInfo.mapData.data.size(), 0, 0));
+                                                              mapInfo.mapData.uncompressedLength, mapDataSize,
+                                                              mapInfo.luaData.uncompressedLength, luaDataSize));
         const auto msg = boost::dynamic_pointer_cast<GameMessage_MapRequest>(client.GetMainPlayer().sendQueue.pop());
         BOOST_TEST_REQUIRE(msg);
         BOOST_TEST(!msg->requestInfo);
     }
     {
-        BOOST_TEST_REQUIRE(mapInfo.mapData.data.size() > 10u); // Should be or we can't chunk the map
-        MOCK_EXPECT(callbacks.CI_MapPartReceived).with(10u, mapInfo.mapData.data.size()).once();
+        const auto totalSize = mapDataSize + luaDataSize;
+        BOOST_TEST_REQUIRE(mapDataSize > 10u); // Should be or we can't chunk the map
+        if(usesLuaScript)
+            BOOST_TEST_REQUIRE(luaDataSize > 5u); // Should be or we can't chunk the lua data
+        // First part of map
+        MOCK_EXPECT(callbacks.CI_MapPartReceived).with(10u, totalSize).once();
         clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, 0, mapInfo.mapData.data.data(), 10));
         BOOST_TEST(client.GetMainPlayer().sendQueue.empty());
-
-        MOCK_EXPECT(callbacks.CI_MapPartReceived).with(mapInfo.mapData.data.size(), mapInfo.mapData.data.size()).once();
-        MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::VerifyMap).once();
+        // Remaining part of map
+        MOCK_EXPECT(callbacks.CI_MapPartReceived).with(mapDataSize, totalSize).once();
+        if(!usesLuaScript)
+            MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::VerifyMap).once();
         clientMsgInterface.OnGameMessage(
-          GameMessage_Map_Data(true, 10, mapInfo.mapData.data.data() + 10, mapInfo.mapData.data.size() - 10));
+          GameMessage_Map_Data(true, 10, mapInfo.mapData.data.data() + 10, mapDataSize - 10));
+        if(usesLuaScript)
+        {
+            // First part of lua
+            MOCK_EXPECT(callbacks.CI_MapPartReceived).with(mapDataSize + 5u, totalSize).once();
+            clientMsgInterface.OnGameMessage(GameMessage_Map_Data(false, 0, mapInfo.luaData.data.data(), 5));
+            BOOST_TEST(client.GetMainPlayer().sendQueue.empty());
+            // Remaining part of lua -> Transmission done
+            MOCK_EXPECT(callbacks.CI_MapPartReceived).with(totalSize, totalSize).once();
+            MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::VerifyMap).once();
+            clientMsgInterface.OnGameMessage(
+              GameMessage_Map_Data(false, 5, mapInfo.luaData.data.data() + 5, luaDataSize - 5));
+        }
+
         const auto msg = boost::dynamic_pointer_cast<GameMessage_Map_Checksum>(client.GetMainPlayer().sendQueue.pop());
         BOOST_TEST_REQUIRE(msg);
         BOOST_TEST(msg->mapChecksum == mapInfo.mapChecksum);
-        BOOST_TEST(msg->luaChecksum == 0u);
+        BOOST_TEST(msg->luaChecksum == mapInfo.luaChecksum);
         BOOST_TEST(bfs::exists(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / testMapPath.filename()));
+        if(usesLuaScript)
+            BOOST_TEST(bfs::exists(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / testLuaPath.filename()));
     }
     {
         MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::QueryServerName).once();
@@ -140,4 +168,43 @@ BOOST_AUTO_TEST_CASE(ClientFollowsConnectProtocol)
         // And done
         BOOST_TEST_REQUIRE(client.GetState() == ClientState::Config);
     }
+}
+
+BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)
+{
+    rttr::test::LogAccessor _suppressLogOutput;
+    GameClient client;
+    GameMessageInterface& clientMsgInterface = client;
+    MockClientInterface callbacks;
+    client.SetInterface(&callbacks);
+    TestServer server;
+    const auto serverPort = server.tryListen();
+    BOOST_TEST_REQUIRE(serverPort >= 0);
+    const auto pw = rttr::test::randString(10);
+    const auto serverType = rttr::test::randomEnum<ServerType>();
+    mock::sequence s;
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::Initiated).once();
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::VerifyServer).once();
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QueryPw).once();
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QueryMapInfo).once();
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::ReceiveMap).once();
+
+    BOOST_TEST_REQUIRE(client.Connect("localhost", pw, serverType, serverPort, false, false));
+    clientMsgInterface.OnGameMessage(GameMessage_Player_Id(1));
+    clientMsgInterface.OnGameMessage(GameMessage_Server_TypeOK(GameMessage_Server_TypeOK::StatusCode::Ok, ""));
+    clientMsgInterface.OnGameMessage(GameMessage_Server_Password("true"));
+
+    const auto mapDataSize = rttr::test::randomValue(10u, 100u);
+    std::vector<char> mapData(mapDataSize);
+    clientMsgInterface.OnGameMessage(GameMessage_Map_Info("testMap.swd", MapType::OldMap, 500u, mapDataSize, 0, 0));
+    // First part of map
+    MOCK_EXPECT(callbacks.CI_MapPartReceived).in(s).with(10u, mapDataSize).once();
+    clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, 0, mapData.data(), 10));
+    BOOST_TEST_REQUIRE(mock::verify());
+    BOOST_TEST(client.GetState() == ClientState::Connect);
+
+    // Remaining part of map but to big/wrong offset
+    MOCK_EXPECT(callbacks.CI_Error).with(ClientError::MapTransmission).once();
+    clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, 10, mapData.data(), mapDataSize - 9));
+    BOOST_TEST(client.GetState() == ClientState::Stopped);
 }
