@@ -2371,7 +2371,7 @@ void AIPlayerJH::AdjustSettings()
                     const unsigned requiredTools = numBuildingsRequiringWorker - inventory[job];
                     // When we are missing tools produce some.
                     // Slightly higher priority if we don't have any tool at all.
-                    if(requiredTools > inventory[good])
+                    if(requiredTools > numToolsAvailable)
                         return (inventory[good] == 0) ? 4 : 2;
                     numToolsAvailable -= requiredTools;
                 }
