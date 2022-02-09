@@ -33,11 +33,11 @@ jobs:
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Release }
           # Latest Clang with externals
-          - { compiler: clang-12, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
-          - { compiler: clang-12, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
-          - { compiler: clang-12, os: ubuntu-20.04, buildType: Release }
+          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
+          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
+          - { compiler: clang-13, os: ubuntu-20.04, buildType: Release }
           # Latest Clang with latest boost
-          - { compiler: clang-12, os: ubuntu-20.04, buildType: Debug, boostVersion: 1.77.0, externalSanitizer: true }
+          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, boostVersion: 1.78.0, externalSanitizer: true }
 
     runs-on: ${{matrix.os}}
 
@@ -65,6 +65,12 @@ jobs:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
 
+      - name: Add LLVM repo
+        if: matrix.compiler == 'clang-13' && matrix.os == 'ubuntu-20.04'
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
+          sudo apt update
       - name: Install Compiler
         if: "!startsWith(runner.os, 'macos')"
         run: |
