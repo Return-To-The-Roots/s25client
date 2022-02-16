@@ -25,7 +25,7 @@ enum
 
 iwConnecting::iwConnecting(ServerType serverType, std::unique_ptr<ILobbyClient> lobbyClient)
     : IngameWindow(CGI_CONNECTING, IngameWindow::posCenter, Extent(300, 120), _("Connecting"),
-                   LOADER.GetImageN("resource", 41), true, false),
+                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom),
       serverType_(serverType), lobbyClient_(std::move(lobbyClient))
 {
     WINDOWMANAGER.SetCursor(Cursor::Moon);

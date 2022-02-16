@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(ConnectingWindow)
         boost::signals2::scoped_connection _ = wnd.onError.connect(onError);
         // Modal and doesn't react on right-click
         BOOST_TEST(wnd.IsModal());
-        BOOST_TEST(!wnd.isUserClosable());
+        BOOST_TEST(wnd.getCloseBehavior() == CloseBehavior::Custom);
         ctrlPercent& progressBar = *wnd.GetCtrls<ctrlPercent>().at(0);
         BOOST_TEST(!progressBar.IsVisible()); // Initially hidden
         for(auto st :

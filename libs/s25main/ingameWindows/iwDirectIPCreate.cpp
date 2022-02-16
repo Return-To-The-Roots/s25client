@@ -17,7 +17,7 @@
 
 iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCREATE, IngameWindow::posLastOrCenter, Extent(300, 285), _("Create Game"),
-                   LOADER.GetImageN("resource", 41), true, true),
+                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom),
       server_type(server_type)
 {
     ctrlEdit *name, *port;

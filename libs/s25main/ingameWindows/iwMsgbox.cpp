@@ -28,17 +28,13 @@ const unsigned short maxTextHeight = 200;
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
                    MsgboxIcon icon, unsigned msgboxid)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
-                   true, false),
-      button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
-{
-    Init(text, "io", rttr::enum_cast(icon));
-}
+    : iwMsgbox(title, text, msgHandler, button, "io", rttr::enum_cast(icon), msgboxid)
+{}
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
                    const ResourceId& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
     : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
-                   true, false),
+                   true, CloseBehavior::Custom),
       button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     Init(text, iconFile, iconIdx);
