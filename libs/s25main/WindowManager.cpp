@@ -137,7 +137,7 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
         // Find one which isn't yet marked for closing so multiple ESC in between draw calls can close multiple windows
         const auto itActiveWnd =
           std::find_if(windows.rbegin(), windows.rend(), [](const auto& wnd) { return !wnd->ShouldBeClosed(); });
-        if(itActiveWnd != windows.rend() && (*itActiveWnd)->isUserClosable())
+        if(itActiveWnd != windows.rend() && (*itActiveWnd)->getCloseBehavior() != CloseBehavior::Custom)
             (*itActiveWnd)->Close();
     } else if(!CALL_MEMBER_FN(*windows.back(), msg)(ke)) // send to active window
     {
@@ -404,7 +404,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     if(!curDesktop)
         return;
 
-    // Sind Fenster vorhanden && ist das aktive Fenster ok
+    // Right-click closes (most) windows, so check that
     if(!windows.empty())
     {
         IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
@@ -419,7 +419,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         if(foundWindow)
         {
             // Close it if requested
-            if(foundWindow->isUserClosable())
+            if(foundWindow->getCloseBehavior() == CloseBehavior::Regular)
                 foundWindow->Close();
             else
             {

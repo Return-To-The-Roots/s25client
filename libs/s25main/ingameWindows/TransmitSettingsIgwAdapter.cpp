@@ -13,8 +13,8 @@ constexpr unsigned TransmitSettingsIgwAdapter::firstCtrlID;
 
 TransmitSettingsIgwAdapter::TransmitSettingsIgwAdapter(unsigned id, const DrawPoint& pos, const Extent& size,
                                                        const std::string& title, glArchivItem_Bitmap* background,
-                                                       bool modal, bool isUserClosable, Window* parent)
-    : IngameWindow(id, pos, size, title, background, modal, isUserClosable, parent), settings_changed(false)
+                                                       bool modal)
+    : IngameWindow(id, pos, size, title, background, modal), settings_changed(false)
 {
     // Timer for transmitting changes every 2 seconds
     using namespace std::chrono_literals;

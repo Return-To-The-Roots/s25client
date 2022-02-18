@@ -14,6 +14,16 @@ class MouseCoords;
 template<typename T>
 struct Point;
 
+enum CloseBehavior
+{
+    /// Closeable via right-click, button, keyboard (ESC, ALT+W)
+    Regular,
+    /// Close behavior is managed by window, e.g. explicit button
+    Custom,
+    /// Same as Regular, but doesn't (auto-)close on right-click
+    NoRightClick,
+};
+
 class IngameWindow : public Window
 {
 public:
@@ -27,8 +37,8 @@ public:
     static const Extent borderSize;
 
     IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
-                 glArchivItem_Bitmap* background, bool modal = false, bool isUserClosable = true,
-                 Window* parent = nullptr);
+                 glArchivItem_Bitmap* background, bool modal = false,
+                 CloseBehavior closeBehavior = CloseBehavior::Regular, Window* parent = nullptr);
 
     /// setzt den Hintergrund.
     void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
@@ -61,11 +71,9 @@ public:
     /// ist das Fenster minimiert?
     bool IsMinimized() const { return isMinimized_; }
 
-    /// Can the user close the window (e.g. right-click, ESC)
-    /// If this is false the close button at the title bar will be hidden
-    bool isUserClosable() const { return isUserClosable_; }
+    CloseBehavior getCloseBehavior() const { return closeBehavior_; }
 
-    /// Modal windows cannot be minimized and stay on top of non-modal ones
+    /// Modal windows cannot be minimized, are always active and stay on top of non-modal ones
     bool IsModal() const { return isModal_; }
 
     void MouseLeftDown(const MouseCoords& mc);
@@ -93,20 +101,22 @@ protected:
     DrawPoint lastMousePos;
     bool last_down;
     bool last_down2;
-    std::array<ButtonState, 2> button_state;
+    std::array<ButtonState, 2> buttonState;
 
     /// Offset from left and top to actual content
     Extent contentOffset;
     /// Offset from content to right and bottom boundary
     Extent contentOffsetEnd;
 
-    Rect GetLeftButtonRect() const;
-    Rect GetRightButtonRect() const;
+    /// Get bounds of close button (left)
+    Rect GetCloseButtonBounds() const;
+    /// Get bounds of minimize button (right)
+    Rect GetMinimizeButtonBounds() const;
 
 private:
     bool isModal_;
     bool closeme;
     bool isMinimized_;
     bool isMoving;
-    bool isUserClosable_;
+    CloseBehavior closeBehavior_;
 };

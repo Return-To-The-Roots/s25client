@@ -16,8 +16,7 @@ protected:
 
 public:
     TransmitSettingsIgwAdapter(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title,
-                               glArchivItem_Bitmap* background, bool modal = false, bool isUserClosable = true,
-                               Window* parent = nullptr);
+                               glArchivItem_Bitmap* background, bool modal = false);
 
     /// Updates the control elements with values from visual settings
     virtual void UpdateSettings() = 0;

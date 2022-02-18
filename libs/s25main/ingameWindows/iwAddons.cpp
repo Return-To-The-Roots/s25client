@@ -33,7 +33,7 @@ constexpr unsigned AddonGuiLineHeight = 30;
 iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed policy,
                    std::vector<AddonId> whitelistedAddons)
     : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 500), _("Addon Settings"),
-                   LOADER.GetImageN("resource", 41), true, false, parent),
+                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom, parent),
       ggs(ggs), policy_(policy), whitelistedAddons_(std::move(whitelistedAddons))
 {
     AddText(ID_txtAddFeatures, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, FontStyle{}, NormalFont);

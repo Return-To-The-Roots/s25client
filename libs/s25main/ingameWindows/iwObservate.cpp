@@ -25,7 +25,7 @@ const Extent BigWndSize(340, 310);
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     : IngameWindow(CGI_OBSERVATION, IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr, false,
-                   false),
+                   CloseBehavior::NoRightClick),
       parentView(gwv),
       view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
       selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
