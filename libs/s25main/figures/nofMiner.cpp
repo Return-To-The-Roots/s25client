@@ -11,6 +11,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
+#include <random/Random.h>
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace)
@@ -71,20 +72,100 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 
 bool nofMiner::AreWaresAvailable() const
 {
+    // FindPointWithResource triggeres outofresource message
+    if(GetAddonSetting() == 3)
+        return true;
+
     return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+}
+
+unsigned int nofMiner::GetAddonSetting() const 
+{
+    const GlobalGameSettings& settings = world->GetGGS();
+
+    switch(workplace->GetBuildingType())
+    {
+        case BuildingType::GoldMine: return settings.getSelection(AddonId::MINES_GOLD);
+        case BuildingType::IronMine: return settings.getSelection(AddonId::MINES_IRON);
+        case BuildingType::CoalMine: return settings.getSelection(AddonId::MINES_COAL);
+        case BuildingType::GraniteMine: return settings.getSelection(AddonId::MINES_GRANITE);
+        default: return 0;
+    }
 }
 
 bool nofMiner::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(GetRequiredResType());
-    if(!resPt.isValid())
-        return false;
-    const GlobalGameSettings& settings = world->GetGGS();
-    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                            || (workplace->GetBuildingType() == BuildingType::GraniteMine
-                                && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
-    if(!inexhaustibleRes)
-        world->ReduceResource(resPt);
+    workplace->is_emptyCycle = false;
+
+    // needs to have at least one resource spot
+    // 0 = is exhaustible
+    // 1 = settlers IV like
+    // 2 = inexhaustible
+    // 3 = everywhere
+    unsigned int addonSettings = GetAddonSetting();
+
+    switch (addonSettings)
+    {
+        case 1: // settlers IV style
+        {
+            int sumResAmount = 0;
+            MapPoint useResPt;
+
+            std::vector<MapPoint> resPts = FindAllPointsWithResource(GetRequiredResType());
+
+            // iterate over all points
+            for each(MapPoint curPt in resPts)
+            {
+                // calculate the absolute amount of resource beneath
+                uint8_t resAmount = world->GetNode(curPt).resources.getAmount();
+                sumResAmount += resAmount;
+
+                // if there is one with more than 1 quantity, keep it (for reducing)
+                if(resAmount > 1 && !useResPt.isValid())
+                    useResPt = curPt;
+            }
+
+            // no resources left (mine was built on invalid spot)
+            if(sumResAmount == 0)
+                return false;
+
+            // 19 = amount of nodes a mine can reach
+            // 7  = maximum resource amount a node possibly has
+            if(RANDOM.Rand(RANDOM_CONTEXT(), 19 * 7) > sumResAmount)
+            {
+                // failed, use food and start working - but produce nothing
+                workplace->is_emptyCycle = true;
+            } else
+            {
+                // if success, use 1 quantity if any
+                if(!useResPt.isValid())
+                    world->ReduceResource(useResPt);
+            }
+        }
+        break;
+        case 2: // inexhaustible
+        {
+            MapPoint resPt = FindPointWithResource(GetRequiredResType());
+            if(!resPt.isValid())
+                return false;
+        }
+        break;
+        case 3: // inexhaustible, everywhere
+        {
+        }
+        break;
+        case 0: // original behavior
+        default:
+        {
+            MapPoint resPt = FindPointWithResource(GetRequiredResType());
+            if(!resPt.isValid())
+                return false;
+
+            world->ReduceResource(resPt);
+        }
+        break;
+    }
+
     return nofWorkman::StartWorking();
 }
 

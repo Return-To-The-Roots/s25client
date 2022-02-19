@@ -34,10 +34,15 @@
 #include "addons/AddonToolOrdering.h"
 
 #include "addons/AddonInexhaustibleFish.h"
-#include "addons/AddonInexhaustibleGraniteMines.h"
 #include "addons/AddonMaxRank.h"
 #include "addons/AddonMilitaryAid.h"
 #include "addons/AddonSeaAttack.h"
+
+#include "addons/AddonInexhaustibleGraniteMines.h"
+#include "addons/AddonMinesGranite.h"
+#include "addons/AddonMinesGold.h"
+#include "addons/AddonMinesIron.h"
+#include "addons/AddonMinesCoal.h"
 
 #include "addons/AddonBattlefieldPromotion.h"
 #include "addons/AddonBurnDuration.h"

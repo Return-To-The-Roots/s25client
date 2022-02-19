@@ -55,7 +55,7 @@ void nofWorkman::HandleStateWaiting2()
 {
     current_ev = nullptr;
     // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
-    if(!(ware = ProduceWare()).has_value())
+    if(!(ware = ProduceWare()).has_value() || workplace->is_emptyCycle)
     {
         // Soll keine erzeugt werden --> wieder anfangen zu arbeiten
         TryToWork();
@@ -109,4 +109,14 @@ MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
     workplace->OnOutOfResources();
 
     return MapPoint::Invalid();
+}
+
+std::vector<MapPoint> nofWorkman::FindAllPointsWithResource(ResourceType type) const
+{
+    // int maxResults = (int)((MINER_RADIUS * MINER_RADIUS + MINER_RADIUS) * 3u + 1u);
+
+    const std::vector<MapPoint> pts =
+      world->GetMatchingPointsInRadius<19>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
+
+    return pts;
 }

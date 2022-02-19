@@ -9,7 +9,7 @@
 class SerializedGameData;
 class nobUsual;
 
-/// Klasse für den Schreiner
+/// Klasse für den Miner
 class nofMiner : public nofWorkman
 {
 protected:
@@ -23,6 +23,7 @@ protected:
     bool AreWaresAvailable() const override;
     bool StartWorking() override;
     ResourceType GetRequiredResType() const;
+    unsigned int GetAddonSetting() const;
 
 public:
     nofMiner(MapPoint pos, unsigned char player, nobUsual* workplace);

@@ -8,6 +8,7 @@
 #include "nofBuildingWorker.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/Resource.h"
+#include <vector>
 class SerializedGameData;
 class nobBaseWarehouse;
 class nobUsual;
@@ -38,6 +39,8 @@ protected:
 
     /// Looks for a point with a given resource on the node
     MapPoint FindPointWithResource(ResourceType type) const;
+    /// Looks for all points with a given resource on the node
+    std::vector<MapPoint> FindAllPointsWithResource(ResourceType type) const;
 
 public:
     /// Going to workplace
