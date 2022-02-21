@@ -39,8 +39,7 @@ protected:
 
     /// Looks for a point with a given resource on the node
     MapPoint FindPointWithResource(ResourceType type) const;
-    /// Looks for all points with a given resource on the node
-    std::vector<MapPoint> FindAllPointsWithResource(ResourceType type) const;
+    MapPoint FindPointWithResource(ResourceType type, unsigned radius) const;
 
 public:
     /// Going to workplace

@@ -95,6 +95,7 @@ public:
     unsigned CalcMaxDistance() const;
     /// Return the direction for ships for going from one point to another
     ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;
+    unsigned numPointsRadius(unsigned radius, bool includePt) const;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -122,9 +123,7 @@ detail::GetPointsResult_t<T_TransformPt> MapBase::GetPointsInRadius(const MapPoi
         result.reserve(T_maxResults);
     else if(std::is_same<T_IsValidPt, AlwaysTrue>::value)
     {
-        // For every additional radius we get 6 * curRadius more points. Hence we have 6 * sum(1..radius) points + the
-        // center point if requested This can be reduced via the gauss formula to the following:
-        result.reserve((radius * radius + radius) * 3u + (includePt ? 1u : 0u));
+        result.reserve(numPointsRadius(radius, includePt));
     }
     if(includePt)
     {

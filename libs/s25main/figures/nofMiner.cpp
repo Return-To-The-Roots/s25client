@@ -62,6 +62,9 @@ unsigned short nofMiner::GetCarryID() const
 
 helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
+    if(isAlteredWorkcycle)
+        return boost::none;
+
     switch(workplace->GetBuildingType())
     {
         case BuildingType::GoldMine: return GoodType::Gold;
@@ -76,10 +79,16 @@ bool nofMiner::AreWaresAvailable() const
     if(!nofWorkman::AreWaresAvailable())
         return false;
 
-    if(GetMiningBehavior() == MiningBehavior::AlwaysAvailable)
+    const MiningBehavior addonSetting = GetMiningBehavior();
+
+    if(addonSetting == MiningBehavior::AlwaysAvailable)
         return true;
 
-    return FindPointWithResource(GetRequiredResType()).isValid();
+    // TODO: Skip this check if siv like mines and worked at least once?
+    if(addonSetting == MiningBehavior::S4Like)
+        return FindPointWithResource(GetRequiredResType(), MINER_RADIUS_SETTLERSIV).isValid();
+    else
+        return FindPointWithResource(GetRequiredResType()).isValid();
 }
 
 MiningBehavior nofMiner::GetMiningBehavior() const
@@ -107,44 +116,43 @@ bool nofMiner::StartWorking()
         case MiningBehavior::S4Like:
         {
             int sumResAmount = 0;
-            MapPoint useResPt;
 
-            std::vector<MapPoint> resPts = FindAllPointsWithResource(GetRequiredResType());
+            MapPoint nonMinumResPt;
 
-            // iterate over all points
-            for each(MapPoint curPt in resPts)
+            const std::vector<MapPoint> reachablePts =
+              world->GetPointsInRadiusWithCenter(workplace->GetPos(), MINER_RADIUS_SETTLERSIV);
+
+            for(const MapPoint curPt : reachablePts)
             {
-                // calculate the absolute amount of resource beneath
-                uint8_t resAmount = world->GetNode(curPt).resources.getAmount();
+                const Resource resPt = world->GetNode(curPt).resources;
+
+                if(resPt.getType() != GetRequiredResType())
+                    continue;
+
+                const auto resAmount = resPt.getAmount();
+
                 sumResAmount += resAmount;
 
-                // if there is one with more than 1 quantity, keep it (for reducing)
-                if(resAmount > 1 && !useResPt.isValid())
-                    useResPt = curPt;
+                if(resAmount > 1u && !nonMinumResPt.isValid())
+                    nonMinumResPt = curPt;
             }
 
-            // no resources left (mine was built on invalid spot)
-            if(sumResAmount == 0)
-                return false;
-
-            // 19 = amount of nodes a mine can reach
-            // 7  = maximum resource amount a node possibly has
-            if(RANDOM.Rand(RANDOM_CONTEXT(), 19 * 7) > sumResAmount)
+            // depending on remaining resources, roll if this workcycle needs to be altered or not
+            if(RANDOM_RAND(world->numPointsRadius(MINER_RADIUS_SETTLERSIV, true) * MINER_MAX_QUANTITY)
+               > sumResAmount)
             {
-                // failed, use food and start working - but produce nothing
                 isAlteredWorkcycle = true;
-                //ProduceWare = boost::none;
             } else
             {
-                // if success, use 1 quantity if any
-                if(!useResPt.isValid())
-                    world->ReduceResource(useResPt);
+                if(nonMinumResPt.isValid())
+                    world->ReduceResource(nonMinumResPt);
             }
         }
         break;
+        // TODO: Is this required? FindPointWithResource checks if there is at least one
         case MiningBehavior::Inexhaustible:
         {
-            MapPoint resPt = FindPointWithResource(GetRequiredResType());
+            const MapPoint resPt = FindPointWithResource(GetRequiredResType());
             if(!resPt.isValid())
                 return false;
         }
@@ -153,7 +161,7 @@ bool nofMiner::StartWorking()
         case MiningBehavior::Normal:
         default:
         {
-            MapPoint resPt = FindPointWithResource(GetRequiredResType());
+            const MapPoint resPt = FindPointWithResource(GetRequiredResType());
             if(!resPt.isValid())
                 return false;
 

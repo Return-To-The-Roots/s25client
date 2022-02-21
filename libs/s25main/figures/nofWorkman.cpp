@@ -100,23 +100,16 @@ struct NodeHasResource
 
 MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
 {
-    // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
+    return FindPointWithResource(type, MINER_RADIUS);
+}
+
+MapPoint nofWorkman::FindPointWithResource(ResourceType type, unsigned radius) const {
     const std::vector<MapPoint> pts =
-      world->GetMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
+      world->GetMatchingPointsInRadius<1>(pos, radius, NodeHasResource(*world, type), true);
     if(!pts.empty())
         return pts.front();
 
     workplace->OnOutOfResources();
 
     return MapPoint::Invalid();
-}
-
-std::vector<MapPoint> nofWorkman::FindAllPointsWithResource(ResourceType type) const
-{
-    // int maxResults = (int)((MINER_RADIUS * MINER_RADIUS + MINER_RADIUS) * 3u + 1u);
-
-    const std::vector<MapPoint> pts =
-      world->GetMatchingPointsInRadius<19>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
-
-    return pts;
 }

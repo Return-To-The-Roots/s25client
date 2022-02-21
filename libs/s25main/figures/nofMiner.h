@@ -6,6 +6,7 @@
 
 #include "nofWorkman.h"
 #include "addons/AddonMiningOverhaul.h"
+#include <gameData/GameConsts.h>
 
 class SerializedGameData;
 class nobUsual;
