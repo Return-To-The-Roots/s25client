@@ -23,7 +23,7 @@ protected:
     bool AreWaresAvailable() const override;
     bool StartWorking() override;
     ResourceType GetRequiredResType() const;
-    unsigned int GetAddonSetting() const;
+    MiningBehavior GetMiningBehavior() const;
 
 public:
     nofMiner(MapPoint pos, unsigned char player, nobUsual* workplace);

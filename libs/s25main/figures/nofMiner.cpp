@@ -12,6 +12,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
 #include <random/Random.h>
+#include <GlobalGameSettings.cpp>
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace)
@@ -72,24 +73,26 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 
 bool nofMiner::AreWaresAvailable() const
 {
-    // FindPointWithResource triggeres outofresource message
-    if(GetAddonSetting() == 3)
+    if(!nofWorkman::AreWaresAvailable())
+        return false;
+
+    if(GetMiningBehavior() == MiningBehavior::AlwaysAvailable)
         return true;
 
-    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+    return FindPointWithResource(GetRequiredResType()).isValid();
 }
 
-unsigned int nofMiner::GetAddonSetting() const 
+MiningBehavior nofMiner::GetMiningBehavior() const
 {
     const GlobalGameSettings& settings = world->GetGGS();
 
     switch(workplace->GetBuildingType())
     {
-        case BuildingType::GoldMine: return settings.getSelection(AddonId::MINING_OVERHAUL_GOLD);
-        case BuildingType::IronMine: return settings.getSelection(AddonId::MINING_OVERHAUL_IRON);
-        case BuildingType::CoalMine: return settings.getSelection(AddonId::MINING_OVERHAUL_COAL);
-        case BuildingType::GraniteMine: return settings.getSelection(AddonId::MINING_OVERHAUL_GRANITE);
-        default: return 0;
+        case BuildingType::GoldMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_GOLD);
+        case BuildingType::IronMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_IRON);
+        case BuildingType::CoalMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_COAL);
+        case BuildingType::GraniteMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_GRANITE);
+        default: return MiningBehavior::Normal;
     }
 }
 
@@ -97,16 +100,11 @@ bool nofMiner::StartWorking()
 {
     workplace->is_emptyCycle = false;
 
-    // needs to have at least one resource spot
-    // 0 = is exhaustible
-    // 1 = settlers IV like
-    // 2 = inexhaustible
-    // 3 = everywhere
-    unsigned int addonSettings = GetAddonSetting();
+    MiningBehavior addonSettings = GetMiningBehavior();
 
     switch (addonSettings)
     {
-        case 1: // settlers IV style
+        case MiningBehavior::S4Like:
         {
             int sumResAmount = 0;
             MapPoint useResPt;
@@ -144,18 +142,15 @@ bool nofMiner::StartWorking()
             }
         }
         break;
-        case 2: // inexhaustible
+        case MiningBehavior::Inexhaustible:
         {
             MapPoint resPt = FindPointWithResource(GetRequiredResType());
             if(!resPt.isValid())
                 return false;
         }
         break;
-        case 3: // inexhaustible, everywhere
-        {
-        }
-        break;
-        case 0: // original behavior
+        case MiningBehavior::AlwaysAvailable: break;
+        case MiningBehavior::Normal:
         default:
         {
             MapPoint resPt = FindPointWithResource(GetRequiredResType());

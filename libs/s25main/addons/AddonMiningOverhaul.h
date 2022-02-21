@@ -7,6 +7,14 @@
 #include "AddonList.h"
 #include "mygettext/mygettext.h"
 
+enum class MiningBehavior
+{
+    Normal,
+    S4Like,
+    Inexhaustible,
+    AlwaysAvailable
+};
+
 class AddonMiningOverhaulBase : public AddonList
 {
 protected:
