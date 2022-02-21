@@ -39,10 +39,7 @@
 #include "addons/AddonSeaAttack.h"
 
 #include "addons/AddonInexhaustibleGraniteMines.h"
-#include "addons/AddonMinesGranite.h"
-#include "addons/AddonMinesGold.h"
-#include "addons/AddonMinesIron.h"
-#include "addons/AddonMinesCoal.h"
+#include "addons/AddonMiningOverhaul.h"
 
 #include "addons/AddonBattlefieldPromotion.h"
 #include "addons/AddonBurnDuration.h"

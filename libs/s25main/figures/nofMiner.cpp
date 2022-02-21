@@ -85,10 +85,10 @@ unsigned int nofMiner::GetAddonSetting() const
 
     switch(workplace->GetBuildingType())
     {
-        case BuildingType::GoldMine: return settings.getSelection(AddonId::MINES_GOLD);
-        case BuildingType::IronMine: return settings.getSelection(AddonId::MINES_IRON);
-        case BuildingType::CoalMine: return settings.getSelection(AddonId::MINES_COAL);
-        case BuildingType::GraniteMine: return settings.getSelection(AddonId::MINES_GRANITE);
+        case BuildingType::GoldMine: return settings.getSelection(AddonId::MINING_OVERHAUL_GOLD);
+        case BuildingType::IronMine: return settings.getSelection(AddonId::MINING_OVERHAUL_IRON);
+        case BuildingType::CoalMine: return settings.getSelection(AddonId::MINING_OVERHAUL_COAL);
+        case BuildingType::GraniteMine: return settings.getSelection(AddonId::MINING_OVERHAUL_GRANITE);
         default: return 0;
     }
 }
@@ -135,6 +135,7 @@ bool nofMiner::StartWorking()
             {
                 // failed, use food and start working - but produce nothing
                 workplace->is_emptyCycle = true;
+                //ProduceWare = boost::none;
             } else
             {
                 // if success, use 1 quantity if any
