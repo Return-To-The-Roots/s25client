@@ -12,12 +12,12 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
 #include <random/Random.h>
-#include <GlobalGameSettings.cpp>
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(Job::Miner, pos, player, workplace)
+    : nofWorkman(Job::Miner, pos, player, workplace), isAlteredWorkcycle(false)
 {}
 
+// TODO: need to look into saving/loading to correctly load the work cycle
 nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
@@ -98,7 +98,7 @@ MiningBehavior nofMiner::GetMiningBehavior() const
 
 bool nofMiner::StartWorking()
 {
-    workplace->is_emptyCycle = false;
+    isAlteredWorkcycle = false;
 
     MiningBehavior addonSettings = GetMiningBehavior();
 
@@ -132,7 +132,7 @@ bool nofMiner::StartWorking()
             if(RANDOM.Rand(RANDOM_CONTEXT(), 19 * 7) > sumResAmount)
             {
                 // failed, use food and start working - but produce nothing
-                workplace->is_emptyCycle = true;
+                isAlteredWorkcycle = true;
                 //ProduceWare = boost::none;
             } else
             {

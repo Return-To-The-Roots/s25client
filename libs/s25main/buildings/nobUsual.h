@@ -57,9 +57,6 @@ public:
     /// Wird gerade gearbeitet oder nicht?
     bool is_working;
 
-    /// is this an empty cycle? (use wares but produce nothing)
-    bool is_emptyCycle;
-
     ~nobUsual() override;
 
     void Serialize(SerializedGameData& sgd) const override;

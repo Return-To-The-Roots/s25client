@@ -5,11 +5,11 @@
 #pragma once
 
 #include "nofWorkman.h"
+#include "addons/AddonMiningOverhaul.h"
 
 class SerializedGameData;
 class nobUsual;
 
-/// Klasse für den Miner
 class nofMiner : public nofWorkman
 {
 protected:
@@ -19,6 +19,8 @@ protected:
     unsigned short GetCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
+    /// alter workcycle (addon)
+    bool isAlteredWorkcycle;
 
     bool AreWaresAvailable() const override;
     bool StartWorking() override;
