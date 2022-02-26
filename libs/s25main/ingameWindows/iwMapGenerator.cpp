@@ -6,6 +6,9 @@
 #include "Loader.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlProgress.h"
+#include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
+#include "helpers/make_array.h"
 #include "lua/GameDataLoader.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/WorldDescription.h"
@@ -15,9 +18,15 @@
 
 using namespace rttr::mapGenerator;
 
+namespace {
+/// Selectable map sizes. Note that maps bigger than 256^2 often cause lags
+constexpr auto mapSizes = helpers::make_array(MapExtent::all(64), MapExtent::all(128), MapExtent::all(256),
+                                              MapExtent::all(320), MapExtent::all(384));
+} // namespace
+
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
     : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 520), _("Map Generator"),
-                   LOADER.GetImageN("resource", 41), true),
+                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom),
       mapSettings(settings)
 {
     WorldDescription desc;
@@ -37,7 +46,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     curPos.y += 30;
     ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned n = 2; n <= MAX_PLAYERS; n++)
-        combo->AddString(boost::str(boost::format(_("%1% players")) % n));
+        combo->AddString(helpers::format(_("%1% players"), n));
 
     curPos.y += 30;
     combo = AddComboBox(CTRL_MAP_STYLE, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
@@ -47,11 +56,8 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 
     curPos.y += 30;
     combo = AddComboBox(CTRL_MAP_SIZE, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
-    combo->AddString("64 x 64");
-    combo->AddString("128 x 128");
-    combo->AddString("256 x 256");
-    combo->AddString("512 x 512");
-    combo->AddString("1024 x 1024");
+    for(const auto& size : mapSizes)
+        combo->AddString(helpers::format("%1% x %2%", size.x, size.y));
 
     curPos.y += 30;
     AddText(CTRL_TXT_LANDSCAPE, curPos, _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -108,16 +114,11 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     Reset();
 }
 
-iwMapGenerator::~iwMapGenerator() = default;
-
 void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        default: break;
-
         case CTRL_BTN_BACK: Close(); break;
-
         case CTRL_BTN_APPLY:
             Apply();
             Close();
@@ -136,49 +137,35 @@ void iwMapGenerator::Apply()
     mapSettings.trees = GetCtrl<ctrlProgress>(CTRL_TREES)->GetPosition();
     mapSettings.stonePiles = GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->GetPosition();
 
-    switch(GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->GetSelection().get())
+    switch(*GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->GetSelection())
     {
         case 0: mapSettings.mountainDistance = MountainDistance::Close; break;
         case 1: mapSettings.mountainDistance = MountainDistance::Normal; break;
         case 2: mapSettings.mountainDistance = MountainDistance::Far; break;
         case 3: mapSettings.mountainDistance = MountainDistance::VeryFar; break;
-        default: break;
     }
-    switch(GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection().get())
+    switch(*GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection())
     {
         case 0: mapSettings.style = MapStyle::Water; break;
         case 1: mapSettings.style = MapStyle::Land; break;
         case 2: mapSettings.style = MapStyle::Mixed; break;
-        default: break;
     }
-    switch(GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection().get())
-    {
-        case 0: mapSettings.size = MapExtent::all(64); break;
-        case 1: mapSettings.size = MapExtent::all(128); break;
-        case 2: mapSettings.size = MapExtent::all(256); break;
-        case 3: mapSettings.size = MapExtent::all(512); break;
-        case 4: mapSettings.size = MapExtent::all(1024); break;
-        default: break;
-    }
-    switch(GetCtrl<ctrlComboBox>(CTRL_ISLANDS)->GetSelection().get())
+    mapSettings.size = mapSizes[*GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection()];
+    switch(*GetCtrl<ctrlComboBox>(CTRL_ISLANDS)->GetSelection())
     {
         case 0: mapSettings.islands = IslandAmount::Few; break;
         case 1: mapSettings.islands = IslandAmount::Normal; break;
         case 2: mapSettings.islands = IslandAmount::Many; break;
-        default: break;
     }
-    int mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection().get();
-    if(mapType >= 0)
-        mapSettings.type = DescIdx<LandscapeDesc>(mapType);
+    const auto& mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection();
+    if(mapType)
+        mapSettings.type = DescIdx<LandscapeDesc>(*mapType);
 }
 
 void iwMapGenerator::Reset()
 {
-    auto* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
-    if(mapSettings.numPlayers <= MAX_PLAYERS)
-    {
-        combo->SetSelection(mapSettings.numPlayers - 2); // List starts at 2 players
-    }
+    GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)
+      ->SetSelection(std::min(mapSettings.numPlayers, MAX_PLAYERS) - 2); // List starts at 2 players
 
     GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->SetPosition(mapSettings.ratioGold);
     GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->SetPosition(mapSettings.ratioIron);
@@ -188,14 +175,13 @@ void iwMapGenerator::Reset()
     GetCtrl<ctrlProgress>(CTRL_TREES)->SetPosition(mapSettings.trees);
     GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->SetPosition(mapSettings.stonePiles);
 
-    combo = GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST);
+    auto* combo = GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST);
     switch(mapSettings.mountainDistance)
     {
         case MountainDistance::Close: combo->SetSelection(0); break;
         case MountainDistance::Normal: combo->SetSelection(1); break;
         case MountainDistance::Far: combo->SetSelection(2); break;
         case MountainDistance::VeryFar: combo->SetSelection(3); break;
-        default: break;
     }
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
@@ -204,19 +190,11 @@ void iwMapGenerator::Reset()
         case MapStyle::Water: combo->SetSelection(0); break;
         case MapStyle::Land: combo->SetSelection(1); break;
         case MapStyle::Mixed: combo->SetSelection(2); break;
-        default: break;
     }
 
-    combo = GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE);
-    switch(mapSettings.size.x)
-    {
-        case 64: combo->SetSelection(0); break;
-        case 128: combo->SetSelection(1); break;
-        case 256: combo->SetSelection(2); break;
-        case 512: combo->SetSelection(3); break;
-        case 1024: combo->SetSelection(4); break;
-        default: break;
-    }
+    const auto idxSize = helpers::indexOf(mapSizes, mapSettings.size);
+    if(idxSize >= 0)
+        GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->SetSelection(idxSize);
 
     combo = GetCtrl<ctrlComboBox>(CTRL_ISLANDS);
     switch(mapSettings.islands)
@@ -224,9 +202,7 @@ void iwMapGenerator::Reset()
         case IslandAmount::Few: combo->SetSelection(0); break;
         case IslandAmount::Normal: combo->SetSelection(1); break;
         case IslandAmount::Many: combo->SetSelection(2); break;
-        default: break;
     }
 
-    combo = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE);
-    combo->SetSelection(mapSettings.type.value);
+    GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->SetSelection(mapSettings.type.value);
 }
