@@ -7,10 +7,7 @@
 #include "IngameWindow.h"
 #include "mapGenerator/MapSettings.h"
 
-/**
- * The iwMapGenerator is an ingame window for the user to configure parameters used
- * for random map generation (when pressing the "Random" button on map selection).
- */
+/// Window to configure parameters used for random map generation
 class iwMapGenerator : public IngameWindow
 {
 public:
@@ -49,25 +46,13 @@ public:
      */
     iwMapGenerator(rttr::mapGenerator::MapSettings& settings);
 
-    ~iwMapGenerator() override;
-
     void Msg_ButtonClick(unsigned ctrl_id) override;
 
 private:
-    /**
-     * Actual settings used for map generation. After pressing the "apply" button in the
-     * UI mapSettings are updated with the values configured in the UI.
-     */
     rttr::mapGenerator::MapSettings& mapSettings;
 
-    /**
-     * Resets the map generation settings to the original value.
-     * Also updates the UI accordingly.
-     */
+    /// Reset the UI to the values of @ref mapSettings
     void Reset();
-
-    /**
-     * Updates the mapSettings with the values currently configured in the UI.
-     */
+    /// Updates @ref mapSettings with the values currently configured in the UI.
     void Apply();
 };
