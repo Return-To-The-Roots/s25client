@@ -48,7 +48,24 @@ MOCK_BASE_CLASS(MockClientInterface, ClientInterface)
     // LCOV_EXCL_STOP
 };
 
+class CustomUserMapFolderFixture
+{
+    boost::filesystem::path oldUserData;
+
+public:
+    TmpFolder tmpUserdata;
+    CustomUserMapFolderFixture() : tmpUserdata(rttr::test::rttrTestDataDirOut)
+    {
+        oldUserData = RTTRCONFIG.ExpandPath("<RTTR_USERDATA>");
+        RTTRCONFIG.overridePathMapping("USERDATA", tmpUserdata);
+        bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
+    }
+    ~CustomUserMapFolderFixture() { RTTRCONFIG.overridePathMapping("USERDATA", oldUserData); }
+};
+
 } // namespace
+
+BOOST_FIXTURE_TEST_SUITE(GameClientTests, CustomUserMapFolderFixture)
 
 static constexpr std::array<bool, 2> usesLuaScriptValues{false, true};
 BOOST_DATA_TEST_CASE(ClientFollowsConnectProtocol, usesLuaScriptValues, usesLuaScript)
@@ -95,9 +112,6 @@ BOOST_DATA_TEST_CASE(ClientFollowsConnectProtocol, usesLuaScriptValues, usesLuaS
     mapInfo.mapData.CompressFromFile(testMapPath, &mapInfo.mapChecksum);
     if(usesLuaScript)
         mapInfo.luaData.CompressFromFile(testLuaPath, &mapInfo.luaChecksum);
-    TmpFolder tmpUserdata(rttr::test::rttrTestDataDirOut);
-    RTTRCONFIG.overridePathMapping("USERDATA", tmpUserdata);
-    bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
     const auto mapDataSize = mapInfo.mapData.data.size();
     const auto luaDataSize = (usesLuaScript) ? mapInfo.luaData.data.size() : 0u;
     {
@@ -208,3 +222,5 @@ BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)
     clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, 10, mapData.data(), mapDataSize - 9));
     BOOST_TEST(client.GetState() == ClientState::Stopped);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
