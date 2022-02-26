@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
+#include "helpers/make_array.h"
 #include "mapGenFixtures.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/TextureHelper.h"
@@ -10,6 +11,13 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
+
+static MountainDistance randomMountainDistance()
+{
+    constexpr auto values = helpers::make_array(MountainDistance::Close, MountainDistance::Normal,
+                                                MountainDistance::Far, MountainDistance::VeryFar);
+    return helpers::getRandomElement(rttr::test::getRandState(), values);
+}
 
 static auto getAllPoints(const MapExtent size)
 {
@@ -67,7 +75,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_empty_for_map_without_suitable_posi
     const TextureMap& textures = map.textureMap;
 
     map.getTextures().Resize(size, TexturePair(textures.Find(IsShipableWater)));
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     const auto positions = FindHqPositions(map, getAllPoints(size), mntDist);
 
     BOOST_TEST(positions.empty());
@@ -87,7 +95,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_suitable_position_for_single_player
     map.getTextures().Resize(size, TexturePair(buildable));
     map.getTextures()[obstacle] = TexturePair(water);
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     const auto positions = FindHqPositions(map, getAllPoints(size), mntDist);
 
     BOOST_TEST(!positions.empty());
@@ -120,7 +128,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_without_mountain)
     Map map = createMap(size);
     const TextureMap& textures = map.textureMap;
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     const auto buildable = textures.Find(IsBuildableLand);
     MapPoint hq(4, 4);
     map.getTextures().Resize(size, TexturePair(buildable));
@@ -136,7 +144,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
     Map map = createMap(size);
     const TextureMap& textures = map.textureMap;
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     const MapPoint obstacle(1, 3);
     const MapPoint hq(4, 5);
 
@@ -156,7 +164,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_empty_area_throws_exception)
     Map map = createMap(size);
     const TextureMap& textures = map.textureMap;
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     const auto water = textures.Find(IsShipableWater);
     map.getTextures().Resize(size, TexturePair(water));
     std::vector<MapPoint> area;
@@ -169,7 +177,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_without_suitable_position_throws_exception
     Map map = createMap(size);
     const TextureMap& textures = map.textureMap;
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     const auto water = textures.Find(IsShipableWater);
     map.getTextures().Resize(size, TexturePair(water));
     std::vector<MapPoint> area{MapPoint(0, 0)};
@@ -184,7 +192,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_with_suitable_positions_for_all_players)
     Map map = createMap(size, players);
     const TextureMap& textures = map.textureMap;
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     map.getTextures().Resize(size, TexturePair(textures.Find(IsBuildableLand)));
     map.getTextures()[MapPoint(0, 0)] = TexturePair(textures.Find(IsWater));
     BOOST_REQUIRE_NO_THROW(PlaceHeadquarters(map, rnd, players, mntDist));
@@ -198,7 +206,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_places_hqs_for_any_player_number_on_suita
     Map map = createMap(size, players);
     const TextureMap& textures = map.textureMap;
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     map.getTextures().Resize(size, textures.Find(IsBuildableLand));
     map.getTextures()[MapPoint(0, 0)] = TexturePair(textures.Find(IsWater));
     PlaceHeadquarters(map, rnd, players, mntDist);
@@ -217,7 +225,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_without_suitable_position_throws_exceptio
     Map map = createMap(size, players);
     const TextureMap& textures = map.textureMap;
 
-    const auto mntDist = rttr::test::randomEnum<MountainDistance>();
+    const auto mntDist = randomMountainDistance();
     map.getTextures().Resize(size, textures.Find(IsWater));
     BOOST_CHECK_THROW(PlaceHeadquarters(map, rnd, players, mntDist), std::runtime_error);
 }

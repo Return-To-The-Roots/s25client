@@ -17,6 +17,7 @@ namespace rttr { namespace mapGenerator {
         Land,
         Mixed
     };
+    constexpr auto maxEnumValue(MapStyle) { return MapStyle::Mixed; }
 
     enum class MountainDistance : uint8_t
     {
@@ -25,7 +26,6 @@ namespace rttr { namespace mapGenerator {
         Far = 25,
         VeryFar = 30
     };
-    constexpr auto maxEnumValue(MountainDistance) { return MountainDistance::VeryFar; }
 
     enum class IslandAmount : uint8_t
     {
@@ -33,7 +33,6 @@ namespace rttr { namespace mapGenerator {
         Normal = 10,
         Many = 30
     };
-    constexpr auto maxEnumValue(IslandAmount) { return IslandAmount::Many; }
 
     struct MapSettings
     {
