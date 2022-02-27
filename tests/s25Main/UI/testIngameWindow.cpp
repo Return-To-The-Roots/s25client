@@ -71,10 +71,12 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->GetSelection().value()
                == static_cast<unsigned>(settings.style));
     wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->SetSelection(1); // MapStyle::Land
-    auto* ctrlMapSize = wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSize);
-    BOOST_TEST(ctrlMapSize->GetText(ctrlMapSize->GetSelection().value())
-               == helpers::format("%1% x %2%", settings.size.x, settings.size.y));
-    ctrlMapSize->SetSelection(2);                                                                           // 256x256
+    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeX)->GetSelectedText().value()
+               == s25util::toStringClassic(settings.size.x));
+    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeY)->GetSelectedText().value()
+               == s25util::toStringClassic(settings.size.y));
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeX)->SetSelection(7);                              // 256
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeY)->SetSelection(3);                              // 128
     BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->GetSelection().value() == 1u); // Normal
     wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->SetSelection(3);                          // VeryFar
     BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbIslands)->GetSelection().value() == 0u);      // Few
@@ -98,7 +100,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
 
     BOOST_TEST(settings.numPlayers == expectedNumPlayers);
     BOOST_TEST(settings.type == DescIdx<LandscapeDesc>(expectedMapType));
-    BOOST_TEST(settings.size == MapExtent(256, 256));
+    BOOST_TEST(settings.size == MapExtent(256, 128));
     BOOST_TEST(settings.style == rttr::mapGenerator::MapStyle::Land);
     BOOST_TEST(settings.mountainDistance == rttr::mapGenerator::MountainDistance::VeryFar);
     BOOST_TEST(settings.islands == rttr::mapGenerator::IslandAmount::Many);

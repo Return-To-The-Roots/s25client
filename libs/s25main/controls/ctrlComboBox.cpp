@@ -23,7 +23,7 @@ ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, co
     liste->SetVisible(false);
 
     if(!readonly)
-        AddImageButton(1, DrawPoint(size.x - size.y, 0), size, tc, LOADER.GetImageN("io", 34));
+        AddImageButton(1, DrawPoint(size.x - size.y, 0), Extent(size.y, size.y), tc, LOADER.GetImageN("io", 34));
 
     Resize(size);
 }
@@ -67,6 +67,15 @@ void ctrlComboBox::Resize(const Extent& newSize)
 
     list->SetPos(DrawPoint(0, newSize.y));
     list->Resize(listSize);
+}
+
+boost::optional<std::string> ctrlComboBox::GetSelectedText() const
+{
+    const boost::optional<unsigned>& selection = GetSelection();
+    if(selection)
+        return GetText(*selection);
+    else
+        return boost::none;
 }
 
 void ctrlComboBox::Msg_PaintAfter()
