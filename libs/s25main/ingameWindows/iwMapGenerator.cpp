@@ -8,21 +8,15 @@
 #include "controls/ctrlProgress.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
-#include "helpers/make_array.h"
 #include "lua/GameDataLoader.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/WorldDescription.h"
 #include "gameData/const_gui_ids.h"
+#include "s25util/StringConversion.h"
 #include "s25util/colors.h"
 #include <string>
 
 using namespace rttr::mapGenerator;
-
-namespace {
-/// Selectable map sizes. Note that maps bigger than 256^2 often cause lags
-constexpr auto mapSizes = helpers::make_array(MapExtent::all(64), MapExtent::all(128), MapExtent::all(256),
-                                              MapExtent::all(320), MapExtent::all(384));
-} // namespace
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
     : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 520), _("Map Generator"),
@@ -39,9 +33,10 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 
     DrawPoint curPos(20, 0);
 
-    const Extent comboSize(230, 20);
-    const Extent progressSize(130, 20);
-    const Extent buttonSize(100, 20);
+    constexpr Extent comboSize(230, 20);
+    constexpr Extent comboSizeSmall(130, 20);
+    constexpr Extent progressSize(130, 20);
+    constexpr Extent buttonSize(100, 20);
 
     curPos.y += 30;
     ctrlComboBox* combo = AddComboBox(ID_cbNumPlayers, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
@@ -49,15 +44,26 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         combo->AddString(helpers::format(_("%1% players"), n));
 
     curPos.y += 30;
-    combo = AddComboBox(ID_cbMapStyle, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    AddText(ID_txtMapStyle, curPos, _("Style"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo =
+      AddComboBox(ID_cbMapStyle, curPos + DrawPoint(100, -5), comboSizeSmall, TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Water"));
     combo->AddString(_("Land"));
     combo->AddString(_("Mixed"));
 
     curPos.y += 30;
-    combo = AddComboBox(ID_cbMapSize, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
-    for(const auto& size : mapSizes)
-        combo->AddString(helpers::format("%1% x %2%", size.x, size.y));
+    AddText(ID_txtMapSize, curPos, _("Size"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    auto* cbSizeX =
+      AddComboBox(ID_cbMapSizeX, curPos + DrawPoint(100, -5), Extent(50, 20), TextureColor::Grey, NormalFont, 200);
+    AddText(ID_txtMapSizeX, curPos + DrawPoint(160, 5), "x", COLOR_YELLOW, FontStyle::VCENTER, NormalFont);
+    auto* cbSizeY =
+      AddComboBox(ID_cbMapSizeY, curPos + DrawPoint(180, -5), Extent(50, 20), TextureColor::Grey, NormalFont, 200);
+    for(unsigned size = 32; size <= 320; size += 32)
+    {
+        const auto strSize = s25util::toStringClassic(size);
+        cbSizeX->AddString(strSize);
+        cbSizeY->AddString(strSize);
+    }
 
     curPos.y += 30;
     AddText(ID_txtLandscape, curPos, _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -83,7 +89,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString(_("Medium"));
     combo->AddString(_("Many"));
 
-    const int pgrOffset = 120;
+    constexpr int pgrOffset = 120;
     curPos.y += 35;
     AddText(ID_txtGold, curPos, _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(ID_pgGoldRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
@@ -149,7 +155,10 @@ void iwMapGenerator::Apply()
         case 1: mapSettings.style = MapStyle::Land; break;
         case 2: mapSettings.style = MapStyle::Mixed; break;
     }
-    mapSettings.size = mapSizes[*GetCtrl<ctrlComboBox>(ID_cbMapSize)->GetSelection()];
+    mapSettings.size.x =
+      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeX)->GetSelectedText().get_value_or("128"));
+    mapSettings.size.y =
+      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeY)->GetSelectedText().get_value_or("128"));
     switch(*GetCtrl<ctrlComboBox>(ID_cbIslands)->GetSelection())
     {
         case 0: mapSettings.islands = IslandAmount::Few; break;
@@ -191,9 +200,19 @@ void iwMapGenerator::Reset()
         case MapStyle::Mixed: combo->SetSelection(2); break;
     }
 
-    const auto idxSize = helpers::indexOf(mapSizes, mapSettings.size);
-    if(idxSize >= 0)
-        GetCtrl<ctrlComboBox>(ID_cbMapSize)->SetSelection(idxSize);
+    const auto strSizeX = s25util::toStringClassic(mapSettings.size.x);
+    const auto strSizeY = s25util::toStringClassic(mapSettings.size.y);
+    auto* cbSizeX = GetCtrl<ctrlComboBox>(ID_cbMapSizeX);
+    auto* cbSizeY = GetCtrl<ctrlComboBox>(ID_cbMapSizeY);
+    const auto numSizes = cbSizeX->GetNumItems();
+    RTTR_Assert(numSizes == cbSizeY->GetNumItems());
+    for(unsigned i = 0; i < numSizes; ++i)
+    {
+        if(cbSizeX->GetText(i) == strSizeX)
+            cbSizeX->SetSelection(i);
+        if(cbSizeY->GetText(i) == strSizeY)
+            cbSizeY->SetSelection(i);
+    }
 
     combo = GetCtrl<ctrlComboBox>(ID_cbIslands);
     switch(mapSettings.islands)
