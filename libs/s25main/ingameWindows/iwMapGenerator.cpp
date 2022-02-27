@@ -44,72 +44,71 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     const Extent buttonSize(100, 20);
 
     curPos.y += 30;
-    ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    ctrlComboBox* combo = AddComboBox(ID_cbNumPlayers, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned n = 2; n <= MAX_PLAYERS; n++)
         combo->AddString(helpers::format(_("%1% players"), n));
 
     curPos.y += 30;
-    combo = AddComboBox(CTRL_MAP_STYLE, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo = AddComboBox(ID_cbMapStyle, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Water"));
     combo->AddString(_("Land"));
     combo->AddString(_("Mixed"));
 
     curPos.y += 30;
-    combo = AddComboBox(CTRL_MAP_SIZE, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo = AddComboBox(ID_cbMapSize, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(const auto& size : mapSizes)
         combo->AddString(helpers::format("%1% x %2%", size.x, size.y));
 
     curPos.y += 30;
-    AddText(CTRL_TXT_LANDSCAPE, curPos, _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(ID_txtLandscape, curPos, _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
-    combo = AddComboBox(CTRL_MAP_TYPE, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo = AddComboBox(ID_cbMapType, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned i = 0; i < desc.landscapes.size(); i++)
         combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
     curPos.y += 30;
-    AddText(CTRL_TXT_MOUNTAIN_DIST, curPos, _("HQ distance to mountain"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(ID_txtMountainDist, curPos, _("HQ distance to mountain"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
-    combo = AddComboBox(CTRL_MOUNTAIN_DIST, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo = AddComboBox(ID_cbMountainDist, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Close"));
     combo->AddString(_("Normal"));
     combo->AddString(_("Far"));
     combo->AddString(_("Very far"));
 
     curPos.y += 30;
-    AddText(CTRL_TXT_ISLANDS, curPos, _("Islands"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(ID_txtIslands, curPos, _("Islands"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
-    combo = AddComboBox(CTRL_ISLANDS, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo = AddComboBox(ID_cbIslands, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Few"));
     combo->AddString(_("Medium"));
     combo->AddString(_("Many"));
 
     const int pgrOffset = 120;
     curPos.y += 35;
-    AddText(CTRL_TXT_GOAL, curPos, _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GOLD, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddText(ID_txtGold, curPos, _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgGoldRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(CTRL_TXT_IRON, curPos, _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_IRON, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddText(ID_txtIron, curPos, _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgIronRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(CTRL_TXT_COAL, curPos, _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_COAL, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddText(ID_txtCoal, curPos, _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgCoalRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(CTRL_TXT_GRANITE, curPos, _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138,
-                100);
+    AddText(ID_txtGranite, curPos, _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgGraniteRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(CTRL_TXT_RIVERS, curPos, _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_RIVERS, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddText(ID_txtRivers, curPos, _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgRivers, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(CTRL_TXT_TREES, curPos, _("Trees:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_TREES, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddText(ID_txtTrees, curPos, _("Trees:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgTrees, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(CTRL_TXT_STONE_PILES, curPos, _("Stone piles:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(CTRL_STONE_PILES, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    AddText(ID_txtStonePiles, curPos, _("Stone piles:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgStonePiles, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
 
     curPos.y += 25;
-    AddTextButton(CTRL_BTN_BACK, curPos, buttonSize, TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(CTRL_BTN_APPLY, DrawPoint(130, curPos.y), buttonSize, TextureColor::Green2, _("Apply"), NormalFont);
+    AddTextButton(ID_btBack, curPos, buttonSize, TextureColor::Red1, _("Back"), NormalFont);
+    AddTextButton(ID_btApply, DrawPoint(130, curPos.y), buttonSize, TextureColor::Green2, _("Apply"), NormalFont);
 
     Reset();
 }
@@ -118,8 +117,8 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case CTRL_BTN_BACK: Close(); break;
-        case CTRL_BTN_APPLY:
+        case ID_btBack: Close(); break;
+        case ID_btApply:
             Apply();
             Close();
             break;
@@ -128,54 +127,54 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwMapGenerator::Apply()
 {
-    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->GetSelection().get() + 2;
-    mapSettings.ratioGold = GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->GetPosition();
-    mapSettings.ratioIron = GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->GetPosition();
-    mapSettings.ratioCoal = GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->GetPosition();
-    mapSettings.ratioGranite = GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->GetPosition();
-    mapSettings.rivers = GetCtrl<ctrlProgress>(CTRL_RIVERS)->GetPosition();
-    mapSettings.trees = GetCtrl<ctrlProgress>(CTRL_TREES)->GetPosition();
-    mapSettings.stonePiles = GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->GetPosition();
+    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(ID_cbNumPlayers)->GetSelection().get() + 2;
+    mapSettings.ratioGold = GetCtrl<ctrlProgress>(ID_pgGoldRatio)->GetPosition();
+    mapSettings.ratioIron = GetCtrl<ctrlProgress>(ID_pgIronRatio)->GetPosition();
+    mapSettings.ratioCoal = GetCtrl<ctrlProgress>(ID_pgCoalRatio)->GetPosition();
+    mapSettings.ratioGranite = GetCtrl<ctrlProgress>(ID_pgGraniteRatio)->GetPosition();
+    mapSettings.rivers = GetCtrl<ctrlProgress>(ID_pgRivers)->GetPosition();
+    mapSettings.trees = GetCtrl<ctrlProgress>(ID_pgTrees)->GetPosition();
+    mapSettings.stonePiles = GetCtrl<ctrlProgress>(ID_pgStonePiles)->GetPosition();
 
-    switch(*GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST)->GetSelection())
+    switch(*GetCtrl<ctrlComboBox>(ID_cbMountainDist)->GetSelection())
     {
         case 0: mapSettings.mountainDistance = MountainDistance::Close; break;
         case 1: mapSettings.mountainDistance = MountainDistance::Normal; break;
         case 2: mapSettings.mountainDistance = MountainDistance::Far; break;
         case 3: mapSettings.mountainDistance = MountainDistance::VeryFar; break;
     }
-    switch(*GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection())
+    switch(*GetCtrl<ctrlComboBox>(ID_cbMapStyle)->GetSelection())
     {
         case 0: mapSettings.style = MapStyle::Water; break;
         case 1: mapSettings.style = MapStyle::Land; break;
         case 2: mapSettings.style = MapStyle::Mixed; break;
     }
-    mapSettings.size = mapSizes[*GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection()];
-    switch(*GetCtrl<ctrlComboBox>(CTRL_ISLANDS)->GetSelection())
+    mapSettings.size = mapSizes[*GetCtrl<ctrlComboBox>(ID_cbMapSize)->GetSelection()];
+    switch(*GetCtrl<ctrlComboBox>(ID_cbIslands)->GetSelection())
     {
         case 0: mapSettings.islands = IslandAmount::Few; break;
         case 1: mapSettings.islands = IslandAmount::Normal; break;
         case 2: mapSettings.islands = IslandAmount::Many; break;
     }
-    const auto& mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection();
+    const auto& mapType = GetCtrl<ctrlComboBox>(ID_cbMapType)->GetSelection();
     if(mapType)
         mapSettings.type = DescIdx<LandscapeDesc>(*mapType);
 }
 
 void iwMapGenerator::Reset()
 {
-    GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)
+    GetCtrl<ctrlComboBox>(ID_cbNumPlayers)
       ->SetSelection(std::min(mapSettings.numPlayers, MAX_PLAYERS) - 2); // List starts at 2 players
 
-    GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->SetPosition(mapSettings.ratioGold);
-    GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->SetPosition(mapSettings.ratioIron);
-    GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->SetPosition(mapSettings.ratioCoal);
-    GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(mapSettings.ratioGranite);
-    GetCtrl<ctrlProgress>(CTRL_RIVERS)->SetPosition(mapSettings.rivers);
-    GetCtrl<ctrlProgress>(CTRL_TREES)->SetPosition(mapSettings.trees);
-    GetCtrl<ctrlProgress>(CTRL_STONE_PILES)->SetPosition(mapSettings.stonePiles);
+    GetCtrl<ctrlProgress>(ID_pgGoldRatio)->SetPosition(mapSettings.ratioGold);
+    GetCtrl<ctrlProgress>(ID_pgIronRatio)->SetPosition(mapSettings.ratioIron);
+    GetCtrl<ctrlProgress>(ID_pgCoalRatio)->SetPosition(mapSettings.ratioCoal);
+    GetCtrl<ctrlProgress>(ID_pgGraniteRatio)->SetPosition(mapSettings.ratioGranite);
+    GetCtrl<ctrlProgress>(ID_pgRivers)->SetPosition(mapSettings.rivers);
+    GetCtrl<ctrlProgress>(ID_pgTrees)->SetPosition(mapSettings.trees);
+    GetCtrl<ctrlProgress>(ID_pgStonePiles)->SetPosition(mapSettings.stonePiles);
 
-    auto* combo = GetCtrl<ctrlComboBox>(CTRL_MOUNTAIN_DIST);
+    auto* combo = GetCtrl<ctrlComboBox>(ID_cbMountainDist);
     switch(mapSettings.mountainDistance)
     {
         case MountainDistance::Close: combo->SetSelection(0); break;
@@ -184,7 +183,7 @@ void iwMapGenerator::Reset()
         case MountainDistance::VeryFar: combo->SetSelection(3); break;
     }
 
-    combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
+    combo = GetCtrl<ctrlComboBox>(ID_cbMapStyle);
     switch(mapSettings.style)
     {
         case MapStyle::Water: combo->SetSelection(0); break;
@@ -194,9 +193,9 @@ void iwMapGenerator::Reset()
 
     const auto idxSize = helpers::indexOf(mapSizes, mapSettings.size);
     if(idxSize >= 0)
-        GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->SetSelection(idxSize);
+        GetCtrl<ctrlComboBox>(ID_cbMapSize)->SetSelection(idxSize);
 
-    combo = GetCtrl<ctrlComboBox>(CTRL_ISLANDS);
+    combo = GetCtrl<ctrlComboBox>(ID_cbIslands);
     switch(mapSettings.islands)
     {
         case IslandAmount::Few: combo->SetSelection(0); break;
@@ -204,5 +203,5 @@ void iwMapGenerator::Reset()
         case IslandAmount::Many: combo->SetSelection(2); break;
     }
 
-    GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->SetSelection(mapSettings.type.value);
+    GetCtrl<ctrlComboBox>(ID_cbMapType)->SetSelection(mapSettings.type.value);
 }

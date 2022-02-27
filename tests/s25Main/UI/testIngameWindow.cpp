@@ -63,37 +63,37 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     rttr::mapGenerator::MapSettings settings;
     iwMapGenerator wnd(settings);
     // UI values are set according to current values. Check that and adjust to random value to test apply-button
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_PLAYER_NUMBER)->GetSelection().value()
+    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbNumPlayers)->GetSelection().value()
                == settings.numPlayers - 2u);
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_PLAYER_NUMBER)->SetSelection(expectedNumPlayers - 2);
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_TYPE)->GetSelection().value() == settings.type.value);
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_TYPE)->SetSelection(expectedMapType);
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_STYLE)->GetSelection().value()
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbNumPlayers)->SetSelection(expectedNumPlayers - 2);
+    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapType)->GetSelection().value() == settings.type.value);
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapType)->SetSelection(expectedMapType);
+    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->GetSelection().value()
                == static_cast<unsigned>(settings.style));
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_STYLE)->SetSelection(1); // MapStyle::Land
-    auto* ctrlMapSize = wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MAP_SIZE);
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->SetSelection(1); // MapStyle::Land
+    auto* ctrlMapSize = wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSize);
     BOOST_TEST(ctrlMapSize->GetText(ctrlMapSize->GetSelection().value())
                == helpers::format("%1% x %2%", settings.size.x, settings.size.y));
-    ctrlMapSize->SetSelection(2);                                                                            // 256x256
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MOUNTAIN_DIST)->GetSelection().value() == 1u); // Normal
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_MOUNTAIN_DIST)->SetSelection(3);                          // VeryFar
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_ISLANDS)->GetSelection().value() == 0u);       // Few
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::CTRL_ISLANDS)->SetSelection(2); // IslandAmount::Many
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_GOLD)->GetPosition() == settings.ratioGold);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_GOLD)->SetPosition(expectedGoldRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_IRON)->GetPosition() == settings.ratioIron);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_IRON)->SetPosition(expectedIronRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_COAL)->GetPosition() == settings.ratioCoal);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_COAL)->SetPosition(expectedCoalRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_GRANITE)->GetPosition() == settings.ratioGranite);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RATIO_GRANITE)->SetPosition(expectedGraniteRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RIVERS)->GetPosition() == settings.rivers);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_RIVERS)->SetPosition(expectedRivers);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_TREES)->GetPosition() == settings.trees);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_TREES)->SetPosition(expectedTrees);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_STONE_PILES)->GetPosition() == settings.stonePiles);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::CTRL_STONE_PILES)->SetPosition(expectedStonePiles);
-    wnd.Msg_ButtonClick(iwMapGenerator::CTRL_BTN_APPLY);
+    ctrlMapSize->SetSelection(2);                                                                           // 256x256
+    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->GetSelection().value() == 1u); // Normal
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->SetSelection(3);                          // VeryFar
+    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbIslands)->GetSelection().value() == 0u);      // Few
+    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbIslands)->SetSelection(2); // IslandAmount::Many
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGoldRatio)->GetPosition() == settings.ratioGold);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGoldRatio)->SetPosition(expectedGoldRatio);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgIronRatio)->GetPosition() == settings.ratioIron);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgIronRatio)->SetPosition(expectedIronRatio);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgCoalRatio)->GetPosition() == settings.ratioCoal);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgCoalRatio)->SetPosition(expectedCoalRatio);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGraniteRatio)->GetPosition() == settings.ratioGranite);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGraniteRatio)->SetPosition(expectedGraniteRatio);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->GetPosition() == settings.rivers);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->SetPosition(expectedRivers);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->GetPosition() == settings.trees);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->SetPosition(expectedTrees);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->GetPosition() == settings.stonePiles);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->SetPosition(expectedStonePiles);
+    wnd.Msg_ButtonClick(iwMapGenerator::ID_btApply);
     BOOST_TEST(wnd.ShouldBeClosed());
 
     BOOST_TEST(settings.numPlayers == expectedNumPlayers);
