@@ -12,6 +12,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
 #include <random/Random.h>
+#include <gameData/GameConsts.h>
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace), isAlteredWorkcycle(false)
