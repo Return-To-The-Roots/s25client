@@ -5,21 +5,22 @@
 #include "nofMiner.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
-#include <random/Random.h>
 #include <gameData/GameConsts.h>
-#include "SerializedGameData.h"
+#include <random/Random.h>
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace), isAlteredWorkcycle(false)
 {}
 
-nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {
+nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+{
     if(sgd.GetGameDataVersion() >= 10)
         isAlteredWorkcycle = sgd.PopBool();
     else
@@ -151,8 +152,7 @@ bool nofMiner::StartWorking()
             }
 
             // depending on remaining resources, roll if this workcycle needs to be altered or not
-            if(RANDOM_RAND(reachablePts.size() * MAX_ORE_QUANTITY)
-               > sumResAmount)
+            if(RANDOM_RAND(reachablePts.size() * MAX_ORE_QUANTITY) > sumResAmount)
             {
                 isAlteredWorkcycle = true;
             } else

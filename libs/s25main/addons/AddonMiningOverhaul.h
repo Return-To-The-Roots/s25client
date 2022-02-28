@@ -50,7 +50,9 @@ public:
 class AddonMiningOverhaulGranite : public AddonMiningOverhaulBase
 {
 public:
-    AddonMiningOverhaulGranite() : AddonMiningOverhaulBase(AddonId::MINING_OVERHAUL_GRANITE, _("Mining overhaul: Granite")) {}
+    AddonMiningOverhaulGranite()
+        : AddonMiningOverhaulBase(AddonId::MINING_OVERHAUL_GRANITE, _("Mining overhaul: Granite"))
+    {}
 };
 
 class AddonMiningOverhaulIron : public AddonMiningOverhaulBase
