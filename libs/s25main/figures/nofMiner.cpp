@@ -85,7 +85,6 @@ bool nofMiner::AreWaresAvailable() const
     if(addonSetting == MiningBehavior::AlwaysAvailable)
         return true;
 
-    // TODO: Skip this check if siv like mines and worked at least once?
     if(addonSetting == MiningBehavior::S4Like)
         return FindPointWithResource(GetRequiredResType(), MINER_ORE_RADIUS_SETTLERSIV).isValid();
     else
@@ -96,71 +95,76 @@ MiningBehavior nofMiner::GetMiningBehavior() const
 {
     const GlobalGameSettings& settings = world->GetGGS();
 
+    auto miningBehavior = MiningBehavior::Normal;
+
     switch(workplace->GetBuildingType())
     {
-        case BuildingType::GoldMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_GOLD);
-        case BuildingType::IronMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_IRON);
-        case BuildingType::CoalMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_COAL);
-        case BuildingType::GraniteMine: return (MiningBehavior)settings.getSelection(AddonId::MINING_OVERHAUL_GRANITE);
-        default: return MiningBehavior::Normal;
+        case BuildingType::GoldMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_GOLD));
+            break;
+        case BuildingType::IronMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_IRON));
+            break;
+        case BuildingType::CoalMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_COAL));
+            break;
+        case BuildingType::GraniteMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_GRANITE));
+            break;
+        default: miningBehavior = MiningBehavior::Normal;
     }
+
+    return miningBehavior;
 }
 
 bool nofMiner::StartWorking()
 {
     isAlteredWorkcycle = false;
 
-    MiningBehavior addonSettings = GetMiningBehavior();
-
-    switch (addonSettings)
+    switch(GetMiningBehavior())
     {
         case MiningBehavior::S4Like:
         {
             int sumResAmount = 0;
-
-            MapPoint nonMinumResPt;
+            MapPoint nonMinimumResPt;
 
             const std::vector<MapPoint> reachablePts =
               world->GetPointsInRadiusWithCenter(workplace->GetPos(), MINER_ORE_RADIUS_SETTLERSIV);
 
             for(const MapPoint curPt : reachablePts)
             {
-                const Resource resPt = world->GetNode(curPt).resources;
+                const Resource resource = world->GetNode(curPt).resources;
 
-                if(resPt.getType() != GetRequiredResType())
+                if(resource.getType() != GetRequiredResType())
                     continue;
 
-                const auto resAmount = resPt.getAmount();
-
+                const auto resAmount = resource.getAmount();
                 sumResAmount += resAmount;
 
-                if(resAmount > 1u && !nonMinumResPt.isValid())
-                    nonMinumResPt = curPt;
+                if(resAmount > 1u && !nonMinimumResPt.isValid())
+                    nonMinimumResPt = curPt;
             }
 
             // depending on remaining resources, roll if this workcycle needs to be altered or not
-            if(RANDOM_RAND(world->GetNumPointsInRadius(MINER_ORE_RADIUS_SETTLERSIV, true) * MAX_ORE_QUANTITY)
+            if(RANDOM_RAND(reachablePts.size() * MAX_ORE_QUANTITY)
                > sumResAmount)
             {
                 isAlteredWorkcycle = true;
             } else
             {
-                if(nonMinumResPt.isValid())
-                    world->ReduceResource(nonMinumResPt);
+                if(nonMinimumResPt.isValid())
+                    world->ReduceResource(nonMinimumResPt);
             }
         }
         break;
-        // TODO: Is this required? FindPointWithResource checks if there is at least one
         case MiningBehavior::Inexhaustible:
         {
-            const MapPoint resPt = FindPointWithResource(GetRequiredResType());
-            if(!resPt.isValid())
+            if(!FindPointWithResource(GetRequiredResType()).isValid())
                 return false;
         }
         break;
         case MiningBehavior::AlwaysAvailable: break;
         case MiningBehavior::Normal:
-        default:
         {
             const MapPoint resPt = FindPointWithResource(GetRequiredResType());
             if(!resPt.isValid())
