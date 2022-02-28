@@ -13,13 +13,18 @@
 #include "world/GameWorld.h"
 #include <random/Random.h>
 #include <gameData/GameConsts.h>
+#include "SerializedGameData.h"
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace), isAlteredWorkcycle(false)
 {}
 
-// TODO: need to look into saving/loading to correctly load the work cycle
-nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
+nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {
+    if(sgd.GetGameDataVersion() >= 10)
+        isAlteredWorkcycle = sgd.PopBool();
+    else
+        isAlteredWorkcycle = false;
+}
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
@@ -187,4 +192,13 @@ ResourceType nofMiner::GetRequiredResType() const
         case BuildingType::CoalMine: return ResourceType::Coal;
         default: return ResourceType::Granite;
     }
+}
+
+void nofMiner::Serialize(SerializedGameData& sgd) const
+{
+    nofWorkman::Serialize(sgd);
+
+    sgd.PushBool(isAlteredWorkcycle);
+
+    sgd.GetGameDataVersion();
 }

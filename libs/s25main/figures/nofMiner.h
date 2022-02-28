@@ -32,4 +32,6 @@ public:
     nofMiner(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const final { return GO_Type::NofMiner; }
+
+    void Serialize(SerializedGameData& sgd) const override;
 };
