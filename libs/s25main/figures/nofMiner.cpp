@@ -138,7 +138,7 @@ bool nofMiner::StartWorking()
             }
 
             // depending on remaining resources, roll if this workcycle needs to be altered or not
-            if(RANDOM_RAND(world->numPointsRadius(MINER_RADIUS_SETTLERSIV, true) * MINER_MAX_QUANTITY)
+            if(RANDOM_RAND(world->GetNumPointsInRadius(MINER_RADIUS_SETTLERSIV, true) * MINER_MAX_QUANTITY)
                > sumResAmount)
             {
                 isAlteredWorkcycle = true;

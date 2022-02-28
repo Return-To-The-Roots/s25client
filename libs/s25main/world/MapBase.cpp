@@ -182,9 +182,3 @@ MapPoint MapBase::MakeMapPoint(Position pt) const
 {
     return ::MakeMapPoint(pt, size_);
 }
-
-unsigned MapBase::numPointsRadius(unsigned radius, bool includePt) const {
-    // For every additional radius we get 6 * curRadius more points. Hence we have 6 * sum(1..radius) points + the
-    // center point if requested This can be reduced via the gauss formula to the following:
-    return (radius * radius + radius) * 3u + (includePt ? 1u : 0u);
-}
