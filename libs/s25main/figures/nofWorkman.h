@@ -8,7 +8,6 @@
 #include "nofBuildingWorker.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/Resource.h"
-#include <vector>
 class SerializedGameData;
 class nobBaseWarehouse;
 class nobUsual;
