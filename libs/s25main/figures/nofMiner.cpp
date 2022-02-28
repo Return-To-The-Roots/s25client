@@ -86,7 +86,7 @@ bool nofMiner::AreWaresAvailable() const
 
     // TODO: Skip this check if siv like mines and worked at least once?
     if(addonSetting == MiningBehavior::S4Like)
-        return FindPointWithResource(GetRequiredResType(), MINER_RADIUS_SETTLERSIV).isValid();
+        return FindPointWithResource(GetRequiredResType(), MINER_ORE_RADIUS_SETTLERSIV).isValid();
     else
         return FindPointWithResource(GetRequiredResType()).isValid();
 }
@@ -120,7 +120,7 @@ bool nofMiner::StartWorking()
             MapPoint nonMinumResPt;
 
             const std::vector<MapPoint> reachablePts =
-              world->GetPointsInRadiusWithCenter(workplace->GetPos(), MINER_RADIUS_SETTLERSIV);
+              world->GetPointsInRadiusWithCenter(workplace->GetPos(), MINER_ORE_RADIUS_SETTLERSIV);
 
             for(const MapPoint curPt : reachablePts)
             {
@@ -138,7 +138,7 @@ bool nofMiner::StartWorking()
             }
 
             // depending on remaining resources, roll if this workcycle needs to be altered or not
-            if(RANDOM_RAND(world->GetNumPointsInRadius(MINER_RADIUS_SETTLERSIV, true) * MINER_MAX_QUANTITY)
+            if(RANDOM_RAND(world->GetNumPointsInRadius(MINER_ORE_RADIUS_SETTLERSIV, true) * MAX_ORE_QUANTITY)
                > sumResAmount)
             {
                 isAlteredWorkcycle = true;

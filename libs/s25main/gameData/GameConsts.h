@@ -20,10 +20,10 @@ constexpr GameSpeed referenceSpeed = GameSpeed::Normal;
 
 /// Reichweite der Bergarbeiter
 constexpr unsigned MINER_RADIUS = 2;
-constexpr unsigned MINER_RADIUS_SETTLERSIV = 1u;
+constexpr unsigned MINER_ORE_RADIUS_SETTLERSIV = 1u;
 
 /// maximum quantity for ores
-constexpr unsigned MINER_MAX_QUANTITY = 7u;
+constexpr unsigned MAX_ORE_QUANTITY = 7u;
 
 /// Konstante für die Pfadrichtung bei einer Schiffsverbindung
 constexpr unsigned char SHIP_DIR = 100;
