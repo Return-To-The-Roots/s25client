@@ -20,10 +20,10 @@ class AddonMiningOverhaulBase : public AddonList
 protected:
     AddonMiningOverhaulBase(AddonId addonId, const std::string& addonName)
         : AddonList(addonId, AddonGroup::Economy, addonName,
-                    _("This addon lets you control mining behavior.\n\n"
+                    _("This addon allows you to change the ore mining behavior.\n\n"
                       "No change: Original behavior\n"
-                      "Settlers IV: Mines never deplete. Range is decreased to 1. Chance for production depends on "
-                      "resource amount in range.\n"
+                      "Settlers IV: Mines never fully deplete. Range is decreased to 1. Chance for production"
+                      " depends on remaining resource amount in range.\n"
                       "Inexhaustible: Mines never deplete\n"
                       "Everywhere: Mines never deplete, can mine everywhere"),
                     {
