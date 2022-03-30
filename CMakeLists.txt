@@ -384,7 +384,11 @@ if(NOT WIN32)
 endif()
 
 # Placeholder for S2 installation
-install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
+option(RTTR_INSTALL_PLACEHOLDER "Install a placeholder file to the location the S2 game files should be copied to." ON)
+mark_as_advanced(RTTR_INSTALL_PLACEHOLDER)
+if(RTTR_INSTALL_PLACEHOLDER)
+    install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
+endif()
 
 ################################################################################
 # Postbuild
