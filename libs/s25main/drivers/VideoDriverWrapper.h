@@ -81,6 +81,8 @@ public:
     // Nachrichtenschleife
     bool Run();
 
+    void ShowErrorMessage(const char* title, const char* message);
+
     unsigned GetTickCount();
     /// Set framerate target (FPS)
     /// negative for unlimited, 0 for hardware VSync

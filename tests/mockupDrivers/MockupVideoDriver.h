@@ -25,6 +25,7 @@ public:
     KeyEvent GetModKeyState() const override;
     void* GetMapPointer() const override;
     bool IsOpenGL() const override { return false; }
+    void ShowErrorMessage(const char* title, const char* message) override;
     using VideoDriver::FindClosestVideoMode;
 
     KeyEvent modKeyState_;

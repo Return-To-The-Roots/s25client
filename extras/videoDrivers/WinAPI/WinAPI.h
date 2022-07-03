@@ -44,6 +44,9 @@ public:
     /// Die Nachrichtenschleife.
     bool MessageLoop() override;
 
+    /// Popup Window
+    void ShowErrorMessage(const char* title, const char* message) override;
+
     /// Funktion zum Auslesen des TickCounts.
     unsigned long GetTickCount() const override;
 
