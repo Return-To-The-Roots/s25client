@@ -223,6 +223,11 @@ void VideoSDL2::PrintError(const std::string& msg) const
     boost::nowide::cerr << msg << std::endl;
 }
 
+void VideoSDL2::ShowErrorMessage(const char* title, const char* message)
+{
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, window);
+}
+
 void VideoSDL2::HandlePaste()
 {
     if(!SDL_HasClipboardText())

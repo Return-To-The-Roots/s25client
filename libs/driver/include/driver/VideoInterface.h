@@ -72,6 +72,9 @@ public:
     virtual bool IsInitialized() const = 0;
     /// Shall we support OpenGL? (Disabled for tests)
     virtual bool IsOpenGL() const = 0;
+
+    // Display the problem to the gamer
+    virtual void ShowErrorMessage(const char* title, const char* message) = 0;
 };
 
 class VideoDriverLoaderInterface;

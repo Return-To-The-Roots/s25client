@@ -34,6 +34,8 @@ public:
 
     bool MessageLoop() override;
 
+    void ShowErrorMessage(const char* title, const char* message) override;
+
     /// Get a timestamp
     unsigned long GetTickCount() const override;
 

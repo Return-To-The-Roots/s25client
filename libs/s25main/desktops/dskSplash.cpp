@@ -12,12 +12,14 @@
 #include "WindowManager.h"
 #include "controls/ctrlTimer.h"
 #include "dskMainMenu.h"
+#include "helpers/format.hpp"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "mygettext/mygettext.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/ApplicationLoader.h"
 #include "s25util/Log.h"
 #include "s25util/error.h"
+#include <drivers/VideoDriverWrapper.h>
 
 using namespace std::chrono_literals;
 
@@ -76,9 +78,11 @@ void dskSplash::LoadFiles()
 
     } else
     {
-        s25util::error(_("Some files failed to load.\n"
+        s25util::error(_("Some essential game files failed to load.\n"
                          "Please ensure that the Settlers 2 Gold-Edition is installed \n"
                          "in the same directory as Return to the Roots."));
+        VIDEODRIVER.ShowErrorMessage("Please install Settlers II game files into",
+                                     RTTRCONFIG.ExpandPath("<RTTR_GAME>").string().c_str());
         GLOBALVARS.notdone = false;
     }
 }
