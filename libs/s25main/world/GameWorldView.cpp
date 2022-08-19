@@ -347,12 +347,18 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(!no)
                 continue;
 
-            // Is object not belonging to local player?
-            if(no->GetPlayer() != gwv.GetPlayerId())
-                continue;
-
             Position curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
             curPos.y -= 22;
+
+            // Is object not belonging to local player?
+            if(no->GetPlayer() != gwv.GetPlayerId())
+            {
+                auto *attackAidImage = LOADER.GetImageN("map_new", 20000);
+                if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
+                    if(gwv.GetNumSoldiersForAttack(pt) > 0) // soldiers available for attack?
+                        attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
+                continue;
+            }
 
             // Draw object name
             if(show_names)
@@ -501,13 +507,6 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
         return;
 
     obj->Draw(curPos);
-
-    return;
-    // TODO: military aid - display icon overlay of attack possibility
-    RTTR_IGNORE_UNREACHABLE_CODE
-    if(gwv.GetNumSoldiersForAttack(pt) > 0) // soldiers available for attack?
-        LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
-    RTTR_POP_DIAGNOSTIC
 }
 
 void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
