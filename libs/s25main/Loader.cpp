@@ -1052,7 +1052,7 @@ void addDefaultResourceFolders(const RttrConfig& config, ArchiveLocator& locator
     for(AddonId addonId : enabledAddons)
     {
         const auto overrideFolder =
-          config.ExpandPath(s25::folders::assetsAddons) / s25util::toStringClassic(static_cast<uint32_t>(addonId));
+          config.ExpandPath(s25::folders::assetsAddons) / s25util::toStringClassic(static_cast<uint32_t>(addonId), true);
         if(bfs::exists(overrideFolder))
             locator.addOverrideFolder(overrideFolder);
     }
