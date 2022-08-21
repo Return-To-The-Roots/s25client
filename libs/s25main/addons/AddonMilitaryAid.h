@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "AddonBool.h"
+#include "AddonList.h"
 #include "mygettext/mygettext.h"
 
 /**
@@ -12,11 +12,17 @@
  *
  *  Gfx by SpikeOne.
  */
-class AddonMilitaryAid : public AddonBool
+class AddonMilitaryAid : public AddonList
 {
 public:
     AddonMilitaryAid()
-        : AddonBool(AddonId::MILITARY_AID, AddonGroup::GamePlay | AddonGroup::Military, _("Military Aid"),
-                    _("Adds military building indicators in construction aid mode."))
+        : AddonList(AddonId::MILITARY_AID, AddonGroup::GamePlay | AddonGroup::Military, _("Military Aid"),
+                    _("Adds indicators for constructing or attacking military buildings."),
+                    {
+                        _("Off"),
+                        _("Construction aid only"),
+                        _("Construction and attack aid")
+                    },
+                    0)
     {}
 };
