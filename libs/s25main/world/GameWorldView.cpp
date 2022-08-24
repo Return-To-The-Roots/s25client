@@ -353,9 +353,10 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             // Is object not belonging to local player?
             if(no->GetPlayer() != gwv.GetPlayerId())
             {
-                auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
                 if(GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2 && gwv.GetNumSoldiersForAttack(pt) > 0)
-                    attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
+                {
+                    LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
+                }
                 continue;
             }
 
