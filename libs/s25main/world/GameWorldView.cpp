@@ -355,7 +355,8 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             {
                 if(GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2 && gwv.GetNumSoldiersForAttack(pt) > 0)
                 {
-                    LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
+                    auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
+                    attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
                 }
                 continue;
             }
