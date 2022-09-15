@@ -188,4 +188,26 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Interpolate, T, TimeTypes)
     }
 }
 
+BOOST_AUTO_TEST_CASE(Lerp)
+{
+    const auto startVal = 5.0f;
+    const auto endVal = 10.0f;
+    BOOST_TEST(helpers::lerp(startVal, endVal, .0f) == startVal);
+    BOOST_TEST(helpers::lerp(startVal, endVal, 1.0f) == endVal);
+    BOOST_TEST(helpers::lerp(startVal, endVal, .5f) == 7.5f);
+    BOOST_TEST(helpers::lerp(startVal, endVal, 2.0f) == 15.0f);
+    BOOST_TEST(helpers::lerp(startVal, endVal, -.5f) == 2.5f);
+}
+
+BOOST_AUTO_TEST_CASE(InverseLerp)
+{
+    const auto startVal = 5.0f;
+    const auto endVal = 10.0f;
+    BOOST_TEST(helpers::inverseLerp(startVal, endVal, startVal) == .0f);
+    BOOST_TEST(helpers::inverseLerp(startVal, endVal, endVal) == 1.0f);
+    BOOST_TEST(helpers::inverseLerp(startVal, endVal, 7.5f) == .5f);
+    BOOST_TEST(helpers::inverseLerp(startVal, endVal, 15.0f) == 2.0f);
+    BOOST_TEST(helpers::inverseLerp(startVal, endVal, 2.5f) == -.5f);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
