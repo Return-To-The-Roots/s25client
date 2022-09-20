@@ -50,24 +50,24 @@
 namespace {
 enum CtrlIds
 {
-    ID_PLAYER_ROW_NAME = 1,
-    ID_PLAYER_ROW_NATION = 3,
-    ID_PLAYER_ROW_PORTRAIT = 9,
-    ID_PLAYER_ROW_COLOR = 4,
-    ID_PLAYER_ROW_TEAM = 5,
-    ID_PLAYER_ROW_READY = 6,
-    ID_PLAYER_ROW_PING = 7,
-    ID_PLAYER_ROW_PAST_PLAYER = 8,
+    ID_btPlayerRowName = 1,
+    ID_btPlayerRowNation = 3,
+    ID_btPlayerRowPortrait = 9,
+    ID_btPlayerRowColor = 4,
+    ID_btPlayerRowTeam = 5,
+    ID_cbPlayerRowReady = 6,
+    ID_dpPlayerRowPing = 7,
+    ID_cbPlayerRowPastPlayer = 8,
 
-    ID_PLAYER_GROUP_START = 50,
-    ID_SWAP_BUTTON = 80,
-    ID_FIRST_FREE = ID_SWAP_BUTTON + MAX_PLAYERS,
-    ID_GAME_CHAT,
-    ID_LOBBY_CHAT,
-    ID_CHAT_INPUT,
-    ID_CHAT_TAB,
-    TAB_GAMECHAT,
-    TAB_LOBBYCHAT
+    ID_groupPlayerStart = 50,
+    ID_btnSwap = 80,
+    ID_FIRST_FREE = ID_btnSwap + MAX_PLAYERS,
+    ID_chatGame,
+    ID_chatLobby,
+    ID_edtChatMsg,
+    ID_optChatTab,
+    ID_btChatGame,
+    ID_btChatLobby
 };
 template<typename T>
 constexpr T nextEnumValue(T value)
@@ -151,23 +151,23 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         // Enable lobby chat when we are logged in
         if(lobbyClient_ && lobbyClient_->IsLoggedIn())
         {
-            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, GroupSelectType::Check);
-            chatTab->AddTextButton(TAB_GAMECHAT, DrawPoint(20, 320), Extent(178, 22), TextureColor::Green2,
+            ctrlOptionGroup* chatTab = AddOptionGroup(ID_optChatTab, GroupSelectType::Check);
+            chatTab->AddTextButton(ID_btChatGame, DrawPoint(20, 320), Extent(178, 22), TextureColor::Green2,
                                    _("Game Chat"), NormalFont);
-            chatTab->AddTextButton(TAB_LOBBYCHAT, DrawPoint(202, 320), Extent(178, 22), TextureColor::Green2,
+            chatTab->AddTextButton(ID_btChatLobby, DrawPoint(202, 320), Extent(178, 22), TextureColor::Green2,
                                    _("Lobby Chat"), NormalFont);
             gameChat =
-              AddChatCtrl(ID_GAME_CHAT, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
+              AddChatCtrl(ID_chatGame, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
             lobbyChat =
-              AddChatCtrl(ID_LOBBY_CHAT, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
-            chatTab->SetSelection(TAB_GAMECHAT, true);
+              AddChatCtrl(ID_chatLobby, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
+            chatTab->SetSelection(ID_btChatGame, true);
         } else
         {
             // Chatfenster
-            gameChat = AddChatCtrl(ID_GAME_CHAT, DrawPoint(20, 320), Extent(360, 218), TextureColor::Grey, NormalFont);
+            gameChat = AddChatCtrl(ID_chatGame, DrawPoint(20, 320), Extent(360, 218), TextureColor::Grey, NormalFont);
         }
         // Edit für Chatfenster
-        AddEdit(ID_CHAT_INPUT, DrawPoint(20, 540), Extent(360, 22), TextureColor::Grey, NormalFont);
+        AddEdit(ID_edtChatMsg, DrawPoint(20, 540), Extent(360, 22), TextureColor::Grey, NormalFont);
     }
 
     // "Spiel starten"
@@ -283,9 +283,9 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     {
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
-            DrawPoint rowPos = GetCtrl<Window>(ID_PLAYER_GROUP_START + i)->GetCtrl<Window>(1)->GetPos();
-            ctrlButton* bt = AddTextButton(ID_SWAP_BUTTON + i, DrawPoint(5, 0), Extent(22, 22), TextureColor::Red1,
-                                           _("-"), NormalFont);
+            DrawPoint rowPos = GetCtrl<Window>(ID_groupPlayerStart + i)->GetCtrl<Window>(1)->GetPos();
+            ctrlButton* bt =
+              AddTextButton(ID_btnSwap + i, DrawPoint(5, 0), Extent(22, 22), TextureColor::Red1, _("-"), NormalFont);
             bt->SetPos(DrawPoint(bt->GetPos().x, rowPos.y));
         }
     }
@@ -353,9 +353,9 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
     TextureColor tc = (row & 1 ? TextureColor::Grey : TextureColor::Green2);
 
     // Alle Controls erstmal zerstören (die ganze Gruppe)
-    DeleteCtrl(ID_PLAYER_GROUP_START + row);
+    DeleteCtrl(ID_groupPlayerStart + row);
     // und neu erzeugen
-    ctrlGroup* group = AddGroup(ID_PLAYER_GROUP_START + row);
+    ctrlGroup* group = AddGroup(ID_groupPlayerStart + row);
 
     std::string name;
     // Name
@@ -380,11 +380,11 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
     if(gameLobby_->isHost() && !player.isHost && (!lua || lua->IsChangeAllowed("playerState")))
-        group->AddTextButton(ID_PLAYER_ROW_NAME, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont);
+        group->AddTextButton(ID_btPlayerRowName, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont);
     else
-        group->AddTextDeepening(ID_PLAYER_ROW_NAME, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont,
+        group->AddTextDeepening(ID_btPlayerRowName, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont,
                                 COLOR_YELLOW);
-    auto* text = group->GetCtrl<ctrlBaseText>(ID_PLAYER_ROW_NAME);
+    auto* text = group->GetCtrl<ctrlBaseText>(ID_btPlayerRowName);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
@@ -415,40 +415,40 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
         }
 
         if(allowNationChange)
-            group->AddTextButton(ID_PLAYER_ROW_NATION, DrawPoint(240, cy), Extent(90, 22), tc,
+            group->AddTextButton(ID_btPlayerRowNation, DrawPoint(240, cy), Extent(90, 22), tc,
                                  _(NationNames[Nation::Romans]), NormalFont);
         else
-            group->AddTextDeepening(ID_PLAYER_ROW_NATION, DrawPoint(240, cy), Extent(90, 22), tc,
+            group->AddTextDeepening(ID_btPlayerRowNation, DrawPoint(240, cy), Extent(90, 22), tc,
                                     _(NationNames[Nation::Romans]), NormalFont, COLOR_YELLOW);
 
         const auto& portrait = Portraits[player.portraitIndex];
-        group->AddImageButton(ID_PLAYER_ROW_PORTRAIT, DrawPoint(335, cy), Extent(34, 22), tc,
+        group->AddImageButton(ID_btPlayerRowPortrait, DrawPoint(335, cy), Extent(34, 22), tc,
                               LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), _(portrait.name));
 
         if(allowColorChange)
-            group->AddColorButton(ID_PLAYER_ROW_COLOR, DrawPoint(375, cy), Extent(30, 22), tc, 0);
+            group->AddColorButton(ID_btPlayerRowColor, DrawPoint(375, cy), Extent(30, 22), tc, 0);
         else
-            group->AddColorDeepening(ID_PLAYER_ROW_COLOR, DrawPoint(375, cy), Extent(30, 22), tc, 0);
+            group->AddColorDeepening(ID_btPlayerRowColor, DrawPoint(375, cy), Extent(30, 22), tc, 0);
 
         if(allowTeamChange)
-            group->AddTextButton(ID_PLAYER_ROW_TEAM, DrawPoint(415, cy), Extent(50, 22), tc, _("-"), NormalFont);
+            group->AddTextButton(ID_btPlayerRowTeam, DrawPoint(415, cy), Extent(50, 22), tc, _("-"), NormalFont);
         else
-            group->AddTextDeepening(ID_PLAYER_ROW_TEAM, DrawPoint(415, cy), Extent(50, 22), tc, _("-"), NormalFont,
+            group->AddTextDeepening(ID_btPlayerRowTeam, DrawPoint(415, cy), Extent(50, 22), tc, _("-"), NormalFont,
                                     COLOR_YELLOW);
 
         // Bereit (nicht bei KIs und Host)
         // if(player.ps == PlayerState::Occupied && !player.isHost)
-        group->AddCheckBox(ID_PLAYER_ROW_READY, DrawPoint(475, cy), Extent(22, 22), tc, "", nullptr,
+        group->AddCheckBox(ID_cbPlayerRowReady, DrawPoint(475, cy), Extent(22, 22), tc, "", nullptr,
                            (localPlayerId_ != row));
 
         // Ping ( "%d" )
-        ctrlVarDeepening* ping = group->AddVarDeepening(ID_PLAYER_ROW_PING, DrawPoint(505, cy), Extent(50, 22), tc,
+        ctrlVarDeepening* ping = group->AddVarDeepening(ID_dpPlayerRowPing, DrawPoint(505, cy), Extent(50, 22), tc,
                                                         _("%d"), NormalFont, COLOR_YELLOW, 1, &player.ping); //-V111
 
         // Verschieben (nur bei Savegames und beim Host!)
         if(gameLobby_->isSavegame() && player.ps == PlayerState::Occupied)
         {
-            ctrlComboBox* combo = group->AddComboBox(ID_PLAYER_ROW_PAST_PLAYER, DrawPoint(560, cy), Extent(160, 22), tc,
+            ctrlComboBox* combo = group->AddComboBox(ID_cbPlayerRowPastPlayer, DrawPoint(560, cy), Extent(160, 22), tc,
                                                      NormalFont, 150, !gameLobby_->isHost());
 
             // Mit den alten Namen füllen
@@ -486,23 +486,23 @@ void dskGameLobby::Msg_PaintBefore()
     Desktop::Msg_PaintBefore();
     // Chatfenster Fokus geben
     if(!IsSinglePlayer())
-        GetCtrl<ctrlEdit>(ID_CHAT_INPUT)->SetFocus();
+        GetCtrl<ctrlEdit>(ID_edtChatMsg)->SetFocus();
 }
 
 void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
-    unsigned playerId = group_id - ID_PLAYER_GROUP_START;
+    unsigned playerId = group_id - ID_groupPlayerStart;
 
     switch(ctrl_id)
     {
-        case ID_PLAYER_ROW_NAME:
+        case ID_btPlayerRowName:
         {
             if(gameLobby_->isHost())
                 lobbyHostController->TogglePlayerState(playerId);
         }
         break;
 
-        case ID_PLAYER_ROW_NATION:
+        case ID_btPlayerRowNation:
         {
             SetPlayerReady(playerId, false);
 
@@ -519,7 +519,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
         }
         break;
 
-        case ID_PLAYER_ROW_PORTRAIT:
+        case ID_btPlayerRowPortrait:
         {
             SetPlayerReady(playerId, false);
 
@@ -536,7 +536,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
         }
         break;
 
-        case ID_PLAYER_ROW_COLOR:
+        case ID_btPlayerRowColor:
         {
             SetPlayerReady(playerId, false);
 
@@ -574,7 +574,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
         }
         break;
 
-        case ID_PLAYER_ROW_TEAM:
+        case ID_btPlayerRowTeam:
         {
             SetPlayerReady(playerId, false);
 
@@ -595,7 +595,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
 
 void dskGameLobby::Msg_Group_CheckboxChange(const unsigned group_id, const unsigned /*ctrl_id*/, const bool checked)
 {
-    unsigned playerId = group_id - ID_PLAYER_GROUP_START;
+    unsigned playerId = group_id - ID_groupPlayerStart;
 
     // Bereit
     if(playerId < MAX_PLAYERS)
@@ -608,7 +608,7 @@ void dskGameLobby::Msg_Group_ComboSelectItem(const unsigned group_id, const unsi
     if(!gameLobby_->isHost())
         return;
     // Swap players
-    const unsigned playerId = group_id - ID_PLAYER_GROUP_START;
+    const unsigned playerId = group_id - ID_groupPlayerStart;
 
     int player2 = -1;
     for(unsigned i = 0, playerCtr = 0; i < gameLobby_->getNumPlayers(); ++i)
@@ -640,9 +640,9 @@ void dskGameLobby::GoBack()
 
 void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if(ctrl_id >= ID_SWAP_BUTTON && ctrl_id < ID_SWAP_BUTTON + MAX_PLAYERS)
+    if(ctrl_id >= ID_btnSwap && ctrl_id < ID_btnSwap + MAX_PLAYERS)
     {
-        unsigned targetPlayer = ctrl_id - ID_SWAP_BUTTON;
+        unsigned targetPlayer = ctrl_id - ID_btnSwap;
         if(targetPlayer != localPlayerId_ && gameLobby_->isHost())
             lobbyHostController->SwapPlayers(localPlayerId_, targetPlayer);
         return;
@@ -701,7 +701,7 @@ void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
 
 void dskGameLobby::Msg_EditEnter(const unsigned ctrl_id)
 {
-    if(ctrl_id != ID_CHAT_INPUT)
+    if(ctrl_id != ID_edtChatMsg)
         return;
     auto* edit = GetCtrl<ctrlEdit>(ctrl_id);
     const std::string msg = edit->GetText();
@@ -760,8 +760,8 @@ void dskGameLobby::FlashGameChat()
 {
     if(!gameChat->IsVisible())
     {
-        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
-        auto* bt = tab->GetCtrl<ctrlButton>(TAB_GAMECHAT);
+        auto* tab = GetCtrl<Window>(ID_optChatTab);
+        auto* bt = tab->GetCtrl<ctrlButton>(ID_btChatGame);
         if(!localChatTabAnimId)
             localChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
@@ -850,13 +850,13 @@ void dskGameLobby::Msg_CheckboxChange(const unsigned ctrl_id, const bool /*check
 
 void dskGameLobby::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
-    if(ctrl_id == ID_CHAT_TAB)
+    if(ctrl_id == ID_optChatTab)
     {
-        gameChat->SetVisible(selection == TAB_GAMECHAT);
-        lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
-        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
+        gameChat->SetVisible(selection == ID_btChatGame);
+        lobbyChat->SetVisible(selection == ID_btChatLobby);
+        auto* tab = GetCtrl<Window>(ID_optChatTab);
         tab->GetCtrl<ctrlButton>(selection)->SetTexture(TextureColor::Green2);
-        if(selection == TAB_GAMECHAT)
+        if(selection == ID_btChatGame)
         {
             tab->GetAnimationManager().finishAnimation(localChatTabAnimId, false);
             localChatTabAnimId = 0;
@@ -897,12 +897,12 @@ void dskGameLobby::ChangeTeam(const unsigned player, const Team team)
 {
     constexpr helpers::EnumArray<const char*, Team> teams = {"-", "?", "1", "2", "3", "4", "1-2", "1-3", "1-4"};
 
-    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseText>(ID_PLAYER_ROW_TEAM)->SetText(teams[team]);
+    GetCtrl<ctrlGroup>(ID_groupPlayerStart + player)->GetCtrl<ctrlBaseText>(ID_btPlayerRowTeam)->SetText(teams[team]);
 }
 
 void dskGameLobby::ChangeReady(const unsigned player, const bool ready)
 {
-    auto* check = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlCheck>(ID_PLAYER_ROW_READY);
+    auto* check = GetCtrl<ctrlGroup>(ID_groupPlayerStart + player)->GetCtrl<ctrlCheck>(ID_cbPlayerRowReady);
     if(check)
         check->setChecked(ready);
 
@@ -918,15 +918,15 @@ void dskGameLobby::ChangeReady(const unsigned player, const bool ready)
 
 void dskGameLobby::ChangeNation(const unsigned player, const Nation nation)
 {
-    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)
-      ->GetCtrl<ctrlBaseText>(ID_PLAYER_ROW_NATION)
+    GetCtrl<ctrlGroup>(ID_groupPlayerStart + player)
+      ->GetCtrl<ctrlBaseText>(ID_btPlayerRowNation)
       ->SetText(_(NationNames[nation]));
 }
 
 void dskGameLobby::ChangePortrait(const unsigned player, const unsigned portraitIndex)
 {
     const auto& portrait = Portraits[portraitIndex];
-    auto* ctrl = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlImageButton>(ID_PLAYER_ROW_PORTRAIT);
+    auto* ctrl = GetCtrl<ctrlGroup>(ID_groupPlayerStart + player)->GetCtrl<ctrlImageButton>(ID_btPlayerRowPortrait);
     ctrl->SetImage(LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex));
     ctrl->SetTooltip(_(portrait.name));
 }
@@ -942,14 +942,14 @@ void dskGameLobby::ChangePing(unsigned playerId)
         color = COLOR_YELLOW;
 
     // und setzen
-    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + playerId)
-      ->GetCtrl<ctrlVarDeepening>(ID_PLAYER_ROW_PING)
+    GetCtrl<ctrlGroup>(ID_groupPlayerStart + playerId)
+      ->GetCtrl<ctrlVarDeepening>(ID_dpPlayerRowPing)
       ->SetTextColor(color);
 }
 
 void dskGameLobby::ChangeColor(const unsigned player, const unsigned color)
 {
-    GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlBaseColor>(ID_PLAYER_ROW_COLOR)->SetColor(color);
+    GetCtrl<ctrlGroup>(ID_groupPlayerStart + player)->GetCtrl<ctrlBaseColor>(ID_btPlayerRowColor)->SetColor(color);
 
     // Minimap-Startfarbe ändern
     if(GetCtrl<ctrlPreviewMinimap>(70))
@@ -1078,8 +1078,8 @@ void dskGameLobby::LC_Chat(const std::string& player, const std::string& text)
     lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
     if(!lobbyChat->IsVisible())
     {
-        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
-        auto* bt = tab->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
+        auto* tab = GetCtrl<Window>(ID_optChatTab);
+        auto* bt = tab->GetCtrl<ctrlButton>(ID_btChatLobby);
         if(!lobbyChatTabAnimId)
             lobbyChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
