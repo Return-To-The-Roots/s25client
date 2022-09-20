@@ -11,6 +11,7 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
+#include "gameTypes/StatisticTypes.h"
 #include <map>
 #include <memory>
 #include <utility>
@@ -47,6 +48,7 @@ public:
     unsigned GetNumBuildingSites(lua::SafeEnum<BuildingType> bld) const;
     unsigned GetNumWares(lua::SafeEnum<GoodType> ware) const;
     unsigned GetNumPeople(lua::SafeEnum<Job> job) const;
+    unsigned GetStatisticsValue(lua::SafeEnum<StatisticType> stat) const;
     bool AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld);
     void ModifyHQ(bool isTent);
     bool IsDefeated() const;

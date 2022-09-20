@@ -313,6 +313,9 @@ Get number of wares a player has of a given type.
 **GetNumPeople(job_type)**  
 Get number of people a player has with a given job.
 
+**GetStatisticsValue(statistic_type)**  
+Get player's current statistic value of given type.
+
 **AIConstructionOrder(x,y,buildingtype)**  
 Order AI to build buildingtype at the given x,y location (AI will usually retry at a nearby location if the location is bad)
 Returns true, if the order was submitted, false otherwise.  

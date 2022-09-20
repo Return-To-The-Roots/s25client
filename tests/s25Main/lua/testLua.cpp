@@ -424,6 +424,8 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_TEST(isLuaEqual("player:GetNumPeople(JOB_HELPER)", "33"));
     BOOST_TEST(isLuaEqual("player:GetNumPeople(JOB_FORESTER)", "2"));
 
+    BOOST_TEST(isLuaEqual("player:GetStatisticsValue(STAT_COUNTRY)", "271"));
+
     BOOST_TEST(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
     BOOST_TEST(isLuaEqual("player:GetNumBuildings(BLD_HEADQUARTERS)", "1"));
     BOOST_TEST(isLuaEqual("player:GetNumBuildingSites(BLD_HEADQUARTERS)", "0"));
