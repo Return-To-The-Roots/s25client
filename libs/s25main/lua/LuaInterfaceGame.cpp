@@ -93,6 +93,18 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
     ADD_LUA_CONST(CharBurner);
 #undef ADD_LUA_CONST
 
+#define ADD_LUA_CONST(name) lua["STAT_" + s25util::toUpper(#name)] = StatisticType::name
+    ADD_LUA_CONST(Country);
+    ADD_LUA_CONST(Buildings);
+    ADD_LUA_CONST(Inhabitants);
+    ADD_LUA_CONST(Merchandise);
+    ADD_LUA_CONST(Military);
+    ADD_LUA_CONST(Gold);
+    ADD_LUA_CONST(Productivity);
+    ADD_LUA_CONST(Vanquished);
+    ADD_LUA_CONST(Tournament);
+#undef ADD_LUA_CONST
+
 #define ADD_LUA_CONST(name) lua["GD_" + s25util::toUpper(#name)] = GoodType::name
     ADD_LUA_CONST(Beer);
     ADD_LUA_CONST(Tongs);

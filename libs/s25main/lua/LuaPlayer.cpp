@@ -44,6 +44,7 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("GetNumBuildingSites", &LuaPlayer::GetNumBuildingSites)
                                .addFunction("GetNumWares", &LuaPlayer::GetNumWares)
                                .addFunction("GetNumPeople", &LuaPlayer::GetNumPeople)
+                               .addFunction("GetStatisticsValue", &LuaPlayer::GetStatisticsValue)
                                .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
                                .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
                                .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
@@ -239,6 +240,11 @@ unsigned LuaPlayer::GetNumWares(lua::SafeEnum<GoodType> ware) const
 unsigned LuaPlayer::GetNumPeople(lua::SafeEnum<Job> job) const
 {
     return player.GetInventory().people[job];
+}
+
+unsigned LuaPlayer::GetStatisticsValue(lua::SafeEnum<StatisticType> stat) const
+{
+    return player.GetStatisticCurrentValue(stat);
 }
 
 bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld)

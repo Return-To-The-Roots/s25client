@@ -184,6 +184,31 @@ BOOST_AUTO_TEST_CASE(AllJobTypesWork)
     )LUA");
 }
 
+BOOST_AUTO_TEST_CASE(AllStatisticTypesWork)
+{
+    executeLua("player = rttr:GetPlayer(0); assert(player)");
+    executeLua(R"LUA(
+        stats = table.pack(
+            STAT_COUNTRY,
+            STAT_BUILDINGS,
+            STAT_INHABITANTS,
+            STAT_MERCHANDISE,
+            STAT_MILITARY,
+            STAT_GOLD,
+            STAT_PRODUCTIVITY,
+            STAT_VANQUISHED,
+            STAT_TOURNAMENT
+        )
+    )LUA");
+    executeLua(R"LUA(
+        for i, stat in elements(stats) do
+            assert(stat ~= nil, "nil at " .. tostring(i))
+            num = player:GetStatisticsValue(stat)
+            assert(num >= 0)
+        end
+    )LUA");
+}
+
 // Put the remaining ones together
 BOOST_AUTO_TEST_CASE(AllOtherConstantsWork)
 {
