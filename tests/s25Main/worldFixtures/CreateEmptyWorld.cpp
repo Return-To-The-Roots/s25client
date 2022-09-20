@@ -39,7 +39,7 @@ bool CreateEmptyWorld::operator()(GameWorld& world) const
     {
         // Distribute player HQs evenly across map
         Point<unsigned> numPlayersPerDim;
-        numPlayersPerDim.x = static_cast<unsigned>(ceil(sqrt(numPlayers)));
+        numPlayersPerDim.x = static_cast<unsigned>(std::ceil(std::sqrt(numPlayers)));
         numPlayersPerDim.y = static_cast<unsigned>(std::ceil(float(numPlayers) / numPlayersPerDim.x));
         // Distance between HQs
         Point<unsigned> playerDist = size_ / numPlayersPerDim;

@@ -336,6 +336,36 @@ public:
     }
 };
 
+/// ausgehende Player-Name-Nachricht
+class GameMessage_Player_Portrait : public GameMessageWithPlayer
+{
+public:
+    unsigned int playerPortraitIndex;
+
+    GameMessage_Player_Portrait() : GameMessageWithPlayer(NMS_PLAYER_PORTRAIT) {}
+    GameMessage_Player_Portrait(uint8_t player, unsigned int portraitIndex)
+        : GameMessageWithPlayer(NMS_PLAYER_PORTRAIT, player), playerPortraitIndex(portraitIndex)
+    {}
+
+    void Serialize(Serializer& ser) const override
+    {
+        GameMessageWithPlayer::Serialize(ser);
+        ser.PushUnsignedInt(playerPortraitIndex);
+    }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessageWithPlayer::Deserialize(ser);
+        playerPortraitIndex = ser.PopUnsignedInt();
+    }
+
+    bool Run(GameMessageInterface* callback) const override
+    {
+        LOG.writeToFile("<<< NMS_PLAYER_PORTRAIT(%u)\n") % playerPortraitIndex;
+        return callback->OnGameMessage(*this);
+    }
+};
+
 /// eingehende Player-List-Nachricht
 class GameMessage_Player_List : public GameMessage
 {

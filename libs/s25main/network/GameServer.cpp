@@ -99,19 +99,14 @@ bool GameServer::CountDown::Update()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
 GameServer::GameServer() : skiptogf(0), state(ServerState::Stopped), currentGF(0), lanAnnouncer(LAN_DISCOVERY_CFG) {}
 
-///////////////////////////////////////////////////////////////////////////////
-//
 GameServer::~GameServer()
 {
     Stop();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Spiel hosten
+// Host the game.
 bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type,
                        const std::string& hostPw)
 {
@@ -271,8 +266,6 @@ void GameServer::LC_Created()
     AnnounceStatusChange();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Hauptschleife
 void GameServer::Run()
 {
     if(state == ServerState::Stopped)
@@ -387,8 +380,6 @@ void GameServer::RunStateGame()
         ExecuteGameFrame();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// stoppt den server
 void GameServer::Stop()
 {
     if(state == ServerState::Stopped)
@@ -524,9 +515,6 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
     return playerWasAssigned;
 }
 
-/**
- *  startet das Spiel.
- */
 bool GameServer::StartGame()
 {
     lanAnnouncer.Stop();
@@ -602,9 +590,6 @@ void GameServer::SendNWFDone(const NWFServerInfo& info)
     SendToAll(GameMessage_Server_NWFDone(info.gf, info.newGFLen, info.nextNWF));
 }
 
-/**
- *  Nachricht an Alle
- */
 void GameServer::SendToAll(const GameMessage& msg)
 {
     for(GameServerPlayer& player : networkPlayers)
@@ -643,7 +628,6 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
       % unsigned(param);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 // testet, ob in der Verbindungswarteschlange Clients auf Verbindung warten
 void GameServer::ClientWatchDog()
 {
@@ -815,7 +799,6 @@ bool GameServer::CheckForLaggingPlayers()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 // testet, ob in der Verbindungswarteschlange Clients auf Verbindung warten
 void GameServer::WaitForClients()
 {
@@ -852,7 +835,6 @@ void GameServer::WaitForClients()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 // füllt die warteschlangen mit "paketen"
 void GameServer::FillPlayerQueues()
 {
@@ -888,8 +870,6 @@ void GameServer::FillPlayerQueues()
     } while(msgReceived);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// pongnachricht
 bool GameServer::OnGameMessage(const GameMessage_Pong& msg)
 {
     GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
@@ -904,8 +884,6 @@ bool GameServer::OnGameMessage(const GameMessage_Pong& msg)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// servertype
 bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
 {
     if(state != ServerState::Config)
@@ -931,9 +909,6 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
     return true;
 }
 
-/**
- *  Server-Passwort-Nachricht
- */
 bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
     if(state != ServerState::Config)
@@ -961,9 +936,6 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
     return true;
 }
 
-/**
- *  Chat-Nachricht.
- */
 bool GameServer::OnGameMessage(const GameMessage_Chat& msg)
 {
     int playerID = GetTargetPlayer(msg);
@@ -1035,8 +1007,6 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Spielername
 bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 {
     if(state != ServerState::Config)
@@ -1057,8 +1027,26 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Nation weiterwechseln
+bool GameServer::OnGameMessage(const GameMessage_Player_Portrait& msg)
+{
+    if(state != ServerState::Config)
+    {
+        KickPlayer(msg.senderPlayerID, KickReason::InvalidMsg, __LINE__);
+        return true;
+    }
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
+        return true;
+
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_PORTRAIT(%u)\n") % playerID % msg.playerPortraitIndex;
+
+    playerInfos[playerID].portraitIndex = msg.playerPortraitIndex;
+    SendToAll(GameMessage_Player_Portrait(playerID, msg.playerPortraitIndex));
+    PlayerDataChanged(playerID);
+
+    return true;
+}
+
 bool GameServer::OnGameMessage(const GameMessage_Player_Nation& msg)
 {
     if(state != ServerState::Config)
@@ -1077,8 +1065,6 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Nation& msg)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Team weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Team& msg)
 {
     if(state != ServerState::Config)
@@ -1097,8 +1083,6 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Team& msg)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Farbe weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
 {
     if(state != ServerState::Config)
@@ -1115,9 +1099,6 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
     return true;
 }
 
-/**
- *  Spielerstatus wechseln
- */
 bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
     if(state != ServerState::Config)

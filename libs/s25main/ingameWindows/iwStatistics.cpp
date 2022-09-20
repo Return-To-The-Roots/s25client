@@ -17,6 +17,7 @@
 #include "ogl/FontStyle.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/PortraitConsts.h"
 #include "gameData/const_gui_ids.h"
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
@@ -46,34 +47,10 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
         if(!curPlayer.isUsed())
             continue;
 
-        switch(curPlayer.nation)
-        {
-            case Nation::Africans:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
-                               LOADER.GetImageN("io", 257), curPlayer.name)
-                  ->SetBorder(false);
-                break;
-            case Nation::Japanese:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
-                               LOADER.GetImageN("io", 253), curPlayer.name)
-                  ->SetBorder(false);
-                break;
-            case Nation::Romans:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
-                               LOADER.GetImageN("io", 252), curPlayer.name)
-                  ->SetBorder(false);
-                break;
-            case Nation::Vikings:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
-                               LOADER.GetImageN("io", 256), curPlayer.name)
-                  ->SetBorder(false);
-                break;
-            case Nation::Babylonians:
-                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
-                               LOADER.GetImageN("io_new", 7), curPlayer.name)
-                  ->SetBorder(false);
-                break;
-        }
+        const auto& portrait = Portraits[curPlayer.portraitIndex];
+        AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
+                       LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), curPlayer.name)
+          ->SetBorder(false);
 
         // Statistik-Sichtbarkeit abhängig von Auswahl
         switch(GAMECLIENT.IsReplayModeOn() ? 0 : world.GetGGS().getSelection(AddonId::STATISTICS_VISIBILITY))

@@ -41,6 +41,7 @@ private:
     void ChangeTeam(unsigned player, Team);
     void ChangeReady(unsigned player, bool ready);
     void ChangeNation(unsigned player, Nation);
+    void ChangePortrait(unsigned player, unsigned portraitIndex);
     void ChangePing(unsigned playerId);
     void ChangeColor(unsigned player, unsigned color);
 

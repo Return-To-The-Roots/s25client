@@ -28,6 +28,7 @@ public:
     void SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) override;
     void TogglePlayerState(unsigned playerIdx);
     void SetName(unsigned playerIdx, const std::string& name) override;
+    void SetPortrait(unsigned playerIdx, unsigned int portraitIndex) override;
     void SetColor(unsigned playerIdx, unsigned newColor) override;
     void SetTeam(unsigned playerIdx, Team newTeam) override;
     void SetNation(unsigned playerIdx, Nation newNation) override;
