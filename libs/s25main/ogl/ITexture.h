@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Point.h"
+#include "Rect.h"
 
 class ITexture
 {
@@ -15,4 +16,5 @@ public:
     virtual Position GetOrigin() const = 0;
     virtual Extent GetSize() const = 0;
     virtual void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFFu) = 0;
+    virtual void Draw(Rect dstArea, Rect srcArea, unsigned color = 0xFFFFFFFFu) = 0;
 };
