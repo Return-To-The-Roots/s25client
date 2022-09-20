@@ -124,7 +124,7 @@ void GameLobbyController::SetName(unsigned playerIdx, const std::string& name)
     mainPlayer_.sendMsgAsync(new GameMessage_Player_Name(playerIdx, name));
 }
 
-void GameLobbyController::SetPortrait(unsigned playerIdx, unsigned int portraitIndex)
+void GameLobbyController::SetPortrait(unsigned playerIdx, unsigned portraitIndex)
 {
     mainPlayer_.sendMsgAsync(new GameMessage_Player_Portrait(playerIdx, portraitIndex));
 }

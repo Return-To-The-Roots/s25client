@@ -27,6 +27,6 @@ constexpr std::array<PortraitInfo, 13> SUPPRESS_UNUSED Portraits = {
   PortraitInfo{gettext_noop("Hakirawashi"), ResourceId("io"), 260},
   PortraitInfo{gettext_noop("Shaka"), ResourceId("io"), 258},
   PortraitInfo{gettext_noop("Todo"), ResourceId("io"), 262},
-  PortraitInfo{gettext_noop("Mnga Tscha "), ResourceId("io"), 257},
+  PortraitInfo{gettext_noop("Mnga Tscha"), ResourceId("io"), 257},
   PortraitInfo{gettext_noop("Nabonidus"), ResourceId("io_new"), 7},
 };
