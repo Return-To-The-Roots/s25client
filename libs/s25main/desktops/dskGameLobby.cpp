@@ -495,14 +495,13 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
 
     switch(ctrl_id)
     {
-        // Click on player name
         case ID_PLAYER_ROW_NAME:
         {
             if(gameLobby_->isHost())
                 lobbyHostController->TogglePlayerState(playerId);
         }
         break;
-        // Nation
+
         case ID_PLAYER_ROW_NATION:
         {
             SetPlayerReady(playerId, false);
@@ -537,7 +536,6 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
         }
         break;
 
-        // Color
         case ID_PLAYER_ROW_COLOR:
         {
             SetPlayerReady(playerId, false);
@@ -576,7 +574,6 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
         }
         break;
 
-        // Team
         case ID_PLAYER_ROW_TEAM:
         {
             SetPlayerReady(playerId, false);

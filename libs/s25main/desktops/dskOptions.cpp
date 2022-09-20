@@ -525,7 +525,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             SETTINGS.lobby.portraitIndex = selection;
             updatePortraitControls();
             break;
-        case ID_COMMON_LANGUAGE_COMBO: // Language
+        case ID_COMMON_LANGUAGE_COMBO:
         {
             // Language changed?
             std::string old_lang = SETTINGS.language.language; //-V807
@@ -534,7 +534,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                 WINDOWMANAGER.Switch(std::make_unique<dskOptions>());
         }
         break;
-        case ID_COMMON_PROXY_TYPE_COMBO: // Proxy
+        case ID_COMMON_PROXY_TYPE_COMBO:
             switch(selection)
             {
                 case 0: SETTINGS.proxy.type = ProxyType::None; break;
@@ -561,10 +561,8 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                   ->GetCtrl<ctrlButton>(ID_COMMON_IPV6_BUTTON_ON)
                   ->SetEnabled(true);
             break;
-        case ID_COMMON_LOCAL_PORT_EDIT: // Fullscreen resolution
-            SETTINGS.video.fullscreenSize = video_modes[selection];
-            break;
-        case ID_GRAPHICS_VSYNC_COMBO: // Limit Framerate
+        case ID_COMMON_LOCAL_PORT_EDIT: SETTINGS.video.fullscreenSize = video_modes[selection]; break;
+        case ID_GRAPHICS_VSYNC_COMBO:
             if(VIDEODRIVER.HasVSync())
             {
                 if(selection == 0)
@@ -576,12 +574,8 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
 
             VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync);
             break;
-        case ID_GRAPHICS_DRIVER_COMBO: // Videotreiber
-            SETTINGS.driver.video = combo->GetText(selection);
-            break;
-        case ID_SOUND_DRIVER_COMBO: // Audiotreiber
-            SETTINGS.driver.audio = combo->GetText(selection);
-            break;
+        case ID_GRAPHICS_DRIVER_COMBO: SETTINGS.driver.video = combo->GetText(selection); break;
+        case ID_SOUND_DRIVER_COMBO: SETTINGS.driver.audio = combo->GetText(selection); break;
     }
 }
 
@@ -590,7 +584,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
 {
     switch(ctrl_id)
     {
-        case ID_COMMON_IPV6_GROUP: // IPv6 Ja/Nein
+        case ID_COMMON_IPV6_GROUP:
         {
             switch(selection)
             {
@@ -599,7 +593,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             }
         }
         break;
-        case ID_GRAPHICS_MODE_GROUP: // Vollbild
+        case ID_GRAPHICS_MODE_GROUP:
         {
             switch(selection)
             {
@@ -608,7 +602,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             }
         }
         break;
-        case ID_GRAPHICS_VBO_GROUP: // VBO
+        case ID_GRAPHICS_VBO_GROUP:
         {
             switch(selection)
             {
@@ -627,7 +621,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
         }
         break;
 
-        case ID_SOUND_MUSIC_GROUP: // Music
+        case ID_SOUND_MUSIC_GROUP:
         {
             switch(selection)
             {
@@ -640,7 +634,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
                 MUSICPLAYER.Stop();
         }
         break;
-        case ID_SOUND_EFFECTS_GROUP: // Soundeffekte
+        case ID_SOUND_EFFECTS_GROUP:
         {
             switch(selection)
             {
@@ -649,7 +643,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             }
         }
         break;
-        case ID_COMMON_DEBUG_DATA_GROUP: // Submit debug data
+        case ID_COMMON_DEBUG_DATA_GROUP:
         {
             switch(selection)
             {
@@ -715,7 +709,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_BACK_BUTTON: // "Back"
+        case ID_BACK_BUTTON:
         {
             auto* groupCommon = GetCtrl<ctrlGroup>(ID_GROUP_COMMON);
 
@@ -755,9 +749,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
             WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
         }
         break;
-        case ID_ADDONS_BUTTON: // Addons
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwAddons>(ggs));
-            break;
+        case ID_ADDONS_BUTTON: WINDOWMANAGER.ToggleWindow(std::make_unique<iwAddons>(ggs)); break;
     }
 }
 
@@ -766,14 +758,12 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsign
     switch(ctrl_id)
     {
         default: break;
-        case ID_COMMON_PORTRAIT_BUTTON: // Click on portrait
+        case ID_COMMON_PORTRAIT_BUTTON:
             SETTINGS.lobby.portraitIndex = (SETTINGS.lobby.portraitIndex + 1) % Portraits.size();
             updatePortraitControls();
             break;
-        case ID_SOUND_MUSIC_PLAYER: // "Music player"
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
-            break;
-        case ID_COMMON_KEY_LAYOUT_BUTTON: // "Keyboard Readme"
+        case ID_SOUND_MUSIC_PLAYER: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>()); break;
+        case ID_COMMON_KEY_LAYOUT_BUTTON:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             break;
     }
