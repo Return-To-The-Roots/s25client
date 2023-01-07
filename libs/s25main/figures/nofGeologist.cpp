@@ -197,10 +197,6 @@ void nofGeologist::Draw(DrawPoint drawPt)
         }
         break;
     }
-
-    /*std::array<char, 256> number;
-    sprintf(number,"%u",obj_id);
-    NormalFont->Draw(x,y,number,0,0xFFFF0000);*/
 }
 
 void nofGeologist::GoalReached()
