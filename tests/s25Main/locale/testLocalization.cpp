@@ -139,8 +139,8 @@ BOOST_AUTO_TEST_CASE(IniValues)
         rttr::test::LocaleResetter resetter(curLang.c_str());
         ini.setValue("int", 123456);
         ini.setValue("string", "123456");
-        BOOST_TEST_REQUIRE(ini.getValue("int") == "123456");
-        BOOST_TEST_REQUIRE(ini.getValueI("string") == 123456);
+        BOOST_TEST_REQUIRE(ini.getIntValue("int") == 123456);
+        BOOST_TEST_REQUIRE(ini.getIntValue("string") == 123456);
     }
 }
 

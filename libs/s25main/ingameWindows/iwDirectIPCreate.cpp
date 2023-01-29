@@ -143,7 +143,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
             }
 
             CreateServerInfo csi(server_type, *port, edtName->GetText(), edtPw->GetText(), SETTINGS.server.ipv6,
-                                 (SETTINGS.global.use_upnp == 1));
+                                 SETTINGS.global.use_upnp);
 
             // Map auswählen
             WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));

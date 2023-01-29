@@ -10,6 +10,7 @@
 #include "s25util/Singleton.h"
 #include <boost/optional.hpp>
 #include <array>
+#include <cstdint>
 #include <gameData/const_gui_ids.h>
 #include <map>
 #include <string>
@@ -51,10 +52,8 @@ protected:
 public:
     struct
     {
-        unsigned submit_debug_data;
-        unsigned use_upnp;
-        bool smartCursor;
-        bool debugMode;
+        uint8_t submit_debug_data;
+        bool use_upnp, smartCursor, debugMode, showGFInfo;
     } global;
 
     struct
@@ -80,9 +79,9 @@ public:
     struct
     {
         bool musicEnabled;
-        unsigned char musicVolume;
+        uint8_t musicVolume;
         bool effectsEnabled;
-        unsigned char effectsVolume;
+        uint8_t effectsVolume;
         std::string playlist; /// musicplayer playlist name
     } sound;
 
