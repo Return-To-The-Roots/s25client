@@ -230,8 +230,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpDebugData, GroupSelectType::Check);
     optiongroup->AddTextButton(ID_btSubmitDebugOn, DrawPoint(480, 355), Extent(190, 22), TextureColor::Grey, _("On"),
                                NormalFont);
-    optiongroup->AddTextButton(ID_btSubmitDebugAsk, DrawPoint(280, 355), Extent(190, 22), TextureColor::Grey, _("Off"),
-                               NormalFont);
+    optiongroup->AddTextButton(ID_btSubmitDebugAsk, DrawPoint(280, 355), Extent(190, 22), TextureColor::Grey,
+                               _("Ask always"), NormalFont);
 
     optiongroup->SetSelection((SETTINGS.global.submit_debug_data == 1) ? ID_btSubmitDebugOn :
                                                                          ID_btSubmitDebugAsk); //-V807
