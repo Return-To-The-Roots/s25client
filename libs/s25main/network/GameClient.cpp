@@ -119,7 +119,13 @@ bool GameClient::HostGame(const CreateServerInfo& csi, const boost::filesystem::
     if(playedMapPath != map_path)
     {
         boost::system::error_code ignoredEc;
-        copy_file(map_path, playedMapPath, boost::filesystem::copy_option::overwrite_if_exists, ignoredEc);
+        constexpr auto overwrite_existing =
+#if BOOST_VERSION >= 107400
+          boost::filesystem::copy_options::overwrite_existing;
+#else
+          boost::filesystem::copy_option::overwrite_if_exists;
+#endif
+        copy_file(map_path, playedMapPath, overwrite_existing, ignoredEc);
     }
     return GAMESERVER.Start(csi, map_path, map_type, hostPw)
            && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
