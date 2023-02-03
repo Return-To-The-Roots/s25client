@@ -90,7 +90,13 @@ enum
     ID_pgEffectsVol,
     ID_btMusicPlayer,
 };
-}
+// Use these as IDs in dedicated groups
+constexpr auto ID_btOn = 1;
+constexpr auto ID_btOff = 0;
+// Special case: Submit debug data uses "2" for "ask user" and "0" for "unset, ask at start"
+constexpr auto ID_btSubmitDebugOn = 1;
+constexpr auto ID_btSubmitDebugAsk = 2;
+} // namespace
 
 static VideoMode getAspectRatio(const VideoMode& vm)
 {
@@ -183,8 +189,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupAllgemein->AddText(ID_txtIpv6, DrawPoint(80, 230), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(ID_grpIpv6, GroupSelectType::Check);
-    ipv6->AddTextButton(1, DrawPoint(480, 225), Extent(190, 22), TextureColor::Grey, _("IPv6"), NormalFont);
-    ipv6->AddTextButton(0, DrawPoint(280, 225), Extent(190, 22), TextureColor::Grey, _("IPv4"), NormalFont);
+    ipv6->AddTextButton(ID_btOn, DrawPoint(480, 225), Extent(190, 22), TextureColor::Grey, _("IPv6"), NormalFont);
+    ipv6->AddTextButton(ID_btOff, DrawPoint(280, 225), Extent(190, 22), TextureColor::Grey, _("IPv4"), NormalFont);
     ipv6->SetSelection(SETTINGS.server.ipv6);
 
     // ipv6-feld ggf (de-)aktivieren
@@ -222,33 +228,37 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupAllgemein->AddText(ID_txtDebugData, DrawPoint(80, 360), _("Submit debug data:"), COLOR_YELLOW, FontStyle{},
                             NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpDebugData, GroupSelectType::Check);
-    optiongroup->AddTextButton(1, DrawPoint(480, 355), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(2, DrawPoint(280, 355), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont);
+    optiongroup->AddTextButton(ID_btSubmitDebugOn, DrawPoint(480, 355), Extent(190, 22), TextureColor::Grey, _("On"),
+                               NormalFont);
+    optiongroup->AddTextButton(ID_btSubmitDebugAsk, DrawPoint(280, 355), Extent(190, 22), TextureColor::Grey, _("Off"),
+                               NormalFont);
 
-    optiongroup->SetSelection((SETTINGS.global.submit_debug_data == 1) ? 1 : 2); //-V807
+    optiongroup->SetSelection((SETTINGS.global.submit_debug_data == 1) ? ID_btSubmitDebugOn :
+                                                                         ID_btSubmitDebugAsk); //-V807
 
     // qx:upnp switch
     groupAllgemein->AddText(ID_txtUPNP, DrawPoint(80, 390), _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(ID_grpUPNP, GroupSelectType::Check);
-    upnp->AddTextButton(0, DrawPoint(280, 385), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont);
-    upnp->AddTextButton(1, DrawPoint(480, 385), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
+    upnp->AddTextButton(ID_btOff, DrawPoint(280, 385), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont);
+    upnp->AddTextButton(ID_btOn, DrawPoint(480, 385), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
     upnp->SetSelection(SETTINGS.global.use_upnp);
 
     groupAllgemein->AddText(ID_txtSmartCursor, DrawPoint(80, 420), _("Smart Cursor"), COLOR_YELLOW, FontStyle{},
                             NormalFont);
     ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(ID_grpSmartCursor, GroupSelectType::Check);
     smartCursor->AddTextButton(
-      0, DrawPoint(280, 415), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont,
+      ID_btOff, DrawPoint(280, 415), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont,
       _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
-    smartCursor->AddTextButton(1, DrawPoint(480, 415), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont,
+    smartCursor->AddTextButton(ID_btOn, DrawPoint(480, 415), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont,
                                _("Place cursor on default button for new dialogs / action windows (default)"));
     smartCursor->SetSelection(SETTINGS.global.smartCursor);
 
     groupAllgemein->AddText(ID_txtGFInfo, DrawPoint(80, 450), _("Show GameFrame Info:"), COLOR_YELLOW, FontStyle{},
                             NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpGFInfo, GroupSelectType::Check);
-    optiongroup->AddTextButton(1, DrawPoint(480, 445), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(0, DrawPoint(280, 445), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont);
+    optiongroup->AddTextButton(ID_btOn, DrawPoint(480, 445), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, DrawPoint(280, 445), Extent(190, 22), TextureColor::Grey, _("Off"),
+                               NormalFont);
 
     optiongroup->SetSelection(SETTINGS.global.showGFInfo);
 
@@ -260,9 +270,10 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Vollbild"
     groupGrafik->AddText(ID_txtFullscreen, DrawPoint(80, 130), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
-    optiongroup->AddTextButton(1, DrawPoint(480, 125), Extent(190, 22), TextureColor::Grey, _("Fullscreen"),
+    optiongroup->AddTextButton(ID_btOn, DrawPoint(480, 125), Extent(190, 22), TextureColor::Grey, _("Fullscreen"),
                                NormalFont);
-    optiongroup->AddTextButton(0, DrawPoint(280, 125), Extent(190, 22), TextureColor::Grey, _("Windowed"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, DrawPoint(280, 125), Extent(190, 22), TextureColor::Grey, _("Windowed"),
+                               NormalFont);
 
     // "VSync"
     groupGrafik->AddText(ID_txtVSync, DrawPoint(80, 180), _("Limit Framerate:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -273,8 +284,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
                          NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpVBO, GroupSelectType::Check);
 
-    optiongroup->AddTextButton(1, DrawPoint(280, 225), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(0, DrawPoint(480, 225), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont);
+    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 225), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, DrawPoint(480, 225), Extent(190, 22), TextureColor::Grey, _("Off"),
+                               NormalFont);
 
     // "Grafiktreiber"
     groupGrafik->AddText(ID_txtVideoDriver, DrawPoint(80, 275), _("Graphics Driver"), COLOR_YELLOW, FontStyle{},
@@ -295,8 +307,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
                          NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpOptTextures, GroupSelectType::Check);
 
-    optiongroup->AddTextButton(1, DrawPoint(280, 315), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(0, DrawPoint(480, 315), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont);
+    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 315), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, DrawPoint(480, 315), Extent(190, 22), TextureColor::Grey, _("Off"),
+                               NormalFont);
 
     // "Audiotreiber"
     groupSound->AddText(ID_txtAudioDriver, DrawPoint(80, 230), _("Sounddriver"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -315,8 +328,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // Musik
     groupSound->AddText(ID_txtMusic, DrawPoint(80, 80), _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
-    optiongroup->AddTextButton(1, DrawPoint(280, 75), Extent(90, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(0, DrawPoint(380, 75), Extent(90, 22), TextureColor::Grey, _("Off"), NormalFont);
+    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 75), Extent(90, 22), TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, DrawPoint(380, 75), Extent(90, 22), TextureColor::Grey, _("Off"), NormalFont);
 
     ctrlProgress* Mvolume =
       groupSound->AddProgress(ID_pgMusicVol, DrawPoint(480, 75), Extent(190, 22), TextureColor::Grey, 139, 138, 100);
@@ -325,8 +338,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // Effekte
     groupSound->AddText(ID_txtEffects, DrawPoint(80, 130), _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupSound->AddOptionGroup(ID_grpEffects, GroupSelectType::Check);
-    optiongroup->AddTextButton(1, DrawPoint(280, 125), Extent(90, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(0, DrawPoint(380, 125), Extent(90, 22), TextureColor::Grey, _("Off"), NormalFont);
+    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 125), Extent(90, 22), TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, DrawPoint(380, 125), Extent(90, 22), TextureColor::Grey, _("Off"), NormalFont);
 
     ctrlProgress* FXvolume =
       groupSound->AddProgress(ID_pgEffectsVol, DrawPoint(480, 125), Extent(190, 22), TextureColor::Grey, 139, 138, 100);
@@ -485,27 +498,31 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
 void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id,
                                              const unsigned selection)
 {
+    const bool enabled = selection == ID_btOn;
     switch(ctrl_id)
     {
-        case ID_grpIpv6: SETTINGS.server.ipv6 = selection != 0; break;
-        case ID_grpFullscreen: SETTINGS.video.fullscreen = selection != 0; break;
-        case ID_grpVBO: SETTINGS.video.vbo = selection != 0; break;
-        case ID_grpOptTextures: SETTINGS.video.shared_textures = selection != 0; break;
+        case ID_grpIpv6: SETTINGS.server.ipv6 = enabled; break;
+        case ID_grpFullscreen: SETTINGS.video.fullscreen = enabled; break;
+        case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
+        case ID_grpOptTextures: SETTINGS.video.shared_textures = enabled; break;
         case ID_grpMusic:
-            SETTINGS.sound.musicEnabled = selection != 0;
-            if(SETTINGS.sound.musicEnabled)
+            SETTINGS.sound.musicEnabled = enabled;
+            if(enabled)
                 MUSICPLAYER.Play();
             else
                 MUSICPLAYER.Stop();
             break;
-        case ID_grpEffects: SETTINGS.sound.effectsEnabled = selection != 0; break;
-        case ID_grpDebugData: SETTINGS.global.submit_debug_data = selection; break;
-        case ID_grpUPNP: SETTINGS.global.use_upnp = selection != 0; break;
-        case ID_grpSmartCursor:
-            SETTINGS.global.smartCursor = selection != 0;
-            VIDEODRIVER.SetMouseWarping(SETTINGS.global.smartCursor);
+        case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;
+        case ID_grpDebugData:
+            // Special case: Uses e.g. ID_btSubmitDebugOn directly
+            SETTINGS.global.submit_debug_data = selection;
             break;
-        case ID_grpGFInfo: SETTINGS.global.showGFInfo = selection != 0; break;
+        case ID_grpUPNP: SETTINGS.global.use_upnp = enabled; break;
+        case ID_grpSmartCursor:
+            SETTINGS.global.smartCursor = enabled;
+            VIDEODRIVER.SetMouseWarping(enabled);
+            break;
+        case ID_grpGFInfo: SETTINGS.global.showGFInfo = enabled; break;
     }
 }
 

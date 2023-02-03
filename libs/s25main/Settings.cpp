@@ -70,7 +70,7 @@ void Settings::LoadDefaults()
 {
     // global
     // {
-    // 0 = ask user at start,1 = enabled, 2 = disabled
+    // 0 = ask user at start, 1 = enabled, 2 = always ask
     global.submit_debug_data = 0;
     global.use_upnp = false;
     global.smartCursor = true;
