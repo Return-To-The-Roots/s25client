@@ -49,7 +49,7 @@ GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
                                 GameMessage_Player_State, GameMessage_Player_Nation, GameMessage_Player_Team,
                                 GameMessage_Player_Color, GameMessage_Player_Kicked, GameMessage_Player_Ping,
                                 GameMessage_Player_New, GameMessage_Player_Ready, GameMessage_Player_Swap,
-                                GameMessage_Player_SwapConfirm,
+                                GameMessage_Player_SwapConfirm, GameMessage_Player_Portrait,
 
                                 GameMessage_Map_Info, GameMessage_MapRequest, GameMessage_Map_Data,
                                 GameMessage_Map_Checksum, GameMessage_Map_ChecksumOK, GameMessage_GGSChange,

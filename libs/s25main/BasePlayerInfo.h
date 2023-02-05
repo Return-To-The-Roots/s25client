@@ -18,6 +18,7 @@ struct BasePlayerInfo
     PlayerState ps;
     AI::Info aiInfo;
     std::string name;
+    unsigned portraitIndex;
     Nation nation;
     /// Actual color (ARGB)
     unsigned color;

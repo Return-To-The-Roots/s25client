@@ -8,7 +8,7 @@
 #include "s25util/colors.h"
 
 BasePlayerInfo::BasePlayerInfo()
-    : ps(PlayerState::Free), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(Team::None)
+    : ps(PlayerState::Free), portraitIndex(0), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(Team::None)
 {}
 
 BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
@@ -16,12 +16,14 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
 {
     if(lightData && !isUsed())
     {
+        portraitIndex = 0;
         nation = Nation::Romans;
         team = Team::None;
         color = PLAYER_COLORS[0];
     } else
     {
         name = ser.PopLongString();
+        portraitIndex = ser.PopUnsignedInt();
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
         team = helpers::popEnum<Team>(ser);
@@ -36,6 +38,7 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     if(!lightData || ps == PlayerState::AI)
         aiInfo.serialize(ser);
     ser.PushLongString(name);
+    ser.PushUnsignedInt(portraitIndex);
     helpers::pushEnum<uint8_t>(ser, nation);
     ser.PushUnsignedInt(color);
     helpers::pushEnum<uint8_t>(ser, team);

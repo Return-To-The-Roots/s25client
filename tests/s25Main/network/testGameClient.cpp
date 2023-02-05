@@ -101,6 +101,7 @@ BOOST_DATA_TEST_CASE(ClientFollowsConnectProtocol, usesLuaScriptValues, usesLuaS
         MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::QueryMapInfo).once();
         clientMsgInterface.OnGameMessage(GameMessage_Server_Password("true"));
         BOOST_TEST_REQUIRE(dynamic_cast<GameMessage_Player_Name*>(client.GetMainPlayer().sendQueue.pop().get()));
+        BOOST_TEST_REQUIRE(dynamic_cast<GameMessage_Player_Portrait*>(client.GetMainPlayer().sendQueue.pop().get()));
         const auto msg = boost::dynamic_pointer_cast<GameMessage_MapRequest>(client.GetMainPlayer().sendQueue.pop());
         BOOST_TEST_REQUIRE(msg);
         BOOST_TEST(msg->requestInfo);

@@ -29,4 +29,5 @@ private:
     std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
 
     void loadVideoModes();
+    void updatePortraitControls();
 };

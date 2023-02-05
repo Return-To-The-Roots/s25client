@@ -29,6 +29,11 @@ void GameClient::Command_SetNation(Nation newNation)
     mainPlayer.sendMsgAsync(new GameMessage_Player_Nation(0xff, newNation));
 }
 
+void GameClient::Command_SetPortrait(unsigned portraitIndex)
+{
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Portrait(0xff, portraitIndex));
+}
+
 void GameClient::Command_SetTeam(Team newTeam)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Team(0xff, newTeam));

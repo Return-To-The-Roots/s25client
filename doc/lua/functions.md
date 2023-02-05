@@ -240,7 +240,10 @@ Closes a spot kicking any player or AI there.
 Add an AI or change its difficulty.
 
 **SetName(name)**  
-Change the players name.
+Change the player's name.
+
+**SetPortrait(portraitIndex)**  
+Change the player's portrait.
 
 [Back](#Lua-objects-and-their-methods)  
 

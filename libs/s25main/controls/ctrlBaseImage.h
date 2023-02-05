@@ -24,8 +24,8 @@ public:
     /// Swap the images of those controls
     void SwapImage(ctrlBaseImage& other);
     Rect GetImageRect() const;
-    void DrawImage(const DrawPoint& pos) const;
-    void DrawImage(const DrawPoint& pos, unsigned color) const;
+    void DrawImage(const Rect& dstArea) const;
+    void DrawImage(const Rect& dstArea, unsigned color) const;
 
 private:
     ITexture* img_;

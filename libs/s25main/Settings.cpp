@@ -120,6 +120,7 @@ void Settings::LoadDefaults()
     // {
 
     lobby.name = System::getUserName();
+    lobby.portraitIndex = 0;
     lobby.password.clear();
     lobby.save_password = false;
     // }

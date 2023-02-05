@@ -89,6 +89,7 @@ public:
     struct
     {
         std::string name;
+        unsigned portraitIndex;
         std::string password;
         bool save_password;
     } lobby;

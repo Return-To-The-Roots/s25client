@@ -26,6 +26,7 @@ enum
 
     NMS_PLAYER_ID = 0x0201, // 1 playerId
     NMS_PLAYER_NAME,        // x playername
+    NMS_PLAYER_PORTRAIT,    // x portraitIndex
     NMS_PLAYER_LIST,        // 1 playercount | x GamePlayerInfo
     NMS_PLAYER_STATE,       // 1 playerId
     NMS_PLAYER_NATION,      // 0 | 1 playerId
