@@ -346,45 +346,51 @@ void dskGameInterface::Msg_PaintAfter()
 {
     Desktop::Msg_PaintAfter();
 
-    /* NWF-Anzeige (vorläufig)*/
-    std::array<char, 256> nwf_string;
-
     const GameWorldBase& world = worldViewer.GetWorld();
-    if(GAMECLIENT.IsReplayModeOn())
+
+    if(SETTINGS.global.showGFInfo)
     {
-        snprintf(nwf_string.data(), nwf_string.size(),
-                 _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
-                 GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
-                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
-    } else
-        snprintf(nwf_string.data(), nwf_string.size(),
-                 _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                 GAMECLIENT.GetNWFLength(),
-                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                 worldViewer.GetPlayer().ping);
+        std::array<char, 256> nwf_string;
+        if(GAMECLIENT.IsReplayModeOn())
+        {
+            snprintf(nwf_string.data(), nwf_string.size(),
+                     _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
+                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
+                     GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
+                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
+        } else
+            snprintf(nwf_string.data(), nwf_string.size(),
+                     _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
+                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                     GAMECLIENT.GetNWFLength(),
+                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                     worldViewer.GetPlayer().ping);
+        NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
+    }
 
     // tournament mode?
-    unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
-
-    if(tmd)
+    const unsigned tournamentDuration = GAMECLIENT.GetTournamentModeDuration();
+    if(tournamentDuration)
     {
         unsigned curGF = world.GetEvMgr().GetCurrentGF();
         std::string tournamentNotice;
-        if(curGF >= tmd)
+        if(curGF >= tournamentDuration)
             tournamentNotice = _("Tournament finished");
         else
-            tournamentNotice = helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tmd - curGF));
+        {
+            tournamentNotice =
+              helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tournamentDuration - curGF));
+        }
+        NormalFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize().x - 30, 1), tournamentNotice, FontStyle::AlignH::RIGHT,
+                         COLOR_YELLOW);
     }
-
-    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
+    {
         NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(),
                          FontStyle::BOTTOM, COLOR_YELLOW);
-    else
+    } else
     {
         // Laggende Spieler anzeigen in Form von Schnecken
         DrawPoint snailPos(VIDEODRIVER.GetRenderSize().x - 70, 35);
