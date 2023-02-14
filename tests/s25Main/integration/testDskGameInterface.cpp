@@ -4,6 +4,7 @@
 
 #include "GamePlayer.h"
 #include "PointOutput.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "desktops/dskGameInterface.h"
@@ -66,63 +67,86 @@ void checkNotScrolling(const GameWorldView& view, Cursor cursor = Cursor::Hand)
 BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
 {
     const int acceleration = 2;
+    SETTINGS.interface.revert_mouse = false;
+
     Position startPos(10, 15);
     MouseCoords mouse(startPos, false, true);
     // Regular scrolling: Right down, 2 moves, right up
-    WINDOWMANAGER.Msg_RightDown(mouse);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-    DrawPoint pos = view->GetOffset();
-    mouse.pos = startPos + Position(4, 3);
-    WINDOWMANAGER.Msg_MouseMove(mouse);
-    pos += acceleration * Position(4, 3);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-    BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-    mouse.pos = startPos + Position(-6, 7);
-    WINDOWMANAGER.Msg_MouseMove(mouse);
-    pos += acceleration * Position(-6, 7);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-    BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-    mouse.rdown = false;
-    WINDOWMANAGER.Msg_RightUp(mouse);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Hand);
-    BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-    checkNotScrolling(*view);
+    {
+        WINDOWMANAGER.Msg_RightDown(mouse);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        DrawPoint pos = view->GetOffset();
+        mouse.pos = startPos + Position(4, 3);
+        WINDOWMANAGER.Msg_MouseMove(mouse);
+        pos += acceleration * Position(4, 3);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+        mouse.pos = startPos + Position(-6, 7);
+        WINDOWMANAGER.Msg_MouseMove(mouse);
+        pos += acceleration * Position(-6, 7);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+        mouse.rdown = false;
+        WINDOWMANAGER.Msg_RightUp(mouse);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Hand);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+        checkNotScrolling(*view);
+    }
+
+    // Inverted scrolling
+    {
+        SETTINGS.interface.revert_mouse = true;
+        WINDOWMANAGER.Msg_RightDown(mouse);
+        startPos = mouse.pos;
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        const DrawPoint pos = view->GetOffset();
+        mouse.pos = startPos + Position(4, 3);
+        WINDOWMANAGER.Msg_MouseMove(mouse);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos - acceleration * Position(4, 3));
+        mouse.rdown = false;
+        WINDOWMANAGER.Msg_RightUp(mouse);
+        SETTINGS.interface.revert_mouse = false;
+    }
 
     // Opening a window does not cancel scrolling
-    mouse.rdown = true;
-    WINDOWMANAGER.Msg_RightDown(mouse);
-    startPos = mouse.pos;
-    KeyEvent key;
-    key.kt = KeyType::Char;
-    key.c = 'm';
-    key.ctrl = key.alt = key.shift = false;
-    WINDOWMANAGER.Msg_KeyDown(key);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow());
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-    mouse.pos = startPos + Position(-6, 7);
-    WINDOWMANAGER.Msg_MouseMove(mouse);
-    pos += acceleration * Position(-6, 7);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-    BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-    // Closing it doesn't either
-    WINDOWMANAGER.Msg_KeyDown(key);
-    WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(gameDesktop->IsActive());
-    BOOST_TEST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-    mouse.pos = startPos + Position(-6, 7);
-    WINDOWMANAGER.Msg_MouseMove(mouse);
-    pos += acceleration * Position(-6, 7);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-    BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-    // Left click does cancel it
-    mouse.ldown = true;
-    WINDOWMANAGER.Msg_LeftDown(mouse);
-    mouse.ldown = false;
-    WINDOWMANAGER.Msg_LeftUp(mouse);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Hand);
-    BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-    checkNotScrolling(*view);
+    {
+        mouse.rdown = true;
+        WINDOWMANAGER.Msg_RightDown(mouse);
+        startPos = mouse.pos;
+        DrawPoint pos = view->GetOffset();
+        KeyEvent key;
+        key.kt = KeyType::Char;
+        key.c = 'm';
+        key.ctrl = key.alt = key.shift = false;
+        WINDOWMANAGER.Msg_KeyDown(key);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow());
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        mouse.pos = startPos + Position(-6, 7);
+        WINDOWMANAGER.Msg_MouseMove(mouse);
+        pos += acceleration * Position(-6, 7);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+        // Closing it doesn't either
+        WINDOWMANAGER.Msg_KeyDown(key);
+        WINDOWMANAGER.Draw();
+        BOOST_TEST_REQUIRE(gameDesktop->IsActive());
+        BOOST_TEST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        mouse.pos = startPos + Position(-6, 7);
+        WINDOWMANAGER.Msg_MouseMove(mouse);
+        pos += acceleration * Position(-6, 7);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+        // Left click does cancel it
+        mouse.ldown = true;
+        WINDOWMANAGER.Msg_LeftDown(mouse);
+        mouse.ldown = false;
+        WINDOWMANAGER.Msg_LeftUp(mouse);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Hand);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+        checkNotScrolling(*view);
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(ScrollingWhileRoadBuilding, GameInterfaceFixture)
