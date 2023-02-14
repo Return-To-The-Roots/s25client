@@ -148,16 +148,23 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // Allgemein
     // {
 
-    // "Name"
-    groupAllgemein->AddText(ID_txtName, DrawPoint(80, 80), _("Name in Game:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlEdit* name =
-      groupAllgemein->AddEdit(ID_edtName, DrawPoint(280, 75), Extent(190, 22), TextureColor::Grey, NormalFont, 15);
-    name->SetText(SETTINGS.lobby.name);
+    DrawPoint curPos = DrawPoint(80, 80);
+    using Offset = DrawPoint;
+    constexpr Offset ctrlOffset(200, -5);                       // Offset of control to its description text
+    constexpr Offset ctrlOffset2 = ctrlOffset + Offset(200, 0); // Offset of 2nd control to its description text
+    constexpr Extent ctrlSize(190, 22);
+    constexpr Extent ctrlSizeLarge = ctrlSize + Extent(ctrlOffset2 - ctrlOffset);
 
-    // "Sprache"
-    groupAllgemein->AddText(ID_txtLanguage, DrawPoint(80, 110), _("Language:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = groupAllgemein->AddComboBox(ID_cbLanguage, DrawPoint(280, 105), Extent(190, 20), TextureColor::Grey,
-                                        NormalFont, 100);
+    groupAllgemein->AddText(ID_txtName, curPos, _("Name in Game:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlEdit* name =
+      groupAllgemein->AddEdit(ID_edtName, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
+    name->SetText(SETTINGS.lobby.name);
+    curPos.y += 30;
+
+    groupAllgemein->AddText(ID_txtLanguage, curPos, _("Language:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo =
+      groupAllgemein->AddComboBox(ID_cbLanguage, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
+    curPos.y += 40;
 
     bool selected = false;
     for(unsigned i = 0; i < LANGUAGES.size(); ++i)
@@ -174,45 +181,46 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     if(!selected)
         combo->SetSelection(0);
 
-    groupAllgemein->AddText(ID_txtKeyboardLayout, DrawPoint(80, 150), _("Keyboard layout:"), COLOR_YELLOW, FontStyle{},
-                            NormalFont);
-    groupAllgemein->AddTextButton(ID_btKeyboardLayout, DrawPoint(280, 145), Extent(120, 22), TextureColor::Grey,
-                                  _("Readme"), NormalFont);
+    groupAllgemein->AddText(ID_txtKeyboardLayout, curPos, _("Keyboard layout:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupAllgemein->AddTextButton(ID_btKeyboardLayout, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Readme"),
+                                  NormalFont);
+    curPos.y += 40;
 
-    groupAllgemein->AddText(ID_txtPort, DrawPoint(80, 190), _("Local Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupAllgemein->AddText(ID_txtPort, curPos, _("Local Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* edtPort =
-      groupAllgemein->AddEdit(ID_edtPort, DrawPoint(280, 185), Extent(190, 22), TextureColor::Grey, NormalFont, 15);
+      groupAllgemein->AddEdit(ID_edtPort, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
     edtPort->SetNumberOnly(true);
     edtPort->SetText(SETTINGS.server.localPort);
+    curPos.y += 40;
 
     // IPv4/6
-    groupAllgemein->AddText(ID_txtIpv6, DrawPoint(80, 230), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupAllgemein->AddText(ID_txtIpv6, curPos, _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(ID_grpIpv6, GroupSelectType::Check);
-    ipv6->AddTextButton(ID_btOn, DrawPoint(480, 225), Extent(190, 22), TextureColor::Grey, _("IPv6"), NormalFont);
-    ipv6->AddTextButton(ID_btOff, DrawPoint(280, 225), Extent(190, 22), TextureColor::Grey, _("IPv4"), NormalFont);
+    ipv6->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("IPv6"), NormalFont);
+    ipv6->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("IPv4"), NormalFont);
     ipv6->SetSelection(SETTINGS.server.ipv6);
-
     // ipv6-feld ggf (de-)aktivieren
     ipv6->GetCtrl<ctrlButton>(1)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
+    curPos.y += 50;
 
     // Proxyserver
-    groupAllgemein->AddText(ID_txtProxy, DrawPoint(80, 280), _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupAllgemein->AddText(ID_txtProxy, curPos, _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* proxy =
-      groupAllgemein->AddEdit(ID_edtProxy, DrawPoint(280, 275), Extent(190, 22), TextureColor::Grey, NormalFont);
+      groupAllgemein->AddEdit(ID_edtProxy, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont);
     proxy->SetText(SETTINGS.proxy.hostname);
     proxy =
-      groupAllgemein->AddEdit(ID_edtProxyPort, DrawPoint(480, 275), Extent(50, 22), TextureColor::Grey, NormalFont, 5);
+      groupAllgemein->AddEdit(ID_edtProxyPort, curPos + ctrlOffset2, Extent(50, 22), TextureColor::Grey, NormalFont, 5);
     proxy->SetNumberOnly(true);
     proxy->SetText(SETTINGS.proxy.port);
+    curPos.y += 30;
 
     // Proxytyp
-    groupAllgemein->AddText(ID_txtProxyType, DrawPoint(80, 310), _("Proxytyp:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = groupAllgemein->AddComboBox(ID_cbProxyType, DrawPoint(280, 305), Extent(390, 20), TextureColor::Grey,
+    groupAllgemein->AddText(ID_txtProxyType, curPos, _("Proxytyp:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = groupAllgemein->AddComboBox(ID_cbProxyType, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                         NormalFont, 100);
     combo->AddString(_("No Proxy"));
     combo->AddString(_("Socks v4"));
-
     // TODO: not implemented
     // combo->AddString(_("Socks v5"));
 
@@ -222,76 +230,73 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         case ProxyType::Socks4: combo->SetSelection(1); break;
         case ProxyType::Socks5: combo->SetSelection(2); break;
     }
+    curPos.y += 50;
 
-    // }
-
-    groupAllgemein->AddText(ID_txtDebugData, DrawPoint(80, 360), _("Submit debug data:"), COLOR_YELLOW, FontStyle{},
-                            NormalFont);
+    groupAllgemein->AddText(ID_txtDebugData, curPos, _("Submit debug data:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpDebugData, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btSubmitDebugOn, DrawPoint(480, 355), Extent(190, 22), TextureColor::Grey, _("On"),
+    optiongroup->AddTextButton(ID_btSubmitDebugOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"),
                                NormalFont);
-    optiongroup->AddTextButton(ID_btSubmitDebugAsk, DrawPoint(280, 355), Extent(190, 22), TextureColor::Grey,
-                               _("Ask always"), NormalFont);
+    optiongroup->AddTextButton(ID_btSubmitDebugAsk, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Ask always"),
+                               NormalFont);
 
     optiongroup->SetSelection((SETTINGS.global.submit_debug_data == 1) ? ID_btSubmitDebugOn :
                                                                          ID_btSubmitDebugAsk); //-V807
+    curPos.y += 50;
 
     // qx:upnp switch
-    groupAllgemein->AddText(ID_txtUPNP, DrawPoint(80, 390), _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupAllgemein->AddText(ID_txtUPNP, curPos, _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(ID_grpUPNP, GroupSelectType::Check);
-    upnp->AddTextButton(ID_btOff, DrawPoint(280, 385), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont);
-    upnp->AddTextButton(ID_btOn, DrawPoint(480, 385), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
+    upnp->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
+    upnp->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
     upnp->SetSelection(SETTINGS.global.use_upnp);
+    curPos.y += 30;
 
-    groupAllgemein->AddText(ID_txtSmartCursor, DrawPoint(80, 420), _("Smart Cursor"), COLOR_YELLOW, FontStyle{},
-                            NormalFont);
+    groupAllgemein->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(ID_grpSmartCursor, GroupSelectType::Check);
     smartCursor->AddTextButton(
-      ID_btOff, DrawPoint(280, 415), Extent(190, 22), TextureColor::Grey, _("Off"), NormalFont,
+      ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
       _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
-    smartCursor->AddTextButton(ID_btOn, DrawPoint(480, 415), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont,
+    smartCursor->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
                                _("Place cursor on default button for new dialogs / action windows (default)"));
     smartCursor->SetSelection(SETTINGS.global.smartCursor);
+    curPos.y += 30;
 
-    groupAllgemein->AddText(ID_txtGFInfo, DrawPoint(80, 450), _("Show GameFrame Info:"), COLOR_YELLOW, FontStyle{},
-                            NormalFont);
+    groupAllgemein->AddText(ID_txtGFInfo, curPos, _("Show GameFrame Info:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpGFInfo, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(480, 445), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(280, 445), Extent(190, 22), TextureColor::Grey, _("Off"),
-                               NormalFont);
+    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
 
     optiongroup->SetSelection(SETTINGS.global.showGFInfo);
 
     // "Auflösung"
-    groupGrafik->AddText(ID_txtResolution, DrawPoint(80, 80), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
-                         NormalFont);
-    groupGrafik->AddComboBox(ID_cbResolution, DrawPoint(280, 75), Extent(190, 22), TextureColor::Grey, NormalFont, 150);
+    curPos.y = 80;
+    groupGrafik->AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupGrafik->AddComboBox(ID_cbResolution, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 150);
+    curPos.y += 50;
 
     // "Vollbild"
-    groupGrafik->AddText(ID_txtFullscreen, DrawPoint(80, 130), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupGrafik->AddText(ID_txtFullscreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(480, 125), Extent(190, 22), TextureColor::Grey, _("Fullscreen"),
+    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Fullscreen"),
                                NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(280, 125), Extent(190, 22), TextureColor::Grey, _("Windowed"),
-                               NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
+    curPos.y += 50;
 
-    groupGrafik->AddText(ID_txtFramerate, DrawPoint(80, 180), _("Limit Framerate:"), COLOR_YELLOW, FontStyle{},
-                         NormalFont);
-    groupGrafik->AddComboBox(ID_cbFramerate, DrawPoint(280, 175), Extent(390, 22), TextureColor::Grey, NormalFont, 150);
+    // "VSync"
+    groupGrafik->AddText(ID_txtFramerate, curPos, _("Limit Framerate:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupGrafik->AddComboBox(ID_cbFramerate, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 150);
+    curPos.y += 50;
 
     // "VBO"
-    groupGrafik->AddText(ID_txtVBO, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, FontStyle{},
-                         NormalFont);
+    groupGrafik->AddText(ID_txtVBO, curPos, _("Vertex Buffer Objects:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpVBO, GroupSelectType::Check);
-
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 225), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(480, 225), Extent(190, 22), TextureColor::Grey, _("Off"),
-                               NormalFont);
+    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
+    curPos.y += 50;
 
     // "Grafiktreiber"
-    groupGrafik->AddText(ID_txtVideoDriver, DrawPoint(80, 275), _("Graphics Driver"), COLOR_YELLOW, FontStyle{},
-                         NormalFont);
-    combo = groupGrafik->AddComboBox(ID_cbVideoDriver, DrawPoint(280, 275), Extent(390, 20), TextureColor::Grey,
+    groupGrafik->AddText(ID_txtVideoDriver, curPos, _("Graphics Driver"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = groupGrafik->AddComboBox(ID_cbVideoDriver, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                      NormalFont, 100);
 
     const auto video_drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Video);
@@ -302,18 +307,47 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(video_driver.GetName() == SETTINGS.driver.video)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
+    curPos.y += 40;
 
-    groupGrafik->AddText(ID_txtOptTextures, DrawPoint(80, 320), _("Optimized Textures:"), COLOR_YELLOW, FontStyle{},
-                         NormalFont);
+    groupGrafik->AddText(ID_txtOptTextures, curPos, _("Optimized Textures:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpOptTextures, GroupSelectType::Check);
 
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 315), Extent(190, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(480, 315), Extent(190, 22), TextureColor::Grey, _("Off"),
-                               NormalFont);
+    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
 
-    // "Audiotreiber"
-    groupSound->AddText(ID_txtAudioDriver, DrawPoint(80, 230), _("Sounddriver"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = groupSound->AddComboBox(ID_cbAudioDriver, DrawPoint(280, 225), Extent(390, 20), TextureColor::Grey,
+    curPos.y = 80;
+    constexpr Offset bt1Offset(200, -5);
+    constexpr Offset bt2Offset(300, -5);
+    constexpr Offset volOffset(400, -5);
+    constexpr Extent ctrlSizeSmall(90, ctrlSize.y);
+
+    groupSound->AddText(ID_txtMusic, curPos, _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    optiongroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
+    optiongroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
+
+    ctrlProgress* Mvolume =
+      groupSound->AddProgress(ID_pgMusicVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
+    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
+    curPos.y += 50;
+
+    // Effekte
+    groupSound->AddText(ID_txtEffects, curPos, _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    optiongroup = groupSound->AddOptionGroup(ID_grpEffects, GroupSelectType::Check);
+    optiongroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
+
+    ctrlProgress* FXvolume =
+      groupSound->AddProgress(ID_pgEffectsVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
+    FXvolume->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
+    curPos.y += 50;
+
+    groupSound->AddTextButton(ID_btMusicPlayer, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Music player"),
+                              NormalFont);
+    curPos.y += 50;
+
+    groupSound->AddText(ID_txtAudioDriver, curPos, _("Sounddriver"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = groupSound->AddComboBox(ID_cbAudioDriver, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                     NormalFont, 100);
 
     const auto audio_drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Audio);
@@ -324,30 +358,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(audio_driver.GetName() == SETTINGS.driver.audio)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
-
-    // Musik
-    groupSound->AddText(ID_txtMusic, DrawPoint(80, 80), _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 75), Extent(90, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(380, 75), Extent(90, 22), TextureColor::Grey, _("Off"), NormalFont);
-
-    ctrlProgress* Mvolume =
-      groupSound->AddProgress(ID_pgMusicVol, DrawPoint(480, 75), Extent(190, 22), TextureColor::Grey, 139, 138, 100);
-    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
-
-    // Effekte
-    groupSound->AddText(ID_txtEffects, DrawPoint(80, 130), _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupSound->AddOptionGroup(ID_grpEffects, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(280, 125), Extent(90, 22), TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(380, 125), Extent(90, 22), TextureColor::Grey, _("Off"), NormalFont);
-
-    ctrlProgress* FXvolume =
-      groupSound->AddProgress(ID_pgEffectsVol, DrawPoint(480, 125), Extent(190, 22), TextureColor::Grey, 139, 138, 100);
-    FXvolume->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
-
-    // Musicplayer-Button
-    groupSound->AddTextButton(ID_btMusicPlayer, DrawPoint(280, 175), Extent(190, 22), TextureColor::Grey,
-                              _("Music player"), NormalFont);
 
     // "Allgemein" auswählen
     optiongroup = GetCtrl<ctrlOptionGroup>(ID_grpOptions);
