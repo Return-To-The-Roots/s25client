@@ -64,6 +64,8 @@ enum
     ID_grpDebugData,
     ID_txtUPNP,
     ID_grpUPNP,
+    ID_txtInvertScroll,
+    ID_grpInvertScroll,
     ID_txtSmartCursor,
     ID_grpSmartCursor,
     ID_txtGFInfo,
@@ -237,6 +239,16 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         case ProxyType::Socks5: combo->SetSelection(2); break;
     }
     curPos.y += 50;
+
+    groupAllgemein->AddText(ID_txtInvertScroll, curPos, _("Mouse scroll behavior:"), COLOR_YELLOW, FontStyle{},
+                            NormalFont);
+    ctrlOptionGroup* invertScroll = groupAllgemein->AddOptionGroup(ID_grpInvertScroll, GroupSelectType::Check);
+    invertScroll->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Original"), NormalFont,
+                                _("When scrolling the map with the mouse move the camera."));
+    invertScroll->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Inverted"), NormalFont,
+                                _("When scrolling the map with the mouse move the map."));
+    invertScroll->SetSelection(SETTINGS.interface.revert_mouse);
+    curPos.y += 30;
 
     groupAllgemein->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(ID_grpSmartCursor, GroupSelectType::Check);
