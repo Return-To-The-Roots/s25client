@@ -62,7 +62,7 @@ iwSettings::iwSettings()
 
     AddCheckBox(ID_cbInvertMouse, DrawPoint(15, 124), Extent(150, 26), TextureColor::Grey, _("Invert mouse"),
                 NormalFont, false)
-      ->setChecked(SETTINGS.interface.revert_mouse);
+      ->setChecked(SETTINGS.interface.invert_mouse);
     AddCheckBox(ID_cbStatisticScale, DrawPoint(200, 124), Extent(150, 26), TextureColor::Grey, _("Statistics Scale"),
                 NormalFont, false)
       ->setChecked(SETTINGS.ingame.scale_statistics);
@@ -105,7 +105,7 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     switch(ctrl_id)
     {
-        case ID_cbInvertMouse: SETTINGS.interface.revert_mouse = checked; break;
+        case ID_cbInvertMouse: SETTINGS.interface.invert_mouse = checked; break;
         case ID_cbStatisticScale: SETTINGS.ingame.scale_statistics = checked; break;
     }
 }

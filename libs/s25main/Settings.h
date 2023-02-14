@@ -103,7 +103,7 @@ public:
     struct
     {
         unsigned autosave_interval;
-        bool revert_mouse;
+        bool invert_mouse;
     } interface;
 
     struct

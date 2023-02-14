@@ -67,7 +67,7 @@ void checkNotScrolling(const GameWorldView& view, Cursor cursor = Cursor::Hand)
 BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
 {
     const int acceleration = 2;
-    SETTINGS.interface.revert_mouse = false;
+    SETTINGS.interface.invert_mouse = false;
 
     Position startPos(10, 15);
     MouseCoords mouse(startPos, false, true);
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
 
     // Inverted scrolling
     {
-        SETTINGS.interface.revert_mouse = true;
+        SETTINGS.interface.invert_mouse = true;
         WINDOWMANAGER.Msg_RightDown(mouse);
         startPos = mouse.pos;
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
@@ -106,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         BOOST_TEST_REQUIRE(view->GetOffset() == pos - acceleration * Position(4, 3));
         mouse.rdown = false;
         WINDOWMANAGER.Msg_RightUp(mouse);
-        SETTINGS.interface.revert_mouse = false;
+        SETTINGS.interface.invert_mouse = false;
     }
 
     // Opening a window does not cancel scrolling

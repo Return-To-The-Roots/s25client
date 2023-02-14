@@ -138,7 +138,7 @@ void Settings::LoadDefaults()
     // interface
     // {
     interface.autosave_interval = 0;
-    interface.revert_mouse = false;
+    interface.invert_mouse = false;
     // }
 
     // addons
@@ -295,7 +295,7 @@ void Settings::Load()
         // interface
         // {
         interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
-        interface.revert_mouse = iniInterface->getBoolValue("revert_mouse");
+        interface.invert_mouse = iniInterface->getValue("invert_mouse", false);
         // }
 
         // addons
@@ -455,7 +455,7 @@ void Settings::Save()
     // interface
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
-    iniInterface->setValue("revert_mouse", interface.revert_mouse);
+    iniInterface->setValue("invert_mouse", interface.invert_mouse);
     // }
 
     // addons
