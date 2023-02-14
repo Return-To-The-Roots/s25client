@@ -164,7 +164,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupAllgemein->AddText(ID_txtLanguage, curPos, _("Language:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo =
       groupAllgemein->AddComboBox(ID_cbLanguage, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
-    curPos.y += 40;
 
     bool selected = false;
     for(unsigned i = 0; i < LANGUAGES.size(); ++i)
@@ -180,10 +179,10 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
     if(!selected)
         combo->SetSelection(0);
+    curPos.y += 30;
 
-    groupAllgemein->AddText(ID_txtKeyboardLayout, curPos, _("Keyboard layout:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    groupAllgemein->AddTextButton(ID_btKeyboardLayout, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Readme"),
-                                  NormalFont);
+    groupAllgemein->AddTextButton(ID_btKeyboardLayout, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
+                                  _("Keyboard layout"), NormalFont);
     curPos.y += 40;
 
     groupAllgemein->AddText(ID_txtPort, curPos, _("Local Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -191,7 +190,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
       groupAllgemein->AddEdit(ID_edtPort, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
     edtPort->SetNumberOnly(true);
     edtPort->SetText(SETTINGS.server.localPort);
-    curPos.y += 40;
+    curPos.y += 30;
 
     // IPv4/6
     groupAllgemein->AddText(ID_txtIpv6, curPos, _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -202,7 +201,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->SetSelection(SETTINGS.server.ipv6);
     // ipv6-feld ggf (de-)aktivieren
     ipv6->GetCtrl<ctrlButton>(1)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
-    curPos.y += 50;
+    curPos.y += 40;
 
     // Proxyserver
     groupAllgemein->AddText(ID_txtProxy, curPos, _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -213,6 +212,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
       groupAllgemein->AddEdit(ID_edtProxyPort, curPos + ctrlOffset2, Extent(50, 22), TextureColor::Grey, NormalFont, 5);
     proxy->SetNumberOnly(true);
     proxy->SetText(SETTINGS.proxy.port);
+    curPos.y += 30;
+
+    groupAllgemein->AddText(ID_txtUPNP, curPos, _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(ID_grpUPNP, GroupSelectType::Check);
+    upnp->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
+    upnp->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
+    upnp->SetSelection(SETTINGS.global.use_upnp);
     curPos.y += 30;
 
     // Proxytyp
@@ -232,6 +238,16 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
     curPos.y += 50;
 
+    groupAllgemein->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(ID_grpSmartCursor, GroupSelectType::Check);
+    smartCursor->AddTextButton(
+      ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
+      _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
+    smartCursor->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
+                               _("Place cursor on default button for new dialogs / action windows (default)"));
+    smartCursor->SetSelection(SETTINGS.global.smartCursor);
+    curPos.y += 50;
+
     groupAllgemein->AddText(ID_txtDebugData, curPos, _("Submit debug data:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpDebugData, GroupSelectType::Check);
     optiongroup->AddTextButton(ID_btSubmitDebugOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"),
@@ -241,24 +257,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     optiongroup->SetSelection((SETTINGS.global.submit_debug_data == 1) ? ID_btSubmitDebugOn :
                                                                          ID_btSubmitDebugAsk); //-V807
-    curPos.y += 50;
-
-    // qx:upnp switch
-    groupAllgemein->AddText(ID_txtUPNP, curPos, _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(ID_grpUPNP, GroupSelectType::Check);
-    upnp->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
-    upnp->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
-    upnp->SetSelection(SETTINGS.global.use_upnp);
-    curPos.y += 30;
-
-    groupAllgemein->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(ID_grpSmartCursor, GroupSelectType::Check);
-    smartCursor->AddTextButton(
-      ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
-      _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
-    smartCursor->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
-                               _("Place cursor on default button for new dialogs / action windows (default)"));
-    smartCursor->SetSelection(SETTINGS.global.smartCursor);
     curPos.y += 30;
 
     groupAllgemein->AddText(ID_txtGFInfo, curPos, _("Show GameFrame Info:"), COLOR_YELLOW, FontStyle{}, NormalFont);
