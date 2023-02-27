@@ -251,8 +251,6 @@ bool VideoSDL2::SwapBuffers()
 
 bool VideoSDL2::MessageLoop()
 {
-    static bool mouseMoved = false;
-
     SDL_Event ev;
     while(SDL_PollEvent(&ev))
     {
@@ -387,19 +385,12 @@ bool VideoSDL2::MessageLoop()
             }
             break;
             case SDL_MOUSEMOTION:
-                // Handle only 1st mouse move
-                if(!mouseMoved)
-                {
-                    mouse_xy.pos = Position(ev.motion.x, ev.motion.y);
-
-                    CallBack->Msg_MouseMove(mouse_xy);
-                    mouseMoved = true;
-                }
+                mouse_xy.pos = Position(ev.motion.x, ev.motion.y);
+                CallBack->Msg_MouseMove(mouse_xy);
                 break;
         }
     }
 
-    mouseMoved = false;
     return true;
 }
 
