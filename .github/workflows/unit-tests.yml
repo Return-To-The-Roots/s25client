@@ -21,15 +21,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - { compiler: gcc-6,    os: ubuntu-18.04, buildType: Release }
-          - { compiler: gcc-6,    os: ubuntu-18.04, buildType: Debug, coverage: true }
-          - { compiler: clang-7,  os: ubuntu-18.04, buildType: Release }
-          - { compiler: clang-7,  os: ubuntu-18.04, buildType: Debug }
-          - { compiler: clang  ,  os: macos-10.15,  buildType: Debug, boostVersion: 1.74.0 } # Multiple bugs with recent OSX until 1.74
-          # GCC 9 is known to show a few warnings that GCC 10 has "fixed", make sure this doesn't happen for us
-          - { compiler: gcc-9,    os: ubuntu-18.04, buildType: Debug }
+          - { compiler: clang  ,  os: macos-11,  buildType: Debug, boostVersion: 1.74.0 }
           # Latest GCC
-          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14 }
+          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Release }
           # Latest Clang with externals
