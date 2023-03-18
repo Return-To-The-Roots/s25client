@@ -150,26 +150,6 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
             currentGF = 0;
         }
         break;
-        case MapType::AIBattle:
-        {
-            mapinfo.type = MapType::OldMap;
-            libsiedler2::Archiv map;
-
-            // Karteninformationen laden
-            if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
-            {
-                LOG.write("GameServer::Start: ERROR: Map %1%, couldn't load header!\n") % mapinfo.filepath;
-                return false;
-            }
-            const libsiedler2::ArchivItem_Map_Header& header =
-              checkedCast<const libsiedler2::ArchivItem_Map*>(map.get(0))->getHeader();
-
-            playerInfos.resize(header.getNumPlayers());
-            mapinfo.title = s25util::ansiToUTF8(header.getName());
-            ggs_.LoadSettings();
-            currentGF = 0;
-        }
-        break;
         // Gespeichertes Spiel
         case MapType::Savegame:
         {

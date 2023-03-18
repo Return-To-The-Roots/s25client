@@ -8,7 +8,6 @@
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskGameLobby.h"
-#include "desktops/dskGameInterface.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
@@ -86,6 +85,7 @@ void iwConnecting::CI_NextConnectState(const ConnectState cs)
         case ConnectState::Finished:
             WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(serverType_, GAMECLIENT.GetGameLobby(),
                                                                 GAMECLIENT.GetPlayerId(), std::move(lobbyClient_)));
+            Close();
             break;
     }
 }

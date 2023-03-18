@@ -63,7 +63,9 @@ void GameClient::ClientConfig::Clear()
     isHost = false;
 }
 
-GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(ClientState::Stopped), ci(nullptr), replayMode(false), aiBattleMode_(false) {}
+GameClient::GameClient()
+    : skiptogf(0), mainPlayer(0), state(ClientState::Stopped), ci(nullptr), replayMode(false), aiBattleMode_(false)
+{}
 
 GameClient::~GameClient()
 {

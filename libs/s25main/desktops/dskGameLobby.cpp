@@ -258,9 +258,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     if(GAMECLIENT.IsAIBattleModeOn())
     {
         // Initialize AI battle players
-        unsigned aiPlayerCount = std::min(
-            gameLobby_->getNumPlayers(), 
-            static_cast<unsigned>(GAMECLIENT.GetAIBattlePlayers().size()));
+        unsigned aiPlayerCount =
+          std::min(gameLobby_->getNumPlayers(), static_cast<unsigned>(GAMECLIENT.GetAIBattlePlayers().size()));
 
         for(unsigned i = 0; i < aiPlayerCount; i++)
         {

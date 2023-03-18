@@ -60,7 +60,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
 
     static_cast<void>(ais);
     if(!ais.empty() && (extension == ".swd" || extension == ".wld")
-       && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::AIBattle))
+       && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap))
     {
         std::vector<JoinPlayerInfo> playerInfos;
         for(unsigned playerId = 0; playerId < ais.size(); ++playerId)
