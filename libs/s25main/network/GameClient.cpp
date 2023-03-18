@@ -355,7 +355,7 @@ void GameClient::GameLoaded()
                 }
             }
             if(aiBattleMode_)
-                ToggleHumanAIPlayer();
+                ToggleHumanAIPlayer(aiBattlePlayers_[GetPlayerId()].aiInfo);
         }
         SendNothingNC();
     }
@@ -1822,7 +1822,7 @@ unsigned GameClient::GetTournamentModeDuration() const
         return 0;
 }
 
-void GameClient::ToggleHumanAIPlayer()
+void GameClient::ToggleHumanAIPlayer(const AI::Info& aiInfo)
 {
     RTTR_Assert(!IsReplayModeOn());
     auto it = helpers::find_if(game->aiPlayers_,
@@ -1830,7 +1830,7 @@ void GameClient::ToggleHumanAIPlayer()
     if(it != game->aiPlayers_.end())
         game->aiPlayers_.erase(it);
     else
-        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), aiBattlePlayers_[GetPlayerId()].aiInfo));
+        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), aiInfo));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)

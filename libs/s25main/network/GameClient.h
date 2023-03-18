@@ -172,7 +172,9 @@ public:
     void SystemChat(const std::string& text) override;
     void SystemChat(const std::string& text, unsigned char fromPlayerIdx);
 
-    void ToggleHumanAIPlayer();
+    /// @brief Toggle current player to be an AI player
+    /// @param aiInfo           AI to replace with
+    void ToggleHumanAIPlayer(const AI::Info& aiInfo);
 
     NetworkPlayer& GetMainPlayer() { return mainPlayer; }
 

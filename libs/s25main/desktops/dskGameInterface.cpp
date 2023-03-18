@@ -765,7 +765,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             const bool allowHumanAI = true;
 #endif // !NDEBUG
             if(GAMECLIENT.GetState() == ClientState::Game && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
-                GAMECLIENT.ToggleHumanAIPlayer();
+                GAMECLIENT.ToggleHumanAIPlayer(AI::Info(AI::Type::Default, AI::Level::Easy));
             return true;
         }
         case KeyType::F11: // Music player (midi files)
