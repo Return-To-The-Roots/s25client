@@ -10,6 +10,7 @@
 #include "GameMessageInterface.h"
 #include "ILocalGameState.h"
 #include "NetworkPlayer.h"
+#include "PlayerInfo.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
@@ -129,6 +130,9 @@ public:
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const boost::filesystem::path& path);
+
+    bool StartAIBattle(const boost::filesystem::path& path, std::vector<PlayerInfo> playerInfos);
+
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus

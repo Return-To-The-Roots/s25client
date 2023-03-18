@@ -256,10 +256,13 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
 
     if(IsSinglePlayer() && !gameLobby_->isSavegame())
     {
+        // @todo: Here, we could check if there are player infos in a global variable.
+        //        Also the check gameLobby_->getPlayer(i).isHost should be skipped.
+
         // Setze initial auf KI
         for(unsigned char i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
-            if(!gameLobby_->getPlayer(i).isHost)
+            gameLobby_->getPlayer(i).ps = PlayerState::AI;
                 lobbyHostController->SetPlayerState(i, PlayerState::AI, AI::Info(AI::Type::Default, AI::Level::Easy));
         }
     }

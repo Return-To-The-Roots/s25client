@@ -248,7 +248,7 @@ const AIPlayer* GameClient::GetAIPlayer(unsigned id) const
  */
 void GameClient::StartGame(const unsigned random_init)
 {
-    RTTR_Assert(state == ClientState::Config || (state == ClientState::Stopped && replayMode));
+    //RTTR_Assert(state == ClientState::Config || (state == ClientState::Stopped && replayMode) || );
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -344,6 +344,8 @@ void GameClient::GameLoaded()
         // Notify server that we are ready
         if(IsHost())
         {
+
+    
             for(unsigned id = 0; id < GetNumPlayers(); id++)
             {
                 if(GetPlayer(id).ps == PlayerState::AI)
@@ -352,6 +354,8 @@ void GameClient::GameLoaded()
                     SendNothingNC(id);
                 }
             }
+            // if(ai-battle-mode)
+                ToggleHumanAIPlayer();  // @todo: Use configured 1st AI player
         }
         SendNothingNC();
     }
@@ -1531,6 +1535,54 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     }
 
     replayinfo->replay.ReadGF(&replayinfo->next_gf);
+
+    return true;
+}
+
+bool GameClient::StartAIBattle(const boost::filesystem::path& path, std::vector<PlayerInfo> playerInfos)
+{
+    mapinfo.Clear();
+    mapinfo.type = MapType::OldMap;
+    mapinfo.title = "AI Battle"; // @todo: check GameServer.cpp:148 on how to set title
+    mapinfo.filepath = path;
+    if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
+    {
+        LOG.write("Could not load map data from %1%\n") % path;
+        OnError(ClientError::InvalidMap);
+        return false;
+    }
+
+    gameLobby = std::make_shared<GameLobby>(true, true, playerInfos.size());
+
+    for(unsigned i = 0; i < playerInfos.size(); ++i)
+        gameLobby->getPlayer(i) = JoinPlayerInfo(playerInfos[i]);
+
+    // Find a player to spectate from
+    for(unsigned char i = 0; i < gameLobby->getNumPlayers(); ++i)
+    {
+        if(gameLobby->getPlayer(i).ps == PlayerState::AI)
+        {
+            mainPlayer.playerId = i;
+            break;
+        }
+    }
+
+    // state = ClientState::Config;
+
+    try
+    {
+        unsigned random_init;
+        RANDOM.Init(random_init);
+        nwfInfo = std::make_shared<NWFInfo>();
+        StartGame(random_init);
+    } catch(SerializedGameData::Error& error)
+    {
+        LOG.write(_("Error when starting AI battle: %s\n")) % error.what();
+        OnError(ClientError::InvalidMap);
+        return false;
+    }
+
+    Run();
 
     return true;
 }

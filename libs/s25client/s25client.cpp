@@ -159,14 +159,14 @@ void showCrashMessage()
 #endif
 }
 
-[[noreturn]] void terminateProgramm()
-{
-#ifdef _DEBUG
-    abort();
-#else
-    throw RttrExitException(1);
-#endif
-}
+// [[noreturn]] void terminateProgramm()
+// {
+// #ifdef _DEBUG
+//     abort();
+// #else
+//     throw RttrExitException(1);
+// #endif
+// }
 
 void handleException(void* pCtx = nullptr) noexcept
 {
@@ -202,11 +202,11 @@ LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
-[[noreturn]] void ExceptionHandler(int /*sig*/)
-{
-    handleException();
-    terminateProgramm();
-}
+// [[noreturn]] void ExceptionHandler(int /*sig*/)
+// {
+//     handleException();
+//     terminateProgramm();
+// }
 #endif
 
 void InstallSignalHandlers()
@@ -219,9 +219,9 @@ void InstallSignalHandlers()
     sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
-    sigaction(SIGINT, &sa, nullptr);
-    sigaction(SIGPIPE, &sa, nullptr);
-    sigaction(SIGALRM, &sa, nullptr);
+    // sigaction(SIGINT, &sa, nullptr);
+    // sigaction(SIGPIPE, &sa, nullptr);
+    // sigaction(SIGALRM, &sa, nullptr);
 #endif
 
 #ifdef _MSC_VER
@@ -237,7 +237,7 @@ void InstallSignalHandlers()
 #    endif     // _DEBUG
 
 #else
-    signal(SIGSEGV, ExceptionHandler);
+    // signal(SIGSEGV, ExceptionHandler);
 #endif // _MSC_VER
 }
 
@@ -259,7 +259,7 @@ void UninstallSignalHandlers()
 #ifdef _MSC_VER
     SetUnhandledExceptionFilter(nullptr);
 #else
-    signal(SIGSEGV, SIG_DFL);
+    // signal(SIGSEGV, SIG_DFL);
 #endif
 }
 
@@ -473,8 +473,19 @@ int RunProgram(po::variables_map& options)
         if(!InitGame(gameManager))
             return 2;
 
-        if(options.count("map") && !QuickStartGame(options["map"].as<std::string>()))
-            return 1;
+        // @todo: Using command line argument --map for replays can be confusing.
+        if(options.count("map"))
+        {
+            if(options.count("ai"))
+            {
+                if(!QuickStartGame(options["map"].as<std::string>(), options["ai"].as<std::vector<std::string>>(), true))
+                    return 1;
+            } else
+            {
+                if(!QuickStartGame(options["map"].as<std::string>()))
+                    return 1;
+            }
+        }
 
         // Hauptschleife
 
@@ -522,6 +533,7 @@ int main(int argc, char** argv)
     desc.add_options()
         ("help,h", "Show help")
         ("map,m", po::value<std::string>(),"Map to load")
+        ("ai", po::value<std::vector<std::string>>(),"AI player to add")
         ("version", "Show version information and exit")
         ("convert-sounds", "Convert sounds and exit")
         ;

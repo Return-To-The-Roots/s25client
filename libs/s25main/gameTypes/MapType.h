@@ -9,9 +9,10 @@
 enum class MapType : uint8_t
 {
     OldMap,
-    Savegame
+    Savegame,
+    AIBattle
 };
 constexpr auto maxEnumValue(MapType)
 {
-    return MapType::Savegame;
+    return MapType::AIBattle;
 }
