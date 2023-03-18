@@ -41,6 +41,7 @@
 #include "libsiedler2/prototypen.h"
 #include "s25util/Log.h"
 #include "s25util/MyTime.h"
+#include <algorithm>
 #include <memory>
 #include <mygettext/mygettext.h>
 #include <set>
@@ -254,15 +255,31 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         }
     }
 
-    if(IsSinglePlayer() && !gameLobby_->isSavegame())
+    if(GAMECLIENT.IsAIBattleModeOn())
     {
-        // @todo: Here, we could check if there are player infos in a global variable.
-        //        Also the check gameLobby_->getPlayer(i).isHost should be skipped.
+        // Initialize AI battle players
+        unsigned aiPlayerCount = std::min(
+            gameLobby_->getNumPlayers(), 
+            static_cast<unsigned>(GAMECLIENT.GetAIBattlePlayers().size()));
 
-        // Setze initial auf KI
-        for(unsigned char i = 0; i < gameLobby_->getNumPlayers(); i++)
+        for(unsigned i = 0; i < aiPlayerCount; i++)
         {
             gameLobby_->getPlayer(i).ps = PlayerState::AI;
+            lobbyHostController->SetPlayerState(i, PlayerState::AI, GAMECLIENT.GetAIBattlePlayers()[i].aiInfo);
+            lobbyHostController->SetName(i, GAMECLIENT.GetAIBattlePlayers()[i].name);
+        }
+
+        // Close remaining slots
+        for(unsigned i = aiPlayerCount; i < gameLobby_->getNumPlayers(); i++)
+        {
+            lobbyHostController->CloseSlot(i);
+        }
+    } else if(IsSinglePlayer() && !gameLobby_->isSavegame())
+    {
+        // Setze initial auf KI
+        for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
+        {
+            if(!gameLobby_->getPlayer(i).isHost)
                 lobbyHostController->SetPlayerState(i, PlayerState::AI, AI::Info(AI::Type::Default, AI::Level::Easy));
         }
     }

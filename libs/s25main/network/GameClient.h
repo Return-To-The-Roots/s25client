@@ -9,8 +9,8 @@
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
 #include "ILocalGameState.h"
+#include "JoinPlayerInfo.h"
 #include "NetworkPlayer.h"
-#include "PlayerInfo.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
@@ -131,7 +131,11 @@ public:
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const boost::filesystem::path& path);
 
-    bool StartAIBattle(const boost::filesystem::path& path, std::vector<PlayerInfo> playerInfos);
+    /// @brief Set the player infos for the AI battle.
+    /// @param playerInfos  List of AI players
+    void SetAIBattlePlayers(std::vector<JoinPlayerInfo>&& playerInfos);
+    const std::vector<JoinPlayerInfo>& GetAIBattlePlayers() const;
+    bool IsAIBattleModeOn() const { return aiBattleMode_; }
 
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
@@ -304,6 +308,10 @@ private:
 
     std::unique_ptr<ReplayInfo> replayinfo;
     bool replayMode;
+
+    // Configured players for an AI battle.
+    std::vector<JoinPlayerInfo> aiBattlePlayers_;
+    bool aiBattleMode_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

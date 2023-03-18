@@ -63,7 +63,7 @@ void GameClient::ClientConfig::Clear()
     isHost = false;
 }
 
-GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(ClientState::Stopped), ci(nullptr), replayMode(false) {}
+GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(ClientState::Stopped), ci(nullptr), replayMode(false), aiBattleMode_(false) {}
 
 GameClient::~GameClient()
 {
@@ -248,7 +248,7 @@ const AIPlayer* GameClient::GetAIPlayer(unsigned id) const
  */
 void GameClient::StartGame(const unsigned random_init)
 {
-    //RTTR_Assert(state == ClientState::Config || (state == ClientState::Stopped && replayMode) || );
+    RTTR_Assert(state == ClientState::Config || (state == ClientState::Stopped && replayMode));
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -344,8 +344,6 @@ void GameClient::GameLoaded()
         // Notify server that we are ready
         if(IsHost())
         {
-
-    
             for(unsigned id = 0; id < GetNumPlayers(); id++)
             {
                 if(GetPlayer(id).ps == PlayerState::AI)
@@ -354,8 +352,8 @@ void GameClient::GameLoaded()
                     SendNothingNC(id);
                 }
             }
-            // if(ai-battle-mode)
-                ToggleHumanAIPlayer();  // @todo: Use configured 1st AI player
+            if(aiBattleMode_)
+                ToggleHumanAIPlayer();
         }
         SendNothingNC();
     }
@@ -1539,52 +1537,15 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     return true;
 }
 
-bool GameClient::StartAIBattle(const boost::filesystem::path& path, std::vector<PlayerInfo> playerInfos)
+void GameClient::SetAIBattlePlayers(std::vector<JoinPlayerInfo>&& playerInfos)
 {
-    mapinfo.Clear();
-    mapinfo.type = MapType::OldMap;
-    mapinfo.title = "AI Battle"; // @todo: check GameServer.cpp:148 on how to set title
-    mapinfo.filepath = path;
-    if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
-    {
-        LOG.write("Could not load map data from %1%\n") % path;
-        OnError(ClientError::InvalidMap);
-        return false;
-    }
+    aiBattlePlayers_ = playerInfos;
+    aiBattleMode_ = !playerInfos.empty();
+}
 
-    gameLobby = std::make_shared<GameLobby>(true, true, playerInfos.size());
-
-    for(unsigned i = 0; i < playerInfos.size(); ++i)
-        gameLobby->getPlayer(i) = JoinPlayerInfo(playerInfos[i]);
-
-    // Find a player to spectate from
-    for(unsigned char i = 0; i < gameLobby->getNumPlayers(); ++i)
-    {
-        if(gameLobby->getPlayer(i).ps == PlayerState::AI)
-        {
-            mainPlayer.playerId = i;
-            break;
-        }
-    }
-
-    // state = ClientState::Config;
-
-    try
-    {
-        unsigned random_init;
-        RANDOM.Init(random_init);
-        nwfInfo = std::make_shared<NWFInfo>();
-        StartGame(random_init);
-    } catch(SerializedGameData::Error& error)
-    {
-        LOG.write(_("Error when starting AI battle: %s\n")) % error.what();
-        OnError(ClientError::InvalidMap);
-        return false;
-    }
-
-    Run();
-
-    return true;
+const std::vector<JoinPlayerInfo>& GameClient::GetAIBattlePlayers() const
+{
+    return aiBattlePlayers_;
 }
 
 unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator,
@@ -1645,7 +1606,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
     unsigned start_ticks = VIDEODRIVER.GetTickCount();
 
-    if(!replayMode)
+    if(!replayMode && !aiBattleMode_)
     {
         // unpause before skipping
         SetPause(false);
@@ -1747,7 +1708,7 @@ void GameClient::SetPause(bool pause)
             return;
         framesinfo.isPaused = true;
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
-    } else if(replayMode)
+    } else if(replayMode || aiBattleMode_)
     {
         framesinfo.isPaused = pause;
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
@@ -1867,7 +1828,7 @@ void GameClient::ToggleHumanAIPlayer()
     if(it != game->aiPlayers_.end())
         game->aiPlayers_.erase(it);
     else
-        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), AI::Info(AI::Type::Default, AI::Level::Easy)));
+        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), aiBattlePlayers_[GetPlayerId()].aiInfo));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)

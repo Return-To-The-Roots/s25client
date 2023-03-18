@@ -3,19 +3,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "QuickStartGame.h"
+#include "JoinPlayerInfo.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
-#include "JoinPlayerInfo.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
-#include "GameLobby.h"
 #include "network/GameClient.h"
 #include "gameData/ApplicationLoader.h"
 #include "s25util/Log.h"
@@ -60,63 +59,36 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
     static_cast<void>(ais);
-    if(!ais.empty() && (extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::AIBattle))
+    if(!ais.empty() && (extension == ".swd" || extension == ".wld")
+       && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::AIBattle))
     {
-        // @todo: Set AI players to what is configured here
-        // @todo: Show AI Player name in Lobby
-        // @todo: Can we disable interaction as in replay mode? Is there a reduced interface for this?
-#if 0
-        // std::vector<PlayerInfo> playerInfos;
-        // int i = 0;
-        // for(const auto& ai : ais)
-        // {
-        //     JoinPlayerInfo pi;
-        //     pi.ps = PlayerState::Occupied;
-        //     pi.name = ai + " #" + std::to_string(i);
-        //     pi.nation = Nation::Romans;
-        //     pi.color = PLAYER_COLORS[i];
-        //     pi.team = Team::None;
-        //     pi.aiInfo.level = AI::Level::Hard;
-        //     i++;
+        std::vector<JoinPlayerInfo> playerInfos;
+        for(unsigned playerId = 0; playerId < ais.size(); ++playerId)
+        {
+            JoinPlayerInfo pi;
+            pi.ps = PlayerState::AI;
+            pi.nation = Nation::Romans;
+            pi.aiInfo.level = AI::Level::Hard;
 
-        //     auto ai_lower = s25util::toLower(ai);
-        //     if(ai_lower == "aijh")
-        //     {
-        //         pi.aiInfo.type = AI::Type::Default;
-        //     } else if(ai_lower == "Dummy")
-        //     {
-        //         pi.aiInfo.type = AI::Type::Dummy;
-        //     } else
-        //     {
-        //         LOG.write(_("Invalid AI player name: %1%\n")) % ai;
-        //         return false;
-        //     }
+            auto ai_lower = s25util::toLower(ais[playerId]);
+            if(ai_lower == "aijh")
+            {
+                pi.aiInfo.type = AI::Type::Default;
+            } else if(ai_lower == "dummy")
+            {
+                pi.aiInfo.type = AI::Type::Dummy;
+            } else
+            {
+                LOG.write(_("Invalid AI player name: %1%\n")) % ais[playerId];
+                return false;
+            }
 
-        //     playerInfos.push_back(pi);
-            // if(!GAMECLIENT.GetGameLobby())
-            // {
-            //     return false;
-            // }
-            // GAMECLIENT.GetGameLobby()->players_.push_back(pi);
-            // GAMECLIENT.GetGameLobby()->ToggleHumanAIPlayer()
-        // }
+            pi.SetAIName(playerId);
 
-        /*
-            NOTE to ME
-            
-            We should call WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
-            This will trigger connect and move to dskGameLobby.
+            playerInfos.push_back(pi);
+        }
+        GAMECLIENT.SetAIBattlePlayers(std::move(playerInfos));
 
-            When user clicks on Start, GameServer::StartGame will send GameMessage_Server_Start, which will trigger Gameclient::StartGame,
-            which will create the game instance.
-
-            By sending GameMessage_Player_Name, GameMessage_Player_Nation, GameMessage_Player_Color, GameMessage_Player_State
-            If this is not possible for player 0, we have to use GAMECLIENT.ToggleHumanAIPlayer() (probably extend with parameters to set specific AI)
-
-        */
-        //SwitchOnStart switchOnStart;
-        //return GAMECLIENT.StartAIBattle(mapOrReplayPath, playerInfos);
-#endif
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::Savegame))
