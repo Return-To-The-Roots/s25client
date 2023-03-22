@@ -60,14 +60,13 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
 
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-    static_cast<void>(ais);
-    if(!ais.empty() && (extension == ".swd" || extension == ".wld")
-       && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap))
+    if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::Savegame))
+       || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap)))
     {
         std::vector<AI::Info> playerInfos;
-        for(unsigned playerId = 0; playerId < ais.size(); ++playerId)
+        for(const std::string& ai : ais)
         {
-            auto ai_lower = s25util::toLower(ais[playerId]);
+            auto ai_lower = s25util::toLower(ai);
             AI::Type type = AI::Type::Dummy;
             if(ai_lower == "aijh")
             {
@@ -77,7 +76,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
                 type = AI::Type::Dummy;
             } else
             {
-                LOG.write(_("Invalid AI player name: %1%\n")) % ais[playerId];
+                LOG.write(_("Invalid AI player name: %1%\n")) % ai;
                 return false;
             }
 
@@ -85,12 +84,6 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
         }
         GAMECLIENT.SetAIBattlePlayers(std::move(playerInfos));
 
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
-        return true;
-    } else if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::Savegame))
-              || ((extension == ".swd" || extension == ".wld")
-                  && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap)))
-    {
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else
