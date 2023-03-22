@@ -63,9 +63,7 @@ void GameClient::ClientConfig::Clear()
     isHost = false;
 }
 
-GameClient::GameClient()
-    : skiptogf(0), mainPlayer(0), state(ClientState::Stopped), ci(nullptr), replayMode(false), aiBattleMode_(false)
-{}
+GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(ClientState::Stopped), ci(nullptr), replayMode(false) {}
 
 GameClient::~GameClient()
 {
@@ -354,8 +352,8 @@ void GameClient::GameLoaded()
                     SendNothingNC(id);
                 }
             }
-            if(aiBattleMode_)
-                ToggleHumanAIPlayer(aiBattlePlayers_[GetPlayerId()].aiInfo);
+            if(IsAIBattleModeOn())
+                ToggleHumanAIPlayer(aiBattlePlayers_[GetPlayerId()]);
         }
         SendNothingNC();
     }
@@ -1539,15 +1537,9 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     return true;
 }
 
-void GameClient::SetAIBattlePlayers(std::vector<JoinPlayerInfo>&& playerInfos)
+void GameClient::SetAIBattlePlayers(std::vector<AI::Info>&& aiInfos)
 {
-    aiBattlePlayers_ = playerInfos;
-    aiBattleMode_ = !playerInfos.empty();
-}
-
-const std::vector<JoinPlayerInfo>& GameClient::GetAIBattlePlayers() const
-{
-    return aiBattlePlayers_;
+    aiBattlePlayers_ = std::move(aiInfos);
 }
 
 unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator,
@@ -1608,7 +1600,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
     unsigned start_ticks = VIDEODRIVER.GetTickCount();
 
-    if(!replayMode && !aiBattleMode_)
+    if(!replayMode)
     {
         // unpause before skipping
         SetPause(false);
@@ -1710,7 +1702,7 @@ void GameClient::SetPause(bool pause)
             return;
         framesinfo.isPaused = true;
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
-    } else if(replayMode || aiBattleMode_)
+    } else if(replayMode)
     {
         framesinfo.isPaused = pause;
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();

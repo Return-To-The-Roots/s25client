@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "QuickStartGame.h"
-#include "JoinPlayerInfo.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
 #include "RttrConfig.h"
@@ -16,6 +15,7 @@
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
+#include "gameTypes/AIInfo.h"
 #include "gameData/ApplicationLoader.h"
 #include "s25util/Log.h"
 #include "s25util/strAlgos.h"
@@ -33,8 +33,7 @@ public:
     }
 };
 
-bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::vector<std::string>& ais,
-                    bool singlePlayer)
+bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::vector<std::string>& ais)
 {
     if(!exists(mapOrReplayPath))
     {
@@ -50,7 +49,10 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     if(SETTINGS.sound.musicEnabled)
         MUSICPLAYER.Play();
 
-    const CreateServerInfo csi(singlePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
+    // An AI-battle is a single-player game.
+    bool isSinglePlayer = !ais.empty();
+
+    const CreateServerInfo csi(isSinglePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
                                _("Unlimited Play"));
 
     LOG.write(_("Loading game...\n"));
@@ -62,30 +64,24 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     if(!ais.empty() && (extension == ".swd" || extension == ".wld")
        && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap))
     {
-        std::vector<JoinPlayerInfo> playerInfos;
+        std::vector<AI::Info> playerInfos;
         for(unsigned playerId = 0; playerId < ais.size(); ++playerId)
         {
-            JoinPlayerInfo pi;
-            pi.ps = PlayerState::AI;
-            pi.nation = Nation::Romans;
-            pi.aiInfo.level = AI::Level::Hard;
-
             auto ai_lower = s25util::toLower(ais[playerId]);
+            AI::Type type = AI::Type::Dummy;
             if(ai_lower == "aijh")
             {
-                pi.aiInfo.type = AI::Type::Default;
+                type = AI::Type::Default;
             } else if(ai_lower == "dummy")
             {
-                pi.aiInfo.type = AI::Type::Dummy;
+                type = AI::Type::Dummy;
             } else
             {
                 LOG.write(_("Invalid AI player name: %1%\n")) % ais[playerId];
                 return false;
             }
 
-            pi.SetAIName(playerId);
-
-            playerInfos.push_back(pi);
+            playerInfos.push_back({type, AI::Level::Hard});
         }
         GAMECLIENT.SetAIBattlePlayers(std::move(playerInfos));
 

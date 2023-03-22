@@ -261,18 +261,26 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         unsigned aiPlayerCount =
           std::min(gameLobby_->getNumPlayers(), static_cast<unsigned>(GAMECLIENT.GetAIBattlePlayers().size()));
 
-        for(unsigned i = 0; i < aiPlayerCount; i++)
+        RTTR_Assert(localPlayerId_ < aiPlayerCount);
+
+        for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
-            gameLobby_->getPlayer(i).ps = PlayerState::AI;
-            lobbyHostController->SetPlayerState(i, PlayerState::AI, GAMECLIENT.GetAIBattlePlayers()[i].aiInfo);
-            lobbyHostController->SetName(i, GAMECLIENT.GetAIBattlePlayers()[i].name);
+            if(i < aiPlayerCount)
+            {
+                lobbyHostController->SetPlayerState(i, PlayerState::AI, GAMECLIENT.GetAIBattlePlayers()[i]);
+            } else
+            {
+                // Close remaining slots
+                lobbyHostController->CloseSlot(i);
+            }
         }
 
-        // Close remaining slots
-        for(unsigned i = aiPlayerCount; i < gameLobby_->getNumPlayers(); i++)
-        {
-            lobbyHostController->CloseSlot(i);
-        }
+        // Set name of host to the corresponding AI for his Id.
+        auto jpi = gameLobby_->getPlayer(localPlayerId_);
+        jpi.ps = PlayerState::AI;
+        jpi.aiInfo = GAMECLIENT.GetAIBattlePlayers()[localPlayerId_];
+        jpi.SetAIName(localPlayerId_);
+        lobbyHostController->SetName(localPlayerId_, jpi.name);
     } else if(IsSinglePlayer() && !gameLobby_->isSavegame())
     {
         // Setze initial auf KI

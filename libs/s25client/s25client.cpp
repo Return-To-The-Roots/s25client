@@ -475,16 +475,8 @@ int RunProgram(po::variables_map& options)
 
         if(options.count("map"))
         {
-            if(options.count("ai"))
-            {
-                if(!QuickStartGame(options["map"].as<std::string>(), options["ai"].as<std::vector<std::string>>(),
-                                   true))
-                    return 1;
-            } else
-            {
-                if(!QuickStartGame(options["map"].as<std::string>()))
-                    return 1;
-            }
+            if(!QuickStartGame(options["map"].as<std::string>(), options["ai"].as<std::vector<std::string>>()))
+                return 1;
         }
 
         // Hauptschleife
@@ -533,7 +525,7 @@ int main(int argc, char** argv)
     desc.add_options()
         ("help,h", "Show help")
         ("map,m", po::value<std::string>(),"Map to load")
-        ("ai", po::value<std::vector<std::string>>(),"AI player to add")
+        ("ai", po::value<std::vector<std::string>>(),"AI player(s) to add")
         ("version", "Show version information and exit")
         ("convert-sounds", "Convert sounds and exit")
         ;
