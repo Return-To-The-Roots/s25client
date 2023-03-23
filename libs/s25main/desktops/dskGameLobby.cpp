@@ -41,7 +41,6 @@
 #include "libsiedler2/prototypen.h"
 #include "s25util/Log.h"
 #include "s25util/MyTime.h"
-#include <algorithm>
 #include <memory>
 #include <mygettext/mygettext.h>
 #include <set>
