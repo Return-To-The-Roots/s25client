@@ -475,7 +475,11 @@ int RunProgram(po::variables_map& options)
 
         if(options.count("map"))
         {
-            if(!QuickStartGame(options["map"].as<std::string>(), options["ai"].as<std::vector<std::string>>()))
+            std::vector<std::string> aiPlayers;
+            if(options.count("ai"))
+                aiPlayers = options["ai"].as<std::vector<std::string>>();
+
+            if(!QuickStartGame(options["map"].as<std::string>(), aiPlayers))
                 return 1;
         }
 
