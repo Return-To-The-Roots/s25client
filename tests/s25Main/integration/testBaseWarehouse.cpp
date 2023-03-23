@@ -6,6 +6,7 @@
 #include "RTTR_AssertError.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
+#include "figures/nofScout_Free.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "gameTypes/GoodTypes.h"
@@ -156,4 +157,25 @@ BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
     BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, wh, true));
     BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) == 0u);
     BOOST_TEST_REQUIRE(hq->GetNumRealWares(GoodType::Hammer) == 0u);
+}
+
+BOOST_FIXTURE_TEST_CASE(DestroyBuilding, EmptyWorldFixture1P)
+{
+    GamePlayer& player = world.GetPlayer(0);
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
+
+    MapPoint whPos = player.GetHQPos() + MapPoint(4, 0);
+
+    auto* wh = static_cast<nobBaseWarehouse*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, 0, Nation::Romans));
+
+    world.BuildRoad(0, false, hq->GetFlagPos(), {4, Direction::East});
+
+    // Reproduce issue #1559, where a dependent figure on the same position would cause a crash
+    // upon building destruction.
+    auto& scout =
+      world.AddFigure(whPos, std::make_unique<nofScout_Free>(whPos, 0, world.GetSpecObj<noRoadNode>(whPos)));
+    wh->AddDependentFigure(scout);
+
+    world.DestroyBuilding(whPos, 0);
 }
