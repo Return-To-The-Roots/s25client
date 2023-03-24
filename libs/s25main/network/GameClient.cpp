@@ -1537,9 +1537,14 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     return true;
 }
 
-void GameClient::SetAIBattlePlayers(std::vector<AI::Info>&& aiInfos)
+void GameClient::SetAIBattlePlayers(std::vector<AI::Info>& aiInfos)
 {
-    aiBattlePlayers_ = std::move(aiInfos);
+    aiBattlePlayers_.swap(aiInfos);
+}
+
+void GameClient::ClearAIBattlePlayers()
+{
+    aiBattlePlayers_.clear();
 }
 
 unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator,

@@ -256,17 +256,17 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
 
     if(GAMECLIENT.IsAIBattleModeOn())
     {
+        const auto& aiBattlePlayers = GAMECLIENT.GetAIBattlePlayers();
+
         // Initialize AI battle players
         const unsigned aiPlayerCount =
-          std::min(gameLobby_->getNumPlayers(), static_cast<unsigned>(GAMECLIENT.GetAIBattlePlayers().size()));
-
-        RTTR_Assert(localPlayerId_ < aiPlayerCount);
+          std::min(gameLobby_->getNumPlayers(), static_cast<unsigned>(aiBattlePlayers.size()));
 
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
             if(i < aiPlayerCount)
             {
-                lobbyHostController->SetPlayerState(i, PlayerState::AI, GAMECLIENT.GetAIBattlePlayers()[i]);
+                lobbyHostController->SetPlayerState(i, PlayerState::AI, aiBattlePlayers[i]);
             } else
             {
                 // Close remaining slots
@@ -275,11 +275,13 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         }
 
         // Set name of host to the corresponding AI for local player
-        auto jpi = gameLobby_->getPlayer(localPlayerId_);
-        jpi.ps = PlayerState::AI;
-        jpi.aiInfo = GAMECLIENT.GetAIBattlePlayers()[localPlayerId_];
-        jpi.SetAIName(localPlayerId_);
-        lobbyHostController->SetName(localPlayerId_, jpi.name);
+        RTTR_Assert(localPlayerId_ < aiPlayerCount);
+        lobbyHostController->SetName(localPlayerId_,
+                                     JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
+
+        // We have to clean up the configured ai players, so that subsequent games can
+        // start with the default setup again.
+        GAMECLIENT.ClearAIBattlePlayers();
     } else if(IsSinglePlayer() && !gameLobby_->isSavegame())
     {
         // Setze initial auf KI

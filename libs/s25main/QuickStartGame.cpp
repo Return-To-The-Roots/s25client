@@ -79,7 +79,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
 
             playerInfos.push_back({type, AI::Level::Hard});
         }
-        GAMECLIENT.SetAIBattlePlayers(std::move(playerInfos));
+        GAMECLIENT.SetAIBattlePlayers(playerInfos);
 
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;

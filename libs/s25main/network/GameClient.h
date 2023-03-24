@@ -132,7 +132,8 @@ public:
     bool StartReplay(const boost::filesystem::path& path);
 
     /// When a non-empty vector is given then an AI battle with the given AIs is started
-    void SetAIBattlePlayers(std::vector<AI::Info>&& aiInfos);
+    void SetAIBattlePlayers(std::vector<AI::Info>& aiInfos);
+    void ClearAIBattlePlayers();
     const std::vector<AI::Info>& GetAIBattlePlayers() const { return aiBattlePlayers_; }
     bool IsAIBattleModeOn() const { return !aiBattlePlayers_.empty(); }
 
