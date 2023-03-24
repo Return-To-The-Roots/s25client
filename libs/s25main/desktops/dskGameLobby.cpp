@@ -265,13 +265,9 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
             if(i < aiPlayerCount)
-            {
                 lobbyHostController->SetPlayerState(i, PlayerState::AI, aiBattlePlayers[i]);
-            } else
-            {
-                // Close remaining slots
-                lobbyHostController->CloseSlot(i);
-            }
+            else
+                lobbyHostController->CloseSlot(i); // Close remaining slots
         }
 
         // Set name of host to the corresponding AI for local player

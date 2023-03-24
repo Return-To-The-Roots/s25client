@@ -33,11 +33,39 @@ public:
     }
 };
 
+static bool ParseAIOptions(std::vector<AI::Info>& aiInfos, const std::vector<std::string>& aiArguments)
+{
+    aiInfos.clear();
+    for(const std::string& aiArgument : aiArguments)
+    {
+        const auto aiArgument_lower = s25util::toLower(aiArgument);
+        AI::Type type = AI::Type::Dummy;
+        if(aiArgument_lower == "aijh")
+            type = AI::Type::Default;
+        else if(aiArgument_lower != "dummy")
+        {
+            LOG.write(_("Invalid AI player name: %1%\n")) % aiArgument_lower;
+            return false;
+        }
+
+        aiInfos.push_back({type, AI::Level::Hard});
+    }
+
+    return true;
+}
+
 bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::vector<std::string>& ais)
 {
     if(!exists(mapOrReplayPath))
     {
         LOG.write(_("Given map or replay (%1%) does not exist!")) % mapOrReplayPath;
+        return false;
+    }
+
+    std::vector<AI::Info> aiInfos;
+    if(!ParseAIOptions(aiInfos, ais))
+    {
+        LOG.write(_("Could not parse AI player(s)"));
         return false;
     }
 
@@ -63,24 +91,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::Savegame))
        || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap)))
     {
-        std::vector<AI::Info> playerInfos;
-        for(const std::string& ai : ais)
-        {
-            const auto ai_lower = s25util::toLower(ai);
-            AI::Type type = AI::Type::Dummy;
-            if(ai_lower == "aijh")
-            {
-                type = AI::Type::Default;
-            } else if(ai_lower != "dummy")
-            {
-                LOG.write(_("Invalid AI player name: %1%\n")) % ai;
-                return false;
-            }
-
-            playerInfos.push_back({type, AI::Level::Hard});
-        }
-        GAMECLIENT.SetAIBattlePlayers(playerInfos);
-
+        GAMECLIENT.SetAIBattlePlayers(aiInfos);
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else
