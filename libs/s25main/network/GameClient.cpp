@@ -366,6 +366,7 @@ void GameClient::ExitGame()
     nwfInfo.reset();
     // Clear remaining commands
     gameCommands_.clear();
+    ClearAIBattlePlayers();
 }
 
 unsigned GameClient::GetGFNumber() const
