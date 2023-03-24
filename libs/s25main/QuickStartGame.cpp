@@ -66,15 +66,12 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
         std::vector<AI::Info> playerInfos;
         for(const std::string& ai : ais)
         {
-            auto ai_lower = s25util::toLower(ai);
+            const auto ai_lower = s25util::toLower(ai);
             AI::Type type = AI::Type::Dummy;
             if(ai_lower == "aijh")
             {
                 type = AI::Type::Default;
-            } else if(ai_lower == "dummy")
-            {
-                type = AI::Type::Dummy;
-            } else
+            } else if(ai_lower != "dummy")
             {
                 LOG.write(_("Invalid AI player name: %1%\n")) % ai;
                 return false;
