@@ -33,18 +33,18 @@ public:
     }
 };
 
-static bool ParseAIOptions(std::vector<AI::Info>& aiInfos, const std::vector<std::string>& aiArguments)
+static bool ParseAIOptions(std::vector<AI::Info>& aiInfos, const std::vector<std::string>& aiOptions)
 {
     aiInfos.clear();
-    for(const std::string& aiArgument : aiArguments)
+    for(const std::string& aiOption : aiOptions)
     {
-        const auto aiArgument_lower = s25util::toLower(aiArgument);
+        const auto aiOption_lower = s25util::toLower(aiOption);
         AI::Type type = AI::Type::Dummy;
-        if(aiArgument_lower == "aijh")
+        if(aiOption_lower == "aijh")
             type = AI::Type::Default;
-        else if(aiArgument_lower != "dummy")
+        else if(aiOption_lower != "dummy")
         {
-            LOG.write(_("Invalid AI player name: %1%\n")) % aiArgument_lower;
+            LOG.write(_("Invalid AI player name: %1%\n")) % aiOption_lower;
             return false;
         }
 
@@ -78,7 +78,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
         MUSICPLAYER.Play();
 
     // An AI-battle is a single-player game.
-    bool isSinglePlayer = !ais.empty();
+    const bool isSinglePlayer = !aiInfos.empty();
 
     const CreateServerInfo csi(isSinglePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
                                _("Unlimited Play"));
