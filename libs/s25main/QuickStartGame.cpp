@@ -15,7 +15,6 @@
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
-#include "gameTypes/AIInfo.h"
 #include "gameData/ApplicationLoader.h"
 #include "s25util/Log.h"
 #include "s25util/strAlgos.h"
@@ -33,9 +32,10 @@ public:
     }
 };
 
-static bool ParseAIOptions(std::vector<AI::Info>& aiInfos, const std::vector<std::string>& aiOptions)
+std::vector<AI::Info> ParseAIOptions(const std::vector<std::string>& aiOptions)
 {
-    aiInfos.clear();
+    std::vector<AI::Info> aiInfos;
+
     for(const std::string& aiOption : aiOptions)
     {
         const auto aiOption_lower = s25util::toLower(aiOption);
@@ -43,15 +43,12 @@ static bool ParseAIOptions(std::vector<AI::Info>& aiInfos, const std::vector<std
         if(aiOption_lower == "aijh")
             type = AI::Type::Default;
         else if(aiOption_lower != "dummy")
-        {
-            LOG.write(_("Invalid AI player name: %1%\n")) % aiOption_lower;
-            return false;
-        }
+            throw std::invalid_argument("Invalid AI player name: " + aiOption_lower);
 
         aiInfos.push_back({type, AI::Level::Hard});
     }
 
-    return true;
+    return aiInfos;
 }
 
 bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::vector<std::string>& ais)
@@ -59,13 +56,6 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     if(!exists(mapOrReplayPath))
     {
         LOG.write(_("Given map or replay (%1%) does not exist!")) % mapOrReplayPath;
-        return false;
-    }
-
-    std::vector<AI::Info> aiInfos;
-    if(!ParseAIOptions(aiInfos, ais))
-    {
-        LOG.write(_("Could not parse AI player(s)"));
         return false;
     }
 
@@ -78,7 +68,16 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
         MUSICPLAYER.Play();
 
     // An AI-battle is a single-player game.
-    const bool isSinglePlayer = !aiInfos.empty();
+    const bool isSinglePlayer = !ais.empty();
+    std::vector<AI::Info> aiInfos;
+    try
+    {
+        aiInfos = ParseAIOptions(ais);
+    } catch(const std::invalid_argument& e)
+    {
+        LOG.write(e.what());
+        return false;
+    }
 
     const CreateServerInfo csi(isSinglePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
                                _("Unlimited Play"));
