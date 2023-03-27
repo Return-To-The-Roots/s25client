@@ -51,7 +51,7 @@ else()
         # Need to check this because Clang-9 with GLIBC > 1.31 generates undefined references to buildins
         # https://bugs.llvm.org/show_bug.cgi?id=45034
         include(CheckCXXSourceCompiles)
-        set(CMAKE_REQUIRED_FLAGS -ffastmath)
+        set(CMAKE_REQUIRED_FLAGS -ffast-math)
         check_cxx_source_compiles("
 #include <cmath>
 
