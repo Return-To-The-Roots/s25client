@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - { compiler: clang,    os: macos-12,     buildType: Debug, boostVersion: 1.74.0 }
+          - { compiler: clang,    os: macos-12,     buildType: Debug, boostVersion: 1.81.0 }
           # Latest GCC
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
