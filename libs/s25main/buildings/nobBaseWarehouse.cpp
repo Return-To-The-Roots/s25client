@@ -72,6 +72,7 @@ void nobBaseWarehouse::DestroyBuilding()
         {
             dependent_figure->SetGoalTonullptr();
             dependent_figure->CutCurrentRoad();
+            dependent_figure->StartWandering();
         } else
             dependent_figure->GoHome();
     }
