@@ -4,13 +4,6 @@
 
 #pragma once
 
-#if __GNUC__ > 7
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
-#endif
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wsuggest-override"
-
 #include "driver/AudioDriver.h"
 #include "driver/IAudioDriverCallback.h"
 #include <turtle/mock.hpp>
@@ -61,8 +54,3 @@ MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
     }
     using driver::AudioDriver::GetEffectChannel;
 };
-
-#pragma clang diagnostic pop
-#if __GNUC__ > 7
-#pragma GCC diagnostic pop
-#endif
