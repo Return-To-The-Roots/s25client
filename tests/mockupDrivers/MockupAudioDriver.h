@@ -4,8 +4,10 @@
 
 #pragma once
 
+#if __GNUC__ > 7
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsuggest-override"
 
@@ -61,4 +63,6 @@ MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
 };
 
 #pragma clang diagnostic pop
+#if __GNUC__ > 7
 #pragma GCC diagnostic pop
+#endif
