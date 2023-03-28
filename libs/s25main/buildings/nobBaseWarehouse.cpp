@@ -66,8 +66,18 @@ void nobBaseWarehouse::DestroyBuilding()
 {
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
     for(noFigure* dependent_figure : dependent_figures)
-        dependent_figure->GoHome();
+    {
+        // Only send figures home that are not already at this position.
+        if(dependent_figure->GetPos() == GetPos())
+        {
+            dependent_figure->SetGoalTonullptr();
+            dependent_figure->CutCurrentRoad();
+            dependent_figure->StartWandering();
+        } else
+            dependent_figure->GoHome();
+    }
     dependent_figures.clear();
+
     for(Ware* dependent_ware : dependent_wares)
         WareNotNeeded(dependent_ware);
     dependent_wares.clear();
