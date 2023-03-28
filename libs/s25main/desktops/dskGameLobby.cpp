@@ -259,21 +259,17 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         const auto& aiBattlePlayers = GAMECLIENT.GetAIBattlePlayers();
 
         // Initialize AI battle players
-        const unsigned aiPlayerCount =
-          std::min(gameLobby_->getNumPlayers(), static_cast<unsigned>(aiBattlePlayers.size()));
-
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
-            if(i < aiPlayerCount)
+            if(i < aiBattlePlayers.size())
                 lobbyHostController->SetPlayerState(i, PlayerState::AI, aiBattlePlayers[i]);
             else
                 lobbyHostController->CloseSlot(i); // Close remaining slots
         }
 
         // Set name of host to the corresponding AI for local player
-        RTTR_Assert(localPlayerId_ < aiPlayerCount);
-        lobbyHostController->SetName(localPlayerId_,
-                                     JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
+        if(localPlayerId_ < aiBattlePlayers.size())
+            lobbyHostController->SetName(localPlayerId_, JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
     } else if(IsSinglePlayer() && !gameLobby_->isSavegame())
     {
         // Setze initial auf KI
@@ -614,10 +610,6 @@ void dskGameLobby::Msg_Group_ComboSelectItem(const unsigned group_id, const unsi
 
 void dskGameLobby::GoBack()
 {
-    // We have to clean up the configured ai players, so that subsequent games can
-    // start with the default setup again.
-    GAMECLIENT.ClearAIBattlePlayers();
-
     if(IsSinglePlayer())
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(serverType == ServerType::LAN)

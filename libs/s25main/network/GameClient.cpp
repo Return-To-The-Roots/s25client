@@ -85,6 +85,8 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
 {
     Stop();
 
+    RTTR_Assert(aiBattlePlayers_.empty());
+
     // Name und Password kopieren
     clientconfig.server = server;
     clientconfig.password = password;
@@ -226,6 +228,8 @@ void GameClient::Stop()
 
     state = ClientState::Stopped;
     LOG.write("client state changed to stop\n");
+
+    aiBattlePlayers_.clear();
 }
 
 std::shared_ptr<GameLobby> GameClient::GetGameLobby()
@@ -366,7 +370,6 @@ void GameClient::ExitGame()
     nwfInfo.reset();
     // Clear remaining commands
     gameCommands_.clear();
-    ClearAIBattlePlayers();
 }
 
 unsigned GameClient::GetGFNumber() const
@@ -1538,14 +1541,9 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     return true;
 }
 
-void GameClient::SetAIBattlePlayers(std::vector<AI::Info>& aiInfos)
+void GameClient::SetAIBattlePlayers(std::vector<AI::Info> aiInfos)
 {
-    aiBattlePlayers_.swap(aiInfos);
-}
-
-void GameClient::ClearAIBattlePlayers()
-{
-    aiBattlePlayers_.clear();
+    aiBattlePlayers_ = std::move(aiInfos);
 }
 
 unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator,

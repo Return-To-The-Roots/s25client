@@ -90,7 +90,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::Savegame))
        || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap)))
     {
-        GAMECLIENT.SetAIBattlePlayers(aiInfos);
+        GAMECLIENT.SetAIBattlePlayers(std::move(aiInfos));
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else
