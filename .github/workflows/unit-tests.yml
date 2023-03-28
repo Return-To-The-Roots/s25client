@@ -122,6 +122,8 @@ jobs:
           echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
           echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON -DBoost_NO_BOOST_CMAKE=ON" >> $GITHUB_ENV
           external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
+          cat /tmp/boost.log
+          ls -la ${BOOST_ROOT}/lib/
 
       - name: Enable coverage collection
         if: matrix.coverage
