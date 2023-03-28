@@ -22,17 +22,17 @@ jobs:
     strategy:
       matrix:
         include:
-          - { compiler: clang,    os: macos-12,     buildType: Debug, cmakeVersion: 3.26.0, boostVersion: 1.81.0 }
+          - { compiler: clang,    os: macos-12,     buildType: Debug, cxxStandard: 14, cmakeVersion: 3.26.0, boostVersion: 1.81.0 }
           # Latest GCC
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Release }
-          # Latest Clang with externals
+          # Clang with externals
           - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
           - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: clang-13, os: ubuntu-20.04, buildType: Release }
-          # Latest Clang with latest boost
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, boostVersion: 1.78.0, externalSanitizer: true }
+          # Clang and new cmake with newer boost
+          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cmakeVersion: 3.26.0, boostVersion: 1.81.0, externalSanitizer: true }
 
     runs-on: ${{matrix.os}}
 
