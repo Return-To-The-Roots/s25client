@@ -269,7 +269,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
 
         // Set name of host to the corresponding AI for local player
         if(localPlayerId_ < aiBattlePlayers.size())
-            lobbyHostController->SetName(localPlayerId_, JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
+            lobbyHostController->SetName(localPlayerId_,
+                                         JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
     } else if(IsSinglePlayer() && !gameLobby_->isSavegame())
     {
         // Setze initial auf KI
