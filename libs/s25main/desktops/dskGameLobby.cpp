@@ -254,10 +254,27 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         }
     }
 
-    if(IsSinglePlayer() && !gameLobby_->isSavegame())
+    if(GAMECLIENT.IsAIBattleModeOn())
+    {
+        const auto& aiBattlePlayers = GAMECLIENT.GetAIBattlePlayers();
+
+        // Initialize AI battle players
+        for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
+        {
+            if(i < aiBattlePlayers.size())
+                lobbyHostController->SetPlayerState(i, PlayerState::AI, aiBattlePlayers[i]);
+            else
+                lobbyHostController->CloseSlot(i); // Close remaining slots
+        }
+
+        // Set name of host to the corresponding AI for local player
+        if(localPlayerId_ < aiBattlePlayers.size())
+            lobbyHostController->SetName(localPlayerId_,
+                                         JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
+    } else if(IsSinglePlayer() && !gameLobby_->isSavegame())
     {
         // Setze initial auf KI
-        for(unsigned char i = 0; i < gameLobby_->getNumPlayers(); i++)
+        for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
             if(!gameLobby_->getPlayer(i).isHost)
                 lobbyHostController->SetPlayerState(i, PlayerState::AI, AI::Info(AI::Type::Default, AI::Level::Easy));

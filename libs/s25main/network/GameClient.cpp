@@ -85,6 +85,8 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
 {
     Stop();
 
+    RTTR_Assert(aiBattlePlayers_.empty());
+
     // Name und Password kopieren
     clientconfig.server = server;
     clientconfig.password = password;
@@ -226,6 +228,8 @@ void GameClient::Stop()
 
     state = ClientState::Stopped;
     LOG.write("client state changed to stop\n");
+
+    aiBattlePlayers_.clear();
 }
 
 std::shared_ptr<GameLobby> GameClient::GetGameLobby()
@@ -352,6 +356,8 @@ void GameClient::GameLoaded()
                     SendNothingNC(id);
                 }
             }
+            if(IsAIBattleModeOn())
+                ToggleHumanAIPlayer(aiBattlePlayers_[GetPlayerId()]);
         }
         SendNothingNC();
     }
@@ -1535,6 +1541,11 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     return true;
 }
 
+void GameClient::SetAIBattlePlayers(std::vector<AI::Info> aiInfos)
+{
+    aiBattlePlayers_ = std::move(aiInfos);
+}
+
 unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator,
                                         const unsigned char factor_denumerator, const unsigned offset)
 {
@@ -1807,7 +1818,7 @@ unsigned GameClient::GetTournamentModeDuration() const
         return 0;
 }
 
-void GameClient::ToggleHumanAIPlayer()
+void GameClient::ToggleHumanAIPlayer(const AI::Info& aiInfo)
 {
     RTTR_Assert(!IsReplayModeOn());
     auto it = helpers::find_if(game->aiPlayers_,
@@ -1815,7 +1826,7 @@ void GameClient::ToggleHumanAIPlayer()
     if(it != game->aiPlayers_.end())
         game->aiPlayers_.erase(it);
     else
-        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), AI::Info(AI::Type::Default, AI::Level::Easy)));
+        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), aiInfo));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)

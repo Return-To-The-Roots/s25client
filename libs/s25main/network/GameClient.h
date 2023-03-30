@@ -11,6 +11,7 @@
 #include "ILocalGameState.h"
 #include "NetworkPlayer.h"
 #include "factories/GameCommandFactory.h"
+#include "gameTypes/AIInfo.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/Nation.h"
@@ -129,6 +130,12 @@ public:
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const boost::filesystem::path& path);
+
+    /// When a non-empty vector is given then an AI battle with the given AIs is started
+    void SetAIBattlePlayers(std::vector<AI::Info> aiInfos);
+    const std::vector<AI::Info>& GetAIBattlePlayers() const { return aiBattlePlayers_; }
+    bool IsAIBattleModeOn() const { return !aiBattlePlayers_.empty(); }
+
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
@@ -164,7 +171,8 @@ public:
     void SystemChat(const std::string& text) override;
     void SystemChat(const std::string& text, unsigned char fromPlayerIdx);
 
-    void ToggleHumanAIPlayer();
+    /// Toggle current player to be an AI player of the given type
+    void ToggleHumanAIPlayer(const AI::Info& aiInfo);
 
     NetworkPlayer& GetMainPlayer() { return mainPlayer; }
 
@@ -300,6 +308,9 @@ private:
 
     std::unique_ptr<ReplayInfo> replayinfo;
     bool replayMode;
+
+    /// Configured players for an AI battle.
+    std::vector<AI::Info> aiBattlePlayers_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

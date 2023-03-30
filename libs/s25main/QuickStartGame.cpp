@@ -32,7 +32,26 @@ public:
     }
 };
 
-bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singlePlayer)
+std::vector<AI::Info> ParseAIOptions(const std::vector<std::string>& aiOptions)
+{
+    std::vector<AI::Info> aiInfos;
+
+    for(const std::string& aiOption : aiOptions)
+    {
+        const auto aiOption_lower = s25util::toLower(aiOption);
+        AI::Type type = AI::Type::Dummy;
+        if(aiOption_lower == "aijh")
+            type = AI::Type::Default;
+        else if(aiOption_lower != "dummy")
+            throw std::invalid_argument("Invalid AI player name: " + aiOption_lower);
+
+        aiInfos.push_back({type, AI::Level::Hard});
+    }
+
+    return aiInfos;
+}
+
+bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::vector<std::string>& ais)
 {
     if(!exists(mapOrReplayPath))
     {
@@ -48,7 +67,19 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singleP
     if(SETTINGS.sound.musicEnabled)
         MUSICPLAYER.Play();
 
-    const CreateServerInfo csi(singlePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
+    // An AI-battle is a single-player game.
+    const bool isSinglePlayer = !ais.empty();
+    std::vector<AI::Info> aiInfos;
+    try
+    {
+        aiInfos = ParseAIOptions(ais);
+    } catch(const std::invalid_argument& e)
+    {
+        LOG.write(e.what());
+        return false;
+    }
+
+    const CreateServerInfo csi(isSinglePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
                                _("Unlimited Play"));
 
     LOG.write(_("Loading game...\n"));
@@ -59,6 +90,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singleP
     if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::Savegame))
        || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, mapOrReplayPath, MapType::OldMap)))
     {
+        GAMECLIENT.SetAIBattlePlayers(std::move(aiInfos));
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else
