@@ -227,4 +227,33 @@ BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture) //, *utf::depends_on(
     BOOST_TEST_REQUIRE(!dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(postbox2.GetNumMsgs() - 1)));
 }
 
+BOOST_FIXTURE_TEST_CASE(PactExpiredTest, PactCreatedFixture) //, *utf::depends_on("PactTestSuite/MakePactTest"))
+{
+    GamePlayer& player1 = world.GetPlayer(1);
+    GamePlayer& player2 = world.GetPlayer(2);
+    PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);
+    postbox2.Clear();
+
+    // Execute the GFs until the pact is expired
+    for(unsigned i = 0; i < duration; i++) 
+    {
+        em.ExecuteNextGF();
+    }
+    // On last GF the pact expired. Suggest new pact.
+    player1.SuggestPact(2, PactType::NonAgressionPact, duration);
+
+    // Test if other player has received the suggestion
+    BOOST_TEST_REQUIRE(postbox2.GetNumMsgs() == 1u);
+    // Other player accepts
+    msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(0));
+    player2.AcceptPact(msg->GetPactId(), PactType::NonAgressionPact, msg->GetPlayerId());
+    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
+    //there must be remaining time    
+    BOOST_TEST_REQUIRE(player1.GetRemainingPactTime(PactType::NonAgressionPact, 2) > 0u);
+    BOOST_TEST_REQUIRE(player2.GetRemainingPactTime(PactType::NonAgressionPact, 1) > 0u);
+    //pact state must be accepted
+    BOOST_TEST_REQUIRE(player1.GetPactState(PactType::NonAgressionPact, 2) == PactState::Accepted);
+    BOOST_TEST_REQUIRE(player2.GetPactState(PactType::NonAgressionPact, 1) == PactState::Accepted);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
