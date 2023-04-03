@@ -10,6 +10,8 @@
 #include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
 
+namespace utf = boost::unit_test;
+
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const PactState e)
 {
@@ -225,6 +227,36 @@ BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture) //, *utf::depends_on(
     // The new message should not be a question
     BOOST_TEST_REQUIRE(!dynamic_cast<const DiplomacyPostQuestion*>(postbox1.GetMsg(postbox1.GetNumMsgs() - 1)));
     BOOST_TEST_REQUIRE(!dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(postbox2.GetNumMsgs() - 1)));
+}
+
+BOOST_FIXTURE_TEST_CASE(SuggestNewPactAfterExpiration, PactCreatedFixture,
+                        *utf::depends_on("PactTestSuite/MakePactTest"))
+{
+    GamePlayer& player1 = world.GetPlayer(1);
+    PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);
+    postbox2.Clear();
+
+    // Execute the GFs until the pact is expired
+    for(unsigned i = 0; i < duration; i++)
+    {
+        em.ExecuteNextGF();
+        player1.TestPacts();
+    }
+
+    // On last GF the pact expired. Suggest new pact.
+    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
+    curPlayer = 1;
+    this->SuggestPact(2, PactType::NonAgressionPact, duration);
+
+    // Test if other player has received the suggestion
+    BOOST_TEST_REQUIRE(postbox2.GetNumMsgs() == 1u);
+    msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(0));
+    BOOST_TEST_REQUIRE(msg);
+    // Other player accepts
+    curPlayer = 2;
+    this->AcceptPact(msg->GetPactId(), PactType::NonAgressionPact, msg->GetPlayerId());
+    // pact state must be accepted
+    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
