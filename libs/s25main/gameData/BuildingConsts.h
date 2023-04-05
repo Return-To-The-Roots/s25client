@@ -44,7 +44,7 @@ const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_W
   {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 6},
   {Job::Miner, GoodType::Stones, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
   {Job::Miner, GoodType::Coal, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
-  {Job::Miner, GoodType::Iron, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
+  {Job::Miner, GoodType::IronOre, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
   {Job::Miner, GoodType::Gold, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
   {Job::Scout}, // No production, just existence
   {},
