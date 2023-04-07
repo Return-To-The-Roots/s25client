@@ -1369,9 +1369,17 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
     const auto* mil = gwb.GetSpecObj<nobMilitary>(pt);
     if(mil)
     {
-        if(mil->GetFrontierDistance() != FrontierDistance::Far && mil->IsGoldDisabled())
+        if(mil->GetFrontierDistance() != FrontierDistance::Far)
         {
-            aii.SetCoinsAllowed(pt, true);
+            if(mil->IsGoldDisabled())
+                aii.SetCoinsAllowed(pt, true);
+
+            // Fill up with soldiers
+            for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+            {
+                if(mil->GetDesiredTroops(rank) != mil->GetMaxTroopsCt())
+                    aii.SetDesiredTroops(mil->GetPos(), rank, mil->GetMaxTroopsCt());
+            }
         }
         if(mil->GetBuildingType() != construction->GetBiggestAllowedMilBuilding())
         {
@@ -1442,11 +1450,14 @@ void AIPlayerJH::MilUpgradeOptim()
             {
                 aii.SetCoinsAllowed(milBld->GetPos(), true);
             }
-            if(milBld->HasMaxRankSoldier()) // has max rank soldier? send it/them out!
-                aii.SendSoldiersHome(milBld->GetPos());
-            if(SoldierAvailable(0)
-               && milBld->GetNumTroops() < milBld->GetMaxTroopsCt()) // building not full and privates in a warehouse?
-                aii.OrderNewSoldiers(milBld->GetPos());              // order new!
+            // Keep 0 generals, 1 of each other rank and fill the rest with privates
+            unsigned rank = 0;
+            for(unsigned count : {milBld->GetMaxTroopsCt(), 1u, 1u, 1u, 0u})
+            {
+                if(milBld->GetDesiredTroops(rank) != count)
+                    aii.SetDesiredTroops(milBld->GetPos(), rank, count);
+                ++rank;
+            }
         }
         count++;
     }

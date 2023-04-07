@@ -237,6 +237,33 @@ public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
+/// Set the desired garrison size of a military building
+class SetDesiredTroops : public Coords
+{
+    GC_FRIEND_DECL;
+    const uint8_t rank;
+    const uint32_t count;
+
+protected:
+    SetDesiredTroops(const MapPoint pt, const uint8_t rank, const uint32_t count)
+        : Coords(GCType::SetDesiredTroops, pt), rank(rank), count(count)
+    {}
+    SetDesiredTroops(Serializer& ser)
+        : Coords(GCType::SetDesiredTroops, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+    {}
+
+public:
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
+
+        ser.PushUnsignedChar(rank);
+        ser.PushUnsignedInt(count);
+    }
+
+    void Execute(GameWorld& world, uint8_t playerId) override;
+};
+
 /// Transportreihenfolge ändern
 class ChangeTransport : public GameCommand
 {

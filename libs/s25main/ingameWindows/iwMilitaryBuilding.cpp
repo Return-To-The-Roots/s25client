@@ -32,6 +32,13 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
                    _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
+    unsigned offset = 0;
+    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
+    {
+        offset = 154;
+        Resize(Extent(226, 348));
+    }
+
     // Schwert
     AddImage(0, DrawPoint(28, 39), LOADER.GetMapTexture(2298));
     AddImage(1, DrawPoint(28, 39), LOADER.GetWareTex(GoodType::Sword));
@@ -41,26 +48,46 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(GoodType::ShieldRomans));
 
     // Hilfe
-    AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(4, DrawPoint(16, offset + 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
     // Abreißen
-    AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
+    AddImageButton(5, DrawPoint(50, offset + 147), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
                    _("Demolish house"));
     // Gold an/aus (227,226)
-    AddImageButton(6, DrawPoint(90, 147), Extent(32, 32), TextureColor::Grey,
+    AddImageButton(6, DrawPoint(90, offset + 147), Extent(32, 32), TextureColor::Grey,
                    LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)), _("Gold delivery"));
     // "Gehe Zu Ort"
-    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
+    AddImageButton(7, DrawPoint(179, offset + 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
                    _("Go to place"));
 
     // Gebäudebild
     AddImage(8, DrawPoint(117, 114), &building->GetBuildingImage());
     // "Go to next" (building of same type)
-    AddImageButton(9, DrawPoint(179, 115), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 11),
+    AddImageButton(9, DrawPoint(179, offset + 115), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 11),
                    _("Go to next military building"));
-    // addon military control active? -> show button
+
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
-        AddImageButton(10, DrawPoint(124, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 12),
-                       _("Send max rank soldiers to a warehouse"));
+    {
+        AddImageButton(10, DrawPoint(126, offset + 147), Extent(32, 32), TextureColor::Grey,
+                       LOADER.GetImageN("io_new", 12), _("Send soldiers home"));
+
+        const unsigned Y_SPACING = 30;
+        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; ++i)
+        {
+            // Minus
+            AddImageButton(11 + (5 * i), DrawPoint(69, 136 + Y_SPACING * i), Extent(24, 24),
+                           TextureColor::Red1, LOADER.GetImageN("io", 139), _("Fewer"));
+            // Background
+            AddImage(12 + (5 * i), DrawPoint(113, 148 + Y_SPACING * i), LOADER.GetMapTexture(2298));
+            // Rank image
+            AddImage(13 + (5 * i), DrawPoint(113, 148 + Y_SPACING * i), LOADER.GetMapTexture(2321 + i));
+            // Desired number indicator
+            AddVarText(14 + (5 * i), DrawPoint(101, 136 + Y_SPACING * i), "%u", COLOR_YELLOW,
+                       FontStyle::LEFT, NormalFont, 1, building->GetDesiredTroopsPointer(i));
+            // Plus
+            AddImageButton(15 + (5 * i), DrawPoint(133, 136 + Y_SPACING * i), Extent(24, 24),
+                           TextureColor::Green2, LOADER.GetImageN("io", 138), _("More"));
+        }
+    }
 }
 
 void iwMilitaryBuilding::Draw_()
@@ -204,9 +231,27 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             }
         }
         break;
-        case 10: // send home button (addon)
+        case 10:
         {
-            gcFactory.SendSoldiersHome(building->GetPos());
+            gcFactory.SetDesiredTroops(building->GetPos(), 0, 1);
+            for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
+                gcFactory.SetDesiredTroops(building->GetPos(), rank, 0);
+        }
+        break;
+        case 11: case 16: case 21: case 26: case 31:
+        {
+            unsigned rank = (ctrl_id - 11) / 5;
+            unsigned count = building->GetDesiredTroops(rank);
+            if(count > 0)
+              gcFactory.SetDesiredTroops(building->GetPos(), rank, count - 1);
+        }
+        break;
+        case 15: case 20: case 25: case 30: case 35:
+        {
+            unsigned rank = (ctrl_id - 15) / 5;
+            unsigned count = building->GetDesiredTroops(rank);
+            if(count < building->GetMaxTroopsCt())
+                gcFactory.SetDesiredTroops(building->GetPos(), rank, count + 1);
         }
         break;
     }

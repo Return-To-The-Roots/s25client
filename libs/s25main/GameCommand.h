@@ -54,6 +54,7 @@ enum class GCType : uint8_t
     UpgradeRoad,
     SendSoldiersHome,
     OrderNewSoldiers,
+    SetDesiredTroops,
     NotifyAlliesOfLocation
 };
 constexpr auto maxEnumValue(GCType)

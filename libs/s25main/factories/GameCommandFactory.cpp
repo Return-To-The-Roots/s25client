@@ -61,6 +61,11 @@ bool GameCommandFactory::OrderNewSoldiers(const MapPoint pt)
     return AddGC(new gc::OrderNewSoldiers(pt));
 }
 
+bool GameCommandFactory::SetDesiredTroops(const MapPoint pt, unsigned char rank, unsigned count)
+{
+    return AddGC(new gc::SetDesiredTroops(pt, rank, count));
+}
+
 bool GameCommandFactory::ChangeTransport(const TransportOrders& data)
 {
     return AddGC(new gc::ChangeTransport(data));

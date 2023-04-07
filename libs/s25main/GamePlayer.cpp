@@ -44,6 +44,7 @@
 #include "gameData/ToolConsts.h"
 #include "s25util/Log.h"
 #include <limits>
+#include <numeric>
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorld& world)
     : GamePlayerInfo(playerId, playerInfo), world(world), hqPos(MapPoint::Invalid()), emergency(false)
@@ -1172,20 +1173,25 @@ bool GamePlayer::IsAttackable(const unsigned char playerId) const
         return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
 }
 
-void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst) const
+void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned max) const
 {
     // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
     nobBaseWarehouse* wh;
+    int sum = 0;
     do
     {
-        wh = FindWarehouse(*goal, FW::HasMinSoldiers(1), false, false);
+        std::array<bool, NUM_SOLDIER_RANKS> desiredRanks;
+        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
+            desiredRanks[i] = counts[i] > 0;
+
+        wh = FindWarehouse(*goal, FW::HasSoldiers(desiredRanks), false, false);
         if(wh)
         {
-            unsigned order_count = std::min(wh->GetNumSoldiers(), count);
-            count -= order_count;
-            wh->OrderTroops(goal, order_count, ignoresettingsendweakfirst);
+            wh->OrderTroops(goal, counts, max);
+            sum = 0;
+            std::accumulate(counts.begin(), counts.end(), sum);
         }
-    } while(count && wh);
+    } while(max && sum && wh);
 }
 
 void GamePlayer::RegulateAllTroops()
@@ -2237,7 +2243,7 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
 INSTANTIATE_FINDWH(FW::HasMinWares);
 INSTANTIATE_FINDWH(FW::HasFigure);
 INSTANTIATE_FINDWH(FW::HasWareAndFigure);
-INSTANTIATE_FINDWH(FW::HasMinSoldiers);
+INSTANTIATE_FINDWH(FW::HasSoldiers);
 INSTANTIATE_FINDWH(FW::AcceptsWare);
 INSTANTIATE_FINDWH(FW::AcceptsFigure);
 INSTANTIATE_FINDWH(FW::CollectsWare);

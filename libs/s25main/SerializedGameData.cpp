@@ -95,7 +95,8 @@
 /// 7: Use helpers::push/popContainer (uses var size)
 /// 8: noFlag::Wares converted to static_vector
 /// 9: Drop serialization of node BQ
-static const unsigned currentGameDataVersion = 9;
+/// 10: desired_troops state introduced to military buildings
+static const unsigned currentGameDataVersion = 10;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

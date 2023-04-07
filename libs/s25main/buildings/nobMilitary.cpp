@@ -58,6 +58,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
             size = 0xFF;
             break;
     }
+    desired_troops.fill(GetMaxTroopsCt());
 
     // Tür aufmachen, bis Gebäude besetzt ist
     OpenDoor();
@@ -79,6 +80,22 @@ size_t nobMilitary::GetTotalSoldiers() const
         sum++;
     sum += /* capturing_soldiers*/ +far_away_capturers.size();
     return sum;
+}
+
+std::array<unsigned, NUM_SOLDIER_RANKS> nobMilitary::GetTotalSoldiersByRank() const
+{
+    std::array<unsigned, NUM_SOLDIER_RANKS> counts = {0};
+    for(auto& troop : troops)
+        ++counts[troop->GetRank()];
+    for(auto& troop : ordered_troops)
+        ++counts[troop->GetRank()];
+    for(auto& troop : troops_on_mission)
+        ++counts[troop->GetRank()];
+    if(defender_ && (defender_->IsWaitingAtFlag() || defender_->IsFightingAtFlag()))
+        ++counts[defender_->GetRank()];
+    for(auto& troop : far_away_capturers)
+        ++counts[troop->GetRank()];
+    return counts;
 }
 
 void nobMilitary::DestroyBuilding()
@@ -136,6 +153,8 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(ordered_coins, true);
     sgd.PushObjectContainer(troops, true);
     sgd.PushObjectContainer(far_away_capturers, true);
+    for(unsigned n : desired_troops)
+        sgd.PushUnsignedInt(n);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
@@ -148,6 +167,15 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     sgd.PopObjectContainer(ordered_coins, GO_Type::Ware);
     sgd.PopObjectContainer(troops, GO_Type::NofPassivesoldier);
     sgd.PopObjectContainer(far_away_capturers, GO_Type::NofAttacker);
+
+    if(sgd.GetGameDataVersion() < 10)
+    {
+        desired_troops.fill(GetMaxTroopsCt());
+    } else
+    {
+        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; ++i)
+            desired_troops[i] = sgd.PopUnsignedInt();
+    }
 
     // ins Militärquadrat einfügen
     world->GetMilitarySquares().Add(this);
@@ -282,6 +310,8 @@ void nobMilitary::HandleEvent(const unsigned id)
                 --numCoins;
                 world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, 1);
 
+                RegulateTroops();
+
                 // Evtl neues Beförderungsevent anmelden
                 PrepareUpgrading();
 
@@ -401,6 +431,57 @@ void nobMilitary::RegulateTroops()
 
     is_regulating_troops = true;
 
+    // This only has an effect if the military control addon is in use and the desired troop numbers have been lowered.
+    std::array<unsigned, NUM_SOLDIER_RANKS> counts = GetTotalSoldiersByRank();
+    std::array<unsigned, NUM_SOLDIER_RANKS> lack;
+    for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; rank++)
+    {
+        int excess = counts[rank] - desired_troops[rank];
+        if(excess > 0)
+        {
+            lack[rank] = 0;
+
+            std::vector<nofPassiveSoldier*> notNeededSoldiers;
+            for(auto it = ordered_troops.begin(); excess && it != ordered_troops.end();)
+            {
+                if((*it)->GetRank() == rank)
+                {
+                    notNeededSoldiers.push_back(*it);
+                    it = ordered_troops.erase(it);
+                    --excess;
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+            for(auto* notNeededSoldier : notNeededSoldiers)
+                notNeededSoldier->NotNeeded();
+        }
+        else
+        {
+            // This bit is for ordering troops later
+            lack[rank] = desired_troops[rank] - counts[rank];
+        }
+        if(excess > 0 && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false))
+        {
+            for(auto it = troops.begin(); excess && it != troops.end() && troops.size() > 1;)
+            {
+                if((*it)->GetRank() == rank)
+                {
+                    (*it)->LeaveBuilding();
+                    AddLeavingFigure(std::move(*it));
+                    it = troops.erase(it);
+                    --excess;
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+        }
+    }
+
     // Zu viele oder zu wenig Truppen?
     int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
     if(diff < 0)
@@ -485,7 +566,7 @@ void nobMilitary::RegulateTroops()
             }
         }
         if(mightHaveRoad)
-            world->GetPlayer(player).OrderTroops(this, diff);
+            world->GetPlayer(player).OrderTroops(this, lack, diff);
     }
 
     is_regulating_troops = false;
@@ -560,12 +641,19 @@ void nobMilitary::OrderNewSoldiers()
         {
             diff = (world->GetPlayer(player).GetMilitarySetting(2) * diff) / MILITARY_SETTINGS_SCALE[2];
         }
-        world->GetPlayer(player).OrderTroops(this, diff, true);
+        // TODO (fix this or remove the whole gamecommand)
+        world->GetPlayer(player).OrderTroops(this, {10, 1, 1, 1, 0}, diff);
     }
     // now notify the max ranks we no longer wanted (they will pick a new target which may be the same building that is
     // why we cancel them after ordering new ones in the hope to get low ranks instead)
     for(auto* sld : noNeed)
         sld->NotNeeded();
+}
+
+void nobMilitary::SetDesiredTroops(const unsigned rank, const unsigned count)
+{
+    desired_troops[rank] = count;
+    RegulateTroops();
 }
 
 bool nobMilitary::IsUseless() const
@@ -906,6 +994,9 @@ void nobMilitary::Capture(const unsigned char new_owner)
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
     world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
+
+    // Reset desired troop setting
+    desired_troops.fill(GetMaxTroopsCt());
 
     // Soldaten, die auf Mission sind, Bescheid sagen
     for(auto* it : troops_on_mission)

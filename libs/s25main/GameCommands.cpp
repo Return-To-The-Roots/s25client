@@ -164,6 +164,13 @@ void OrderNewSoldiers::Execute(GameWorld& world, uint8_t playerId)
         bld->OrderNewSoldiers();
 }
 
+void SetDesiredTroops::Execute(GameWorld& world, uint8_t playerId)
+{
+    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
+    if(bld && bld->GetPlayer() == playerId)
+        bld->SetDesiredTroops(rank, count);
+}
+
 void SetProductionEnabled::Execute(GameWorld& world, uint8_t playerId)
 {
     auto* const bld = world.GetSpecObj<nobUsual>(pt_);

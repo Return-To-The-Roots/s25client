@@ -247,7 +247,7 @@ public:
                + GetNumRealFigures(Job::Sergeant) + GetNumRealFigures(Job::Officer) + GetNumRealFigures(Job::General);
     }
     /// Bestellt Soldaten
-    void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);
+    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> &counts, unsigned &max);
 
     /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
     nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;

@@ -35,10 +35,10 @@ struct HasWareAndFigure : protected HasMinWares, protected HasFigure
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 
-struct HasMinSoldiers
+struct HasSoldiers
 {
-    const unsigned count;
-    HasMinSoldiers(unsigned count) : count(count) {}
+    const std::array<bool, NUM_SOLDIER_RANKS> ranks;
+    HasSoldiers(std::array<bool, NUM_SOLDIER_RANKS> ranks) : ranks(ranks) {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 

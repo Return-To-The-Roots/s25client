@@ -71,6 +71,7 @@ private:
     bool is_regulating_troops;
     /// Soldatenbesatzung
     OwnedSortedTroops troops;
+    std::array<unsigned, NUM_SOLDIER_RANKS> desired_troops;
 
     /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
     void CancelOrders();
@@ -85,6 +86,7 @@ private:
     void PrepareUpgrading();
     /// Gets the total amount of soldiers (ordered, stationed, on mission)
     size_t GetTotalSoldiers() const;
+    std::array<unsigned, NUM_SOLDIER_RANKS> GetTotalSoldiersByRank() const;
     /// Looks for the next far-away-capturer waiting around and calls it to the flag
     void CallNextFarAwayCapturer(nofAttacker& attacker);
 
@@ -137,6 +139,10 @@ public:
     unsigned GetNumTroops() const { return troops.size(); }
     auto GetTroops() const { return helpers::nonNullPtrSpan(troops); }
     bool IsInTroops(const nofPassiveSoldier& soldier) const;
+
+    const unsigned* GetDesiredTroopsPointer(unsigned rank) const { return &desired_troops[rank]; }
+    unsigned GetDesiredTroops(const unsigned rank) const { return desired_troops[rank]; }
+    void SetDesiredTroops(const unsigned rank, const unsigned count);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
     void TakeWare(Ware* ware) override;

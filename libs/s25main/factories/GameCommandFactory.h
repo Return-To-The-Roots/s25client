@@ -42,6 +42,8 @@ public:
     bool SendSoldiersHome(MapPoint pt);
     /// order new soldiers
     bool OrderNewSoldiers(MapPoint pt);
+    /// Set garrison size of a military building
+    bool SetDesiredTroops(MapPoint pt, unsigned char rank, unsigned count);
     bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);
