@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CMAKE_VERSION: 3.9.6
-  BOOST_VERSION: 1.69.0
+  CMAKE_VERSION: 3.26.0
+  BOOST_VERSION: 1.81.0
   ADDITIONAL_CMAKE_FLAGS: -DRTTR_ENABLE_BENCHMARKS=ON
 
 jobs:
@@ -22,17 +22,20 @@ jobs:
     strategy:
       matrix:
         include:
-          - { compiler: clang,    os: macos-12,     buildType: Debug, cxxStandard: 14, cmakeVersion: 3.26.0, boostVersion: 1.81.0 }
-          # Latest GCC
-          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
-          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
-          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Release }
-          # Clang with externals
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Release }
-          # Clang and new cmake with newer boost
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cmakeVersion: 3.26.0, boostVersion: 1.81.0, externalSanitizer: true }
+          # MacOSX
+          - { compiler: clang,    os: macos-12,     buildType: Debug, cxxStandard: 14 }
+          # Linux GCC
+          - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
+          - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
+          - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Release, cxxStandard: 14 }
+          # Linux clang
+          - { compiler: clang-11, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
+          - { compiler: clang-11, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
+          - { compiler: clang-11, os: ubuntu-20.04, buildType: Release, cxxStandard: 14 }
+          # Linux Latest GCC
+          #- { compiler: gcc-12,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
+          # Linux Latest clang
+          - { compiler: clang-16, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
 
     runs-on: ${{matrix.os}}
 
@@ -45,35 +48,37 @@ jobs:
       - run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON" >> $GITHUB_ENV
         if: matrix.externalSanitizer
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: "!matrix.coverage"
         with:
           submodules: true
       # Coverage collection requires access to history to find merge-base
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: matrix.coverage
         with:
           submodules: true
           fetch-depth: 0
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
 
       - name: Add LLVM repo
-        if: matrix.compiler == 'clang-13' && matrix.os == 'ubuntu-20.04'
+        if: matrix.compiler == 'clang-16' && matrix.os == 'ubuntu-20.04'
         run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
+          sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main'
           sudo apt update
+
       - name: Install Compiler
         if: "!startsWith(runner.os, 'macos')"
         run: |
           pkgs=${{matrix.compiler}}
           pkgs=${pkgs/gcc-/g++-}
           sudo apt install $pkgs
+
       - name: Setup compiler
         run: |
             CC=${{matrix.compiler}}
@@ -96,6 +101,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev
+
       - name: Install system packages (OSX)
         if: startsWith(runner.os, 'macos')
         run: |
