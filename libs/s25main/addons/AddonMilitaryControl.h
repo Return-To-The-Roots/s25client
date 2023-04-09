@@ -6,12 +6,18 @@
 
 #include "AddonBool.h"
 
-class AddonMilitaryControl : public AddonBool
+class AddonMilitaryControl : public AddonList
 {
 public:
     AddonMilitaryControl()
-        : AddonBool(AddonId::MILITARY_CONTROL, AddonGroup::GamePlay | AddonGroup::Military, _("Military Control"),
+        : AddonList(AddonId::MILITARY_CONTROL, AddonGroup::GamePlay | AddonGroup::Military, _("Military Control"),
                     _("Adds troop controls to military buildings.\n"
-                      "Allows players to control in each military building how many soldiers of each rank should be stationed there."))
+                      "Minimal: Adds the 'send home' button which will send all soldiers of the highest available rank to a warehouse.\n"
+                      "Full: Allows players to control in each military building how many soldiers of each rank should be stationed there."),
+                    {
+                      _("None"),
+                      _("Minimal Control"),
+                      _("Full Control"),
+                    })
     {}
 };

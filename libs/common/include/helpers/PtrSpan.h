@@ -69,6 +69,7 @@ public:
     RTTR_CONSTEXPR_INLINE Iterator begin() const { return Iterator(range.begin()); }
     RTTR_CONSTEXPR_INLINE Iterator end() const { return Iterator(range.end()); }
     RTTR_CONSTEXPR_INLINE typename Iterator::reference front() const { return **range.begin(); }
+    RTTR_CONSTEXPR_INLINE typename Iterator::reference back() const { return **range.rbegin(); }
     RTTR_CONSTEXPR_INLINE bool empty() const { return range.empty(); }
     RTTR_CONSTEXPR_INLINE auto size() const { return range.size(); }
 };

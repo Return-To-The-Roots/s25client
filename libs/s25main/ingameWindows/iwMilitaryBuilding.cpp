@@ -33,7 +33,7 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     unsigned offset = 0;
-    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
+    if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 2)
     {
         offset = 154;
         Resize(Extent(226, 348));
@@ -65,8 +65,15 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImageButton(9, DrawPoint(179, offset + 115), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 11),
                    _("Go to next military building"));
 
-    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
+    if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 1)
     {
+        // Minimal troop controls
+        AddImageButton(10, DrawPoint(126, offset + 147), Extent(32, 32), TextureColor::Grey,
+                       LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
+    }
+    else if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 2)
+    {
+        // Full troop controls
         AddImageButton(10, DrawPoint(126, offset + 147), Extent(32, 32), TextureColor::Grey,
                        LOADER.GetImageN("io_new", 12), _("Send soldiers home"));
 
@@ -233,9 +240,23 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 10:
         {
-            gcFactory.SetDesiredTroops(building->GetPos(), 0, 1);
-            for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
-                gcFactory.SetDesiredTroops(building->GetPos(), rank, 0);
+            if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 1)
+            {
+                // Send the highest rank soldiers in this building home and get new soldiers
+                if(building->GetNumTroops() > 1)
+                {
+                    auto maxRank = building->GetTroops().back().GetRank();
+                    gcFactory.SetDesiredTroops(building->GetPos(), maxRank, 0);
+                    gcFactory.SetDesiredTroops(building->GetPos(), maxRank, building->GetMaxTroopsCt());
+                }
+            }
+            else
+            {
+                // Send all soldiers home except one
+                gcFactory.SetDesiredTroops(building->GetPos(), 0, 1);
+                for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
+                    gcFactory.SetDesiredTroops(building->GetPos(), rank, 0);
+            }
         }
         break;
         case 11: case 16: case 21: case 26: case 31:
