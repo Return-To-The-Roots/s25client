@@ -52,8 +52,6 @@ enum class GCType : uint8_t
     CheatArmageddon,
     DestroyAll,
     UpgradeRoad,
-    SendSoldiersHome,
-    OrderNewSoldiers,
     SetDesiredTroops,
     NotifyAlliesOfLocation
 };

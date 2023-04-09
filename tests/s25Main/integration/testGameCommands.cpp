@@ -468,7 +468,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     // send each of the higher ranks home
     for(unsigned curRank = 4; curRank > 0; --curRank)
     {
-        this->SendSoldiersHome(milPt);
+        this->SetDesiredTroops(milPt, curRank, 0);
         expectedTroopCt -= (curRank == 4) ? 2 : 1; // 2 generals, 1 of the others
         BOOST_TEST_REQUIRE(bld->GetNumTroops() == expectedTroopCt);
         itTroops = bld->GetTroops().begin();
@@ -477,9 +477,10 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     }
     // One low rank is left
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 1u);
-    this->SendSoldiersHome(milPt);
+    this->SetDesiredTroops(milPt, 0, 0);
     // But he must stay
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 1u);
+    this->SetDesiredTroops(milPt, 0, 6);
 
     // Wait till new soldiers have arrived
     RTTR_SKIP_GFS(numGFtillAllArrive);
@@ -491,9 +492,11 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         BOOST_TEST_REQUIRE(itTroops->GetRank() == 0u);
 
     // Send 5 of them home
-    this->SendSoldiersHome(milPt);
+    this->SetDesiredTroops(milPt, 0, 1);
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 1u);
 
+    for(unsigned curRank = 4; curRank > 0; --curRank)
+        this->SetDesiredTroops(milPt, curRank, 6);
     // Wait till one left so new ones get ordered
     RTTR_SKIP_GFS(40);
 
@@ -505,7 +508,8 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     RTTR_SKIP_GFS(40);
 
     // Now cancel orders for generals and replace with low rank ones
-    this->OrderNewSoldiers(milPt);
+    this->SetDesiredTroops(milPt, 4, 0);
+    this->SetDesiredTroops(milPt, 0, 6);
 
     // Wait till new soldiers have arrived
     RTTR_SKIP_GFS(numGFtillAllArrive);
@@ -517,46 +521,6 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         BOOST_TEST_REQUIRE(itTroops->GetRank() == 0u);
     for(unsigned i = 1; i < 3; i++, ++itTroops)
         BOOST_TEST_REQUIRE(itTroops->GetRank() == i);
-}
-
-BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
-{
-    initGameRNG();
-
-    const MapPoint milPt = hqPos + MapPoint(4, 0);
-    GamePlayer& player = world.GetPlayer(curPlayer);
-    nobBaseWarehouse* wh = player.GetFirstWH();
-    BOOST_TEST_REQUIRE(wh);
-    // Set all military stuff to max
-    this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
-    ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
-    // Build a watchtower and connect it
-    auto* bld = static_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Barracks, milPt, curPlayer, player.nation));
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SouthEast), false,
-                    std::vector<Direction>((milPt.x - hqPos.x), Direction::East));
-    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
-    const nofPassiveSoldier* soldier = nullptr;
-    for(const noFigure& fig : hq->GetLeavingFigures())
-    {
-        soldier = dynamic_cast<const nofPassiveSoldier*>(&fig);
-        if(soldier)
-            break;
-    }
-    BOOST_TEST_REQUIRE(soldier);
-    // Let soldiers out and walk a bit
-    MapPoint sldTestPos = world.GetNeighbour(world.GetNeighbour(hqPos, Direction::SouthEast), Direction::East);
-    RTTR_EXEC_TILL(30 * 2 + 20 * 2 + 10, soldier->GetPos() == sldTestPos); //-V522
-    BOOST_TEST_REQUIRE(soldier->GetGoal() == bld);
-    this->OrderNewSoldiers(milPt);
-    // Soldier must still have this goal!
-    BOOST_TEST_REQUIRE(soldier->GetGoal() == bld);
-    // Now run some GFs so the bld is occupied (20GFs per node walked (distance + to and from flag))
-    unsigned numGFtillAllArrive = 20 * (milPt.x - hqPos.x + 2);
-    RTTR_EXEC_TILL(numGFtillAllArrive, bld->GetNumTroops() == 2u);
-    this->OrderNewSoldiers(milPt);
-    // No one leaves!
-    BOOST_TEST_REQUIRE(bld->GetNumTroops() == 2u);
 }
 
 namespace {

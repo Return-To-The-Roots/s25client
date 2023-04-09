@@ -20,7 +20,7 @@ uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
     /// Search for "TODO(Replay)" when increasing this (breaking Replay compatibility)
-    return 7;
+    return 8;
 }
 
 //////////////////////////////////////////////////////////////////////////

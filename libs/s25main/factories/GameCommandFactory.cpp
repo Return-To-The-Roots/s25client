@@ -51,16 +51,6 @@ bool GameCommandFactory::DestroyBuilding(const MapPoint pt)
     return AddGC(new gc::DestroyBuilding(pt));
 }
 
-bool GameCommandFactory::SendSoldiersHome(const MapPoint pt)
-{
-    return AddGC(new gc::SendSoldiersHome(pt));
-}
-
-bool GameCommandFactory::OrderNewSoldiers(const MapPoint pt)
-{
-    return AddGC(new gc::OrderNewSoldiers(pt));
-}
-
 bool GameCommandFactory::SetDesiredTroops(const MapPoint pt, unsigned char rank, unsigned count)
 {
     return AddGC(new gc::SetDesiredTroops(pt, rank, count));

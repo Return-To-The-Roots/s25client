@@ -150,20 +150,6 @@ void SetCoinsAllowed::Execute(GameWorld& world, uint8_t playerId)
         bld->SetCoinsAllowed(enabled);
 }
 
-void SendSoldiersHome::Execute(GameWorld& world, uint8_t playerId)
-{
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->SendSoldiersHome();
-}
-
-void OrderNewSoldiers::Execute(GameWorld& world, uint8_t playerId)
-{
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->OrderNewSoldiers();
-}
-
 void SetDesiredTroops::Execute(GameWorld& world, uint8_t playerId)
 {
     auto* const bld = world.GetSpecObj<nobMilitary>(pt_);

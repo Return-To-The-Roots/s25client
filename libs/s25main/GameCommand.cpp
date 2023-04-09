@@ -46,8 +46,6 @@ GameCommandPtr GameCommand::Deserialize(Serializer& ser)
         case GCType::CheatArmageddon: gc = new CheatArmageddon(ser); break;
         case GCType::DestroyAll: gc = new DestroyAll(ser); break;
         case GCType::UpgradeRoad: gc = new UpgradeRoad(ser); break;
-        case GCType::OrderNewSoldiers: gc = new OrderNewSoldiers(ser); break;
-        case GCType::SendSoldiersHome: gc = new SendSoldiersHome(ser); break;
         case GCType::SetDesiredTroops: gc = new SetDesiredTroops(ser); break;
         case GCType::NotifyAlliesOfLocation: gc = new NotifyAlliesOfLocation(ser); break;
         default: throw std::logic_error("Invalid GC Type: " + helpers::toString(rttr::enum_cast(gcType)));

@@ -1420,7 +1420,14 @@ void AIPlayerJH::MilUpgradeOptim()
                 {
                     if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
                     {
-                        aii.SendSoldiersHome(milBld->GetPos());
+                        aii.SetDesiredTroops(milBld->GetPos(), 0, 1);
+                        for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
+                            aii.SetDesiredTroops(milBld->GetPos(), rank, 0);
+
+                        // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it uses
+                        // only SetDesiredTroops then this can be removed
+                        for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+                            aii.SetDesiredTroops(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
                     } else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier
                                                      // at some point and the building is not new on the list-> cancel
                                                      // road (and fix roadsystem if necessary)

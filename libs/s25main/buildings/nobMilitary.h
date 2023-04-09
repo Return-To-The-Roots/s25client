@@ -230,11 +230,6 @@ public:
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
     bool DefendersAvailable() const override { return GetNumTroops() > 0; }
 
-    /// send all soldiers of the highest rank home (if highest=lowest keep 1)
-    void SendSoldiersHome();
-    /// order new troops
-    void OrderNewSoldiers();
-
     /// Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
     bool IsDemolitionAllowed() const;
 
