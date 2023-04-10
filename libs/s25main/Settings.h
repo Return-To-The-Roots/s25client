@@ -59,7 +59,7 @@ public:
     struct
     {
         VideoMode fullscreenSize, windowedSize;
-        signed short vsync; // <0 for unlimited, 0 for HW Vsync
+        signed short framerate; // <0 for unlimited, 0 for HW Vsync
         bool fullscreen;
         bool vbo;
         bool shared_textures;

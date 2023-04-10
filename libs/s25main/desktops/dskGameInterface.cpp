@@ -141,7 +141,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
     if(initOGL)
         worldViewer.InitTerrainRenderer();
 
-    VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync); // Use requested setting for ingame
+    VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate); // Use requested setting for ingame
 }
 
 void dskGameInterface::InitPlayer()

@@ -52,7 +52,7 @@ bool GameManager::Start()
       settings_.video.fullscreen ? settings_.video.fullscreenSize : settings_.video.windowedSize; //-V807
     if(!videoDriver_.CreateScreen(screenSize, settings_.video.fullscreen))
         return false;
-    videoDriver_.setTargetFramerate(settings_.video.vsync);
+    videoDriver_.setTargetFramerate(settings_.video.framerate);
     videoDriver_.SetMouseWarping(settings_.global.smartCursor);
 
     /// Audiodriver laden
