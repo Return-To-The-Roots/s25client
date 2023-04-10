@@ -14,7 +14,7 @@ concurrency:
 
 env:
   CMAKE_VERSION: 3.26.0
-  BOOST_VERSION: 1.81.0
+  BOOST_VERSION: 1.69.0
   ADDITIONAL_CMAKE_FLAGS: -DRTTR_ENABLE_BENCHMARKS=ON
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       matrix:
         include:
           # MacOSX
-          - { compiler: clang,    os: macos-12,     buildType: Debug, cxxStandard: 14 }
+          - { compiler: clang,    os: macos-12,     buildType: Debug, cxxStandard: 14, boostVersion: 1.81.0 }
           # Linux GCC
           # GCC 9 is known to show a few warnings that GCC 10 has "fixed", make sure this doesn't happen for us
           - { compiler: gcc-9,    os: ubuntu-20.04, buildType: Debug }
@@ -109,6 +109,8 @@ jobs:
         run: |
           brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
           echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
+          echo "Available Boost versions:"
+          ls /usr/local/Cellar/boost
           BOOST_ROOT=$(find /usr/local/Cellar/boost/${BOOST_VERSION}_* -maxdepth 0)
           echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
 
