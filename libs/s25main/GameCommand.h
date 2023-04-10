@@ -52,7 +52,7 @@ enum class GCType : uint8_t
     CheatArmageddon,
     DestroyAll,
     UpgradeRoad,
-    SetDesiredTroops,
+    SetTroopLimit,
     NotifyAlliesOfLocation
 };
 constexpr auto maxEnumValue(GCType)

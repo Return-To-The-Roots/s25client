@@ -51,9 +51,9 @@ bool GameCommandFactory::DestroyBuilding(const MapPoint pt)
     return AddGC(new gc::DestroyBuilding(pt));
 }
 
-bool GameCommandFactory::SetDesiredTroops(const MapPoint pt, unsigned char rank, unsigned count)
+bool GameCommandFactory::SetTroopLimit(const MapPoint pt, unsigned char rank, unsigned limit)
 {
-    return AddGC(new gc::SetDesiredTroops(pt, rank, count));
+    return AddGC(new gc::SetTroopLimit(pt, rank, limit));
 }
 
 bool GameCommandFactory::ChangeTransport(const TransportOrders& data)

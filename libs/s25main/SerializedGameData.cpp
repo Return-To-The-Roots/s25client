@@ -95,7 +95,7 @@
 /// 7: Use helpers::push/popContainer (uses var size)
 /// 8: noFlag::Wares converted to static_vector
 /// 9: Drop serialization of node BQ
-/// 10: desired_troops state introduced to military buildings
+/// 10: troop_limits state introduced to military buildings
 static const unsigned currentGameDataVersion = 10;
 // clang-format on
 

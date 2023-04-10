@@ -150,11 +150,11 @@ void SetCoinsAllowed::Execute(GameWorld& world, uint8_t playerId)
         bld->SetCoinsAllowed(enabled);
 }
 
-void SetDesiredTroops::Execute(GameWorld& world, uint8_t playerId)
+void SetTroopLimit::Execute(GameWorld& world, uint8_t playerId)
 {
     auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
     if(bld && bld->GetPlayer() == playerId)
-        bld->SetDesiredTroops(rank, count);
+        bld->SetTroopLimit(rank, count);
 }
 
 void SetProductionEnabled::Execute(GameWorld& world, uint8_t playerId)

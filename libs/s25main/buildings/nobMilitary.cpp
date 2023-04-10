@@ -58,7 +58,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
             size = 0xFF;
             break;
     }
-    desired_troops.fill(GetMaxTroopsCt());
+    troop_limits.fill(GetMaxTroopsCt());
 
     // Tür aufmachen, bis Gebäude besetzt ist
     OpenDoor();
@@ -153,8 +153,7 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(ordered_coins, true);
     sgd.PushObjectContainer(troops, true);
     sgd.PushObjectContainer(far_away_capturers, true);
-    for(unsigned n : desired_troops)
-        sgd.PushUnsignedInt(n);
+    helpers::pushContainer(sgd, troop_limits);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
@@ -169,13 +168,9 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     sgd.PopObjectContainer(far_away_capturers, GO_Type::NofAttacker);
 
     if(sgd.GetGameDataVersion() < 10)
-    {
-        desired_troops.fill(GetMaxTroopsCt());
-    } else
-    {
-        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; ++i)
-            desired_troops[i] = sgd.PopUnsignedInt();
-    }
+        troop_limits.fill(GetMaxTroopsCt());
+    else
+        helpers::popContainer(sgd, troop_limits);
 
     // ins Militärquadrat einfügen
     world->GetMilitarySquares().Add(this);
@@ -431,12 +426,12 @@ void nobMilitary::RegulateTroops()
 
     is_regulating_troops = true;
 
-    // This only has an effect if the military control addon is in use and the desired troop numbers have been lowered.
+    // This only has an effect if the military control addon is in use and the troop limits have been lowered.
     std::array<unsigned, NUM_SOLDIER_RANKS> counts = GetTotalSoldiersByRank();
     std::array<unsigned, NUM_SOLDIER_RANKS> lack;
     for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; rank++)
     {
-        int excess = counts[rank] - desired_troops[rank];
+        int excess = counts[rank] - troop_limits[rank];
         if(excess > 0)
         {
             lack[rank] = 0;
@@ -461,7 +456,7 @@ void nobMilitary::RegulateTroops()
         else
         {
             // This bit is for ordering troops later
-            lack[rank] = desired_troops[rank] - counts[rank];
+            lack[rank] = troop_limits[rank] - counts[rank];
         }
         if(excess > 0 && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false))
         {
@@ -584,9 +579,9 @@ unsigned nobMilitary::CalcRequiredNumTroops(FrontierDistance assumedFrontierDist
            + 1;
 }
 
-void nobMilitary::SetDesiredTroops(const unsigned rank, const unsigned count)
+void nobMilitary::SetTroopLimit(const unsigned rank, const unsigned limit)
 {
-    desired_troops[rank] = count;
+    troop_limits[rank] = limit;
     RegulateTroops();
 }
 
@@ -930,7 +925,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
 
     // Reset desired troop setting
-    desired_troops.fill(GetMaxTroopsCt());
+    troop_limits.fill(GetMaxTroopsCt());
 
     // Soldaten, die auf Mission sind, Bescheid sagen
     for(auto* it : troops_on_mission)

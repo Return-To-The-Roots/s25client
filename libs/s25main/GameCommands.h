@@ -212,18 +212,18 @@ public:
 };
 
 /// Set the desired garrison size of a military building
-class SetDesiredTroops : public Coords
+class SetTroopLimit : public Coords
 {
     GC_FRIEND_DECL;
     const uint8_t rank;
     const uint32_t count;
 
 protected:
-    SetDesiredTroops(const MapPoint pt, const uint8_t rank, const uint32_t count)
-        : Coords(GCType::SetDesiredTroops, pt), rank(rank), count(count)
+    SetTroopLimit(const MapPoint pt, const uint8_t rank, const uint32_t count)
+        : Coords(GCType::SetTroopLimit, pt), rank(rank), count(count)
     {}
-    SetDesiredTroops(Serializer& ser)
-        : Coords(GCType::SetDesiredTroops, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+    SetTroopLimit(Serializer& ser)
+        : Coords(GCType::SetTroopLimit, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
     {}
 
 public:

@@ -468,7 +468,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     // send each of the higher ranks home
     for(unsigned curRank = 4; curRank > 0; --curRank)
     {
-        this->SetDesiredTroops(milPt, curRank, 0);
+        this->SetTroopLimit(milPt, curRank, 0);
         expectedTroopCt -= (curRank == 4) ? 2 : 1; // 2 generals, 1 of the others
         BOOST_TEST_REQUIRE(bld->GetNumTroops() == expectedTroopCt);
         itTroops = bld->GetTroops().begin();
@@ -477,10 +477,10 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     }
     // One low rank is left
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 1u);
-    this->SetDesiredTroops(milPt, 0, 0);
+    this->SetTroopLimit(milPt, 0, 0);
     // But he must stay
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 1u);
-    this->SetDesiredTroops(milPt, 0, 6);
+    this->SetTroopLimit(milPt, 0, 6);
 
     // Wait till new soldiers have arrived
     RTTR_SKIP_GFS(numGFtillAllArrive);
@@ -492,11 +492,11 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         BOOST_TEST_REQUIRE(itTroops->GetRank() == 0u);
 
     // Send 5 of them home
-    this->SetDesiredTroops(milPt, 0, 1);
+    this->SetTroopLimit(milPt, 0, 1);
     BOOST_TEST_REQUIRE(bld->GetNumTroops() == 1u);
 
     for(unsigned curRank = 4; curRank > 0; --curRank)
-        this->SetDesiredTroops(milPt, curRank, 6);
+        this->SetTroopLimit(milPt, curRank, 6);
     // Wait till one left so new ones get ordered
     RTTR_SKIP_GFS(40);
 
@@ -508,8 +508,8 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     RTTR_SKIP_GFS(40);
 
     // Now cancel orders for generals and replace with low rank ones
-    this->SetDesiredTroops(milPt, 4, 0);
-    this->SetDesiredTroops(milPt, 0, 6);
+    this->SetTroopLimit(milPt, 4, 0);
+    this->SetTroopLimit(milPt, 0, 6);
 
     // Wait till new soldiers have arrived
     RTTR_SKIP_GFS(numGFtillAllArrive);

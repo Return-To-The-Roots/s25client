@@ -1173,25 +1173,24 @@ bool GamePlayer::IsAttackable(const unsigned char playerId) const
         return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
 }
 
-void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned max) const
+void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned total_max) const
 {
     // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
     nobBaseWarehouse* wh;
-    int sum = 0;
+    unsigned sum = 0;
     do
     {
         std::array<bool, NUM_SOLDIER_RANKS> desiredRanks;
         for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
             desiredRanks[i] = counts[i] > 0;
 
-        wh = FindWarehouse(*goal, FW::HasSoldiers(desiredRanks), false, false);
+        wh = FindWarehouse(*goal, FW::HasAnyMatchingSoldier(desiredRanks), false, false);
         if(wh)
         {
-            wh->OrderTroops(goal, counts, max);
-            sum = 0;
-            std::accumulate(counts.begin(), counts.end(), sum);
+            wh->OrderTroops(goal, counts, total_max);
+            sum = std::accumulate(counts.begin(), counts.end(), 0u);
         }
-    } while(max && sum && wh);
+    } while(total_max && sum && wh);
 }
 
 void GamePlayer::RegulateAllTroops()
@@ -2243,7 +2242,7 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
 INSTANTIATE_FINDWH(FW::HasMinWares);
 INSTANTIATE_FINDWH(FW::HasFigure);
 INSTANTIATE_FINDWH(FW::HasWareAndFigure);
-INSTANTIATE_FINDWH(FW::HasSoldiers);
+INSTANTIATE_FINDWH(FW::HasAnyMatchingSoldier);
 INSTANTIATE_FINDWH(FW::AcceptsWare);
 INSTANTIATE_FINDWH(FW::AcceptsFigure);
 INSTANTIATE_FINDWH(FW::CollectsWare);

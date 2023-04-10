@@ -28,7 +28,7 @@ bool HasWareAndFigure::operator()(const nobBaseWarehouse& wh) const
     return HasMinWares::operator()(wh) && HasFigure::operator()(wh);
 }
 
-bool HasSoldiers::operator()(const nobBaseWarehouse& wh) const
+bool HasAnyMatchingSoldier::operator()(const nobBaseWarehouse& wh) const
 {
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
     {

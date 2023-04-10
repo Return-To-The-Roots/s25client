@@ -197,8 +197,8 @@ public:
     bool IsAttackable(unsigned char playerId) const;
     /// Are these players allied? (-> Teamview, attack support, ...)
     bool IsAlly(unsigned char playerId) const;
-    /// Truppen bestellen
-    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned max) const;
+    /// Order troops of each rank according to `counts` without exceeding `total_max` in total
+    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned total_max) const;
     /// Prüft die Besatzung von allen Militärgebäuden und reguliert entsprechend (bei Veränderung der
     /// Militäreinstellungen)
     void RegulateAllTroops();

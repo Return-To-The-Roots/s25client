@@ -71,7 +71,7 @@ private:
     bool is_regulating_troops;
     /// Soldatenbesatzung
     OwnedSortedTroops troops;
-    std::array<unsigned, NUM_SOLDIER_RANKS> desired_troops;
+    std::array<uint8_t, NUM_SOLDIER_RANKS> troop_limits;
 
     /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
     void CancelOrders();
@@ -140,9 +140,9 @@ public:
     auto GetTroops() const { return helpers::nonNullPtrSpan(troops); }
     bool IsInTroops(const nofPassiveSoldier& soldier) const;
 
-    const unsigned* GetDesiredTroopsPointer(unsigned rank) const { return &desired_troops[rank]; }
-    unsigned GetDesiredTroops(const unsigned rank) const { return desired_troops[rank]; }
-    void SetDesiredTroops(const unsigned rank, const unsigned count);
+    /// Get/Set the maximum number of soldiers of rank `rank` allowed in this building
+    unsigned GetTroopLimit(const unsigned rank) const { return troop_limits[rank]; }
+    void SetTroopLimit(unsigned rank, unsigned limit);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
     void TakeWare(Ware* ware) override;
