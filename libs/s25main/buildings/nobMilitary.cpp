@@ -76,7 +76,7 @@ nobMilitary::~nobMilitary() = default;
 size_t nobMilitary::GetTotalSoldiers() const
 {
     size_t sum = troops.size() + ordered_troops.size() + troops_on_mission.size();
-    if(defender_ && (defender_->IsWaitingAtFlag() || defender_->IsFightingAtFlag()))
+    if(defender_)
         sum++;
     sum += /* capturing_soldiers*/ +far_away_capturers.size();
     return sum;
@@ -91,7 +91,7 @@ std::array<unsigned, NUM_SOLDIER_RANKS> nobMilitary::GetTotalSoldiersByRank() co
         ++counts[troop->GetRank()];
     for(auto& troop : troops_on_mission)
         ++counts[troop->GetRank()];
-    if(defender_ && (defender_->IsWaitingAtFlag() || defender_->IsFightingAtFlag()))
+    if(defender_)
         ++counts[defender_->GetRank()];
     for(auto& troop : far_away_capturers)
         ++counts[troop->GetRank()];
