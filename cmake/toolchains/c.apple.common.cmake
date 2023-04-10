@@ -22,6 +22,8 @@ foreach(COMPILER_PREFIX x86_64-apple-darwin22.2 i386-apple-darwin15 i686-apple-d
     endif()
 endforeach()
 
+find_program(CMAKE_AR NAMES ${usedToolchain}-ar)
+find_program(CMAKE_RANLIB NAMES ${usedToolchain}-ranlib)
 find_program(CMAKE_INSTALL_NAME_TOOL NAMES ${usedToolchain}-install_name_tool)
 
 set(OSX_SDKS
@@ -68,12 +70,19 @@ if(NOT CMAKE_SYSTEM_VERSION)
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    if(osx_version MATCHES "^1[0-9]+\\.([0-9]+)")
+    if(osx_version MATCHES "^(1[0-9]+)\\.([0-9]+)")
         #  10.x == Mac OSX 10.6 (Snow Leopard)
         #  11.x == Mac OSX 10.7 (Lion)
         #  12.x == Mac OSX 10.8 (Mountain Lion)
+        #  ...
+		#  22.x == Mac OSX 13.X
         #  etc.
-        math(EXPR majorVersion "4 + ${CMAKE_MATCH_1}")
+		if("${CMAKE_MATCH_1}" STREQUAL "10")
+			math(EXPR majorVersion "4 + ${CMAKE_MATCH_2}")
+		else()
+			math(EXPR majorVersion "9 + ${CMAKE_MATCH_1}")
+		endif()
+
         set(CMAKE_SYSTEM_VERSION "${majorVersion}.0.0")
     else()
         message(FATAL_ERROR "Could not parse SDK version: ${osx_version}")
@@ -88,4 +97,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
-set(CMAKE_SKIP_INSTALL_RPATH ON)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
