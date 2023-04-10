@@ -224,7 +224,7 @@ void Settings::Load()
         video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
         video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
         video.fullscreen = iniVideo->getBoolValue("fullscreen");
-        video.framerate = iniVideo->getIntValue("framerate");
+        video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
         // };
