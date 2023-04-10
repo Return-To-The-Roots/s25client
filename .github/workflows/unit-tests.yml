@@ -30,8 +30,8 @@ jobs:
           - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
           - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Release }
-          - { compiler: gcc-12,   os: ubuntu-22.04, buildType: Debug, cxxStandard: 14 }
-          - { compiler: gcc-12,   os: ubuntu-22.04, buildType: Release }
+          - { compiler: gcc-11,   os: ubuntu-22.04, buildType: Debug, cxxStandard: 14, boostVersion: 1.73.0 }
+          - { compiler: gcc-11,   os: ubuntu-22.04, buildType: Release,                boostVersion: 1.73.0 }
           # Linux clang
           - { compiler: clang-10, os: ubuntu-20.04, buildType: Debug }
           - { compiler: clang-11, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
