@@ -43,5 +43,5 @@ Rect ctrlText::GetBoundaryRect() const
 void ctrlText::Draw_()
 {
     if(!text.empty())
-        font->Draw(GetDrawPos(), text, format_, color_, maxWidth_);
+        font->DrawScaled(GetDrawPos(), text, format_, ScaleHeigthIf(1.0f), color_, maxWidth_);
 }

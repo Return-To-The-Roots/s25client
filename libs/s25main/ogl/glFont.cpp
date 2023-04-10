@@ -173,7 +173,15 @@ inline void glFont::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint
 void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
                   const std::string& end) const
 {
+    DrawScaled(pos, text, format, 1.0f, color, maxWidth, end);
+}
+
+void glFont::DrawScaled(DrawPoint pos, const std::string& text, FontStyle format, float scale, unsigned color,
+                        unsigned short maxWidth, const std::string& end) const
+{
     RTTR_Assert(s25util::isValidUTF8(text));
+
+    DrawPoint originalPos = pos;
 
     unsigned maxNumChars;
     unsigned short textWidth;
@@ -249,11 +257,16 @@ void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
     for(GlPoint& pt : texList.texCoords)
         pt /= texSize;
 
+    glPushMatrix();
+    glTranslatef(float(originalPos.x), float(originalPos.y), 0);
+    glScalef(scale, scale, 1);
     glVertexPointer(2, GL_FLOAT, 0, &texList.vertices[0]);
+    glTranslatef(float(-originalPos.x), float(-originalPos.y), 0);
     glTexCoordPointer(2, GL_FLOAT, 0, &texList.texCoords[0]);
     VIDEODRIVER.BindTexture(texture);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.vertices.size());
+    glPopMatrix();
 }
 
 template<bool T_limitWidth>

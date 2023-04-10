@@ -277,6 +277,8 @@ protected:
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt) const;
+    /// Gets scale for heigth only
+    float ScaleHeigthIf(float heigth) const;
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
     /// zeichnet das Fenster.

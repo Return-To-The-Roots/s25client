@@ -4,13 +4,16 @@
 
 #pragma once
 
+#define DefaultWidth 800
+#define DefaultHeigth 600
+
 /// Functor or static method to scale a window propertie from the real coordinates
 /// (relative to 800x600 resolution) to new coordinates given a size
 struct ScaleWindowPropUp
 {
     Extent size;
     ScaleWindowPropUp(const Extent& size) : size(size) {}
-
+    
     template<typename T_Pt>
     static T_Pt scale(const T_Pt& value, const Extent& size);
     template<typename T_Pt>
@@ -30,7 +33,7 @@ struct RescaleWindowProp
 template<typename T_Pt>
 inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale)
 {
-    return T_Pt(value * sizeToScale / Extent(800, 600));
+    return T_Pt(value * sizeToScale / Extent(DefaultWidth, DefaultHeigth));
 }
 
 template<typename T_Pt>
@@ -42,7 +45,7 @@ inline T_Pt ScaleWindowPropUp::operator()(const T_Pt& value) const
 template<typename T_Pt>
 inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue) const
 {
-    T_Pt realValue(oldValue.x * 800 / oldSize.x, oldValue.y * 600 / oldSize.y);
+    T_Pt realValue(oldValue.x * DefaultWidth / oldSize.x, oldValue.y * DefaultHeigth / oldSize.y);
     // Check for rounding errors
     T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize);
     if(checkValue.x < oldValue.x)

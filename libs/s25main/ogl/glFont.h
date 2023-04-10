@@ -30,6 +30,9 @@ public:
     /// appended (included in maxWidth)
     void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE,
               unsigned short maxWidth = 0xFFFF, const std::string& end = "...") const;
+   
+    void DrawScaled(DrawPoint pos, const std::string& text, FontStyle format, float scale, unsigned color = COLOR_WHITE,
+                    unsigned short maxWidth = 0xFFFF, const std::string& end = "...") const;
 
     /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will
     /// be set to the maximum number of chars (not glyphs!) that fit into the width

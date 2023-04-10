@@ -541,6 +541,11 @@ T_Pt Window::ScaleIf(const T_Pt& pt) const
     return scale_ ? Scale(pt) : pt;
 }
 
+float Window::ScaleHeigthIf(float heigth) const
+{
+    return scale_ ? float(Scale(Point<float>(heigth, heigth)).y) : heigth;
+}
+
 // Inlining removes those. so add it here
 template DrawPoint Window::ScaleIf(const DrawPoint&) const;
 template Extent Window::ScaleIf(const Extent&) const;
