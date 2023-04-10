@@ -25,6 +25,8 @@ jobs:
           # MacOSX
           - { compiler: clang,    os: macos-12,     buildType: Debug, cxxStandard: 14 }
           # Linux GCC
+          # GCC 9 is known to show a few warnings that GCC 10 has "fixed", make sure this doesn't happen for us
+          - { compiler: gcc-9,    os: ubuntu-20.04, buildType: Debug }
           - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
           - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: gcc-10,   os: ubuntu-20.04, buildType: Release, cxxStandard: 14 }
@@ -33,7 +35,7 @@ jobs:
           - { compiler: clang-11, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: clang-11, os: ubuntu-20.04, buildType: Release, cxxStandard: 14 }
           # Linux Latest GCC
-          #- { compiler: gcc-12,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, coverage: true }
+          - { compiler: gcc-12,   os: ubuntu-22.04, buildType: Debug, cxxStandard: 14, coverage: true }
           # Linux Latest clang
           - { compiler: clang-16, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
 
