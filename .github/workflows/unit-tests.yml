@@ -35,7 +35,7 @@ jobs:
           - { compiler: clang-11, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
           - { compiler: clang-11, os: ubuntu-20.04, buildType: Release, cxxStandard: 14 }
           # Linux Latest GCC
-          - { compiler: gcc-12,   os: ubuntu-22.04, buildType: Debug, cxxStandard: 14, coverage: true }
+          - { compiler: gcc-11,   os: ubuntu-22.04, buildType: Debug, cxxStandard: 14, boostVersion: 1.73.0 }
           # Linux Latest clang
           - { compiler: clang-16, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
 
