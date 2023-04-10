@@ -203,8 +203,8 @@ BOOST_AUTO_TEST_CASE(Serialization)
         BOOST_TEST(msgOut->player2 == msgIn.player2);
     }
     {
-        const GameMessage_Map_Info msgIn(randString(), randomEnum<MapType>(), randomValue<unsigned>(),
-                                         randomValue<unsigned>(), randomValue<unsigned>(), randomValue<unsigned>());
+        auto rv = [] { return randomValue<unsigned>(); };
+        const GameMessage_Map_Info msgIn(randString(), randomEnum<MapType>(), rv(), rv(), rv(), rv());
         const auto msgOut = serializeDeserializeMessage(msgIn);
         BOOST_TEST(msgOut->filename == msgIn.filename);
         BOOST_TEST(msgOut->mt == msgIn.mt);

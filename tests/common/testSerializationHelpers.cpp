@@ -32,6 +32,7 @@ std::ostream& operator<<(std::ostream& os, TestEnum e)
 {
     return os << static_cast<unsigned>(e);
 }
+// LCOV_EXCL_STOP
 } // namespace
 
 BOOST_AUTO_TEST_SUITE(Serialization)
