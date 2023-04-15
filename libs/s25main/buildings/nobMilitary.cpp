@@ -85,15 +85,15 @@ size_t nobMilitary::GetTotalSoldiers() const
 std::array<unsigned, NUM_SOLDIER_RANKS> nobMilitary::GetTotalSoldiersByRank() const
 {
     std::array<unsigned, NUM_SOLDIER_RANKS> counts = {0};
-    for(auto& troop : troops)
+    for(const auto& troop : troops)
         ++counts[troop->GetRank()];
-    for(auto& troop : ordered_troops)
+    for(const auto& troop : ordered_troops)
         ++counts[troop->GetRank()];
-    for(auto& troop : troops_on_mission)
+    for(const auto& troop : troops_on_mission)
         ++counts[troop->GetRank()];
     if(defender_)
         ++counts[defender_->GetRank()];
-    for(auto& troop : far_away_capturers)
+    for(const auto& troop : far_away_capturers)
         ++counts[troop->GetRank()];
     return counts;
 }
@@ -444,21 +444,20 @@ void nobMilitary::RegulateTroops()
                     notNeededSoldiers.push_back(*it);
                     it = ordered_troops.erase(it);
                     --excess;
-                }
-                else
+                } else
                 {
                     ++it;
                 }
             }
             for(auto* notNeededSoldier : notNeededSoldiers)
                 notNeededSoldier->NotNeeded();
-        }
-        else
+        } else
         {
             // This bit is for ordering troops later
             lack[rank] = troop_limits[rank] - counts[rank];
         }
-        if(excess > 0 && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false))
+        if(excess > 0
+           && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false))
         {
             for(auto it = troops.begin(); excess && it != troops.end() && troops.size() > 1;)
             {
@@ -468,8 +467,7 @@ void nobMilitary::RegulateTroops()
                     AddLeavingFigure(std::move(*it));
                     it = troops.erase(it);
                     --excess;
-                }
-                else
+                } else
                 {
                     ++it;
                 }

@@ -1424,8 +1424,8 @@ void AIPlayerJH::MilUpgradeOptim()
                         for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
                             aii.SetTroopLimit(milBld->GetPos(), rank, 0);
 
-                        // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it uses
-                        // only SetTroopLimit then this can be removed
+                        // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it
+                        // uses only SetTroopLimit then this can be removed
                         for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
                             aii.SetTroopLimit(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
                     } else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier

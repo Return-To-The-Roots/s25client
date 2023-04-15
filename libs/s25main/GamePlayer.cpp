@@ -1173,7 +1173,8 @@ bool GamePlayer::IsAttackable(const unsigned char playerId) const
         return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
 }
 
-void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned total_max) const
+void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts,
+                             unsigned total_max) const
 {
     // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
     nobBaseWarehouse* wh;

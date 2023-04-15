@@ -248,7 +248,7 @@ public:
     }
     /// Order troops of each rank according to `counts` without exceeding `max` in total. The number of soldiers
     /// of each rank that is sent out is subtracted from the corresponding count in `counts` and from `max`.
-    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> &counts, unsigned &max);
+    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max);
 
     /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
     nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;

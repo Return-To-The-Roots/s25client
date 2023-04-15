@@ -868,7 +868,7 @@ void nobBaseWarehouse::TakeWare(Ware* ware)
     dependent_wares.push_back(ware);
 }
 
-void nobBaseWarehouse::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> &counts, unsigned &max)
+void nobBaseWarehouse::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max)
 {
     unsigned start, limit;
     int step;
@@ -879,8 +879,7 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_S
         start = SOLDIER_JOBS.size();
         step = -1;
         limit = 0;
-    }
-    else
+    } else
     {
         // Ränge durchgehen, aufsteigend, schwache zuerst
         start = 1;
