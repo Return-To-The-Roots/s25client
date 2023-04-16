@@ -90,7 +90,7 @@ void Settings::LoadDefaults()
         video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
         video.fullscreen = false;
     }
-    video.vsync = 0;
+    video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
     video.shared_textures = true;
     // }
@@ -224,7 +224,7 @@ void Settings::Load()
         video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
         video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
         video.fullscreen = iniVideo->getBoolValue("fullscreen");
-        video.vsync = iniVideo->getBoolValue("vsync");
+        video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
         // };
@@ -402,7 +402,7 @@ void Settings::Save()
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
     iniVideo->setValue("fullscreen", video.fullscreen);
-    iniVideo->setValue("vsync", video.vsync);
+    iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.shared_textures);
     // };

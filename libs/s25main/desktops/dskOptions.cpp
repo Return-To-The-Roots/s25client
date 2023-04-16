@@ -72,8 +72,8 @@ enum
     ID_cbResolution,
     ID_txtFullscreen,
     ID_grpFullscreen,
-    ID_txtVSync,
-    ID_cbVSync,
+    ID_txtFramerate,
+    ID_cbFramerate,
     ID_txtVBO,
     ID_grpVBO,
     ID_txtVideoDriver,
@@ -275,9 +275,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->AddTextButton(ID_btOff, DrawPoint(280, 125), Extent(190, 22), TextureColor::Grey, _("Windowed"),
                                NormalFont);
 
-    // "VSync"
-    groupGrafik->AddText(ID_txtVSync, DrawPoint(80, 180), _("Limit Framerate:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    groupGrafik->AddComboBox(ID_cbVSync, DrawPoint(280, 175), Extent(390, 22), TextureColor::Grey, NormalFont, 150);
+    groupGrafik->AddText(ID_txtFramerate, DrawPoint(80, 180), _("Limit Framerate:"), COLOR_YELLOW, FontStyle{},
+                         NormalFont);
+    groupGrafik->AddComboBox(ID_cbFramerate, DrawPoint(280, 175), Extent(390, 22), TextureColor::Grey, NormalFont, 150);
 
     // "VBO"
     groupGrafik->AddText(ID_txtVBO, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, FontStyle{},
@@ -382,7 +382,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupGrafik->GetCtrl<ctrlOptionGroup>(ID_grpFullscreen)->SetSelection(SETTINGS.video.fullscreen); //-V807
 
     // "Limit Framerate" füllen
-    auto* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(ID_cbVSync);
+    auto* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(ID_cbFramerate);
     if(VIDEODRIVER.HasVSync())
         cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
     for(int framerate : Settings::SCREEN_REFRESH_RATES)
@@ -391,7 +391,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
             cbFrameRate->AddString(_("Disabled"));
         else
             cbFrameRate->AddString(helpers::toString(framerate) + " FPS");
-        if(SETTINGS.video.vsync == framerate)
+        if(SETTINGS.video.framerate == framerate)
             cbFrameRate->SetSelection(cbFrameRate->GetNumItems() - 1);
     }
     if(!cbFrameRate->GetSelection())
@@ -478,17 +478,17 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                   ->SetEnabled(true);
             break;
         case ID_cbResolution: SETTINGS.video.fullscreenSize = video_modes[selection]; break;
-        case ID_cbVSync:
+        case ID_cbFramerate:
             if(VIDEODRIVER.HasVSync())
             {
                 if(selection == 0)
-                    SETTINGS.video.vsync = 0;
+                    SETTINGS.video.framerate = 0;
                 else
-                    SETTINGS.video.vsync = Settings::SCREEN_REFRESH_RATES[selection - 1];
+                    SETTINGS.video.framerate = Settings::SCREEN_REFRESH_RATES[selection - 1];
             } else
-                SETTINGS.video.vsync = Settings::SCREEN_REFRESH_RATES[selection];
+                SETTINGS.video.framerate = Settings::SCREEN_REFRESH_RATES[selection];
 
-            VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync);
+            VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate);
             break;
         case ID_cbVideoDriver: SETTINGS.driver.video = combo->GetText(selection); break;
         case ID_cbAudioDriver: SETTINGS.driver.audio = combo->GetText(selection); break;

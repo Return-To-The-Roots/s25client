@@ -26,11 +26,11 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
 {
     SetScale(true);
     SetFpsDisplay(true);
-    // By default limit the maximum frame rate to 60 FPS
-    if(SETTINGS.video.vsync < 0)
+    // By default limit the maximum frame rate to 60 FPS - used for main menu
+    if(SETTINGS.video.framerate < 0)
         VIDEODRIVER.setTargetFramerate(60);
     else
-        VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync);
+        VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate);
     UpdateFps(VIDEODRIVER.GetFPS());
 }
 
