@@ -18,7 +18,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Extract tag name
         id: get_tag
         run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"

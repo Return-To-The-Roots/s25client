@@ -62,16 +62,16 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
     if(!kernel32 || !dbghelp)
         return false;
 
-#if __GNUC__ >= 9
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-function-type"
-    // error: cast between incompatible function types from
-    // 'FARPROC' {aka 'int (__attribute__((stdcall)) *)()'}
-    // to
-    // 'RtlCaptureContextType' {aka 'void (__attribute__((stdcall)) *)(CONTEXT*)'}
-    // [-Werror=cast-function-type]
-    // and so on
-#endif
+#            if __GNUC__ >= 9
+#                pragma GCC diagnostic push
+#                pragma GCC diagnostic ignored "-Wcast-function-type"
+        // error: cast between incompatible function types from
+        // 'FARPROC' {aka 'int (__attribute__((stdcall)) *)()'}
+        // to
+        // 'RtlCaptureContextType' {aka 'void (__attribute__((stdcall)) *)(CONTEXT*)'}
+        // [-Werror=cast-function-type]
+        // and so on
+#            endif
     RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
 
     SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
@@ -81,9 +81,9 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
       (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
     PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 =
       (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
-#if __GNUC__ >= 9
-#pragma GCC diagnostic pop
-#endif
+#            if __GNUC__ >= 9
+#                pragma GCC diagnostic pop
+#            endif
 
     if(!SymInitialize || !StackWalk64 || !SymFunctionTableAccess64 || !SymGetModuleBase64 || !RtlCaptureContext)
         return false;
