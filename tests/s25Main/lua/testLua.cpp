@@ -654,6 +654,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     BOOST_TEST_REQUIRE(serData.GetLength() == 0u);
     BOOST_TEST_REQUIRE(lua.Deserialize(serData));
     lua.EventOccupied(1, pt1);
+    lua.EventAttack(0, 1, 5);
     lua.EventExplored(1, pt2, 0);
     lua.EventGameFrame(0);
     lua.EventResourceFound(1, pt3, ResourceType::Gold, 1);
@@ -730,6 +731,12 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // Else owner-1 = playerIdx
     lua.EventExplored(0, pt2, 2);
     BOOST_TEST_REQUIRE(getLog() == (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % 1).str());
+
+    executeLua(
+      "function onAttack(attacker_player_id, defender_player_id, attacker_count)\n"
+      "  rttr:Log('attack: '..attacker_player_id..'->'..defender_player_id..' (Attacker: '..attacker_count..')')\nend");
+    lua.EventAttack(0, 1, 4);
+    BOOST_TEST_REQUIRE(getLog() == (boost::format("attack: %1%->%2% (Attacker: %3%)\n") % 0 % 1 % 4).str());
 
     executeLua("function onGameFrame(gameframe_number)\n  rttr:Log('gf: '..gameframe_number)\nend");
     lua.EventGameFrame(0);

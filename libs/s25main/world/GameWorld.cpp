@@ -786,6 +786,11 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
         pa.soldier->getHome()->SendAttacker(pa.soldier, *attacked_building);
         curNumSoldiers++;
     }
+
+    if(curNumSoldiers > 0 && HasLua())
+    {
+        GetLua().EventAttack(player_attacker, attacked_building->GetPlayer(), curNumSoldiers);
+    }
 }
 
 /// Compare sea attackers by their rank, then by their distance
@@ -828,6 +833,11 @@ void GameWorld::AttackViaSea(const unsigned char player_attacker, const MapPoint
             break;
         pa.soldier->getHome()->SendAttacker(pa.soldier, attacked_building, pa.harbor);
         counter++;
+    }
+
+    if(counter > 0 && HasLua())
+    {
+        GetLua().EventAttack(player_attacker, attacked_building.GetPlayer(), counter);
     }
 }
 

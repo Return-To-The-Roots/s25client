@@ -75,6 +75,10 @@ Needs to return true on success or false on error.
 **onOccupied(playerIdx, x, y)**  
 Called every time a point on the map gets occupied by a player.
 
+**onAttack(attackerPlayerId, defenderPlayerId, attackerCount)**  
+Called every time a player attacks another player. The attackerCount is the number
+of attackers send out.
+
 **onExplored(playerIdx, x, y, owner)**  
 Called every time a point on the map becomes visible for a player.
 The owner parameter contains the owner's player id, _nil_ means that there is no owner.

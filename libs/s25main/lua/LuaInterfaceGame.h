@@ -31,6 +31,7 @@ public:
 
     void EventExplored(unsigned player, MapPoint pt, unsigned char owner);
     void EventOccupied(unsigned player, MapPoint pt);
+    void EventAttack(unsigned char attackerPlayerId, unsigned char defenderPlayerId, unsigned attackerCount);
     void EventStart(bool isFirstStart);
     void EventGameFrame(unsigned nr);
     void EventResourceFound(unsigned char player, MapPoint pt, ResourceType type, unsigned char quantity);
