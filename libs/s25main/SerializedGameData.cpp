@@ -86,16 +86,17 @@
 /// Then reset this number to 1.
 /// TODO: Let GO_Type start at 0 again when resetting this
 /// Changelog:
-/// 2: All player buildings together, variable width size for containers and ship names
-/// 3: Landscape and terrain names stored as strings
-/// 4: HunterWaitingForAnimalReady introduced as sub-state of HunterFindingShootingpoint
-/// 5: Make RoadPathDirection contiguous and use optional for ware in nofBuildingWorker
-/// 6: Make TradeDirection contiguous, Serialize only nobUsuals in BuildingRegister::buildings,
-///    include water and fish in geologists resourceFound
-/// 7: Use helpers::push/popContainer (uses var size)
-/// 8: noFlag::Wares converted to static_vector
-/// 9: Drop serialization of node BQ
-static const unsigned currentGameDataVersion = 9;
+///  2: All player buildings together, variable width size for containers and ship names
+///  3: Landscape and terrain names stored as strings
+///  4: HunterWaitingForAnimalReady introduced as sub-state of HunterFindingShootingpoint
+///  5: Make RoadPathDirection contiguous and use optional for ware in nofBuildingWorker
+///  6: Make TradeDirection contiguous, Serialize only nobUsuals in BuildingRegister::buildings,
+///     include water and fish in geologists resourceFound
+///  7: Use helpers::push/popContainer (uses var size)
+///  8: noFlag::Wares converted to static_vector
+///  9: Drop serialization of node BQ
+/// 10: nofMiner saves isAlteredWorkcycle boolean variable
+static const unsigned currentGameDataVersion = 10;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

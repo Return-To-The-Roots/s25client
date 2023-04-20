@@ -38,6 +38,7 @@ protected:
 
     /// Looks for a point with a given resource on the node
     MapPoint FindPointWithResource(ResourceType type) const;
+    MapPoint FindPointWithResource(ResourceType type, unsigned radius) const;
 
 public:
     /// Going to workplace

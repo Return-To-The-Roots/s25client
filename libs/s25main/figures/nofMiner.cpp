@@ -5,18 +5,27 @@
 #include "nofMiner.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
+#include <gameData/GameConsts.h>
+#include <random/Random.h>
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(Job::Miner, pos, player, workplace)
+    : nofWorkman(Job::Miner, pos, player, workplace), isAlteredWorkcycle(false)
 {}
 
-nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
+nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+{
+    if(sgd.GetGameDataVersion() >= 10)
+        isAlteredWorkcycle = sgd.PopBool();
+    else
+        isAlteredWorkcycle = false;
+}
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
@@ -60,6 +69,9 @@ unsigned short nofMiner::GetCarryID() const
 
 helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
+    if(isAlteredWorkcycle)
+        return boost::none;
+
     switch(workplace->GetBuildingType())
     {
         case BuildingType::GoldMine: return GoodType::Gold;
@@ -71,20 +83,103 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 
 bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+    if(!nofWorkman::AreWaresAvailable())
+        return false;
+
+    const MiningBehavior addonSetting = GetMiningBehavior();
+
+    if(addonSetting == MiningBehavior::AlwaysAvailable)
+        return true;
+
+    if(addonSetting == MiningBehavior::S4Like)
+        return FindPointWithResource(GetRequiredResType(), MINER_ORE_RADIUS_SETTLERSIV).isValid();
+    else
+        return FindPointWithResource(GetRequiredResType()).isValid();
+}
+
+MiningBehavior nofMiner::GetMiningBehavior() const
+{
+    const GlobalGameSettings& settings = world->GetGGS();
+
+    auto miningBehavior = MiningBehavior::Normal;
+
+    switch(workplace->GetBuildingType())
+    {
+        case BuildingType::GoldMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_GOLD));
+            break;
+        case BuildingType::IronMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_IRON));
+            break;
+        case BuildingType::CoalMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_COAL));
+            break;
+        case BuildingType::GraniteMine:
+            miningBehavior = static_cast<MiningBehavior>(settings.getSelection(AddonId::MINING_OVERHAUL_GRANITE));
+            break;
+        default: miningBehavior = MiningBehavior::Normal;
+    }
+
+    return miningBehavior;
 }
 
 bool nofMiner::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(GetRequiredResType());
-    if(!resPt.isValid())
-        return false;
-    const GlobalGameSettings& settings = world->GetGGS();
-    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                            || (workplace->GetBuildingType() == BuildingType::GraniteMine
-                                && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
-    if(!inexhaustibleRes)
-        world->ReduceResource(resPt);
+    isAlteredWorkcycle = false;
+
+    switch(GetMiningBehavior())
+    {
+        case MiningBehavior::S4Like:
+        {
+            int sumResAmount = 0;
+            MapPoint nonMinimumResPt;
+
+            const std::vector<MapPoint> reachablePts =
+              world->GetPointsInRadiusWithCenter(workplace->GetPos(), MINER_ORE_RADIUS_SETTLERSIV);
+
+            for(const MapPoint curPt : reachablePts)
+            {
+                const Resource resource = world->GetNode(curPt).resources;
+
+                if(resource.getType() != GetRequiredResType())
+                    continue;
+
+                const auto resAmount = resource.getAmount();
+                sumResAmount += resAmount;
+
+                if(resAmount > 1u && !nonMinimumResPt.isValid())
+                    nonMinimumResPt = curPt;
+            }
+
+            // depending on remaining resources, roll if this workcycle needs to be altered or not
+            if(RANDOM_RAND(reachablePts.size() * MAX_ORE_QUANTITY) > sumResAmount)
+            {
+                isAlteredWorkcycle = true;
+            } else
+            {
+                if(nonMinimumResPt.isValid())
+                    world->ReduceResource(nonMinimumResPt);
+            }
+        }
+        break;
+        case MiningBehavior::Inexhaustible:
+        {
+            if(!FindPointWithResource(GetRequiredResType()).isValid())
+                return false;
+        }
+        break;
+        case MiningBehavior::AlwaysAvailable: break;
+        case MiningBehavior::Normal:
+        {
+            const MapPoint resPt = FindPointWithResource(GetRequiredResType());
+            if(!resPt.isValid())
+                return false;
+
+            world->ReduceResource(resPt);
+        }
+        break;
+    }
+
     return nofWorkman::StartWorking();
 }
 
@@ -97,4 +192,13 @@ ResourceType nofMiner::GetRequiredResType() const
         case BuildingType::CoalMine: return ResourceType::Coal;
         default: return ResourceType::Granite;
     }
+}
+
+void nofMiner::Serialize(SerializedGameData& sgd) const
+{
+    nofWorkman::Serialize(sgd);
+
+    sgd.PushBool(isAlteredWorkcycle);
+
+    sgd.GetGameDataVersion();
 }

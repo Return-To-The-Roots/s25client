@@ -86,6 +86,15 @@ public:
     template<class T_IsValidPt>
     bool CheckPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid, bool includePt) const;
 
+    /// Returns number of points in the given radius
+    /// If includePt is true, then the point itself is also counted
+    constexpr unsigned GetNumPointsInRadius(unsigned radius, bool includePt) const
+    {
+        // For every additional radius we get 6 * curRadius more points. Hence we have 6 * sum(1..radius) points + the
+        // center point if requested This can be reduced via the gauss formula to the following:
+        return (radius * radius + radius) * 3u + (includePt ? 1u : 0u);
+    }
+
     /// Return the distance between 2 points on the map (includes wrapping around map borders)
     unsigned CalcDistance(const Position& p1, const Position& p2) const;
     unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const
@@ -122,9 +131,7 @@ detail::GetPointsResult_t<T_TransformPt> MapBase::GetPointsInRadius(const MapPoi
         result.reserve(T_maxResults);
     else if(std::is_same<T_IsValidPt, AlwaysTrue>::value)
     {
-        // For every additional radius we get 6 * curRadius more points. Hence we have 6 * sum(1..radius) points + the
-        // center point if requested This can be reduced via the gauss formula to the following:
-        result.reserve((radius * radius + radius) * 3u + (includePt ? 1u : 0u));
+        result.reserve(GetNumPointsInRadius(radius, includePt));
     }
     if(includePt)
     {
