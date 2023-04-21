@@ -38,10 +38,8 @@ public:
     bool SetBuildingSite(MapPoint pt, BuildingType bt);
     /// Destroys a building on a spot
     bool DestroyBuilding(MapPoint pt);
-    /// send out soldiers
-    bool SendSoldiersHome(MapPoint pt);
-    /// order new soldiers
-    bool OrderNewSoldiers(MapPoint pt);
+    /// Set garrison size of a military building
+    bool SetTroopLimit(MapPoint pt, unsigned char rank, unsigned limit);
     bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);

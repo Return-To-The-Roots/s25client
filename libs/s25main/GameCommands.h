@@ -211,29 +211,30 @@ public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
-/// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
-class SendSoldiersHome : public Coords
+/// Set the desired garrison size of a military building
+class SetTroopLimit : public Coords
 {
     GC_FRIEND_DECL;
+    const uint8_t rank;
+    const uint32_t count;
 
 protected:
-    SendSoldiersHome(const MapPoint pt) : Coords(GCType::SendSoldiersHome, pt) {}
-    SendSoldiersHome(Serializer& ser) : Coords(GCType::SendSoldiersHome, ser) {}
+    SetTroopLimit(const MapPoint pt, const uint8_t rank, const uint32_t count)
+        : Coords(GCType::SetTroopLimit, pt), rank(rank), count(count)
+    {}
+    SetTroopLimit(Serializer& ser)
+        : Coords(GCType::SetTroopLimit, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+    {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
-};
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
 
-/// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
-class OrderNewSoldiers : public Coords
-{
-    GC_FRIEND_DECL;
+        ser.PushUnsignedChar(rank);
+        ser.PushUnsignedInt(count);
+    }
 
-protected:
-    OrderNewSoldiers(const MapPoint pt) : Coords(GCType::OrderNewSoldiers, pt) {}
-    OrderNewSoldiers(Serializer& ser) : Coords(GCType::OrderNewSoldiers, ser) {}
-
-public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 

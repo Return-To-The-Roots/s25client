@@ -58,6 +58,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
             size = 0xFF;
             break;
     }
+    troop_limits.fill(GetMaxTroopsCt());
 
     // Tür aufmachen, bis Gebäude besetzt ist
     OpenDoor();
@@ -75,10 +76,26 @@ nobMilitary::~nobMilitary() = default;
 size_t nobMilitary::GetTotalSoldiers() const
 {
     size_t sum = troops.size() + ordered_troops.size() + troops_on_mission.size();
-    if(defender_ && (defender_->IsWaitingAtFlag() || defender_->IsFightingAtFlag()))
+    if(defender_)
         sum++;
     sum += /* capturing_soldiers*/ +far_away_capturers.size();
     return sum;
+}
+
+std::array<unsigned, NUM_SOLDIER_RANKS> nobMilitary::GetTotalSoldiersByRank() const
+{
+    std::array<unsigned, NUM_SOLDIER_RANKS> counts = {0};
+    for(const auto& troop : troops)
+        ++counts[troop->GetRank()];
+    for(const auto& troop : ordered_troops)
+        ++counts[troop->GetRank()];
+    for(const auto& troop : troops_on_mission)
+        ++counts[troop->GetRank()];
+    if(defender_)
+        ++counts[defender_->GetRank()];
+    for(const auto& troop : far_away_capturers)
+        ++counts[troop->GetRank()];
+    return counts;
 }
 
 void nobMilitary::DestroyBuilding()
@@ -136,6 +153,7 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(ordered_coins, true);
     sgd.PushObjectContainer(troops, true);
     sgd.PushObjectContainer(far_away_capturers, true);
+    helpers::pushContainer(sgd, troop_limits);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
@@ -148,6 +166,11 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     sgd.PopObjectContainer(ordered_coins, GO_Type::Ware);
     sgd.PopObjectContainer(troops, GO_Type::NofPassivesoldier);
     sgd.PopObjectContainer(far_away_capturers, GO_Type::NofAttacker);
+
+    if(sgd.GetGameDataVersion() < 10)
+        troop_limits.fill(GetMaxTroopsCt());
+    else
+        helpers::popContainer(sgd, troop_limits);
 
     // ins Militärquadrat einfügen
     world->GetMilitarySquares().Add(this);
@@ -282,6 +305,8 @@ void nobMilitary::HandleEvent(const unsigned id)
                 --numCoins;
                 world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, 1);
 
+                RegulateTroops();
+
                 // Evtl neues Beförderungsevent anmelden
                 PrepareUpgrading();
 
@@ -401,6 +426,55 @@ void nobMilitary::RegulateTroops()
 
     is_regulating_troops = true;
 
+    // This only has an effect if the military control addon is in use and the troop limits have been lowered.
+    std::array<unsigned, NUM_SOLDIER_RANKS> counts = GetTotalSoldiersByRank();
+    std::array<unsigned, NUM_SOLDIER_RANKS> lack;
+    for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; rank++)
+    {
+        int excess = counts[rank] - troop_limits[rank];
+        if(excess > 0)
+        {
+            lack[rank] = 0;
+
+            std::vector<nofPassiveSoldier*> notNeededSoldiers;
+            for(auto it = ordered_troops.begin(); excess && it != ordered_troops.end();)
+            {
+                if((*it)->GetRank() == rank)
+                {
+                    notNeededSoldiers.push_back(*it);
+                    it = ordered_troops.erase(it);
+                    --excess;
+                } else
+                {
+                    ++it;
+                }
+            }
+            for(auto* notNeededSoldier : notNeededSoldiers)
+                notNeededSoldier->NotNeeded();
+        } else
+        {
+            // This bit is for ordering troops later
+            lack[rank] = troop_limits[rank] - counts[rank];
+        }
+        if(excess > 0
+           && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false))
+        {
+            for(auto it = troops.begin(); excess && it != troops.end() && troops.size() > 1;)
+            {
+                if((*it)->GetRank() == rank)
+                {
+                    (*it)->LeaveBuilding();
+                    AddLeavingFigure(std::move(*it));
+                    it = troops.erase(it);
+                    --excess;
+                } else
+                {
+                    ++it;
+                }
+            }
+        }
+    }
+
     // Zu viele oder zu wenig Truppen?
     int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
     if(diff < 0)
@@ -485,7 +559,7 @@ void nobMilitary::RegulateTroops()
             }
         }
         if(mightHaveRoad)
-            world->GetPlayer(player).OrderTroops(this, diff);
+            world->GetPlayer(player).OrderTroops(this, lack, diff);
     }
 
     is_regulating_troops = false;
@@ -503,69 +577,10 @@ unsigned nobMilitary::CalcRequiredNumTroops(FrontierDistance assumedFrontierDist
            + 1;
 }
 
-void nobMilitary::SendSoldiersHome()
+void nobMilitary::SetTroopLimit(const unsigned rank, const unsigned limit)
 {
-    int diff = 1 - static_cast<int>(GetTotalSoldiers());
-    if(diff
-       < 0) // poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier
-            // and this last one would count twice here and result in a returning soldier that shouldnt return.
-    {
-        // Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-        if(!world->GetPlayer(player).FindWarehouse(*this, FW::NoCondition(), true, false))
-            return;
-        int mrank = -1;
-        for(auto it = troops.rbegin(); diff && troops.size() > 1; ++diff)
-        {
-            if(mrank < 0) // set mrank = highest rank
-                mrank = (*it)->GetRank();
-            else if(mrank > (*it)->GetRank()) // if the current soldier is of lower rank than what we started with ->
-                                              // send no more troops out
-                return;
-            (*it)->LeaveBuilding();
-            AddLeavingFigure(std::move(*it));
-            it = helpers::erase_reverse(troops, it);
-        }
-    }
-}
-
-// used by the ai to refill the upgradebuilding with low rank soldiers! - normal orders for soldiers are done in
-// RegulateTroops!
-void nobMilitary::OrderNewSoldiers()
-{
-    const GlobalGameSettings& ggs = world->GetGGS();
-    // No other ranks -> Don't send soldiers back
-    if(ggs.GetMaxMilitaryRank() == 0)
-        return;
-    // cancel all max ranks on their way to this building
-    std::vector<nofPassiveSoldier*> noNeed;
-    for(auto it = ordered_troops.begin(); it != ordered_troops.end();)
-    {
-        if((*it)->GetRank() >= ggs.GetMaxMilitaryRank())
-        {
-            nofPassiveSoldier* soldier = *it;
-            it = ordered_troops.erase(it);
-            noNeed.push_back(soldier);
-        } else
-            ++it;
-    }
-
-    int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
-    // order new troops now
-    if(diff > 0)
-    {
-        // Zu wenig Truppen
-        // Gebäude wird angegriffen und
-        // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if(IsUnderAttack() && ggs.getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
-        {
-            diff = (world->GetPlayer(player).GetMilitarySetting(2) * diff) / MILITARY_SETTINGS_SCALE[2];
-        }
-        world->GetPlayer(player).OrderTroops(this, diff, true);
-    }
-    // now notify the max ranks we no longer wanted (they will pick a new target which may be the same building that is
-    // why we cancel them after ordering new ones in the hope to get low ranks instead)
-    for(auto* sld : noNeed)
-        sld->NotNeeded();
+    troop_limits[rank] = limit;
+    RegulateTroops();
 }
 
 bool nobMilitary::IsUseless() const
@@ -906,6 +921,9 @@ void nobMilitary::Capture(const unsigned char new_owner)
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
     world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
+
+    // Reset desired troop setting
+    troop_limits.fill(GetMaxTroopsCt());
 
     // Soldaten, die auf Mission sind, Bescheid sagen
     for(auto* it : troops_on_mission)

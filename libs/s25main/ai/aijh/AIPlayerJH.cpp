@@ -1369,9 +1369,17 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
     const auto* mil = gwb.GetSpecObj<nobMilitary>(pt);
     if(mil)
     {
-        if(mil->GetFrontierDistance() != FrontierDistance::Far && mil->IsGoldDisabled())
+        if(mil->GetFrontierDistance() != FrontierDistance::Far)
         {
-            aii.SetCoinsAllowed(pt, true);
+            if(mil->IsGoldDisabled())
+                aii.SetCoinsAllowed(pt, true);
+
+            // Fill up with soldiers
+            for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+            {
+                if(mil->GetTroopLimit(rank) != mil->GetMaxTroopsCt())
+                    aii.SetTroopLimit(mil->GetPos(), rank, mil->GetMaxTroopsCt());
+            }
         }
         if(mil->GetBuildingType() != construction->GetBiggestAllowedMilBuilding())
         {
@@ -1412,7 +1420,14 @@ void AIPlayerJH::MilUpgradeOptim()
                 {
                     if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
                     {
-                        aii.SendSoldiersHome(milBld->GetPos());
+                        aii.SetTroopLimit(milBld->GetPos(), 0, 1);
+                        for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
+                            aii.SetTroopLimit(milBld->GetPos(), rank, 0);
+
+                        // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it
+                        // uses only SetTroopLimit then this can be removed
+                        for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+                            aii.SetTroopLimit(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
                     } else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier
                                                      // at some point and the building is not new on the list-> cancel
                                                      // road (and fix roadsystem if necessary)
@@ -1442,11 +1457,11 @@ void AIPlayerJH::MilUpgradeOptim()
             {
                 aii.SetCoinsAllowed(milBld->GetPos(), true);
             }
-            if(milBld->HasMaxRankSoldier()) // has max rank soldier? send it/them out!
-                aii.SendSoldiersHome(milBld->GetPos());
-            if(SoldierAvailable(0)
-               && milBld->GetNumTroops() < milBld->GetMaxTroopsCt()) // building not full and privates in a warehouse?
-                aii.OrderNewSoldiers(milBld->GetPos());              // order new!
+            // Keep 0 max rank soldiers, 1 of each other rank and fill the rest with privates
+            aii.SetTroopLimit(milBld->GetPos(), 0, milBld->GetMaxTroopsCt());
+            for(unsigned rank = 1; rank < ggs.GetMaxMilitaryRank(); ++rank)
+                aii.SetTroopLimit(milBld->GetPos(), rank, 1);
+            aii.SetTroopLimit(milBld->GetPos(), ggs.GetMaxMilitaryRank(), 0);
         }
         count++;
     }

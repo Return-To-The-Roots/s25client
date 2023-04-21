@@ -691,7 +691,9 @@ void nobHarborBuilding::AddFigure(std::unique_ptr<noFigure> figure, const bool i
     // Brauchen wir einen Bauarbeiter für die Expedition?
     if(figure->GetJobType() == Job::Builder && expedition.active && !expedition.builder)
     {
-        nobBaseWarehouse::RemoveDependentFigure(*figure);
+        // Make sure the figure came from outside and was not already here waiting for a ship
+        if(IsDependentFigure(*figure))
+            nobBaseWarehouse::RemoveDependentFigure(*figure);
         GetEvMgr().AddToKillList(std::move(figure));
 
         expedition.builder = true;
@@ -701,7 +703,9 @@ void nobHarborBuilding::AddFigure(std::unique_ptr<noFigure> figure, const bool i
     // Brauchen wir einen Spähter für die Expedition?
     else if(figure->GetJobType() == Job::Scout && exploration_expedition.active && !IsExplorationExpeditionReady())
     {
-        nobBaseWarehouse::RemoveDependentFigure(*figure);
+        // Make sure the figure came from outside and was not already here waiting for a ship
+        if(IsDependentFigure(*figure))
+            nobBaseWarehouse::RemoveDependentFigure(*figure);
         GetEvMgr().AddToKillList(std::move(figure));
 
         ++exploration_expedition.scouts;
