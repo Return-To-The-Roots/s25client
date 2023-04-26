@@ -75,7 +75,7 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    if(!textures.bmp)
+    if(IsAnimated() || !textures.bmp)
     {
         textures = getTextures(file, id);
         RTTR_Assert(textures.bmp);
@@ -92,13 +92,11 @@ void noStaticObject::Draw(DrawPoint drawPt)
 noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsigned short id)
 {
     Textures textures{};
-    if(file == 0xFFFF)
-    {
-        if(id == 561)
-            textures.bmp = &LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1];
-        else
-            textures = {LOADER.GetMapTexture(id), LOADER.GetMapTexture(id + 100)};
-    } else if(file < 7)
+    if(IsOpenGateway(file, id))
+        textures.bmp = &LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1];
+    else if(file == 0xFFFF)
+        textures = {LOADER.GetMapTexture(id), LOADER.GetMapTexture(id + 100)};
+    else if(file < 7)
     {
         static const std::array<ResourceId, 7> files = {"mis0bobs", "mis1bobs", "mis2bobs",       "mis3bobs",
                                                         "mis4bobs", "mis5bobs", "charburner_bobs"};
@@ -110,4 +108,14 @@ noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsign
         throw std::runtime_error("Invalid file number for static object");
 
     return textures;
+}
+
+bool noStaticObject::IsAnimated() const
+{
+    return IsOpenGateway(file, id);
+}
+
+bool noStaticObject::IsOpenGateway(unsigned short file, unsigned short id)
+{
+    return file == 0xFFFF && id == 561;
 }
