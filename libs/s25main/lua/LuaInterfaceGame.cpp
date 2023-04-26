@@ -348,6 +348,14 @@ void LuaInterfaceGame::EventOccupied(unsigned player, const MapPoint pt)
         onOccupied.call<void>(player, pt.x, pt.y);
 }
 
+void LuaInterfaceGame::EventAttack(unsigned char attackerPlayerId, unsigned char defenderPlayerId,
+                                   unsigned attackerCount)
+{
+    kaguya::LuaRef onAttack = lua["onAttack"];
+    if(onAttack.type() == LUA_TFUNCTION)
+        onAttack.call<void>(attackerPlayerId, defenderPlayerId, attackerCount);
+}
+
 void LuaInterfaceGame::EventStart(bool isFirstStart)
 {
     kaguya::LuaRef onStart = lua["onStart"];
