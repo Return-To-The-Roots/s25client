@@ -370,6 +370,7 @@ void Loader::LoadDummyMapFiles()
     pushRange(350, 432);
     pushRange(440, 484);
     pushRange(500, 527);
+    pushRange(560, 561);
 
     for(int j = 0; j <= 5; j++)
     {
