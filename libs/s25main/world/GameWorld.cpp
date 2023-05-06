@@ -267,8 +267,8 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
     GetPlayer(playerId).NewRoadConnection(rs);
     GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
 
-    // if the addon is enabled and the road is not waterway add flags where possible
-    if(GetGGS().isEnabled(AddonId::AUTOFLAGS) && rs->GetRoadType() != RoadType::Water)
+    // Addon is enabled, road is not waterway and player is human then add flags to new roadsegment
+    if(GetGGS().isEnabled(AddonId::AUTOFLAGS) && rs->GetRoadType() != RoadType::Water && GetPlayer(playerId).isHuman())
     {     
 
         MapPoint nextPT = GetSpecObj<noFlag>(start)->GetPos();
