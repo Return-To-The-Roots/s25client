@@ -115,7 +115,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     // Memorize the old course of the road so that we can tell everyone on it later
     std::vector<Direction> old_route(route);
 
-        // find out the place where the path is cut ( = length of the first section )
+    // find out the place where the path is cut ( = length of the first section )
     unsigned length1, length2;
     MapPoint t = f1->GetPos();
     for(length1 = 0; length1 < route.size(); ++length1)
@@ -138,7 +138,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     if(rt == RoadType::Donkey)
         splitflag->Upgrade();
 
-      // Create 1st section from F1 to this F ( 1st section is this way! )
+     // 1st create section from F1 to this F ( 1st section is this way! )
 
     route.resize(length1);
     // f1 = f1;
@@ -152,7 +152,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     splitflag->SetRoute(second->route.front(), second);
     second->f2->SetRoute(second->route.back() + 3u, second);
 
-     // Walk down the street and tell all the characters
+    // Walk down the street and tell all the characters
     t = f1->GetPos();
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
