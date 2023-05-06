@@ -63,7 +63,7 @@ void RoadSegment::Destroy()
 
     if(!route.empty())
     {
-        // Walk down the street and all the characters say they lost their jobs
+        // Tell all characters on this road they lost their jobs
         MapPoint pt = f1->GetPos();
 
         for(unsigned short i = 0; i < route.size() + 1; ++i)
@@ -110,12 +110,12 @@ void RoadSegment::Serialize(SerializedGameData& sgd) const
 void RoadSegment::SplitRoad(noFlag* splitflag)
 {
     // Flag 1 _________ This flag _________ Flag 2
-    //          | broken path |
+    //         |          broken road           |
 
-    // Memorize the old course of the road so that we can tell everyone on it later
+    // Store the old route of the road so that we can tell everyone on it later
     std::vector<Direction> old_route(route);
 
-    // find out the place where the path is cut ( = length of the first section )
+    // find the place where the road is cut ( = length of the first section )
     unsigned length1, length2;
     MapPoint t = f1->GetPos();
     for(length1 = 0; length1 < route.size(); ++length1)
@@ -134,12 +134,11 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     auto* second = new RoadSegment(rt, splitflag, f2, second_route);
 
-    // donkey road? Then magnificent flag, since it is again between donkey streets
+    // donkey road? Then upgrade flag, since it will be between donkey roads
     if(rt == RoadType::Donkey)
         splitflag->Upgrade();
 
-     // 1st create section from F1 to this F ( 1st section is this way! )
-
+    // create 1st section from F1 to this F (1st section is this road!)
     route.resize(length1);
     // f1 = f1;
     f2 = splitflag;
@@ -152,7 +151,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     splitflag->SetRoute(second->route.front(), second);
     second->f2->SetRoute(second->route.back() + 3u, second);
 
-    // Walk down the street and tell all the characters
+    // Notify all characters on the road
     t = f1->GetPos();
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
@@ -180,7 +179,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         if(carriers_[i])
             carriers_[i]->RoadSplitted(this, second);
         else if(i == 0)
-            // The street was unoccupied before? Then 2nd street to the unoccupied rodes
+            // If road was unoccupied before then add 2nd part to the unoccupied roads
             // (1st is already included)
             world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(second);
     }
