@@ -199,7 +199,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         return;
     }
 
-    // Gucken, ob der Weg überhaupt noch gebaut werden kann
+    // See if the path can still be built at all
     PathConditionRoad<GameWorldBase> roadChecker(*this, boat_road);
     MapPoint curPt(start);
     for(unsigned i = 0; i + 1 < route.size(); ++i)
@@ -209,7 +209,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         roadOk &= roadChecker.IsNodeOk(curPt);
         if(!roadOk)
         {
-            // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
+            // No? Then check whether the desired path is already there
             if(!RoadAlreadyBuilt(boat_road, start, route))
                 GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
@@ -218,10 +218,10 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
 
     curPt = GetNeighbour(curPt, route.back());
 
-    // Prüfen, ob am Ende auch eine Flagge steht oder eine gebaut werden kann
+    // Check whether there is a flag at the end or whether one can be built
     if(GetNO(curPt)->GetGOT() == GO_Type::Flag)
     {
-        // Falscher Spieler?
+        // Wrong player?
         if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
         {
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
@@ -235,11 +235,11 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
-        // keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
+        // no flag so far, but nothing speaks against a new flag -> put up a flag!
         SetFlag(curPt, playerId);
     }
 
-    // Evtl Zierobjekte abreißen (Anfangspunkt)
+    // Tear off decorative objects (starting point)
     if(HasRemovableObjForRoad(start))
         DestroyNO(start);
 
@@ -250,20 +250,42 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         RecalcBQForRoad(end);
         end = GetNeighbour(end, i);
 
-        // Evtl Zierobjekte abreißen
+        // Tear off decorative objects if necessary
         if(HasRemovableObjForRoad(end))
             DestroyNO(end);
     }
 
     auto* rs = new RoadSegment(boat_road ? RoadType::Water : RoadType::Normal, GetSpecObj<noFlag>(start),
                                GetSpecObj<noFlag>(end), route);
-
+    
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
     GetSpecObj<noFlag>(end)->SetRoute(route.back() + 3u, rs);
 
-    // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
+   
+
+    // Telling the economy that a new road has been built so that it does whatever it takes
     GetPlayer(playerId).NewRoadConnection(rs);
     GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
+
+    // if the addon is enabled and the road is not waterway add flags where possible
+    if(GetGGS().isEnabled(AddonId::AUTOFLAGS) && rs->GetRoadType() != RoadType::Water)
+    {     
+
+        MapPoint nextPT = GetSpecObj<noFlag>(start)->GetPos();
+
+        for(unsigned short i = 0; i < route.size(); ++i)
+        {
+            nextPT = GetNeighbour(nextPT, route[i]);
+
+            if(!IsFlagAround(nextPT))
+            {
+                SetFlag(nextPT, playerId);
+            }
+        }
+    }
+    
+
+        
 }
 
 bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const
