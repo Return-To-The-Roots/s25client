@@ -39,9 +39,8 @@ dskSinglePlayer::dskSinglePlayer()
     AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Resume last game"), NormalFont);
     AddTextButton(7, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Load game"), NormalFont);
 
-    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2,
-                  std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)
-      ->SetEnabled(false);
+    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, std::string(_("Campaigns")),
+                  NormalFont);
     AddTextButton(6, DrawPoint(115, 280), Extent(220, 22), TextureColor::Green2, _("Unlimited Play"), NormalFont);
 
     AddTextButton(4, DrawPoint(115, 320), Extent(220, 22), TextureColor::Green2, _("Play Replay"), NormalFont);
@@ -108,10 +107,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 5: // "Kampagne"
         {
-            /// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-              _("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this,
-              MsgboxButton::Ok, MsgboxIcon::ExclamationGreen));
+            PrepareCampaigns();
         }
         break;
         case 6: // "Freies Spiel"
@@ -130,6 +126,11 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
         }
         break;
     }
+}
+
+void dskSinglePlayer::PrepareCampaigns()
+{
+    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(createLocalGameInfo(_("Campaign")), 9));
 }
 
 void dskSinglePlayer::PrepareSinglePlayerServer()

@@ -55,7 +55,7 @@ constexpr unsigned ID_msgBoxError = 0;
  *  @param[in] name Server-Name
  *  @param[in] pass Server-Passwort
  */
-dskSelectMap::dskSelectMap(CreateServerInfo csi)
+dskSelectMap::dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType)
     : Desktop(LOADER.GetImageN("setup015", 0)), csi(std::move(csi)), mapGenThread(nullptr), waitWnd(nullptr)
 {
     WorldDescription desc;
@@ -122,13 +122,23 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
     curBtPos.y += catBtSize.y + 3;
     // "Heruntergeladene"
     optiongroup->AddTextButton(8, curBtPos, catBtSize, TextureColor::Grey, _("Played"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
+    // "Alle Kampagnen"
+    optiongroup->AddTextButton(9, curBtPos, catBtSize, TextureColor::Grey, _("Campaigns"), NormalFont);
 
     AddPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), nullptr);
     AddText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
     AddText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
+    // Die Tabelle für die Kampagnen
+    using SRT = ctrlTable::SortType;
+    ctrlTable* campaignsTable = AddTable(14, DrawPoint(110, 35), Extent(680, 400), TextureColor::Grey, NormalFont,
+                                        ctrlTable::Columns{{_("Name"), 250, SRT::String},
+                                                           {_("Description"), 216, SRT::String},
+                                                           {_("Author"), 170, SRT::Number},
+                                                           {"", 0, SRT::Default}});
     // "Eigene" auswählen
-    optiongroup->SetSelection(5, true);
+    optiongroup->SetSelection(preSelectedMapType, true);
 
     LOBBYCLIENT.AddListener(this);
 }
@@ -142,6 +152,12 @@ dskSelectMap::~dskSelectMap()
 
 void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
+    GetCtrl<ctrlTable>(14)->SetVisible(selection == 9);
+    GetCtrl<ctrlTable>(1)->SetVisible(selection != 9);
+
+    if(selection == 9)
+        return;
+
     auto* table = GetCtrl<ctrlTable>(1);
 
     // Tabelle leeren

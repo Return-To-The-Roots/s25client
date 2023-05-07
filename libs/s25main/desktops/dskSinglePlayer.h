@@ -14,6 +14,7 @@ public:
 
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
+    void PrepareCampaigns();
     void PrepareSinglePlayerServer();
     void PrepareLoadGame();
 };

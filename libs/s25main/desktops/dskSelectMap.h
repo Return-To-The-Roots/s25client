@@ -21,7 +21,7 @@ class thread;
 class dskSelectMap final : public Desktop, public LobbyInterface
 {
 public:
-    dskSelectMap(CreateServerInfo csi);
+    dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType = 5);
     ~dskSelectMap() override;
 
 private:
