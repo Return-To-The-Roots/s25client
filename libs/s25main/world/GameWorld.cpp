@@ -268,7 +268,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
     // Add flags on land roads for human players if addon is enabled
     if(GetGGS().isEnabled(AddonId::AUTOFLAGS) && rs->GetRoadType() != RoadType::Water && GetPlayer(playerId).isHuman())
     {
-       MapPoint roadPt = GetSpecObj<noFlag>(start)->GetPos();
+        MapPoint roadPt = GetSpecObj<noFlag>(start)->GetPos();
         for(const Direction curDir : route)
         {
             roadPt = GetNeighbour(roadPt, curDir);

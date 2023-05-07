@@ -2,14 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-
 #pragma once
 
 #include "AddonBool.h"
 #include "mygettext/mygettext.h"
 
 /**
- *  Automaticallu places flags on newly build roads
+ *  Automatically places flags on newly build roads
  *
  */
 class AddonAutoFlags : public AddonBool
