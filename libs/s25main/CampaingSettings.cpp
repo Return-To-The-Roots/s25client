@@ -6,6 +6,7 @@
 #include "RttrConfig.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libsiedler2/ArchivItem_Ini.h"
+#include "libsiedler2/ErrorCodes.h"
 #include "s25util/error.h"
 #include "RTTR_assert.h"
 #include <regex>
@@ -18,14 +19,14 @@ namespace bfs = boost::filesystem;
 
 CampaignSettings::CampaignSettings(std::string filePath) : filePath_(filePath){};
 
-void CampaignSettings::Load()
+bool CampaignSettings::Load()
 {
     libsiedler2::Archiv settings;
     const auto settingsPath = RTTRCONFIG.ExpandPath(filePath_);
     try
     {
-        if(libsiedler2::Load(settingsPath, settings) != 0)
-            throw std::runtime_error("File missing or invalid");
+        if(int ec = libsiedler2::Load(settingsPath, settings) != 0)
+            throw std::runtime_error(libsiedler2::getErrorString(ec));
 
         const libsiedler2::ArchivItem_Ini* iniDescription =
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("description"));
@@ -55,7 +56,9 @@ void CampaignSettings::Load()
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\". Reason: " + e.what());
+        return false;
     }
+    return true;
 };
 
 void CampaignSettings::Save()

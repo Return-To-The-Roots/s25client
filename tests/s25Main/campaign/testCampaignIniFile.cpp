@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(TestCampaingIniFileSave)
 BOOST_AUTO_TEST_CASE(TestCampaingIniFileLoad)
 {
     CampaignSettings campaignSettings(campaignIniFixture.campaignIniFileName);
-    campaignSettings.Load();
+    BOOST_TEST_REQUIRE(campaignSettings.Load());
 
     // campaign description
     BOOST_TEST_REQUIRE(campaignSettings.campaignDescription.author

@@ -12,7 +12,7 @@ class CampaignSettings
 {
 public:
     CampaignSettings(std::string filePath);
-    void Load();
+    bool Load();
     void Save();
 
 public:
