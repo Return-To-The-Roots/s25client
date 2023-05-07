@@ -257,11 +257,9 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
 
     auto* rs = new RoadSegment(boat_road ? RoadType::Water : RoadType::Normal, GetSpecObj<noFlag>(start),
                                GetSpecObj<noFlag>(end), route);
-    
+
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
     GetSpecObj<noFlag>(end)->SetRoute(route.back() + 3u, rs);
-
-   
 
     // Tell the economy that a new road has been built
     GetPlayer(playerId).NewRoadConnection(rs);
@@ -269,7 +267,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
 
     // Add flags on land roads for human players if addon is enabled
     if(GetGGS().isEnabled(AddonId::AUTOFLAGS) && rs->GetRoadType() != RoadType::Water && GetPlayer(playerId).isHuman())
-    {     
+    {
        MapPoint roadPt = GetSpecObj<noFlag>(start)->GetPos();
         for(const Direction curDir : route)
         {
@@ -277,7 +275,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
             if(!IsFlagAround(roadPt))
                 SetFlag(roadPt, playerId);
         }
-    }        
+    }
 }
 
 bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const
