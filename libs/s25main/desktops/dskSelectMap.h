@@ -28,6 +28,7 @@ private:
     void Draw_() override;
 
     void FillTable(const std::vector<boost::filesystem::path>& files);
+    void FillCampaignsTable(const std::vector<boost::filesystem::path>& folders);
 
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
@@ -41,6 +42,8 @@ private:
      * Starts a new game with the currently selected map.
      */
     void StartServer();
+
+    void ShowCampaignScreen();
 
     /**
      * Go back to the previous menu.
@@ -64,5 +67,7 @@ private:
     std::map<uint8_t, std::string> landscapeNames;
     /// Maps that we already know are broken
     std::set<boost::filesystem::path> brokenMapPaths;
+    /// Campaings that we already know are broken
+    std::set<boost::filesystem::path> brokenCampaignPaths;
     boost::signals2::scoped_connection onErrorConnection_;
 };

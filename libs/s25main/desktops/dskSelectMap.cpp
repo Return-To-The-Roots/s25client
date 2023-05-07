@@ -9,6 +9,7 @@
 #include "RttrLobbyClient.hpp"
 #include "WindowManager.h"
 #include "commonDefines.h"
+#include "CampaingSettings.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
@@ -152,48 +153,74 @@ dskSelectMap::~dskSelectMap()
 
 void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
-    GetCtrl<ctrlTable>(14)->SetVisible(selection == 9);
-    GetCtrl<ctrlTable>(1)->SetVisible(selection != 9);
-
-    if(selection == 9)
-        return;
-
     auto* table = GetCtrl<ctrlTable>(1);
+    auto* mapTable = GetCtrl<ctrlTable>(1);
+    auto* campaignsTable = GetCtrl<ctrlTable>(14);
 
-    // Tabelle leeren
-    table->DeleteAllItems();
+    // Tabellen leeren
+    mapTable->DeleteAllItems();
+    campaignsTable->DeleteAllItems();
 
-    // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
-    static const std::array<std::string, 9> ids = {{s25::folders::mapsOld, s25::folders::mapsNew, s25::folders::mapsOwn,
+    // Tabellen ausblenden
+    mapTable->SetVisible(false);
+    campaignsTable->SetVisible(false);
+
+    // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played, Campaigns
+    static const std::array<std::string, 10> ids = {{s25::folders::mapsOld, s25::folders::mapsNew, s25::folders::mapsOwn,
                                                     s25::folders::mapsContinents, s25::folders::mapsCampaign,
                                                     s25::folders::mapsRttr, s25::folders::mapsOther,
-                                                    s25::folders::mapsSea, s25::folders::mapsPlayed}};
+                                                    s25::folders::mapsSea, s25::folders::mapsPlayed,
+                                                    s25::folders::campaigns}};
 
-    const size_t numFaultyMapsPrior = brokenMapPaths.size();
-    const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
-    FillTable(ListDir(mapPath, "swd"));
-    FillTable(ListDir(mapPath, "wld"));
-    // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
-    if(mapPath.filename() == "WORLDS")
+    if(ids[selection] == s25::folders::campaigns)
     {
-        const bfs::path worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
-        FillTable(ListDir(worldsPath, "swd"));
-        FillTable(ListDir(worldsPath, "wld"));
-    }
+        const size_t numFaultyCampaignsPrior = brokenCampaignPaths.size();
+        const bfs::path campaignPath = RTTRCONFIG.ExpandPath(ids[selection]);
+        FillCampaignsTable(ListDir(campaignPath, std::string() , true));
 
-    if(brokenMapPaths.size() > numFaultyMapsPrior)
+        if(brokenCampaignPaths.size() > numFaultyCampaignsPrior)
+        {
+            std::string errorTxt = helpers::format(_("%1% campaign(s) could not be loaded. Check the log for details"),
+                                                   brokenCampaignPaths.size() - numFaultyCampaignsPrior);
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
+        }
+
+        campaignsTable->SortRows(0, TableSortDir::Ascending);
+        campaignsTable->SetSelection(boost::none);
+        campaignsTable->SetVisible(true);
+    }
+    else
     {
-        std::string errorTxt = helpers::format(_("%1% map(s) could not be loaded. Check the log for details"),
-                                               brokenMapPaths.size() - numFaultyMapsPrior);
-        WINDOWMANAGER.Show(
-          std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
+        const size_t numFaultyMapsPrior = brokenMapPaths.size();
+        const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
+        FillTable(ListDir(mapPath, "swd"));
+        FillTable(ListDir(mapPath, "wld"));
+        // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
+        if(mapPath.filename() == "WORLDS")
+        {
+            const bfs::path worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
+            FillTable(ListDir(worldsPath, "swd"));
+            FillTable(ListDir(worldsPath, "wld"));
+        }
+
+        if(brokenMapPaths.size() > numFaultyMapsPrior)
+        {
+            std::string errorTxt = helpers::format(_("%1% map(s) could not be loaded. Check the log for details"),
+                                                   brokenMapPaths.size() - numFaultyMapsPrior);
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
+        }
+
+        // Dann noch sortieren
+        mapTable->SortRows(0, TableSortDir::Ascending);
+
+        // und Auswahl zurücksetzen
+        mapTable->SetSelection(boost::none);
+
+        // und anzeigen
+        mapTable->SetVisible(true);
     }
-
-    // Dann noch sortieren
-    table->SortRows(0, TableSortDir::Ascending);
-
-    // und Auswahl zurücksetzen
-    table->SetSelection(boost::none);
 }
 
 /// Load a map, throw on error
@@ -213,11 +240,11 @@ static std::unique_ptr<libsiedler2::ArchivItem_Map> loadAndVerifyMap(const std::
 }
 
 /**
- *  Occurs when user changes the selection in the table of maps.
+ *  Occurs when user changes the selection in the table of maps or campaings.
  */
 void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
-    if(ctrl_id != 1)
+    if(ctrl_id != 1 && ctrl_id != 14)
         return;
 
     ctrlPreviewMinimap& preview = *GetCtrl<ctrlPreviewMinimap>(11);
@@ -229,35 +256,51 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::opti
     txtMapPath.SetText("");
     btContinue.SetEnabled(false);
 
-    // is the selection valid?
-    if(selection)
+    // Campaigns table
+    if(ctrl_id == 14)
     {
-        ctrlTable& table = *GetCtrl<ctrlTable>(1);
-        const std::string& path = table.GetItemText(*selection, 5);
-        if(!path.empty())
+        if(selection)
         {
-            try
+            ctrlTable& campaingTable = *GetCtrl<ctrlTable>(14);
+            const std::string& campaignFolder = campaingTable.GetItemText(*selection, 3);
+            if(!campaignFolder.empty())
             {
-                std::unique_ptr<libsiedler2::ArchivItem_Map> map = loadAndVerifyMap(path);
-                RTTR_Assert(map);
-                preview.SetMap(map.get());
-                txtMapName.SetText(s25util::ansiToUTF8(map->getHeader().getName()));
-                txtMapPath.SetText(path);
                 btContinue.SetEnabled(true);
-            } catch(const std::runtime_error& e)
-            {
-                const std::string errorTxt = helpers::format(_("Could not load map:\n%1%\n%2%"), path, e.what());
-                LOG.write("%1%\n") % errorTxt;
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok,
-                                                              MsgboxIcon::ExclamationRed, 1));
-                brokenMapPaths.insert(path);
-                table.RemoveRow(*selection);
             }
         }
     }
-    const unsigned txtXPos = preview.GetPos().x + preview.GetSize().x + 10;
-    txtMapName.SetPos(DrawPoint(txtXPos, txtMapName.GetPos().y));
-    txtMapPath.SetPos(DrawPoint(txtXPos, txtMapPath.GetPos().y));
+    else if(ctrl_id == 1)
+    {
+        // is the selection valid?
+        if(selection)
+        {
+            ctrlTable& table = *GetCtrl<ctrlTable>(1);
+            const std::string& path = table.GetItemText(*selection, 5);
+            if(!path.empty())
+            {
+                try
+                {
+                    std::unique_ptr<libsiedler2::ArchivItem_Map> map = loadAndVerifyMap(path);
+                    RTTR_Assert(map);
+                    preview.SetMap(map.get());
+                    txtMapName.SetText(s25util::ansiToUTF8(map->getHeader().getName()));
+                    txtMapPath.SetText(path);
+                    btContinue.SetEnabled(true);
+                } catch(const std::runtime_error& e)
+                {
+                    const std::string errorTxt = helpers::format(_("Could not load map:\n%1%\n%2%"), path, e.what());
+                    LOG.write("%1%\n") % errorTxt;
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok,
+                                                                  MsgboxIcon::ExclamationRed, 1));
+                    brokenMapPaths.insert(path);
+                    table.RemoveRow(*selection);
+                }
+            }
+        }
+        const unsigned txtXPos = preview.GetPos().x + preview.GetSize().x + 10;
+        txtMapName.SetPos(DrawPoint(txtXPos, txtMapName.GetPos().y));
+        txtMapPath.SetPos(DrawPoint(txtXPos, txtMapPath.GetPos().y));
+    }
 }
 
 void dskSelectMap::GoBack() const
@@ -289,7 +332,12 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 5: // "Weiter"
         {
-            StartServer();
+            auto* optionGroup = GetCtrl<ctrlOptionGroup>(10);
+            if(optionGroup)
+                if(optionGroup->GetSelection() == 9)
+                    ShowCampaignScreen();
+                else
+                    StartServer();
         }
         break;
         case 6: // random map
@@ -312,10 +360,17 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskSelectMap::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
-    // Doppelklick auf bestimmte Map -> weiter
-    StartServer();
+    if(ctrl_id == 1)
+    {
+        // Doppelklick auf bestimmte Map -> weiter
+        StartServer();
+    } else if(ctrl_id == 14)
+    {
+        // Doppelklick auf bestimmte Kampagne -> weiter
+        ShowCampaignScreen();
+    }
 }
 
 void dskSelectMap::CreateRandomMap()
@@ -380,6 +435,20 @@ void dskSelectMap::StartServer()
                                                               ID_msgBoxError));
             });
         }
+    }
+}
+
+void dskSelectMap::ShowCampaignScreen()
+{
+    auto* table = GetCtrl<ctrlTable>(14);
+    const auto& selection = table->GetSelection();
+
+    // Ist die Auswahl gültig?
+    if(selection)
+    {
+        // Kampagnenpfad aus Tabelle holen
+        const std::string& mapPath = table->GetItemText(*selection, 3);
+        // TODO: switch to campaign mission selection screen
     }
 }
 
@@ -464,5 +533,55 @@ void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
         std::string author = s25util::ansiToUTF8(header.getAuthor());
 
         table->AddRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath.string()});
+    }
+}
+
+void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>& folders)
+{
+    auto* table = GetCtrl<ctrlTable>(14);
+    for(const bfs::path& folder : folders)
+    {
+        if(helpers::contains(brokenCampaignPaths, folder))
+            continue;
+
+        auto const campaignIniFile = folder / "campaign.ini";
+        CampaignSettings campaignSettings(campaignIniFile.string());
+        if (!campaignSettings.Load())
+        {
+            LOG.write(_("Failed to load campaign %1%.\n")) % folder;
+            brokenCampaignPaths.insert(folder);
+            continue;
+        }
+
+        for(auto const& map : campaignSettings.missions.mapNames)
+        {
+            auto const mapPath = folder / map;
+            auto const luaFilepath = bfs::path(mapPath).replace_extension("lua");
+            if(!bfs::exists(mapPath))
+            {
+                LOG.write(_("Campaign map %1% does not exist.\n")) % mapPath;
+                brokenCampaignPaths.insert(folder);
+                continue;
+            }
+            if(!bfs::exists(luaFilepath))
+            {
+                LOG.write(_("Campaign map lua file %1% does not exist.\n")) % mapPath;
+                brokenCampaignPaths.insert(folder);
+                continue;
+            }
+
+            libsiedler2::Archiv map;
+            if(int ec = libsiedler2::loader::LoadMAP(mapPath, map, true))
+            {
+                LOG.write(_("Failed to load map %1%: %2%\n")) % mapPath % libsiedler2::getErrorString(ec);
+                brokenMapPaths.insert(folder);
+                continue;
+            }
+        }
+
+        table->AddRow({s25util::ansiToUTF8(campaignSettings.campaignDescription.name),
+                       s25util::ansiToUTF8(campaignSettings.campaignDescription.shortDescription),
+                       s25util::ansiToUTF8(campaignSettings.campaignDescription.author),
+                       folder.string()});
     }
 }
