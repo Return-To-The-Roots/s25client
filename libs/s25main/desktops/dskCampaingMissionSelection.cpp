@@ -55,7 +55,7 @@ enum CtrlIds
 
 dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder)
     : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(campaignFolder), csi_(std::move(csi)), currentPage(0),
-      lastPage(0), missionsPerPage(5)
+      lastPage(0), missionsPerPage(10)
 {
     const unsigned int btOffset = 50 + LargeFont->getHeight() + NormalFont->getHeight() + 70 + 10 + 2 + missionsPerPage * (20 + 8) + 10;
     AddTextButton(ID_BACK, DrawPoint(300, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
@@ -155,6 +155,8 @@ void dskCampaignMissionSelection::UpdateEnabledStateOfNextPreviousButton()
 {
     GetCtrl<ctrlImageButton>(ID_PREVIOUS_MISSION_PAGE)->SetEnabled(currentPage > 0);
     GetCtrl<ctrlImageButton>(ID_NEXT_MISSION_PAGE)->SetEnabled(currentPage < lastPage);
+    GetCtrl<ctrlImageButton>(ID_FIRST_MISSION_PAGE)->SetEnabled(currentPage > 0);
+    GetCtrl<ctrlImageButton>(ID_LAST_MISSION_PAGE)->SetEnabled(currentPage < lastPage);
 }
 
 void dskCampaignMissionSelection::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
@@ -170,29 +172,40 @@ void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
     if(ctrl_id == ID_BACK)
         WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi_, 9));
 
-    if(ctrl_id == ID_PREVIOUS_MISSION_PAGE)
+    if(ctrl_id >= ID_FIRST_MISSION_PAGE && ctrl_id <= ID_LAST_MISSION_PAGE)
     {
-        if(currentPage > 0)
-        {
-            // Alle Controls erstmal zerstören (die ganze Gruppe)
-            DeleteCtrl(ID_MISSION_GROUP_START + currentPage);
-            UpdateMissionPage(--currentPage);
-            GetCtrl<ctrlText>(ID_MISSION_PAGE_LABEL)
-              ->SetText(std::to_string(currentPage + 1) + "/" + std::to_string(lastPage + 1));
-            UpdateEnabledStateOfNextPreviousButton();
-        }
-    }
+        // Alle Controls erstmal zerstören (die ganze Gruppe)
+        DeleteCtrl(ID_MISSION_GROUP_START + currentPage);
 
-    if(ctrl_id == ID_NEXT_MISSION_PAGE)
-    {
-        if(currentPage < lastPage)
+        switch(ctrl_id)
         {
-            // Alle Controls erstmal zerstören (die ganze Gruppe)
-            DeleteCtrl(ID_MISSION_GROUP_START + currentPage);
-            UpdateMissionPage(++currentPage);
-            GetCtrl<ctrlText>(ID_MISSION_PAGE_LABEL)
-              ->SetText(std::to_string(currentPage + 1) + "/" + std::to_string(lastPage + 1));
-            UpdateEnabledStateOfNextPreviousButton();
+            case ID_FIRST_MISSION_PAGE:
+            {
+                currentPage = 0;
+                break;
+            }
+            case ID_NEXT_MISSION_PAGE:
+            {
+                if(currentPage < lastPage)
+                    currentPage++;
+
+                break;
+            }
+            case ID_PREVIOUS_MISSION_PAGE:
+            {
+                if(currentPage > 0)
+                    currentPage--;
+                break;
+            }
+            case ID_LAST_MISSION_PAGE:
+            {
+                currentPage = lastPage;
+                break;
+            }
         }
+        UpdateMissionPage(currentPage);
+        GetCtrl<ctrlText>(ID_MISSION_PAGE_LABEL)
+          ->SetText(std::to_string(currentPage + 1) + "/" + std::to_string(lastPage + 1));
+        UpdateEnabledStateOfNextPreviousButton();
     }
 }
