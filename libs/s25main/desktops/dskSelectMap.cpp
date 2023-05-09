@@ -19,6 +19,7 @@
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
+#include "desktops/dskCampaingMissionSelection.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
@@ -448,7 +449,7 @@ void dskSelectMap::ShowCampaignScreen()
     {
         // Kampagnenpfad aus Tabelle holen
         const std::string& mapPath = table->GetItemText(*selection, 3);
-        // TODO: switch to campaign mission selection screen
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi, mapPath));
     }
 }
 
