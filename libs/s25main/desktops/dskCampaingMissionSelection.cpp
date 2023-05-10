@@ -3,37 +3,37 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCampaingMissionSelection.h"
-#include "dskSelectMap.h"
-#include "Loader.h"
-#include "WindowManager.h"
-#include "Desktop.h"
-#include "Window.h"
-#include "ListDir.h"
-#include "ogl/glFont.h"
-#include "controls/ctrlButton.h"
-#include "controls/ctrlTextButton.h"
-#include "controls/ctrlMultiline.h"
-#include "controls/ctrlGroup.h"
-#include "controls/ctrlText.h"
-#include "controls/ctrlImageButton.h"
-#include <boost/filesystem/operations.hpp>
-#include <boost/pointer_cast.hpp>
-#include "libsiedler2/ArchivItem_Map.h"
-#include "libsiedler2/ArchivItem_Map_Header.h"
-#include "libsiedler2/prototypen.h"
-#include "libsiedler2/ErrorCodes.h"
-#include "helpers/format.hpp"
-#include "gameData/MapConsts.h"
-#include "gameData/MaxPlayers.h"
-#include "s25util/Log.h"
-#include "s25util/utf8.h"
-#include "commonDefines.h"
 #include "CampaingSettings.h"
-#include "network/GameClient.h"
+#include "Desktop.h"
+#include "ListDir.h"
+#include "Loader.h"
 #include "RttrLobbyClient.hpp"
+#include "Window.h"
+#include "WindowManager.h"
+#include "commonDefines.h"
+#include "controls/ctrlButton.h"
+#include "controls/ctrlGroup.h"
+#include "controls/ctrlImageButton.h"
+#include "controls/ctrlMultiline.h"
+#include "controls/ctrlText.h"
+#include "controls/ctrlTextButton.h"
+#include "dskSelectMap.h"
+#include "helpers/format.hpp"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
+#include "ogl/glFont.h"
+#include "gameData/MapConsts.h"
+#include "gameData/MaxPlayers.h"
 #include "liblobby/LobbyClient.h"
+#include "libsiedler2/ArchivItem_Map.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/ErrorCodes.h"
+#include "libsiedler2/prototypen.h"
+#include "s25util/Log.h"
+#include "s25util/utf8.h"
+#include <boost/filesystem/operations.hpp>
+#include <boost/pointer_cast.hpp>
 
 namespace bfs = boost::filesystem;
 constexpr unsigned ID_msgBoxError = 0;
@@ -57,7 +57,8 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
     : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(campaignFolder), csi_(std::move(csi)), currentPage(0),
       lastPage(0), missionsPerPage(10)
 {
-    const unsigned int btOffset = 50 + LargeFont->getHeight() + NormalFont->getHeight() + 70 + 10 + 2 + missionsPerPage * (20 + 8) + 10;
+    const unsigned int btOffset =
+      50 + LargeFont->getHeight() + NormalFont->getHeight() + 70 + 10 + 2 + missionsPerPage * (20 + 8) + 10;
     AddTextButton(ID_BACK, DrawPoint(300, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     AddImageButton(ID_FIRST_MISSION_PAGE, DrawPoint(400 - LargeFont->getHeight() * 3 - 2, btOffset),
@@ -65,13 +66,11 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
                    LOADER.GetImageN("io", 102));
 
     AddImageButton(ID_PREVIOUS_MISSION_PAGE, DrawPoint(400 - LargeFont->getHeight() * 2, btOffset),
-                   Extent(LargeFont->getHeight(), LargeFont->getHeight()),
-                   TextureColor::Green2,
+                   Extent(LargeFont->getHeight(), LargeFont->getHeight()), TextureColor::Green2,
                    LOADER.GetImageN("io", 103));
 
     AddImageButton(ID_NEXT_MISSION_PAGE, DrawPoint(400 + LargeFont->getHeight(), btOffset),
-                   Extent(LargeFont->getHeight(), LargeFont->getHeight()),
-                   TextureColor::Green2,
+                   Extent(LargeFont->getHeight(), LargeFont->getHeight()), TextureColor::Green2,
                    LOADER.GetImageN("io", 104));
 
     AddImageButton(ID_LAST_MISSION_PAGE, DrawPoint(400 + LargeFont->getHeight() * 2 + 2, btOffset),
@@ -87,15 +86,15 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
 
     AddText(ID_MISSION_PAGE_LABEL, DrawPoint(400, btOffset + LargeFont->getHeight() / 2),
             std::to_string(currentPage + 1) + "/" + std::to_string(lastPage + 1), COLOR_YELLOW,
-            FontStyle::CENTER | FontStyle::VCENTER,
-            LargeFont);
+            FontStyle::CENTER | FontStyle::VCENTER, LargeFont);
 
     DrawPoint curBtPos(200, 50);
-    AddText(ID_CHOOSE_CAPITAL_LABEL, DrawPoint(400, 50),
-            _("Choose capital"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    AddText(ID_CHOOSE_CAPITAL_LABEL, DrawPoint(400, 50), _("Choose capital"), COLOR_YELLOW, FontStyle::CENTER,
+            LargeFont);
 
-    ctrlMultiline* multiline = AddMultiline(ID_CAMPAIGN_LONG_DESCRIPTION, DrawPoint(200, 50 + LargeFont->getHeight() + 10),
-                                            Extent(400, 70), TextureColor::Green1, NormalFont);
+    ctrlMultiline* multiline =
+      AddMultiline(ID_CAMPAIGN_LONG_DESCRIPTION, DrawPoint(200, 50 + LargeFont->getHeight() + 10), Extent(400, 70),
+                   TextureColor::Green1, NormalFont);
     multiline->ShowBackground(true);
     multiline->AddString(settings->campaignDescription.longDescription, COLOR_YELLOW);
 

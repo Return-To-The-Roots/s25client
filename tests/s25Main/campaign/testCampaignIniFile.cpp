@@ -26,8 +26,8 @@ struct CampaignIniFixture
         fixtureCampaignSettings->campaignDescription.shortDescription = "We are aground in the dessert";
         fixtureCampaignSettings->campaignDescription.longDescription =
           "We are in a large dessert with low amount of water and few space"
-                              " for farming. We need to hunt for wild and use our ore mines to produce gold and "
-                              "exchange it for goods we can not produce.";
+          " for farming. We need to hunt for wild and use our ore mines to produce gold and "
+          "exchange it for goods we can not produce.";
         fixtureCampaignSettings->campaignDescription.maxPlayers = 1;
 
         // maps

@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "CampaingSettings.h"
+#include "RTTR_assert.h"
 #include "RttrConfig.h"
-#include "libsiedler2/libsiedler2.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ErrorCodes.h"
+#include "libsiedler2/libsiedler2.h"
 #include "s25util/error.h"
-#include "RTTR_assert.h"
-#include <regex>
 #include <boost/filesystem/operations.hpp>
+#include <regex>
 
 const int CampaignSettings::VERSION = 1;
 const std::array<std::string, 2> CampaignSettings::SECTION_NAMES = {{"description", "maps"}};
@@ -30,8 +30,7 @@ bool CampaignSettings::Load()
 
         const libsiedler2::ArchivItem_Ini* iniDescription =
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("description"));
-        const libsiedler2::ArchivItem_Ini* iniMaps =
-          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("maps"));
+        const libsiedler2::ArchivItem_Ini* iniMaps = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("maps"));
 
         if(!iniDescription || !iniMaps)
             throw std::runtime_error("Missing section");
@@ -49,10 +48,9 @@ bool CampaignSettings::Load()
         auto mapList = iniMaps->getValue("maps");
         std::regex reg("\\,");
 
-        missions.mapNames =
-          std::vector<std::string>(std::sregex_token_iterator(mapList.begin(), mapList.end(), reg, -1), std::sregex_token_iterator());
-    }
-    catch (std::runtime_error& e)
+        missions.mapNames = std::vector<std::string>(
+          std::sregex_token_iterator(mapList.begin(), mapList.end(), reg, -1), std::sregex_token_iterator());
+    } catch(std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\". Reason: " + e.what());
@@ -68,7 +66,8 @@ void CampaignSettings::Save()
     for(unsigned i = 0; i < SECTION_NAMES.size(); ++i)
         settings.set(i, std::make_unique<libsiedler2::ArchivItem_Ini>(SECTION_NAMES[i]));
 
-    libsiedler2::ArchivItem_Ini* iniDescription = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("description"));
+    libsiedler2::ArchivItem_Ini* iniDescription =
+      static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("description"));
     libsiedler2::ArchivItem_Ini* iniMaps = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("maps"));
 
     // ist eine der Kategorien nicht vorhanden?

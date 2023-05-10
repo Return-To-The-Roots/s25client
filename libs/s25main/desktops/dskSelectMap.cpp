@@ -3,23 +3,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskSelectMap.h"
+#include "CampaingSettings.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "RttrLobbyClient.hpp"
 #include "WindowManager.h"
 #include "commonDefines.h"
-#include "CampaingSettings.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
+#include "desktops/dskCampaingMissionSelection.h"
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
-#include "desktops/dskCampaingMissionSelection.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
@@ -135,10 +135,10 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType
     // Die Tabelle für die Kampagnen
     using SRT = ctrlTable::SortType;
     ctrlTable* campaignsTable = AddTable(14, DrawPoint(110, 35), Extent(680, 400), TextureColor::Grey, NormalFont,
-                                        ctrlTable::Columns{{_("Name"), 250, SRT::String},
-                                                           {_("Description"), 216, SRT::String},
-                                                           {_("Author"), 170, SRT::Number},
-                                                           {"", 0, SRT::Default}});
+                                         ctrlTable::Columns{{_("Name"), 250, SRT::String},
+                                                            {_("Description"), 216, SRT::String},
+                                                            {_("Author"), 170, SRT::Number},
+                                                            {"", 0, SRT::Default}});
     // "Eigene" auswählen
     optiongroup->SetSelection(preSelectedMapType, true);
 
@@ -167,17 +167,16 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     campaignsTable->SetVisible(false);
 
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played, Campaigns
-    static const std::array<std::string, 10> ids = {{s25::folders::mapsOld, s25::folders::mapsNew, s25::folders::mapsOwn,
-                                                    s25::folders::mapsContinents, s25::folders::mapsCampaign,
-                                                    s25::folders::mapsRttr, s25::folders::mapsOther,
-                                                    s25::folders::mapsSea, s25::folders::mapsPlayed,
-                                                    s25::folders::campaigns}};
+    static const std::array<std::string, 10> ids = {
+      {s25::folders::mapsOld, s25::folders::mapsNew, s25::folders::mapsOwn, s25::folders::mapsContinents,
+       s25::folders::mapsCampaign, s25::folders::mapsRttr, s25::folders::mapsOther, s25::folders::mapsSea,
+       s25::folders::mapsPlayed, s25::folders::campaigns}};
 
     if(ids[selection] == s25::folders::campaigns)
     {
         const size_t numFaultyCampaignsPrior = brokenCampaignPaths.size();
         const bfs::path campaignPath = RTTRCONFIG.ExpandPath(ids[selection]);
-        FillCampaignsTable(ListDir(campaignPath, std::string() , true));
+        FillCampaignsTable(ListDir(campaignPath, std::string(), true));
 
         if(brokenCampaignPaths.size() > numFaultyCampaignsPrior)
         {
@@ -190,8 +189,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
         campaignsTable->SortRows(0, TableSortDir::Ascending);
         campaignsTable->SetSelection(boost::none);
         campaignsTable->SetVisible(true);
-    }
-    else
+    } else
     {
         const size_t numFaultyMapsPrior = brokenMapPaths.size();
         const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
@@ -269,8 +267,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::opti
                 btContinue.SetEnabled(true);
             }
         }
-    }
-    else if(ctrl_id == 1)
+    } else if(ctrl_id == 1)
     {
         // is the selection valid?
         if(selection)
@@ -547,7 +544,7 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
 
         auto const campaignIniFile = folder / "campaign.ini";
         CampaignSettings campaignSettings(campaignIniFile.string());
-        if (!campaignSettings.Load())
+        if(!campaignSettings.Load())
         {
             LOG.write(_("Failed to load campaign %1%.\n")) % folder;
             brokenCampaignPaths.insert(folder);
@@ -582,7 +579,6 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
 
         table->AddRow({s25util::ansiToUTF8(campaignSettings.campaignDescription.name),
                        s25util::ansiToUTF8(campaignSettings.campaignDescription.shortDescription),
-                       s25util::ansiToUTF8(campaignSettings.campaignDescription.author),
-                       folder.string()});
+                       s25util::ansiToUTF8(campaignSettings.campaignDescription.author), folder.string()});
     }
 }

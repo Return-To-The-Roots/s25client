@@ -6,8 +6,8 @@
 
 #include "desktops/Desktop.h"
 #include "network/CreateServerInfo.h"
-#include <boost/signals2/connection.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/signals2/connection.hpp>
 
 class CampaignSettings;
 
