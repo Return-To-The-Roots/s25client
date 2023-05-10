@@ -95,8 +95,8 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
             _("Choose capital"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     ctrlMultiline* multiline = AddMultiline(ID_CAMPAIGN_LONG_DESCRIPTION, DrawPoint(200, 50 + LargeFont->getHeight() + 10),
-                                            Extent(400, 70), TextureColor::Green2, NormalFont);
-    multiline->ShowBackground(false);
+                                            Extent(400, 70), TextureColor::Green1, NormalFont);
+    multiline->ShowBackground(true);
     multiline->AddString(settings->campaignDescription.longDescription, COLOR_YELLOW);
 
     UpdateMissionPage(currentPage);
