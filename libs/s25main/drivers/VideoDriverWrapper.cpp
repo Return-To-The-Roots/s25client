@@ -96,13 +96,13 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
 {
     if(!videodriver)
     {
-        s25util::fatal_error("No video driver selected!\n");
+        s25util::fatal_error("No video driver selected!");
         return false;
     }
 
     if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, fullscreen))
     {
-        s25util::fatal_error("Could not create window!\n");
+        s25util::fatal_error("Could not create window!");
         return false;
     }
 
@@ -110,7 +110,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
     // Extensions laden
     if(!LoadAllExtensions())
     {
-        s25util::fatal_error("Failed to initialize the OpenGL context!\n");
+        s25util::fatal_error("Failed to initialize the OpenGL context!");
         return false;
     }
 
@@ -138,7 +138,7 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscree
 {
     if(!videodriver)
     {
-        s25util::fatal_error("No video driver selected!\n");
+        s25util::fatal_error("No video driver selected!");
         return false;
     }
 
@@ -165,7 +165,7 @@ bool VideoDriverWrapper::DestroyScreen()
 {
     if(!videodriver)
     {
-        s25util::fatal_error("No video driver selected!\n");
+        s25util::fatal_error("No video driver selected!");
         return false;
     }
 
@@ -253,7 +253,7 @@ void VideoDriverWrapper::SwapBuffers()
 {
     if(!videodriver)
     {
-        s25util::fatal_error("No video driver selected!\n");
+        s25util::fatal_error("No video driver selected!");
         return;
     }
     frameLimiter_->sleepTillNextFrame(FrameCounter::clock::now());
@@ -272,7 +272,7 @@ bool VideoDriverWrapper::Run()
 {
     if(!videodriver)
     {
-        s25util::fatal_error("No video driver selected!\n");
+        s25util::fatal_error("No video driver selected!");
         return false;
     }
 
@@ -404,7 +404,7 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
     if(!videodriver)
     {
-        s25util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        s25util::fatal_error("No video driver selected!");
         return (nullptr);
     }
 
