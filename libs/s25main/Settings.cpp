@@ -208,7 +208,7 @@ void Settings::Load()
         // global
         // {
         if(iniGlobal->getValue("gameversion") != rttr::version::GetRevision())
-            s25util::warning("Your application version has changed - please recheck your settings!\n");
+            s25util::warning("Your application version has changed - please recheck your settings!");
 
         global.submit_debug_data = iniGlobal->getIntValue("submit_debug_data");
         global.use_upnp = iniGlobal->getBoolValue("use_upnp");

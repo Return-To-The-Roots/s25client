@@ -73,7 +73,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 
     if(!dll)
     {
-        s25util::fatal_error("Could not load driver library\n");
+        s25util::fatal_error("Could not load driver library");
         return false;
     }
 
