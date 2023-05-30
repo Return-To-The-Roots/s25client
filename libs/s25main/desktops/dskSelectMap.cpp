@@ -551,10 +551,16 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
             continue;
         }
 
+        auto campaignMapFolder = bfs::path(folder);
+        if(campaignSettings.campaignDescription.name == "Roman")
+            campaignMapFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsCampaign);
+        else if(campaignSettings.campaignDescription.name == "Continent")
+            campaignMapFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsContinents);
+
         for(auto const& map : campaignSettings.missions.mapNames)
         {
-            auto const mapPath = folder / map;
-            auto const luaFilepath = bfs::path(mapPath).replace_extension("lua");
+            auto const mapPath = campaignMapFolder / map;
+            auto const luaFilepath = (folder / map).replace_extension("lua");
             if(!bfs::exists(mapPath))
             {
                 LOG.write(_("Campaign map %1% does not exist.\n")) % mapPath;
@@ -563,7 +569,7 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
             }
             if(!bfs::exists(luaFilepath))
             {
-                LOG.write(_("Campaign map lua file %1% does not exist.\n")) % mapPath;
+                LOG.write(_("Campaign map lua file %1% does not exist.\n")) % luaFilepath;
                 brokenCampaignPaths.insert(folder);
                 continue;
             }

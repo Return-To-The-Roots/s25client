@@ -7,6 +7,7 @@
 #include "Desktop.h"
 #include "ListDir.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "RttrLobbyClient.hpp"
 #include "Window.h"
 #include "WindowManager.h"
@@ -18,6 +19,7 @@
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextButton.h"
 #include "dskSelectMap.h"
+#include "files.h"
 #include "helpers/format.hpp"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -112,7 +114,13 @@ void dskCampaignMissionSelection::UpdateMissionPage(const unsigned page)
         if(missionIndex >= settings->missions.mapNames.size())
             break;
 
-        const bfs::path& mapFilePath = bfs::path(campaignFolder_) / settings->missions.mapNames[missionIndex];
+        auto campaignFolder = bfs::path(campaignFolder_);
+        if(settings->campaignDescription.name == "Roman")
+            campaignFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsCampaign);
+        else if(settings->campaignDescription.name == "Continent")
+            campaignFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsContinents);
+
+        const bfs::path& mapFilePath = bfs::path(campaignFolder) / settings->missions.mapNames[missionIndex];
 
         libsiedler2::Archiv map;
         if(int ec = libsiedler2::loader::LoadMAP(mapFilePath, map, true))
