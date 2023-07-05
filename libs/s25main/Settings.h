@@ -63,6 +63,7 @@ public:
         bool fullscreen;
         bool vbo;
         bool shared_textures;
+        unsigned guiScale; ///< UI scaling in percent; 0 indicates automatic selection
     } video;
 
     struct
@@ -128,6 +129,8 @@ public:
     } addons;
 
     static const std::array<short, 13> SCREEN_REFRESH_RATES;
+
+    static const std::array<unsigned, 14> GUI_SCALES;
 
 private:
     static const int VERSION;

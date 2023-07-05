@@ -27,6 +27,9 @@ const std::array<std::string, 10> Settings::SECTION_NAMES = {
 const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {
   {-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
 
+const std::array<unsigned, 14> Settings::GUI_SCALES = {
+  {50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 225, 250, 275, 300}};
+
 const std::map<GUI_ID, std::string> persistentWindows = {{CGI_CHAT, "wnd_chat"},
                                                          {CGI_POSTOFFICE, "wnd_postoffice"},
                                                          {CGI_DISTRIBUTION, "wnd_distribution"},
@@ -93,6 +96,7 @@ void Settings::LoadDefaults()
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
     video.shared_textures = true;
+    video.guiScale = 100;
     // }
 
     // language
@@ -228,6 +232,7 @@ void Settings::Load()
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
+        video.guiScale = iniVideo->getValue("gui_scale", 100);
         // };
 
         if(video.fullscreenSize.width == 0 || video.fullscreenSize.height == 0 || video.windowedSize.width == 0
@@ -412,6 +417,7 @@ void Settings::Save()
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.shared_textures);
+    iniVideo->setValue("gui_scale", video.guiScale);
     // };
 
     // language
