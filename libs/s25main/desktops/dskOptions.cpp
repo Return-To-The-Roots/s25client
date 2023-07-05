@@ -80,6 +80,8 @@ enum
     ID_cbVideoDriver,
     ID_txtOptTextures,
     ID_grpOptTextures,
+    ID_txtGuiScale,
+    ID_cbGuiScale,
     ID_txtAudioDriver,
     ID_cbAudioDriver,
     ID_txtMusic,
@@ -305,13 +307,24 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(video_driver.GetName() == SETTINGS.driver.video)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
-    curPos.y += 40;
+    curPos.y += 50;
 
     groupGrafik->AddText(ID_txtOptTextures, curPos, _("Optimized Textures:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpOptTextures, GroupSelectType::Check);
 
     optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
     optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
+    curPos.y += 50;
+
+    groupGrafik->AddText(ID_txtGuiScale, curPos, _("GUI Scale:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = groupGrafik->AddComboBox(ID_cbGuiScale, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
+
+    for(const auto& percent : Settings::GUI_SCALES)
+    {
+        combo->AddString(helpers::toString(percent) + "%");
+        if(percent == SETTINGS.video.guiScale)
+            combo->SetSelection(combo->GetNumItems() - 1);
+    }
 
     curPos.y = 80;
     constexpr Offset bt1Offset(200, -5);
@@ -499,6 +512,10 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate);
             break;
         case ID_cbVideoDriver: SETTINGS.driver.video = combo->GetText(selection); break;
+        case ID_cbGuiScale:
+            SETTINGS.video.guiScale = Settings::GUI_SCALES[selection];
+            VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
+            break;
         case ID_cbAudioDriver: SETTINGS.driver.audio = combo->GetText(selection); break;
     }
 }
