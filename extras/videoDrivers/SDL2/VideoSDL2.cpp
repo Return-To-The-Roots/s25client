@@ -352,7 +352,7 @@ bool VideoSDL2::MessageLoop()
                 break;
             }
             case SDL_MOUSEBUTTONDOWN:
-                mouse_xy.pos = Position(ev.button.x, ev.button.y);
+                mouse_xy.pos = getGuiScale().screenToView(Position(ev.button.x, ev.button.y));
 
                 if(/*!mouse_xy.ldown && */ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -366,7 +366,7 @@ bool VideoSDL2::MessageLoop()
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
-                mouse_xy.pos = Position(ev.button.x, ev.button.y);
+                mouse_xy.pos = getGuiScale().screenToView(Position(ev.button.x, ev.button.y));
 
                 if(/*mouse_xy.ldown &&*/ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -393,7 +393,7 @@ bool VideoSDL2::MessageLoop()
             }
             break;
             case SDL_MOUSEMOTION:
-                mouse_xy.pos = Position(ev.motion.x, ev.motion.y);
+                mouse_xy.pos = getGuiScale().screenToView(Position(ev.motion.x, ev.motion.y));
                 CallBack->Msg_MouseMove(mouse_xy);
                 break;
         }
@@ -433,8 +433,18 @@ OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 
 void VideoSDL2::SetMousePos(Position pos)
 {
+    const auto screenPos = getGuiScale().viewToScreen(pos);
     mouse_xy.pos = pos;
-    SDL_WarpMouseInWindow(window, pos.x, pos.y);
+    SDL_WarpMouseInWindow(window, screenPos.x, screenPos.y);
+}
+
+void VideoSDL2::setGuiScalePercent(unsigned percent)
+{
+    if(setGuiScaleInternal(percent))
+    {
+        UpdateCurrentSizes();
+        CallBack->WindowResized();
+    }
 }
 
 KeyEvent VideoSDL2::GetModKeyState() const
