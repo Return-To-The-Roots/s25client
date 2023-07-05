@@ -17,7 +17,7 @@ IVideoDriver::~IVideoDriver() = default;
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
-    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0)
+    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0), guiScale_(100)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
@@ -72,5 +72,14 @@ VideoMode VideoDriver::FindClosestVideoMode(const VideoMode& mode) const
 void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
 {
     windowSize_ = windowSize;
-    renderSize_ = renderSize;
+    renderSize_ = guiScale_.screenToView<Extent>(renderSize);
+}
+
+bool VideoDriver::setGuiScaleInternal(unsigned percent)
+{
+    if(guiScale_.percent() == percent)
+        return false;
+
+    guiScale_ = GuiScale(percent);
+    return true;
 }

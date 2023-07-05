@@ -115,11 +115,15 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 {
     SetNextZoomFactor();
 
+    const auto windowSize = VIDEODRIVER.GetWindowSize();
+    const auto& guiScale = VIDEODRIVER.getGuiScale();
+    const auto screenOrigin = guiScale.viewToScreen(origin_);
+    const auto screenSize = guiScale.viewToScreen(size_);
+    glScissor(screenOrigin.x, windowSize.height - (screenOrigin.y + screenSize.y), screenSize.x, screenSize.y);
+
     int shortestDistToMouse = 100000;
     Position mousePos = VIDEODRIVER.GetMousePos();
     mousePos -= Position(origin_);
-
-    glScissor(origin_.x, VIDEODRIVER.GetRenderSize().y - origin_.y - size_.y, size_.x, size_.y);
     if(zoomFactor_ != 1.f) //-V550
     {
         glMatrixMode(GL_PROJECTION);
@@ -212,7 +216,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     }
     glTranslatef(-static_cast<GLfloat>(origin_.x) / zoomFactor_, -static_cast<GLfloat>(origin_.y) / zoomFactor_, 0.0f);
 
-    glScissor(0, 0, VIDEODRIVER.GetRenderSize().x, VIDEODRIVER.GetRenderSize().y);
+    glScissor(0, 0, windowSize.width, windowSize.height);
 }
 
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer,

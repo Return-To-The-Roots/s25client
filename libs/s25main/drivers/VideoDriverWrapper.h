@@ -6,6 +6,7 @@
 
 #include "DriverWrapper.h"
 #include "Point.h"
+#include "driver/GuiScale.h"
 #include "driver/KeyEvent.h"
 #include "driver/VideoMode.h"
 #include "s25util/Singleton.h"
@@ -69,6 +70,12 @@ public:
     /// Get the renderer size in pixels
     Extent GetRenderSize() const;
     bool IsFullscreen() const;
+
+    /// Get the scale applied to the user interface
+    const GuiScale& getGuiScale() const;
+
+    /// Set the scale applied to the user interface in percent
+    void setGuiScalePercent(unsigned percent);
 
     bool IsLeftDown();
     bool IsRightDown();

@@ -31,6 +31,8 @@ public:
     Extent GetRenderSize() const override final { return renderSize_; }
     bool IsFullscreen() const override final { return isFullscreen_; }
 
+    const GuiScale& getGuiScale() const override final { return guiScale_; }
+
     /// prüft auf Initialisierung.
     bool IsInitialized() const override final { return initialized; }
     bool IsOpenGL() const override { return true; }
@@ -38,6 +40,9 @@ public:
 protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
+
+    /// Set the GUI scale in percent and return true if changed
+    bool setGuiScaleInternal(unsigned percent);
 
     VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
     bool initialized;                     /// Initialisierungsstatus.
@@ -48,4 +53,6 @@ private:
     // cached as possibly used often
     VideoMode windowSize_;
     Extent renderSize_;
+
+    GuiScale guiScale_; ///< Scale factor applied to the user interface
 };

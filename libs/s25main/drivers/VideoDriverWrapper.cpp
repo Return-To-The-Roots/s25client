@@ -306,10 +306,11 @@ void VideoDriverWrapper::RenewViewport()
         return;
 
     const Extent renderSize = videodriver->GetRenderSize();
+    const VideoMode windowSize = videodriver->GetWindowSize();
 
-    // Viewport mit widthxheight setzen
-    glViewport(0, 0, renderSize.x, renderSize.y);
-    glScissor(0, 0, renderSize.x, renderSize.y);
+    // Set the viewport and scissor area to the entire window
+    glViewport(0, 0, windowSize.width, windowSize.height);
+    glScissor(0, 0, windowSize.width, windowSize.height);
 
     // Orthogonale Matrix erstellen
     glMatrixMode(GL_PROJECTION);
@@ -492,4 +493,14 @@ Extent VideoDriverWrapper::GetRenderSize() const
 bool VideoDriverWrapper::IsFullscreen() const
 {
     return videodriver->IsFullscreen();
+}
+
+const GuiScale& VideoDriverWrapper::getGuiScale() const
+{
+    return videodriver->getGuiScale();
+}
+
+void VideoDriverWrapper::setGuiScalePercent(unsigned percent)
+{
+    videodriver->setGuiScalePercent(percent);
 }
