@@ -680,3 +680,44 @@ void dskOptions::loadVideoModes()
     // Sort by aspect ratio
     std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
 }
+
+bool dskOptions::Msg_WheelUp(const MouseCoords& mc)
+{
+    if(VIDEODRIVER.GetModKeyState().ctrl)
+    {
+        scrollGuiScale(true);
+        return true;
+    } else
+        return Desktop::Msg_WheelUp(mc);
+}
+
+bool dskOptions::Msg_WheelDown(const MouseCoords& mc)
+{
+    if(VIDEODRIVER.GetModKeyState().ctrl)
+    {
+        scrollGuiScale(false);
+        return true;
+    } else
+        return Desktop::Msg_WheelDown(mc);
+}
+
+void dskOptions::scrollGuiScale(bool up)
+{
+    unsigned index = 0;
+    auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
+    const auto& selection = combo->GetSelection();
+    if(!selection)
+    {
+        while(index < Settings::GUI_SCALES.size() && Settings::GUI_SCALES[index] != 100)
+            ++index;
+    } else if(!up && *selection > 0)
+        index = *selection - 1;
+    else if(up && *selection < (Settings::GUI_SCALES.size() - 1))
+        index = *selection + 1;
+    else
+        return;
+
+    // TODO add notify parameter
+    combo->SetSelection(index);
+    Msg_Group_ComboSelectItem(ID_grpGraphics, ID_cbGuiScale, index);
+}
