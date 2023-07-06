@@ -33,6 +33,8 @@ public:
 
     const GuiScale& getGuiScale() const override final { return guiScale_; }
 
+    GuiScaleRange getGuiScaleRange() const override;
+
     /// prüft auf Initialisierung.
     bool IsInitialized() const override final { return initialized; }
     bool IsOpenGL() const override { return true; }

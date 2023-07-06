@@ -4,6 +4,7 @@
 
 #include "driver/VideoDriver.h"
 #include "commonDefines.h"
+#include "helpers/mathFuncs.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -84,4 +85,18 @@ bool VideoDriver::setGuiScaleInternal(unsigned percent)
 
     guiScale_ = GuiScale(percent);
     return true;
+}
+
+GuiScaleRange VideoDriver::getGuiScaleRange() const
+{
+    const auto ratioXY = PointF(renderSize_) / PointF(windowSize_.width, windowSize_.height);
+    const auto ratioAvg = (ratioXY.x + ratioXY.y) / 2.f;
+    const auto min = helpers::iround<unsigned>(ratioAvg * 50.f);
+    const auto recommended = std::max(min, helpers::iround<unsigned>(ratioAvg * 100.f));
+    const auto maxScaleXY = renderSize_ / PointF(800.f, 600.f);
+    const auto maxScale = std::min(maxScaleXY.x, maxScaleXY.y);
+    // if the window shrinks below its minimum size of 800x600, max can be smaller than recommended
+    const auto max = std::max(helpers::iround<unsigned>(maxScale * 100.f), recommended);
+
+    return GuiScaleRange{min, max, recommended};
 }

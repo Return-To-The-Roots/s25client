@@ -8,6 +8,14 @@
 #include "helpers/mathFuncs.h"
 #include <type_traits>
 
+/// Holds the range of supported GUI scale percentages
+struct GuiScaleRange
+{
+    unsigned minPercent;         ///< Minimum supported GUI scale in percent
+    unsigned maxPercent;         ///< Maximum supported GUI scale in percent
+    unsigned recommendedPercent; ///< Recommended GUI scale in percent
+};
+
 /// Represents the scale factors – precomputed from a percentage – to translate between screen and view dimensions
 class GuiScale
 {

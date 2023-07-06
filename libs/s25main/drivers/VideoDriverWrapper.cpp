@@ -504,3 +504,8 @@ void VideoDriverWrapper::setGuiScalePercent(unsigned percent)
 {
     videodriver->setGuiScalePercent(percent);
 }
+
+GuiScaleRange VideoDriverWrapper::getGuiScaleRange() const
+{
+    return videodriver->getGuiScaleRange();
+}

@@ -77,6 +77,9 @@ public:
     /// Set the scale applied to the user interface in percent
     void setGuiScalePercent(unsigned percent);
 
+    /// Get minimum, maximum, and recommended GUI scale percentages for the current window and render size
+    GuiScaleRange getGuiScaleRange() const;
+
     bool IsLeftDown();
     bool IsRightDown();
     // setzt den Mausstatus

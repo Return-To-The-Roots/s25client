@@ -70,6 +70,9 @@ public:
     /// Set the scale applied to the user interface in percent
     virtual void setGuiScalePercent(unsigned percent) = 0;
 
+    /// Get minimum, maximum, and recommended GUI scale percentages for the current window and render size
+    virtual GuiScaleRange getGuiScaleRange() const = 0;
+
     /// Get state of the modifier keys
     virtual KeyEvent GetModKeyState() const = 0;
 
