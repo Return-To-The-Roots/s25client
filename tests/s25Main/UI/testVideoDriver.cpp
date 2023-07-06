@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "PointOutput.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
 #include "mockupDrivers/MockupVideoDriver.h"
@@ -99,4 +100,48 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
     BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.empty());
     // Next cleanup call is a no-op (validated inside glDeleteTextures)
     VIDEODRIVER.CleanUp();
+}
+
+BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
+{
+    auto* driver = uiHelper::GetVideoDriver();
+    driver->CreateScreen("", VideoMode(800 * 2, 600 * 2), false);
+
+    {
+        // GUI scale 100%; translations are no-ops
+        const auto& guiScale = driver->getGuiScale();
+        BOOST_TEST(guiScale.percent() == 100u);
+        BOOST_TEST(guiScale.scaleFactor() == 1.f);
+        BOOST_TEST(guiScale.invScaleFactor() == 1.f);
+        BOOST_TEST(guiScale.screenToView(800.f) == 800.f);
+        BOOST_TEST(guiScale.viewToScreen(800.f) == 800.f);
+        BOOST_TEST(Position(guiScale.screenToView(Position(800, 600))) == Position(800, 600));
+        BOOST_TEST(Position(guiScale.viewToScreen(Position(800, 600))) == Position(800, 600));
+    }
+
+    {
+        // GUI scale 50%; view coords > screen coords
+        driver->setGuiScalePercent(50);
+        const auto& guiScale = driver->getGuiScale();
+        BOOST_TEST(guiScale.percent() == 50u);
+        BOOST_TEST(guiScale.scaleFactor() == .5f);
+        BOOST_TEST(guiScale.invScaleFactor() == 2.f);
+        BOOST_TEST(guiScale.screenToView(400.f) == 800.f);
+        BOOST_TEST(guiScale.viewToScreen(800.f) == 400.f);
+        BOOST_TEST(Position(guiScale.screenToView(Position(400, 300))) == Position(800, 600));
+        BOOST_TEST(Position(guiScale.viewToScreen(Position(800, 600))) == Position(400, 300));
+    }
+
+    {
+        // GUI scale 200%; screen coords > view coords
+        driver->setGuiScalePercent(200);
+        const auto& guiScale = driver->getGuiScale();
+        BOOST_TEST(guiScale.percent() == 200u);
+        BOOST_TEST(guiScale.scaleFactor() == 2.f);
+        BOOST_TEST(guiScale.invScaleFactor() == .5f);
+        BOOST_TEST(guiScale.screenToView(800.f) == 400.f);
+        BOOST_TEST(guiScale.viewToScreen(400.f) == 800.f);
+        BOOST_TEST(Position(guiScale.screenToView(Position(800, 600))) == Position(400, 300));
+        BOOST_TEST(Position(guiScale.viewToScreen(Position(400, 300))) == Position(800, 600));
+    }
 }
