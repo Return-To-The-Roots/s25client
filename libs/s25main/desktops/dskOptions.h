@@ -15,6 +15,7 @@ public:
     dskOptions();
     ~dskOptions() override;
 
+    void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
     bool Msg_WheelUp(const MouseCoords& mc) override;
     bool Msg_WheelDown(const MouseCoords& mc) override;
 
@@ -28,10 +29,13 @@ private:
     void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
 
+    void updateGuiScale();
     void scrollGuiScale(bool up);
 
     GlobalGameSettings ggs;
-    std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
+    std::vector<VideoMode> video_modes;    ///< Sorted list of filtered video modes
+    std::vector<unsigned> guiScales_;      ///< Generated GUI scale percentages
+    std::size_t recommendedGuiScaleIndex_; ///< Index of the recommended GUI scale percentage
 
     void loadVideoModes();
 };

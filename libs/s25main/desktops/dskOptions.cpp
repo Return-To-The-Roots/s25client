@@ -317,14 +317,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     curPos.y += 50;
 
     groupGrafik->AddText(ID_txtGuiScale, curPos, _("GUI Scale:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = groupGrafik->AddComboBox(ID_cbGuiScale, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
-
-    for(const auto& percent : Settings::GUI_SCALES)
-    {
-        combo->AddString(helpers::toString(percent) + "%");
-        if(percent == SETTINGS.video.guiScale)
-            combo->SetSelection(combo->GetNumItems() - 1);
-    }
+    groupGrafik->AddComboBox(ID_cbGuiScale, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
+    updateGuiScale();
 
     curPos.y = 80;
     constexpr Offset bt1Offset(200, -5);
@@ -513,7 +507,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             break;
         case ID_cbVideoDriver: SETTINGS.driver.video = combo->GetText(selection); break;
         case ID_cbGuiScale:
-            SETTINGS.video.guiScale = Settings::GUI_SCALES[selection];
+            SETTINGS.video.guiScale = guiScales_[selection];
             VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
             break;
         case ID_cbAudioDriver: SETTINGS.driver.audio = combo->GetText(selection); break;
@@ -681,6 +675,12 @@ void dskOptions::loadVideoModes()
     std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
 }
 
+void dskOptions::Msg_ScreenResize(const ScreenResizeEvent& sr)
+{
+    Desktop::Msg_ScreenResize(sr);
+    updateGuiScale();
+}
+
 bool dskOptions::Msg_WheelUp(const MouseCoords& mc)
 {
     if(VIDEODRIVER.GetModKeyState().ctrl)
@@ -701,18 +701,55 @@ bool dskOptions::Msg_WheelDown(const MouseCoords& mc)
         return Desktop::Msg_WheelDown(mc);
 }
 
+void dskOptions::updateGuiScale()
+{
+    const auto stepSizeForGuiScale = [](unsigned percent) {
+        // generate zoom values in 10% increments below 100% and 25% increments above 100%
+        constexpr unsigned stepSizeBelow100 = 10;
+        constexpr unsigned stepSizeAbove100 = 25;
+        return (percent < 100 ? stepSizeBelow100 : stepSizeAbove100);
+    };
+    const auto roundGuiScale = [=](unsigned percent) {
+        const auto stepSize = stepSizeForGuiScale(percent);
+        return (percent + stepSize / 2) / stepSize * stepSize;
+    };
+
+    auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
+    auto range = VIDEODRIVER.getGuiScaleRange();
+    auto recommendedPercentRounded = roundGuiScale(range.recommendedPercent);
+
+    guiScales_.clear();
+    combo->DeleteAllItems();
+    for(unsigned percent = roundGuiScale(range.minPercent); percent <= range.maxPercent; percent += stepSizeForGuiScale(percent))
+    {
+        if(percent == recommendedPercentRounded)
+            recommendedGuiScaleIndex_ = guiScales_.size();
+        guiScales_.push_back(percent);
+
+        combo->AddString(helpers::toString(percent) + "%");
+        if(percent == SETTINGS.video.guiScale)
+            combo->SetSelection(combo->GetNumItems() - 1);
+    }
+
+    // if GUI scale exceeds maximum, lower it to keep UI elements on screen
+    if(SETTINGS.video.guiScale > guiScales_.back())
+    {
+        combo->SetSelection(combo->GetNumItems() - 1);
+        SETTINGS.video.guiScale = guiScales_.back();
+        VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
+    }
+}
+
 void dskOptions::scrollGuiScale(bool up)
 {
     unsigned index = 0;
     auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
     const auto& selection = combo->GetSelection();
     if(!selection)
-    {
-        while(index < Settings::GUI_SCALES.size() && Settings::GUI_SCALES[index] != 100)
-            ++index;
-    } else if(!up && *selection > 0)
+        index = recommendedGuiScaleIndex_;
+    else if(!up && *selection > 0)
         index = *selection - 1;
-    else if(up && *selection < (Settings::GUI_SCALES.size() - 1))
+    else if(up && *selection < (guiScales_.size() - 1))
         index = *selection + 1;
     else
         return;

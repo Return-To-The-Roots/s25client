@@ -130,8 +130,6 @@ public:
 
     static const std::array<short, 13> SCREEN_REFRESH_RATES;
 
-    static const std::array<unsigned, 14> GUI_SCALES;
-
 private:
     static const int VERSION;
     static const std::array<std::string, 10> SECTION_NAMES;

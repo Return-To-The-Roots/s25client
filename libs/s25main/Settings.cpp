@@ -27,9 +27,6 @@ const std::array<std::string, 10> Settings::SECTION_NAMES = {
 const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {
   {-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
 
-const std::array<unsigned, 14> Settings::GUI_SCALES = {
-  {50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 225, 250, 275, 300}};
-
 const std::map<GUI_ID, std::string> persistentWindows = {{CGI_CHAT, "wnd_chat"},
                                                          {CGI_POSTOFFICE, "wnd_postoffice"},
                                                          {CGI_DISTRIBUTION, "wnd_distribution"},
