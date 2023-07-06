@@ -28,7 +28,7 @@ public:
     bool GetMouseStateR() const override;
 
     VideoMode GetWindowSize() const override final { return windowSize_; }
-    Extent GetRenderSize() const override final { return renderSize_; }
+    Extent GetRenderSize() const override final { return scaledRenderSize_; }
     bool IsFullscreen() const override final { return isFullscreen_; }
 
     const GuiScale& getGuiScale() const override final { return guiScale_; }
@@ -51,8 +51,9 @@ protected:
     bool isFullscreen_;                   /// Vollbild an/aus?
 private:
     // cached as possibly used often
-    VideoMode windowSize_;
-    Extent renderSize_;
+    VideoMode windowSize_;    ///< Size of the window or fullscreen resolution
+    Extent renderSize_;       ///< Size of the renderable surface
+    Extent scaledRenderSize_; ///< Size of the projection clipping area
 
     GuiScale guiScale_; ///< Scale factor applied to the user interface
 };
