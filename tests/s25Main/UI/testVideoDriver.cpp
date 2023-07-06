@@ -145,3 +145,32 @@ BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
         BOOST_TEST(Position(guiScale.viewToScreen(Position(400, 300))) == Position(800, 600));
     }
 }
+
+BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
+{
+    GuiScaleRange range;
+    auto* driver = uiHelper::GetVideoDriver();
+    driver->CreateScreen("", VideoMode(800 * 3, 600 * 3), false);
+
+    // Regular DPI configuration
+    range = driver->getGuiScaleRange();
+    BOOST_TEST(range.minPercent == 100u);
+    BOOST_TEST(range.maxPercent == 300u);
+    BOOST_TEST(range.recommendedPercent == 100u);
+
+    // Maximum is constrained by width
+    driver->ResizeScreen(VideoMode(800 * 2, 600 * 3), false);
+    BOOST_TEST(driver->getGuiScaleRange().maxPercent == 200u);
+
+    // Maximum is constrained by height
+    driver->ResizeScreen(VideoMode(800 * 3, 600 * 2), false);
+    BOOST_TEST(driver->getGuiScaleRange().maxPercent == 200u);
+
+    // HighDPI configuration (50% larger render size than window size)
+    driver->ResizeScreen(VideoMode(800 * 2, 600 * 2), false);
+    driver->SetNewSize(driver->GetWindowSize(), Extent(800 * 3, 600 * 3));
+    range = driver->getGuiScaleRange();
+    BOOST_TEST(range.minPercent == 100u);
+    BOOST_TEST(range.maxPercent == (200 * 1.5));
+    BOOST_TEST(range.recommendedPercent == (100 * 1.5));
+}
