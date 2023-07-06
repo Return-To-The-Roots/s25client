@@ -27,8 +27,8 @@ jobs:
           #  Use system clang (14)
           #   Use (compiler) default C++ 14 standard
           #   Use system cmake (version gets ignored below)
-          #   Use default boost
-          - { compiler: clang,    os: macos-12,     type: Debug }
+          #   Use boost installed on this GHA image
+          - { compiler: clang,    os: macos-12,     type: Debug, boost: 1.82.0 }
 
           # Linux:
           #  Oldest Compilers 
