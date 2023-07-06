@@ -714,12 +714,18 @@ void dskOptions::updateGuiScale()
         return (percent + stepSize / 2) / stepSize * stepSize;
     };
 
+    const auto range = VIDEODRIVER.getGuiScaleRange();
+    const auto recommendedPercentRounded = roundGuiScale(range.recommendedPercent);
     auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
-    auto range = VIDEODRIVER.getGuiScaleRange();
-    auto recommendedPercentRounded = roundGuiScale(range.recommendedPercent);
 
     guiScales_.clear();
     combo->DeleteAllItems();
+
+    guiScales_.push_back(0);
+    combo->AddString(_("Auto"));
+    if(SETTINGS.video.guiScale == 0)
+        combo->SetSelection(0);
+
     for(unsigned percent = roundGuiScale(range.minPercent); percent <= range.maxPercent; percent += stepSizeForGuiScale(percent))
     {
         if(percent == recommendedPercentRounded)
@@ -742,19 +748,18 @@ void dskOptions::updateGuiScale()
 
 void dskOptions::scrollGuiScale(bool up)
 {
-    unsigned index = 0;
     auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
     const auto& selection = combo->GetSelection();
-    if(!selection)
-        index = recommendedGuiScaleIndex_;
-    else if(!up && *selection > 0)
-        index = *selection - 1;
-    else if(up && *selection < (guiScales_.size() - 1))
-        index = *selection + 1;
+    unsigned newSelection = 0;
+    if(!selection || *selection == 0) // No selection or "Auto" item selected
+        newSelection = recommendedGuiScaleIndex_;
     else
-        return;
+        newSelection = std::clamp<unsigned>(*selection + (up ? 1 : -1), 1, combo->GetNumItems() - 1);
 
-    // TODO add notify parameter
-    combo->SetSelection(index);
-    Msg_Group_ComboSelectItem(ID_grpGraphics, ID_cbGuiScale, index);
+    if(newSelection != selection)
+    {
+        combo->SetSelection(newSelection);
+        SETTINGS.video.guiScale = guiScales_[newSelection];
+        VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
+    }
 }

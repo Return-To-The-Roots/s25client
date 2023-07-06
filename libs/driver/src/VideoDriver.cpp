@@ -80,6 +80,9 @@ void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
 
 bool VideoDriver::setGuiScaleInternal(unsigned percent)
 {
+    if(percent == 0)
+        percent = getGuiScaleRange().recommendedPercent;
+
     if(guiScale_.percent() == percent)
         return false;
 
