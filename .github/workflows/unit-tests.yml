@@ -15,7 +15,7 @@ concurrency:
 env:
   # Default versions from Jenkins Toolchain
   CMAKE_VERSION: 3.26.0
-  BOOST_VERSION: 1.81.0
+  BOOST_VERSION: 1.82.0
   ADDITIONAL_CMAKE_FLAGS: -DRTTR_ENABLE_BENCHMARKS=ON
 
 jobs:
