@@ -46,6 +46,7 @@ private:
 using Position = Point<int>;
 /// Type for describing an extent/size etc. (unsigned type)
 using Extent = Point<unsigned>;
+using PointF = Point<float>;
 //-V:all:810
 
 //////////////////////////////////////////////////////////////////////////

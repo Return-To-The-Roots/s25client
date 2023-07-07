@@ -126,11 +126,11 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         glPushMatrix();
         glScalef(zoomFactor_, zoomFactor_, 1);
         // Offset to center view
-        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
+        PointF diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         diff = diff / 2.f;
         glTranslatef(-diff.x, -diff.y, 0.f);
         // Also adjust mouse
-        mousePos = Position(Point<float>(mousePos) / zoomFactor_ + diff);
+        mousePos = Position(PointF(mousePos) / zoomFactor_ + diff);
         glMatrixMode(GL_MODELVIEW);
     }
 
@@ -623,7 +623,7 @@ void GameWorldView::CalcFxLx()
     if(zoomFactor_ != 1.f) //-V550
     {
         // Calc pixels we can remove from sides, as they are not drawn due to zoom
-        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
+        PointF diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         // Stay centered by removing half the pixels from opposite sites
         diff = diff / 2.f;
         // Convert to map points
@@ -632,8 +632,8 @@ void GameWorldView::CalcFxLx()
         // Don't remove to much
         diff.x = std::floor(diff.x);
         diff.y = std::floor(diff.y);
-        firstPt = Position(Point<float>(firstPt) + diff);
-        lastPt = Position(Point<float>(lastPt) - diff);
+        firstPt = Position(PointF(firstPt) + diff);
+        lastPt = Position(PointF(lastPt) - diff);
     }
 }
 

@@ -27,8 +27,6 @@ glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp);
 class TerrainRenderer : private boost::noncopyable
 {
 public:
-    using PointF = Point<float>;
-
     TerrainRenderer();
     ~TerrainRenderer();
 
