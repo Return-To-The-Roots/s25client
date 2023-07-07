@@ -40,7 +40,7 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, libsiedler2::PixelBufferBGRA&
             b->drawTo(buffer, current->pos);
             current->bmp = b;
 
-            const Point<float> bufferSize(buffer.getWidth(), buffer.getHeight());
+            const PointF bufferSize(buffer.getWidth(), buffer.getHeight());
             Extent currentSize(current->size);
             if(b->isPlayer())
                 currentSize.x /= 2;

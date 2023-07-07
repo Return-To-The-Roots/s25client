@@ -56,7 +56,7 @@ static constexpr unsigned getFlatIndex(DescIdx<LandscapeDesc> ls, LandRoadType r
     return ls.value * helpers::NumEnumValues_v<LandRoadType> + rttr::enum_cast(road);
 }
 
-TerrainRenderer::PointF TerrainRenderer::GetNeighbourVertexPos(MapPoint pt, const Direction dir) const
+PointF TerrainRenderer::GetNeighbourVertexPos(MapPoint pt, const Direction dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
     Position ptNb = ::GetNeighbour(Position(pt), dir);
@@ -67,8 +67,8 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourVertexPos(MapPoint pt, cons
     return GetVertexPos(t) + PointF(offset);
 }
 
-TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle,
-                                                               const Direction dir) const
+PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle,
+                                              const Direction dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
     Position ptNb = ::GetNeighbour(Position(pt), dir);
@@ -205,7 +205,7 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 
 void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv)
 {
-    GetVertex(pt).pos = Point<float>(gwv.GetWorld().GetNodePos(pt));
+    GetVertex(pt).pos = PointF(gwv.GetWorld().GetNodePos(pt));
 }
 
 void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv)
