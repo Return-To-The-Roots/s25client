@@ -4,6 +4,7 @@
 
 #include "driver/VideoDriver.h"
 #include "commonDefines.h"
+#include "driver/VideoDriverLoaderInterface.h"
 #include "helpers/mathFuncs.h"
 #include <algorithm>
 #include <stdexcept>
@@ -86,7 +87,15 @@ bool VideoDriver::setGuiScaleInternal(unsigned percent)
     if(guiScale_.percent() == percent)
         return false;
 
+    // translate current mouse position to screen space
+    const auto screenPos = guiScale_.viewToScreen(mouse_xy.pos);
+
     guiScale_ = GuiScale(percent);
+
+    // move cursor to new position in view space
+    mouse_xy.pos = guiScale_.screenToView(screenPos);
+    CallBack->Msg_MouseMove(mouse_xy);
+
     return true;
 }
 
