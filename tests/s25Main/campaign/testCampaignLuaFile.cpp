@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "gameData/CampaignDescription.h"
 #include "lua/CampaignDataLoader.h"
-#include "rttr/test/TmpFolder.hpp"
+#include "gameData/CampaignDescription.h"
 #include "rttr/test/LocaleResetter.hpp"
-#include <boost/filesystem.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/nowide/fstream.hpp>
+#include "rttr/test/TmpFolder.hpp"
 #include <s25util/utf8.h>
+#include <boost/filesystem.hpp>
+#include <boost/nowide/fstream.hpp>
+#include <boost/test/unit_test.hpp>
 
 namespace bnw = boost::nowide;
 
