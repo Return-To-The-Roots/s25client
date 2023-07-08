@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "helpers/mathFuncs.h"
 #include <algorithm>
 #include <cstdint>
 #include <limits>
@@ -24,8 +25,11 @@ struct Point //-V690
     T x, y;
     constexpr Point() noexcept : x(getInvalidValue()), y(getInvalidValue()) {}
     constexpr Point(const T x, const T y) noexcept : x(x), y(y) {}
-    template<typename U>
+    template<typename U, std::enable_if_t<!(std::is_integral<T>::value && std::is_floating_point<U>::value), int> = 0>
     constexpr explicit Point(const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
+    {}
+    template<typename U, std::enable_if_t<std::is_integral<T>::value && std::is_floating_point<U>::value, int> = 0>
+    constexpr explicit Point(const Point<U>& pt) noexcept : x(helpers::iround<T>(pt.x)), y(helpers::iround<T>(pt.y))
     {}
     constexpr Point(const Point&) = default;
     constexpr Point& operator=(const Point&) = default;
