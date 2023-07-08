@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#define BOOST_TEST_MODULE RTTR_Campaign
+#define BOOST_TEST_MODULE RTTR_CampaignData
 
 #include <rttr/test/Fixture.hpp>
 #include <boost/test/unit_test.hpp>
