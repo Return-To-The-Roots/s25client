@@ -176,7 +176,7 @@ void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
 
     if(ctrl_id >= ID_FIRST_MISSION_PAGE && ctrl_id <= ID_LAST_MISSION_PAGE)
     {
-        // Alle Controls erstmal zerstören (die ganze Gruppe)
+        // Alle Controls erstmal zerstoeren (die ganze Gruppe)
         DeleteCtrl(ID_MISSION_GROUP_START + currentPage);
 
         switch(ctrl_id)
