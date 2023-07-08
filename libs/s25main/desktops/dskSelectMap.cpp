@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskSelectMap.h"
-#include "CampaingSettings.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -29,10 +28,12 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
+#include "lua/CampaignDataLoader.h"
 #include "lua/GameDataLoader.h"
 #include "mapGenerator/RandomMap.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
+#include "gameData/CampaignDescription.h"
 #include "gameData/MapConsts.h"
 #include "gameData/WorldDescription.h"
 #include "liblobby/LobbyClient.h"
@@ -542,25 +543,19 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
         if(helpers::contains(brokenCampaignPaths, folder))
             continue;
 
-        auto const campaignIniFile = folder / "campaign.ini";
-        CampaignSettings campaignSettings(campaignIniFile.string());
-        if(!campaignSettings.Load())
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, folder);
+        if(!loader.Load())
         {
             LOG.write(_("Failed to load campaign %1%.\n")) % folder;
             brokenCampaignPaths.insert(folder);
             continue;
         }
 
-        auto campaignMapFolder = bfs::path(folder);
-        if(campaignSettings.campaignDescription.name == "Roman")
-            campaignMapFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsCampaign);
-        else if(campaignSettings.campaignDescription.name == "Continent")
-            campaignMapFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsContinents);
-
-        for(auto const& map : campaignSettings.missions.mapNames)
+        for(auto const& map : desc.mapNames)
         {
-            auto const mapPath = campaignMapFolder / map;
-            auto const luaFilepath = (folder / map).replace_extension("lua");
+            auto const mapPath = RTTRCONFIG.ExpandPath(desc.mapFolder) / map;
+            auto const luaFilepath = (RTTRCONFIG.ExpandPath(desc.luaFolder) / map).replace_extension("lua");
             if(!bfs::exists(mapPath))
             {
                 LOG.write(_("Campaign map %1% does not exist.\n")) % mapPath;
@@ -583,8 +578,6 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
             }
         }
 
-        table->AddRow({s25util::ansiToUTF8(campaignSettings.campaignDescription.name),
-                       s25util::ansiToUTF8(campaignSettings.campaignDescription.shortDescription),
-                       s25util::ansiToUTF8(campaignSettings.campaignDescription.author), folder.string()});
+        table->AddRow({desc.name, desc.shortDescription, desc.author, folder.string()});
     }
 }

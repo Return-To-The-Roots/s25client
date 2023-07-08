@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/signals2/connection.hpp>
 
-class CampaignSettings;
+struct CampaignDescription;
 
 class dskCampaignMissionSelection : public Desktop
 {
@@ -27,7 +27,7 @@ private:
     CreateServerInfo csi_;
     unsigned int currentPage;
     unsigned int lastPage;
-    std::unique_ptr<CampaignSettings> settings;
+    std::unique_ptr<CampaignDescription> settings;
     unsigned int missionsPerPage;
     boost::signals2::scoped_connection onErrorConnection_;
 };

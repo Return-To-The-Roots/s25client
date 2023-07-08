@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCampaingMissionSelection.h"
-#include "CampaingSettings.h"
 #include "Desktop.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -23,8 +22,10 @@
 #include "helpers/format.hpp"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "lua/CampaignDataLoader.h"
 #include "network/GameClient.h"
 #include "ogl/glFont.h"
+#include "gameData/CampaignDescription.h"
 #include "gameData/MapConsts.h"
 #include "gameData/MaxPlayers.h"
 #include "liblobby/LobbyClient.h"
@@ -79,10 +80,10 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
                    Extent(LargeFont->getHeight(), LargeFont->getHeight()), TextureColor::Green2,
                    LOADER.GetImageN("io", 105));
 
-    auto const campaignIniFile = bfs::path(campaignFolder) / "campaign.ini";
-    settings = std::make_unique<CampaignSettings>(campaignIniFile.string());
-    settings->Load();
-    lastPage = (settings->missions.mapNames.size() - 1) / missionsPerPage;
+    settings = std::make_unique<CampaignDescription>();
+    CampaignDataLoader loader(*settings, campaignFolder);
+    loader.Load();
+    lastPage = (settings->mapNames.size() - 1) / missionsPerPage;
 
     UpdateEnabledStateOfNextPreviousButton();
 
@@ -98,7 +99,7 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
       AddMultiline(ID_CAMPAIGN_LONG_DESCRIPTION, DrawPoint(200, 50 + LargeFont->getHeight() + 10), Extent(400, 70),
                    TextureColor::Green1, NormalFont);
     multiline->ShowBackground(true);
-    multiline->AddString(settings->campaignDescription.longDescription, COLOR_YELLOW);
+    multiline->AddString(settings->longDescription, COLOR_YELLOW);
 
     UpdateMissionPage(currentPage);
 }
@@ -111,16 +112,10 @@ void dskCampaignMissionSelection::UpdateMissionPage(const unsigned page)
     for(unsigned int i = 0; i < missionsPerPage; i++)
     {
         unsigned int missionIndex = page * missionsPerPage + i;
-        if(missionIndex >= settings->missions.mapNames.size())
+        if(missionIndex >= settings->mapNames.size())
             break;
 
-        auto campaignFolder = bfs::path(campaignFolder_);
-        if(settings->campaignDescription.name == "Roman")
-            campaignFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsCampaign);
-        else if(settings->campaignDescription.name == "Continent")
-            campaignFolder = RTTRCONFIG.ExpandPath(s25::folders::mapsContinents);
-
-        const bfs::path& mapFilePath = bfs::path(campaignFolder) / settings->missions.mapNames[missionIndex];
+        const bfs::path& mapFilePath = RTTRCONFIG.ExpandPath(settings->mapFolder) / settings->mapNames[missionIndex];
 
         libsiedler2::Archiv map;
         if(int ec = libsiedler2::loader::LoadMAP(mapFilePath, map, true))
@@ -169,7 +164,7 @@ void dskCampaignMissionSelection::UpdateEnabledStateOfNextPreviousButton()
 void dskCampaignMissionSelection::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     unsigned int missionIndex = (group_id - ID_MISSION_GROUP_START) * missionsPerPage + ctrl_id;
-    const bfs::path& mapPath = bfs::path(campaignFolder_) / settings->missions.mapNames[missionIndex];
+    const bfs::path& mapPath = RTTRCONFIG.ExpandPath(settings->mapFolder) / settings->mapNames[missionIndex];
 
     StartServer(mapPath);
 }
