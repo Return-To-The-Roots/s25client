@@ -51,34 +51,44 @@ enum CtrlIds
     ID_PREVIOUS_MISSION_PAGE,
     ID_LAST_MISSION_PAGE,
     ID_CHOOSE_CAPITAL_LABEL,
-    ID_CAMPAIGN_LONG_DESCRIPTION,
     ID_MISSION_GROUP_START
 };
+
+const int startOffsetY = 70;
+const int distanceBetweenElementsY = 10;
+const int missionButtonHeightY = 20;
+const int distanceBetweenMissionButtonsY = 10;
+
+int getStartOffsetMissionButtonsY()
+{
+    return startOffsetY + LargeFont->getHeight() + distanceBetweenElementsY + 8;
 }
+} // namespace
 
 dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder)
     : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(campaignFolder), csi_(std::move(csi)), currentPage(0),
       lastPage(0), missionsPerPage(10)
 {
-    const unsigned int btOffset =
-      50 + LargeFont->getHeight() + NormalFont->getHeight() + 70 + 10 + 2 + missionsPerPage * (20 + 8) + 10;
+    const unsigned int btOffset = getStartOffsetMissionButtonsY()
+                                  + missionsPerPage * (missionButtonHeightY + distanceBetweenMissionButtonsY)
+                                  + distanceBetweenElementsY;
     AddTextButton(ID_BACK, DrawPoint(300, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
 
-    AddImageButton(ID_FIRST_MISSION_PAGE, DrawPoint(400 - LargeFont->getHeight() * 3 - 2, btOffset),
-                   Extent(LargeFont->getHeight(), LargeFont->getHeight()), TextureColor::Green2,
-                   LOADER.GetImageN("io", 102));
+    auto imageFirstPage = LOADER.GetImageN("io", 102);
+    AddImageButton(ID_FIRST_MISSION_PAGE, DrawPoint(400 - imageFirstPage->GetSize().y * 3 - 4, btOffset),
+                   Extent(imageFirstPage->GetSize()), TextureColor::Green2, imageFirstPage);
 
-    AddImageButton(ID_PREVIOUS_MISSION_PAGE, DrawPoint(400 - LargeFont->getHeight() * 2, btOffset),
-                   Extent(LargeFont->getHeight(), LargeFont->getHeight()), TextureColor::Green2,
-                   LOADER.GetImageN("io", 103));
+    auto imagePreviousPage = LOADER.GetImageN("io", 103);
+    AddImageButton(ID_PREVIOUS_MISSION_PAGE, DrawPoint(400 - imagePreviousPage->GetSize().y * 2, btOffset),
+                   Extent(imagePreviousPage->GetSize()), TextureColor::Green2, imagePreviousPage);
 
-    AddImageButton(ID_NEXT_MISSION_PAGE, DrawPoint(400 + LargeFont->getHeight(), btOffset),
-                   Extent(LargeFont->getHeight(), LargeFont->getHeight()), TextureColor::Green2,
-                   LOADER.GetImageN("io", 104));
+    auto imageNextPage = LOADER.GetImageN("io", 104);
+    AddImageButton(ID_NEXT_MISSION_PAGE, DrawPoint(400 + imageNextPage->GetSize().y, btOffset),
+                   Extent(imageNextPage->GetSize()), TextureColor::Green2, imageNextPage);
 
-    AddImageButton(ID_LAST_MISSION_PAGE, DrawPoint(400 + LargeFont->getHeight() * 2 + 2, btOffset),
-                   Extent(LargeFont->getHeight(), LargeFont->getHeight()), TextureColor::Green2,
-                   LOADER.GetImageN("io", 105));
+    auto imageLastPage = LOADER.GetImageN("io", 105);
+    AddImageButton(ID_LAST_MISSION_PAGE, DrawPoint(400 + imageLastPage->GetSize().y * 2 + 4, btOffset),
+                   Extent(imageLastPage->GetSize()), TextureColor::Green2, imageLastPage);
 
     settings = std::make_unique<CampaignDescription>();
     CampaignDataLoader loader(*settings, campaignFolder);
@@ -87,18 +97,12 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
 
     UpdateEnabledStateOfNextPreviousButton();
 
-    AddText(ID_MISSION_PAGE_LABEL, DrawPoint(400, btOffset + LargeFont->getHeight() / 2),
+    AddText(ID_MISSION_PAGE_LABEL, DrawPoint(400, btOffset + imageLastPage->GetSize().y / 2),
             std::to_string(currentPage + 1) + "/" + std::to_string(lastPage + 1), COLOR_YELLOW,
             FontStyle::CENTER | FontStyle::VCENTER, LargeFont);
 
-    AddText(ID_CHOOSE_CAPITAL_LABEL, DrawPoint(400, 50), _("Choose capital"), COLOR_YELLOW, FontStyle::CENTER,
+    AddText(ID_CHOOSE_CAPITAL_LABEL, DrawPoint(400, startOffsetY), _("Choose capital"), COLOR_YELLOW, FontStyle::CENTER,
             LargeFont);
-
-    ctrlMultiline* multiline =
-      AddMultiline(ID_CAMPAIGN_LONG_DESCRIPTION, DrawPoint(200, 50 + LargeFont->getHeight() + 10), Extent(400, 70),
-                   TextureColor::Green1, NormalFont);
-    multiline->ShowBackground(true);
-    multiline->AddString(settings->longDescription, COLOR_YELLOW);
 
     UpdateMissionPage(currentPage);
 }
@@ -106,8 +110,8 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
 void dskCampaignMissionSelection::UpdateMissionPage(unsigned page)
 {
     ctrlGroup* group = AddGroup(ID_MISSION_GROUP_START + page);
-    Extent catBtSize = Extent(400, 20);
-    DrawPoint curBtPos(200, 50 + LargeFont->getHeight() + NormalFont->getHeight() + 70 + 10 + 2);
+    Extent catBtSize = Extent(300, missionButtonHeightY);
+    DrawPoint curBtPos(250, getStartOffsetMissionButtonsY());
     for(unsigned int i = 0; i < missionsPerPage; i++)
     {
         unsigned int missionIndex = page * missionsPerPage + i;
@@ -129,7 +133,7 @@ void dskCampaignMissionSelection::UpdateMissionPage(unsigned page)
         group->AddTextButton(i, curBtPos, catBtSize, TextureColor::Grey, s25util::ansiToUTF8(header.getName()),
                              NormalFont);
 
-        curBtPos.y += catBtSize.y + 8;
+        curBtPos.y += catBtSize.y + distanceBetweenMissionButtonsY;
     }
 }
 
