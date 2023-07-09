@@ -29,12 +29,16 @@ private:
 
     void FillTable(const std::vector<boost::filesystem::path>& files);
     void FillCampaignsTable(const std::vector<boost::filesystem::path>& folders);
+    void FillCampaignList(const std::vector<boost::filesystem::path>& folders);
 
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
     void Msg_TableSelectItem(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+
+    void Msg_ListChooseItem(unsigned ctrl_id, unsigned) override;
+    void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
 
     void LC_Status_Error(const std::string& error) override;
 
@@ -70,4 +74,11 @@ private:
     /// Campaings that we already know are broken
     std::set<boost::filesystem::path> brokenCampaignPaths;
     boost::signals2::scoped_connection onErrorConnection_;
+    enum CampaignScreen
+    {
+        Table,
+        ListWithDescription,
+        TableWithSeparateCampaignDetail
+    };
+    CampaignScreen campaignScreen;
 };

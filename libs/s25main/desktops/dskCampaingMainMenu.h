@@ -11,25 +11,19 @@
 
 struct CampaignDescription;
 
-class dskCampaignMissionSelection : public Desktop
+class dskCampaingMainMenu : public Desktop
 {
 public:
-    dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder,
-                                int currentSelectedCapital = -1);
+    dskCampaingMainMenu(CreateServerInfo csi, std::string campaignFolder, int selectedCapital);
 
-    void UpdateMissionPage(unsigned page);
+    //void UpdateMissionPage(const unsigned page);
 
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void StartServer(const boost::filesystem::path& mapPath);
-    void UpdateEnabledStateOfNextPreviousButton();
+    int currentSelectedCapital;
     std::string campaignFolder_;
     CreateServerInfo csi_;
-    unsigned int currentPage;
-    unsigned int lastPage;
     std::unique_ptr<CampaignDescription> settings;
-    unsigned int missionsPerPage;
     boost::signals2::scoped_connection onErrorConnection_;
-    int currentSelectedCapital_;
 };

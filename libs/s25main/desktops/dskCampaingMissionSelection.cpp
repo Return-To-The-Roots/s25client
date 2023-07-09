@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCampaingMissionSelection.h"
+#include "dskCampaingMainMenu.h"
 #include "Desktop.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -65,9 +66,10 @@ int getStartOffsetMissionButtonsY()
 }
 } // namespace
 
-dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder)
+dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder,
+                                                         int currentSelectedCapital)
     : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(campaignFolder), csi_(std::move(csi)), currentPage(0),
-      lastPage(0), missionsPerPage(10)
+      lastPage(0), missionsPerPage(10), currentSelectedCapital_(currentSelectedCapital)
 {
     const unsigned int btOffset = getStartOffsetMissionButtonsY()
                                   + missionsPerPage * (missionButtonHeightY + distanceBetweenMissionButtonsY)
@@ -167,15 +169,29 @@ void dskCampaignMissionSelection::UpdateEnabledStateOfNextPreviousButton()
 void dskCampaignMissionSelection::Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id)
 {
     unsigned int missionIndex = (group_id - ID_MISSION_GROUP_START) * missionsPerPage + ctrl_id;
-    const bfs::path& mapPath = RTTRCONFIG.ExpandPath(settings->mapFolder) / settings->mapNames[missionIndex];
+    if(currentSelectedCapital_ != -1)
+    {
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaingMainMenu>(csi_, campaignFolder_, missionIndex));
+    } else
+    {
+        const bfs::path& mapPath = RTTRCONFIG.ExpandPath(settings->mapFolder) / settings->mapNames[missionIndex];
 
-    StartServer(mapPath);
+        StartServer(mapPath);
+    }
 }
 
 void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_BACK)
-        WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi_, 9));
+    {
+        if(currentSelectedCapital_ != -1)
+        {
+            WINDOWMANAGER.Switch(std::make_unique<dskCampaingMainMenu>(csi_, campaignFolder_, currentSelectedCapital_));
+        } else
+        {
+            WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi_, 9));
+        }
+    }
 
     if(ctrl_id >= ID_FIRST_MISSION_PAGE && ctrl_id <= ID_LAST_MISSION_PAGE)
     {

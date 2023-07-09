@@ -14,11 +14,15 @@
 #include "controls/ctrlPreviewMinimap.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
+#include "controls/ctrlTextButton.h"
+#include "controls/ctrlList.h"
+#include "controls/ctrlMultiline.h"
 #include "desktops/dskCampaingMissionSelection.h"
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
+#include "desktops/dskCampaingMainMenu.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
@@ -85,6 +89,10 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType
     // "Karten Auswahl"
     AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
+    // "Toggle different campaign screens"
+    campaignScreen = CampaignScreen::Table;
+    AddTextButton(100, DrawPoint(100, 560), Extent(270, 22), TextureColor::Red1, _("Toggle campaign screen (Table)"), NormalFont);
+
     // "Zurück"
     AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     // "Spiel laden..."
@@ -140,6 +148,11 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType
                                 {_("Description"), 216, SRT::String},
                                 {_("Author"), 170, SRT::Number},
                                 {"", 0, SRT::Default}});
+    AddList(101, DrawPoint(110, 35), Extent(200, 400), TextureColor::Grey, NormalFont);
+
+    ctrlMultiline* multiline = AddMultiline(102, DrawPoint(320, 35), Extent(300, 400), TextureColor::Green1, NormalFont);
+    multiline->ShowBackground(true);
+
     // "Eigene" auswählen
     optiongroup->SetSelection(preSelectedMapType, true);
 
@@ -157,14 +170,21 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
 {
     auto* mapTable = GetCtrl<ctrlTable>(1);
     auto* campaignsTable = GetCtrl<ctrlTable>(14);
+    auto* toggleCampaignScreenButton = GetCtrl<ctrlTextButton>(100);
+    auto* campaignList = GetCtrl<ctrlList>(101);
+    auto* campaignDescription = GetCtrl<ctrlMultiline>(102);
 
     // Tabellen leeren
     mapTable->DeleteAllItems();
     campaignsTable->DeleteAllItems();
+    campaignList->DeleteAllItems();
 
     // Tabellen ausblenden
     mapTable->SetVisible(false);
     campaignsTable->SetVisible(false);
+    toggleCampaignScreenButton->SetVisible(false);
+    campaignList->SetVisible(false);
+    campaignDescription->SetVisible(false);
 
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played, Campaigns
     static const std::array<std::string, 10> ids = {
@@ -177,6 +197,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
         const size_t numFaultyCampaignsPrior = brokenCampaignPaths.size();
         const bfs::path campaignPath = RTTRCONFIG.ExpandPath(ids[selection]);
         FillCampaignsTable(ListDir(campaignPath, std::string(), true));
+        FillCampaignList(ListDir(campaignPath, std::string(), true));
 
         if(brokenCampaignPaths.size() > numFaultyCampaignsPrior)
         {
@@ -186,9 +207,13 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
               std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
         }
 
+        toggleCampaignScreenButton->SetVisible(true);
         campaignsTable->SortRows(0, TableSortDir::Ascending);
         campaignsTable->SetSelection(boost::none);
-        campaignsTable->SetVisible(true);
+        campaignsTable->SetVisible(campaignScreen == CampaignScreen::Table
+                                   || campaignScreen == CampaignScreen::TableWithSeparateCampaignDetail);
+        campaignList->SetVisible(campaignScreen == CampaignScreen::ListWithDescription);
+        campaignDescription->SetVisible(campaignScreen == CampaignScreen::ListWithDescription);
     } else
     {
         const size_t numFaultyMapsPrior = brokenMapPaths.size();
@@ -236,6 +261,43 @@ static std::unique_ptr<libsiedler2::ArchivItem_Map> loadAndVerifyMap(const std::
     if(map->getHeader().getNumPlayers() > MAX_PLAYERS)
         throw std::runtime_error(helpers::format(_("Map has more than %1% players"), MAX_PLAYERS));
     return map;
+}
+
+void dskSelectMap::Msg_ListSelectItem(unsigned ctrl_id, int selection)
+{
+    if(ctrl_id == 101 && campaignScreen == CampaignScreen::ListWithDescription)
+    {
+        auto* campaignDescriptionTextField = GetCtrl<ctrlMultiline>(102);
+        campaignDescriptionTextField->Clear();
+        int index = -1;
+        for(const bfs::path& folder : ListDir(RTTRCONFIG.ExpandPath(s25::folders::campaigns), std::string(), true))
+        {
+            if(helpers::contains(brokenCampaignPaths, folder))
+                continue;
+
+            index++;
+
+            if(index == selection)
+            {
+                CampaignDescription desc;
+                CampaignDataLoader loader(desc, folder);
+                if(!loader.Load())
+                {
+                    LOG.write(_("Failed to load campaign %1%.\n")) % folder;
+                    brokenCampaignPaths.insert(folder);
+                    continue;
+                }
+
+                std::string campaingDescriptionString =
+                  _("Title:   ") + desc.shortDescription + "\n" + _("Author:  ") + desc.author + "\n" + _("Maps:    ")
+                  + std::to_string(desc.mapNames.size()) + "\n\n" + desc.longDescription;
+                campaignDescriptionTextField->AddString(campaingDescriptionString, COLOR_YELLOW);
+                ctrlButton& btContinue = *GetCtrl<ctrlButton>(5);
+                btContinue.SetEnabled(true);
+                break;
+            }
+        }
+    }
 }
 
 /**
@@ -360,6 +422,29 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapGenerator>(rndMapSettings));
         }
         break;
+        case 100: // Toggle different campaign screens
+        {
+            auto* toggleCampaignScreenButton = GetCtrl<ctrlTextButton>(100);
+            if(campaignScreen == CampaignScreen::Table)
+            {
+                campaignScreen = CampaignScreen::ListWithDescription;
+                toggleCampaignScreenButton->SetText(_("Toggle campaign screen") + std::string (" (List)"));
+            } else if(campaignScreen == CampaignScreen::ListWithDescription)
+            {
+                campaignScreen = CampaignScreen::TableWithSeparateCampaignDetail;
+                toggleCampaignScreenButton->SetText(_("Toggle campaign screen")
+                                                    + std::string(" (Campaign screen)"));
+            } else if(campaignScreen == CampaignScreen::TableWithSeparateCampaignDetail)
+            {
+                campaignScreen = CampaignScreen::Table;
+                toggleCampaignScreenButton->SetText(_("Toggle campaign screen")
+                                                    + std::string(" (Table)"));
+            }
+
+            ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
+            optiongroup->SetSelection(9, true);
+        }
+        break;
     }
 }
 
@@ -370,6 +455,15 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned /*
         // Doppelklick auf bestimmte Map -> weiter
         StartServer();
     } else if(ctrl_id == 14)
+    {
+        // Doppelklick auf bestimmte Kampagne -> weiter
+        ShowCampaignScreen();
+    }
+}
+
+void dskSelectMap::Msg_ListChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
+{
+    if(ctrl_id == 101)
     {
         // Doppelklick auf bestimmte Kampagne -> weiter
         ShowCampaignScreen();
@@ -443,15 +537,53 @@ void dskSelectMap::StartServer()
 
 void dskSelectMap::ShowCampaignScreen()
 {
-    auto* table = GetCtrl<ctrlTable>(14);
-    const auto& selection = table->GetSelection();
-
-    // Ist die Auswahl gültig?
-    if(selection)
+    if(campaignScreen == CampaignScreen::Table || campaignScreen == CampaignScreen::TableWithSeparateCampaignDetail)
     {
-        // Kampagnenpfad aus Tabelle holen
-        const std::string& mapPath = table->GetItemText(*selection, 3);
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi, mapPath));
+        auto* table = GetCtrl<ctrlTable>(14);
+        const auto& selection = table->GetSelection();
+
+        // Ist die Auswahl gültig?
+        if(selection)
+        {
+            // Kampagnenpfad aus Tabelle holen
+            const std::string& mapPath = table->GetItemText(*selection, 3);
+            if(campaignScreen == CampaignScreen::Table)
+                WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi, mapPath));
+            if(campaignScreen == CampaignScreen::TableWithSeparateCampaignDetail)
+                WINDOWMANAGER.Switch(std::make_unique<dskCampaingMainMenu>(csi, mapPath, 0));
+        }
+    }
+
+    if(campaignScreen == CampaignScreen::ListWithDescription)
+    {
+        auto* table = GetCtrl<ctrlList>(101);
+        const auto& selection = table->GetSelection();
+
+        // Ist die Auswahl gültig?
+        if(selection)
+        {
+            // Kampagnenpfad aus Tabelle holen
+            const std::string& mapPath = table->GetSelItemText();
+            const size_t numFaultyCampaignsPrior = brokenCampaignPaths.size();
+            const bfs::path campaignPath = RTTRCONFIG.ExpandPath(s25::folders::campaigns);
+            auto folders = ListDir(campaignPath, std::string(), true);
+            for(const bfs::path& folder : folders)
+            {
+                if(helpers::contains(brokenCampaignPaths, folder))
+                    continue;
+
+                CampaignDescription desc;
+                CampaignDataLoader loader(desc, folder);
+                if(!loader.Load())
+                {
+                    LOG.write(_("Failed to load campaign %1%.\n")) % folder;
+                    brokenCampaignPaths.insert(folder);
+                    continue;
+                }
+                if(mapPath == desc.name)
+                    WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi, folder.string()));
+            }
+        }
     }
 }
 
@@ -583,5 +715,52 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
         }
 
         table->AddRow({desc.name, desc.shortDescription, desc.author, folder.string()});
+    }
+}
+
+void dskSelectMap::FillCampaignList(const std::vector<boost::filesystem::path>& folders)
+{
+    auto* table = GetCtrl<ctrlList>(101);
+    for(const bfs::path& folder : folders)
+    {
+        if(helpers::contains(brokenCampaignPaths, folder))
+            continue;
+
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, folder);
+        if(!loader.Load())
+        {
+            LOG.write(_("Failed to load campaign %1%.\n")) % folder;
+            brokenCampaignPaths.insert(folder);
+            continue;
+        }
+
+        for(auto const& mapName : desc.mapNames)
+        {
+            auto const mapPath = RTTRCONFIG.ExpandPath(desc.mapFolder) / mapName;
+            auto const luaFilepath = (RTTRCONFIG.ExpandPath(desc.luaFolder) / mapName).replace_extension("lua");
+            if(!bfs::exists(mapPath))
+            {
+                LOG.write(_("Campaign map %1% does not exist.\n")) % mapPath;
+                brokenCampaignPaths.insert(folder);
+                continue;
+            }
+            if(!bfs::exists(luaFilepath))
+            {
+                LOG.write(_("Campaign map lua file %1% does not exist.\n")) % luaFilepath;
+                brokenCampaignPaths.insert(folder);
+                continue;
+            }
+
+            libsiedler2::Archiv map;
+            if(int ec = libsiedler2::loader::LoadMAP(mapPath, map, true))
+            {
+                LOG.write(_("Failed to load map %1%: %2%\n")) % mapPath % libsiedler2::getErrorString(ec);
+                brokenMapPaths.insert(folder);
+                continue;
+            }
+        }
+
+        table->AddString (desc.name);
     }
 }
