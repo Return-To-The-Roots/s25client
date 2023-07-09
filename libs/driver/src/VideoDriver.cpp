@@ -82,24 +82,27 @@ void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
     dpiScale_ = (ratioXY.x + ratioXY.y) / 2.f; // use the average ratio of both axes
 }
 
-bool VideoDriver::setGuiScaleInternal(unsigned percent)
+void VideoDriver::setGuiScaleInternal(unsigned percent)
 {
     if(percent == 0)
         percent = getGuiScaleRange().recommendedPercent;
 
     if(guiScale_.percent() == percent)
-        return false;
+        return;
 
     // translate current mouse position to screen space
     const auto screenPos = guiScale_.viewToScreen(mouse_xy.pos);
 
     guiScale_ = GuiScale(percent);
 
+    onGuiScaleChanged(); // give backends an opportunity to update their state
+
+    CallBack->WindowResized();
+
     // move cursor to new position in view space
+    // must happen after window resize event to avoid drawing spurious hover events
     mouse_xy.pos = guiScale_.screenToView(screenPos);
     CallBack->Msg_MouseMove(mouse_xy);
-
-    return true;
 }
 
 GuiScaleRange VideoDriver::getGuiScaleRange() const

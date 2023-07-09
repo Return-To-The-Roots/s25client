@@ -45,8 +45,11 @@ protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
 
-    /// Set the GUI scale in percent and return true if changed
-    bool setGuiScaleInternal(unsigned percent);
+    /// Set the GUI scale in percent
+    void setGuiScaleInternal(unsigned percent);
+
+    /// Callback to update state in response to GUI scale changes before events are dispatched
+    virtual void onGuiScaleChanged() {}
 
     VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
     bool initialized;                     /// Initialisierungsstatus.

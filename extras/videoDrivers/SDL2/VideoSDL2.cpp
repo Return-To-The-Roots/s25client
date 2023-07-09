@@ -445,11 +445,12 @@ void VideoSDL2::SetMousePos(Position pos)
 
 void VideoSDL2::setGuiScalePercent(unsigned percent)
 {
-    if(setGuiScaleInternal(percent))
-    {
-        UpdateCurrentSizes();
-        CallBack->WindowResized();
-    }
+    setGuiScaleInternal(percent);
+}
+
+void VideoSDL2::onGuiScaleChanged()
+{
+    UpdateCurrentSizes();
 }
 
 KeyEvent VideoSDL2::GetModKeyState() const

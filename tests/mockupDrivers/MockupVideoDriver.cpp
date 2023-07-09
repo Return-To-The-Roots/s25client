@@ -75,11 +75,7 @@ void MockupVideoDriver::SetMousePos(Position pos)
 
 void MockupVideoDriver::setGuiScalePercent(unsigned percent)
 {
-    if(setGuiScaleInternal(percent))
-    {
-        const auto windowSize = GetWindowSize();
-        SetNewSize(windowSize, Extent(windowSize.width, windowSize.height));
-    }
+    setGuiScaleInternal(percent);
 }
 
 KeyEvent MockupVideoDriver::GetModKeyState() const
@@ -95,4 +91,10 @@ void* MockupVideoDriver::GetMapPointer() const
 void MockupVideoDriver::ShowErrorMessage(const std::string& title, const std::string& message)
 {
     std::cerr << title << ": " << message << std::endl;
+}
+
+void MockupVideoDriver::onGuiScaleChanged()
+{
+    const auto windowSize = GetWindowSize();
+    SetNewSize(windowSize, Extent(windowSize.width, windowSize.height));
 }
