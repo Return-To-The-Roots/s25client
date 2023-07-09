@@ -128,15 +128,20 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     int wndPos = SDL_WINDOWPOS_CENTERED;
 
     const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
+    unsigned commonFlags = SDL_WINDOW_OPENGL;
+
+#if SDL_VERSION_ATLEAST(2, 0, 1)
+    commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+#endif
 
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                              SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
+                              commonFlags | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
 
     // Fallback to non-fullscreen
     if(!window && fullscreen)
     {
         window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+                                  commonFlags | SDL_WINDOW_RESIZABLE);
     }
 
     if(!window)
