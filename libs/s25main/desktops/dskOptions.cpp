@@ -19,6 +19,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
 #include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
 #include "helpers/mathFuncs.h"
 #include "helpers/toString.h"
 #include "ingameWindows/iwAddons.h"
@@ -722,7 +723,7 @@ void dskOptions::updateGuiScale()
     combo->DeleteAllItems();
 
     guiScales_.push_back(0);
-    combo->AddString(_("Auto"));
+    combo->AddString(helpers::format(_("Auto (%u%%)"), range.recommendedPercent));
     if(SETTINGS.video.guiScale == 0)
         combo->SetSelection(0);
 
