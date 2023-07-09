@@ -51,25 +51,32 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     // Save to settings that window is open
     SaveOpenStatus(true);
 
-    // Restore minimized state
-    if(windowSettings_ && windowSettings_->isMinimized)
+    if(windowSettings_)
     {
-        isMinimized_ = true;
-        Extent minimizedSize(GetSize().x, contentOffset.y + contentOffsetEnd.y);
-        Window::Resize(minimizedSize);
+        // Restore minimized state
+        if(windowSettings_ && windowSettings_->isMinimized)
+        {
+            isMinimized_ = true;
+            Extent minimizedSize(GetSize().x, contentOffset.y + contentOffsetEnd.y);
+            Window::Resize(minimizedSize);
+        }
+        // Load restorePos
+        restorePos_ = windowSettings_->restorePos;
     }
 
     // Load last position or center the window
     if(pos == posLastOrCenter)
     {
         if(windowSettings_ && windowSettings_->lastPos.isValid())
-            SetPos(windowSettings_->lastPos);
+            SetPos(windowSettings_->lastPos, !restorePos_.isValid());
         else
             MoveToCenter();
     } else if(pos == posCenter)
         MoveToCenter();
     else if(pos == posAtMouse)
         MoveNextToMouse();
+    else
+        SetPos(pos); // always call SetPos() to update restorePos
 }
 
 void IngameWindow::Resize(const Extent& newSize)
@@ -81,6 +88,9 @@ void IngameWindow::Resize(const Extent& newSize)
 
 void IngameWindow::SetIwSize(const Extent& newSize)
 {
+    // Is the window connecting with the bottom screen edge?
+    const auto atBottom = (GetPos().y + GetSize().y) >= VIDEODRIVER.GetRenderSize().y;
+
     iwHeight = newSize.y;
     Extent wndSize = newSize;
     if(isMinimized_)
@@ -88,8 +98,13 @@ void IngameWindow::SetIwSize(const Extent& newSize)
     wndSize += contentOffset + contentOffsetEnd;
     Window::Resize(wndSize);
 
-    // Reset the position to check if parts of the window are out of the visible area
-    SetPos(GetPos());
+    // Adjust restorePos if the window was connecting with the bottom screen edge before being minimized
+    const auto pos = (atBottom && isMinimized_) ? DrawPoint(restorePos_.x, DrawPoint::MaxElementValue) : restorePos_;
+
+    // Reset the position
+    // 1) to check if parts of the window are out of the visible area
+    // 2) to re-connect the window with the bottom screen edge, if needed
+    SetPos(pos, false);
 }
 
 Extent IngameWindow::GetIwSize() const
@@ -102,24 +117,38 @@ DrawPoint IngameWindow::GetRightBottomBoundary()
     return DrawPoint(GetSize() - contentOffsetEnd);
 }
 
-void IngameWindow::SetPos(DrawPoint newPos)
+void IngameWindow::SetPos(DrawPoint newPos, bool saveRestorePos)
 {
     const Extent screenSize = VIDEODRIVER.GetRenderSize();
+    DrawPoint newRestorePos = newPos;
     // Too far left or right?
     if(newPos.x < 0)
-        newPos.x = 0;
-    else if(newPos.x + GetSize().x > screenSize.x)
+        newRestorePos.x = newPos.x = 0;
+    else if(newPos.x + GetSize().x >= screenSize.x)
+    {
         newPos.x = screenSize.x - GetSize().x;
+        newRestorePos.x = DrawPoint::MaxElementValue; // make window stick to the right
+    }
 
     // Too high or low?
     if(newPos.y < 0)
-        newPos.y = 0;
-    else if(newPos.y + GetSize().y > screenSize.y)
+        newRestorePos.y = newPos.y = 0;
+    else if(newPos.y + GetSize().y >= screenSize.y)
+    {
         newPos.y = screenSize.y - GetSize().y;
+        newRestorePos.y = DrawPoint::MaxElementValue; // make window stick to the bottom
+    }
 
-    // if possible save the position to settings
+    if(saveRestorePos)
+        restorePos_ = newRestorePos;
+
+    // if possible save the positions to settings
     if(windowSettings_)
+    {
         windowSettings_->lastPos = newPos;
+        if(saveRestorePos)
+            windowSettings_->restorePos = newRestorePos;
+    }
 
     Window::SetPos(newPos);
 }
