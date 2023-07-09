@@ -91,7 +91,6 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
             std::to_string(currentPage + 1) + "/" + std::to_string(lastPage + 1), COLOR_YELLOW,
             FontStyle::CENTER | FontStyle::VCENTER, LargeFont);
 
-    DrawPoint curBtPos(200, 50);
     AddText(ID_CHOOSE_CAPITAL_LABEL, DrawPoint(400, 50), _("Choose capital"), COLOR_YELLOW, FontStyle::CENTER,
             LargeFont);
 
@@ -104,7 +103,7 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, s
     UpdateMissionPage(currentPage);
 }
 
-void dskCampaignMissionSelection::UpdateMissionPage(const unsigned page)
+void dskCampaignMissionSelection::UpdateMissionPage(unsigned page)
 {
     ctrlGroup* group = AddGroup(ID_MISSION_GROUP_START + page);
     Extent catBtSize = Extent(400, 20);
@@ -161,7 +160,7 @@ void dskCampaignMissionSelection::UpdateEnabledStateOfNextPreviousButton()
     GetCtrl<ctrlImageButton>(ID_LAST_MISSION_PAGE)->SetEnabled(currentPage < lastPage);
 }
 
-void dskCampaignMissionSelection::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void dskCampaignMissionSelection::Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id)
 {
     unsigned int missionIndex = (group_id - ID_MISSION_GROUP_START) * missionsPerPage + ctrl_id;
     const bfs::path& mapPath = RTTRCONFIG.ExpandPath(settings->mapFolder) / settings->mapNames[missionIndex];

@@ -135,11 +135,11 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType
 
     // Die Tabelle für die Kampagnen
     using SRT = ctrlTable::SortType;
-    ctrlTable* campaignsTable = AddTable(14, DrawPoint(110, 35), Extent(680, 400), TextureColor::Grey, NormalFont,
-                                         ctrlTable::Columns{{_("Name"), 250, SRT::String},
-                                                            {_("Description"), 216, SRT::String},
-                                                            {_("Author"), 170, SRT::Number},
-                                                            {"", 0, SRT::Default}});
+    AddTable(14, DrawPoint(110, 35), Extent(680, 400), TextureColor::Grey, NormalFont,
+             ctrlTable::Columns{{_("Name"), 250, SRT::String},
+                                {_("Description"), 216, SRT::String},
+                                {_("Author"), 170, SRT::Number},
+                                {"", 0, SRT::Default}});
     // "Eigene" auswählen
     optiongroup->SetSelection(preSelectedMapType, true);
 
@@ -155,7 +155,6 @@ dskSelectMap::~dskSelectMap()
 
 void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
-    auto* table = GetCtrl<ctrlTable>(1);
     auto* mapTable = GetCtrl<ctrlTable>(1);
     auto* campaignsTable = GetCtrl<ctrlTable>(14);
 
@@ -333,10 +332,15 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
         {
             auto* optionGroup = GetCtrl<ctrlOptionGroup>(10);
             if(optionGroup)
+            {
                 if(optionGroup->GetSelection() == 9)
+                {
                     ShowCampaignScreen();
-                else
+                } else
+                {
                     StartServer();
+                }
+            }
         }
         break;
         case 6: // random map
@@ -552,10 +556,10 @@ void dskSelectMap::FillCampaignsTable(const std::vector<boost::filesystem::path>
             continue;
         }
 
-        for(auto const& map : desc.mapNames)
+        for(auto const& mapName : desc.mapNames)
         {
-            auto const mapPath = RTTRCONFIG.ExpandPath(desc.mapFolder) / map;
-            auto const luaFilepath = (RTTRCONFIG.ExpandPath(desc.luaFolder) / map).replace_extension("lua");
+            auto const mapPath = RTTRCONFIG.ExpandPath(desc.mapFolder) / mapName;
+            auto const luaFilepath = (RTTRCONFIG.ExpandPath(desc.luaFolder) / mapName).replace_extension("lua");
             if(!bfs::exists(mapPath))
             {
                 LOG.write(_("Campaign map %1% does not exist.\n")) % mapPath;

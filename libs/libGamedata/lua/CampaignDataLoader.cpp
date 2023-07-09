@@ -14,8 +14,6 @@
 #include <boost/filesystem.hpp>
 #include <stdexcept>
 
-namespace bfs = boost::filesystem;
-
 CampaignDataLoader::CampaignDataLoader(CampaignDescription& campaignDesc, const boost::filesystem::path& basePath)
     : campaignDesc_(campaignDesc), basePath_(basePath.lexically_normal().make_preferred())
 {

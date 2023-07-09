@@ -16,11 +16,11 @@ class dskCampaignMissionSelection : public Desktop
 public:
     dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder);
 
-    void UpdateMissionPage(const unsigned page);
+    void UpdateMissionPage(unsigned page);
 
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void StartServer(const boost::filesystem::path& mapPath);
     void UpdateEnabledStateOfNextPreviousButton();
     std::string campaignFolder_;
