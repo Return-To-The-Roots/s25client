@@ -857,9 +857,11 @@ void WindowManager::DrawToolTip()
     // Tooltip zeichnen
     if(curTooltip && lastMousePos.isValid())
     {
-        // Horizontal pace between mouse position and tooltip border
-        constexpr unsigned rightSpacing = 25;
-        constexpr unsigned leftSpacing = 10;
+        constexpr unsigned cursorWidth = 32;
+        constexpr unsigned cursorPadding = 5;
+        // Horizontal space between mouse position and tooltip border
+        constexpr unsigned rightSpacing = cursorWidth + cursorPadding;
+        constexpr unsigned leftSpacing = cursorPadding;
         DrawPoint ttPos = DrawPoint(lastMousePos.x + rightSpacing, lastMousePos.y);
         unsigned right_edge = ttPos.x + curTooltip->getWidth();
 
