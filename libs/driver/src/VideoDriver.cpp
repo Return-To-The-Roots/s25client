@@ -20,7 +20,7 @@ IVideoDriver::~IVideoDriver() = default;
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
     : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0), scaledRenderSize_(0, 0),
-      guiScale_(100)
+      dpiScale_(1.f), guiScale_(100)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
@@ -77,6 +77,9 @@ void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
     windowSize_ = windowSize;
     renderSize_ = renderSize;
     scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize);
+
+    const auto ratioXY = PointF(renderSize_) / PointF(windowSize_.width, windowSize_.height);
+    dpiScale_ = (ratioXY.x + ratioXY.y) / 2.f; // use the average ratio of both axes
 }
 
 bool VideoDriver::setGuiScaleInternal(unsigned percent)
@@ -101,10 +104,8 @@ bool VideoDriver::setGuiScaleInternal(unsigned percent)
 
 GuiScaleRange VideoDriver::getGuiScaleRange() const
 {
-    const auto ratioXY = PointF(renderSize_) / PointF(windowSize_.width, windowSize_.height);
-    const auto ratioAvg = (ratioXY.x + ratioXY.y) / 2.f;
-    const auto min = helpers::iround<unsigned>(ratioAvg * 50.f);
-    const auto recommended = std::max(min, helpers::iround<unsigned>(ratioAvg * 100.f));
+    const auto min = helpers::iround<unsigned>(dpiScale_ * 50.f);
+    const auto recommended = std::max(min, helpers::iround<unsigned>(dpiScale_ * 100.f));
     const auto maxScaleXY = renderSize_ / PointF(800.f, 600.f);
     const auto maxScale = std::min(maxScaleXY.x, maxScaleXY.y);
     // if the window shrinks below its minimum size of 800x600, max can be smaller than recommended

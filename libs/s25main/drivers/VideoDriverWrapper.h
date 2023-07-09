@@ -71,6 +71,9 @@ public:
     Extent GetRenderSize() const;
     bool IsFullscreen() const;
 
+    /// Get the factor required to scale "normal" DPI to the display DPI
+    float getDpiScale() const;
+
     /// Get the scale applied to the user interface
     const GuiScale& getGuiScale() const;
 

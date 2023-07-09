@@ -495,6 +495,11 @@ bool VideoDriverWrapper::IsFullscreen() const
     return videodriver->IsFullscreen();
 }
 
+float VideoDriverWrapper::getDpiScale() const
+{
+    return videodriver->getDpiScale();
+}
+
 const GuiScale& VideoDriverWrapper::getGuiScale() const
 {
     return videodriver->getGuiScale();

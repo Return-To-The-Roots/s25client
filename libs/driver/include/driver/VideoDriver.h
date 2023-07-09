@@ -31,6 +31,8 @@ public:
     Extent GetRenderSize() const override final { return scaledRenderSize_; }
     bool IsFullscreen() const override final { return isFullscreen_; }
 
+    float getDpiScale() const override final { return dpiScale_; }
+
     const GuiScale& getGuiScale() const override final { return guiScale_; }
 
     GuiScaleRange getGuiScaleRange() const override;
@@ -57,5 +59,7 @@ private:
     Extent renderSize_;       ///< Size of the renderable surface
     Extent scaledRenderSize_; ///< Size of the projection clipping area
 
+    float dpiScale_;    ///< Scale factor required to convert "normal" DPI to the display DPI
     GuiScale guiScale_; ///< Scale factor applied to the user interface
+    bool autoGuiScale_; ///< Whether the recommended GUI scale is used
 };

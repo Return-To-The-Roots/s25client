@@ -64,8 +64,11 @@ public:
     virtual Extent GetRenderSize() const = 0;
     virtual bool IsFullscreen() const = 0;
 
+    /// Get the factor required to scale "normal" DPI to the display DPI
+    virtual float getDpiScale() const = 0;
+
     /// Get the scale applied to the user interface
-    virtual const GuiScale &getGuiScale() const = 0;
+    virtual const GuiScale& getGuiScale() const = 0;
 
     /// Set the scale applied to the user interface in percent
     virtual void setGuiScalePercent(unsigned percent) = 0;
