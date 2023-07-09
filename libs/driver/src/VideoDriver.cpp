@@ -107,7 +107,7 @@ void VideoDriver::setGuiScaleInternal(unsigned percent)
 
 GuiScaleRange VideoDriver::getGuiScaleRange() const
 {
-    const auto min = helpers::iround<unsigned>(dpiScale_ * 50.f);
+    constexpr auto min = 100u;
     const auto recommended = std::max(min, helpers::iround<unsigned>(dpiScale_ * 100.f));
     const auto maxScaleXY = renderSize_ / PointF(800.f, 600.f);
     const auto maxScale = std::min(maxScaleXY.x, maxScaleXY.y);
