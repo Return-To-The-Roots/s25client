@@ -9,6 +9,7 @@
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlOptionGroup.h"
+#include "driver/VideoInterface.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/format.hpp"
 #include "iwMsgbox.h"
@@ -67,7 +68,7 @@ iwSettings::iwSettings()
     optiongroup->AddTextButton(ID_btOn, curPos, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
     curPos.y += ctrlSize.y + 3;
     optiongroup->AddTextButton(ID_btOff, curPos, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
-    optiongroup->SetSelection(SETTINGS.video.fullscreen); //-V807
+    optiongroup->SetSelection((bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen) ? 1 : 2)); //-V807
 
     curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
     const auto cbSize = Extent(rowWidth - curPos.x, 26);
@@ -102,12 +103,12 @@ iwSettings::~iwSettings()
         auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
-        if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
-           || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
+        const auto fullscreen = bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen);
+        if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
+           || fullscreen != VIDEODRIVER.IsFullscreen())
         {
-            const auto screenSize =
-              SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-            if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
+            const auto screenSize = fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+            if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
@@ -124,7 +125,10 @@ void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned se
 {
     switch(ctrl_id)
     {
-        case ID_grpFullscreen: SETTINGS.video.fullscreen = selection == ID_btOn; break;
+        case ID_grpFullscreen:
+            SETTINGS.video.displayMode =
+              bitset::set(SETTINGS.video.displayMode, DisplayMode::Fullscreen, (selection == ID_btOn));
+            break;
     }
 }
 

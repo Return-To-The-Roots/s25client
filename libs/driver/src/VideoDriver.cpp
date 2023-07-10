@@ -19,8 +19,8 @@ IVideoDriver::~IVideoDriver() = default;
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
-    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0), scaledRenderSize_(0, 0),
-      dpiScale_(1.f), guiScale_(100), autoGuiScale_(false)
+    : CallBack(CallBack), initialized(false), displayMode_(DisplayMode::Resizable), renderSize_(0, 0),
+      scaledRenderSize_(0, 0), dpiScale_(1.f), guiScale_(100), autoGuiScale_(false)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
