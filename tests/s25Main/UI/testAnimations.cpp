@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     video->tickCount_ += 1;
     dsk->Msg_PaintBefore();
     // Resize the screen and test that the final position got updated too
-    VIDEODRIVER.ResizeScreen(VideoMode(1024, 768), false);
+    VIDEODRIVER.ResizeScreen(VideoMode(1024, 768), DisplayMode::Resizable);
     // Pass the animation
     video->tickCount_ += 1100;
     dsk->Msg_PaintBefore();

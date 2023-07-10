@@ -9,11 +9,95 @@
 #include "Point.h"
 #include "VideoMode.h"
 #include "exportImport.h"
+// #include "s25util/enumUtils.h"
 #include <string>
+#include <type_traits>
 #include <vector>
 
 /// Function type for loading OpenGL methods
 using OpenGL_Loader_Proc = void* (*)(const char*);
+
+template<typename Enum>
+struct IsBitset : std::false_type
+{};
+
+template<typename Enum>
+using IsValidBitset =
+  std::integral_constant<bool, IsBitset<Enum>::value && std::is_unsigned<std::underlying_type_t<Enum>>::value>;
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr auto operator~(Enum val) noexcept
+{
+    using T = std::underlying_type_t<Enum>;
+    return Enum(~static_cast<T>(val));
+}
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr auto operator&(Enum lhs, Enum rhs) noexcept
+{
+    using T = std::underlying_type_t<Enum>;
+    return Enum(static_cast<T>(lhs) & static_cast<T>(rhs));
+}
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr auto operator|(Enum lhs, Enum rhs) noexcept
+{
+    using T = std::underlying_type_t<Enum>;
+    return Enum(static_cast<T>(lhs) | static_cast<T>(rhs));
+}
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr auto operator^(Enum lhs, Enum rhs) noexcept
+{
+    using T = std::underlying_type_t<Enum>;
+    return Enum(static_cast<T>(lhs) ^ static_cast<T>(rhs));
+}
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr auto operator&=(Enum& lhs, Enum rhs) noexcept
+{
+    lhs = lhs & rhs;
+    return lhs;
+}
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr auto operator|=(Enum& lhs, Enum rhs) noexcept
+{
+    lhs = lhs | rhs;
+    return lhs;
+}
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr auto operator^=(Enum& lhs, Enum rhs) noexcept
+{
+    lhs = lhs ^ rhs;
+    return lhs;
+}
+
+namespace bitset {
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+constexpr bool isSet(Enum val, Enum flag)
+{
+    return (val & flag) != Enum(0);
+}
+
+template<typename Enum, std::enable_if_t<IsValidBitset<Enum>::value, int> = 0>
+[[nodiscard]] constexpr Enum set(Enum val, Enum flag, bool state)
+{
+    return state ? (val | flag) : (val & ~flag);
+}
+} // namespace bitset
+
+enum class DisplayMode : unsigned
+{
+    None,
+    Fullscreen = (1 << 0),
+    Resizable = (1 << 1)
+};
+
+template<>
+struct IsBitset<DisplayMode> : std::true_type
+{};
 
 class BOOST_SYMBOL_VISIBLE IVideoDriver
 {
@@ -26,9 +110,9 @@ public:
     virtual bool Initialize() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) = 0;
+    virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode) = 0;
 
-    virtual bool ResizeScreen(const VideoMode& newSize, bool fullscreen) = 0;
+    virtual bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) = 0;
 
     /// Schliesst das Fenster.
     virtual void DestroyScreen() = 0;
@@ -64,7 +148,9 @@ public:
     virtual VideoMode GetWindowSize() const = 0;
     /// Get the size of the render region in pixels
     virtual Extent GetRenderSize() const = 0;
+    virtual DisplayMode GetDisplayMode() const = 0;
     virtual bool IsFullscreen() const = 0;
+    virtual bool IsResizable() const = 0;
 
     /// Get the factor required to scale "normal" DPI to the display DPI
     virtual float getDpiScale() const = 0;
