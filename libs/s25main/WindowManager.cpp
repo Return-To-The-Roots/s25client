@@ -12,6 +12,7 @@
 #include "commonDefines.h"
 #include "desktops/Desktop.h"
 #include "driver/MouseCoords.h"
+#include "driver/VideoInterface.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -380,10 +381,10 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     if(ke.alt && (ke.kt == KeyType::Return))
     {
         // Switch Fullscreen/Windowed
-        const auto newScreenSize =
-          !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
-        VIDEODRIVER.ResizeScreen(newScreenSize, !SETTINGS.video.fullscreen);
-        SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
+        SETTINGS.video.displayMode ^= DisplayMode::Fullscreen;
+        const auto isFullscreen = (SETTINGS.video.displayMode & DisplayMode::Fullscreen) != DisplayMode::None;
+        const auto newScreenSize = isFullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
+        VIDEODRIVER.ResizeScreen(newScreenSize, SETTINGS.video.displayMode);
     } else if(ke.kt == KeyType::Print)
         TakeScreenshot();
     else
@@ -412,7 +413,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     curRenderSize = sr.newSize;
 
     // Don't change fullscreen size (only in menu)
-    if(!SETTINGS.video.fullscreen)
+    if(!bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen))
         SETTINGS.video.windowedSize = VIDEODRIVER.GetWindowSize();
 
     // ist unser Desktop gültig?

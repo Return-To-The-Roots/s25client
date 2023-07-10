@@ -12,6 +12,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskSplash.h"
+#include "driver/VideoInterface.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -48,9 +49,10 @@ bool GameManager::Start()
     }
 
     // Fenster erstellen
-    const auto screenSize =
-      settings_.video.fullscreen ? settings_.video.fullscreenSize : settings_.video.windowedSize; //-V807
-    if(!videoDriver_.CreateScreen(screenSize, settings_.video.fullscreen))
+    const auto screenSize = (settings_.video.displayMode & DisplayMode::Fullscreen) != DisplayMode::None ?
+                              settings_.video.fullscreenSize :
+                              settings_.video.windowedSize; //-V807
+    if(!videoDriver_.CreateScreen(screenSize, settings_.video.displayMode))
         return false;
     videoDriver_.setTargetFramerate(settings_.video.framerate);
     videoDriver_.SetMouseWarping(settings_.global.smartCursor);

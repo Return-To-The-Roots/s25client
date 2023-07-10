@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
     {
         rttr::test::LogAccessor logAcc;
         VIDEODRIVER.DestroyScreen();
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Resizable);
         logAcc.clearLog();
     }
 
@@ -89,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
 
     {
         rttr::test::LogAccessor logAcc;
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Resizable);
         logAcc.clearLog();
     }
     glGenTextures = rttrOglMock2::glGenTextures;

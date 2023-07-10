@@ -32,7 +32,9 @@ public:
 
     VideoMode GetWindowSize() const override final { return windowSize_; }
     Extent GetRenderSize() const override final { return scaledRenderSize_; }
-    bool IsFullscreen() const override final { return isFullscreen_; }
+    DisplayMode GetDisplayMode() const override final { return displayMode_; }
+    bool IsFullscreen() const override final { return bitset::isSet(displayMode_, DisplayMode::Fullscreen); }
+    bool IsResizable() const override final { return bitset::isSet(displayMode_, DisplayMode::Fullscreen); }
 
     float getDpiScale() const override final { return dpiScale_; }
 
@@ -49,11 +51,16 @@ protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
 
+    void SetResizableFlag(bool resizable)
+    {
+        displayMode_ = bitset::set(displayMode_, DisplayMode::Resizable, resizable);
+    }
+
     VideoDriverLoaderInterface* CallBack; /// DriverCallback to notify on player input
     bool initialized;
     MouseCoords mouse_xy;           /// Mouse state
     std::array<bool, 512> keyboard; /// Keyboard state
-    bool isFullscreen_;
+    DisplayMode displayMode_;       /// Fullscreen/resizable?
 
 private:
     // cached as possibly used often
