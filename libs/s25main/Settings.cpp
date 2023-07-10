@@ -6,6 +6,7 @@
 #include "DrawPoint.h"
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
+#include "driver/VideoInterface.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -84,11 +85,12 @@ void Settings::LoadDefaults()
     {
         video.fullscreenSize = VIDEODRIVER.GetWindowSize();
         video.windowedSize = VIDEODRIVER.IsFullscreen() ? VideoMode(800, 600) : video.fullscreenSize;
-        video.fullscreen = VIDEODRIVER.IsFullscreen();
+        video.displayMode = (VIDEODRIVER.IsFullscreen() ? DisplayMode::Fullscreen : DisplayMode::None)
+                            | (VIDEODRIVER.IsResizable() ? DisplayMode::Resizable : DisplayMode::None);
     } else
     {
         video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
-        video.fullscreen = false;
+        video.displayMode = DisplayMode::Resizable;
     }
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
@@ -223,7 +225,10 @@ void Settings::Load()
         video.windowedSize.height = iniVideo->getIntValue("windowed_height");
         video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
         video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
-        video.fullscreen = iniVideo->getBoolValue("fullscreen");
+        const auto fullscreen = iniVideo->getBoolValue("fullscreen");
+        const auto resizable = iniVideo->getValue("resizable", true);
+        video.displayMode = (fullscreen ? DisplayMode::Fullscreen : DisplayMode::None)
+                            | (resizable ? DisplayMode::Resizable : DisplayMode::None);
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
@@ -401,7 +406,8 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
-    iniVideo->setValue("fullscreen", video.fullscreen);
+    iniVideo->setValue("fullscreen", (video.displayMode & DisplayMode::Fullscreen) != DisplayMode::None);
+    iniVideo->setValue("resizable", (video.displayMode & DisplayMode::Resizable) != DisplayMode::None);
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.shared_textures);

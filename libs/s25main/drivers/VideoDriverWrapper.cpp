@@ -92,7 +92,7 @@ void VideoDriverWrapper::UnloadDriver()
  *
  *  @return Bei Erfolg @p true ansonsten @p false
  */
-bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscreen)
+bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -100,7 +100,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, fullscreen))
+    if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, displayMode))
     {
         s25util::fatal_error("Could not create window!");
         return false;
@@ -134,7 +134,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
  *
  *  @return Bei Erfolg @p true ansonsten @p false
  */
-bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscreen)
+bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -142,7 +142,7 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    const bool result = videodriver->ResizeScreen(size, fullscreen);
+    const bool result = videodriver->ResizeScreen(size, displayMode);
 #ifdef _WIN32
     if(!videodriver->IsFullscreen())
     {
@@ -483,7 +483,17 @@ Extent VideoDriverWrapper::GetRenderSize() const
     return videodriver->GetRenderSize();
 }
 
+DisplayMode VideoDriverWrapper::GetDisplayMode() const
+{
+    return videodriver->GetDisplayMode();
+}
+
 bool VideoDriverWrapper::IsFullscreen() const
 {
     return videodriver->IsFullscreen();
+}
+
+bool VideoDriverWrapper::IsResizable() const
+{
+    return videodriver->IsResizable();
 }
