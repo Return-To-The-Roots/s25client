@@ -283,3 +283,12 @@ BOOST_AUTO_TEST_CASE(ProdOfComponents)
     Point<float> ptF(256.5, 256.5);
     BOOST_TEST(prodOfComponents(ptF) == 256.5f * 256.5f);
 }
+
+BOOST_AUTO_TEST_CASE(ConvertFloatToIntPoints)
+{
+    BOOST_TEST(Point<int>(Point<float>(1.5f, 3.4f)) == Point<int>(2, 3));
+    BOOST_TEST(Point<int>(Point<int>::Truncate, Point<float>(1.5f, 3.4f)) == Point<int>(1, 3));
+
+    BOOST_TEST(Point<int>(Point<float>(-1.5f, -3.4f)) == Point<int>(-2, -3));
+    BOOST_TEST(Point<int>(Point<int>::Truncate, Point<float>(-1.5f, -3.4f)) == Point<int>(-1, -3));
+}
