@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "DrawPoint.h"
+#include "Loader.h"
 #include "Point.h"
 #include "PointOutput.h"
 #include "Settings.h"
@@ -14,6 +15,7 @@
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlProgress.h"
 #include "desktops/dskGameLobby.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "helpers/format.hpp"
 #include "ingameWindows/IngameWindow.h"
 #include "ingameWindows/iwConnecting.h"
@@ -21,6 +23,7 @@
 #include "ingameWindows/iwHelp.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameData/const_gui_ids.h"
@@ -28,6 +31,7 @@
 #include "s25util/StringConversion.h"
 #include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
+#include <functional>
 
 // LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::MapStyle)
@@ -225,6 +229,168 @@ BOOST_AUTO_TEST_CASE(SaveAndRestoreMinimized)
 
         wnd.SetMinimized(false);
         BOOST_TEST(!it->second.isMinimized);
+    }
+}
+
+namespace {
+void WindowPositioning_testOne(IngameWindow& wnd, const char* context, const std::function<void()>& checkNormal,
+                               const std::function<void()>& checkMinimized)
+{
+    BOOST_TEST_CONTEXT(context)
+    {
+        BOOST_TEST_CONTEXT("Before minimize/un-minimize") checkNormal();
+
+        wnd.SetMinimized(true);
+
+        BOOST_TEST_CONTEXT("Minimized") checkMinimized();
+
+        wnd.SetMinimized(false);
+
+        BOOST_TEST_CONTEXT("After minimize/un-minimize") checkNormal();
+    }
+}
+} // namespace
+
+BOOST_AUTO_TEST_CASE(WindowPositioning)
+{
+    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), false);
+
+    const auto renderSize = VIDEODRIVER.GetRenderSize();
+
+    constexpr auto idPersisted = CGI_MINIMAP;
+    constexpr auto idNonPersisted = CGI_OBSERVATION;
+    constexpr auto wndSizeS = Extent(50, 50);
+    constexpr auto wndSizeM = Extent(90, 90);
+    constexpr auto wndSizeL = Extent(200, 200);
+    constexpr auto offset = DrawPoint(100, 100);
+
+    auto it = SETTINGS.windows.persistentSettings.find(idNonPersisted);
+    BOOST_REQUIRE(it == SETTINGS.windows.persistentSettings.end());
+
+    it = SETTINGS.windows.persistentSettings.find(idPersisted);
+    BOOST_REQUIRE(it != SETTINGS.windows.persistentSettings.end());
+    auto& settings = it->second;
+
+    // Calculate minimized height
+    const auto minHeight = LOADER.GetImageN("resource", 42)->getHeight()    // title bar
+                           + LOADER.GetImageN("resource", 40)->getHeight(); // bottom bar
+
+    BOOST_TEST_CONTEXT("Persisted window, fresh settings, posLastOrCenter")
+    {
+        settings = PersistentWindowSettings{};
+
+        IngameWindow wnd(idPersisted, IngameWindow::posLastOrCenter, wndSizeM, "Test Window", nullptr);
+
+        WindowPositioning_testOne(
+          wnd, "Window should be centered",
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == (renderSize / 2 - wndSizeM / 2));
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.GetPos() == settings.restorePos);
+              BOOST_TEST(wnd.GetSize() == wndSizeM);
+          },
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.GetPos() == settings.restorePos);
+              BOOST_TEST(wnd.GetPos() == (renderSize / 2 - wndSizeM / 2));
+              BOOST_TEST(wnd.GetSize() == Extent(wndSizeM.x, minHeight));
+          });
+
+        const auto restorePos = renderSize - offset; // new position is also the restorePos
+        WindowPositioning_testOne(
+          wnd, "Move window into bottom right corner, not connecting with the screen edges",
+          [&]() {
+              wnd.SetPos(restorePos);
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.GetPos() == settings.restorePos);
+              BOOST_TEST(wnd.GetSize() == wndSizeM);
+          },
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.GetPos() == settings.restorePos);
+              BOOST_TEST(wnd.GetSize() == Extent(wndSizeM.x, minHeight));
+          });
+
+        WindowPositioning_testOne(
+          wnd, "Increase size, window connects with screen edges and should move",
+          [&]() {
+              wnd.Resize(wndSizeL);
+              BOOST_TEST(wnd.GetPos() == DrawPoint(renderSize - wndSizeL));
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(restorePos == settings.restorePos);
+              BOOST_TEST(wnd.GetSize() == wndSizeL);
+          },
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == renderSize - DrawPoint(wndSizeL.x, minHeight));
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(restorePos == settings.restorePos);
+              BOOST_TEST(wnd.GetSize() == Extent(wndSizeL.x, minHeight));
+          });
+
+        WindowPositioning_testOne(
+          wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
+          [&]() {
+              wnd.Resize(wndSizeS);
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(restorePos == settings.restorePos);
+              BOOST_TEST(wnd.GetSize() == wndSizeS);
+          },
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(restorePos == settings.restorePos);
+              BOOST_TEST(wnd.GetSize() == Extent(wndSizeS.x, minHeight));
+          });
+    }
+
+    BOOST_TEST_CONTEXT("Non-persisted window, posAtMouse")
+    {
+        // the offset subtracted from the window position for posAtMouse
+        constexpr auto cursorOffset = DrawPoint(-20, wndSizeM.y / 2);
+        const auto restorePos = renderSize - offset; // initial window position is also the restorePos
+
+        VIDEODRIVER.SetMousePos(restorePos + cursorOffset);
+        BOOST_REQUIRE(VIDEODRIVER.GetMousePos() == (restorePos + cursorOffset));
+
+        IngameWindow wnd(idNonPersisted, IngameWindow::posAtMouse, wndSizeM, "Test Window", nullptr);
+
+        WindowPositioning_testOne(
+          wnd, "Window should be at cursor",
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetSize() == wndSizeM);
+          },
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetSize() == Extent(wndSizeM.x, minHeight));
+          });
+
+        WindowPositioning_testOne(
+          wnd, "Increase size, window connects with screen edges and should move",
+          [&]() {
+              wnd.Resize(wndSizeL);
+              BOOST_TEST(wnd.GetPos() == DrawPoint(renderSize - wndSizeL));
+              BOOST_TEST(wnd.GetSize() == wndSizeL);
+          },
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == renderSize - DrawPoint(wndSizeL.x, minHeight));
+              BOOST_TEST(wnd.GetSize() == Extent(wndSizeL.x, minHeight));
+          });
+
+        WindowPositioning_testOne(
+          wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
+          [&]() {
+              wnd.Resize(wndSizeS);
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetSize() == wndSizeS);
+          },
+          [&]() {
+              BOOST_TEST(wnd.GetPos() == restorePos);
+              BOOST_TEST(wnd.GetSize() == Extent(wndSizeS.x, minHeight));
+          });
     }
 }
 
