@@ -491,6 +491,20 @@ void Window::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsign
     VIDEODRIVER.GetRenderer()->DrawLine(pt1, pt2, width, color);
 }
 
+// DEBUG REMOVE BEFORE MERGE
+void Window::DrawCross(DrawPoint pt, unsigned short length, unsigned short width, unsigned color)
+{
+    auto* renderer = VIDEODRIVER.GetRenderer();
+
+    DrawPoint pt1 = pt - DrawPoint(-length, length);
+    DrawPoint pt2 = pt - DrawPoint(length, -length);
+    DrawPoint pt3 = pt - DrawPoint(length, length);
+    DrawPoint pt4 = pt - DrawPoint(-length, -length);
+
+    renderer->DrawLine(pt1, pt2, width, color);
+    renderer->DrawLine(pt3, pt4, width, color);
+}
+
 void Window::Msg_PaintBefore()
 {
     animations_.update(VIDEODRIVER.GetTickCount());
