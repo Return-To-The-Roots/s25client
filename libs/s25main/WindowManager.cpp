@@ -798,12 +798,21 @@ class WindowManager::Tooltip
     const glFont* font;
     std::vector<std::string> lines;
     unsigned width = 0, height = 0;
+    unsigned short maxWidth;
 
 public:
     Tooltip(const ctrlBaseTooltip* showingCtrl, const std::string& text, unsigned short maxWidth)
-        : showingCtrl(showingCtrl), font(NormalFont),
-          lines(font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text))
+        : showingCtrl(showingCtrl), font(NormalFont), maxWidth(maxWidth)
     {
+        setText(text);
+    }
+
+    auto getShowingCtrl() const { return showingCtrl; }
+    auto getWidth() const { return width; }
+
+    void setText(const std::string& text)
+    {
+        lines = font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text);
         if(lines.empty())
             return;
         width = 0;
@@ -812,9 +821,6 @@ public:
         width += BORDER_SIZE * 2;
         height = lines.size() * font->getHeight() + BORDER_SIZE * 2;
     }
-
-    auto getShowingCtrl() const { return showingCtrl; }
-    auto getWidth() const { return width; }
 
     void draw(DrawPoint pos) const
     {
@@ -829,7 +835,7 @@ public:
     }
 };
 
-void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip)
+void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent)
 {
     // Max width of tooltip
     constexpr unsigned short MAX_TOOLTIP_WIDTH = 260;
@@ -838,6 +844,10 @@ void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& to
     {
         if(curTooltip && (!ttw || curTooltip->getShowingCtrl() == ttw))
             curTooltip.reset();
+    } else if(updateCurrent)
+    {
+        if(curTooltip && curTooltip->getShowingCtrl() == ttw)
+            curTooltip->setText(tooltip);
     } else
         curTooltip = std::make_unique<Tooltip>(ttw, tooltip, MAX_TOOLTIP_WIDTH);
 }
