@@ -102,7 +102,7 @@ public:
     /// Verarbeitung Keyboard-Event
     void Msg_KeyDown(const KeyEvent& ke) override;
     // setzt den Tooltip
-    void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip);
+    void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent = false);
 
     /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
     void WindowResized() override;
