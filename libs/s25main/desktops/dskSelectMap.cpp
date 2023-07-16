@@ -564,7 +564,6 @@ void dskSelectMap::ShowCampaignScreen()
         {
             // Kampagnenpfad aus Tabelle holen
             const std::string& mapPath = table->GetSelItemText();
-            const size_t numFaultyCampaignsPrior = brokenCampaignPaths.size();
             const bfs::path campaignPath = RTTRCONFIG.ExpandPath(s25::folders::campaigns);
             auto folders = ListDir(campaignPath, std::string(), true);
             for(const bfs::path& folder : folders)
