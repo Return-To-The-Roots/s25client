@@ -132,11 +132,14 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
         return; // No windows -> nothing to do
 
     // ESC or ALT+W closes the active window
-    if(ke.kt == KeyType::Escape || (ke.c == 'w' && ke.alt))
+    const auto escape = (ke.kt == KeyType::Escape);
+    if(escape || (ke.c == 'w' && ke.alt))
     {
         // Find one which isn't yet marked for closing so multiple ESC in between draw calls can close multiple windows
-        const auto itActiveWnd =
-          std::find_if(windows.rbegin(), windows.rend(), [](const auto& wnd) { return !wnd->ShouldBeClosed(); });
+        // ESC doesn't close pinned windows
+        const auto itActiveWnd = std::find_if(windows.rbegin(), windows.rend(), [escape](const auto& wnd) {
+            return !wnd->ShouldBeClosed() && !(escape && wnd->IsPinned());
+        });
         if(itActiveWnd != windows.rend() && (*itActiveWnd)->getCloseBehavior() != CloseBehavior::Custom)
             (*itActiveWnd)->Close();
     } else if(!CALL_MEMBER_FN(*windows.back(), msg)(ke)) // send to active window

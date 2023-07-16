@@ -30,11 +30,12 @@ enum CloseBehavior
 enum class IwButton
 {
     Close,
-    Minimize
+    Title, /// Pseudo-button to respond to double-clicks on the title bar
+    PinOrMinimize
 };
 constexpr auto maxEnumValue(IwButton)
 {
-    return IwButton::Minimize;
+    return IwButton::PinOrMinimize;
 }
 
 class IngameWindow : public Window
@@ -86,6 +87,9 @@ public:
     /// ist das Fenster minimiert?
     bool IsMinimized() const { return isMinimized_; }
 
+    void SetPinned(bool pinned = true) { isPinned_ = pinned; }
+    bool IsPinned() const { return isPinned_; }
+
     CloseBehavior getCloseBehavior() const { return closeBehavior_; }
 
     /// Modal windows cannot be minimized, are always active and stay on top of non-modal ones
@@ -126,6 +130,7 @@ private:
 
     bool isModal_;
     bool closeme;
+    bool isPinned_;
     bool isMinimized_;
     bool isMoving;
     CloseBehavior closeBehavior_;
