@@ -10,19 +10,19 @@
 #include "WindowManager.h"
 #include "commonDefines.h"
 #include "controls/ctrlButton.h"
+#include "controls/ctrlList.h"
+#include "controls/ctrlMultiline.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextButton.h"
-#include "controls/ctrlList.h"
-#include "controls/ctrlMultiline.h"
+#include "desktops/dskCampaingMainMenu.h"
 #include "desktops/dskCampaingMissionSelection.h"
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
-#include "desktops/dskCampaingMainMenu.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
@@ -91,7 +91,8 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType
 
     // "Toggle different campaign screens"
     campaignScreen = CampaignScreen::Table;
-    AddTextButton(100, DrawPoint(100, 560), Extent(270, 22), TextureColor::Red1, _("Toggle campaign screen (Table)"), NormalFont);
+    AddTextButton(100, DrawPoint(100, 560), Extent(270, 22), TextureColor::Red1, _("Toggle campaign screen (Table)"),
+                  NormalFont);
 
     // "Zurück"
     AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
@@ -150,7 +151,8 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi, unsigned int preSelectedMapType
                                 {"", 0, SRT::Default}});
     AddList(101, DrawPoint(110, 35), Extent(200, 400), TextureColor::Grey, NormalFont);
 
-    ctrlMultiline* multiline = AddMultiline(102, DrawPoint(320, 35), Extent(300, 400), TextureColor::Green1, NormalFont);
+    ctrlMultiline* multiline =
+      AddMultiline(102, DrawPoint(320, 35), Extent(300, 400), TextureColor::Green1, NormalFont);
     multiline->ShowBackground(true);
 
     // "Eigene" auswählen
@@ -428,17 +430,15 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
             if(campaignScreen == CampaignScreen::Table)
             {
                 campaignScreen = CampaignScreen::ListWithDescription;
-                toggleCampaignScreenButton->SetText(_("Toggle campaign screen") + std::string (" (List)"));
+                toggleCampaignScreenButton->SetText(_("Toggle campaign screen") + std::string(" (List)"));
             } else if(campaignScreen == CampaignScreen::ListWithDescription)
             {
                 campaignScreen = CampaignScreen::TableWithSeparateCampaignDetail;
-                toggleCampaignScreenButton->SetText(_("Toggle campaign screen")
-                                                    + std::string(" (Campaign screen)"));
+                toggleCampaignScreenButton->SetText(_("Toggle campaign screen") + std::string(" (Campaign screen)"));
             } else if(campaignScreen == CampaignScreen::TableWithSeparateCampaignDetail)
             {
                 campaignScreen = CampaignScreen::Table;
-                toggleCampaignScreenButton->SetText(_("Toggle campaign screen")
-                                                    + std::string(" (Table)"));
+                toggleCampaignScreenButton->SetText(_("Toggle campaign screen") + std::string(" (Table)"));
             }
 
             ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
@@ -760,6 +760,6 @@ void dskSelectMap::FillCampaignList(const std::vector<boost::filesystem::path>& 
             }
         }
 
-        table->AddString (desc.name);
+        table->AddString(desc.name);
     }
 }
