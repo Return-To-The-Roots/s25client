@@ -16,8 +16,6 @@ class dskCampaingMainMenu : public Desktop
 public:
     dskCampaingMainMenu(CreateServerInfo csi, std::string campaignFolder, int selectedCapital);
 
-    //void UpdateMissionPage(const unsigned page);
-
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void StartServer(const boost::filesystem::path& mapPath);

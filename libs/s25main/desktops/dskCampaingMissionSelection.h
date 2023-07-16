@@ -14,8 +14,7 @@ struct CampaignDescription;
 class dskCampaignMissionSelection : public Desktop
 {
 public:
-    dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder,
-                                int currentSelectedCapital = -1);
+    dskCampaignMissionSelection(CreateServerInfo csi, std::string campaignFolder, int currentSelectedCapital = -1);
 
     void UpdateMissionPage(unsigned page);
 

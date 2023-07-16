@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCampaingMissionSelection.h"
-#include "dskCampaingMainMenu.h"
 #include "Desktop.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -18,6 +17,7 @@
 #include "controls/ctrlMultiline.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextButton.h"
+#include "dskCampaingMainMenu.h"
 #include "dskSelectMap.h"
 #include "files.h"
 #include "helpers/format.hpp"
