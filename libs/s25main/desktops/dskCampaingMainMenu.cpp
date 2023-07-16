@@ -3,9 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCampaingMainMenu.h"
-#include "dskCampaingMissionSelection.h"
-#include "gameData/CampaignDescription.h"
-#include "lua/CampaignDataLoader.h"
 #include "Desktop.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -20,13 +17,16 @@
 #include "controls/ctrlMultiline.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextButton.h"
+#include "dskCampaingMissionSelection.h"
 #include "dskSelectMap.h"
 #include "files.h"
 #include "helpers/format.hpp"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "lua/CampaignDataLoader.h"
 #include "network/GameClient.h"
 #include "ogl/glFont.h"
+#include "gameData/CampaignDescription.h"
 #include "gameData/MapConsts.h"
 #include "gameData/MaxPlayers.h"
 #include "liblobby/LobbyClient.h"
@@ -54,26 +54,24 @@ enum CtrlIds
 };
 
 int startOffsetY = 70;
-}
+} // namespace
 
 dskCampaingMainMenu::dskCampaingMainMenu(CreateServerInfo csi, std::string campaignFolder, int selectedCapital)
-    : Desktop(LOADER.GetImageN("setup013", 0)), campaignFolder_(campaignFolder),
-      csi_(std::move(csi)), currentSelectedCapital (selectedCapital)
+    : Desktop(LOADER.GetImageN("setup013", 0)), csi_(std::move(csi)), campaignFolder_(campaignFolder),
+      currentSelectedCapital(selectedCapital)
 {
     settings = std::make_unique<CampaignDescription>();
     CampaignDataLoader loader(*settings, campaignFolder);
     loader.Load();
 
-    AddText(ID_CAMPAIGN_LABEL, DrawPoint(400, startOffsetY), _("Campaign"), COLOR_YELLOW, FontStyle::CENTER,
-            LargeFont);
+    AddText(ID_CAMPAIGN_LABEL, DrawPoint(400, startOffsetY), _("Campaign"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     ctrlMultiline* multiline = AddMultiline(ID_CAMPAIGN_LONG_DESCRIPTION, DrawPoint(200, startOffsetY + 50),
                                             Extent(400, 250), TextureColor::Green1, NormalFont);
     multiline->ShowBackground(true);
-    std::string campaingDescription = _("Title:   ") + settings->shortDescription + "\n"
-                                      + _("Author:  ") + settings->author + "\n" + _("Maps:    ")
-                                      + std::to_string(settings->mapNames.size()) + "\n\n"
-                                      + settings->longDescription;
+    std::string campaingDescription = _("Title:   ") + settings->shortDescription + "\n" + _("Author:  ")
+                                      + settings->author + "\n" + _("Maps:    ")
+                                      + std::to_string(settings->mapNames.size()) + "\n\n" + settings->longDescription;
     multiline->AddString(campaingDescription, COLOR_YELLOW);
 
     const bfs::path& mapFilePath =
@@ -89,9 +87,9 @@ dskCampaingMainMenu::dskCampaingMainMenu(CreateServerInfo csi, std::string campa
       checkedCast<const libsiedler2::ArchivItem_Map*>(map[0])->getHeader();
 
     AddTextButton(ID_SELECTED_CAPITAL_LABEL, DrawPoint(300, 464), Extent(200, 22), TextureColor::Invisible,
-                  s25util::ansiToUTF8(header.getName()),
+                  s25util::ansiToUTF8(header.getName()), NormalFont);
+    AddTextButton(ID_CHOOSE_CAPITAL, DrawPoint(300, 494), Extent(200, 22), TextureColor::Green2, _("Choose capital"),
                   NormalFont);
-    AddTextButton(ID_CHOOSE_CAPITAL, DrawPoint(300, 494), Extent(200, 22), TextureColor::Green2, _("Choose capital"), NormalFont);
     AddTextButton(ID_BACK, DrawPoint(300, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     AddTextButton(ID_PLAY_CAPITAL, DrawPoint(510, 560), Extent(200, 22), TextureColor::Green2, _("Play capital"),
                   NormalFont);

@@ -21,9 +21,9 @@ public:
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void StartServer(const boost::filesystem::path& mapPath);
-    int currentSelectedCapital;
-    std::string campaignFolder_;
     CreateServerInfo csi_;
+    std::string campaignFolder_;
+    int currentSelectedCapital;
     std::unique_ptr<CampaignDescription> settings;
     boost::signals2::scoped_connection onErrorConnection_;
 };
