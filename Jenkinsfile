@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+// Copyright (C) 2005 - 2023 Settlers Freaks <sf-team at siedler25.org>
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,9 +11,16 @@ dockerImages = [
     "apple.x86_64"    : "rttr/cross-compiler/apple/apple-docker:master"
 ]
 
+timeouts = [
+    "windows.i686"    : 120,
+    "windows.x86_64"  : 120,
+    "linux.x86_64"    : 120,
+    "apple.x86_64"    : 240
+]
+
 def transformIntoStep(architecture, dockerImage, buildScript) {
     return {
-        timeout(120) {
+        timeout(timeouts[architecture]) {
             def wspwd = pwd()
             dir("build-$architecture") {
                 sh 'touch .git-keep'
