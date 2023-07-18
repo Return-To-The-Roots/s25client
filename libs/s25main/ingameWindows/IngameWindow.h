@@ -99,8 +99,6 @@ protected:
     std::string title_;
     glArchivItem_Bitmap* background;
     DrawPoint lastMousePos;
-    bool last_down;
-    bool last_down2;
     std::array<ButtonState, 2> buttonState;
 
     /// Offset from left and top to actual content

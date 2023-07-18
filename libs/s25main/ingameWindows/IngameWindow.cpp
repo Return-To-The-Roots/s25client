@@ -30,8 +30,7 @@ const Extent IngameWindow::borderSize(1, 1);
 IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
                            glArchivItem_Bitmap* background, bool modal, CloseBehavior closeBehavior, Window* parent)
     : Window(parent, id, pos, size), title_(std::move(title)), background(background), lastMousePos(0, 0),
-      last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false),
-      closeBehavior_(closeBehavior)
+      isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeBehavior_(closeBehavior)
 {
     std::fill(buttonState.begin(), buttonState.end(), ButtonState::Up);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
