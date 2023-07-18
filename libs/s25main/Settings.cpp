@@ -350,6 +350,7 @@ void Settings::LoadIngame()
             windows.persistentSettings[window.first].lastPos.x = iniWindow->getIntValue("pos_x");
             windows.persistentSettings[window.first].lastPos.y = iniWindow->getIntValue("pos_y");
             windows.persistentSettings[window.first].isOpen = iniWindow->getIntValue("is_open");
+            windows.persistentSettings[window.first].isMinimized = iniWindow->getValue("is_minimized", false);
         }
     } catch(std::runtime_error& e)
     {
@@ -502,6 +503,7 @@ void Settings::SaveIngame()
         iniWindow->setValue("pos_x", windows.persistentSettings[window.first].lastPos.x);
         iniWindow->setValue("pos_y", windows.persistentSettings[window.first].lastPos.y);
         iniWindow->setValue("is_open", windows.persistentSettings[window.first].isOpen);
+        iniWindow->setValue("is_minimized", windows.persistentSettings[window.first].isMinimized);
     }
 
     bfs::path settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);

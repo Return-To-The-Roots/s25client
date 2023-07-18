@@ -26,6 +26,7 @@ struct PersistentWindowSettings
 {
     DrawPoint lastPos = DrawPoint::Invalid();
     bool isOpen = false;
+    bool isMinimized = false;
 };
 
 /// Configuration class
