@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Window.h"
+#include "helpers/EnumArray.h"
 #include "gameData/const_gui_ids.h"
 #include <array>
 #include <vector>
@@ -23,6 +24,16 @@ enum CloseBehavior
     /// Same as Regular, but doesn't (auto-)close on right-click
     NoRightClick,
 };
+
+enum class IwButton
+{
+    Close,
+    Minimize
+};
+constexpr auto maxEnumValue(IwButton)
+{
+    return IwButton::Minimize;
+}
 
 class IngameWindow : public Window
 {
@@ -99,22 +110,20 @@ protected:
     std::string title_;
     glArchivItem_Bitmap* background;
     DrawPoint lastMousePos;
-    std::array<ButtonState, 2> buttonState;
 
     /// Offset from left and top to actual content
     Extent contentOffset;
     /// Offset from content to right and bottom boundary
     Extent contentOffsetEnd;
 
-    /// Get bounds of close button (left)
-    Rect GetCloseButtonBounds() const;
-    /// Get bounds of minimize button (right)
-    Rect GetMinimizeButtonBounds() const;
-
 private:
+    /// Get bounds of given button
+    Rect GetButtonBounds(IwButton btn) const;
+
     bool isModal_;
     bool closeme;
     bool isMinimized_;
     bool isMoving;
     CloseBehavior closeBehavior_;
+    helpers::EnumArray<ButtonState, IwButton> buttonStates_;
 };

@@ -8,6 +8,7 @@
 #include "Settings.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/EnumRange.h"
 #include "helpers/MultiArray.h"
 #include "helpers/containerUtils.h"
 #include "ogl/FontStyle.h"
@@ -18,6 +19,10 @@
 #include "s25util/error.h"
 #include <algorithm>
 #include <utility>
+
+namespace {
+constexpr Extent ButtonSize(16, 16);
+}
 
 const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(),
                                               std::numeric_limits<DrawPoint::ElementType>::max());
@@ -32,7 +37,7 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     : Window(parent, id, pos, size), title_(std::move(title)), background(background), lastMousePos(0, 0),
       isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeBehavior_(closeBehavior)
 {
-    std::fill(buttonState.begin(), buttonState.end(), ButtonState::Up);
+    std::fill(buttonStates_.begin(), buttonStates_.end(), ButtonState::Up);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
     contentOffset.y = LOADER.GetImageN("resource", 42)->getHeight();    // title bar
     contentOffsetEnd.x = LOADER.GetImageN("resource", 39)->getWidth();  // right border
@@ -146,13 +151,11 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
         lastMousePos = mc.GetPos();
     } else
     {
-        // Check the 2 buttons
-        const std::array<Rect, 2> rec = {GetCloseButtonBounds(), GetMinimizeButtonBounds()};
-
-        for(unsigned i = 0; i < 2; ++i)
+        // Check the buttons
+        for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.GetPos(), rec[i]))
-                buttonState[i] = ButtonState::Pressed;
+            if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
+                buttonStates_[btn] = ButtonState::Pressed;
         }
     }
 }
@@ -161,26 +164,23 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
 {
     isMoving = false;
 
-    const std::array<Rect, 2> rec = {GetCloseButtonBounds(), GetMinimizeButtonBounds()};
-
-    for(unsigned i = 0; i < 2; ++i)
+    for(const auto btn : helpers::enumRange<IwButton>())
     {
-        buttonState[i] = ButtonState::Up;
+        buttonStates_[btn] = ButtonState::Up;
 
-        if((i == 0 && closeBehavior_ == CloseBehavior::Custom) // no close button
-           || (i == 1 && isModal_))                            // modal windows cannot be minimized
-        {
+        if((btn == IwButton::Close && closeBehavior_ == CloseBehavior::Custom) // no close button
+           || (btn == IwButton::Minimize && isModal_))                         // modal windows cannot be minimized
             continue;
-        }
 
-        if(IsPointInRect(mc.GetPos(), rec[i]))
+        if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
         {
-            if(i == 0)
-                Close();
-            else
+            switch(btn)
             {
-                SetMinimized(!IsMinimized());
-                LOADER.GetSoundN("sound", 113)->Play(255, false);
+                case IwButton::Close: Close(); break;
+                case IwButton::Minimize:
+                    SetMinimized(!IsMinimized());
+                    LOADER.GetSoundN("sound", 113)->Play(255, false);
+                    break;
             }
         }
     }
@@ -203,15 +203,13 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
         lastMousePos = mc.GetPos();
     } else
     {
-        // Check the 2 buttons
-        const std::array<Rect, 2> rec = {GetCloseButtonBounds(), GetMinimizeButtonBounds()};
-
-        for(unsigned i = 0; i < 2; ++i)
+        // Check the buttons
+        for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.GetPos(), rec[i]))
-                buttonState[i] = mc.ldown ? ButtonState::Pressed : ButtonState::Hover;
+            if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
+                buttonStates_[btn] = mc.ldown ? ButtonState::Pressed : ButtonState::Hover;
             else
-                buttonState[i] = ButtonState::Up;
+                buttonStates_[btn] = ButtonState::Up;
         }
     }
 }
@@ -250,12 +248,15 @@ void IngameWindow::Draw_()
     glArchivItem_Bitmap* rightUpperImg = LOADER.GetImageN("resource", 37);
     rightUpperImg->DrawFull(GetPos() + DrawPoint(GetSize().x - rightUpperImg->getWidth(), 0));
 
-    // The 2 buttons
-    constexpr std::array<helpers::EnumArray<uint16_t, ButtonState>, 2> ids = {{{47, 55, 50}, {48, 56, 52}}};
+    // The buttons
+    using ButtonStateResIds = helpers::EnumArray<unsigned, ButtonState>;
+    constexpr ButtonStateResIds closeResIds = {47, 55, 51};
+    constexpr ButtonStateResIds minimizeResIds = {48, 56, 52};
     if(closeBehavior_ != CloseBehavior::Custom)
-        LOADER.GetImageN("resource", ids[0][buttonState[0]])->DrawFull(GetPos());
+        LOADER.GetImageN("resource", closeResIds[buttonStates_[IwButton::Close]])->DrawFull(GetPos());
     if(!IsModal())
-        LOADER.GetImageN("resource", ids[1][buttonState[1]])->DrawFull(GetPos() + DrawPoint(GetSize().x - 16, 0));
+        LOADER.GetImageN("resource", minimizeResIds[buttonStates_[IwButton::Minimize]])
+          ->DrawFull(GetButtonBounds(IwButton::Minimize));
 
     // The title bar
     unsigned titleIndex;
@@ -358,16 +359,6 @@ bool IngameWindow::IsMessageRelayAllowed() const
     return !isMinimized_;
 }
 
-Rect IngameWindow::GetCloseButtonBounds() const
-{
-    return Rect(GetPos(), 16, 16);
-}
-
-Rect IngameWindow::GetMinimizeButtonBounds() const
-{
-    return Rect(GetPos().x + GetSize().x - 16, GetPos().y, 16, 16);
-}
-
 void IngameWindow::SaveOpenStatus(bool isOpen) const
 {
     auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
@@ -375,4 +366,15 @@ void IngameWindow::SaveOpenStatus(bool isOpen) const
     {
         windowSettings->second.isOpen = isOpen;
     }
+}
+
+Rect IngameWindow::GetButtonBounds(IwButton btn) const
+{
+    auto pos = GetPos();
+    switch(btn)
+    {
+        case IwButton::Close: break;
+        case IwButton::Minimize: pos.x += GetSize().x - ButtonSize.x; break;
+    }
+    return Rect(pos, ButtonSize);
 }
