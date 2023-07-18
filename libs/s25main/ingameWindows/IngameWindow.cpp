@@ -43,6 +43,9 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     contentOffsetEnd.x = LOADER.GetImageN("resource", 39)->getWidth();  // right border
     contentOffsetEnd.y = LOADER.GetImageN("resource", 40)->getHeight(); // bottom bar
 
+    const auto it = SETTINGS.windows.persistentSettings.find(GetGUIID());
+    windowSettings_ = (it == SETTINGS.windows.persistentSettings.cend() ? nullptr : &it->second);
+
     // For compatibility we treat the given height as the window height, not the content height
     // First we have to make sure the size is not to small
     Window::Resize(elMax(contentOffset + contentOffsetEnd, GetSize()));
@@ -54,9 +57,8 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     // Load last position or center the window
     if(pos == posLastOrCenter)
     {
-        const auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
-        if(windowSettings != SETTINGS.windows.persistentSettings.cend() && windowSettings->second.lastPos.isValid())
-            SetPos(windowSettings->second.lastPos);
+        if(windowSettings_ && windowSettings_->lastPos.isValid())
+            SetPos(windowSettings_->lastPos);
         else
             MoveToCenter();
     } else if(pos == posCenter)
@@ -111,11 +113,8 @@ void IngameWindow::SetPos(DrawPoint newPos)
         newPos.y = screenSize.y - GetSize().y;
 
     // if possible save the position to settings
-    const auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
-    if(windowSettings != SETTINGS.windows.persistentSettings.cend())
-    {
-        windowSettings->second.lastPos = newPos;
-    }
+    if(windowSettings_)
+        windowSettings_->lastPos = newPos;
 
     Window::SetPos(newPos);
 }
@@ -361,11 +360,8 @@ bool IngameWindow::IsMessageRelayAllowed() const
 
 void IngameWindow::SaveOpenStatus(bool isOpen) const
 {
-    auto windowSettings = SETTINGS.windows.persistentSettings.find(GetGUIID());
-    if(windowSettings != SETTINGS.windows.persistentSettings.cend())
-    {
-        windowSettings->second.isOpen = isOpen;
-    }
+    if(windowSettings_)
+        windowSettings_->isOpen = isOpen;
 }
 
 Rect IngameWindow::GetButtonBounds(IwButton btn) const
