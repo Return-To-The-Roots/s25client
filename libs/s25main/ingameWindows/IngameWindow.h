@@ -12,6 +12,7 @@
 
 class glArchivItem_Bitmap;
 class MouseCoords;
+struct PersistentWindowSettings;
 template<typename T>
 struct Point;
 
@@ -126,4 +127,5 @@ private:
     bool isMoving;
     CloseBehavior closeBehavior_;
     helpers::EnumArray<ButtonState, IwButton> buttonStates_;
+    PersistentWindowSettings* windowSettings_;
 };
