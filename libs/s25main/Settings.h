@@ -24,11 +24,8 @@ bool checkPort(int port);
 
 struct PersistentWindowSettings
 {
-    DrawPoint lastPos;
-    bool isOpen;
-
-    PersistentWindowSettings(DrawPoint lastPos, bool isOpen) : lastPos(lastPos), isOpen(isOpen) {}
-    PersistentWindowSettings() : lastPos(DrawPoint::Invalid()), isOpen(false) {}
+    DrawPoint lastPos = DrawPoint::Invalid();
+    bool isOpen = false;
 };
 
 /// Configuration class
