@@ -886,7 +886,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
                                        const Position& offset) const
 {
     const WorldDescription& desc = gwViewer.GetWorld().GetDescription();
-    Position startPos = Position(GetVertexPos(pt)) + offset;
+    Position startPos = Position(Position::Truncate, GetVertexPos(pt)) + offset;
 
     Visibility visibility = gwViewer.GetVisibility(pt);
 
@@ -902,7 +902,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
         const Direction targetDir = toDirection(dir);
         MapPoint ta = gwViewer.GetNeighbour(pt, targetDir);
 
-        Position endPos = Position(GetVertexPos(ta)) + offset;
+        Position endPos = Position(Position::Truncate, GetVertexPos(ta)) + offset;
         Position diff = startPos - endPos;
 
         // Gehen wir über einen Kartenrand (horizontale Richung?)

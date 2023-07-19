@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "helpers/mathFuncs.h"
 #include <algorithm>
 #include <cstdint>
 #include <limits>
@@ -21,11 +22,26 @@ struct Point //-V690
     using ElementType = T;
     static_assert(std::is_arithmetic<ElementType>::value, "Requires an arithmetic type");
 
+    struct Truncate_t
+    {
+        constexpr explicit Truncate_t() = default;
+    };
+
+    static constexpr Truncate_t Truncate{};
+
     T x, y;
     constexpr Point() noexcept : x(getInvalidValue()), y(getInvalidValue()) {}
     constexpr Point(const T x, const T y) noexcept : x(x), y(y) {}
-    template<typename U>
+    template<typename U, std::enable_if_t<!(std::is_integral<T>::value && std::is_floating_point<U>::value), int> = 0>
     constexpr explicit Point(const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
+    {}
+    /// Convert floating-point to integer by truncating
+    template<typename U, std::enable_if_t<std::is_integral<T>::value && std::is_floating_point<U>::value, int> = 0>
+    constexpr explicit Point(Truncate_t, const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
+    {}
+    /// Convert floating-point to integer with rounding (default behavior)
+    template<typename U, std::enable_if_t<std::is_integral<T>::value && std::is_floating_point<U>::value, int> = 0>
+    constexpr explicit Point(const Point<U>& pt) noexcept : x(helpers::iround<T>(pt.x)), y(helpers::iround<T>(pt.y))
     {}
     constexpr Point(const Point&) = default;
     constexpr Point& operator=(const Point&) = default;

@@ -17,6 +17,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
 #include "helpers/containerUtils.h"
+#include "helpers/mathFuncs.h"
 #include "helpers/reverse.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/BuildingNote.h"
@@ -37,7 +38,6 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainDesc.h"
 #include <algorithm>
-#include <cmath>
 #include <functional>
 #include <set>
 #include <stdexcept>
@@ -1357,8 +1357,8 @@ void GameWorld::PlaceAndFixWater()
             }
         }
         if(minHumidity)
-            curNodeResource = Resource(
-              ResourceType::Water, waterEverywhere ? 7 : static_cast<uint8_t>(std::lround(minHumidity * 7. / 100.)));
+            curNodeResource =
+              Resource(ResourceType::Water, waterEverywhere ? 7 : helpers::iround<uint8_t>(minHumidity * 7. / 100.));
         else
             curNodeResource = Resource(ResourceType::Nothing, 0);
 

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "FrameCounter.h"
+#include "helpers/mathFuncs.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include <algorithm>
-#include <cmath>
 
 //-V:clock::time_point:813
 
@@ -36,7 +36,7 @@ unsigned FrameCounter::getCurFrameRate() const
     if(timeDiff == clock::duration::zero())
         return 0;
     using dSeconds = std::chrono::duration<double>;
-    return std::lround(curNumFrames_ / std::chrono::duration_cast<dSeconds>(timeDiff).count());
+    return helpers::iround<unsigned>(curNumFrames_ / std::chrono::duration_cast<dSeconds>(timeDiff).count());
 }
 
 FrameTimer::FrameTimer(int targetFramerate, unsigned maxLagFrames, clock::time_point curTime)

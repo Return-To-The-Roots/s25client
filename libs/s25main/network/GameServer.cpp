@@ -16,6 +16,7 @@
 #include "commonDefines.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
+#include "helpers/mathFuncs.h"
 #include "helpers/random.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameMessages.h"
@@ -36,7 +37,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/nowide/convert.hpp>
 #include <boost/nowide/fstream.hpp>
-#include <cmath>
 #include <helpers/chronoIO.h>
 #include <iomanip>
 #include <iterator>
@@ -763,7 +763,7 @@ void GameServer::ExecuteNWF()
         using MsDouble = duration<double, std::milli>;
         double newNWFLen =
           framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
-        newInfo.nextNWF = lastNWF + std::max(1l, std::lround(newNWFLen));
+        newInfo.nextNWF = lastNWF + std::max(1u, helpers::iround<unsigned>(newNWFLen));
     }
     SendNWFDone(newInfo);
 }

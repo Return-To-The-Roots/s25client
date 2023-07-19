@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "RTTR_Assert.h"
+#include <cmath>
 #include <type_traits>
 
 namespace helpers {
@@ -78,5 +80,19 @@ template<typename T>
 constexpr T inverseLerp(const T startVal, const T endVal, const T value) noexcept
 {
     return (value - startVal) / (endVal - startVal);
+}
+
+// TODO can be constexpr in C++20
+/// Arithmetically round floating point values to integers
+template<typename IntType, typename FloatType,
+         std::enable_if_t<std::is_integral<IntType>::value && std::is_floating_point<FloatType>::value, int> = 0>
+IntType iround(const FloatType val) noexcept
+{
+    RTTR_Assert(std::isfinite(val));
+
+    if(std::is_unsigned<IntType>::value)
+        RTTR_Assert_Msg(!(val < 0), "Floating-point value must not be negative when casting to unsigned integer type.");
+
+    return static_cast<IntType>(std::lround(val));
 }
 } // namespace helpers
