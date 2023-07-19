@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "DrawPoint.h"
+#include "Point.h"
 #include "PointOutput.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlComboBox.h"
@@ -12,6 +15,7 @@
 #include "controls/ctrlProgress.h"
 #include "desktops/dskGameLobby.h"
 #include "helpers/format.hpp"
+#include "ingameWindows/IngameWindow.h"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwHelp.h"
@@ -19,6 +23,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameData/const_gui_ids.h"
 #include "rttr/test/random.hpp"
 #include "s25util/StringConversion.h"
 #include <turtle/mock.hpp>
@@ -191,6 +196,35 @@ BOOST_AUTO_TEST_CASE(ConnectingWindow)
         wnd.Msg_ButtonClick(wnd.GetCtrls<ctrlButton>().at(0)->GetID());
         BOOST_TEST(wnd.ShouldBeClosed());
         BOOST_TEST((dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow())));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(SaveAndRestoreMinimized)
+{
+    constexpr auto id = CGI_MINIMAP;
+    auto it = SETTINGS.windows.persistentSettings.find(id);
+    BOOST_REQUIRE(it != SETTINGS.windows.persistentSettings.end());
+
+    {
+        it->second.isMinimized = false;
+
+        IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+        BOOST_TEST(!wnd.IsMinimized());
+        BOOST_TEST(wnd.GetSize() == Extent(100, 100));
+
+        wnd.SetMinimized(true);
+        BOOST_TEST(it->second.isMinimized);
+    }
+
+    {
+        it->second.isMinimized = true;
+
+        IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+        BOOST_TEST(wnd.IsMinimized());
+        BOOST_TEST(wnd.GetSize() != Extent(100, 100));
+
+        wnd.SetMinimized(false);
+        BOOST_TEST(!it->second.isMinimized);
     }
 }
 
