@@ -86,7 +86,7 @@ constexpr T inverseLerp(const T startVal, const T endVal, const T value) noexcep
 /// Arithmetically round floating point values to integers
 template<typename IntType, typename FloatType,
          std::enable_if_t<std::is_integral<IntType>::value && std::is_floating_point<FloatType>::value, int> = 0>
-inline IntType iround(const FloatType val) noexcept
+IntType iround(const FloatType val) noexcept
 {
     RTTR_Assert(std::isfinite(val));
 
