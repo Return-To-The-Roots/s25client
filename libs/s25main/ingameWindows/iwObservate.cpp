@@ -5,6 +5,7 @@
 #include "iwObservate.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "PickedMovableObject.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlImageButton.h"
@@ -23,13 +24,13 @@ const Extent SmallWndSize(260, 190);
 const Extent MediumWndSize(300, 250);
 const Extent BigWndSize(340, 310);
 
-iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
+iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt, PickedMovableObject&& pmo)
     : IngameWindow(CGI_OBSERVATION, IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr, false,
                    CloseBehavior::NoRightClick),
       parentView(gwv),
       view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
       selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
-      followMovableId(0)
+      pickedObject(std::move(pmo)), following(false), lastValid(pickedObject.isValid())
 {
     view->MoveToMapPt(selectedPt);
     view->SetZoomFactor(1.9f, false);
@@ -41,7 +42,7 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     AddImageButton(1, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 36), _("Zoom"));
     // Kamera (Folgen): 43
     btPos.x += btSize.x;
-    AddImageButton(2, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 43), _("Follow object"));
+    AddImageButton(2, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 43));
     // Zum Ort
     btPos.x += btSize.x;
     AddImageButton(3, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 107), _("Go to place"));
@@ -53,6 +54,9 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     parentView.CopyHudSettingsTo(*view, false);
     gwvSettingsConnection =
       parentView.onHudSettingsChanged.connect([this]() { parentView.CopyHudSettingsTo(*view, false); });
+
+    // Set follow button tooltip
+    UpdateFollowButton();
 }
 
 void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
@@ -74,53 +78,17 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
                 view->SetZoomFactor(2.3f);
             break;
         case 2:
-        {
-            if(followMovableId)
-                followMovableId = 0;
-            else
-            {
-                const DrawPoint centerDrawPt = DrawPoint(view->GetSize() / 2u);
+            if(following)
+                pickedObject.invalidate();   // Stop following
+            else if(!pickedObject.isValid()) // If object is invalid, pick new object at center of view
+                pickedObject = PickedMovableObject::pickAtViewCenter(*view, false);
 
-                double minDistance = std::numeric_limits<double>::max();
-
-                for(int y = view->GetFirstPt().y; y <= view->GetLastPt().y; ++y)
-                {
-                    for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
-                    {
-                        Position curOffset;
-                        const MapPoint curPt =
-                          view->GetViewer().GetTerrainRenderer().ConvertCoords(Position(x, y), &curOffset);
-                        DrawPoint curDrawPt = view->GetWorld().GetNodePos(curPt) - view->GetOffset() + curOffset;
-
-                        if(view->GetViewer().GetVisibility(curPt) != Visibility::Visible)
-                            continue;
-
-                        for(const noBase& obj : view->GetWorld().GetFigures(curPt))
-                        {
-                            const auto* movable = dynamic_cast<const noMovable*>(&obj);
-                            if(!movable)
-                                continue;
-
-                            DrawPoint objDrawPt = curDrawPt;
-
-                            if(movable->IsMoving())
-                                objDrawPt += movable->CalcWalkingRelative();
-
-                            DrawPoint diffToCenter = objDrawPt - centerDrawPt;
-                            double distance = sqrt(pow(diffToCenter.x, 2) + pow(diffToCenter.y, 2));
-
-                            if(distance < minDistance)
-                            {
-                                followMovableId = movable->GetObjId();
-                                minDistance = distance;
-                            }
-                        }
-                    }
-                }
-            }
-
+            // Follow picked object, if valid
+            following = lastValid = pickedObject.isValid();
+            // Ensure the object doesn't expire if we started following the initially picked object
+            pickedObject.cancelExpiration();
+            UpdateFollowButton();
             break;
-        }
         case 3:
             parentView.MoveToMapPt(MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2));
             break;
@@ -159,10 +127,12 @@ void iwObservate::Draw_()
         lastWindowPos = GetPos();
     }
 
-    if(followMovableId)
+    // If the object was valid previously, track it (checks isValid() for us)
+    // If it returns false, it either expired or we lost it
+    if(lastValid && !pickedObject.track(*view, following))
     {
-        if(!MoveToFollowedObj())
-            followMovableId = 0;
+        following = lastValid = false;
+        UpdateFollowButton();
     }
 
     if(!IsMinimized())
@@ -172,57 +142,11 @@ void iwObservate::Draw_()
 
         view->Draw(road, parentView.GetSelectedPt(), false);
         // Draw indicator for center point
-        if(!followMovableId)
+        if(!following && !lastValid)
             LOADER.GetMapTexture(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);
     }
 
     return IngameWindow::Draw_();
-}
-
-bool iwObservate::MoveToFollowedObj()
-{
-    // First look around the center (figure is normally still there)
-    const GameWorldBase& world = view->GetWorld();
-    const MapPoint centerPt = world.MakeMapPoint((view->GetFirstPt() + view->GetLastPt()) / 2);
-    const std::vector<MapPoint> centerPts = world.GetPointsInRadiusWithCenter(centerPt, 2);
-    for(const MapPoint& curPt : centerPts)
-    {
-        if(MoveToFollowedObj(curPt))
-            return true;
-    }
-
-    // Not at the center (normally due to lags) -> Check full area
-    for(int y = view->GetFirstPt().y; y <= view->GetLastPt().y; ++y)
-    {
-        for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
-        {
-            const MapPoint curPt = world.MakeMapPoint(Position(x, y));
-            if(MoveToFollowedObj(curPt))
-                return true;
-        }
-    }
-    return false;
-}
-
-bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
-{
-    if(view->GetViewer().GetVisibility(ptToCheck) != Visibility::Visible)
-        return false;
-    for(const noBase& obj : view->GetWorld().GetFigures(ptToCheck))
-    {
-        if(obj.GetObjId() == followMovableId)
-        {
-            const auto& followMovable = static_cast<const noMovable&>(obj);
-            DrawPoint drawPt = view->GetWorld().GetNodePos(ptToCheck);
-
-            if(followMovable.IsMoving())
-                drawPt += followMovable.CalcWalkingRelative();
-
-            view->MoveTo(drawPt - view->GetSize() / 2u);
-            return true;
-        }
-    }
-    return false;
 }
 
 bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
@@ -252,7 +176,9 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
         scrollOrigin = mc.GetPos();
 
         isScrolling = true;
-        followMovableId = 0;
+        following = lastValid = false;
+        pickedObject.invalidate();
+        UpdateFollowButton();
         WINDOWMANAGER.SetCursor(Cursor::Scroll);
     } else
     {
@@ -269,4 +195,15 @@ bool iwObservate::Msg_RightUp(const MouseCoords& /*mc*/)
     isScrolling = false;
 
     return true;
+}
+
+void iwObservate::UpdateFollowButton()
+{
+    auto* button = GetCtrl<ctrlImageButton>(2);
+    if(following)
+        button->SetTooltip(_("Stop following object"));
+    else if(pickedObject.isValid())
+        button->SetTooltip(_("Follow picked object"));
+    else
+        button->SetTooltip(_("Follow object near the center"));
 }

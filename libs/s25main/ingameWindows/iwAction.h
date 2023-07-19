@@ -5,6 +5,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "PickedMovableObject.h"
 #include "gameTypes/MapCoordinates.h"
 #include <boost/variant.hpp>
 #include <array>
@@ -69,6 +70,8 @@ private:
     /// Die einzelnen Höhen für die einzelnen Tabs im Bautab
     std::array<unsigned short, 4> building_tab_heights;
 
+    PickedMovableObject pickedObject_;
+
 public:
     iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos,
              Params params, bool military_buildings);
@@ -98,4 +101,6 @@ private:
     void AddAttackControls(ctrlGroup* group, unsigned attackers_count);
     void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
     bool DoUpgradeRoad();
+
+    void Draw_() override;
 };
