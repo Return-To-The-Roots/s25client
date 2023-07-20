@@ -15,6 +15,7 @@
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
+#include <memory>
 
 #ifdef _WIN32
 #    include <boost/nowide/convert.hpp>
@@ -27,6 +28,17 @@
         if((call) == -1)                \
             PrintError(SDL_GetError()); \
     } while(false)
+
+namespace {
+template<typename T>
+struct SDLMemoryDeleter
+{
+    void operator()(T* p) const { SDL_free(p); }
+};
+
+template<typename T>
+using SDL_memory = std::unique_ptr<T, SDLMemoryDeleter<T>>;
+} // namespace
 
 IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
@@ -213,29 +225,19 @@ void VideoSDL2::PrintError(const std::string& msg) const
 
 void VideoSDL2::HandlePaste()
 {
-#ifdef _WIN32
-    if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
+    if(!SDL_HasClipboardText())
         return;
 
-    OpenClipboard(nullptr);
+    SDL_memory<char> text(SDL_GetClipboardText());
+    if(!text || *text == '\0') // empty string indicates error
+        PrintError(text ? SDL_GetError() : "Paste failed.");
 
-    HANDLE hData = GetClipboardData(CF_UNICODETEXT);
-    const wchar_t* pData = (const wchar_t*)GlobalLock(hData);
-
-    KeyEvent ke = {KeyType::Invalid, 0, false, false, false};
-    while(pData && *pData)
+    KeyEvent ke = {KeyType::Char, 0, false, false, false};
+    for(const char32_t c : s25util::utf8to32(text.get()))
     {
-        ke.c = *(pData++);
-        if(ke.c == L' ')
-            ke.kt = KeyType::Space;
-        else
-            ke.kt = KeyType::Char;
+        ke.c = static_cast<unsigned>(c);
         CallBack->Msg_KeyDown(ke);
     }
-
-    GlobalUnlock(hData);
-    CloseClipboard();
-#endif
 }
 
 void VideoSDL2::DestroyScreen()
