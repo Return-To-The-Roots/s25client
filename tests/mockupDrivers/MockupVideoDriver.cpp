@@ -29,16 +29,16 @@ bool MockupVideoDriver::Initialize()
     return true;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode& newSize, bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode& newSize, DisplayMode displayMode)
 {
-    ResizeScreen(newSize, fullscreen);
+    ResizeScreen(newSize, displayMode);
     return true;
 }
 
-bool MockupVideoDriver::ResizeScreen(const VideoMode& newSize, bool fullscreen)
+bool MockupVideoDriver::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
 {
     SetNewSize(newSize, Extent(newSize.width, newSize.height));
-    isFullscreen_ = fullscreen;
+    displayMode_ = displayMode;
     return true;
 }
 

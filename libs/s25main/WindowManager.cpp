@@ -600,10 +600,11 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     if(ke.alt && (ke.kt == KeyType::Return))
     {
         // Switch Fullscreen/Windowed
-        const auto newScreenSize =
-          !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
-        VIDEODRIVER.ResizeScreen(newScreenSize, !SETTINGS.video.fullscreen);
-        SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
+        const auto newScreenSize = !bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen) ?
+                                     SETTINGS.video.fullscreenSize :
+                                     SETTINGS.video.windowedSize; //-V807
+        VIDEODRIVER.ResizeScreen(newScreenSize, bitset::toggle(SETTINGS.video.displayMode, DisplayMode::Fullscreen));
+        SETTINGS.video.displayMode = VIDEODRIVER.GetDisplayMode();
     } else if(ke.kt == KeyType::Print)
         TakeScreenshot();
     else
@@ -632,7 +633,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     curRenderSize = sr.newSize;
 
     // Don't change fullscreen size (only in menu)
-    if(!SETTINGS.video.fullscreen)
+    if(!bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen))
         SETTINGS.video.windowedSize = VIDEODRIVER.GetWindowSize();
 
     // ist unser Desktop gültig?

@@ -92,7 +92,7 @@ void VideoDriverWrapper::UnloadDriver()
  *
  *  @return Bei Erfolg @p true ansonsten @p false
  */
-bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscreen)
+bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -100,7 +100,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, fullscreen))
+    if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, displayMode))
     {
         s25util::fatal_error("Could not create window!");
         return false;
@@ -130,11 +130,11 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
  *
  *  @param[in] screenWidth neue Breite des Fensters
  *  @param[in] screenHeight neue Höhe des Fensters
- *  @param[in] fullscreen Vollbild oder nicht
+ *  @param[in] displayMode Fullscreen on/off
  *
  *  @return Bei Erfolg @p true ansonsten @p false
  */
-bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscreen)
+bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -142,9 +142,9 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    const bool result = videodriver->ResizeScreen(size, fullscreen);
+    const bool result = videodriver->ResizeScreen(size, displayMode);
 #ifdef _WIN32
-    if(!videodriver->IsFullscreen())
+    if(!bitset::isSet(videodriver->GetDisplayMode(), DisplayMode::Fullscreen))
     {
         // We cannot change the size of a maximized window. So restore it here
         WINDOWPLACEMENT wp;
@@ -483,7 +483,12 @@ Extent VideoDriverWrapper::GetRenderSize() const
     return videodriver->GetRenderSize();
 }
 
+DisplayMode VideoDriverWrapper::GetDisplayMode() const
+{
+    return videodriver->GetDisplayMode();
+}
+
 bool VideoDriverWrapper::IsFullscreen() const
 {
-    return videodriver->IsFullscreen();
+    return bitset::isSet(videodriver->GetDisplayMode(), DisplayMode::Fullscreen);
 }

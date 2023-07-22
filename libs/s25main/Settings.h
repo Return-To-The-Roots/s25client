@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DrawPoint.h"
+#include "driver/VideoInterface.h"
 #include "driver/VideoMode.h"
 #include "s25util/ProxySettings.h"
 #include "s25util/Singleton.h"
@@ -59,7 +60,7 @@ public:
     {
         VideoMode fullscreenSize, windowedSize;
         signed short framerate; // <0 for unlimited, 0 for HW Vsync
-        bool fullscreen;
+        DisplayMode displayMode;
         bool vbo;
         bool shared_textures;
     } video;

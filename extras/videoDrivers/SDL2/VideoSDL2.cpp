@@ -103,7 +103,7 @@ void VideoSDL2::UpdateCurrentSizes()
     SetNewSize(VideoMode(w, h), Extent(w2, h2));
 }
 
-bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bool fullscreen)
+bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -125,18 +125,19 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
 
-    int wndPos = SDL_WINDOWPOS_CENTERED;
-
+    const int wndPos = SDL_WINDOWPOS_CENTERED;
+    const auto fullscreen = bitset::isSet(displayMode, DisplayMode::Fullscreen);
     const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
-
+    const unsigned commonFlags = SDL_WINDOW_OPENGL;
+    const unsigned fullscreenFlag = (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                              SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
+                              commonFlags | fullscreenFlag);
 
     // Fallback to non-fullscreen
     if(!window && fullscreen)
     {
-        window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+        window =
+          SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height, commonFlags);
     }
 
     if(!window)
@@ -145,10 +146,11 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
         return false;
     }
 
-    isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+    displayMode_ =
+      bitset::set(displayMode_, DisplayMode::Fullscreen, (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0);
     UpdateCurrentSizes();
 
-    if(!isFullscreen_)
+    if(!bitset::isSet(displayMode_, DisplayMode::Fullscreen))
         MoveWindowToCenter();
 
     SDL_Surface* iconSurf =
@@ -173,16 +175,19 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     return true;
 }
 
-bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
+bool VideoSDL2::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
 
-    if(isFullscreen_ != fullscreen)
+    const auto newFullscreen = bitset::isSet(displayMode, DisplayMode::Fullscreen);
+    auto fullscreen = bitset::isSet(displayMode_, DisplayMode::Fullscreen);
+    if(fullscreen != newFullscreen)
     {
-        SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-        isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
-        if(!isFullscreen_)
+        SDL_SetWindowFullscreen(window, newFullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+        fullscreen = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+        displayMode_ = bitset::set(displayMode_, DisplayMode::Fullscreen, fullscreen);
+        if(!fullscreen)
         {
 #if SDL_VERSION_ATLEAST(2, 0, 5)
             SDL_SetWindowResizable(window, SDL_TRUE);
@@ -193,7 +198,7 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 
     if(newSize != GetWindowSize())
     {
-        if(isFullscreen_)
+        if(fullscreen)
         {
             auto const targetMode = FindClosestVideoMode(newSize);
             SDL_DisplayMode target;
@@ -267,7 +272,8 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_WINDOWEVENT_RESIZED:
                     {
-                        isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+                        displayMode_ = bitset::set(displayMode_, DisplayMode::Fullscreen,
+                                                   (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0);
                         VideoMode newSize(ev.window.data1, ev.window.data2);
                         if(newSize != GetWindowSize())
                         {

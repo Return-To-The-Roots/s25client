@@ -8,11 +8,19 @@
 #include "Point.h"
 #include "VideoMode.h"
 #include "exportImport.h"
+#include "s25util/enumUtils.h"
 #include <string>
 #include <vector>
 
 /// Function type for loading OpenGL methods
 using OpenGL_Loader_Proc = void* (*)(const char*);
+
+enum class DisplayMode : unsigned
+{
+    None,
+    Fullscreen = 1 << 0
+};
+MAKE_BITSET_STRONG(DisplayMode);
 
 class BOOST_SYMBOL_VISIBLE IVideoDriver
 {
@@ -25,9 +33,9 @@ public:
     virtual bool Initialize() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) = 0;
+    virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode) = 0;
 
-    virtual bool ResizeScreen(const VideoMode& newSize, bool fullscreen) = 0;
+    virtual bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) = 0;
 
     /// Schliesst das Fenster.
     virtual void DestroyScreen() = 0;
@@ -61,7 +69,7 @@ public:
     virtual VideoMode GetWindowSize() const = 0;
     /// Get the size of the render region in pixels
     virtual Extent GetRenderSize() const = 0;
-    virtual bool IsFullscreen() const = 0;
+    virtual DisplayMode GetDisplayMode() const = 0;
 
     /// Get state of the modifier keys
     virtual KeyEvent GetModKeyState() const = 0;
