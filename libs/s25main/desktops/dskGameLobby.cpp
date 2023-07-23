@@ -231,7 +231,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     combo->AddString(_("Very fast")); // Sehr Schnell
 
     // Karte laden, um Kartenvorschau anzuzeigen
-    if(!gameLobby_->isSavegame())
+    bool isMapPreviewEnabled = !lua || lua->IsMapPreviewEnabled();
+    if(!gameLobby_->isSavegame() && isMapPreviewEnabled)
     {
         // Map laden
         libsiedler2::Archiv mapArchiv;
