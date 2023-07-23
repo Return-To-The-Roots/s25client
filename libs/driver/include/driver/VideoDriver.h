@@ -34,6 +34,7 @@ public:
     float getDpiScale() const override final { return dpiScale_; }
 
     const GuiScale& getGuiScale() const override final { return guiScale_; }
+    void setGuiScalePercent(unsigned percent) override;
 
     GuiScaleRange getGuiScaleRange() const override;
 
@@ -44,9 +45,6 @@ public:
 protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
-
-    /// Set the GUI scale in percent
-    void setGuiScaleInternal(unsigned percent);
 
     /// Callback to update state in response to GUI scale changes before events are dispatched
     virtual void onGuiScaleChanged() {}

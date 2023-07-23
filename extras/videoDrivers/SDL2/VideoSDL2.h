@@ -47,8 +47,6 @@ public:
     /// Set mouse position
     void SetMousePos(Position pos) override;
 
-    void setGuiScalePercent(unsigned percent) override;
-
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const override;
 

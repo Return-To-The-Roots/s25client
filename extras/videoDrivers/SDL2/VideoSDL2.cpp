@@ -443,11 +443,6 @@ void VideoSDL2::SetMousePos(Position pos)
     SDL_WarpMouseInWindow(window, screenPos.x, screenPos.y);
 }
 
-void VideoSDL2::setGuiScalePercent(unsigned percent)
-{
-    setGuiScaleInternal(percent);
-}
-
 void VideoSDL2::onGuiScaleChanged()
 {
     UpdateCurrentSizes();

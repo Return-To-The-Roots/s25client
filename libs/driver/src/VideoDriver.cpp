@@ -82,7 +82,7 @@ void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
     dpiScale_ = (ratioXY.x + ratioXY.y) / 2.f; // use the average ratio of both axes
 }
 
-void VideoDriver::setGuiScaleInternal(unsigned percent)
+void VideoDriver::setGuiScalePercent(unsigned percent)
 {
     if(percent == 0)
         percent = getGuiScaleRange().recommendedPercent;
