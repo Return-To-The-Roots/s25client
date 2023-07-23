@@ -590,6 +590,17 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             SETTINGS.Save();
 
+            // Is the selected backend required to support GUI scaling to fullfill the user's choice?
+            // If so, warn the user if the backend is unable to support GUI scaling.
+            if(VIDEODRIVER.getGuiScale().percent() == 100
+               && (SETTINGS.video.guiScale != 100
+                   || (SETTINGS.video.guiScale == 0 && VIDEODRIVER.getGuiScaleRange().recommendedPercent != 100)))
+            {
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                  _("Sorry!"), _("The selected video driver does not support GUI scaling! Setting won't be used."),
+                  this, MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
+            }
+
             if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
                || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
@@ -635,11 +646,9 @@ void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /
     switch(msgbox_id)
     {
         default: break;
-        case 1: // "You need to restart your game ..."
-        {
-            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
-        }
-        break;
+        // "You need to restart your game ..."
+        // "The selected video driver does not support GUI scaling!"
+        case 1: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
     }
 }
 
