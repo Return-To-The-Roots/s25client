@@ -73,6 +73,15 @@ void MockupVideoDriver::SetMousePos(Position pos)
     mouse_xy.pos = pos;
 }
 
+void MockupVideoDriver::setGuiScalePercent(unsigned percent)
+{
+    if(setGuiScaleInternal(percent))
+    {
+        const auto windowSize = GetWindowSize();
+        SetNewSize(windowSize, Extent(windowSize.width, windowSize.height));
+    }
+}
+
 KeyEvent MockupVideoDriver::GetModKeyState() const
 {
     return modKeyState_;

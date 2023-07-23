@@ -22,6 +22,7 @@ public:
     OpenGL_Loader_Proc GetLoaderFunction() const override;
     void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
     void SetMousePos(Position pos) override;
+    void setGuiScalePercent(unsigned percent) override;
     KeyEvent GetModKeyState() const override;
     void* GetMapPointer() const override;
     bool IsOpenGL() const override { return false; }
