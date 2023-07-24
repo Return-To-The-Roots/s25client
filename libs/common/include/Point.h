@@ -22,6 +22,9 @@ struct Point //-V690
     using ElementType = T;
     static_assert(std::is_arithmetic<ElementType>::value, "Requires an arithmetic type");
 
+    static constexpr auto MinElementValue = std::numeric_limits<T>::min();
+    static constexpr auto MaxElementValue = std::numeric_limits<T>::max();
+
     struct Truncate_t
     {
         constexpr explicit Truncate_t() = default;
