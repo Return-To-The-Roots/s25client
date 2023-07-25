@@ -48,6 +48,11 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     // Fenster vergroessern/verkleinern
     btPos.x += btSize.x;
     AddImageButton(4, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 109), _("Resize window"));
+
+    // Synchronize visibility of HUD elements with parentView
+    parentView.CopyHudSettingsTo(*view, false);
+    gwvSettingsConnection =
+      parentView.onHudSettingsChanged.connect([this]() { parentView.CopyHudSettingsTo(*view, false); });
 }
 
 void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)

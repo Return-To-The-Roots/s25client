@@ -7,6 +7,7 @@
 #include "DrawPoint.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
+#include <boost/signals2.hpp>
 #include <vector>
 
 class GameWorldBase;
@@ -80,26 +81,17 @@ public:
     float GetCurrentTargetZoomFactor() const;
     void SetNextZoomFactor();
 
-    /// Bauqualitäten anzeigen oder nicht
-    void ToggleShowBQ()
-    {
-        show_bq = !show_bq;
-        SaveIngameSettingsValues();
-    }
-    /// Gebäudenamen zeigen oder nicht
-    void ToggleShowNames()
-    {
-        show_names = !show_names;
-        SaveIngameSettingsValues();
-    }
-    /// Produktivität zeigen oder nicht
-    void ToggleShowProductivity()
-    {
-        show_productivity = !show_productivity;
-        SaveIngameSettingsValues();
-    };
-    /// Schaltet Produktivitäten/Namen komplett aus oder an
+    /// Show or hide construction aid
+    void ToggleShowBQ();
+    /// Show or hide building names
+    void ToggleShowNames();
+    /// Show or hide productivity
+    void ToggleShowProductivity();
+    /// Toggle names and productivity completely on or off
     void ToggleShowNamesAndProductivity();
+
+    /// Copy visibility of HUD elements from this view to another
+    void CopyHudSettingsTo(GameWorldView& other, bool copyBQ) const;
 
     void Draw(const RoadBuildState& rb, MapPoint selected, bool drawMouse, unsigned* water = nullptr);
 
@@ -127,6 +119,9 @@ public:
     Position GetLastPt() const { return lastPt; }
 
     void Resize(const Extent& newSize);
+
+    /// Triggered when visibility of HUD elements changes
+    boost::signals2::signal<void()> onHudSettingsChanged;
 
 private:
     void CalcFxLx();

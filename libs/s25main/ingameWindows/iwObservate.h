@@ -6,6 +6,7 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/MapCoordinates.h"
+#include <boost/signals2.hpp>
 
 class GameWorldView;
 class MouseCoords;
@@ -29,6 +30,8 @@ class iwObservate : public IngameWindow
 
     /// id of object currently followed or INVALID_ID
     unsigned followMovableId;
+
+    boost::signals2::scoped_connection gwvSettingsConnection;
 
 public:
     iwObservate(GameWorldView& gwv, MapPoint selectedPt);
