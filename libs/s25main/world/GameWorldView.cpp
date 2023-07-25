@@ -545,7 +545,27 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     }
 }
 
-/// Schaltet Produktivitäten/Namen komplett aus oder an
+void GameWorldView::ToggleShowBQ()
+{
+    show_bq = !show_bq;
+    SaveIngameSettingsValues();
+    onHudSettingsChanged();
+}
+
+void GameWorldView::ToggleShowNames()
+{
+    show_names = !show_names;
+    SaveIngameSettingsValues();
+    onHudSettingsChanged();
+}
+
+void GameWorldView::ToggleShowProductivity()
+{
+    show_productivity = !show_productivity;
+    SaveIngameSettingsValues();
+    onHudSettingsChanged();
+}
+
 void GameWorldView::ToggleShowNamesAndProductivity()
 {
     if(show_productivity && show_names)
@@ -553,6 +573,14 @@ void GameWorldView::ToggleShowNamesAndProductivity()
     else
         show_productivity = show_names = true;
     SaveIngameSettingsValues();
+    onHudSettingsChanged();
+}
+
+void GameWorldView::CopyHudSettingsTo(GameWorldView& other, bool copyBQ) const
+{
+    other.show_bq = (copyBQ ? show_bq : false);
+    other.show_names = show_names;
+    other.show_productivity = show_productivity;
 }
 
 void GameWorldView::MoveBy(const DrawPoint& numPixels)
