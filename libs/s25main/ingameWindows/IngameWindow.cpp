@@ -24,12 +24,9 @@ namespace {
 constexpr Extent ButtonSize(16, 16);
 }
 
-const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(),
-                                              std::numeric_limits<DrawPoint::ElementType>::max());
-const DrawPoint IngameWindow::posCenter(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
-                                        std::numeric_limits<DrawPoint::ElementType>::max());
-const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
-                                         std::numeric_limits<DrawPoint::ElementType>::max() - 1);
+const DrawPoint IngameWindow::posLastOrCenter(DrawPoint::MaxElementValue, DrawPoint::MaxElementValue);
+const DrawPoint IngameWindow::posCenter(DrawPoint::MaxElementValue - 1, DrawPoint::MaxElementValue);
+const DrawPoint IngameWindow::posAtMouse(DrawPoint::MaxElementValue - 1, DrawPoint::MaxElementValue - 1);
 
 const Extent IngameWindow::borderSize(1, 1);
 IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
