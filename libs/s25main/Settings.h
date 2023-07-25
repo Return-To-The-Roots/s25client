@@ -25,6 +25,7 @@ bool checkPort(int port);
 struct PersistentWindowSettings
 {
     DrawPoint lastPos = DrawPoint::Invalid();
+    DrawPoint restorePos = DrawPoint::Invalid();
     bool isOpen = false;
     bool isMinimized = false;
 };
