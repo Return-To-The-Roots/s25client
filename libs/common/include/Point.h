@@ -10,6 +10,50 @@
 #include <limits>
 #include <type_traits>
 
+namespace detail {
+
+template<class T>
+struct type_identity
+{
+    using type = T;
+};
+
+/// Convert the type T to a signed type if the condition is true (safe for float types)
+template<bool cond, typename T>
+using make_signed_if_t =
+  typename std::conditional_t<cond && !std::is_signed<T>::value, std::make_signed<T>, type_identity<T>>::type;
+
+// clang-format off
+
+/// Creates a mixed type out of types T and U which is
+/// the larger type of T & U AND signed iff either is signed
+/// Will be a floating point type if either T or U is floating point
+template<typename T, typename U>
+using mixed_type_t =
+  make_signed_if_t<
+    std::is_signed<T>::value || std::is_signed<U>::value,
+    typename std::conditional_t<
+        std::is_floating_point<T>::value == std::is_floating_point<U>::value, // both are FP or not FP?
+        std::conditional<(sizeof(T) > sizeof(U)), T, U>, // Take the larger type
+        std::conditional<std::is_floating_point<T>::value, T, U> // Take the floating point type
+    >::type
+  >;
+
+template<typename T, typename U>
+using IsNonLossyOp = std::integral_constant<bool,
+    // We can do T = T <op> U (except overflow) if:
+    std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value
+>;
+
+// clang-format on
+
+template<typename T, typename U>
+using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;
+template<typename T>
+using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
+
+} // namespace detail
+
 /// Type for describing a 2D value (position, size, offset...)
 /// Note: Combining a signed with an unsigned point will result in a signed type!
 /// Allowed operations:
@@ -87,50 +131,6 @@ constexpr bool Point<T>::operator!=(const Point<T>& second) const noexcept
 {
     return !(*this == second);
 }
-
-namespace detail {
-
-template<class T>
-struct type_identity
-{
-    using type = T;
-};
-
-/// Convert the type T to a signed type if the condition is true (safe for float types)
-template<bool cond, typename T>
-using make_signed_if_t =
-  typename std::conditional_t<cond && !std::is_signed<T>::value, std::make_signed<T>, type_identity<T>>::type;
-
-// clang-format off
-
-/// Creates a mixed type out of types T and U which is
-/// the larger type of T & U AND signed iff either is signed
-/// Will be a floating point type if either T or U is floating point
-template<typename T, typename U>
-using mixed_type_t =
-  make_signed_if_t<
-    std::is_signed<T>::value || std::is_signed<U>::value,
-    typename std::conditional_t<
-        std::is_floating_point<T>::value == std::is_floating_point<U>::value, // both are FP or not FP?
-        std::conditional<(sizeof(T) > sizeof(U)), T, U>, // Take the larger type
-        std::conditional<std::is_floating_point<T>::value, T, U> // Take the floating point type
-    >::type
-  >;
-
-template<typename T, typename U>
-using IsNonLossyOp = std::integral_constant<bool,
-    // We can do T = T <op> U (except overflow) if:
-    std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value
->;
-
-// clang-format on
-
-template<typename T, typename U>
-using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;
-template<typename T>
-using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
-
-} // namespace detail
 
 /// Compute the element wise minimum
 template<typename T>
