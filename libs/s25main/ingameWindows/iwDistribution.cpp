@@ -62,12 +62,12 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     tab->SetSelection(0);
 
     const Extent btSize(32, 32);
-    // Hilfe
-    AddImageButton(2, DrawPoint(15, GetSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
+    // "Help" button
+    AddImageButton(2, DrawPoint(15, GetFullSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
                    LOADER.GetImageN("io", 225), _("Help"));
-    // Standardbelegung
-    AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey, LOADER.GetImageN("io", 191),
-                   _("Default"));
+    // "Default" button
+    AddImageButton(10, GetFullSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey,
+                   LOADER.GetImageN("io", 191), _("Default"));
 
     iwDistribution::UpdateSettings();
 }

@@ -68,6 +68,8 @@ public:
     void SetIwSize(const Extent& newSize);
     /// Get the size of the (expanded) content area
     Extent GetIwSize() const;
+    /// Get the full size of the window, even when minimized
+    Extent GetFullSize() const;
     /// Get the current lower right corner of the content area
     DrawPoint GetRightBottomBoundary();
 

@@ -112,6 +112,11 @@ Extent IngameWindow::GetIwSize() const
     return Extent(GetSize().x - contentOffset.x - contentOffsetEnd.x, iwHeight);
 }
 
+Extent IngameWindow::GetFullSize() const
+{
+    return Extent(GetSize().x, contentOffset.y + contentOffsetEnd.y + iwHeight);
+}
+
 DrawPoint IngameWindow::GetRightBottomBoundary()
 {
     return DrawPoint(GetSize() - contentOffsetEnd);

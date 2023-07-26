@@ -67,10 +67,10 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
         }
     }
 
-    // Hilfe-Button
+    // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(32, GetSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey, LOADER.GetImageN("io", 225),
-                   _("Help"));
+    AddImageButton(32, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+                   LOADER.GetImageN("io", 225), _("Help"));
 }
 
 /// Anzahlen der Gebäude zeichnen
