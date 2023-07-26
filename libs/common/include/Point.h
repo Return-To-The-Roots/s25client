@@ -98,6 +98,28 @@ struct Point //-V690
     static constexpr Point all(const T value) noexcept { return Point(value, value); }
     constexpr bool isValid() const noexcept { return *this != Invalid(); }
 
+    /// Calculate the euclidean distance to the origin
+    constexpr auto distance() const noexcept { return std::hypot(x, y); }
+
+    /// Calculate the euclidean distance to another point
+    template<typename U, std::enable_if_t<!(std::is_unsigned<T>::value && std::is_unsigned<U>::value), int> = 0>
+    constexpr auto distance(const Point<U>& pt) const noexcept
+    {
+        using Res = ::detail::mixed_type_t<T, U>;
+        return std::hypot(static_cast<Res>(x) - static_cast<Res>(pt.x), static_cast<Res>(y) - static_cast<Res>(pt.y));
+    }
+
+    /// Calculate the euclidean distance to another point
+    template<typename U, std::enable_if_t<std::is_unsigned<T>::value && std::is_unsigned<U>::value, int> = 0>
+    constexpr auto distance(const Point<U>& pt) const noexcept
+    {
+        using Res = ::detail::mixed_type_t<T, U>;
+        const auto x1 = static_cast<Res>(x), x2 = static_cast<Res>(pt.x);
+        const auto y1 = static_cast<Res>(y), y2 = static_cast<Res>(pt.y);
+        // Calculate difference of usigned values without overflow
+        return std::hypot((x1 > x2 ? x1 - x2 : x2 - x1), (y1 > y2 ? y1 - y2 : y2 - y1));
+    }
+
     constexpr bool operator==(const Point& second) const noexcept;
     constexpr bool operator!=(const Point& second) const noexcept;
 
