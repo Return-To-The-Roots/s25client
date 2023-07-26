@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "DrawPoint.h"
 #include "Window.h"
 #include "helpers/EnumArray.h"
 #include "gameData/const_gui_ids.h"
@@ -71,7 +72,7 @@ public:
     DrawPoint GetRightBottomBoundary();
 
     /// Set the position for the window after adjusting newPos so the window is in the visible area
-    void SetPos(DrawPoint newPos);
+    void SetPos(DrawPoint newPos, bool saveRestorePos = true);
 
     /// merkt das Fenster zum Schließen vor.
     virtual void Close();
@@ -128,4 +129,5 @@ private:
     CloseBehavior closeBehavior_;
     helpers::EnumArray<ButtonState, IwButton> buttonStates_;
     PersistentWindowSettings* windowSettings_;
+    DrawPoint restorePos_;
 };

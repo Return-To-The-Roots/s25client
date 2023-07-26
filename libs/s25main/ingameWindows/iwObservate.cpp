@@ -148,11 +148,6 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
             for(unsigned i = 1; i <= 4; ++i)
                 GetCtrl<ctrlImageButton>(i)->SetPos(
                   DrawPoint(GetCtrl<ctrlImageButton>(i)->GetPos().x - diff, GetSize().y - 50));
-
-            DrawPoint maxPos(VIDEODRIVER.GetRenderSize() - GetSize() - Extent::all(1));
-            DrawPoint newPos = elMin(maxPos, GetPos());
-            if(newPos != GetPos())
-                SetPos(newPos);
     }
 }
 

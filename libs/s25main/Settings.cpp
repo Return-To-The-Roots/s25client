@@ -347,10 +347,13 @@ void Settings::LoadIngame()
             const auto* iniWindow = static_cast<const libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
             if(!iniWindow)
                 continue;
-            windows.persistentSettings[window.first].lastPos.x = iniWindow->getIntValue("pos_x");
-            windows.persistentSettings[window.first].lastPos.y = iniWindow->getIntValue("pos_y");
-            windows.persistentSettings[window.first].isOpen = iniWindow->getIntValue("is_open");
-            windows.persistentSettings[window.first].isMinimized = iniWindow->getValue("is_minimized", false);
+            auto& settings = windows.persistentSettings[window.first];
+            const auto lastPos = settings.lastPos =
+              DrawPoint(iniWindow->getIntValue("pos_x"), iniWindow->getIntValue("pos_y"));
+            settings.restorePos = DrawPoint(iniWindow->getValue("restore_pos_x", lastPos.x),
+                                            iniWindow->getValue("restore_pos_y", lastPos.y));
+            settings.isOpen = iniWindow->getIntValue("is_open");
+            settings.isMinimized = iniWindow->getValue("is_minimized", false);
         }
     } catch(std::runtime_error& e)
     {
@@ -500,10 +503,17 @@ void Settings::SaveIngame()
         auto* iniWindow = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
         if(!iniWindow)
             continue;
-        iniWindow->setValue("pos_x", windows.persistentSettings[window.first].lastPos.x);
-        iniWindow->setValue("pos_y", windows.persistentSettings[window.first].lastPos.y);
-        iniWindow->setValue("is_open", windows.persistentSettings[window.first].isOpen);
-        iniWindow->setValue("is_minimized", windows.persistentSettings[window.first].isMinimized);
+        const auto& settings = windows.persistentSettings[window.first];
+        iniWindow->setValue("pos_x", settings.lastPos.x);
+        iniWindow->setValue("pos_y", settings.lastPos.y);
+        if(settings.restorePos != settings.lastPos)
+        {
+            // only save if different; defaults to lastPos on load
+            iniWindow->setValue("restore_pos_x", settings.restorePos.x);
+            iniWindow->setValue("restore_pos_y", settings.restorePos.y);
+        }
+        iniWindow->setValue("is_open", settings.isOpen);
+        iniWindow->setValue("is_minimized", settings.isMinimized);
     }
 
     bfs::path settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);
