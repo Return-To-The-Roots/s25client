@@ -130,12 +130,12 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         }
     }
 
-    // "Blättern"
-    AddImageButton(0, DrawPoint(52, GetSize().y - 47), Extent(66, 32), TextureColor::Grey, LOADER.GetImageN("io", 84),
-                   _("Next page"));
-    // Hilfe
-    AddImageButton(12, DrawPoint(16, GetSize().y - 47), Extent(32, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
-                   _("Help"));
+    // "Next page" button
+    AddImageButton(0, DrawPoint(52, GetFullSize().y - 47), Extent(66, 32), TextureColor::Grey,
+                   LOADER.GetImageN("io", 84), _("Next page"));
+    // "Help" button
+    AddImageButton(12, DrawPoint(16, GetFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
+                   LOADER.GetImageN("io", 225), _("Help"));
 
     waresPage.SetVisible(true);
     curPage_ = warePageID;
