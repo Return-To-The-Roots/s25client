@@ -421,10 +421,12 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         }
         if(foundWindow)
         {
-            // Close it if requested
+            // Close it if requested (unless pinned)
             if(foundWindow->getCloseBehavior() == CloseBehavior::Regular)
-                foundWindow->Close();
-            else
+            {
+                if(!foundWindow->IsPinned())
+                    foundWindow->Close();
+            } else
             {
                 SetActiveWindow(*foundWindow);
                 foundWindow->Msg_RightDown(mc);
