@@ -208,27 +208,57 @@ BOOST_AUTO_TEST_CASE(SaveAndRestoreMinimized)
     constexpr auto id = CGI_MINIMAP;
     auto it = SETTINGS.windows.persistentSettings.find(id);
     BOOST_REQUIRE(it != SETTINGS.windows.persistentSettings.end());
+    auto& settings = it->second;
 
     {
-        it->second.isMinimized = false;
+        settings.isMinimized = false;
 
         IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
         BOOST_TEST(!wnd.IsMinimized());
         BOOST_TEST(wnd.GetSize() == Extent(100, 100));
 
         wnd.SetMinimized(true);
-        BOOST_TEST(it->second.isMinimized);
+        BOOST_TEST(settings.isMinimized);
     }
 
     {
-        it->second.isMinimized = true;
+        settings.isMinimized = true;
 
         IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
         BOOST_TEST(wnd.IsMinimized());
         BOOST_TEST(wnd.GetSize() != Extent(100, 100));
 
         wnd.SetMinimized(false);
-        BOOST_TEST(!it->second.isMinimized);
+        BOOST_TEST(!settings.isMinimized);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(SaveAndRestorePinned)
+{
+    constexpr auto id = CGI_MINIMAP;
+    auto it = SETTINGS.windows.persistentSettings.find(id);
+    BOOST_REQUIRE(it != SETTINGS.windows.persistentSettings.end());
+    auto& settings = it->second;
+
+    {
+        settings.isPinned = false;
+
+        IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+        BOOST_TEST(!wnd.IsPinned());
+        BOOST_TEST(wnd.GetSize() == Extent(100, 100));
+
+        wnd.SetPinned();
+        BOOST_TEST(settings.isPinned);
+    }
+
+    {
+        settings.isPinned = true;
+
+        IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+        BOOST_TEST(wnd.IsPinned());
+
+        wnd.SetPinned(false);
+        BOOST_TEST(!settings.isPinned);
     }
 }
 
