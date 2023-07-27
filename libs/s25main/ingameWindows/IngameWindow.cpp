@@ -56,14 +56,14 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     if(windowSettings_)
     {
         // Restore minimized state
-        if(windowSettings_ && windowSettings_->isMinimized)
+        if(windowSettings_->isMinimized)
         {
             isMinimized_ = true;
             Extent minimizedSize(GetSize().x, contentOffset.y + contentOffsetEnd.y);
             Window::Resize(minimizedSize);
         }
-        // Load restorePos
-        restorePos_ = windowSettings_->restorePos;
+        isPinned_ = windowSettings_->isPinned;     // Restore pinned state
+        restorePos_ = windowSettings_->restorePos; // Load restorePos
     }
 
     // Load last position or center the window
@@ -177,6 +177,15 @@ void IngameWindow::SetMinimized(bool minimized)
     // if possible save the minimized state to settings
     if(windowSettings_)
         windowSettings_->isMinimized = isMinimized_;
+}
+
+void IngameWindow::SetPinned(bool pinned)
+{
+    isPinned_ = pinned;
+
+    // if possible save the pinned state to settings
+    if(windowSettings_)
+        windowSettings_->isPinned = isPinned_;
 }
 
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)

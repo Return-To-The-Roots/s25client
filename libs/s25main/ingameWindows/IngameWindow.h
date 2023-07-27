@@ -87,7 +87,7 @@ public:
     /// ist das Fenster minimiert?
     bool IsMinimized() const { return isMinimized_; }
 
-    void SetPinned(bool pinned = true) { isPinned_ = pinned; }
+    void SetPinned(bool pinned = true);
     bool IsPinned() const { return isPinned_; }
 
     CloseBehavior getCloseBehavior() const { return closeBehavior_; }

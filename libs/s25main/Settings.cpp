@@ -355,6 +355,7 @@ void Settings::LoadIngame()
             settings.restorePos = DrawPoint(iniWindow->getValue("restore_pos_x", lastPos.x),
                                             iniWindow->getValue("restore_pos_y", lastPos.y));
             settings.isOpen = iniWindow->getIntValue("is_open");
+            settings.isPinned = iniWindow->getValue("is_pinned", false);
             settings.isMinimized = iniWindow->getValue("is_minimized", false);
         }
     } catch(std::runtime_error& e)
@@ -516,6 +517,7 @@ void Settings::SaveIngame()
             iniWindow->setValue("restore_pos_y", settings.restorePos.y);
         }
         iniWindow->setValue("is_open", settings.isOpen);
+        iniWindow->setValue("is_pinned", settings.isPinned);
         iniWindow->setValue("is_minimized", settings.isMinimized);
     }
 
