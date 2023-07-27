@@ -262,6 +262,131 @@ BOOST_AUTO_TEST_CASE(SaveAndRestorePinned)
     }
 }
 
+BOOST_AUTO_TEST_CASE(TitleBarButtons)
+{
+    constexpr auto id = CGI_MINIMAP;
+    auto it = SETTINGS.windows.persistentSettings.find(id);
+    BOOST_REQUIRE(it != SETTINGS.windows.persistentSettings.end());
+    auto& settings = it->second;
+
+    BOOST_TEST_CONTEXT("Window pinning disabled")
+    {
+        SETTINGS.interface.enableWindowPinning = false;
+        settings.isMinimized = false;
+        settings.isPinned = false;
+        BOOST_TEST_CONTEXT("Left title bar button closes window")
+        {
+            IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(4, 4), true};
+
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            wnd.MouseLeftUp(evLDown);
+            BOOST_TEST(wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!settings.isOpen);
+            BOOST_TEST(!settings.isMinimized);
+            BOOST_TEST(!settings.isPinned);
+        }
+
+        BOOST_TEST_CONTEXT("Double-click on the window title has no effect")
+        {
+            IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+            const MouseCoords evLDblDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4), true, false, true};
+
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            wnd.MouseLeftUp(evLDblDown);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(settings.isOpen);
+            BOOST_TEST(!settings.isMinimized);
+            BOOST_TEST(!settings.isPinned);
+        }
+
+        settings.isMinimized = false;
+        BOOST_TEST_CONTEXT("Right title bar button minimizes window")
+        {
+            IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4), true};
+
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            wnd.MouseLeftUp(evLDown);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(settings.isOpen);
+            BOOST_TEST(settings.isMinimized);
+            BOOST_TEST(!settings.isPinned);
+        }
+    }
+
+    BOOST_TEST_CONTEXT("Window pinning enabled")
+    {
+        SETTINGS.interface.enableWindowPinning = true;
+        settings.isMinimized = false;
+        settings.isPinned = false;
+        BOOST_TEST_CONTEXT("Left title bar button closes window")
+        {
+            IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(4, 4), true};
+
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            wnd.MouseLeftUp(evLDown);
+            BOOST_TEST(wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!settings.isOpen);
+            BOOST_TEST(!settings.isMinimized);
+            BOOST_TEST(!settings.isPinned);
+        }
+
+        BOOST_TEST_CONTEXT("Double-click on the window title minimizes")
+        {
+            IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+            const MouseCoords evLDblDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4), true, false, true};
+
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            wnd.MouseLeftUp(evLDblDown);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(settings.isOpen);
+            BOOST_TEST(settings.isMinimized);
+            BOOST_TEST(!settings.isPinned);
+        }
+
+        settings.isMinimized = false;
+        settings.isPinned = false;
+        BOOST_TEST_CONTEXT("Right title bar button pins window")
+        {
+            IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
+            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4), true};
+
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            wnd.MouseLeftUp(evLDown);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(wnd.IsPinned());
+            BOOST_TEST(settings.isOpen);
+            BOOST_TEST(!settings.isMinimized);
+            BOOST_TEST(settings.isPinned);
+        }
+    }
+}
+
 namespace {
 void WindowPositioning_testOne(IngameWindow& wnd, const char* context, const std::function<void()>& checkNormal,
                                const std::function<void()>& checkMinimized)
