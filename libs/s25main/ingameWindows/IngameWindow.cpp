@@ -454,7 +454,7 @@ void IngameWindow::MoveNextToMouse()
 
 bool IngameWindow::IsMessageRelayAllowed() const
 {
-    return !isMinimized_;
+    return !isMinimized_ && !isMoving;
 }
 
 void IngameWindow::SaveOpenStatus(bool isOpen) const
