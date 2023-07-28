@@ -877,3 +877,53 @@ void WindowManager::DrawToolTip()
         curTooltip->draw(ttPos);
     }
 }
+
+SnapOffset WindowManager::snapWindow(Window* wnd, const Rect& wndRect) const
+{
+    constexpr int snapDistance = 15;
+
+    /// Progressive minimum distance to another window edge; initial value limits to at most snapDistance
+    auto minDist = Extent::all(snapDistance + 1);
+    /// (Smallest) offset (signed distance) the window should be moved; initially zero, so no snapping
+    SnapOffset minOffset = SnapOffset::all(0);
+
+    const auto setOffsetIfLowerDist = [](int a, int b, unsigned& minDist, int& minOffset) {
+        const int offset = b - a;
+        const unsigned dist = std::abs(offset);
+        if(dist < minDist)
+        {
+            minDist = dist;
+            minOffset = offset;
+        }
+    };
+    const auto setOffsetIfLowerDistX = [&](int x1, int x2) { setOffsetIfLowerDist(x1, x2, minDist.x, minOffset.x); };
+    const auto setOffsetIfLowerDistY = [&](int y1, int y2) { setOffsetIfLowerDist(y1, y2, minDist.y, minOffset.y); };
+
+    for(const auto& curWnd : windows)
+    {
+        if(curWnd.get() == wnd)
+            continue;
+
+        const Rect curWndRect = curWnd->GetBoundaryRect();
+
+        // Calculate smallest offset for each parallel pair of window edges, iff the windows overlap along the
+        // orthogonal axis (± snap distance)
+        if(wndRect.top <= (curWndRect.bottom + snapDistance) && wndRect.bottom >= (curWndRect.top - snapDistance))
+        {
+            setOffsetIfLowerDistX(wndRect.left, curWndRect.left);
+            setOffsetIfLowerDistX(wndRect.left, curWndRect.right);
+            setOffsetIfLowerDistX(wndRect.right, curWndRect.left);
+            setOffsetIfLowerDistX(wndRect.right, curWndRect.right);
+        }
+
+        if(wndRect.left <= (curWndRect.right + snapDistance) && wndRect.right >= (curWndRect.left - snapDistance))
+        {
+            setOffsetIfLowerDistY(wndRect.top, curWndRect.top);
+            setOffsetIfLowerDistY(wndRect.top, curWndRect.bottom);
+            setOffsetIfLowerDistY(wndRect.bottom, curWndRect.top);
+            setOffsetIfLowerDistY(wndRect.bottom, curWndRect.bottom);
+        }
+    }
+
+    return minOffset;
+}
