@@ -74,7 +74,7 @@ public:
     virtual bool IsOpenGL() const = 0;
 
     // Display the problem to the gamer
-    virtual void ShowErrorMessage(const char* title, const char* message) = 0;
+    virtual void ShowErrorMessage(const std::string& title, const std::string& message) = 0;
 };
 
 class VideoDriverLoaderInterface;

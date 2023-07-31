@@ -81,7 +81,7 @@ public:
     // Nachrichtenschleife
     bool Run();
 
-    void ShowErrorMessage(const char* title, const char* message);
+    void ShowErrorMessage(const std::string& title, const std::string& message);
 
     unsigned GetTickCount();
     /// Set framerate target (FPS)
