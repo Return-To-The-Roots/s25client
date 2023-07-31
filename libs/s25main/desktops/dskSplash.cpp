@@ -78,11 +78,14 @@ void dskSplash::LoadFiles()
 
     } else
     {
-        s25util::error(_("Some essential game files failed to load.\n"
-                         "Please ensure that the Settlers 2 Gold-Edition is installed \n"
-                         "in the same directory as Return to the Roots."));
-        VIDEODRIVER.ShowErrorMessage("Please install Settlers II game files into",
-                                     RTTRCONFIG.ExpandPath("<RTTR_GAME>").string().c_str());
+        const auto fmt = boost::format(_("Some essential game files failed to load.\n"
+                                         "Please ensure that the Settlers 2 Gold-Edition is installed in\n"
+                                         "%1%"))
+                         % RTTRCONFIG.ExpandPath("<RTTR_GAME>").string();
+
+        s25util::error(fmt.str());
+        VIDEODRIVER.ShowErrorMessage(_("Missing game files"), fmt.str());
+
         GLOBALVARS.notdone = false;
     }
 }

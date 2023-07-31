@@ -444,9 +444,9 @@ bool VideoWinAPI::MessageLoop()
     return true;
 }
 
-void VideoWinAPI::ShowErrorMessage(const char* title, const char* message)
+void VideoWinAPI::ShowErrorMessage(const std::string& title, const std::string& message)
 {
-    MessageBoxW(nullptr, boost::nowide::widen(message).c_str(), boost::nowide::widen(title).c_str(), MB_OK);
+    MessageBoxA(nullptr, message.c_str(), title.c_str(), MB_OK | MB_ICONEXCLAMATION);
 }
 
 /**

@@ -83,7 +83,7 @@ void* MockupVideoDriver::GetMapPointer() const
     return nullptr;
 }
 
-void MockupVideoDriver::ShowErrorMessage(const char* title, const char* message)
+void MockupVideoDriver::ShowErrorMessage(const std::string& title, const std::string& message)
 {
-    std::cout << title << std::endl << message << std::endl;
+    std::cerr << title << ": " << message << std::endl;
 }

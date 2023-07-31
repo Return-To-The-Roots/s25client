@@ -180,9 +180,10 @@ bool VideoDriverWrapper::DestroyScreen()
     return true;
 }
 
-void VideoDriverWrapper::ShowErrorMessage(const char* title, const char* message)
+void VideoDriverWrapper::ShowErrorMessage(const std::string& title, const std::string& message)
 {
-    videodriver->ShowErrorMessage(title, message);
+    if(videodriver)
+        videodriver->ShowErrorMessage(title, message);
 }
 
 void VideoDriverWrapper::setTargetFramerate(int target)

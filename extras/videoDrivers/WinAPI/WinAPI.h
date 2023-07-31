@@ -45,7 +45,7 @@ public:
     bool MessageLoop() override;
 
     /// Popup Window
-    void ShowErrorMessage(const char* title, const char* message) override;
+    void ShowErrorMessage(const std::string& title, const std::string& message) override;
 
     /// Funktion zum Auslesen des TickCounts.
     unsigned long GetTickCount() const override;
