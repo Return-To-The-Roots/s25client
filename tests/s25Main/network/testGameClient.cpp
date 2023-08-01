@@ -208,18 +208,22 @@ BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)
     clientMsgInterface.OnGameMessage(GameMessage_Server_TypeOK(GameMessage_Server_TypeOK::StatusCode::Ok, ""));
     clientMsgInterface.OnGameMessage(GameMessage_Server_Password("true"));
 
-    const auto mapDataSize = rttr::test::randomValue(10u, 100u);
+    constexpr auto chunkSize = 10u;
+    const auto mapDataSize = rttr::test::randomValue(2 * chunkSize, 10 * chunkSize);      // At least 2 chunks
+    const auto uncompressedSize = rttr::test::randomValue(mapDataSize, 10 * mapDataSize); // Doesn't really matter
     std::vector<char> mapData(mapDataSize);
-    clientMsgInterface.OnGameMessage(GameMessage_Map_Info("testMap.swd", MapType::OldMap, 500u, mapDataSize, 0, 0));
+    clientMsgInterface.OnGameMessage(
+      GameMessage_Map_Info("testMap.swd", MapType::OldMap, uncompressedSize, mapDataSize, 0, 0));
     // First part of map
-    MOCK_EXPECT(callbacks.CI_MapPartReceived).in(s).with(10u, mapDataSize).once();
-    clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, 0, mapData.data(), 10));
+    MOCK_EXPECT(callbacks.CI_MapPartReceived).in(s).with(chunkSize, mapDataSize).once();
+    clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, 0, mapData.data(), chunkSize));
     BOOST_TEST_REQUIRE(mock::verify());
     BOOST_TEST(client.GetState() == ClientState::Connect);
 
     // Remaining part of map but to big/wrong offset
     MOCK_EXPECT(callbacks.CI_Error).with(ClientError::MapTransmission).once();
-    clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, 10, mapData.data(), mapDataSize - 9));
+    const auto remainingSize = mapDataSize - chunkSize;
+    clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, chunkSize, mapData.data(), remainingSize + 1u));
     BOOST_TEST(client.GetState() == ClientState::Stopped);
 }
 
