@@ -22,7 +22,8 @@
 
 namespace {
 constexpr Extent ButtonSize(16, 16);
-}
+constexpr unsigned TitleMargin = 32;
+} // namespace
 
 const DrawPoint IngameWindow::posLastOrCenter(DrawPoint::MaxElementValue, DrawPoint::MaxElementValue);
 const DrawPoint IngameWindow::posCenter(DrawPoint::MaxElementValue - 1, DrawPoint::MaxElementValue);
@@ -32,7 +33,8 @@ const Extent IngameWindow::borderSize(1, 1);
 IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
                            glArchivItem_Bitmap* background, bool modal, CloseBehavior closeBehavior, Window* parent)
     : Window(parent, id, pos, size), title_(std::move(title)), background(background), lastMousePos(0, 0),
-      isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeBehavior_(closeBehavior)
+      isModal_(modal), closeme(false), isPinned_(false), isMinimized_(false), isMoving(false),
+      closeBehavior_(closeBehavior)
 {
     std::fill(buttonStates_.begin(), buttonStates_.end(), ButtonState::Up);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
@@ -54,14 +56,14 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     if(windowSettings_)
     {
         // Restore minimized state
-        if(windowSettings_ && windowSettings_->isMinimized)
+        if(windowSettings_->isMinimized)
         {
             isMinimized_ = true;
             Extent minimizedSize(GetSize().x, contentOffset.y + contentOffsetEnd.y);
             Window::Resize(minimizedSize);
         }
-        // Load restorePos
-        restorePos_ = windowSettings_->restorePos;
+        isPinned_ = windowSettings_->isPinned;     // Restore pinned state
+        restorePos_ = windowSettings_->restorePos; // Load restorePos
     }
 
     // Load last position or center the window
@@ -177,6 +179,15 @@ void IngameWindow::SetMinimized(bool minimized)
         windowSettings_->isMinimized = isMinimized_;
 }
 
+void IngameWindow::SetPinned(bool pinned)
+{
+    isPinned_ = pinned;
+
+    // if possible save the pinned state to settings
+    if(windowSettings_)
+        windowSettings_->isPinned = isPinned_;
+}
+
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
     // Maus muss sich auf der Titelleiste befinden
@@ -211,7 +222,8 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
         buttonStates_[btn] = ButtonState::Up;
 
         if((btn == IwButton::Close && closeBehavior_ == CloseBehavior::Custom) // no close button
-           || (btn == IwButton::Minimize && isModal_))                         // modal windows cannot be minimized
+           || (isModal_ // modal windows cannot be pinned or minimized
+               && (btn == IwButton::Title || btn == IwButton::PinOrMinimize)))
             continue;
 
         if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
@@ -219,9 +231,23 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
             switch(btn)
             {
                 case IwButton::Close: Close(); break;
-                case IwButton::Minimize:
-                    SetMinimized(!IsMinimized());
-                    LOADER.GetSoundN("sound", 113)->Play(255, false);
+                case IwButton::Title:
+                    if(SETTINGS.interface.enableWindowPinning && mc.dbl_click)
+                    {
+                        SetMinimized(!IsMinimized());
+                        LOADER.GetSoundN("sound", 113)->Play(255, false);
+                    }
+                    break;
+                case IwButton::PinOrMinimize:
+                    if(SETTINGS.interface.enableWindowPinning)
+                    {
+                        SetPinned(!IsPinned());
+                        LOADER.GetSoundN("sound", 111)->Play(255, false);
+                    } else
+                    {
+                        SetMinimized(!IsMinimized());
+                        LOADER.GetSoundN("sound", 113)->Play(255, false);
+                    }
                     break;
             }
         }
@@ -294,11 +320,26 @@ void IngameWindow::Draw_()
     using ButtonStateResIds = helpers::EnumArray<unsigned, ButtonState>;
     constexpr ButtonStateResIds closeResIds = {47, 55, 51};
     constexpr ButtonStateResIds minimizeResIds = {48, 56, 52};
+    constexpr ButtonStateResIds pinBaseResIds = {47, 47, 51};
+    constexpr ButtonStateResIds pinOverlayResIds = {15, 16, 17};
+    constexpr ButtonStateResIds unpinOverlayResIds = {18, 19, 20};
     if(closeBehavior_ != CloseBehavior::Custom)
-        LOADER.GetImageN("resource", closeResIds[buttonStates_[IwButton::Close]])->DrawFull(GetPos());
+        LOADER.GetImageN("resource", closeResIds[buttonStates_[IwButton::Close]])
+          ->DrawFull(GetButtonBounds(IwButton::Close));
     if(!IsModal())
-        LOADER.GetImageN("resource", minimizeResIds[buttonStates_[IwButton::Minimize]])
-          ->DrawFull(GetButtonBounds(IwButton::Minimize));
+    {
+        const auto buttonState = buttonStates_[IwButton::PinOrMinimize];
+        const auto bounds = GetButtonBounds(IwButton::PinOrMinimize);
+        if(SETTINGS.interface.enableWindowPinning)
+        {
+            LOADER.GetImageN("resource", pinBaseResIds[buttonState])->DrawFull(bounds);
+            if(isPinned_)
+                LOADER.GetImageN("io_new", unpinOverlayResIds[buttonState])->DrawFull(bounds);
+            else
+                LOADER.GetImageN("io_new", pinOverlayResIds[buttonState])->DrawFull(bounds);
+        } else
+            LOADER.GetImageN("resource", minimizeResIds[buttonState])->DrawFull(bounds);
+    }
 
     // The title bar
     unsigned titleIndex;
@@ -410,10 +451,15 @@ void IngameWindow::SaveOpenStatus(bool isOpen) const
 Rect IngameWindow::GetButtonBounds(IwButton btn) const
 {
     auto pos = GetPos();
+    auto size = ButtonSize;
     switch(btn)
     {
         case IwButton::Close: break;
-        case IwButton::Minimize: pos.x += GetSize().x - ButtonSize.x; break;
+        case IwButton::Title:
+            pos.x += TitleMargin;
+            size.x = GetSize().x - TitleMargin * 2;
+            break;
+        case IwButton::PinOrMinimize: pos.x += GetSize().x - ButtonSize.x; break;
     }
-    return Rect(pos, ButtonSize);
+    return Rect(pos, size);
 }

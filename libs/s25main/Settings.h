@@ -27,6 +27,7 @@ struct PersistentWindowSettings
     DrawPoint lastPos = DrawPoint::Invalid();
     DrawPoint restorePos = DrawPoint::Invalid();
     bool isOpen = false;
+    bool isPinned = false;
     bool isMinimized = false;
 };
 
@@ -104,6 +105,7 @@ public:
     {
         unsigned autosave_interval;
         bool revert_mouse;
+        bool enableWindowPinning;
     } interface;
 
     struct

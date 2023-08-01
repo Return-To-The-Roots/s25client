@@ -139,6 +139,7 @@ void Settings::LoadDefaults()
     // {
     interface.autosave_interval = 0;
     interface.revert_mouse = false;
+    interface.enableWindowPinning = false;
     // }
 
     // addons
@@ -296,6 +297,7 @@ void Settings::Load()
         // {
         interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
         interface.revert_mouse = iniInterface->getBoolValue("revert_mouse");
+        interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
         // }
 
         // addons
@@ -353,6 +355,7 @@ void Settings::LoadIngame()
             settings.restorePos = DrawPoint(iniWindow->getValue("restore_pos_x", lastPos.x),
                                             iniWindow->getValue("restore_pos_y", lastPos.y));
             settings.isOpen = iniWindow->getIntValue("is_open");
+            settings.isPinned = iniWindow->getValue("is_pinned", false);
             settings.isMinimized = iniWindow->getValue("is_minimized", false);
         }
     } catch(std::runtime_error& e)
@@ -456,6 +459,7 @@ void Settings::Save()
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
     iniInterface->setValue("revert_mouse", interface.revert_mouse);
+    iniInterface->setValue("enable_window_pinning", interface.enableWindowPinning);
     // }
 
     // addons
@@ -513,6 +517,7 @@ void Settings::SaveIngame()
             iniWindow->setValue("restore_pos_y", settings.restorePos.y);
         }
         iniWindow->setValue("is_open", settings.isOpen);
+        iniWindow->setValue("is_pinned", settings.isPinned);
         iniWindow->setValue("is_minimized", settings.isMinimized);
     }
 

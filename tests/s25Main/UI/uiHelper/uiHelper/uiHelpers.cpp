@@ -4,6 +4,7 @@
 
 #include "uiHelpers.hpp"
 #include "Loader.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -31,12 +32,15 @@ void initGUITests()
         VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
         BOOST_TEST_CHECKPOINT("Load dummy files");
         LOADER.LoadDummyGUIFiles();
+        LOADER.LoadDummySoundFiles();
         BOOST_TEST_CHECKPOINT("Switch to Desktop");
         WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
         BOOST_TEST_CHECKPOINT("Dummy Draw");
         WINDOWMANAGER.Draw();
         logAcc.clearLog();
     }
+    // Don't try to play sounds
+    SETTINGS.sound.effectsEnabled = false;
     BOOST_TEST_CHECKPOINT("GUI test initialized");
 }
 
