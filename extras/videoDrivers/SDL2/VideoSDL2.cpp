@@ -225,8 +225,8 @@ void VideoSDL2::PrintError(const std::string& msg) const
 
 void VideoSDL2::ShowErrorMessage(const std::string& title, const std::string& message)
 {
-    if(window)
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), window);
+    // window==nullptr is okay too ("no parent")
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), window);
 }
 
 void VideoSDL2::HandlePaste()
