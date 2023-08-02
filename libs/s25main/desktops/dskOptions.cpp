@@ -387,7 +387,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
 
     // "Vollbild" setzen
-    groupGrafik->GetCtrl<ctrlOptionGroup>(ID_grpFullscreen)->SetSelection(SETTINGS.video.fullscreen); //-V807
+    groupGrafik->GetCtrl<ctrlOptionGroup>(ID_grpFullscreen)
+      ->SetSelection(bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen)); //-V807
 
     // "Limit Framerate" füllen
     auto* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(ID_cbFramerate);
@@ -510,7 +511,9 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
     switch(ctrl_id)
     {
         case ID_grpIpv6: SETTINGS.server.ipv6 = enabled; break;
-        case ID_grpFullscreen: SETTINGS.video.fullscreen = enabled; break;
+        case ID_grpFullscreen:
+            SETTINGS.video.displayMode = bitset::set(SETTINGS.video.displayMode, DisplayMode::Fullscreen, enabled);
+            break;
         case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
         case ID_grpOptTextures: SETTINGS.video.shared_textures = enabled; break;
         case ID_grpMusic:
@@ -577,13 +580,12 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
                 return;
 
             SETTINGS.Save();
-
-            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
-               || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
+            const auto fullscreen = bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen);
+            if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
+               || fullscreen != VIDEODRIVER.IsFullscreen())
             {
-                const auto screenSize =
-                  SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-                if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
+                const auto screenSize = fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+                if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
                 {
                     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                       _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,

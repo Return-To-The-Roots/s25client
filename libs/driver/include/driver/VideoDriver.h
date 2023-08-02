@@ -29,7 +29,7 @@ public:
 
     VideoMode GetWindowSize() const override final { return windowSize_; }
     Extent GetRenderSize() const override final { return renderSize_; }
-    bool IsFullscreen() const override final { return isFullscreen_; }
+    DisplayMode GetDisplayMode() const override final { return displayMode_; }
 
     /// prüft auf Initialisierung.
     bool IsInitialized() const override final { return initialized; }
@@ -43,7 +43,7 @@ protected:
     bool initialized;                     /// Initialisierungsstatus.
     MouseCoords mouse_xy;                 /// Status der Maus.
     std::array<bool, 512> keyboard;       /// Status der Tastatur;
-    bool isFullscreen_;                   /// Vollbild an/aus?
+    DisplayMode displayMode_;             /// Fullscreen on/off?
 private:
     // cached as possibly used often
     VideoMode windowSize_;

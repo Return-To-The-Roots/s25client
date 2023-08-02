@@ -29,7 +29,7 @@ void initGUITests()
         rttr::test::LogAccessor logAcc;
         VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
         RTTR_REQUIRE_LOG_CONTAINS("Mockup Video Driver", false);
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::None);
         BOOST_TEST_CHECKPOINT("Load dummy files");
         LOADER.LoadDummyGUIFiles();
         LOADER.LoadDummySoundFiles();

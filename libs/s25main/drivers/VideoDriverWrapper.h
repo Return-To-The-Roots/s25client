@@ -7,6 +7,7 @@
 #include "DriverWrapper.h"
 #include "Point.h"
 #include "driver/KeyEvent.h"
+#include "driver/VideoInterface.h"
 #include "driver/VideoMode.h"
 #include "s25util/Singleton.h"
 #include <memory>
@@ -35,9 +36,9 @@ public:
     IVideoDriver* GetDriver() const { return videodriver.get(); }
 
     /// Erstellt das Fenster.
-    bool CreateScreen(VideoMode size, bool fullscreen);
+    bool CreateScreen(VideoMode size, DisplayMode displayMode);
     /// Verändert Auflösung, Fenster/Fullscreen
-    bool ResizeScreen(VideoMode size, bool fullscreen);
+    bool ResizeScreen(VideoMode size, DisplayMode displayMode);
     /// Viewport (neu) setzen
     void RenewViewport();
     /// zerstört das Fenster.
@@ -68,6 +69,7 @@ public:
     VideoMode GetWindowSize() const;
     /// Get the renderer size in pixels
     Extent GetRenderSize() const;
+    DisplayMode GetDisplayMode() const;
     bool IsFullscreen() const;
 
     bool IsLeftDown();

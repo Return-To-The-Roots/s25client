@@ -84,11 +84,11 @@ void Settings::LoadDefaults()
     {
         video.fullscreenSize = VIDEODRIVER.GetWindowSize();
         video.windowedSize = VIDEODRIVER.IsFullscreen() ? VideoMode(800, 600) : video.fullscreenSize;
-        video.fullscreen = VIDEODRIVER.IsFullscreen();
+        video.displayMode = VIDEODRIVER.GetDisplayMode();
     } else
     {
         video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
-        video.fullscreen = false;
+        video.displayMode = DisplayMode::None;
     }
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
@@ -224,7 +224,8 @@ void Settings::Load()
         video.windowedSize.height = iniVideo->getIntValue("windowed_height");
         video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
         video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
-        video.fullscreen = iniVideo->getBoolValue("fullscreen");
+        video.displayMode =
+          bitset::set(video.displayMode, DisplayMode::Fullscreen, iniVideo->getBoolValue("fullscreen"));
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
@@ -408,7 +409,7 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
-    iniVideo->setValue("fullscreen", video.fullscreen);
+    iniVideo->setValue("fullscreen", bitset::isSet(video.displayMode, DisplayMode::Fullscreen));
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.shared_textures);

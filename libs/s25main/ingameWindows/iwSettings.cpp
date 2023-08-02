@@ -31,7 +31,7 @@ iwSettings::iwSettings()
 
     // "Vollbild" setzen
     optiongroup = GetCtrl<ctrlOptionGroup>(3);
-    optiongroup->SetSelection((SETTINGS.video.fullscreen ? 1 : 2)); //-V807
+    optiongroup->SetSelection(bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen) ? 1 : 2); //-V807
     VIDEODRIVER.ListVideoModes(video_modes);
 
     // "Auflösung"
@@ -63,12 +63,12 @@ iwSettings::~iwSettings()
         auto* SizeCombo = GetCtrl<ctrlComboBox>(0);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
-        if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
-           || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
+        const auto fullscreen = bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen);
+        if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
+           || fullscreen != VIDEODRIVER.IsFullscreen())
         {
-            const auto screenSize =
-              SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-            if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
+            const auto screenSize = fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+            if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
@@ -85,7 +85,10 @@ void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned se
 {
     switch(ctrl_id)
     {
-        case 3: SETTINGS.video.fullscreen = (selection == 1); break;
+        case 3:
+            SETTINGS.video.displayMode =
+              bitset::set(SETTINGS.video.displayMode, DisplayMode::Fullscreen, selection == 1);
+            break;
     }
 }
 
