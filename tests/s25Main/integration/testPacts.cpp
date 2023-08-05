@@ -159,8 +159,6 @@ struct PactCreatedFixture : public WorldWithGCExecution3P
     }
 };
 
-constexpr unsigned PactCreatedFixture::duration;
-
 BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture) //, *utf::depends_on("PactTestSuite/MakePactTest"))
 {
     GamePlayer& player1 = world.GetPlayer(1);
