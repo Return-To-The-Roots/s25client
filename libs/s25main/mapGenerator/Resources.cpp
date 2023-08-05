@@ -10,7 +10,7 @@
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     std::vector<Tree> CreateTrees(const TextureMap& textures)
     {
@@ -266,4 +266,4 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

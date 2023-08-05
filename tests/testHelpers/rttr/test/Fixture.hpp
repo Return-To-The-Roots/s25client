@@ -6,10 +6,10 @@
 
 #include "BaseFixture.hpp"
 
-namespace rttr { namespace test {
+namespace rttr::test {
     /// Init locale, logger and random numbers and rttr config
     struct Fixture : BaseFixture
     {
         Fixture();
     };
-}} // namespace rttr::test
+} // namespace rttr::test

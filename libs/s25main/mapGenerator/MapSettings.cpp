@@ -6,7 +6,7 @@
 #include "helpers/mathFuncs.h"
 #include "gameData/MaxPlayers.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     void MapSettings::MakeValid()
     {
@@ -24,4 +24,4 @@ namespace rttr { namespace mapGenerator {
             ratioCoal = 1;
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

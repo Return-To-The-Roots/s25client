@@ -5,7 +5,7 @@
 #include "mapGenerator/Algorithms.h"
 #include "helpers/mathFuncs.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue)
     {
@@ -56,4 +56,4 @@ namespace rttr { namespace mapGenerator {
         SetValues(heightMap, neighbors, lowestHeight);
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

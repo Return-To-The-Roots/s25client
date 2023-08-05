@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-namespace rttr { namespace test {
+namespace rttr::test {
     /// Adapter buffers the current text. If it isn't cleared till the end of the lifetime it will be written to the
     /// orig writer
     class BufferedWriter : public TextWriterInterface
@@ -35,4 +35,4 @@ namespace rttr { namespace test {
     }
 
     inline void BufferedWriter::writeText(const std::string& txt, unsigned /*color*/) { curText += txt; }
-}} // namespace rttr::test
+} // namespace rttr::test

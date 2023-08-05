@@ -7,7 +7,7 @@
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     using River = std::set<MapPoint, MapPointLess>;
 
@@ -27,4 +27,4 @@ namespace rttr { namespace mapGenerator {
     River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
                        unsigned splitRate = 0);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

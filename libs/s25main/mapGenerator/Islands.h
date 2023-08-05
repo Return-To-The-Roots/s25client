@@ -7,7 +7,7 @@
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     using Island = std::set<MapPoint, MapPointLess>;
 
@@ -25,4 +25,4 @@ namespace rttr { namespace mapGenerator {
      */
     Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

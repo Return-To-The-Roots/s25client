@@ -6,7 +6,7 @@
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
                        unsigned splitRate)
@@ -80,4 +80,4 @@ namespace rttr { namespace mapGenerator {
         return river;
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

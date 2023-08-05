@@ -5,7 +5,7 @@
 #include "RTTR_Version.h"
 #include "build_version_defines.h"
 
-namespace rttr { namespace version {
+namespace rttr::version {
 
     std::string GetTitle() { return "Return To The Roots"; }
 
@@ -21,4 +21,4 @@ namespace rttr { namespace version {
 
     std::string GetReadableVersion() { return "v" + GetVersion() + " - " + GetShortRevision(); }
 
-}} // namespace rttr::version
+} // namespace rttr::version

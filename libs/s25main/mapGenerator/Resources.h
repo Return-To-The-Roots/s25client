@@ -8,7 +8,7 @@
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/RandomUtility.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     /**
      * Custom representation of a tree specifically for tree placement on random maps.
@@ -31,4 +31,4 @@ namespace rttr { namespace mapGenerator {
 
     void AddAnimals(Map& map, RandomUtility& rnd);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

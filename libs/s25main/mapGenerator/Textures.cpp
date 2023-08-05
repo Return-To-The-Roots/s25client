@@ -10,7 +10,7 @@
 #include <set>
 #include <stdexcept>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     void TextureMap::Set(const MapPoint& pt, DescIdx<TerrainDesc> texture)
     {
@@ -246,4 +246,4 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

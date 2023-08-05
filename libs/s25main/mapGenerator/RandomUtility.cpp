@@ -7,7 +7,7 @@
 #include <ctime>
 #include <numeric>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     RandomUtility::RandomUtility()
     {
@@ -32,4 +32,4 @@ namespace rttr { namespace mapGenerator {
         return distr(rng_);
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

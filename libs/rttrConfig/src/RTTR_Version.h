@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace rttr { namespace version {
+namespace rttr::version {
     std::string GetTitle();
     std::string GetVersion();
     std::string GetBuildDate();
@@ -14,4 +14,4 @@ namespace rttr { namespace version {
     std::string GetShortRevision();
     std::string GetYear();
     std::string GetReadableVersion();
-}} // namespace rttr::version
+} // namespace rttr::version

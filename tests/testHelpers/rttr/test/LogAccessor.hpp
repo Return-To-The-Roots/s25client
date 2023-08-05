@@ -9,7 +9,7 @@
 #include "s25util/Log.h"
 #include <boost/test/unit_test.hpp>
 
-namespace rttr { namespace test {
+namespace rttr::test {
     /// Provide the last log line via getLog
     struct LogAccessor
     {
@@ -46,7 +46,7 @@ namespace rttr { namespace test {
             return result;
         }
     };
-}} // namespace rttr::test
+} // namespace rttr::test
 
 /// Require that the log contains "content" in the first line. If allowEmpty is true, then an empty log is acceptable
 #define RTTR_REQUIRE_LOG_CONTAINS(content, allowEmpty)                                             \

@@ -13,7 +13,7 @@
 #include <set>
 #include <stdexcept>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     template<typename T>
     auto join(const T& container)
@@ -318,4 +318,4 @@ namespace rttr { namespace mapGenerator {
         return limit - 1;
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

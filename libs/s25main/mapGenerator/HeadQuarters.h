@@ -11,7 +11,7 @@
 #include "mapGenerator/TextureHelper.h"
 #include <stdexcept>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     /**
      * Find the largest connected area on the map. An area still counts as "connected" when it's divided by a tiny river
@@ -131,4 +131,4 @@ namespace rttr { namespace mapGenerator {
      */
     void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries = 10);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

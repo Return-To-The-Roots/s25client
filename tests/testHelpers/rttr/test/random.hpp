@@ -9,7 +9,7 @@
 #include <random>
 #include <string>
 
-namespace rttr { namespace test {
+namespace rttr::test {
     /// Decorate a test with , *boost::unit_test::label("seed=42") to enforce a seed
     std::mt19937& getRandState();
 
@@ -31,4 +31,4 @@ namespace rttr { namespace test {
         return T{randomValue(min, max), randomValue(min, max)};
     }
     std::string randString(int len = -1);
-}} // namespace rttr::test
+} // namespace rttr::test

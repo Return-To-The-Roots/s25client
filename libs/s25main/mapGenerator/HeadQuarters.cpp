@@ -7,7 +7,7 @@
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/TextureHelper.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     {
@@ -78,4 +78,4 @@ namespace rttr { namespace mapGenerator {
             FlattenForCastleBuilding(map.z, hqPos);
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

@@ -10,7 +10,7 @@
 #include <cmath>
 #include <functional>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     template<typename T_Value>
     struct ValueRange
@@ -139,4 +139,4 @@ namespace rttr { namespace mapGenerator {
      */
     std::vector<MapPoint> SelectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

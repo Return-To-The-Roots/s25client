@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     std::array<Triangle, 2> GetTriangles(const MapPoint& p, const MapExtent& size, Direction direction)
     {
@@ -172,4 +172,4 @@ namespace rttr { namespace mapGenerator {
         return {p, MakeMapPoint(Position(x1, y1), size), MakeMapPoint(Position(x2, y2), size)};
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

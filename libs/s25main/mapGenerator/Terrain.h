@@ -9,7 +9,7 @@
 #include "mapGenerator/RandomUtility.h"
 #include <functional>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     /**
      * Restructures the specified height map by elevating landscape preferably around the specified focus area.
@@ -31,4 +31,4 @@ namespace rttr { namespace mapGenerator {
      */
     void ResetSeaLevel(Map& map, RandomUtility& rnd, unsigned seaLevel);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

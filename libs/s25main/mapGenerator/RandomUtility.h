@@ -9,7 +9,7 @@
 #include <random>
 #include <vector>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     using UsedRNG = XorShift;
 
@@ -87,4 +87,4 @@ namespace rttr { namespace mapGenerator {
         double RandomDouble(double min, double max);
     };
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

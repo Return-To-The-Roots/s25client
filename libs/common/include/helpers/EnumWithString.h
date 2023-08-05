@@ -94,11 +94,10 @@ namespace detail {
         __VA_ARGS__                                                                                                   \
     };                                                                                                                \
                                                                                                                       \
-    namespace rttrEnum { namespace detail {                                                                           \
+    namespace rttrEnum::detail {                                                                                      \
             constexpr std::array<EnumName, size> getValues(Tag<EnumName>)                                             \
             {                                                                                                         \
                 return {{IGNORE_ASSIGN(EnumName, __VA_ARGS__)}};                                                      \
             }                                                                                                         \
             constexpr std::array<const char*, size> getRawNames(Tag<EnumName>) { return {{STRINGIZE(__VA_ARGS__)}}; } \
-        }                                                                                                             \
-    }
+        }

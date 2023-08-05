@@ -6,7 +6,7 @@
 
 #include <boost/filesystem.hpp>
 
-namespace rttr { namespace test {
+namespace rttr::test {
     class TmpFolder
     {
         boost::filesystem::path folder;
@@ -25,4 +25,4 @@ namespace rttr { namespace test {
         const boost::filesystem::path& get() const { return folder; }
         operator const boost::filesystem::path &() const { return folder; }
     };
-}} // namespace rttr::test
+} // namespace rttr::test

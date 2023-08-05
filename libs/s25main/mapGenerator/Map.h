@@ -14,7 +14,7 @@
 #include <cmath>
 #include <string>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     class Map
     {
@@ -51,4 +51,4 @@ namespace rttr { namespace mapGenerator {
         const NodeMapBase<TexturePair>& getTextures() const { return textureMap.textures_; }
     };
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

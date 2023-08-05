@@ -4,10 +4,10 @@
 
 #pragma once
 
-namespace rttr { namespace test {
+namespace rttr::test {
     /// Init locale, logger and random numbers
     struct BaseFixture
     {
         BaseFixture();
     };
-}} // namespace rttr::test
+} // namespace rttr::test

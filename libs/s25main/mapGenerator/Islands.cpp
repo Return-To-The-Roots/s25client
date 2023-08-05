@@ -6,7 +6,7 @@
 #include "mapGenerator/TextureHelper.h"
 #include <cmath>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage)
     {
@@ -92,4 +92,4 @@ namespace rttr { namespace mapGenerator {
         return island;
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

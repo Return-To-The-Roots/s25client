@@ -16,7 +16,7 @@
 
 #include <stdexcept>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     unsigned GetMaximumHeight(const MapExtent& size)
     {
@@ -295,4 +295,4 @@ namespace rttr { namespace mapGenerator {
         libsiedler2::Write(filePath, map.CreateArchiv());
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator
