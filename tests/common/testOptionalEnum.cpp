@@ -26,7 +26,7 @@ enum class UnsignedEnum : unsigned char
 
 // LCOV_EXCL_START
 template<typename T>
-static std::enable_if_t<std::is_enum<T>::value, std::ostream&> operator<<(std::ostream& os, T enumVal)
+static std::enable_if_t<std::is_enum_v<T>, std::ostream&> operator<<(std::ostream& os, T enumVal)
 {
     return os << static_cast<int>(enumVal);
 }
