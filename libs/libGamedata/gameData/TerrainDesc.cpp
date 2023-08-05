@@ -71,14 +71,14 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
     if(!landscape)
         throw GameDataError("Invalid landscape type: " + luaData.getOrThrow<std::string>("landscape"));
     s2Id = luaData.getOrDefault<uint8_t>("s2Id", 0xFF);
-    std::string edgeTypeName = luaData.getOrThrow<std::string>("edgeType");
+    auto edgeTypeName = luaData.getOrThrow<std::string>("edgeType");
     if(edgeTypeName != "none" && !worldDesc.edges.getIndex(edgeTypeName))
         throw GameDataError("Invalid edge type: " + edgeTypeName);
     else
         edgeType = worldDesc.edges.getIndex(edgeTypeName);
     edgePriority = luaData.getOrDefault<int8_t>("edgePriority", 0);
     kind = strToTerrainKind(luaData.getOrDefault<std::string>("kind", "land"));
-    std::string property = luaData.getOrDefault<std::string>("property", "");
+    auto property = luaData.getOrDefault<std::string>("property", "");
     if(property.empty())
         flags = getDefaultFlags(kind);
     else if(property == "buildable")
