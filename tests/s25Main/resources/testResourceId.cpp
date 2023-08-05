@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(ConstructibleFromCStringAndArray)
     // Implicitely convertible
     ResourceId resId2 = "res_id";
     BOOST_TEST(resId1 == resId2);
-    static_assert(!std::is_convertible<ResourceId, const char*>::value, "Not convertible from char array");
+    static_assert(!std::is_convertible_v<ResourceId, const char*>, "Not convertible from char array");
 }
 
 BOOST_AUTO_TEST_CASE(ConstructibleFromStdString)
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(ConstructibleFromStdString)
     const std::string name = "res_id";
     ResourceId resId1(name);
     BOOST_TEST(resId1 == ResourceId("res_id"));
-    static_assert(!std::is_convertible<ResourceId, std::string>::value, "Not convertible from std::string");
+    static_assert(!std::is_convertible_v<ResourceId, std::string>, "Not convertible from std::string");
 }
 
 BOOST_AUTO_TEST_CASE(CopyableAndMovable)

@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(PlaintPtrSpan)
     BOOST_TEST_REQUIRE(initialSpan.size() == values.size());
     for(auto it2 = span.begin(); it2 != span.end(); ++it2, ++it)
     {
-        static_assert(std::is_same<decltype(*it2), TestClass&>::value, "!");
+        static_assert(std::is_same_v<decltype(*it2), TestClass&>, "!");
         BOOST_TEST((*it2).value == it->value);
         BOOST_TEST(it2->value == it->value);
         BOOST_TEST(&*it2 == &*it);
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(UniquePtrSpan)
     BOOST_TEST_REQUIRE(initialSpan.size() == ptrs.size());
     for(auto it2 = span.begin(); it2 != span.end(); ++it2, ++it)
     {
-        static_assert(std::is_same<decltype(*it2), TestClass&>::value, "!");
+        static_assert(std::is_same_v<decltype(*it2), TestClass&>, "!");
         BOOST_TEST((*it2).value == (*it)->value);
         BOOST_TEST(it2->value == (*it)->value);
     }
