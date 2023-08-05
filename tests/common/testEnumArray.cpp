@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(ConvertedValuesAreCorrect)
     BOOST_TEST(values[TestEnum::Value3] == expectedValues[3]);
     BOOST_TEST(values[TestEnum::Value4] == expectedValues[4]);
     BOOST_TEST(values == expectedValues, boost::test_tools::per_element{});
-    static_assert(values.size() == expectedValues.size(), "!");
+    static_assert(values.size() == expectedValues.size());
     BOOST_TEST(std::equal(values.begin(), values.end(), expectedValues.begin(), expectedValues.end()));
 }
 
