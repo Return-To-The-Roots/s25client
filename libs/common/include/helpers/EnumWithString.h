@@ -29,9 +29,9 @@ struct EnumData
 };
 
 template<class T>
-constexpr std::size_t size = EnumData<T>::size;
+inline constexpr std::size_t size = EnumData<T>::size;
 template<class T>
-constexpr auto values = EnumData<T>::values;
+inline constexpr auto values = EnumData<T>::values;
 
 template<class T>
 std::string toString(T value)
