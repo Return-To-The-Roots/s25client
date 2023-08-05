@@ -20,10 +20,10 @@ struct MaxEnumValue
 
 /// Return the maximum value of an Enum
 template<class T_Enum>
-constexpr unsigned MaxEnumValue_v = static_cast<std::underlying_type_t<T_Enum>>(MaxEnumValue<T_Enum>::value); // NOLINT
+constexpr unsigned MaxEnumValue_v = static_cast<std::underlying_type_t<T_Enum>>(MaxEnumValue<T_Enum>::value);
 
 /// Return the number of enumerators for an enum type
 template<class T_Enum>
-constexpr unsigned NumEnumValues_v = MaxEnumValue_v<T_Enum> + 1u; // NOLINT
+constexpr unsigned NumEnumValues_v = MaxEnumValue_v<T_Enum> + 1u;
 
 } // namespace helpers
