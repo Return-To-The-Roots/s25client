@@ -4,7 +4,7 @@
 
 #include "mapGenerator/TextureHelper.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     uint8_t ByHumidity(const TerrainDesc& terrain) { return terrain.humidity; }
 
@@ -55,4 +55,4 @@ namespace rttr { namespace mapGenerator {
         return terrain.kind == TerrainKind::Mountain || IsSnowOrLava(terrain);
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

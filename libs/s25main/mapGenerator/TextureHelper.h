@@ -6,7 +6,7 @@
 
 #include "gameData/TerrainDesc.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     uint8_t ByHumidity(const TerrainDesc& terrain);
 
@@ -32,4 +32,4 @@ namespace rttr { namespace mapGenerator {
 
     bool IsMountainOrSnowOrLava(const TerrainDesc& terrain);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

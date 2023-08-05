@@ -11,7 +11,7 @@
 
 #include <boost/filesystem/path.hpp>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     unsigned GetMaximumHeight(const MapExtent& size);
     unsigned GetCoastline(const MapExtent& size);
@@ -44,4 +44,4 @@ namespace rttr { namespace mapGenerator {
     Map GenerateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings);
     void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

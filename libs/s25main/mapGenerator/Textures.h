@@ -10,7 +10,7 @@
 #include "mapGenerator/Triangles.h"
 #include "gameData/WorldDescription.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     struct TexturePair
     {
@@ -240,4 +240,4 @@ namespace rttr { namespace mapGenerator {
     void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPointLess>& nodes,
                          DescIdx<TerrainDesc> texture, const std::set<DescIdx<TerrainDesc>>& excluded);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

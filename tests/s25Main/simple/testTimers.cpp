@@ -10,7 +10,7 @@
 #include <sstream>
 
 // LCOV_EXCL_START
-namespace boost { namespace test_tools { namespace tt_detail {
+namespace boost::test_tools::tt_detail {
     template<class T, class R>
     struct print_log_value<std::chrono::duration<T, R>>
     {
@@ -19,7 +19,7 @@ namespace boost { namespace test_tools { namespace tt_detail {
             out << helpers::withUnit(value);
         }
     };
-}}} // namespace boost::test_tools::tt_detail
+} // namespace boost::test_tools::tt_detail
 // LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(Timers)

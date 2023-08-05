@@ -8,7 +8,7 @@
 #include <array>
 #include <cmath>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     /**
      * Triangle is a geometrical representation for an LSD (left-side-down) or RSD (right-side-up) texture.
@@ -62,4 +62,4 @@ namespace rttr { namespace mapGenerator {
      */
     std::array<MapPoint, 3> GetTriangleEdges(const Triangle& triangle, const MapExtent& size);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

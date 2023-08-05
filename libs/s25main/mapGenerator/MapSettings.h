@@ -9,7 +9,7 @@
 #include "gameData/LandscapeDesc.h"
 #include <string>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     enum class MapStyle
     {
@@ -54,4 +54,4 @@ namespace rttr { namespace mapGenerator {
         MapStyle style = MapStyle::Mixed;
     };
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

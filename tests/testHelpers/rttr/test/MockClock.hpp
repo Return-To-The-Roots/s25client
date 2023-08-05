@@ -6,7 +6,7 @@
 
 #include "Clock.h"
 
-namespace rttr { namespace test {
+namespace rttr::test {
     struct MockClock : public BaseClock
     {
         duration& currentTime;
@@ -21,4 +21,4 @@ namespace rttr { namespace test {
         MockClockFixture() : currentTime(0) { Clock::setClock(std::make_unique<MockClock>(currentTime)); }
         ~MockClockFixture() { Clock::setClock(std::make_unique<BaseClock>()); }
     };
-}} // namespace rttr::test
+} // namespace rttr::test

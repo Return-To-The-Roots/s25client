@@ -7,7 +7,7 @@
 #include "mapGenerator/Map.h"
 #include "mapGenerator/Rivers.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     /**
      * Places a harbor position on the map.
@@ -37,4 +37,4 @@ namespace rttr { namespace mapGenerator {
      */
     void PlaceHarbors(Map& map, const std::vector<River>& rivers, int coastSize = 32, int nodesPerHarbor = 64);
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

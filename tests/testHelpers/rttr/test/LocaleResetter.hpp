@@ -6,7 +6,7 @@
 
 #include <mygettext/mygettext.h>
 
-namespace rttr { namespace test {
+namespace rttr::test {
     struct LocaleResetter
     {
         const std::string oldLoc;
@@ -16,4 +16,4 @@ namespace rttr { namespace test {
         }
         ~LocaleResetter() { mygettext::setlocale(LC_ALL, oldLoc.c_str()); }
     };
-}} // namespace rttr::test
+} // namespace rttr::test

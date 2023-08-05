@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
              DescIdx<LandscapeDesc> landscape, uint8_t maxHeight)
@@ -94,4 +94,4 @@ namespace rttr { namespace mapGenerator {
         return info;
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

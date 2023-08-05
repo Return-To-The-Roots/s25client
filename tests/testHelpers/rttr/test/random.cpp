@@ -13,7 +13,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace rttr { namespace test {
+namespace rttr::test {
     class randomObserver final : public boost::unit_test::test_observer
     {
         static auto getRandSeed() { return std::chrono::high_resolution_clock::now().time_since_epoch().count(); }
@@ -105,4 +105,4 @@ namespace rttr { namespace test {
         return result;
     }
 
-}} // namespace rttr::test
+} // namespace rttr::test

@@ -4,7 +4,7 @@
 
 #include "mapGenerator/NodeMapUtilities.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     std::vector<MapPoint> SelectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size)
     {
@@ -19,4 +19,4 @@ namespace rttr { namespace mapGenerator {
         return selectedNodes;
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

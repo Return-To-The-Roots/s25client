@@ -41,13 +41,13 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(Resource)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AddonId)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(nofBuildingWorker::State)
 
-namespace boost { namespace test_tools { namespace tt_detail {
+namespace boost::test_tools::tt_detail {
     template<>
     struct print_log_value<ReplayCommand>
     {
         void operator()(std::ostream& os, ReplayCommand const& rc) { os << static_cast<unsigned>(rc); }
     };
-}}} // namespace boost::test_tools::tt_detail
+} // namespace boost::test_tools::tt_detail
 // LCOV_EXCL_STOP
 
 namespace {

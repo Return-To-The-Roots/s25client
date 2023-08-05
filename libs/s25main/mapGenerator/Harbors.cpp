@@ -8,7 +8,7 @@
 #include "mapGenerator/Islands.h"
 #include "mapGenerator/TextureHelper.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     void PlaceHarborPosition(Map& map, const MapPoint& position)
     {
@@ -108,4 +108,4 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

@@ -12,9 +12,9 @@
 #include <string>
 #include <utility>
 
-namespace boost { namespace filesystem {
+namespace boost::filesystem {
     class path;
-}} // namespace boost::filesystem
+} // namespace boost::filesystem
 
 #ifdef _MSC_VER
 #    define RTTR_SAFEBUF __declspec(safebuffers)

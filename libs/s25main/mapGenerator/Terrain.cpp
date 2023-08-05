@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
     void Restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate, double weight)
     {
@@ -67,4 +67,4 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator
