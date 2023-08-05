@@ -55,7 +55,8 @@ namespace detail {
         constexpr ignore_assign(T value) : value_(value) {}
         constexpr operator T() const { return value_; }
 
-        constexpr const ignore_assign& operator=(int) const { return *this; } // NOLINT
+        // NOLINTNEXTLINE(misc-unconventional-assign-operator)
+        constexpr const ignore_assign& operator=(int) const { return *this; }
 
         T value_;
     };
