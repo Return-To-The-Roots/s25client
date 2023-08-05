@@ -102,6 +102,7 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(endFrame);
     helpers::pushContainer(sgd, goodsToCollect);
     std::vector<unsigned> teamBitMasks;
+    teamBitMasks.reserve(economyModeTeams.size());
     for(const EconomyModeHandler::EconTeam& curTeam : economyModeTeams)
     {
         teamBitMasks.push_back(curTeam.playersInTeam.to_ulong());
