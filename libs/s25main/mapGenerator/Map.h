@@ -16,39 +16,39 @@
 
 namespace rttr::mapGenerator {
 
-    class Map
-    {
-    private:
-        std::vector<DescIdx<TerrainDesc>> terrains_;
+class Map
+{
+private:
+    std::vector<DescIdx<TerrainDesc>> terrains_;
 
-    public:
-        NodeMapBase<uint8_t> z;
-        NodeMapBase<uint8_t> objectTypes;
-        NodeMapBase<uint8_t> objectInfos;
-        NodeMapBase<uint8_t> resources;
-        NodeMapBase<libsiedler2::Animal> animals;
-        std::vector<Triangle> harbors;
-        std::vector<MapPoint> hqPositions;
-        TextureMap textureMap;
+public:
+    NodeMapBase<uint8_t> z;
+    NodeMapBase<uint8_t> objectTypes;
+    NodeMapBase<uint8_t> objectInfos;
+    NodeMapBase<uint8_t> resources;
+    NodeMapBase<libsiedler2::Animal> animals;
+    std::vector<Triangle> harbors;
+    std::vector<MapPoint> hqPositions;
+    TextureMap textureMap;
 
-        const std::string name;
-        const std::string author;
-        const ValueRange<uint8_t> height;
-        const uint8_t players;
-        const MapExtent size;
+    const std::string name;
+    const std::string author;
+    const ValueRange<uint8_t> height;
+    const uint8_t players;
+    const MapExtent size;
 
-        Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape,
-            uint8_t maxHeight = 0x60);
+    Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape,
+        uint8_t maxHeight = 0x60);
 
-        /**
-         * Creates a new archiv for this map.
-         *
-         * @return a new archiv containing the information of this map
-         */
-        libsiedler2::Archiv CreateArchiv() const;
+    /**
+     * Creates a new archiv for this map.
+     *
+     * @return a new archiv containing the information of this map
+     */
+    libsiedler2::Archiv CreateArchiv() const;
 
-        NodeMapBase<TexturePair>& getTextures() { return textureMap.textures_; }
-        const NodeMapBase<TexturePair>& getTextures() const { return textureMap.textures_; }
-    };
+    NodeMapBase<TexturePair>& getTextures() { return textureMap.textures_; }
+    const NodeMapBase<TexturePair>& getTextures() const { return textureMap.textures_; }
+};
 
 } // namespace rttr::mapGenerator

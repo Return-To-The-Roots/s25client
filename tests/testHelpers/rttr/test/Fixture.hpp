@@ -7,9 +7,9 @@
 #include "BaseFixture.hpp"
 
 namespace rttr::test {
-    /// Init locale, logger and random numbers and rttr config
-    struct Fixture : BaseFixture
-    {
-        Fixture();
-    };
+/// Init locale, logger and random numbers and rttr config
+struct Fixture : BaseFixture
+{
+    Fixture();
+};
 } // namespace rttr::test

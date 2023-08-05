@@ -13,7 +13,7 @@
 #include <utility>
 
 namespace boost::filesystem {
-    class path;
+class path;
 } // namespace boost::filesystem
 
 #ifdef _MSC_VER

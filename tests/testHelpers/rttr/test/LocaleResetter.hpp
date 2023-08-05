@@ -7,13 +7,13 @@
 #include <mygettext/mygettext.h>
 
 namespace rttr::test {
-    struct LocaleResetter
+struct LocaleResetter
+{
+    const std::string oldLoc;
+    LocaleResetter(const char* newLoc) : oldLoc(mygettext::setlocale(LC_ALL, nullptr))
     {
-        const std::string oldLoc;
-        LocaleResetter(const char* newLoc) : oldLoc(mygettext::setlocale(LC_ALL, nullptr))
-        {
-            mygettext::setlocale(LC_ALL, newLoc);
-        }
-        ~LocaleResetter() { mygettext::setlocale(LC_ALL, oldLoc.c_str()); }
-    };
+        mygettext::setlocale(LC_ALL, newLoc);
+    }
+    ~LocaleResetter() { mygettext::setlocale(LC_ALL, oldLoc.c_str()); }
+};
 } // namespace rttr::test

@@ -7,18 +7,39 @@
 
 namespace rttr::version {
 
-    std::string GetTitle() { return "Return To The Roots"; }
+std::string GetTitle()
+{
+    return "Return To The Roots";
+}
 
-    std::string GetVersion() { return rttr::VERSION; }
+std::string GetVersion()
+{
+    return rttr::VERSION;
+}
 
-    std::string GetBuildDate() { return rttr::BUILD_DATE; }
+std::string GetBuildDate()
+{
+    return rttr::BUILD_DATE;
+}
 
-    std::string GetRevision() { return rttr::REVISION; }
+std::string GetRevision()
+{
+    return rttr::REVISION;
+}
 
-    std::string GetShortRevision() { return GetRevision().substr(0, 7); }
+std::string GetShortRevision()
+{
+    return GetRevision().substr(0, 7);
+}
 
-    std::string GetYear() { return GetBuildDate().substr(0, 4); }
+std::string GetYear()
+{
+    return GetBuildDate().substr(0, 4);
+}
 
-    std::string GetReadableVersion() { return "v" + GetVersion() + " - " + GetShortRevision(); }
+std::string GetReadableVersion()
+{
+    return "v" + GetVersion() + " - " + GetShortRevision();
+}
 
 } // namespace rttr::version

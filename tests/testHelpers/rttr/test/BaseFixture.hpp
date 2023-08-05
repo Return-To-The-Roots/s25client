@@ -5,9 +5,9 @@
 #pragma once
 
 namespace rttr::test {
-    /// Init locale, logger and random numbers
-    struct BaseFixture
-    {
-        BaseFixture();
-    };
+/// Init locale, logger and random numbers
+struct BaseFixture
+{
+    BaseFixture();
+};
 } // namespace rttr::test
