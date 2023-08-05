@@ -9,8 +9,6 @@
 #include "network/GameClient.h"
 #include <mygettext/mygettext.h>
 
-constexpr unsigned TransmitSettingsIgwAdapter::firstCtrlID;
-
 TransmitSettingsIgwAdapter::TransmitSettingsIgwAdapter(unsigned id, const DrawPoint& pos, const Extent& size,
                                                        const std::string& title, glArchivItem_Bitmap* background,
                                                        bool modal)
