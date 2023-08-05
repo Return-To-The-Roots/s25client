@@ -10,42 +10,42 @@
 #include <boost/test/unit_test.hpp>
 
 namespace rttr::test {
-    /// Provide the last log line via getLog
-    struct LogAccessor
+/// Provide the last log line via getLog
+struct LogAccessor
+{
+    std::shared_ptr<AvoidDuplicatesWriter> logWriter;
+    std::shared_ptr<BufferedWriter> logWriterBuff;
+
+    LogAccessor()
     {
-        std::shared_ptr<AvoidDuplicatesWriter> logWriter;
-        std::shared_ptr<BufferedWriter> logWriterBuff;
+        logWriter = std::dynamic_pointer_cast<AvoidDuplicatesWriter>(LOG.getStdoutWriter());
+        BOOST_TEST_REQUIRE(logWriter);
+        logWriterBuff = std::dynamic_pointer_cast<BufferedWriter>(logWriter->origWriter);
+        BOOST_TEST_REQUIRE(logWriterBuff);
+        flush();
+    }
 
-        LogAccessor()
-        {
-            logWriter = std::dynamic_pointer_cast<AvoidDuplicatesWriter>(LOG.getStdoutWriter());
-            BOOST_TEST_REQUIRE(logWriter);
-            logWriterBuff = std::dynamic_pointer_cast<BufferedWriter>(logWriter->origWriter);
-            BOOST_TEST_REQUIRE(logWriterBuff);
-            flush();
-        }
-
-        /// Clear the last line so it won't be written and reset duplicates avoidance as we may want the same entry
-        /// again
-        void clearLog()
-        {
-            logWriter->reset();
-            logWriterBuff->curText.clear();
-        }
-        void flush()
-        {
-            logWriter->reset();
-            logWriterBuff->flush();
-            logWriter->reset();
-        }
-        std::string getLog(bool clear = true)
-        {
-            std::string result = logWriterBuff->curText;
-            if(clear)
-                clearLog();
-            return result;
-        }
-    };
+    /// Clear the last line so it won't be written and reset duplicates avoidance as we may want the same entry
+    /// again
+    void clearLog()
+    {
+        logWriter->reset();
+        logWriterBuff->curText.clear();
+    }
+    void flush()
+    {
+        logWriter->reset();
+        logWriterBuff->flush();
+        logWriter->reset();
+    }
+    std::string getLog(bool clear = true)
+    {
+        std::string result = logWriterBuff->curText;
+        if(clear)
+            clearLog();
+        return result;
+    }
+};
 } // namespace rttr::test
 
 /// Require that the log contains "content" in the first line. If allowEmpty is true, then an empty log is acceptable

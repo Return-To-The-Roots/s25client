@@ -8,11 +8,11 @@
 
 // LCOV_EXCL_START
 namespace boost::test_tools::tt_detail {
-    template<>
-    struct print_log_value<AI::Type>
-    {
-        void operator()(std::ostream& os, const AI::Type type) { os << static_cast<unsigned>(rttr::enum_cast(type)); }
-    };
+template<>
+struct print_log_value<AI::Type>
+{
+    void operator()(std::ostream& os, const AI::Type type) { os << static_cast<unsigned>(rttr::enum_cast(type)); }
+};
 } // namespace boost::test_tools::tt_detail
 // LCOV_EXCL_STOP
 

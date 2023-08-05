@@ -7,22 +7,22 @@
 #include <boost/filesystem.hpp>
 
 namespace rttr::test {
-    class TmpFolder
-    {
-        boost::filesystem::path folder;
+class TmpFolder
+{
+    boost::filesystem::path folder;
 
-    public:
-        explicit TmpFolder(const boost::filesystem::path& parent = boost::filesystem::temp_directory_path(),
-                           const boost::filesystem::path& pattern = "%%%%-%%%%-%%%%-%%%%")
+public:
+    explicit TmpFolder(const boost::filesystem::path& parent = boost::filesystem::temp_directory_path(),
+                       const boost::filesystem::path& pattern = "%%%%-%%%%-%%%%-%%%%")
+    {
+        do
         {
-            do
-            {
-                folder = unique_path(parent / pattern);
-            } while(exists(folder));
-            create_directories(folder);
-        }
-        ~TmpFolder() { boost::filesystem::remove_all(folder); }
-        const boost::filesystem::path& get() const { return folder; }
-        operator const boost::filesystem::path &() const { return folder; }
-    };
+            folder = unique_path(parent / pattern);
+        } while(exists(folder));
+        create_directories(folder);
+    }
+    ~TmpFolder() { boost::filesystem::remove_all(folder); }
+    const boost::filesystem::path& get() const { return folder; }
+    operator const boost::filesystem::path &() const { return folder; }
+};
 } // namespace rttr::test

@@ -11,14 +11,11 @@
 
 // LCOV_EXCL_START
 namespace boost::test_tools::tt_detail {
-    template<class T, class R>
-    struct print_log_value<std::chrono::duration<T, R>>
-    {
-        void operator()(std::ostream& out, const std::chrono::duration<T, R>& value)
-        {
-            out << helpers::withUnit(value);
-        }
-    };
+template<class T, class R>
+struct print_log_value<std::chrono::duration<T, R>>
+{
+    void operator()(std::ostream& out, const std::chrono::duration<T, R>& value) { out << helpers::withUnit(value); }
+};
 } // namespace boost::test_tools::tt_detail
 // LCOV_EXCL_STOP
 
