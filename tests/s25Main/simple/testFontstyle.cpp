@@ -78,8 +78,8 @@ BOOST_AUTO_TEST_CASE(Combineable)
 BOOST_AUTO_TEST_CASE(ConstexprUseable)
 {
     constexpr FontStyle style = FontStyle::RIGHT | FontStyle::BOTTOM;
-    static_assert(style.is(FontStyle::RIGHT), "!");
-    static_assert(style.is(FontStyle::BOTTOM), "!");
+    static_assert(style.is(FontStyle::RIGHT));
+    static_assert(style.is(FontStyle::BOTTOM));
     BOOST_TEST(style.is(FontStyle::OUTLINE));
 }
 

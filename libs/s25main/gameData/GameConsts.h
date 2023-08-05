@@ -28,4 +28,4 @@ constexpr unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::m
 
 /// tournament modes
 constexpr auto SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = helpers::make_array(30, 60, 90, 120, 240);
-static_assert(TOURNAMENT_MODES_DURATION.size() == NUM_TOURNAMENT_MODES, "!");
+static_assert(TOURNAMENT_MODES_DURATION.size() == NUM_TOURNAMENT_MODES);
