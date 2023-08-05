@@ -140,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
     BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
 
     // Same for different music types
-    for(const bfs::path musicFile : {"test.ogg", "testMidi.mid", "testXMidi.xmi"})
+    for(const bfs::path musicFile : {"test.ogg", "testMidi.mid", "testXMidi.xmi"}) // NOLINT(performance-for-range-copy)
     {
         mock::sequence s;
         // All midi types are treated as .midi
