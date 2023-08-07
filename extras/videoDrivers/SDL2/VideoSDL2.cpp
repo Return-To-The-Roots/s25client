@@ -103,7 +103,7 @@ void VideoSDL2::UpdateCurrentSizes()
     SetNewSize(VideoMode(w, h), Extent(w2, h2));
 }
 
-bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bool fullscreen)
+bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -125,19 +125,20 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
 
-    int wndPos = SDL_WINDOWPOS_CENTERED;
-
+    const int wndPos = SDL_WINDOWPOS_CENTERED;
+    const auto fullscreen = (displayMode & DisplayMode::Fullscreen) != DisplayMode::None;
+    const auto resizable = (displayMode & DisplayMode::Resizable) != DisplayMode::None;
     const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
+    const unsigned commonFlags = SDL_WINDOW_OPENGL | (resizable ? SDL_WINDOW_RESIZABLE : 0);
+    const unsigned fullscreenFlag = (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                              SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
+                              commonFlags | fullscreenFlag);
 
     // Fallback to non-fullscreen
     if(!window && fullscreen)
-    {
-        window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    }
+        window =
+          SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height, commonFlags);
 
     if(!window)
     {
@@ -145,10 +146,12 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
         return false;
     }
 
-    isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+    const auto flags = SDL_GetWindowFlags(window);
+    SetFullscreenFlag((flags & SDL_WINDOW_FULLSCREEN) != 0);
+    SetResizableFlag((flags & SDL_WINDOW_RESIZABLE) != 0);
     UpdateCurrentSizes();
 
-    if(!isFullscreen_)
+    if(!IsFullscreen())
         MoveWindowToCenter();
 
     SDL_Surface* iconSurf =
@@ -173,27 +176,34 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     return true;
 }
 
-bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
+bool VideoSDL2::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
 
-    if(isFullscreen_ != fullscreen)
+    const auto fullscreen = (displayMode & DisplayMode::Fullscreen) != DisplayMode::None;
+    const auto resizable = (displayMode & DisplayMode::Resizable) != DisplayMode::None;
+
+    if(IsFullscreen() != fullscreen)
     {
         SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-        isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
-        if(!isFullscreen_)
-        {
-#if SDL_VERSION_ATLEAST(2, 0, 5)
-            SDL_SetWindowResizable(window, SDL_TRUE);
-#endif
+        SetFullscreenFlag((SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0);
+        if(!IsFullscreen())
             MoveWindowToCenter();
-        }
+    }
+
+    if(displayMode_ != displayMode)
+    {
+        if(!IsFullscreen())
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+            SDL_SetWindowResizable(window, static_cast<SDL_bool>(resizable));
+#endif
+        SetResizableFlag((SDL_GetWindowFlags(window) & SDL_WINDOW_RESIZABLE) != 0);
     }
 
     if(newSize != GetWindowSize())
     {
-        if(isFullscreen_)
+        if(IsFullscreen())
         {
             auto const targetMode = FindClosestVideoMode(newSize);
             SDL_DisplayMode target;
@@ -215,6 +225,7 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
         }
         UpdateCurrentSizes();
     }
+
     return true;
 }
 
@@ -273,7 +284,7 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_WINDOWEVENT_RESIZED:
                     {
-                        isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+                        SetFullscreenFlag((SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0);
                         VideoMode newSize(ev.window.data1, ev.window.data2);
                         if(newSize != GetWindowSize())
                         {

@@ -29,7 +29,9 @@ public:
 
     VideoMode GetWindowSize() const override final { return windowSize_; }
     Extent GetRenderSize() const override final { return renderSize_; }
-    bool IsFullscreen() const override final { return isFullscreen_; }
+    DisplayMode GetDisplayMode() const override final { return displayMode_; }
+    bool IsFullscreen() const override final { return bitset::isSet(displayMode_, DisplayMode::Fullscreen); }
+    bool IsResizable() const override final { return bitset::isSet(displayMode_, DisplayMode::Fullscreen); }
 
     /// prüft auf Initialisierung.
     bool IsInitialized() const override final { return initialized; }
@@ -39,11 +41,14 @@ protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
 
+    void SetFullscreenFlag(bool fullscreen) { displayMode_ = fullscreen ? (displayMode_ | DisplayMode::Fullscreen) : (displayMode_ & ~DisplayMode::Fullscreen); }
+    void SetResizableFlag(bool resizable) { displayMode_ = bitset::set(displayMode_, DisplayMode::Resizable, resizable); }
+
     VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
     bool initialized;                     /// Initialisierungsstatus.
     MouseCoords mouse_xy;                 /// Status der Maus.
     std::array<bool, 512> keyboard;       /// Status der Tastatur;
-    bool isFullscreen_;                   /// Vollbild an/aus?
+    DisplayMode displayMode_;             /// Fullscreen/resizable?
 private:
     // cached as possibly used often
     VideoMode windowSize_;

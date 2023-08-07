@@ -30,10 +30,10 @@ public:
     bool Initialize() override;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;
+    bool CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode) override;
 
     /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
-    bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
+    bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) override;
 
     /// Schliesst das Fenster.
     void DestroyScreen() override;
@@ -69,7 +69,7 @@ private:
     std::pair<DWORD, DWORD> GetStyleFlags(bool fullscreen) const;
     /// Calculate the rect for the window and adjusts the (usable) size if required
     RECT CalculateWindowRect(bool fullscreen, VideoMode& size) const;
-    bool RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, bool fullscreen);
+    bool RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, DisplayMode displayMode);
     bool InitOGL();
     static bool MakeFullscreen(const VideoMode& resolution);
 

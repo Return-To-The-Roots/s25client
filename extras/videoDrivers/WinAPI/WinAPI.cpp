@@ -130,26 +130,25 @@ void VideoWinAPI::CleanUp()
 /**
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
- *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
- *  @param[in] fullscreen Vollbildmodus ja oder nein
+ *  @param[in] width       Breite des Fensters
+ *  @param[in] height      Höhe des Fensters
+ *  @param[in] displayMode Fullscreen on/off, window resizable?
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  *
  *  @bug Hardwarecursor ist bei Fenstermodus sichtbar,
  *       Cursor deaktivieren ist fehlerhaft
  */
-bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
+bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
 
-    if(!RegisterAndCreateWindow(title, newSize, fullscreen))
+    if(!RegisterAndCreateWindow(title, newSize, displayMode))
         return false;
 
-    if(fullscreen && !MakeFullscreen(GetWindowSize()))
+    if(bitset::isSet(displayMode, DisplayMode::Fullscreen) && !MakeFullscreen(GetWindowSize()))
         return false;
-    isFullscreen_ = fullscreen;
 
     if(!InitOGL())
         return false;
@@ -175,30 +174,31 @@ bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSiz
  *
  *  @todo Vollbildmodus ggf. wechseln
  */
-bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, bool fullscreen)
+bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
 {
     if(!initialized || !isWindowResizable)
         return false;
 
-    if(isFullscreen_ == fullscreen && newSize == GetWindowSize())
+    const auto fullscreen = bitset::isSet(displayMode, DisplayMode::Fullscreen);
+    if(IsFullscreen() == fullscreen && newSize == GetWindowSize())
         return true;
 
     ShowWindow(screen, SW_HIDE);
 
     VideoMode windowSize = fullscreen ? FindClosestVideoMode(newSize) : newSize;
     // Try to switch full screen first
-    if(isFullscreen_ && !fullscreen)
+    if(IsFullscreen() && !fullscreen)
     {
         if(ChangeDisplaySettings(nullptr, 0) != DISP_CHANGE_SUCCESSFUL)
             return false;
-    } else if(isFullscreen_ || fullscreen)
+    } else if(IsFullscreen() || fullscreen)
     {
         if(!MakeFullscreen(windowSize))
             return false;
     }
 
     // Fensterstyle ggf. ändern
-    std::pair<DWORD, DWORD> style = GetStyleFlags(isFullscreen_);
+    std::pair<DWORD, DWORD> style = GetStyleFlags(IsFullscreen());
     SetWindowLongPtr(screen, GWL_STYLE, style.first);
     SetWindowLongPtr(screen, GWL_EXSTYLE, style.second);
 
@@ -254,7 +254,7 @@ RECT VideoWinAPI::CalculateWindowRect(bool fullscreen, VideoMode& size) const
     return wRect;
 }
 
-bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, bool fullscreen)
+bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, DisplayMode displayMode)
 {
     std::wstring wTitle = boost::nowide::widen(title);
     windowClassName = wTitle.substr(0, wTitle.find(' '));
@@ -276,6 +276,7 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
         return false;
 
     // Create window
+    const auto fullscreen = bitset::isSet(displayMode, DisplayMode::Fullscreen);
     auto adjWindowSize = fullscreen ? FindClosestVideoMode(wndSize) : wndSize;
     RECT wRect = CalculateWindowRect(fullscreen, adjWindowSize);
 
@@ -406,7 +407,7 @@ void VideoWinAPI::DestroyScreen()
 
     UnregisterClassW(windowClassName.c_str(), GetModuleHandle(nullptr));
 
-    isFullscreen_ = false;
+    displayMode_ = bitset::set(displayMode_, DisplayMode::Fullscreen, false);
 }
 
 /**
