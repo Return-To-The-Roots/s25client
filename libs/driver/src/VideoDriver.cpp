@@ -20,7 +20,7 @@ IVideoDriver::~IVideoDriver() = default;
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
     : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0), scaledRenderSize_(0, 0),
-      dpiScale_(1.f), guiScale_(100)
+      dpiScale_(1.f), guiScale_(100), autoGuiScale_(false)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
@@ -76,15 +76,20 @@ void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
 {
     windowSize_ = windowSize;
     renderSize_ = renderSize;
-    scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize);
 
     const auto ratioXY = PointF(renderSize_) / PointF(windowSize_.width, windowSize_.height);
     dpiScale_ = (ratioXY.x + ratioXY.y) / 2.f; // use the average ratio of both axes
+
+    if(autoGuiScale_)
+        guiScale_ = GuiScale(getGuiScaleRange().recommendedPercent);
+
+    scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize);
 }
 
 void VideoDriver::setGuiScalePercent(unsigned percent)
 {
-    if(percent == 0)
+    autoGuiScale_ = (percent == 0);
+    if(autoGuiScale_)
         percent = getGuiScaleRange().recommendedPercent;
 
     if(guiScale_.percent() == percent)
@@ -94,9 +99,7 @@ void VideoDriver::setGuiScalePercent(unsigned percent)
     const auto screenPos = guiScale_.viewToScreen(mouse_xy.pos);
 
     guiScale_ = GuiScale(percent);
-
-    onGuiScaleChanged(); // give backends an opportunity to update their state
-
+    scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize_);
     CallBack->WindowResized();
 
     // move cursor to new position in view space

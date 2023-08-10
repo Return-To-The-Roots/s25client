@@ -87,9 +87,3 @@ void MockupVideoDriver::ShowErrorMessage(const std::string& title, const std::st
 {
     std::cerr << title << ": " << message << std::endl;
 }
-
-void MockupVideoDriver::onGuiScaleChanged()
-{
-    const auto windowSize = GetWindowSize();
-    SetNewSize(windowSize, Extent(windowSize.width, windowSize.height));
-}

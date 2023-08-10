@@ -31,7 +31,4 @@ public:
     KeyEvent modKeyState_;
     unsigned long tickCount_;
     std::vector<VideoMode> video_modes_;
-
-protected:
-    void onGuiScaleChanged() override;
 };

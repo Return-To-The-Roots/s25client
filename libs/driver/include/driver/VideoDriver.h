@@ -46,9 +46,6 @@ protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
 
-    /// Callback to update state in response to GUI scale changes before events are dispatched
-    virtual void onGuiScaleChanged() {}
-
     VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
     bool initialized;                     /// Initialisierungsstatus.
     MouseCoords mouse_xy;                 /// Status der Maus.
