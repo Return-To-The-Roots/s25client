@@ -8,6 +8,7 @@
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "rttr/test/LogAccessor.hpp"
+#include "rttr/test/random.hpp"
 #include <rttr/test/stubFunction.hpp>
 #include <s25util/warningSuppression.h>
 #include <glad/glad.h>
@@ -143,6 +144,49 @@ BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
         BOOST_TEST(guiScale.viewToScreen(400.f) == 800.f);
         BOOST_TEST(Position(guiScale.screenToView(Position(800, 600))) == Position(400, 300));
         BOOST_TEST(Position(guiScale.viewToScreen(Position(400, 300))) == Position(800, 600));
+    }
+
+    {
+        // screenToView rounds scalars and points
+        driver->setGuiScalePercent(95);
+        const auto& guiScale = driver->getGuiScale();
+        constexpr auto pt = Position(10, 15);
+        const auto pt1 = guiScale.screenToView<Position>(pt);
+        const auto pt2 = Position(guiScale.screenToView<int>(static_cast<float>(pt.x)),
+                                  guiScale.screenToView<int>(static_cast<float>(pt.y)));
+        const auto pt3 = Position(Position::Truncate, PointF(pt) * driver->getGuiScale().invScaleFactor());
+        BOOST_TEST(pt1 == pt2);
+        BOOST_TEST(pt1 != pt3);
+        // Points are off by 1 due to rounding
+        BOOST_TEST((pt1 - pt3) == Position(1, 1));
+    }
+
+    {
+        // viewToScreen rounds scalars and points
+        driver->setGuiScalePercent(105);
+        const auto& guiScale = driver->getGuiScale();
+        constexpr auto pt = Position(10, 15);
+        const auto pt1 = guiScale.viewToScreen<Position>(pt);
+        const auto pt2 = Position(guiScale.viewToScreen<int>(static_cast<float>(pt.x)),
+                                  guiScale.viewToScreen<int>(static_cast<float>(pt.y)));
+        const auto pt3 = Position(Position::Truncate, PointF(pt) * driver->getGuiScale().scaleFactor());
+        BOOST_TEST(pt1 == pt2);
+        BOOST_TEST(pt1 != pt3);
+        // Points are off by 1 due to rounding
+        BOOST_TEST((pt1 - pt3) == Position(1, 1));
+    }
+
+    {
+        // screenToView and viewToScreen round scalars and points
+        driver->setGuiScalePercent(rttr::test::randomValue<unsigned>(90, 110));
+        const auto& guiScale = driver->getGuiScale();
+        const auto pt = rttr::test::randomPoint<Position>(-100, 100);
+        BOOST_TEST(guiScale.screenToView<Position>(pt)
+                   == Position(guiScale.screenToView<int>(static_cast<float>(pt.x)),
+                               guiScale.screenToView<int>(static_cast<float>(pt.y))));
+        BOOST_TEST(guiScale.viewToScreen<Position>(pt)
+                   == Position(guiScale.viewToScreen<int>(static_cast<float>(pt.x)),
+                               guiScale.viewToScreen<int>(static_cast<float>(pt.y))));
     }
 }
 
