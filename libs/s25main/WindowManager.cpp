@@ -880,7 +880,9 @@ void WindowManager::DrawToolTip()
 
 SnapOffset WindowManager::snapWindow(Window* wnd, const Rect& wndRect) const
 {
-    constexpr int snapDistance = 15;
+    const auto snapDistance = static_cast<int>(SETTINGS.interface.windowSnapDistance);
+    if(snapDistance == 0)
+        return SnapOffset::all(0); // No snapping
 
     /// Progressive minimum distance to another window edge; initial value limits to at most snapDistance
     auto minDist = Extent::all(snapDistance + 1);
