@@ -218,3 +218,17 @@ BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
     BOOST_TEST(range.maxPercent == (200 * 1.5));
     BOOST_TEST(range.recommendedPercent == (100 * 1.5));
 }
+
+BOOST_AUTO_TEST_CASE(DpiScale)
+{
+    auto* driver = uiHelper::GetVideoDriver();
+
+    driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+    BOOST_TEST(driver->getDpiScale() == 1.f);
+
+    driver->SetNewSize(VideoMode(800, 600), Extent(800 * 3 / 2, 600 * 3 / 2));
+    BOOST_TEST(driver->getDpiScale() == 1.5f);
+
+    driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+    BOOST_TEST(driver->getDpiScale() == 2.f);
+}
