@@ -232,3 +232,36 @@ BOOST_AUTO_TEST_CASE(DpiScale)
     driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
     BOOST_TEST(driver->getDpiScale() == 2.f);
 }
+
+BOOST_AUTO_TEST_CASE(AutoGuiScale)
+{
+    auto* driver = uiHelper::GetVideoDriver();
+
+    BOOST_TEST_CONTEXT("Fixed GUI scale")
+    {
+        driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+        driver->setGuiScalePercent(100);
+        BOOST_TEST(driver->getDpiScale() == 1.f);
+        BOOST_TEST(driver->getGuiScale().percent() == 100u);
+
+        // Changing window and render size has no effect on GUI scale, even though DPI scale has changed
+        driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+        BOOST_TEST(driver->getDpiScale() == 2.f);
+        BOOST_TEST(driver->getGuiScale().percent() == 100u);
+    }
+
+    BOOST_TEST_CONTEXT("Automatic GUI scale")
+    {
+        driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+        driver->setGuiScalePercent(0);
+
+        // Automatic GUI scale is correctly calculated from current sizes
+        BOOST_TEST(driver->getDpiScale() == 1.f);
+        BOOST_TEST(driver->getGuiScale().percent() == 100u);
+
+        // After changing window and render size, GUI scale is updated based on DPI scale
+        driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+        BOOST_TEST(driver->getDpiScale() == 2.f);
+        BOOST_TEST(driver->getGuiScale().percent() == 200u);
+    }
+}
