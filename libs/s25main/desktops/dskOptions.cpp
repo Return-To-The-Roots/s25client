@@ -704,15 +704,10 @@ bool dskOptions::Msg_WheelDown(const MouseCoords& mc)
 
 void dskOptions::updateGuiScale()
 {
-    const auto stepSizeForGuiScale = [](unsigned percent) {
-        // generate zoom values in 10% increments below 100% and 25% increments above 100%
-        constexpr unsigned stepSizeBelow100 = 10;
-        constexpr unsigned stepSizeAbove100 = 25;
-        return (percent < 100 ? stepSizeBelow100 : stepSizeAbove100);
-    };
+    // generate GUI scale percentages in 10% increments
+    constexpr auto stepSize = 10u;
     const auto roundGuiScale = [=](unsigned percent) {
-        const auto stepSize = stepSizeForGuiScale(percent);
-        return (percent + stepSize / 2) / stepSize * stepSize;
+        return helpers::iround<unsigned>(static_cast<float>(percent) / stepSize) * stepSize;
     };
 
     const auto range = VIDEODRIVER.getGuiScaleRange();
@@ -727,7 +722,7 @@ void dskOptions::updateGuiScale()
     if(SETTINGS.video.guiScale == 0)
         combo->SetSelection(0);
 
-    for(unsigned percent = roundGuiScale(range.minPercent); percent <= range.maxPercent; percent += stepSizeForGuiScale(percent))
+    for(unsigned percent = roundGuiScale(range.minPercent); percent <= range.maxPercent; percent += stepSize)
     {
         if(percent == recommendedPercentRounded)
             recommendedGuiScaleIndex_ = guiScales_.size();
