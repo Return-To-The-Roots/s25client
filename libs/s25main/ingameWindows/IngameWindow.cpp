@@ -192,14 +192,8 @@ void IngameWindow::SetPinned(bool pinned)
 
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
-    // Maus muss sich auf der Titelleiste befinden
-    Rect title_rect(LOADER.GetImageN("resource", 36)->getWidth(), 0,
-                    static_cast<unsigned short>(GetSize().x - LOADER.GetImageN("resource", 36)->getWidth()
-                                                - LOADER.GetImageN("resource", 37)->getWidth()),
-                    LOADER.GetImageN("resource", 43)->getHeight());
-    title_rect.move(GetDrawPos());
-
-    if(IsPointInRect(mc.GetPos(), title_rect))
+    // Check if the mouse is on the title bar
+    if(IsPointInRect(mc.GetPos(), GetButtonBounds(IwButton::Title)))
     {
         // start moving
         isMoving = true;
