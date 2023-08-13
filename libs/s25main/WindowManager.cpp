@@ -781,8 +781,9 @@ void WindowManager::SetActiveWindow(Window& wnd)
 
 void WindowManager::TakeScreenshot() const
 {
-    libsiedler2::PixelBufferBGRA buffer(curRenderSize.x, curRenderSize.y);
-    glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    const auto windowSize = VIDEODRIVER.GetWindowSize();
+    libsiedler2::PixelBufferBGRA buffer(windowSize.width, windowSize.height);
+    glReadPixels(0, 0, windowSize.width, windowSize.height, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
     const bfs::path outFilepath =
       RTTRCONFIG.ExpandPath(s25::folders::screenshots) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");

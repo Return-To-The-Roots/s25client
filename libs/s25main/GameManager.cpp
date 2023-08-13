@@ -54,6 +54,7 @@ bool GameManager::Start()
         return false;
     videoDriver_.setTargetFramerate(settings_.video.framerate);
     videoDriver_.SetMouseWarping(settings_.global.smartCursor);
+    videoDriver_.setGuiScalePercent(settings_.video.guiScale);
 
     /// Audiodriver laden
     if(!audioDriver_.LoadDriver(settings_.driver.audio))

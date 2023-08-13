@@ -63,6 +63,7 @@ public:
         bool fullscreen;
         bool vbo;
         bool shared_textures;
+        unsigned guiScale; ///< UI scaling in percent; 0 indicates automatic selection
     } video;
 
     struct

@@ -93,6 +93,7 @@ void Settings::LoadDefaults()
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
     video.shared_textures = true;
+    video.guiScale = 0; // special value indicating automatic selection
     // }
 
     // language
@@ -228,6 +229,7 @@ void Settings::Load()
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
+        video.guiScale = iniVideo->getValue("gui_scale", 0);
         // };
 
         if(video.fullscreenSize.width == 0 || video.fullscreenSize.height == 0 || video.windowedSize.width == 0
@@ -412,6 +414,7 @@ void Settings::Save()
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.shared_textures);
+    iniVideo->setValue("gui_scale", video.guiScale);
     // };
 
     // language

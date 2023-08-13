@@ -63,6 +63,7 @@ class GameWorldView
 
     /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
     float zoomFactor_;
+    float effectiveZoomFactor_; ///< DPI scale corrected zoom factor
     float targetZoomFactor_;
     float zoomSpeed_;
 
@@ -138,4 +139,5 @@ private:
                  bool drawMouse);
 
     void SaveIngameSettingsValues() const;
+    void updateEffectiveZoomFactor();
 };

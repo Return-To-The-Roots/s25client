@@ -19,6 +19,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
 #include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
 #include "helpers/mathFuncs.h"
 #include "helpers/toString.h"
 #include "ingameWindows/iwAddons.h"
@@ -80,6 +81,8 @@ enum
     ID_cbVideoDriver,
     ID_txtOptTextures,
     ID_grpOptTextures,
+    ID_txtGuiScale,
+    ID_cbGuiScale,
     ID_txtAudioDriver,
     ID_cbAudioDriver,
     ID_txtMusic,
@@ -305,13 +308,18 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(video_driver.GetName() == SETTINGS.driver.video)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
-    curPos.y += 40;
+    curPos.y += 50;
 
     groupGrafik->AddText(ID_txtOptTextures, curPos, _("Optimized Textures:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpOptTextures, GroupSelectType::Check);
 
     optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
     optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
+    curPos.y += 50;
+
+    groupGrafik->AddText(ID_txtGuiScale, curPos, _("GUI Scale:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupGrafik->AddComboBox(ID_cbGuiScale, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
+    updateGuiScale();
 
     curPos.y = 80;
     constexpr Offset bt1Offset(200, -5);
@@ -499,6 +507,10 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate);
             break;
         case ID_cbVideoDriver: SETTINGS.driver.video = combo->GetText(selection); break;
+        case ID_cbGuiScale:
+            SETTINGS.video.guiScale = guiScales_[selection];
+            VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
+            break;
         case ID_cbAudioDriver: SETTINGS.driver.audio = combo->GetText(selection); break;
     }
 }
@@ -578,6 +590,17 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             SETTINGS.Save();
 
+            // Is the selected backend required to support GUI scaling to fullfill the user's choice?
+            // If so, warn the user if the backend is unable to support GUI scaling.
+            if(VIDEODRIVER.getGuiScale().percent() == 100
+               && (SETTINGS.video.guiScale != 100
+                   || (SETTINGS.video.guiScale == 0 && VIDEODRIVER.getGuiScaleRange().recommendedPercent != 100)))
+            {
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                  _("Sorry!"), _("The selected video driver does not support GUI scaling! Setting won't be used."),
+                  this, MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
+            }
+
             if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
                || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
@@ -623,11 +646,9 @@ void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /
     switch(msgbox_id)
     {
         default: break;
-        case 1: // "You need to restart your game ..."
-        {
-            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
-        }
-        break;
+        // "You need to restart your game ..."
+        // "The selected video driver does not support GUI scaling!"
+        case 1: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
     }
 }
 
@@ -662,4 +683,88 @@ void dskOptions::loadVideoModes()
     helpers::erase_if(video_modes, [](const auto& it) { return it.width < 800 && it.height < 600; });
     // Sort by aspect ratio
     std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
+}
+
+void dskOptions::Msg_ScreenResize(const ScreenResizeEvent& sr)
+{
+    Desktop::Msg_ScreenResize(sr);
+    updateGuiScale();
+}
+
+bool dskOptions::Msg_WheelUp(const MouseCoords& mc)
+{
+    if(VIDEODRIVER.GetModKeyState().ctrl)
+    {
+        scrollGuiScale(true);
+        return true;
+    } else
+        return Desktop::Msg_WheelUp(mc);
+}
+
+bool dskOptions::Msg_WheelDown(const MouseCoords& mc)
+{
+    if(VIDEODRIVER.GetModKeyState().ctrl)
+    {
+        scrollGuiScale(false);
+        return true;
+    } else
+        return Desktop::Msg_WheelDown(mc);
+}
+
+void dskOptions::updateGuiScale()
+{
+    // generate GUI scale percentages in 10% increments
+    constexpr auto stepSize = 10u;
+    const auto roundGuiScale = [=](unsigned percent) {
+        return helpers::iround<unsigned>(static_cast<float>(percent) / stepSize) * stepSize;
+    };
+
+    const auto range = VIDEODRIVER.getGuiScaleRange();
+    const auto recommendedPercentRounded = roundGuiScale(range.recommendedPercent);
+    auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
+
+    guiScales_.clear();
+    combo->DeleteAllItems();
+
+    guiScales_.push_back(0);
+    combo->AddString(helpers::format(_("Auto (%u%%)"), range.recommendedPercent));
+    if(SETTINGS.video.guiScale == 0)
+        combo->SetSelection(0);
+
+    for(unsigned percent = roundGuiScale(range.minPercent); percent <= range.maxPercent; percent += stepSize)
+    {
+        if(percent == recommendedPercentRounded)
+            recommendedGuiScaleIndex_ = guiScales_.size();
+        guiScales_.push_back(percent);
+
+        combo->AddString(helpers::toString(percent) + "%");
+        if(percent == SETTINGS.video.guiScale)
+            combo->SetSelection(combo->GetNumItems() - 1);
+    }
+
+    // if GUI scale exceeds maximum, lower it to keep UI elements on screen
+    if(SETTINGS.video.guiScale > guiScales_.back())
+    {
+        combo->SetSelection(combo->GetNumItems() - 1);
+        SETTINGS.video.guiScale = guiScales_.back();
+        VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
+    }
+}
+
+void dskOptions::scrollGuiScale(bool up)
+{
+    auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
+    const auto& selection = combo->GetSelection();
+    unsigned newSelection = 0;
+    if(!selection || *selection == 0) // No selection or "Auto" item selected
+        newSelection = recommendedGuiScaleIndex_;
+    else
+        newSelection = std::clamp<unsigned>(*selection + (up ? 1 : -1), 1, combo->GetNumItems() - 1);
+
+    if(newSelection != selection)
+    {
+        combo->SetSelection(newSelection);
+        SETTINGS.video.guiScale = guiScales_[newSelection];
+        VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
+    }
 }

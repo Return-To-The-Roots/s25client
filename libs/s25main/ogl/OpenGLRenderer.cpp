@@ -4,6 +4,7 @@
 
 #include "OpenGLRenderer.h"
 #include "DrawPoint.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
 #include "openglCfg.hpp"
 #include <glad/glad.h>
@@ -111,7 +112,7 @@ void OpenGLRenderer::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsi
     glDisable(GL_TEXTURE_2D);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
-    glLineWidth(static_cast<GLfloat>(width));
+    glLineWidth(VIDEODRIVER.getGuiScale().viewToScreen<GLfloat>(static_cast<float>(width)));
     glBegin(GL_LINES);
     glVertex2i(pt1.x, pt1.y);
     glVertex2i(pt2.x, pt2.y);

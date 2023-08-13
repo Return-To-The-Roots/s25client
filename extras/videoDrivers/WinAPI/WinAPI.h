@@ -59,6 +59,9 @@ public:
     /// Funktion zum Setzen der Mauskoordinaten.
     void SetMousePos(Position pos) override;
 
+    // GUI scaling is not implemented by this backend
+    void setGuiScalePercent(unsigned /* percent */) override {}
+
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const override;
 
