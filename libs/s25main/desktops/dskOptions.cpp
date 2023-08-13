@@ -250,7 +250,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
                                 _("When scrolling the map with the mouse move the camera."));
     invertScroll->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Inverted"), NormalFont,
                                 _("When scrolling the map with the mouse move the map."));
-    invertScroll->SetSelection(SETTINGS.interface.invert_mouse);
+    invertScroll->SetSelection(SETTINGS.interface.invertMouse);
     curPos.y += 30;
 
     groupAllgemein->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);

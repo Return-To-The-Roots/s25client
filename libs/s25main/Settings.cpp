@@ -139,7 +139,7 @@ void Settings::LoadDefaults()
     // interface
     // {
     interface.autosave_interval = 0;
-    interface.invert_mouse = false;
+    interface.invertMouse = false;
     interface.enableWindowPinning = false;
     // }
 
@@ -298,7 +298,7 @@ void Settings::Load()
         // interface
         // {
         interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
-        interface.invert_mouse = iniInterface->getValue("invert_mouse", false);
+        interface.invertMouse = iniInterface->getValue("invert_mouse", false);
         interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
         // }
 
@@ -461,7 +461,7 @@ void Settings::Save()
     // interface
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
-    iniInterface->setValue("invert_mouse", interface.invert_mouse);
+    iniInterface->setValue("invert_mouse", interface.invertMouse);
     iniInterface->setValue("enable_window_pinning", interface.enableWindowPinning);
     // }
 

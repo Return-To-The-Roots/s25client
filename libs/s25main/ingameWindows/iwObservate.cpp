@@ -231,7 +231,7 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-        if(SETTINGS.interface.invert_mouse)
+        if(SETTINGS.interface.invertMouse)
             acceleration = -acceleration;
 
         view->MoveBy((mc.GetPos() - scrollOrigin) * acceleration);
