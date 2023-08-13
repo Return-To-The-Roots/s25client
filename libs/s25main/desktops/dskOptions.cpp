@@ -243,13 +243,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
     curPos.y += 50;
 
-    groupAllgemein->AddText(ID_txtInvertScroll, curPos, _("Mouse scroll behavior:"), COLOR_YELLOW, FontStyle{},
+    groupAllgemein->AddText(ID_txtInvertScroll, curPos, _("Invert Mouse Pan:"), COLOR_YELLOW, FontStyle{},
                             NormalFont);
     ctrlOptionGroup* invertScroll = groupAllgemein->AddOptionGroup(ID_grpInvertScroll, GroupSelectType::Check);
-    invertScroll->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Original"), NormalFont,
-                                _("When scrolling the map with the mouse move the camera."));
-    invertScroll->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Inverted"), NormalFont,
-                                _("When scrolling the map with the mouse move the map."));
+    invertScroll->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
+                                _("Map moves in the same direction the mouse is moved when scrolling/panning."));
+    invertScroll->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
+                                _("Map moves in the opposite direction the mouse is moved when scrolling/panning."));
     invertScroll->SetSelection(SETTINGS.interface.invertMouse);
     curPos.y += 30;
 
