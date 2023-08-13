@@ -166,7 +166,7 @@ kaguya::LuaRef LuaInterfaceSettings::GetAllowedChanges()
     kaguya::LuaRef getGeneralConfig = lua["getAllowedChanges"];
     if(getGeneralConfig.type() == LUA_TFUNCTION)
     {
-        kaguya::LuaRef cfg = getGeneralConfig.call<kaguya::LuaRef>();
+        auto cfg = getGeneralConfig.call<kaguya::LuaRef>();
         if(cfg.type() == LUA_TTABLE)
             return cfg;
     }

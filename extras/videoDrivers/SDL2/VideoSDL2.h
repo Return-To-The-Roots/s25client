@@ -34,6 +34,8 @@ public:
 
     bool MessageLoop() override;
 
+    void ShowErrorMessage(const std::string& title, const std::string& message) override;
+
     /// Get a timestamp
     unsigned long GetTickCount() const override;
 

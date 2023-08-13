@@ -39,6 +39,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
       show_productivity(SETTINGS.ingame.showProductivity), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
       size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
+    updateEffectiveZoomFactor();
     MoveBy({0, 0});
 }
 
@@ -83,6 +84,7 @@ void GameWorldView::SetNextZoomFactor()
     }
 
     zoomFactor_ = zoomFactor_ + zoomSpeed_;
+    updateEffectiveZoomFactor();
     CalcFxLx();
 }
 
@@ -95,7 +97,11 @@ void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = t
     else
         targetZoomFactor_ = zoomFactor;
     if(!smoothTransition)
+    {
         zoomFactor_ = targetZoomFactor_;
+        updateEffectiveZoomFactor();
+        CalcFxLx();
+    }
 }
 
 float GameWorldView::GetCurrentTargetZoomFactor() const
@@ -115,26 +121,31 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 {
     SetNextZoomFactor();
 
+    const auto windowSize = VIDEODRIVER.GetWindowSize();
+    const auto& guiScale = VIDEODRIVER.getGuiScale();
+    const auto screenOrigin = guiScale.viewToScreen(origin_);
+    const auto screenSize = guiScale.viewToScreen(size_);
+    glScissor(screenOrigin.x, windowSize.height - (screenOrigin.y + screenSize.y), screenSize.x, screenSize.y);
+
     int shortestDistToMouse = 100000;
     Position mousePos = VIDEODRIVER.GetMousePos();
     mousePos -= Position(origin_);
-
-    glScissor(origin_.x, VIDEODRIVER.GetRenderSize().y - origin_.y - size_.y, size_.x, size_.y);
-    if(zoomFactor_ != 1.f) //-V550
+    if(effectiveZoomFactor_ != 1.f) //-V550
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
-        glScalef(zoomFactor_, zoomFactor_, 1);
+        glScalef(effectiveZoomFactor_, effectiveZoomFactor_, 1);
         // Offset to center view
-        PointF diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
+        PointF diff(size_.x - size_.x / effectiveZoomFactor_, size_.y - size_.y / effectiveZoomFactor_);
         diff = diff / 2.f;
         glTranslatef(-diff.x, -diff.y, 0.f);
         // Also adjust mouse
-        mousePos = Position(PointF(mousePos) / zoomFactor_ + diff);
+        mousePos = Position(PointF(mousePos) / effectiveZoomFactor_ + diff);
         glMatrixMode(GL_MODELVIEW);
     }
 
-    glTranslatef(static_cast<GLfloat>(origin_.x) / zoomFactor_, static_cast<GLfloat>(origin_.y) / zoomFactor_, 0.0f);
+    glTranslatef(static_cast<GLfloat>(origin_.x) / effectiveZoomFactor_,
+                 static_cast<GLfloat>(origin_.y) / effectiveZoomFactor_, 0.0f);
 
     glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
     const TerrainRenderer& terrainRenderer = gwv.GetTerrainRenderer();
@@ -204,15 +215,16 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
             catapult_stone->Draw(offset);
     }
 
-    if(zoomFactor_ != 1.f) //-V550
+    if(effectiveZoomFactor_ != 1.f) //-V550
     {
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
     }
-    glTranslatef(-static_cast<GLfloat>(origin_.x) / zoomFactor_, -static_cast<GLfloat>(origin_.y) / zoomFactor_, 0.0f);
+    glTranslatef(-static_cast<GLfloat>(origin_.x) / effectiveZoomFactor_,
+                 -static_cast<GLfloat>(origin_.y) / effectiveZoomFactor_, 0.0f);
 
-    glScissor(0, 0, VIDEODRIVER.GetRenderSize().x, VIDEODRIVER.GetRenderSize().y);
+    glScissor(0, 0, windowSize.width, windowSize.height);
 }
 
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer,
@@ -648,10 +660,10 @@ void GameWorldView::CalcFxLx()
     const auto maxAltitude = gwv.getMaxNodeAltitude();
     lastPt.y = (offset.y + size_.y + maxAltitude * HEIGHT_FACTOR) / TR_H + 1;
 
-    if(zoomFactor_ != 1.f) //-V550
+    if(effectiveZoomFactor_ != 1.f) //-V550
     {
         // Calc pixels we can remove from sides, as they are not drawn due to zoom
-        PointF diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
+        PointF diff(size_.x - size_.x / effectiveZoomFactor_, size_.y - size_.y / effectiveZoomFactor_);
         // Stay centered by removing half the pixels from opposite sites
         diff = diff / 2.f;
         // Convert to map points
@@ -677,4 +689,11 @@ void GameWorldView::SaveIngameSettingsValues() const
     ingameSettings.showBQ = show_bq;
     ingameSettings.showNames = show_names;
     ingameSettings.showProductivity = show_productivity;
+}
+
+void GameWorldView::updateEffectiveZoomFactor()
+{
+    // partially "undo" GUI scale depending on DPI scale
+    // => zoom levels should look the same on screens with different DPI regardless of GUI scale
+    effectiveZoomFactor_ = VIDEODRIVER.getGuiScale().screenToView(zoomFactor_ * VIDEODRIVER.getDpiScale());
 }

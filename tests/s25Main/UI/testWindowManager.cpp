@@ -466,6 +466,75 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
 }
 
+BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
+{
+    constexpr KeyEvent evEsc{KeyType::Escape, 0, false, false, false};
+    constexpr KeyEvent evAltW{KeyType::Char, 'w', false, false, true};
+
+    BOOST_TEST_CONTEXT("Pinned windows ignore escape key")
+    {
+        auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+
+        wnd->SetPinned();
+        BOOST_TEST_CONTEXT("Pinned")
+        {
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+            WINDOWMANAGER.Msg_KeyDown(evEsc);
+            MOCK_EXPECT(wnd->Draw_).once();
+            WINDOWMANAGER.Draw();
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+        }
+
+        wnd->SetPinned(false);
+        BOOST_TEST_CONTEXT("Un-pinned")
+        {
+            WINDOWMANAGER.Msg_KeyDown(evEsc);
+            WINDOWMANAGER.Draw();
+            REQUIRE_WINDOW_DESTROYED(wnd);
+        }
+    }
+
+    BOOST_TEST_CONTEXT("Pinned windows close on Alt+W")
+    {
+        auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+
+        wnd->SetPinned();
+        BOOST_TEST_CONTEXT("Pinned")
+        {
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+            WINDOWMANAGER.Msg_KeyDown(evAltW);
+            WINDOWMANAGER.Draw();
+            REQUIRE_WINDOW_DESTROYED(wnd);
+        }
+    }
+
+    BOOST_TEST_CONTEXT("Pinned windows ignore right click")
+    {
+        auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+        const MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10), false, true);
+
+        wnd->SetPinned();
+        BOOST_TEST_CONTEXT("Pinned")
+        {
+            WINDOWMANAGER.Msg_RightDown(evRDown);
+            MOCK_EXPECT(wnd->Draw_).once();
+            WINDOWMANAGER.Draw();
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+        }
+
+        wnd->SetPinned(false);
+        BOOST_TEST_CONTEXT("Un-pinned")
+        {
+            WINDOWMANAGER.Msg_RightDown(evRDown);
+            WINDOWMANAGER.Draw();
+            REQUIRE_WINDOW_DESTROYED(wnd);
+        }
+    }
+
+    mock::verify();
+}
+
 MOCK_BASE_CLASS(MockSettingsWnd, TransmitSettingsIgwAdapter)
 {
     static int activeWnds;

@@ -7,14 +7,14 @@
 #include <boost/test/unit_test.hpp>
 #include <utility>
 
-namespace boost { namespace test_tools { namespace tt_detail {
-    // Allow printing of pairs
-    template<typename T, typename U>
-    struct print_log_value<std::pair<T, U>>
-    {
-        void operator()(std::ostream& os, std::pair<T, U> const& v) { os << "(" << v.first << "," << v.second << ")"; }
-    };
-}}} // namespace boost::test_tools::tt_detail
+namespace boost::test_tools::tt_detail {
+// Allow printing of pairs
+template<typename T, typename U>
+struct print_log_value<std::pair<T, U>>
+{
+    void operator()(std::ostream& os, std::pair<T, U> const& v) { os << "(" << v.first << "," << v.second << ")"; }
+};
+} // namespace boost::test_tools::tt_detail
 
 /// Check that an exception of the given type is thrown and it contains the message
 #define RTTR_CHECK_EXCEPTION_MSG(S, E, MSG)         \

@@ -7,10 +7,10 @@
 
 BOOST_AUTO_TEST_SUITE(MultiArrayTests)
 
-static_assert(std::is_same<int[1], helpers::detail::AddExtents_t<int, 1>>::value, "!");
-static_assert(std::is_same<int[2], helpers::detail::AddExtents_t<int, 2>>::value, "!");
-static_assert(std::is_same<int[3][5], helpers::detail::AddExtents_t<int, 3, 5>>::value, "!");
-static_assert(std::is_same<int[3][5][7], helpers::detail::AddExtents_t<int, 3, 5, 7>>::value, "!");
+static_assert(std::is_same_v<int[1], helpers::detail::AddExtents_t<int, 1>>);
+static_assert(std::is_same_v<int[2], helpers::detail::AddExtents_t<int, 2>>);
+static_assert(std::is_same_v<int[3][5], helpers::detail::AddExtents_t<int, 3, 5>>);
+static_assert(std::is_same_v<int[3][5][7], helpers::detail::AddExtents_t<int, 3, 5, 7>>);
 
 const helpers::MultiArray<int, 3, 2> sma32 = {{{0, 1}, {10, 11}, {20, 21}}};
 const helpers::MultiArray<int, 4, 3, 2> sma432 = {{{{0, 1}, {10, 11}, {20, 21}},
@@ -46,10 +46,10 @@ BOOST_AUTO_TEST_CASE(Test2DArray)
     }
 
     helpers::MultiArray<int, 3, 2> tmp;
-    static_assert(std::is_same<decltype(sma32[0][0]), const int&>::value, "!");
-    static_assert(std::is_same<decltype(sma32(0, 0)), const int&>::value, "!");
-    static_assert(std::is_same<decltype(tmp[0][0]), int&>::value, "!");
-    static_assert(std::is_same<decltype(tmp(0, 0)), int&>::value, "!");
+    static_assert(std::is_same_v<decltype(sma32[0][0]), const int&>);
+    static_assert(std::is_same_v<decltype(sma32(0, 0)), const int&>);
+    static_assert(std::is_same_v<decltype(tmp[0][0]), int&>);
+    static_assert(std::is_same_v<decltype(tmp(0, 0)), int&>);
 
     tmp[0][0] = 0;
     tmp[0][1] = 1;

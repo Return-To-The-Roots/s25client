@@ -93,6 +93,7 @@ void Settings::LoadDefaults()
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
     video.shared_textures = true;
+    video.guiScale = 0; // special value indicating automatic selection
     // }
 
     // language
@@ -139,6 +140,7 @@ void Settings::LoadDefaults()
     // {
     interface.autosave_interval = 0;
     interface.invert_mouse = false;
+    interface.enableWindowPinning = false;
     // }
 
     // addons
@@ -227,6 +229,7 @@ void Settings::Load()
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
+        video.guiScale = iniVideo->getValue("gui_scale", 0);
         // };
 
         if(video.fullscreenSize.width == 0 || video.fullscreenSize.height == 0 || video.windowedSize.width == 0
@@ -296,6 +299,7 @@ void Settings::Load()
         // {
         interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
         interface.invert_mouse = iniInterface->getValue("invert_mouse", false);
+        interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
         // }
 
         // addons
@@ -353,6 +357,7 @@ void Settings::LoadIngame()
             settings.restorePos = DrawPoint(iniWindow->getValue("restore_pos_x", lastPos.x),
                                             iniWindow->getValue("restore_pos_y", lastPos.y));
             settings.isOpen = iniWindow->getIntValue("is_open");
+            settings.isPinned = iniWindow->getValue("is_pinned", false);
             settings.isMinimized = iniWindow->getValue("is_minimized", false);
         }
     } catch(std::runtime_error& e)
@@ -409,6 +414,7 @@ void Settings::Save()
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.shared_textures);
+    iniVideo->setValue("gui_scale", video.guiScale);
     // };
 
     // language
@@ -456,6 +462,7 @@ void Settings::Save()
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
     iniInterface->setValue("invert_mouse", interface.invert_mouse);
+    iniInterface->setValue("enable_window_pinning", interface.enableWindowPinning);
     // }
 
     // addons
@@ -513,6 +520,7 @@ void Settings::SaveIngame()
             iniWindow->setValue("restore_pos_y", settings.restorePos.y);
         }
         iniWindow->setValue("is_open", settings.isOpen);
+        iniWindow->setValue("is_pinned", settings.isPinned);
         iniWindow->setValue("is_minimized", settings.isMinimized);
     }
 

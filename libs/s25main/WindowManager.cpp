@@ -132,11 +132,14 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
         return; // No windows -> nothing to do
 
     // ESC or ALT+W closes the active window
-    if(ke.kt == KeyType::Escape || (ke.c == 'w' && ke.alt))
+    const auto escape = (ke.kt == KeyType::Escape);
+    if(escape || (ke.c == 'w' && ke.alt))
     {
         // Find one which isn't yet marked for closing so multiple ESC in between draw calls can close multiple windows
-        const auto itActiveWnd =
-          std::find_if(windows.rbegin(), windows.rend(), [](const auto& wnd) { return !wnd->ShouldBeClosed(); });
+        // ESC doesn't close pinned windows
+        const auto itActiveWnd = std::find_if(windows.rbegin(), windows.rend(), [escape](const auto& wnd) {
+            return !wnd->ShouldBeClosed() && !(escape && wnd->IsPinned());
+        });
         if(itActiveWnd != windows.rend() && (*itActiveWnd)->getCloseBehavior() != CloseBehavior::Custom)
             (*itActiveWnd)->Close();
     } else if(!CALL_MEMBER_FN(*windows.back(), msg)(ke)) // send to active window
@@ -418,10 +421,12 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         }
         if(foundWindow)
         {
-            // Close it if requested
+            // Close it if requested (unless pinned)
             if(foundWindow->getCloseBehavior() == CloseBehavior::Regular)
-                foundWindow->Close();
-            else
+            {
+                if(!foundWindow->IsPinned())
+                    foundWindow->Close();
+            } else
             {
                 SetActiveWindow(*foundWindow);
                 foundWindow->Msg_RightDown(mc);
@@ -776,8 +781,9 @@ void WindowManager::SetActiveWindow(Window& wnd)
 
 void WindowManager::TakeScreenshot() const
 {
-    libsiedler2::PixelBufferBGRA buffer(curRenderSize.x, curRenderSize.y);
-    glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    const auto windowSize = VIDEODRIVER.GetWindowSize();
+    libsiedler2::PixelBufferBGRA buffer(windowSize.width, windowSize.height);
+    glReadPixels(0, 0, windowSize.width, windowSize.height, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
     const bfs::path outFilepath =
       RTTRCONFIG.ExpandPath(s25::folders::screenshots) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");

@@ -128,15 +128,20 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     int wndPos = SDL_WINDOWPOS_CENTERED;
 
     const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
+    unsigned commonFlags = SDL_WINDOW_OPENGL;
+
+#if SDL_VERSION_ATLEAST(2, 0, 1)
+    commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+#endif
 
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                              SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
+                              commonFlags | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
 
     // Fallback to non-fullscreen
     if(!window && fullscreen)
     {
         window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+                                  commonFlags | SDL_WINDOW_RESIZABLE);
     }
 
     if(!window)
@@ -221,6 +226,12 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 void VideoSDL2::PrintError(const std::string& msg) const
 {
     boost::nowide::cerr << msg << std::endl;
+}
+
+void VideoSDL2::ShowErrorMessage(const std::string& title, const std::string& message)
+{
+    // window==nullptr is okay too ("no parent")
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), window);
 }
 
 void VideoSDL2::HandlePaste()
@@ -346,7 +357,7 @@ bool VideoSDL2::MessageLoop()
                 break;
             }
             case SDL_MOUSEBUTTONDOWN:
-                mouse_xy.pos = Position(ev.button.x, ev.button.y);
+                mouse_xy.pos = getGuiScale().screenToView(Position(ev.button.x, ev.button.y));
 
                 if(/*!mouse_xy.ldown && */ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -360,7 +371,7 @@ bool VideoSDL2::MessageLoop()
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
-                mouse_xy.pos = Position(ev.button.x, ev.button.y);
+                mouse_xy.pos = getGuiScale().screenToView(Position(ev.button.x, ev.button.y));
 
                 if(/*mouse_xy.ldown &&*/ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -387,7 +398,7 @@ bool VideoSDL2::MessageLoop()
             }
             break;
             case SDL_MOUSEMOTION:
-                mouse_xy.pos = Position(ev.motion.x, ev.motion.y);
+                mouse_xy.pos = getGuiScale().screenToView(Position(ev.motion.x, ev.motion.y));
                 CallBack->Msg_MouseMove(mouse_xy);
                 break;
         }
@@ -427,8 +438,9 @@ OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 
 void VideoSDL2::SetMousePos(Position pos)
 {
+    const auto screenPos = getGuiScale().viewToScreen(pos);
     mouse_xy.pos = pos;
-    SDL_WarpMouseInWindow(window, pos.x, pos.y);
+    SDL_WarpMouseInWindow(window, screenPos.x, screenPos.y);
 }
 
 KeyEvent VideoSDL2::GetModKeyState() const

@@ -9,49 +9,52 @@
 #include "gameData/LandscapeDesc.h"
 #include <string>
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
-    enum class MapStyle
-    {
-        Water,
-        Land,
-        Mixed
-    };
-    constexpr auto maxEnumValue(MapStyle) { return MapStyle::Mixed; }
+enum class MapStyle
+{
+    Water,
+    Land,
+    Mixed
+};
+constexpr auto maxEnumValue(MapStyle)
+{
+    return MapStyle::Mixed;
+}
 
-    enum class MountainDistance : uint8_t
-    {
-        Close = 5,
-        Normal = 15,
-        Far = 25,
-        VeryFar = 30
-    };
+enum class MountainDistance : uint8_t
+{
+    Close = 5,
+    Normal = 15,
+    Far = 25,
+    VeryFar = 30
+};
 
-    enum class IslandAmount : uint8_t
-    {
-        Few = 0,
-        Normal = 10,
-        Many = 30
-    };
+enum class IslandAmount : uint8_t
+{
+    Few = 0,
+    Normal = 10,
+    Many = 30
+};
 
-    struct MapSettings
-    {
-        void MakeValid();
+struct MapSettings
+{
+    void MakeValid();
 
-        std::string name, author;
-        unsigned numPlayers = 2;
-        MapExtent size = MapExtent::all(128);
-        unsigned short ratioGold = 9;
-        unsigned short ratioIron = 36;
-        unsigned short ratioCoal = 40;
-        unsigned short ratioGranite = 15;
-        unsigned short rivers = 15;
-        unsigned short trees = 40;
-        unsigned short stonePiles = 5;
-        IslandAmount islands = IslandAmount::Few;
-        MountainDistance mountainDistance = MountainDistance::Normal;
-        DescIdx<LandscapeDesc> type = DescIdx<LandscapeDesc>(0);
-        MapStyle style = MapStyle::Mixed;
-    };
+    std::string name, author;
+    unsigned numPlayers = 2;
+    MapExtent size = MapExtent::all(128);
+    unsigned short ratioGold = 9;
+    unsigned short ratioIron = 36;
+    unsigned short ratioCoal = 40;
+    unsigned short ratioGranite = 15;
+    unsigned short rivers = 15;
+    unsigned short trees = 40;
+    unsigned short stonePiles = 5;
+    IslandAmount islands = IslandAmount::Few;
+    MountainDistance mountainDistance = MountainDistance::Normal;
+    DescIdx<LandscapeDesc> type = DescIdx<LandscapeDesc>(0);
+    MapStyle style = MapStyle::Mixed;
+};
 
-}} // namespace rttr::mapGenerator
+} // namespace rttr::mapGenerator

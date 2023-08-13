@@ -4,6 +4,8 @@
 
 #include "driver/VideoDriver.h"
 #include "commonDefines.h"
+#include "driver/VideoDriverLoaderInterface.h"
+#include "helpers/mathFuncs.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -17,7 +19,8 @@ IVideoDriver::~IVideoDriver() = default;
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
-    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0)
+    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0), scaledRenderSize_(0, 0),
+      dpiScale_(1.f), guiScale_(100), autoGuiScale_(false)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
@@ -73,4 +76,46 @@ void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
 {
     windowSize_ = windowSize;
     renderSize_ = renderSize;
+
+    const auto ratioXY = PointF(renderSize_) / PointF(windowSize_.width, windowSize_.height);
+    dpiScale_ = (ratioXY.x + ratioXY.y) / 2.f; // use the average ratio of both axes
+
+    if(autoGuiScale_)
+        guiScale_ = GuiScale(getGuiScaleRange().recommendedPercent);
+
+    scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize);
+}
+
+void VideoDriver::setGuiScalePercent(unsigned percent)
+{
+    autoGuiScale_ = (percent == 0);
+    if(autoGuiScale_)
+        percent = getGuiScaleRange().recommendedPercent;
+
+    if(guiScale_.percent() == percent)
+        return;
+
+    // translate current mouse position to screen space
+    const auto screenPos = guiScale_.viewToScreen(mouse_xy.pos);
+
+    guiScale_ = GuiScale(percent);
+    scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize_);
+    CallBack->WindowResized();
+
+    // move cursor to new position in view space
+    // must happen after window resize event to avoid drawing spurious hover events
+    mouse_xy.pos = guiScale_.screenToView(screenPos);
+    CallBack->Msg_MouseMove(mouse_xy);
+}
+
+GuiScaleRange VideoDriver::getGuiScaleRange() const
+{
+    constexpr auto min = 100u;
+    const auto recommended = std::max(min, helpers::iround<unsigned>(dpiScale_ * 100.f));
+    const auto maxScaleXY = renderSize_ / PointF(800.f, 600.f);
+    const auto maxScale = std::min(maxScaleXY.x, maxScaleXY.y);
+    // if the window shrinks below its minimum size of 800x600, max can be smaller than recommended
+    const auto max = std::max(helpers::iround<unsigned>(maxScale * 100.f), recommended);
+
+    return GuiScaleRange{min, max, recommended};
 }

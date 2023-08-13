@@ -24,7 +24,7 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(AI::Info)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(JoinPlayerInfo)
 
 template<typename T>
-static std::enable_if_t<std::is_enum<T>::value, std::ostream&> operator<<(std::ostream& os, T enumVal)
+static std::enable_if_t<std::is_enum_v<T>, std::ostream&> operator<<(std::ostream& os, T enumVal)
 {
     return os << rttr::enum_cast(enumVal);
 }

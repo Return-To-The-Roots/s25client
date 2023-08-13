@@ -17,7 +17,7 @@ add_library(s25Common STATIC ${ALL_SRC})
 target_include_directories(s25Common PUBLIC include)
 target_link_libraries(s25Common PUBLIC s25util::common s25util::log Boost::boost)
 set_target_properties(s25Common PROPERTIES POSITION_INDEPENDENT_CODE ON CXX_EXTENSIONS OFF)
-target_compile_features(s25Common PUBLIC cxx_std_14)
+target_compile_features(s25Common PUBLIC cxx_std_17)
 
 if(RTTR_Assert_Enabled EQUAL 0)
     target_compile_definitions(s25Common PUBLIC RTTR_ENABLE_ASSERTS=0)

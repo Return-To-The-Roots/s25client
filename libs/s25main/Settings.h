@@ -27,6 +27,7 @@ struct PersistentWindowSettings
     DrawPoint lastPos = DrawPoint::Invalid();
     DrawPoint restorePos = DrawPoint::Invalid();
     bool isOpen = false;
+    bool isPinned = false;
     bool isMinimized = false;
 };
 
@@ -62,6 +63,7 @@ public:
         bool fullscreen;
         bool vbo;
         bool shared_textures;
+        unsigned guiScale; ///< UI scaling in percent; 0 indicates automatic selection
     } video;
 
     struct
@@ -104,6 +106,7 @@ public:
     {
         unsigned autosave_interval;
         bool invert_mouse;
+        bool enableWindowPinning;
     } interface;
 
     struct

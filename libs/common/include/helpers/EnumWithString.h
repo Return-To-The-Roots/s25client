@@ -29,18 +29,9 @@ struct EnumData
 };
 
 template<class T>
-constexpr decltype(getValues(detail::Tag<T>{})) EnumData<T>::values;
-
+inline constexpr std::size_t size = EnumData<T>::size;
 template<class T>
-constexpr decltype(getRawNames(detail::Tag<T>{})) EnumData<T>::rawNames;
-
-template<class T>
-constexpr size_t EnumData<T>::size;
-
-template<class T>
-constexpr std::size_t size = EnumData<T>::size; // NOLINT
-template<class T>
-constexpr auto values = EnumData<T>::values; // NOLINT
+inline constexpr auto values = EnumData<T>::values;
 
 template<class T>
 std::string toString(T value)
@@ -64,7 +55,8 @@ namespace detail {
         constexpr ignore_assign(T value) : value_(value) {}
         constexpr operator T() const { return value_; }
 
-        constexpr const ignore_assign& operator=(int) const { return *this; } // NOLINT
+        // NOLINTNEXTLINE(misc-unconventional-assign-operator)
+        constexpr const ignore_assign& operator=(int) const { return *this; }
 
         T value_;
     };
@@ -87,18 +79,17 @@ namespace detail {
 #define ENUM_WITH_STRING(EnumName, ...) \
     ENUM_WITH_STRING_IMPL(EnumName, BOOST_PP_SEQ_SIZE(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)), __VA_ARGS__)
 
-#define ENUM_WITH_STRING_IMPL(EnumName, size, ...)                                                                    \
-                                                                                                                      \
-    enum class EnumName                                                                                               \
-    {                                                                                                                 \
-        __VA_ARGS__                                                                                                   \
-    };                                                                                                                \
-                                                                                                                      \
-    namespace rttrEnum { namespace detail {                                                                           \
-            constexpr std::array<EnumName, size> getValues(Tag<EnumName>)                                             \
-            {                                                                                                         \
-                return {{IGNORE_ASSIGN(EnumName, __VA_ARGS__)}};                                                      \
-            }                                                                                                         \
-            constexpr std::array<const char*, size> getRawNames(Tag<EnumName>) { return {{STRINGIZE(__VA_ARGS__)}}; } \
-        }                                                                                                             \
+#define ENUM_WITH_STRING_IMPL(EnumName, size, ...)                                                                \
+                                                                                                                  \
+    enum class EnumName                                                                                           \
+    {                                                                                                             \
+        __VA_ARGS__                                                                                               \
+    };                                                                                                            \
+                                                                                                                  \
+    namespace rttrEnum::detail {                                                                                  \
+        constexpr std::array<EnumName, size> getValues(Tag<EnumName>)                                             \
+        {                                                                                                         \
+            return {{IGNORE_ASSIGN(EnumName, __VA_ARGS__)}};                                                      \
+        }                                                                                                         \
+        constexpr std::array<const char*, size> getRawNames(Tag<EnumName>) { return {{STRINGIZE(__VA_ARGS__)}}; } \
     }

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "GuiScale.h"
 #include "KeyEvent.h"
 #include "Point.h"
 #include "VideoMode.h"
@@ -63,6 +64,18 @@ public:
     virtual Extent GetRenderSize() const = 0;
     virtual bool IsFullscreen() const = 0;
 
+    /// Get the factor required to scale "normal" DPI to the display DPI
+    virtual float getDpiScale() const = 0;
+
+    /// Get the scale applied to the user interface
+    virtual const GuiScale& getGuiScale() const = 0;
+
+    /// Set the scale applied to the user interface in percent
+    virtual void setGuiScalePercent(unsigned percent) = 0;
+
+    /// Get minimum, maximum, and recommended GUI scale percentages for the current window and render size
+    virtual GuiScaleRange getGuiScaleRange() const = 0;
+
     /// Get state of the modifier keys
     virtual KeyEvent GetModKeyState() const = 0;
 
@@ -72,6 +85,9 @@ public:
     virtual bool IsInitialized() const = 0;
     /// Shall we support OpenGL? (Disabled for tests)
     virtual bool IsOpenGL() const = 0;
+
+    // Display the problem to the gamer
+    virtual void ShowErrorMessage(const std::string& title, const std::string& message) = 0;
 };
 
 class VideoDriverLoaderInterface;
