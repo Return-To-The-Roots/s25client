@@ -60,7 +60,7 @@ iwSettings::iwSettings()
                                NormalFont);
     optiongroup->SetSelection(SETTINGS.video.fullscreen); //-V807
 
-    AddCheckBox(ID_cbInvertMouse, DrawPoint(15, 124), Extent(150, 26), TextureColor::Grey, _("Invert mouse"),
+    AddCheckBox(ID_cbInvertMouse, DrawPoint(15, 124), Extent(150, 26), TextureColor::Grey, _("Invert Mouse Pan"),
                 NormalFont, false)
       ->setChecked(SETTINGS.interface.invertMouse);
     AddCheckBox(ID_cbStatisticScale, DrawPoint(200, 124), Extent(150, 26), TextureColor::Grey, _("Statistics Scale"),
