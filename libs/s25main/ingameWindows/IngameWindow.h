@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DrawPoint.h"
+#include "SnapOffset.h"
 #include "Window.h"
 #include "helpers/EnumArray.h"
 #include "gameData/const_gui_ids.h"
@@ -133,6 +134,7 @@ private:
     bool isPinned_;
     bool isMinimized_;
     bool isMoving;
+    SnapOffset snapOffset_;
     CloseBehavior closeBehavior_;
     helpers::EnumArray<ButtonState, IwButton> buttonStates_;
     PersistentWindowSettings* windowSettings_;
