@@ -5,7 +5,9 @@
 #include "IngameWindow.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "RTTR_Assert.h"
 #include "Settings.h"
+#include "WindowManager.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/EnumRange.h"
@@ -190,17 +192,12 @@ void IngameWindow::SetPinned(bool pinned)
 
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
-    // Maus muss sich auf der Titelleiste befinden
-    Rect title_rect(LOADER.GetImageN("resource", 36)->getWidth(), 0,
-                    static_cast<unsigned short>(GetSize().x - LOADER.GetImageN("resource", 36)->getWidth()
-                                                - LOADER.GetImageN("resource", 37)->getWidth()),
-                    LOADER.GetImageN("resource", 43)->getHeight());
-    title_rect.move(GetDrawPos());
-
-    if(IsPointInRect(mc.GetPos(), title_rect))
+    // Check if the mouse is on the title bar
+    if(IsPointInRect(mc.GetPos(), GetButtonBounds(IwButton::Title)))
     {
         // start moving
         isMoving = true;
+        snapOffset_ = SnapOffset::all(0);
         lastMousePos = mc.GetPos();
     } else
     {
@@ -256,18 +253,30 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
 
 void IngameWindow::MouseMove(const MouseCoords& mc)
 {
-    // Fenster bewegen, wenn die Bewegung aktiviert wurde
     if(isMoving)
     {
-        DrawPoint newPos = GetPos() + mc.GetPos() - lastMousePos;
-        // Make sure we don't move outside window on either side
-        DrawPoint newPosBounded =
-          elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - GetSize()));
-        // Fix mouse position if moved too far
-        if(newPosBounded != newPos)
-            VIDEODRIVER.SetMousePos(newPosBounded - GetPos() + lastMousePos);
+        // Calculate new window boundary rectangle without snapping
+        DrawPoint delta = mc.GetPos() - lastMousePos;
+        Rect wndRect = GetBoundaryRect();
+        RTTR_Assert(wndRect.getOrigin() == GetPos()); // The rest of the code assumes this to be true
+        wndRect.move(delta - snapOffset_);
 
-        SetPos(newPosBounded);
+        // Try to snap this window to any other
+        snapOffset_ = WINDOWMANAGER.snapWindow(this, wndRect);
+
+        // The cursor position is always relative to the position of the "unsnapped" window; bound the "unsnapped"
+        // window position to the screen…
+        DrawPoint newPos = wndRect.getOrigin();
+        DrawPoint newPosBounded =
+          elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - wndRect.getSize()));
+        // …and use it to fix the mouse position if moved too far
+        if(newPosBounded != newPos)
+            VIDEODRIVER.SetMousePos(newPosBounded - wndRect.getOrigin() + mc.GetPos());
+
+        // Set new position and re-calculate snap offset (window position may have been out of bounds)
+        SetPos(newPos + snapOffset_);
+        snapOffset_ = GetPos() - newPosBounded;
+
         lastMousePos = mc.GetPos();
     } else
     {
@@ -439,7 +448,7 @@ void IngameWindow::MoveNextToMouse()
 
 bool IngameWindow::IsMessageRelayAllowed() const
 {
-    return !isMinimized_;
+    return !isMinimized_ && !isMoving;
 }
 
 void IngameWindow::SaveOpenStatus(bool isOpen) const

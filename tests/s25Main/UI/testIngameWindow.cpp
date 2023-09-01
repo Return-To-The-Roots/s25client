@@ -549,4 +549,87 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
     }
 }
 
+BOOST_AUTO_TEST_CASE(WindowSnapping)
+{
+    SETTINGS.interface.windowSnapDistance = 10;
+
+    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), false);
+
+    auto& wnd1 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
+      std::make_unique<IngameWindow>(0, DrawPoint(0, 500), Extent(100, 100), "Test Window 1", nullptr)));
+    auto& wnd2 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
+      std::make_unique<IngameWindow>(0, DrawPoint(200, 480), Extent(100, 100), "Test Window 2", nullptr)));
+
+    {
+        const DrawPoint mousePosRel = DrawPoint(wnd2.GetSize().x / 2, 4);
+        const MouseCoords evLDown{wnd2.GetPos() + mousePosRel, true};
+        wnd2.MouseLeftDown(evLDown);
+
+        {
+            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-80, 0), true};
+            VIDEODRIVER.SetMousePos(mc.pos);
+            wnd2.MouseMove(mc);
+            BOOST_TEST(wnd2.GetPos() == DrawPoint(120, 480)); // Not in snap range yet
+            BOOST_TEST(VIDEODRIVER.GetMousePos() == (wnd2.GetPos() + mousePosRel));
+        }
+
+        {
+            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 0), true};
+            VIDEODRIVER.SetMousePos(mc.pos);
+            wnd2.MouseMove(mc);
+            BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 480)); // In snap range
+            BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
+            // Cursor position is off by snap offset
+            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd2.GetPos() + mousePosRel)) == DrawPoint(10, 0));
+        }
+
+        {
+            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 30), true};
+            // Reset mouse position to ensure it's properly updated in MouseMove()
+            VIDEODRIVER.SetMousePos(Position(0, 0));
+            wnd2.MouseMove(mc);
+            BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 500)); // Still in snap range
+            BOOST_TEST(VIDEODRIVER.GetMousePos() == Position(mc.pos.x, wnd2.GetPos().y + mousePosRel.y));
+            // Cursor position is off by snap offset
+            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd2.GetPos() + mousePosRel)) == DrawPoint(10, 0));
+        }
+    }
+
+    BOOST_TEST_CONTEXT("Snap to the closest window")
+    {
+        auto& wnd3 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
+          std::make_unique<IngameWindow>(0, DrawPoint(200, 0), Extent(100, 100), "Test Window 3", nullptr)));
+
+        const DrawPoint mousePosRel = DrawPoint(wnd3.GetSize().x / 2, 4);
+        const MouseCoords evLDown{wnd3.GetPos() + mousePosRel, true};
+        wnd3.MouseLeftDown(evLDown);
+
+        {
+            wnd1.SetPos(DrawPoint(0, 0));
+            wnd2.SetPos(DrawPoint(5, 0));
+            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 0), true};
+            VIDEODRIVER.SetMousePos(mc.pos);
+            wnd3.MouseMove(mc);
+            // In snap range of wnd1 and wnd2, but closest to wnd2
+            BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd2.GetPos().x + wnd2.GetSize().x, 0));
+            BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
+            // Cursor position is off by snap offset
+            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd3.GetPos() + mousePosRel)) == DrawPoint(5, 0));
+        }
+
+        {
+            wnd1.SetPos(DrawPoint(5, 0));
+            wnd2.SetPos(DrawPoint(0, 0));
+            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 0), true};
+            VIDEODRIVER.SetMousePos(mc.pos);
+            wnd3.MouseMove(mc);
+            // In snap range of wnd1 and wnd2, but closest to wnd1
+            BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd1.GetPos().x + wnd1.GetSize().x, 0));
+            BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
+            // Cursor position is off by snap offset
+            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd3.GetPos() + mousePosRel)) == DrawPoint(5, 0));
+        }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

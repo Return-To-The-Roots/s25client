@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "Point.h"
+#include "Rect.h"
+#include "SnapOffset.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "s25util/Singleton.h"
 #include <list>
@@ -121,6 +122,8 @@ public:
 
     void SetCursor(Cursor cursor = Cursor::Hand);
     Cursor GetCursor() const { return cursor_; }
+
+    SnapOffset snapWindow(Window* wnd, const Rect& wndRect) const;
 
 private:
     class Tooltip;

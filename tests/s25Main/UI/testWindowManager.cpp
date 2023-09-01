@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "DrawPoint.h"
 #include "PointOutput.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
 #include "helpers/containerUtils.h"
@@ -533,6 +535,23 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
     }
 
     mock::verify();
+}
+
+BOOST_FIXTURE_TEST_CASE(SnapWindow, uiHelper::Fixture)
+{
+    SETTINGS.interface.windowSnapDistance = 10;
+
+    WINDOWMANAGER.Show(std::make_unique<IngameWindow>(0, DrawPoint(0, 0), Extent(100, 100), "", nullptr));
+    auto* wnd =
+      &WINDOWMANAGER.Show(std::make_unique<IngameWindow>(0, DrawPoint(100, 0), Extent(100, 100), "", nullptr));
+
+    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->GetBoundaryRect()) == SnapOffset(0, 0));
+
+    wnd->SetPos(DrawPoint(111, 5));
+    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->GetBoundaryRect()) == SnapOffset(0, 0));
+
+    wnd->SetPos(DrawPoint(110, 5));
+    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->GetBoundaryRect()) == SnapOffset(-10, -5));
 }
 
 MOCK_BASE_CLASS(MockSettingsWnd, TransmitSettingsIgwAdapter)
