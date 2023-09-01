@@ -664,25 +664,10 @@ void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /
 
 static bool cmpVideoModes(const VideoMode& left, const VideoMode& right)
 {
-    if(left == right)
-        return false;
-    VideoMode leftRatio = getAspectRatio(left);
-    VideoMode rightRatio = getAspectRatio(right);
-    // Cmp ratios descending (so 16:9 is above 4:3 as wider ones are more commonly used)
-    if(leftRatio.width == rightRatio.width)
-    {
-        if(leftRatio.height == rightRatio.height)
-        {
-            // Same ratios -> cmp width/height
-            if(left.width == right.width)
-                return left.height < right.height;
-            else
-                return left.width < right.width;
-
-        } else
-            return leftRatio.height > rightRatio.height;
-    } else
-        return leftRatio.width > rightRatio.width;
+    if(left.width == right.width)
+        return left.height > right.height;
+    else
+        return left.width > right.width;
 }
 
 void dskOptions::loadVideoModes()
