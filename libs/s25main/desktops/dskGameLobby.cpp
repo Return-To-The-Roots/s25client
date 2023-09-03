@@ -233,24 +233,34 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     // Karte laden, um Kartenvorschau anzuzeigen
     if(!gameLobby_->isSavegame())
     {
-        // Map laden
-        libsiedler2::Archiv mapArchiv;
-        // Karteninformationen laden
-        if(int ec = libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv))
+        bool isMapPreviewEnabled = !lua || lua->IsMapPreviewEnabled();
+        if(!isMapPreviewEnabled)
         {
-            WINDOWMANAGER.ShowAfterSwitch(
-              std::make_unique<iwMsgbox>(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this,
-                                         MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
+            AddTextDeepening(70, DrawPoint(560, 40), Extent(220, 220), TextureColor::Grey, _("No preview"), LargeFont,
+                             COLOR_YELLOW);
+            AddText(71, DrawPoint(670, 40 + 220 + 10), _("Map: ") + GAMECLIENT.GetMapTitle(), COLOR_YELLOW,
+                    FontStyle::CENTER, NormalFont);
         } else
         {
-            auto* map = static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv.get(0));
-            ctrlPreviewMinimap* preview = AddPreviewMinimap(70, DrawPoint(560, 40), Extent(220, 220), map);
+            // Map laden
+            libsiedler2::Archiv mapArchiv;
+            // Karteninformationen laden
+            if(int ec = libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv))
+            {
+                WINDOWMANAGER.ShowAfterSwitch(
+                  std::make_unique<iwMsgbox>(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec),
+                                             this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
+            } else
+            {
+                auto* map = static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv.get(0));
+                ctrlPreviewMinimap* preview = AddPreviewMinimap(70, DrawPoint(560, 40), Extent(220, 220), map);
 
-            // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
-            // verschieben, da diese Position sonst skaliert wird!
-            ctrlText* text = AddText(71, DrawPoint(670, 0), _("Map: ") + GAMECLIENT.GetMapTitle(), COLOR_YELLOW,
-                                     FontStyle::CENTER, NormalFont);
-            text->SetPos(DrawPoint(text->GetPos().x, preview->GetPos().y + preview->GetMapArea().bottom + 10));
+                // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
+                // verschieben, da diese Position sonst skaliert wird!
+                ctrlText* text = AddText(71, DrawPoint(670, 0), _("Map: ") + GAMECLIENT.GetMapTitle(), COLOR_YELLOW,
+                                         FontStyle::CENTER, NormalFont);
+                text->SetPos(DrawPoint(text->GetPos().x, preview->GetPos().y + preview->GetMapArea().bottom + 10));
+            }
         }
     }
 
