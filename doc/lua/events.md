@@ -56,6 +56,9 @@ end
 Only meaningfull if `addonsAll=false` and `addonsSome=true`:
 Return a list with addonIds that the host can change.
 
+**isMapPreviewEnabled()**  
+Is map preview enabled. Default is true
+
 ## Game
 
 **onStart(isFirstStart)**  
