@@ -31,6 +31,7 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Draw_() override;
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void DrawPlayerBoxes();
     void DrawStatistic(StatisticType type);
     void DrawAxis();
 };
