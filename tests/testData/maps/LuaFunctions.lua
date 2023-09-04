@@ -20,6 +20,10 @@ function getAllowedChanges()
 	return {general=true, addonsAll=false, addonsSome=true, swapping=false, playerState = not isSinglePlayer, ownNation = true, ownColor=true, ownTeam=false, aiNation = false, aiColor=false, aiTeam=false}
 end
 
+function isMapPreviewEnabled()
+	return false
+end
+
 function onSettingsInit(isSinglePlayerArg, isSavegameArg)
 	isSinglePlayer = isSinglePlayerArg
 	isSavegame = isSavegameArg

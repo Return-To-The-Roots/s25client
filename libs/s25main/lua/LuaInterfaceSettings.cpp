@@ -237,3 +237,13 @@ std::vector<AddonId> LuaInterfaceSettings::GetAllowedAddons()
     }
     return std::vector<AddonId>();
 }
+
+bool LuaInterfaceSettings::IsMapPreviewEnabled()
+{
+    kaguya::LuaRef func = lua["isMapPreviewEnabled"];
+    if(func.type() == LUA_TFUNCTION)
+    {
+        return func.call<bool>();
+    }
+    return true;
+}

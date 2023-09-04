@@ -15,9 +15,24 @@
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
+#include "ogl/glFont.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
+
+namespace {
+
+std::string getPlayerStatus(const GamePlayer& player)
+{
+    if(player.IsDefeated())
+        return "---";
+    else if(player.isHuman())
+        return "#" + std::to_string(player.GetPlayerId() + 1);
+    else
+        return _("COMP");
+}
+
+} // namespace
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     : IngameWindow(CGI_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 336), _("Statistics"),
@@ -254,6 +269,17 @@ void iwStatistics::Draw_()
         return;
 
     // Die farbigen Boxen unter den Spielerportraits malen
+    DrawPlayerBoxes();
+
+    // Koordinatenachsen malen
+    DrawAxis();
+
+    // Statistiklinien malen
+    DrawStatistic(currentView);
+}
+
+void iwStatistics::DrawPlayerBoxes()
+{
     unsigned short startX = 126 - numPlayingPlayers * 17;
     DrawPoint drawPt = GetDrawPos() + DrawPoint(startX, 68);
     for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
@@ -263,15 +289,16 @@ void iwStatistics::Draw_()
             continue;
 
         if(activePlayers[i])
-            DrawRectangle(Rect(drawPt, Extent(34, 12)), player.color);
+        {
+            auto const playerBoxRect = Rect(drawPt, Extent(34, 12));
+            auto const playerStatusPosition =
+              DrawPoint(playerBoxRect.getOrigin() + playerBoxRect.getSize() / 2 + DrawPoint(0, 1));
+            DrawRectangle(playerBoxRect, player.color);
+            SmallFont->Draw(playerStatusPosition, getPlayerStatus(player), FontStyle::CENTER | FontStyle::VCENTER,
+                            COLOR_YELLOW);
+        }
         drawPt.x += 34;
     }
-
-    // Koordinatenachsen malen
-    DrawAxis();
-
-    // Statistiklinien malen
-    DrawStatistic(currentView);
 }
 
 void iwStatistics::DrawStatistic(StatisticType type)
