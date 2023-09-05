@@ -65,6 +65,8 @@ enum
     ID_grpDebugData,
     ID_txtUPNP,
     ID_grpUPNP,
+    ID_txtInvertScroll,
+    ID_grpInvertScroll,
     ID_txtSmartCursor,
     ID_grpSmartCursor,
     ID_txtGFInfo,
@@ -199,8 +201,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupAllgemein->AddText(ID_txtIpv6, curPos, _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(ID_grpIpv6, GroupSelectType::Check);
-    ipv6->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("IPv6"), NormalFont);
-    ipv6->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("IPv4"), NormalFont);
+    ipv6->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("IPv6"), NormalFont);
+    ipv6->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("IPv4"), NormalFont);
     ipv6->SetSelection(SETTINGS.server.ipv6);
     // ipv6-feld ggf (de-)aktivieren
     ipv6->GetCtrl<ctrlButton>(1)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
@@ -219,8 +221,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     groupAllgemein->AddText(ID_txtUPNP, curPos, _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(ID_grpUPNP, GroupSelectType::Check);
-    upnp->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
-    upnp->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
+    upnp->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
+    upnp->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
     upnp->SetSelection(SETTINGS.global.use_upnp);
     curPos.y += 30;
 
@@ -241,21 +243,30 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
     curPos.y += 50;
 
+    groupAllgemein->AddText(ID_txtInvertScroll, curPos, _("Invert Mouse Pan:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlOptionGroup* invertScroll = groupAllgemein->AddOptionGroup(ID_grpInvertScroll, GroupSelectType::Check);
+    invertScroll->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
+                                _("Map moves in the opposite direction the mouse is moved when scrolling/panning."));
+    invertScroll->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
+                                _("Map moves in the same direction the mouse is moved when scrolling/panning."));
+    invertScroll->SetSelection(SETTINGS.interface.invertMouse);
+    curPos.y += 30;
+
     groupAllgemein->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(ID_grpSmartCursor, GroupSelectType::Check);
-    smartCursor->AddTextButton(
-      ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
-      _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
-    smartCursor->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
+    smartCursor->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
                                _("Place cursor on default button for new dialogs / action windows (default)"));
+    smartCursor->AddTextButton(
+      ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
+      _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
     smartCursor->SetSelection(SETTINGS.global.smartCursor);
     curPos.y += 50;
 
     groupAllgemein->AddText(ID_txtDebugData, curPos, _("Submit debug data:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpDebugData, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btSubmitDebugOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"),
+    optiongroup->AddTextButton(ID_btSubmitDebugOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"),
                                NormalFont);
-    optiongroup->AddTextButton(ID_btSubmitDebugAsk, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Ask always"),
+    optiongroup->AddTextButton(ID_btSubmitDebugAsk, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Ask always"),
                                NormalFont);
 
     optiongroup->SetSelection((SETTINGS.global.submit_debug_data == 1) ? ID_btSubmitDebugOn :
@@ -264,8 +275,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     groupAllgemein->AddText(ID_txtGFInfo, curPos, _("Show GameFrame Info:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(ID_grpGFInfo, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
-    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
+    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
 
     optiongroup->SetSelection(SETTINGS.global.showGFInfo);
 
@@ -278,9 +289,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Vollbild"
     groupGrafik->AddText(ID_txtFullscreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Fullscreen"),
-                               NormalFont);
-    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
+    optiongroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
+    optiongroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
     curPos.y += 50;
 
     // "VSync"

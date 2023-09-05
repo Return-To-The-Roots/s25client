@@ -105,7 +105,7 @@ public:
     struct
     {
         unsigned autosave_interval;
-        bool revert_mouse;
+        bool invertMouse;
         bool enableWindowPinning;
         unsigned windowSnapDistance;
     } interface;
