@@ -75,6 +75,7 @@ pipeline {
                         git status
                         git submodule foreach git status
                         git restore-mtime -c || echo "Unable to restore file modification time" >&2
+                        git submodule foreach "git restore-mtime -c || echo "Unable to restore file modification time" >&2"
                     """
                 }
                 sh 'rm -rf result'
