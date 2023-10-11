@@ -54,6 +54,23 @@
 #include <helpers/chronoIO.h>
 #include <memory>
 
+namespace {
+void copyFileIfPathDifferent(const boost::filesystem::path& src_path, const boost::filesystem::path& dst_path)
+{
+    if(src_path != dst_path)
+    {
+        boost::system::error_code ignoredEc;
+        constexpr auto overwrite_existing =
+#if BOOST_VERSION >= 107400
+          boost::filesystem::copy_options::overwrite_existing;
+#else
+          boost::filesystem::copy_option::overwrite_if_exists;
+#endif
+        copy_file(src_path, dst_path, overwrite_existing, ignoredEc);
+    }
+}
+} // namespace
+
 void GameClient::ClientConfig::Clear()
 {
     server.clear();
@@ -113,24 +130,18 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     return true;
 }
 
-bool GameClient::HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type)
+bool GameClient::HostGame(const CreateServerInfo& csi, const MapDescription& map)
 {
     std::string hostPw = createRandString(20);
-    // Copy the map to the played map folders to avoid having to transmit it from the (local) server
-    const auto playedMapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map_path.filename();
-    if(playedMapPath != map_path)
+    // Copy the map and lua to the played map folders to avoid having to transmit it from the (local) server
+    const auto playedMapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map.map_path.filename();
+    copyFileIfPathDifferent(map.map_path, playedMapPath);
+    if(map.lua_path)
     {
-        boost::system::error_code ignoredEc;
-        constexpr auto overwrite_existing =
-#if BOOST_VERSION >= 107400
-          boost::filesystem::copy_options::overwrite_existing;
-#else
-          boost::filesystem::copy_option::overwrite_if_exists;
-#endif
-        copy_file(map_path, playedMapPath, overwrite_existing, ignoredEc);
+        const auto playedMapLuaPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map.lua_path->filename();
+        copyFileIfPathDifferent(*map.lua_path, playedMapLuaPath);
     }
-    return GAMESERVER.Start(csi, map_path, map_type, hostPw)
-           && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
+    return GAMESERVER.Start(csi, map, hostPw) && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
 }
 
 /**

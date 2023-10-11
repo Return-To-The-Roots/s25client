@@ -112,8 +112,7 @@ GameServer::~GameServer()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spiel hosten
-bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type,
-                       const std::string& hostPw)
+bool GameServer::Start(const CreateServerInfo& csi, const MapDescription& map, const std::string& hostPw)
 {
     Stop();
 
@@ -124,8 +123,8 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
     config.servertype = csi.type;
     config.port = csi.port;
     config.ipv6 = csi.ipv6;
-    mapinfo.type = map_type;
-    mapinfo.filepath = map_path;
+    mapinfo.type = map.map_type;
+    mapinfo.filepath = map.map_path;
 
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
     switch(mapinfo.type)
@@ -185,7 +184,10 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
     if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
 
-    bfs::path luaFilePath = bfs::path(mapinfo.filepath).replace_extension("lua");
+    if(map.lua_path.has_value() && !bfs::is_regular_file(*map.lua_path))
+        return false;
+
+    bfs::path luaFilePath = map.lua_path.get_value_or(bfs::path(mapinfo.filepath).replace_extension("lua"));
     if(bfs::is_regular_file(luaFilePath))
     {
         if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))
