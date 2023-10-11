@@ -350,7 +350,7 @@ void dskSelectMap::StartServer()
         const std::string& mapPath = table->GetItemText(*selection, 5);
 
         // Server starten
-        if(!GAMECLIENT.HostGame(csi, mapPath, MapType::OldMap))
+        if(!GAMECLIENT.HostGame(csi, {mapPath, MapType::OldMap}))
             GoBack();
         else
         {

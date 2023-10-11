@@ -121,10 +121,11 @@ void dskCampaignMissionSelection::UpdateMissionPage()
     }
 }
 
-void dskCampaignMissionSelection::StartServer(const boost::filesystem::path& mapPath)
+void dskCampaignMissionSelection::StartServer(const boost::filesystem::path& mapPath,
+                                              const boost::optional<boost::filesystem::path>& luaPath)
 {
     // Start server
-    if(!GAMECLIENT.HostGame(csi_, mapPath, MapType::OldMap))
+    if(!GAMECLIENT.HostGame(csi_, {mapPath, MapType::OldMap, luaPath}))
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Hosting of game not possible"), this,
                                                       MsgboxButton::Ok, MsgboxIcon::ExclamationRed, ID_msgBoxError));

@@ -7,6 +7,7 @@
 #include "desktops/Desktop.h"
 #include "network/CreateServerInfo.h"
 #include <boost/filesystem.hpp>
+#include <boost/optional.hpp>
 #include <boost/signals2/connection.hpp>
 
 struct CampaignDescription;
@@ -20,7 +21,7 @@ private:
     void UpdateMissionPage();
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void StartServer(const boost::filesystem::path& mapPath);
+    void StartServer(const boost::filesystem::path& mapPath, const boost::optional<boost::filesystem::path>& luaPath);
     void UpdateEnabledStateOfNextPreviousButton();
     boost::filesystem::path campaignFolder_;
     CreateServerInfo csi_;
