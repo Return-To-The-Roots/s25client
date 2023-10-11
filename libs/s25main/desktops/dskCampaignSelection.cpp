@@ -169,7 +169,8 @@ void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
 void dskCampaignSelection::FillCampaignsTable()
 {
     const size_t numFaultyCampaignsPrior = brokenCampaignPaths_.size();
-    static const std::array<std::string, 2> campaignFolders = {{s25::folders::campaignsBuiltin, s25::folders::campaignsUser}};
+    static const std::array<std::string, 2> campaignFolders = {
+      {s25::folders::campaignsBuiltin, s25::folders::campaignsUser}};
 
     auto* table = GetCtrl<ctrlTable>(ID_Table);
     for(const auto& campaignFolder : campaignFolders)

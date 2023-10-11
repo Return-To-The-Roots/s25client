@@ -199,7 +199,7 @@ void iwLoad::SaveLoad()
     if(!table->GetSelection())
         return;
 
-    if(GAMECLIENT.HostGame(csi, table->GetItemText(*table->GetSelection(), 4), MapType::Savegame))
+    if(GAMECLIENT.HostGame(csi, {table->GetItemText(*table->GetSelection(), 4), MapType::Savegame}))
     {
         std::unique_ptr<ILobbyClient> lobbyClient;
         if(csi.type == ServerType::Lobby)

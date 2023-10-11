@@ -88,7 +88,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
                 WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-                if(GAMECLIENT.HostGame(csi, mostRecentFilepath, MapType::Savegame))
+                if(GAMECLIENT.HostGame(csi, {mostRecentFilepath, MapType::Savegame}))
                     WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
                 else
                 {

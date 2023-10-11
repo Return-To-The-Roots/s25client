@@ -13,6 +13,7 @@
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/ChatDestination.h"
+#include "gameTypes/MapDescription.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/ServerType.h"
@@ -79,8 +80,9 @@ public:
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port,
                  bool host, bool use_ipv6);
+
     /// Start the server and connect to it
-    bool HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type);
+    bool HostGame(const CreateServerInfo& csi, const MapDescription& map);
     void Run();
     void Stop();
 
