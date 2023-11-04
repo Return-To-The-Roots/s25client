@@ -27,8 +27,8 @@ jobs:
           #  Use system clang (14)
           #   Use (compiler) default C++ 14 standard
           #   Use system cmake (version gets ignored below)
-          #   Use boost installed on this GHA image
-          - { compiler: clang,    os: macos-12,     type: Debug, boost: 1.82.0 }
+          #   Use boost installed via brew
+          - { compiler: clang,    os: macos-12,     type: Debug }
 
           # Linux:
           #  Oldest Compilers 
@@ -149,8 +149,11 @@ jobs:
         run: |
           brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
           echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
-          ls -la /usr/local/Cellar/boost/
-          BOOST_ROOT=$(find /usr/local/Cellar/boost/${BOOST_VERSION}_* -maxdepth 0)
+          echo "Available Boost installs: $(ls /usr/local/Cellar/boost/)"
+          # Use the latest (last folder)
+          BOOST_ROOT=$(find /usr/local/Cellar/boost/* -maxdepth 0 -type d | tail -n1)
+          [[ -n "$BOOST_ROOT" ]]
+          echo "Choosen Boost: $BOOST_ROOT"
           echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
 
       - name: Setup CCache
