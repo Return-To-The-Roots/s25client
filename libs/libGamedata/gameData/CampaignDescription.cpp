@@ -37,22 +37,12 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     luaData.checkUnused();
 }
 
-size_t CampaignDescription::getNumMaps()
-{
-    return mapNames.size();
-}
-
-std::string CampaignDescription::getMapName(const size_t idx) const
-{
-    return mapNames.at(idx);
-}
-
 boost::filesystem::path CampaignDescription::getLuaFilePath(const size_t idx) const
 {
-    return (RTTRCONFIG.ExpandPath(luaFolder) / mapNames.at(idx)).replace_extension("lua");
+    return (RTTRCONFIG.ExpandPath(luaFolder) / getMapName(idx)).replace_extension("lua");
 }
 
 boost::filesystem::path CampaignDescription::getMapFilePath(const size_t idx) const
 {
-    return RTTRCONFIG.ExpandPath(mapFolder) / mapNames.at(idx);
+    return RTTRCONFIG.ExpandPath(mapFolder) / getMapName(idx);
 }
