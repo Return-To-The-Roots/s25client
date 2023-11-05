@@ -24,10 +24,10 @@ struct CampaignDescription
 
     CampaignDescription() = default;
     explicit CampaignDescription(const kaguya::LuaRef& table);
-    size_t getNumMaps();
+    size_t getNumMaps() const { return mapNames.size(); }
+    const std::string& getMapName(const size_t idx) const { return mapNames.at(idx); }
     boost::filesystem::path getLuaFilePath(size_t idx) const;
     boost::filesystem::path getMapFilePath(size_t idx) const;
-    std::string getMapName(size_t idx) const;
 
 private:
     std::string mapFolder;
