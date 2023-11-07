@@ -29,6 +29,6 @@ campaign = {
     maxHumanPlayers= 1,
     difficulty = "easy",
     mapFolder = "<RTTR_GAME>/DATA/MAPS2",
-    luaFolder = "<RTTR_RTTR>/CAMPAIGNS/WORLD",
+    luaFolder = "<RTTR_RTTR>/CAMPAIGNS/world",
     maps = { "AFRICA.WLD","AUSTRA.WLD","EUROPE.WLD","GREEN.WLD","JAPAN.WLD","NAMERICA.WLD","NASIA.WLD","SAMERICA.WLD","SASIA.WLD"}
 }
