@@ -6,20 +6,20 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 # Add a custom campaign
 
-You can have a look into the already existing original Settlers 2 campaigns in the subfolders `RTTR/CAMPAIGNS/roman` and `RTTR/CAMPAIGNS/continent` for an example.
+You can have a look into the already existing original Settlers 2 campaigns in the subfolders `RTTR/campaigns/roman` and `RTTR/campaigns/continent` for an example.
 We will now create an example campaign `garden`.
 
 ## Location for adding a new campaign
 
-To add a new custom campaign you have to create a new subfolder with your campaign name under `RTTR/CAMPAIGNS/` in the install directory or under `<RTTR_USERDATA>/CAMPAIGNS/`.
+To add a new custom campaign you have to create a new subfolder with your campaign name under `RTTR/campaigns/` in the install directory or under `<RTTR_USERDATA>/campaigns/`.
 `<RTTR_USERDATA>` is the placeholder for the RttR folder in your user dir, e.g. `~/.s25rttr` on Linux or "Saved Games" on Windows.  
 This subfolder will be filled with all the needed data for the campaign.
-We create the subfolder `RTTR/CAMPAIGNS/garden` for our new example campaign.
+We create the subfolder `RTTR/campaigns/garden` for our new example campaign.
 
 
 ## Lua campaign description file
 
-First we have to add a `campaign.lua` file to our campaign folder `RTTR/CAMPAIGNS/garden`. This file describes the settings and needed stuff for our new campaign `garden`.
+First we have to add a `campaign.lua` file to our campaign folder `RTTR/campaigns/garden`. This file describes the settings and needed stuff for our new campaign `garden`.
 
 ```
 function getRequiredLuaVersion()
@@ -42,11 +42,11 @@ campaign = {
     name = _"name",
     shortDescription = _"shortDescription",
     longDescription = _"longDescription",
-    image = "<RTTR_RTTR>/CAMPAIGNS/garden/garden.bmp",
+    image = "<RTTR_RTTR>/campaigns/garden/garden.bmp",
     maxHumanPlayers= 1,
     difficulty = "easy",
-    mapFolder = "<RTTR_RTTR>/CAMPAIGNS/garden",
-    luaFolder = "<RTTR_RTTR>/CAMPAIGNS/garden",
+    mapFolder = "<RTTR_RTTR>/campaigns/garden",
+    luaFolder = "<RTTR_RTTR>/campaigns/garden",
     maps = { "MISS01.WLD","MISS02.WLD"}
 }
 ```
@@ -81,16 +81,18 @@ If you want a field to be translated you have to add the translation as describe
 
 Hints:
 - The lua file of a map must have the same name as the map it self but with the extension `.lua` to be found correctly. The lua and the map file must not be in the same folder because the path can be specified differently.
+- To work on case sensitive os (like linux) the file name of the lua file must have the same case as the map file name. This applies to the map names in the campaign.lua file too.
+For example: `MISS01.WLD, MISS01.lua` is correct and `MISS01.WLD, miss01.lua` will not work on linux
 - All paths can contain placeholders like `<RTTR_RTTR>, ...`
 
 ## Final view of the example garden campaign folder
 ```
-RTTR/CAMPAIGNS/garden
-RTTR/CAMPAIGNS/garden/campaign.lua
-RTTR/CAMPAIGNS/garden/garden.bmp
-RTTR/CAMPAIGNS/garden/MISS01.lua
-RTTR/CAMPAIGNS/garden/MISS01.WLD
-RTTR/CAMPAIGNS/garden/MISS02.lua
-RTTR/CAMPAIGNS/garden/MISS02.WLD
+RTTR/campaigns/garden
+RTTR/campaigns/garden/campaign.lua
+RTTR/campaigns/garden/garden.bmp
+RTTR/campaigns/garden/MISS01.lua
+RTTR/campaigns/garden/MISS01.WLD
+RTTR/campaigns/garden/MISS02.lua
+RTTR/campaigns/garden/MISS02.WLD
 
  ```
