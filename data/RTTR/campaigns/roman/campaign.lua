@@ -29,6 +29,6 @@ campaign = {
     maxHumanPlayers = 1,
     difficulty = "easy",
     mapFolder = "<RTTR_GAME>/DATA/MAPS",
-    luaFolder = "<RTTR_RTTR>/CAMPAIGNS/roman",
+    luaFolder = "<RTTR_RTTR>/campaigns/roman",
     maps = { "MISS200.WLD","MISS201.WLD","MISS202.WLD","MISS203.WLD","MISS204.WLD","MISS205.WLD","MISS206.WLD","MISS207.WLD","MISS208.WLD","MISS209.WLD"}
 }
