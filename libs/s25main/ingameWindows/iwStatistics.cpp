@@ -12,6 +12,7 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
+#include "helpers/Range.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
@@ -268,8 +269,8 @@ void iwStatistics::Draw_()
     if(IsMinimized())
         return;
 
-    // Die farbigen Boxen unter den Spielerportraits malen
-    DrawPlayerBoxes();
+    // Draw the alliances and the colored boxes under the portraits
+    DrawPlayerOverlays();
 
     // Koordinatenachsen malen
     DrawAxis();
@@ -278,26 +279,48 @@ void iwStatistics::Draw_()
     DrawStatistic(currentView);
 }
 
-void iwStatistics::DrawPlayerBoxes()
+void iwStatistics::DrawPlayerOverlays()
 {
-    unsigned short startX = 126 - numPlayingPlayers * 17;
-    DrawPoint drawPt = GetDrawPos() + DrawPoint(startX, 68);
+    DrawPoint drawPt = GetDrawPos() + DrawPoint(126 - numPlayingPlayers * 17, 22);
     for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
         if(!player.isUsed())
             continue;
 
+        // Draw the alliances at top of the player image
+        DrawPlayerAlliances(drawPt, player);
+        // Draw player boxes and player status at bottom
         if(activePlayers[i])
-        {
-            auto const playerBoxRect = Rect(drawPt, Extent(34, 12));
-            auto const playerStatusPosition =
-              DrawPoint(playerBoxRect.getOrigin() + playerBoxRect.getSize() / 2 + DrawPoint(0, 1));
-            DrawRectangle(playerBoxRect, player.color);
-            SmallFont->Draw(playerStatusPosition, getPlayerStatus(player), FontStyle::CENTER | FontStyle::VCENTER,
-                            COLOR_YELLOW);
-        }
+            DrawPlayerBox(drawPt, player);
         drawPt.x += 34;
+    }
+}
+
+void iwStatistics::DrawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player)
+{
+    auto const playerBoxRect = Rect(DrawPoint(drawPt.x, drawPt.y + 47), Extent(34, 12));
+    auto const playerStatusPosition =
+      DrawPoint(playerBoxRect.getOrigin() + playerBoxRect.getSize() / 2 + DrawPoint(0, 1));
+    DrawRectangle(playerBoxRect, player.color);
+    SmallFont->Draw(playerStatusPosition, getPlayerStatus(player), FontStyle::CENTER | FontStyle::VCENTER,
+                    COLOR_YELLOW);
+}
+
+void iwStatistics::DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player)
+{
+    constexpr unsigned spacingAllianceRects = 1;
+    constexpr Extent allianceRectExtent(4, 6);
+    constexpr unsigned allianceRectOffset = allianceRectExtent.x + spacingAllianceRects;
+
+    auto pactPos = drawPt + DrawPoint::all(spacingAllianceRects);
+    for(auto idxOther : helpers::range(gwv.GetWorld().GetNumPlayers()))
+    {
+        if(idxOther != player.GetPlayerId() && player.IsAlly(idxOther))
+        {
+            DrawRectangle(Rect(pactPos, allianceRectExtent), gwv.GetWorld().GetPlayer(idxOther).color);
+            pactPos.x += allianceRectOffset;
+        }
     }
 }
 
