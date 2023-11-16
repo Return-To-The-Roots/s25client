@@ -288,11 +288,13 @@ void iwStatistics::DrawPlayerOverlays()
         if(!player.isUsed())
             continue;
 
-        // Draw the alliances at top of the player image
-        DrawPlayerAlliances(drawPt, player);
-        // Draw player boxes and player status at bottom
         if(activePlayers[i])
+        {
+            // Draw the alliances at top of the player image
+            DrawPlayerAlliances(drawPt, player);
+            // Draw player boxes and player status at bottom
             DrawPlayerBox(drawPt, player);
+        }
         drawPt.x += 34;
     }
 }
