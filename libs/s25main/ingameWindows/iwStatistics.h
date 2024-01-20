@@ -9,6 +9,7 @@
 
 class ctrlText;
 class GameWorldViewer;
+class GamePlayer;
 
 /// Fenster mit den Statistiken.
 class iwStatistics : public IngameWindow
@@ -31,7 +32,9 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Draw_() override;
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    void DrawPlayerBoxes();
+    void DrawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player);
+    void DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player);
+    void DrawPlayerOverlays();
     void DrawStatistic(StatisticType type);
     void DrawAxis();
 };

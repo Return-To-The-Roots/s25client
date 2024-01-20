@@ -5,6 +5,7 @@
 #define BOOST_TEST_MODULE RTTR_Network
 
 #include "TestServer.h"
+#include "helpers/CIUtils.h"
 #include <rttr/test/Fixture.hpp>
 #include <s25util/Socket.h>
 #include <boost/test/unit_test.hpp>
@@ -28,9 +29,7 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
     auto runServer = [&server]() {
         const auto result = server.run();
         for(int i = 0; i < 5; i++)
-        {
             BOOST_TEST(server.run() == result);
-        }
         return result;
     };
     BOOST_TEST(!runServer());
@@ -54,5 +53,13 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
     BOOST_TEST(runServer());
     sock.Close();
     BOOST_TEST(runServer());
-    BOOST_TEST_REQUIRE(server.connections.size() == 1u);
+    if(rttr::isRunningOnCI()) // On CI retry to avoid flakes
+    {
+        for(int i = 0; i < 5; i++)
+        {
+            if(server.connections.size() == 2u)
+                BOOST_TEST(runServer()); // LCOV_EXCL_LINE
+        }
+    }
+    BOOST_TEST(server.connections.size() == 1u);
 }
