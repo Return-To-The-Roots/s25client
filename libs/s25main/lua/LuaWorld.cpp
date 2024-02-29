@@ -84,7 +84,10 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
 
     gw.DestroyNO(pt, false);
     gw.SetNO(pt, new noStaticObject(pt, id, file, size));
-    gw.RecalcBQAroundPoint(pt);
+    if(size > 1)
+        gw.RecalcBQAroundPointBig(pt);
+    else if(size == 1)
+        gw.RecalcBQAroundPoint(pt);
     return true;
 }
 
