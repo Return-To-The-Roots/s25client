@@ -977,13 +977,8 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             foundPos = FindBestPosition(around, AIResource::Ironore, BuildingQuality::Mine, searchRadius);
             break;
         case BuildingType::GraniteMine:
-            if(!ggs.isEnabled(
-                 AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
-                foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, searchRadius);
-            else
-                foundPos = SimpleFindPosition(around, BuildingQuality::Mine, searchRadius);
+			foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, searchRadius);
             break;
-
         case BuildingType::Fishery:
             foundPos = FindBestPosition(around, AIResource::Fish, BUILDING_SIZE[type], searchRadius);
             if(foundPos.isValid() && !ValidFishInRange(foundPos))
