@@ -977,7 +977,7 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             foundPos = FindBestPosition(around, AIResource::Ironore, BuildingQuality::Mine, searchRadius);
             break;
         case BuildingType::GraniteMine:
-			foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, searchRadius);
+          foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, searchRadius);
             break;
         case BuildingType::Fishery:
             foundPos = FindBestPosition(around, AIResource::Fish, BUILDING_SIZE[type], searchRadius);
