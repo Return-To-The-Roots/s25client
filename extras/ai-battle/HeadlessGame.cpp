@@ -23,8 +23,10 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais);
 std::string ToString(const std::chrono::milliseconds& time);
 std::string HumanReadableNumber(unsigned num);
 
-HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const boost::filesystem::path& map,
-                           const std::vector<AI::Info>& ais)
+namespace bfs = bfs;
+using bfs::canonical;
+
+HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais)
     : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
@@ -74,7 +76,7 @@ void HeadlessGame::Run(unsigned maxGF)
                     replay_.AddGameCommand(em_.GetCurrentGF(), playerId, cmds);
                 }
 
-                for(gc::GameCommandPtr gc : cmds.gcs)
+                for(const gc::GameCommandPtr& gc : cmds.gcs)
                     gc->Execute(world_, player->GetPlayerId());
             }
         }
@@ -103,16 +105,16 @@ void HeadlessGame::Close()
     if(replay_.IsRecording())
     {
         replay_.StopRecording();
-        printf("Replay written to %s\n", boost::filesystem::canonical(replayPath_).c_str());
+        printf("Replay written to %s\n", canonical(replayPath_).c_str());
     }
 
     replay_.Close();
 }
 
-void HeadlessGame::StartReplay(const boost::filesystem::path& path, unsigned random_init)
+void HeadlessGame::StartReplay(const bfs::path& path, unsigned random_init)
 {
     // Remove old replay
-    boost::filesystem::remove(path);
+    bfs::remove(path);
 
     replayPath_ = path;
 
@@ -129,10 +131,10 @@ void HeadlessGame::StartReplay(const boost::filesystem::path& path, unsigned ran
         throw std::runtime_error("Replayfile could not be opened!");
 }
 
-void HeadlessGame::SaveGame(const boost::filesystem::path& path) const
+void HeadlessGame::SaveGame(const bfs::path& path) const
 {
     // Remove old savegame
-    boost::filesystem::remove(path);
+    bfs::remove(path);
 
     Savegame save;
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
@@ -143,7 +145,7 @@ void HeadlessGame::SaveGame(const boost::filesystem::path& path) const
     save.sgd.MakeSnapshot(game_);
     save.Save(path, "AI Battle");
 
-    printf("Savegame written to %s\n", boost::filesystem::canonical(path).c_str());
+    printf("Savegame written to %s\n", canonical(path).c_str());
 }
 
 std::string ToString(const std::chrono::milliseconds& time)
@@ -152,7 +154,8 @@ std::string ToString(const std::chrono::milliseconds& time)
     auto hours = std::chrono::duration_cast<std::chrono::hours>(time);
     auto minutes = std::chrono::duration_cast<std::chrono::minutes>(time % std::chrono::hours(1));
     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(time % std::chrono::minutes(1));
-    snprintf(buffer, 90, "%03ld:%02ld:%02ld", hours.count(), minutes.count(), seconds.count());
+    snprintf(buffer, 90, "%03ld:%02ld:%02ld", static_cast<long int>(hours.count()),
+             static_cast<long int>(minutes.count()), static_cast<long int>(seconds.count()));
     return std::string(buffer);
 }
 

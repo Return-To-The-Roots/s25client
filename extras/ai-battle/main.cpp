@@ -42,20 +42,18 @@ int main(int argc, char** argv)
         ("version", "Show version information and exit")
         ;
     // clang-format on
-    po::positional_options_description positionalOptions;
-    positionalOptions.add("map", 1);
 
     po::variables_map options;
     try
     {
-        po::store(po::command_line_parser(argc, argv).options(desc).positional(positionalOptions).run(), options);
+        po::store(po::command_line_parser(argc, argv).options(desc).run(), options);
+        po::notify(options);
     } catch(const std::exception& e)
     {
         bnw::cerr << "Error: " << e.what() << std::endl;
         bnw::cerr << desc << std::endl;
         return 1;
     }
-    po::notify(options);
 
     if(options.count("help"))
     {
@@ -80,25 +78,25 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    unsigned random_init = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    if(options.count("random_init"))
-        random_init = options["random_init"].as<unsigned>();
-
-    // We print arguments and seed in order to be able to reproduce crashes.
-    for(int i = 0; i < argc; ++i)
-        bnw::cout << argv[i] << " ";
-    bnw::cout << std::endl;
-    bnw::cout << "random_init: " << random_init << std::endl;
-    bnw::cout << std::endl;
-
-    RTTRCONFIG.Init();
-    RANDOM.Init(random_init);
-
-    const bfs::path mapPath = RTTRCONFIG.ExpandPath(options["map"].as<std::string>());
-    const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
-
     try
     {
+        unsigned random_init = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        if(options.count("random_init"))
+            random_init = options["random_init"].as<unsigned>();
+
+        // We print arguments and seed in order to be able to reproduce crashes.
+        for(int i = 0; i < argc; ++i)
+            bnw::cout << argv[i] << " ";
+        bnw::cout << std::endl;
+        bnw::cout << "random_init: " << random_init << std::endl;
+        bnw::cout << std::endl;
+
+        RTTRCONFIG.Init();
+        RANDOM.Init(random_init);
+
+        const bfs::path mapPath = RTTRCONFIG.ExpandPath(options["map"].as<std::string>());
+        const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
+
         GlobalGameSettings ggs;
         if(options.count("objective"))
         {
@@ -131,6 +129,10 @@ int main(int argc, char** argv)
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;
+        return 1;
+    } catch(...)
+    {
+        bnw::cerr << "An unknown exception occurred" << std::endl;
         return 1;
     }
 
