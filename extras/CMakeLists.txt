@@ -11,6 +11,7 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
 add_subdirectory(audioDrivers)
 add_subdirectory(videoDrivers)
+add_subdirectory(ai-battle)
 if(RTTR_BUNDLE AND APPLE)
     add_subdirectory(macosLauncher)
 endif()
