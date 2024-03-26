@@ -297,6 +297,9 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         curPos.x += btSize.x;
         group->AddImageButton(4, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 107),
                               _("Notify allies of this location"));
+
+        // Try to pick a movable object at the cursor now, in case the user activates the observation window later
+        pickedObject_ = PickedMovableObject::pickAtCursor(gwv, true);
     }
 
     main_tab->SetSelection(0, true);
@@ -706,8 +709,8 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 1:
-            // TODO: bestimen, was an der position selected ist
-            WINDOWMANAGER.Show(std::make_unique<iwObservate>(gwv, selectedPt));
+            WINDOWMANAGER.Show(
+              std::make_unique<iwObservate>(gwv, selectedPt, std::exchange(pickedObject_, PickedMovableObject{})));
             DisableMousePosResetOnClose();
             Close();
             break;
@@ -730,4 +733,12 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
 void iwAction::DisableMousePosResetOnClose()
 {
     mousePosAtOpen_ = DrawPoint::Invalid();
+}
+
+void iwAction::Draw_()
+{
+    IngameWindow::Draw_();
+
+    // Track picked object (if valid)
+    pickedObject_.track(gwv);
 }

@@ -201,6 +201,8 @@ public:
     static void DrawRectangle(const Rect& rect, unsigned color);
     /// Zeichnet eine Linie
     static void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color);
+    // DEBUG REMOVE BEFORE MERGE
+    static void DrawCross(DrawPoint pt, unsigned short length, unsigned short width, unsigned color);
 
     // GUI-Notify-Messages
 
