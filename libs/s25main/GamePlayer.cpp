@@ -2063,9 +2063,12 @@ void GamePlayer::TestPacts()
             {
                 // Pact was running but is expired -> Cancel for both players
                 pacts[i][pact].duration = 0;
+                pacts[i][pact].accepted = false;
                 GamePlayer& otherPlayer = world.GetPlayer(i);
                 RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].duration);
+                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].accepted);
                 otherPlayer.pacts[GetPlayerId()][pact].duration = 0;
+                otherPlayer.pacts[GetPlayerId()][pact].accepted = false;
                 // And notify
                 PactChanged(pact);
                 otherPlayer.PactChanged(pact);
