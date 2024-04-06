@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "LoadMockupAudio.h"
+#include "MusicPlayer.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
@@ -167,6 +168,86 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
         MOCK_EXPECT(audioDriverMock->doUnloadSound).in(s).once().calls(makeUnloadHandle(SoundType::Music));
     }
     BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
+}
+
+static auto isHandle(const driver::RawSoundHandle& expected)
+{
+    return [&](const driver::RawSoundHandle& actual) { return actual == expected; };
+}
+static auto isType(SoundType expected)
+{
+    return [=](const driver::RawSoundHandle& actual) { return actual.getType() == expected; };
+}
+
+static void release_soundhandle(const driver::RawSoundHandle& h)
+{
+    delete static_cast<MockupSoundData*>(h.getDriverData());
+}
+
+BOOST_FIXTURE_TEST_CASE(PlayListRepeatsCorrect, LoadMockupAudio)
+{
+    libsiedler2::setAllocator(new GlAllocator);
+    Playlist playlist({(rttr::test::libsiedler2TestFilesDir / "test.ogg").string(),
+                       (rttr::test::libsiedler2TestFilesDir / "testMidi.mid").string()},
+                      0, false);
+    MusicPlayer player;
+    player.SetPlaylist(playlist);
+
+    auto handleOgg1 = audioDriverMock->doLoad(SoundType::Music);
+    auto handleOgg2 = audioDriverMock->doLoad(SoundType::Music);
+    auto handleMidi = audioDriverMock->doLoad(SoundType::Music);
+    MOCK_EXPECT(audioDriverMock->LoadMusicFromData).once().with(mock::any, ".ogg").returns(handleOgg1);
+    MOCK_EXPECT(audioDriverMock->LoadMusicFromData).once().with(mock::any, ".ogg").returns(handleOgg2);
+    MOCK_EXPECT(audioDriverMock->LoadMusicFromData).once().with(mock::any, ".midi").returns(handleMidi);
+
+    // Play both songs once (no repeats), then play first again
+    mock::sequence s;
+    MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).once().with(isHandle(handleOgg1), 0);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).once().with(isHandle(handleMidi), 0);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).once().with(isHandle(handleOgg2), 0);
+    MOCK_EXPECT(audioDriverMock->doUnloadSound).calls(makeUnloadHandle(SoundType::Music));
+
+    player.Play();
+    player.MusicFinished();
+    player.MusicFinished();
+
+    mock::verify();
+    mock::reset();
+
+    // Use the type to distinguish the 2 songs
+    MOCK_EXPECT(audioDriverMock->LoadMusicFromData).with(mock::any, ".ogg").calls(makeDoLoad(SoundType::Effect));
+    MOCK_EXPECT(audioDriverMock->LoadMusicFromData).with(mock::any, ".midi").calls(makeDoLoad(SoundType::Music));
+    MOCK_EXPECT(audioDriverMock->doUnloadSound).calls(release_soundhandle);
+
+    // Play both songs twice (1 repeat), then play first again
+    Playlist playlist_repeat(playlist.getSongs(), 1, false);
+    player.SetPlaylist(playlist_repeat);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).exactly(2).with(isType(SoundType::Effect), 0);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).exactly(2).with(isType(SoundType::Music), 0);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).once().with(isType(SoundType::Effect), 0);
+
+    player.Play();
+    player.MusicFinished();
+    player.MusicFinished();
+    player.MusicFinished();
+    player.MusicFinished();
+
+    mock::verify();
+
+    // Same but in random order
+    Playlist playlist_random(playlist.getSongs(), 1, true);
+    player.SetPlaylist(playlist_random);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).exactly(2).with(isType(SoundType::Effect), 0);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).exactly(2).with(isType(SoundType::Music), 0);
+    MOCK_EXPECT(audioDriverMock->PlayMusic).once().with(mock::any, 0);
+
+    player.Play();
+    player.MusicFinished();
+    player.MusicFinished();
+    player.MusicFinished();
+    player.MusicFinished();
+
+    mock::verify();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
