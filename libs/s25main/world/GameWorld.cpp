@@ -413,22 +413,20 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
             sizeChanges[oldOwner - 1]--;
     }
 
-    const std::vector<MapPoint> ptsToHandled = GetAllNeighboursUnion(ptsWithChangedOwners);
+    const std::vector<MapPoint> ptsToHandle = GetAllNeighboursUnion(ptsWithChangedOwners);
 
     // Destroy everything from old player on all nodes where the owner has changed
-    for(const MapPoint& curMapPt : ptsToHandled)
+    for(const MapPoint& curMapPt : ptsToHandle)
     {
-        // Destroy everything around this point as this is at best a border node where nothing should be around
         // Do not destroy the triggering building or its flag
-        const uint8_t owner = GetNode(curMapPt).owner;
-        DestroyPlayerRests(curMapPt, owner, &building);
+        DestroyPlayerRests(curMapPt, GetNode(curMapPt).owner, &building);
 
         if(gi)
             gi->GI_UpdateMinimap(curMapPt);
     }
 
-    // Destroy remaining roads going through non-owned territory
-    for(const MapPoint& curMapPt : ptsToHandled)
+    // Destroy remaining roads going through non-owned and border territory
+    for(const MapPoint& curMapPt : ptsToHandle)
     {
         // Skip if there is an object. We are looking only for roads going through, not ending here
         // (objects here are already destroyed and if the road ended there it would have been as well)
@@ -439,7 +437,9 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
 
         if(!flag)
             continue;
-        if(flag->GetPlayer() + 1 == GetNode(curMapPt).owner && !IsBorderNode(curMapPt, GetNode(curMapPt).owner))
+
+        const uint8_t owner = GetNode(curMapPt).owner;
+        if(flag->GetPlayer() + 1 == owner && !IsBorderNode(curMapPt, owner))
             continue;
 
         flag->DestroyRoad(dir);
@@ -449,7 +449,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
     for(const MapPoint& curMapPt : ptsWithChangedOwners)
         GetNotifications().publish(NodeNote(NodeNote::Owner, curMapPt));
 
-    for(const MapPoint& pt : ptsToHandled)
+    for(const MapPoint& pt : ptsToHandle)
     {
         // BQ neu berechnen
         RecalcBQ(pt);

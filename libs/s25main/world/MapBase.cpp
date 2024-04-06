@@ -95,10 +95,8 @@ std::vector<MapPoint> MapBase::GetAllNeighboursUnion(const std::vector<MapPoint>
     for(const MapPoint& curMapPt : points)
     {
         ptsToReturn.insert(curMapPt);
-        for(const MapPoint neighbourPt : GetNeighbours(curMapPt))
-        {
-            ptsToReturn.insert(neighbourPt);
-        }
+        const auto neighbours = GetNeighbours(curMapPt);
+        ptsToReturn.insert(neighbours.begin(), neighbours.end());
     }
 
     return std::vector<MapPoint>(ptsToReturn.begin(), ptsToReturn.end());
