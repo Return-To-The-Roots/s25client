@@ -74,5 +74,5 @@ void MusicPlayer::PlayNext()
     // Und abspielen
     auto* curSong = dynamic_cast<MusicItem*>(sng[0]);
     if(curSong)
-        curSong->Play(1);
+        curSong->Play();
 }
