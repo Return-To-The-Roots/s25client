@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
     std::vector<MapPoint> testPoints{MapPoint(1, 1), MapPoint(10, 10), MapPoint(10, 11)};
     // ((center + 6 connecting hexes) * 3 points in test data) - 4 common vectors for the bigger component = 17 points
     std::vector<MapPoint> expectedResultPoints{
-      // Original points
+      // Original point
       MapPoint(1, 1),
       // Neighbours
       MapPoint(1, 0), MapPoint(2, 0), MapPoint(0, 1), MapPoint(2, 1), MapPoint(1, 2), MapPoint(2, 2),
