@@ -39,13 +39,7 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
 
     const auto resultPoints = world.GetAllNeighboursUnion(testPoints);
 
-    BOOST_TEST_REQUIRE(resultPoints.size() == expectedResultPoints.size());
-
-    for(auto pointIt = expectedResultPoints.begin(); pointIt != expectedResultPoints.end(); ++pointIt)
-    {
-        BOOST_REQUIRE_MESSAGE(std::find(resultPoints.begin(), resultPoints.end(), *pointIt) != resultPoints.end(),
-                              "Failed searching for: " << *pointIt);
-    }
+    BOOST_TEST(resultPoints == expectedResultPoints, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(NeighbourPts)
