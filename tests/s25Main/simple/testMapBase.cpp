@@ -18,17 +18,14 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
 {
     MapBase world;
 
-    // No points -> empty response
-    std::vector<MapPoint> testPointsEmpty{};
-
-    auto replyEmpty = world.GetAllNeighboursUnion(testPointsEmpty);
-    BOOST_TEST_REQUIRE(replyEmpty.empty());
+    // No points -> empty result
+    BOOST_TEST(world.GetAllNeighboursUnion(std::vector<MapPoint>{}).empty());
 
     // Two compontents of 1 and 2 vertices
-    std::vector<MapPoint> testPoints{MapPoint(1, 1), MapPoint(10, 10), MapPoint(10, 11)};
-    // ((center + 6 connecting hexes) * 3 points in test data) - 4 common vectors for the bigger component = 17 points
-    std::vector<MapPoint> expectedResultPoints{
-      // Original points
+    const std::vector<MapPoint> testPoints{MapPoint(1, 1), MapPoint(10, 10), MapPoint(10, 11)};
+    // ((center + hexagon (6 points)) * 3 points input) - 4 common points = 17 points
+    const std::vector<MapPoint> expectedResultPoints{
+      // Original point
       MapPoint(1, 1),
       // Neighbours
       MapPoint(1, 0), MapPoint(2, 0), MapPoint(0, 1), MapPoint(2, 1), MapPoint(1, 2), MapPoint(2, 2),
@@ -42,13 +39,7 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
 
     const auto resultPoints = world.GetAllNeighboursUnion(testPoints);
 
-    BOOST_TEST_REQUIRE(resultPoints.size() == expectedResultPoints.size());
-
-    for(auto pointIt = expectedResultPoints.begin(); pointIt != expectedResultPoints.end(); ++pointIt)
-    {
-        BOOST_REQUIRE_MESSAGE(std::find(resultPoints.begin(), resultPoints.end(), *pointIt) != resultPoints.end(),
-                              "Failed searching for: " << *pointIt);
-    }
+    BOOST_TEST(resultPoints == expectedResultPoints, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(NeighbourPts)
