@@ -18,11 +18,8 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
 {
     MapBase world;
 
-    // No points -> empty response
-    std::vector<MapPoint> testPointsEmpty{};
-
-    auto replyEmpty = world.GetAllNeighboursUnion(testPointsEmpty);
-    BOOST_TEST_REQUIRE(replyEmpty.empty());
+    // No points -> empty result
+    BOOST_TEST(world.GetAllNeighboursUnion(std::vector<MapPoint>{}).empty());
 
     // Two compontents of 1 and 2 vertices
     std::vector<MapPoint> testPoints{MapPoint(1, 1), MapPoint(10, 10), MapPoint(10, 11)};
