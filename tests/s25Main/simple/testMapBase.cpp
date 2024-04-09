@@ -21,10 +21,10 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
     // No points -> empty result
     BOOST_TEST(world.GetAllNeighboursUnion(std::vector<MapPoint>{}).empty());
 
-    // Two compontents of 1 and 2 vertices
+    // 3 points where the last 2 share neighbours and are neighbours to each other
     const std::vector<MapPoint> testPoints{MapPoint(1, 1), MapPoint(10, 10), MapPoint(10, 11)};
     // ((center + hexagon (6 points)) * 3 points input) - 4 common points = 17 points
-    const std::vector<MapPoint> expectedResultPoints{
+    std::vector<MapPoint> expectedResultPoints{
       // Original point
       MapPoint(1, 1),
       // Neighbours
@@ -37,7 +37,10 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
       // Duplicates
       MapPoint(11, 10), MapPoint(9, 11)};
 
-    const auto resultPoints = world.GetAllNeighboursUnion(testPoints);
+    auto resultPoints = world.GetAllNeighboursUnion(testPoints);
+
+    std::sort(resultPoints.begin(), resultPoints.end(), MapPointLess());
+    std::sort(expectedResultPoints.begin(), expectedResultPoints.end(), MapPointLess());
 
     BOOST_TEST(resultPoints == expectedResultPoints, boost::test_tools::per_element());
 }
