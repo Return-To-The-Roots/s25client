@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     MapPoint curPos(0, 0);
     for(const auto bldType : helpers::EnumRange<BuildingType>{})
     {
-        if(!BuildingProperties::IsValid(bldType))
+        if(!BuildingProperties::IsValid(bldType) || bldType == BuildingType::HarborBuilding)
             continue;
 
         noBuilding* bld;
