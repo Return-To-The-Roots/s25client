@@ -670,8 +670,8 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
        && noType != NodalObjectType::Buildingsite)
         return;
 
-    // is the building on a node with a different owner?
-    if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 == newOwner)
+    // is the building on a node with a different owner? Border is allways destroyed.
+    if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 == newOwner && !IsBorderNode(pt, newOwner))
         return;
 
     // Do not destroy military buildings that hold territory on their own
