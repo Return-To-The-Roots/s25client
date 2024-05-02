@@ -394,6 +394,12 @@ ctrlText* Window::AddText(unsigned id, const DrawPoint& pos, const std::string& 
     return AddCtrl(new ctrlText(this, id, ScaleIf(pos), text, color, format, font));
 }
 
+ctrlMapSelection* Window::AddMapSelection(unsigned id, const DrawPoint& pos, const Extent& size,
+                                          const SelectionMapInputData& inputData)
+{
+    return AddCtrl(new ctrlMapSelection(this, id, ScaleIf(pos), ScaleIf(size), inputData));
+}
+
 TextFormatSetter Window::AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
                                           FontStyle format, const glFont* font)
 {
