@@ -30,6 +30,7 @@ class ctrlEdit;
 class ctrlGroup;
 class ctrlImage;
 class ctrlList;
+class ctrlMapSelection;
 class ctrlMultiline;
 class ctrlMultiSelectGroup;
 class ctrlOptionGroup;
@@ -51,6 +52,7 @@ enum class GroupSelectType : unsigned;
 struct KeyEvent;
 struct ScreenResizeEvent;
 struct TableColumn;
+struct SelectionMapInputData;
 
 namespace libsiedler2 {
 class ArchivItem_Map;
@@ -176,6 +178,8 @@ public:
                         std::vector<TableColumn> columns);
     ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                       const glFont* font);
+    ctrlMapSelection* AddMapSelection(unsigned id, const DrawPoint& pos, const Extent& size,
+                                      const SelectionMapInputData& inputData);
     TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
                                       FontStyle format, const glFont* font);
     ctrlTimer* AddTimer(unsigned id, std::chrono::milliseconds timeout);
