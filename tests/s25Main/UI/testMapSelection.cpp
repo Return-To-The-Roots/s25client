@@ -102,16 +102,18 @@ SelectionMapInputData createInputForSelectionMap(rttr::test::TmpFolder const& tm
     storeBitmap(markerPath, createBitmapWithOneColor(overlaySize, green));
     storeBitmap(conqueredPath, createBitmapWithOneColor(overlaySize, red));
 
-    return SelectionMapInputData{{backgroundPath.string(), 0},
-                                 {mapPath.string(), 0},
-                                 {missionmapmaskPath.string(), 0},
-                                 {markerPath.string(), 0},
-                                 {conqueredPath.string(), 0},
-                                 mapOffsetInBackground,
-                                 disabledColor,
-                                 {{red, {Position((mapSize.x * 3) / 4, mapSize.y / 4)}},
-                                  {green, {Position(mapSize.x / 4, (mapSize.y * 3) / 4)}},
-                                  {blue, {Position((mapSize.x * 3) / 4, (mapSize.y * 3) / 4)}}}};
+    SelectionMapInputData selectionMapInputData;
+    selectionMapInputData.background = {backgroundPath, 0};
+    selectionMapInputData.map = {mapPath, 0};
+    selectionMapInputData.missionMapMask = {missionmapmaskPath, 0};
+    selectionMapInputData.marker = {markerPath, 0};
+    selectionMapInputData.conquered = {conqueredPath, 0};
+    selectionMapInputData.mapOffsetInBackground = mapOffsetInBackground;
+    selectionMapInputData.disabledColor = disabledColor;
+    selectionMapInputData.missionSelectionInfos = {{red, {Position((mapSize.x * 3) / 4, mapSize.y / 4)}},
+                                                   {green, {Position(mapSize.x / 4, (mapSize.y * 3) / 4)}},
+                                                   {blue, {Position((mapSize.x * 3) / 4, (mapSize.y * 3) / 4)}}};
+    return selectionMapInputData;
 }
 
 void testMapSelection(Position const& windowPos, Extent const& windowExtent, Extent const& mapBackgroundSize,
