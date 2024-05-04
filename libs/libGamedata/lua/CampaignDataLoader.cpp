@@ -17,7 +17,7 @@
 
 unsigned CampaignDataLoader::GetVersion()
 {
-    return 1;
+    return 2;
 }
 
 CampaignDataLoader::CampaignDataLoader(CampaignDescription& campaignDesc, const boost::filesystem::path& basePath)
