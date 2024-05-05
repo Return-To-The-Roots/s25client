@@ -1,6 +1,6 @@
 ---- Campaign lua version ------
 function getRequiredLuaVersion()
-    return 1
+    return 2
 end
 
 rttr:RegisterTranslations(
