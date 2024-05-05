@@ -47,7 +47,20 @@ campaign = {
     difficulty = "easy",
     mapFolder = "<RTTR_RTTR>/campaigns/garden",
     luaFolder = "<RTTR_RTTR>/campaigns/garden",
-    maps = { "MISS01.WLD","MISS02.WLD"}
+    maps = { "MISS01.WLD","MISS02.WLD"},
+    selectionMap = {
+        background = {"<RTTR_GAME>/campaigns/garden/mapscreen/background.bmp", 0},
+        map = {"<RTTR_GAME>/campaigns/garden/mapscreen/map.bmp", 0},
+        missionMapMask = {"<RTTR_GAME>/campaigns/garden/mapscreen/map_mask.bmp", 0},
+        marker = {"<RTTR_GAME>/campaigns/garden/mapscreen/marker.bmp", 0},
+        conquered = {"<RTTR_GAME>/campaigns/garden/mapscreen/conquered.bmp", 0},
+        backgroundOffset = {0, 0},
+        disabledColor = 0x70000000,
+        missionSelectionInfos = {
+            {0xffffff00, 100, 50},
+            {0xffaf73cb, 200, 100}
+        }
+    }
 }
 ```
 
@@ -78,12 +91,30 @@ If you want a field to be translated you have to add the translation as describe
   8. `difficulty` difficulty of the campaign. Should be one of the valus easy, medium or hard.
   9. `mapFolder` and `luaFolder` Path to the folder containing the campaign maps and associated lua files. Usually your campaign folder or a subfolder of it
   10. `maps` List of the names of the files of the campaigns mission maps
+  11. `selectionMap` Optional parameter. See [map selection screen](#selection-map) for detailed explanations.
 
 Hints:
 - The lua file of a map must have the same name as the map it self but with the extension `.lua` to be found correctly. The lua and the map file must not be in the same folder because the path can be specified differently.
 - To work on case sensitive os (like linux) the file name of the lua file must have the same case as the map file name. This applies to the map names in the campaign.lua file too.
 For example: `MISS01.WLD, MISS01.lua` is correct and `MISS01.WLD, miss01.lua` will not work on linux
 - All paths can contain placeholders like `<RTTR_RTTR>, ...`
+
+### Optional map selection screen {#selection-map}
+
+This parameter is optional and can be obmitted in the lua campaign file. If this parameter is specified the selection screen for the missions of a campaign is replaced by a selection map. Like the one used in the original settler 2 world campaign.
+
+We have the following parameters:
+  1. `background` background image for the selection map
+  2. `map` the map image itself
+  3. `missionMapMask` this image is a mask that describes the mission areas of the `map` image. It must be the same size as the `map` image where the color of each pixel determines the mission it belongs to. Each mission must have a unique color (specified in the `missionSelectionInfos`). Any other color is treated as neutral area and ignored.
+  4. `marker` the marker image shown when a mission is selected
+  5. `conquered` the image shown when a mission is already finished
+  6. `backgroundOffset` offset of the `map` image and `missionMapMask` image relative to the `background` image. Can be (0,0) if no offset exists.
+  7. `disabledColor` color for drawing missions not playable yet. Usually this should be a partly transparent color
+  8. `missionSelectionInfos` contains an entry for each mission and must be the same order as specified in `maps` lua parameter. Each entry consists of three elements. The first is the `maskAreaColor` and the two following are the `ankerPos` x and y position. The `ankerPos` is the position the `conquered` image and the `cursor` image, if mission is selected, are displayed for this mission. The offset is always counted from the origin of the `map` image. The `maskAreaColor` is the color for the mission used in the `missionMapMask`.
+
+Hints:
+- All the images are described by the path to the image file and an index parameter. Usually the index parameter is zero. For special image formats containing multiple images in an archive this is the index of the image to use.
 
 ## Final view of the example garden campaign folder
 ```
@@ -94,5 +125,10 @@ RTTR/campaigns/garden/MISS01.lua
 RTTR/campaigns/garden/MISS01.WLD
 RTTR/campaigns/garden/MISS02.lua
 RTTR/campaigns/garden/MISS02.WLD
+RTTR/campaigns/garden/mapscreen/background.bmp
+RTTR/campaigns/garden/mapscreen/map.bmp
+RTTR/campaigns/garden/mapscreen/map_mask.bmp
+RTTR/campaigns/garden/mapscreen/marker.bmp
+RTTR/campaigns/garden/mapscreen/conquered.bmp
 
  ```
