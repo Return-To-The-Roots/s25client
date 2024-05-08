@@ -72,9 +72,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
 
     // Sort buildings so military buildings are created first 
     // and no buildings are destroyed when borders are recalculated
-    std::sort(buildingTypes.begin(), buildingTypes.end(), [](BuildingType a, BuildingType b) {
-        return !BuildingProperties::IsUsual(a) > !BuildingProperties::IsUsual(b);
-    });
+    std::partition(buildingTypes.begin(), buildingTypes.end(), [](BuildingType bld) { return !BuildingProperties::IsUsual(bld); });
 
     MapPoint curPos(0, 0);
     for(const auto bldType : buildingTypes)
