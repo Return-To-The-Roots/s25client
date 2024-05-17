@@ -1,11 +1,10 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+// Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 dockerRegistry = "registry.mytrap.de/"
 dockerCredentials = "gitlab-Flow86"
 dockerImages = [
-    "windows.i686"    : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
     "windows.x86_64"  : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
     "linux.x86_64"    : "rttr/cross-compiler/linux/linux-amd64-docker:master",
     "apple.x86_64"    : "rttr/cross-compiler/apple/apple-docker:master"
