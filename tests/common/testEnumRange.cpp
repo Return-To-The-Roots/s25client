@@ -4,6 +4,7 @@
 
 #include "helpers/EnumRange.h"
 #include <boost/test/unit_test.hpp>
+#include <vector>
 
 enum PlainEnum
 {
@@ -90,4 +91,18 @@ BOOST_AUTO_TEST_CASE(OffsetWorks)
     for(const IntEnum e : helpers::enumRange(IntEnum::Forth))
         result.push_back(e);
     BOOST_TEST(result == expected);
+}
+
+BOOST_AUTO_TEST_CASE(CanAssignToRange)
+{
+    const auto enums = helpers::EnumRange<IntEnum>{};
+    std::vector<IntEnum> enums_vec(enums.begin(), enums.end());
+    std::vector<IntEnum> expected{IntEnum::First, IntEnum::Second, IntEnum::Third, IntEnum::Forth};
+    BOOST_TEST(enums_vec == expected);
+
+    expected.push_back(expected.front());
+    expected.erase(expected.begin());
+    const auto enums2 = helpers::enumRange(IntEnum::Second);
+    enums_vec = std::vector<IntEnum>(enums2.begin(), enums2.end());
+    BOOST_TEST(enums_vec == expected);
 }
