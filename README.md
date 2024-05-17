@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
 
 SPDX-License-Identifier: GPL-2.0-or-later
 -->
@@ -122,6 +122,7 @@ Then just run (tests or application) as usual.
 - boost (i.e from <http://www.boost.org/>)
 - Visual Studio (at least 2017, you can get the community edition for free)
 - Git Client (i.e TortoiseGit)
+- 32bit systems are not officially supported
 
 #### Steps
 
