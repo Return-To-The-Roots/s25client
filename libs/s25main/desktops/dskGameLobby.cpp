@@ -104,10 +104,9 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
             lobbyHostController->RemoveLuaScript();
     }
 
-    const bool readonlySettings =
-      !gameLobby_->isHost() || gameLobby_->isSavegame() || (lua && !lua->IsChangeAllowed("general"));
+    const bool readonlySettings = !gameLobby_->isHost() || gameLobby_->isSavegame() || !IsChangeAllowed("general");
     allowAddonChange = gameLobby_->isHost() && !gameLobby_->isSavegame()
-                       && (!lua || lua->IsChangeAllowed("addonsAll") || lua->IsChangeAllowed("addonsSome"));
+                       && (IsChangeAllowed("addonsAll") || IsChangeAllowed("addonsSome"));
 
     // Kartenname
     AddText(0, DrawPoint(400, 5), GAMECLIENT.GetGameName(), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
@@ -295,7 +294,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         UpdatePlayerRow(i);
     // swap buttons erstellen
-    if(gameLobby_->isHost() && !gameLobby_->isSavegame() && (!lua || lua->IsChangeAllowed("swapping")))
+    if(gameLobby_->isHost() && !gameLobby_->isSavegame() && IsChangeAllowed("swapping"))
     {
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
@@ -395,7 +394,7 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
     }
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
-    if(gameLobby_->isHost() && !player.isHost && (!lua || lua->IsChangeAllowed("playerState")))
+    if(gameLobby_->isHost() && !player.isHost && IsChangeAllowed("playerState"))
         group->AddTextButton(1, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont);
     else
         group->AddTextDeepening(1, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont, COLOR_YELLOW);
@@ -631,6 +630,11 @@ void dskGameLobby::GoBack()
         WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
 }
 
+bool dskGameLobby::IsChangeAllowed(const std::string& setting) const
+{
+    return !lua || lua->IsChangeAllowed(setting);
+}
+
 void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id >= ID_SWAP_BUTTON && ctrl_id < ID_SWAP_BUTTON + MAX_PLAYERS)
@@ -678,7 +682,7 @@ void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
             else
             {
                 std::unique_ptr<iwAddons> w;
-                if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
+                if(allowAddonChange && lua->IsChangeAllowed("addonsAll"))
                     w = std::make_unique<iwAddons>(gameLobby_->getSettings(), this, AddonChangeAllowed::All);
                 else if(allowAddonChange)
                     w = std::make_unique<iwAddons>(gameLobby_->getSettings(), this, AddonChangeAllowed::WhitelistOnly,

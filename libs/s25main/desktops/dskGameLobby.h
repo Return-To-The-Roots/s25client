@@ -82,7 +82,9 @@ private:
     bool checkOptions();
 
     void GoBack();
-    bool IsSinglePlayer() { return serverType == ServerType::Local; }
+    bool IsSinglePlayer() const { return serverType == ServerType::Local; }
+    /// Check whether the given setting can be changed, i.e. is not disabled by lua
+    bool IsChangeAllowed(const std::string& setting) const;
 
     const ServerType serverType;
     std::shared_ptr<GameLobby> gameLobby_;
