@@ -75,12 +75,15 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     if(!gameLobby_)
         return;
 
-    if(gameLobby_->isHost())
-        lobbyHostController = std::make_unique<GameLobbyController>(gameLobby_, GAMECLIENT.GetMainPlayer());
+    const bool loadLua = !GAMECLIENT.GetLuaFilePath().empty();
 
-    if(!GAMECLIENT.GetLuaFilePath().empty() && gameLobby_->isHost())
+    // The lobby controller for clients is only used by lua
+    if(gameLobby_->isHost() || loadLua)
+        lobbyController = std::make_unique<GameLobbyController>(gameLobby_, GAMECLIENT.GetMainPlayer());
+
+    if(loadLua)
     {
-        lua = std::make_unique<LuaInterfaceSettings>(*lobbyHostController, GAMECLIENT);
+        lua = std::make_unique<LuaInterfaceSettings>(*lobbyController, GAMECLIENT);
         if(!lua->loadScript(GAMECLIENT.GetLuaFilePath()))
         {
             WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
@@ -95,13 +98,13 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
             lua.reset();
         } else if(!lua->EventSettingsInit(serverType == ServerType::Local, gameLobby_->isSavegame()))
         {
-            RTTR_Assert(
-              gameLobby_->isHost()); // This should be done first for the host so others won't even see the script
+            // This should have been detected for the host so others won't even see the script
+            RTTR_Assert(gameLobby_->isHost());
             LOG.write(_("Lua was disabled by the script itself\n"));
             lua.reset();
         }
-        if(!lua)
-            lobbyHostController->RemoveLuaScript();
+        if(!lua && gameLobby_->isHost())
+            lobbyController->RemoveLuaScript();
     }
 
     const bool readonlySettings = !gameLobby_->isHost() || gameLobby_->isSavegame() || !IsChangeAllowed("general");
@@ -271,22 +274,22 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
             if(i < aiBattlePlayers.size())
-                lobbyHostController->SetPlayerState(i, PlayerState::AI, aiBattlePlayers[i]);
+                lobbyController->SetPlayerState(i, PlayerState::AI, aiBattlePlayers[i]);
             else
-                lobbyHostController->CloseSlot(i); // Close remaining slots
+                lobbyController->CloseSlot(i); // Close remaining slots
         }
 
         // Set name of host to the corresponding AI for local player
         if(localPlayerId_ < aiBattlePlayers.size())
-            lobbyHostController->SetName(localPlayerId_,
-                                         JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
+            lobbyController->SetName(localPlayerId_,
+                                     JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
     } else if(IsSinglePlayer() && !gameLobby_->isSavegame())
     {
         // Setze initial auf KI
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
             if(!gameLobby_->getPlayer(i).isHost)
-                lobbyHostController->SetPlayerState(i, PlayerState::AI, AI::Info(AI::Type::Default, AI::Level::Easy));
+                lobbyController->SetPlayerState(i, PlayerState::AI, AI::Info(AI::Type::Default, AI::Level::Easy));
         }
     }
 
@@ -505,7 +508,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
         case 1:
         {
             if(gameLobby_->isHost())
-                lobbyHostController->TogglePlayerState(playerId);
+                lobbyController->TogglePlayerState(playerId);
         }
         break;
         // Volk
@@ -518,7 +521,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
                 JoinPlayerInfo& player = gameLobby_->getPlayer(playerId);
                 player.nation = nextEnumValue(player.nation);
                 if(gameLobby_->isHost())
-                    lobbyHostController->SetNation(playerId, player.nation);
+                    lobbyController->SetNation(playerId, player.nation);
                 else
                     GAMECLIENT.Command_SetNation(player.nation);
                 ChangeNation(playerId, player.nation);
@@ -555,7 +558,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
                 } while(helpers::contains(takenColors, player.color));
 
                 if(gameLobby_->isHost())
-                    lobbyHostController->SetColor(playerId, player.color);
+                    lobbyController->SetColor(playerId, player.color);
                 else
                     GAMECLIENT.Command_SetColor(player.color);
                 ChangeColor(playerId, player.color);
@@ -575,7 +578,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
                 JoinPlayerInfo& player = gameLobby_->getPlayer(playerId);
                 player.team = nextEnumValue(player.team);
                 if(gameLobby_->isHost())
-                    lobbyHostController->SetTeam(playerId, player.team);
+                    lobbyController->SetTeam(playerId, player.team);
                 else
                     GAMECLIENT.Command_SetTeam(player.team);
                 ChangeTeam(playerId, player.team);
@@ -615,7 +618,7 @@ void dskGameLobby::Msg_Group_ComboSelectItem(const unsigned group_id, const unsi
     if(player2 < 0)
         LOG.write("dskHostGame: ERROR: Selected player not found, stop swapping!\n");
     else
-        lobbyHostController->SwapPlayers(playerId, static_cast<unsigned>(player2));
+        lobbyController->SwapPlayers(playerId, static_cast<unsigned>(player2));
 }
 
 void dskGameLobby::GoBack()
@@ -641,7 +644,7 @@ void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
     {
         unsigned targetPlayer = ctrl_id - ID_SWAP_BUTTON;
         if(targetPlayer != localPlayerId_ && gameLobby_->isHost())
-            lobbyHostController->SwapPlayers(localPlayerId_, targetPlayer);
+            lobbyController->SwapPlayers(localPlayerId_, targetPlayer);
         return;
     }
     switch(ctrl_id)
@@ -663,9 +666,9 @@ void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
                 if(lua)
                     lua->EventPlayerReady(localPlayerId_);
                 if(ready->GetText() == _("Start game"))
-                    lobbyHostController->StartCountdown(5);
+                    lobbyController->StartCountdown(5);
                 else
-                    lobbyHostController->CancelCountdown();
+                    lobbyController->CancelCountdown();
             } else
             {
                 if(ready->GetText() == _("Ready"))
@@ -887,7 +890,7 @@ void dskGameLobby::UpdateGGS()
     ggs.randomStartPosition = GetCtrl<ctrlCheck>(23)->isChecked();
 
     // An Server übermitteln
-    lobbyHostController->ChangeGlobalGameSettings(ggs);
+    lobbyController->ChangeGlobalGameSettings(ggs);
 }
 
 void dskGameLobby::ChangeTeam(const unsigned player, const Team team)
