@@ -92,7 +92,7 @@ private:
     std::unique_ptr<ILobbyClient> lobbyClient_;
     bool hasCountdown_;
     std::unique_ptr<LuaInterfaceSettings> lua;
-    std::unique_ptr<GameLobbyController> lobbyHostController;
+    std::unique_ptr<GameLobbyController> lobbyController;
     bool wasActivated, allowAddonChange;
     ctrlChat *gameChat, *lobbyChat;
     unsigned lobbyChatTabAnimId, localChatTabAnimId;
