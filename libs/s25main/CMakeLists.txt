@@ -76,7 +76,7 @@ endif()
 # For clock_gettime etc. this is required on some platforms/compilers
 find_library(LIBRT rt)
 if(LIBRT)
-  target_link_libraries(s25Main PUBLIC ${LIBRT})
+    target_link_libraries(s25Main PUBLIC ${LIBRT})
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
