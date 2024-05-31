@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,6 +11,7 @@
 #include "driver/MouseCoords.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 #include "ogl/IRenderer.h"
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/reversed.hpp>
@@ -160,7 +161,7 @@ void Window::ActivateControls(bool activate)
 void Window::LockRegion(Window* window, const Rect& rect)
 {
     lockedAreas_[window] = rect;
-    auto it = std::find(tofreeAreas_.begin(), tofreeAreas_.end(), window);
+    auto it = helpers::find(tofreeAreas_, window);
     if(it != tofreeAreas_.end())
         tofreeAreas_.erase(it);
 

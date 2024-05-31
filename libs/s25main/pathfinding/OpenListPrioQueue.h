@@ -1,9 +1,10 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
+#include "helpers/containerUtils.h"
 #include <algorithm>
 #include <queue>
 #include <vector>
@@ -27,7 +28,7 @@ public:
 
     void rearrange(iterator it) { std::push_heap(Parent::c.begin(), it + 1, Parent::comp); }
 
-    iterator find(const T& target) { return std::find(Parent::c.begin(), Parent::c.end(), target); }
+    iterator find(const T& target) { return helpers::find(Parent::c, target); }
 
     void clear() { Parent::c.clear(); }
 

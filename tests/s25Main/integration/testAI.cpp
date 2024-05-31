@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,6 +12,7 @@
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
 #include "factories/BuildingFactory.h"
+#include "helpers/containerUtils.h"
 #include "network/GameMessage_Chat.h"
 #include "notifications/NodeNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
@@ -33,9 +34,8 @@ using EmptyWorldFixture2P = WorldFixture<CreateEmptyWorld, 2>;
 template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
 {
-    return std::find_if(collection.begin(), collection.end(),
-                        [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; })
-           != collection.end();
+    return helpers::contains_if(collection,
+                                [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; });
 }
 
 inline bool playerHasBld(const GamePlayer& player, BuildingType type)
