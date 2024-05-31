@@ -42,6 +42,9 @@
 #include "figures/nofStonemason.h"
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
+#include "figures/nofWinegrower.h"
+#include "figures/nofVintner.h"
+#include "figures/nofTempleServant.h"
 #include "helpers/toString.h"
 #include "nodeObjs/noFlag.h"
 #include <stdexcept>
@@ -167,6 +170,15 @@ std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint
         case Job::CharBurner:
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
             return std::make_unique<nofCharburner>(pt, player, static_cast<nobUsual*>(goal));
+        case Job::Winegrower:
+            RTTR_Assert(dynamic_cast<nobUsual*>(goal));
+            return std::make_unique<nofWinegrower>(pt, player, static_cast<nobUsual*>(goal));
+        case Job::Vintner:
+            RTTR_Assert(dynamic_cast<nobUsual*>(goal));
+            return std::make_unique<nofVintner>(pt, player, static_cast<nobUsual*>(goal));
+        case Job::TempleServant:
+            RTTR_Assert(dynamic_cast<nobUsual*>(goal));
+            return std::make_unique<nofTempleServant>(pt, player, static_cast<nobUsual*>(goal));
         case Job::BoatCarrier:
             throw std::logic_error("Cannot create a boat carrier job (try creating Job::Helper).");
             break;

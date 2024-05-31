@@ -18,7 +18,7 @@ class iwBuildingProductivities : public IngameWindow
 
 public:
     /// Icons shown (in this order)
-    static const std::array<BuildingType, 24> icons;
+    static const std::array<BuildingType, 27> icons;
 
     iwBuildingProductivities(const GamePlayer& player);
 

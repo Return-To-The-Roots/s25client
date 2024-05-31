@@ -9,6 +9,7 @@ const DistributionMap distributionMap = {{
   DistributionMapping(GoodType::Fish, BuildingType::CoalMine, 5),
   DistributionMapping(GoodType::Fish, BuildingType::IronMine, 7),
   DistributionMapping(GoodType::Fish, BuildingType::GoldMine, 10),
+  DistributionMapping(GoodType::Fish, BuildingType::Temple, 8),
 
   DistributionMapping(GoodType::Grain, BuildingType::Mill, 5),
   DistributionMapping(GoodType::Grain, BuildingType::PigFarm, 3),
@@ -25,6 +26,7 @@ const DistributionMap distributionMap = {{
 
   DistributionMapping(GoodType::Wood, BuildingType::Sawmill, 8),
   DistributionMapping(GoodType::Wood, BuildingType::Charburner, 3),
+  DistributionMapping(GoodType::Wood, BuildingType::Vineyard, 2),
 
   DistributionMapping(GoodType::Boards, BuildingType::Headquarters, 10),
   DistributionMapping(GoodType::Boards, BuildingType::Metalworks, 4),
@@ -34,4 +36,5 @@ const DistributionMap distributionMap = {{
   DistributionMapping(GoodType::Water, BuildingType::Brewery, 3),
   DistributionMapping(GoodType::Water, BuildingType::PigFarm, 2),
   DistributionMapping(GoodType::Water, BuildingType::DonkeyBreeder, 2),
+  DistributionMapping(GoodType::Water, BuildingType::Vineyard, 2),
 }};

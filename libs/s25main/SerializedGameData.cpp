@@ -56,6 +56,9 @@
 #include "figures/nofWarehouseWorker.h"
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
+#include "figures/nofWinegrower.h"
+#include "figures/nofVintner.h"
+#include "figures/nofTempleServant.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
 #include "helpers/toString.h"
@@ -76,6 +79,7 @@
 #include "nodeObjs/noSkeleton.h"
 #include "nodeObjs/noStaticObject.h"
 #include "nodeObjs/noTree.h"
+#include "nodeObjs/noGrapefield.h"
 #include "s25util/Log.h"
 
 // clang-format off
@@ -169,6 +173,10 @@ std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type 
         RTTR_CREATE_GO(GO_Type::Shipbuildingsite, noShipBuildingSite);
         RTTR_CREATE_GO(GO_Type::Charburnerpile, noCharburnerPile);
         RTTR_CREATE_GO(GO_Type::Economymodehandler, EconomyModeHandler);
+        RTTR_CREATE_GO(GO_Type::NofWinegrower, nofWinegrower);
+        RTTR_CREATE_GO(GO_Type::NofVintner, nofVintner);
+        RTTR_CREATE_GO(GO_Type::NofTempleservant, nofTempleServant);
+        RTTR_CREATE_GO(GO_Type::Grapefield, noGrapefield);
         case GO_Type::Nothing: RTTR_Assert(false); break;
 #undef RTTR_CREATE_GO
     }

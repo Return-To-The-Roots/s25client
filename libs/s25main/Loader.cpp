@@ -56,6 +56,37 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace {
+struct Building
+{
+    unsigned building;
+    unsigned building_shadow;
+    unsigned buildingskeleton;
+    unsigned buildingskeleton_shadow;
+    unsigned door;
+    unsigned building_winter;
+    unsigned building_shadow_winter;
+    unsigned door_winter;
+    unsigned icon;
+};
+std::map<Nation, std::array<Building, 3>> index{
+  {Nation::Africans,
+   {Building{1, 2, 3, 4, 5, 6, 0, 7, 8}, Building{9, 10, 11, 12, 13, 0, 14, 15, 16},
+    Building{17, 18, 19, 20, 21, 22, 0, 23, 24}}},
+  {Nation::Japanese,
+   {Building{25, 26, 27, 28, 29, 30, 0, 31, 32}, Building{33, 34, 35, 36, 37, 0, 38, 39, 40},
+    Building{41, 42, 43, 44, 45, 46, 47, 48, 49}}},
+  {Nation::Romans,
+   {Building{50, 51, 52, 53, 54, 55, 0, 56, 57}, Building{58, 59, 60, 61, 62, 63, 0, 64, 65},
+    Building{66, 67, 68, 69, 70, 71, 0, 72, 73}}},
+  {Nation::Vikings,
+   {Building{74, 75, 76, 77, 78, 79, 0, 80, 81}, Building{82, 83, 84, 85, 86, 87, 88, 89, 90},
+    Building{91, 92, 93, 94, 95, 96, 97, 98, 99}}},
+  {Nation::Babylonians,
+   {Building{100, 101, 102, 103, 104, 105, 0, 106, 107}, Building{108, 109, 110, 111, 112, 113, 0, 114, 115},
+    Building{116, 117, 118, 119, 0, 120, 0, 0, 123}}}};
+} // namespace
+
 struct Loader::FileEntry
 {
     libsiedler2::Archiv archive;
@@ -150,6 +181,8 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
         return LOADER.GetImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
+    else if(bld == BuildingType::Vineyard || bld == BuildingType::Winery || bld == BuildingType::Temple)
+        return LOADER.GetImageN("wine", index.at(nation)[rttr::enum_cast(bld) - 40].icon);
     else
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
@@ -470,6 +503,10 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     if(!LoadResources({"charburner", "charburner_bobs"}))
         return false;
 
+    // TODO: Move to addon folder and make it overwrite existing file
+    if(!LoadResources({"wine", "wine_bobs"}))
+        return false;
+
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
     if(!Load(mapGFXFile, pal5))
         return false;
@@ -589,6 +626,17 @@ void Loader::fillCaches()
                 sprites.skeleton.addShadow(GetImageN("charburner", id + 4));
 
                 sprites.door.add(GetImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
+            } else if(type == BuildingType::Winery || type == BuildingType::Vineyard || type == BuildingType::Temple)
+            {
+                const auto entry = index.at(nation)[rttr::enum_cast(type) - 40];
+
+                sprites.building.add(GetImageN("wine", isWinterGFX_ ? entry.building_winter : entry.building));
+                sprites.building.addShadow(GetImageN("wine", entry.building_shadow));
+
+                sprites.skeleton.add(GetImageN("wine", entry.buildingskeleton));
+                sprites.skeleton.addShadow(GetImageN("wine", entry.buildingskeleton_shadow));
+
+                sprites.door.add(GetImageN("wine", isWinterGFX_ ? entry.door_winter : entry.door));
             } else
             {
                 sprites.building.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type)));
@@ -830,6 +878,8 @@ void Loader::fillCaches()
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
 
+    libsiedler2::Archiv wine_bob_carrier = GetArchive("wine_bobs");
+
     for(bool fat : {true, false})
     {
         for(const auto ware : helpers::EnumRange<GoodType>{})
@@ -847,10 +897,26 @@ void Loader::fillCaches()
 
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
-                    bmp.add(
-                      dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
-                    bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    if(ware == GoodType::Grapes)
+                    {
+                        // Array: [fat][direction][animStep]: [2][6][8]
+                        const unsigned bodyIdx = (fat * 6 + static_cast<unsigned>(imgDir)) * 8 + ani_step;
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(wine_bob_carrier.get(412 + bodyIdx)));
+                        bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    } else if(ware == GoodType::Wine)
+                    {
+                        // Array: [fat][direction][animStep]: [2][6][8]
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                          wine_bob_carrier.get(fat ? 517 : 510 + static_cast<unsigned>(imgDir))));
+                        bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    } else
+                    {
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                          bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                        bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    }
 
                     stp->add(bmp);
                 }

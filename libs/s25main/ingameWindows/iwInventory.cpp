@@ -8,6 +8,6 @@
 #include "gameData/const_gui_ids.h"
 
 iwInventory::iwInventory(const GamePlayer& player)
-    : iwWares(CGI_INVENTORY, IngameWindow::posLastOrCenter, Extent(167, 376), _("Stock"), false, SmallFont,
+    : iwWares(CGI_INVENTORY, IngameWindow::posLastOrCenter, Extent(167, 415), _("Stock"), false, SmallFont,
               player.GetInventory(), player)
 {}

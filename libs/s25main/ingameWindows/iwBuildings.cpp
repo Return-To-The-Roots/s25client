@@ -26,7 +26,7 @@
 #include "gameData/const_gui_ids.h"
 
 /// Reihenfolge der Gebäude
-const std::array<BuildingType, 32> bts = {
+const std::array<BuildingType, 35> bts = {
   BuildingType::Barracks,      BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
   BuildingType::GraniteMine,   BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
   BuildingType::LookoutTower,  BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
@@ -37,7 +37,8 @@ const std::array<BuildingType, 32> bts = {
   BuildingType::Mill,          BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
   BuildingType::Well,          BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
   BuildingType::Charburner,
-  BuildingType::HarborBuilding // entry 31
+  BuildingType::HarborBuilding, // entry 31
+  BuildingType::Vineyard,      BuildingType::Winery, BuildingType::Temple // entry 34
 };
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
@@ -48,7 +49,7 @@ const DrawPoint iconSpacing(40, 48);
 const unsigned short font_distance_y = 20;
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"),
+    : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 528), _("Buildings"),
                    LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
@@ -69,7 +70,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
     // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(32, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+    AddImageButton(35, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
                    LOADER.GetImageN("io", 225), _("Help"));
 }
 

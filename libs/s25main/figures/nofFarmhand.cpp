@@ -68,7 +68,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     case Job::Carpenter: return 0;
                     case Job::Hunter:
                     case Job::Farmer: return 2;
-                    case Job::CharBurner: return 3;
+                    case Job::CharBurner:
+                    case Job::Winegrower: return 2;
                     case Job::Woodcutter:
                     case Job::Forester: return 6;
                     case Job::Fisher: return 7;
@@ -87,7 +88,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     case Job::Carpenter:
                     case Job::Hunter:
                     case Job::Farmer:
-                    case Job::CharBurner: return 1;
+                    case Job::CharBurner:
+                    case Job::Winegrower: return 1;
                     case Job::Stonemason: return 0;
                     default: throw std::logic_error("Invalid job");
                 }
