@@ -7,6 +7,7 @@
 #include <functional>
 #include <samplerate.h>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 
 namespace samplerate {
@@ -33,18 +34,15 @@ namespace detail {
     inline void throwOnError(int errorCode)
     {
         if(errorCode)
-            throw std::runtime_error(src_strerror(errorCode));
+            throwError(errorCode);
     }
-
-    template<class... Ts>
-    using void_t = void;
 
     template<class T, class = void>
     struct has_src_clone : std::false_type
     {};
 
     template<class T>
-    struct has_src_clone<T, void_t<decltype(src_clone(std::declval<T>(), nullptr))>> : std::true_type
+    struct has_src_clone<T, std::void_t<decltype(src_clone(std::declval<T>(), nullptr))>> : std::true_type
     {};
 
     template<typename T, bool = has_src_clone<T*>::value>
@@ -55,7 +53,7 @@ namespace detail {
     public:
         explicit State(SRC_STATE* state) : state_(state) {}
         ~State() { src_delete(state_); }
-        State(State&& other) noexcept : state_(other.state_) { other.state_ = nullptr; }
+        State(State&& other) noexcept : state_(std::exchange(other.state_, nullptr)) {}
         State(const State& other) : state_(nullptr)
         {
             if(other.state_)
@@ -82,11 +80,10 @@ namespace detail {
     public:
         explicit State(SRC_STATE* state) : state_(state) {}
         ~State() { src_delete(state_); }
-        State(State&& other) noexcept : state_(other.state_) { other.state_ = nullptr; }
+        State(State&& other) noexcept : state_(std::exchange(other.state_, nullptr)) {}
         State& operator=(State&& other) noexcept
         {
-            state_ = other.state_;
-            other.state_ = nullptr;
+            state_ = std::exchange(other.state_, nullptr);
             return *this;
         }
         operator SRC_STATE*() { return state_; }
