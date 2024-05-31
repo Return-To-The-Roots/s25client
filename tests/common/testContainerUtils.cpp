@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,9 +7,12 @@
 #include "s25util/warningSuppression.h"
 #include <rttr/test/random.hpp>
 #include <boost/test/unit_test.hpp>
+#include <set>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(ContainerUtils)
+
+constexpr boost::test_tools::per_element per_element;
 
 BOOST_AUTO_TEST_CASE(MakeUniqueStable)
 {
@@ -91,6 +94,11 @@ BOOST_AUTO_TEST_CASE(IndexOf)
     ptrVec.push_back((int*)1338);                                         //-V566
     BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (int*)1337) == 1);        //-V566
     BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (const int*)1337) == 1);  //-V566
+
+    vec = {1, 3, 5, 6};
+    BOOST_TEST_REQUIRE(helpers::indexOf_if(vec, [](int el) { return el % 2 == 0; }) == 3);
+    BOOST_TEST_REQUIRE(helpers::indexOf_if(vec, [](int el) { return el > 2; }) == 1);
+    BOOST_TEST_REQUIRE(helpers::indexOf_if(vec, [](int el) { return el > 6; }) == -1);
 }
 
 BOOST_AUTO_TEST_CASE(Reverse)
