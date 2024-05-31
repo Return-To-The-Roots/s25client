@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -35,14 +35,15 @@ class AddonEconomyModeGameLength : public AddonList
         return result;
     }
 
+    static constexpr auto defaultIdx = helpers::indexOf(AddonEconomyModeGameLengthList, std::chrono::minutes(120));
+    static_assert(defaultIdx >= 0);
+
 public:
     AddonEconomyModeGameLength()
         : AddonList(AddonId::ECONOMY_MODE_GAME_LENGTH, AddonGroup::Economy | AddonGroup::GamePlay,
                     _("Economy Mode: Game Length"),
                     _("Adjust the time after which the economy mode victory condition is checked."), makeOptions(),
-                    helpers::indexOf(AddonEconomyModeGameLengthList, std::chrono::minutes(120)))
+                    static_cast<unsigned>(defaultIdx))
 
-    {
-        RTTR_Assert(getDefaultStatus() != unsigned(-1));
-    }
+    {}
 };

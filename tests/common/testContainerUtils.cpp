@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(MakeUniqueStable)
     vec = {5, 6, 5, 5, 2, 6, 1, 5, 7, 7, 3, -1, 3};
     std::vector<int> expectedVec = {5, 6, 2, 1, 7, 3, -1};
     helpers::makeUniqueStable(vec);
-    BOOST_TEST_REQUIRE(vec == expectedVec, boost::test_tools::per_element());
+    BOOST_TEST_REQUIRE(vec == expectedVec, per_element);
 }
 
 BOOST_AUTO_TEST_CASE(MakeUnique)
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(MakeUnique)
     vec = {5, 6, 5, 5, 2, 6, 1, 5, 7, 7, 3, -1, 3};
     std::vector<int> expectedVec = {-1, 1, 2, 3, 5, 6, 7};
     helpers::makeUnique(vec);
-    BOOST_TEST_REQUIRE(vec == expectedVec, boost::test_tools::per_element());
+    BOOST_TEST_REQUIRE(vec == expectedVec, per_element);
 }
 
 BOOST_AUTO_TEST_CASE(IndexOf)
@@ -117,40 +117,64 @@ BOOST_AUTO_TEST_CASE(Reverse)
     for(int i : helpers::reverse(vecIn))
         vecOut.push_back(i);
     std::reverse(vecIn.begin(), vecIn.end());
-    BOOST_TEST(vecIn == vecOut, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecOut, per_element);
 }
 
 BOOST_AUTO_TEST_CASE(Erase)
 {
     std::vector<int> vecIn = {1, 2, 3, 4, 5}, vecExp;
     helpers::erase(vecIn, 42);
-    BOOST_TEST(vecIn == vecIn, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecIn, per_element);
     helpers::erase(vecIn, 2);
     vecExp = {1, 3, 4, 5};
-    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecExp, per_element);
     helpers::erase(vecIn, 1);
     vecExp = {3, 4, 5};
-    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecExp, per_element);
     helpers::erase(vecIn, 5);
     vecExp = {3, 4};
-    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecExp, per_element);
     helpers::erase(vecIn, 4);
     vecExp = {3};
-    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecExp, per_element);
     helpers::erase(vecIn, 3);
     vecExp = {};
-    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecExp, per_element);
+}
+
+BOOST_AUTO_TEST_CASE(PopFront)
+{
+    std::vector<int> vec{1, 2, 3};
+    helpers::pop_front(vec);
+    BOOST_TEST(vec == (std::vector<int>{2, 3}));
+
+    std::set<int> set{1, 2, 3};
+    helpers::pop_front(set);
+    BOOST_TEST(set == (std::set<int>{2, 3}));
+}
+
+BOOST_AUTO_TEST_CASE(Find)
+{
+    std::vector<int> vec{1, 2, 3};
+    BOOST_TEST((helpers::find(vec, 1) == vec.begin()));
+    BOOST_TEST((helpers::find(vec, 2) == vec.begin() + 1));
+    BOOST_TEST((helpers::find(vec, 4) == vec.end()));
+
+    std::set<int> set{1, 2, 3};
+    BOOST_TEST((helpers::find(set, 1) == set.begin()));
+    BOOST_TEST((helpers::find(set, 2) == set.find(2)));
+    BOOST_TEST((helpers::find(set, 4) == set.end()));
 }
 
 BOOST_AUTO_TEST_CASE(RemoveIf)
 {
     std::vector<int> vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {1, 3, 5};
     helpers::erase_if(vecIn, [](int i) { return i % 2 == 0; });
-    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecExp, per_element);
 
     vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {2, 4, 6};
     helpers::erase_if(vecIn, [](int i) { return i % 2 != 0; });
-    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+    BOOST_TEST(vecIn == vecExp, per_element);
 }
 
 BOOST_AUTO_TEST_CASE(Count)

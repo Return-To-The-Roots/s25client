@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -240,7 +240,7 @@ bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
        == milbld.GetPos()) // upgrade bld should have road already but just in case it doesnt -> get a road asap
         return true;
     // TODO: This probably does not do what is wanted...
-    int bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
+    const auto bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
     return bldIdx
            > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds());
 }

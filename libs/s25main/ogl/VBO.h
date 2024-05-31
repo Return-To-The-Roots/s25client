@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,13 +9,13 @@
 #include "ogl/BufferHandle.h"
 #include "ogl/constants.h"
 #include <glad/glad.h>
-#include <boost/type_traits/make_void.hpp>
 #include <stdexcept>
+#include <type_traits>
 
 namespace ogl {
 
 template<class T>
-using RequireContiguousMemory = boost::void_t<decltype(std::declval<T>().data())>;
+using RequireContiguousMemory = std::void_t<decltype(std::declval<T>().data())>;
 
 template<typename T>
 class VBO

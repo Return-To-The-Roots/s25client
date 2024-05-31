@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(CtorAndBaseFuncsWork)
     s1.setRatio(44100. / 22050.); // No exceptions thrown
 }
 
-template<typename T, typename std::enable_if<std::is_copy_constructible<T>::value>::type* = nullptr>
+template<typename T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
 void cloneTests(T& s1)
 {
     samplerate::State s2 = s1;
@@ -56,7 +56,7 @@ void cloneTests(T& s1)
     BOOST_TEST(s1.getState() != s3.getState());
 }
 
-template<typename T, typename std::enable_if<!std::is_copy_constructible<T>::value>::type* = nullptr>
+template<typename T, std::enable_if_t<!std::is_copy_constructible<T>::value>* = nullptr>
 void cloneTests(const T&)
 {}
 
