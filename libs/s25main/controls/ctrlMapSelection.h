@@ -6,15 +6,17 @@
 
 #include "DrawPoint.h"
 #include "Window.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include <gameData/SelectionMapInputData.h>
 
 class glArchivItem_Bitmap;
+namespace libsiedler2 {
+class baseArchivItem_Bitmap;
+} // namespace libsiedler2
 
 struct MissionStatus
 {
     bool playable = false;
-    bool occupied = false;
+    bool conquered = false;
 };
 
 class ctrlMapSelection : public Window
@@ -35,7 +37,6 @@ protected:
     bool IsMouseOver(const Position& mousePos) const;
     void Draw_() override;
 
-    glArchivItem_Bitmap* createEnabledMask(const Extent& extent);
     void updateEnabledMask();
 
     float getScaleFactor();
@@ -47,14 +48,14 @@ protected:
     DrawPoint invertScale(const DrawPoint& scaleIt);
 
     DrawPoint getBackgroundPosition();
-    DrawPoint getMapOffsetRelativeToBackground();
     DrawPoint getMapPosition();
-    DrawPoint getScaledImageOriginOffset(glArchivItem_Bitmap* bitmap);
 
     void drawImageOnMap(glArchivItem_Bitmap* image, const Position& drawPos);
 
     struct MapImages
     {
+        MapImages(const SelectionMapInputData& data);
+
         glArchivItem_Bitmap* background;
         glArchivItem_Bitmap* map;
         glArchivItem_Bitmap* missionMapMask;
@@ -62,10 +63,9 @@ protected:
         glArchivItem_Bitmap* conquered;
         glArchivItem_Bitmap* enabledMask;
         std::unique_ptr<libsiedler2::baseArchivItem_Bitmap> enabledMaskMemory;
-        bool isValid() const { return map && background && missionMapMask && conquered && marker && enabledMask; };
     };
 
-    MapImages mapImages;
+    const MapImages mapImages;
     SelectionMapInputData inputData;
     std::vector<MissionStatus> missionStatus;
     Position currentSelectionPos;

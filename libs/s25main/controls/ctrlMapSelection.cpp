@@ -5,40 +5,51 @@
 #include "ctrlMapSelection.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
-#include "RttrConfig.h"
+#include "RttrForeachPt.h"
 #include "driver/MouseCoords.h"
 #include "helpers/Range.h"
+#include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
+#include "mygettext/mygettext.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include <libsiedler2/ArchivItem_Bitmap.h>
 #include <libsiedler2/ColorBGRA.h>
 #include <libsiedler2/IAllocator.h>
 #include <libsiedler2/libsiedler2.h>
-#include <helpers/format.hpp>
+#include <algorithm>
+
+ctrlMapSelection::MapImages::MapImages(const SelectionMapInputData& data)
+{
+    auto loadImage = [](const ImageResource& res) {
+        if(LOADER.LoadFiles({res.filePath.string()}))
+        {
+            auto* img = LOADER.GetImageN(ResourceId::make(res.filePath), res.index);
+            if(img)
+                return img;
+        }
+        throw std::runtime_error(helpers::format(_("Loading of images %s for map selection failed."), res.filePath));
+    };
+
+    background = loadImage(data.background);
+    map = loadImage(data.map);
+    missionMapMask = loadImage(data.missionMapMask);
+    marker = loadImage(data.marker);
+    conquered = loadImage(data.conquered);
+    if(map->GetSize() != missionMapMask->GetSize())
+        throw std::runtime_error(_("Map and mission mask have different sizes."));
+
+    enabledMaskMemory =
+      libsiedler2::getAllocator().create<libsiedler2::baseArchivItem_Bitmap>(libsiedler2::BobType::Bitmap);
+    enabledMask = dynamic_cast<glArchivItem_Bitmap*>(enabledMaskMemory.get());
+    RTTR_Assert(enabledMask);
+    enabledMask->init(missionMapMask->getWidth(), missionMapMask->getHeight(), libsiedler2::TextureFormat::BGRA);
+}
 
 ctrlMapSelection::ctrlMapSelection(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
                                    const SelectionMapInputData& inputData)
-    : Window(parent, id, pos, size), inputData(inputData), missionStatus(inputData.missionSelectionInfos.size()),
-      preview(false)
+    : Window(parent, id, pos, size), mapImages(inputData), inputData(inputData),
+      missionStatus(inputData.missionSelectionInfos.size()), preview(false)
 {
-    if(!LOADER.LoadFiles({inputData.background.filePath.string(), inputData.map.filePath.string(),
-                          inputData.missionMapMask.filePath.string(), inputData.marker.filePath.string(),
-                          inputData.conquered.filePath.string()}))
-        throw std::runtime_error("Loading of images for map failed.");
-
-    auto getImage = [](const ImageResource& res) {
-        return LOADER.GetImageN(ResourceId::make(res.filePath), res.index);
-    };
-
-    mapImages.background = getImage(inputData.background);
-    mapImages.map = getImage(inputData.map);
-    mapImages.missionMapMask = getImage(inputData.missionMapMask);
-    mapImages.marker = getImage(inputData.marker);
-    mapImages.conquered = getImage(inputData.conquered);
-    mapImages.enabledMask = createEnabledMask(mapImages.missionMapMask->GetSize());
-
-    if(!mapImages.isValid())
-        throw std::runtime_error("Setup of images for map failed");
-
     updateEnabledMask();
 }
 
@@ -46,30 +57,29 @@ ctrlMapSelection::~ctrlMapSelection() = default;
 
 void ctrlMapSelection::updateEnabledMask()
 {
-    for(const auto x : helpers::range(mapImages.enabledMask->getWidth()))
-    {
-        for(const auto y : helpers::range(mapImages.enabledMask->getHeight()))
-        {
-            const auto pixelColor = mapImages.missionMapMask->getPixel(x, y);
-            const auto matchingMission =
-              std::find_if(inputData.missionSelectionInfos.begin(), inputData.missionSelectionInfos.end(),
-                           [&pixelColor](const auto& val) { return val.maskAreaColor == pixelColor.asValue(); });
+    RTTR_Assert(mapImages.enabledMask->GetSize() == mapImages.missionMapMask->GetSize());
+    const libsiedler2::ColorBGRA disabledColor(inputData.disabledColor);
 
-            auto const index = std::distance(inputData.missionSelectionInfos.begin(), matchingMission);
-            if(matchingMission == inputData.missionSelectionInfos.end() || missionStatus[index].playable)
-            {
-                mapImages.enabledMask->setPixel(x, y, libsiedler2::ColorBGRA());
-            } else
-                mapImages.enabledMask->setPixel(x, y, libsiedler2::ColorBGRA(inputData.disabledColor));
-        }
+    RTTR_FOREACH_PT(Point<uint16_t>, mapImages.enabledMask->GetSize())
+    {
+        const auto pixelColor = mapImages.missionMapMask->getPixel(pt.x, pt.y).asValue();
+        const auto matchingMissionIdx = helpers::indexOf_if(
+          inputData.missionSelectionInfos, [pixelColor](const auto& val) { return val.maskAreaColor == pixelColor; });
+
+        libsiedler2::ColorBGRA newColor;
+        if(matchingMissionIdx >= 0 && !missionStatus[matchingMissionIdx].playable)
+            newColor = disabledColor;
+        mapImages.enabledMask->setPixel(pt.x, pt.y, newColor);
     }
 }
 
 void ctrlMapSelection::setMissionsStatus(const std::vector<MissionStatus>& status)
 {
     if(inputData.missionSelectionInfos.size() != status.size())
+    {
         throw std::runtime_error(
           helpers::format("List has wrong size. %1% != %2%", inputData.missionSelectionInfos.size(), status.size()));
+    }
 
     missionStatus = status;
     updateEnabledMask();
@@ -87,11 +97,8 @@ void ctrlMapSelection::setSelection(size_t select)
 
 int ctrlMapSelection::getCurrentSelection() const
 {
-    const auto match = std::find_if(inputData.missionSelectionInfos.begin(), inputData.missionSelectionInfos.end(),
-                                    [&](const auto& val) { return val.ankerPos == currentSelectionPos; });
-    return match != inputData.missionSelectionInfos.end() ?
-             static_cast<int>(std::distance(inputData.missionSelectionInfos.begin(), match)) :
-             -1;
+    return static_cast<int>(helpers::indexOf_if(inputData.missionSelectionInfos,
+                                                [&](const auto& val) { return val.ankerPos == currentSelectionPos; }));
 }
 
 void ctrlMapSelection::setPreview(bool previewOnly)
@@ -105,33 +112,22 @@ bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
     {
         const auto pickPos = invertScale(mc.GetPos() - getMapPosition());
 
-        const auto pixelColor =
-          mapImages.missionMapMask->getPixel(std::max(0, std::min(pickPos.x, (int)(mapImages.map->GetSize().x - 1))),
-                                             std::max(0, std::min(pickPos.y, (int)(mapImages.map->GetSize().y - 1))));
+        const auto pixelColor = mapImages.missionMapMask
+                                  ->getPixel(helpers::clamp(pickPos.x, 0u, mapImages.map->GetSize().x - 1),
+                                             helpers::clamp(pickPos.y, 0u, mapImages.map->GetSize().y - 1))
+                                  .asValue();
 
-        const auto matchingMission =
-          std::find_if(inputData.missionSelectionInfos.begin(), inputData.missionSelectionInfos.end(),
-                       [&pixelColor](const auto& val) { return val.maskAreaColor == pixelColor.asValue(); });
+        const auto matchingMissionIdx = helpers::indexOf_if(
+          inputData.missionSelectionInfos, [pixelColor](const auto& val) { return val.maskAreaColor == pixelColor; });
 
-        if(matchingMission != inputData.missionSelectionInfos.end())
+        if(matchingMissionIdx >= 0)
         {
-            setSelection(std::distance(inputData.missionSelectionInfos.begin(), matchingMission));
+            setSelection(matchingMissionIdx);
             GetParent()->Msg_ButtonClick(GetID());
         }
         return true;
     }
     return false;
-}
-
-glArchivItem_Bitmap* ctrlMapSelection::createEnabledMask(const Extent& extent)
-{
-    auto enabledMask =
-      libsiedler2::getAllocator().create<libsiedler2::baseArchivItem_Bitmap>(libsiedler2::BobType::Bitmap);
-    enabledMask->init(extent.x, extent.y, libsiedler2::TextureFormat::BGRA);
-    auto* res = dynamic_cast<glArchivItem_Bitmap*>(enabledMask.get());
-    RTTR_Assert(!enabledMask.get() || res);
-    mapImages.enabledMaskMemory = std::move(enabledMask);
-    return res;
 }
 
 bool ctrlMapSelection::IsMouseOver(const Position& mousePos) const
@@ -142,7 +138,7 @@ bool ctrlMapSelection::IsMouseOver(const Position& mousePos) const
 float ctrlMapSelection::getScaleFactor()
 {
     const auto ratio = PointF(GetSize()) / mapImages.background->GetSize();
-    return ratio.x < ratio.y ? ratio.x : ratio.y;
+    return std::min(ratio.x, ratio.y);
 }
 
 DrawPoint ctrlMapSelection::invertScale(const DrawPoint& scaleIt)
@@ -155,25 +151,15 @@ DrawPoint ctrlMapSelection::getBackgroundPosition()
     return GetDrawPos() + (GetSize() - scale(mapImages.background->GetSize())) / 2;
 }
 
-DrawPoint ctrlMapSelection::getMapOffsetRelativeToBackground()
-{
-    return scale(inputData.mapOffsetInBackground);
-}
-
 DrawPoint ctrlMapSelection::getMapPosition()
 {
-    return getBackgroundPosition() + getMapOffsetRelativeToBackground();
-}
-
-DrawPoint ctrlMapSelection::getScaledImageOriginOffset(glArchivItem_Bitmap* bitmap)
-{
-    return bitmap->GetOrigin() - scale(bitmap->GetOrigin());
+    return getBackgroundPosition() + scale(inputData.mapOffsetInBackground);
 }
 
 void ctrlMapSelection::drawImageOnMap(glArchivItem_Bitmap* image, const Position& drawPos)
 {
-    image->DrawFull(
-      Rect(getMapPosition() + scale(drawPos) + getScaledImageOriginOffset(image), scale(image->GetSize())));
+    const auto originCorrection = image->GetOrigin() - scale(image->GetOrigin());
+    image->DrawFull(Rect(getMapPosition() + scale(drawPos) + originCorrection, scale(image->GetSize())));
 }
 
 void ctrlMapSelection::Draw_()
@@ -188,14 +174,10 @@ void ctrlMapSelection::Draw_()
 
     for(const auto idx : helpers::range(missionStatus.size()))
     {
-        if(!missionStatus[idx].occupied)
-            continue;
-
-        drawImageOnMap(mapImages.conquered, inputData.missionSelectionInfos[idx].ankerPos);
+        if(missionStatus[idx].conquered)
+            drawImageOnMap(mapImages.conquered, inputData.missionSelectionInfos[idx].ankerPos);
     }
 
     if(!preview && currentSelectionPos.isValid())
-    {
         drawImageOnMap(mapImages.marker, currentSelectionPos);
-    }
 }
