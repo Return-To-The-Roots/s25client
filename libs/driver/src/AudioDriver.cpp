@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -62,7 +62,7 @@ void AudioDriver::StopEffect(EffectPlayId play_id)
 void AudioDriver::unloadSound(RawSoundHandle handle)
 {
     RTTR_Assert(handle.driverData); // Otherwise handle is invalid
-    const auto it = std::find(loadedSounds_.begin(), loadedSounds_.end(), handle);
+    const auto it = helpers::find(loadedSounds_, handle);
     if(it == loadedSounds_.end())
         throw std::invalid_argument("Sound is not currently loaded");
     doUnloadSound(handle);

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -32,16 +32,14 @@ void NWFInfo::addPlayer(unsigned playerId)
 
 void NWFInfo::removePlayer(unsigned playerId)
 {
-    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(),
-                           [playerId](const auto& info) { return info.id == playerId; });
+    auto it = helpers::find_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
     if(it != playerInfos_.end())
         playerInfos_.erase(it);
 }
 
 bool NWFInfo::addPlayerCmds(unsigned playerId, const PlayerGameCommands& cmds)
 {
-    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(),
-                           [playerId](const auto& info) { return info.id == playerId; });
+    auto it = helpers::find_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     // Commands in NWF n are sent for NWF n + cmdDelay. Clients can only execute an NWF (and send their cmds) when all
@@ -83,8 +81,7 @@ bool NWFInfo::isReady()
 
 const NWFPlayerInfo& NWFInfo::getPlayerInfo(unsigned playerId) const
 {
-    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(),
-                           [playerId](const auto& info) { return info.id == playerId; });
+    auto it = helpers::find_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     else

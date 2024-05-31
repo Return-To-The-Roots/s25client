@@ -205,7 +205,7 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         const auto* flag = aii.gwb.GetSpecObj<noFlag>(pt);
         if(flag)
         {
-            auto it = std::find(flags.begin(), flags.end(), flag);
+            auto it = helpers::find(flags, flag);
             if(it != flags.end())
                 flags.erase(it);
         }

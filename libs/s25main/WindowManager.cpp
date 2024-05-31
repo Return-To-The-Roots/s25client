@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,7 +13,7 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
-#include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "helpers/reverse.h"
 #include "ingameWindows/IngameWindow.h"
 #include "ogl/FontStyle.h"
@@ -665,8 +665,7 @@ IngameWindow* WindowManager::GetTopMostWindow() const
 
 void WindowManager::DoClose(IngameWindow* window)
 {
-    const auto it =
-      std::find_if(windows.begin(), windows.end(), [window](const auto& it) { return it.get() == window; });
+    const auto it = helpers::findPtr(windows, window);
 
     RTTR_Assert(it != windows.end());
 
@@ -741,11 +740,11 @@ void WindowManager::DoDesktopSwitch()
 void WindowManager::CloseMarkedIngameWnds()
 {
     auto isWndMarkedForClose = [](const auto& wnd) { return wnd->ShouldBeClosed(); };
-    auto it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
+    auto it = helpers::find_if(windows, isWndMarkedForClose);
     while(it != windows.end())
     {
         DoClose(it->get());
-        it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
+        it = helpers::find_if(windows, isWndMarkedForClose);
     }
 }
 
