@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -175,6 +175,20 @@ int indexOf(const T_Container& container, const T_Element& element)
     for(const auto& curEl : container)
     {
         if(curEl == element)
+            return index;
+        ++index;
+    }
+    return -1;
+}
+
+/// Returns the index of the first matching element in the container or -1 when not found
+template<class T_Container, class T_Predicate>
+constexpr std::ptrdiff_t indexOf_if(const T_Container& container, T_Predicate predicate)
+{
+    std::ptrdiff_t index = 0;
+    for(const auto& curEl : container)
+    {
+        if(predicate(curEl))
             return index;
         ++index;
     }
