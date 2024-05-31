@@ -68,7 +68,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         font = SmallFont;
 
     // Zuordnungs-IDs
-    constexpr std::array<GoodType, 31> WARE_DISPLAY_ORDER{
+    constexpr std::array<GoodType, 33> WARE_DISPLAY_ORDER{
       GoodType::Wood,    GoodType::Boards,   GoodType::Stones,
       GoodType::Ham,     GoodType::Grain,    GoodType::Flour,
       GoodType::Fish,    GoodType::Meat,     GoodType::Bread,
@@ -79,16 +79,17 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
       GoodType::Shovel,  GoodType::Crucible, GoodType::RodAndLine,
       GoodType::Scythe,  GoodType::Cleaver,  GoodType::Rollingpin,
       GoodType::Bow,     GoodType::Sword,    GoodType::ShieldRomans /* nation specific */,
-      GoodType::Boat};
+      GoodType::Boat,    GoodType::Grapes,   GoodType::Wine};
 
-    constexpr std::array<Job, 31> JOB_DISPLAY_ORDER{
+    constexpr std::array<Job, 34> JOB_DISPLAY_ORDER{
       Job::Helper,      Job::Builder,     Job::Planer,     Job::Woodcutter,
       Job::Forester,    Job::Stonemason,  Job::Fisher,     Job::Hunter,
       Job::Carpenter,   Job::Farmer,      Job::PigBreeder, Job::DonkeyBreeder,
       Job::Miller,      Job::Baker,       Job::Butcher,    Job::Brewer,
       Job::Miner,       Job::IronFounder, Job::Armorer,    Job::Minter,
       Job::Metalworker, Job::Shipwright,  Job::Geologist,  Job::Scout,
-      Job::PackDonkey,  Job::CharBurner,  Job::Private,    Job::PrivateFirstClass,
+      Job::PackDonkey,  Job::CharBurner,  Job::Winegrower, Job::Vintner,
+      Job::TempleServant, Job::Private,   Job::PrivateFirstClass,
       Job::Sergeant,    Job::Officer,     Job::General};
 
     // Warenseite hinzufügen

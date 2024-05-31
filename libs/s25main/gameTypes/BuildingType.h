@@ -48,11 +48,14 @@ enum class BuildingType : uint8_t
     Farm,           // 37
     DonkeyBreeder,  // 38
     HarborBuilding, // 39
+    Vineyard,       // 40
+    Winery,         // 41
+    Temple,         // 42
 };
 
 constexpr auto maxEnumValue(BuildingType)
 {
-    return BuildingType::HarborBuilding;
+    return BuildingType::Temple;
 }
 
 /// Number of NOTHING entries (currently unused buildings)

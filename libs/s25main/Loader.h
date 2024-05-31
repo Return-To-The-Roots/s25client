@@ -124,21 +124,46 @@ public:
     /// Return the more specialized map image. Note: Prefer GetMapTexture which also handles (pseudo) player bitmaps
     glArchivItem_Bitmap* GetMapImage(unsigned nr);
     /// Get the ware symbol texture
-    ITexture* GetWareTex(GoodType ware) { return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware)); }
+    ITexture* GetWareTex(GoodType ware)
+    {
+        if(ware == GoodType::Grapes)
+            return GetTextureN("wine_bobs", 525);
+        else if(ware == GoodType::Wine)
+            return GetTextureN("wine_bobs", 526);
+        else
+            return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+    }
     /// Get the ware stack texture (lying on ground)
     ITexture* GetWareStackTex(GoodType ware)
     {
-        return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        if(ware == GoodType::Grapes)
+            return GetTextureN("wine_bobs", 532);
+        else if(ware == GoodType::Wine)
+            return GetTextureN("wine_bobs", 533);
+        else
+            return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
     }
     /// Get the ware texture when carried by donky
     ITexture* GetWareDonkeyTex(GoodType ware)
     {
-        return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        if(ware == GoodType::Grapes)
+            return GetTextureN("wine_bobs", 535);
+        else if(ware == GoodType::Wine)
+            return GetTextureN("wine_bobs", 536);
+        else
+            return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
     }
     /// Get job symbol texture
     ITexture* GetJobTex(Job job)
     {
-        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
+        if(job == Job::Winegrower)
+            return GetTextureN("wine_bobs", 527);
+        else if(job == Job::Vintner)
+            return GetTextureN("wine_bobs", 528);
+        else if(job == Job::TempleServant)
+            return GetTextureN("wine_bobs", 529);
+        else
+            return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
     }
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
 

@@ -799,6 +799,9 @@ void noFigure::DrawWalking(DrawPoint drawPt)
         }
         break;
         case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
+        case Job::Vintner: DrawWalking(drawPt, "wine_bobs", 204); break;
+        case Job::Winegrower: DrawWalking(drawPt, "wine_bobs", 48); break;
+        case Job::TempleServant: DrawWalking(drawPt, "wine_bobs", 295); break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }
 }

@@ -126,6 +126,7 @@ public:
             case GoodType::Flour: return ("GoodType::Flour");
             case GoodType::Gold: return ("GoodType::Gold");
             case GoodType::Grain: return ("GoodType::Grain");
+            case GoodType::Grapes: return ("GoodType::Grapes");
             case GoodType::Ham: return ("GoodType::Ham");
             case GoodType::Hammer: return ("GoodType::Hammer");
             case GoodType::Iron: return ("GoodType::Iron");
@@ -147,6 +148,7 @@ public:
             case GoodType::Tongs: return ("GoodType::Tongs");
             case GoodType::Water: return ("GoodType::Water");
             case GoodType::WaterEmpty: return ("GoodType::WaterEmpty");
+            case GoodType::Wine: return ("GoodType::Wine");
             case GoodType::Wood: return ("GoodType::Wood");
         }
         RTTR_Assert(false);

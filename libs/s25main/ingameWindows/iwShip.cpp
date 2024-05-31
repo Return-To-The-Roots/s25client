@@ -279,7 +279,7 @@ void iwShip::DrawCargo()
 
             const auto draw_id = convertShieldToNation(ware, owner.nation);
 
-            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(draw_id))->DrawFull(drawPt);
+            LOADER.GetWareStackTex(draw_id)->DrawFull(drawPt);
             drawPt.x += xStep;
             lineCounter++;
         }

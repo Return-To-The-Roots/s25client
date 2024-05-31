@@ -41,12 +41,15 @@ enum class Job : uint8_t
     Scout,             // 28
     PackDonkey,        // 29
     BoatCarrier,       // 30
-    CharBurner         // 31
+    CharBurner,        // 31
+    Winegrower,        // 32
+    Vintner,           // 33
+    TempleServant      // 34
 };
 
 constexpr auto maxEnumValue(Job)
 {
-    return Job::CharBurner;
+    return Job::TempleServant;
 }
 
 constexpr unsigned NUM_SOLDIER_RANKS = 5;

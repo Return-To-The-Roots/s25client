@@ -25,6 +25,7 @@
 // 00D Shawn8901
 // 00E Jonathan
 // 00F Jarno
+// 010 aztimh
 
 // Do not forget to add your Addon to GlobalGameSettings::registerAllAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -71,7 +72,9 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
 
                  PEACEFULMODE = 0x00E0000, DURABLE_GEOLOGIST_SIGNS = 0x00E0001, ECONOMY_MODE_GAME_LENGTH = 0x00E0002,
 
-                 AUTOFLAGS = 0x00F00000)
+                 AUTOFLAGS = 0x00F00000,
+
+                 WINE = 0x01000000)
 //-V:AddonId:801
 
 enum class AddonGroup : unsigned

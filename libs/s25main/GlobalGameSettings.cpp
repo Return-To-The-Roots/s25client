@@ -100,7 +100,8 @@ void GlobalGameSettings::registerAllAddons()
         AddonStatisticsVisibility,
         AddonToolOrdering,
         AddonTrade,
-        AddonAutoFlags
+        AddonAutoFlags,
+        AddonWine
     >;
     // clang-format on
     using namespace boost::mp11;
