@@ -54,12 +54,15 @@ else()
     include(FetchContent)
     FetchContent_Declare(
         LibSamplerate
-        GIT_REPOSITORY https://github.com/Flamefire/libsamplerate
-        GIT_TAG        b5d39fbfc86b656fed68c935ac7b0a06349e4aa1
+        GIT_REPOSITORY https://github.com/libsndfile/libsamplerate
+        GIT_TAG        0.2.2
     )
-    set(LIBSAMPLERATE_TESTS OFF CACHE INTERNAL "")
+    set(LIBSAMPLERATE_EXAMPLES OFF CACHE INTERNAL "")
     set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
+    set(old_BUILD_TESTING ${BUILD_TESTING})
+    set(BUILD_TESTING OFF)
     FetchContent_MakeAvailable(LibSamplerate)
+    set(BUILD_TESTING ${old_BUILD_TESTING})
 endif()
 
 # No tests for turtle
