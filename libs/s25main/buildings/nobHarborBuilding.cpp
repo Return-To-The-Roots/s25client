@@ -244,13 +244,11 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
-            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
-              ->DrawFull(boardsPos - DrawPoint(0, i * 4));
+            LOADER.GetWareStackTex(GoodType::Boards)->DrawFull(boardsPos - DrawPoint(0, i * 4));
         DrawPoint stonesPos = drawPt + STONES_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
-            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
-              ->DrawFull(stonesPos - DrawPoint(0, i * 4));
+            LOADER.GetWareStackTex(GoodType::Stones)->DrawFull(stonesPos - DrawPoint(0, i * 4));
 
         // Und den Bauarbeiter, falls er schon da ist
         if(expedition.builder)
