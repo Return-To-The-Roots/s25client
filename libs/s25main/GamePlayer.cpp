@@ -133,6 +133,8 @@ void GamePlayer::LoadStandardDistribution()
     distribution[GoodType::Stones].client_buildings.push_back(
       BuildingType::Headquarters); // BuildingType::Headquarters = Baustellen!
     distribution[GoodType::Stones].client_buildings.push_back(BuildingType::Catapult);
+    distribution[GoodType::Grapes].client_buildings.push_back(BuildingType::Winery);
+    distribution[GoodType::Wine].client_buildings.push_back(BuildingType::Temple);
 
     // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
     for(const auto i : helpers::enumRange<GoodType>())
