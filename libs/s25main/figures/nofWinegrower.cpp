@@ -8,14 +8,17 @@
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
+#include "WineLoader.h"
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
-#include "gameData/TerrainDesc.h"
-#include <stdexcept>
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrapefield.h"
+#include "gameData/TerrainDesc.h"
+#include <stdexcept>
+
+using namespace wineaddon;
 
 nofWinegrower::nofWinegrower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(Job::Winegrower, pos, player, workplace), harvest(false)
@@ -38,20 +41,19 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
     if(harvest)
     {
         now_id = GAMECLIENT.Interpolate(44, current_ev);
-        LOADER.GetPlayerImage("wine_bobs", 22 + now_id % 4)
+        LOADER
+          .GetPlayerImage("wine_bobs", getStartIndexOfBob(BobTypes::WINEGROWER_PICKING_GRAPES_ANIMATION) + now_id % 4)
           ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
-    }
-    else
+    } else
     {
         now_id = GAMECLIENT.Interpolate(4 * 16 + 4 * 8, current_ev);
         unsigned draw_id;
         if(now_id < 64)
-            draw_id = 1 + now_id % 15;
+            draw_id = getStartIndexOfBob(BobTypes::WINEGROWER_DIGGING_ANIMATION) + now_id % 15;
         else
-            draw_id = 17 + now_id % 4;
+            draw_id = getStartIndexOfBob(BobTypes::WINEGROWER_PLANTING_ANIMATION) + now_id % 4;
 
-        LOADER.GetPlayerImage("wine_bobs", draw_id)
-          ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+        LOADER.GetPlayerImage("wine_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     }
 
     // Schaufel-Sound
@@ -181,7 +183,7 @@ void nofWinegrower::WalkingStarted()
 /// Draws the figure while returning home / entering the building (often carrying wares)
 void nofWinegrower::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "wine_bobs", 146);
+    DrawWalking(drawPt, "wine_bobs", getStartIndexOfBob(BobTypes::WINEGROWER_WALKING_WITH_FULL_BASKET));
 }
 
 /// Draws the winegrower while walking
@@ -195,7 +197,7 @@ void nofWinegrower::DrawOtherStates(DrawPoint drawPt)
             // Go to harvest grapes?
             if(harvest)
             {
-                DrawWalking(drawPt, "wine_bobs", 97);
+                DrawWalking(drawPt, "wine_bobs", getStartIndexOfBob(BobTypes::WINEGROWER_WALKING_WITH_EMPTY_BASKET));
             } else
                 // Draw normal walking
                 DrawWalking(drawPt);

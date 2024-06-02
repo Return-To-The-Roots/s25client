@@ -17,6 +17,7 @@
 #include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
 #include <boost/filesystem/path.hpp>
+#include "WineLoader.h"
 #include <array>
 #include <cstdint>
 #include <map>
@@ -126,42 +127,32 @@ public:
     /// Get the ware symbol texture
     ITexture* GetWareTex(GoodType ware)
     {
-        if(ware == GoodType::Grapes)
-            return GetTextureN("wine_bobs", 525);
-        else if(ware == GoodType::Wine)
-            return GetTextureN("wine_bobs", 526);
+        if(wineaddon::isWineAddonGoodType(ware))
+            return wineaddon::GetWineBobImage(wineaddon::GetWareTex(ware));
         else
             return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
     }
     /// Get the ware stack texture (lying on ground)
     ITexture* GetWareStackTex(GoodType ware)
     {
-        if(ware == GoodType::Grapes)
-            return GetTextureN("wine_bobs", 532);
-        else if(ware == GoodType::Wine)
-            return GetTextureN("wine_bobs", 533);
+        if(wineaddon::isWineAddonGoodType(ware))
+            return wineaddon::GetWineBobImage(wineaddon::GetWareStackTex(ware));
         else
             return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
     }
     /// Get the ware texture when carried by donky
     ITexture* GetWareDonkeyTex(GoodType ware)
     {
-        if(ware == GoodType::Grapes)
-            return GetTextureN("wine_bobs", 535);
-        else if(ware == GoodType::Wine)
-            return GetTextureN("wine_bobs", 536);
+        if(wineaddon::isWineAddonGoodType(ware))
+            return wineaddon::GetWineBobImage(wineaddon::GetWareDonkeyTex(ware));
         else
             return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
     }
     /// Get job symbol texture
     ITexture* GetJobTex(Job job)
     {
-        if(job == Job::Winegrower)
-            return GetTextureN("wine_bobs", 527);
-        else if(job == Job::Vintner)
-            return GetTextureN("wine_bobs", 528);
-        else if(job == Job::TempleServant)
-            return GetTextureN("wine_bobs", 529);
+        if(wineaddon::isWineAddonJobType(job))
+            return wineaddon::GetWineBobImage(wineaddon::GetJobTex(job));
         else
             return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
     }

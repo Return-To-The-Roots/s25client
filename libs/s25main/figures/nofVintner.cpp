@@ -5,11 +5,14 @@
 #include "nofVintner.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "WineLoader.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
+
+using namespace wineaddon;
 
 nofVintner::nofVintner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Vintner, pos, player, workplace)
@@ -25,7 +28,7 @@ void nofVintner::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 91)
     {
-        LOADER.GetPlayerImage("wine_bobs", 195 + (now_id) % 8)
+        LOADER.GetPlayerImage("wine_bobs", getStartIndexOfBob(BobTypes::VINTNER_WORK_WINDOW) + (now_id) % 8)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
 
@@ -48,7 +51,7 @@ unsigned short nofVintner::GetCarryID() const
 /// Draws the figure while returning home / entering the building (often carrying wares)
 void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "wine_bobs", 245);
+    DrawWalking(drawPt, "wine_bobs", getStartIndexOfBob(BobTypes::VINTNER_CARRYING_WINE_IN_OUT) - 8);
 }
 
 helpers::OptionalEnum<GoodType> nofVintner::ProduceWare()

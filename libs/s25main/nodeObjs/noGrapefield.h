@@ -51,7 +51,7 @@ public:
     bool IsHarvestable() const { return size == 3 && state == State::Normal; }
 
     /// Gibt die ID des abgeernteten Weinbergs in der wine_bobs zurück
-    unsigned GetHarvestID() const { return 27 + type * 5 + 4; }
+    unsigned GetHarvestID() const;
 
     /// Bauer beginnt dieses Feld abzuernten
     void BeginHarvesting();

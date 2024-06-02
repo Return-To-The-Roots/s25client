@@ -8,6 +8,7 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "helpers/containerUtils.h"
@@ -799,9 +800,16 @@ void noFigure::DrawWalking(DrawPoint drawPt)
         }
         break;
         case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
-        case Job::Vintner: DrawWalking(drawPt, "wine_bobs", 204); break;
-        case Job::Winegrower: DrawWalking(drawPt, "wine_bobs", 48); break;
-        case Job::TempleServant: DrawWalking(drawPt, "wine_bobs", 295); break;
+        case Job::Vintner:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::getStartIndexOfBob(wineaddon::BobTypes::VINTNER_WALKING));
+            break;
+        case Job::Winegrower:
+            DrawWalking(drawPt, "wine_bobs",
+                        wineaddon::getStartIndexOfBob(wineaddon::BobTypes::WINEGROWER_WALKING_WITH_SHOVEL));
+            break;
+        case Job::TempleServant:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::getStartIndexOfBob(wineaddon::BobTypes::TEMPLESERVANT_WALKING));
+            break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }
 }
