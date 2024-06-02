@@ -91,6 +91,9 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
     ADD_LUA_CONST(PackDonkey);
     ADD_LUA_CONST(BoatCarrier);
     ADD_LUA_CONST(CharBurner);
+    ADD_LUA_CONST(Vineyard);
+    ADD_LUA_CONST(Winery);
+    ADD_LUA_CONST(Temple);
 #undef ADD_LUA_CONST
 
 #define ADD_LUA_CONST(name) lua["STAT_" + s25util::toUpper(#name)] = StatisticType::name
