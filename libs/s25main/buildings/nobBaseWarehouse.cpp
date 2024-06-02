@@ -549,7 +549,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
                     should.Add(it->GetJobType());
             }
         }
-        //RTTR_Assert(should.people == inventory.visual.people);
+        RTTR_Assert(should.people == inventory.visual.people);
     }
 #endif
 
