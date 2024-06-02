@@ -6,16 +6,18 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "WineLoader.h"
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/GameWorld.h"
 #include "random/Random.h"
+#include "world/GameWorld.h"
 
-namespace
-{
+namespace {
 int producedGood = 0;
 }
+
+using namespace wineaddon;
 
 nofTempleServant::nofTempleServant(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::TempleServant, pos, player, workplace)
@@ -31,13 +33,15 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 11) // servant pours wine into crucible(play once at start)
     {
-        LOADER.GetPlayerImage("wine_bobs", 270 + now_id)
+        LOADER.GetPlayerImage("wine_bobs", getStartIndexOfBob(BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION) + now_id)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
     }
     if(now_id >= 11 && now_id < 77) // wine and food is burned (loop for duration)
     {
-        LOADER.GetPlayerImage("wine_bobs", 282 + (now_id + 1) % 6)
+        LOADER
+          .GetPlayerImage("wine_bobs",
+                          getStartIndexOfBob(BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION) + (now_id + 1) % 6)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
 
@@ -50,7 +54,8 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
     }
     if(now_id >= 77 && now_id < 82) // last loop of animation (play once at end)
     {
-        LOADER.GetPlayerImage("wine_bobs", 289 + now_id - 77)
+        LOADER
+          .GetPlayerImage("wine_bobs", getStartIndexOfBob(BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION) + now_id - 77)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
     }
@@ -66,8 +71,10 @@ unsigned short nofTempleServant::GetCarryID() const
 /// Draws the figure while returning home / entering the building (often carrying wares)
 void nofTempleServant::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    std::array<int, 4> resultWare{336, 353, 370, 387};
-    DrawWalking(drawPt, "wine_bobs", resultWare[producedGood]);
+    std::array<BobTypes, 4> resultWare{
+      BobTypes::TEMPLESERVANT_CARRYING_GOLD_IN_OUT, BobTypes::TEMPLESERVANT_CARRYING_IRON_IN_OUT,
+      BobTypes::TEMPLESERVANT_CARRYING_COAL_IN_OUT, BobTypes::TEMPLESERVANT_CARRYING_STONE_IN_OUT};
+    DrawWalking(drawPt, "wine_bobs", getStartIndexOfBob(resultWare[producedGood]) - 8);
 }
 
 helpers::OptionalEnum<GoodType> nofTempleServant::ProduceWare()

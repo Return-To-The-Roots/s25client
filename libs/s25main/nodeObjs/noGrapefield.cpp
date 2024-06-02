@@ -6,6 +6,8 @@
 
 #include "EventManager.h"
 #include "Loader.h"
+#include "WineLoader.h"
+#include "WineLoader.h"
 #include "SerializedGameData.h"
 #include "network/GameClient.h"
 #include "ogl/glSmartBitmap.h"
@@ -18,6 +20,8 @@
 const unsigned GROWING_WAITING_LENGTH = 1100;
 /// Länge des Wachsens
 const unsigned GROWING_LENGTH = 16;
+
+using namespace wineaddon;
 
 noGrapefield::noGrapefield(const MapPoint pos)
     : noCoordBase(NodalObjectType::Grapefield, pos), type(RANDOM_RAND(2)), state(State::GrowingWaiting), size(0)
@@ -59,7 +63,7 @@ void noGrapefield::Draw(DrawPoint drawPt)
         case State::GrowingWaiting:
         case State::Normal:
         {
-            LOADER.GetImageN("wine_bobs", 27 + 5 * type + size)->DrawFull(drawPt);
+            grapefield_cache[type][size].draw(drawPt);
         }
         break;
         case State::Growing:
@@ -67,10 +71,10 @@ void noGrapefield::Draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
             // altes Feld ausblenden
-            LOADER.GetImageN("wine_bobs", 27 + 5 * type + size)->DrawFull(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
 
             // neues Feld einblenden
-            LOADER.GetImageN("wine_bobs", 27 + 5 * type + size + 1)->DrawFull(drawPt, SetAlpha(COLOR_WHITE, alpha));
+            grapefield_cache[type][size+1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
         }
         break;
         case State::Withering:
@@ -78,7 +82,7 @@ void noGrapefield::Draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
             // Feld ausblenden
-            LOADER.GetImageN("wine_bobs", 27 + 5 * type)->DrawFull(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
         }
         break;
     }
@@ -129,6 +133,11 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
         }
         break;
     }
+}
+
+unsigned noGrapefield::GetHarvestID() const
+{
+    return getStartIndexOfBob(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type * 5 + 4;
 }
 
 void noGrapefield::BeginHarvesting()
