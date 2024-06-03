@@ -27,7 +27,7 @@ nofTempleServant::nofTempleServant(SerializedGameData& sgd, const unsigned obj_i
 
 void nofTempleServant::DrawWorking(DrawPoint drawPt)
 {
-    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{19, -31}, {15, -38}, {0, 0}, {22, -25}, {7, -49}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{26,-23}, {17, -40}, {4, 0}, {22, -25}, {20, -45}}};
 
     unsigned now_id = GAMECLIENT.Interpolate(82, current_ev);
 
