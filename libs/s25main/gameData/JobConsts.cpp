@@ -50,9 +50,9 @@ const std::array<FullJobData, helpers::NumEnumValues_v<Job>> fullJobData = {{
   {{}, {false, 37}, gettext_noop("Pack donkey")},
   {{}, {false, 37}, gettext_noop("Boat carrier")},
   {{GoodType::Shovel, 117, 106, 5}, {false, 37}, gettext_noop("Charburner")},
-  {{GoodType::Shovel, 217, 106, 5}, {false, 37}, gettext_noop("Vineyard worker")},
-  {{GoodType::Nothing, 117, 106, 5}, {false, 37}, gettext_noop("Winery worker")},
-  {{GoodType::Crucible, 400, 95, 5}, {false, 37}, gettext_noop("Temple worker")},
+  {{GoodType::Shovel, 217, 106, 5}, {false, 37}, gettext_noop("Winegrower")},
+  {{GoodType::Nothing, 117, 106, 5}, {false, 37}, gettext_noop("Vintner")},
+  {{GoodType::Crucible, 400, 95, 5}, {false, 37}, gettext_noop("Temple Servant")},
 
   // End data
 }};
