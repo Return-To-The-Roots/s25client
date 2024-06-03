@@ -102,8 +102,10 @@ noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsign
                                                         "mis4bobs", "mis5bobs", "charburner_bobs", "wine_bobs"};
         textures.bmp = LOADER.GetTextureN(files[file], id);
         // Use only shadows where available
-        if(file != 6)
+        if(file < 6)
             textures.shadow = LOADER.GetTextureN(files[file], id + 1);
+        else if(file == 7)
+            textures.shadow = LOADER.GetTextureN(files[file], id + 10);
     } else
         throw std::runtime_error("Invalid file number for static object");
 

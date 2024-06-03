@@ -137,7 +137,7 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
 
 unsigned noGrapefield::GetHarvestID() const
 {
-    return getStartIndexOfBob(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type * 5 + 4;
+    return getStartIndexOfBob(BobTypes(BobTypes::WINEGROWER_GRAPEFIELDS_ONE + type)) + 4;
 }
 
 void noGrapefield::BeginHarvesting()
