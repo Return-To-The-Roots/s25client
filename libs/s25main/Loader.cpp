@@ -872,9 +872,11 @@ void Loader::fillCaches()
                     if(ware == GoodType::Grapes)
                     {
                         // Array: [fat][direction][animStep]: [2][6][8]
-                        const unsigned bodyIdx = (fat * 6 + static_cast<unsigned>(imgDir)) * 8 + ani_step;
+                        const unsigned bodyIdx = static_cast<unsigned>(imgDir) * 8 + ani_step;
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(wine_bob_carrier.get(
-                          wineaddon::getStartIndexOfBob(wineaddon::BobTypes::THIN_CARRIER_CARRYING_GRAPES) + bodyIdx)));
+                          wineaddon::getStartIndexOfBob(fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_GRAPES :
+                                                              wineaddon::BobTypes::THIN_CARRIER_CARRYING_GRAPES)
+                          + bodyIdx)));
                         bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
                     } else if(ware == GoodType::Wine)
                     {
