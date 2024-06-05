@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Rect.h"
+#include "WineLoader.h"
 #include "enum_cast.hpp"
 #include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
@@ -17,7 +18,6 @@
 #include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
 #include <boost/filesystem/path.hpp>
-#include "WineLoader.h"
 #include <array>
 #include <cstdint>
 #include <map>

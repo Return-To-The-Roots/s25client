@@ -9,7 +9,6 @@
 
 // Wine Addon animation and images
 
-
 constexpr unsigned NOT_AVAILABLE = 0;
 constexpr unsigned EMPTY = 0;
 
@@ -31,7 +30,7 @@ std::map<std::pair<Nation, BuildingType>, BuildingImages> buildings{
   {{Nation::Babylonians, BuildingType::Winery}, {109, 110, 111, 112, 113, 114, NOT_AVAILABLE, 115, 116}},
   {{Nation::Babylonians, BuildingType::Temple}, {117, 118, 119, 120, EMPTY, 122, NOT_AVAILABLE, EMPTY, 124}}};
 
-    std::map<BobTypes, BobEntry> bobs = {
+std::map<BobTypes, BobEntry> bobs = {
   {BobTypes::WINEGROWER_DIGGING_ANIMATION, {{1, 15}, "Winegrower digging animation (setup grape field, loop)"}},
   {BobTypes::WINEGROWER_PLANTING_ANIMATION,
    {{17, 20}, "Winegrower planting animation (setup field after digging, loop)"}},
@@ -47,7 +46,8 @@ std::map<std::pair<Nation, BuildingType>, BuildingImages> buildings{
    {{97, 144}, "Winegrower walking with empty basket (walking to harvest grapes)"}},
   {BobTypes::WINEGROWER_WALKING_WITH_FULL_BASKET,
    {{146, 193}, "Winery work window - Vintner stomping grapes in barrel (loop for duration)"}},
-  {BobTypes::VINTNER_WORK_WINDOW, {{195,202}, "Winery work window - Vintner stomping grapes in barrel (loop for duration)"}},
+  {BobTypes::VINTNER_WORK_WINDOW,
+   {{195, 202}, "Winery work window - Vintner stomping grapes in barrel (loop for duration)"}},
   {BobTypes::VINTNER_WALKING, {{204, 251}, "Vintner walking"}},
   {BobTypes::VINTNER_CARRYING_WINE_IN_OUT, {{253, 268}, "Vintner carrying wine out (and back in if flag is full)"}},
   {BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION,
@@ -138,7 +138,6 @@ glArchivItem_Bitmap* GetWineBobImage(unsigned nr)
 {
     return LOADER.GetImageN("wine_bobs", nr);
 }
-
 
 helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
 
