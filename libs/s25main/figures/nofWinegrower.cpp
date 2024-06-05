@@ -69,10 +69,10 @@ unsigned short nofWinegrower::GetCarryID() const
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+/// Abgeleitete Klasse informieren, wenn sie startet zu arbeiten (Vorbereitungen)
 void nofWinegrower::WorkStarted()
 {
-    // Weinberg Bescheid sagen, damits nicht plötzlich verschwindet, während wir arbeiten
+    // Weinberg Bescheid sagen, damit nicht verschwindet, solange wir arbeiten
     if(harvest)
         world->GetSpecObj<noGrapefield>(pos)->BeginHarvesting();
 };
@@ -103,7 +103,7 @@ void nofWinegrower::WorkFinished()
         // Was stand hier vorher?
         NodalObjectType noType = world->GetNO(pos)->GetType();
 
-        // Nur Zierobjekte und Schilder dürfen weggerissen werden
+        // Nur Zierobjekte und Schilder weggerissen werden
         if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
             world->DestroyNO(pos, false);
@@ -111,7 +111,7 @@ void nofWinegrower::WorkFinished()
             world->SetNO(pos, new noGrapefield(pos));
         }
 
-        // Wir haben nur gesäht (gar nichts in die Hand nehmen)
+        // Wir haben nur gepflanzt (gar nichts in die Hand nehmen)
         ware = boost::none;
     }
 
@@ -119,10 +119,10 @@ void nofWinegrower::WorkFinished()
     world->RecalcBQAroundPoint(pos);
 }
 
-/// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht, den z.B. der Holzfäller braucht
+/// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht
 nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) const
 {
-    // Entweder gibts einen Weinberg, den wir abernten können...
+    // Entweder gibts einen Weinberg, den wir abernten...
     if(world->GetNO(pt)->GetType() == NodalObjectType::Grapefield)
     {
         if(world->GetSpecObj<noGrapefield>(pt)->IsHarvestable())
@@ -130,7 +130,7 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) cons
         else
             return PointQuality::NotPossible;
     }
-    // oder einen freien Platz, wo wir einen neuen anlegen können
+    // oder einen freien Platz, wo wir einen neuen anlegen
     else
     {
         // Nicht auf Straßen bauen!
@@ -151,7 +151,7 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) cons
 
         for(const MapPoint nb : world->GetNeighbours(pt))
         {
-            // Nicht direkt neben anderen Weinbergen und Gebäude setzen!
+            // Nicht direkt neben anderen Weinbergen und Building setzen!
             noType = world->GetNO(nb)->GetType();
             if(noType == NodalObjectType::Grapefield || noType == NodalObjectType::Building
                || noType == NodalObjectType::Buildingsite)
