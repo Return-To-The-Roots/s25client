@@ -9,12 +9,16 @@
 class SerializedGameData;
 class nobUsual;
 
+#ifdef _MSC_VER
+#    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
+#endif
+
 class nofTempleServant : public nofWorkman
 {
     /// Zeichnet ihn beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override;
+    [[noreturn]] unsigned short GetCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
 

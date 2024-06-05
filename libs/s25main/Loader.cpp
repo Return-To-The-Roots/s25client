@@ -5,11 +5,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Loader.h"
-#include "WineLoader.h"
 #include "ListDir.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Timer.h"
+#include "WineLoader.h"
 #include "addons/const_addons.h"
 #include "commonDefines.h"
 #include "convertSounds.h"

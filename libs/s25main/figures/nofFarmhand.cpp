@@ -67,7 +67,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 {
                     case Job::Carpenter: return 0;
                     case Job::Hunter:
-                    case Job::Farmer: return 2;
+                    case Job::Farmer:
                     case Job::CharBurner:
                     case Job::Winegrower: return 2;
                     case Job::Woodcutter:

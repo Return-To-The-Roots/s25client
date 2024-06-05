@@ -5,10 +5,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "buildings/nobTemple.h"
 #include "helpers/MultiArray.h"
-#include "ogl/glTexturePacker.h"
-#include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glSmartBitmap.h"
+#include "ogl/glTexturePacker.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
@@ -18,7 +19,6 @@
 // Wine Addon animation and images
 
 namespace wineaddon {
-
 
 struct BuildingImages
 {
@@ -87,11 +87,11 @@ enum BobTypes
 
 extern std::map<BobTypes, BobEntry> bobs;
 
-unsigned getStartIndexOfBob(const BobTypes bobType);
-unsigned GetWareTex(const GoodType good);
-unsigned GetWareStackTex(const GoodType good);
-unsigned GetWareDonkeyTex(const GoodType good);
-unsigned GetJobTex(const Job job);
+unsigned getStartIndexOfBob(BobTypes bobType);
+unsigned GetWareTex(GoodType good);
+unsigned GetWareStackTex(GoodType good);
+unsigned GetWareDonkeyTex(GoodType good);
+unsigned GetJobTex(Job job);
 glArchivItem_Bitmap* GetWineImage(unsigned nr);
 glArchivItem_Bitmap* GetWineBobImage(unsigned nr);
 
