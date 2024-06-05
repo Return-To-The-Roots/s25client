@@ -75,7 +75,7 @@ void nofWinegrower::WorkStarted()
     // Inform grapefield to not disappear during harvesting
     if(harvest)
         world->GetSpecObj<noGrapefield>(pos)->BeginHarvesting();
-};
+}
 
 /// Inform derived class, when work is finished
 void nofWinegrower::WorkFinished()
