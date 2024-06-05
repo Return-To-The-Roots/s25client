@@ -24,6 +24,8 @@ private:
     void Msg_Timer(unsigned ctrl_id) override;
     void FillCampaignsTable();
     void showCampaignInfo(bool show);
+    bool hasMapSelectionScreen();
+    void showCampaignMissionSelectionScreen();
     boost::filesystem::path getSelectedCampaignPath();
     bool showCampaignInfo_;
     CreateServerInfo csi_;

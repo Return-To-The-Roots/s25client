@@ -3,9 +3,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#include <kaguya/lua_ref.hpp>
 #include <boost/filesystem.hpp>
+#include <Point.h>
 #include <string>
 #include <vector>
+
+namespace kaguya {
+class LuaRef;
+} // namespace kaguya
 
 struct ImageResource
 {
@@ -27,6 +33,7 @@ struct MissionSelectionInfo
 struct SelectionMapInputData
 {
     SelectionMapInputData() = default;
+    explicit SelectionMapInputData(const kaguya::LuaRef& table);
 
     /// Background image for the selection map
     ImageResource background;
@@ -48,3 +55,16 @@ struct SelectionMapInputData
     /// Contains an entry for each mission
     std::vector<MissionSelectionInfo> missionSelectionInfos;
 };
+
+namespace kaguya {
+template<>
+struct lua_type_traits<SelectionMapInputData> : private lua_type_traits<kaguya::LuaTable>
+{
+    using Base = lua_type_traits<kaguya::LuaTable>;
+    using get_type = SelectionMapInputData;
+
+    using Base::checkType;
+    using Base::strictCheckType;
+    static get_type get(lua_State* l, int index) { return SelectionMapInputData(Base::get(l, index)); }
+};
+} // namespace kaguya

@@ -17,7 +17,7 @@
 
 unsigned CampaignDataLoader::GetVersion()
 {
-    return 1;
+    return 2;
 }
 
 CampaignDataLoader::CampaignDataLoader(CampaignDescription& campaignDesc, const boost::filesystem::path& basePath)
@@ -35,7 +35,7 @@ bool CampaignDataLoader::CheckScriptVersion()
     if(func.type() == LUA_TFUNCTION)
     {
         const auto scriptVersion = func.call<unsigned>();
-        if(scriptVersion == GetVersion())
+        if(scriptVersion <= GetVersion())
             return true;
         else
         {

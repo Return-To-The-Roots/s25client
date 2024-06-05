@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#include "SelectionMapInputData.h"
 #include <boost/filesystem/path.hpp>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,6 +23,7 @@ struct CampaignDescription
     std::string image;
     unsigned maxHumanPlayers = 0;
     std::string difficulty;
+    std::optional<SelectionMapInputData> selectionMapData;
 
     CampaignDescription() = default;
     explicit CampaignDescription(const kaguya::LuaRef& table);
@@ -28,6 +31,7 @@ struct CampaignDescription
     const std::string& getMapName(const size_t idx) const { return mapNames.at(idx); }
     boost::filesystem::path getLuaFilePath(size_t idx) const;
     boost::filesystem::path getMapFilePath(size_t idx) const;
+    const std::optional<SelectionMapInputData>& getSelectionMapData() const;
 
 private:
     std::string mapFolder;
