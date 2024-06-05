@@ -34,7 +34,7 @@ void nofWinegrower::Serialize(SerializedGameData& sgd) const
     sgd.PushBool(harvest);
 }
 
-/// Malt den Arbeiter beim Arbeiten
+/// Draw worker at work
 void nofWinegrower::DrawWorking(DrawPoint drawPt)
 {
     unsigned short now_id;
@@ -56,7 +56,7 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
         LOADER.GetPlayerImage("wine_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     }
 
-    // Schaufel-Sound
+    // Shovel-Sound
     if(now_id % 8 == 3)
     {
         world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
@@ -69,21 +69,21 @@ unsigned short nofWinegrower::GetCarryID() const
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
 
-/// Abgeleitete Klasse informieren, wenn sie startet zu arbeiten (Vorbereitungen)
+/// Inform derived class, when working starts (preparing)
 void nofWinegrower::WorkStarted()
 {
-    // Weinberg Bescheid sagen, damit nicht verschwindet, solange wir arbeiten
+    // Inform grapefield to not disappear during harvesting
     if(harvest)
         world->GetSpecObj<noGrapefield>(pos)->BeginHarvesting();
 };
 
-/// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+/// Inform derived class, when work is finished
 void nofWinegrower::WorkFinished()
 {
     if(harvest)
     {
-        // Weinberg vernichten und vorher noch die ID von dem abgeernteten Weinberg holen, was dann als
-        // normales Zierobjekt gesetzt wird
+        // Destroy grapefield, and take before the ID of the harvested grapefield, which will be set as normal
+        // ornamental object
         noBase* nob = world->GetNO(pos);
         // Check if there is still a grapes field at this position
         if(nob->GetGOT() != GO_Type::Grapefield)
@@ -92,7 +92,7 @@ void nofWinegrower::WorkFinished()
         world->DestroyNO(pos);
         world->SetNO(pos, new noEnvObject(pos, wine_bobs, 7));
 
-        // Getreide, was wir geerntet haben, in die Hand nehmen
+        // Take harvested grapes into hands
         ware = GoodType::Grapes;
     } else
     {
@@ -100,29 +100,29 @@ void nofWinegrower::WorkFinished()
         if(GetPointQuality(pos) == PointQuality::NotPossible)
             return;
 
-        // Was stand hier vorher?
+        // What stands here before?
         NodalObjectType noType = world->GetNO(pos)->GetType();
 
-        // Nur Zierobjekte und Schilder weggerissen werden
+        // Only demolish ornamental objects and signs
         if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
             world->DestroyNO(pos, false);
-            // neuen Weinberg setzen
+            // place new grapefield
             world->SetNO(pos, new noGrapefield(pos));
         }
 
-        // Wir haben nur gepflanzt (gar nichts in die Hand nehmen)
+        // We have only planted (take nothing into hand)
         ware = boost::none;
     }
 
-    // BQ drumrum neu berechnen
+    // recompute BQ around
     world->RecalcBQAroundPoint(pos);
 }
 
-/// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht
+/// Returns the quality of this working point or determines if the worker can work here at all
 nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) const
 {
-    // Entweder gibts einen Weinberg, den wir abernten...
+    // Either a grapefield exists we can harvest...
     if(world->GetNO(pt)->GetType() == NodalObjectType::Grapefield)
     {
         if(world->GetSpecObj<noGrapefield>(pt)->IsHarvestable())
@@ -130,28 +130,28 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) cons
         else
             return PointQuality::NotPossible;
     }
-    // oder einen freien Platz, wo wir einen neuen anlegen
+    // or a free space, to place a new one
     else
     {
-        // Nicht auf Straﬂen bauen!
+        // Do not build on road
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             if(world->GetPointRoad(pt, dir) != PointRoad::None)
                 return PointQuality::NotPossible;
         }
 
-        // Terrain untersuchen
+        // Investigate terrain
         if(!world->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
             return PointQuality::NotPossible;
 
-        // Ist Platz frei?
+        // Is space free?
         NodalObjectType noType = world->GetNO(pt)->GetType();
         if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
             return PointQuality::NotPossible;
 
         for(const MapPoint nb : world->GetNeighbours(pt))
         {
-            // Nicht direkt neben anderen Weinbergen und Building setzen!
+            // Do not build near to other grapefields and buildings!
             noType = world->GetNO(nb)->GetType();
             if(noType == NodalObjectType::Grapefield || noType == NodalObjectType::Building
                || noType == NodalObjectType::Buildingsite)
@@ -162,10 +162,11 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) cons
     }
 }
 
+/// Inform derived class, when work was aborted
 void nofWinegrower::WorkAborted()
 {
     nofFarmhand::WorkAborted();
-    // dem Weinberg Bescheid sagen, damit er wieder verdorren kann, wenn wir abernten
+    // inform the grapefield, so it can wither, when we harvest it
     if(harvest && state == State::Work)
         world->GetSpecObj<noGrapefield>(pos)->EndHarvesting();
 }
@@ -173,7 +174,7 @@ void nofWinegrower::WorkAborted()
 /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
 void nofWinegrower::WalkingStarted()
 {
-    // Wenn ich zu einem Weinberg gehe, ernte ich es ab, ansonsten pflanze ich
+    // When walking to a grapefield, harvest it or plant a new one
     harvest = (world->GetNO(dest)->GetType() == NodalObjectType::Grapefield);
 
     if(!harvest)

@@ -20,16 +20,16 @@ class nofWinegrower : public nofFarmhand
     bool harvest;
 
 private:
-    /// Malt den Arbeiter beim Arbeiten
+    /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     [[noreturn]] unsigned short GetCarryID() const override;
 
-    /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+    /// Inform derived class, when working starts (preparing)
     void WorkStarted() override;
-    /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+    /// Inform derived class, when work is finished
     void WorkFinished() override;
-    /// Abgeleitete Klasse informieren, wenn Arbeiten abgebrochen werden müssen
+    /// Inform derived class, when work was aborted
     void WorkAborted() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
@@ -41,7 +41,7 @@ private:
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
     void DrawWalkingWithWare(DrawPoint drawPt) override;
-    /// Draws the charburner while walking
+    /// Draws the vintner while walking
     /// (overriding standard method of nofFarmhand)
     void DrawOtherStates(DrawPoint drawPt) override;
 
