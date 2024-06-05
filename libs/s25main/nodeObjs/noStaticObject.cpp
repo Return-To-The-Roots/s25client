@@ -98,7 +98,7 @@ noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsign
         textures = {LOADER.GetMapTexture(id), LOADER.GetMapTexture(id + 100)};
     else if(file < 8)
     {
-        static const std::array<ResourceId, 8> files = {"mis0bobs", "mis1bobs", "mis2bobs",       "mis3bobs",
+        static const std::array<ResourceId, 8> files = {"mis0bobs", "mis1bobs", "mis2bobs",        "mis3bobs",
                                                         "mis4bobs", "mis5bobs", "charburner_bobs", "wine_bobs"};
         textures.bmp = LOADER.GetTextureN(files[file], id);
         // Use only shadows where available
