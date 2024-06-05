@@ -5,7 +5,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "buildings/nobTemple.h"
 #include "helpers/MultiArray.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
