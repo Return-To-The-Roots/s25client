@@ -13,6 +13,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
+#include <boost/nowide/filesystem.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <boost/program_options.hpp>
 
@@ -26,6 +27,7 @@ std::atomic<bool> g_abort = false;
 
 int main(int argc, char** argv)
 {
+    bnw::nowide_filesystem();
     bnw::args _(argc, argv);
 
     po::options_description desc("Allowed options");
@@ -80,7 +82,7 @@ int main(int argc, char** argv)
 
     try
     {
-        unsigned random_init = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        auto random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
         if(options.count("random_init"))
             random_init = options["random_init"].as<unsigned>();
 

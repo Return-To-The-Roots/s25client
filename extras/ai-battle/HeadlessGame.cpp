@@ -13,9 +13,7 @@
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/GameConsts.h"
-
 #include <boost/nowide/iostream.hpp>
-
 #include <chrono>
 #include <sstream>
 
@@ -23,7 +21,8 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais);
 std::string ToString(const std::chrono::milliseconds& time);
 std::string HumanReadableNumber(unsigned num);
 
-namespace bfs = bfs;
+namespace bfs = boost::filesystem;
+namespace bnw = boost::nowide;
 using bfs::canonical;
 
 HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais)
@@ -105,7 +104,7 @@ void HeadlessGame::Close()
     if(replay_.IsRecording())
     {
         replay_.StopRecording();
-        printf("Replay written to %s\n", canonical(replayPath_).c_str());
+        bnw::cout << "Replay written to " << canonical(replayPath_) << '\n';
     }
 
     replay_.Close();
@@ -145,7 +144,7 @@ void HeadlessGame::SaveGame(const bfs::path& path) const
     save.sgd.MakeSnapshot(game_);
     save.Save(path, "AI Battle");
 
-    printf("Savegame written to %s\n", canonical(path).c_str());
+    bnw::cout << "Savegame written to " << canonical(path) << '\n';
 }
 
 std::string ToString(const std::chrono::milliseconds& time)
