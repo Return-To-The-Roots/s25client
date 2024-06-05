@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -15,11 +15,11 @@ class nobUsual;
 
 class nofTempleServant : public nofWorkman
 {
-    /// Zeichnet ihn beim Arbeiten
+    /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     [[noreturn]] unsigned short GetCarryID() const override;
-    /// Der Arbeiter erzeugt eine Ware
+    /// The worker produces a ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
