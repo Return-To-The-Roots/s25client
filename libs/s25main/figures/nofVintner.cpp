@@ -1,12 +1,12 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "nofVintner.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "WineLoader.h"
 #include "SoundManager.h"
+#include "WineLoader.h"
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -32,7 +32,7 @@ void nofVintner::DrawWorking(DrawPoint drawPt)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
 
-        // Evtl Sound abspielen
+        // Play rowing boat sound
         if(now_id % 8 == 3)
         {
             world->GetSoundMgr().playNOSound(81, *this, now_id);
@@ -56,6 +56,6 @@ void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofVintner::ProduceWare()
 {
-    //world->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
+    // world->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
     return GoodType::Wine;
 }

@@ -27,7 +27,7 @@ nofTempleServant::nofTempleServant(SerializedGameData& sgd, const unsigned obj_i
 
 void nofTempleServant::DrawWorking(DrawPoint drawPt)
 {
-    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{26,-23}, {17, -40}, {4, 0}, {22, -25}, {20, -45}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{26, -23}, {17, -40}, {4, 0}, {22, -25}, {20, -45}}};
 
     unsigned now_id = GAMECLIENT.Interpolate(82, current_ev);
 
@@ -45,7 +45,7 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
 
-        // Evtl Sound abspielen
+        // Play sound burning
         if((now_id + 1) % 6 == 3)
         {
             world->GetSoundMgr().playNOSound(93, *this, now_id);

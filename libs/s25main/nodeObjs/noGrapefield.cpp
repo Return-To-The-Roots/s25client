@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,19 +6,18 @@
 
 #include "EventManager.h"
 #include "Loader.h"
-#include "WineLoader.h"
-#include "WineLoader.h"
 #include "SerializedGameData.h"
+#include "WineLoader.h"
 #include "network/GameClient.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "s25util/colors.h"
-#include "ogl/glArchivItem_Bitmap.h"
 
-/// Länge des Wachs-Wartens
+/// Duration of the grow waiting phase
 const unsigned GROWING_WAITING_LENGTH = 1100;
-/// Länge des Wachsens
+/// Duration of grow phase
 const unsigned GROWING_LENGTH = 16;
 
 using namespace wineaddon;
@@ -35,7 +34,7 @@ void noGrapefield::Destroy()
 {
     GetEvMgr().RemoveEvent(event);
 
-    // Bauplätze drumrum neu berechnen
+    // recompute BQ around
     world->RecalcBQAroundPoint(pos);
 
     noCoordBase::Destroy();
@@ -70,18 +69,18 @@ void noGrapefield::Draw(DrawPoint drawPt)
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
-            // altes Feld ausblenden
+            // hiding old field
             grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
 
-            // neues Feld einblenden
-            grapefield_cache[type][size+1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+            // showing new field
+            grapefield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
         }
         break;
         case State::Withering:
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
-            // Feld ausblenden
+            // hiding old field
             grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
         }
         break;
@@ -94,39 +93,38 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
     {
         case State::GrowingWaiting:
         {
-            // Feld hat gewartet, also wächst es jetzt
+            // Field was waiting, so it is growing now
             event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
             state = State::Growing;
         }
         break;
         case State::Growing:
         {
-            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter
-            // wächst
+            // When not fully grown, add an additional wait event, so the field can grow further
             if(++size != 3)
             {
                 event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
-                // Erstmal wieder bis zum nächsten Wachsstumsschub warten
+                // Wait until the next growing phase
                 state = State::GrowingWaiting;
             } else
             {
-                // bin nun ausgewachsen
+                // Fully grown
                 state = State::Normal;
-                // nach langer Zeit verdorren
+                // wither after large time
                 event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
             }
         }
         break;
         case State::Normal:
         {
-            // Jetzt lebt es schon zu lange --> hokus pokus verschwindibus!
+            // Living to long --> hokus pokus verschwindibus!
             state = State::Withering;
             event = GetEvMgr().AddEvent(this, 20);
         }
         break;
         case State::Withering:
         {
-            // Selbst zerstören
+            // Self destruction
             event = nullptr;
             world->SetNO(pos, nullptr);
             GetEvMgr().AddToKillList(this);
@@ -142,7 +140,7 @@ unsigned noGrapefield::GetHarvestID() const
 
 void noGrapefield::BeginHarvesting()
 {
-    // Event killen, damit wir nicht plötzlich verschwinden, wenn er uns aberntet
+    // Kill event, so we do not disappear when we are harvested
     GetEvMgr().RemoveEvent(event);
     event = nullptr;
     state = State::Normal;
@@ -150,6 +148,6 @@ void noGrapefield::BeginHarvesting()
 
 void noGrapefield::EndHarvesting()
 {
-    // nach langer Zeit verdorren (von neuem)
+    // Wither after long time
     event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
 }
