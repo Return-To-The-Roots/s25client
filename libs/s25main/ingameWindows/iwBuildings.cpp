@@ -27,18 +27,18 @@
 
 /// Reihenfolge der Gebäude
 const std::array<BuildingType, 35> bts = {
-  BuildingType::Barracks,      BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
-  BuildingType::GraniteMine,   BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
-  BuildingType::LookoutTower,  BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
-  BuildingType::Quarry,        BuildingType::Forester,   BuildingType::Slaughterhouse, BuildingType::Hunter,
-  BuildingType::Brewery,       BuildingType::Armory,     BuildingType::Metalworks,     BuildingType::Ironsmelter,
+  BuildingType::Barracks,       BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
+  BuildingType::GraniteMine,    BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
+  BuildingType::LookoutTower,   BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
+  BuildingType::Quarry,         BuildingType::Forester,   BuildingType::Slaughterhouse, BuildingType::Hunter,
+  BuildingType::Brewery,        BuildingType::Armory,     BuildingType::Metalworks,     BuildingType::Ironsmelter,
   BuildingType::PigFarm,
   BuildingType::Storehouse, // entry 21
-  BuildingType::Mill,          BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
-  BuildingType::Well,          BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
+  BuildingType::Mill,           BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
+  BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
   BuildingType::Charburner,
-  BuildingType::HarborBuilding, // entry 31
-  BuildingType::Vineyard,      BuildingType::Winery, BuildingType::Temple // entry 34
+  BuildingType::HarborBuilding,                                                // entry 31
+  BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple // entry 34
 };
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
