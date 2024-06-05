@@ -139,7 +139,6 @@ glArchivItem_Bitmap* GetWineBobImage(unsigned nr)
     return LOADER.GetImageN("wine_bobs", nr);
 }
 
-
 helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
 
 void fillCache(std::unique_ptr<glTexturePacker>& stp)
