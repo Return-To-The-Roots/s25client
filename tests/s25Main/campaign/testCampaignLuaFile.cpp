@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
+#include "helpers/format.hpp"
 #include "lua/CampaignDataLoader.h"
 #include "gameData/CampaignDescription.h"
 #include "gameData/SelectionMapInputData.h"
@@ -14,16 +15,6 @@
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
 #include <RttrConfig.h>
-
-/// Require that the log contains "content"
-#define REQUIRE_LOG_CONTAINS(content)                                                                                  \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        const std::string log = logAcc.getLog();                                                                       \
-        BOOST_TEST_REQUIRE((log.find(content) != std::string::npos), "Unexpected log: " << log << "\n"                 \
-                                                                                        << "Expected: " << (content)); \
-                                                                                                                       \
-    } while(false)
 
 namespace bnw = boost::nowide;
 
@@ -51,13 +42,13 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
     {
         rttr::test::TmpFolder tmp;
         {
-            bnw::ofstream file(tmp.get() / "campaign.lua");
-            file << boost::format("function getRequiredLuaVersion()\n return %1%\n end")
-                      % CampaignDataLoader::GetVersion();
+            bnw::ofstream file(tmp / "campaign.lua");
+            file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end",
+                                    CampaignDataLoader::GetVersion());
         }
 
         CampaignDescription desc;
-        CampaignDataLoader loader(desc, tmp.get());
+        CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(!loader.Load());
         BOOST_TEST_REQUIRE(loader.CheckScriptVersion());
@@ -98,18 +89,18 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
     {
         rttr::test::TmpFolder tmp;
         {
-            bnw::ofstream file(tmp.get() / "campaign.lua");
-            file << boost::format("function getRequiredLuaVersion()\n return %1%\n end")
-                      % (CampaignDataLoader::GetVersion() + 1);
+            bnw::ofstream file(tmp / "campaign.lua");
+            file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end",
+                                    CampaignDataLoader::GetVersion() + 1);
         }
 
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(!loader.Load());
-        RTTR_REQUIRE_LOG_CONTAINS((boost::format("Wrong lua script version: %1%. Current version: %2%.\n")
-                                   % (CampaignDataLoader::GetVersion() + 1) % CampaignDataLoader::GetVersion())
-                                    .str(),
+        RTTR_REQUIRE_LOG_CONTAINS(helpers::format("Wrong lua script version: %1%. Current version: %2%.\n",
+                                                  CampaignDataLoader::GetVersion() + 1,
+                                                  CampaignDataLoader::GetVersion()),
                                   false);
     }
 }
@@ -237,8 +228,8 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
     CampaignDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
-    REQUIRE_LOG_CONTAINS(
-      "Failed to load campaign data!\nReason: Failed to load game data: Required field 'luaFolder' not found");
+    RTTR_REQUIRE_LOG_CONTAINS(
+      "Failed to load campaign data!\nReason: Failed to load game data: Required field 'luaFolder' not found", false);
 }
 
 BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
