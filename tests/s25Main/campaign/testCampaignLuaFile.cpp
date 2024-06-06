@@ -83,17 +83,24 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         BOOST_TEST_REQUIRE(loader.Load());
         BOOST_TEST(loader.CheckScriptVersion());
         logAcc.clearLog();
+        BOOST_TEST_PASSPOINT();
     }
 
     // Wrong version
     {
+        BOOST_TEST_PASSPOINT();
         rttr::test::TmpFolder tmp;
+        BOOST_TEST_PASSPOINT();
         {
+            BOOST_TEST_PASSPOINT();
             bnw::ofstream file(tmp / "campaign.lua");
+            BOOST_TEST_PASSPOINT();
             file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end",
                                     CampaignDataLoader::GetVersion() + 1);
+            BOOST_TEST_PASSPOINT();
         }
 
+        BOOST_TEST_PASSPOINT();
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
