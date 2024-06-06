@@ -84,13 +84,13 @@ BOOST_AUTO_TEST_CASE(DetectRecursion)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "default.lua");
+        bnw::ofstream file(tmp / "default.lua");
         file << "include(\"foo.lua\")\n";
-        bnw::ofstream file2(tmp.get() / "foo.lua");
+        bnw::ofstream file2(tmp / "foo.lua");
         file2 << "include(\"default.lua\")\n";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get());
+    GameDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("Maximum include depth", false);
@@ -100,11 +100,11 @@ BOOST_AUTO_TEST_CASE(DetectInvalidFilenames)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "default.lua");
+        bnw::ofstream file(tmp / "default.lua");
         file << "include(\"foo(=.lua\")\n";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get());
+    GameDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("disallowed chars", false);
@@ -114,11 +114,11 @@ BOOST_AUTO_TEST_CASE(DetectNonexistingFile)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "default.lua");
+        bnw::ofstream file(tmp / "default.lua");
         file << "include(\"foo.lua\")\n";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get());
+    GameDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("File not found", false);
@@ -128,12 +128,12 @@ BOOST_AUTO_TEST_CASE(DetectWrongExtension)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "default.lua");
+        bnw::ofstream file(tmp / "default.lua");
         file << "include(\"foo.txt\")\n";
-        bnw::ofstream file2(tmp.get() / "foo.txt");
+        bnw::ofstream file2(tmp / "foo.txt");
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get());
+    GameDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("File must have .lua as the extension", false);
@@ -142,12 +142,12 @@ BOOST_AUTO_TEST_CASE(DetectWrongExtension)
 BOOST_AUTO_TEST_CASE(DetectFolderEscape)
 {
     rttr::test::TmpFolder tmp;
-    bfs::path basePath(tmp.get() / "gameData");
+    bfs::path basePath(tmp / "gameData");
     create_directories(basePath);
     {
         bnw::ofstream file(basePath / "default.lua");
         file << "include(\"../foo.lua\")\n";
-        bnw::ofstream file2(tmp.get() / "foo.lua");
+        bnw::ofstream file2(tmp / "foo.lua");
     }
     WorldDescription desc;
     GameDataLoader loader(desc, basePath);
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(DetectFolderEscape)
 BOOST_AUTO_TEST_CASE(DetectAbsolute)
 {
     rttr::test::TmpFolder tmp;
-    bfs::path basePath(tmp.get() / "gameData");
+    bfs::path basePath(tmp / "gameData");
     create_directories(basePath);
     {
         bnw::ofstream file(basePath / "default.lua");
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "default.lua");
+        bnw::ofstream file(tmp / "default.lua");
         file << "rttr:AddLandscape{\
             name = \"testland\",\
             mapGfx = \"<RTTR_GAME>/DATA/MAP_0_Z.LST\",\

@@ -35,12 +35,12 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
     {
         rttr::test::TmpFolder tmp;
         {
-            bnw::ofstream file(tmp.get() / "campaign.lua");
+            bnw::ofstream file(tmp / "campaign.lua");
             file << "";
         }
 
         CampaignDescription desc;
-        CampaignDataLoader loader(desc, tmp.get());
+        CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(!loader.Load());
         RTTR_REQUIRE_LOG_CONTAINS(
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
     {
         rttr::test::TmpFolder tmp;
         {
-            bnw::ofstream file(tmp.get() / "campaign.lua");
+            bnw::ofstream file(tmp / "campaign.lua");
 
             file << "campaign ={\
                 version = \"1\",\
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         }
 
         CampaignDescription desc;
-        CampaignDataLoader loader(desc, tmp.get());
+        CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(loader.Load());
         BOOST_TEST_REQUIRE(loader.CheckScriptVersion());
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         }
 
         CampaignDescription desc;
-        CampaignDataLoader loader(desc, tmp.get());
+        CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(!loader.Load());
         RTTR_REQUIRE_LOG_CONTAINS((boost::format("Wrong lua script version: %1%. Current version: %2%.\n")
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "campaign.lua");
+        bnw::ofstream file(tmp / "campaign.lua");
 
         file << "campaign ={\
             version = \"1\",\
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     }
 
     CampaignDescription desc;
-    CampaignDataLoader loader(desc, tmp.get());
+    CampaignDataLoader loader(desc, tmp);
     BOOST_TEST_REQUIRE(loader.Load());
 
     // campaign description
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingCampaignVariable)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "campaign.lua");
+        bnw::ofstream file(tmp / "campaign.lua");
 
         file << "roemer_campaign ={\
             version = \"1\",\
@@ -175,17 +175,17 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingCampaignVariable)
     }
 
     CampaignDescription desc;
-    CampaignDataLoader loader(desc, tmp.get());
+    CampaignDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
-    REQUIRE_LOG_CONTAINS("Failed to load campaign data!\nReason: Campaign table variable missing.");
+    RTTR_REQUIRE_LOG_CONTAINS("Failed to load campaign data!\nReason: Campaign table variable missing.", false);
 }
 
 BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToIncorrectDifficulty)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "campaign.lua");
+        bnw::ofstream file(tmp / "campaign.lua");
 
         file << "campaign ={\
             version = \"1\",\
@@ -205,17 +205,17 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToIncorrectDifficulty)
     }
 
     CampaignDescription desc;
-    CampaignDataLoader loader(desc, tmp.get());
+    CampaignDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
-    REQUIRE_LOG_CONTAINS("Failed to load campaign data!\nReason: Invalid difficulty: middle");
+    RTTR_REQUIRE_LOG_CONTAINS("Failed to load campaign data!\nReason: Invalid difficulty: middle", false);
 }
 
 BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "campaign.lua");
+        bnw::ofstream file(tmp / "campaign.lua");
 
         file << "campaign ={\
             version = \"1\",\
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
     }
 
     CampaignDescription desc;
-    CampaignDataLoader loader(desc, tmp.get());
+    CampaignDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     REQUIRE_LOG_CONTAINS(
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "campaign.lua");
+        bnw::ofstream file(tmp / "campaign.lua");
 
         file << "rttr:RegisterTranslations(\
         {\
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
     rttr::test::LocaleResetter loc("de");
 
     CampaignDescription desc;
-    CampaignDataLoader loader(desc, tmp.get());
+    CampaignDataLoader loader(desc, tmp);
     BOOST_TEST_REQUIRE(loader.Load());
 
     // campaign description
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
 {
     rttr::test::TmpFolder tmp;
     {
-        bnw::ofstream file(tmp.get() / "campaign.lua");
+        bnw::ofstream file(tmp / "campaign.lua");
 
         file << "campaign = {\
             version = \"1\",\
@@ -347,7 +347,7 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
     }
 
     CampaignDescription desc;
-    CampaignDataLoader loader(desc, tmp.get());
+    CampaignDataLoader loader(desc, tmp);
     BOOST_TEST_REQUIRE(loader.Load());
 
     // campaign description
