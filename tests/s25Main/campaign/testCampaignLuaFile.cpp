@@ -22,46 +22,12 @@ BOOST_AUTO_TEST_SUITE(CampaignLuaFile)
 
 BOOST_AUTO_TEST_CASE(ScriptVersion)
 {
-    // No getRequiredLuaVersion
+    rttr::test::TmpFolder tmp;
+    const auto campaignFile = tmp / "campaign.lua";
     {
-        rttr::test::TmpFolder tmp;
-        {
-            bnw::ofstream file(tmp / "campaign.lua");
-            file << "";
-        }
+        bnw::ofstream file(campaignFile);
 
-        CampaignDescription desc;
-        CampaignDataLoader loader(desc, tmp);
-        rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(!loader.Load());
-        RTTR_REQUIRE_LOG_CONTAINS(
-          "Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated.", false);
-    }
-
-    // Correct version
-    {
-        rttr::test::TmpFolder tmp;
-        {
-            bnw::ofstream file(tmp / "campaign.lua");
-            file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end",
-                                    CampaignDataLoader::GetVersion());
-        }
-
-        CampaignDescription desc;
-        CampaignDataLoader loader(desc, tmp);
-        rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(!loader.Load());
-        BOOST_TEST(loader.CheckScriptVersion());
-        logAcc.clearLog();
-    }
-
-    // Backwards compatibility: version 2 can load version 1
-    {
-        rttr::test::TmpFolder tmp;
-        {
-            bnw::ofstream file(tmp / "campaign.lua");
-
-            file << "campaign ={\
+        file << "campaign ={\
                 version = \"1\",\
                 author = \"Max Meier\",\
                 name = \"Meine Kampagne\",\
@@ -73,8 +39,40 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
                 mapFolder = \"<RTTR_GAME>/DATA/MAPS\",\
                 luaFolder = \"<RTTR_GAME>/CAMPAIGNS/ROMAN\",\
                 maps = { \"dessert0.WLD\", \"dessert1.WLD\", \"dessert2.WLD\"}\
-            }\
-            function getRequiredLuaVersion()\n return 1\n end";
+            }\n";
+    }
+
+    // No getRequiredLuaVersion
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        rttr::test::LogAccessor logAcc;
+        BOOST_TEST_REQUIRE(!loader.Load());
+        RTTR_REQUIRE_LOG_CONTAINS(
+          "Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated.", false);
+    }
+
+    // Correct version
+    {
+        {
+            bnw::ofstream file(campaignFile, std::ios::app);
+            file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end\n",
+                                    CampaignDataLoader::GetVersion());
+        }
+
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        rttr::test::LogAccessor logAcc;
+        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST(loader.CheckScriptVersion());
+        logAcc.clearLog();
+    }
+
+    // Backwards compatibility: version 2 can load version 1
+    {
+        {
+            bnw::ofstream file(tmp / "campaign.lua", std::ios::app);
+            file << "function getRequiredLuaVersion()\n return 1\n end\n";
         }
 
         CampaignDescription desc;
@@ -89,13 +87,11 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
     // Wrong version
     {
         BOOST_TEST_PASSPOINT();
-        rttr::test::TmpFolder tmp;
-        BOOST_TEST_PASSPOINT();
         {
             BOOST_TEST_PASSPOINT();
-            bnw::ofstream file(tmp / "campaign.lua");
+            bnw::ofstream file(tmp / "campaign.lua", std::ios::app);
             BOOST_TEST_PASSPOINT();
-            file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end",
+            file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end\n",
                                     CampaignDataLoader::GetVersion() + 1);
             BOOST_TEST_PASSPOINT();
         }
