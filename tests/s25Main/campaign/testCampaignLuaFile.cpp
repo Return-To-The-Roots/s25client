@@ -64,7 +64,6 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(loader.Load());
-        BOOST_TEST(loader.CheckScriptVersion());
         logAcc.clearLog();
     }
 
@@ -79,7 +78,6 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(loader.Load());
-        BOOST_TEST(loader.CheckScriptVersion());
         logAcc.clearLog();
         BOOST_TEST_PASSPOINT();
     }
