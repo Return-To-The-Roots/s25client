@@ -18,6 +18,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
+#include "buildings/nobTemple.h"
 #include "buildings/nobUsual.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
@@ -55,6 +56,7 @@
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwStatistics.h"
+#include "ingameWindows/iwTempleBuilding.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTools.h"
 #include "ingameWindows/iwTrade.h"
@@ -566,6 +568,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             else if(BuildingProperties::IsMilitary(bt))
                 WINDOWMANAGER.Show(std::make_unique<iwMilitaryBuilding>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
+            else if(bt == BuildingType::Temple)
+                WINDOWMANAGER.Show(std::make_unique<iwTempleBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobTemple>(cSel)));
             else
                 WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));

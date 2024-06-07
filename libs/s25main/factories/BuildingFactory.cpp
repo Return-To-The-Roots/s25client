@@ -9,6 +9,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobStorehouse.h"
+#include "buildings/nobTemple.h"
 #include "buildings/nobUsual.h"
 #include "world/GameWorldBase.h"
 
@@ -26,6 +27,7 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const Building
         case BuildingType::Watchtower:
         case BuildingType::Fortress: bld = new nobMilitary(type, pt, player, nation); break;
         case BuildingType::Shipyard: bld = new nobShipYard(pt, player, nation); break;
+        case BuildingType::Temple: bld = new nobTemple(pt, player, nation); break;
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
     world.SetNO(pt, bld);

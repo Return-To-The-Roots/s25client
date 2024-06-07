@@ -6,6 +6,7 @@
 
 #include "WineLoader.h"
 #include "Loader.h"
+#include "gameTypes/PactTypes.h"
 
 // Wine Addon animation and images
 
@@ -137,6 +138,19 @@ glArchivItem_Bitmap* GetWineImage(unsigned nr)
 glArchivItem_Bitmap* GetWineBobImage(unsigned nr)
 {
     return LOADER.GetImageN("wine_bobs", nr);
+}
+
+ITexture* GetTempleProductionModeTex(ProductionMode productionMode)
+{
+    switch(productionMode)
+    {
+        case ProductionMode::Default:
+            return GetWineBobImage(getStartIndexOfBob(BobTypes::TEMPLE_OUTPUT_WARE_ICON_RANDOM));
+        case ProductionMode::IronOre: return LOADER.GetWareTex(GoodType::IronOre);
+        case ProductionMode::Coal: return LOADER.GetWareTex(GoodType::Coal);
+        case ProductionMode::Stone: return LOADER.GetWareTex(GoodType::Stones);
+    }
+    return nullptr;
 }
 
 helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;

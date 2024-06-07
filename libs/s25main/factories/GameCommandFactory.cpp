@@ -154,6 +154,11 @@ bool GameCommandFactory::SetShipYardMode(const MapPoint pt, bool buildShips)
     return AddGC(new gc::SetShipYardMode(pt, buildShips));
 }
 
+bool GameCommandFactory::SetTempleProductionMode(MapPoint pt, ProductionMode mode)
+{
+    return AddGC(new gc::SetTempleProductionMode(pt, mode));
+}
+
 bool GameCommandFactory::StartStopExpedition(const MapPoint pt, bool start)
 {
     return AddGC(new gc::StartStopExpedition(pt, start));

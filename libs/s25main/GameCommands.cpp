@@ -8,6 +8,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
+#include "buildings/nobTemple.h"
 #include "enum_cast.hpp"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/format.hpp"
@@ -225,6 +226,13 @@ void SetShipYardMode::Execute(GameWorld& world, uint8_t playerId)
     auto* const bld = world.GetSpecObj<nobShipYard>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetMode(buildShips ? nobShipYard::Mode::Ships : nobShipYard::Mode::Boats);
+}
+
+void SetTempleProductionMode::Execute(GameWorld& world, uint8_t playerId)
+{
+    auto* const bld = world.GetSpecObj<nobTemple>(pt_);
+    if(bld && bld->GetPlayer() == playerId)
+        bld->SetProductionMode(productionMode);
 }
 
 void StartStopExpedition::Execute(GameWorld& world, uint8_t playerId)

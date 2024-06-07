@@ -398,7 +398,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
 
         unsigned short p = static_cast<const noBuildingSite&>(no).GetBuildProgress();
         SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
-    } else if(got == GO_Type::NobUsual || got == GO_Type::NobShipyard)
+    } else if(got == GO_Type::NobUsual || got == GO_Type::NobShipyard || got == GO_Type::NobTemple)
     {
         const auto& n = static_cast<const nobUsual&>(no);
         std::string text;
