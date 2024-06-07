@@ -13,6 +13,7 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
+#include "gameTypes/TempleProductionMode.h"
 #include <map>
 
 // Wine Addon animation and images
@@ -93,6 +94,7 @@ unsigned GetWareDonkeyTex(GoodType good);
 unsigned GetJobTex(Job job);
 glArchivItem_Bitmap* GetWineImage(unsigned nr);
 glArchivItem_Bitmap* GetWineBobImage(unsigned nr);
+ITexture* GetTempleProductionModeTex(ProductionMode mode);
 
 /// Grapefield: Type, Size
 extern helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;

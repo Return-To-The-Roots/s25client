@@ -78,9 +78,10 @@ enum class GO_Type : uint16_t
     NofWinegrower,
     NofVintner,
     NofTempleservant,
-    Grapefield
+    Grapefield,
+    NobTemple
 };
 constexpr auto maxEnumValue(GO_Type)
 {
-    return GO_Type::Grapefield;
+    return GO_Type::NobTemple;
 }

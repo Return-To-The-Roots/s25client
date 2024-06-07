@@ -25,9 +25,12 @@ class nofTempleServant : public nofWorkman
     /// Draws the figure while returning home / entering the building (often carrying wares)
     void DrawWalkingWithWare(DrawPoint drawPt) override;
 
+    GoodType currentProduction;
+
 public:
     nofTempleServant(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofTempleServant(SerializedGameData& sgd, unsigned obj_id);
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const final { return GO_Type::NofTempleservant; }
 };

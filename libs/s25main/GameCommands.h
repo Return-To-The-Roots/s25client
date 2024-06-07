@@ -16,6 +16,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/TempleProductionMode.h"
 #include "s25util/Serializer.h"
 #include <cstdint>
 #include <utility>
@@ -681,6 +682,29 @@ public:
     {
         Coords::Serialize(ser);
         ser.PushBool(buildShips);
+    }
+};
+
+/// Switch output of temple
+class SetTempleProductionMode : public Coords
+{
+    GC_FRIEND_DECL;
+    const ProductionMode productionMode;
+
+protected:
+    SetTempleProductionMode(const MapPoint pt, ProductionMode productionMode)
+        : Coords(GCType::SetTempleProductionMode, pt), productionMode(productionMode)
+    {}
+    SetTempleProductionMode(Serializer& ser)
+        : Coords(GCType::SetTempleProductionMode, ser), productionMode(helpers::popEnum<ProductionMode>(ser))
+    {}
+
+public:
+    void Execute(GameWorld& world, uint8_t playerId) override;
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
+        helpers::pushEnum<uint8_t>(ser, productionMode);
     }
 };
 

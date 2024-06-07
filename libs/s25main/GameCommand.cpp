@@ -44,6 +44,7 @@ GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
         case GCType::AcceptPact: gc = new AcceptPact(ser); break;
         case GCType::CancelPact: gc = new CancelPact(ser); break;
         case GCType::SetShipyardMode: gc = new SetShipYardMode(ser); break;
+        case GCType::SetTempleProductionMode: gc = new SetTempleProductionMode(ser); break;
         case GCType::StartStopExpedition: gc = new StartStopExpedition(ser); break;
         case GCType::StartStopExplorationExpedition: gc = new StartStopExplorationExpedition(ser); break;
         case GCType::ExpeditionCommand: gc = new ExpeditionCommand(ser); break;

@@ -20,6 +20,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobStorehouse.h"
+#include "buildings/nobTemple.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofArmorer.h"
 #include "figures/nofAttacker.h"
@@ -177,6 +178,7 @@ std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type 
         RTTR_CREATE_GO(GO_Type::NofVintner, nofVintner);
         RTTR_CREATE_GO(GO_Type::NofTempleservant, nofTempleServant);
         RTTR_CREATE_GO(GO_Type::Grapefield, noGrapefield);
+        RTTR_CREATE_GO(GO_Type::NobTemple, nobTemple);
         case GO_Type::Nothing: RTTR_Assert(false); break;
 #undef RTTR_CREATE_GO
     }
