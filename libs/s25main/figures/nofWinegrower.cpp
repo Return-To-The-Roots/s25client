@@ -46,21 +46,23 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
           ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     } else
     {
-        now_id = GAMECLIENT.Interpolate(4 * 16 + 4 * 8, current_ev);
+        now_id = GAMECLIENT.Interpolate(3 * 16 + 8 * 4, current_ev);
         unsigned draw_id;
-        if(now_id < 64)
+        if(now_id < 48)
+        {
             draw_id = getStartIndexOfBob(BobTypes::WINEGROWER_DIGGING_ANIMATION) + now_id % 15;
+
+            // Shovel-Sound
+            if(now_id % 8 == 3)
+            {
+                world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
+                was_sounding = true;
+            }
+        }
         else
             draw_id = getStartIndexOfBob(BobTypes::WINEGROWER_PLANTING_ANIMATION) + now_id % 4;
 
         LOADER.GetPlayerImage("wine_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
-    }
-
-    // Shovel-Sound
-    if(now_id % 8 == 3)
-    {
-        world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
-        was_sounding = true;
     }
 }
 
