@@ -12,7 +12,7 @@ class GameEvent;
 class noGrapefield : public noCoordBase
 {
 private:
-    /// Typ of the grape field (2 different types)
+    /// Type of the grape field (for drawing only, currently 0-1)
     unsigned char type;
 
     /// State
