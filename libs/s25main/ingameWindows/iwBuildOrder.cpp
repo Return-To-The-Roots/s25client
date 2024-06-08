@@ -187,6 +187,6 @@ void iwBuildOrder::UpdateSettings()
         useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     }
     GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
-    for(unsigned char i = 0; i < 31; ++i)
+    for(unsigned char i = 0; i < pendingBuildOrder.size(); ++i)
         GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[pendingBuildOrder[i]]), i);
 }
