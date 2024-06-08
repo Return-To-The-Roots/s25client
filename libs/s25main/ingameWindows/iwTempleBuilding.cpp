@@ -21,7 +21,6 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
-#include "gameData/BuildingProperties.h"
 #include "gameData/const_gui_ids.h"
 #include <sstream>
 

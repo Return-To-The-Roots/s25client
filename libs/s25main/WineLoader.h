@@ -14,7 +14,6 @@
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/TempleProductionMode.h"
-#include <map>
 
 // Wine Addon animation and images
 
