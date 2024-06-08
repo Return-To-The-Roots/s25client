@@ -46,7 +46,7 @@ struct BobEntry
     std::string description;
 };
 
-enum BobTypes
+enum class BobTypes
 {
     WINEGROWER_DIGGING_ANIMATION,
     WINEGROWER_PLANTING_ANIMATION,

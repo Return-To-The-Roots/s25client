@@ -94,18 +94,19 @@ unsigned getStartIndexOfBob(const BobTypes bobType)
 
 unsigned GetWareTex(const GoodType good)
 {
-    return getStartIndexOfBob(good == GoodType::Wine ? WINE_WARE_ICON : GRAPES_WARE_ICON);
+    return getStartIndexOfBob(good == GoodType::Wine ? BobTypes::WINE_WARE_ICON : BobTypes::GRAPES_WARE_ICON);
 }
 
 unsigned GetWareStackTex(const GoodType good)
 {
-    return getStartIndexOfBob(good == GoodType::Wine ? WINE_WARE_ON_GROUND_OF_FLAG : GRAPES_WARE_ON_GROUND_OF_FLAG);
+    return getStartIndexOfBob(good == GoodType::Wine ? BobTypes::WINE_WARE_ON_GROUND_OF_FLAG :
+                                                       BobTypes::GRAPES_WARE_ON_GROUND_OF_FLAG);
 }
 
 unsigned GetWareDonkeyTex(const GoodType good)
 {
-    return getStartIndexOfBob(good == GoodType::Wine ? DONKEY_BOAT_CARRYING_WINE_WARE :
-                                                       DONKEY_BOAT_CARRYING_GRAPES_WARE);
+    return getStartIndexOfBob(good == GoodType::Wine ? BobTypes::DONKEY_BOAT_CARRYING_WINE_WARE :
+                                                       BobTypes::DONKEY_BOAT_CARRYING_GRAPES_WARE);
 }
 
 unsigned GetJobTex(Job job)
@@ -148,8 +149,9 @@ void fillCache(std::unique_ptr<glTexturePacker>& stp)
 {
     for(unsigned type = 0; type < 2; ++type)
     {
-        const auto field = getStartIndexOfBob(BobTypes(WINEGROWER_GRAPEFIELDS_ONE + type));
-        const auto shadow = getStartIndexOfBob(BobTypes(WINEGROWER_GRAPEFIELDS_ONE_SHADOW + type));
+        const auto field = getStartIndexOfBob(BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type));
+        const auto shadow =
+          getStartIndexOfBob(BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE_SHADOW) + type));
         for(unsigned size = 0; size < 5; ++size)
         {
             glSmartBitmap& bmp = grapefield_cache[type][size];
