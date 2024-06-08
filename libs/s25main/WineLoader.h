@@ -82,11 +82,15 @@ enum class BobTypes
     GRAPES_WARE_ON_GROUND_OF_FLAG,
     WINE_WARE_ON_GROUND_OF_FLAG,
     DONKEY_BOAT_CARRYING_GRAPES_WARE,
-    DONKEY_BOAT_CARRYING_WINE_WARE,
-
+    DONKEY_BOAT_CARRYING_WINE_WARE
 };
 
-extern std::map<BobTypes, BobEntry> bobs;
+constexpr auto maxEnumValue(BobTypes)
+{
+    return BobTypes::DONKEY_BOAT_CARRYING_WINE_WARE;
+}
+
+extern helpers::EnumArray<BobEntry, BobTypes> bobs;
 
 unsigned getStartIndexOfBob(BobTypes bobType);
 unsigned GetWareTex(GoodType good);
