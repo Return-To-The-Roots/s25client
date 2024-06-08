@@ -157,9 +157,13 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
-ITexture* Loader::GetNationTex(Nation nation, unsigned nr)
+ITexture* Loader::GetNationTex(Nation nation, BuildingType bld)
 {
-    return checkedCast<ITexture*>(GetNationImage(nation, nr));
+    if(bld == BuildingType::Charburner || wineaddon::isWineAddonBuildingType(bld))
+        return &LOADER.building_cache[nation][bld].building;
+    else
+        return checkedCast<ITexture*>(GetNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
+    return nullptr;
 }
 
 glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(Nation nation, unsigned nr)
