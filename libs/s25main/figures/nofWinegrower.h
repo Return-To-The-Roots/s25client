@@ -5,7 +5,6 @@
 #pragma once
 
 #include "nofFarmhand.h"
-#include <cstdint>
 
 class SerializedGameData;
 class nobUsual;

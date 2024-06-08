@@ -15,7 +15,6 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrapefield.h"
-#include "gameData/TerrainDesc.h"
 #include <stdexcept>
 
 using namespace wineaddon;
