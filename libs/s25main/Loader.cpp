@@ -152,7 +152,7 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
     if(bld == BuildingType::Charburner)
         return LOADER.GetImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
     else if(wineaddon::isWineAddonBuildingType(bld))
-        return wineaddon::GetWineImage(wineaddon::buildings[std::pair(nation, bld)].icon);
+        return wineaddon::GetWineImage(wineaddon::GetBuildingImages(nation, bld).icon);
     else
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
@@ -598,7 +598,7 @@ void Loader::fillCaches()
                 sprites.door.add(GetImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
             } else if(wineaddon::isWineAddonBuildingType(type))
             {
-                const auto entry = wineaddon::buildings[std::pair(nation, type)];
+                const auto entry = wineaddon::GetBuildingImages(nation, type);
 
                 sprites.building.add(wineaddon::GetWineImage(isWinterGFX_ ? entry.building_winter : entry.building));
                 sprites.building.addShadow(wineaddon::GetWineImage(entry.building_shadow));
