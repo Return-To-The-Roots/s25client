@@ -9,27 +9,7 @@
 #include "gameTypes/PactTypes.h"
 
 // Wine Addon animation and images
-
-constexpr unsigned NOT_AVAILABLE = 0;
-constexpr unsigned EMPTY = 0;
-
 namespace wineaddon {
-std::map<std::pair<Nation, BuildingType>, BuildingImages> buildings{
-  {{Nation::Africans, BuildingType::Vineyard}, {1, 2, 3, 4, 5, 6, NOT_AVAILABLE, 7, 8}},
-  {{Nation::Africans, BuildingType::Winery}, {9, 10, 11, 12, 13, 14, NOT_AVAILABLE, 15, 16}},
-  {{Nation::Africans, BuildingType::Temple}, {17, 18, 19, 20, 21, 22, 23, 24, 25}},
-  {{Nation::Japanese, BuildingType::Vineyard}, {26, 27, 28, 29, 30, 31, NOT_AVAILABLE, 32, 33}},
-  {{Nation::Japanese, BuildingType::Winery}, {34, 35, 36, 37, 38, 39, NOT_AVAILABLE, 40, 41}},
-  {{Nation::Japanese, BuildingType::Temple}, {42, 43, 44, 45, 46, 47, 48, 49, 50}},
-  {{Nation::Romans, BuildingType::Vineyard}, {51, 52, 53, 54, 55, 56, NOT_AVAILABLE, 57, 58}},
-  {{Nation::Romans, BuildingType::Winery}, {59, 60, 61, 62, 63, 64, NOT_AVAILABLE, 65, 66}},
-  {{Nation::Romans, BuildingType::Temple}, {67, 68, 69, 70, 71, 72, NOT_AVAILABLE, 73, 74}},
-  {{Nation::Vikings, BuildingType::Vineyard}, {75, 76, 77, 78, 79, 80, NOT_AVAILABLE, 81, 82}},
-  {{Nation::Vikings, BuildingType::Winery}, {83, 84, 85, 86, 87, 88, 89, 90, 91}},
-  {{Nation::Vikings, BuildingType::Temple}, {92, 93, 94, 95, 96, 97, 98, 99, 100}},
-  {{Nation::Babylonians, BuildingType::Vineyard}, {101, 102, 103, 104, 105, 106, NOT_AVAILABLE, 107, 108}},
-  {{Nation::Babylonians, BuildingType::Winery}, {109, 110, 111, 112, 113, 114, NOT_AVAILABLE, 115, 116}},
-  {{Nation::Babylonians, BuildingType::Temple}, {117, 118, 119, 120, EMPTY, 122, NOT_AVAILABLE, EMPTY, 124}}};
 
 std::map<BobTypes, BobEntry> bobs = {
   {BobTypes::WINEGROWER_DIGGING_ANIMATION, {{1, 15}, "Winegrower digging animation (setup grape field, loop)"}},
@@ -96,6 +76,15 @@ bool isWineAddonGoodType(GoodType good)
 bool isWineAddonJobType(Job job)
 {
     return job == Job::Winegrower || job == Job::Vintner || job == Job::TempleServant;
+}
+
+BuildingImages GetBuildingImages(Nation nation, BuildingType buildType)
+{
+    const unsigned buildingStartIndex =
+      1 + rttr::enum_cast(nation) * 27 + (rttr::enum_cast(buildType) - rttr::enum_cast(BuildingType::Vineyard)) * 9;
+    return {buildingStartIndex,     buildingStartIndex + 1, buildingStartIndex + 2,
+            buildingStartIndex + 3, buildingStartIndex + 4, buildingStartIndex + 5,
+            buildingStartIndex + 6, buildingStartIndex + 7, buildingStartIndex + 8};
 }
 
 unsigned getStartIndexOfBob(const BobTypes bobType)

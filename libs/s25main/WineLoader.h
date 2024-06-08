@@ -37,7 +37,8 @@ bool isWineAddonBuildingType(BuildingType bld);
 bool isWineAddonGoodType(GoodType good);
 bool isWineAddonJobType(Job job);
 
-extern std::map<std::pair<Nation, BuildingType>, BuildingImages> buildings;
+BuildingImages GetBuildingImages(Nation nation, BuildingType buildType);
+
 using BobEntryRange = std::pair<unsigned, unsigned>;
 struct BobEntry
 {
