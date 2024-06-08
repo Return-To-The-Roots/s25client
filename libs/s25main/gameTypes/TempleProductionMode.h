@@ -22,4 +22,4 @@ constexpr auto maxEnumValue(ProductionMode)
 }
 
 const helpers::EnumArray<ProductionMode, ProductionMode> TRANSITIONS{
-  {{ProductionMode::IronOre}, {ProductionMode::Coal}, {ProductionMode::Stone}, {ProductionMode::Default}}};
+  {ProductionMode::IronOre, ProductionMode::Coal, ProductionMode::Stone, ProductionMode::Default}};
