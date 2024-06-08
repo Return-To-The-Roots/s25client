@@ -58,8 +58,7 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
                 world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
                 was_sounding = true;
             }
-        }
-        else
+        } else
             draw_id = getStartIndexOfBob(BobTypes::WINEGROWER_PLANTING_ANIMATION) + now_id % 4;
 
         LOADER.GetPlayerImage("wine_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
@@ -155,8 +154,8 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) cons
         {
             // Do not build near to other grapefields and buildings!
             noType = world->GetNO(nb)->GetType();
-            if(noType == NodalObjectType::Grapefield || noType == NodalObjectType::Building
-               || noType == NodalObjectType::Buildingsite)
+            if(noType == NodalObjectType::Grapefield || noType == NodalObjectType::Grainfield
+               || noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite)
                 return PointQuality::NotPossible;
         }
 
