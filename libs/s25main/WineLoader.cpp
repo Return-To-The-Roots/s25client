@@ -150,7 +150,8 @@ void fillCache(std::unique_ptr<glTexturePacker>& stp)
     for(unsigned type = 0; type < 2; ++type)
     {
         const auto field = getStartIndexOfBob(BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type));
-        const auto shadow = getStartIndexOfBob(BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE_SHADOW) + type));
+        const auto shadow =
+          getStartIndexOfBob(BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE_SHADOW) + type));
         for(unsigned size = 0; size < 5; ++size)
         {
             glSmartBitmap& bmp = grapefield_cache[type][size];
