@@ -162,7 +162,7 @@ ITexture* Loader::GetNationTex(Nation nation, BuildingType bld)
     if(bld == BuildingType::Charburner || wineaddon::isWineAddonBuildingType(bld))
         return &LOADER.building_cache[nation][bld].building;
     else
-        return GetNationTex(nation, 250 + rttr::enum_cast(bld) * 5);
+        return checkedCast<ITexture*>(GetNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
     return nullptr;
 }
 
