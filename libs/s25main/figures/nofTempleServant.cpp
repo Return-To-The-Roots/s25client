@@ -39,15 +39,13 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 11) // servant pours wine into crucible(play once at start)
     {
-        LOADER.GetPlayerImage("wine_bobs", getStartIndexOfBob(BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION) + now_id)
+        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION] + now_id)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
     }
     if(now_id >= 11 && now_id < 77) // wine and food is burned (loop for duration)
     {
-        LOADER
-          .GetPlayerImage("wine_bobs",
-                          getStartIndexOfBob(BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION) + (now_id + 1) % 6)
+        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION] + (now_id + 1) % 6)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
 
@@ -60,8 +58,7 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
     }
     if(now_id >= 77 && now_id < 82) // last loop of animation (play once at end)
     {
-        LOADER
-          .GetPlayerImage("wine_bobs", getStartIndexOfBob(BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION) + now_id - 77)
+        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION] + now_id - 77)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
     }
@@ -82,7 +79,7 @@ void nofTempleServant::DrawWalkingWithWare(DrawPoint drawPt)
                                                    {GoodType::Coal, BobTypes::TEMPLESERVANT_CARRYING_COAL_IN_OUT},
                                                    {GoodType::Stones, BobTypes::TEMPLESERVANT_CARRYING_STONE_IN_OUT}};
 
-    DrawWalking(drawPt, "wine_bobs", getStartIndexOfBob(goodTypeToTexture[currentProduction]) - 8);
+    DrawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]] - 8);
 }
 
 helpers::OptionalEnum<GoodType> nofTempleServant::ProduceWare()

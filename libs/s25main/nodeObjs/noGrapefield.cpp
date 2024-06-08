@@ -135,7 +135,7 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
 
 unsigned noGrapefield::GetHarvestID() const
 {
-    return getStartIndexOfBob(BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type)) + 4;
+    return bobIndex[BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type)] + 4;
 }
 
 void noGrapefield::BeginHarvesting()
