@@ -20,7 +20,7 @@ helpers::EnumArray<BobEntry, BobTypes> bobs = {
   BobEntry{{42, 46}, "Grape field B shadows"},
   BobEntry{{48, 95}, "Winegrower walking with shovel (walk to setup field and back to house)"},
   BobEntry{{97, 144}, "Winegrower walking with empty basket (walking to harvest grapes)"},
-  BobEntry{{146, 193}, "Winery work window - Vintner stomping grapes in barrel (loop for duration)"},
+  BobEntry{{146, 193}, "Winegrower walking with full basket (walk back to house after harvest)"},
   BobEntry{{195, 202}, "Winery work window - Vintner stomping grapes in barrel (loop for duration)"},
   BobEntry{{204, 251}, "Vintner walking"},
   BobEntry{{253, 268}, "Vintner carrying wine out (and back in if flag is full)"},
