@@ -801,14 +801,13 @@ void noFigure::DrawWalking(DrawPoint drawPt)
         break;
         case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
         case Job::Vintner:
-            DrawWalking(drawPt, "wine_bobs", wineaddon::getStartIndexOfBob(wineaddon::BobTypes::VINTNER_WALKING));
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::VINTNER_WALKING]);
             break;
         case Job::Winegrower:
-            DrawWalking(drawPt, "wine_bobs",
-                        wineaddon::getStartIndexOfBob(wineaddon::BobTypes::WINEGROWER_WALKING_WITH_SHOVEL));
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::WINEGROWER_WALKING_WITH_SHOVEL]);
             break;
         case Job::TempleServant:
-            DrawWalking(drawPt, "wine_bobs", wineaddon::getStartIndexOfBob(wineaddon::BobTypes::TEMPLESERVANT_WALKING));
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
             break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }

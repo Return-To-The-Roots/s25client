@@ -15,9 +15,11 @@
 #include "gameTypes/Nation.h"
 #include "gameTypes/TempleProductionMode.h"
 
-// Wine Addon animation and images
-
 namespace wineaddon {
+
+bool isWineAddonBuildingType(BuildingType bld);
+bool isWineAddonGoodType(GoodType good);
+bool isWineAddonJobType(Job job);
 
 struct BuildingImages
 {
@@ -32,18 +34,7 @@ struct BuildingImages
     unsigned icon;
 };
 
-bool isWineAddonBuildingType(BuildingType bld);
-bool isWineAddonGoodType(GoodType good);
-bool isWineAddonJobType(Job job);
-
 BuildingImages GetBuildingImages(Nation nation, BuildingType buildType);
-
-using BobEntryRange = std::pair<unsigned, unsigned>;
-struct BobEntry
-{
-    BobEntryRange bobEntryRange;
-    std::string description;
-};
 
 enum class BobTypes
 {
@@ -89,19 +80,19 @@ constexpr auto maxEnumValue(BobTypes)
     return BobTypes::DONKEY_BOAT_CARRYING_WINE_WARE;
 }
 
-extern helpers::EnumArray<BobEntry, BobTypes> bobs;
+extern helpers::EnumArray<unsigned, BobTypes> bobIndex;
+extern helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
 
-unsigned getStartIndexOfBob(BobTypes bobType);
 unsigned GetWareTex(GoodType good);
 unsigned GetWareStackTex(GoodType good);
 unsigned GetWareDonkeyTex(GoodType good);
 unsigned GetJobTex(Job job);
+
 glArchivItem_Bitmap* GetWineImage(unsigned nr);
 glArchivItem_Bitmap* GetWineBobImage(unsigned nr);
+
 ITexture* GetTempleProductionModeTex(ProductionMode mode);
 
-/// Grapefield: Type, Size
-extern helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
-
 void fillCache(std::unique_ptr<glTexturePacker>& stp);
+
 } // namespace wineaddon

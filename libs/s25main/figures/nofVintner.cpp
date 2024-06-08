@@ -28,7 +28,7 @@ void nofVintner::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 91)
     {
-        LOADER.GetPlayerImage("wine_bobs", getStartIndexOfBob(BobTypes::VINTNER_WORK_WINDOW) + (now_id) % 8)
+        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::VINTNER_WORK_WINDOW] + (now_id) % 8)
           ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
                      world->GetPlayer(workplace->GetPlayer()).color);
 
@@ -51,7 +51,7 @@ unsigned short nofVintner::GetCarryID() const
 /// Draws the figure while returning home / entering the building (often carrying wares)
 void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "wine_bobs", getStartIndexOfBob(BobTypes::VINTNER_CARRYING_WINE_IN_OUT) - 8);
+    DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::VINTNER_CARRYING_WINE_IN_OUT] - 8);
 }
 
 helpers::OptionalEnum<GoodType> nofVintner::ProduceWare()
