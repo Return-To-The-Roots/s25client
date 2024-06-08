@@ -101,7 +101,7 @@ void iwBuildings::Msg_PaintAfter()
 
 void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if(ctrl_id == 32) // Help button
+    if(ctrl_id == 35) // Help button
     {
         WINDOWMANAGER.ReplaceWindow(
           std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
