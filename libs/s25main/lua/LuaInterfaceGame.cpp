@@ -143,8 +143,8 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
     ADD_LUA_CONST(Coal);
     ADD_LUA_CONST(Meat);
     ADD_LUA_CONST(Ham);
-    ADD_LUA_CONST(Wine);
     ADD_LUA_CONST(Grapes);
+    ADD_LUA_CONST(Wine);
 #undef ADD_LUA_CONST
 
 #define ADD_LUA_CONST(name) lua["RES_" + s25util::toUpper(#name)] = ResourceType::name
