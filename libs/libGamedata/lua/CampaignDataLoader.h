@@ -18,8 +18,6 @@ public:
     CampaignDataLoader(CampaignDescription& campaignDesc, const boost::filesystem::path& basePath);
     ~CampaignDataLoader() override;
 
-    bool CheckScriptVersion();
-
     /// Return version of the interface. Changes here reflect breaking changes
     static unsigned GetVersion();
 
@@ -30,4 +28,6 @@ public:
 private:
     CampaignDescription& campaignDesc_;
     boost::filesystem::path basePath_;
+
+    bool CheckScriptVersion();
 };

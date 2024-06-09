@@ -90,11 +90,11 @@ SelectionMapInputData createInputForSelectionMap(rttr::test::TmpFolder const& tm
     uint32_t const green = 0xff00ff00;
     uint32_t const blue = 0xff0000ff;
 
-    auto backgroundPath = tmp.get() / "background.bmp";
-    auto mapPath = tmp.get() / "map.bmp";
-    auto missionmapmaskPath = tmp.get() / "missionmapmask.bmp";
-    auto markerPath = tmp.get() / "marker.bmp";
-    auto conqueredPath = tmp.get() / "conquered.bmp";
+    auto backgroundPath = tmp / "background.bmp";
+    auto mapPath = tmp / "map.bmp";
+    auto missionmapmaskPath = tmp / "missionmapmask.bmp";
+    auto markerPath = tmp / "marker.bmp";
+    auto conqueredPath = tmp / "conquered.bmp";
 
     storeBitmap(backgroundPath, createBitmapWithOneColor(backgroundSize, red));
     storeBitmap(mapPath, createBitmapFromBuffer(createMapTestData(mapSize)));
