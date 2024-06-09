@@ -152,7 +152,7 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
     if(bld == BuildingType::Charburner)
         return LOADER.GetImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
     else if(wineaddon::isWineAddonBuildingType(bld))
-        return wineaddon::GetWineImage(wineaddon::GetBuildingImages(nation, bld).icon);
+        return wineaddon::GetImage(wineaddon::GetBuildingImages(nation, bld).icon);
     else
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
@@ -179,6 +179,38 @@ glArchivItem_Bitmap* Loader::GetMapImage(unsigned nr)
 ITexture* Loader::GetMapTexture(unsigned nr)
 {
     return convertChecked<ITexture*>(map_gfx->get(nr));
+}
+
+ITexture* Loader::GetWareTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareTex(ware);
+    else
+        return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetWareStackTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareStackTex(ware);
+    else
+        return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetWareDonkeyTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareDonkeyTex(ware);
+    else
+        return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetJobTex(Job job)
+{
+    if(wineaddon::isWineAddonJobType(job))
+        return wineaddon::GetJobTex(job);
+    else
+        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
 }
 
 glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
@@ -604,13 +636,13 @@ void Loader::fillCaches()
             {
                 const auto entry = wineaddon::GetBuildingImages(nation, type);
 
-                sprites.building.add(wineaddon::GetWineImage(isWinterGFX_ ? entry.building_winter : entry.building));
-                sprites.building.addShadow(wineaddon::GetWineImage(entry.building_shadow));
+                sprites.building.add(wineaddon::GetImage(isWinterGFX_ ? entry.building_winter : entry.building));
+                sprites.building.addShadow(wineaddon::GetImage(entry.building_shadow));
 
-                sprites.skeleton.add(wineaddon::GetWineImage(entry.buildingskeleton));
-                sprites.skeleton.addShadow(wineaddon::GetWineImage(entry.buildingskeleton_shadow));
+                sprites.skeleton.add(wineaddon::GetImage(entry.buildingskeleton));
+                sprites.skeleton.addShadow(wineaddon::GetImage(entry.buildingskeleton_shadow));
 
-                sprites.door.add(wineaddon::GetWineImage(isWinterGFX_ ? entry.door_winter : entry.door));
+                sprites.door.add(wineaddon::GetImage(isWinterGFX_ ? entry.door_winter : entry.door));
             } else
             {
                 sprites.building.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type)));
@@ -847,7 +879,7 @@ void Loader::fillCaches()
         }
     }
 
-    wineaddon::fillCache(stp);
+    wineaddon::fillCache(*stp);
 
     // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBob("carrier");
