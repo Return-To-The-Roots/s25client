@@ -12,6 +12,7 @@ class GameCommandFactory;
 
 class iwBuilding : public IngameWindow
 {
+protected:
     GameWorldView& gwv;
     GameCommandFactory& gcFactory;
     nobUsual* const building; /// Das zugehörige Gebäudeobjekt
@@ -22,5 +23,7 @@ public:
 private:
     void Msg_PaintBefore() override;
     void Msg_PaintAfter() override;
+
+protected:
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
