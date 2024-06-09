@@ -912,7 +912,6 @@ void Loader::fillCaches()
                           wineaddon::bobIndex[fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_GRAPES :
                                                     wineaddon::BobTypes::THIN_CARRIER_CARRYING_GRAPES]
                           + bodyIdx)));
-                        bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
                     } else if(ware == GoodType::Wine)
                     {
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
@@ -920,14 +919,13 @@ void Loader::fillCaches()
                           wineaddon::bobIndex[fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_WINE :
                                                     wineaddon::BobTypes::THIN_CARRIER_CARRYING_WINE]
                           + static_cast<unsigned>(imgDir))));
-                        bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
                     } else
                     {
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
                           bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
-                        bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
                     }
+                    bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
