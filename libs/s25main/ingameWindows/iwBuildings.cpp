@@ -38,7 +38,7 @@ const std::array<BuildingType, 35> bts = {
   BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
   BuildingType::Charburner,
   BuildingType::HarborBuilding,                                                // entry 31
-  BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple // entry 34
+  BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
 };
 
 // Abstand des ersten Icons vom linken oberen Fensterrand

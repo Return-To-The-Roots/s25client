@@ -21,5 +21,5 @@ constexpr auto maxEnumValue(ProductionMode)
     return ProductionMode::Stone;
 }
 
-const helpers::EnumArray<ProductionMode, ProductionMode> TRANSITIONS{
+constexpr helpers::EnumArray<ProductionMode, ProductionMode> TRANSITIONS{
   {ProductionMode::IronOre, ProductionMode::Coal, ProductionMode::Stone, ProductionMode::Default}};

@@ -16,9 +16,9 @@
 #include "s25util/colors.h"
 
 /// Duration of the grow waiting phase
-const unsigned GROWING_WAITING_LENGTH = 1100;
+constexpr unsigned GROWING_WAITING_LENGTH = 1100;
 /// Duration of grow phase
-const unsigned GROWING_LENGTH = 16;
+constexpr unsigned GROWING_LENGTH = 16;
 
 using namespace wineaddon;
 
@@ -117,7 +117,7 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
         break;
         case State::Normal:
         {
-            // Living to long --> hokus pokus verschwindibus!
+            // Living to long --> start vanishing
             state = State::Withering;
             event = GetEvMgr().AddEvent(this, 20);
         }
@@ -146,7 +146,7 @@ void noGrapefield::BeginHarvesting()
     state = State::Normal;
 }
 
-void noGrapefield::EndHarvesting()
+void noGrapefield::AbortHarvesting()
 {
     // Wither after long time
     event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));

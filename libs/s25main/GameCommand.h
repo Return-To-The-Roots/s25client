@@ -61,7 +61,7 @@ enum class GCType : uint8_t
     UpgradeRoad,
     SetTroopLimit,
     NotifyAlliesOfLocation,
-    SetTempleProductionMode
+    SetTempleProductionMode,
 };
 constexpr auto maxEnumValue(GCType)
 {

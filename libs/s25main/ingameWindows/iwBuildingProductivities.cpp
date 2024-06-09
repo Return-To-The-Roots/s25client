@@ -26,7 +26,7 @@ const std::array<BuildingType, 27> iwBuildingProductivities::icons = {
   BuildingType::PigFarm,       BuildingType::GraniteMine,
   BuildingType::DonkeyBreeder, BuildingType::Charburner,
   BuildingType::Vineyard,      BuildingType::Winery,
-  BuildingType::Temple
+  BuildingType::Temple,
   // clang-format on
 };
 

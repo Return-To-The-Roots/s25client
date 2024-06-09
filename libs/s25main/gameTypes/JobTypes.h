@@ -44,7 +44,7 @@ enum class Job : uint8_t
     CharBurner,        // 31
     Winegrower,        // 32
     Vintner,           // 33
-    TempleServant      // 34
+    TempleServant,     // 34
 };
 
 constexpr auto maxEnumValue(Job)

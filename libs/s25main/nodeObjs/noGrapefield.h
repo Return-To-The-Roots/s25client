@@ -21,7 +21,7 @@ private:
         GrowingWaiting, /// Growing phase, waiting of the next growing boost
         Growing,        /// Growing
         Normal,         /// Is fully grown and withers after a time
-        Withering       /// Withered (disappers)
+        Withering       /// Disappearing
     } state;
     friend constexpr auto maxEnumValue(State) { return State::Withering; }
 
@@ -55,6 +55,6 @@ public:
 
     /// Winegrower starts harvesting the field
     void BeginHarvesting();
-    /// Winegrower is interrupted duriong harvesting
-    void EndHarvesting();
+    /// Winegrower is interrupted during harvesting
+    void AbortHarvesting();
 };
