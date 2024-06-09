@@ -118,6 +118,7 @@ public:
     unsigned GetProductivity() const { return productivity; }
 
     void Draw(DrawPoint drawPt) override;
+    void DrawWalking(DrawPoint drawPt) override;
 
     /// Wird aufgerufen, wenn der Weg des Trägers abgerissen wurde
     void LostWork();
