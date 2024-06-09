@@ -12,16 +12,16 @@ BOOST_AUTO_TEST_CASE(RectCtor)
     const Extent size(5, 7);
     // Compound ctor
     Rect rect1(origin, size);
-    BOOST_TEST_REQUIRE(rect1.getOrigin() == origin);
-    BOOST_TEST_REQUIRE(rect1.getSize() == size);
+    BOOST_TEST(rect1.getOrigin() == origin);
+    BOOST_TEST(rect1.getSize() == size);
     // Semi-Individual ctor
     Rect rect2(origin, size.x, size.y);
-    BOOST_TEST_REQUIRE(rect2.getOrigin() == origin);
-    BOOST_TEST_REQUIRE(rect2.getSize() == size);
+    BOOST_TEST(rect2.getOrigin() == origin);
+    BOOST_TEST(rect2.getSize() == size);
     // Individual ctor
     Rect rect3(origin.x, origin.y, size.x, size.y);
-    BOOST_TEST_REQUIRE(rect3.getOrigin() == origin);
-    BOOST_TEST_REQUIRE(rect3.getSize() == size);
+    BOOST_TEST(rect3.getOrigin() == origin);
+    BOOST_TEST(rect3.getSize() == size);
 }
 
 BOOST_AUTO_TEST_CASE(Rectmove)

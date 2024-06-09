@@ -40,8 +40,8 @@ BOOST_AUTO_TEST_CASE(Test2DArray)
         BOOST_TEST_REQUIRE(sma32[i].size() == 2u);
         for(int j = 0; j < 2; j++)
         {
-            BOOST_TEST_REQUIRE(sma32[i][j] == i * 10 + j);
-            BOOST_TEST_REQUIRE(sma32(i, j) == i * 10 + j);
+            BOOST_TEST(sma32[i][j] == i * 10 + j);
+            BOOST_TEST(sma32(i, j) == i * 10 + j);
         }
     }
 
@@ -79,8 +79,8 @@ BOOST_AUTO_TEST_CASE(Test3DArray)
             BOOST_TEST_REQUIRE(sma432[i][j].size() == 2u);
             for(int k = 0; k < 2; k++)
             {
-                BOOST_TEST_REQUIRE(sma432[i][j][k] == i * 100 + j * 10 + k);
-                BOOST_TEST_REQUIRE(sma432(i, j, k) == i * 100 + j * 10 + k);
+                BOOST_TEST(sma432[i][j][k] == i * 100 + j * 10 + k);
+                BOOST_TEST(sma432(i, j, k) == i * 100 + j * 10 + k);
             }
         }
     }
@@ -101,8 +101,8 @@ BOOST_AUTO_TEST_CASE(Test4DArray)
                 BOOST_TEST_REQUIRE(sma3432[i][j][k].size() == 2u);
                 for(int l = 0; l < 2; l++)
                 {
-                    BOOST_TEST_REQUIRE(sma3432[i][j][k][l] == i * 1000 + j * 100 + k * 10 + l);
-                    BOOST_TEST_REQUIRE(sma3432(i, j, k, l) == i * 1000 + j * 100 + k * 10 + l);
+                    BOOST_TEST(sma3432[i][j][k][l] == i * 1000 + j * 100 + k * 10 + l);
+                    BOOST_TEST(sma3432(i, j, k, l) == i * 1000 + j * 100 + k * 10 + l);
                 }
             }
         }

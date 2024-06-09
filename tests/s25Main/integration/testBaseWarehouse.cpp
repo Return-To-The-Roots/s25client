@@ -36,24 +36,26 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
     {
         nobBaseWarehouse& hq = *world.GetSpecObj<nobBaseWarehouse>(world.GetPlayer(0).GetHQPos());
         for(const auto i : helpers::enumRange<Job>())
-        {
-            BOOST_TEST_REQUIRE(hq.GetNumVisualFigures(i) == numPeople[i]);
-            BOOST_TEST_REQUIRE(hq.GetNumRealFigures(i) == numPeople[i]);
-        }
+            BOOST_TEST_CONTEXT("Job: " << rttr::enum_cast(i))
+            {
+                BOOST_TEST(hq.GetNumVisualFigures(i) == numPeople[i]);
+                BOOST_TEST(hq.GetNumRealFigures(i) == numPeople[i]);
+            }
         for(const auto i : helpers::enumRange<GoodType>())
-        {
-            BOOST_TEST_REQUIRE(hq.GetNumVisualWares(i) == numGoods[i]);
-            BOOST_TEST_REQUIRE(hq.GetNumRealWares(i) == numGoods[i]);
-        }
+            BOOST_TEST_CONTEXT("Good: " << rttr::enum_cast(i))
+            {
+                BOOST_TEST(hq.GetNumVisualWares(i) == numGoods[i]);
+                BOOST_TEST(hq.GetNumRealWares(i) == numGoods[i]);
+            }
     }
     /// Asserts that the expected and actual good count match for the player
     void testNumGoodsPlayer()
     {
         GamePlayer& player = world.GetPlayer(0);
         for(const auto i : helpers::enumRange<Job>())
-            BOOST_TEST_REQUIRE(player.GetInventory()[i] == numPeoplePlayer[i]);
+            BOOST_TEST(player.GetInventory()[i] == numPeoplePlayer[i]);
         for(const auto i : helpers::enumRange<GoodType>())
-            BOOST_TEST_REQUIRE(player.GetInventory()[i] == numGoodsPlayer[i]);
+            BOOST_TEST(player.GetInventory()[i] == numGoodsPlayer[i]);
     }
 };
 
@@ -155,8 +157,8 @@ BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
     }
     // Ordering another one fails
     BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, wh, true));
-    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) == 0u);
-    BOOST_TEST_REQUIRE(hq->GetNumRealWares(GoodType::Hammer) == 0u);
+    BOOST_TEST(hq->GetNumRealFigures(Job::Builder) == 0u);
+    BOOST_TEST(hq->GetNumRealWares(GoodType::Hammer) == 0u);
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyBuilding, EmptyWorldFixture1P)

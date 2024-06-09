@@ -23,6 +23,7 @@ public:
     }
     ~TmpFolder() { boost::filesystem::remove_all(folder); }
     const boost::filesystem::path& get() const { return folder; }
+    boost::filesystem::path operator/(const boost::filesystem::path& rhs) const { return folder / rhs; }
     operator const boost::filesystem::path &() const { return folder; }
 };
 } // namespace rttr::test

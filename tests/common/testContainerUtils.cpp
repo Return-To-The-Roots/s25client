@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(MakeUniqueStable)
     vec = {5, 6, 5, 5, 2, 6, 1, 5, 7, 7, 3, -1, 3};
     std::vector<int> expectedVec = {5, 6, 2, 1, 7, 3, -1};
     helpers::makeUniqueStable(vec);
-    BOOST_TEST_REQUIRE(vec == expectedVec, per_element);
+    BOOST_TEST(vec == expectedVec, per_element);
 }
 
 BOOST_AUTO_TEST_CASE(MakeUnique)
@@ -61,44 +61,44 @@ BOOST_AUTO_TEST_CASE(MakeUnique)
     vec.push_back(-1);
     helpers::makeUnique(vec);
     BOOST_TEST_REQUIRE(vec.size() == 2u);
-    BOOST_TEST_REQUIRE(vec[0] == -1);
-    BOOST_TEST_REQUIRE(vec[1] == 1);
+    BOOST_TEST(vec[0] == -1);
+    BOOST_TEST(vec[1] == 1);
     // More mixed elements
     vec = {5, 6, 5, 5, 2, 6, 1, 5, 7, 7, 3, -1, 3};
     std::vector<int> expectedVec = {-1, 1, 2, 3, 5, 6, 7};
     helpers::makeUnique(vec);
-    BOOST_TEST_REQUIRE(vec == expectedVec, per_element);
+    BOOST_TEST(vec == expectedVec, per_element);
 }
 
 BOOST_AUTO_TEST_CASE(IndexOf)
 {
     std::vector<int> vec;
     // Empty vector
-    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 1) == -1);
+    BOOST_TEST(helpers::indexOf(vec, 1) == -1);
     // 1 el
     vec.push_back(1);
-    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 1) == 0);
-    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 2) == -1);
+    BOOST_TEST(helpers::indexOf(vec, 1) == 0);
+    BOOST_TEST(helpers::indexOf(vec, 2) == -1);
     // 2 els
     vec.push_back(0);
-    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 1) == 0);
-    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 0) == 1);
-    BOOST_TEST_REQUIRE(helpers::indexOf(vec, 2) == -1);
+    BOOST_TEST(helpers::indexOf(vec, 1) == 0);
+    BOOST_TEST(helpers::indexOf(vec, 0) == 1);
+    BOOST_TEST(helpers::indexOf(vec, 2) == -1);
 
     // Pointer vector
     std::vector<int*> ptrVec;
-    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (int*)1337) == -1);       //-V566
-    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (const int*)1337) == -1); //-V566
-    ptrVec.push_back((int*)1336);                                         //-V566
-    ptrVec.push_back((int*)1337);                                         //-V566
-    ptrVec.push_back((int*)1338);                                         //-V566
-    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (int*)1337) == 1);        //-V566
-    BOOST_TEST_REQUIRE(helpers::indexOf(ptrVec, (const int*)1337) == 1);  //-V566
+    BOOST_TEST(helpers::indexOf(ptrVec, (int*)1337) == -1);       //-V566
+    BOOST_TEST(helpers::indexOf(ptrVec, (const int*)1337) == -1); //-V566
+    ptrVec.push_back((int*)1336);                                 //-V566
+    ptrVec.push_back((int*)1337);                                 //-V566
+    ptrVec.push_back((int*)1338);                                 //-V566
+    BOOST_TEST(helpers::indexOf(ptrVec, (int*)1337) == 1);        //-V566
+    BOOST_TEST(helpers::indexOf(ptrVec, (const int*)1337) == 1);  //-V566
 
     vec = {1, 3, 5, 6};
-    BOOST_TEST_REQUIRE(helpers::indexOf_if(vec, [](int el) { return el % 2 == 0; }) == 3);
-    BOOST_TEST_REQUIRE(helpers::indexOf_if(vec, [](int el) { return el > 2; }) == 1);
-    BOOST_TEST_REQUIRE(helpers::indexOf_if(vec, [](int el) { return el > 6; }) == -1);
+    BOOST_TEST(helpers::indexOf_if(vec, [](int el) { return el % 2 == 0; }) == 3);
+    BOOST_TEST(helpers::indexOf_if(vec, [](int el) { return el > 2; }) == 1);
+    BOOST_TEST(helpers::indexOf_if(vec, [](int el) { return el > 6; }) == -1);
 }
 
 BOOST_AUTO_TEST_CASE(Reverse)
