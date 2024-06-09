@@ -124,37 +124,13 @@ public:
     /// Return the more specialized map image. Note: Prefer GetMapTexture which also handles (pseudo) player bitmaps
     glArchivItem_Bitmap* GetMapImage(unsigned nr);
     /// Get the ware symbol texture
-    ITexture* GetWareTex(GoodType ware)
-    {
-        if(wineaddon::isWineAddonGoodType(ware))
-            return wineaddon::GetWineBobImage(wineaddon::GetWareTex(ware));
-        else
-            return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
-    }
+    ITexture* GetWareTex(GoodType ware);
     /// Get the ware stack texture (lying on ground)
-    ITexture* GetWareStackTex(GoodType ware)
-    {
-        if(wineaddon::isWineAddonGoodType(ware))
-            return wineaddon::GetWineBobImage(wineaddon::GetWareStackTex(ware));
-        else
-            return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
-    }
+    ITexture* GetWareStackTex(GoodType ware);
     /// Get the ware texture when carried by donky
-    ITexture* GetWareDonkeyTex(GoodType ware)
-    {
-        if(wineaddon::isWineAddonGoodType(ware))
-            return wineaddon::GetWineBobImage(wineaddon::GetWareDonkeyTex(ware));
-        else
-            return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
-    }
+    ITexture* GetWareDonkeyTex(GoodType ware);
     /// Get job symbol texture
-    ITexture* GetJobTex(Job job)
-    {
-        if(wineaddon::isWineAddonJobType(job))
-            return wineaddon::GetWineBobImage(wineaddon::GetJobTex(job));
-        else
-            return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
-    }
+    ITexture* GetJobTex(Job job);
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
 
     bool IsWinterGFX() const { return isWinterGFX_; }

@@ -6,6 +6,8 @@
 
 #include "WineLoader.h"
 #include "Loader.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glTexturePacker.h"
 
 namespace wineaddon {
 
@@ -37,49 +39,46 @@ helpers::EnumArray<unsigned, BobTypes> bobIndex = {1,   17,  22,  27,  32,  37, 
                                                    253, 270, 282, 289, 295, 344, 361, 378, 395, 412, 461, 510,
                                                    517, 525, 526, 527, 528, 529, 530, 532, 533, 535, 536};
 
-unsigned GetWareTex(const GoodType good)
+ITexture* GetWareTex(const GoodType good)
 {
-    return bobIndex[good == GoodType::Wine ? BobTypes::WINE_WARE_ICON : BobTypes::GRAPES_WARE_ICON];
+    return LOADER.GetImageN("wine_bobs",
+                            bobIndex[good == GoodType::Wine ? BobTypes::WINE_WARE_ICON : BobTypes::GRAPES_WARE_ICON]);
 }
 
-unsigned GetWareStackTex(const GoodType good)
+ITexture* GetWareStackTex(const GoodType good)
 {
-    return bobIndex[good == GoodType::Wine ? BobTypes::WINE_WARE_ON_GROUND_OF_FLAG :
-                                             BobTypes::GRAPES_WARE_ON_GROUND_OF_FLAG];
+    return LOADER.GetImageN("wine_bobs", bobIndex[good == GoodType::Wine ? BobTypes::WINE_WARE_ON_GROUND_OF_FLAG :
+                                                                           BobTypes::GRAPES_WARE_ON_GROUND_OF_FLAG]);
 }
 
-unsigned GetWareDonkeyTex(const GoodType good)
+ITexture* GetWareDonkeyTex(const GoodType good)
 {
-    return bobIndex[good == GoodType::Wine ? BobTypes::DONKEY_BOAT_CARRYING_WINE_WARE :
-                                             BobTypes::DONKEY_BOAT_CARRYING_GRAPES_WARE];
+    return LOADER.GetImageN("wine_bobs", bobIndex[good == GoodType::Wine ? BobTypes::DONKEY_BOAT_CARRYING_WINE_WARE :
+                                                                           BobTypes::DONKEY_BOAT_CARRYING_GRAPES_WARE]);
 }
 
-unsigned GetJobTex(Job job)
+ITexture* GetJobTex(Job job)
 {
-    if(job == Job::Winegrower)
-        return bobIndex[BobTypes::WINEGROWER_JOB_ICON];
-    else if(job == Job::Vintner)
-        return bobIndex[BobTypes::VINTNER_JOB_ICON];
-    else if(job == Job::TempleServant)
-        return bobIndex[BobTypes::TEMPLESERVANT_JOB_ICON];
-    return 0;
+    switch(job)
+    {
+        case Job::Winegrower: return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::WINEGROWER_JOB_ICON]);
+        case Job::Vintner: return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::VINTNER_JOB_ICON]);
+        case Job::TempleServant: return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::TEMPLESERVANT_JOB_ICON]);
+        default: return nullptr;
+    }
 }
 
-glArchivItem_Bitmap* GetWineImage(unsigned nr)
+glArchivItem_Bitmap* GetImage(unsigned nr)
 {
     return LOADER.GetImageN("wine", nr);
-}
-
-glArchivItem_Bitmap* GetWineBobImage(unsigned nr)
-{
-    return LOADER.GetImageN("wine_bobs", nr);
 }
 
 ITexture* GetTempleProductionModeTex(ProductionMode productionMode)
 {
     switch(productionMode)
     {
-        case ProductionMode::Default: return GetWineBobImage(bobIndex[BobTypes::TEMPLE_OUTPUT_WARE_ICON_RANDOM]);
+        case ProductionMode::Default:
+            return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::TEMPLE_OUTPUT_WARE_ICON_RANDOM]);
         case ProductionMode::IronOre: return LOADER.GetWareTex(GoodType::IronOre);
         case ProductionMode::Coal: return LOADER.GetWareTex(GoodType::Coal);
         case ProductionMode::Stone: return LOADER.GetWareTex(GoodType::Stones);
@@ -89,7 +88,7 @@ ITexture* GetTempleProductionModeTex(ProductionMode productionMode)
 
 helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
 
-void fillCache(std::unique_ptr<glTexturePacker>& stp)
+void fillCache(glTexturePacker& stp)
 {
     for(unsigned type = 0; type < 2; ++type)
     {
@@ -99,9 +98,9 @@ void fillCache(std::unique_ptr<glTexturePacker>& stp)
         {
             glSmartBitmap& bmp = grapefield_cache[type][size];
             bmp.reset();
-            bmp.add(GetWineBobImage(field + size));
-            bmp.addShadow(GetWineBobImage(shadow + size));
-            stp->add(bmp);
+            bmp.add(LOADER.GetImageN("wine_bobs", field + size));
+            bmp.addShadow(LOADER.GetImageN("wine_bobs", shadow + size));
+            stp.add(bmp);
         }
     }
 }

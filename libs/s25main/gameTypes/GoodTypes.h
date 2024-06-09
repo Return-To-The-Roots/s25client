@@ -49,7 +49,7 @@ enum class GoodType : uint8_t
     /* 34 */ ShieldJapanese, // Schild
     /* 35 */ Grapes,
     /* 36 */ Wine,
-    /* 37 */ Nothing         // Nothing. Is not counted as a good. TODO: Remove
+    /* 37 */ Nothing // Nothing. Is not counted as a good. TODO: Remove
 };
 constexpr auto maxEnumValue(GoodType)
 {

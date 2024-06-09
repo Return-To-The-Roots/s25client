@@ -6,14 +6,15 @@
 #pragma once
 
 #include "helpers/MultiArray.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "ogl/glTexturePacker.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/TempleProductionMode.h"
+
+class glArchivItem_Bitmap;
+class glTexturePacker;
 
 namespace wineaddon {
 
@@ -83,16 +84,15 @@ constexpr auto maxEnumValue(BobTypes)
 extern helpers::EnumArray<unsigned, BobTypes> bobIndex;
 extern helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
 
-unsigned GetWareTex(GoodType good);
-unsigned GetWareStackTex(GoodType good);
-unsigned GetWareDonkeyTex(GoodType good);
-unsigned GetJobTex(Job job);
+ITexture* GetWareTex(GoodType good);
+ITexture* GetWareStackTex(GoodType good);
+ITexture* GetWareDonkeyTex(GoodType good);
+ITexture* GetJobTex(Job job);
 
-glArchivItem_Bitmap* GetWineImage(unsigned nr);
-glArchivItem_Bitmap* GetWineBobImage(unsigned nr);
+glArchivItem_Bitmap* GetImage(unsigned nr);
 
 ITexture* GetTempleProductionModeTex(ProductionMode mode);
 
-void fillCache(std::unique_ptr<glTexturePacker>& stp);
+void fillCache(glTexturePacker& stp);
 
 } // namespace wineaddon

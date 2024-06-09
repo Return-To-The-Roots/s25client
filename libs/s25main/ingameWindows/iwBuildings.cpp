@@ -37,7 +37,7 @@ const std::array<BuildingType, 35> bts = {
   BuildingType::Mill,           BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
   BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
   BuildingType::Charburner,
-  BuildingType::HarborBuilding,                                                // entry 31
+  BuildingType::HarborBuilding,                                                 // entry 31
   BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
 };
 
