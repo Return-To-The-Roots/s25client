@@ -52,6 +52,7 @@ public:
     GO_Type GetGOT() const final { return GO_Type::NofTradedonkey; }
 
     void Draw(DrawPoint drawPt) override;
+    void DrawWalking(DrawPoint drawPt) override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
     void LostWork();

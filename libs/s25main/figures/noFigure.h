@@ -150,7 +150,7 @@ public:
     /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
     void DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei
-    void DrawWalking(DrawPoint drawPt);
+    virtual void DrawWalking(DrawPoint drawPt);
     /// Interpoliert die Positon zwischen zwei Knotenpunkten
     DrawPoint CalcFigurRelative() const;
     /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)

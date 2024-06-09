@@ -76,7 +76,12 @@ void nofTempleServant::DrawWalkingWithWare(DrawPoint drawPt)
                                                    {GoodType::Coal, BobTypes::TEMPLESERVANT_CARRYING_COAL_IN_OUT},
                                                    {GoodType::Stones, BobTypes::TEMPLESERVANT_CARRYING_STONE_IN_OUT}};
 
-    DrawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]] - 8);
+    noFigure::DrawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]] - 8);
+}
+
+void nofTempleServant::DrawWalking(DrawPoint drawPt)
+{
+    noFigure::DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
 }
 
 helpers::OptionalEnum<GoodType> nofTempleServant::ProduceWare()

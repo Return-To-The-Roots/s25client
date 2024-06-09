@@ -50,7 +50,12 @@ unsigned short nofVintner::GetCarryID() const
 
 void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::VINTNER_CARRYING_WINE_IN_OUT] - 8);
+    noFigure::DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::VINTNER_CARRYING_WINE_IN_OUT] - 8);
+}
+
+void nofVintner::DrawWalking(DrawPoint drawPt)
+{
+    noFigure::DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::VINTNER_WALKING]);
 }
 
 helpers::OptionalEnum<GoodType> nofVintner::ProduceWare()

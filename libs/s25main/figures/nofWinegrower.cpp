@@ -173,7 +173,7 @@ void nofWinegrower::WalkingStarted()
 
 void nofWinegrower::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_FULL_BASKET]);
+    noFigure::DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_FULL_BASKET]);
 }
 
 void nofWinegrower::DrawOtherStates(DrawPoint drawPt)
@@ -181,8 +181,13 @@ void nofWinegrower::DrawOtherStates(DrawPoint drawPt)
     if(state == State::WalkToWorkpoint)
     {
         if(harvest) // Go to harvest grapes
-            DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_EMPTY_BASKET]);
+            noFigure::DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_EMPTY_BASKET]);
         else // Draw normal walking
             DrawWalking(drawPt);
     }
+}
+
+void nofWinegrower::DrawWalking(DrawPoint drawPt)
+{
+    noFigure::DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::VINTNER_WALKING]);
 }
