@@ -25,7 +25,7 @@ enum class NodalObjectType : uint8_t
     BurnedWarehouse, // abgebranntes Lagerhaus, aus dem die Menschen jetzt strömen
     Ship,            // Schiff
     CharburnerPile,  // Holz-/Kohle-Haufen vom Köhler
-    Grapefield
+    Grapefield,
 };
 constexpr auto maxEnumValue(NodalObjectType)
 {

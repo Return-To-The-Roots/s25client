@@ -15,7 +15,7 @@ class nobUsual;
 
 class nofWinegrower : public nofFarmhand
 {
-    /// Is he harvesting grapes (or planting?)
+    /// harvesting grapes or planting
     bool harvest;
 
 private:

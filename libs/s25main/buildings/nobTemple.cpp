@@ -21,7 +21,6 @@ nobTemple::nobTemple(SerializedGameData& sgd, const unsigned obj_id)
 void nobTemple::Serialize(SerializedGameData& sgd) const
 {
     nobUsual::Serialize(sgd);
-
     sgd.PushEnum<uint8_t>(productionMode);
 }
 

@@ -48,7 +48,6 @@ unsigned short nofVintner::GetCarryID() const
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
 
-/// Draws the figure while returning home / entering the building (often carrying wares)
 void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 {
     DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::VINTNER_CARRYING_WINE_IN_OUT] - 8);
@@ -56,6 +55,5 @@ void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofVintner::ProduceWare()
 {
-    // world->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
     return GoodType::Wine;
 }

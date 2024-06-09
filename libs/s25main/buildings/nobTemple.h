@@ -6,7 +6,6 @@
 
 #include "nobUsual.h"
 #include "gameTypes/TempleProductionMode.h"
-#include <cstdint>
 class SerializedGameData;
 
 class nobTemple : public nobUsual
