@@ -6,7 +6,9 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "WineLoader.h"
 #include "buildings/nobShipYard.h"
+#include "buildings/nobTemple.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
@@ -28,8 +30,8 @@
 const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
-iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, Extent(226, 194),
+iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building, Extent extent)
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, extent,
                    _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
@@ -40,24 +42,34 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         AddImage(13, DrawPoint(28, 39), LOADER.GetJobTex(*job));
 
     // Gebäudesymbol
-    AddImage(1, DrawPoint(117, 114), &building->GetBuildingImage());
+    if(building->GetBuildingType() == BuildingType::Temple)
+    {
+        AddImage(1, DrawPoint(117, 160), &building->GetBuildingImage());
+    } else
+        AddImage(1, DrawPoint(117, 114), &building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
     const auto producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
     if(producedWare && producedWare != GoodType::Nothing)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapTexture(2298));
-        AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(*producedWare));
+        if(building->GetBuildingType() == BuildingType::Temple)
+        {
+            AddImage(3, DrawPoint(196, 39),
+                     wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()));
+        } else
+            AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(*producedWare));
     }
 
     // Info
-    AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(4, DrawPoint(16, extent.y - 47), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
+                   _("Help"));
     // Abreißen
-    AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
+    AddImageButton(5, DrawPoint(50, extent.y - 47), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
                    _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
     Window* enable_productivity = AddImageButton(
-      6, DrawPoint(90, 147), Extent(34, 32), TextureColor::Grey,
+      6, DrawPoint(90, extent.y - 47), Extent(34, 32), TextureColor::Grey,
       LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)), _("Production on/off"));
     if(building->GetBuildingType() == BuildingType::LookoutTower)
         enable_productivity->SetVisible(false);
@@ -67,11 +79,18 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         // Jenachdem Boot oder Schiff anzeigen
         unsigned io_dat_id =
           (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
-        AddImageButton(11, DrawPoint(130, 147), Extent(43, 32), TextureColor::Grey, LOADER.GetImageN("io", io_dat_id));
+        AddImageButton(11, DrawPoint(130, extent.y - 47), Extent(43, 32), TextureColor::Grey,
+                       LOADER.GetImageN("io", io_dat_id));
+    }
+
+    if(building->GetBuildingType() == BuildingType::Temple)
+    {
+        AddImageButton(8, DrawPoint(130, 176), Extent(34, 32), TextureColor::Grey,
+                       wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()));
     }
 
     // "Gehe Zum Ort"
-    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
+    AddImageButton(7, DrawPoint(179, extent.y - 47), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
                    _("Go to place"));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
@@ -84,8 +103,8 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Go to next" (building of same type)
-    AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 11),
-                   _("Go to next building of same type"));
+    AddImageButton(12, DrawPoint(179, extent.y - 79), Extent(30, 32), TextureColor::Grey,
+                   LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
 }
 
 void iwBuilding::Msg_PaintBefore()
@@ -186,6 +205,16 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         case 7: // "Gehe Zum Ort"
         {
             gwv.MoveToMapPt(building->GetPos());
+        }
+        break;
+        case 8:
+        {
+            const auto nextProductionMode = static_cast<nobTemple*>(building)->getNextProductionMode();
+            if(gcFactory.SetTempleProductionMode(building->GetPos(), nextProductionMode))
+            {
+                GetCtrl<ctrlImageButton>(8)->SetImage(wineaddon::GetTempleProductionModeTex(nextProductionMode));
+                static_cast<nobTemple*>(building)->SetProductionMode(nextProductionMode);
+            }
         }
         break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
