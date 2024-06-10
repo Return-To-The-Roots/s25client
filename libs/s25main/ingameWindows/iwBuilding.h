@@ -18,7 +18,7 @@ protected:
     nobUsual* const building; /// Das zugehörige Gebäudeobjekt
 
 public:
-    iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* building);
+    iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* building, Extent extent = Extent(226, 194));
 
 private:
     void Msg_PaintBefore() override;
