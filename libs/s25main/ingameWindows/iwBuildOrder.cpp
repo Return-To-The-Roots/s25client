@@ -37,7 +37,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
                    _("Bottom"));
 
     // Bild der Auswahl
-    AddImage(5, DrawPoint(240, 150), LOADER.GetNationTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
+    AddImage(5, DrawPoint(240, 150), LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
 
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
@@ -82,7 +82,8 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
 
         case 0:
         {
-            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationTex(gwv.GetPlayer().nation, pendingBuildOrder[selection]));
+            GetCtrl<ctrlImage>(5)->SetImage(
+              LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[selection]));
         }
         break;
     }
@@ -170,7 +171,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
                 list->AddString(_(BUILDING_NAMES[pendingBuildOrder[i]]));
             list->SetSelection(0);
 
-            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
+            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
 
             settings_changed = true;
         }

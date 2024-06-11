@@ -117,7 +117,7 @@ public:
     glArchivItem_BitmapBase* GetNationImageN(Nation nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(Nation nation, unsigned nr);
     glArchivItem_Bitmap* GetNationIcon(Nation nation, BuildingType bld);
-    ITexture* GetNationTex(Nation nation, BuildingType bld);
+    ITexture* GetBuildingTex(Nation nation, BuildingType bld);
     glArchivItem_Bitmap_Player* GetNationPlayerImage(Nation nation, unsigned nr);
     /// Return the map texture with the given number
     ITexture* GetMapTexture(unsigned nr);
