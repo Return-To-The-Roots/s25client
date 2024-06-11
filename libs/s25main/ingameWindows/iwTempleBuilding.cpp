@@ -14,8 +14,7 @@ iwTempleBuilding::iwTempleBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     : iwBuilding(gwv, gcFactory, building, Extent(226, 223))
 {
     GetCtrl<Window>(1)->SetPos(DrawPoint(117, 160));
-    GetCtrl<ctrlImage>(3)->SetImage(
-      wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()));
+    GetCtrl<ctrlImage>(3)->SetImage(wineaddon::GetTempleProductionModeTex(ProductionMode::Default));
     AddImageButton(8, DrawPoint(130, 176), Extent(34, 32), TextureColor::Grey,
                    wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()));
 }
