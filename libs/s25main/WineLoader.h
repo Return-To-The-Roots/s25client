@@ -22,21 +22,6 @@ bool isWineAddonBuildingType(BuildingType bld);
 bool isWineAddonGoodType(GoodType good);
 bool isWineAddonJobType(Job job);
 
-struct BuildingImages
-{
-    unsigned building;
-    unsigned building_shadow;
-    unsigned buildingskeleton;
-    unsigned buildingskeleton_shadow;
-    unsigned door;
-    unsigned building_winter;
-    unsigned building_shadow_winter;
-    unsigned door_winter;
-    unsigned icon;
-};
-
-BuildingImages GetBuildingImages(Nation nation, BuildingType buildType);
-
 enum class BobTypes
 {
     WINEGROWER_DIGGING_ANIMATION,
@@ -88,9 +73,6 @@ ITexture* GetWareTex(GoodType good);
 ITexture* GetWareStackTex(GoodType good);
 ITexture* GetWareDonkeyTex(GoodType good);
 ITexture* GetJobTex(Job job);
-
-glArchivItem_Bitmap* GetImage(unsigned nr);
-
 ITexture* GetTempleProductionModeTex(ProductionMode mode);
 
 void fillCache(glTexturePacker& stp);

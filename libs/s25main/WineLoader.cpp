@@ -26,15 +26,6 @@ bool isWineAddonJobType(Job job)
     return job == Job::Winegrower || job == Job::Vintner || job == Job::TempleServant;
 }
 
-BuildingImages GetBuildingImages(Nation nation, BuildingType buildType)
-{
-    const unsigned buildingStartIndex =
-      1 + rttr::enum_cast(nation) * 27 + (rttr::enum_cast(buildType) - rttr::enum_cast(BuildingType::Vineyard)) * 9;
-    return {buildingStartIndex,     buildingStartIndex + 1, buildingStartIndex + 2,
-            buildingStartIndex + 3, buildingStartIndex + 4, buildingStartIndex + 5,
-            buildingStartIndex + 6, buildingStartIndex + 7, buildingStartIndex + 8};
-}
-
 helpers::EnumArray<unsigned, BobTypes> bobIndex = {1,   17,  22,  27,  32,  37,  42,  48,  97,  146, 195, 204,
                                                    253, 270, 282, 289, 295, 344, 361, 378, 395, 412, 461, 510,
                                                    517, 525, 526, 527, 528, 529, 530, 532, 533, 535, 536};
@@ -66,11 +57,6 @@ ITexture* GetJobTex(Job job)
         case Job::TempleServant: return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::TEMPLESERVANT_JOB_ICON]);
         default: return nullptr;
     }
-}
-
-glArchivItem_Bitmap* GetImage(unsigned nr)
-{
-    return LOADER.GetImageN("wine", nr);
 }
 
 ITexture* GetTempleProductionModeTex(ProductionMode productionMode)
