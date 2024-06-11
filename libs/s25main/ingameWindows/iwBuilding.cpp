@@ -42,23 +42,14 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         AddImage(13, DrawPoint(28, 39), LOADER.GetJobTex(*job));
 
     // Gebäudesymbol
-    if(building->GetBuildingType() == BuildingType::Temple)
-    {
-        AddImage(1, DrawPoint(117, 160), &building->GetBuildingImage());
-    } else
-        AddImage(1, DrawPoint(117, 114), &building->GetBuildingImage());
+    AddImage(1, DrawPoint(117, 114), &building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
     const auto producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
     if(producedWare && producedWare != GoodType::Nothing)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapTexture(2298));
-        if(building->GetBuildingType() == BuildingType::Temple)
-        {
-            AddImage(3, DrawPoint(196, 39),
-                     wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()));
-        } else
-            AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(*producedWare));
+        AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(*producedWare));
     }
 
     // Info
@@ -81,12 +72,6 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
           (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
         AddImageButton(11, DrawPoint(130, extent.y - 47), Extent(43, 32), TextureColor::Grey,
                        LOADER.GetImageN("io", io_dat_id));
-    }
-
-    if(building->GetBuildingType() == BuildingType::Temple)
-    {
-        AddImageButton(8, DrawPoint(130, 176), Extent(34, 32), TextureColor::Grey,
-                       wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()));
     }
 
     // "Gehe Zum Ort"
@@ -205,16 +190,6 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         case 7: // "Gehe Zum Ort"
         {
             gwv.MoveToMapPt(building->GetPos());
-        }
-        break;
-        case 8:
-        {
-            const auto nextProductionMode = static_cast<nobTemple*>(building)->getNextProductionMode();
-            if(gcFactory.SetTempleProductionMode(building->GetPos(), nextProductionMode))
-            {
-                GetCtrl<ctrlImageButton>(8)->SetImage(wineaddon::GetTempleProductionModeTex(nextProductionMode));
-                static_cast<nobTemple*>(building)->SetProductionMode(nextProductionMode);
-            }
         }
         break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer

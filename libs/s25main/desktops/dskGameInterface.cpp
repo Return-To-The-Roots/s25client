@@ -56,6 +56,7 @@
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwStatistics.h"
+#include "ingameWindows/iwTempleBuilding.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTools.h"
 #include "ingameWindows/iwTrade.h"
@@ -568,8 +569,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 WINDOWMANAGER.Show(std::make_unique<iwMilitaryBuilding>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
             else if(bt == BuildingType::Temple)
-                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobTemple>(cSel), Extent(226, 223)));
+                WINDOWMANAGER.Show(std::make_unique<iwTempleBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobTemple>(cSel)));
             else
                 WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
