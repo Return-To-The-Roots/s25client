@@ -151,17 +151,17 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
         return LOADER.GetImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
-    else if(wineaddon::isWineAddonBuildingType(bld))
-        return wineaddon::GetImage(wineaddon::GetBuildingImages(nation, bld).icon);
     else
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
 ITexture* Loader::GetNationTex(Nation nation, BuildingType bld)
 {
-    if(bld == BuildingType::Charburner || wineaddon::isWineAddonBuildingType(bld))
-        return &LOADER.building_cache[nation][bld].building;
-    else
+    if(bld == BuildingType::Charburner)
+    {
+        unsigned id = rttr::enum_cast(nation) * 8;
+        return GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1));
+    } else
         return checkedCast<ITexture*>(GetNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
     return nullptr;
 }
@@ -509,8 +509,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     if(!LoadResources({"charburner", "charburner_bobs"}))
         return false;
 
-    // TODO: Move to addon folder and make it overwrite existing file
-    if(!LoadResources({"wine", "wine_bobs"}))
+    if(!LoadResources({"wine_bobs"}))
         return false;
 
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
@@ -632,17 +631,6 @@ void Loader::fillCaches()
                 sprites.skeleton.addShadow(GetImageN("charburner", id + 4));
 
                 sprites.door.add(GetImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
-            } else if(wineaddon::isWineAddonBuildingType(type))
-            {
-                const auto entry = wineaddon::GetBuildingImages(nation, type);
-
-                sprites.building.add(wineaddon::GetImage(isWinterGFX_ ? entry.building_winter : entry.building));
-                sprites.building.addShadow(wineaddon::GetImage(entry.building_shadow));
-
-                sprites.skeleton.add(wineaddon::GetImage(entry.buildingskeleton));
-                sprites.skeleton.addShadow(wineaddon::GetImage(entry.buildingskeleton_shadow));
-
-                sprites.door.add(wineaddon::GetImage(isWinterGFX_ ? entry.door_winter : entry.door));
             } else
             {
                 sprites.building.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type)));
