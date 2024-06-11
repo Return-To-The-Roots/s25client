@@ -155,7 +155,7 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
-ITexture* Loader::GetNationTex(Nation nation, BuildingType bld)
+ITexture* Loader::GetBuildingTex(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
     {
