@@ -11,6 +11,7 @@
 #include "SerializedGameData.h"
 #include "TradePathCache.h"
 #include "Ware.h"
+#include "WineLoader.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHarborBuilding.h"
@@ -258,8 +259,12 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     hqPos = sgd.PopMapPoint();
 
-    for(Distribution& dist : distribution)
+    for(const auto i : helpers::enumRange<GoodType>())
     {
+        if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
+            continue;
+
+        Distribution& dist = distribution[i];
         helpers::popContainer(sgd, dist.percent_buildings);
         if(sgd.GetGameDataVersion() < 7)
         {
@@ -277,8 +282,23 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     useCustomBuildOrder_ = sgd.PopBool();
 
-    helpers::popContainer(sgd, build_order);
-    helpers::popContainer(sgd, transportPrio);
+    if(sgd.GetGameDataVersion() < 11)
+    {
+        std::vector<BuildingType> build_order_raw(build_order.size() - 3);
+        helpers::popContainer(sgd, build_order_raw, true);
+        build_order_raw.insert(build_order_raw.end(),
+                               {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+        std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
+
+        std::vector<uint8_t> transportPrio_raw(transportPrio.size() - 2);
+        helpers::popContainer(sgd, transportPrio_raw, true);
+        std::copy(transportPrio_raw.begin(), transportPrio_raw.end(), transportPrio.begin());
+    } else
+    {
+        helpers::popContainer(sgd, build_order);
+        helpers::popContainer(sgd, transportPrio);
+    }
+
     helpers::popContainer(sgd, militarySettings_);
     helpers::popContainer(sgd, toolsSettings_);
 
@@ -286,8 +306,21 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     helpers::popContainer(sgd, tools_ordered);
     tools_ordered_delta = {};
 
-    helpers::popContainer(sgd, global_inventory.goods);
-    helpers::popContainer(sgd, global_inventory.people);
+    if(sgd.GetGameDataVersion() < 11)
+    {
+        std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size() - 2);
+        helpers::popContainer(sgd, global_inventory_good_raw, true);
+        std::copy(global_inventory_good_raw.begin(), global_inventory_good_raw.end(), global_inventory.goods.begin());
+
+        std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size() - 3);
+        helpers::popContainer(sgd, global_inventory_people_raw, true);
+        std::copy(global_inventory_people_raw.begin(), global_inventory_people_raw.end(),
+                  global_inventory.people.begin());
+    } else
+    {
+        helpers::popContainer(sgd, global_inventory.goods);
+        helpers::popContainer(sgd, global_inventory.people);
+    }
 
     // Visuelle Einstellungen festlegen
 
