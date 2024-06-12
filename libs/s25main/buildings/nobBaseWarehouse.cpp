@@ -10,6 +10,7 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
+#include "WineLoader.h"
 #include "commonDefines.h"
 #include "factories/JobFactory.h"
 #include "figures/nofAggressiveDefender.h"
@@ -167,12 +168,16 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
 
     for(const auto i : helpers::enumRange<GoodType>())
     {
+        if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
+            continue;
         inventory.visual[i] = sgd.PopUnsignedInt();
         inventory.real[i] = sgd.PopUnsignedInt();
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
     for(const auto i : helpers::enumRange<Job>())
     {
+        if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonJobType(i))
+            continue;
         inventory.visual[i] = sgd.PopUnsignedInt();
         inventory.real[i] = sgd.PopUnsignedInt();
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
