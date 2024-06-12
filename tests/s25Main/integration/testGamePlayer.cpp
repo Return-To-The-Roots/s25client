@@ -53,7 +53,7 @@ RTTR_ATTRIBUTE_NO_UBSAN(vptr) void setProductivity(nobUsual* bld, unsigned short
 }
 } // namespace
 
-using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEnumValue_v<BuildingType>, 4>;
+using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEnumValue_v<BuildingType> + 6, 4>;
 BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
 {
     using boost::test_tools::per_element;
