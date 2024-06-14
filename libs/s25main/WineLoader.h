@@ -10,11 +10,11 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/Nation.h"
 #include "gameTypes/TempleProductionMode.h"
 
 class glArchivItem_Bitmap;
 class glTexturePacker;
+class GameWorldBase;
 
 namespace wineaddon {
 
@@ -74,6 +74,7 @@ ITexture* GetWareStackTex(GoodType good);
 ITexture* GetWareDonkeyTex(GoodType good);
 ITexture* GetJobTex(Job job);
 ITexture* GetTempleProductionModeTex(ProductionMode mode);
+bool isAddonActive(const GameWorldBase& gwb);
 
 void fillCache(glTexturePacker& stp);
 
