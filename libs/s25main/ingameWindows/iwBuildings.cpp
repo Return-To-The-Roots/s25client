@@ -4,8 +4,11 @@
 
 #include "iwBuildings.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
@@ -19,6 +22,7 @@
 #include "iwTempleBuilding.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/BuildingCount.h"
@@ -27,43 +31,64 @@
 #include "gameData/const_gui_ids.h"
 
 /// Reihenfolge der Gebäude
-const std::array<BuildingType, 35> bts = {
-  BuildingType::Barracks,       BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
-  BuildingType::GraniteMine,    BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
-  BuildingType::LookoutTower,   BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
-  BuildingType::Quarry,         BuildingType::Forester,   BuildingType::Slaughterhouse, BuildingType::Hunter,
-  BuildingType::Brewery,        BuildingType::Armory,     BuildingType::Metalworks,     BuildingType::Ironsmelter,
-  BuildingType::PigFarm,
-  BuildingType::Storehouse, // entry 21
-  BuildingType::Mill,           BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
-  BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
-  BuildingType::Charburner,
-  BuildingType::HarborBuilding,                                                 // entry 31
-  BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
-};
+void iwBuildings::setBuildingOrder()
+{
+    bts = {
+      BuildingType::Barracks,       BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
+      BuildingType::GraniteMine,    BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
+      BuildingType::LookoutTower,   BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
+      BuildingType::Quarry,         BuildingType::Forester,   BuildingType::Slaughterhouse, BuildingType::Hunter,
+      BuildingType::Brewery,        BuildingType::Armory,     BuildingType::Metalworks,     BuildingType::Ironsmelter,
+      BuildingType::PigFarm,
+      BuildingType::Storehouse, // entry 21
+      BuildingType::Mill,           BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
+      BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
+      BuildingType::Charburner,
+      BuildingType::HarborBuilding,                                                 // entry 31
+      BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
+    };
+    removeUnusedBuildings();
+}
+
+void iwBuildings::removeUnusedBuildings()
+{
+    auto removeNotUsedBuilding = [=](BuildingType const& bts) {
+        if((!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bts))
+           && (!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bts == BuildingType::Charburner))
+            return true;
+        else
+            return false;
+    };
+    bts.erase(std::remove_if(std::begin(bts), std::end(bts), removeNotUsedBuilding), std::end(bts));
+}
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
-const DrawPoint iconPadding(30, 40);
+const Extent bldContentOffset(30, 40);
 // Abstand der einzelnen Symbole untereinander
-const DrawPoint iconSpacing(40, 48);
+const Extent iconSpacing(40, 48);
 // Abstand der Schriften unter den Icons
 const unsigned short font_distance_y = 20;
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 528), _("Buildings"),
+    : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"),
                    LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
+    setBuildingOrder();
+    const unsigned rowCount = helpers::divCeil(bts.size(), 4);
+    Resize(iconSpacing * Extent(4, rowCount + 1) + bldContentOffset);
+
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
-    for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
+    for(unsigned y = 0; y < rowCount; y++)
     {
-        for(unsigned x = 0; x < 4; ++x)
+        for(unsigned x = 0; x < 4; x++)
         {
             if(y * 4 + x >= bts.size()) //-V547
                 break;
+
             Extent btSize = Extent(32, 32);
-            DrawPoint btPos = iconPadding - btSize / 2 + iconSpacing * DrawPoint(x, y);
+            DrawPoint btPos = bldContentOffset - btSize / 2 + iconSpacing * DrawPoint(x, y);
             AddImageButton(y * 4 + x, btPos, btSize, TextureColor::Grey,
                            LOADER.GetNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
@@ -84,14 +109,15 @@ void iwBuildings::Msg_PaintAfter()
     BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingRegister().GetBuildingNums();
 
     // Anzahlen unter die Gebäude schreiben
-    DrawPoint rowPos = GetDrawPos() + iconPadding + DrawPoint(0, font_distance_y);
-    for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
+    DrawPoint rowPos = GetDrawPos() + bldContentOffset + DrawPoint(0, font_distance_y);
+    for(unsigned y = 0; y < helpers::divCeil(bts.size(), 4); ++y)
     {
         DrawPoint curPos = rowPos;
-        for(unsigned x = 0; x < 4; ++x)
+        for(unsigned x = 0; x < 4; x++)
         {
             if(y * 4 + x >= bts.size()) //-V547
                 break;
+
             fmt % bc.buildings[bts[y * 4 + x]] % bc.buildingSites[bts[y * 4 + x]];
             NormalFont->Draw(curPos, fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
             curPos.x += iconSpacing.x;

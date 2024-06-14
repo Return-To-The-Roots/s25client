@@ -4,14 +4,18 @@
 
 #include "iwBuildingProductivities.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "files.h"
 #include "helpers/mathFuncs.h"
+#include "world/GameWorld.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
 
-const std::array<BuildingType, 27> iwBuildingProductivities::icons = {
+const std::array<BuildingType, 27> iwBuildingProductivities::allIcons = {
   // clang-format off
   BuildingType::Woodcutter,    BuildingType::Slaughterhouse,
   BuildingType::Forester,      BuildingType::Metalworks,
@@ -30,6 +34,25 @@ const std::array<BuildingType, 27> iwBuildingProductivities::icons = {
   // clang-format on
 };
 
+void iwBuildingProductivities::setBuildingOrder()
+{
+    std::copy(std::begin(allIcons), std::end(allIcons), usedIcons.begin());
+    removeUnusedBuildings();
+}
+
+void iwBuildingProductivities::removeUnusedBuildings()
+{
+    auto removeNotUsedBuilding = [=](BuildingType const& bts) {
+        if((!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonBuildingType(bts))
+           && (!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bts == BuildingType::Charburner))
+            return true;
+        else
+            return false;
+    };
+    usedIcons.erase(std::remove_if(std::begin(usedIcons), std::end(usedIcons), removeNotUsedBuilding),
+                    std::end(usedIcons));
+}
+
 /// Abstand vom linken, oberen Fensterrand
 constexpr Extent bldProdContentOffset(50, 30);
 /// Horizontaler Abstand zwischen Bild und Prozentbar
@@ -41,33 +64,36 @@ constexpr unsigned short distance_y = 35;
 /// Größe der Prozentbalken
 constexpr Extent percentSize(100, 18);
 
-constexpr unsigned numRows = helpers::divCeil(iwBuildingProductivities::icons.size(), 2);
 constexpr Extent cellSize(percent_image_x + percentSize.x + image_percent_x, distance_y);
 
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posLastOrCenter,
-                   cellSize * Extent(2, numRows + 1) + bldProdContentOffset, _("Productivity"),
-                   LOADER.GetImageN("resource", 41)),
+                   cellSize * Extent(2, helpers::divCeil(allIcons.size(), 2) + 1) + bldProdContentOffset,
+                   _("Productivity"), LOADER.GetImageN("resource", 41)),
       player(player), percents()
 {
+    setBuildingOrder();
+    const unsigned numRows = helpers::divCeil(usedIcons.size(), 2);
+    Resize(cellSize * Extent(2, numRows + 1) + bldProdContentOffset);
+
     const Nation playerNation = player.nation;
     unsigned curIdx = 0;
     for(unsigned y = 0; y < numRows; ++y)
     {
         for(unsigned x = 0; x < 2; ++x, ++curIdx)
         {
-            if(curIdx >= icons.size()) //-V547
+            if(curIdx >= usedIcons.size()) //-V547
                 break;
             const DrawPoint curPos = cellSize * DrawPoint(x, y) + bldProdContentOffset;
             const DrawPoint imgPos = curPos + DrawPoint(0, percentSize.y / 2);
             const unsigned imgId = curIdx * 2;
-            if(player.IsBuildingEnabled(icons[curIdx]))
+            if(player.IsBuildingEnabled(usedIcons[curIdx]))
             {
-                AddImage(imgId, imgPos, LOADER.GetNationIcon(playerNation, icons[curIdx]),
-                         _(BUILDING_NAMES[icons[curIdx]]));
+                AddImage(imgId, imgPos, LOADER.GetNationIcon(playerNation, usedIcons[curIdx]),
+                         _(BUILDING_NAMES[usedIcons[curIdx]]));
                 DrawPoint percentPos = curPos + DrawPoint(image_percent_x, 0);
                 AddPercent(imgId + 1, percentPos, percentSize, TextureColor::Grey, COLOR_YELLOW, SmallFont,
-                           &percents[icons[curIdx]]);
+                           &percents[usedIcons[curIdx]]);
             } else
                 AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
         }

@@ -88,7 +88,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
             BOOST_TEST_REQUIRE((curPos.x += 2) < world.GetSize().x);
         }
         // Test productivity calculation for all buildings shown in the productivity window
-        if(helpers::contains(iwBuildingProductivities::icons, bldType))
+        if(helpers::contains(iwBuildingProductivities::allIcons, bldType))
         {
             auto* productionBld = dynamic_cast<nobUsual*>(bld);
             BOOST_TEST_REQUIRE(productionBld);
@@ -99,12 +99,12 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     }
     BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
     unsigned avgProd = std::accumulate(expectedProductivity.begin(), expectedProductivity.end(), 0u)
-                       / iwBuildingProductivities::icons.size();
+                       / iwBuildingProductivities::allIcons.size();
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
 
     // Average productivity over multiple buildings of same type
     avgProd = 0;
-    for(const BuildingType bldType : iwBuildingProductivities::icons)
+    for(const BuildingType bldType : iwBuildingProductivities::allIcons)
     {
         auto* bld =
           static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, bldType, curPos, 0, Nation::Babylonians));
@@ -115,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
         avgProd += productivity + expectedProductivity[bldType];
         expectedProductivity[bldType] = (productivity + expectedProductivity[bldType]) / 2;
     }
-    avgProd /= iwBuildingProductivities::icons.size() * 2;
+    avgProd /= iwBuildingProductivities::allIcons.size() * 2;
     BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
 }
