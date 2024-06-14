@@ -7,7 +7,7 @@
 #include "IngameWindow.h"
 #include "helpers/EnumArray.h"
 #include "gameTypes/BuildingType.h"
-#include <array>
+#include <vector>
 
 class GamePlayer;
 
@@ -17,12 +17,14 @@ class iwBuildingProductivities : public IngameWindow
     helpers::EnumArray<uint16_t, BuildingType> percents;
 
 public:
-    /// Icons shown (in this order)
-    static const std::array<BuildingType, 27> icons;
-
     iwBuildingProductivities(const GamePlayer& player);
 
 private:
     void UpdatePercents();
     void Msg_PaintAfter() override;
+
+    void removeUnusedBuildings();
+    void setBuildingOrder();
+    /// Icons shown (in this order)
+    std::vector<BuildingType> icons;
 };

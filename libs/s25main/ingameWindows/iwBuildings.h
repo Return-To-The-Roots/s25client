@@ -7,6 +7,7 @@
 #include "IngameWindow.h"
 #include "gameTypes/BuildingType.h"
 #include <list>
+#include <vector>
 
 class GameCommandFactory;
 class GameWorldView;
@@ -27,4 +28,8 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     template<class T_Window, class T_Building>
     void GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds);
+
+    void removeUnusedBuildings();
+    void setBuildingOrder();
+    std::vector<BuildingType> bts;
 };
