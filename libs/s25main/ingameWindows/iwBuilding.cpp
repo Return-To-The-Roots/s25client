@@ -14,6 +14,7 @@
 #include "helpers/containerUtils.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
+#include "iwTempleBuilding.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glFont.h"
@@ -222,7 +223,10 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 if(it == buildings.end()) // was last entry in list -> goto first
                     it = buildings.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
-                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it)).SetPos(GetPos());
+                if(building->GetBuildingType() == BuildingType::Temple)
+                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwTempleBuilding>(gwv, gcFactory, *it)).SetPos(GetPos());
+                else
+                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it)).SetPos(GetPos());
                 break;
             }
         }
