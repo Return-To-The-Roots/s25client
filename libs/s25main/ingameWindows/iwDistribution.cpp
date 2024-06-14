@@ -195,12 +195,9 @@ void iwDistribution::removeUnusedGroupEntries()
 {
     auto removeNotUsedDistribution = [=](std::tuple<std::string, unsigned> const& bts) {
         const BuildingType buildingType = std::get<1>(distributionMap[std::get<1>(bts)]);
-        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(buildingType))
-            return true;
-        else if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && buildingType == BuildingType::Charburner)
-            return true;
-        else
-            return false;
+        return (
+          (!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(buildingType))
+          || (!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && buildingType == BuildingType::Charburner));
     };
     for(auto& group : groups)
     {
