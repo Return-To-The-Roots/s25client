@@ -16,6 +16,7 @@
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
 #include "iwMilitaryBuilding.h"
+#include "iwTempleBuilding.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
 #include "world/GameWorldView.h"
@@ -123,6 +124,8 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
         GoToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.GetHarbors());
     else if(BuildingProperties::IsWareHouse(bldType))
         GoToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.GetStorehouses());
+    else if(bldType == BuildingType::Temple)
+        GoToFirstMatching<iwTempleBuilding>(bldType, buildingRegister.GetBuildings(bldType));
     else
         GoToFirstMatching<iwBuilding>(bldType, buildingRegister.GetBuildings(bldType));
 }
