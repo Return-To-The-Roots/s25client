@@ -5,9 +5,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "WineLoader.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "addons/const_addons.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glTexturePacker.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
 
 namespace wineaddon {
 
@@ -70,6 +74,11 @@ ITexture* GetTempleProductionModeTex(ProductionMode productionMode)
         case ProductionMode::Stone: return LOADER.GetWareTex(GoodType::Stones);
     }
     return nullptr;
+}
+
+bool isAddonActive(const GameWorldBase& gwb)
+{
+    return gwb.GetGGS().isEnabled(AddonId::WINE);
 }
 
 helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
