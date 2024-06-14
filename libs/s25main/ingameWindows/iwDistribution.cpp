@@ -12,7 +12,6 @@
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlProgress.h"
 #include "controls/ctrlTab.h"
-#include "controls/ctrlText.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
@@ -48,9 +47,9 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
         for(const auto& entry : group.entries)
         {
             unsigned txtId = group.entries.size() + curId;
-            ctrlText* text = tabGrp->AddText(txtId, txtPos, std::get<0>(entry), COLOR_YELLOW,
-                                             FontStyle::CENTER | FontStyle::BOTTOM, SmallFont);
-            ctrlProgress* progress = tabGrp->AddProgress(curId++, progPos, progSize, TextureColor::Grey, 139, 138, 10);
+            tabGrp->AddText(txtId, txtPos, std::get<0>(entry), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM,
+                            SmallFont);
+            tabGrp->AddProgress(curId++, progPos, progSize, TextureColor::Grey, 139, 138, 10);
             txtPos.y = progPos.y += progSize.y * 2;
         }
     }
