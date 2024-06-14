@@ -54,7 +54,7 @@ void iwBuildings::removeUnusedBuildings()
 {
     auto removeNotUsedBuilding = [=](BuildingType const& bts) {
         if((!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bts))
-           && (!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bts == BuildingType::Charburner))
+           || (!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bts == BuildingType::Charburner))
             return true;
         else
             return false;
