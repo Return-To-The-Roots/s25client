@@ -224,7 +224,8 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                     it = buildings.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
                 if(building->GetBuildingType() == BuildingType::Temple)
-                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwTempleBuilding>(gwv, gcFactory, *it)).SetPos(GetPos());
+                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwTempleBuilding>(gwv, gcFactory, *it))
+                      .SetPos(GetPos());
                 else
                     WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it)).SetPos(GetPos());
                 break;
