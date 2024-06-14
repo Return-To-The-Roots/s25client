@@ -36,7 +36,7 @@ const std::array<BuildingType, 27> iwBuildingProductivities::allIcons = {
 
 void iwBuildingProductivities::setBuildingOrder()
 {
-    std::copy(std::begin(allIcons), std::end(allIcons), usedIcons.begin());
+    std::copy(std::begin(allIcons), std::end(allIcons), std::back_inserter(usedIcons));
     removeUnusedBuildings();
 }
 
