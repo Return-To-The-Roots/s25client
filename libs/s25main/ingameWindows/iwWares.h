@@ -18,7 +18,7 @@ protected:
     unsigned warePageID, peoplePageID;
 
 public:
-    iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing,
+    iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, const std::string& title, bool allow_outhousing,
             const glFont* font, const Inventory& inventory, const GamePlayer& player);
 
 protected:
