@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,6 +8,7 @@
 #include "GamePlayerInfo.h"
 #include "helpers/EnumArray.h"
 #include "helpers/MultiArray.h"
+#include "variant.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
 #include "gameTypes/MapCoordinates.h"
@@ -15,7 +16,6 @@
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/StatisticTypes.h"
 #include "gameData/MaxPlayers.h"
-#include <boost/variant/variant_fwd.hpp>
 #include <array>
 #include <list>
 #include <memory>
@@ -281,7 +281,7 @@ public:
     /// IMPORTANT: Warehouses can be destroyed. So check them first before using!
     std::vector<nobBaseWarehouse*> GetWarehousesForTrading(const nobBaseWarehouse& goalWh) const;
     /// Send wares to warehouse wh
-    void Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, Job>& what, unsigned count) const;
+    void Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, Job>& what, unsigned count) const;
 
     void EnableBuilding(BuildingType type) { building_enabled[type] = true; }
     void DisableBuilding(BuildingType type) { building_enabled[type] = false; }
