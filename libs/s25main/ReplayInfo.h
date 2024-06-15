@@ -6,20 +6,18 @@
 
 #include "Replay.h"
 #include <boost/filesystem/path.hpp>
+#include <optional>
 #include <string>
 
 struct ReplayInfo
 {
-    ReplayInfo() : async(0), end(false), next_gf(0), all_visible(false) {}
-
-    /// Replaydatei
+    /// Replay file
     Replay replay;
     boost::filesystem::path filename;
-    /// Replay asynchron (Meldung nur einmal ausgeben!)
-    int async;
-    bool end;
-    // Nächster Replay-Command-Zeitpunkt (in GF)
-    unsigned next_gf;
-    /// Alles sichtbar (FoW deaktiviert)
+    /// Number of async GFs
+    int async = 0;
+    // GF for the next replay command if any
+    std::optional<unsigned> next_gf;
+    /// FoW deactivated?
     bool all_visible;
 };
