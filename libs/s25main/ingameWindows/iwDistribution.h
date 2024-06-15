@@ -41,5 +41,4 @@ private:
     std::vector<DistributionGroup> groups;
     /// Initialize the groups structure
     void CreateGroups();
-    void removeUnusedGroupEntries();
 };

@@ -36,18 +36,16 @@ const std::array<BuildingType, 27> iwBuildingProductivities::allIcons = {
 
 void iwBuildingProductivities::setBuildingOrder()
 {
-    std::copy(std::begin(allIcons), std::end(allIcons), std::back_inserter(usedIcons));
-    removeUnusedBuildings();
-}
+    usedIcons.assign(allIcons.begin(), allIcons.end());
 
-void iwBuildingProductivities::removeUnusedBuildings()
-{
-    auto removeNotUsedBuilding = [=](BuildingType const& bts) {
-        return ((!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonBuildingType(bts))
-                || (!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bts == BuildingType::Charburner));
+    const auto isUnused = [&](BuildingType const& bld) {
+        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonBuildingType(bld))
+            return true;
+        if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        return false;
     };
-    usedIcons.erase(std::remove_if(std::begin(usedIcons), std::end(usedIcons), removeNotUsedBuilding),
-                    std::end(usedIcons));
+    helpers::erase_if(usedIcons, isUnused);
 }
 
 /// Abstand vom linken, oberen Fensterrand
