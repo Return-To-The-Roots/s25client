@@ -12,6 +12,7 @@
 #include "network/PlayerGameCommands.h"
 #include "ogl/glAllocator.h"
 #include "random/Random.h"
+#include "variant.h"
 #include "world/GameWorld.h"
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
@@ -24,6 +25,8 @@
 #if RTTR_HAS_VLD
 #    include <vld.h>
 #endif
+
+#include "gameTypes/BuildingType.h"
 
 struct Fixture : rttr::test::Fixture
 {
@@ -46,7 +49,7 @@ static void playReplay(const boost::filesystem::path& replayPath)
     for(unsigned i = 0; i < replay.GetNumPlayers(); i++)
         players.emplace_back(replay.GetPlayer(i));
     Game game(replay.ggs, /*startGF*/ 0, players);
-    RANDOM.Init(replay.random_init);
+    RANDOM.Init(replay.getSeed());
     GameWorld& gameWorld = game.world_;
 
     for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
@@ -58,43 +61,36 @@ static void playReplay(const boost::filesystem::path& replayPath)
     gameWorld.InitAfterLoad();
 
     bool endOfReplay = false;
-    unsigned nextGF;
-    BOOST_TEST_REQUIRE(replay.ReadGF(&nextGF));
+    auto nextGF = replay.ReadGF();
+    BOOST_TEST_REQUIRE(nextGF.has_value());
 
     const Timer timer(true);
     do
     {
-        unsigned curGF = game.em_->GetCurrentGF();
+        const unsigned curGF = game.em_->GetCurrentGF();
         AsyncChecksum checksum;
-        if(nextGF == curGF)
+        if(*nextGF == curGF)
             checksum = AsyncChecksum::create(game);
-        while(nextGF == curGF)
+        while(*nextGF == curGF)
         {
             BOOST_TEST_INFO("Current GF: " << curGF);
-            const ReplayCommand rc = replay.ReadRCType();
-
-            if(rc == ReplayCommand::Chat)
-            {
-                uint8_t player, dest;
-                std::string message;
-                replay.ReadChatCommand(player, dest, message);
-            } else if(rc == ReplayCommand::Game)
-            {
-                PlayerGameCommands msg;
-                uint8_t gcPlayer;
-                replay.ReadGameCommand(gcPlayer, msg);
-                for(const gc::GameCommandPtr& gc : msg.gcs)
-                    gc->Execute(game.world_, gcPlayer);
-                AsyncChecksum& msgChecksum = msg.checksum;
-                if(msgChecksum.randChecksum != 0)
-                    BOOST_TEST_REQUIRE(msgChecksum == checksum);
-            }
-            if(!replay.ReadGF(&nextGF))
+            const auto cmd = replay.ReadCommand();
+            visit(composeVisitor([](const Replay::ChatCommand&) {},
+                                 [&game, &checksum](const Replay::GameCommand& cmd) {
+                                     for(const gc::GameCommandPtr& gc : cmd.cmds.gcs)
+                                         gc->Execute(game.world_, cmd.player);
+                                     const AsyncChecksum& msgChecksum = cmd.cmds.checksum;
+                                     if(msgChecksum.randChecksum != 0)
+                                         BOOST_TEST_REQUIRE(msgChecksum == checksum);
+                                 }),
+                  cmd);
+            nextGF = replay.ReadGF();
+            if(!nextGF)
             {
                 endOfReplay = true;
                 break;
             } else
-                BOOST_TEST_REQUIRE(nextGF <= replay.GetLastGF());
+                BOOST_TEST_REQUIRE(*nextGF <= replay.GetLastGF());
         }
         game.RunGF();
     } while(!endOfReplay);

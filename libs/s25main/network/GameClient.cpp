@@ -1442,13 +1442,12 @@ void GameClient::StartReplayRecording(const unsigned random_init)
 {
     replayinfo = std::make_unique<ReplayInfo>();
     replayinfo->filename = s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
-    replayinfo->replay.random_init = random_init;
 
     WritePlayerInfo(replayinfo->replay);
     replayinfo->replay.ggs = game->ggs_;
 
-    // Datei speichern
-    if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(s25::folders::replays) / replayinfo->filename, mapinfo))
+    if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(s25::folders::replays) / replayinfo->filename, mapinfo,
+                                          random_init))
     {
         LOG.write(_("Replayfile couldn't be opened. No replay will be recorded\n"));
         replayinfo.reset();
@@ -1534,12 +1533,10 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     }
 
     replayMode = true;
-    replayinfo->async = 0;
-    replayinfo->end = false;
 
     try
     {
-        StartGame(replayinfo->replay.random_init);
+        StartGame(replayinfo->replay.getSeed());
     } catch(SerializedGameData::Error& error)
     {
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
@@ -1547,7 +1544,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
         return false;
     }
 
-    replayinfo->replay.ReadGF(&replayinfo->next_gf);
+    replayinfo->next_gf = replayinfo->replay.ReadGF();
 
     return true;
 }

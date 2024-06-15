@@ -138,11 +138,10 @@ void HeadlessGame::RecordReplay(const bfs::path& path, unsigned random_init)
     mapInfo.mapData.CompressFromFile(mapInfo.filepath, &mapInfo.mapChecksum);
     mapInfo.type = MapType::OldMap;
 
-    replay_.random_init = random_init;
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
         replay_.AddPlayer(world_.GetPlayer(playerId));
     replay_.ggs = game_.ggs_;
-    if(!replay_.StartRecording(path, mapInfo))
+    if(!replay_.StartRecording(path, mapInfo, random_init))
         throw std::runtime_error("Replayfile could not be opened!");
 }
 

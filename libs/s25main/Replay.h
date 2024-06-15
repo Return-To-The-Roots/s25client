@@ -5,23 +5,18 @@
 #pragma once
 
 #include "SavedFile.h"
+#include "network/PlayerGameCommands.h"
+#include "variant.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapType.h"
 #include "s25util/BinaryFile.h"
 #include <memory>
+#include <optional>
 #include <string>
 
 class MapInfo;
 struct PlayerGameCommands;
 class TmpFile;
-
-/// Replay-Command-Art
-enum class ReplayCommand
-{
-    End,
-    Chat,
-    Game
-};
 
 /// Holds a replay that is being recorded or was recorded and loaded
 /// It has a header that holds minimal information:
@@ -31,6 +26,26 @@ enum class ReplayCommand
 class Replay : public SavedFile
 {
 public:
+    enum class CommandType
+    {
+        End,
+        Chat,
+        Game,
+    };
+    struct ChatCommand
+    {
+        ChatCommand(BinaryFile& file);
+        uint8_t player;
+        ChatDestination dest;
+        std::string msg;
+    };
+    struct GameCommand
+    {
+        GameCommand(BinaryFile& file);
+        uint8_t player;
+        PlayerGameCommands cmds;
+    };
+
     Replay();
     ~Replay() override;
 
@@ -39,51 +54,48 @@ public:
     std::string GetSignature() const override;
     uint16_t GetVersion() const override;
 
-    /// Beginnt die Save-Datei und schreibt den Header
-    bool StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo);
+    /// Opens the replay for recording
+    bool StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo, unsigned randomSeed);
     /// Stop recording. Will compress the data and return true if that succeeded. The file will be closed in any case
     bool StopRecording();
 
-    /// Replaydatei gültig?
-    bool IsValid() const { return file_.IsOpen(); }
+    /// Is the replay in the state for accepting commands to record
     bool IsRecording() const { return isRecording_ && file_.IsOpen(); }
+    /// Is the replay open for reading commands
     bool IsReplaying() const { return !isRecording_ && file_.IsOpen(); }
     const boost::filesystem::path& GetPath() const;
 
-    /// Loads the header and optionally the mapInfo (former "extended header")
+    /// Load the header (containing map and player names)
     bool LoadHeader(const boost::filesystem::path& filepath);
+    /// Load the remaining data into the mapInfo
     bool LoadGameData(MapInfo& mapInfo);
 
-    /// Fügt ein Chat-Kommando hinzu (schreibt)
+    /// Record a chat message
     void AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str);
-    /// Fügt ein Spiel-Kommando hinzu (schreibt)
+    /// Record game commands (player actions)
     void AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds);
 
-    /// Liest RC-Type aus, liefert false, wenn das Replay zu Ende ist
-    bool ReadGF(unsigned* gf);
-    /// RC-Type aus, liefert false
-    ReplayCommand ReadRCType();
-    /// Liest ein Chat-Command aus
-    void ReadChatCommand(uint8_t& player, uint8_t& dest, std::string& str);
-    void ReadGameCommand(uint8_t& player, PlayerGameCommands& cmds);
+    /// Read the next GameFrame to which the following replay command applies if there are any left
+    std::optional<unsigned> ReadGF();
+    boost_variant2<ChatCommand, GameCommand> ReadCommand();
 
-    /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
+    /// Update the (currently) last GameFrame in the file
     void UpdateLastGF(unsigned last_gf);
 
+    unsigned getSeed() const { return randomSeed_; }
     unsigned GetLastGF() const { return lastGF_; }
-
-    /// Zufallsgeneratorinitialisierung
-    unsigned random_init;
 
 protected:
     BinaryFile file_;
     std::unique_ptr<TmpFile> uncompressedDataFile_; /// Used when reading a compressed replay
     boost::filesystem::path filepath_;              /// Path to current file
 
-    bool isRecording_;
+    bool isRecording_ = false;
+    /// Seed for the random number generator
+    unsigned randomSeed_ = 0;
     /// End-GF
-    unsigned lastGF_;
-    /// Position des End-GF in der Datei
-    unsigned lastGfFilePos_;
-    MapType mapType_;
+    unsigned lastGF_ = 0;
+    /// Position of the last GF value in the file
+    unsigned lastGfFilePos_ = 0;
+    MapType mapType_ = MapType(0);
 };

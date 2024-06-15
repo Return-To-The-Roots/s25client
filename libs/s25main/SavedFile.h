@@ -52,10 +52,10 @@ public:
     void AddPlayer(const BasePlayerInfo& player);
     void ClearPlayers();
 
-    std::string GetLastErrorMsg() const { return lastErrorMsg; }
+    const std::string& GetLastErrorMsg() const { return lastErrorMsg; }
 
     std::string GetRevision() const;
-    std::string GetMapName() const { return mapName_; }
+    const std::string& GetMapName() const { return mapName_; }
     s25util::time64_t GetSaveTime() const { return saveTime_; }
     const std::vector<std::string>& GetPlayerNames() const { return playerNames_; }
 
