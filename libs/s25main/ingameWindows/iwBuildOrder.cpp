@@ -219,7 +219,6 @@ void iwBuildOrder::UpdateSettings()
     {
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
         fillBuildOrderAndRemoveUnusedBuildings();
-        GAMECLIENT.visual_settings.build_order;
         useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     }
     GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
