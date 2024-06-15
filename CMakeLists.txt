@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -306,20 +306,12 @@ if(BUILD_TESTING)
     list(APPEND BoostPackages unit_test_framework)
 endif()
 
-find_package(Boost 1.69 COMPONENTS ${BoostPackages})
+find_package(Boost 1.71 COMPONENTS ${BoostPackages})
 if(NOT Boost_FOUND)
-    message(FATAL_ERROR "You have to install boost (>=1.69) into contrib/boost or set (as CMake or environment variable) "
+    message(FATAL_ERROR "You have to install boost (>=1.71) into contrib/boost or set (as CMake or environment variable) "
     "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
     "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}') "
     "since cmake was unable to find boost!")
-endif()
-if(Boost_VERSION VERSION_EQUAL 1.70)
-    # Bug in Boost 1.70: https://github.com/boostorg/boost_install/issues/5
-    if(Boost_USE_STATIC_LIBS)
-        set(BUILD_SHARED_LIBS OFF)
-    else()
-        set(BUILD_SHARED_LIBS ON)
-    endif()
 endif()
 
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
