@@ -11,7 +11,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glTexturePacker.h"
 #include "world/GameWorldBase.h"
-#include "world/GameWorldView.h"
 
 namespace wineaddon {
 
