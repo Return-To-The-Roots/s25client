@@ -94,6 +94,8 @@ bool Replay::StopRecording()
 
 bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo)
 {
+    Close();
+
     // Deny overwrite, also avoids double-opening by different processes
     if(boost::filesystem::exists(filepath))
         return false;
