@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,18 +9,17 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "variant.h"
 #include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
-                               const boost::variant<GoodType, Job>& what)
-    : noFigure(holds_alternative<Job>(what) ? boost::get<Job>(what) : Job::PackDonkey, pos, player), successor(nullptr)
+                               const boost_variant2<GoodType, Job>& what)
+    : noFigure(holds_alternative<Job>(what) ? get<Job>(what) : Job::PackDonkey, pos, player), successor(nullptr)
 {
     if(holds_alternative<GoodType>(what))
-        gt = boost::get<GoodType>(what);
+        gt = get<GoodType>(what);
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)

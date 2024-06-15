@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -15,13 +15,13 @@
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "variant.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <boost/variant/variant.hpp>
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(wh.GetPos()), IngameWindow::posAtMouse, Extent(400, 194),
@@ -79,7 +79,7 @@ void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
     // pressed the send button
     const unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection().get();
     const bool isJob = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1u;
-    boost::variant<GoodType, Job> what;
+    boost_variant2<GoodType, Job> what;
     if(isJob)
         what = jobs[ware_figure_selection];
     else

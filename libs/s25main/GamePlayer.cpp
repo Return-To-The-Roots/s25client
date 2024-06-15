@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -26,7 +26,6 @@
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostManager.h"
 #include "random/Random.h"
-#include "variant.h"
 #include "world/GameWorld.h"
 #include "world/TradeRoute.h"
 #include "nodeObjs/noFlag.h"
@@ -2170,7 +2169,7 @@ struct WarehouseDistanceComparator
 };
 
 /// Send wares to warehouse wh
-void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, Job>& what, unsigned count) const
+void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, Job>& what, unsigned count) const
 {
     if(!world.GetGGS().isEnabled(AddonId::TRADE))
         return;
@@ -2195,9 +2194,9 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
     {
         // Get available wares
         const unsigned available =
-          boost::apply_visitor(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
-                                              [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
-                               what);
+          boost::variant2::visit(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
+                                                [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
+                                 what);
         if(available == 0)
             continue;
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -367,7 +367,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
         return;
     }
 
-    std::vector<boost::variant<GoodType, Job>> possibleTypes;
+    std::vector<boost_variant2<GoodType, Job>> possibleTypes;
     // Waren und Figuren zum Auslagern zusammensuchen
     // Wenn keine Platz an Flagge, dann keine Waren raus
     if(GetFlag()->HasSpaceForWare())
@@ -397,7 +397,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     if(holds_alternative<GoodType>(selectedId))
     {
         // Ware
-        const auto goodType = boost::get<GoodType>(selectedId);
+        const auto goodType = get<GoodType>(selectedId);
         auto ware = std::make_unique<Ware>(goodType, nullptr, this);
         noBaseBuilding* wareGoal = world->GetPlayer(player).FindClientForWare(*ware);
         if(wareGoal != this)
@@ -418,7 +418,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
             world->GetPlayer(player).RemoveWare(*ware);
     } else
     {
-        const auto jobType = boost::get<Job>(selectedId);
+        const auto jobType = get<Job>(selectedId);
         nobBaseWarehouse* wh =
           world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(jobType), true, false);
         if(wh != this)
@@ -1174,20 +1174,20 @@ InventorySetting nobBaseWarehouse::GetInventorySetting(const GoodType ware) cons
 }
 
 /// Verändert Ein/Auslagerungseinstellungen (visuell)
-void nobBaseWarehouse::SetInventorySettingVisual(const boost::variant<GoodType, Job>& what, InventorySetting state)
+void nobBaseWarehouse::SetInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state)
 {
     state.MakeValid();
-    boost::apply_visitor([this, state](auto type) { inventorySettingsVisual[type] = state; }, what);
+    visit([this, state](auto type) { inventorySettingsVisual[type] = state; }, what);
 
     NotifyListeners(1);
 }
 
 /// Verändert Ein/Auslagerungseinstellungen (real)
-void nobBaseWarehouse::SetInventorySetting(const boost::variant<GoodType, Job>& what, InventorySetting state)
+void nobBaseWarehouse::SetInventorySetting(const boost_variant2<GoodType, Job>& what, InventorySetting state)
 {
     state.MakeValid();
     InventorySetting& selectedSetting =
-      boost::apply_visitor([this](auto type) -> InventorySetting& { return inventorySettings[type]; }, what);
+      visit([this](auto type) -> InventorySetting& { return inventorySettings[type]; }, what);
 
     InventorySetting oldState = selectedSetting;
     selectedSetting = state;
@@ -1208,7 +1208,7 @@ void nobBaseWarehouse::SetInventorySetting(const boost::variant<GoodType, Job>& 
         // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues
         // anmelden
         auto getWaresOrJobs = [this](auto type) { return inventory[type]; };
-        if(!empty_event && boost::apply_visitor(getWaresOrJobs, what))
+        if(!empty_event && visit(getWaresOrJobs, what))
             empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
     } else if(!oldState.IsSet(EInventorySetting::Collect) && state.IsSet(EInventorySetting::Collect))
     {
@@ -1340,7 +1340,7 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
     // ansonsten ists gleich und alles ist in Ordnung!
 }
 
-void nobBaseWarehouse::CheckOuthousing(const boost::variant<GoodType, Job>& what)
+void nobBaseWarehouse::CheckOuthousing(const boost_variant2<GoodType, Job>& what)
 {
     // Check if we need to send this ware or figure and register an event for this
     // If we already have an event, we don't need to do anything
@@ -1348,12 +1348,12 @@ void nobBaseWarehouse::CheckOuthousing(const boost::variant<GoodType, Job>& what
         return;
 
     const InventorySetting setting =
-      boost::apply_visitor(composeVisitor(
-                             [this](Job job) { // Bootsträger in Träger umwandeln, der evtl dann raus soll
-                                 return GetInventorySetting((job == Job::BoatCarrier) ? Job::Helper : job);
-                             },
-                             [this](GoodType good) { return GetInventorySetting(good); }),
-                           what);
+      visit(composeVisitor(
+              [this](Job job) { // Bootsträger in Träger umwandeln, der evtl dann raus soll
+                  return GetInventorySetting((job == Job::BoatCarrier) ? Job::Helper : job);
+              },
+              [this](GoodType good) { return GetInventorySetting(good); }),
+            what);
 
     if(setting.IsSet(EInventorySetting::Send))
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
@@ -1389,7 +1389,7 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 }
 
 /// Starts a trade caravane from this warehouse
-void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& what, const unsigned count,
+void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& what, const unsigned count,
                                           const TradeRoute& tr, nobBaseWarehouse* goal)
 {
     auto tlOwned = std::make_unique<nofTradeLeader>(pos, player, tr, this->GetPos(), goal->GetPos());
@@ -1417,19 +1417,19 @@ void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& w
     owner.DecreaseInventoryJob(Job::Helper, 1);
 
     // Also diminish the count of donkeys
-    boost::apply_visitor(composeVisitor(
-                           [&](const Job job) {
-                               // remove the jobs
-                               inventory.real.Remove(job, count);
-                               owner.DecreaseInventoryJob(job, count);
-                           },
-                           [&](const GoodType gt) {
-                               // Diminish the goods in the warehouse
-                               inventory.real.Remove(gt, count);
-                               owner.DecreaseInventoryWare(gt, count);
-                               // now that we have removed the goods lets remove the donkeys
-                               inventory.real.Remove(Job::PackDonkey, count);
-                               owner.DecreaseInventoryJob(Job::PackDonkey, count);
-                           }),
-                         what);
+    visit(composeVisitor(
+            [&](const Job job) {
+                // remove the jobs
+                inventory.real.Remove(job, count);
+                owner.DecreaseInventoryJob(job, count);
+            },
+            [&](const GoodType gt) {
+                // Diminish the goods in the warehouse
+                inventory.real.Remove(gt, count);
+                owner.DecreaseInventoryWare(gt, count);
+                // now that we have removed the goods lets remove the donkeys
+                inventory.real.Remove(Job::PackDonkey, count);
+                owner.DecreaseInventoryJob(Job::PackDonkey, count);
+            }),
+          what);
 }

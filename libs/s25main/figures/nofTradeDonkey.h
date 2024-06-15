@@ -1,13 +1,13 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "figures/noFigure.h"
+#include "variant.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/TradeDirection.h"
-#include <boost/variant.hpp>
 #include <deque>
 
 class SerializedGameData;
@@ -38,7 +38,7 @@ private:
     }
 
 public:
-    nofTradeDonkey(MapPoint pos, unsigned char player, const boost::variant<GoodType, Job>& what);
+    nofTradeDonkey(MapPoint pos, unsigned char player, const boost_variant2<GoodType, Job>& what);
     nofTradeDonkey(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

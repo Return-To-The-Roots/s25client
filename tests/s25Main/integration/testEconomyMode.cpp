@@ -148,8 +148,8 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     newWorld.getEconHandler()->UpdateAmounts();
     for(const auto& teamPair : boost::combine(econTeams, econTeamsAfter))
     {
-        const EconomyModeHandler::EconTeam& before = boost::get<0>(teamPair);
-        const EconomyModeHandler::EconTeam& after = boost::get<1>(teamPair);
+        const EconomyModeHandler::EconTeam& before = get<0>(teamPair);
+        const EconomyModeHandler::EconTeam& after = get<1>(teamPair);
         BOOST_TEST_REQUIRE(before.playersInTeam == after.playersInTeam);
         BOOST_TEST_REQUIRE(before.amountsTheTeamCollected == after.amountsTheTeamCollected);
         BOOST_TEST_REQUIRE(before.goodTypeWins == after.goodTypeWins);
