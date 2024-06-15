@@ -30,9 +30,9 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/const_gui_ids.h"
 
-/// Reihenfolge der Gebäude
 void iwBuildings::setBuildingOrder()
 {
+    // Order of the buildings in which they will be shown
     bts = {
       BuildingType::Barracks,       BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
       BuildingType::GraniteMine,    BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
@@ -47,16 +47,15 @@ void iwBuildings::setBuildingOrder()
       BuildingType::HarborBuilding,                                                 // entry 31
       BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
     };
-    removeUnusedBuildings();
-}
 
-void iwBuildings::removeUnusedBuildings()
-{
-    auto removeNotUsedBuilding = [=](BuildingType const& bts) {
-        return ((!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bts))
-                || (!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bts == BuildingType::Charburner));
+    const auto isUnused = [&](BuildingType const& bld) {
+        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
+            return true;
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        return false;
     };
-    bts.erase(std::remove_if(std::begin(bts), std::end(bts), removeNotUsedBuilding), std::end(bts));
+    helpers::erase_if(bts, isUnused);
 }
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
@@ -72,14 +71,13 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
       gwv(gwv), gcFactory(gcFactory)
 {
     setBuildingOrder();
-    const unsigned rowCount = helpers::divCeil(bts.size(), 4);
-    Resize(iconSpacing * Extent(4, rowCount + 1) + bldContentOffset);
+    Resize(iconSpacing * Extent(4, helpers::divCeil(bts.size(), 4) + 1) + bldContentOffset);
 
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
-    for(unsigned y = 0; y < rowCount; y++)
+    for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
     {
-        for(unsigned x = 0; x < 4; x++)
+        for(unsigned x = 0; x < 4; ++x)
         {
             if(y * 4 + x >= bts.size()) //-V547
                 break;

@@ -26,7 +26,6 @@ private:
     void UpdatePercents();
     void Msg_PaintAfter() override;
 
-    void removeUnusedBuildings();
     void setBuildingOrder();
     /// Icons shown (in this order)
     std::vector<BuildingType> usedIcons;
