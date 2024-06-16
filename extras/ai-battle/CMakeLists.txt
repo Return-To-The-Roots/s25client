@@ -4,3 +4,8 @@
 
 add_executable(ai-battle main.cpp HeadlessGame.cpp)
 target_link_libraries(ai-battle PRIVATE s25Main Boost::program_options Boost::nowide)
+
+if(WIN32)
+    include(GatherDll)
+    gather_dll_copy(ai-battle)
+endif()

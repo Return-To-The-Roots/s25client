@@ -45,6 +45,12 @@ int main(int argc, char** argv)
         ;
     // clang-format on
 
+    if(argc == 1)
+    {
+        bnw::cerr << desc << std::endl;
+        return 1;
+    }
+
     po::variables_map options;
     try
     {
