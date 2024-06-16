@@ -785,7 +785,32 @@ void noFigure::DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id
 
 void noFigure::DrawWalking(DrawPoint drawPt)
 {
-    DrawWalkingBobJobs(drawPt, job_);
+    // Figurentyp unterscheiden
+    switch(job_)
+    {
+        case Job::PackDonkey:
+        {
+            const unsigned ani_step = CalcWalkAnimationFrame();
+            drawPt = InterpolateWalkDrawPos(drawPt);
+
+            // Esel
+            LOADER.GetMapTexture(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
+            // Schatten des Esels
+            LOADER.GetMapTexture(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
+        }
+        break;
+        case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
+        case Job::Vintner:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::VINTNER_WALKING]);
+            break;
+        case Job::Winegrower:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::WINEGROWER_WALKING_WITH_SHOVEL]);
+            break;
+        case Job::TempleServant:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
+            break;
+        default: DrawWalkingBobJobs(drawPt, job_); break;
+    }
 }
 
 void noFigure::Die()

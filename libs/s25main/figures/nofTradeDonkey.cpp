@@ -117,17 +117,6 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         DrawWalking(drawPt);
 }
 
-void nofTradeDonkey::DrawWalking(DrawPoint drawPt)
-{
-    const unsigned ani_step = CalcWalkAnimationFrame();
-    drawPt = InterpolateWalkDrawPos(drawPt);
-
-    // Esel
-    LOADER.GetMapTexture(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
-    // Schatten des Esels
-    LOADER.GetMapTexture(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
-}
-
 void nofTradeDonkey::LostWork() {}
 
 void nofTradeDonkey::CancelTradeCaravane()

@@ -17,13 +17,13 @@ class nofVintner : public nofWorkman
 {
     /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
+    /// Id in jobs.bob or carrier.bob when carrying a ware
     [[noreturn]] unsigned short GetCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
     void DrawWalkingWithWare(DrawPoint drawPt) override;
-    void DrawWalking(DrawPoint drawPt) override;
 
 public:
     nofVintner(MapPoint pos, unsigned char player, nobUsual* workplace);
