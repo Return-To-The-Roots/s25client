@@ -194,12 +194,7 @@ void nofCharburner::WalkingStarted()
 /// Draws the figure while returning home / entering the building (often carrying wares)
 void nofCharburner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    noFigure::DrawWalking(drawPt, "charburner_bobs", 200);
-}
-
-void nofCharburner::DrawWalking(DrawPoint drawPt)
-{
-    noFigure::DrawWalking(drawPt, "charburner_bobs", 53);
+    DrawWalking(drawPt, "charburner_bobs", 200);
 }
 
 /// Draws the charburner while walking
@@ -214,9 +209,9 @@ void nofCharburner::DrawOtherStates(DrawPoint drawPt)
             if(!harvest)
             {
                 if(wt == WareType::Wood)
-                    noFigure::DrawWalking(drawPt, "charburner_bobs", 102);
+                    DrawWalking(drawPt, "charburner_bobs", 102);
                 else
-                    noFigure::DrawWalking(drawPt, "charburner_bobs", 151);
+                    DrawWalking(drawPt, "charburner_bobs", 151);
             } else
                 // Draw normal walking
                 DrawWalking(drawPt);

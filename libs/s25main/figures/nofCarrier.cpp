@@ -304,21 +304,6 @@ void nofCarrier::Draw(DrawPoint drawPt)
     }
 }
 
-void nofCarrier::DrawWalking(DrawPoint drawPt)
-{
-    if(job_ == Job::PackDonkey)
-    {
-        const unsigned ani_step = CalcWalkAnimationFrame();
-        drawPt = InterpolateWalkDrawPos(drawPt);
-
-        // Esel
-        LOADER.GetMapTexture(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
-        // Schatten des Esels
-        LOADER.GetMapTexture(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
-    } else
-        noFigure::DrawWalking(drawPt);
-}
-
 /// Bestimmt neuen Animationszeitpunkt
 void nofCarrier::SetNewAnimationMoment()
 {

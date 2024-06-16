@@ -21,6 +21,7 @@ class nofWinegrower : public nofFarmhand
 private:
     /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
+    /// Id in jobs.bob or carrier.bob when carrying a ware
     [[noreturn]] unsigned short GetCarryID() const override;
 
     /// Inform derived class, when working starts (preparing)
@@ -42,7 +43,6 @@ private:
     /// Draws the vintner while walking
     /// (overriding standard method of nofFarmhand)
     void DrawOtherStates(DrawPoint drawPt) override;
-    void DrawWalking(DrawPoint drawPt) override;
 
 public:
     nofWinegrower(MapPoint pos, unsigned char player, nobUsual* workplace);
