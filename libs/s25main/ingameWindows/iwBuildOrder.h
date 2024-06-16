@@ -29,5 +29,5 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
 
-    void fillBuildOrderAndRemoveUnusedBuildings();
+    void fillBuildOrder();
 };

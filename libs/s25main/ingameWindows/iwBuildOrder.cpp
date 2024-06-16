@@ -18,7 +18,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 
-void iwBuildOrder::fillBuildOrderAndRemoveUnusedBuildings()
+void iwBuildOrder::fillBuildOrder()
 {
     pendingBuildOrder.assign(GAMECLIENT.visual_settings.build_order.begin(),
                              GAMECLIENT.visual_settings.build_order.end());
@@ -40,7 +40,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 {
     ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
 
-    fillBuildOrderAndRemoveUnusedBuildings();
+    fillBuildOrder();
 
     for(const auto buildOrder : pendingBuildOrder)
         list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
@@ -195,7 +195,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         case 10: // Standardwerte
         {
             // Baureihenfolge vom Spieler kopieren
-            fillBuildOrderAndRemoveUnusedBuildings();
+            fillBuildOrder();
 
             auto* list = GetCtrl<ctrlList>(0);
             list->DeleteAllItems();
@@ -218,7 +218,7 @@ void iwBuildOrder::UpdateSettings()
     if(GAMECLIENT.IsReplayModeOn())
     {
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-        fillBuildOrderAndRemoveUnusedBuildings();
+        fillBuildOrder();
         useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     }
     GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
