@@ -3,11 +3,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "nofPassiveWorker.h"
-#include "Loader.h"
-#include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "world/GameWorld.h"
-#include "s25util/colors.h"
 class SerializedGameData;
 class noRoadNode;
 
@@ -35,29 +32,7 @@ void nofPassiveWorker::AbrogateWorkplace() {}
 /// Zeichnen
 void nofPassiveWorker::Draw(DrawPoint drawPt)
 {
-    switch(job_)
-    {
-        case Job::PackDonkey:
-        {
-            const unsigned ani_step = CalcWalkAnimationFrame();
-            drawPt = InterpolateWalkDrawPos(drawPt);
-
-            LOADER.GetMapTexture(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
-            LOADER.GetMapTexture(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
-        }
-        break;
-        case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
-        case Job::Vintner:
-            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::VINTNER_WALKING]);
-            break;
-        case Job::Winegrower:
-            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::WINEGROWER_WALKING_WITH_SHOVEL]);
-            break;
-        case Job::TempleServant:
-            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
-            break;
-        default: DrawWalkingBobJobs(drawPt, job_); break;
-    }
+    DrawWalking(drawPt);
 }
 
 /// Für alle restlichen Events, die nicht von noFigure behandelt werden
