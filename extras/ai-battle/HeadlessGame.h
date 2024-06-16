@@ -8,9 +8,7 @@
 #include "Replay.h"
 #include "ai/AIPlayer.h"
 #include "gameTypes/AIInfo.h"
-
 #include <boost/filesystem.hpp>
-
 #include <chrono>
 #include <limits>
 #include <vector>
@@ -29,13 +27,13 @@ public:
     void Run(unsigned maxGF = std::numeric_limits<unsigned>::max());
     void Close();
 
-    void StartReplay(const boost::filesystem::path& path, unsigned random_init);
+    void RecordReplay(const boost::filesystem::path& path, unsigned random_init);
     void SaveGame(const boost::filesystem::path& path) const;
 
 private:
     void PrintState();
 
-    const boost::filesystem::path& map_;
+    boost::filesystem::path map_;
     Game game_;
     GameWorld& world_;
     EventManager& em_;

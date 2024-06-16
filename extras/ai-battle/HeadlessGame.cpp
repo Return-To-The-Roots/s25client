@@ -124,7 +124,7 @@ void HeadlessGame::Close()
     replay_.Close();
 }
 
-void HeadlessGame::StartReplay(const bfs::path& path, unsigned random_init)
+void HeadlessGame::RecordReplay(const bfs::path& path, unsigned random_init)
 {
     // Remove old replay
     bfs::remove(path);
@@ -248,7 +248,7 @@ HANDLE setupStdOut()
 
 void printConsole(const char* fmt, ...)
 {
-    static char buffer[512];
+    char buffer[512];
     va_list args;
     va_start(args, fmt);
     const int len = vsnprintf(buffer, sizeof(buffer), fmt, args);

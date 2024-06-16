@@ -15,32 +15,33 @@
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/filesystem.hpp>
 #include <boost/nowide/iostream.hpp>
+#include <boost/optional.hpp>
 #include <boost/program_options.hpp>
-
-#include <atomic>
 
 namespace bnw = boost::nowide;
 namespace bfs = boost::filesystem;
 namespace po = boost::program_options;
-
-std::atomic<bool> g_abort = false;
 
 int main(int argc, char** argv)
 {
     bnw::nowide_filesystem();
     bnw::args _(argc, argv);
 
+    boost::optional<std::string> replay_path;
+    boost::optional<std::string> savegame_path;
+    unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
     po::options_description desc("Allowed options");
     // clang-format off
     desc.add_options()
         ("help,h", "Show help")
-        ("map,m", po::value<std::string>(),"Map to load")
-        ("ai", po::value<std::vector<std::string>>(),"AI player(s) to add")
-        ("objective", po::value<std::string>(),"domination(default)|conquer")
-        ("replay", po::value<std::string>(),"Filename to write replay to (optional)")
-        ("save", po::value<std::string>(),"Filename to write savegame to (optional)")
-        ("random_init", po::value<unsigned>(),"Seed value for the random number generator (optional)")
-        ("maxGF", po::value<unsigned>(),"Maximum number of game frames to run (optional)")
+        ("map,m", po::value<std::string>()->required(),"Map to load")
+        ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
+        ("objective", po::value<std::string>()->default_value("domination"),"domination(default)|conquer")
+        ("replay", po::value(&replay_path),"Filename to write replay to (optional)")
+        ("save", po::value(&savegame_path),"Filename to write savegame to (optional)")
+        ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
+        ("maxGF", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("version", "Show version information and exit")
         ;
     // clang-format on
@@ -55,6 +56,20 @@ int main(int argc, char** argv)
     try
     {
         po::store(po::command_line_parser(argc, argv).options(desc).run(), options);
+
+        if(options.count("help"))
+        {
+            bnw::cout << desc << std::endl;
+            return 0;
+        }
+        if(options.count("version"))
+        {
+            bnw::cout << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-"
+                      << rttr::version::GetRevision() << std::endl
+                      << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << std::endl;
+            return 0;
+        }
+
         po::notify(options);
     } catch(const std::exception& e)
     {
@@ -63,35 +78,8 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if(options.count("help"))
-    {
-        bnw::cout << desc << std::endl;
-        return 0;
-    }
-    if(options.count("version"))
-    {
-        bnw::cout << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-"
-                  << rttr::version::GetRevision() << std::endl
-                  << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << std::endl;
-        return 0;
-    }
-    if(options.count("map") == 0)
-    {
-        bnw::cerr << "No map specified" << std::endl;
-        return 1;
-    }
-    if(options.count("ai") == 0)
-    {
-        bnw::cerr << "No AI specified" << std::endl;
-        return 1;
-    }
-
     try
     {
-        auto random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-        if(options.count("random_init"))
-            random_init = options["random_init"].as<unsigned>();
-
         // We print arguments and seed in order to be able to reproduce crashes.
         for(int i = 0; i < argc; ++i)
             bnw::cout << argv[i] << " ";
@@ -106,41 +94,29 @@ int main(int argc, char** argv)
         const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
 
         GlobalGameSettings ggs;
-        if(options.count("objective"))
-        {
-            std::string objective = options["objective"].as<std::string>();
-            if(objective == "domination")
-                ggs.objective = GameObjective::TotalDomination;
-            else if(objective == "conquer")
-                ggs.objective = GameObjective::Conquer3_4;
-            else
-            {
-                bnw::cerr << "unknown objective: " << objective << std::endl;
-                return 1;
-            }
-        } else
+        const auto objective = options["objective"].as<std::string>();
+        if(objective == "domination")
             ggs.objective = GameObjective::TotalDomination;
+        else if(objective == "conquer")
+            ggs.objective = GameObjective::Conquer3_4;
+        else
+        {
+            bnw::cerr << "unknown objective: " << objective << std::endl;
+            return 1;
+        }
 
         ggs.objective = GameObjective::TotalDomination;
         HeadlessGame game(ggs, mapPath, ais);
-        if(options.count("replay"))
-            game.StartReplay(options["replay"].as<std::string>(), random_init);
+        if(replay_path)
+            game.RecordReplay(*replay_path, random_init);
 
-        unsigned maxGF = std::numeric_limits<unsigned>::max();
-        if(options.count("maxGF"))
-            maxGF = options["maxGF"].as<unsigned>();
-
-        game.Run(maxGF);
+        game.Run(options["maxGF"].as<unsigned>());
         game.Close();
-        if(options.count("save"))
-            game.SaveGame(options["save"].as<std::string>());
+        if(savegame_path)
+            game.SaveGame(*savegame_path);
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;
-        return 1;
-    } catch(...)
-    {
-        bnw::cerr << "An unknown exception occurred" << std::endl;
         return 1;
     }
 
