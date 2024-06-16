@@ -44,19 +44,19 @@ public:
     /// Stop recording. Will compress the data and return true if that succeeded. The file will be closed in any case
     bool StopRecording();
 
-    /// Replaydatei gÃ¼ltig?
-    bool IsValid() const { return file_.IsValid(); }
-    bool IsRecording() const { return isRecording_ && file_.IsValid(); }
-    bool IsReplaying() const { return !isRecording_ && file_.IsValid(); }
+    /// Replaydatei gültig?
+    bool IsValid() const { return file_.IsOpen(); }
+    bool IsRecording() const { return isRecording_ && file_.IsOpen(); }
+    bool IsReplaying() const { return !isRecording_ && file_.IsOpen(); }
     const boost::filesystem::path& GetPath() const;
 
     /// Loads the header and optionally the mapInfo (former "extended header")
     bool LoadHeader(const boost::filesystem::path& filepath);
     bool LoadGameData(MapInfo& mapInfo);
 
-    /// FÃ¼gt ein Chat-Kommando hinzu (schreibt)
+    /// Fügt ein Chat-Kommando hinzu (schreibt)
     void AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str);
-    /// FÃ¼gt ein Spiel-Kommando hinzu (schreibt)
+    /// Fügt ein Spiel-Kommando hinzu (schreibt)
     void AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds);
 
     /// Liest RC-Type aus, liefert false, wenn das Replay zu Ende ist

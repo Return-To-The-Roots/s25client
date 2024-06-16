@@ -47,7 +47,7 @@ bool Replay::StopRecording()
     file_.Close();
 
     BinaryFile file;
-    if(!file.Open(filepath_, OpenFileMode::OFM_READ))
+    if(!file.Open(filepath_, OpenFileMode::Read))
         return false;
     try
     {
@@ -55,7 +55,7 @@ bool Replay::StopRecording()
         file.Seek(0, SEEK_SET);
         tmpReplayFile.close();
         BinaryFile compressedReplay;
-        compressedReplay.Open(tmpReplayFile.filePath, OpenFileMode::OFM_WRITE);
+        compressedReplay.Open(tmpReplayFile.filePath, OpenFileMode::Write);
 
         // Copy header data uncompressed
         std::vector<char> data(lastGfFilePos_);
@@ -97,8 +97,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     // Deny overwrite, also avoids double-opening by different processes
     if(boost::filesystem::exists(filepath))
         return false;
-    // Datei öffnen
-    if(!file_.Open(filepath, OFM_WRITE))
+    if(!file_.Open(filepath, OpenFileMode::Write))
         return false;
     filepath_ = filepath;
 
@@ -115,7 +114,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     if(mapType_ == MapType::Savegame)
         mapInfo.savegame->WriteFileHeader(file_);
 
-    // Position merken für End-GF
+    // Position merken f�r End-GF
     lastGfFilePos_ = file_.Tell();
     file_.WriteUnsignedInt(lastGF_);
     file_.WriteUnsignedChar(0); // Compressed flag
@@ -151,14 +150,14 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
 
 const boost::filesystem::path& Replay::GetPath() const
 {
-    RTTR_Assert(IsValid());
+    RTTR_Assert(file_.IsOpen());
     return filepath_;
 }
 
 bool Replay::LoadHeader(const boost::filesystem::path& filepath)
 {
     Close();
-    if(!file_.Open(filepath, OFM_READ))
+    if(!file_.Open(filepath, OpenFileMode::Read))
     {
         lastErrorMsg = _("File could not be opened.");
         return false;
@@ -209,7 +208,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
             uncompressedDataFile_->close();
             compressedData.DecompressToFile(uncompressedDataFile_->filePath);
             file_.Close();
-            file_.Open(uncompressedDataFile_->filePath, OpenFileMode::OFM_READ);
+            file_.Open(uncompressedDataFile_->filePath, OpenFileMode::Read);
         }
 
         ReadPlayerData(file_);
@@ -254,7 +253,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
 void Replay::AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str)
 {
     RTTR_Assert(IsRecording());
-    if(!file_.IsValid())
+    if(!file_.IsOpen())
         return;
 
     file_.WriteUnsignedInt(gf);
@@ -271,7 +270,7 @@ void Replay::AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, c
 void Replay::AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds)
 {
     RTTR_Assert(IsRecording());
-    if(!file_.IsValid())
+    if(!file_.IsOpen())
         return;
 
     file_.WriteUnsignedInt(gf);
@@ -295,7 +294,7 @@ bool Replay::ReadGF(unsigned* gf)
     } catch(std::runtime_error&)
     {
         *gf = 0xFFFFFFFF;
-        if(file_.EndOfFile())
+        if(file_.IsEndOfFile())
             return false;
         throw;
     }
@@ -329,7 +328,7 @@ void Replay::ReadGameCommand(uint8_t& player, PlayerGameCommands& cmds)
 void Replay::UpdateLastGF(unsigned last_gf)
 {
     RTTR_Assert(IsRecording());
-    if(!file_.IsValid())
+    if(!file_.IsOpen())
         return;
 
     // An die Stelle springen
