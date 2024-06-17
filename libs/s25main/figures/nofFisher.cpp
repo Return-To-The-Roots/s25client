@@ -89,34 +89,34 @@ unsigned short nofFisher::GetCarryID() const
     return 70;
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofFisher::WorkStarted()
 {
-    // Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
+    // Find a random neighbour point with fish
+    unsigned fishAmount = 0;
     for(Direction dir : helpers::enumRange(RANDOM_ENUM(Direction)))
     {
-        fishing_dir = dir;
-        Resource neighbourRes = world->GetNode(world->GetNeighbour(pos, fishing_dir)).resources;
+        const Resource neighbourRes = world->GetNode(world->GetNeighbour(pos, dir)).resources;
         if(neighbourRes.has(ResourceType::Fish))
+        {
+            fishing_dir = dir;
+            fishAmount = neighbourRes.getAmount();
             break;
+        }
     }
 
-    // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-    unsigned short probability =
-      40 + (world->GetNode(world->GetNeighbour(pos, fishing_dir)).resources.getAmount()) * 10;
-    successful = (RANDOM_RAND(100) < probability);
+    // Probability to catch a fish is proportional to the amount of fish
+    const int probability = (fishAmount == 0) ? 0 : 40 + fishAmount * 10;
+    successful = RANDOM_RAND(100) < probability;
+    // On success remove the fish now to make it unavailable to others
+    if(successful && !world->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
+        world->ReduceResource(world->GetNeighbour(pos, fishing_dir));
 }
 
-/// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofFisher::WorkFinished()
 {
-    // Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
     if(successful)
-    {
-        if(!world->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
-            world->ReduceResource(world->GetNeighbour(pos, fishing_dir));
         ware = GoodType::Fish;
-    } else
+    else
         ware = boost::none;
 }
 
