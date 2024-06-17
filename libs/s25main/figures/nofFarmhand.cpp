@@ -204,28 +204,29 @@ bool nofFarmhand::IsPointAvailable(const MapPoint pt) const
 
 void nofFarmhand::WalkToWorkpoint()
 {
-    // Sind wir am Ziel angekommen?
-    if(pos == dest)
+    if(GetPointQuality(dest) == PointQuality::NotPossible)
     {
-        // Anfangen zu arbeiten
+        // Point became invalid -> Abort and go home
+        WorkAborted();
+        StartWalkingHome();
+    } else if(pos == dest)
+    {
+        // Arrived at target -> Start working
         state = State::Work;
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
         WorkStarted();
-        return;
-    }
-
-    // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    const auto dir = world->FindHumanPath(pos, dest, 20);
-    if(!dir || GetPointQuality(dest) == PointQuality::NotPossible)
-    {
-        // Punkt freigeben
-        world->SetReserved(dest, false);
-        // Kein Weg führt mehr zum Ziel oder Punkt ist nich mehr in Ordnung --> wieder nach Hause gehen
-        StartWalkingHome();
     } else
     {
-        // All good, let's start walking there
-        StartWalking(*dir);
+        // Keep on walking if possible
+        const auto dir = world->FindHumanPath(pos, dest, 20);
+        if(dir)
+            StartWalking(*dir);
+        else
+        {
+            // Point now unreachable -> abort and go gome
+            WorkAborted();
+            StartWalkingHome();
+        }
     }
 }
 
