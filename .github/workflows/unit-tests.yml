@@ -57,8 +57,10 @@ jobs:
           #   Use C++ 17 standard (default for gcc-11)
           #   Use system cmake
           #   Use system boost
-          - { compiler: gcc-11,   os: ubuntu-22.04, type: Debug, cmake: 3.22.1, boost: 1.74.0 }
-          - { compiler: clang-14, os: ubuntu-22.04, type: Debug, cmake: 3.22.1, boost: 1.74.0, cxx: 17 }
+          #   Also include a (semi-)optimized build to a) shake out issues there an b) run the replay tests
+          - { compiler: clang-14, os: ubuntu-22.04, type: Debug,          cmake: 3.22.1, boost: 1.74.0, cxx: 17 }
+          - { compiler: gcc-11,   os: ubuntu-22.04, type: Debug,          cmake: 3.22.1, boost: 1.74.0 }
+          - { compiler: gcc-11,   os: ubuntu-22.04, type: RelWithDebInfo, cmake: 3.22.1, boost: 1.74.0 }
           #
           #  Latest Compilers
           #   GCC 12 needs boost 1.82 to compile correctly
