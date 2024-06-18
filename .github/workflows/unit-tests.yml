@@ -193,7 +193,7 @@ jobs:
         run: echo "TRAVIS_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Build
-        run: tools/ci/travisBuild.sh
+        run: tools/ci/build.sh
 
       - run: tools/ci/collectCoverageData.sh && external/libutil/tools/ci/uploadCoverageData.sh
         if: matrix.coverage && success()
