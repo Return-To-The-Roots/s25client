@@ -160,7 +160,7 @@ GO_Type World::GetGOT(const MapPoint pt) const
 
 void World::ReduceResource(const MapPoint pt)
 {
-    uint8_t curAmount = GetNodeInt(pt).resources.getAmount();
+    const uint8_t curAmount = GetNodeInt(pt).resources.getAmount();
     RTTR_Assert(curAmount > 0);
     GetNodeInt(pt).resources.setAmount(curAmount - 1u);
 }

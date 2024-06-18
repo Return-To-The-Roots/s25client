@@ -6,11 +6,10 @@
 #include "FontStyle.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "glArchivItem_Bitmap.h"
+#include "glArchivItem_Bitmap_Raw.h"
 #include "helpers/containerUtils.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/ArchivItem_Font.h"
-#include "libsiedler2/IAllocator.h"
 #include "libsiedler2/PixelBufferBGRA.h"
 #include "libsiedler2/libsiedler2.h"
 #include "s25util/utf8.h"
@@ -27,8 +26,8 @@ using utf8 = utf::utf_traits<char>;
 
 glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getDx(), font.getDy()), asciiMapping{}
 {
-    fontWithOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BobType::Bitmap);
-    fontNoOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BobType::Bitmap);
+    fontWithOutline = std::make_unique<glArchivItem_Bitmap_Raw>();
+    fontNoOutline = std::make_unique<glArchivItem_Bitmap_Raw>();
 
     // first, we have to find how much chars we really have
     unsigned numChars = 0;
@@ -79,7 +78,7 @@ glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getD
     fontNoOutline->create(bufferNoOutline);
     fontWithOutline->create(bufferWithOutline);
 
-    // Set the placeholder for non-existant glyphs. Use '?' (should always be possible)
+    // Set the placeholder for non-existent glyphs. Use '?' (should always be possible)
     if(CharExist(0xFFFD))
         placeHolder = GetCharInfo(0xFFFD);
     else if(CharExist('?'))
