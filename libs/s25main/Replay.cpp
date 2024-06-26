@@ -42,7 +42,7 @@ bool Replay::StopRecording()
 {
     if(!isRecording_)
         return true;
-    const unsigned replayDataSize = file_.Tell();
+    const auto replayDataSize = file_.Tell();
     isRecording_ = false;
     file_.Close();
 
@@ -64,11 +64,10 @@ bool Replay::StopRecording()
         const auto lastGF = file.ReadUnsignedInt();
         RTTR_Assert(lastGF == lastGF_);
         compressedReplay.WriteUnsignedInt(lastGF);
-        file.ReadUnsignedChar(); // Ignore compressed flag
-        compressedReplay.WriteUnsignedChar(1);
+        file.ReadUnsignedChar(); // Ignore compressed flag (always zero for the temporary file)
 
         // Read and compress remaining data
-        const auto uncompressedSize = replayDataSize - file.Tell();
+        const auto uncompressedSize = replayDataSize - file.Tell(); // Always positive as there is always some game data
         data.resize(uncompressedSize);
         file.ReadRawData(data.data(), data.size());
         data = CompressedData::compress(data);
@@ -76,6 +75,7 @@ bool Replay::StopRecording()
         // This can happen for very short replays
         if(data.size() >= uncompressedSize)
             return true;
+        compressedReplay.WriteUnsignedChar(1); // Compressed flag
         compressedReplay.WriteUnsignedInt(uncompressedSize);
         compressedReplay.WriteUnsignedInt(data.size());
         compressedReplay.WriteRawData(data.data(), data.size());
