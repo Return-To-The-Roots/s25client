@@ -33,7 +33,9 @@ using bfs::canonical;
 HANDLE setupStdOut();
 #endif
 
-#ifdef __GNUC__
+#if defined(__MINGW32__) && !defined(__clang__)
+void printConsole(const char* fmt, ...) __attribute__((format(gnu_printf, 1, 2)));
+#elif defined __GNUC__
 void printConsole(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 #else
 void printConsole(const char* fmt, ...);
