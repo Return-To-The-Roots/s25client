@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Desktop.h"
+#include "DrawPoint.h"
 #include "GameInterface.h"
 #include "IngameMinimap.h"
 #include "Messenger.h"
@@ -30,6 +31,16 @@ struct BuildingNote;
 struct KeyEvent;
 class NWFInfo;
 
+// DEBUG REMOVE BEFORE MERGE
+struct DebugPoint
+{
+    bool valid = false;
+    DrawPoint pos;
+    unsigned short length;
+    unsigned short width;
+    unsigned color;
+};
+
 class dskGameInterface :
     public Desktop,
     public ClientInterface,
@@ -38,6 +49,10 @@ class dskGameInterface :
     public IChatCmdListener
 {
 public:
+    // DEBUG REMOVE BEFORE MERGE
+    static void SetDebugPoint(unsigned i, DrawPoint pos, unsigned short length, unsigned short width, unsigned color);
+    static void ClearDebugPoints();
+
     dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx,
                      bool initOGL = true);
     ~dskGameInterface() override;
@@ -164,4 +179,7 @@ protected:
     bool isCheatModeOn;
     std::string curCheatTxt;
     Subscription evBld;
+
+    // DEBUG REMOVE BEFORE MERGE
+    static std::vector<DebugPoint> debugPoints;
 };

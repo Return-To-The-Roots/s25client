@@ -4,6 +4,7 @@
 
 #include "dskGameInterface.h"
 #include "CollisionDetection.h"
+#include "DrawPoint.h"
 #include "EventManager.h"
 #include "Game.h"
 #include "GamePlayer.h"
@@ -82,6 +83,7 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
+#include "s25util/colors.h"
 #include <algorithm>
 #include <cstdio>
 #include <utility>
@@ -668,6 +670,10 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             actionwindow->Close();
         VIDEODRIVER.SetMousePos(mc.GetPos());
 
+        // DEBUG REMOVE BEFORE MERGE
+        ClearDebugPoints();
+        SetDebugPoint(0, mc.GetPos(), 8, 4, MakeColor(255, 0, 255, 255));
+
         ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
     }
 
@@ -980,6 +986,14 @@ void dskGameInterface::Run()
     }
 
     messenger.Draw();
+
+    // DEBUG REMOVE BEFORE MERGE
+    for(const auto& debugPoint : debugPoints)
+    {
+        if(!debugPoint.valid)
+            continue;
+        DrawCross(debugPoint.pos, debugPoint.length, debugPoint.width, debugPoint.color);
+    }
 }
 
 void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad)
@@ -1391,3 +1405,23 @@ void dskGameInterface::GI_TeamWinner(const unsigned playerMask)
     messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
     WINDOWMANAGER.Show(std::make_unique<iwVictory>(winners));
 }
+
+// DEBUG REMOVE BEFORE MERGE
+void dskGameInterface::SetDebugPoint(unsigned i, DrawPoint pos, unsigned short length, unsigned short width,
+                                     unsigned color)
+{
+    unsigned minSize = i + 1;
+    if(debugPoints.size() < minSize)
+        debugPoints.resize(minSize);
+
+    debugPoints[i] = {true, pos, length, width, color};
+}
+
+// DEBUG REMOVE BEFORE MERGE
+void dskGameInterface::ClearDebugPoints()
+{
+    debugPoints.clear();
+}
+
+// DEBUG REMOVE BEFORE MERGE
+std::vector<DebugPoint> dskGameInterface::debugPoints;

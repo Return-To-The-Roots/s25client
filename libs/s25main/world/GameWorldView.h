@@ -79,6 +79,7 @@ public:
     Extent GetSize() const { return size_; }
 
     void SetZoomFactor(float zoomFactor, bool smoothTransition = true);
+    float GetZoomFactor() const { return zoomFactor_; }
     float GetCurrentTargetZoomFactor() const;
     void SetNextZoomFactor();
 
