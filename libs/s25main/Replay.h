@@ -98,4 +98,7 @@ protected:
     /// Position of the last GF value in the file
     unsigned lastGfFilePos_ = 0;
     MapType mapType_ = MapType(0);
+
+    /// Sub version for backwards compatibility (i.e. allow loading older files with same file version)
+    uint8_t subVersion_ = 0;
 };
