@@ -17,6 +17,19 @@ std::string Replay::GetSignature() const
     return "RTTRRP2";
 }
 
+// clang-format off
+/// (Sub)-Version of the current replay file
+/// Usage:
+////    - Always save for the most current version
+////    - Loading code may cope with file format changes
+/// If the format changes (e.g. new enum values, types, ... increase this version and handle it in the loading code.
+/// If the change cannot be handled:
+///     - Remove all code handling this version.
+///     - Reset this version to 0
+///     - Increase the version in GetVersion
+static const unsigned currentReplayDataVersion = 0;
+// clang-format on
+
 /// Format version of replay files
 uint16_t Replay::GetVersion() const
 {
@@ -27,7 +40,7 @@ uint16_t Replay::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Replay::Replay() : randomSeed_(0), isRecording_(false), lastGF_(0), lastGfFilePos_(0), mapType_(MapType::OldMap) {}
+Replay::Replay() : subVersion_(currentReplayDataVersion) {}
 
 Replay::~Replay() = default;
 
@@ -114,6 +127,10 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     WriteAllHeaderData(file_, mapInfo.title);
     file_.WriteUnsignedShort(rttr::enum_cast(mapType_));
     // For (savegame) format validation
+    // TODO(Replay): Move before mapType
+    file_.WriteUnsignedChar(subVersion_ = currentReplayDataVersion);
+
+    // For (savegame) format validation
     if(mapType_ == MapType::Savegame)
         mapInfo.savegame->WriteFileHeader(file_);
 
@@ -172,7 +189,11 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
         if(!ReadAllHeaderData(file_))
             return false;
 
-        mapType_ = static_cast<MapType>(file_.ReadUnsignedShort());
+        mapType_ = static_cast<MapType>(file_.ReadUnsignedChar());
+        // TODO(Replay): Move before mapType to have it as early as possible.
+        // Previously mapType was an unsigned short, i.e. in little endian the 2nd byte was always unused/zero
+        subVersion_ = file_.ReadUnsignedChar();
+
         if(mapType_ == MapType::Savegame)
         {
             // Validate savegame

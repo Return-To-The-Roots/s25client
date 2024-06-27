@@ -89,12 +89,15 @@ protected:
     std::unique_ptr<TmpFile> uncompressedDataFile_; /// Used when reading a compressed replay
     boost::filesystem::path filepath_;              /// Path to current file
 
-    bool isRecording_;
+    bool isRecording_ = false;
     /// Seed for the random number generator
-    unsigned randomSeed_;
+    unsigned randomSeed_ = 0;
     /// End-GF
-    unsigned lastGF_;
+    unsigned lastGF_ = 0;
     /// Position of the last GF value in the file
-    unsigned lastGfFilePos_;
-    MapType mapType_;
+    unsigned lastGfFilePos_ = 0;
+    MapType mapType_ = MapType(0);
+
+    /// Sub version for backwards compatibility (i.e. allow loading older files with same file version)
+    unsigned subVersion_;
 };
