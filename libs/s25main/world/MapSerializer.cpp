@@ -183,7 +183,6 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         unsigned luaSaveSize = sgd.PopUnsignedInt();
         Serializer luaSaveState;
         sgd.PopRawData(luaSaveState.GetDataWritable(luaSaveSize), luaSaveSize);
-        luaSaveState.SetLength(luaSaveSize);
         if(sgd.PopUnsignedInt() != 0xC001C0DE)
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
