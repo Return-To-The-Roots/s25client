@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,7 +9,12 @@
 
 namespace gc {
 
-GameCommandPtr GameCommand::Deserialize(Serializer& ser)
+unsigned Deserializer::getCurrentVersion()
+{
+    return 0;
+}
+
+GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
 {
     auto gcType = helpers::popEnum<GCType>(ser);
     GameCommand* gc;

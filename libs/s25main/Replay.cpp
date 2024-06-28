@@ -29,7 +29,7 @@ std::string Replay::GetSignature() const
 ///     - Increase the version in GetVersion
 ///
 /// Changelog:
-/// 1: Unused first CommandType (End) removed
+/// 1: Unused first CommandType (End) removed, GameCommand version added
 static const unsigned currentReplayDataVersion = 1;
 // clang-format on
 
@@ -196,6 +196,10 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
         // TODO(Replay): Move before mapType to have it as early as possible.
         // Previously mapType was an unsigned short, i.e. in little endian the 2nd byte was always unused/zero
         subVersion_ = file_.ReadUnsignedChar();
+        if(subVersion_ >= 1)
+            gcVersion_ = file_.ReadUnsignedInt();
+        else
+            gcVersion_ = 0;
 
         if(mapType_ == MapType::Savegame)
         {
@@ -330,7 +334,7 @@ boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::ReadCommand()
     switch(type)
     {
         case CommandType::Chat: return ChatCommand(file_);
-        case CommandType::Game: return GameCommand(file_);
+        case CommandType::Game: return GameCommand(file_, gcVersion_);
         default: throw std::invalid_argument("Invalid command type: " + std::to_string(rttr::enum_cast(type)));
     }
 }
@@ -352,9 +356,9 @@ Replay::ChatCommand::ChatCommand(BinaryFile& file)
       msg(file.ReadLongString())
 {}
 
-Replay::GameCommand::GameCommand(BinaryFile& file)
+Replay::GameCommand::GameCommand(BinaryFile& file, const unsigned version)
 {
-    Serializer ser;
+    gc::Deserializer ser{version};
     ser.ReadFromFile(file);
     player = ser.PopUnsignedChar();
     cmds.Deserialize(ser);
