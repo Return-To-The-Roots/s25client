@@ -29,7 +29,7 @@ std::string Replay::GetSignature() const
 ///     - Increase the version in GetVersion
 ///
 /// Changelog:
-/// 1: Unused first CommandType (End) removed
+/// 1: Unused first CommandType (End) removed, GameCommand version added
 static const uint8_t currentReplayDataVersion = 1;
 // clang-format on
 
@@ -128,6 +128,8 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     file_.WriteUnsignedChar(rttr::enum_cast(mapType_));
     // TODO(Replay): Move before mapType
     file_.WriteUnsignedChar(subVersion_ = currentReplayDataVersion);
+    RTTR_Assert(gc::Deserializer::getCurrentVersion() <= std::numeric_limits<decltype(gcVersion_)>::max());
+    file_.WriteUnsignedChar(gcVersion_ = gc::Deserializer::getCurrentVersion());
 
     // For (savegame) format validation
     if(mapType_ == MapType::Savegame)
@@ -192,6 +194,10 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
         // TODO(Replay): Move before mapType to have it as early as possible.
         // Previously mapType was an unsigned short, i.e. in little endian the 2nd byte was always unused/zero
         subVersion_ = file_.ReadUnsignedChar();
+        if(subVersion_ >= 1)
+            gcVersion_ = file_.ReadUnsignedChar();
+        else
+            gcVersion_ = 0;
 
         if(mapType_ == MapType::Savegame)
         {
@@ -326,7 +332,7 @@ boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::ReadCommand()
     switch(type)
     {
         case CommandType::Chat: return ChatCommand(file_);
-        case CommandType::Game: return GameCommand(file_);
+        case CommandType::Game: return GameCommand(file_, gcVersion_);
         default: throw std::invalid_argument("Invalid command type: " + std::to_string(rttr::enum_cast(type)));
     }
 }
@@ -348,9 +354,9 @@ Replay::ChatCommand::ChatCommand(BinaryFile& file)
       msg(file.ReadLongString())
 {}
 
-Replay::GameCommand::GameCommand(BinaryFile& file)
+Replay::GameCommand::GameCommand(BinaryFile& file, const unsigned version)
 {
-    Serializer ser;
+    gc::Deserializer ser{version};
     ser.ReadFromFile(file);
     player = ser.PopUnsignedChar();
     cmds.Deserialize(ser);

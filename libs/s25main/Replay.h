@@ -40,7 +40,7 @@ public:
     };
     struct GameCommand
     {
-        GameCommand(BinaryFile& file);
+        GameCommand(BinaryFile& file, unsigned version);
         uint8_t player;
         PlayerGameCommands cmds;
     };
@@ -100,4 +100,5 @@ protected:
 
     /// Sub version for backwards compatibility (i.e. allow loading older files with same file version)
     uint8_t subVersion_ = 0;
+    uint8_t gcVersion_ = 0;
 };
