@@ -24,9 +24,10 @@ enum class NodalObjectType : uint8_t
     Animal,          // Tier
     BurnedWarehouse, // abgebranntes Lagerhaus, aus dem die Menschen jetzt strömen
     Ship,            // Schiff
-    CharburnerPile   // Holz-/Kohle-Haufen vom Köhler
+    CharburnerPile,  // Holz-/Kohle-Haufen vom Köhler
+    Grapefield,
 };
 constexpr auto maxEnumValue(NodalObjectType)
 {
-    return NodalObjectType::CharburnerPile;
+    return NodalObjectType::Grapefield;
 }

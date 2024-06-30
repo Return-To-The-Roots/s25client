@@ -16,6 +16,7 @@
 #include "helpers/EnumRange.h"
 #include "iwHelp.h"
 #include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glFont.h"
 #include "world/GameWorldBase.h"
@@ -252,7 +253,19 @@ void iwShip::DrawCargo()
             else if(job == Job::BoatCarrier)
                 LOADER.GetBob("carrier")->Draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
                                                drawPt, owner.color);
-            else
+            else if(wineaddon::isWineAddonJobType(job))
+            {
+                wineaddon::BobTypes type = wineaddon::BobTypes::VINTNER_WALKING;
+                if(job == Job::Winegrower)
+                    type = wineaddon::BobTypes::WINEGROWER_WALKING_WITH_SHOVEL;
+                if(job == Job::TempleServant)
+                    type = wineaddon::BobTypes::TEMPLESERVANT_WALKING;
+
+                LOADER
+                  .GetPlayerImage("wine_bobs",
+                                  wineaddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
+                  ->DrawFull(drawPt, COLOR_WHITE, owner.color);
+            } else
             {
                 const auto& spriteData = JOB_SPRITE_CONSTS[job];
                 LOADER.GetBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,

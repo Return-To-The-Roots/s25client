@@ -358,7 +358,7 @@ void dskCredits::DrawCredit()
 template<typename T>
 T randEnum()
 {
-    return T(rand() % helpers::NumEnumValues_v<T>);
+    return T(rand() % (helpers::NumEnumValues_v<T> - 2));
 }
 
 void dskCredits::DrawBobs()
@@ -400,7 +400,7 @@ void dskCredits::DrawBobs()
 
         // exclude "headless" bobs
         if(job == Job::Miller || job == Job::Baker || job == Job::Brewer || job == Job::Armorer
-           || job == Job::CharBurner /* Comes from another file */)
+           || job == Job::CharBurner /* Comes from another file */ || wineaddon::isWineAddonJobType(job))
         {
             const auto ware = randEnum<GoodType>();
             // Japanese shield is missing

@@ -4,15 +4,34 @@
 
 #include "iwBuildOrder.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlList.h"
 #include "network/GameClient.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
+
+void iwBuildOrder::fillBuildOrder()
+{
+    pendingBuildOrder.assign(GAMECLIENT.visual_settings.build_order.begin(),
+                             GAMECLIENT.visual_settings.build_order.end());
+
+    auto isUnused = [&](BuildingType const& bld) {
+        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
+            return true;
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        return false;
+    };
+    helpers::erase_if(pendingBuildOrder, isUnused);
+}
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     : TransmitSettingsIgwAdapter(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300),
@@ -21,8 +40,8 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 {
     ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
 
-    // Liste füllen
-    pendingBuildOrder = GAMECLIENT.visual_settings.build_order;
+    fillBuildOrder();
+
     for(const auto buildOrder : pendingBuildOrder)
         list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
 
@@ -37,8 +56,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
                    _("Bottom"));
 
     // Bild der Auswahl
-    AddImage(5, DrawPoint(240, 150),
-             LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + rttr::enum_cast(pendingBuildOrder[0]) * 5));
+    AddImage(5, DrawPoint(240, 150), LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
 
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
@@ -64,9 +82,24 @@ void iwBuildOrder::TransmitSettings()
     {
         // Einstellungen speichern
         useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() != 0u;
-        if(GAMECLIENT.ChangeBuildOrder(useCustomBuildOrder, pendingBuildOrder))
+        BuildOrders transmitPendingBuildOrder;
+        unsigned int i = 0;
+        for(; i < pendingBuildOrder.size(); i++)
+            transmitPendingBuildOrder[i] = pendingBuildOrder[i];
+
+        if(!wineaddon::isAddonActive(gwv.GetWorld()))
         {
-            GAMECLIENT.visual_settings.build_order = pendingBuildOrder;
+            transmitPendingBuildOrder[i++] = BuildingType::Vineyard;
+            transmitPendingBuildOrder[i++] = BuildingType::Winery;
+            transmitPendingBuildOrder[i++] = BuildingType::Temple;
+        }
+
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
+            transmitPendingBuildOrder[i++] = BuildingType::Charburner;
+
+        if(GAMECLIENT.ChangeBuildOrder(useCustomBuildOrder, transmitPendingBuildOrder))
+        {
+            GAMECLIENT.visual_settings.build_order = transmitPendingBuildOrder;
             GAMECLIENT.visual_settings.useCustomBuildOrder = useCustomBuildOrder;
             settings_changed = false;
         }
@@ -84,7 +117,7 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
         case 0:
         {
             GetCtrl<ctrlImage>(5)->SetImage(
-              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + rttr::enum_cast(pendingBuildOrder[selection]) * 5));
+              LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[selection]));
         }
         break;
     }
@@ -162,7 +195,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         case 10: // Standardwerte
         {
             // Baureihenfolge vom Spieler kopieren
-            pendingBuildOrder = GAMECLIENT.default_settings.build_order;
+            fillBuildOrder();
 
             auto* list = GetCtrl<ctrlList>(0);
             list->DeleteAllItems();
@@ -172,8 +205,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
                 list->AddString(_(BUILDING_NAMES[pendingBuildOrder[i]]));
             list->SetSelection(0);
 
-            GetCtrl<ctrlImage>(5)->SetImage(
-              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + rttr::enum_cast(pendingBuildOrder[0]) * 5));
+            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
 
             settings_changed = true;
         }
@@ -186,10 +218,10 @@ void iwBuildOrder::UpdateSettings()
     if(GAMECLIENT.IsReplayModeOn())
     {
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-        pendingBuildOrder = GAMECLIENT.visual_settings.build_order;
+        fillBuildOrder();
         useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     }
     GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
-    for(unsigned char i = 0; i < 31; ++i)
+    for(unsigned char i = 0; i < pendingBuildOrder.size(); ++i)
         GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[pendingBuildOrder[i]]), i);
 }

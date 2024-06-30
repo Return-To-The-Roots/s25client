@@ -63,9 +63,6 @@ bool BuildingProperties::IsValid(BuildingType bld)
     switch(bld)
     {
         case BuildingType::Nothing2:
-        case BuildingType::Nothing3:
-        case BuildingType::Nothing4:
-        case BuildingType::Nothing5:
         case BuildingType::Nothing6:
         case BuildingType::Nothing7:
         case BuildingType::Nothing9: return false;

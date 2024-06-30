@@ -12,9 +12,9 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
   gettext_noop("Guardhouse"),
   "",
   gettext_noop("Watchtower"),
-  "",
-  "",
-  "",
+  gettext_noop("Vineyard"),
+  gettext_noop("Winery"),
+  gettext_noop("Temple"),
   "",
   gettext_noop("Fortress"),
   gettext_noop("Granite mine"),
@@ -105,11 +105,29 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
                "gold coins the soldiers here can "
                "not train and improve their "
                "skills."),
-  // 4x Nothing
+  // Vineyard building
+  gettext_noop("The winegrower plants and harvests "
+               "grapes in the surrounding fields. A "
+               "vineyard requires a steady supply of "
+               "sturdy logs for trellises and fresh "
+               "water to irrigate the fields. Ripe "
+               "grapes are sent to the winery to "
+               "be pressed into wine."),
+  // Winery building
+  gettext_noop("At the winery, grapes are stomped in "
+               "a vat to produce wine. The vintner's "
+               "wine is of high quality, worthy of "
+               "sacrifice at the temple."),
+  // Temple building
+  gettext_noop("The temple servant sacrifices wine and "
+               "food granting a blessing of gold, iron "
+               "ore, coal or granite. This allows your "
+               "iron founder and minter to continue "
+               "working when mines become exhausted. The "
+               "desired mineral can be selected by "
+               "toggling the output button."),
   "",
-  "",
-  "",
-  "",
+  // Nothing
   // Fortress
   gettext_noop("The defensive capabilities and "
                "size of the fortress are "
@@ -332,6 +350,8 @@ const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_C
     vikings[BuildingType::Mint] = SmokeConst(1, {16, -38});
     vikings[BuildingType::Farm] = SmokeConst(1, {-17, -48});
     vikings[BuildingType::DonkeyBreeder] = SmokeConst(4, {-27, -40});
+    vikings[BuildingType::Vineyard] = SmokeConst(1, {18, -48});
+    vikings[BuildingType::Winery] = SmokeConst(1, {-14, -32});
     auto& babylonians = result[Nation::Babylonians];
     babylonians[BuildingType::Brewery] = SmokeConst(2, {-18, -43});
     babylonians[BuildingType::Armory] = SmokeConst(1, {-22, -47});

@@ -9,6 +9,7 @@
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Timer.h"
+#include "WineLoader.h"
 #include "addons/const_addons.h"
 #include "commonDefines.h"
 #include "convertSounds.h"
@@ -154,9 +155,15 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
-ITexture* Loader::GetNationTex(Nation nation, unsigned nr)
+ITexture* Loader::GetBuildingTex(Nation nation, BuildingType bld)
 {
-    return checkedCast<ITexture*>(GetNationImage(nation, nr));
+    if(bld == BuildingType::Charburner)
+    {
+        unsigned id = rttr::enum_cast(nation) * 8;
+        return GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1));
+    } else
+        return checkedCast<ITexture*>(GetNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
+    return nullptr;
 }
 
 glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(Nation nation, unsigned nr)
@@ -172,6 +179,38 @@ glArchivItem_Bitmap* Loader::GetMapImage(unsigned nr)
 ITexture* Loader::GetMapTexture(unsigned nr)
 {
     return convertChecked<ITexture*>(map_gfx->get(nr));
+}
+
+ITexture* Loader::GetWareTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareTex(ware);
+    else
+        return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetWareStackTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareStackTex(ware);
+    else
+        return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetWareDonkeyTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareDonkeyTex(ware);
+    else
+        return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetJobTex(Job job)
+{
+    if(wineaddon::isWineAddonJobType(job))
+        return wineaddon::GetJobTex(job);
+    else
+        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
 }
 
 glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
@@ -468,6 +507,9 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     // TODO: Move to addon folder and make it overwrite existing file
     if(!LoadResources({"charburner", "charburner_bobs"}))
+        return false;
+
+    if(!LoadResources({"wine_bobs"}))
         return false;
 
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
@@ -825,10 +867,14 @@ void Loader::fillCaches()
         }
     }
 
+    wineaddon::fillCache(*stp);
+
     // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBob("carrier");
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
+
+    libsiedler2::Archiv wine_bob_carrier = GetArchive("wine_bobs");
 
     for(bool fat : {true, false})
     {
@@ -847,9 +893,26 @@ void Loader::fillCaches()
 
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
-                    bmp.add(
-                      dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                    if(ware == GoodType::Grapes)
+                    {
+                        const unsigned bodyIdx = static_cast<unsigned>(imgDir) * 8 + ani_step;
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(wine_bob_carrier.get(
+                          wineaddon::bobIndex[fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_GRAPES :
+                                                    wineaddon::BobTypes::THIN_CARRIER_CARRYING_GRAPES]
+                          + bodyIdx)));
+                    } else if(ware == GoodType::Wine)
+                    {
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(wine_bob_carrier.get(
+                          wineaddon::bobIndex[fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_WINE :
+                                                    wineaddon::BobTypes::THIN_CARRIER_CARRYING_WINE]
+                          + static_cast<unsigned>(imgDir))));
+                    } else
+                    {
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                          bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                    }
                     bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);

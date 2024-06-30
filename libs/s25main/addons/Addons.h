@@ -60,3 +60,5 @@
 #include "addons/AddonPeacefulMode.h"
 
 #include "addons/AddonAutoFlags.h"
+
+#include "addons/AddonWine.h"

@@ -44,7 +44,7 @@ enum
 }
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
-    : iwWares(CGI_BUILDING + MapBase::CreateGUIID(wh->GetPos()), IngameWindow::posAtMouse, Extent(167, 416),
+    : iwWares(CGI_BUILDING + MapBase::CreateGUIID(wh->GetPos()), IngameWindow::posAtMouse, 40,
               _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont, wh->GetInventory(),
               gwv.GetWorld().GetPlayer(wh->GetPlayer())),
       gwv(gwv), gcFactory(gcFactory), wh(wh)
@@ -57,25 +57,25 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
     // Auswahl für Auslagern/Einlagern Verbieten-Knöpfe
     ctrlOptionGroup* group = AddOptionGroup(ID_STORE_SETTINGS_GROUP, GroupSelectType::Check);
     // Einlagern
-    group->AddImageButton(ID_COLLECT, DrawPoint(16, 335), Extent(32, 32), TextureColor::Grey,
+    group->AddImageButton(ID_COLLECT, DrawPoint(16, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
                           LOADER.GetImageN("io_new", 4), _("Collect"));
     // Auslagern
-    group->AddImageButton(ID_TAKEOUT, DrawPoint(52, 335), Extent(32, 32), TextureColor::Grey,
+    group->AddImageButton(ID_TAKEOUT, DrawPoint(52, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
                           LOADER.GetImageN("io", 211), _("Take out of store"));
     // Einlagern verbieten
-    group->AddImageButton(ID_STOP, DrawPoint(86, 335), Extent(32, 32), TextureColor::Grey, LOADER.GetImageN("io", 212),
-                          _("Stop storage"));
+    group->AddImageButton(ID_STOP, DrawPoint(86, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
+                          LOADER.GetImageN("io", 212), _("Stop storage"));
     // nix tun auswählen
     group->SetSelection(ID_COLLECT);
     // Alle auswählen bzw setzen!
-    AddImageButton(ID_SELECT_ALL, DrawPoint(122, 335), Extent(32, 32), TextureColor::Grey, LOADER.GetImageN("io", 223),
-                   _("Select all"));
+    AddImageButton(ID_SELECT_ALL, DrawPoint(122, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
+                   LOADER.GetImageN("io", 223), _("Select all"));
 
     // "Gehe Zu Ort"
-    AddImageButton(ID_GOTO, DrawPoint(122, 369), Extent(15, 32), TextureColor::Grey, LOADER.GetImageN("io_new", 10),
-                   _("Go to place"));
+    AddImageButton(ID_GOTO, DrawPoint(122, GetFullSize().y - 47), Extent(15, 32), TextureColor::Grey,
+                   LOADER.GetImageN("io_new", 10), _("Go to place"));
     // Go to next warehouse
-    AddImageButton(ID_GOTO_NEXT, DrawPoint(139, 369), Extent(15, 32), TextureColor::Grey,
+    AddImageButton(ID_GOTO_NEXT, DrawPoint(139, GetFullSize().y - 47), Extent(15, 32), TextureColor::Grey,
                    LOADER.GetImageN("io_new", 13), _("Go to next warehouse"));
 
     UpdateOverlays();
@@ -86,10 +86,10 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
         // Abbrennbutton hinzufügen
         // "Blättern" in Bretter stauchen und verschieben
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetWidth(32);
-        GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, 369));
+        GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, GetFullSize().y - 47));
 
-        AddImageButton(ID_DEMOLISH, DrawPoint(52, 369), Extent(32, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
-                       _("Demolish house"));
+        AddImageButton(ID_DEMOLISH, DrawPoint(52, GetFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
+                       LOADER.GetImageN("io", 23), _("Demolish house"));
     }
 }
 

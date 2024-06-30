@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Rect.h"
+#include "WineLoader.h"
 #include "enum_cast.hpp"
 #include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
@@ -116,30 +117,20 @@ public:
     glArchivItem_BitmapBase* GetNationImageN(Nation nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(Nation nation, unsigned nr);
     glArchivItem_Bitmap* GetNationIcon(Nation nation, BuildingType bld);
-    /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
-    ITexture* GetNationTex(Nation nation, unsigned nr);
+    ITexture* GetBuildingTex(Nation nation, BuildingType bld);
     glArchivItem_Bitmap_Player* GetNationPlayerImage(Nation nation, unsigned nr);
     /// Return the map texture with the given number
     ITexture* GetMapTexture(unsigned nr);
     /// Return the more specialized map image. Note: Prefer GetMapTexture which also handles (pseudo) player bitmaps
     glArchivItem_Bitmap* GetMapImage(unsigned nr);
     /// Get the ware symbol texture
-    ITexture* GetWareTex(GoodType ware) { return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware)); }
+    ITexture* GetWareTex(GoodType ware);
     /// Get the ware stack texture (lying on ground)
-    ITexture* GetWareStackTex(GoodType ware)
-    {
-        return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
-    }
+    ITexture* GetWareStackTex(GoodType ware);
     /// Get the ware texture when carried by donky
-    ITexture* GetWareDonkeyTex(GoodType ware)
-    {
-        return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
-    }
+    ITexture* GetWareDonkeyTex(GoodType ware);
     /// Get job symbol texture
-    ITexture* GetJobTex(Job job)
-    {
-        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
-    }
+    ITexture* GetJobTex(Job job);
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
 
     bool IsWinterGFX() const { return isWinterGFX_; }
