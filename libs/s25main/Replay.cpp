@@ -27,7 +27,10 @@ std::string Replay::GetSignature() const
 ///     - Remove all code handling this version.
 ///     - Reset this version to 0
 ///     - Increase the version in GetVersion
-static const uint8_t currentReplayDataVersion = 0;
+///
+/// Changelog:
+/// 1: Unused first CommandType (End) removed
+static const uint8_t currentReplayDataVersion = 1;
 // clang-format on
 
 /// Format version of replay files
@@ -319,7 +322,7 @@ std::optional<unsigned> Replay::ReadGF()
 boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::ReadCommand()
 {
     RTTR_Assert(IsReplaying());
-    const auto type = static_cast<CommandType>(file_.ReadUnsignedChar());
+    const auto type = static_cast<CommandType>(file_.ReadUnsignedChar() - (subVersion_ == 0 ? 1 : 0));
     switch(type)
     {
         case CommandType::Chat: return ChatCommand(file_);

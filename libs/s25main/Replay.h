@@ -28,7 +28,6 @@ class Replay : public SavedFile
 public:
     enum class CommandType
     {
-        End,
         Chat,
         Game,
     };
