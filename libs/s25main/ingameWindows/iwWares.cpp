@@ -23,8 +23,8 @@
 namespace {
 constexpr unsigned ID_pageOffset = 100;
 constexpr unsigned rowHeight = 42;
-constexpr unsigned topMargin_y = 21;
-constexpr unsigned bottomMargin_y = 11;
+constexpr unsigned topMargin = 21;
+constexpr unsigned bottomMargin = 11;
 constexpr unsigned buttonRowHeight = 34;
 constexpr unsigned spacingBetweenLastRowAndButtonRow = 16;
 } // namespace
@@ -148,7 +148,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
     peoplePageID = figuresPage.GetID();
 
     bool isRowWithFourElemens = true;
-    unsigned numElements = std::max(WARE_DISPLAY_ORDER.size(), JOB_DISPLAY_ORDER.size());
+    const unsigned numElements = std::max(WARE_DISPLAY_ORDER.size(), JOB_DISPLAY_ORDER.size());
     unsigned y = 0;
     for(unsigned idx = 0, x = 0; idx < numElements; ++x, ++idx)
     {
@@ -162,8 +162,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
         }
 
         const Extent btSize(26, 26);
-        const DrawPoint btPos((isRowWithFourElemens ? btSize.x + 1 : btSize.x / 2) + x * 28,
-                              topMargin_y + y * rowHeight);
+        const DrawPoint btPos((isRowWithFourElemens ? btSize.x + 1 : btSize.x / 2) + x * 28, topMargin + y * rowHeight);
 
         if(idx < WARE_DISPLAY_ORDER.size())
         {
@@ -182,8 +181,8 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
     }
 
     // compute the final window size
-    Resize(Extent(GetSize().x, topMargin_y + (y + 1) * rowHeight + spacingBetweenLastRowAndButtonRow + additionalYSpace
-                                 + buttonRowHeight + bottomMargin_y));
+    Resize(Extent(GetSize().x, topMargin + (y + 1) * rowHeight + spacingBetweenLastRowAndButtonRow + additionalYSpace
+                                 + buttonRowHeight + bottomMargin));
 
     // "Next page" button
     AddImageButton(0, DrawPoint(52, GetFullSize().y - 47), Extent(66, 32), TextureColor::Grey,
