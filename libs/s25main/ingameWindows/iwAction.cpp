@@ -185,7 +185,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 70), _("Erect flag"), TAB_FLAG);
 
-        switch(boost::get<FlagType>(params))
+        switch(get<FlagType>(params))
         {
             case FlagType::Normal:
             {
@@ -236,7 +236,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 45), _("Erect flag"), TAB_SETFLAG);
 
         unsigned nr = 70;
-        if(boost::get<FlagType>(params) == FlagType::WaterFlag)
+        if(get<FlagType>(params) == FlagType::WaterFlag)
             nr = 94;
 
         // Straße aufwerten ggf anzeigen
@@ -266,7 +266,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     if(tabs.attack)
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 98), _("Attack options"), TAB_ATTACK);
-        available_soldiers_count = boost::get<SoldierCount>(params);
+        available_soldiers_count = get<SoldierCount>(params);
         AddAttackControls(group, available_soldiers_count);
         selected_soldiers_count = 1;
     }

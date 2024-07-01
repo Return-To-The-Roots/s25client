@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,7 +7,7 @@
 #include "NetworkPlayer.h"
 #include "Timer.h"
 #include "helpers/SmoothedValue.hpp"
-#include <variant.h>
+#include "variant.h"
 
 /// Player connected to the server
 class GameServerPlayer : public NetworkPlayer
@@ -58,8 +58,8 @@ public:
     /// Set player not lagging (anymore)
     void setNotLagging();
 
-    auto& getPendingSwaps() { return boost::get<ActiveState>(state_).pendingSwaps; }
+    auto& getPendingSwaps() { return get<ActiveState>(state_).pendingSwaps; }
 
 private:
-    boost::variant<JustConnectedState, MapSendingState, ActiveState> state_;
+    boost_variant2<JustConnectedState, MapSendingState, ActiveState> state_;
 };

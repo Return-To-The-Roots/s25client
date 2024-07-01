@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,6 +8,7 @@
 #include "helpers/format.hpp"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
+#include "variant.h"
 #include "s25util/Log.h"
 
 void GameClient::ExecuteGameFrame_Replay()
@@ -15,62 +16,54 @@ void GameClient::ExecuteGameFrame_Replay()
     AsyncChecksum checksum = AsyncChecksum::create(*game);
 
     const unsigned curGF = GetGFNumber();
-    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
+    RTTR_Assert(replayinfo->next_gf.value_or(curGF) >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
 
     bool cmdsExecuted = false;
+    auto& replay = replayinfo->replay;
     // Execute all commands from the replay for the current GF
-    while(replayinfo->next_gf == curGF)
+    while(replayinfo->next_gf && replayinfo->next_gf == curGF)
     {
-        // What type of command follows?
-        ReplayCommand rc = replayinfo->replay.ReadRCType();
+        const auto cmd = replay.ReadCommand();
+        visit(
+          composeVisitor(
+            [this](const Replay::ChatCommand& cmd) {
+                if(ci)
+                    ci->CI_Chat(cmd.player, cmd.dest, cmd.msg);
+            },
+            [this, &cmdsExecuted, &checksum, curGF](const Replay::GameCommand& cmd) {
+                cmdsExecuted = true;
 
-        if(rc == ReplayCommand::Chat)
-        {
-            uint8_t player, dest;
-            std::string message;
-            replayinfo->replay.ReadChatCommand(player, dest, message);
+                ExecuteAllGCs(cmd.player, cmd.cmds);
+                const AsyncChecksum& msgChecksum = cmd.cmds.checksum;
 
-            if(ci)
-                ci->CI_Chat(player, ChatDestination(dest), message);
-        } else if(rc == ReplayCommand::Game)
-        {
-            cmdsExecuted = true;
-
-            PlayerGameCommands msg;
-            uint8_t gcPlayer;
-            replayinfo->replay.ReadGameCommand(gcPlayer, msg);
-
-            // Execute them
-            ExecuteAllGCs(gcPlayer, msg);
-            AsyncChecksum& msgChecksum = msg.checksum;
-
-            // Check for async if checksum data is valid
-            if(msgChecksum.randChecksum != 0 && msgChecksum != checksum)
-            {
-                // Show message if this is the first async GF
-                if(replayinfo->async == 0)
+                // Check for async if checksum data is valid
+                if(msgChecksum.randChecksum != 0 && msgChecksum != checksum)
                 {
-                    if(ci)
+                    // Show message if this is the first async GF
+                    if(replayinfo->async == 0)
                     {
-                        ci->CI_ReplayAsync(helpers::format(
-                          _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF));
+                        if(ci)
+                        {
+                            ci->CI_ReplayAsync(helpers::format(
+                              _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF));
+                        }
+
+                        LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF
+                          % msgChecksum.randChecksum % checksum.randChecksum % msgChecksum.objCt % checksum.objCt
+                          % msgChecksum.objIdCt % checksum.objIdCt;
+
+                        // and pause the game for further investigation
+                        framesinfo.isPaused = true;
+                        if(skiptogf)
+                            skiptogf = 0;
                     }
 
-                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF
-                      % msgChecksum.randChecksum % checksum.randChecksum % msgChecksum.objCt % checksum.objCt
-                      % msgChecksum.objIdCt % checksum.objIdCt;
-
-                    // and pause the game for further investigation
-                    framesinfo.isPaused = true;
-                    if(skiptogf)
-                        skiptogf = 0;
+                    replayinfo->async++;
                 }
-
-                replayinfo->async++;
-            }
-        }
+            }),
+          cmd);
         // Read GF of next command
-        replayinfo->replay.ReadGF(&replayinfo->next_gf);
+        replayinfo->next_gf = replayinfo->replay.ReadGF();
     }
 
     // Run game simulation
@@ -97,15 +90,14 @@ void GameClient::ExecuteGameFrame_Replay()
 
         if(replayinfo->async != 0)
         {
-            // Messenger im Game
+            // in-game messenger
             if(ci)
             {
                 ci->CI_ReplayEndReached(
                   helpers::format(_("Notice: Overall asynchronous frame count: %u"), replayinfo->async));
             }
         }
-
-        replayinfo->end = true;
+        replayinfo->next_gf.reset();
         framesinfo.isPaused = true;
         if(skiptogf)
             skiptogf = GetGFNumber();
