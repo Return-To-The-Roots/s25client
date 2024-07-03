@@ -125,6 +125,11 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) cons
             return PointQuality::NotPossible;
     } else // or a free space, to place a new one
     {
+        // Try to "plant" a new grapefield
+        // Still enough wares when starting new work (state = Waiting1)?
+        if(state == State::Waiting1 && !workplace->WaresAvailable())
+            return PointQuality::NotPossible;
+
         // Do not build on road
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
@@ -185,4 +190,11 @@ void nofWinegrower::DrawOtherStates(DrawPoint drawPt)
         else // Draw normal walking
             DrawWalking(drawPt);
     }
+}
+
+bool nofWinegrower::AreWaresAvailable() const
+{
+    // wine grower doesn't need wares for harvesting!
+    // -> Wares are considered when calling GetPointQuality!
+    return true;
 }

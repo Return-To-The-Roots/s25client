@@ -44,6 +44,8 @@ private:
     /// (overriding standard method of nofFarmhand)
     void DrawOtherStates(DrawPoint drawPt) override;
 
+    bool AreWaresAvailable() const override;
+
 public:
     nofWinegrower(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofWinegrower(SerializedGameData& sgd, unsigned obj_id);
