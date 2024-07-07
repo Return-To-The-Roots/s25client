@@ -8,44 +8,46 @@
 class SerializedGameData;
 class nobUsual;
 
-/// Ein Landarbeiter geht raus aus seiner Hütte und arbeitet in "freier Natur"
+/// Worker that walks out of his building and works at some point
 class nofFarmhand : public nofBuildingWorker
 {
-protected:
-    /// Arbeitsziel, das der Arbeiter ansteuert
-    MapPoint dest;
-
+public:
     enum class PointQuality
     {
-        NotPossible, // Work is not possible at this position
-        Class1,      /// Work is possible, points are prefered to other points
-        Class2,      /// Work is possible, points are prefered to other points class 2
+        NotPossible, /// Work is not possible at this position
+        Class1,      /// Work is possible, points are preferred to other points
+        Class2,      /// Work is possible, points are preferred to other points class 2
         Class3       /// Work is possible, points are only chosen if there are no other class 1/2's
     };
+
+protected:
+    /// Point the worker is going to work at
+    MapPoint dest;
+
     friend constexpr auto maxEnumValue(PointQuality) { return PointQuality::Class3; }
 
-    /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn...
+    /// Called by base class (noFigure) after having walked to new point
     void WalkedDerived() override;
 
-    /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
+    /// Stop work as workplace becomes unavailable
     void WorkAborted() override;
 
-    /// Läuft zum Arbeitspunkt
+    /// Start walking to work point
     void WalkToWorkpoint();
-    /// Trifft Vorbereitungen fürs nach Hause - Laufen
+    /// Get ready to work back to workplace
     void StartWalkingHome();
-    /// Läuft wieder zu seiner Hütte zurück
+    /// Do next step for walking home
     void WalkHome();
 
-    /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
-    /// house)
+    /// Inform derived class about the start of the whole working process
+    /// (at the beginning when walking out of the house)
     virtual void WalkingStarted();
-    /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+    /// Inform derived class when starting work at the work point
     virtual void WorkStarted() = 0;
-    /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+    /// Inform derived class when work at work point is done
     virtual void WorkFinished() = 0;
 
-    /// Zeichnen der Figur in sonstigen Arbeitslagen
+    /// Draw in other work-related states
     void DrawOtherStates(DrawPoint drawPt) override;
 
 public:
