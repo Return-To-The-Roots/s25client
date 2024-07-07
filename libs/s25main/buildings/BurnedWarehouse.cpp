@@ -83,15 +83,17 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // Remove from inventory
         people[job] -= count;
 
-        // Distribute in all directions starting at a random one
-        const unsigned start_dir = RANDOM_RAND(helpers::NumEnumValues_v<Direction>);
+        // Distribute in all directions starting at a random one of the possible ones
+        const unsigned startIdx = (possibleDirs.size() <= 1u) ? 0 : RANDOM_RAND(possibleDirs.size());
         const unsigned numPeoplePerDir = count / possibleDirs.size();
 
-        for(unsigned j = 0; j < possibleDirs.size(); ++j)
+        for(const unsigned j : helpers::range(possibleDirs.size()))
         {
-            const Direction curDir = possibleDirs[j] + start_dir;
+            // Get current direction accounting for startIdx and hence possible wrap around
+            const unsigned idx = j + startIdx;
+            const Direction curDir = possibleDirs[idx < possibleDirs.size() ? idx : idx - possibleDirs.size()];
             // Take all in last direction
-            const auto curNumPeople = (j + 1 < possibleDirs.size()) ? numPeoplePerDir : count;
+            const auto curNumPeople = (j + 1u < possibleDirs.size()) ? numPeoplePerDir : count;
             count -= curNumPeople;
             for(const auto z : helpers::range(curNumPeople))
             {
