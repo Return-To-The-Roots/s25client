@@ -43,14 +43,11 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
     {
         case State::Work:
         {
-            // fertig mit Arbeiten --> dann müssen die "Folgen des Arbeitens" ausgeführt werden
+            // Done working -> Handle results of the work (step)
             WorkFinished();
-            // Objekt wieder freigeben
             world->SetReserved(pos, false);
-            // Wieder nach Hause gehen
             StartWalkingHome();
 
-            // Evtl. Sounds löschen
             if(was_sounding)
             {
                 world->GetSoundMgr().stopSounds(*this);
@@ -60,7 +57,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         break;
         case State::Waiting1:
         {
-            // Fertig mit warten --> anfangen zu arbeiten
+            // Start working after the initial wait period
             // Work radius
             const unsigned max_radius = [](Job job) {
                 switch(job)
@@ -77,9 +74,9 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     default: throw std::logic_error("Invalid job");
                 }
             }(job_);
-            // Additional radius delta r which is used when a point in radius r was found
-            // I.e. looks till radius r + delta r
-            const unsigned add_radius_when_found = [](Job job) {
+            // Number of additional radii in which points should be found
+            // I.e. 0 => Don't search for points further away than ones already found
+            const unsigned additionalRadiiToFind = [](Job job) {
                 switch(job)
                 {
                     case Job::Woodcutter:
@@ -95,18 +92,16 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 }
             }(job_);
 
-            bool points_found = false;
-            bool wait = false;
-            // Anzahl der Radien, wo wir gültige Punkte gefunden haben
-            unsigned radius_count = 0;
+            bool wait = false; // Whether waiting might make points available
+            // Number of radii in which points have been found
+            unsigned numFoundRadii = 0;
 
             helpers::EnumArray<std::vector<MapPoint>, PointQuality> available_points;
 
             for(MapCoord tx = world->GetXA(pos, Direction::West), r = 1; r <= max_radius;
                 tx = world->GetXA(MapPoint(tx, pos.y), Direction::West), ++r)
             {
-                // Wurde ein Punkt in diesem Radius gefunden?
-                bool found_in_radius = false;
+                bool pointFound = false;
 
                 MapPoint t2(tx, pos.y);
                 for(const auto dir : helpers::enumRange(Direction::NorthEast))
@@ -117,28 +112,23 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                         {
                             if(!world->GetNode(t2).reserved)
                             {
-                                available_points[GetPointQuality(t2)].push_back(MapPoint(t2));
-                                found_in_radius = true;
-                                points_found = true;
+                                available_points[GetPointQuality(t2)].push_back(t2);
+                                pointFound = true;
                             } else if(job_ == Job::Stonemason)
-                            {
-                                // just wait a little bit longer
                                 wait = true;
-                            }
                         }
                     }
                 }
 
-                // Nur die zwei ADD_RADIUS_WHEN_FOUND Radien erst einmal nehmen
-                if(found_in_radius)
+                // Stop if we found enough radii with points
+                if(pointFound)
                 {
-                    if(radius_count++ == add_radius_when_found)
+                    if(numFoundRadii++ == additionalRadiiToFind)
                         break;
                 }
             }
 
-            // Are there any objects at all?
-            if(points_found)
+            if(numFoundRadii > 0)
             {
                 // Prefer points with lower class (better)
                 for(auto& available_point : available_points)
@@ -150,41 +140,35 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     }
                 }
 
-                state = State::WalkToWorkpoint;
-
-                // Wir arbeiten jetzt
+                // Start working
                 workplace->is_working = true;
                 workplace->StopNotWorking();
 
-                // Punkt für uns reservieren
+                // Avoid others taking this point too
                 world->SetReserved(dest, true);
 
-                // Anfangen zu laufen (erstmal aus dem Haus raus!)
+                // Walk out of the building first
+                state = State::WalkToWorkpoint;
                 StartWalking(Direction::SouthEast);
                 WalkingStarted();
-            } else if(wait)
-            {
-                // We have to wait, since we do not know whether there are any unreachable or reserved points where
-                // there's more to get
-                current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-
-                workplace->StartNotWorking();
             } else
             {
-                switch(job_)
+                if(!wait)
                 {
-                    case Job::Stonemason:
-                    case Job::Fisher: workplace->OnOutOfResources(); break;
-                    case Job::Woodcutter:
-                        world->GetNotifications().publish(BuildingNote(
-                          BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
-                        break;
-                    default: break;
+                    switch(job_)
+                    {
+                        case Job::Stonemason:
+                        case Job::Fisher: workplace->OnOutOfResources(); break;
+                        case Job::Woodcutter:
+                            world->GetNotifications().publish(BuildingNote(
+                              BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
+                            break;
+                        default: break;
+                    }
                 }
 
-                // Weiter warten, vielleicht gibts ja später wieder mal was
+                // Try to find something later
                 current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-
                 workplace->StartNotWorking();
             }
         }
