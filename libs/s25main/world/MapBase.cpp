@@ -6,6 +6,7 @@
 #include "commonDefines.h"
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
+#include <set>
 #include <stdexcept>
 #include <string>
 
@@ -85,6 +86,20 @@ MapPoint MapBase::GetNeighbour(const MapPoint pt, const Direction dir) const
 MapPoint MapBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
 {
     return MakeMapPoint(::GetNeighbour2(Position(pt), dir));
+}
+
+std::vector<MapPoint> MapBase::GetAllNeighboursUnion(const std::vector<MapPoint>& points) const
+{
+    std::set<MapPoint, MapPointLess> ptsToReturn;
+
+    for(const MapPoint& curMapPt : points)
+    {
+        ptsToReturn.insert(curMapPt);
+        const auto neighbours = GetNeighbours(curMapPt);
+        ptsToReturn.insert(neighbours.begin(), neighbours.end());
+    }
+
+    return std::vector<MapPoint>(ptsToReturn.begin(), ptsToReturn.end());
 }
 
 helpers::EnumArray<MapPoint, Direction> MapBase::GetNeighbours(const MapPoint pt) const

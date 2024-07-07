@@ -62,8 +62,16 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == 0u);
 
+    const auto buildingTypesEnum = helpers::EnumRange<BuildingType>{};
+    std::vector<BuildingType> buildingTypes(buildingTypesEnum.begin(), buildingTypesEnum.end());
+
+    // Sort buildings so military buildings are created first
+    // and no buildings are destroyed when borders are recalculated
+    std::partition(buildingTypes.begin(), buildingTypes.end(),
+                   [](BuildingType bld) { return !BuildingProperties::IsUsual(bld); });
+
     MapPoint curPos(0, 0);
-    for(const auto bldType : helpers::EnumRange<BuildingType>{})
+    for(const auto bldType : buildingTypes)
     {
         if(!BuildingProperties::IsValid(bldType))
             continue;

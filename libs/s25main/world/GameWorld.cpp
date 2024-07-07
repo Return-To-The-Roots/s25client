@@ -287,7 +287,7 @@ bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const
 // When defined the game tries to remove "blocks" of border stones that look ugly (TODO: Example?)
 // DISABLED: This currently leads to bugs. If you enable/fix this, please add tests and document the conditions this
 // tries to fix
-//#define PREVENT_BORDER_STONE_BLOCKING
+// #define PREVENT_BORDER_STONE_BLOCKING
 
 void GameWorld::RecalcBorderStones(Position startPt, Extent areaSize)
 {
@@ -413,26 +413,20 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
             sizeChanges[oldOwner - 1]--;
     }
 
-    std::set<MapPoint, MapPointLess> ptsHandled;
+    const std::vector<MapPoint> ptsToHandle = GetAllNeighboursUnion(ptsWithChangedOwners);
+
     // Destroy everything from old player on all nodes where the owner has changed
-    for(const MapPoint& curMapPt : ptsWithChangedOwners)
+    for(const MapPoint& curMapPt : ptsToHandle)
     {
-        // Destroy everything around this point as this is at best a border node where nothing should be around
         // Do not destroy the triggering building or its flag
-        // TODO: What about this point?
-        const uint8_t owner = GetNode(curMapPt).owner;
-        for(const MapPoint neighbourPt : GetNeighbours(curMapPt))
-        {
-            if(ptsHandled.insert(neighbourPt).second)
-                DestroyPlayerRests(neighbourPt, owner, &building);
-        }
+        DestroyPlayerRests(curMapPt, GetNode(curMapPt).owner, &building);
 
         if(gi)
             gi->GI_UpdateMinimap(curMapPt);
     }
 
-    // Destroy remaining roads going through non-owned territory
-    for(const MapPoint& curMapPt : ptsWithChangedOwners)
+    // Destroy remaining roads going through non-owned and border territory
+    for(const MapPoint& curMapPt : ptsToHandle)
     {
         // Skip if there is an object. We are looking only for roads going through, not ending here
         // (objects here are already destroyed and if the road ended there it would have been as well)
@@ -440,8 +434,14 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
             continue;
         Direction dir;
         noFlag* flag = GetRoadFlag(curMapPt, dir);
-        if(!flag || flag->GetPlayer() + 1 == GetNode(curMapPt).owner)
+
+        if(!flag)
             continue;
+
+        const uint8_t owner = GetNode(curMapPt).owner;
+        if(flag->GetPlayer() + 1 == owner && IsPlayerTerritory(curMapPt, owner))
+            continue;
+
         flag->DestroyRoad(dir);
     }
 
@@ -449,7 +449,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
     for(const MapPoint& curMapPt : ptsWithChangedOwners)
         GetNotifications().publish(NodeNote(NodeNote::Owner, curMapPt));
 
-    for(const MapPoint& pt : ptsHandled)
+    for(const MapPoint& pt : ptsToHandle)
     {
         // BQ neu berechnen
         RecalcBQ(pt);
@@ -670,8 +670,8 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
        && noType != NodalObjectType::Buildingsite)
         return;
 
-    // is the building on a node with a different owner?
-    if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 == newOwner)
+    // is the building on a node with a different owner? Border is allways destroyed.
+    if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 == newOwner && !IsBorderNode(pt, newOwner))
         return;
 
     // Do not destroy military buildings that hold territory on their own
