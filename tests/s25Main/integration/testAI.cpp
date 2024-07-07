@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,6 +12,7 @@
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
 #include "factories/BuildingFactory.h"
+#include "helpers/containerUtils.h"
 #include "network/GameMessage_Chat.h"
 #include "notifications/NodeNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
@@ -33,9 +34,8 @@ using EmptyWorldFixture2P = WorldFixture<CreateEmptyWorld, 2>;
 template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
 {
-    return std::find_if(collection.begin(), collection.end(),
-                        [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; })
-           != collection.end();
+    return helpers::contains_if(collection,
+                                [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; });
 }
 
 inline bool playerHasBld(const GamePlayer& player, BuildingType type)
@@ -127,7 +127,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             BOOST_TEST_INFO(pt);
-            BOOST_TEST_REQUIRE(this->world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
+            BOOST_TEST(this->world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
         }
     };
     const auto assertBqEqualAround = [this, &aijh](const unsigned lineNr, MapPoint pt, unsigned radius) {
@@ -136,7 +136,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
           pt, radius,
           [&](const MapPoint curPt, unsigned) {
               BOOST_TEST_INFO(curPt);
-              BOOST_TEST_REQUIRE(this->world.GetBQ(curPt, curPlayer) == aijh.GetAINode(curPt).bq);
+              BOOST_TEST(this->world.GetBQ(curPt, curPlayer) == aijh.GetAINode(curPt).bq);
               return false;
           },
           true);
@@ -293,9 +293,9 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
            && playerHasBld(player, BuildingType::Forester))
             break;
     }
-    BOOST_TEST_REQUIRE(playerHasBld(player, BuildingType::Sawmill));
-    BOOST_TEST_REQUIRE(playerHasBld(player, BuildingType::Woodcutter));
-    BOOST_TEST_REQUIRE(playerHasBld(player, BuildingType::Forester));
+    BOOST_TEST(playerHasBld(player, BuildingType::Sawmill));
+    BOOST_TEST(playerHasBld(player, BuildingType::Woodcutter));
+    BOOST_TEST(playerHasBld(player, BuildingType::Forester));
 }
 
 BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)

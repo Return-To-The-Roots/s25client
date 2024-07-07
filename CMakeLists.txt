@@ -4,10 +4,10 @@
 
 cmake_minimum_required(VERSION 3.9)
 if(POLICY CMP0093)
-  cmake_policy(SET CMP0093 NEW) # Use Boost_VERSION x.y.z in CMake >= 3.15 or BoostConfig
+    cmake_policy(SET CMP0093 NEW) # Use Boost_VERSION x.y.z in CMake >= 3.15 or BoostConfig
 endif()
 if (POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW) # find_package uses <PackageName>_ROOT variables
+    cmake_policy(SET CMP0074 NEW) # find_package uses <PackageName>_ROOT variables
 endif()
 
 if(NOT RTTR_VERSION)
@@ -325,18 +325,18 @@ endif()
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 
 if(Boost_VERSION_MINOR GREATER_EQUAL "74" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
-  # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
-  find_package(Boost COMPONENTS nowide)
+    # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
+    find_package(Boost COMPONENTS nowide)
 endif()
 # Prefer system version, either as part of Boost or preinstalled
 if(NOT Boost_NOWIDE_FOUND)
-  if(RTTR_USE_SYSTEM_BOOST_NOWIDE)
-    set(bnw_required REQUIRED)
-  else()
-    set(bnw_required QUIET)
-  endif()
-  find_package(boost_nowide 11.0.0 ${bnw_required})
-  # Fallback in libutil, but find_package must be done here so all subprojects can use it
+    if(RTTR_USE_SYSTEM_BOOST_NOWIDE)
+        set(bnw_required REQUIRED)
+    else()
+        set(bnw_required QUIET)
+    endif()
+    find_package(boost_nowide 11.0.0 ${bnw_required})
+    # Fallback in libutil, but find_package must be done here so all subprojects can use it
 endif()
 
 add_subdirectory(external)

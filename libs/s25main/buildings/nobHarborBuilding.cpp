@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -244,13 +244,11 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
-            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
-              ->DrawFull(boardsPos - DrawPoint(0, i * 4));
+            LOADER.GetWareStackTex(GoodType::Boards)->DrawFull(boardsPos - DrawPoint(0, i * 4));
         DrawPoint stonesPos = drawPt + STONES_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
-            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
-              ->DrawFull(stonesPos - DrawPoint(0, i * 4));
+            LOADER.GetWareStackTex(GoodType::Stones)->DrawFull(stonesPos - DrawPoint(0, i * 4));
 
         // Und den Bauarbeiter, falls er schon da ist
         if(expedition.builder)
@@ -1109,8 +1107,8 @@ std::unique_ptr<Ware> nobHarborBuilding::CancelWareForShip(Ware* ware)
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobHarborBuilding::CancelFigure(noFigure* figure)
 {
-    const auto it = std::find_if(figures_for_ships.begin(), figures_for_ships.end(),
-                                 [figure](const FigureForShip& it) { return it.fig.get() == figure; });
+    const auto it =
+      helpers::find_if(figures_for_ships, [figure](const FigureForShip& it) { return it.fig.get() == figure; });
 
     // Figur ggf. aus der List entfernen
     if(it != figures_for_ships.end())
@@ -1183,7 +1181,7 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
-        auto it2 = std::find(buildings.begin(), buildings.end(), static_cast<nobMilitary*>(all_building));
+        auto it2 = helpers::find(buildings, static_cast<nobMilitary*>(all_building));
         // Noch nicht vorhanden?
         if(it2 == buildings.end())
         {

@@ -8,10 +8,12 @@
 #include "RttrConfig.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "controls/ctrlMapSelection.h"
 #include "controls/ctrlMultiline.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
+#include "dskCampaignMissionMapSelection.h"
 #include "dskCampaignMissionSelection.h"
 #include "dskSinglePlayer.h"
 #include "files.h"
@@ -41,7 +43,8 @@ enum
     ID_PreviewDescription,
     ID_Back,
     ID_Next,
-    ID_TimerFillCampaignTable
+    ID_TimerFillCampaignTable,
+    ID_MapSelection
 };
 
 constexpr int startOffsetY = 20;
@@ -95,7 +98,7 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
 void dskCampaignSelection::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned)
 {
     if(ctrl_id == ID_Table)
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, getSelectedCampaignPath()));
+        showCampaignMissionSelectionScreen();
 }
 
 void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
@@ -127,6 +130,16 @@ void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const boo
             {
                 campaignImage_ = LOADER.GetImageN(ResourceId::make(RTTRCONFIG.ExpandPath(desc.image)), 0);
             }
+
+            if(desc.selectionMapData.has_value())
+            {
+                auto* mapSelection =
+                  AddMapSelection(ID_MapSelection, DrawPoint(secondColumnOffsetX, getColumnOffsetY()),
+                                  Extent(secondColumnExtentX, campaignImageExtentY), desc.selectionMapData.value());
+                mapSelection->setMissionsStatus(std::vector<MissionStatus>(desc.getNumMaps(), {true, true}));
+                mapSelection->setPreview(true);
+            }
+
             btContinue.SetEnabled(true);
             showCampaignInfo(true);
         }
@@ -137,7 +150,28 @@ void dskCampaignSelection::showCampaignInfo(bool show)
 {
     GetCtrl<ctrlMultiline>(ID_PreviewDescription)->SetVisible(show);
     GetCtrl<ctrlText>(ID_PreviewTitle)->SetVisible(show);
+
+    if(!show)
+        DeleteCtrl(ID_MapSelection);
+
     showCampaignInfo_ = show;
+}
+
+bool dskCampaignSelection::hasMapSelectionScreen()
+{
+    CampaignDescription desc;
+    CampaignDataLoader loader(desc, getSelectedCampaignPath());
+    if(!loader.Load())
+        return false;
+    return desc.getSelectionMapData().has_value();
+}
+
+void dskCampaignSelection::showCampaignMissionSelectionScreen()
+{
+    if(hasMapSelectionScreen())
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionMapSelection>(csi_, getSelectedCampaignPath()));
+    else
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, getSelectedCampaignPath()));
 }
 
 boost::filesystem::path dskCampaignSelection::getSelectedCampaignPath()
@@ -157,7 +191,7 @@ void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
     if(ctrl_id == ID_Back)
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(ctrl_id == ID_Next)
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, getSelectedCampaignPath()));
+        showCampaignMissionSelectionScreen();
 }
 
 void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
@@ -239,7 +273,7 @@ void dskCampaignSelection::Draw_()
     Desktop::Draw_();
 
     // replace this by AddImageButton as soon as it can handle this sceneraio correctly
-    if(showCampaignInfo_ && campaignImage_)
+    if(showCampaignInfo_ && campaignImage_ && !hasMapSelectionScreen())
     {
         campaignImage_->DrawFull(Rect(ScaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY())),
                                       ScaleIf(Extent(secondColumnExtentX, campaignImageExtentY))));

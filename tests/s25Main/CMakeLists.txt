@@ -51,7 +51,7 @@ add_subdirectory(UI)
 
 option(RTTR_ENABLE_BENCHMARKS "Build the benchmarks" OFF)
 if(RTTR_ENABLE_BENCHMARKS)
-  add_subdirectory(benchmarks)
+    add_subdirectory(benchmarks)
 endif()
 
 if(WIN32)

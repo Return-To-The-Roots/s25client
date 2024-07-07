@@ -7,6 +7,7 @@
 #include "Rect.h"
 #include "gameData/WorldDescription.h"
 #include <kaguya/kaguya.hpp>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -34,6 +35,9 @@ public:
     /// Return the value or use the default if it doesn't exist
     template<typename T>
     T getOrDefault(const std::string& fieldName, const T& defaultValue);
+    /// Return the value if it exists
+    template<typename T>
+    std::optional<T> getOptional(const std::string& fieldName);
     /// Get a Rect from lua or return the default. TODO: Add kaguya conversion function and remove this
     Rect getRectOrDefault(const std::string& fieldName, const Rect& defaultValue);
 };
@@ -75,16 +79,24 @@ inline void CheckedLuaTable::getOrThrow(T& outVal, const std::string& fieldName)
 }
 
 template<typename T>
-inline T CheckedLuaTable::getOrDefault(const std::string& fieldName, const T& defaultValue)
+inline std::optional<T> CheckedLuaTable::getOptional(const std::string& fieldName)
 {
     accessedKeys_.insert(fieldName);
     kaguya::LuaRef value = table[fieldName];
     if(value.isNilref())
-        return defaultValue;
+        return std::nullopt;
     if(value.isConvertible<T>())
-        return value;
-    else
+    {
+        T val = value;
+        return std::optional<T>(val);
+    } else
         throw GameDataLoadError("Field '" + fieldName + "' has the wrong type");
+}
+
+template<typename T>
+inline T CheckedLuaTable::getOrDefault(const std::string& fieldName, const T& defaultValue)
+{
+    return getOptional<T>(fieldName).value_or(defaultValue);
 }
 
 inline Rect CheckedLuaTable::getRectOrDefault(const std::string& fieldName, const Rect& defaultValue)

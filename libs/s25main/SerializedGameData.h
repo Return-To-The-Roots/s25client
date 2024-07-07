@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,10 +6,8 @@
 
 #include "FOWObjects.h"
 #include "RTTR_Assert.h"
-#include "helpers/GetInsertIterator.hpp"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/OptionalEnum.h"
-#include "helpers/ReserveElements.hpp"
 #include "helpers/serializeContainers.h"
 #include "helpers/serializeEnums.h"
 #include "helpers/serializePoint.h"
@@ -17,6 +15,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "s25util/Serializer.h"
 #include "s25util/warningSuppression.h"
+#include <iterator>
 #include <limits>
 #include <map>
 #include <memory>
@@ -29,6 +28,38 @@ class EventManager;
 class GameEvent;
 class Game;
 class ILocalGameState;
+
+namespace detail {
+template<class T, typename = void>
+struct has_reserve : std::false_type
+{};
+
+template<class T>
+struct has_reserve<T, std::void_t<decltype(std::declval<T>().reserve(0u))>> : std::true_type
+{};
+
+template<class T, typename = void>
+struct has_push_back : std::false_type
+{
+    static auto get(T& collection) { return std::inserter(collection, collection.end()); }
+};
+
+template<class T>
+struct has_push_back<T, std::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>> :
+    std::true_type
+{
+    static auto get(T& collection) { return std::back_inserter(collection); }
+};
+
+template<class T>
+auto get_back_inserter(T& collection)
+{
+    if constexpr(detail::has_push_back<T>::value)
+        return std::back_inserter(collection);
+    else
+        return std::inserter(collection, collection.end());
+}
+} // namespace detail
 
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
@@ -211,8 +242,10 @@ void SerializedGameData::PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Typ
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
-    helpers::ReserveElements<T>::reserve(gos, size);
-    auto it = helpers::GetInsertIterator<T>::get(gos);
+    if constexpr(detail::has_reserve<decltype(gos)>::value)
+        gos.reserve(size);
+
+    auto it = detail::get_back_inserter(gos);
     for(unsigned i = 0; i < size; ++i)
         *it = Elements(PopObject<Object>(got)); // Conversion required to support unique_ptr
 }

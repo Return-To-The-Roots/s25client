@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -1493,8 +1493,7 @@ bfs::path GameServer::SaveAsyncLog()
     unsigned numEntries = 0;
     for(AsyncLog& log : asyncLogs)
     {
-        auto it = std::find_if(log.randEntries.begin(), log.randEntries.end(),
-                               [maxCtr](const auto& e) { return e.counter == maxCtr; });
+        auto it = helpers::find_if(log.randEntries, [maxCtr](const auto& e) { return e.counter == maxCtr; });
         log.randEntries.erase(log.randEntries.begin(), it);
         if(numEntries < log.randEntries.size())
             numEntries = log.randEntries.size();

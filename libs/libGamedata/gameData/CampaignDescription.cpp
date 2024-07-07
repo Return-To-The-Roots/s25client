@@ -33,8 +33,13 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     lua::validatePath(mapFolder);
     lua::validatePath(luaFolder);
     mapNames = luaData.getOrDefault("maps", std::vector<std::string>());
-
+    selectionMapData = luaData.getOptional<SelectionMapInputData>("selectionMap");
     luaData.checkUnused();
+}
+
+const std::optional<SelectionMapInputData>& CampaignDescription::getSelectionMapData() const
+{
+    return selectionMapData;
 }
 
 boost::filesystem::path CampaignDescription::getLuaFilePath(const size_t idx) const

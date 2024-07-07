@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -99,7 +99,7 @@ constexpr helpers::EnumArray<uint8_t, Tool> CARRYTOOLS_IDS = {78, 79, 80, 91, 81
 
 unsigned short nofMetalworker::GetCarryID() const
 {
-    const int toolIdx = helpers::indexOf(TOOL_TO_GOOD, ware);
+    const auto toolIdx = helpers::indexOf(TOOL_TO_GOOD, ware);
     return (toolIdx >= 0) ? CARRYTOOLS_IDS[static_cast<Tool>(toolIdx)] : 0;
 }
 
