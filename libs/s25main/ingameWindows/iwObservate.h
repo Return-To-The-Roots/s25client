@@ -5,6 +5,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "PickedMovableObject.h"
 #include "gameTypes/MapCoordinates.h"
 #include <boost/signals2.hpp>
 
@@ -28,13 +29,15 @@ class iwObservate : public IngameWindow
 
     unsigned zoomLvl;
 
-    /// id of object currently followed or INVALID_ID
-    unsigned followMovableId;
+    // Follow object
+    PickedMovableObject pickedObject;
+    bool following;
+    bool lastValid; // keep previous IsValid() result to detect transitions
 
     boost::signals2::scoped_connection gwvSettingsConnection;
 
 public:
-    iwObservate(GameWorldView& gwv, MapPoint selectedPt);
+    iwObservate(GameWorldView& gwv, MapPoint selectedPt, PickedMovableObject&& pmo);
 
 private:
     void Draw_() override;
@@ -42,7 +45,5 @@ private:
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_RightDown(const MouseCoords& mc) override;
     bool Msg_RightUp(const MouseCoords& mc) override;
-    /// Move view to the object we currently follow, return true if it can still be found
-    bool MoveToFollowedObj();
-    inline bool MoveToFollowedObj(MapPoint ptToCheck);
+    void UpdateFollowButton();
 };

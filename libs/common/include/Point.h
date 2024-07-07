@@ -10,6 +10,50 @@
 #include <limits>
 #include <type_traits>
 
+namespace detail {
+
+template<class T>
+struct type_identity
+{
+    using type = T;
+};
+
+/// Convert the type T to a signed type if the condition is true (safe for float types)
+template<bool cond, typename T>
+using make_signed_if_t =
+  typename std::conditional_t<cond && !std::is_signed<T>::value, std::make_signed<T>, type_identity<T>>::type;
+
+// clang-format off
+
+/// Creates a mixed type out of types T and U which is
+/// the larger type of T & U AND signed iff either is signed
+/// Will be a floating point type if either T or U is floating point
+template<typename T, typename U>
+using mixed_type_t =
+  make_signed_if_t<
+    std::is_signed<T>::value || std::is_signed<U>::value,
+    typename std::conditional_t<
+        std::is_floating_point<T>::value == std::is_floating_point<U>::value, // both are FP or not FP?
+        std::conditional<(sizeof(T) > sizeof(U)), T, U>, // Take the larger type
+        std::conditional<std::is_floating_point<T>::value, T, U> // Take the floating point type
+    >::type
+  >;
+
+template<typename T, typename U>
+using IsNonLossyOp = std::integral_constant<bool,
+    // We can do T = T <op> U (except overflow) if:
+    std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value
+>;
+
+// clang-format on
+
+template<typename T, typename U>
+using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;
+template<typename T>
+using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
+
+} // namespace detail
+
 /// Type for describing a 2D value (position, size, offset...)
 /// Note: Combining a signed with an unsigned point will result in a signed type!
 /// Allowed operations:
@@ -54,6 +98,28 @@ struct Point //-V690
     static constexpr Point all(const T value) noexcept { return Point(value, value); }
     constexpr bool isValid() const noexcept { return *this != Invalid(); }
 
+    /// Calculate the euclidean distance to the origin
+    constexpr auto distance() const noexcept { return std::hypot(x, y); }
+
+    /// Calculate the euclidean distance to another point
+    template<typename U, std::enable_if_t<!(std::is_unsigned<T>::value && std::is_unsigned<U>::value), int> = 0>
+    constexpr auto distance(const Point<U>& pt) const noexcept
+    {
+        using Res = ::detail::mixed_type_t<T, U>;
+        return std::hypot(static_cast<Res>(x) - static_cast<Res>(pt.x), static_cast<Res>(y) - static_cast<Res>(pt.y));
+    }
+
+    /// Calculate the euclidean distance to another point
+    template<typename U, std::enable_if_t<std::is_unsigned<T>::value && std::is_unsigned<U>::value, int> = 0>
+    constexpr auto distance(const Point<U>& pt) const noexcept
+    {
+        using Res = ::detail::mixed_type_t<T, U>;
+        const auto x1 = static_cast<Res>(x), x2 = static_cast<Res>(pt.x);
+        const auto y1 = static_cast<Res>(y), y2 = static_cast<Res>(pt.y);
+        // Calculate difference of usigned values without overflow
+        return std::hypot((x1 > x2 ? x1 - x2 : x2 - x1), (y1 > y2 ? y1 - y2 : y2 - y1));
+    }
+
     constexpr bool operator==(const Point& second) const noexcept;
     constexpr bool operator!=(const Point& second) const noexcept;
 
@@ -87,50 +153,6 @@ constexpr bool Point<T>::operator!=(const Point<T>& second) const noexcept
 {
     return !(*this == second);
 }
-
-namespace detail {
-
-template<class T>
-struct type_identity
-{
-    using type = T;
-};
-
-/// Convert the type T to a signed type if the condition is true (safe for float types)
-template<bool cond, typename T>
-using make_signed_if_t =
-  typename std::conditional_t<cond && !std::is_signed<T>::value, std::make_signed<T>, type_identity<T>>::type;
-
-// clang-format off
-
-/// Creates a mixed type out of types T and U which is
-/// the larger type of T & U AND signed iff either is signed
-/// Will be a floating point type if either T or U is floating point
-template<typename T, typename U>
-using mixed_type_t =
-  make_signed_if_t<
-    std::is_signed<T>::value || std::is_signed<U>::value,
-    typename std::conditional_t<
-        std::is_floating_point<T>::value == std::is_floating_point<U>::value, // both are FP or not FP?
-        std::conditional<(sizeof(T) > sizeof(U)), T, U>, // Take the larger type
-        std::conditional<std::is_floating_point<T>::value, T, U> // Take the floating point type
-    >::type
-  >;
-
-template<typename T, typename U>
-using IsNonLossyOp = std::integral_constant<bool,
-    // We can do T = T <op> U (except overflow) if:
-    std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value
->;
-
-// clang-format on
-
-template<typename T, typename U>
-using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;
-template<typename T>
-using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
-
-} // namespace detail
 
 /// Compute the element wise minimum
 template<typename T>
