@@ -103,16 +103,17 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             {
                 bool pointFound = false;
 
-                MapPoint t2(tx, pos.y);
+                MapPoint pt(tx, pos.y);
                 for(const auto dir : helpers::enumRange(Direction::NorthEast))
                 {
-                    for(MapCoord r2 = 0; r2 < r; t2 = world->GetNeighbour(t2, dir), ++r2)
+                    for(MapCoord r2 = 0; r2 < r; pt = world->GetNeighbour(pt, dir), ++r2)
                     {
-                        if(IsPointAvailable(t2))
+                        const auto quality = GetPointQuality(pt);
+                        if(quality != PointQuality::NotPossible && world->FindHumanPath(this->pos, pt, 20))
                         {
-                            if(!world->GetNode(t2).reserved)
+                            if(!world->GetNode(pt).reserved)
                             {
-                                available_points[GetPointQuality(t2)].push_back(t2);
+                                available_points[quality].push_back(pt);
                                 pointFound = true;
                             } else if(job_ == Job::Stonemason)
                                 wait = true;
@@ -175,17 +176,6 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         break;
         default: break;
     }
-}
-
-bool nofFarmhand::IsPointAvailable(const MapPoint pt) const
-{
-    // Gibts an diesen Punkt überhaupt die nötigen Vorraussetzungen für den Beruf?
-    if(GetPointQuality(pt) != PointQuality::NotPossible)
-    {
-        // Gucken, ob ein Weg hinführt
-        return world->FindHumanPath(this->pos, pt, 20) != boost::none;
-    } else
-        return false;
 }
 
 void nofFarmhand::WalkToWorkpoint()

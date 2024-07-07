@@ -57,8 +57,6 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     void HandleDerivedEvent(unsigned id) override;
-    /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
-    bool IsPointAvailable(MapPoint pt) const;
-    /// Returns the quality of this working point or determines if the worker can work here at all
+    /// Return the quality of this working point (including if the worker can work here at all)
     virtual PointQuality GetPointQuality(MapPoint pt) const = 0;
 };
