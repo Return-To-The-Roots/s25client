@@ -79,6 +79,8 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             count = people[job];
         else
             count = people[job] / (GO_OUT_PHASES - go_out_phase);
+        if(count == 0)
+            continue;
 
         // Remove from inventory
         people[job] -= count;
