@@ -439,7 +439,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
             continue;
 
         const uint8_t owner = GetNode(curMapPt).owner;
-        if(flag->GetPlayer() + 1 == owner && !IsBorderNode(curMapPt, owner))
+        if(flag->GetPlayer() + 1 == owner && IsPlayerTerritory(curMapPt, owner))
             continue;
 
         flag->DestroyRoad(dir);
