@@ -58,5 +58,7 @@ public:
 
     void HandleDerivedEvent(unsigned id) override;
     /// Return the quality of this working point (including if the worker can work here at all)
-    virtual PointQuality GetPointQuality(MapPoint pt) const = 0;
+    /// isBeforeWork determines whether the evaluation happens before leaving for work or afterwards
+    virtual PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const = 0;
+    PointQuality GetPointQuality(MapPoint pt) const { return GetPointQuality(pt, false); }
 };

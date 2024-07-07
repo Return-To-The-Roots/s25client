@@ -108,7 +108,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 {
                     for(MapCoord r2 = 0; r2 < r; pt = world->GetNeighbour(pt, dir), ++r2)
                     {
-                        const auto quality = GetPointQuality(pt);
+                        const auto quality = GetPointQuality(pt, true);
                         if(quality != PointQuality::NotPossible && world->FindHumanPath(this->pos, pt, 20))
                         {
                             if(!world->GetNode(pt).reserved)

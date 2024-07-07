@@ -111,7 +111,7 @@ void nofFarmer::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
+nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // Entweder gibts ein Getreidefeld, das wir abernten können...
     if(world->GetNO(pt)->GetType() == NodalObjectType::Grainfield)
