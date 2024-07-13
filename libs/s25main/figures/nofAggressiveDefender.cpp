@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,7 +16,7 @@ nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned 
     : nofActiveSoldier(pos, player, home, rank, SoldierState::AggressivedefendingWalkingToAggressor),
       attacker(&attacker), attacked_goal(attacker.GetAttackedGoal())
 {
-    // Angegriffenem Gebäude Bescheid sagen
+    // Notify building to protect
     attacked_goal->LinkAggressiveDefender(*this);
 }
 
@@ -24,7 +24,7 @@ nofAggressiveDefender::nofAggressiveDefender(const nofPassiveSoldier& other, nof
     : nofActiveSoldier(other, SoldierState::AggressivedefendingWalkingToAggressor), attacker(&attacker),
       attacked_goal(attacker.GetAttackedGoal())
 {
-    // Angegriffenem Gebäude Bescheid sagen
+    // Notify building to protect
     attacked_goal->LinkAggressiveDefender(*this);
 }
 
@@ -64,19 +64,12 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
 
 void nofAggressiveDefender::Walked()
 {
-    // Was bestimmtes machen, je nachdem welchen Status wir gerade haben
-    switch(state)
-    {
-        default: nofActiveSoldier::Walked(); return;
-        case SoldierState::AggressivedefendingWalkingToAggressor:
-        {
-            MissAggressiveDefendingWalk();
-        }
-            return;
-    }
+    if(state == SoldierState::AggressivedefendingWalkingToAggressor)
+        MissAggressiveDefendingWalk();
+    else
+        nofActiveSoldier::Walked();
 }
 
-/// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
 void nofAggressiveDefender::HomeDestroyed()
 {
     building = nullptr;
@@ -105,7 +98,6 @@ void nofAggressiveDefender::CancelAtAttackedBld()
     }
 }
 
-/// Wenn ein Kampf gewonnen wurde
 void nofAggressiveDefender::WonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
@@ -130,7 +122,6 @@ void nofAggressiveDefender::WonFighting()
     MissAggressiveDefendingContinueWalking();
 }
 
-/// Wenn ein Kampf verloren wurde (Tod)
 void nofAggressiveDefender::LostFighting()
 {
     // Meinem zu Hause Bescheid sagen, dass ich nicht mehr lebe (damit neue Truppen reinkönnen),
@@ -151,7 +142,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
         return;
     }
 
-    /// Vermeiden, dass in FindAggressor nochmal der Soldat zum Loslaufen gezwungen wird, weil er als state
+    // Vermeiden, dass in FindAggressor nochmal der Soldat zum Loslaufen gezwungen wird, weil er als state
     // noch drinstehen hat, dass er auf einen Kampf wartet
     state = SoldierState::AggressivedefendingWalkingToAggressor;
 
@@ -186,29 +177,26 @@ void nofAggressiveDefender::MissAggressiveDefendingContinueWalking()
 
 void nofAggressiveDefender::MissAggressiveDefendingWalk()
 {
-    // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
     {
+        // Home destroyed so abort and wander around
         InformTargetsAboutCancelling();
-
-        // Rumirren
         state = SoldierState::FigureWork;
         StartWandering();
         Wander();
         return;
     }
 
-    // Wenns das Zielgebäude nich mehr gibt, gleich nach Hause gehen!
     if(!attacked_goal)
     {
+        // Similar when the defended building is gone
         ReturnHomeMissionAggressiveDefending();
         return;
     }
 
-    // Does the attacker still exists?
     if(!attacker)
     {
-        // Look for a new one
+        // Search for a new attacker if lost
         MissionAggressiveDefendingLookForNewAggressor();
         return;
     }
@@ -252,9 +240,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
 
 void nofAggressiveDefender::ReturnHomeMissionAggressiveDefending()
 {
-    // Zielen Bescheid sagen
     InformTargetsAboutCancelling();
-    // Und nach Hause gehen
     ReturnHome();
 }
 
@@ -269,13 +255,10 @@ void nofAggressiveDefender::NeedForHomeDefence()
     InformTargetsAboutCancelling();
 }
 
-/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
 void nofAggressiveDefender::InformTargetsAboutCancelling()
 {
     nofActiveSoldier::InformTargetsAboutCancelling();
-    // Angreifer Bescheid sagen
     CancelAtAttacker();
-    // Ziel Bescheid sagen
     CancelAtAttackedBld();
 }
 
@@ -289,10 +272,10 @@ void nofAggressiveDefender::CancelAtAttacker()
     }
 }
 
-/// The derived classes regain control after a fight of nofActiveSoldier
 void nofAggressiveDefender::FreeFightEnded()
 {
     nofActiveSoldier::FreeFightEnded();
+    RTTR_Assert(state != SoldierState::WaitingForFight);
     // Continue with normal walking towards our goal
     state = SoldierState::AggressivedefendingWalkingToAggressor;
 }

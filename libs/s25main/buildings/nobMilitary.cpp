@@ -1082,7 +1082,7 @@ void nobMilitary::NeedOccupyingTroops()
             if(attacker->GetPlayer() == player)
             {
                 // Ask attacker if this is possible
-                if(attacker->TryToStartFarAwayCapturing(this))
+                if(attacker->CanStartFarAwayCapturing(this))
                 {
                     it = aggressors.erase(it);
                     far_away_capturers.push_back(attacker);
