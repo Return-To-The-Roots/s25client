@@ -60,3 +60,9 @@ function getAllowedChanges()
         ["aiTeam"]      = false
     }
 end
+
+-------------------------------- mission events -------------------------------
+function onHumanWinner()
+    rttr:SetCampaignChapterCompleted("world", 4)
+    rttr:EnableCampaignChapter("world", 3) -- namerica
+end

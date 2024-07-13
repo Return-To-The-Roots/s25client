@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCampaignMissionSelection.h"
+#include "CampaignSaveData.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "commonDefines.h"
@@ -114,8 +115,9 @@ void dskCampaignMissionSelection::UpdateMissionPage()
         const libsiedler2::ArchivItem_Map_Header& header =
           checkedCast<const libsiedler2::ArchivItem_Map*>(map[0])->getHeader();
 
-        group->AddTextButton(i, curBtPos, catBtSize, TextureColor::Grey, s25util::ansiToUTF8(header.getName()),
-                             NormalFont);
+        group
+          ->AddTextButton(i, curBtPos, catBtSize, TextureColor::Grey, s25util::ansiToUTF8(header.getName()), NormalFont)
+          ->SetEnabled(isChapterEnabled(*settings_, i));
 
         curBtPos.y += catBtSize.y + distanceBetweenMissionButtonsY;
     }

@@ -21,8 +21,8 @@
 #include <boost/filesystem/operations.hpp>
 
 const int Settings::VERSION = 13;
-const std::array<std::string, 10> Settings::SECTION_NAMES = {
-  {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "addons"}};
+const std::array<std::string, 11> Settings::SECTION_NAMES = {
+  {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "addons", "campaigns"}};
 
 const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {
   {-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
@@ -149,6 +149,11 @@ void Settings::LoadDefaults()
     addons.configuration.clear();
     // }
 
+    // campaigns
+    // {
+    campaigns.saveData.clear();
+    // }
+
     LoadIngameDefaults();
 }
 
@@ -197,10 +202,12 @@ void Settings::Load()
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
         const libsiedler2::ArchivItem_Ini* iniAddons =
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
+        const libsiedler2::ArchivItem_Ini* iniCampaigns =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("campaigns"));
 
         // ist eine der Kategorien nicht vorhanden?
         if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy
-           || !iniInterface || !iniAddons)
+           || !iniInterface || !iniAddons || !iniCampaigns)
         {
             throw std::runtime_error("Missing section");
         }
@@ -315,6 +322,15 @@ void Settings::Load()
                                                            s25util::fromStringClassic<unsigned>(item->getText())));
         }
 
+        // campaigns
+        // {
+        for(unsigned campaign = 0; campaign < iniCampaigns->size(); ++campaign)
+        {
+            if(const auto* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniCampaigns->get(campaign)))
+                campaigns.saveData.emplace(item->getName(), item->getText());
+        }
+        // }
+
         LoadIngame();
         // }
     } catch(std::runtime_error& e)
@@ -390,10 +406,11 @@ void Settings::Save()
     libsiedler2::ArchivItem_Ini* iniProxy = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("proxy"));
     libsiedler2::ArchivItem_Ini* iniInterface = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
     libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
+    libsiedler2::ArchivItem_Ini* iniCampaigns = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("campaigns"));
 
     // ist eine der Kategorien nicht vorhanden?
     RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy
-                && iniInterface && iniAddons);
+                && iniInterface && iniAddons && iniCampaigns);
 
     // global
     // {
@@ -473,6 +490,13 @@ void Settings::Save()
     iniAddons->clear();
     for(const auto& it : addons.configuration)
         iniAddons->setValue(s25util::toStringClassic(it.first), s25util::toStringClassic(it.second));
+    // }
+
+    // campaigns
+    // {
+    iniCampaigns->clear();
+    for(const auto& it : campaigns.saveData)
+        iniCampaigns->setValue(it.first, it.second);
     // }
 
     bfs::path settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);

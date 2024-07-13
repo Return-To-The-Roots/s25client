@@ -6,6 +6,7 @@
 #include "Loader.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "Settings.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "enum_cast.hpp"
@@ -841,6 +842,20 @@ BOOST_AUTO_TEST_CASE(onExplored)
         std::sort(luaPts.begin(), luaPts.end());
         BOOST_TEST_REQUIRE(luaPts == gamePts, boost::test_tools::per_element());
     }
+}
+
+BOOST_AUTO_TEST_CASE(CampaignStatusCanBeChangedFromLua)
+{
+    initWorld();
+
+    SETTINGS.campaigns.saveData["campaign_id"] = "110";
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 2)");
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 4)");
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 5)");
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 0)"); // noop
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 0)");       // noop
+    game.executeAICommands();
+    BOOST_TEST_REQUIRE(SETTINGS.campaigns.saveData["campaign_id"] == "12021");
 }
 
 BOOST_AUTO_TEST_CASE(LuaPacts)

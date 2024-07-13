@@ -9,6 +9,7 @@
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
+#include "desktops/dskCampaignVictory.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskSplash.h"
@@ -183,6 +184,10 @@ bool GameManager::ShowMenu()
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
         windowManager_.Switch(std::make_unique<dskLobby>());
+    else if(GAMECLIENT.IsCampaignCompleted())
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignVictory>(0));
+    else if(const auto chapter = GAMECLIENT.GetCampaignChapterCompleted())
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignVictory>(chapter));
     else
         // Hauptmenü zeigen
         windowManager_.Switch(std::make_unique<dskMainMenu>());

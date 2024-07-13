@@ -6,7 +6,6 @@
 
 
 -------------------------------- TODO -----------------------------------------
--- EnableNextMissions()
 -- Set Portraits
 -- Set AI Agression Level
 -------------------------------------------------------------------------------
@@ -441,9 +440,10 @@ function MissionEvent(e, onLoad)
         rttr:GetPlayer(2):SetRestrictedArea()
 
     elseif(e == 99) then
-        -- TODO: EnableNextMissions()
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(11, 125, 561, 0xFFFF, 2)
+        rttr:SetCampaignChapterCompleted("roman", 8)
+        rttr:EnableCampaignChapter("roman", 9)
     end
 
     -- update event state

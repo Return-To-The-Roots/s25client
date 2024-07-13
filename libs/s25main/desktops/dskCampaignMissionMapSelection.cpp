@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCampaignMissionMapSelection.h"
+#include "CampaignSaveData.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlMapSelection.h"
@@ -45,9 +46,8 @@ dskCampaignMissionMapSelection::dskCampaignMissionMapSelection(CreateServerInfo 
 
     if(settings_->selectionMapData.has_value())
     {
-        auto* mapSelection =
-          AddMapSelection(ID_MapSelection, DrawPoint(0, 0), Extent(800, 508), settings_->selectionMapData.value());
-        mapSelection->setMissionsStatus(std::vector<MissionStatus>(settings_->getNumMaps(), {true, true}));
+        AddMapSelection(ID_MapSelection, DrawPoint(0, 0), Extent(800, 508), settings_->selectionMapData.value())
+          ->setMissionsStatus(getMissionsStatus(*settings_));
     }
 }
 

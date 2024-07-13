@@ -6,7 +6,6 @@
 
 
 -------------------------------- TODO -----------------------------------------
--- EnableNextMissions()
 -- Set Portraits
 -- Set AI Agression Level
 -- RttR: AI doesn't go south
@@ -514,9 +513,10 @@ function MissionEvent(e, onLoad)
         rttr:GetPlayer(1):DisableBuilding(BLD_CATAPULT, false)
 
     elseif(e == 99) then
-        -- TODO: EnableNextMissions()
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(48, 9, 561, 0xFFFF, 2)
+        rttr:SetCampaignChapterCompleted("roman", 2)
+        rttr:EnableCampaignChapter("roman", 3)
     end
 
     -- update event state
