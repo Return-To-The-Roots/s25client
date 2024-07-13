@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -40,54 +40,45 @@ nofDefender::nofDefender(SerializedGameData& sgd, const unsigned obj_id) : nofAc
         attacker = nullptr;
 }
 
-/// wenn man gelaufen ist
 void nofDefender::Walked()
 {
-    // Was bestimmtes machen, je nachdem welchen Status wir gerade haben
     switch(state)
     {
         case SoldierState::DefendingWalkingTo:
-        {
-            // Mit Angreifer den Kampf beginnen
+            // Start fight with attacker
             world->AddFigure(pos, std::make_unique<noFighting>(*attacker, *this));
             state = SoldierState::Fighting;
             attacker->FightVsDefenderStarted();
-        }
-        break;
+            break;
         case SoldierState::DefendingWalkingFrom:
-        {
-            // Ist evtl. unser Heimatgebäude zerstört?
             if(!building)
             {
-                // Rumirren
+                // Home destroyed -> Start wandering around
                 attacker = nullptr;
                 state = SoldierState::FigureWork;
                 StartWandering();
                 Wander();
-                return;
-            }
-
-            // Zu Hause angekommen
-            // Ist evtl. wieder ein Angreifer in der Zwischenzeit an der Fahne angekommen?
-            if(attacker)
-            {
-                // dann umdrehen und wieder rausgehen
-                state = SoldierState::DefendingWalkingTo;
-                StartWalking(Direction::SouthEast);
             } else
             {
-                nobBaseMilitary* bld = building;
-                RTTR_Assert(bld->GetDefender() == this); // I should be the defender
-                bld->AddActiveSoldier(world->RemoveFigure(pos, *this));
-                RTTR_Assert(!bld->GetDefender()); // No defender anymore
+                // Arrived in building
+                if(attacker)
+                {
+                    // An attacker arrived in the meantime so go back out
+                    state = SoldierState::DefendingWalkingTo;
+                    StartWalking(Direction::SouthEast);
+                } else
+                {
+                    nobBaseMilitary* bld = building;
+                    RTTR_Assert(bld->GetDefender() == this); // I should be the defender
+                    bld->AddActiveSoldier(world->RemoveFigure(pos, *this));
+                    RTTR_Assert(!bld->GetDefender()); // No defender anymore
+                }
             }
-        }
-        break;
+            break;
         default: break;
     }
 }
 
-/// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
 void nofDefender::HomeDestroyed()
 {
     building = nullptr;
@@ -95,30 +86,20 @@ void nofDefender::HomeDestroyed()
     switch(state)
     {
         case SoldierState::DefendingWaiting:
-        {
-            // Hier muss sofort reagiert werden, da man steht
+            // Handle now as we are not moving
             attacker = nullptr;
-            // Rumirren
             state = SoldierState::FigureWork;
             StartWandering();
             Wander();
-        }
-        break;
+            break;
         case SoldierState::DefendingWalkingTo:
         case SoldierState::DefendingWalkingFrom:
-        {
             attacker = nullptr;
-            // Rumirren
             StartWandering();
             state = SoldierState::FigureWork;
-        }
-        break;
+            break;
         case SoldierState::Fighting:
-        {
-            // Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
-            // wird er auch nicht mehr zurückgehen)
-        }
-        break;
+            // Just continue fighting if we have already started started
         default: break;
     }
 }
@@ -129,24 +110,21 @@ void nofDefender::HomeDestroyedAtBegin()
 
     state = SoldierState::FigureWork;
 
-    // Rumirren
     StartWandering();
     StartWalking(RANDOM_ENUM(Direction));
 }
 
-/// Wenn ein Kampf gewonnen wurde
 void nofDefender::WonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
     if(world->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
         IncreaseRank();
-    // Angreifer tot
+    // Attacker is dead
     attacker = nullptr;
 
-    // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
     {
-        // Rumirren
+        // Home destroyed so abort and wander around
         state = SoldierState::FigureWork;
         StartWandering();
         Wander();
@@ -154,33 +132,30 @@ void nofDefender::WonFighting()
         return;
     }
 
-    // Neuen Angreifer rufen
     attacker = building->FindAttackerNearBuilding();
     if(attacker)
     {
-        // Ein Angreifer gefunden, dann warten wir auf ihn, bis er kommt
+        // New attacker found so wait for him
         state = SoldierState::DefendingWaiting;
     } else
     {
-        // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
+        // Otherwise go back into the building
         state = SoldierState::DefendingWalkingFrom;
         StartWalking(Direction::NorthWest);
     }
 }
 
-/// Wenn ein Kampf verloren wurde (Tod)
 void nofDefender::LostFighting()
 {
     attacker = nullptr;
 
-    // Gebäude Bescheid sagen, falls es noch existiert
+    // Notify building if it still exists
     if(building)
     {
         building->NoDefender();
-        // Ist das ein "normales" Militärgebäude?
+        // A military building potentially needs to get new soldiers if this wasn't the last one
         if(BuildingProperties::IsMilitary(building->GetBuildingType()))
         {
-            // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(building));
             if(static_cast<nobMilitary*>(building)->GetNumTroops())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
@@ -191,18 +166,11 @@ void nofDefender::LostFighting()
 
 void nofDefender::AttackerArrested()
 {
-    // Neuen Angreifer suchen
     attacker = building->FindAttackerNearBuilding();
     if(!attacker)
     {
-        // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
+        // Go back into the building
         state = SoldierState::DefendingWalkingFrom;
         StartWalking(Direction::NorthWest);
     }
-}
-
-/// The derived classes regain control after a fight of nofActiveSoldier
-void nofDefender::FreeFightEnded()
-{
-    throw std::logic_error("Should not participate inf ree fights");
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -32,7 +32,7 @@ class nofAggressiveDefender : public nofActiveSoldier
 
     void CancelAtAttacker();
 
-    /// The derived classes regain control after a fight of nofActiveSoldier
+    /// Hand back control to derived class after a fight of nofActiveSoldier
     void FreeFightEnded() override;
 
 protected:

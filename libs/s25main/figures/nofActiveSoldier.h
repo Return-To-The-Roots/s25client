@@ -6,13 +6,13 @@
 
 #include "nofSoldier.h"
 #include <cstdint>
+#include <optional>
 
 class SerializedGameData;
 class nobBaseMilitary;
 
-/// Base class for all 3 types of "active" soldiers (i.e. who are in the free world to fight and don't
-/// walk on the roads just to fill buildings)
-/// Attackers, defenders and aggressive defenders
+/// Base class for all 3 types of "active" soldiers: Attackers, defenders and aggressive defenders
+/// i.e. who are in the free world to fight and don't walk on the roads just to fill buildings
 class nofActiveSoldier : public nofSoldier
 {
 public:
@@ -23,27 +23,27 @@ public:
         WalkingHome,     /// Walking home after work to the military building
         MeetEnemy,       /// Prepare fighting with an enemy
         WaitingForFight, /// Standing still and waiting for a fight
-        Fighting,        // Fighting
+        Fighting,        /// Fighting
 
-        AttackingWalkingToGoal,         // Attacker is walking to his attacked destination
-        AttackingWaitingAroundBuilding, // Attacker is waiting around the building for his fight at the flag
-                                        // against the defender(s)
-        AttackingWaitingForDefender,    // Waiting at the flag until the defender emerges from the building
-        AttackingCapturingFirst,        // Captures the hostile building as first person
-        AttackingCapturingNext,         // The next soldiers capture the building in this state
-        AttackingAttackingFlag,         // Goes to the flag to fight the defender
-        AttackingFightingVsDefender,    // Fighting against a defender at the flag
+        AttackingWalkingToGoal,         /// Attacker is walking to his attacked destination
+        AttackingWaitingAroundBuilding, /// Attacker is waiting around the building for his fight at the flag
+                                        /// against the defender(s)
+        AttackingWaitingForDefender,    /// Waiting at the flag until the defender emerges from the building
+        AttackingCapturingFirst,        /// Captures the hostile building as first person
+        AttackingCapturingNext,         /// The next soldiers capture the building in this state
+        AttackingAttackingFlag,         /// Goes to the flag to fight the defender
+        AttackingFightingVsDefender,    /// Fighting against a defender at the flag
 
-        SeaattackingGoToHarbor,   // Goes from his home military building to the start harbor
-        SeaattackingWaitInHarbor, // Waiting in the start harbor for the ship
-        SeaattackingOnShip,       // On the ship to the destination
-        SeaattackingReturnToShip, // Returns to the ship at the destination environment
+        SeaattackingGoToHarbor,   /// Goes from his home military building to the start harbor
+        SeaattackingWaitInHarbor, /// Waiting in the start harbor for the ship
+        SeaattackingOnShip,       /// On the ship to the destination
+        SeaattackingReturnToShip, /// Returns to the ship at the destination environment
 
-        AggressivedefendingWalkingToAggressor, // Follow the attacker in order to fight against him
+        AggressivedefendingWalkingToAggressor, /// Follow the attacker in order to fight against him
 
-        DefendingWaiting,    // Waiting at the flag for further attackers
-        DefendingWalkingTo,  // Goes to the flag before the fight
-        DefendingWalkingFrom // Goes into the building after the fight
+        DefendingWaiting,    /// Waiting at the flag for further attackers
+        DefendingWalkingTo,  /// Goes to the flag before the fight
+        DefendingWalkingFrom /// Goes into the building after the fight
     };
     friend constexpr auto maxEnumValue(SoldierState) { return nofActiveSoldier::SoldierState::DefendingWalkingFrom; }
 
@@ -63,32 +63,32 @@ protected:
     /// Walking home, called after each walking step
     void WalkingHome();
 
-    /// Examines hostile people on roads and expels them
-    void ExpelEnemies();
+    /// Examine hostile people on roads and expels them
+    void ExpelEnemies() const;
 
-    /// Handle walking for nofActiveSoldier speciefic sates
+    /// Handle walking for nofActiveSoldier specific states
     void Walked() override;
 
-    /// Looks for enemies nearby which want to fight with this soldier
-    /// Returns true if it found one
-    bool FindEnemiesNearby(unsigned char excludedOwner = 255);
-    /// Informs this soldier that another soldier starts meeting him
+    /// Look for a nearby enemy which wants to fight with this soldier
+    /// Return true if one found
+    bool FindEnemiesNearby(const std::optional<unsigned char>& excludedOwner = std::nullopt);
+    /// Inform this soldier that another soldier starts meeting him
     void MeetEnemy(nofActiveSoldier* other, MapPoint figh_spot);
     /// Handle state "meet enemy" after each walking step
     void MeetingEnemy();
-    /// Looks for an appropriate fighting spot between the two soldiers
-    /// Returns true if successful
+    /// Look for an appropriate fighting spot between the two soldiers
+    /// Return true on success
     bool GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight_spot);
-    /// increase rank (used by addon CombatPromotion)
+    /// increase rank if possible
     void IncreaseRank();
-    /// The derived classes regain control after a fight of nofActiveSoldier
+    /// Hand back control to derived class after a fight
     virtual void FreeFightEnded();
 
 private:
-    /// Is informed when...
-    void GoalReached() override; // ... he reached his "working place" (i.e. his military building)
+    /// Soldier reached his military building
+    void GoalReached() override;
 
-    /// Gets the visual range radius of this soldier
+    /// Get how much of the map/FoW the soldier discovers
     unsigned GetVisualRange() const override;
 
 public:
@@ -108,7 +108,7 @@ public:
     /// Draw soldier (for all types of soldiers done by this base class!)
     void Draw(DrawPoint drawPt) override;
 
-    /// Informs the different things that we are not coming anymore
+    /// Inform the different things that we are not coming anymore
     virtual void InformTargetsAboutCancelling();
     /// Is called when our home military building was destroyed
     virtual void HomeDestroyed() = 0;
@@ -121,15 +121,15 @@ public:
     /// When a fight was lost
     virtual void LostFighting() = 0;
 
-    /// Determines if this soldier is ready for a spontaneous  fight
+    /// Determine if this soldier is ready for a spontaneous  fight
     bool IsReadyForFight() const;
-    /// Informs a waiting soldier about the start of a fight
+    /// Inform a waiting soldier about the start of a fight
     void FightingStarted();
 
-    /// Gets the current state
+    /// Get the current state
     SoldierState GetState() const { return state; }
-    /// Sets the home (building) to nullptr e.g. after the soldier was removed from the homes list but it was not
-    /// destroyed
+    /// Set the home (building) to nullptr
+    /// e.g. after the soldier was removed from the homes list but it was not destroyed
     void ResetHome() { building = nullptr; }
     void FightVsDefenderStarted() { state = SoldierState::AttackingFightingVsDefender; }
 
