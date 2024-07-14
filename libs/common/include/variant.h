@@ -6,7 +6,7 @@
 
 #include <boost/variant2/variant.hpp>
 
-/// Shortcurs to avoid typing out boost::variant2
+/// Shortcuts to avoid typing out boost::variant2
 template<typename... T>
 using boost_variant2 = boost::variant2::variant<T...>;
 
