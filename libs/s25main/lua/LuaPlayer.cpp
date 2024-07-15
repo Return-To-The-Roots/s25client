@@ -9,6 +9,7 @@
 #include "ai/AIPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
+#include "factories/BuildingFactory.h"
 #include "helpers/EnumRange.h"
 #include "helpers/toString.h"
 #include "lua/LuaHelpers.h"
@@ -46,6 +47,7 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("GetNumPeople", &LuaPlayer::GetNumPeople)
                                .addFunction("GetStatisticsValue", &LuaPlayer::GetStatisticsValue)
                                .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
+                               .addFunction("PlaceHQ", &LuaPlayer::PlaceHQ)
                                .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
                                .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
                                .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
@@ -259,15 +261,22 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<Buildi
     return true;
 }
 
+void LuaPlayer::PlaceHQ(MapCoord x, MapCoord y)
+{
+    // Ignore if there is an HQ set in the map file.
+    if(player.GetHQPos().isValid())
+        return;
+
+    GameWorld& world = player.GetGameWorld();
+    const MapPoint mp{x, y};
+    constexpr auto checkExists = false;
+    world.DestroyNO(mp, checkExists);
+    BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation);
+}
+
 void LuaPlayer::ModifyHQ(bool isTent)
 {
-    const MapPoint hqPos = player.GetHQPos();
-    if(hqPos.isValid())
-    {
-        auto* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
-        if(hq)
-            hq->SetIsTent(isTent);
-    }
+    player.SetHQIsTent(isTent);
 }
 
 bool LuaPlayer::IsDefeated() const

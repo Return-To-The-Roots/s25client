@@ -14,6 +14,7 @@
 #include "WineLoader.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
+#include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
@@ -409,6 +410,19 @@ void GamePlayer::RemoveBuildingSite(noBuildingSite* bldSite)
 {
     RTTR_Assert(bldSite->GetPlayer() == GetPlayerId());
     buildings.Remove(bldSite);
+}
+
+bool GamePlayer::IsHQTent() const
+{
+    if(const nobHQ* hq = GetHQ())
+        return hq->IsTent();
+    return false;
+}
+
+void GamePlayer::SetHQIsTent(bool isTent)
+{
+    if(nobHQ* hq = GetHQ())
+        hq->SetIsTent(isTent);
 }
 
 void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
@@ -1398,6 +1412,12 @@ void GamePlayer::TestDefeat()
     // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
     if(!isDefeated && buildings.GetMilitaryBuildings().empty() && buildings.GetStorehouses().empty())
         Surrender();
+}
+
+nobHQ* GamePlayer::GetHQ() const
+{
+    const MapPoint& hqPos = GetHQPos();
+    return const_cast<nobHQ*>(hqPos.isValid() ? GetGameWorld().GetSpecObj<nobHQ>(hqPos) : nullptr);
 }
 
 void GamePlayer::Surrender()

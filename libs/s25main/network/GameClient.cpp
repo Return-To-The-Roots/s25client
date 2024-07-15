@@ -323,8 +323,8 @@ void GameClient::StartGame(const unsigned random_init)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
         MapLoader loader(gameWorld);
-        if(!loader.Load(mapinfo.filepath)
-           || (!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(*game, *this, mapinfo.luaFilepath)))
+        if((!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(*game, *this, mapinfo.luaFilepath))
+           || !loader.Load(mapinfo.filepath)) // do not reorder: load lua first, load map second
         {
             OnError(ClientError::InvalidMap);
             return;
