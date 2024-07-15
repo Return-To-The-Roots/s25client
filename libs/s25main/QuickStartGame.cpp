@@ -80,7 +80,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     }
 
     const CreateServerInfo csi(isSinglePlayer ? ServerType::Local : ServerType::Direct, SETTINGS.server.localPort,
-                               _("Unlimited Play"));
+                               _("Unlimited play"));
 
     LOG.write(_("Loading game...\n"));
     const std::string extension = s25util::toLower(mapOrReplayPath.extension().string());

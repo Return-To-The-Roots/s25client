@@ -7,6 +7,7 @@
 #include "WindowManager.h"
 #include "controls/ctrlMapSelection.h"
 #include "dskCampaignSelection.h"
+#include "dskSinglePlayer.h"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/CampaignDataLoader.h"
@@ -31,8 +32,10 @@ constexpr int spacingBetweenButtons = 2;
 } // namespace
 
 dskCampaignMissionMapSelection::dskCampaignMissionMapSelection(CreateServerInfo csi,
-                                                               boost::filesystem::path campaignFolder)
-    : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(std::move(campaignFolder)), csi_(std::move(csi))
+                                                               boost::filesystem::path campaignFolder,
+                                                               CreatedFrom createdFrom)
+    : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(std::move(campaignFolder)), csi_(std::move(csi)),
+      createdFrom_(createdFrom)
 {
     AddTextButton(ID_Start, DrawPoint(300, 530), buttonSize, TextureColor::Red1, _("Start"), NormalFont);
     AddTextButton(ID_Back, DrawPoint(300, 530 + buttonSize.y + spacingBetweenButtons), buttonSize, TextureColor::Red1,
@@ -50,6 +53,8 @@ dskCampaignMissionMapSelection::dskCampaignMissionMapSelection(CreateServerInfo 
         mapSelection->setMissionsStatus(std::vector<MissionStatus>(settings_->getNumMaps(), {true, true}));
     }
 }
+
+dskCampaignMissionMapSelection::~dskCampaignMissionMapSelection() = default;
 
 void dskCampaignMissionMapSelection::StartServer(const boost::filesystem::path& mapPath,
                                                  const boost::optional<boost::filesystem::path>& luaPath)
@@ -72,8 +77,12 @@ void dskCampaignMissionMapSelection::StartServer(const boost::filesystem::path& 
 void dskCampaignMissionMapSelection::Msg_ButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_Back)
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(csi_));
-    else if(ctrl_id == ID_Start)
+    {
+        if(createdFrom_ == CreatedFrom::SinglePlayer)
+            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+        else
+            WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(csi_));
+    } else if(ctrl_id == ID_Start)
     {
         if(GetCtrl<ctrlMapSelection>(ID_MapSelection))
         {

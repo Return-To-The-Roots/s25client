@@ -10,6 +10,8 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "dskCampaignMissionMapSelection.h"
+#include "dskCampaignMissionSelection.h"
 #include "dskCampaignSelection.h"
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"
@@ -37,17 +39,17 @@ dskSinglePlayer::dskSinglePlayer()
 {
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
-    AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Resume last game"), NormalFont);
-    AddTextButton(7, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Load game"), NormalFont);
-
-    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, std::string(_("Campaigns")),
+    AddTextButton(5, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, std::string(_("All Campaigns")),
                   NormalFont);
-    AddTextButton(6, DrawPoint(115, 280), Extent(220, 22), TextureColor::Green2, _("Unlimited Play"), NormalFont);
-
-    AddTextButton(4, DrawPoint(115, 320), Extent(220, 22), TextureColor::Green2, _("Play Replay"), NormalFont);
-
+    AddTextButton(9, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, std::string(_("Roman Campaign")),
+                  NormalFont);
+    AddTextButton(10, DrawPoint(115, 240), Extent(220, 22), TextureColor::Green2, std::string(_("World Campaign")),
+                  NormalFont);
+    AddTextButton(3, DrawPoint(115, 270), Extent(220, 22), TextureColor::Green2, _("Resume last game"), NormalFont);
+    AddTextButton(7, DrawPoint(115, 300), Extent(220, 22), TextureColor::Green2, _("Load game"), NormalFont);
+    AddTextButton(6, DrawPoint(115, 330), Extent(220, 22), TextureColor::Green2, _("Unlimited play"), NormalFont);
+    AddTextButton(4, DrawPoint(115, 360), Extent(220, 22), TextureColor::Green2, _("Play Replay"), NormalFont);
     AddTextButton(8, DrawPoint(115, 390), Extent(220, 22), TextureColor::Red1, _("Back"), NormalFont);
-
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
@@ -126,17 +128,31 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
             WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
         }
         break;
+        case 9: // Roman campaign
+        {
+            WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(
+              createLocalGameInfo(_("Campaign")),
+              bfs::path{RTTRCONFIG.ExpandPath(s25::folders::campaignsBuiltin)} / "roman", CreatedFrom::SinglePlayer));
+        }
+        break;
+        case 10: // World campaign
+        {
+            WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionMapSelection>(
+              createLocalGameInfo(_("Campaign")),
+              bfs::path{RTTRCONFIG.ExpandPath(s25::folders::campaignsBuiltin)} / "world", CreatedFrom::SinglePlayer));
+        }
+        break;
     }
 }
 
 void dskSinglePlayer::PrepareSinglePlayerServer()
 {
-    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(createLocalGameInfo(_("Unlimited Play"))));
+    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(createLocalGameInfo(_("Unlimited play"))));
 }
 
 void dskSinglePlayer::PrepareLoadGame()
 {
-    CreateServerInfo csi = createLocalGameInfo(_("Unlimited Play"));
+    CreateServerInfo csi = createLocalGameInfo(_("Unlimited play"));
 
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
     WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwLoad>(csi));

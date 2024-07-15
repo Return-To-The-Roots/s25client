@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "CreatedFrom.h"
 #include "desktops/Desktop.h"
 #include "network/CreateServerInfo.h"
 #include <boost/filesystem.hpp>
@@ -15,7 +16,8 @@ struct CampaignDescription;
 class dskCampaignMissionSelection : public Desktop
 {
 public:
-    dskCampaignMissionSelection(CreateServerInfo csi, boost::filesystem::path campaignFolder);
+    dskCampaignMissionSelection(CreateServerInfo csi, boost::filesystem::path campaignFolder, CreatedFrom createdFrom);
+    ~dskCampaignMissionSelection();
 
 private:
     void UpdateMissionPage();
@@ -30,4 +32,5 @@ private:
     std::unique_ptr<CampaignDescription> settings_;
     unsigned missionsPerPage_;
     boost::signals2::scoped_connection onErrorConnection_;
+    CreatedFrom createdFrom_;
 };

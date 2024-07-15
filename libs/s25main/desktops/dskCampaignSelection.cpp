@@ -169,9 +169,11 @@ bool dskCampaignSelection::hasMapSelectionScreen()
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
     if(hasMapSelectionScreen())
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionMapSelection>(csi_, getSelectedCampaignPath()));
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionMapSelection>(csi_, getSelectedCampaignPath(),
+                                                                              CreatedFrom::CampaignSelection));
     else
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, getSelectedCampaignPath()));
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, getSelectedCampaignPath(),
+                                                                           CreatedFrom::CampaignSelection));
 }
 
 boost::filesystem::path dskCampaignSelection::getSelectedCampaignPath()

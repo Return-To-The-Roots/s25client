@@ -10,6 +10,7 @@
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
 #include "dskCampaignSelection.h"
+#include "dskSinglePlayer.h"
 #include "ingameWindows/iwConnecting.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/CampaignDataLoader.h"
@@ -51,9 +52,10 @@ int getStartOffsetMissionButtonsY()
 }
 } // namespace
 
-dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, boost::filesystem::path campaignFolder)
+dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, boost::filesystem::path campaignFolder,
+                                                         CreatedFrom createdFrom)
     : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(std::move(campaignFolder)), csi_(std::move(csi)),
-      currentPage_(0), lastPage_(0), missionsPerPage_(10)
+      currentPage_(0), lastPage_(0), missionsPerPage_(10), createdFrom_(createdFrom)
 {
     const unsigned int btOffset = getStartOffsetMissionButtonsY()
                                   + missionsPerPage_ * (buttonSize.y + distanceBetweenMissionButtonsY)
@@ -90,6 +92,8 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, b
 
     UpdateMissionPage();
 }
+
+dskCampaignMissionSelection::~dskCampaignMissionSelection() = default;
 
 void dskCampaignMissionSelection::UpdateMissionPage()
 {
@@ -159,8 +163,12 @@ void dskCampaignMissionSelection::Msg_Group_ButtonClick(unsigned group_id, unsig
 void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_Back)
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(csi_));
-    else if(ctrl_id >= ID_FirstPage && ctrl_id <= ID_LastPage)
+    {
+        if(createdFrom_ == CreatedFrom::SinglePlayer)
+            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+        else
+            WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(csi_));
+    } else if(ctrl_id >= ID_FirstPage && ctrl_id <= ID_LastPage)
     {
         // Destroy all controls first (the whole group)
         DeleteCtrl(ID_GroupStart + currentPage_);
