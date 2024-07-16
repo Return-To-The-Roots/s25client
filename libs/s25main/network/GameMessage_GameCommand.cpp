@@ -24,7 +24,8 @@ void GameMessage_GameCommand::Serialize(Serializer& ser) const
 void GameMessage_GameCommand::Deserialize(Serializer& ser)
 {
     GameMessageWithPlayer::Deserialize(ser);
-    cmds.Deserialize(ser);
+    gc::Deserializer deser(ser);
+    cmds.Deserialize(deser);
 }
 
 bool GameMessage_GameCommand::Run(GameMessageInterface* callback) const

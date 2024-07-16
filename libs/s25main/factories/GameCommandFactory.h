@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "GameCommand.h"
+#include "variant.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
@@ -13,7 +14,6 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"
-#include <boost/variant.hpp>
 #include <vector>
 
 struct InventorySetting;
@@ -57,7 +57,7 @@ public:
     bool SetProductionEnabled(MapPoint pt, bool enabled);
     bool NotifyAlliesOfLocation(MapPoint pt);
     /// Sets inventory settings for a warehouse
-    bool SetInventorySetting(MapPoint pt, const boost::variant<GoodType, Job>& what, InventorySetting state);
+    bool SetInventorySetting(MapPoint pt, const boost_variant2<GoodType, Job>& what, InventorySetting state);
     bool SetAllInventorySettings(MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
     bool ChangeReserve(MapPoint pt, unsigned char rank, unsigned count);
     bool CheatArmageddon();
@@ -78,7 +78,7 @@ public:
     /// Cancels an expedition
     bool CancelExpedition(unsigned shipID);
     bool StartStopExplorationExpedition(MapPoint pt, bool start);
-    bool TradeOverLand(MapPoint pt, const boost::variant<GoodType, Job>& what, unsigned count);
+    bool TradeOverLand(MapPoint pt, const boost_variant2<GoodType, Job>& what, unsigned count);
 
 protected:
     virtual ~GameCommandFactory() = default;

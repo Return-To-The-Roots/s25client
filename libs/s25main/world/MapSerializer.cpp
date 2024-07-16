@@ -179,11 +179,9 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     {
         if(sgd.PopUnsignedInt() != 0xC0DEBA5E)
             throw SerializedGameData::Error(_("Invalid id for lua data"));
-        // If there is a script, there is also save data. Pop that first
-        unsigned luaSaveSize = sgd.PopUnsignedInt();
-        Serializer luaSaveState;
-        sgd.PopRawData(luaSaveState.GetDataWritable(luaSaveSize), luaSaveSize);
-        luaSaveState.SetLength(luaSaveSize);
+        // If there is a script, there is also save data. Store reference to that
+        const auto luaSaveSize = sgd.PopUnsignedInt();
+        Serializer luaSaveState(sgd.PopAndDiscard(luaSaveSize), luaSaveSize);
         if(sgd.PopUnsignedInt() != 0xC001C0DE)
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 

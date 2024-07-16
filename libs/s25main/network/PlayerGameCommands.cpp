@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -14,7 +14,7 @@ void PlayerGameCommands::Serialize(Serializer& ser) const
         gc->Serialize(ser);
 }
 
-void PlayerGameCommands::Deserialize(Serializer& ser)
+void PlayerGameCommands::Deserialize(gc::Deserializer& ser)
 {
     checksum.Deserialize(ser);
 

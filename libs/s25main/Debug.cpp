@@ -296,7 +296,7 @@ bool DebugInfo::SendReplay()
         rpl->Close();
 
         BinaryFile f;
-        if(f.Open(replayPath, OpenFileMode::OFM_READ))
+        if(f.Open(replayPath, OpenFileMode::Read))
         {
             if(!SendString("Replay"))
                 return false;
@@ -317,7 +317,7 @@ bool DebugInfo::SendReplay()
 bool DebugInfo::SendAsyncLog(const boost::filesystem::path& asyncLogFilepath)
 {
     BinaryFile file;
-    if(!file.Open(asyncLogFilepath, OFM_READ))
+    if(!file.Open(asyncLogFilepath, OpenFileMode::Read))
         return false;
 
     if(!SendString("AsyncLog"))

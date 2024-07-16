@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -83,7 +83,7 @@
 /// Usage: Always save for the most current version but include loading code that can cope with file format changes
 /// If a format change occurred that can still be handled increase this version and handle it in the loading code.
 /// If the change is to big to handle increase the version in Savegame.cpp and remove all code referencing GetGameDataVersion.
-/// Then reset this number to 1.
+/// Then reset this number to 0.
 /// TODO: Let GO_Type start at 0 again when resetting this
 /// Changelog:
 /// 2: All player buildings together, variable width size for containers and ship names

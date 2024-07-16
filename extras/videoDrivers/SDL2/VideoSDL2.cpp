@@ -19,6 +19,10 @@
 
 #ifdef _WIN32
 #    include <boost/nowide/convert.hpp>
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#    include <windows.h> // Avoid "Windows headers require the default packing option" due to SDL2
 #    include <SDL_syswm.h>
 #endif // _WIN32
 
