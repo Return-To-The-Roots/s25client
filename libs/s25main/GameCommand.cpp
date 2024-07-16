@@ -9,6 +9,7 @@
 
 namespace gc {
 
+/// Current version of the game commands, see VersionedDeserializer.
 unsigned Deserializer::getCurrentVersion()
 {
     return 0;
