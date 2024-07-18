@@ -21,6 +21,7 @@ public:
     const JoinPlayerInfo& getPlayer(unsigned playerId) const;
     const std::vector<JoinPlayerInfo>& getPlayers() const { return players_; }
     unsigned getNumPlayers() const;
+    void setNumPlayers(unsigned num);
 
     GlobalGameSettings& getSettings() { return ggs_; }
     const GlobalGameSettings& getSettings() const { return ggs_; }
