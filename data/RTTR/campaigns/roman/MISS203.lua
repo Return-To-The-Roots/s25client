@@ -30,7 +30,7 @@ function checkVersion()
 end
 -------------------------------- mission events and texts ---------------------
 -- Message-Window (mission statement and hints): 52 chars wide
-eIdx = {1, 2, 3, 98, 99}
+eIdx = {1, 2, 3, 99}
 
 rttr:RegisterTranslations(
 {
@@ -161,7 +161,12 @@ function onStart(isFirstStart)
         eHist = {["n"] = 0}
         MissionEvent(1)                     -- initial event / start screen
     end
-    
+
+    rttr:GetWorld():SetComputerBarrier(14, 61, 75)
+    rttr:GetWorld():SetComputerBarrier(13, 62, 92)
+    rttr:GetWorld():SetComputerBarrier(12, 77, 37)
+    rttr:GetWorld():SetComputerBarrier(12, 79, 24)
+
     if isFirstStart then
         -- type 8 == 7 in rttr
         rttr:GetWorld():AddAnimal(  8,  17, SPEC_POLARBEAR)
@@ -213,39 +218,6 @@ function addPlayerBld(p, onLoad)
     rttr:GetPlayer(p):EnableAllBuildings()
     rttr:GetPlayer(p):DisableBuilding(BLD_SHIPYARD, false)
     rttr:GetPlayer(p):DisableBuilding(BLD_HARBORBUILDING, false)
-
-    if not (p == 0) then
-        -- set restriction area for all AIs
-        rttr:GetPlayer(p):SetRestrictedArea(
-            nil, nil,           -- enable the whole map
-                  0,   0,
-                  0, 127,
-                127, 127,
-                127,   0,
-            nil, nil,           -- R=12, X=77, Y=37 V   R=12->8, X=79, Y=24
-                 83,  16,
-                 87,  24,
-                 89,  37,
-                 83,  49,
-                 71,  49,
-                 65,  37,
-                 71,  24,
-                 83,  16,
-            nil, nil,           -- R=14, X=61, Y=75 V   R=13, X=62, Y=92
-                 68,  61,
-                 75,  75,
-                 68,  79,
-                 75,  92,
-                 68, 105,
-                 55, 105,
-                 49,  92,
-                 54,  89,
-                 47,  75,
-                 54,  61,
-                 68,  61,
-            nil, nil
-        )
-    end
 end
 
 -------------------------------- set resources --------------------------------
@@ -480,10 +452,6 @@ function onOccupied(p, x, y)
     if(     (x == 10) and (y == 37) ) then MissionEvent(2)
     elseif( (x == 97) and (y == 68) ) then MissionEvent(99)
     end
-
-    if(not rttr:GetPlayer(1):IsInRestrictedArea(x, y)) then 
-        MissionEvent(98) -- for lifting restrictions
-    end
 end
 
 function onExplored(p, x, y)
@@ -507,10 +475,6 @@ function MissionEvent(e, onLoad)
     if(e == 2) then
         rttr:GetPlayer(0):EnableBuilding(BLD_HARBORBUILDING, not onLoad)
         rttr:GetPlayer(0):EnableBuilding(BLD_SHIPYARD, not onLoad)
-
-    elseif(e == 98) then
-        rttr:GetPlayer(1):SetRestrictedArea()
-        rttr:GetPlayer(2):SetRestrictedArea()
 
     elseif(e == 99) then
         -- TODO: EnableNextMissions()

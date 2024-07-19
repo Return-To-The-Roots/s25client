@@ -379,6 +379,9 @@ rttr:GetWorld():AddAnimal(41, 44, SPEC_DUCK)
 
 [Back](#Lua-objects-and-their-methods)  
 
+**SetComputerBarrier(radius, x, y)**
+Defines an area with a specified (inclusive) radius around map point {x, y} in which the AI cannot build military buildings.
+
 ## Serializer
 
 The following methods are available.
