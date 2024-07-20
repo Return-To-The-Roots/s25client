@@ -134,7 +134,7 @@ class ChangeDistribution : public GameCommand
 
 protected:
     ChangeDistribution(const Distributions& data) : GameCommand(GCType::ChangeDistribution), data(data) {}
-    ChangeDistribution(Serializer& ser) : GameCommand(GCType::ChangeDistribution) { helpers::popContainer(ser, data); }
+    ChangeDistribution(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
