@@ -4,6 +4,7 @@
 
 #include "Cheats.h"
 #include "CheatCommandTracker.h"
+#include "GameInterface.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 
@@ -33,6 +34,20 @@ void Cheats::toggleCheatMode()
         return;
 
     isCheatModeOn_ = !isCheatModeOn_;
+}
+
+void Cheats::toggleAllVisible()
+{
+    // This is actually the behavior of the original game.
+    // If you enabled cheats, revealed the map and disabled cheats you would be unable to unreveal the map.
+    if(!isCheatModeOn())
+        return;
+
+    isAllVisible_ = !isAllVisible_;
+
+    // The minimap in the original game is not updated immediately, but here this would cause complications.
+    if(GameInterface* gi = world_.GetGameInterface())
+        gi->GI_UpdateMapVisibility();
 }
 
 void Cheats::toggleHumanAIPlayer()
