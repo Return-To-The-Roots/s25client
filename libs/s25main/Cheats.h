@@ -4,10 +4,12 @@
 
 #pragma once
 
+#include "gameTypes/MapCoordinates.h"
 #include <memory>
 #include <string>
 
 class CheatCommandTracker;
+class GamePlayer;
 class GameWorldBase;
 struct KeyEvent;
 
@@ -26,6 +28,9 @@ public:
     // Classic S2 cheats
     void toggleAllVisible();
     bool isAllVisible() const { return isAllVisible_; }
+
+    bool canPlaceCheatBuilding(const MapPoint& mp) const;
+    void placeCheatBuilding(const MapPoint& mp, const GamePlayer& player);
 
     // RTTR cheats
     void toggleHumanAIPlayer();
