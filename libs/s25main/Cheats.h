@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include "gameTypes/MapCoordinates.h"
+#include <memory>
+#include <string>
+class GamePlayer;
 class GameWorldBase;
 
 class Cheats
@@ -25,6 +29,9 @@ public:
 
     void toggleShowEnemyProductivityOverlay();
     bool shouldShowEnemyProductivityOverlay() const { return shouldShowEnemyProductivityOverlay_; }
+
+    bool canPlaceCheatBuilding(const MapPoint& mp) const;
+    void placeCheatBuilding(const MapPoint& mp, const GamePlayer& player);
 
     // RTTR cheats
     void toggleHumanAIPlayer();

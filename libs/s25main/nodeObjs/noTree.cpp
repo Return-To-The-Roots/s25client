@@ -14,6 +14,7 @@
 #include "network/GameClient.h"
 #include "noAnimal.h"
 #include "noDisappearingMapEnvObject.h"
+#include "noExtension.h"
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
@@ -188,8 +189,28 @@ void noTree::HandleEvent(const unsigned id)
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
             event = nullptr;
             GetEvMgr().AddToKillList(this);
-            world->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
-            world->RecalcBQAroundPoint(pos);
+
+            // Due to the "build headquarters" cheat, there could be an HQ in these directions. Replace stump with
+            // extension which would have otherwise been placed in noBaseBuilding ctor.
+            bool shouldPlaceStump = true;
+            for(const Direction i : {Direction::East, Direction::SouthEast, Direction::SouthWest})
+            {
+                const noBase* neighborNo = world->GetNO(world->GetNeighbour(pos, i));
+
+                if(neighborNo->GetType() == NodalObjectType::Building
+                   && static_cast<const noBaseBuilding*>(neighborNo)->GetBuildingType() == BuildingType::Headquarters)
+                {
+                    world->SetNO(pos, new noExtension(this), true);
+                    shouldPlaceStump = false;
+                    break;
+                }
+            }
+
+            if(shouldPlaceStump)
+            {
+                world->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
+                world->RecalcBQAroundPoint(pos);
+            }
 
             // Minimap Bescheid geben (Baum gefallen)
             if(world->GetGameInterface())

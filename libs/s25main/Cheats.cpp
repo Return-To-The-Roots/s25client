@@ -4,6 +4,8 @@
 
 #include "Cheats.h"
 #include "GameInterface.h"
+#include "GamePlayer.h"
+#include "factories/BuildingFactory.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 
@@ -54,6 +56,30 @@ void Cheats::toggleShowEnemyProductivityOverlay()
     // In RTTR, the user must explicitly enable this feature after enabling cheats.
     if(isCheatModeOn())
         shouldShowEnemyProductivityOverlay_ = !shouldShowEnemyProductivityOverlay_;
+}
+
+bool Cheats::canPlaceCheatBuilding(const MapPoint& mp) const
+{
+    if(!isCheatModeOn())
+        return false;
+
+    // It seems that in the original game you can only build headquarters in unoccupied territory at least 2 nodes
+    // away from any border markers and that it doesn't need more bq than a hut.
+    const MapNode& node = world_.GetNode(mp);
+    return !node.owner && !world_.IsAnyNeighborOwned(mp) && node.bq >= BuildingQuality::Hut;
+}
+
+void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
+{
+    if(!canPlaceCheatBuilding(mp))
+        return;
+
+    // The new HQ will have default resources.
+    // In the original game, new HQs created in the Roman campaign had no resources.
+    constexpr auto checkExists = false;
+    world_.DestroyNO(mp, checkExists); // if CanPlaceCheatBuilding is true then this must be safe to destroy
+    BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation,
+                                    player.IsHQTent());
 }
 
 void Cheats::toggleHumanAIPlayer()

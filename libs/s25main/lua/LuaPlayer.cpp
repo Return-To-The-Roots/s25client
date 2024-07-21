@@ -261,13 +261,7 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<Buildi
 
 void LuaPlayer::ModifyHQ(bool isTent)
 {
-    const MapPoint hqPos = player.GetHQPos();
-    if(hqPos.isValid())
-    {
-        auto* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
-        if(hq)
-            hq->SetIsTent(isTent);
-    }
+    player.SetHQIsTent(isTent);
 }
 
 bool LuaPlayer::IsDefeated() const
