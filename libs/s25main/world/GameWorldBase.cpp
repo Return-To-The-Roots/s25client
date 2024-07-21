@@ -4,6 +4,7 @@
 
 #include "world/GameWorldBase.h"
 #include "BQCalculator.h"
+#include "Cheats.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "MapGeometry.h"
@@ -29,7 +30,8 @@
 
 GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(std::move(players)),
-      gameSettings(gameSettings), em(em), soundManager(std::make_unique<SoundManager>()), lua(nullptr), gi(nullptr)
+      gameSettings(gameSettings), em(em), soundManager(std::make_unique<SoundManager>()), lua(nullptr),
+      cheats(std::make_unique<Cheats>()), gi(nullptr)
 {}
 
 GameWorldBase::~GameWorldBase() = default;
@@ -254,6 +256,11 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, helpers::O
 Position GameWorldBase::GetNodePos(const MapPoint pt) const
 {
     return ::GetNodePos(pt, GetNode(pt).altitude);
+}
+
+bool GameWorldBase::IsCheatModeOn() const
+{
+    return cheats->isCheatModeOn();
 }
 
 void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility /*oldVis*/, Visibility /*newVis*/)

@@ -16,6 +16,7 @@
 #include <set>
 #include <vector>
 
+class Cheats;
 class EventManager;
 class FreePathFinder;
 class GameInterface;
@@ -61,6 +62,7 @@ class GameWorldBase : public World
     std::unique_ptr<SoundManager> soundManager;
     std::set<MapPoint, MapPointLess> ptsInsideComputerBarriers;
     LuaInterfaceGame* lua;
+    std::unique_ptr<Cheats> cheats;
 
 protected:
     /// Interface zum GUI
@@ -217,6 +219,9 @@ public:
     bool HasLua() const { return lua != nullptr; }
     LuaInterfaceGame& GetLua() const { return *lua; }
     void SetLua(LuaInterfaceGame* newLua) { lua = newLua; }
+
+    Cheats& GetCheats() const { return *cheats; }
+    bool IsCheatModeOn() const;
 
 protected:
     /// Called when the visibility of point changed for a player
