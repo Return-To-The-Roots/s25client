@@ -48,6 +48,9 @@ void Cheats::toggleHumanAIPlayer()
 
 void Cheats::armageddon()
 {
+    if(!isCheatModeOn())
+        return;
+
     GAMECLIENT.CheatArmageddon();
 }
 
