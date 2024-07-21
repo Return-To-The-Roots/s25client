@@ -96,7 +96,14 @@ public:
     bool IsOnRoad(const MapPoint& pt) const;
     /// Check if a flag is at a neighbour node
     bool IsFlagAround(const MapPoint& pt) const;
+
+    /** Checks if any of the neighboring nodes of a given map point are owned by any player.
+     *
+     * @param pt - The map point whose neighbors should be checked.
+     * @return true if any neighbor has an owner, false otherwise
+     */
     bool IsAnyNeighborOwned(const MapPoint& pt) const;
+
     /// Berechnet BQ bei einer gebauten Stra�e
     void RecalcBQForRoad(MapPoint pt);
     /// Pr�ft, ob sich in unmittelbarer N�he (im Radius von 4) Milit�rgeb�ude befinden
