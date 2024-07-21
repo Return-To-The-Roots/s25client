@@ -77,6 +77,16 @@ void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
                                     player.IsHQTent());
 }
 
+void Cheats::setGameSpeed(uint8_t speedIndex)
+{
+    if(!isCheatModeOn())
+        return;
+
+    constexpr auto gfLengthInMs = 50;
+    GAMECLIENT.SetGFLengthReq(FramesInfo::milliseconds32_t{gfLengthInMs >> speedIndex});
+    // 50 -> 25 -> 12 -> 6 -> 3 -> 1
+}
+
 void Cheats::toggleHumanAIPlayer()
 {
     if(!isCheatModeOn())

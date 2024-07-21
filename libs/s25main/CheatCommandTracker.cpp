@@ -18,7 +18,7 @@ CheatCommandTracker::CheatCommandTracker(Cheats& cheats) : cheats_(cheats), last
 
 void CheatCommandTracker::trackKeyEvent(const KeyEvent& ke)
 {
-    if(trackSpecialKeyEvent(ke))
+    if(trackSpecialKeyEvent(ke) || trackSpeedKeyEvent(ke))
     {
         lastChars_.clear();
         return;
@@ -63,6 +63,17 @@ bool CheatCommandTracker::trackSpecialKeyEvent(const KeyEvent& ke)
     }
 
     return true;
+}
+
+bool CheatCommandTracker::trackSpeedKeyEvent(const KeyEvent& ke)
+{
+    const char c = ke.c;
+    if(ke.alt && c >= '1' && c <= '6')
+    {
+        cheats_.setGameSpeed(c - '1');
+        return true;
+    }
+    return false;
 }
 
 bool CheatCommandTracker::trackCharKeyEvent(const KeyEvent& ke)

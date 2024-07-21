@@ -20,6 +20,7 @@ public:
 
 private:
     bool trackSpecialKeyEvent(const KeyEvent& ke);
+    bool trackSpeedKeyEvent(const KeyEvent& ke);
     bool trackCharKeyEvent(const KeyEvent& ke);
 
     Cheats& cheats_;
