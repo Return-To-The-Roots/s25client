@@ -5,23 +5,33 @@
 #include "Cheats.h"
 #include "CheatCommandTracker.h"
 #include "network/GameClient.h"
+#include "world/GameWorldBase.h"
 
-Cheats::Cheats() : cheatCmdTracker_(std::make_unique<CheatCommandTracker>(*this)) {}
+Cheats::Cheats(GameWorldBase& world) : cheatCmdTracker_(std::make_unique<CheatCommandTracker>(*this)), world_(world) {}
 
 Cheats::~Cheats() = default;
 
 void Cheats::trackKeyEvent(const KeyEvent& ke)
 {
+    if(!canCheatModeBeOn())
+        return;
+
     cheatCmdTracker_->trackKeyEvent(ke);
 }
 
 void Cheats::trackChatCommand(const std::string& cmd)
 {
+    if(!canCheatModeBeOn())
+        return;
+
     cheatCmdTracker_->trackChatCommand(cmd);
 }
 
 void Cheats::toggleCheatMode()
 {
+    if(!canCheatModeBeOn())
+        return;
+
     isCheatModeOn_ = !isCheatModeOn_;
 }
 
@@ -39,4 +49,9 @@ void Cheats::toggleHumanAIPlayer()
 void Cheats::armageddon()
 {
     GAMECLIENT.CheatArmageddon();
+}
+
+bool Cheats::canCheatModeBeOn() const
+{
+    return world_.IsSinglePlayer();
 }

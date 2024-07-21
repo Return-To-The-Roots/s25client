@@ -31,7 +31,7 @@
 GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(std::move(players)),
       gameSettings(gameSettings), em(em), soundManager(std::make_unique<SoundManager>()), lua(nullptr),
-      cheats(std::make_unique<Cheats>()), gi(nullptr)
+      cheats(std::make_unique<Cheats>(*this)), gi(nullptr)
 {}
 
 GameWorldBase::~GameWorldBase() = default;

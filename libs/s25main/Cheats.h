@@ -8,12 +8,13 @@
 #include <string>
 
 class CheatCommandTracker;
+class GameWorldBase;
 struct KeyEvent;
 
 class Cheats
 {
 public:
-    Cheats();
+    Cheats(GameWorldBase& world);
     ~Cheats(); // = default - for unique_ptr
 
     void trackKeyEvent(const KeyEvent& ke);
@@ -26,6 +27,9 @@ public:
     void armageddon();
 
 private:
+    bool canCheatModeBeOn() const;
+
     std::unique_ptr<CheatCommandTracker> cheatCmdTracker_;
     bool isCheatModeOn_ = false;
+    GameWorldBase& world_;
 };

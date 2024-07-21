@@ -5,14 +5,15 @@
 #include "CheatCommandTracker.h"
 #include "Cheats.h"
 #include "driver/KeyEvent.h"
-#include <boost/test/unit_test.hpp>
+#include "worldFixtures/CreateEmptyWorld.h"
+#include "worldFixtures/WorldFixture.h"
 
 BOOST_AUTO_TEST_SUITE(CheatsTests)
 
 namespace {
-struct CheatCommandTrackerFixture
+struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, 1>
 {
-    Cheats cheats_;
+    Cheats cheats_{world};
     CheatCommandTracker tracker_{cheats_};
 
     KeyEvent makeKeyEvent(unsigned c) { return {KeyType::Char, c, 0, 0, 0}; }
