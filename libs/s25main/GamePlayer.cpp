@@ -2279,6 +2279,11 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
     }
 }
 
+bool GamePlayer::IsBuildingEnabled(BuildingType type) const
+{
+    return building_enabled[type] || GetGameWorld().IsCheatModeOn();
+}
+
 void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
 {
     Distributions& visDistribution = visualSettings.distribution;

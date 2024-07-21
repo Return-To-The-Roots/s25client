@@ -289,7 +289,7 @@ public:
 
     void EnableBuilding(BuildingType type) { building_enabled[type] = true; }
     void DisableBuilding(BuildingType type) { building_enabled[type] = false; }
-    bool IsBuildingEnabled(BuildingType type) const { return building_enabled[type]; }
+    bool IsBuildingEnabled(BuildingType type) const;
     /// Set the area the player may have territory in
     /// Nothing means all is allowed. See Lua description
     std::vector<MapPoint>& GetRestrictedArea() { return restricted_area; }

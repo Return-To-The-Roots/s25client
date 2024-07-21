@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "Cheats.h"
 #include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
@@ -143,4 +144,16 @@ BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsTrue_IfPrimaryHQIsTent, WorldFixtureEmpt
     BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians, false);
 
     BOOST_TEST_REQUIRE(p1.IsHQTent() == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(AllBuildingsAreEnabled_WhenCheatModeIsOn, WorldFixtureEmpty1P)
+{
+    GamePlayer& p1 = world.GetPlayer(0);
+    const auto bld = BuildingType::Brewery;
+    p1.DisableBuilding(bld);
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
+    world.GetCheats().toggleCheatMode();
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == true);
+    world.GetCheats().toggleCheatMode();
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
 }
