@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <boost/circular_buffer.hpp>
 #include <string>
 
 class Cheats;
@@ -12,12 +13,15 @@ struct KeyEvent;
 class CheatCommandTracker
 {
 public:
-    CheatCommandTracker(Cheats& cheats) : cheats_(cheats) {}
+    CheatCommandTracker(Cheats& cheats);
 
     void trackKeyEvent(const KeyEvent& ke);
     void trackChatCommand(const std::string& cmd);
 
 private:
+    bool trackSpecialKeyEvent(const KeyEvent& ke);
+    bool trackCharKeyEvent(const KeyEvent& ke);
+
     Cheats& cheats_;
-    std::string curCheatTxt_;
+    boost::circular_buffer<char> lastChars_;
 };

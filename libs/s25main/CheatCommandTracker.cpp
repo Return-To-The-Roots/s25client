@@ -6,39 +6,53 @@
 #include "Cheats.h"
 #include "driver/KeyEvent.h"
 
+namespace {
+auto makeCircularBuffer(const std::string& str)
+{
+    return boost::circular_buffer<char>{cbegin(str), cend(str)};
+}
+const auto cheatStr = makeCircularBuffer("winter");
+} // namespace
+
+CheatCommandTracker::CheatCommandTracker(Cheats& cheats) : cheats_(cheats), lastChars_(cheatStr.size()) {}
+
 void CheatCommandTracker::trackKeyEvent(const KeyEvent& ke)
 {
-    switch(ke.kt)
+    if(trackSpecialKeyEvent(ke))
     {
-        case KeyType::F10: return cheats_.toggleHumanAIPlayer();
-        default:;
+        lastChars_.clear();
+        return;
     }
 
-    static std::string winterCheat = "winter";
-    switch(ke.c)
-    {
-        case 'w':
-        case 'i':
-        case 'n':
-        case 't':
-        case 'e':
-        case 'r':
-            curCheatTxt_ += char(ke.c);
-            if(winterCheat.find(curCheatTxt_) == 0)
-            {
-                if(curCheatTxt_ == winterCheat)
-                {
-                    cheats_.toggleCheatMode();
-                    curCheatTxt_.clear();
-                }
-            } else
-                curCheatTxt_.clear();
-            break;
-    }
+    trackCharKeyEvent(ke);
 }
 
 void CheatCommandTracker::trackChatCommand(const std::string& cmd)
 {
     if(cmd == "apocalypsis")
         cheats_.armageddon();
+}
+
+bool CheatCommandTracker::trackSpecialKeyEvent(const KeyEvent& ke)
+{
+    if(ke.kt == KeyType::Char)
+        return false;
+
+    switch(ke.kt)
+    {
+        case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
+        default: break;
+    }
+
+    return true;
+}
+
+bool CheatCommandTracker::trackCharKeyEvent(const KeyEvent& ke)
+{
+    lastChars_.push_back(ke.c);
+
+    if(lastChars_ == cheatStr)
+        cheats_.toggleCheatMode();
+
+    return true;
 }
