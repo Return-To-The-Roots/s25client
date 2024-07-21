@@ -144,4 +144,24 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_AndShowEnemyProductivityOve
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
 }
 
+BOOST_FIXTURE_TEST_CASE(AllBuildingsAreEnabled_WhenCheatModeIsOn, CheatsFixture)
+{
+    MockGameInterface mgi;
+    MOCK_EXPECT(mgi.GI_GetCheats).returns(std::ref(this->cheats));
+    world.SetGameInterface(&mgi);
+    cheats.toggleCheatMode();
+    GamePlayer& p1 = world.GetPlayer(0);
+    const auto bld = BuildingType::Brewery;
+    p1.DisableBuilding(bld);
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == true);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == true);
+    cheats.toggleCheatMode();
+    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
