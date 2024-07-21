@@ -4,19 +4,28 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
+class CheatCommandTracker;
 struct KeyEvent;
 
 class Cheats
 {
 public:
-    bool isCheatModeOn() const { return isCheatModeOn_; }
+    Cheats();
+    ~Cheats(); // = default - for unique_ptr
 
     void trackKeyEvent(const KeyEvent& ke);
     void trackChatCommand(const std::string& cmd);
 
+    void toggleCheatMode();
+    bool isCheatModeOn() const { return isCheatModeOn_; }
+
+    void toggleHumanAIPlayer();
+    void armageddon();
+
 private:
+    std::unique_ptr<CheatCommandTracker> cheatCmdTracker_;
     bool isCheatModeOn_ = false;
-    std::string curCheatTxt_;
 };
