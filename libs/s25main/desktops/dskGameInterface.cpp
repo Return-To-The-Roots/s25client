@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskGameInterface.h"
+#include "Cheats.h"
 #include "CollisionDetection.h"
 #include "EventManager.h"
 #include "Game.h"
@@ -104,8 +105,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
     : Desktop(nullptr), game_(std::move(game)), nwfInfo_(std::move(nwfInfo)),
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
-      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
-      isCheatModeOn(false)
+      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
 {
     road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
@@ -424,7 +424,7 @@ void dskGameInterface::Msg_PaintAfter()
     DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
 
     // Draw cheating indicator icon (WINTER)
-    if(isCheatModeOn)
+    if(world.IsCheatModeOn())
     {
         glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
         cheatingImg->DrawFull(iconPos);
@@ -738,6 +738,8 @@ bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
  */
 bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 {
+    game_->world_.GetCheats().trackKeyEvent(ke);
+
     switch(ke.kt)
     {
         default: break;
@@ -779,45 +781,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KeyType::F9: // Readme
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
-        case KeyType::F10:
-        {
-#ifdef NDEBUG
-            const bool allowHumanAI = isCheatModeOn;
-#else
-            const bool allowHumanAI = true;
-#endif // !NDEBUG
-            if(GAMECLIENT.GetState() == ClientState::Game && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
-                GAMECLIENT.ToggleHumanAIPlayer(AI::Info(AI::Type::Default, AI::Level::Easy));
-            return true;
-        }
         case KeyType::F11: // Music player (midi files)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
         case KeyType::F12: // Optionsfenster
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>(gwv.GetSoundMgr()));
             return true;
-    }
-
-    static std::string winterCheat = "winter";
-    switch(ke.c)
-    {
-        case 'w':
-        case 'i':
-        case 'n':
-        case 't':
-        case 'e':
-        case 'r':
-            curCheatTxt += char(ke.c);
-            if(winterCheat.find(curCheatTxt) == 0)
-            {
-                if(curCheatTxt == winterCheat)
-                {
-                    isCheatModeOn = !isCheatModeOn;
-                    curCheatTxt.clear();
-                }
-            } else
-                curCheatTxt.clear();
-            break;
     }
 
     switch(ke.c)
@@ -1127,9 +1096,9 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)
 {
-    if(cmd == "apocalypsis")
-        GAMECLIENT.CheatArmageddon();
-    else if(cmd == "surrender")
+    game_->world_.GetCheats().trackChatCommand(cmd);
+
+    if(cmd == "surrender")
         GAMECLIENT.Surrender();
     else if(cmd == "async")
         (void)RANDOM.Rand(RANDOM_CONTEXT2(0), 255);

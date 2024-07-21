@@ -162,7 +162,5 @@ protected:
     bool isScrolling;
     Position startScrollPt;
     size_t zoomLvl;
-    bool isCheatModeOn;
-    std::string curCheatTxt;
     Subscription evBld;
 };
