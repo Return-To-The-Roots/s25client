@@ -37,13 +37,13 @@ void Cheats::toggleCheatMode()
 
 void Cheats::toggleHumanAIPlayer()
 {
-#ifdef NDEBUG
-    const bool allowHumanAI = isCheatModeOn_;
-#else
-    const bool allowHumanAI = true;
-#endif // !NDEBUG
-    if(GAMECLIENT.GetState() == ClientState::Game && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.ToggleHumanAIPlayer(AI::Info(AI::Type::Default, AI::Level::Easy));
+    if(!isCheatModeOn())
+        return;
+
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
+
+    GAMECLIENT.ToggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
 }
 
 void Cheats::armageddon()
