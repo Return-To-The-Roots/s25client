@@ -332,6 +332,12 @@ bool VideoSDL2::MessageLoop()
                         // Die 12 F-Tasten
                         if(ev.key.keysym.sym >= SDLK_F1 && ev.key.keysym.sym <= SDLK_F12)
                             ke.kt = static_cast<KeyType>(rttr::enum_cast(KeyType::F1) + ev.key.keysym.sym - SDLK_F1);
+
+                        if((SDL_GetModState() & KMOD_ALT) && isdigit(ev.key.keysym.sym))
+                        {
+                            ke.kt = KeyType::Char;
+                            ke.c = ev.key.keysym.sym;
+                        }
                     }
                     break;
                     case SDLK_RETURN: ke.kt = KeyType::Return; break;

@@ -21,7 +21,9 @@ void CheatCommandTracker::onKeyEvent(const KeyEvent& ke)
     if(!cheats_.areCheatsAllowed())
         return;
 
-    if(ke.kt == KeyType::Char)
+    if(checkSpeedKeyEvent(ke))
+        lastChars_.clear();
+    else if(ke.kt == KeyType::Char)
         onCharKeyEvent(ke);
     else
     {
@@ -68,6 +70,17 @@ void CheatCommandTracker::onSpecialKeyEvent(const KeyEvent& ke)
         case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }
+}
+
+bool CheatCommandTracker::checkSpeedKeyEvent(const KeyEvent& ke)
+{
+    const char32_t c = ke.c;
+    if(ke.alt && c >= '1' && c <= '6')
+    {
+        cheats_.setGameSpeed(c - '1');
+        return true;
+    }
+    return false;
 }
 
 void CheatCommandTracker::onCharKeyEvent(const KeyEvent& ke)

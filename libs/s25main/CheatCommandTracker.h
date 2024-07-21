@@ -20,6 +20,7 @@ public:
 
 private:
     void onSpecialKeyEvent(const KeyEvent& ke);
+    bool checkSpeedKeyEvent(const KeyEvent& ke);
     void onCharKeyEvent(const KeyEvent& ke);
 
     Cheats& cheats_;

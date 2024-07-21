@@ -35,6 +35,8 @@ public:
     bool canPlaceCheatBuilding(const MapPoint& mp) const;
     void placeCheatBuilding(const MapPoint& mp, const GamePlayer& player);
 
+    void setGameSpeed(uint8_t speedIndex);
+
     // RTTR cheats
     void toggleHumanAIPlayer();
 
