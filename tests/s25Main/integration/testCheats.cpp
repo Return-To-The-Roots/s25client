@@ -15,9 +15,13 @@
 namespace {
 constexpr auto worldWidth = 64;
 constexpr auto worldHeight = 64;
-struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, 2, worldWidth, worldHeight>
+struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, 3, worldWidth, worldHeight>
 {
-    CheatWorldFixture() { p2.ps = PlayerState::AI; }
+    CheatWorldFixture()
+    {
+        p2.ps = PlayerState::AI;
+        p3.ps = PlayerState::AI;
+    }
 
     Cheats& cheats = world.GetCheats();
 
@@ -27,6 +31,7 @@ struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, 2, worldWidth, worldHe
     GamePlayer& getPlayer(unsigned id) { return world.GetPlayer(id); }
     GamePlayer& p1 = getPlayer(0);
     GamePlayer& p2 = getPlayer(1);
+    GamePlayer& p3 = getPlayer(2);
 
     const MapPoint p1HQPos = p1.GetHQPos();
     const MapPoint p2HQPos = p2.GetHQPos();
@@ -43,6 +48,14 @@ struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, 2, worldWidth, worldHe
         for(auto bld : player.GetBuildingRegister().GetStorehouses())
             if(bld->GetBuildingType() == BuildingType::Headquarters)
                 ret.push_back(static_cast<nobHQ*>(bld));
+        return ret;
+    }
+
+    auto countAllBuildings(const GamePlayer& player)
+    {
+        unsigned ret = 0;
+        for(auto b : player.GetBuildingRegister().GetBuildingNums().buildings)
+            ret += b;
         return ret;
     }
 };
@@ -251,4 +264,48 @@ BOOST_FIXTURE_TEST_CASE(CanToggleResourcesToRevealSuccessively, CheatWorldFixtur
     cheats.toggleResourceRevealMode();
     cheats.toggleCheatMode();
     BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Fish);
+}
+
+BOOST_FIXTURE_TEST_CASE(DestroyBuildingsOfGivenPlayer, CheatWorldFixture)
+{
+    cheats.toggleCheatMode();
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 1);
+    BOOST_TEST_REQUIRE(countAllBuildings(p2) == 1);
+    cheats.destroyBuildings({0});
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 0);
+    BOOST_TEST_REQUIRE(countAllBuildings(p2) == 1);
+}
+
+BOOST_FIXTURE_TEST_CASE(DestroyBuildingsOfGivenPlayers, CheatWorldFixture)
+{
+    cheats.toggleCheatMode();
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 1);
+    BOOST_TEST_REQUIRE(countAllBuildings(p2) == 1);
+    cheats.destroyBuildings({0, 1});
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 0);
+    BOOST_TEST_REQUIRE(countAllBuildings(p2) == 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(DestroyBuildingsOfAIPlayers, CheatWorldFixture)
+{
+    cheats.toggleCheatMode();
+    p2.ps = PlayerState::AI;
+    p3.ps = PlayerState::AI;
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 1);
+    BOOST_TEST_REQUIRE(countAllBuildings(p2) == 1);
+    BOOST_TEST_REQUIRE(countAllBuildings(p3) == 1);
+    cheats.destroyAllAIBuildings();
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 1);
+    BOOST_TEST_REQUIRE(countAllBuildings(p2) == 0);
+    BOOST_TEST_REQUIRE(countAllBuildings(p3) == 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(CannotDestroyBuildings_IfCheatModeIsNotOn, CheatWorldFixture)
+{
+    p1.ps = PlayerState::AI;
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 1);
+    cheats.destroyBuildings({0});
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 1);
+    cheats.destroyAllAIBuildings();
+    BOOST_TEST_REQUIRE(countAllBuildings(p1) == 1);
 }

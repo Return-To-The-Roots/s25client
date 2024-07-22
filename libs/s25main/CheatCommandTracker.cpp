@@ -38,6 +38,16 @@ bool CheatCommandTracker::trackSpecialKeyEvent(const KeyEvent& ke)
     if(ke.kt == KeyType::Char)
         return false;
 
+    if(ke.ctrl && ke.shift)
+    {
+        if(ke.kt >= KeyType::F1 && ke.kt <= KeyType::F8)
+            cheats_.destroyBuildings({static_cast<unsigned>(ke.kt) - static_cast<unsigned>(KeyType::F1)});
+        else if(ke.kt == KeyType::F9)
+            cheats_.destroyAllAIBuildings();
+
+        return true;
+    }
+
     switch(ke.kt)
     {
         case KeyType::F7:
