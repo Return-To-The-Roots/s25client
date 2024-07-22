@@ -95,6 +95,22 @@ void Cheats::armageddon()
     GAMECLIENT.CheatArmageddon();
 }
 
+Cheats::ResourceRevealMode Cheats::getResourceRevealMode() const
+{
+    return isCheatModeOn() ? resourceRevealMode_ : ResourceRevealMode::Nothing;
+}
+
+void Cheats::toggleResourceRevealMode()
+{
+    switch(resourceRevealMode_)
+    {
+        case ResourceRevealMode::Nothing: resourceRevealMode_ = ResourceRevealMode::Ores; break;
+        case ResourceRevealMode::Ores: resourceRevealMode_ = ResourceRevealMode::Fish; break;
+        case ResourceRevealMode::Fish: resourceRevealMode_ = ResourceRevealMode::Water; break;
+        default: resourceRevealMode_ = ResourceRevealMode::Nothing; break;
+    }
+}
+
 bool Cheats::canCheatModeBeOn() const
 {
     return world_.IsSinglePlayer();

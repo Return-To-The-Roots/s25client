@@ -195,6 +195,9 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
             for(IDrawNodeCallback* callback : drawNodeCallbacks)
                 callback->onDraw(curPt, curPos);
+
+            if(visibility == Visibility::Visible)
+                DrawResource(curPt, curPos, GetWorld().GetCheats().getResourceRevealMode());
         }
 
         // Figuren zwischen den Zeilen zeichnen
@@ -556,6 +559,54 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
         else
             continue;
         LOADER.boundary_stone_cache[nation].draw(curPos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
+    }
+}
+
+void GameWorldView::DrawResource(const MapPoint& pt, DrawPoint curPos, Cheats::ResourceRevealMode resRevealMode)
+{
+    using RRM = Cheats::ResourceRevealMode;
+
+    if(resRevealMode == RRM::Nothing)
+        return;
+
+    const Resource res = gwv.GetNode(pt).resources;
+    const auto amount = res.getAmount();
+
+    if(!amount)
+        return;
+
+    GoodType gt = GoodType::Nothing;
+
+    switch(res.getType())
+    {
+        case ResourceType::Iron: gt = GoodType::IronOre; break;
+        case ResourceType::Gold: gt = GoodType::Gold; break;
+        case ResourceType::Coal: gt = GoodType::Coal; break;
+        case ResourceType::Granite: gt = GoodType::Stones; break;
+        case ResourceType::Water:
+            if(resRevealMode >= RRM::Water)
+            {
+                gt = GoodType::Water;
+                break;
+            } else
+                return;
+        case ResourceType::Fish:
+            if(resRevealMode >= RRM::Fish)
+            {
+                gt = GoodType::Fish;
+                break;
+            } else
+                return;
+        default: return;
+    }
+
+    if(auto bm = LOADER.GetWareTex(gt))
+    {
+        for(auto i = 0u; i < amount; ++i)
+        {
+            bm->DrawFull(curPos);
+            curPos.y -= 4;
+        }
     }
 }
 

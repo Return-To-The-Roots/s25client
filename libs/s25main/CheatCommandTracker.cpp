@@ -40,7 +40,14 @@ bool CheatCommandTracker::trackSpecialKeyEvent(const KeyEvent& ke)
 
     switch(ke.kt)
     {
-        case KeyType::F7: cheats_.toggleAllVisible(); break;
+        case KeyType::F7:
+        {
+            if(ke.alt)
+                cheats_.toggleResourceRevealMode();
+            else
+                cheats_.toggleAllVisible();
+        }
+        break;
         case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }
