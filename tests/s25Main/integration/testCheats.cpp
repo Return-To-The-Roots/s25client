@@ -285,4 +285,28 @@ BOOST_FIXTURE_TEST_CASE(CheatBuildingIsNotATent_IfPrimaryHQIsNotATent, CheatsFix
         BOOST_TEST_REQUIRE(static_cast<nobHQ*>(bld)->IsTent() == false);
 }
 
+BOOST_FIXTURE_TEST_CASE(CanToggleResourcesToRevealSuccessively, CheatsFixture)
+{
+    using RRM = Cheats::ResourceRevealMode;
+
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Nothing);
+    cheats.toggleCheatMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Nothing);
+    cheats.toggleResourceRevealMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Ores);
+    cheats.toggleResourceRevealMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Fish);
+    cheats.toggleResourceRevealMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Water);
+    cheats.toggleResourceRevealMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Nothing);
+    cheats.toggleResourceRevealMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Ores);
+    cheats.toggleCheatMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Nothing);
+    cheats.toggleResourceRevealMode();
+    cheats.toggleCheatMode();
+    BOOST_CHECK(cheats.getResourceRevealMode() == RRM::Fish);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

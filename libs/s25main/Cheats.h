@@ -35,7 +35,18 @@ public:
 
     // RTTR cheats
     void toggleHumanAIPlayer();
-    void armageddon() const;
+
+    void armageddon();
+
+    enum class ResourceRevealMode
+    {
+        Nothing,
+        Ores,
+        Fish,
+        Water
+    };
+    ResourceRevealMode getResourceRevealMode() const;
+    void toggleResourceRevealMode();
 
 private:
     void turnAllCheatsOff();
@@ -46,4 +57,5 @@ private:
     bool shouldShowEnemyProductivityOverlay_ = false;
     bool isHumanAIPlayer_ = false;
     GameWorldBase& world_;
+    ResourceRevealMode resourceRevealMode_ = ResourceRevealMode::Nothing;
 };
