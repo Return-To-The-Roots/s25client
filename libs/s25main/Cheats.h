@@ -7,6 +7,8 @@
 #include "gameTypes/MapCoordinates.h"
 #include <memory>
 #include <string>
+#include <unordered_set>
+
 class GamePlayer;
 class GameWorldBase;
 
@@ -47,6 +49,10 @@ public:
     };
     ResourceRevealMode getResourceRevealMode() const;
     void toggleResourceRevealMode();
+
+    using PlayerIDSet = std::unordered_set<unsigned>;
+    void destroyBuildings(const PlayerIDSet& playerIds);
+    void destroyAllAIBuildings();
 
 private:
     void turnAllCheatsOff();

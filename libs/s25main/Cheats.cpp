@@ -5,6 +5,7 @@
 #include "Cheats.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "RttrForeachPt.h"
 #include "factories/BuildingFactory.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
@@ -111,6 +112,32 @@ void Cheats::toggleResourceRevealMode()
         case ResourceRevealMode::Fish: resourceRevealMode_ = ResourceRevealMode::Water; break;
         default: resourceRevealMode_ = ResourceRevealMode::Nothing; break;
     }
+}
+
+void Cheats::destroyBuildings(const PlayerIDSet& playerIds)
+{
+    if(!isCheatModeOn())
+        return;
+
+    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
+    {
+        if(world_.GetNO(pt)->GetType() == NodalObjectType::Building && playerIds.count(world_.GetNode(pt).owner - 1))
+            world_.DestroyNO(pt);
+    }
+}
+
+void Cheats::destroyAllAIBuildings()
+{
+    if(!isCheatModeOn())
+        return;
+
+    PlayerIDSet ais;
+    for(auto i = 0u; i < world_.GetNumPlayers(); ++i)
+    {
+        if(!world_.GetPlayer(i).isHuman())
+            ais.insert(i);
+    }
+    destroyBuildings(ais);
 }
 
 void Cheats::turnAllCheatsOff()
