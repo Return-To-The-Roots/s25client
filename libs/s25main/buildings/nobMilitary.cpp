@@ -345,7 +345,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
     {
         // feindliches Militärgebäude?
         if(building != exception && building->GetPlayer() != player
-           && world->GetPlayer(building->GetPlayer()).IsAttackable(player))
+           && world->GetPlayer(player).CanAttack(building->GetPlayer()))
         {
             unsigned distance = world->CalcDistance(pos, building->GetPos());
             FrontierDistance newFrontierDistance = FrontierDistance::Far;
@@ -590,10 +590,10 @@ bool nobMilitary::IsUseless() const
     return !world->DoesDestructionChangeTerritory(*this);
 }
 
-bool nobMilitary::IsAttackable(unsigned playerIdx) const
+bool nobMilitary::CanBeAttackedBy(unsigned playerIdx) const
 {
     // Cannot be attacked, if it is Being captured or not claimed yet (just built)
-    return nobBaseMilitary::IsAttackable(playerIdx) && !IsBeingCaptured() && !IsNewBuilt();
+    return nobBaseMilitary::CanBeAttackedBy(playerIdx) && !IsBeingCaptured() && !IsNewBuilt();
 }
 
 bool nobMilitary::IsInTroops(const nofPassiveSoldier& soldier) const
@@ -966,7 +966,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     for(auto* building : buildings)
     {
         // verbündetes Gebäude?
-        if(world->GetPlayer(building->GetPlayer()).IsAttackable(old_player)
+        if(world->GetPlayer(old_player).CanAttack(building->GetPlayer())
            && BuildingProperties::IsMilitary(building->GetBuildingType()))
             // Grenzflaggen von dem neu berechnen
             static_cast<nobMilitary*>(building)->LookForEnemyBuildings();
@@ -996,7 +996,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
         nofAttacker* attacker = *it;
         // dont remove attackers owned by players not allied with the new owner!
         unsigned char attPlayer = attacker->GetPlayer();
-        if(attPlayer != player && !world->GetPlayer(attPlayer).IsAttackable(player))
+        if(attPlayer != player && !world->GetPlayer(attPlayer).CanAttack(player))
         {
             it = aggressors.erase(it);
             attacker->CapturedBuildingFull();
@@ -1102,7 +1102,7 @@ void nobMilitary::NeedOccupyingTroops()
         // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
         // also: dont remove attackers owned by players not allied with the new owner!
         if(attacker->GetState() != nofActiveSoldier::SoldierState::AttackingCapturingNext
-           && !world->GetPlayer(attacker->GetPlayer()).IsAttackable(player))
+           && !world->GetPlayer(attacker->GetPlayer()).CanAttack(player))
         {
             it = aggressors.erase(it);
             attacker->CapturedBuildingFull();

@@ -7,6 +7,7 @@
 // Include with all addons
 
 #include "addons/AddonCatapultGraphics.h"
+#include "addons/AddonCatapultsAttackAllies.h"
 #include "addons/AddonExhaustibleWater.h"
 #include "addons/AddonInexhaustibleMines.h"
 #include "addons/AddonLimitCatapults.h"

@@ -89,7 +89,7 @@ unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
 {
     const auto* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
     // Can we actually attack this bld?
-    if(!attacked_building || !attacked_building->IsAttackable(playerId_))
+    if(!attacked_building || !attacked_building->CanBeAttackedBy(playerId_))
         return 0;
 
     // Militärgebäude in der Nähe finden

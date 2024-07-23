@@ -673,7 +673,7 @@ void nofAttacker::OrderAggressiveDefender()
             continue;
         // We only send a defender if we are allied with the attacked player and can attack the attacker (no pact etc)
         GamePlayer& bldOwner = world->GetPlayer(bldOwnerId);
-        if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && bldOwner.IsAttackable(player))
+        if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && world->GetPlayer(bldOwnerId).CanAttack(player))
         {
             // If player did not decide on sending do it now.
             // Doing this as late as here reduces chance, that the player changed the setting when the defender is asked
