@@ -852,8 +852,9 @@ BOOST_AUTO_TEST_CASE(CampaignStatusCanBeChangedFromLua)
     executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 2)");
     executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 4)");
     executeLua("rttr:EnableCampaignChapter('campaign_id', 5)");
-    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 0)"); // noop
-    executeLua("rttr:EnableCampaignChapter('campaign_id', 0)");       // noop
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 0)"); // noop - chapters start from 1
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 0)");       // noop - chapters start from 1
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 2)");       // noop - already completed
     game.executeAICommands();
     BOOST_TEST_REQUIRE(SETTINGS.campaigns.saveData["campaign_id"] == "12021");
 }

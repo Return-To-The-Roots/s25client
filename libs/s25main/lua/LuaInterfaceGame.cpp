@@ -330,7 +330,12 @@ void MarkCampaignChapter(const std::string& campaignUid, unsigned char chapter, 
     if(saveData.length() < chapter)
         saveData.resize(chapter);
 
-    saveData[chapter - 1] = code;
+    auto& chapterSaveData = saveData[chapter - 1];
+
+    if(chapterSaveData == CampaignSaveCodes::chapterCompleted)
+        return;
+
+    chapterSaveData = code;
 }
 } // namespace
 
