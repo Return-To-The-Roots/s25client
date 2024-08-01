@@ -114,7 +114,7 @@ void nofWinegrower::WorkFinished()
     world->RecalcBQAroundPoint(pos);
 }
 
-nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) const
+nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt, const bool isBeforeWork) const
 {
     // Either a grapefield exists we can harvest...
     if(world->GetNO(pt)->GetType() == NodalObjectType::Grapefield)
@@ -126,8 +126,8 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt) cons
     } else // or a free space, to place a new one
     {
         // Try to "plant" a new grapefield
-        // Still enough wares when starting new work (state = Waiting1)?
-        if(state == State::Waiting1 && !workplace->WaresAvailable())
+        // Still enough wares when starting new work
+        if(isBeforeWork && !workplace->WaresAvailable())
             return PointQuality::NotPossible;
 
         // Do not build on road

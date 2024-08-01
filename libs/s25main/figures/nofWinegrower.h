@@ -32,7 +32,8 @@ private:
     void WorkAborted() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt) const override;
+    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
+    using nofFarmhand::GetPointQuality;
 
     /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
     /// house)
@@ -41,7 +42,6 @@ private:
     /// Draws the figure while returning home / entering the building (often carrying wares)
     void DrawWalkingWithWare(DrawPoint drawPt) override;
     /// Draws the vintner while walking
-    /// (overriding standard method of nofFarmhand)
     void DrawOtherStates(DrawPoint drawPt) override;
 
     bool AreWaresAvailable() const override;
