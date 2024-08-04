@@ -129,11 +129,16 @@ public:
         std::map<unsigned, unsigned> configuration;
     } addons;
 
+    struct
+    {
+        std::map<std::string, std::string> saveData;
+    } campaigns;
+
     static const std::array<short, 13> SCREEN_REFRESH_RATES;
 
 private:
     static const int VERSION;
-    static const std::array<std::string, 10> SECTION_NAMES;
+    static const std::array<std::string, 11> SECTION_NAMES;
 };
 
 #define SETTINGS Settings::inst()

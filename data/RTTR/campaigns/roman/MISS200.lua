@@ -508,9 +508,9 @@ function MissionEvent(e, onLoad)
         rttr:GetPlayer(0):EnableBuilding(BLD_BAKERY, not onLoad)
 
     elseif(e == 99) then
-        -- TODO: EnableNextMissions()
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(14, 8, 561, 0xFFFF, 2)
+        rttr:SetCampaignChapterCompleted("roman", 1)
     end
 
     -- update event state

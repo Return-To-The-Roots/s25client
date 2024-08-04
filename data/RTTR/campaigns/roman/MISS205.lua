@@ -6,7 +6,6 @@
 
 
 -------------------------------- TODO -----------------------------------------
--- EnableNextMissions()
 -- Set Portraits
 -- Set AI Agression Level
 -------------------------------------------------------------------------------
@@ -559,9 +558,10 @@ function MissionEvent(e, onLoad)
     
     -- call side effects for active events, check "eState[e] == 1" for multiple call events!
     elseif(e == 99) then
-        -- TODO: EnableNextMissions()
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(148, 50, 561, 0xFFFF, 2)
+        rttr:SetCampaignChapterCompleted("roman", 6)
+        rttr:EnableCampaignChapter("roman", 7)
     end
 
     -- update event state

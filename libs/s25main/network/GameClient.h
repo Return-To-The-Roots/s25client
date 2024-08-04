@@ -102,6 +102,11 @@ public:
     /// Beendet das Spiel, zerstört die Spielstrukturen
     void ExitGame();
 
+    void SetCampaignChapterCompleted(unsigned char chapter) { chapterCompleted = chapter; }
+    void SetCampaignCompleted(bool state) { campaignCompleted = state; }
+    unsigned char GetCampaignChapterCompleted() const { return chapterCompleted; }
+    bool IsCampaignCompleted() const { return campaignCompleted; }
+
     ClientState GetState() const { return state; }
     Replay* GetReplay();
     std::shared_ptr<const NWFInfo> GetNWFInfo() const;
@@ -307,6 +312,9 @@ private:
 
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;
+
+    unsigned char chapterCompleted = 0;
+    bool campaignCompleted = false;
 
     std::unique_ptr<ReplayInfo> replayinfo;
     bool replayMode;
