@@ -97,7 +97,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             // Take all in last direction
             const auto curNumPeople = (j + 1u < possibleDirs.size()) ? numPeoplePerDir : count;
             count -= curNumPeople;
-            for(const auto z : helpers::range(curNumPeople))
+            for([[maybe_unused]] const auto z : helpers::range(curNumPeople))
             {
                 // Create job and send moving into the current direction
                 auto& figure = world->AddFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
