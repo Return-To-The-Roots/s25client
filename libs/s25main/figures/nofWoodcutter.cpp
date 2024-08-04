@@ -86,7 +86,7 @@ void nofWoodcutter::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt) const
+nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // Gibt es hier an dieser Position einen Baum und ist dieser ausgewachsen?
     // außerdem keine Ananas fällen!

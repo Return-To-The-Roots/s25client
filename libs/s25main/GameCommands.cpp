@@ -4,10 +4,12 @@
 
 #include "GameCommands.h"
 #include "GamePlayer.h"
+#include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
+#include "buildings/nobTemple.h"
 #include "enum_cast.hpp"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/format.hpp"
@@ -84,6 +86,27 @@ void UpgradeRoad::Execute(GameWorld& world, uint8_t playerId)
     auto* flag = world.GetSpecObj<noFlag>(pt_);
     if(flag && flag->GetPlayer() == playerId)
         flag->UpgradeRoad(start_dir);
+}
+
+ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::ChangeDistribution)
+{
+    if(ser.getDataVersion() >= 1)
+        helpers::popContainer(ser, data);
+    else
+    {
+        std::array<Distributions::value_type,
+                   std::tuple_size<Distributions>::value - 3>
+          tmpData; // 3 entries for wine addon
+        helpers::popContainer(ser, tmpData);
+        size_t srcIdx = 0, tgtIdx = 0;
+        for(const auto& mapping : distributionMap)
+        {
+            // skip over wine buildings in tmpData
+            const auto setting =
+              wineaddon::isWineAddonBuildingType(std::get<BuildingType>(mapping)) ? 0 : tmpData[srcIdx++];
+            data[tgtIdx++] = setting;
+        }
+    }
 }
 
 void ChangeDistribution::Execute(GameWorld& world, uint8_t playerId)
@@ -225,6 +248,13 @@ void SetShipYardMode::Execute(GameWorld& world, uint8_t playerId)
     auto* const bld = world.GetSpecObj<nobShipYard>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetMode(buildShips ? nobShipYard::Mode::Ships : nobShipYard::Mode::Boats);
+}
+
+void SetTempleProductionMode::Execute(GameWorld& world, uint8_t playerId)
+{
+    auto* const bld = world.GetSpecObj<nobTemple>(pt_);
+    if(bld && bld->GetPlayer() == playerId)
+        bld->SetProductionMode(productionMode);
 }
 
 void StartStopExpedition::Execute(GameWorld& world, uint8_t playerId)

@@ -84,7 +84,7 @@ void nofForester::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
+nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // Der Platz muss frei sein
     BlockingManner bm = world->GetNO(pt)->GetBM();

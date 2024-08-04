@@ -60,11 +60,12 @@ enum class GCType : uint8_t
     DestroyAll,
     UpgradeRoad,
     SetTroopLimit,
-    NotifyAlliesOfLocation
+    NotifyAlliesOfLocation,
+    SetTempleProductionMode,
 };
 constexpr auto maxEnumValue(GCType)
 {
-    return GCType::NotifyAlliesOfLocation;
+    return GCType::SetTempleProductionMode;
 }
 
 class GameCommand

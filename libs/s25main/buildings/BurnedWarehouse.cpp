@@ -8,19 +8,21 @@
 #include "GamePlayer.h"
 #include "SerializedGameData.h"
 #include "figures/nofPassiveWorker.h"
+#include "helpers/Range.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
+#include <boost/container/static_vector.hpp>
 
-/// Anzahl der Rausgeh-Etappen
-const unsigned GO_OUT_PHASES = 10;
-/// Länge zwischen zwei solchen Phasen
-const unsigned PHASE_LENGTH = 2;
+/// Number of "waves" of workers leaving
+constexpr unsigned GO_OUT_PHASES = 10;
+/// Time between those phases
+constexpr unsigned PHASE_LENGTH = 2;
 
 BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const PeopleArray& people)
     : noCoordBase(NodalObjectType::BurnedWarehouse, pos), player(player), go_out_phase(0), people(people)
 {
-    // Erstes Event anmelden
+    // First event
     GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
 }
 
@@ -50,23 +52,19 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
-    std::array<Direction, helpers::NumEnumValues_v<Direction>> possibleDirs;
-    unsigned possibleDirCt = 0;
-
-    // Mögliche Richtungen zählen und speichern
+    // Determine valid directions for people
+    boost::container::static_vector<Direction, helpers::NumEnumValues_v<Direction>> possibleDirs;
     PathConditionHuman pathChecker(*world);
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
         if(pathChecker.IsNodeOk(world->GetNeighbour(pos, dir)))
-            possibleDirs[possibleDirCt++] = dir;
+            possibleDirs.push_back(dir);
     }
 
-    // GAR KEINE Richtungen?
-    if(possibleDirCt == 0)
+    if(possibleDirs.empty())
     {
-        // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
+        // No way out for figures -> all die and we can remove this object
         GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
-        // restliche Leute von der Inventur abziehen
         for(const auto i : helpers::enumRange<Job>())
             world->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
 
@@ -75,57 +73,49 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
 
     for(const auto job : helpers::enumRange<Job>())
     {
-        // Anzahl ausrechnen, die in dieser Runde rausgeht
+        // In the last phase all remaining ones leave, else only some
         unsigned count;
         if(go_out_phase + 1 >= GO_OUT_PHASES)
-            count = people[job]; // Take all on last round
+            count = people[job];
         else
             count = people[job] / (GO_OUT_PHASES - go_out_phase);
+        if(count == 0)
+            continue;
 
-        // Von der vorhandenen Abzahl abziehen
+        // Remove from inventory
         people[job] -= count;
 
-        // In Alle Richtungen verteilen
-        // Startrichtung zufällig bestimmen
-        unsigned start_dir = RANDOM_RAND(helpers::NumEnumValues_v<Direction>);
+        // Distribute in all directions starting at a random one of the possible ones
+        const unsigned startIdx = (possibleDirs.size() <= 1u) ? 0 : RANDOM_RAND(possibleDirs.size());
+        const unsigned numPeoplePerDir = count / possibleDirs.size();
 
-        for(unsigned j = 0; j < possibleDirCt; ++j)
+        for(const unsigned j : helpers::range(possibleDirs.size()))
         {
-            // Aktuelle Richtung, die jetzt dran ist bestimmen
-            Direction dir = possibleDirs[j] + start_dir;
-
-            // Anzahl jetzt für diese Richtung ausrechnen
-            unsigned numPeopleInDir = count / possibleDirCt;
-            // Bei letzter Richtung noch den übriggebliebenen Rest dazuaddieren
-            if(j + 1 == possibleDirCt)
-                numPeopleInDir += count % possibleDirCt;
-
-            // Die Figuren schließlich rausschicken
-            for(unsigned z = 0; z < numPeopleInDir; ++z)
+            // Get current direction accounting for startIdx and hence possible wrap around
+            const unsigned idx = j + startIdx;
+            const Direction curDir = possibleDirs[idx < possibleDirs.size() ? idx : idx - possibleDirs.size()];
+            // Take all in last direction
+            const auto curNumPeople = (j + 1u < possibleDirs.size()) ? numPeoplePerDir : count;
+            count -= curNumPeople;
+            for([[maybe_unused]] const auto z : helpers::range(curNumPeople))
             {
-                // Job erzeugen
+                // Create job and send moving into the current direction
                 auto& figure = world->AddFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
-                // Losrumirren in die jeweilige Richtung
                 figure.StartWandering(GetObjId());
-                figure.StartWalking(dir);
+                figure.StartWalking(curDir);
             }
         }
     }
 
-    // Nächste Runde
+    // Prepare next phase if any
     ++go_out_phase;
-
-    // Nächste Runde anmelden bzw. sich selbst killen, wenn alle Runden erledigt sind
     if(go_out_phase == GO_OUT_PHASES)
     {
-        // fertig, sich selbst töten
+        // All done
         GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
-        // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
+        // There shouldn't be any more
         for(unsigned int it : people)
             RTTR_Assert(it == 0);
-    } else
-    {
-        // Nächstes Event anmelden
+    } else // Not done yet
         GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
-    }
 }

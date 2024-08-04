@@ -4,28 +4,23 @@
 
 #include "iwDistribution.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlProgress.h"
 #include "controls/ctrlTab.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/const_gui_ids.h"
 #include <utility>
-
-struct iwDistribution::DistributionGroup
-{
-    DistributionGroup(std::string name, glArchivItem_Bitmap* img) : name(std::move(name)), img(img) {}
-    std::string name;
-    glArchivItem_Bitmap* img;
-    std::vector<std::string> entries;
-};
-std::vector<iwDistribution::DistributionGroup> iwDistribution::groups;
 
 /// Dertermines width of the progress bars: distance to the window borders
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
@@ -49,10 +44,11 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
         ctrlGroup* tabGrp = tab->AddTab(group.img, group.name, groupId);
         txtPos.y = progPos.y = 60;
         unsigned curId = 0;
-        for(const std::string& entry : group.entries)
+        for(const auto& entry : group.entries)
         {
             unsigned txtId = group.entries.size() + curId;
-            tabGrp->AddText(txtId, txtPos, entry, COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, SmallFont);
+            tabGrp->AddText(txtId, txtPos, std::get<0>(entry), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM,
+                            SmallFont);
             tabGrp->AddProgress(curId++, progPos, progSize, TextureColor::Grey, 139, 138, 10);
             txtPos.y = progPos.y += progSize.y * 2;
         }
@@ -79,21 +75,19 @@ void iwDistribution::TransmitSettings()
     if(settings_changed)
     {
         // Read values from the progress ctrls to the struct
-        Distributions newDistribution;
+        Distributions newDistribution{0};
 
-        unsigned distIdx = 0;
         for(unsigned i = 0; i < groups.size(); ++i)
         {
             ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(i);
             const DistributionGroup& group = groups[i];
             // Werte der Gruppen auslesen
-            for(unsigned j = 0; j < group.entries.size(); ++j, ++distIdx)
+            for(unsigned j = 0; j < group.entries.size(); ++j)
             {
                 auto value = static_cast<uint8_t>(tab->GetCtrl<ctrlProgress>(j)->GetPosition());
-                newDistribution[distIdx] = value;
+                newDistribution[std::get<1>(group.entries[j])] = value;
             }
         }
-        RTTR_Assert(distIdx == newDistribution.size());
 
         // und übermitteln
         if(gcFactory.ChangeDistribution(newDistribution))
@@ -114,17 +108,16 @@ void iwDistribution::UpdateSettings(const Distributions& distribution)
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    unsigned distIdx = 0;
+
     for(unsigned g = 0; g < groups.size(); ++g)
     {
         // Look for correct group
         const DistributionGroup& group = groups[g];
         ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(g);
         // And correct entry
-        for(unsigned i = 0; i < group.entries.size(); ++i, ++distIdx)
-            tab->GetCtrl<ctrlProgress>(i)->SetPosition(distribution[distIdx]);
+        for(unsigned i = 0; i < group.entries.size(); ++i)
+            tab->GetCtrl<ctrlProgress>(i)->SetPosition(distribution[std::get<1>(group.entries[i])]);
     }
-    RTTR_Assert(distIdx == std::tuple_size<Distributions>::value);
 }
 
 void iwDistribution::UpdateSettings()
@@ -164,6 +157,7 @@ void iwDistribution::CreateGroups()
         return;
 
     GoodType lastGood = GoodType::Nothing;
+    unsigned pos = 0;
     for(const DistributionMapping& mapping : distributionMap)
     {
         // New group?
@@ -191,6 +185,18 @@ void iwDistribution::CreateGroups()
         // HQ = Construction
         std::string name = std::get<1>(mapping) == BuildingType::Headquarters ? gettext_noop("Construction") :
                                                                                 BUILDING_NAMES[std::get<1>(mapping)];
-        groups.back().entries.push_back(_(name));
+        groups.back().entries.push_back(std::tuple(_(name), pos));
+        pos++;
     }
+
+    auto isUnused = [&](std::tuple<std::string, unsigned> const& bts) {
+        const BuildingType buildingType = std::get<1>(distributionMap[std::get<1>(bts)]);
+        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(buildingType))
+            return true;
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && buildingType == BuildingType::Charburner)
+            return true;
+        return false;
+    };
+    for(auto& group : groups)
+        helpers::erase_if(group.entries, isUnused);
 }
