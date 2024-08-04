@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Cheats.h"
 #include "DrawPoint.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
@@ -127,6 +128,7 @@ public:
 private:
     void CalcFxLx();
     void DrawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis);
+    void DrawResource(const MapPoint& pt, DrawPoint curPos, Cheats::ResourceRevealMode resRevealMode);
     void DrawObject(const MapPoint& pt, const DrawPoint& curPos) const;
     void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
     void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines) const;
