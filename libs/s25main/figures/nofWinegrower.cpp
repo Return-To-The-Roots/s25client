@@ -49,7 +49,7 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
             draw_id = bobIndex[BobTypes::WINEGROWER_DIGGING_ANIMATION] + now_id % 15;
 
             // Shovel-Sound
-            if(now_id % 8 == 3)
+            if(now_id % 16 == 5)
             {
                 world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
                 was_sounding = true;
