@@ -12,7 +12,7 @@ namespace {
 template<unsigned T_numPlayers>
 struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, T_numPlayers>
 {
-    Cheats& cheats = world.GetCheats();
+    Cheats& cheats = this->world.GetCheats();
 };
 
 using CheatWorldFixture1P = CheatWorldFixture<1>;

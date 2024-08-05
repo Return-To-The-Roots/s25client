@@ -4,10 +4,10 @@
 
 #pragma once
 
+#include "CheatCommandTracker.h"
 #include <memory>
 #include <string>
 
-class CheatCommandTracker;
 class GameWorldBase;
 struct KeyEvent;
 
@@ -27,9 +27,9 @@ public:
     void armageddon();
 
 private:
-    bool canCheatModeBeOn() const;
+    bool areCheatsAllowed() const;
 
-    std::unique_ptr<CheatCommandTracker> cheatCmdTracker_;
+    CheatCommandTracker cheatCmdTracker_;
     bool isCheatModeOn_ = false;
     GameWorldBase& world_;
 };

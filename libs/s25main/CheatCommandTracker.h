@@ -20,7 +20,7 @@ public:
 
 private:
     bool trackSpecialKeyEvent(const KeyEvent& ke);
-    bool trackCharKeyEvent(const KeyEvent& ke);
+    void trackCharKeyEvent(const KeyEvent& ke);
 
     Cheats& cheats_;
     boost::circular_buffer<char> lastChars_;
