@@ -705,5 +705,5 @@ void GameWorldBase::SetComputerBarrier(const MapPoint& pt, unsigned radius)
 
 bool GameWorldBase::IsInsideComputerBarrier(const MapPoint& pt) const
 {
-    return ptsInsideComputerBarriers.count(pt);
+    return helpers::contains(ptsInsideComputerBarriers, pt);
 }
