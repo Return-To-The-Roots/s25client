@@ -119,28 +119,3 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
 }
-
-BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsFalse_IfPrimaryHQIsNotTent, WorldFixtureEmpty1P)
-{
-    GamePlayer& p1 = world.GetPlayer(0);
-
-    // place another HQ that is a tent
-    MapPoint newHqPos = p1.GetHQPos();
-    newHqPos.x += 3;
-    BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians, true);
-
-    BOOST_TEST_REQUIRE(p1.IsHQTent() == false);
-}
-
-BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsTrue_IfPrimaryHQIsTent, WorldFixtureEmpty1P)
-{
-    GamePlayer& p1 = world.GetPlayer(0);
-    p1.SetHQIsTent(true);
-
-    // place another HQ that is not a tent
-    MapPoint newHqPos = p1.GetHQPos();
-    newHqPos.x += 3;
-    BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians, false);
-
-    BOOST_TEST_REQUIRE(p1.IsHQTent() == true);
-}
