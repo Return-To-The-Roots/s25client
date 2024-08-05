@@ -421,7 +421,7 @@ bool GamePlayer::IsHQTent() const
 
 void GamePlayer::SetHQIsTent(bool isTent)
 {
-    if(nobHQ* hq = GetHQ())
+    if(nobHQ* hq = const_cast<nobHQ*>(GetHQ()))
         hq->SetIsTent(isTent);
 }
 
@@ -1414,10 +1414,10 @@ void GamePlayer::TestDefeat()
         Surrender();
 }
 
-nobHQ* GamePlayer::GetHQ() const
+const nobHQ* GamePlayer::GetHQ() const
 {
     const MapPoint& hqPos = GetHQPos();
-    return const_cast<nobHQ*>(hqPos.isValid() ? GetGameWorld().GetSpecObj<nobHQ>(hqPos) : nullptr);
+    return hqPos.isValid() ? GetGameWorld().GetSpecObj<nobHQ>(hqPos) : nullptr;
 }
 
 void GamePlayer::Surrender()
