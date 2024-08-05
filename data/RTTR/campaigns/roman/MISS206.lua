@@ -218,9 +218,12 @@ function addPlayerBld(p, onLoad)
             nil, nil
         )
 
-        if(p == 2) then
-            if onLoad then return end
+        if onLoad then return end
 
+        if(p == 1) then
+            rttr:GetPlayer(p):PlaceHQ(112, 82)  -- !SET_HOUSE 24, 112, 82
+        elseif(p == 2) then
+            rttr:GetPlayer(p):PlaceHQ(40, 54)   -- !SET_HOUSE 24, 40, 54
             rttr:GetPlayer(p):AIConstructionOrder(43, 59, BLD_FORTRESS)
         end
     end

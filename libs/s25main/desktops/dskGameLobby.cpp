@@ -32,6 +32,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "ogl/FontStyle.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
@@ -99,6 +100,13 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
               gameLobby_->isHost()); // This should be done first for the host so others won't even see the script
             LOG.write(_("Lua was disabled by the script itself\n"));
             lua.reset();
+        } else
+        {
+            if(const auto num = lua->GetNumPlayersFromScript())
+            {
+                GAMESERVER.SetNumPlayers(num);
+                gameLobby_->setNumPlayers(num);
+            }
         }
         if(!lua)
             lobbyHostController->RemoveLuaScript();

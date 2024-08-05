@@ -343,6 +343,10 @@ Ignored if the current player is not controlled by AI.
 **GetHQPos()**  
 Return x,y of the players HQ
 
+**PlaceHQ(x, y)**  
+Places this player's headquarters at map location {x, y}.  
+Does nothing if the player already has a valid headquarters position (e.g. set by the map or using a previous PlaceHQ call).
+
 **Surrender(destroyBuildings)**  
 Let the player give up either keeping its buildings or destroying them.
 Can be called multiple times e.g. to destroy buildings later.
