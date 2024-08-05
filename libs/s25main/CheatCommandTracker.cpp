@@ -11,20 +11,17 @@ auto makeCircularBuffer(const std::string& str)
 {
     return boost::circular_buffer<char>{cbegin(str), cend(str)};
 }
-const auto cheatStr = makeCircularBuffer("winter");
+const auto enableCheatsStr = makeCircularBuffer("winter");
 } // namespace
 
-CheatCommandTracker::CheatCommandTracker(Cheats& cheats) : cheats_(cheats), lastChars_(cheatStr.size()) {}
+CheatCommandTracker::CheatCommandTracker(Cheats& cheats) : cheats_(cheats), lastChars_(enableCheatsStr.size()) {}
 
 void CheatCommandTracker::trackKeyEvent(const KeyEvent& ke)
 {
     if(trackSpecialKeyEvent(ke))
-    {
         lastChars_.clear();
-        return;
-    }
-
-    trackCharKeyEvent(ke);
+    else
+        trackCharKeyEvent(ke);
 }
 
 void CheatCommandTracker::trackChatCommand(const std::string& cmd)
@@ -47,12 +44,10 @@ bool CheatCommandTracker::trackSpecialKeyEvent(const KeyEvent& ke)
     return true;
 }
 
-bool CheatCommandTracker::trackCharKeyEvent(const KeyEvent& ke)
+void CheatCommandTracker::trackCharKeyEvent(const KeyEvent& ke)
 {
     lastChars_.push_back(ke.c);
 
-    if(lastChars_ == cheatStr)
+    if(lastChars_ == enableCheatsStr)
         cheats_.toggleCheatMode();
-
-    return true;
 }
