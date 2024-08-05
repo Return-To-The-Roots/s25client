@@ -430,7 +430,7 @@ private:
     bool FindWarehouseForJob(Job job, noRoadNode* goal) const;
     /// Prüft, ob der Spieler besiegt wurde
     void TestDefeat();
-    nobHQ* GetHQ() const;
+    const nobHQ* GetHQ() const;
 
     //////////////////////////////////////////////////////////////////////////
     /// Unsynchronized state (e.g. lua, gui...)
