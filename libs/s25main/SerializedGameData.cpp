@@ -20,6 +20,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobStorehouse.h"
+#include "buildings/nobTemple.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofArmorer.h"
 #include "figures/nofAttacker.h"
@@ -51,10 +52,13 @@
 #include "figures/nofScout_LookoutTower.h"
 #include "figures/nofShipWright.h"
 #include "figures/nofStonemason.h"
+#include "figures/nofTempleServant.h"
 #include "figures/nofTradeDonkey.h"
 #include "figures/nofTradeLeader.h"
+#include "figures/nofVintner.h"
 #include "figures/nofWarehouseWorker.h"
 #include "figures/nofWellguy.h"
+#include "figures/nofWinegrower.h"
 #include "figures/nofWoodcutter.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
@@ -70,6 +74,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noGrainfield.h"
 #include "nodeObjs/noGranite.h"
+#include "nodeObjs/noGrapefield.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noShipBuildingSite.h"
 #include "nodeObjs/noSign.h"
@@ -96,7 +101,8 @@
 /// 8: noFlag::Wares converted to static_vector
 /// 9: Drop serialization of node BQ
 /// 10: troop_limits state introduced to military buildings
-static const unsigned currentGameDataVersion = 10;
+/// 11:: wineaddon added, three new building types and two new goods
+static const unsigned currentGameDataVersion = 11;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
@@ -169,6 +175,11 @@ std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type 
         RTTR_CREATE_GO(GO_Type::Shipbuildingsite, noShipBuildingSite);
         RTTR_CREATE_GO(GO_Type::Charburnerpile, noCharburnerPile);
         RTTR_CREATE_GO(GO_Type::Economymodehandler, EconomyModeHandler);
+        RTTR_CREATE_GO(GO_Type::NofWinegrower, nofWinegrower);
+        RTTR_CREATE_GO(GO_Type::NofVintner, nofVintner);
+        RTTR_CREATE_GO(GO_Type::NofTempleservant, nofTempleServant);
+        RTTR_CREATE_GO(GO_Type::Grapefield, noGrapefield);
+        RTTR_CREATE_GO(GO_Type::NobTemple, nobTemple);
         case GO_Type::Nothing: RTTR_Assert(false); break;
 #undef RTTR_CREATE_GO
     }

@@ -4,6 +4,7 @@
 
 #include "BuildingRegister.h"
 #include "SerializedGameData.h"
+#include "WineLoader.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -37,6 +38,9 @@ void BuildingRegister::Deserialize(SerializedGameData& sgd)
     {
         for(const auto bld : helpers::enumRange<BuildingType>())
         {
+            if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonBuildingType(bld))
+                continue;
+
             if(BuildingProperties::IsUsual(bld))
                 sgd.PopObjectContainer(buildings[bld], GO_Type::NobUsual);
         }

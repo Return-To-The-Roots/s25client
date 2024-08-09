@@ -2090,31 +2090,34 @@ void AIPlayerJH::InitDistribution()
     goodSettings[1] = 10; // food coal
     goodSettings[2] = 10; // food iron
     goodSettings[3] = 10; // food gold
+    goodSettings[4] = 2;  // food temple
 
-    goodSettings[4] = 10; // grain mill
-    goodSettings[5] = 10; // grain pigfarm
-    goodSettings[6] = 10; // grain donkeybreeder
-    goodSettings[7] = 10; // grain brewery
-    goodSettings[8] = 10; // grain charburner
+    goodSettings[5] = 10; // grain mill
+    goodSettings[6] = 10; // grain pigfarm
+    goodSettings[7] = 10; // grain donkeybreeder
+    goodSettings[8] = 10; // grain brewery
+    goodSettings[9] = 10; // grain charburner
 
-    goodSettings[9] = 10;  // iron armory
-    goodSettings[10] = 10; // iron metalworks
+    goodSettings[10] = 10; // iron armory
+    goodSettings[11] = 10; // iron metalworks
 
-    goodSettings[11] = 10; // coal armory
-    goodSettings[12] = 10; // coal ironsmelter
-    goodSettings[13] = 10; // coal mint
+    goodSettings[12] = 10; // coal armory
+    goodSettings[13] = 10; // coal ironsmelter
+    goodSettings[14] = 10; // coal mint
 
-    goodSettings[14] = 10; // wood sawmill
-    goodSettings[15] = 10; // wood charburner
+    goodSettings[15] = 10; // wood sawmill
+    goodSettings[16] = 10; // wood charburner
+    goodSettings[17] = 2;  // wood vineyard
 
-    goodSettings[16] = 10; // boards new buildings
-    goodSettings[17] = 4;  // boards metalworks
-    goodSettings[18] = 2;  // boards shipyard
+    goodSettings[18] = 10; // boards new buildings
+    goodSettings[19] = 4;  // boards metalworks
+    goodSettings[20] = 2;  // boards shipyard
 
-    goodSettings[19] = 10; // water bakery
-    goodSettings[20] = 10; // water brewery
-    goodSettings[21] = 10; // water pigfarm
-    goodSettings[22] = 10; // water donkeybreeder
+    goodSettings[21] = 10; // water bakery
+    goodSettings[22] = 10; // water brewery
+    goodSettings[23] = 10; // water pigfarm
+    goodSettings[24] = 10; // water donkeybreeder
+    goodSettings[25] = 2;  // water vineyard
     aii.ChangeDistribution(goodSettings);
 }
 

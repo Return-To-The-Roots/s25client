@@ -103,10 +103,10 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             BuildingType::Well},
            {BuildingType::Sawmill, BuildingType::Slaughterhouse, BuildingType::Mill, BuildingType::Bakery,
             BuildingType::Ironsmelter, BuildingType::Metalworks, BuildingType::Armory, BuildingType::Mint,
-            BuildingType::Shipyard, BuildingType::Brewery, BuildingType::Storehouse, BuildingType::Watchtower,
-            BuildingType::Catapult},
+            BuildingType::Shipyard, BuildingType::Brewery, BuildingType::Winery, BuildingType::Storehouse,
+            BuildingType::Watchtower, BuildingType::Catapult},
            {BuildingType::Farm, BuildingType::PigFarm, BuildingType::DonkeyBreeder, BuildingType::Charburner,
-            BuildingType::Fortress, BuildingType::HarborBuilding},
+            BuildingType::Vineyard, BuildingType::Temple, BuildingType::Fortress, BuildingType::HarborBuilding},
            {BuildingType::GoldMine, BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine}}};
 
         /// Flexible what-buildings-are-available handling
@@ -140,6 +140,13 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
             building_available[BuildingType::Charburner] = false;
+
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::WINE))
+        {
+            building_available[BuildingType::Vineyard] = false;
+            building_available[BuildingType::Winery] = false;
+            building_available[BuildingType::Temple] = false;
+        }
 
         constexpr helpers::EnumArray<unsigned, BuildTab> NUM_TABS = {1, 2, 3, 1, 3};
 

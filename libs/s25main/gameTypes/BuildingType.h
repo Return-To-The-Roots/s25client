@@ -13,9 +13,9 @@ enum class BuildingType : uint8_t
     Guardhouse,     // 2
     Nothing2,       // 3
     Watchtower,     // 4
-    Nothing3,       // 5
-    Nothing4,       // 6
-    Nothing5,       // 7
+    Vineyard,       // 5
+    Winery,         // 6
+    Temple,         // 7
     Nothing6,       // 8
     Fortress,       // 9
     GraniteMine,    // 10
@@ -56,4 +56,4 @@ constexpr auto maxEnumValue(BuildingType)
 }
 
 /// Number of NOTHING entries (currently unused buildings)
-const unsigned NUM_UNUSED_BLD_TYPES = 7;
+const unsigned NUM_UNUSED_BLD_TYPES = 4;

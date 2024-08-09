@@ -88,7 +88,7 @@ void nofCharburner::WorkFinished()
     if(GetPointQuality(pos) != PointQuality::NotPossible)
     {
         // Delete previous elements
-        // Only environt objects and signs are allowed to be removed by the worker!
+        // Only environ objects and signs are allowed to be removed by the worker!
         // Otherwise just do nothing
         NodalObjectType noType = no->GetType();
 
@@ -105,7 +105,7 @@ void nofCharburner::WorkFinished()
 }
 
 /// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht, den z.B. der Holzfäller braucht
-nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) const
+nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt, const bool isBeforeWork) const
 {
     noBase* no = world->GetNO(pt);
 
@@ -117,11 +117,11 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
         if(pileState == noCharburnerPile::State::Smoldering)
             return PointQuality::NotPossible;
 
-        // Wood stack which stell need resources?
+        // Wood stack which still need resources?
         if(pileState == noCharburnerPile::State::Wood)
         {
-            // Does it need resources and I don't have them hen starting new work (state = Waiting1)?
-            if(!workplace->WaresAvailable() && this->state == State::Waiting1)
+            // Only check for resources before going out
+            if(isBeforeWork && !workplace->WaresAvailable())
                 return PointQuality::NotPossible;
             else
                 // Only second class, harvest all piles first before continue
@@ -134,8 +134,8 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     }
 
     // Try to "plant" a new pile
-    // Still enough wares when starting new work (state = Waiting1)?
-    if(!workplace->WaresAvailable() && state == State::Waiting1)
+    // Enough wares when starting new work?
+    if(isBeforeWork && !workplace->WaresAvailable())
         return PointQuality::NotPossible;
 
     // Der Platz muss frei sein

@@ -47,11 +47,13 @@ enum class GoodType : uint8_t
     /* 32 */ Meat,           // Fleisch
     /* 33 */ Ham,            // Schinken ( Schwein )
     /* 34 */ ShieldJapanese, // Schild
-    /* 35 */ Nothing         // Nothing. Is not counted as a good. TODO: Remove
+    /* 35 */ Grapes,
+    /* 36 */ Wine,
+    /* 37 */ Nothing // Nothing. Is not counted as a good. TODO: Remove
 };
 constexpr auto maxEnumValue(GoodType)
 {
-    return GoodType::ShieldJapanese;
+    return GoodType::Wine;
 }
 
 /// List of all tools (correspond to buttons at IO:140-163)
