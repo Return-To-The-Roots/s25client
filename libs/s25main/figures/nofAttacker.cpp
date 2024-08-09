@@ -467,7 +467,8 @@ void nofAttacker::MissAttackingWalk()
 void nofAttacker::ReachedDestination()
 {
     // Are we at the flag of the target?
-    if(pos == attacked_goal->GetFlagPos())
+    const MapPoint attFlagPos = attacked_goal->GetFlagPos();
+    if(pos == attFlagPos)
     {
         // If building is already captured continue capturing
         // (This can only be a far away attacker)
@@ -507,41 +508,28 @@ void nofAttacker::ReachedDestination()
     {
         // Destination wasn't the flag, so just wait until we can fight and face the flag
         state = SoldierState::AttackingWaitingAroundBuilding;
-        // zur Flagge hin ausrichten
-        Direction dir(Direction::West);
-        MapPoint attFlagPos = attacked_goal->GetFlagPos();
-        if(pos.y == attFlagPos.y && pos.x <= attFlagPos.x)
-            dir = Direction::East;
-        else if(pos.y == attFlagPos.y && pos.x > attFlagPos.x)
-            dir = Direction::West;
-        else if(pos.y < attFlagPos.y && pos.x < attFlagPos.x)
-            dir = Direction::SouthEast;
-        else if(pos.y < attFlagPos.y && pos.x > attFlagPos.x)
-            dir = Direction::SouthWest;
-        else if(pos.y > attFlagPos.y && pos.x < attFlagPos.x)
-            dir = Direction::NorthEast;
-        else if(pos.y > attFlagPos.y && pos.x > attFlagPos.x)
-            dir = Direction::NorthWest;
-        else /* (pos.x ==  attFlagPos.x)*/
+        Direction dir;
+        if(pos.y == attFlagPos.y)
+            dir = (pos.x < attFlagPos.x) ? Direction::East : Direction::West;
+        else if(pos.x == attFlagPos.x)
         {
-            if(pos.y < attFlagPos.y && !(absDiff(pos.y, attFlagPos.y) & 1))
-                dir = Direction::SouthEast;
-            else if(pos.y < attFlagPos.y && (absDiff(pos.y, attFlagPos.y) & 1))
+            if(pos.y < attFlagPos.y)
             {
-                if(pos.y & 1)
-                    dir = Direction::SouthWest;
+                if(absDiff(pos.y, attFlagPos.y) & 1)
+                    dir = (pos.y & 1) ? Direction::SouthWest : Direction::SouthEast;
                 else
                     dir = Direction::SouthEast;
-            } else if(pos.y > attFlagPos.y && !(absDiff(pos.y, attFlagPos.y) & 1))
-                dir = Direction::NorthEast;
-            else /* (pos.y > attFlagPos.y && (safeDiff(pos.y, attFlagPos.y) & 1))*/
+            } else
             {
-                if(pos.y & 1)
-                    dir = Direction::NorthWest;
+                if(absDiff(pos.y, attFlagPos.y) & 1)
+                    dir = (pos.y & 1) ? Direction::NorthWest : Direction::NorthEast;
                 else
                     dir = Direction::NorthEast;
             }
-        }
+        } else if(pos.y < attFlagPos.y)
+            dir = (pos.x < attFlagPos.x) ? Direction::SouthEast : Direction::SouthWest;
+        else // pos.y > attFlagPos.y
+            dir = (pos.x < attFlagPos.x) ? Direction::NorthEast : Direction::NorthWest;
         FaceDir(dir);
         if(attacked_goal->GetPlayer() == player)
         {
