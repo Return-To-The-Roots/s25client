@@ -21,7 +21,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 4
+local requiredFeature = 5
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -30,7 +30,7 @@ function checkVersion()
 end
 -------------------------------- mission events and texts ---------------------
 -- Message-Window (mission statement and hints): 52 chars wide
-eIdx = {1, 2, 98, 99}
+eIdx = {1, 2, 99}
 
 rttr:RegisterTranslations(
 {
@@ -140,6 +140,9 @@ function onStart(isFirstStart)
         eHist = {["n"] = 0}
         MissionEvent(1)                         -- initial event / start screen
     end
+
+    rttr:GetWorld():SetComputerBarrier(10, 57, 73)
+    rttr:GetWorld():SetComputerBarrier(10, 39, 29)
 end
 
 function getAllowedChanges()
@@ -181,30 +184,6 @@ function addPlayerBld(p, onLoad)
     rttr:GetPlayer(p):DisableBuilding(BLD_HARBORBUILDING, false)
 
     if(p == 1) then
-        rttr:GetPlayer(p):SetRestrictedArea(
-            nil, nil,       -- enable the whole map
-                0,   0,
-                0, 127,
-                127, 127,
-                127,   0,
-            nil, nil,       -- R=10,    X=57,   Y=73    ->  R=10,   X=58,   Y=68    (Yellow HQ!)
-                 62,  76,
-                 67,  86,
-                 62,  96,
-                 52,  96,
-                 47,  86,
-                 52,  76,
-                 62,  76,
-            nil, nil,      -- northern pass
-                 39,  28,
-                 40,  28,
-                 40,  29,
-                 40,  30,
-                 39,  30,
-                 38,  29,
-                 39,  28,
-            nil, nil        -- ignore R=10, X=39,   Y=29
-        )
         if onLoad then return end
 
         rttr:GetPlayer(p):AIConstructionOrder(57, 73, BLD_FORTRESS)
@@ -444,10 +423,6 @@ function onOccupied(p, x, y)
 
     if( (x == 75) and (y == 40) ) then MissionEvent(99)
     end
-
-    if(not rttr:GetPlayer(1):IsInRestrictedArea(x, y)) then 
-        MissionEvent(98) -- for lifting restrictions
-    end
 end
 
 function onExplored(p, x, y, o)
@@ -464,11 +439,7 @@ function MissionEvent(e, onLoad)
     end
 
     -- call side effects for active events, check "eState[e] == 1" for multiple call events!
-    if(e == 98) then
-        rttr:GetPlayer(1):SetRestrictedArea()
-        rttr:GetPlayer(2):SetRestrictedArea()
-        
-    elseif(e == 99) then
+    if(e == 99) then
         -- TODO: EnableNextMissions()
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(75, 40, 561, 0xFFFF, 2)

@@ -21,7 +21,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 4
+local requiredFeature = 5
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -30,7 +30,7 @@ function checkVersion()
 end
 -------------------------------- mission events and texts --------------------
 -- Message-Window (mission statement and hints): 52 chars wide
-eIdx = {1, 2, 3, 98, 99}
+eIdx = {1, 2, 3, 99}
 
 rttr:RegisterTranslations(
 {
@@ -156,6 +156,18 @@ function onStart(isFirstStart)
         MissionEvent(1)                     -- initial event / start screen
     end
 
+    rttr:GetWorld():SetComputerBarrier(16, 162, 69)
+    rttr:GetWorld():SetComputerBarrier(17, 148, 107)
+    rttr:GetWorld():SetComputerBarrier(15, 131, 71)
+    rttr:GetWorld():SetComputerBarrier(16, 103, 40)
+    rttr:GetWorld():SetComputerBarrier(13, 124, 93)
+    rttr:GetWorld():SetComputerBarrier(13, 103, 49)
+    rttr:GetWorld():SetComputerBarrier(12, 108, 66)
+    rttr:GetWorld():SetComputerBarrier(14, 61, 111)
+    rttr:GetWorld():SetComputerBarrier(13, 48, 41)
+    rttr:GetWorld():SetComputerBarrier(14, 40, 52)
+    rttr:GetWorld():SetComputerBarrier(14, 25, 45)
+
     if isFirstStart then
         -- type 8 == 7 in rttr
         rttr:GetWorld():AddAnimal( 126,  48, SPEC_DUCK)
@@ -228,77 +240,6 @@ end
 function addPlayerBld(p, onLoad)
     -- set buildings for all players
     rttr:GetPlayer(p):EnableAllBuildings()
-
-    if not (p == 0) then
-        rttr:GetPlayer(p):SetRestrictedArea(
-            nil, nil,       -- enable the whole map
-                0,   0,
-                0, 127,
-                191, 127,
-                191,   0,
-            nil, nil,       -- R=16,    X=162,  Y=69    (Choose R=10 -> Yellow can conquer mountain)
-                167,  59,
-                172,  69,
-                167,  79,
-                157,  79,
-                152,  69,
-                157,  59,
-                167,  59,
-            nil, nil,       -- R=17,    X=148,  Y=107
-                157,  90,
-                165, 107,
-                157, 124,
-                140, 124,
-                131, 107,
-                140,  90,
-                157,  90,
-            nil, nil,       -- R=15,    X=131,  Y=71    (Choose R=4 -> Yellow HQ!)
-                133,  67,
-                135,  71,
-                133,  75,
-                129,  75,
-                127,  71,
-                129,  67,
-                133,  67,
-            nil, nil,       -- R=16,    X=103,  Y=40    V
-                87,  40,    -- R=13,    X=103,  Y=49    V
-                95,  24,    -- R=12,    X=108,  Y=66
-                111,  24,
-                119,  40,
-                116,  49,
-                120,  66,
-                114,  78,
-                102,  78,
-                96,  66,
-                90,  49,
-                87,  40,
-            nil, nil,       -- R=13,    X=124,  Y=93
-                131,  80,
-                137,  93,
-                131, 106,
-                118, 106,
-                111,  93,
-                118,  80,
-                131,  80,
-            nil, nil,       -- R=14,    X=61,   Y=111
-                68,  97,
-                75, 111,
-                68, 125,
-                54, 125,
-                47, 111,
-                54,  97,
-                68,  97,
-            nil, nil,       -- R=13,    X=48,   Y=41
-                55,  28,
-                61,  41,
-                55,  54,
-                42,  54,
-                35,  41,
-                42,  28,
-                55,  28,
-            nil, nil        -- ignore R=14, X=40, Y=52 and R=14, X=25, Y=45
-        )
-    end
 end
 
 -------------------------------- set resources --------------------------------
@@ -533,10 +474,6 @@ function onOccupied(p, x, y)
     if(     (x == 102) and (y == 50) ) then MissionEvent(3)
     elseif( (x == 148) and (y == 50) ) then MissionEvent(99)
     end
-    
-    if(not rttr:GetPlayer(1):IsInRestrictedArea(x, y)) then 
-        MissionEvent(98) -- for lifting restrictions
-    end
 end
 
 function onExplored(p, x, y, o)
@@ -551,14 +488,9 @@ function MissionEvent(e, onLoad)
     if(eState[e] <= 0) then
         return
     end
-
-    if(e == 98) then
-        rttr:Log("liftRestrictions")
-        rttr:GetPlayer(1):SetRestrictedArea()
-        rttr:GetPlayer(2):SetRestrictedArea()
     
     -- call side effects for active events, check "eState[e] == 1" for multiple call events!
-    elseif(e == 99) then
+    if(e == 99) then
         -- TODO: EnableNextMissions()
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(148, 50, 561, 0xFFFF, 2)

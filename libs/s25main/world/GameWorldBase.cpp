@@ -696,3 +696,14 @@ void GameWorldBase::RecalcBQ(const MapPoint pt)
         GetNotifications().publish(NodeNote(NodeNote::BQ, pt));
     }
 }
+
+void GameWorldBase::SetComputerBarrier(const MapPoint& pt, unsigned radius)
+{
+    for(const auto& pt : GetPointsInRadiusWithCenter(pt, radius))
+        ptsInsideComputerBarriers.insert(pt);
+}
+
+bool GameWorldBase::IsInsideComputerBarrier(const MapPoint& pt) const
+{
+    return helpers::contains(ptsInsideComputerBarriers, pt);
+}
