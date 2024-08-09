@@ -1,8 +1,9 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GameEvent.h"
+#include "PointOutput.h"
 #include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
@@ -12,6 +13,7 @@
 #include "figures/nofCarrier.h"
 #include "figures/nofDefender.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "helpers/pointerContainerUtils.h"
 #include "pathfinding/FindPathForRoad.h"
@@ -802,7 +804,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
     const MapPoint flagPt = world.MakeMapPoint(milBld1Pos - Position(2, 0));
     this->SetFlag(flagPt);
     BuildRoadForBlds(world.GetNeighbour(flagPt, Direction::NorthWest), milBld1Pos);
-    // Build a long road connecting left&right w/o any flag inbetween (See #863)
+    // Build a long road connecting left&right w/o any flag in between (See #863)
     BuildRoadForBlds(leftBldPos, rightBldPos);
     BOOST_TEST_REQUIRE(leftBld->GetFlag()->GetRoute(Direction::East)->GetLength() >= 10u);
 
@@ -823,6 +825,138 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
             }
         }
     }
+}
+
+// Prepare a free fight between an attacker from the left and a (aggressive) defender from the right
+// After preparation both are just about to meet
+struct FreeFightFixture : AttackFixture<2>
+{
+    nobMilitary &attackerBld, &attackedBld;
+    const MapPoint attackedBldPos, fightSpot;
+    nofAttacker* attacker_;
+    nofAggressiveDefender* defender_;
+
+    FreeFightFixture()
+        : attackerBld(*milBld0), attackedBld(*milBld1), attackedBldPos(milBld1Pos),
+          fightSpot(attackedBldPos - MapPoint(3, 0))
+    {
+        AddSoldiersWithRank(milBld0Pos, 6, 0);
+        AddSoldiersWithRank(milBld1Pos, 6, 0);
+        this->Attack(attackedBldPos, 1, true);
+        auto& attacker = dynamic_cast<nofAttacker&>(attackerBld.GetLeavingFigures().front());
+        attacker_ = &attacker;
+        RTTR_EXEC_TILL(70, attackerBld.GetLeavingFigures().empty()); //-V807
+
+        nofAggressiveDefender& defender = ensureNonNull(attackedBld.SendAggressiveDefender(attacker));
+        defender_ = &defender;
+        RTTR_EXEC_TILL(70, attackedBld.GetLeavingFigures().empty()); //-V807
+        attacker.LetsFight(defender);
+
+        // In a distance of 2 they find each other and meet half way
+        const MapPoint fightSpot = attackedBldPos - MapPoint(3, 0);
+        // attacker building is left -> place attacker left of fight spot
+        BOOST_TEST_REQUIRE(attackerBld.GetPos().x < attackedBldPos.x);
+        moveObjTo(world, attacker, fightSpot - MapPoint(1, 0));
+        moveObjTo(world, defender, fightSpot + MapPoint(1, 0));
+        rescheduleWalkEvent(em, attacker, 1);
+        RTTR_SKIP_GFS(1);
+        BOOST_TEST_REQUIRE((defender.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
+        BOOST_TEST_REQUIRE((attacker.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
+    }
+
+    /// Add blocking terrain around building of defender starting left of the specified position
+    void blockDefenderBuilding(const MapCoord x)
+    {
+        const auto terrain =
+          this->world.GetDescription().terrain.find([](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable); });
+        for(const auto y : helpers::range(this->world.GetHeight()))
+        {
+            auto& node = this->world.GetNodeWriteable(MapPoint(x, y));
+            auto& rightNode = this->world.GetNodeWriteable(MapPoint(attackedBldPos.x + 1, y));
+            node.t1 = node.t2 = rightNode.t1 = rightNode.t2 = terrain;
+        }
+        const auto yTop = this->world.MakeMapPoint(Position(attackedBldPos.x, attackedBldPos.y - 3)).y;
+        const auto yBottom = this->world.MakeMapPoint(Position(attackedBldPos.x, attackedBldPos.y + 3)).y;
+        for(const auto x : helpers::range(x, attackedBldPos.x))
+        {
+            auto& topNode = this->world.GetNodeWriteable(MapPoint(x, yTop));
+            auto& bottomNode = this->world.GetNodeWriteable(MapPoint(x, yBottom));
+            topNode.t1 = topNode.t2 = bottomNode.t1 = bottomNode.t2 = terrain;
+        }
+    }
+};
+
+BOOST_FIXTURE_TEST_CASE(Attacker_Returns_When_AgressiveDefender_Aborts, FreeFightFixture)
+{
+    /* Setup:
+     * Attacker waits for the defender.
+     * The spot becomes unreachable for the defender and the attacked building becomes unreachable for the attacker.
+     * In issue #1668 this happened due to a destroyed road.
+     * Once the defender notices this, both should be walking home.
+     */
+    auto& attacker = ensureNonNull(attacker_);
+    auto& defender = ensureNonNull(defender_);
+
+    moveObjTo(world, attacker, fightSpot);
+    rescheduleWalkEvent(em, attacker, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST_REQUIRE((defender.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
+    BOOST_TEST_REQUIRE((attacker.GetState() == nofActiveSoldier::SoldierState::WaitingForFight));
+    // The next part of the test assumes they use this fight spot.
+    // This doesn't need to stay true which only needs adjustments to the test.
+    BOOST_TEST_REQUIRE(attacker.GetPos() == fightSpot);
+
+    blockDefenderBuilding(fightSpot.x);
+    // -> defender can't reach attacker
+    // -> attacker can't reach attacked building
+    // Pending fight should get aborted and both go back home:
+    rescheduleWalkEvent(em, defender, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST(defender.IsMoving());
+    BOOST_TEST(attacker.IsMoving());
+    BOOST_TEST((defender.GetState() != nofActiveSoldier::SoldierState::MeetEnemy));
+    BOOST_TEST((attacker.GetState() != nofActiveSoldier::SoldierState::WaitingForFight));
+
+    BOOST_TEST_REQUIRE(attackedBld.GetNumTroops() == 5u); // Sanity check
+    RTTR_EXEC_TILL(100, attackedBld.GetNumTroops() == 6u);
+    BOOST_TEST_REQUIRE(attackerBld.GetNumTroops() == 5u); // Sanity check
+    RTTR_EXEC_TILL(100, attackerBld.GetNumTroops() == 6u);
+}
+
+BOOST_FIXTURE_TEST_CASE(AgressiveDefender_Returns_When_Attacker_Aborts, FreeFightFixture)
+{
+    /* Setup:
+     * Defender waits for attacker.
+     * Something happens that the attacker can't reach the defender, e.g. a destroyed road
+     * Once the attacker notices this, both should be walking home.
+     */
+    auto& attacker = ensureNonNull(attacker_);
+    auto& defender = ensureNonNull(defender_);
+
+    moveObjTo(world, defender, fightSpot);
+    rescheduleWalkEvent(em, defender, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST_REQUIRE((defender.GetState() == nofActiveSoldier::SoldierState::WaitingForFight));
+    BOOST_TEST_REQUIRE((attacker.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
+    // The next part of the test assumes they use this fight spot.
+    // This doesn't need to stay true which only needs adjustments to the test.
+    BOOST_TEST_REQUIRE(defender.GetPos() == fightSpot);
+
+    blockDefenderBuilding(fightSpot.x - 1);
+    // -> attacker can't reach defender or attacked building
+    // Pending fight should get aborted and both go back home:
+    moveObjTo(world, attacker, fightSpot - MapPoint(1, 0));
+    rescheduleWalkEvent(em, attacker, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST(defender.IsMoving());
+    BOOST_TEST(attacker.IsMoving());
+    BOOST_TEST((defender.GetState() != nofActiveSoldier::SoldierState::WaitingForFight));
+    BOOST_TEST((attacker.GetState() != nofActiveSoldier::SoldierState::MeetEnemy));
+
+    BOOST_TEST_REQUIRE(attackedBld.GetNumTroops() == 5u); // Sanity check
+    RTTR_EXEC_TILL(100, attackedBld.GetNumTroops() == 6u);
+    BOOST_TEST_REQUIRE(attackerBld.GetNumTroops() == 5u); // Sanity check
+    RTTR_EXEC_TILL(100, attackerBld.GetNumTroops() == 6u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
