@@ -211,7 +211,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     }
 
     // Look for enemies
-    if(FindEnemiesNearby())
+    if(TryFightingNearbyEnemy())
     {
         // Enemy found -> abort, because nofActiveSoldier handles all things now
         // Note it is ok, if the enemy is our attacker.

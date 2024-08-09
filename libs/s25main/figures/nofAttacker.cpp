@@ -360,15 +360,11 @@ void nofAttacker::ContinueAtFlag()
        || (state == SoldierState::Fighting && attacked_goal->GetFlagPos() == pos))
     {
         if(attacked_goal->CallDefender(*this)) //-V522
-        {
-            // Verteidiger gefunden --> hinstellen und auf ihn warten
             SwitchStateAttackingWaitingForDefender();
-        } else
+        else if(!TryFightingNearbyEnemy(attacked_goal->GetPlayer()))
         {
-            // check for soldiers of other non-friendly non-owner players to fight
-            if(FindEnemiesNearby(attacked_goal->GetPlayer()))
-                return;
-            // kein Verteidiger gefunden --> ins Gebäude laufen und es erobern
+            // No defender or soldiers of other non-friendly non-owner players to fight
+            // -> Enter building
             state = SoldierState::AttackingCapturingFirst;
             StartWalking(Direction::NorthWest);
 
@@ -446,7 +442,7 @@ void nofAttacker::MissAttackingWalk()
     }
 
     // Find all sorts of enemies (attackers, aggressive defenders..) nearby
-    if(FindEnemiesNearby())
+    if(TryFightingNearbyEnemy())
         // Enemy found -> abort, because nofActiveSoldier handles all things now
         return;
 

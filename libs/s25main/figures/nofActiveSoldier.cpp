@@ -96,7 +96,7 @@ void nofActiveSoldier::WalkingHome()
         if(dir)
         {
             // Find all sorts of enemies (attackers, aggressive defenders..) nearby
-            if(FindEnemiesNearby())
+            if(TryFightingNearbyEnemy())
                 // Enemy found -> abort, because nofActiveSoldier handles all things now (inclusive one walking step)
                 return;
 
@@ -200,7 +200,7 @@ void nofActiveSoldier::Walked()
     }
 }
 
-bool nofActiveSoldier::FindEnemiesNearby(const std::optional<unsigned char>& excludedOwner)
+bool nofActiveSoldier::TryFightingNearbyEnemy(const std::optional<unsigned char>& excludedOwner)
 {
     RTTR_Assert(enemy == nullptr);
     enemy = nullptr;
