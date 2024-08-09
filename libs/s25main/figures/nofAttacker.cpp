@@ -29,9 +29,10 @@ constexpr unsigned BLOCK_OFFSET = 10;
 nofAttacker::nofAttacker(const nofPassiveSoldier& other, nobBaseMilitary& attacked_goal,
                          const nobHarborBuilding* const harbor)
     : nofActiveSoldier(other, harbor ? SoldierState::SeaattackingGoToHarbor : SoldierState::AttackingWalkingToGoal),
-      attacked_goal(&attacked_goal), mayBeHunted(true), canPlayerSendAggDefender(world->GetNumPlayers(), 2),
-      huntingDefender(nullptr), radius(0), blocking_event(nullptr),
-      harborPos(harbor ? harbor->GetPos() : MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
+      attacked_goal(&attacked_goal), mayBeHunted(true),
+      canPlayerSendAggDefender(world->GetNumPlayers(), SendDefender::Undecided), huntingDefender(nullptr), radius(0),
+      blocking_event(nullptr), harborPos(harbor ? harbor->GetPos() : MapPoint::Invalid()), shipPos(MapPoint::Invalid()),
+      ship_obj_id(0)
 {
     attacked_goal.LinkAggressor(*this);
 }
@@ -99,7 +100,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     {
         attacked_goal = nullptr;
         mayBeHunted = false;
-        canPlayerSendAggDefender.resize(world->GetNumPlayers(), 2);
+        canPlayerSendAggDefender.resize(world->GetNumPlayers(), SendDefender::Undecided);
         huntingDefender = nullptr;
         radius = 0;
         blocking_event = nullptr;
@@ -578,34 +579,33 @@ void nofAttacker::OrderAggressiveDefender()
         if(world->CalcDistance(pos, bld->GetPos()) > maxDistance)
             continue;
         const unsigned bldOwnerId = bld->GetPlayer();
-        if(canPlayerSendAggDefender[bldOwnerId] == 0)
+        if(canPlayerSendAggDefender[bldOwnerId] == SendDefender::No)
             continue;
         // Only allies of the attacked player send defenders and only if we can attack them
         GamePlayer& bldOwner = world->GetPlayer(bldOwnerId);
-        if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && bldOwner.IsAttackable(player))
+        if(!bldOwner.IsAlly(attacked_goal->GetPlayer()))
+            continue;
+        if(!bldOwner.IsAttackable(player))
+            continue;
+        // If player did not decide on sending do it now.
+        // Doing this as late as here reduces chances,
+        // that the player changed the setting when the defender is asked for
+        if(canPlayerSendAggDefender[bldOwnerId] == SendDefender::Undecided)
         {
-            // If player did not decide on sending do it now.
-            // Doing this as late as here reduces chance, that the player changed the setting when the defender is asked
-            // for
-            if(canPlayerSendAggDefender[bldOwnerId] == 2)
+            if(bldOwner.ShouldSendDefender())
+                canPlayerSendAggDefender[bldOwnerId] = SendDefender::Yes;
+            else
             {
-                bool sendDefender = bldOwner.ShouldSendDefender();
-                if(sendDefender)
-                    canPlayerSendAggDefender[bldOwnerId] = 1;
-                else
-                {
-                    canPlayerSendAggDefender[bldOwnerId] = 0;
-                    continue;
-                }
+                canPlayerSendAggDefender[bldOwnerId] = SendDefender::No;
+                continue;
             }
-            // ggf. Verteidiger rufen
-            huntingDefender = bld->SendAggressiveDefender(*this);
-            if(huntingDefender)
-            {
-                // nun brauchen wir keinen Verteidiger mehr
-                mayBeHunted = false;
-                break;
-            }
+        }
+        huntingDefender = bld->SendAggressiveDefender(*this);
+        if(huntingDefender)
+        {
+            // Cannot be hunted again
+            mayBeHunted = false;
+            break;
         }
     }
 }

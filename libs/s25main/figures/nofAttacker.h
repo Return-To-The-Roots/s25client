@@ -20,12 +20,21 @@ class GameEvent;
 /// Attacking soldier
 class nofAttacker : public nofActiveSoldier
 {
+    /// State whether a defender might be sent
+    enum class SendDefender : uint8_t
+    {
+        No,
+        Yes,
+        Undecided /// To be determined
+    };
+    friend constexpr auto maxEnumValue(SendDefender) { return SendDefender::Undecided; }
+
     /// Building which is attacked by the soldier
     nobBaseMilitary* attacked_goal;
     /// Can we get chased by an aggressive defender?
     bool mayBeHunted;
     /// Whether we may send a defender to this player
-    std::vector<uint8_t> canPlayerSendAggDefender;
+    std::vector<SendDefender> canPlayerSendAggDefender;
     /// Defender who is currently chasing after this soldier
     nofAggressiveDefender* huntingDefender;
     /// Distance to flag when waiting around it
