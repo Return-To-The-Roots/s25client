@@ -69,9 +69,9 @@ protected:
     /// Handle walking for nofActiveSoldier specific states
     void Walked() override;
 
-    /// Look for a nearby enemy which wants to fight with this soldier
-    /// Return true if one found
-    bool FindEnemiesNearby(const std::optional<unsigned char>& excludedOwner = std::nullopt);
+    /// Look for a nearby enemy which wants to fight with this soldier.
+    /// Return true if one was found and we are going to fight him.
+    bool TryFightingNearbyEnemy(const std::optional<unsigned char>& excludedOwner = std::nullopt);
     /// Inform this soldier that another soldier starts meeting him
     void MeetEnemy(nofActiveSoldier* other, MapPoint figh_spot);
     /// Handle state "meet enemy" after each walking step
