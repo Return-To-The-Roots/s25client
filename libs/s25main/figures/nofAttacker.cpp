@@ -253,28 +253,21 @@ void nofAttacker::Walked()
             {
                 state = SoldierState::SeaattackingWaitInHarbor;
                 world->GetSpecObj<nobHarborBuilding>(pos)->AddSeaAttacker(world->RemoveFigure(pos, *this));
-                return;
-            }
-
-            // Erstmal Flagge ansteuern
-            MapPoint harborFlagPos = world->GetNeighbour(harborPos, Direction::SouthEast);
-
-            // Wenn wir an der Flagge bereits sind, in den Hafen eintreten
-            if(pos == harborFlagPos)
-                StartWalking(Direction::NorthWest);
-            else
+            } else // Go to flag then walk inside the building
             {
-                // Weg zum Hafen suchen
-                const auto dir = world->FindHumanPath(pos, harborFlagPos, MAX_ATTACKING_RUN_DISTANCE, false, nullptr);
-                if(!dir)
-                {
-                    // Kein Weg gefunden? Dann auch abbrechen!
-                    ReturnHomeMissionAttacking();
-                    return;
-                }
+                const MapPoint harborFlagPos = world->GetNeighbour(harborPos, Direction::SouthEast);
 
-                // Und schön weiterlaufen
-                StartWalking(*dir);
+                if(pos == harborFlagPos)
+                    StartWalking(Direction::NorthWest);
+                else
+                {
+                    const auto dir =
+                      world->FindHumanPath(pos, harborFlagPos, MAX_ATTACKING_RUN_DISTANCE, false, nullptr);
+                    if(dir)
+                        StartWalking(*dir);
+                    else
+                        ReturnHomeMissionAttacking(); // No possible path -> Abort
+                }
             }
         }
         break;
@@ -427,41 +420,23 @@ void nofAttacker::MissAttackingWalk()
     // Find a position next to the target
     const MapPoint goal = attacked_goal->FindAnAttackerPlace(radius, *this);
 
-    // Keinen Platz mehr gefunden?
-    if(!goal.isValid())
-    {
-        // Dann nach Haus gehen
+    if(!goal.isValid()) // Go home if there is no free spot
         ReturnHomeMissionAttacking();
-        return;
-    }
-
-    // Sind wir evtl schon da?
-    if(pos == goal)
-    {
+    else if(pos == goal)
         ReachedDestination();
-        return;
-    }
-
-    // Find all sorts of enemies (attackers, aggressive defenders..) nearby
-    if(TryFightingNearbyEnemy())
-        // Enemy found -> abort, because nofActiveSoldier handles all things now
-        return;
-
-    // Haben wir noch keinen Feind?
-    // Könnte mir noch ein neuer Verteidiger entgegenlaufen?
-    TryToOrderAggressiveDefender();
-
-    // Ansonsten Weg zum Ziel suchen
-    const auto dir = world->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
-    // Keiner gefunden? Nach Hause gehen
-    if(!dir)
+    else if(!TryFightingNearbyEnemy())
     {
-        ReturnHomeMissionAttacking();
-        return;
-    }
+        // If no Enemy (attackers, aggressive defenders..) was found (would be handled by nofActiveSoldier)
+        // check if some building might send a defender and walk to goal
 
-    // Start walking
-    StartWalking(*dir);
+        TryToOrderAggressiveDefender();
+
+        const auto dir = world->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
+        if(dir)
+            StartWalking(*dir);
+        else
+            ReturnHomeMissionAttacking();
+    }
 }
 
 void nofAttacker::ReachedDestination()
@@ -482,27 +457,25 @@ void nofAttacker::ReachedDestination()
             StartWalking(Direction::NorthWest);
             // Then tell the building
             goal->FarAwayCapturerReachedGoal(*this, true);
-            return;
-        }
-
-        // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
-        SendPostMessage(attacked_goal->GetPlayer(),
-                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("We are under attack!"),
-                                                              PostCategory::Military, *attacked_goal));
-
-        // Dann Verteidiger rufen
-        if(attacked_goal->CallDefender(*this))
-        {
-            // Verteidiger gefunden --> hinstellen und auf ihn warten
-            SwitchStateAttackingWaitingForDefender();
         } else
         {
-            // kein Verteidiger gefunden --> ins Gebäude laufen und es erobern
-            state = SoldierState::AttackingCapturingFirst;
-            StartWalking(Direction::NorthWest);
-            // Normalen Militärgebäuden schonmal Bescheid sagen
-            if(attacked_goal->GetGOT() == GO_Type::NobMilitary)
-                static_cast<nobMilitary*>(attacked_goal)->PrepareCapturing();
+            // Notify player
+            // TODO: Possibly improve that not every attacker does that
+            SendPostMessage(attacked_goal->GetPlayer(),
+                            std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("We are under attack!"),
+                                                                  PostCategory::Military, *attacked_goal));
+
+            // Get a defender or walk into the building
+            if(attacked_goal->CallDefender(*this))
+                SwitchStateAttackingWaitingForDefender();
+            else
+            {
+                state = SoldierState::AttackingCapturingFirst;
+                StartWalking(Direction::NorthWest);
+                // Regular military buildings will be captured
+                if(attacked_goal->GetGOT() == GO_Type::NobMilitary)
+                    static_cast<nobMilitary*>(attacked_goal)->PrepareCapturing();
+            }
         }
     } else
     {
@@ -632,29 +605,18 @@ bool nofAttacker::AttackFlag(nofDefender* /*defender*/)
 {
     // Walk to flag if possible
     const auto dir = world->FindHumanPath(pos, attacked_goal->GetFlagPos(), 3, true);
+    if(!dir)
+        return false;
 
-    if(dir)
+    const bool waiting_around_building = (state == SoldierState::AttackingWaitingAroundBuilding);
+    state = SoldierState::AttackingAttackingFlag;
+
+    if(waiting_around_building)
     {
-        // Hat er drumrum gewartet?
-        const bool waiting_around_building = (state == SoldierState::AttackingWaitingAroundBuilding);
-
-        // Ja er hat einen Weg gefunden, also hinlaufen
-
-        // Wenn er steht, muss er loslaufen
-        if(waiting_around_building)
-            StartWalking(*dir);
-
-        state = SoldierState::AttackingAttackingFlag;
-
-        // Hatte er ums Gebäude gewartet?
-        if(waiting_around_building)
-        {
-            // evtl. Nachrücker senden
-            attacked_goal->SendSuccessor(pos, radius);
-        }
-        return true;
+        StartWalking(*dir);
+        attacked_goal->SendSuccessor(pos, radius);
     }
-    return false;
+    return true;
 }
 
 void nofAttacker::AttackFlag()
@@ -681,7 +643,10 @@ void nofAttacker::CapturingWalking()
 
     const MapPoint attFlagPos = attacked_goal->GetFlagPos();
 
-    // Sind wir schon im Gebäude?
+    // 3 cases:
+    // 1. We arrived in the building -> Capture
+    // 2. We arrived at flag -> Go into the building
+    // 3. Otherwise walk to the flag if our home building still exists, else wander around
     if(pos == attacked_goal->GetPos())
     {
         // We switch buildings
@@ -698,16 +663,16 @@ void nofAttacker::CapturingWalking()
         {
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             auto* goal = static_cast<nobMilitary*>(attacked_goal);
-            // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was
-            // already finished
-            if(!goal->IsFarAwayCapturer(*this))
+            // If we are still a far-away-capturer at this point,
+            // then the building belongs to us and capturing was already finished
+            if(goal->IsFarAwayCapturer(*this))
             {
+                RTTR_Assert(goal->GetPlayer() == player);
                 RemoveFromAttackedGoal();
-                goal->CapturingSoldierArrived();
             } else
             {
                 RemoveFromAttackedGoal();
-                RTTR_Assert(goal->GetPlayer() == player);
+                goal->CapturingSoldierArrived();
             }
         } else
             RemoveFromAttackedGoal();
@@ -717,34 +682,28 @@ void nofAttacker::CapturingWalking()
         StartWalking(Direction::NorthWest);
         RTTR_Assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
         static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
-    } else
+    } else if(!building)
     {
-        // Ist evtl. unser Heimatgebäude zerstört?
-        if(!building)
+        // If our home is destroyed we are lost and don't walk to the target (our new home if we were at least at the
+        // flag already) Notify it, if it still exists (could be destroyed in the meantime too)
+        if(attacked_goal)
         {
-            // Wenn noch das Ziel existiert (könnte ja zeitgleich abgebrannt worden sein)
-            if(attacked_goal)
-            {
-                auto* attackedBld = static_cast<nobMilitary*>(attacked_goal);
-                RemoveFromAttackedGoal();
-                // Evtl. neue Besatzer rufen
-                RTTR_Assert(attackedBld->GetPlayer() == player);
-                attackedBld->NeedOccupyingTroops();
-            }
-
-            // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
-            if(ship_obj_id)
-                CancelAtShip();
-
-            // Rumirren
-            state = SoldierState::FigureWork;
-            StartWandering();
-            Wander();
-
-            return;
+            auto* attackedBld = static_cast<nobMilitary*>(attacked_goal);
+            RemoveFromAttackedGoal();
+            // Reinforce building (should be already ours)
+            RTTR_Assert(attackedBld->GetPlayer() == player);
+            attackedBld->NeedOccupyingTroops();
         }
 
-        // weiter zur Flagge laufen
+        if(ship_obj_id)
+            CancelAtShip();
+
+        state = SoldierState::FigureWork;
+        StartWandering();
+        Wander();
+    } else
+    {
+        // Our home still exists so walk to the flag of the building if possible
         const auto dir = world->FindHumanPath(pos, attFlagPos, 10, true);
         if(dir)
             StartWalking(*dir);
