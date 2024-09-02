@@ -94,7 +94,9 @@ MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality siz
             // special case fish -> check for other fishery buildings
             if(res == AIResource::Fish && aii.isBuildingNearby(BuildingType::Fishery, curPt, 5))
                 continue;
-            if(res == AIResource::Borderland && aii.gwb.IsOnRoad(aii.gwb.GetNeighbour(curPt, Direction::SouthEast)))
+            if(res == AIResource::Borderland
+               && (aii.gwb.IsOnRoad(aii.gwb.GetNeighbour(curPt, Direction::SouthEast))
+                   || aii.gwb.IsInsideComputerBarrier(curPt)))
                 continue;
             // dont build next to empty harborspots
             if(aii.isHarborPosClose(curPt, 2, true))

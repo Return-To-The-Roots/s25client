@@ -33,7 +33,8 @@ void LuaWorld::Register(kaguya::State& state)
     state["World"].setClass(kaguya::UserdataMetatable<LuaWorld>()
                               .addFunction("AddEnvObject", AddEnvObjectWrapper())
                               .addFunction("AddStaticObject", AddStaticObjectWrapper())
-                              .addFunction("AddAnimal", &LuaWorld::AddAnimal));
+                              .addFunction("AddAnimal", &LuaWorld::AddAnimal)
+                              .addFunction("SetComputerBarrier", &LuaWorld::SetComputerBarrier));
 }
 
 static bool isValidObject(unsigned file, unsigned id)
@@ -95,4 +96,9 @@ void LuaWorld::AddAnimal(int x, int y, lua::SafeEnum<Species> species)
 {
     MapPoint pos = gw.MakeMapPoint(Position(x, y));
     gw.AddFigure(pos, std::make_unique<noAnimal>(species, pos)).StartLiving();
+}
+
+void LuaWorld::SetComputerBarrier(unsigned radius, unsigned short x, unsigned short y)
+{
+    gw.SetComputerBarrier({x, y}, radius);
 }
