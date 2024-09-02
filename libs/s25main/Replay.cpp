@@ -5,6 +5,7 @@
 #include "Replay.h"
 #include "Savegame.h"
 #include "enum_cast.hpp"
+#include "helpers/format.hpp"
 #include "network/PlayerGameCommands.h"
 #include "gameTypes/MapInfo.h"
 #include <s25util/tmpFile.h>
@@ -194,10 +195,25 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
         // TODO(Replay): Move before mapType to have it as early as possible.
         // Previously mapType was an unsigned short, i.e. in little endian the 2nd byte was always unused/zero
         subVersion_ = file_.ReadUnsignedChar();
+        if(subVersion_ > currentReplayDataVersion)
+        {
+            lastErrorMsg =
+              helpers::format(_("Cannot play replay created with a more recent version (Current: %1%, Replay: %2%)"),
+                              currentReplayDataVersion, subVersion_);
+            return false;
+        }
+
         if(subVersion_ >= 1)
             gcVersion_ = file_.ReadUnsignedChar();
         else
             gcVersion_ = 0;
+        if(gcVersion_ > gc::Deserializer::getCurrentVersion())
+        {
+            lastErrorMsg =
+              helpers::format(_("Cannot play replay created with a more recent GC version (Current: %1%, Replay: %2%)"),
+                              gc::Deserializer::getCurrentVersion(), gcVersion_);
+            return false;
+        }
 
         if(mapType_ == MapType::Savegame)
         {

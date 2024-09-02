@@ -4,8 +4,11 @@
 
 #include "iwBuildings.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
@@ -16,8 +19,10 @@
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
 #include "iwMilitaryBuilding.h"
+#include "iwTempleBuilding.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/BuildingCount.h"
@@ -25,25 +30,38 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/const_gui_ids.h"
 
-/// Reihenfolge der Gebäude
-const std::array<BuildingType, 32> bts = {
-  BuildingType::Barracks,      BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
-  BuildingType::GraniteMine,   BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
-  BuildingType::LookoutTower,  BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
-  BuildingType::Quarry,        BuildingType::Forester,   BuildingType::Slaughterhouse, BuildingType::Hunter,
-  BuildingType::Brewery,       BuildingType::Armory,     BuildingType::Metalworks,     BuildingType::Ironsmelter,
-  BuildingType::PigFarm,
-  BuildingType::Storehouse, // entry 21
-  BuildingType::Mill,          BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
-  BuildingType::Well,          BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
-  BuildingType::Charburner,
-  BuildingType::HarborBuilding // entry 31
-};
+void iwBuildings::setBuildingOrder()
+{
+    // Order of the buildings in which they will be shown
+    bts = {
+      BuildingType::Barracks,       BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
+      BuildingType::GraniteMine,    BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
+      BuildingType::LookoutTower,   BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
+      BuildingType::Quarry,         BuildingType::Forester,   BuildingType::Slaughterhouse, BuildingType::Hunter,
+      BuildingType::Brewery,        BuildingType::Armory,     BuildingType::Metalworks,     BuildingType::Ironsmelter,
+      BuildingType::PigFarm,
+      BuildingType::Storehouse, // entry 21
+      BuildingType::Mill,           BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
+      BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
+      BuildingType::Charburner,
+      BuildingType::HarborBuilding,                                                 // entry 31
+      BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
+    };
+
+    const auto isUnused = [&](BuildingType const& bld) {
+        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
+            return true;
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        return false;
+    };
+    helpers::erase_if(bts, isUnused);
+}
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
-const DrawPoint iconPadding(30, 40);
+const Extent bldContentOffset(30, 40);
 // Abstand der einzelnen Symbole untereinander
-const DrawPoint iconSpacing(40, 48);
+const Extent iconSpacing(40, 48);
 // Abstand der Schriften unter den Icons
 const unsigned short font_distance_y = 20;
 
@@ -52,6 +70,9 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
                    LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
+    setBuildingOrder();
+    Resize(iconSpacing * Extent(4, helpers::divCeil(bts.size(), 4) + 1) + bldContentOffset);
+
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
     for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
@@ -60,8 +81,9 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
         {
             if(y * 4 + x >= bts.size()) //-V547
                 break;
+
             Extent btSize = Extent(32, 32);
-            DrawPoint btPos = iconPadding - btSize / 2 + iconSpacing * DrawPoint(x, y);
+            DrawPoint btPos = bldContentOffset - btSize / 2 + iconSpacing * DrawPoint(x, y);
             AddImageButton(y * 4 + x, btPos, btSize, TextureColor::Grey,
                            LOADER.GetNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
@@ -69,7 +91,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
     // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(32, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+    AddImageButton(35, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
                    LOADER.GetImageN("io", 225), _("Help"));
 }
 
@@ -82,14 +104,15 @@ void iwBuildings::Msg_PaintAfter()
     BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingRegister().GetBuildingNums();
 
     // Anzahlen unter die Gebäude schreiben
-    DrawPoint rowPos = GetDrawPos() + iconPadding + DrawPoint(0, font_distance_y);
-    for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
+    DrawPoint rowPos = GetDrawPos() + bldContentOffset + DrawPoint(0, font_distance_y);
+    for(unsigned y = 0; y < helpers::divCeil(bts.size(), 4); ++y)
     {
         DrawPoint curPos = rowPos;
-        for(unsigned x = 0; x < 4; ++x)
+        for(unsigned x = 0; x < 4; x++)
         {
             if(y * 4 + x >= bts.size()) //-V547
                 break;
+
             fmt % bc.buildings[bts[y * 4 + x]] % bc.buildingSites[bts[y * 4 + x]];
             NormalFont->Draw(curPos, fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
             curPos.x += iconSpacing.x;
@@ -100,7 +123,7 @@ void iwBuildings::Msg_PaintAfter()
 
 void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if(ctrl_id == 32) // Help button
+    if(ctrl_id == 35) // Help button
     {
         WINDOWMANAGER.ReplaceWindow(
           std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
@@ -122,6 +145,8 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
         GoToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.GetHarbors());
     else if(BuildingProperties::IsWareHouse(bldType))
         GoToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.GetStorehouses());
+    else if(bldType == BuildingType::Temple)
+        GoToFirstMatching<iwTempleBuilding>(bldType, buildingRegister.GetBuildings(bldType));
     else
         GoToFirstMatching<iwBuilding>(bldType, buildingRegister.GetBuildings(bldType));
 }

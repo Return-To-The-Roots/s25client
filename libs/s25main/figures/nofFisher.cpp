@@ -121,7 +121,7 @@ void nofFisher::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
+nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // Der Punkt muss passierbar sein für Figuren
     if(!PathConditionHuman(*world).IsNodeOk(pt))

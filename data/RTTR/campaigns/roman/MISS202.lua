@@ -21,7 +21,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 4
+local requiredFeature = 5
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -30,7 +30,7 @@ function checkVersion()
 end
 -------------------------------- mission events and texts ---------------------
 -- Message-Window (mission statement and hints): 52 chars wide
-eIdx = {1, 2, 3, 98, 99}
+eIdx = {1, 2, 3, 99}
 
 rttr:RegisterTranslations(
 {
@@ -163,6 +163,9 @@ function onStart(isFirstStart)
         MissionEvent(1)                     -- initial event / start screen
     end
 
+    rttr:GetWorld():SetComputerBarrier(6, 70, 71)
+    rttr:GetWorld():SetComputerBarrier(6, 59, 60)
+
     if isFirstStart then
         -- type 8 == 7 in rttr
         rttr:GetWorld():AddAnimal( 70,  72, SPEC_DUCK)
@@ -239,26 +242,6 @@ function addPlayerBld(p, onLoad)
 
     if(p == 0) then
         rttr:GetPlayer(p):DisableBuilding(BLD_LOOKOUTTOWER, false)
-
-    else
-        rttr:GetPlayer(p):SetRestrictedArea(
-            nil, nil,       -- enable the whole map
-                0,   0,
-                0,   127,
-                127, 127,
-                127, 0,
-            nil, nil,       -- R=6, X=70, Y=71 V R=6, X=59, Y=60
-                73,  65,
-                76,  71,
-                73,  77,
-                67,  77,
-                56,  66,
-                53,  60,
-                56,  54,
-                62,  54,
-                73,  65,
-            nil, nil
-        )
     end
 end
 
@@ -492,10 +475,6 @@ function onOccupied(p, x, y)
 
     if( (x == 89) and (y == 20) ) then MissionEvent(99)
     end
-
-    if(not rttr:GetPlayer(1):IsInRestrictedArea(x, y)) then 
-        MissionEvent(98) -- for lifting restrictions
-    end
 end
 
 function onExplored(p, x, y, o)
@@ -515,10 +494,6 @@ function MissionEvent(e, onLoad)
     -- call side effects for active events, check "eState[e] == 1" for multiple call events!
     if(e == 2) then
         rttr:GetPlayer(0):EnableBuilding(BLD_LOOKOUTTOWER, not onLoad)
-        
-    elseif(e == 98) then
-        rttr:GetPlayer(1):SetRestrictedArea()
-        rttr:GetPlayer(2):SetRestrictedArea()
 
     elseif(e == 99) then
         -- TODO: EnableNextMissions()

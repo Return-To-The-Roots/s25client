@@ -114,6 +114,8 @@ BOOST_AUTO_TEST_CASE(Play200kReplay)
     // Map: Big Slaughter v2
     // 7 x Hard KI
     // 2 KIs each in Teams 1-3, 1 in Team 4
+    // Player KI without team ("WINTER" + F10)
+    // Default addon settings
     // 200k GFs run (+ a bit)
     const boost::filesystem::path replayPath = rttr::test::rttrBaseDir / "tests" / "testData" / "200kGFs.rpl";
     playReplay(replayPath);
@@ -122,8 +124,8 @@ BOOST_AUTO_TEST_CASE(Play200kReplay)
 BOOST_AUTO_TEST_CASE(PlaySeaReplay)
 {
     // Map: Island by Island
-    // 2 x Hard KI + Player KI
-    // No teams, Sea attacks enabled, ships fast
+    // 2 x Hard KI + Player KI ("WINTER" + F10)
+    // No teams, Sea attacks enabled (harbors block), ships fast
     // 300k GFs run (+ a bit)
     const boost::filesystem::path replayPath = rttr::test::rttrBaseDir / "tests" / "testData" / "SeaMap300kGfs.rpl";
     playReplay(replayPath);
