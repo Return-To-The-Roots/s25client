@@ -235,7 +235,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     // Karte laden, um Kartenvorschau anzuzeigen
     if(!gameLobby_->isSavegame())
     {
-        bool isMapPreviewEnabled = !lua || lua->IsMapPreviewEnabled();
+        const bool isMapPreviewEnabled = !lua || lua->IsMapPreviewEnabled();
         if(!isMapPreviewEnabled)
         {
             AddTextDeepening(70, DrawPoint(560, 40), Extent(220, 220), TextureColor::Grey, _("No preview"), LargeFont,
@@ -685,13 +685,16 @@ void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
             else
             {
                 std::unique_ptr<iwAddons> w;
-                if(allowAddonChange && lua->IsChangeAllowed("addonsAll"))
+                if(!allowAddonChange)
+                    w = std::make_unique<iwAddons>(gameLobby_->getSettings(), this, AddonChangeAllowed::None);
+                else if(IsChangeAllowed("addonsAll"))
                     w = std::make_unique<iwAddons>(gameLobby_->getSettings(), this, AddonChangeAllowed::All);
-                else if(allowAddonChange)
+                else
+                {
+                    RTTR_Assert(lua); // Otherwise all changes would be allowed
                     w = std::make_unique<iwAddons>(gameLobby_->getSettings(), this, AddonChangeAllowed::WhitelistOnly,
                                                    lua->GetAllowedAddons());
-                else
-                    w = std::make_unique<iwAddons>(gameLobby_->getSettings(), this, AddonChangeAllowed::None);
+                }
                 WINDOWMANAGER.Show(std::move(w));
             }
         }
@@ -960,7 +963,6 @@ void dskGameLobby::SetPlayerReady(unsigned char player, bool ready)
 
 void dskGameLobby::CI_NewPlayer(const unsigned playerId)
 {
-    // Spielername setzen
     UpdatePlayerRow(playerId);
 
     if(lua && gameLobby_->isHost())
@@ -976,7 +978,6 @@ void dskGameLobby::CI_PlayerLeft(const unsigned playerId)
 
 void dskGameLobby::CI_GameLoading(std::shared_ptr<Game> game)
 {
-    // Desktop wechseln
     WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(std::move(game)));
 }
 
