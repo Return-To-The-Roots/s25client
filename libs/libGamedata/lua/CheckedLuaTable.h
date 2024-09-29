@@ -67,7 +67,7 @@ inline T CheckedLuaTable::getOrThrow(const std::string& fieldName)
     if(value.isNilref())
         throw GameDataLoadError("Required field '" + fieldName + "' not found");
     if(value.isConvertible<T>())
-        return value;
+        return value.get<T>();
     else
         throw GameDataLoadError("Field '" + fieldName + "' has the wrong type");
 }
