@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2023 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -27,6 +27,50 @@ env:
   ADDITIONAL_CMAKE_FLAGS: -DRTTR_ENABLE_BENCHMARKS=ON
 
 jobs:
+  Windows:
+    strategy:
+      matrix:
+        include:
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Debug,   platform: Win32}
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Debug,   platform: x64}
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Release, platform: Win32}
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Release, platform: x64}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Debug,   platform: Win32}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Debug,   platform: x64}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Release, platform: Win32}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Release, platform: x64}
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.4.5
+        id: install-boost
+        with:
+          boost_version: ${{env.BOOST_VERSION}}
+          platform_version: ${{matrix.os == 'windows-2019' &&  '2019' || '2022'}}
+          toolset: msvc
+      - name: 'Configure'
+        env:
+          BOOST_ROOT: ${{steps.install-boost.outputs.BOOST_ROOT}}
+        shell: cmd
+        run: |
+          set "INSTALL_DIR=%GITHUB_WORKSPACE%\installed"
+          mkdir build_dir
+          cd build_dir
+          rem Enable LTCG for release builds (speeds up linking as /GL compiled modules are used)
+          if ${{matrix.type}} == Release (set "cmakeFlags=-DCMAKE_EXE_LINKER_FLAGS=/LTCG -DCMAKE_SHARED_LINKER_FLAGS=/LTCG")
+          echo "Configuring ${{matrix.generator}} for ${{matrix.type}} on ${{matrix.platform}}"
+          cmake -G "${{matrix.generator}}" -A ${{matrix.platform}} ^
+              -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR ^
+              -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_BENCHMARKS=ON ^
+              %cmakeFlags% ..
+      - name: 'Build'
+        run: cmake --build build_dir --config ${{matrix.type}} --parallel 4
+      - name: 'Test'
+        run: ctest --test-dir build_dir --output-on-failure -C ${{matrix.type}} --parallel 4
+
   Linux:
     strategy:
       matrix:
