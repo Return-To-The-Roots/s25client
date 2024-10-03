@@ -234,7 +234,9 @@ bool nofActiveSoldier::TryFightingNearbyEnemy(const std::optional<unsigned char>
         // we have an excluded owner for our new enemy and that only happens in ffa situations when we won against
         // the last defender so our fight spot is the exact location we have right now
         fightSpot_ = pos;
-    } else if(!GetFightSpotNear(enemy, &fightSpot_))
+    } else if(const auto fightSpot = GetFightSpotNear(*enemy))
+        fightSpot_ = *fightSpot;
+    else
     {
         // No success? Then no fight
         enemy = nullptr;
@@ -243,7 +245,7 @@ bool nofActiveSoldier::TryFightingNearbyEnemy(const std::optional<unsigned char>
 
     // We try to meet now
     state = SoldierState::MeetEnemy;
-    enemy->MeetEnemy(this, fightSpot_);
+    enemy->MeetEnemy(*this, fightSpot_);
 
     // Walk to him
     MeetingEnemy();
@@ -348,9 +350,9 @@ bool nofActiveSoldier::IsReadyForFight() const
     }
 }
 
-void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_spot)
+void nofActiveSoldier::MeetEnemy(nofActiveSoldier& other, const MapPoint figh_spot)
 {
-    enemy = other;
+    enemy = &other;
     fightSpot_ = figh_spot;
 
     SoldierState old_state = state;
@@ -361,10 +363,10 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
         MeetingEnemy();
 }
 
-bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight_spot)
+std::optional<MapPoint> nofActiveSoldier::GetFightSpotNear(const nofActiveSoldier& other)
 {
     // Calc middle between the two soldiers and use this as origin spot for the search of more fight spots
-    MapPoint otherPos = world->GetNeighbour(other->GetPos(), other->GetCurMoveDir());
+    MapPoint otherPos = world->GetNeighbour(other.GetPos(), other.GetCurMoveDir());
     MapPoint middle((pos + otherPos) / 2u);
 
     // The point is supposed to be in the middle between the 2 soldiers (and guaranteed to be inside the map)
@@ -393,18 +395,18 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
     }
     RTTR_Assert(world->CalcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
 
-    const auto isGoodFightingSpot = [world = this->world, pos = this->pos, this, other](MapPoint pt) {
+    const auto isGoodFightingSpot = [world = this->world, pos = this->pos, this, &other](MapPoint pt) {
         return world->IsValidPointForFighting(pt, *this, true)
                && (pos == pt || world->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false))
-               && (other->GetPos() == pt
-                   || world->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false));
+               && (other.GetPos() == pt
+                   || world->FindHumanPath(other.GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false));
     };
     const std::vector<MapPoint> pts =
       world->GetMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);
     if(pts.empty())
-        return false;
-    *fight_spot = pts.front();
-    return true;
+        return std::nullopt;
+    else
+        return pts.front();
 }
 
 void nofActiveSoldier::FightingStarted()

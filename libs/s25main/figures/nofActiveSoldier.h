@@ -73,12 +73,12 @@ protected:
     /// Return true if one was found and we are going to fight him.
     bool TryFightingNearbyEnemy(const std::optional<unsigned char>& excludedOwner = std::nullopt);
     /// Inform this soldier that another soldier starts meeting him
-    void MeetEnemy(nofActiveSoldier* other, MapPoint figh_spot);
+    void MeetEnemy(nofActiveSoldier& other, MapPoint figh_spot);
     /// Handle state "meet enemy" after each walking step
     void MeetingEnemy();
     /// Look for an appropriate fighting spot between the two soldiers
     /// Return true on success
-    bool GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight_spot);
+    std::optional<MapPoint> GetFightSpotNear(const nofActiveSoldier& other);
     /// increase rank if possible
     void IncreaseRank();
     /// Hand back control to derived class after a fight

@@ -115,7 +115,7 @@ public:
     /// The aggressive defender won't chase this soldier anymore
     void AggressiveDefenderLost();
     /// Go to the defender waiting at the flag
-    bool AttackFlag(nofDefender* defender);
+    bool AttackDefenderAtFlag();
     /// Go to the flag without an available defender (e.g. just freed after a fight)
     void AttackFlag();
     /// Go into a building that was just captured.
@@ -127,10 +127,10 @@ public:
     /// A waiting soldier should move closer to the flag to fill gaps
     void StartSucceeding(MapPoint pt, unsigned short new_radius);
     /// Return if this soldier is available to occupy the captured building
-    bool CanStartFarAwayCapturing(nobMilitary* dest) const;
+    bool CanStartFarAwayCapturing(const nobMilitary& dest) const;
 
     /// The aggressive defender is going to fight with this soldier
-    void LetsFight(nofAggressiveDefender* other);
+    void LetsFight(nofAggressiveDefender& other);
 
     /// Return if this attacker waits around the building for a fight
     bool IsAttackerReady() const { return (state == SoldierState::AttackingWaitingAroundBuilding); }

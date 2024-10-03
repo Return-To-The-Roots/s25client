@@ -601,7 +601,7 @@ void nofAttacker::AttackedGoalDestroyed()
     }
 }
 
-bool nofAttacker::AttackFlag(nofDefender* /*defender*/)
+bool nofAttacker::AttackDefenderAtFlag()
 {
     // Walk to flag if possible
     const auto dir = world->FindHumanPath(pos, attacked_goal->GetFlagPos(), 3, true);
@@ -741,12 +741,12 @@ void nofAttacker::StartSucceeding(const MapPoint /*pt*/, unsigned short /*new_ra
         attacked_goal->SendSuccessor(oldPos, oldRadius);
 }
 
-void nofAttacker::LetsFight(nofAggressiveDefender* other)
+void nofAttacker::LetsFight(nofAggressiveDefender& other)
 {
     RTTR_Assert(!huntingDefender);
     // We only get hunted once
     mayBeHunted = false;
-    huntingDefender = other;
+    huntingDefender = &other;
 }
 
 void nofAttacker::AggressiveDefenderLost()
@@ -936,14 +936,14 @@ void nofAttacker::FreeFightEnded()
     state = SoldierState::AttackingWalkingToGoal;
 }
 
-bool nofAttacker::CanStartFarAwayCapturing(nobMilitary* dest) const
+bool nofAttacker::CanStartFarAwayCapturing(const nobMilitary& dest) const
 {
     // Are we already walking to the destination?
     if(state == SoldierState::AttackingWalkingToGoal || state == SoldierState::MeetEnemy
        || state == SoldierState::WaitingForFight || state == SoldierState::Fighting)
     {
         // Not too far away?
-        if(world->CalcDistance(pos, dest->GetPos()) < MAX_FAR_AWAY_CAPTURING_DISTANCE)
+        if(world->CalcDistance(pos, dest.GetPos()) < MAX_FAR_AWAY_CAPTURING_DISTANCE)
             return true;
     }
 
