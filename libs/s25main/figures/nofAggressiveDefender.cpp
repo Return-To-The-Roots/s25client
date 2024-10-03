@@ -147,7 +147,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
     state = SoldierState::AggressivedefendingWalkingToAggressor;
 
     // nach anderen suchen, die in meiner Nähe sind und mich evtl noch mit denen kloppen
-    attacker = attacked_goal->FindAggressor(this);
+    attacker = attacked_goal->FindAggressor(*this);
     if(attacker)
     {
         // zum Angreifer gehen und mit ihm kämpfen
