@@ -5,9 +5,11 @@
 #include "GamePlayer.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
+#include "helpers/Range.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/CreateSeaWorld.h"
 #include "worldFixtures/WorldFixture.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/MapLoader.h"
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
@@ -72,15 +74,13 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
 {
     const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
-    for(int y = 1; y < world.GetHeight(); y++)
+    for(const auto y : helpers::range(1, +world.GetHeight()))
     {
-        for(int x = 1; x < world.GetWidth(); x++)
+        for(const auto x : helpers::range(1, +world.GetWidth()))
         {
             MapPoint curPoint(x, y);
             if(curPoint == milBld0Pos || curPoint == milBld1Pos)
-            {
                 continue;
-            }
 
             MapNode& mapPoint = world.GetNodeWriteable(curPoint);
             mapPoint.t1 = tWater;
@@ -117,15 +117,13 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
                 break;
         }
 
-        for(int y = 1; y < world.GetHeight(); y++)
+        for(const auto y : helpers::range(1, +world.GetHeight()))
         {
-            for(int x = 1; x < world.GetWidth(); x++)
+            for(const auto x : helpers::range(1, +world.GetWidth()))
             {
                 MapPoint curPoint(x, y);
                 if(curPoint == milBld0Pos || curPoint == milBld1Pos)
-                {
                     continue;
-                }
 
                 MapNode& mapPoint = world.GetNodeWriteable(curPoint);
                 mapPoint.t1 = tUnreachable;
@@ -154,9 +152,9 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
 {
     const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
-    for(int y = 1; y < world.GetHeight(); y++)
+    for(const auto y : helpers::range(1, +world.GetHeight()))
     {
-        for(int x = 1; x < world.GetWidth(); x++)
+        for(const auto x : helpers::range(1, +world.GetWidth()))
         {
             MapPoint curPoint(x, y);
             if(curPoint == milBld0Pos || curPoint == milBld1Pos)
@@ -190,9 +188,9 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
 {
     const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
-    for(int y = 1; y < world.GetHeight(); y++)
+    for(const auto y : helpers::range(1, +world.GetHeight()))
     {
-        for(int x = 1; x < world.GetWidth(); x++)
+        for(const auto x : helpers::range(1, +world.GetWidth()))
         {
             MapPoint curPoint(x, y);
             if(curPoint == milBld0Pos || curPoint == milBld1Pos)
@@ -241,9 +239,9 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
     // Little bit, but walkable water between the 2 buildings (middle of map)
     // and around the border big water
     unsigned middle = world.GetWidth() / 2;
-    for(int y = 1; y < world.GetHeight(); y++)
+    for(const auto y : helpers::range(1, +world.GetHeight()))
     {
-        for(int x = 1; x < world.GetWidth(); x++)
+        for(const auto x : helpers::range(1, +world.GetWidth()))
         {
             MapPoint curPoint(x, y);
 
@@ -307,9 +305,9 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 
     unsigned middle = world.GetWidth() / 2;
 
-    for(unsigned y = 1; y < world.GetHeight(); y++)
+    for(const auto y : helpers::range(1, +world.GetHeight()))
     {
-        for(unsigned x = 1; x < world.GetWidth(); x++)
+        for(const auto x : helpers::range(1, +world.GetWidth()))
         {
             MapPoint curPoint(x, y);
 

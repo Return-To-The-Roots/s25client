@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "helpers/reverse.h"
 #include "s25util/warningSuppression.h"
@@ -191,6 +192,18 @@ BOOST_AUTO_TEST_CASE(CountIf)
     std::vector<int> values = {1, 2, 3, 4, 5};
     const auto isEven = [](int i) { return i % 2 == 0; };
     BOOST_TEST(helpers::count_if(values, isEven) == 2u);
+}
+
+BOOST_AUTO_TEST_CASE(RangeStruct)
+{
+    std::vector<int> is;
+    for(const auto i : helpers::range(5))
+        is.push_back(i);
+    BOOST_TEST(is == (std::vector<int>{0, 1, 2, 3, 4}), boost::test_tools::per_element());
+    is.clear();
+    for(const auto i : helpers::range(2, 5))
+        is.push_back(i);
+    BOOST_TEST(is == (std::vector<int>{2, 3, 4}), boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
