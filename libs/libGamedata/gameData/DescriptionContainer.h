@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DescIdx.h"
+#include "helpers/containerUtils.h"
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -28,6 +29,15 @@ struct DescriptionContainer
     const T& get(DescIdx<T> idx) const;
     /// Return a mutable reference to the given item
     T& getMutable(DescIdx<T> idx);
+    /// Return the first item matching the predicate
+    template<class Predicate>
+    constexpr DescIdx<T> find(Predicate&& predicate) const;
+    /// Return all items matching the predicate
+    template<class Predicate>
+    std::vector<DescIdx<T>> findAll(Predicate&& predicate) const;
+
+    auto begin() const { return items.begin(); }
+    auto end() const { return items.end(); }
 
 private:
     std::vector<T> items;
@@ -82,4 +92,25 @@ template<typename T>
 inline T& DescriptionContainer<T>::getMutable(const DescIdx<T> idx)
 {
     return items[idx.value];
+}
+
+template<typename T>
+template<class Predicate>
+constexpr DescIdx<T> DescriptionContainer<T>::find(Predicate&& predicate) const
+{
+    const auto idx = helpers::indexOf_if(items, std::forward<Predicate>(predicate));
+    return idx >= 0 ? DescIdx<T>(static_cast<typename DescIdx<T>::value_type>(idx)) : DescIdx<T>();
+}
+
+template<typename T>
+template<class Predicate>
+std::vector<DescIdx<T>> DescriptionContainer<T>::findAll(Predicate&& predicate) const
+{
+    std::vector<DescIdx<T>> result;
+    for(unsigned i = 0; i < items.size(); i++)
+    {
+        if(predicate(items[i]))
+            result.emplace_back(i);
+    }
+    return result;
 }

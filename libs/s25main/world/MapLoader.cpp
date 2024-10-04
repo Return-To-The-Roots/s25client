@@ -43,15 +43,8 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
         return false;
 
     uint8_t gfxSet = map.getHeader().getGfxSet();
-    DescIdx<LandscapeDesc> lt(0);
-    for(DescIdx<LandscapeDesc> i(0); i.value < world_.GetDescription().landscapes.size(); i.value++)
-    {
-        if(world_.GetDescription().get(i).s2Id == gfxSet)
-        {
-            lt = i;
-            break;
-        }
-    }
+    DescIdx<LandscapeDesc> lt =
+      world_.GetDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
     world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
 
     if(!InitNodes(map, exploration))
@@ -130,14 +123,9 @@ void MapLoader::SetMapExplored(World& world)
 
 DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
 {
-    const WorldDescription& desc = world_.GetDescription();
-    for(DescIdx<TerrainDesc> tId(0); tId.value < desc.terrain.size(); tId.value++)
-    {
-        const TerrainDesc& t = desc.get(tId);
-        if(t.s2Id == s2Id && t.landscape == world_.GetLandscapeType())
-            return tId;
-    }
-    return DescIdx<TerrainDesc>();
+    return world_.GetDescription().terrain.find([s2Id, landscape = world_.GetLandscapeType()](const TerrainDesc& t) {
+        return t.s2Id == s2Id && t.landscape == landscape;
+    });
 }
 
 bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration)

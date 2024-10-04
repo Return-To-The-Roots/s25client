@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,11 +11,12 @@
 template<class T>
 struct DescIdx
 {
+    using value_type = uint8_t;
     /// Invalid index
-    static constexpr uint8_t INVALID = 0xFF;
-    uint8_t value;
-    explicit constexpr DescIdx(uint8_t value = INVALID) noexcept : value(value) {}
-    constexpr bool operator!() const noexcept { return value == INVALID; }
+    static constexpr value_type INVALID = 0xFF;
+    value_type value;
+    explicit constexpr DescIdx(value_type value = INVALID) noexcept : value(value) {}
+    constexpr explicit operator bool() const noexcept { return value != INVALID; }
     constexpr bool operator==(DescIdx rhs) const noexcept { return value == rhs.value; }
     constexpr bool operator!=(DescIdx rhs) const noexcept { return value != rhs.value; }
     constexpr bool operator<(DescIdx rhs) const noexcept { return value < rhs.value; }

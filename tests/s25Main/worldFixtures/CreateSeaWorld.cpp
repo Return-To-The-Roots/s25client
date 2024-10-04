@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,9 +6,9 @@
 #include "RttrForeachPt.h"
 #include "initGameRNG.hpp"
 #include "lua/GameDataLoader.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/GameWorld.h"
 #include "world/MapLoader.h"
-#include "gameData/TerrainDesc.h"
 #include <boost/test/test_tools.hpp>
 
 CreateSeaWorld::CreateSeaWorld(const MapExtent& size) : size_(size) {}
@@ -53,13 +53,7 @@ bool CreateSeaWorld::operator()(GameWorld& world) const
     loadGameData(world.GetDescriptionWriteable());
     world.Init(size_);
     // Set everything to water
-    DescIdx<TerrainDesc> t(0);
-    const WorldDescription& desc = world.GetDescription();
-    for(; t.value < desc.terrain.size(); t.value++)
-    {
-        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::Water) //-V807
-            break;
-    }
+    auto t = GetWaterTerrain(world.GetDescription());
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
@@ -96,12 +90,7 @@ bool CreateSeaWorld::operator()(GameWorld& world) const
         if(minMapSide < minSize)
             throw std::runtime_error("World to small"); // LCOV_EXCL_LINE
     }
-    t = DescIdx<TerrainDesc>(0);
-    for(; t.value < desc.terrain.size(); t.value++)
-    {
-        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::Land)
-            break;
-    }
+    t = GetLandTerrain(world.GetDescription(), ETerrain::Buildable);
     // Vertical
     for(MapPoint pt(offset, offset); pt.y < size_.y - offset; ++pt.y)
     {
@@ -183,13 +172,8 @@ bool CreateWaterWorld::operator()(GameWorld& world) const
     loadGameData(world.GetDescriptionWriteable());
     world.Init(size_);
     // Set everything to water
-    DescIdx<TerrainDesc> t(0);
-    const WorldDescription& desc = world.GetDescription();
-    for(; t.value < desc.terrain.size(); t.value++)
-    {
-        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::Water) //-V807
-            break;
-    }
+    auto t = GetWaterTerrain(world.GetDescription());
+
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
@@ -200,12 +184,7 @@ bool CreateWaterWorld::operator()(GameWorld& world) const
     hqPositions.push_back(MapPoint(10, 10));
     if(world.GetNumPlayers() > 1)
         hqPositions.push_back(world.MakeMapPoint(hqPositions.front() + size_ / 2)); // LCOV_EXCL_LINE
-    t = DescIdx<TerrainDesc>(0);
-    for(; t.value < desc.terrain.size(); t.value++)
-    {
-        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::Land)
-            break;
-    }
+    t = GetLandTerrain(world.GetDescription(), ETerrain::Buildable);
     for(MapPoint hqPos : hqPositions)
     {
         std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(hqPos, landRadius);

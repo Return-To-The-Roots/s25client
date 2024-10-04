@@ -6,10 +6,10 @@
 #include "helpers/OptionalIO.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "nodeObjs/noGranite.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameData/GameConsts.h"
-#include "gameData/TerrainDesc.h"
 #include <rttr/test/testHelpers.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/test/unit_test.hpp>
@@ -73,12 +73,8 @@ void setupTestcase2to4(GameWorld& world, const MapPoint& startPt, DescIdx<Terrai
 
 BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 {
-    std::vector<DescIdx<TerrainDesc>> friendlyTerrains;
-    for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
-    {
-        if(world.GetDescription().get(t).Is(ETerrain::Walkable))
-            friendlyTerrains.push_back(t);
-    }
+    const auto friendlyTerrains =
+      world.GetDescription().terrain.findAll([](const TerrainDesc& t) { return t.Is(ETerrain::Walkable); });
 
     const MapPoint startPt(0, 6);
 
@@ -105,20 +101,9 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
 {
     const MapPoint startPt(5, 2);
-    DescIdx<TerrainDesc> tWater(0);
-    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
-    {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::Water
-           && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
-            break;
-    }
-    DescIdx<TerrainDesc> tLand(0);
-    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
-    {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
-           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
-            break;
-    }
+    const auto tWater = GetWaterTerrain(world.GetDescription());
+    const auto tLand = GetLandTerrain(world.GetDescription());
+
     setupTestcase1(world, startPt, tWater, tLand);
     // 4 steps right
     MapPoint endPt = world.MakeMapPoint(Position(startPt.x + 4, startPt.y));
@@ -155,20 +140,9 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     // Test cases 2                                    a)                 b)                     c)
     const std::vector<Direction> testDirections{Direction::East, Direction::SouthEast, Direction::NorthEast};
 
-    std::vector<DescIdx<TerrainDesc>> deepWaterTerrains;
-    for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
-    {
-        if(!world.GetDescription().get(t).Is(ETerrain::Walkable)
-           && !world.GetDescription().get(t).Is(ETerrain::Unreachable))
-            deepWaterTerrains.push_back(t);
-    }
-    DescIdx<TerrainDesc> tLand(0);
-    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
-    {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
-           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
-            break;
-    }
+    const auto deepWaterTerrains = world.GetDescription().terrain.findAll(
+      [](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable) && !t.Is(ETerrain::Unreachable); });
+    const auto tLand = GetLandTerrain(world.GetDescription());
     for(DescIdx<TerrainDesc> deepWater : deepWaterTerrains)
     {
         for(Direction dir : testDirections)
@@ -218,19 +192,9 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
                                                 Direction::East, Direction::SouthEast, Direction::NorthEast,
                                                 // Test cases 4 a)        b)                    c)
                                                 Direction::West, Direction::SouthWest, Direction::NorthWest};
-    std::vector<DescIdx<TerrainDesc>> deadlyTerrains;
-    const WorldDescription& worldDescription = world.GetDescription();
-    for(DescIdx<TerrainDesc> t(0); t.value < worldDescription.terrain.size(); t.value++)
-    {
-        if(worldDescription.get(t).Is(ETerrain::Unreachable))
-            deadlyTerrains.push_back(t);
-    }
-    DescIdx<TerrainDesc> tLand(0);
-    for(; tLand.value < worldDescription.terrain.size(); tLand.value++)
-    {
-        if(worldDescription.get(tLand).kind == TerrainKind::Land && worldDescription.get(tLand).Is(ETerrain::Walkable))
-            break;
-    }
+    std::vector<DescIdx<TerrainDesc>> deadlyTerrains =
+      world.GetDescription().terrain.findAll([](const TerrainDesc& t) { return t.Is(ETerrain::Unreachable); });
+    const auto tLand = GetLandTerrain(world.GetDescription());
     for(DescIdx<TerrainDesc> deadlyTerrain : deadlyTerrains)
     {
         for(Direction dir : testDirections)

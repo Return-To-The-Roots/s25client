@@ -87,18 +87,11 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
 
     // Headinformationen
     const auto size = helpers::popPoint<MapExtent>(sgd);
-    DescIdx<LandscapeDesc> lt(0);
+    DescIdx<LandscapeDesc> lt;
     if(sgd.GetGameDataVersion() < 3)
     {
         uint8_t gfxSet = sgd.PopUnsignedChar();
-        for(DescIdx<LandscapeDesc> i(0); i.value < world.GetDescription().landscapes.size(); i.value++)
-        {
-            if(world.GetDescription().get(i).s2Id == gfxSet)
-            {
-                lt = i;
-                break;
-            }
-        }
+        lt = world.GetDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
     } else
     {
         std::string sLandscape = sgd.PopString();
@@ -113,11 +106,8 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     if(sgd.GetGameDataVersion() < 3)
     {
         // Assumes the order of the terrain in the description file is the same as in the prior RTTR versions
-        for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
-        {
-            if(world.GetDescription().get(t).landscape == lt)
-                landscapeTerrains.push_back(t);
-        }
+        landscapeTerrains =
+          world.GetDescription().terrain.findAll([lt](const TerrainDesc& t) { return t.landscape == lt; });
     }
     // Alle Weltpunkte
     MapPoint curPos(0, 0);

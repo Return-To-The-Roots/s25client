@@ -24,6 +24,8 @@ add_library(testWorldFixtures STATIC
     worldFixtures/SeaWorldWithGCExecution.h
     worldFixtures/TestEventManager.cpp
     worldFixtures/TestEventManager.h
+    worldFixtures/terrainHelpers.cpp
+    worldFixtures/terrainHelpers.h
     worldFixtures/WorldFixture.h
     worldFixtures/WorldWithGCExecution.h
 )
