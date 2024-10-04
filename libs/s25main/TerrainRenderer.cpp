@@ -686,7 +686,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     // Beim zeichnen immer nur beginnen, wo man auch was sieht
     for(int y = firstPt.y; y <= lastPt.y; ++y)
     {
-        unsigned char lastTerrain = 255;
+        DescIdx<TerrainDesc> lastTerrain;
         unsigned char lastBorder = 255;
 
         for(int x = firstPt.x; x <= lastPt.x; ++x)
@@ -694,27 +694,27 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
             Position posOffset;
             MapPoint tP = ConvertCoords(Position(x, y), &posOffset);
 
-            unsigned char t = terrain[GetVertexIdx(tP)][0].value;
+            auto t = terrain[GetVertexIdx(tP)][0];
             if(posOffset != lastOffset)
-                lastTerrain = 255;
+                lastTerrain = DescIdx<TerrainDesc>();
 
             if(t == lastTerrain && tP != MapPoint(0, 0))
-                ++sorted_textures[t].back().count;
+                ++sorted_textures[t.value].back().count;
             else
             {
                 MapTile tmp(GetTriangleIdx(tP), posOffset);
-                sorted_textures[t].push_back(tmp);
+                sorted_textures[t.value].push_back(tmp);
                 lastTerrain = t;
             }
 
-            t = terrain[GetVertexIdx(tP)][1].value;
+            t = terrain[GetVertexIdx(tP)][1];
 
             if(t == lastTerrain)
-                ++sorted_textures[t].back().count;
+                ++sorted_textures[t.value].back().count;
             else
             {
                 MapTile tmp(GetTriangleIdx(tP) + 1, posOffset);
-                sorted_textures[t].push_back(tmp);
+                sorted_textures[t.value].push_back(tmp);
             }
 
             lastTerrain = t;

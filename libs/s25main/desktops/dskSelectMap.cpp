@@ -66,8 +66,8 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
         return;
     }
 
-    for(DescIdx<LandscapeDesc> i(0); i.value < desc.landscapes.size(); i.value++)
-        landscapeNames[desc.get(i).s2Id] = _(desc.get(i).name);
+    for(const auto& l : desc.landscapes)
+        landscapeNames[l.s2Id] = _(l.name);
 
     // Die Tabelle für die Maps
     using SRT = ctrlTable::SortType;
