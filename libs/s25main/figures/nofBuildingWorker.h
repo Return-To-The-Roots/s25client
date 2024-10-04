@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -94,6 +94,7 @@ public:
     nofBuildingWorker(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofBuildingWorker(Job job, MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofBuildingWorker(SerializedGameData& sgd, unsigned obj_id);
+    nofBuildingWorker(const nofBuildingWorker&) = delete;
 
     void Destroy() override
     {

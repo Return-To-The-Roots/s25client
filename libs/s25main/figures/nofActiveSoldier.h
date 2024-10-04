@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -96,6 +96,7 @@ public:
                      SoldierState init_state);
     nofActiveSoldier(const nofSoldier& other, SoldierState init_state);
     nofActiveSoldier(SerializedGameData& sgd, unsigned obj_id);
+    nofActiveSoldier(const nofActiveSoldier&) = delete;
 
     void Destroy() override
     {
