@@ -152,7 +152,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     const unsigned numHarborPositions = sgd.PopUnsignedInt();
     world.harbor_pos.clear();
     world.harbor_pos.reserve(numHarborPositions);
-    for(const auto i : helpers::Range<unsigned>{numHarborPositions})
+    for(const auto i : helpers::range<unsigned>(numHarborPositions))
     {
         RTTR_UNUSED(i);
         world.harbor_pos.emplace_back(sgd.PopMapPoint());
@@ -162,7 +162,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         {
             const unsigned numNeighbors = sgd.PopUnsignedInt();
             neighbor.reserve(numNeighbors);
-            for(const auto j : helpers::Range<unsigned>{numNeighbors})
+            for(const auto j : helpers::range<unsigned>(numNeighbors))
             {
                 RTTR_UNUSED(j);
                 const auto id = sgd.PopUnsignedInt();
