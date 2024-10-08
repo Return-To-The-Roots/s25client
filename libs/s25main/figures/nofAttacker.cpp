@@ -929,9 +929,9 @@ void nofAttacker::CancelSeaAttack()
     Abrogate();
 }
 
-void nofAttacker::FreeFightEnded()
+void nofAttacker::AbortFreeFight()
 {
-    nofActiveSoldier::FreeFightEnded();
+    nofActiveSoldier::AbortFreeFight();
     // Continue with normal walking towards our goal
     state = SoldierState::AttackingWalkingToGoal;
 }
