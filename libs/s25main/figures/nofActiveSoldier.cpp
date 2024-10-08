@@ -288,18 +288,16 @@ void nofActiveSoldier::MeetingEnemy()
             FightingStarted();
         } else
         {
-            // fighting point still valid (there could e.g. be another fight already) and enemy still on the way?
-            if(!world->IsValidPointForFighting(pos, *this, false) || enemy->GetState() != SoldierState::MeetEnemy)
+            // Is fighting point still valid (there could e.g. be another fight already) and enemy on the way?
+            if(world->IsValidPointForFighting(pos, *this, false) && enemy->GetState() == SoldierState::MeetEnemy)
             {
-                // If not abort
+                RTTR_Assert(enemy->enemy == this);
+                state = SoldierState::WaitingForFight;
+            } else
+            {
                 enemy->AbortFreeFight();
                 AbortFreeFight();
                 Walked();
-            } else
-            {
-                // Spot is still ok, let's wait for the enemy
-                RTTR_Assert(enemy->enemy == this);
-                state = SoldierState::WaitingForFight;
             }
         }
     } else
