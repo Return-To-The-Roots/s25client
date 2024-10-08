@@ -81,8 +81,8 @@ protected:
     std::optional<MapPoint> GetFightSpotNear(const nofActiveSoldier& other);
     /// increase rank if possible
     void IncreaseRank();
-    /// Hand back control to derived class after a fight
-    virtual void FreeFightEnded();
+    /// Notify that a free fight (somewhere at the map, not the one at the building flag) cannot be started
+    virtual void AbortFreeFight();
 
 private:
     /// Soldier reached his military building

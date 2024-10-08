@@ -32,8 +32,7 @@ class nofAggressiveDefender : public nofActiveSoldier
 
     void CancelAtAttacker();
 
-    /// Hand back control to derived class after a fight of nofActiveSoldier
-    void FreeFightEnded() override;
+    void AbortFreeFight() override;
 
 protected:
     [[noreturn]] void HandleDerivedEvent(unsigned) override { throw std::logic_error("No events expected"); }

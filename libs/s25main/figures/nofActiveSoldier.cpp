@@ -269,7 +269,7 @@ void nofActiveSoldier::MeetingEnemy()
     // Enemy vanished?
     if(!enemy)
     {
-        FreeFightEnded();
+        AbortFreeFight();
         Walked();
         return;
     }
@@ -292,8 +292,8 @@ void nofActiveSoldier::MeetingEnemy()
             if(!world->IsValidPointForFighting(pos, *this, false) || enemy->GetState() != SoldierState::MeetEnemy)
             {
                 // If not abort
-                enemy->FreeFightEnded();
-                FreeFightEnded();
+                enemy->AbortFreeFight();
+                AbortFreeFight();
                 Walked();
             } else
             {
@@ -311,14 +311,14 @@ void nofActiveSoldier::MeetingEnemy()
         else
         {
             // No way from current location to fighting spot -> cancel fight
-            enemy->FreeFightEnded();
-            FreeFightEnded();
+            enemy->AbortFreeFight();
+            AbortFreeFight();
             Walked();
         }
     }
 }
 
-void nofActiveSoldier::FreeFightEnded()
+void nofActiveSoldier::AbortFreeFight()
 {
     enemy = nullptr;
 }
@@ -327,7 +327,7 @@ void nofActiveSoldier::InformTargetsAboutCancelling()
 {
     if(enemy)
     {
-        enemy->FreeFightEnded();
+        enemy->AbortFreeFight();
         enemy = nullptr;
     }
 }
