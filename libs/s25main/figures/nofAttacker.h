@@ -75,7 +75,8 @@ class nofAttacker : public nofActiveSoldier
     /// Handle walking back to ship
     void HandleState_SeaAttack_ReturnToShip();
 
-    void AbortFreeFight() override;
+protected:
+    SoldierState FreeFightAborted() override;
 
 public:
     /// Notify all targets (or those that target us) that we won't be coming anymore

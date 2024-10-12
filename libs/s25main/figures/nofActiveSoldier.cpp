@@ -266,13 +266,8 @@ void nofActiveSoldier::IncreaseRank()
 
 void nofActiveSoldier::MeetingEnemy()
 {
-    // Enemy vanished?
-    if(!enemy)
-    {
-        AbortFreeFight();
-        Walked();
-        return;
-    }
+    // At this point we must still have an enemy which we were walking towards
+    RTTR_Assert(enemy);
 
     // Reached the fighting place?
     if(GetPos() == fightSpot_)
@@ -288,14 +283,15 @@ void nofActiveSoldier::MeetingEnemy()
             FightingStarted();
         } else
         {
-            // Is fighting point still valid (there could e.g. be another fight already) and enemy on the way?
-            if(world->IsValidPointForFighting(pos, *this, false) && enemy->GetState() == SoldierState::MeetEnemy)
+            // Is fighting point still valid (there could e.g. be another fight already)
+            if(world->IsValidPointForFighting(pos, *this, false))
             {
+                // Enemy should be on the way, so wait here
                 RTTR_Assert(enemy->enemy == this);
+                RTTR_Assert(enemy->GetState() == SoldierState::MeetEnemy);
                 state = SoldierState::WaitingForFight;
             } else
             {
-                enemy->AbortFreeFight();
                 AbortFreeFight();
                 Walked();
             }
@@ -309,7 +305,6 @@ void nofActiveSoldier::MeetingEnemy()
         else
         {
             // No way from current location to fighting spot -> cancel fight
-            enemy->AbortFreeFight();
             AbortFreeFight();
             Walked();
         }
@@ -318,16 +313,31 @@ void nofActiveSoldier::MeetingEnemy()
 
 void nofActiveSoldier::AbortFreeFight()
 {
-    enemy = nullptr;
+    const bool enemyWasWaiting = enemy && enemy->state == SoldierState::WaitingForFight;
+    auto* old_enemy = enemy;
+    // First clean up as much as possible: Reset enemies and set new state for both
+    if(enemy)
+    {
+        RTTR_Assert(enemy->enemy == this);
+        enemy->enemy = nullptr;
+        enemy = nullptr;
+    }
+    state = FreeFightAborted();
+    if(old_enemy)
+        old_enemy->state = old_enemy->FreeFightAborted();
+    // Now the (possibly) 2 soldiers are in a state where they could even engage in another fight with each other
+    if(enemyWasWaiting)
+    {
+        // Act as-if the enemy just arrived at his position so he'll start moving again if required
+        RTTR_Assert(!old_enemy->IsMoving());
+        old_enemy->Walked();
+    }
 }
 
 void nofActiveSoldier::InformTargetsAboutCancelling()
 {
     if(enemy)
-    {
-        enemy->AbortFreeFight();
-        enemy = nullptr;
-    }
+        AbortFreeFight();
 }
 
 void nofActiveSoldier::TakeHit()

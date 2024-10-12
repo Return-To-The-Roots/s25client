@@ -82,7 +82,8 @@ protected:
     /// increase rank if possible
     void IncreaseRank();
     /// Notify that a free fight (somewhere at the map, not the one at the building flag) cannot be started
-    virtual void AbortFreeFight();
+    /// Return state that is able to handle the next walk event
+    virtual SoldierState FreeFightAborted() = 0;
 
 private:
     /// Soldier reached his military building
@@ -90,6 +91,8 @@ private:
 
     /// Get how much of the map/FoW the soldier discovers
     unsigned GetVisualRange() const override;
+    /// Abort a free fight (somewhere at the map, not the one at the building flag) that cannot be started
+    void AbortFreeFight();
 
 public:
     nofActiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank,
