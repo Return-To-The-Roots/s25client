@@ -272,10 +272,8 @@ void nofAggressiveDefender::CancelAtAttacker()
     }
 }
 
-void nofAggressiveDefender::AbortFreeFight()
+nofActiveSoldier::SoldierState nofAggressiveDefender::FreeFightAborted()
 {
-    nofActiveSoldier::AbortFreeFight();
-    RTTR_Assert(state != SoldierState::WaitingForFight);
     // Continue with normal walking towards our goal
-    state = SoldierState::AggressivedefendingWalkingToAggressor;
+    return SoldierState::AggressivedefendingWalkingToAggressor;
 }

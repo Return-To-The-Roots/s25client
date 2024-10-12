@@ -32,9 +32,9 @@ class nofAggressiveDefender : public nofActiveSoldier
 
     void CancelAtAttacker();
 
-    void AbortFreeFight() override;
-
 protected:
+    SoldierState FreeFightAborted() override;
+
     [[noreturn]] void HandleDerivedEvent(unsigned) override { throw std::logic_error("No events expected"); }
 
 public:

@@ -929,11 +929,10 @@ void nofAttacker::CancelSeaAttack()
     Abrogate();
 }
 
-void nofAttacker::AbortFreeFight()
+nofActiveSoldier::SoldierState nofAttacker::FreeFightAborted()
 {
-    nofActiveSoldier::AbortFreeFight();
     // Continue with normal walking towards our goal
-    state = SoldierState::AttackingWalkingToGoal;
+    return SoldierState::AttackingWalkingToGoal;
 }
 
 bool nofAttacker::CanStartFarAwayCapturing(const nobMilitary& dest) const

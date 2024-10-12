@@ -21,7 +21,10 @@ class nofDefender : public nofActiveSoldier
     void Walked() override;
 
     /// Hand back control to derived class after a fight of nofActiveSoldier, not possible for defenders
-    [[noreturn]] void AbortFreeFight() override { throw std::logic_error("Should not participate in free fights"); }
+    [[noreturn]] SoldierState FreeFightAborted() override
+    {
+        throw std::logic_error("Should not participate in free fights");
+    }
 
 protected:
     void HandleDerivedEvent [[noreturn]] (unsigned) override { throw std::logic_error("No events expected"); }
