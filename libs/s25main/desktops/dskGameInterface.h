@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -133,7 +133,8 @@ protected:
 
     void StopScrolling();
     void StartScrolling(const Position& mousePos);
-
+    void ToggleFoW();              // Switch Fog of War mode if possible
+    void DisableFoW(bool hideFOW); // Set Fog of War mode if possible
     void ShowPersistentWindowsAfterSwitch();
 
     PostBox& GetPostBox();
