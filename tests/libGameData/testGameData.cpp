@@ -45,6 +45,34 @@ static std::vector<std::string> getNames(const Container& items, Predicate&& pre
     return result;
 }
 
+BOOST_AUTO_TEST_CASE(IndexingToDescriptionVector)
+{
+    struct name_t
+    {};
+    using idx_t = DescIdx<name_t>;
+    {
+        // Default construct index is false-ish
+        idx_t idx;
+        BOOST_TEST(!idx);
+        // With a value it is true-ish
+        idx = idx_t(5);
+        BOOST_TEST(!!idx);
+    }
+
+    DescriptionVector<std::string, idx_t::index_type> vec;
+    vec.push_back("0");
+    vec.push_back("1");
+    vec.push_back("2");
+    BOOST_TEST(vec[idx_t(0)] == "0");
+    BOOST_TEST(vec[idx_t(1)] == "1");
+    BOOST_TEST(vec[idx_t(2)] == "2");
+
+    std::vector<idx_t> indices;
+    for(const auto i : vec.indices())
+        indices.push_back(i);
+    BOOST_TEST((indices == std::vector<idx_t>{idx_t(0), idx_t(1), idx_t(2)}));
+}
+
 BOOST_AUTO_TEST_CASE(LoadGameData)
 {
     WorldDescription worldDesc;

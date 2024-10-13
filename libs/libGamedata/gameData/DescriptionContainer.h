@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "DescIdx.h"
+#include "DescriptionVector.h"
 #include "helpers/containerUtils.h"
 #include <map>
 #include <stdexcept>
@@ -40,7 +41,7 @@ struct DescriptionContainer
     auto end() const { return items.end(); }
 
 private:
-    std::vector<T> items;
+    DescriptionVector<T, T> items;
     std::map<std::string, unsigned> name2Idx;
 };
 
@@ -73,7 +74,7 @@ inline const T* DescriptionContainer<T>::tryGet(const DescIdx<T> idx) const
 {
     if(!idx || idx.value >= size())
         return nullptr;
-    return &items[idx.value];
+    return &items[idx];
 }
 
 template<typename T>
@@ -85,13 +86,13 @@ inline const T* DescriptionContainer<T>::tryGet(const std::string& name) const
 template<typename T>
 inline const T& DescriptionContainer<T>::get(const DescIdx<T> idx) const
 {
-    return items[idx.value];
+    return items[idx];
 }
 
 template<typename T>
 inline T& DescriptionContainer<T>::getMutable(const DescIdx<T> idx)
 {
-    return items[idx.value];
+    return items[idx];
 }
 
 template<typename T>
@@ -107,10 +108,10 @@ template<class Predicate>
 std::vector<DescIdx<T>> DescriptionContainer<T>::findAll(Predicate&& predicate) const
 {
     std::vector<DescIdx<T>> result;
-    for(unsigned i = 0; i < items.size(); i++)
+    for(const auto i : items.indices())
     {
         if(predicate(items[i]))
-            result.emplace_back(i);
+            result.push_back(i);
     }
     return result;
 }
