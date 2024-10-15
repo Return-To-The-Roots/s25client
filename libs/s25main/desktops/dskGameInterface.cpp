@@ -860,7 +860,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             worldViewer.RecalcAllColors();
             minimap.UpdateAll();
             return true;
-        case 'g': // Go to the position of last message
+        case 'g': // Go to the position of current/last message
         {
             const PostMsg* msg = GetPostBox().GetCurrentMsg();
             if(msg && msg->GetPos().isValid())
