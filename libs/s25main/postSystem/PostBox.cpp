@@ -65,7 +65,9 @@ const PostMsg* PostBox::GetMsg(unsigned idx) const
 
 const PostMsg* PostBox::GetCurrentMsg() const
 {
-    unsigned idx = currMsgIdx >= 0 && currMsgIdx < (int) numMessages ? currMsgIdx : numMessages - 1;
+    if(numMessages == 0 || currMsgIdx > static_cast<int>(numMessages) - 1)
+        return nullptr;
+    unsigned idx = currMsgIdx >= 0 ? currMsgIdx : numMessages - 1;
     return GetMsg(idx);
 }
 
