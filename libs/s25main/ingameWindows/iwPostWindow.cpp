@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -107,6 +107,10 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     FilterMessages();
     curMsgId = curMsgIdxs.size();
     DisplayPostMessage();
+}
+
+iwPostWindow::~iwPostWindow() {
+    postBox.SetCurrentMsg(-1);
 }
 
 void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
@@ -317,7 +321,10 @@ void iwPostWindow::DisplayPostMessage()
         GetCtrl<Window>(ID_TEXT)->SetPos(textCenter);
     // If message contains valid position, allow going to it
     if(curMsg->GetPos().isValid())
+    {
         GetCtrl<Window>(ID_GOTO)->SetVisible(true);
+        postBox.SetCurrentMsg(curMsgId);
+    }
 }
 
 void iwPostWindow::SetMessageText(const std::string& message)

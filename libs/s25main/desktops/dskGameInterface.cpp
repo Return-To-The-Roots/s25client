@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -859,6 +859,13 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             // Sichtbarkeiten neu setzen auf der Map-Anzeige und der Minimap
             worldViewer.RecalcAllColors();
             minimap.UpdateAll();
+            return true;
+        case 'g': // Go to the position of last message
+        {
+            const PostMsg* msg = GetPostBox().GetCurrentMsg();
+            if(msg && msg->GetPos().isValid())
+                gwv.MoveToMapPt(msg->GetPos());
+        }
             return true;
         case 'h': // Zum HQ springen
         {

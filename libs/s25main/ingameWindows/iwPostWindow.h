@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,6 +17,7 @@ class iwPostWindow : public IngameWindow
 {
 public:
     iwPostWindow(GameWorldView& gwv, PostBox& postBox);
+    ~iwPostWindow();
     void Msg_PaintBefore() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
