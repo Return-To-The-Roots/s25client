@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -22,3 +22,11 @@ struct print_log_value<std::pair<T, U>>
         BOOST_TEST(std::string(e.what()) == (MSG)); \
         return std::string(e.what()) == (MSG);      \
     })
+
+/// Transform a pointer to a reference, ensuring it is non-NULL
+template<class T>
+T& ensureNonNull(T* pointer)
+{
+    BOOST_TEST_REQUIRE(pointer);
+    return *pointer;
+}

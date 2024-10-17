@@ -1082,7 +1082,7 @@ void nobMilitary::NeedOccupyingTroops()
             if(attacker->GetPlayer() == player)
             {
                 // Ask attacker if this is possible
-                if(attacker->TryToStartFarAwayCapturing(this))
+                if(attacker->CanStartFarAwayCapturing(*this))
                 {
                     it = aggressors.erase(it);
                     far_away_capturers.push_back(attacker);
@@ -1093,7 +1093,7 @@ void nobMilitary::NeedOccupyingTroops()
         }
     }
 
-    // At this point agressors contains only soldiers, that cannot capture the building (from other player or without a
+    // At this point aggressors contains only soldiers, that cannot capture the building (from other player or without a
     // path to flag), the one(s) that is currently walking to capture the building and possibly some more from other
     // (non-allied) players So send those home, who cannot capture the building
     for(auto it = aggressors.begin(); it != aggressors.end();)

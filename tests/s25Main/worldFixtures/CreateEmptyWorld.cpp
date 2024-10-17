@@ -6,9 +6,9 @@
 #include "RttrForeachPt.h"
 #include "initGameRNG.hpp"
 #include "lua/GameDataLoader.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/GameWorld.h"
 #include "world/MapLoader.h"
-#include "gameData/TerrainDesc.h"
 #include <cmath>
 #include <stdexcept>
 
@@ -22,13 +22,7 @@ bool CreateEmptyWorld::operator()(GameWorld& world) const
     loadGameData(world.GetDescriptionWriteable());
     world.Init(size_);
     // Set everything to buildable land
-    DescIdx<TerrainDesc> t(0);
-    const WorldDescription& desc = world.GetDescription();
-    for(; t.value < desc.terrain.size(); t.value++)
-    {
-        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::Land)
-            break;
-    }
+    DescIdx<TerrainDesc> t = GetLandTerrain(world.GetDescription(), ETerrain::Buildable);
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);

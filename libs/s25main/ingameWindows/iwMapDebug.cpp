@@ -10,7 +10,9 @@
 #include "ai/aijh/AIPlayerJH.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
+#include "controls/ctrlEdit.h"
 #include "controls/ctrlTimer.h"
+#include "driver/KeyEvent.h"
 #include "helpers/toString.h"
 #include "notifications/NodeNote.h"
 #include "ogl/glFont.h"
@@ -21,6 +23,7 @@
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
+#include "s25util/StringConversion.h"
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 
@@ -31,8 +34,10 @@ enum
     ID_cbShowWhat,
     ID_cbShowForPlayer,
     ID_cbCheckEventForPlayer,
-    ID_lblCheckEvents,
     ID_tmrCheckEvents,
+    ID_lblJump,
+    ID_edtJumpX,
+    ID_edtJumpY,
 };
 }
 
@@ -120,7 +125,7 @@ public:
                 if(bqMap[pt][playerIdx] != gw.GetBQ(pt, playerIdx))
                 {
                     boost::nowide::cerr << "BQs mismatch at " << pt << " for player " << playerIdx << ": "
-                                        << bqMap[pt][playerIdx] << "!=" << gw.GetBQ(pt, playerIdx) << "\n";
+                                        << bqMap[pt][playerIdx] << "!=" << gw.GetBQ(pt, playerIdx) << std::endl;
                 }
             }
         }
@@ -144,17 +149,31 @@ using namespace std::chrono_literals;
 static const std::array<std::chrono::milliseconds, 6> BQ_CHECK_INTERVALS = {10s, 1s, 500ms, 250ms, 100ms, 50ms};
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
-    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 135), _("Map Debug"),
+    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 160), _("Map Debug"),
                    LOADER.GetImageN("resource", 41)),
       gwv(gwv), printer(std::make_unique<DebugPrinter>(gwv.GetWorld()))
 {
     gwv.AddDrawNodeCallback(printer.get());
 
-    ctrlCheck* cbShowCoords = AddCheckBox(ID_cbShowCoordinates, DrawPoint(15, 25), Extent(200, 20), TextureColor::Grey,
-                                          _("Show coordinates"), NormalFont);
+    DrawPoint curPos(15, 25);
+    constexpr Extent ctrlSize(200, 20);
+    constexpr auto spaceY = ctrlSize.y + 5;
+
+    ctrlCheck* cbShowCoords =
+      AddCheckBox(ID_cbShowCoordinates, curPos, ctrlSize, TextureColor::Grey, _("Show coordinates"), NormalFont);
+    curPos.y += spaceY;
     cbShowCoords->setChecked(true);
+
+    constexpr Extent editSize(40, ctrlSize.y);
+    AddText(ID_lblJump, curPos + DrawPoint(0, 2), _("Jump to X:Y"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    const DrawPoint edtPos = curPos + DrawPoint(ctrlSize.x - 2 * editSize.x - 2, 0);
+    AddEdit(ID_edtJumpX, edtPos, editSize, TextureColor::Grey, NormalFont, 4);
+    AddEdit(ID_edtJumpY, edtPos + DrawPoint(editSize.x + 2, 0), editSize, TextureColor::Grey, NormalFont, 4);
+    curPos.y += spaceY;
+
     ctrlComboBox* cbCheckEvents =
-      AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TextureColor::Grey, NormalFont, 100);
+      AddComboBox(ID_cbCheckEventForPlayer, curPos, ctrlSize, TextureColor::Grey, NormalFont, 100);
+    curPos.y += spaceY;
     cbCheckEvents->AddString(_("BQ check disabled"));
     for(const std::chrono::milliseconds ms : BQ_CHECK_INTERVALS)
     {
@@ -166,8 +185,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
 
     if(allowCheating)
     {
-        ctrlComboBox* data =
-          AddComboBox(ID_cbShowWhat, DrawPoint(15, 75), Extent(200, 20), TextureColor::Grey, NormalFont, 100);
+        ctrlComboBox* data = AddComboBox(ID_cbShowWhat, curPos, ctrlSize, TextureColor::Grey, NormalFont, 100);
+        curPos.y += spaceY;
         data->AddString(_("Nothing"));
         data->AddString(_("Reserved"));
         data->AddString(_("Altitude"));
@@ -176,8 +195,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         data->AddString(_("Owner"));
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
-        ctrlComboBox* players =
-          AddComboBox(ID_cbShowForPlayer, DrawPoint(15, 100), Extent(200, 20), TextureColor::Grey, NormalFont, 100);
+        ctrlComboBox* players = AddComboBox(ID_cbShowForPlayer, curPos, ctrlSize, TextureColor::Grey, NormalFont, 100);
+        curPos.y += spaceY;
         for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetNumPlayers(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);
@@ -236,4 +255,41 @@ void iwMapDebug::Msg_Timer(unsigned /*ctrl_id*/)
 {
     if(eventChecker)
         eventChecker->check();
+}
+
+void iwMapDebug::Msg_EditEnter(unsigned ctrl_id)
+{
+    RTTR_Assert(ctrl_id == ID_edtJumpX || ctrl_id == ID_edtJumpY);
+    Position pos;
+    if(s25util::tryFromStringClassic(GetCtrl<ctrlEdit>(ID_edtJumpX)->GetText(), pos.x)
+       && s25util::tryFromStringClassic(GetCtrl<ctrlEdit>(ID_edtJumpY)->GetText(), pos.y))
+    {
+        gwv.MoveToMapPt(gwv.GetWorld().MakeMapPoint(pos));
+    }
+}
+
+bool iwMapDebug::Msg_KeyDown(const KeyEvent& ke)
+{
+    switch(ke.kt)
+    {
+        case KeyType::Return: Msg_EditEnter(ID_edtJumpY); break;
+        case KeyType::Tab:
+        {
+            auto* edtNewFocus = GetCtrl<ctrlEdit>(ID_edtJumpX);
+            if(edtNewFocus->HasFocus())
+                edtNewFocus = GetCtrl<ctrlEdit>(ID_edtJumpY);
+            edtNewFocus->SetFocus();
+            edtNewFocus->SetText("");
+        };
+        break;
+        default: return IngameWindow::Msg_KeyDown(ke);
+    }
+    return true;
+}
+
+void iwMapDebug::SetActive(bool activate)
+{
+    IngameWindow::SetActive(activate);
+    if(activate)
+        GetCtrl<ctrlEdit>(ID_edtJumpX)->SetFocus();
 }

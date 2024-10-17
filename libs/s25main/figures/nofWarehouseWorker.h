@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -38,6 +38,7 @@ private:
 public:
     nofWarehouseWorker(MapPoint pos, unsigned char player, std::unique_ptr<Ware> ware, bool task);
     nofWarehouseWorker(SerializedGameData& sgd, unsigned obj_id);
+    nofWarehouseWorker(const nofWarehouseWorker&) = delete;
 
     ~nofWarehouseWorker() override;
 

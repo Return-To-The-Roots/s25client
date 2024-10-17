@@ -1728,10 +1728,10 @@ void GameClient::SetPause(bool pause)
     }
 }
 
-void GameClient::ToggleReplayFOW()
+void GameClient::SetReplayFOW(const bool hideFOW)
 {
     if(replayinfo)
-        replayinfo->all_visible = !replayinfo->all_visible;
+        replayinfo->all_visible = hideFOW;
 }
 
 bool GameClient::IsReplayFOWDisabled() const

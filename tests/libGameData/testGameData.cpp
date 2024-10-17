@@ -1,9 +1,10 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
 #include "TerrainBQOutput.h"
+#include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "legacy/TerrainData.h"
 #include "lua/GameDataLoader.h"
@@ -32,6 +33,46 @@ BOOST_AUTO_TEST_CASE(BQ_Output)
     BOOST_TEST(s.str() == "Mine");
 }
 
+template<class Container, class Predicate>
+static std::vector<std::string> getNames(const Container& items, Predicate&& predicate)
+{
+    std::vector<std::string> result;
+    for(const auto& item : items)
+    {
+        if(predicate(item))
+            result.push_back(item.name);
+    }
+    return result;
+}
+
+BOOST_AUTO_TEST_CASE(IndexingToDescriptionVector)
+{
+    struct name_t
+    {};
+    using idx_t = DescIdx<name_t>;
+    {
+        // Default construct index is false-ish
+        idx_t idx;
+        BOOST_TEST(!idx);
+        // With a value it is true-ish
+        idx = idx_t(5);
+        BOOST_TEST(!!idx);
+    }
+
+    DescriptionVector<std::string, idx_t::index_type> vec;
+    vec.push_back("0");
+    vec.push_back("1");
+    vec.push_back("2");
+    BOOST_TEST(vec[idx_t(0)] == "0");
+    BOOST_TEST(vec[idx_t(1)] == "1");
+    BOOST_TEST(vec[idx_t(2)] == "2");
+
+    std::vector<idx_t> indices;
+    for(const auto i : vec.indices())
+        indices.push_back(i);
+    BOOST_TEST((indices == std::vector<idx_t>{idx_t(0), idx_t(1), idx_t(2)}));
+}
+
 BOOST_AUTO_TEST_CASE(LoadGameData)
 {
     WorldDescription worldDesc;
@@ -40,25 +81,18 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
     BOOST_TEST(worldDesc.terrain.size() >= 3u * NUM_TTS);
     for(unsigned l = 0; l < NUM_LTS; l++)
     {
-        auto lt = Landscape(l);
         // indexOf(name) in these arrays should be the original RTTR index as in TerrainData
-        std::vector<std::string> tNames, eNames;
-        for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
+        const std::vector<std::string> tNames = getNames(
+          worldDesc.terrain, [l, &worldDesc](const TerrainDesc& t) { return worldDesc.get(t.landscape).s2Id == l; });
+        const std::vector<std::string> eNames = getNames(
+          worldDesc.edges, [l, &worldDesc](const EdgeDesc& e) { return worldDesc.get(e.landscape).s2Id == l; });
+        const auto lt = Landscape(l);
+        for(const unsigned i : helpers::range(NUM_TTS))
         {
-            if(worldDesc.get(worldDesc.get(i).landscape).s2Id == l)
-                tNames.push_back(worldDesc.get(i).name);
-        }
-        for(DescIdx<EdgeDesc> i(0); i.value < worldDesc.edges.size(); i.value++)
-        {
-            if(worldDesc.get(worldDesc.get(i).landscape).s2Id == l)
-                eNames.push_back(worldDesc.get(i).name);
-        }
-        for(unsigned i = 0; i < NUM_TTS; i++)
-        {
-            auto t = TerrainType(i);
+            const auto t = TerrainType(i);
             const TerrainDesc& desc = worldDesc.terrain.get(worldDesc.terrain.getIndex(tNames[i]));
             BOOST_TEST(desc.s2Id == TerrainData::GetTextureIdentifier(t));
-            EdgeType newEdge =
+            const EdgeType newEdge =
               !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));
             BOOST_TEST(newEdge == TerrainData::GetEdgeType(lt, t));
             BOOST_TEST(desc.GetBQ() == TerrainData::GetBuildingQuality(t));

@@ -140,9 +140,9 @@ public:
 
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
-    /// Schaltet FoW im Replaymodus ein/aus
-    void ToggleReplayFOW();
-    /// Prüft, ob FoW im Replaymodus ausgeschalten ist
+    /// Hide or show the fog-of-war. Only in replay mode
+    void SetReplayFOW(bool hideFOW);
+    /// Return whether we are in replay mode and fog-of-war is disabled
     bool IsReplayFOWDisabled() const;
     /// Gibt Replay-Ende (GF) zurück
     unsigned GetLastReplayGF() const;

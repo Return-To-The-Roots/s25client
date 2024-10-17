@@ -53,12 +53,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
             BOOST_TEST_REQUIRE(isPointAvailable(world.GetNeighbour2(farmPt, dir)));
     }
     // Not on non-vital terrain
-    DescIdx<TerrainDesc> tUnvital(0);
-    for(; tUnvital.value < world.GetDescription().terrain.size(); tUnvital.value++)
-    {
-        if(!world.GetDescription().get(tUnvital).IsVital())
-            break;
-    }
+    const auto tUnvital = world.GetDescription().terrain.find([](const TerrainDesc& t) { return !t.IsVital(); });
     world.GetNodeWriteable(world.GetNeighbour2(farmPt, 3)).t1 = tUnvital;
     BOOST_TEST_REQUIRE(isPointAvailable(world.GetNeighbour2(farmPt, 2)));
     BOOST_TEST_REQUIRE(!isPointAvailable(world.GetNeighbour2(farmPt, 3)));

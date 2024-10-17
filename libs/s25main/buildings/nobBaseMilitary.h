@@ -90,7 +90,7 @@ public:
     /// Sucht einen Angreifer auf das Gebäude, der gerade nichts zu tun hat und Lust hat zum Kämpfen
     /// und in der Nähe von x,y ist (wird von aggressiven Verteidigern aufgerufen), wenn keiner gefunden wird, wird 0
     /// zurückgegeben
-    nofAttacker* FindAggressor(nofAggressiveDefender* defender);
+    nofAttacker* FindAggressor(nofAggressiveDefender& defender);
     /// Sucht für einen Angreifer den nächsten (bzw. genau den) Platz zur Fahne, damit die sich darum postieren und
     /// warten
     MapPoint FindAnAttackerPlace(unsigned short& ret_radius, const nofAttacker& soldier);

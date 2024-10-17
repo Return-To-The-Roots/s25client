@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -24,6 +24,7 @@ private:
 public:
     nofPassiveWorker(Job job, MapPoint pos, unsigned char player, noRoadNode* goal);
     nofPassiveWorker(SerializedGameData& sgd, unsigned obj_id);
+    nofPassiveWorker(const nofPassiveWorker&) = delete;
 
     /// Zeichnen
     void Draw(DrawPoint drawPt) override;

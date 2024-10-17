@@ -131,7 +131,7 @@ void nobBaseMilitary::AddLeavingFigure(std::unique_ptr<noFigure> fig)
     leave_house.push_back(std::move(fig));
 }
 
-nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
+nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender& defender)
 {
     // Look for other attackers on this building that are close and ready to fight
     for(nofAttacker* aggressor : aggressors)
@@ -141,7 +141,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
             continue;
 
         const MapPoint attackerPos = aggressor->GetPos();
-        const MapPoint defenderPos = defender->GetPos();
+        const MapPoint defenderPos = defender.GetPos();
         if(attackerPos == defenderPos)
         {
             // Both are at same pos --> Go!
@@ -272,8 +272,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
     }
 
     if(best_attacker)
-        // Den schließlich zur Flagge schicken
-        best_attacker->AttackFlag(defender_);
+        best_attacker->AttackDefenderAtFlag();
 
     // und ihn zurückgeben, wenns keine gibt, natürlich 0
     return best_attacker;

@@ -48,8 +48,8 @@ BOOST_FIXTURE_TEST_CASE(AddTextures_sets_valid_textures_for_entire_map, TextureM
 
     RTTR_FOREACH_PT(MapPoint, textures.GetSize())
     {
-        BOOST_TEST_REQUIRE((textures[pt].rsu.value != DescIdx<TerrainDesc>::INVALID));
-        BOOST_TEST_REQUIRE((textures[pt].lsd.value != DescIdx<TerrainDesc>::INVALID));
+        BOOST_TEST(textures[pt].rsu);
+        BOOST_TEST(textures[pt].lsd);
     }
 }
 

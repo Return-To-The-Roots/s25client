@@ -1,4 +1,5 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+//
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -14,28 +15,31 @@ class GameWorld;
 class EventManager;
 class PostMsg;
 
-/// Basisklasse für alle Spielobjekte
+/// Base class for all game objects
 class GameObject
 {
 public:
     GameObject();
     GameObject(SerializedGameData& sgd, unsigned obj_id);
-    GameObject(const GameObject& go);
     virtual ~GameObject();
+
+protected:
+    // We store GameObject references by address, so they must not be copied
+    explicit GameObject(const GameObject&);
+
+public:
     GameObject& operator=(const GameObject&) = delete;
 
-    /// zerstört das Objekt.
+    /// Handle destruction before deleting the instance
     virtual void Destroy() = 0;
 
-    /// Benachrichtigen, wenn neuer GF erreicht wurde.
+    /// Called for each expiring event (i.e. target GF reached) that this instance has registered
     virtual void HandleEvent(unsigned /*id*/) {}
 
     /// Return the unique ID of an object. Always non-zero!
     unsigned GetObjId() const { return objId; }
 
-    /// Serialisierungsfunktion.
     virtual void Serialize(SerializedGameData& sgd) const = 0;
-    /// Liefert den GOT (siehe oben)
     virtual GO_Type GetGOT() const = 0;
 
     virtual std::string ToString() const;
@@ -57,7 +61,7 @@ public:
     static void DetachWorld(GameWorld* gameWorld);
     /// Return the number of objects alive
     static unsigned GetNumObjs() { return objCounter_; }
-    /// Gibt Obj-ID-Counter zurück
+    /// Return ID counter, i.e. the last object ID used
     static unsigned GetObjIDCounter() { return objIdCounter_; }
     /// Reset the object counter and the object ID counter to 0
     static void ResetCounters()
@@ -73,12 +77,12 @@ public:
     }
 
 protected:
-    /// Zugriff auf übrige Spielwelt
+    /// Access to the currently active game world
     static GameWorld* world;
 
 private:
-    static unsigned objIdCounter_; /// Objekt-ID-Counter (number of objects created)
-    static unsigned objCounter_;   /// Objekt-Counter (number of objects alive)
+    static unsigned objIdCounter_; /// Object-ID-Counter (number of objects created)
+    static unsigned objCounter_;   /// Object-Counter (number of objects alive)
 };
 
 /// Calls destroy on a GameObject and then deletes it setting the ptr to nullptr

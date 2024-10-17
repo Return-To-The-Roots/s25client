@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,17 +11,20 @@ class nofPassiveSoldier;
 class SerializedGameData;
 class nobBaseMilitary;
 
-/// Verteidiger, der rauskommt, wenn ein Angreifer an die Flagge kommt
+/// Defender coming out of the building when an attacker is at the flag
 class nofDefender : public nofActiveSoldier
 {
-    /// angreifender Soldat an der Flagge
+    /// Attacker at the flag
     nofAttacker* attacker;
 
-    /// wenn man gelaufen ist
+    /// Walked to the next map point
     void Walked() override;
 
-    /// The derived classes regain control after a fight of nofActiveSoldier
-    [[noreturn]] void FreeFightEnded() override;
+    /// Hand back control to derived class after a fight of nofActiveSoldier, not possible for defenders
+    [[noreturn]] SoldierState FreeFightAborted() override
+    {
+        throw std::logic_error("Should not participate in free fights");
+    }
 
 protected:
     void HandleDerivedEvent [[noreturn]] (unsigned) override { throw std::logic_error("No events expected"); }
@@ -40,27 +43,26 @@ public:
 
     GO_Type GetGOT() const final { return GO_Type::NofDefender; }
 
-    /// Der Verteidiger geht gerade rein und es kommt ein neuer Angreifer an die Flagge, hiermit wird der Ver-
-    /// teidiger darüber informiert, damit er dann gleich wieder umdrehen kann
+    /// Inform that a new attacker arrived at the flag while we are going on such that we can come right back
     void NewAttacker(nofAttacker& attacker) { this->attacker = &attacker; }
-    /// Der Angreifer konnte nicht mehr an die Flagge kommen
+    /// The attacker won't come to the flag anymore
     void AttackerArrested();
 
-    /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
+    /// Home military building destroyed during mission
     void HomeDestroyed() override;
-    /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
+    /// Home military building destroyed while waiting to go out
     void HomeDestroyedAtBegin() override;
-    /// Wenn ein Kampf gewonnen wurde
+    /// Fight was won
     void WonFighting() override;
-    /// Wenn ein Kampf verloren wurde (Tod)
+    /// Fight was lost -> Die
     void LostFighting() override;
 
     /// Is the defender waiting at the flag for an attacker?
     bool IsWaitingAtFlag() const { return (state == SoldierState::DefendingWaiting); }
     bool IsFightingAtFlag() const { return (state == SoldierState::Fighting); }
-    /// Informs the defender that a fight between him and an attacker has started
+    /// Inform the defender that a fight between him and an attacker has started
     void FightStarted() { state = SoldierState::Fighting; }
 
-    // Debugging
+    // For debugging
     const nofAttacker* GetAttacker() const { return attacker; }
 };

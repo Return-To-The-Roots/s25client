@@ -52,8 +52,8 @@ void dskTextureTest::Load()
     auto* cb = GetCtrl<ctrlComboBox>(ID_cbTexture);
     const unsigned selection = cb->GetSelection().value_or(0);
     cb->DeleteAllItems();
-    for(DescIdx<TerrainDesc> i(0); i.value < desc.terrain.size(); i.value++)
-        cb->AddString(desc.get(i).name);
+    for(const auto& t : desc.terrain)
+        cb->AddString(t.name);
     cb->SetSelection(selection);
     Msg_ComboSelectItem(ID_cbTexture, selection);
 }

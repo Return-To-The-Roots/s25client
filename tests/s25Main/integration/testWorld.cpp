@@ -12,6 +12,7 @@
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
 #include "gameTypes/GameTypesOutput.h"
@@ -142,20 +143,8 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
 {
     loadGameData(world.GetDescriptionWriteable());
-    DescIdx<TerrainDesc> tWater(0);
-    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
-    {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::Water
-           && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
-            break;
-    }
-    DescIdx<TerrainDesc> tLand(0);
-    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
-    {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
-           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
-            break;
-    }
+    const auto tWater = GetWaterTerrain(world.GetDescription());
+    const auto tLand = GetLandTerrain(world.GetDescription());
 
     world.Init(MapExtent(30, 30));
     RTTR_FOREACH_PT(MapPoint, world.GetSize())

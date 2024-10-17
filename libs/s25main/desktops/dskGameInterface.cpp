@@ -220,6 +220,19 @@ void dskGameInterface::StartScrolling(const Position& mousePos)
     WINDOWMANAGER.SetCursor(Cursor::Scroll);
 }
 
+void dskGameInterface::ToggleFoW()
+{
+    DisableFoW(!GAMECLIENT.IsReplayFOWDisabled());
+}
+
+void dskGameInterface::DisableFoW(const bool hideFOW)
+{
+    GAMECLIENT.SetReplayFOW(hideFOW);
+    // Notify viewer and minimap to recalculate the visibility
+    worldViewer.RecalcAllColors();
+    minimap.UpdateAll();
+}
+
 void dskGameInterface::ShowPersistentWindowsAfterSwitch()
 {
     auto& windows = SETTINGS.windows.persistentSettings;
@@ -753,9 +766,13 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
             return true;
         case KeyType::F3: // Map debug window/ Multiplayer coordinates
-            WINDOWMANAGER.ToggleWindow(
-              std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
+        {
+            const bool replayMode = GAMECLIENT.IsReplayModeOn();
+            if(replayMode)
+                DisableFoW(true);
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || replayMode));
             return true;
+        }
         case KeyType::F8: // Tastaturbelegung
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
@@ -854,11 +871,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             gwv.ToggleShowNames();
             return true;
         case 'd': // Replay: FoW an/ausschalten
-            // GameClient Bescheid sagen
-            GAMECLIENT.ToggleReplayFOW();
-            // Sichtbarkeiten neu setzen auf der Map-Anzeige und der Minimap
-            worldViewer.RecalcAllColors();
-            minimap.UpdateAll();
+            ToggleFoW();
             return true;
         case 'h': // Zum HQ springen
         {

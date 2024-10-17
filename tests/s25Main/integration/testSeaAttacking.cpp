@@ -16,13 +16,13 @@
 #include "pathfinding/FindPathForRoad.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameData/SettingTypeConv.h"
-#include "gameData/TerrainDesc.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
@@ -589,20 +589,8 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
 {
-    DescIdx<TerrainDesc> tWater(0);
-    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
-    {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::Water
-           && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
-            break;
-    }
-    DescIdx<TerrainDesc> tLand(0);
-    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
-    {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::Land
-           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
-            break;
-    }
+    const auto tWater = GetWaterTerrain(world.GetDescription());
+    const auto tLand = GetLandTerrain(world.GetDescription());
 
     // Issue: A harbor is a castle-sized building and blocks the nodes W, NW, NE
     // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the

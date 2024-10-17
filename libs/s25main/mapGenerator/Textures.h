@@ -17,7 +17,7 @@ struct TexturePair
     DescIdx<TerrainDesc> rsu;
     DescIdx<TerrainDesc> lsd;
 
-    TexturePair() : rsu(DescIdx<TerrainDesc>::INVALID), lsd(DescIdx<TerrainDesc>::INVALID) {}
+    TexturePair() = default;
     TexturePair(DescIdx<TerrainDesc> texture) : rsu(texture), lsd(texture) {}
 };
 
@@ -27,20 +27,13 @@ private:
     const WorldDescription& worldDesc_;
     const DescIdx<LandscapeDesc> landscape_;
 
-    std::vector<DescIdx<TerrainDesc>> terrains_;
+    const std::vector<DescIdx<TerrainDesc>> terrains_;
 
 public:
     TextureOperator(const WorldDescription& worldDesc, const DescIdx<LandscapeDesc> landscape)
-        : worldDesc_(worldDesc), landscape_(landscape)
-    {
-        for(DescIdx<TerrainDesc> t(0); t.value < worldDesc_.terrain.size(); t.value++)
-        {
-            if(worldDesc_.get(t).landscape == landscape)
-            {
-                terrains_.push_back(t);
-            }
-        }
-    }
+        : worldDesc_(worldDesc), landscape_(landscape),
+          terrains_(worldDesc_.terrain.findAll([landscape](const TerrainDesc& t) { return t.landscape == landscape; }))
+    {}
 
     inline uint8_t GetTextureId(DescIdx<TerrainDesc> texture) const { return worldDesc_.get(texture).s2Id; }
 

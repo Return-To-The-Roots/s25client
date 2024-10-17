@@ -95,14 +95,10 @@ void Texturizer::ApplyTexturingByHeightMap(unsigned mountainLevel)
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        if(textures_[pt].rsu.value == DescIdx<TerrainDesc>::INVALID)
-        {
+        if(!textures_[pt].rsu)
             textures_[pt].rsu = mapping[interpolateEdges(Triangle(true, pt))];
-        }
-        if(textures_[pt].lsd.value == DescIdx<TerrainDesc>::INVALID)
-        {
+        if(!textures_[pt].lsd)
             textures_[pt].lsd = mapping[interpolateEdges(Triangle(false, pt))];
-        }
     }
 }
 
