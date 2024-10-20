@@ -548,9 +548,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             SETTINGS.global.submit_debug_data = selection;
             break;
         case ID_grpUPNP: SETTINGS.global.use_upnp = enabled; break;
-        case ID_grpInvertScroll:
-            SETTINGS.interface.invertMouse = enabled;
-            break;
+        case ID_grpInvertScroll: SETTINGS.interface.invertMouse = enabled; break;
         case ID_grpSmartCursor:
             SETTINGS.global.smartCursor = enabled;
             VIDEODRIVER.SetMouseWarping(enabled);
