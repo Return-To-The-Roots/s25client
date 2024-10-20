@@ -39,11 +39,6 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     luaData.checkUnused();
 }
 
-const std::optional<SelectionMapInputData>& CampaignDescription::getSelectionMapData() const
-{
-    return selectionMapData;
-}
-
 boost::filesystem::path CampaignDescription::getLuaFilePath(const size_t idx) const
 {
     return (RTTRCONFIG.ExpandPath(luaFolder) / getMapName(idx)).replace_extension("lua");

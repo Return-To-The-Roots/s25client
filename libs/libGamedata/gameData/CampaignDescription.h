@@ -31,7 +31,6 @@ struct CampaignDescription
     const std::string& getMapName(const size_t idx) const { return mapNames.at(idx); }
     boost::filesystem::path getLuaFilePath(size_t idx) const;
     boost::filesystem::path getMapFilePath(size_t idx) const;
-    const std::optional<SelectionMapInputData>& getSelectionMapData() const;
 
 private:
     std::string mapFolder;

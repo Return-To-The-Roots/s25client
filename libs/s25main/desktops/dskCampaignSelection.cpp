@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2023 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -18,7 +18,6 @@
 #include "dskSinglePlayer.h"
 #include "files.h"
 #include "helpers/Range.h"
-#include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/CampaignDataLoader.h"
@@ -30,6 +29,7 @@
 #include "s25util/Log.h"
 #include <boost/filesystem/operations.hpp>
 #include <chrono>
+#include <set>
 
 namespace bfs = boost::filesystem;
 using namespace std::chrono_literals;
@@ -63,7 +63,7 @@ int getColumnOffsetY()
 } // namespace
 
 dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
-    : Desktop(LOADER.GetImageN("setup015", 0)), showCampaignInfo_(false), csi_(std::move(csi))
+    : Desktop(LOADER.GetImageN("setup015", 0)), csi_(std::move(csi))
 {
     AddText(ID_Label, DrawPoint(250, startOffsetY), _("Campaigns"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
@@ -73,9 +73,9 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
              TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("Title"), 100, SRT::String},
                                 {_("Description"), 150, SRT::String},
-                                {_("Author"), 100, SRT::String},
-                                {_("Maps"), 20, SRT::Number},
-                                {_("Difficulty"), 40, SRT::String},
+                                {_("Author"), 60, SRT::String},
+                                {_("Maps"), 40, SRT::Number},
+                                {_("Difficulty"), 70, SRT::String},
                                 {"", 0, SRT::Default}});
 
     const int previewTitleOffsetY = getColumnOffsetY() + campaignImageExtentY + padding;
@@ -95,6 +95,8 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
     AddTimer(ID_TimerFillCampaignTable, 1ms);
 }
 
+dskCampaignSelection::~dskCampaignSelection() noexcept = default;
+
 void dskCampaignSelection::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned)
 {
     if(ctrl_id == ID_Table)
@@ -106,84 +108,57 @@ void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const boo
     if(ctrl_id != ID_Table)
         return;
 
-    ctrlButton& btContinue = *GetCtrl<ctrlButton>(ID_Next);
-    btContinue.SetEnabled(false);
-    showCampaignInfo(false);
-    campaignImage_ = nullptr;
-
-    if(selection)
+    DeleteCtrl(ID_MapSelection); // Needs to be either hidden or recreated as it doesn't support updating
+    auto& btContinue = *GetCtrl<ctrlButton>(ID_Next);
+    if(!selection)
     {
-        ctrlTable& campaignTable = *GetCtrl<ctrlTable>(ctrl_id);
-        const std::string& campaignFolder = campaignTable.GetItemText(*selection, 5);
+        btContinue.SetEnabled(false);
+        showCampaignInfo(false);
+    } else
+    {
+        btContinue.SetEnabled(true);
+        showCampaignInfo(true);
 
-        CampaignDescription desc;
-        CampaignDataLoader loader(desc, campaignFolder);
-        if(loader.Load())
+        const auto& campaign = campaigns_.at(*selection);
+
+        auto& campaignDescription = *GetCtrl<ctrlMultiline>(ID_PreviewDescription);
+        campaignDescription.Clear();
+        campaignDescription.AddString(campaign.longDescription, COLOR_YELLOW);
+
+        auto& campaignTitle = *GetCtrl<ctrlText>(ID_PreviewTitle);
+        campaignTitle.SetText(campaign.name);
+
+        if(campaign.selectionMapData)
         {
-            ctrlMultiline& multiline = *GetCtrl<ctrlMultiline>(ID_PreviewDescription);
-            ctrlText& campaignTitle = *GetCtrl<ctrlText>(ID_PreviewTitle);
-            multiline.Clear();
-            multiline.AddString(desc.longDescription, COLOR_YELLOW);
-            campaignTitle.SetText(desc.name);
-
-            if(!desc.image.empty() && LOADER.LoadFiles({desc.image}))
-            {
-                campaignImage_ = LOADER.GetImageN(ResourceId::make(RTTRCONFIG.ExpandPath(desc.image)), 0);
-            }
-
-            if(desc.selectionMapData.has_value())
-            {
-                auto* mapSelection =
-                  AddMapSelection(ID_MapSelection, DrawPoint(secondColumnOffsetX, getColumnOffsetY()),
-                                  Extent(secondColumnExtentX, campaignImageExtentY), desc.selectionMapData.value());
-                mapSelection->setMissionsStatus(std::vector<MissionStatus>(desc.getNumMaps(), {true, true}));
-                mapSelection->setPreview(true);
-            }
-
-            btContinue.SetEnabled(true);
-            showCampaignInfo(true);
-        }
+            campaignImage_ = nullptr;
+            auto* mapSelection =
+              AddMapSelection(ID_MapSelection, DrawPoint(secondColumnOffsetX, getColumnOffsetY()),
+                              Extent(secondColumnExtentX, campaignImageExtentY), *campaign.selectionMapData);
+            mapSelection->setMissionsStatus(std::vector<MissionStatus>(campaign.getNumMaps(), {true, true}));
+            mapSelection->setPreview(true);
+        } else if(campaign.image)
+            campaignImage_ = LOADER.GetImageN(ResourceId::fromPath(*campaign.image), 0);
+        else
+            campaignImage_ = nullptr;
     }
 }
 
-void dskCampaignSelection::showCampaignInfo(bool show)
+void dskCampaignSelection::showCampaignInfo(const bool show)
 {
     GetCtrl<ctrlMultiline>(ID_PreviewDescription)->SetVisible(show);
     GetCtrl<ctrlText>(ID_PreviewTitle)->SetVisible(show);
-
     if(!show)
-        DeleteCtrl(ID_MapSelection);
-
-    showCampaignInfo_ = show;
-}
-
-bool dskCampaignSelection::hasMapSelectionScreen()
-{
-    CampaignDescription desc;
-    CampaignDataLoader loader(desc, getSelectedCampaignPath());
-    if(!loader.Load())
-        return false;
-    return desc.getSelectionMapData().has_value();
+        campaignImage_ = nullptr;
 }
 
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
-    if(hasMapSelectionScreen())
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionMapSelection>(csi_, getSelectedCampaignPath()));
+    const auto& campaign = campaigns_.at(*GetCtrl<ctrlTable>(ID_Table)->GetSelection());
+
+    if(campaign.selectionMapData)
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionMapSelection>(csi_, campaign));
     else
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, getSelectedCampaignPath()));
-}
-
-boost::filesystem::path dskCampaignSelection::getSelectedCampaignPath()
-{
-    auto* table = GetCtrl<ctrlTable>(ID_Table);
-    const auto& selection = table->GetSelection();
-    if(!selection)
-        throw std::runtime_error("Campaign path is empty.");
-
-    boost::filesystem::path campaignPath = table->GetItemText(*selection, 5);
-    RTTR_Assert(!campaignPath.empty());
-    return campaignPath;
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 
 void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
@@ -197,74 +172,24 @@ void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
 void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+    loadCampaigns();
+    std::set<std::string> resourcesToLoad;
+    for(const auto& campaign : campaigns_)
+    {
+        if(campaign.image)
+            resourcesToLoad.insert(*campaign.image);
+    }
+    LOADER.LoadFiles({resourcesToLoad.begin(), resourcesToLoad.end()});
     FillCampaignsTable();
 }
 
 void dskCampaignSelection::FillCampaignsTable()
 {
-    const size_t numFaultyCampaignsPrior = brokenCampaignPaths_.size();
-    static const std::array<std::string, 2> campaignFolders = {
-      {s25::folders::campaignsBuiltin, s25::folders::campaignsUser}};
-
     auto* table = GetCtrl<ctrlTable>(ID_Table);
-    for(const auto& campaignFolder : campaignFolders)
+    for(const auto& campaign : campaigns_)
     {
-        for(const bfs::path& folder : ListDir(RTTRCONFIG.ExpandPath(campaignFolder), "", true))
-        {
-            if(!is_directory(folder) || helpers::contains(brokenCampaignPaths_, folder))
-                continue;
-
-            CampaignDescription desc;
-            CampaignDataLoader loader(desc, folder);
-            if(!loader.Load())
-            {
-                LOG.write(_("Failed to load campaign %1%.\n")) % folder;
-                brokenCampaignPaths_.insert(folder);
-                continue;
-            }
-
-            bool success = true;
-            for(auto idx : helpers::range(desc.getNumMaps()))
-            {
-                auto const mapPath = desc.getMapFilePath(idx);
-                auto const luaFilepath = desc.getLuaFilePath(idx);
-                if(!bfs::exists(mapPath))
-                {
-                    LOG.write(_("Campaign map %1% does not exist.\n")) % mapPath;
-                    brokenCampaignPaths_.insert(folder);
-                    success = false;
-                    continue;
-                }
-                if(!bfs::exists(luaFilepath))
-                {
-                    LOG.write(_("Campaign map lua file %1% does not exist.\n")) % luaFilepath;
-                    brokenCampaignPaths_.insert(folder);
-                    success = false;
-                    continue;
-                }
-
-                libsiedler2::Archiv map;
-                if(int ec = libsiedler2::loader::LoadMAP(mapPath, map, true))
-                {
-                    LOG.write(_("Failed to load map %1%: %2%\n")) % mapPath % libsiedler2::getErrorString(ec);
-                    brokenCampaignPaths_.insert(folder);
-                    success = false;
-                    continue;
-                }
-            }
-
-            if(success)
-                table->AddRow({desc.name, desc.shortDescription, desc.author, std::to_string(desc.getNumMaps()),
-                               _(desc.difficulty), folder.string()});
-        }
-    }
-
-    if(brokenCampaignPaths_.size() > numFaultyCampaignsPrior)
-    {
-        std::string errorTxt = helpers::format(_("%1% campaign(s) could not be loaded. Check the log for details"),
-                                               brokenCampaignPaths_.size() - numFaultyCampaignsPrior);
-        WINDOWMANAGER.Show(
-          std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
+        table->AddRow({campaign.name, campaign.shortDescription, campaign.author, std::to_string(campaign.getNumMaps()),
+                       _(campaign.difficulty)});
     }
 }
 
@@ -272,10 +197,70 @@ void dskCampaignSelection::Draw_()
 {
     Desktop::Draw_();
 
-    // replace this by AddImageButton as soon as it can handle this sceneraio correctly
-    if(showCampaignInfo_ && campaignImage_ && !hasMapSelectionScreen())
+    // replace this by AddImageButton as soon as it can handle this scenario correctly
+    if(campaignImage_)
     {
         campaignImage_->DrawFull(Rect(ScaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY())),
                                       ScaleIf(Extent(secondColumnExtentX, campaignImageExtentY))));
+    }
+}
+
+void dskCampaignSelection::loadCampaigns()
+{
+    unsigned numBroken = 0;
+    for(const std::string campaignFolder : {s25::folders::campaignsBuiltin, s25::folders::campaignsUser})
+    {
+        for(const bfs::path& folder : ListDir(RTTRCONFIG.ExpandPath(campaignFolder), "", true))
+        {
+            if(!is_directory(folder))
+                continue;
+
+            CampaignDescription desc;
+            CampaignDataLoader loader(desc, folder);
+            if(!loader.Load())
+            {
+                LOG.write(_("Failed to load campaign %1%.\n")) % folder;
+                numBroken++;
+                continue;
+            }
+
+            bool mapsOK = true;
+            for(const auto idx : helpers::range(desc.getNumMaps()))
+            {
+                auto const mapPath = desc.getMapFilePath(idx);
+                auto const luaFilepath = desc.getLuaFilePath(idx);
+                if(!bfs::exists(mapPath))
+                {
+                    LOG.write(_("Campaign map %1% does not exist.\n")) % mapPath;
+                    mapsOK = false;
+                } else
+                {
+                    libsiedler2::Archiv map;
+                    if(int ec = libsiedler2::loader::LoadMAP(mapPath, map, true))
+                    {
+                        LOG.write(_("Failed to load map %1%: %2%\n")) % mapPath % libsiedler2::getErrorString(ec);
+                        mapsOK = false;
+                    }
+                }
+                if(!bfs::exists(luaFilepath))
+                {
+                    LOG.write(_("Campaign map lua file %1% does not exist.\n")) % luaFilepath;
+                    mapsOK = false;
+                }
+            }
+
+            if(mapsOK)
+                campaigns_.push_back(std::move(desc));
+            else
+                numBroken++;
+        }
+    }
+
+    if(numBroken > 0)
+    {
+        const std::string errorTxt =
+          helpers::format(_("%1% campaign(s) could not be loaded. Check the log for details"), numBroken);
+        WINDOWMANAGER.Show(
+          std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     }
 }

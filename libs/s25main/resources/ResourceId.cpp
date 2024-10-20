@@ -26,6 +26,11 @@ ResourceId ResourceId::make(const boost::filesystem::path& filepath)
     return make(sName);
 }
 
+ResourceId ResourceId::fromPath(const std::string& filepath)
+{
+    return make(boost::filesystem::path(filepath));
+}
+
 std::ostream& operator<<(std::ostream& os, const ResourceId& resId)
 {
     return os.write(resId.name_, resId.length_);

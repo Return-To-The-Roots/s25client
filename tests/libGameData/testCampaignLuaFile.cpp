@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
     BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert2.lua"));
 
     // selection map
-    BOOST_TEST(!desc.getSelectionMapData().has_value());
+    BOOST_TEST(!desc.selectionMapData);
 }
 
 BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
@@ -405,7 +405,7 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
     BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert2.lua"));
 
     // selection map
-    auto selectionMap = desc.getSelectionMapData();
+    const auto& selectionMap = desc.selectionMapData;
     BOOST_TEST(selectionMap->background.filePath == "<RTTR_GAME>/GFX/PICS/SETUP990.LBM");
     BOOST_TEST(selectionMap->background.index == 0u);
     BOOST_TEST(selectionMap->map.filePath == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");

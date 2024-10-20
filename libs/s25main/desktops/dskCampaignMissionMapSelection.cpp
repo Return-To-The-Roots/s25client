@@ -31,28 +31,27 @@ constexpr int spacingBetweenButtons = 2;
 } // namespace
 
 dskCampaignMissionMapSelection::dskCampaignMissionMapSelection(CreateServerInfo csi,
-                                                               boost::filesystem::path campaignFolder)
-    : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(std::move(campaignFolder)), csi_(std::move(csi))
+                                                               const CampaignDescription& campaign)
+    : Desktop(LOADER.GetImageN("setup015", 0)), csi_(std::move(csi)),
+      campaign_(std::make_unique<CampaignDescription>(campaign))
 {
     AddTextButton(ID_Start, DrawPoint(300, 530), buttonSize, TextureColor::Red1, _("Start"), NormalFont);
     AddTextButton(ID_Back, DrawPoint(300, 530 + buttonSize.y + spacingBetweenButtons), buttonSize, TextureColor::Red1,
                   _("Back"), NormalFont);
 
-    settings_ = std::make_unique<CampaignDescription>();
-    CampaignDataLoader loader(*settings_, campaignFolder_);
-    if(!loader.Load() || settings_->getNumMaps() == 0)
-        LOG.write(_("Failed to load campaign %1%.\n")) % campaignFolder_;
+    if(campaign_->getNumMaps() == 0)
+        LOG.write(_("Campaign %1% has no maps.\n")) % campaign_->name;
 
-    if(settings_->selectionMapData.has_value())
+    if(campaign_->selectionMapData)
     {
         auto* mapSelection =
-          AddMapSelection(ID_MapSelection, DrawPoint(0, 0), Extent(800, 508), settings_->selectionMapData.value());
-        mapSelection->setMissionsStatus(std::vector<MissionStatus>(settings_->getNumMaps(), {true, true}));
+          AddMapSelection(ID_MapSelection, DrawPoint(0, 0), Extent(800, 508), *campaign_->selectionMapData);
+        mapSelection->setMissionsStatus(std::vector<MissionStatus>(campaign_->getNumMaps(), {true, true}));
     }
 }
 
 void dskCampaignMissionMapSelection::StartServer(const boost::filesystem::path& mapPath,
-                                                 const boost::optional<boost::filesystem::path>& luaPath)
+                                                 const boost::filesystem::path& luaPath)
 {
     if(!GAMECLIENT.HostGame(csi_, {mapPath, MapType::OldMap, luaPath}))
     {
@@ -79,11 +78,7 @@ void dskCampaignMissionMapSelection::Msg_ButtonClick(unsigned ctrl_id)
         {
             auto selectedMission = GetCtrl<ctrlMapSelection>(ID_MapSelection)->getCurrentSelection();
             if(selectedMission != -1)
-            {
-                const bfs::path mapPath = settings_->getMapFilePath(selectedMission);
-                const bfs::path luaPath = settings_->getLuaFilePath(selectedMission);
-                StartServer(mapPath, luaPath);
-            }
+                StartServer(campaign_->getMapFilePath(selectedMission), campaign_->getLuaFilePath(selectedMission));
         }
     }
 }

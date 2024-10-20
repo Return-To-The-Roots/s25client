@@ -51,13 +51,13 @@ int getStartOffsetMissionButtonsY()
 }
 } // namespace
 
-dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, boost::filesystem::path campaignFolder)
-    : Desktop(LOADER.GetImageN("setup015", 0)), campaignFolder_(std::move(campaignFolder)), csi_(std::move(csi)),
-      currentPage_(0), lastPage_(0), missionsPerPage_(10)
+dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, const CampaignDescription& campaign)
+    : Desktop(LOADER.GetImageN("setup015", 0)), csi_(std::move(csi)),
+      campaign_(std::make_unique<CampaignDescription>(campaign)), currentPage_(0), lastPage_(0), missionsPerPage_(10)
 {
-    const unsigned int btOffset = getStartOffsetMissionButtonsY()
-                                  + missionsPerPage_ * (buttonSize.y + distanceBetweenMissionButtonsY)
-                                  + distanceBetweenElementsY;
+    const unsigned btOffset = getStartOffsetMissionButtonsY()
+                              + missionsPerPage_ * (buttonSize.y + distanceBetweenMissionButtonsY)
+                              + distanceBetweenElementsY;
     AddTextButton(ID_Back, DrawPoint(300, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     AddImageButton(ID_FirstPage, DrawPoint(400 - buttonSize.x * 3 - 2 * spacingBetweenButtons, btOffset), buttonSize,
@@ -72,12 +72,10 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, b
     AddImageButton(ID_LastPage, DrawPoint(400 + buttonSize.x * 2 + 2 * spacingBetweenButtons, btOffset), buttonSize,
                    TextureColor::Green2, LOADER.GetImageN("io", 105));
 
-    settings_ = std::make_unique<CampaignDescription>();
-    CampaignDataLoader loader(*settings_, campaignFolder_);
-    if(!loader.Load() || settings_->getNumMaps() == 0)
-        LOG.write(_("Failed to load campaign %1%.\n")) % campaignFolder_;
+    if(campaign_->getNumMaps() == 0)
+        LOG.write(_("Campaign %1% has no maps.\n")) % campaign_->name;
     else
-        lastPage_ = (settings_->getNumMaps() - 1) / missionsPerPage_;
+        lastPage_ = (campaign_->getNumMaps() - 1) / missionsPerPage_;
 
     UpdateEnabledStateOfNextPreviousButton();
 
@@ -96,13 +94,13 @@ void dskCampaignMissionSelection::UpdateMissionPage()
     ctrlGroup* group = AddGroup(ID_GroupStart + currentPage_);
     Extent catBtSize = Extent(300, buttonSize.y);
     DrawPoint curBtPos(250, getStartOffsetMissionButtonsY());
-    for(unsigned int i = 0; i < missionsPerPage_; i++)
+    for(unsigned i = 0; i < missionsPerPage_; i++)
     {
-        unsigned int missionIndex = currentPage_ * missionsPerPage_ + i;
-        if(missionIndex >= settings_->getNumMaps())
+        const unsigned missionIndex = currentPage_ * missionsPerPage_ + i;
+        if(missionIndex >= campaign_->getNumMaps())
             break;
 
-        const bfs::path& mapFilePath = settings_->getMapFilePath(missionIndex);
+        const bfs::path& mapFilePath = campaign_->getMapFilePath(missionIndex);
 
         libsiedler2::Archiv map;
         if(int ec = libsiedler2::loader::LoadMAP(mapFilePath, map, true))
@@ -122,7 +120,7 @@ void dskCampaignMissionSelection::UpdateMissionPage()
 }
 
 void dskCampaignMissionSelection::StartServer(const boost::filesystem::path& mapPath,
-                                              const boost::optional<boost::filesystem::path>& luaPath)
+                                              const boost::filesystem::path& luaPath)
 {
     // Start server
     if(!GAMECLIENT.HostGame(csi_, {mapPath, MapType::OldMap, luaPath}))
@@ -150,10 +148,8 @@ void dskCampaignMissionSelection::UpdateEnabledStateOfNextPreviousButton()
 
 void dskCampaignMissionSelection::Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id)
 {
-    unsigned int missionIndex = (group_id - ID_GroupStart) * missionsPerPage_ + ctrl_id;
-    const bfs::path mapPath = settings_->getMapFilePath(missionIndex);
-    const bfs::path luaPath = settings_->getLuaFilePath(missionIndex);
-    StartServer(mapPath, luaPath);
+    const unsigned missionIndex = (group_id - ID_GroupStart) * missionsPerPage_ + ctrl_id;
+    StartServer(campaign_->getMapFilePath(missionIndex), campaign_->getLuaFilePath(missionIndex));
 }
 
 void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
