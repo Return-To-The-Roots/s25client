@@ -17,7 +17,9 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     luaData.getOrThrow(name, "name");
     luaData.getOrThrow(shortDescription, "shortDescription");
     luaData.getOrThrow(longDescription, "longDescription");
-    luaData.getOrThrow(image, "image");
+    image = luaData.getOptional<std::string>("image");
+    if(image && image->empty())
+        image = std::nullopt;
     luaData.getOrThrow(maxHumanPlayers, "maxHumanPlayers");
 
     if(maxHumanPlayers != 1)

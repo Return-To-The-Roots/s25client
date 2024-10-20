@@ -1,8 +1,9 @@
-// Copyright (C) 2005 - 2023 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
+#include "helpers/OptionalIO.h"
 #include "helpers/format.hpp"
 #include "lua/CampaignDataLoader.h"
 #include "gameData/CampaignDescription.h"
@@ -151,6 +152,48 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert0.lua"));
     BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert1.lua"));
     BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert2.lua"));
+}
+
+BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
+{
+    rttr::test::TmpFolder tmp;
+    {
+        bnw::ofstream file(tmp / "campaign.lua");
+        file << R"(
+            campaign = {
+                version = "1",
+                author = "Max Meier",
+                name = "My campaign",
+                shortDescription = "short",
+                longDescription = "long",
+                maxHumanPlayers = 1,
+                difficulty = "easy",
+                mapFolder = "<RTTR_GAME>/MAPS",
+                luaFolder = "<RTTR_GAME>/LUA",
+                maps = { "map.WLD" }
+            }
+            function getRequiredLuaVersion() return 1 end
+        )";
+    }
+
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST(!desc.image);
+    }
+
+    {
+        // Empty image is same as unset
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["image"] = ""
+        )";
+    }
+    CampaignDescription desc;
+    CampaignDataLoader loader(desc, tmp);
+    BOOST_TEST_REQUIRE(loader.Load());
+    BOOST_TEST(!desc.image);
 }
 
 BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingCampaignVariable)
