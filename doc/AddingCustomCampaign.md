@@ -81,23 +81,26 @@ You need to implement this and return the version your script works with. If it 
 
 If you want a field to be translated you have to add the translation as described above and set the variable to _"<key>". The _"..." will translate the text during application execution depending on your language settings.
 
-  1. `version` simple a number for versioning of the campaign
-  2. `author` human readable string of the campaign creator
-  3. `name` the name of the campaign
-  4. `shortDescription` Short description of the campaign (like a head line to get a rough imagination of the campaign)
-  5. `longDescription` Extended description describing the campaign in detail. Will be shown in the campaign selection screen, when the campaign is selected.
-  6. `image` Path to an image displayed in the campaign selection screen. You can omit this if you do no want to provide an image.
-  7. `maxHumanPlayers` for now this is always 1 until we support multiplayer campaigns
-  8. `difficulty` difficulty of the campaign. Should be one of the valus easy, medium or hard.
-  9. `mapFolder` and `luaFolder` Path to the folder containing the campaign maps and associated lua files. Usually your campaign folder or a subfolder of it
-  10. `maps` List of the names of the files of the campaigns mission maps
-  11. `selectionMap` Optional parameter. See [map selection screen](#selection-map) for detailed explanations.
+  1. `version`: Simple a number for versioning of the campaign
+  2. `author`: Human readable string of the campaign creator
+  3. `name`: The name of the campaign
+  4. `shortDescription`: Short description of the campaign (like a head line to get a rough imagination of the campaign)
+  5. `longDescription`: Extended description describing the campaign in detail. Will be shown in the campaign selection screen, when the campaign is selected.
+  6. `image`: Path to an image displayed in the campaign selection screen. You can omit this if you do no want to provide an image.
+  7. `maxHumanPlayers`: For now this is always 1 until we support multiplayer campaigns
+  8. `difficulty`: Difficulty of the campaign. Should be one of the valus easy, medium or hard.
+  9. `mapFolder` and `luaFolder`: Path to the folder containing the campaign maps and associated lua files. Usually your campaign folder or a subfolder of it.
+  10. `maps`: List of the names of the files of the campaigns mission maps
+  11. `selectionMap`: Optional parameter. See [map selection screen](#selection-map) for detailed explanations.
 
 Hints:
-- The lua file of a map must have the same name as the map it self but with the extension `.lua` to be found correctly. The lua and the map file must not be in the same folder because the path can be specified differently.
 - To work on case sensitive os (like linux) the file name of the lua file must have the same case as the map file name. This applies to the map names in the campaign.lua file too.
 For example: `MISS01.WLD, MISS01.lua` is correct and `MISS01.WLD, miss01.lua` will not work on linux
-- All paths can contain placeholders like `<RTTR_RTTR>, ...`
+- The lua file of a map must have the same name as the map itself but with the extension `.lua` to be found.
+- The lua and the map file don't need to be in the same folder because the path can be specified separately.
+- If `mapFolder` is not specified or empty it defaults to the folder containing the campaign lua file.
+- If `luaFolder` is not specified it defaults to the `mapFolder`.
+- Both paths can start with placeholders like `<RTTR_GAME>`, otherwise they need to be only the name of a folder relative to the folder containing the campaign lua file. I.e. multiple levels are not supported.
 
 ### Optional map selection screen {#selection-map}
 

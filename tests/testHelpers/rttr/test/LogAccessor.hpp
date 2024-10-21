@@ -60,6 +60,10 @@ struct LogAccessor
                                                                                                    \
     } while(false)
 
+/// Require that the log contains "content" somewhere
+#define RTTR_REQUIRE_LOG_CONTAINS_SOME(content, allowEmpty) \
+    BOOST_TEST_REQUIRE(logAcc.getLog().find(content) != std::string::npos, "Log does not contain: " << (content))
+
 #define RTTR_REQUIRE_ASSERT(stmt)                              \
     do                                                         \
     {                                                          \

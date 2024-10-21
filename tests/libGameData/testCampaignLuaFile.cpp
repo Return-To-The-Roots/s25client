@@ -198,6 +198,108 @@ BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
     BOOST_TEST(!desc.image);
 }
 
+BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
+{
+    rttr::test::TmpFolder tmp;
+    {
+        bnw::ofstream file(tmp / "campaign.lua");
+        file << R"(
+            campaign = {
+                version = "1",
+                author = "Max Meier",
+                name = "My campaign",
+                shortDescription = "short",
+                longDescription = "long",
+                maxHumanPlayers = 1,
+                difficulty = "easy",
+                maps = { "map.WLD" }
+            }
+            function getRequiredLuaVersion() return 1 end
+        )";
+    }
+
+    // Without mapFolder and luaFolder paths default to campaign path
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST(desc.getMapFilePath(0) == tmp / "map.WLD");
+        BOOST_TEST(desc.getLuaFilePath(0) == tmp / "map.lua");
+    }
+
+    // Only folder name is a subdirectory to the campaign
+    {
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["mapFolder"] = "maps"
+        )";
+    }
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST(desc.getMapFilePath(0) == tmp / "maps" / "map.WLD");
+        BOOST_TEST(desc.getLuaFilePath(0) == tmp / "maps" / "map.lua");
+    }
+
+    // Lua folder can be different
+    {
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["luaFolder"] = "scripts"
+        )";
+    }
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST(desc.getMapFilePath(0) == tmp / "maps" / "map.WLD");
+        BOOST_TEST(desc.getLuaFilePath(0) == tmp / "scripts" / "map.lua");
+    }
+
+    // Empty folder is the same as the campaign folder
+    {
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["luaFolder"] = ""
+        )";
+    }
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST(desc.getMapFilePath(0) == tmp / "maps" / "map.WLD");
+        BOOST_TEST(desc.getLuaFilePath(0) == tmp / "map.lua");
+    }
+
+    // More than a folder name is forbidden
+    rttr::test::LogAccessor logAcc;
+    {
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["luaFolder"] = "subdir/scripts"
+        )";
+    }
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(!loader.Load());
+        RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path 'subdir/scripts", false);
+    }
+    {
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["mapFolder"] = "subdir/maps"
+        )";
+    }
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(!loader.Load());
+        RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path 'subdir/maps", false);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingCampaignVariable)
 {
     rttr::test::TmpFolder tmp;
@@ -264,7 +366,6 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
             longDescription = "This is the long description",
             image = "<RTTR_GAME>/GFX/PICS/WORLD.LBM",
             maxHumanPlayers = 1,
-            difficulty = "easy",
             mapFolder = "<RTTR_GAME>/DATA/MAPS",
             maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
         }
@@ -278,7 +379,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS(
-      "Failed to load campaign data!\nReason: Failed to load game data: Required field 'luaFolder' not found", false);
+      "Failed to load campaign data!\nReason: Failed to load game data: Required field 'difficulty' not found", false);
 }
 
 BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
