@@ -28,19 +28,20 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
     {
         bnw::ofstream file(campaignFile);
 
-        file << "campaign ={\
-                version = \"1\",\
-                author = \"Max Meier\",\
-                name = \"Meine Kampagne\",\
-                shortDescription = \"Sehr kurze Beschreibung\",\
-                longDescription = \"Das ist die lange Beschreibung\",\
-                image = \"<RTTR_GAME>/GFX/PICS/WORLD.LBM\",\
-                maxHumanPlayers = 1,\
-                difficulty = \"easy\",\
-                mapFolder = \"<RTTR_GAME>/DATA/MAPS\",\
-                luaFolder = \"<RTTR_GAME>/CAMPAIGNS/ROMAN\",\
-                maps = { \"dessert0.WLD\", \"dessert1.WLD\", \"dessert2.WLD\"}\
-            }\n";
+        file << R"(campaign ={
+                version = "1",
+                author = "Max Meier",
+                name = "My campaign",
+                shortDescription = "Very short description",
+                longDescription = "This is the long description",
+                image = "<RTTR_GAME>/GFX/PICS/WORLD.LBM",
+                maxHumanPlayers = 1,
+                difficulty = "easy",
+                mapFolder = "<RTTR_GAME>/DATA/MAPS",
+                luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+                maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
+            }
+            )";
     }
 
     // No getRequiredLuaVersion
@@ -113,19 +114,20 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     {
         bnw::ofstream file(tmp / "campaign.lua");
 
-        file << "campaign ={\
-            version = \"1\",\
-            author = \"Max Meier\",\
-            name = \"Meine Kampagne\",\
-            shortDescription = \"Sehr kurze Beschreibung\",\
-            longDescription = \"Das ist die lange Beschreibung\",\
-            image = \"<RTTR_GAME>/GFX/PICS/WORLD.LBM\",\
-            maxHumanPlayers = 1,\
-            difficulty = \"easy\",\
-            mapFolder = \"<RTTR_GAME>/DATA/MAPS\",\
-            luaFolder = \"<RTTR_GAME>/CAMPAIGNS/ROMAN\",\
-            maps = { \"dessert0.WLD\", \"dessert1.WLD\", \"dessert2.WLD\"}\
-        }";
+        file << R"(campaign ={
+            version = "1",
+            author = "Max Meier",
+            name = "My campaign",
+            shortDescription = "Very short description",
+            longDescription = "This is the long description",
+            image = "<RTTR_GAME>/GFX/PICS/WORLD.LBM",
+            maxHumanPlayers = 1,
+            difficulty = "easy",
+            mapFolder = "<RTTR_GAME>/DATA/MAPS",
+            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
+        }
+        )";
 
         file << "function getRequiredLuaVersion() return 1 end";
     }
@@ -137,9 +139,9 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     // campaign description
     BOOST_TEST(desc.version == "1");
     BOOST_TEST(desc.author == "Max Meier");
-    BOOST_TEST(desc.name == "Meine Kampagne");
-    BOOST_TEST(desc.shortDescription == "Sehr kurze Beschreibung");
-    BOOST_TEST(desc.longDescription == "Das ist die lange Beschreibung");
+    BOOST_TEST(desc.name == "My campaign");
+    BOOST_TEST(desc.shortDescription == "Very short description");
+    BOOST_TEST(desc.longDescription == "This is the long description");
     BOOST_TEST(desc.image == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");
     BOOST_TEST(desc.maxHumanPlayers == 1u);
     BOOST_TEST(desc.difficulty == "easy");
@@ -202,9 +204,10 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingCampaignVariable)
     {
         bnw::ofstream file(tmp / "campaign.lua");
 
-        file << "roemer_campaign ={\
-            version = \"1\",\
-        }";
+        file << R"(roemer_campaign ={
+            version = "1",
+        }
+        )";
 
         file << "function getRequiredLuaVersion() return 2 end";
     }
@@ -222,19 +225,20 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToIncorrectDifficulty)
     {
         bnw::ofstream file(tmp / "campaign.lua");
 
-        file << "campaign ={\
-            version = \"1\",\
-            author = \"Max Meier\",\
-            name = \"Meine Kampagne\",\
-            shortDescription = \"Sehr kurze Beschreibung\",\
-            longDescription = \"Das ist die lange Beschreibung\",\
-            image = \"<RTTR_GAME>/GFX/PICS/WORLD.LBM\",\
-            maxHumanPlayers = 1,\
-            difficulty = \"middle\",\
-            mapFolder = \"<RTTR_GAME>/DATA/MAPS\",\
-            luaFolder = \"<RTTR_GAME>/CAMPAIGNS/ROMAN\",\
-            maps = { \"dessert0.WLD\", \"dessert1.WLD\", \"dessert2.WLD\"}\
-        }";
+        file << R"(campaign ={
+            version = "1",
+            author = "Max Meier",
+            name = "My campaign",
+            shortDescription = "Very short description",
+            longDescription = "This is the long description",
+            image = "<RTTR_GAME>/GFX/PICS/WORLD.LBM",
+            maxHumanPlayers = 1,
+            difficulty = "middle",
+            mapFolder = "<RTTR_GAME>/DATA/MAPS",
+            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
+        }
+        )";
 
         file << "function getRequiredLuaVersion() return 1 end";
     }
@@ -252,18 +256,19 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
     {
         bnw::ofstream file(tmp / "campaign.lua");
 
-        file << "campaign ={\
-            version = \"1\",\
-            author = \"Max Meier\",\
-            name = \"Meine Kampagne\",\
-            shortDescription = \"Sehr kurze Beschreibung\",\
-            longDescription = \"Das ist die lange Beschreibung\",\
-            image = \"<RTTR_GAME>/GFX/PICS/WORLD.LBM\",\
-            maxHumanPlayers = 1,\
-            difficulty = \"easy\",\
-            mapFolder = \"<RTTR_GAME>/DATA/MAPS\",\
-            maps = { \"dessert0.WLD\", \"dessert1.WLD\", \"dessert2.WLD\"}\
-        }";
+        file << R"(campaign ={
+            version = "1",
+            author = "Max Meier",
+            name = "My campaign",
+            shortDescription = "Very short description",
+            longDescription = "This is the long description",
+            image = "<RTTR_GAME>/GFX/PICS/WORLD.LBM",
+            maxHumanPlayers = 1,
+            difficulty = "easy",
+            mapFolder = "<RTTR_GAME>/DATA/MAPS",
+            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
+        }
+        )";
 
         file << "function getRequiredLuaVersion() return 1 end";
     }
@@ -282,35 +287,37 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
     {
         bnw::ofstream file(tmp / "campaign.lua");
 
-        file << "rttr:RegisterTranslations(\
-        {\
-            en =\
-            {\
-                name = 'My campaign',\
-                shortDescription = 'Very short description',\
-                longDescription = 'That is the long description'\
-            },\
-            de =\
-            {\
-                name = 'Meine Kampagne',\
-                shortDescription = 'Sehr kurze Beschreibung',\
-                longDescription = 'Das ist die lange Beschreibung'\
-            }\
-        })";
+        file << R"(rttr:RegisterTranslations(
+        {
+            en =
+            {
+                name = 'My campaign',
+                shortDescription = 'Very short description',
+                longDescription = 'That is the long description'
+            },
+            de =
+            {
+                name = 'My campaign',
+                shortDescription = 'Sehr kurze Beschreibung',
+                longDescription = 'Das ist die lange Beschreibung'
+            }
+        })
+        )";
 
-        file << "campaign = {\
-            version = \"1\",\
-            author = \"Max Meier\",\
-            name = _\"name\",\
-            shortDescription = _\"shortDescription\",\
-            longDescription = _\"longDescription\",\
-            image = \"<RTTR_GAME>/GFX/PICS/WORLD.LBM\",\
-            maxHumanPlayers = 1,\
-            difficulty = \"easy\",\
-            mapFolder = \"<RTTR_GAME>/DATA/MAPS\",\
-            luaFolder = \"<RTTR_GAME>/CAMPAIGNS/ROMAN\",\
-            maps = { \"dessert0.WLD\", \"dessert1.WLD\", \"dessert2.WLD\"}\
-        }";
+        file << R"(campaign = {
+            version = "1",
+            author = "Max Meier",
+            name = _"name",
+            shortDescription = _"shortDescription",
+            longDescription = _"longDescription",
+            image = "<RTTR_GAME>/GFX/PICS/WORLD.LBM",
+            maxHumanPlayers = 1,
+            difficulty = "easy",
+            mapFolder = "<RTTR_GAME>/DATA/MAPS",
+            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
+        }
+        )";
 
         file << "function getRequiredLuaVersion() return 1 end";
     }
@@ -324,7 +331,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
     // campaign description
     BOOST_TEST(desc.version == "1");
     BOOST_TEST(desc.author == "Max Meier");
-    BOOST_TEST(desc.name == "Meine Kampagne");
+    BOOST_TEST(desc.name == "My campaign");
     BOOST_TEST(desc.shortDescription == "Sehr kurze Beschreibung");
     BOOST_TEST(desc.longDescription == "Das ist die lange Beschreibung");
     BOOST_TEST(desc.image == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");
@@ -350,33 +357,34 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
     {
         bnw::ofstream file(tmp / "campaign.lua");
 
-        file << "campaign = {\
-            version = \"1\",\
-            author = \"Max Meier\",\
-            name = \"Meine Kampagne\",\
-            shortDescription = \"Sehr kurze Beschreibung\",\
-            longDescription = \"Das ist die lange Beschreibung\",\
-            image = \"<RTTR_GAME>/GFX/PICS/WORLD.LBM\",\
-            maxHumanPlayers = 1,\
-            difficulty = \"easy\",\
-            mapFolder = \"<RTTR_GAME>/DATA/MAPS\",\
-            luaFolder = \"<RTTR_GAME>/CAMPAIGNS/ROMAN\",\
-            maps = { \"dessert0.WLD\", \"dessert1.WLD\", \"dessert2.WLD\"},\
-            selectionMap = {\
-                background     = {\"<RTTR_GAME>/GFX/PICS/SETUP990.LBM\", 0},\
-                map            = {\"<RTTR_GAME>/GFX/PICS/WORLD.LBM\", 0},\
-                missionMapMask = {\"<RTTR_GAME>/GFX/PICS/WORLDMSK.LBM\", 0},\
-                marker         = {\"<RTTR_GAME>/DATA/IO/IO.DAT\", 231},\
-                conquered      = {\"<RTTR_GAME>/DATA/IO/IO.DAT\", 232},\
-                backgroundOffset = {64, 70},\
-                disabledColor = 0x70000000,\
-                missionSelectionInfos = {\
-                    {0xffffff00, 243, 97},\
-                    {0xffaf73cb, 55, 78},\
-                    {0xff008fc3, 122, 193}\
-                }\
-            }\
-        }";
+        file << R"(campaign = {
+            version = "1",
+            author = "Max Meier",
+            name = "My campaign",
+            shortDescription = "Very short description",
+            longDescription = "This is the long description",
+            image = "<RTTR_GAME>/GFX/PICS/WORLD.LBM",
+            maxHumanPlayers = 1,
+            difficulty = "easy",
+            mapFolder = "<RTTR_GAME>/DATA/MAPS",
+            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"},
+            selectionMap = {
+                background     = {"<RTTR_GAME>/GFX/PICS/SETUP990.LBM", 0},
+                map            = {"<RTTR_GAME>/GFX/PICS/WORLD.LBM", 0},
+                missionMapMask = {"<RTTR_GAME>/GFX/PICS/WORLDMSK.LBM", 0},
+                marker         = {"<RTTR_GAME>/DATA/IO/IO.DAT", 231},
+                conquered      = {"<RTTR_GAME>/DATA/IO/IO.DAT", 232},
+                backgroundOffset = {64, 70},
+                disabledColor = 0x70000000,
+                missionSelectionInfos = {
+                    {0xffffff00, 243, 97},
+                    {0xffaf73cb, 55, 78},
+                    {0xff008fc3, 122, 193}
+                }
+            }
+        }
+        )";
 
         file << "function getRequiredLuaVersion() return 2 end";
     }
@@ -388,9 +396,9 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
     // campaign description
     BOOST_TEST(desc.version == "1");
     BOOST_TEST(desc.author == "Max Meier");
-    BOOST_TEST(desc.name == "Meine Kampagne");
-    BOOST_TEST(desc.shortDescription == "Sehr kurze Beschreibung");
-    BOOST_TEST(desc.longDescription == "Das ist die lange Beschreibung");
+    BOOST_TEST(desc.name == "My campaign");
+    BOOST_TEST(desc.shortDescription == "Very short description");
+    BOOST_TEST(desc.longDescription == "This is the long description");
     BOOST_TEST(desc.image == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");
     BOOST_TEST(desc.maxHumanPlayers == 1u);
     BOOST_TEST(desc.difficulty == "easy");
