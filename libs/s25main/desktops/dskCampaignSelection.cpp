@@ -40,7 +40,7 @@ enum
     ID_Table,
     ID_PreviewTitle,
     ID_PreviewDescription,
-    ID_Back,
+    ID_btBack,
     ID_Next,
     ID_TimerFillCampaignTable,
     ID_MapSelection
@@ -85,7 +85,7 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
     AddMultiline(ID_PreviewDescription, DrawPoint(secondColumnOffsetX, multilineOffsetY),
                  Extent(secondColumnExtentX, mutlilineExtentY), TextureColor::Grey, NormalFont);
 
-    AddTextButton(ID_Back, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     AddTextButton(ID_Next, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont);
 
     showCampaignInfo(false);
@@ -158,7 +158,7 @@ void dskCampaignSelection::showCampaignMissionSelectionScreen()
 
 void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
 {
-    if(ctrl_id == ID_Back)
+    if(ctrl_id == ID_btBack)
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(ctrl_id == ID_Next)
         showCampaignMissionSelectionScreen();

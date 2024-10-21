@@ -31,17 +31,17 @@ constexpr unsigned ID_msgBoxError = 0;
 namespace {
 enum
 {
-    ID_Back,
-    ID_Start,
+    ID_btBack,
+    ID_btStart,
     ID_MapSelection,
     // IDs used if map selection is not available
-    ID_FirstPage,
-    ID_NextPage,
-    ID_PageLabel,
-    ID_PreviousPage,
-    ID_LastPage,
-    ID_ChooseMissionLabel,
-    ID_GroupStart
+    ID_btFirstPage,
+    ID_btNextPage,
+    ID_lblPage,
+    ID_btPrevPage,
+    ID_btLastPage,
+    ID_lblChooseMission,
+    ID_FirstPageGrp
 };
 
 constexpr auto startOffsetY = 70;
@@ -69,8 +69,8 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, c
     if(campaign_->selectionMapData)
     {
         constexpr Extent buttonSize(200, buttonHeight);
-        AddTextButton(ID_Start, DrawPoint(300, 530), buttonSize, TextureColor::Red1, _("Start"), NormalFont);
-        AddTextButton(ID_Back, DrawPoint(300, 530 + buttonSize.y + spacingBetweenButtons), buttonSize,
+        AddTextButton(ID_btStart, DrawPoint(300, 530), buttonSize, TextureColor::Red1, _("Start"), NormalFont);
+        AddTextButton(ID_btBack, DrawPoint(300, 530 + buttonSize.y + spacingBetweenButtons), buttonSize,
                       TextureColor::Red1, _("Back"), NormalFont);
 
         auto* mapSelection =
@@ -79,8 +79,8 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, c
     } else
     {
         constexpr Extent buttonSize(22, buttonHeight);
-        AddText(ID_ChooseMissionLabel, DrawPoint(400, startOffsetY), _("Choose mission"), COLOR_YELLOW,
-                FontStyle::CENTER, LargeFont);
+        AddText(ID_lblChooseMission, DrawPoint(400, startOffsetY), _("Choose mission"), COLOR_YELLOW, FontStyle::CENTER,
+                LargeFont);
 
         // Add navigation controls
         const unsigned btOffset = getStartOffsetMissionButtonsY()
@@ -92,18 +92,18 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, c
         // width of one button as space around the label center, 2 buttons per side
         // |bt|s|bt|s|(bt)|label|(bt)|s|bt|s|bt
         DrawPoint btPos(pageLabelPos.x - buttonSize.x * 3 - 2 * spacingBetweenButtons, btOffset);
-        AddImageButton(ID_FirstPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 102));
+        AddImageButton(ID_btFirstPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 102));
         btPos.x += buttonSize.x + spacingBetweenButtons;
-        AddImageButton(ID_PreviousPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 103));
+        AddImageButton(ID_btPrevPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 103));
 
-        AddText(ID_PageLabel, pageLabelPos, "0/0", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, LargeFont);
+        AddText(ID_lblPage, pageLabelPos, "0/0", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, LargeFont);
 
         btPos.x = pageLabelPos.x + buttonSize.x + spacingBetweenButtons;
-        AddImageButton(ID_NextPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 104));
+        AddImageButton(ID_btNextPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 104));
         btPos.x += buttonSize.x + spacingBetweenButtons;
-        AddImageButton(ID_LastPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 105));
+        AddImageButton(ID_btLastPage, btPos, buttonSize, TextureColor::Green2, LOADER.GetImageN("io", 105));
 
-        AddTextButton(ID_Back, DrawPoint(300, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
+        AddTextButton(ID_btBack, DrawPoint(300, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
 
         UpdateStateOfNavigationButtons();
         UpdateMissionPage();
@@ -115,17 +115,17 @@ void dskCampaignMissionSelection::UpdateMissionPage()
     // Hide all groups
     for(const auto i : helpers::range(lastPage_ + 1))
     {
-        auto* group = GetCtrl<ctrlGroup>(ID_GroupStart + i);
+        auto* group = GetCtrl<ctrlGroup>(ID_FirstPageGrp + i);
         if(group)
             group->SetVisible(false);
     }
-    ctrlGroup* group = GetCtrl<ctrlGroup>(ID_GroupStart + currentPage_);
+    auto* group = GetCtrl<ctrlGroup>(ID_FirstPageGrp + currentPage_);
     if(group)
         group->SetVisible(true);
     else
     {
         // Create group (once)
-        group = AddGroup(ID_GroupStart + currentPage_);
+        group = AddGroup(ID_FirstPageGrp + currentPage_);
 
         constexpr Extent missionBtSize(300, buttonHeight);
         DrawPoint curBtPos(250, getStartOffsetMissionButtonsY());
@@ -151,7 +151,7 @@ void dskCampaignMissionSelection::UpdateMissionPage()
             curBtPos.y += missionBtSize.y + distanceBetweenMissionButtonsY;
         }
     }
-    GetCtrl<ctrlText>(ID_PageLabel)->SetText(std::to_string(currentPage_ + 1) + "/" + std::to_string(lastPage_ + 1));
+    GetCtrl<ctrlText>(ID_lblPage)->SetText(std::to_string(currentPage_ + 1) + "/" + std::to_string(lastPage_ + 1));
 }
 
 void dskCampaignMissionSelection::StartServer(unsigned missionIdx)
@@ -173,42 +173,42 @@ void dskCampaignMissionSelection::StartServer(unsigned missionIdx)
 
 void dskCampaignMissionSelection::UpdateStateOfNavigationButtons()
 {
-    GetCtrl<ctrlImageButton>(ID_FirstPage)->SetEnabled(currentPage_ > 0);
-    GetCtrl<ctrlImageButton>(ID_PreviousPage)->SetEnabled(currentPage_ > 0);
-    GetCtrl<ctrlImageButton>(ID_NextPage)->SetEnabled(currentPage_ < lastPage_);
-    GetCtrl<ctrlImageButton>(ID_LastPage)->SetEnabled(currentPage_ < lastPage_);
+    GetCtrl<ctrlImageButton>(ID_btFirstPage)->SetEnabled(currentPage_ > 0);
+    GetCtrl<ctrlImageButton>(ID_btPrevPage)->SetEnabled(currentPage_ > 0);
+    GetCtrl<ctrlImageButton>(ID_btNextPage)->SetEnabled(currentPage_ < lastPage_);
+    GetCtrl<ctrlImageButton>(ID_btLastPage)->SetEnabled(currentPage_ < lastPage_);
 }
 
 void dskCampaignMissionSelection::Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id)
 {
-    const auto page = group_id - ID_GroupStart;
+    const auto page = group_id - ID_FirstPageGrp;
     RTTR_Assert(page == currentPage_);
     StartServer(page * missionsPerPage_ + ctrl_id);
 }
 
 void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
 {
-    if(ctrl_id == ID_Back)
+    if(ctrl_id == ID_btBack)
         WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(csi_));
-    else if(ctrl_id == ID_Start)
+    else if(ctrl_id == ID_btStart)
     {
         const auto selectedMission = GetCtrl<ctrlMapSelection>(ID_MapSelection)->getSelection();
         if(selectedMission)
             StartServer(*selectedMission);
-    } else if(ctrl_id >= ID_FirstPage && ctrl_id <= ID_LastPage)
+    } else if(ctrl_id >= ID_btFirstPage && ctrl_id <= ID_btLastPage)
     {
         switch(ctrl_id)
         {
-            case ID_FirstPage: currentPage_ = 0; break;
-            case ID_NextPage:
+            case ID_btFirstPage: currentPage_ = 0; break;
+            case ID_btNextPage:
                 if(currentPage_ < lastPage_)
                     currentPage_++;
                 break;
-            case ID_PreviousPage:
+            case ID_btPrevPage:
                 if(currentPage_ > 0)
                     currentPage_--;
                 break;
-            case ID_LastPage: currentPage_ = lastPage_; break;
+            case ID_btLastPage: currentPage_ = lastPage_; break;
         }
         UpdateMissionPage();
         UpdateStateOfNavigationButtons();
