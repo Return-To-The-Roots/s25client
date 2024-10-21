@@ -13,7 +13,6 @@
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
-#include "dskCampaignMissionMapSelection.h"
 #include "dskCampaignMissionSelection.h"
 #include "dskSinglePlayer.h"
 #include "files.h"
@@ -154,11 +153,7 @@ void dskCampaignSelection::showCampaignInfo(const bool show)
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
     const auto& campaign = campaigns_.at(*GetCtrl<ctrlTable>(ID_Table)->GetSelection());
-
-    if(campaign.selectionMapData)
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionMapSelection>(csi_, campaign));
-    else
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
+    WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 
 void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
