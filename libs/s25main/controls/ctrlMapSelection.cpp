@@ -100,10 +100,16 @@ void ctrlMapSelection::setSelection(size_t select)
         currentSelectionPos = Position::Invalid();
 }
 
-int ctrlMapSelection::getCurrentSelection() const
+std::optional<unsigned> ctrlMapSelection::getSelection() const
 {
-    return static_cast<int>(helpers::indexOf_if(inputData.missionSelectionInfos,
-                                                [&](const auto& val) { return val.ankerPos == currentSelectionPos; }));
+    if(!currentSelectionPos.isValid())
+        return std::nullopt;
+    const auto result = helpers::indexOf_if(inputData.missionSelectionInfos,
+                                            [currentSelectionPos = this->currentSelectionPos](const auto& val) {
+                                                return val.ankerPos == currentSelectionPos;
+                                            });
+    RTTR_Assert(result >= 0);
+    return static_cast<unsigned>(result);
 }
 
 void ctrlMapSelection::setPreview(bool previewOnly)
