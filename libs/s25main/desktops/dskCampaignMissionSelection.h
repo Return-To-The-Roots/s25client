@@ -23,8 +23,10 @@ private:
     void UpdateStateOfNavigationButtons();
     CreateServerInfo csi_;
     std::unique_ptr<CampaignDescription> campaign_;
+    const unsigned missionsPerPage_;
+    /// current page (zero based) in the paged mission list
     unsigned currentPage_;
-    unsigned lastPage_;
-    unsigned missionsPerPage_;
+    /// last page in the paged mission list
+    const unsigned lastPage_;
     boost::signals2::scoped_connection onErrorConnection_;
 };

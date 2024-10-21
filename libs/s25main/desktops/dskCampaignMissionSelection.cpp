@@ -41,6 +41,7 @@ enum
     ID_btPrevPage,
     ID_btLastPage,
     ID_lblChooseMission,
+    /// ID of the first group control that makes up pages, must be the last
     ID_FirstPageGrp
 };
 
@@ -58,14 +59,11 @@ int getStartOffsetMissionButtonsY()
 
 dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, const CampaignDescription& campaign)
     : Desktop(LOADER.GetImageN("setup015", 0)), csi_(std::move(csi)),
-      campaign_(std::make_unique<CampaignDescription>(campaign)), currentPage_(0), missionsPerPage_(10 - 8)
+      campaign_(std::make_unique<CampaignDescription>(campaign)), missionsPerPage_(10), currentPage_(0),
+      lastPage_((campaign_->getNumMaps() - 1) / missionsPerPage_)
 {
     if(campaign_->getNumMaps() == 0)
-    {
         LOG.write(_("Campaign %1% has no maps.\n")) % campaign_->name;
-        lastPage_ = 0;
-    } else
-        lastPage_ = (campaign_->getNumMaps() - 1) / missionsPerPage_;
     if(campaign_->selectionMapData)
     {
         constexpr Extent buttonSize(200, buttonHeight);
@@ -119,13 +117,14 @@ void dskCampaignMissionSelection::UpdateMissionPage()
         if(group)
             group->SetVisible(false);
     }
-    auto* group = GetCtrl<ctrlGroup>(ID_FirstPageGrp + currentPage_);
+    const auto grpIdCurrentPage = ID_FirstPageGrp + currentPage_;
+    auto* group = GetCtrl<ctrlGroup>(grpIdCurrentPage);
     if(group)
         group->SetVisible(true);
     else
     {
         // Create group (once)
-        group = AddGroup(ID_FirstPageGrp + currentPage_);
+        group = AddGroup(grpIdCurrentPage);
 
         constexpr Extent missionBtSize(300, buttonHeight);
         DrawPoint curBtPos(250, getStartOffsetMissionButtonsY());
