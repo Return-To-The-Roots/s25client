@@ -67,13 +67,15 @@ dskCampaignMissionSelection::dskCampaignMissionSelection(CreateServerInfo csi, c
     if(campaign_->selectionMapData)
     {
         constexpr Extent buttonSize(200, buttonHeight);
-        AddTextButton(ID_btStart, DrawPoint(300, 530), buttonSize, TextureColor::Red1, _("Start"), NormalFont);
+        auto* btStart =
+          AddTextButton(ID_btStart, DrawPoint(300, 530), buttonSize, TextureColor::Red1, _("Start"), NormalFont);
         AddTextButton(ID_btBack, DrawPoint(300, 530 + buttonSize.y + spacingBetweenButtons), buttonSize,
                       TextureColor::Red1, _("Back"), NormalFont);
 
         auto* mapSelection =
           AddMapSelection(ID_MapSelection, DrawPoint(0, 0), Extent(800, 508), *campaign_->selectionMapData);
         mapSelection->setMissionsStatus(std::vector<MissionStatus>(campaign_->getNumMaps(), {true, true}));
+        btStart->SetEnabled(static_cast<bool>(mapSelection->getSelection()));
     } else
     {
         constexpr Extent buttonSize(22, buttonHeight);
@@ -194,6 +196,11 @@ void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
         const auto selectedMission = GetCtrl<ctrlMapSelection>(ID_MapSelection)->getSelection();
         if(selectedMission)
             StartServer(*selectedMission);
+    } else if(ctrl_id == ID_MapSelection)
+    {
+        auto* btStart = GetCtrl<ctrlButton>(ID_btStart);
+        const auto* mapSelection = GetCtrl<ctrlMapSelection>(ID_MapSelection);
+        btStart->SetEnabled(static_cast<bool>(mapSelection->getSelection()));
     } else if(ctrl_id >= ID_btFirstPage && ctrl_id <= ID_btLastPage)
     {
         switch(ctrl_id)
