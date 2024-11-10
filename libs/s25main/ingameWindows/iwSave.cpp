@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -166,14 +166,14 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
 void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
-    // Erster Eintrag --> deaktiviert
-    if(selection == 0)
+    if(selection == 0) // First entry is "disabled"
         SETTINGS.interface.autosave_interval = 0;
-    else if(selection >= AUTO_SAVE_INTERVALS.size())
+    else if(selection > AUTO_SAVE_INTERVALS.size()) // Last entry is "every GF" (in debug mode)
         SETTINGS.interface.autosave_interval = 1;
     else
     {
-        // ansonsten jeweilige GF-Zahl eintragen
+        // selection is the index into the array ignoring the first ("disabled") entry
+        RTTR_Assert(selection >= 1 && selection <= AUTO_SAVE_INTERVALS.size());
         SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1] / SPEED_GF_LENGTHS[referenceSpeed];
     }
 }
