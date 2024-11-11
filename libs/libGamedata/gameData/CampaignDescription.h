@@ -20,8 +20,8 @@ struct CampaignDescription
     std::string name;
     std::string shortDescription;
     std::string longDescription;
-    std::string image;
-    unsigned maxHumanPlayers = 0;
+    std::optional<std::string> image;
+    unsigned maxHumanPlayers = 1;
     std::string difficulty;
     std::optional<SelectionMapInputData> selectionMapData;
 
@@ -31,7 +31,6 @@ struct CampaignDescription
     const std::string& getMapName(const size_t idx) const { return mapNames.at(idx); }
     boost::filesystem::path getLuaFilePath(size_t idx) const;
     boost::filesystem::path getMapFilePath(size_t idx) const;
-    const std::optional<SelectionMapInputData>& getSelectionMapData() const;
 
 private:
     std::string mapFolder;

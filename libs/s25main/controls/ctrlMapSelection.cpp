@@ -20,21 +20,26 @@
 
 ctrlMapSelection::MapImages::MapImages(const SelectionMapInputData& data)
 {
-    auto loadImage = [](const ImageResource& res) {
-        if(LOADER.LoadFiles({res.filePath.string()}))
-        {
-            auto* img = LOADER.GetImageN(ResourceId::make(res.filePath), res.index);
-            if(img)
-                return img;
-        }
-        throw std::runtime_error(helpers::format(_("Loading of images %s for map selection failed."), res.filePath));
+    auto getImage = [](const ImageResource& res) {
+        auto* img = LOADER.GetImageN(ResourceId::make(res.filePath), res.index);
+        if(!img)
+            throw std::runtime_error(
+              helpers::format(_("Loading of images %s for map selection failed."), res.filePath));
+        return img;
     };
 
-    background = loadImage(data.background);
-    map = loadImage(data.map);
-    missionMapMask = loadImage(data.missionMapMask);
-    marker = loadImage(data.marker);
-    conquered = loadImage(data.conquered);
+    {
+        std::vector<std::string> pathsToLoad;
+        for(const auto& res : {data.background, data.map, data.missionMapMask, data.marker, data.conquered})
+            pathsToLoad.push_back(res.filePath.string());
+        LOADER.LoadFiles(pathsToLoad);
+    }
+
+    background = getImage(data.background);
+    map = getImage(data.map);
+    missionMapMask = getImage(data.missionMapMask);
+    marker = getImage(data.marker);
+    conquered = getImage(data.conquered);
     if(map->GetSize() != missionMapMask->GetSize())
         throw std::runtime_error(_("Map and mission mask have different sizes."));
 
@@ -95,10 +100,16 @@ void ctrlMapSelection::setSelection(size_t select)
         currentSelectionPos = Position::Invalid();
 }
 
-int ctrlMapSelection::getCurrentSelection() const
+std::optional<unsigned> ctrlMapSelection::getSelection() const
 {
-    return static_cast<int>(helpers::indexOf_if(inputData.missionSelectionInfos,
-                                                [&](const auto& val) { return val.ankerPos == currentSelectionPos; }));
+    if(!currentSelectionPos.isValid())
+        return std::nullopt;
+    const auto result = helpers::indexOf_if(inputData.missionSelectionInfos,
+                                            [currentSelectionPos = this->currentSelectionPos](const auto& val) {
+                                                return val.ankerPos == currentSelectionPos;
+                                            });
+    RTTR_Assert(result >= 0);
+    return static_cast<unsigned>(result);
 }
 
 void ctrlMapSelection::setPreview(bool previewOnly)

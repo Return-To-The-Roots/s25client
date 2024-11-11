@@ -17,7 +17,9 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     luaData.getOrThrow(name, "name");
     luaData.getOrThrow(shortDescription, "shortDescription");
     luaData.getOrThrow(longDescription, "longDescription");
-    luaData.getOrThrow(image, "image");
+    image = luaData.getOptional<std::string>("image");
+    if(image && image->empty())
+        image = std::nullopt;
     luaData.getOrThrow(maxHumanPlayers, "maxHumanPlayers");
 
     if(maxHumanPlayers != 1)
@@ -35,11 +37,6 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     mapNames = luaData.getOrDefault("maps", std::vector<std::string>());
     selectionMapData = luaData.getOptional<SelectionMapInputData>("selectionMap");
     luaData.checkUnused();
-}
-
-const std::optional<SelectionMapInputData>& CampaignDescription::getSelectionMapData() const
-{
-    return selectionMapData;
 }
 
 boost::filesystem::path CampaignDescription::getLuaFilePath(const size_t idx) const
