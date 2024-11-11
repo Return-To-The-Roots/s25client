@@ -6,6 +6,7 @@
 #include "RttrForeachPt.h"
 #include "controls/ctrlMapSelection.h"
 #include "driver/MouseCoords.h"
+#include "helpers/OptionalIO.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "rttr/test/TmpFolder.hpp"
 #include <libsiedler2/Archiv.h>
@@ -134,55 +135,55 @@ void testMapSelection(Position const& windowPos, Extent const& windowExtent, Ext
     // Activate first mission
     ms.setMissionsStatus({{true, false}, {false, false}, {false, false}});
     // Initial the selection is not set
-    BOOST_TEST(ms.getCurrentSelection() == -1);
+    BOOST_TEST(!ms.getSelection());
     // Click on non mission area => selection will not change
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + freeQuadrantMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == -1);
+    BOOST_TEST(!ms.getSelection());
     // Click on mission area of first mission => selection will change because mission is playable
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + firstMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     // Click on mission area of second mission => selection will not change because mission is not playable
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + secondMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     // Click on mission area of third mission => selection will not change because mission is not playable
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + thirdMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
 
     // Activate first and second mission
     ms.setMissionsStatus({{true, false}, {true, false}, {false, false}});
     // Selection stays the same as before
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     // Click on mission area of second mission => selection will change because mission is playable
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + secondMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 1);
+    BOOST_TEST(ms.getSelection() == 1u);
     // Click on mission area of third mission => selection will not change because mission is not playable
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + thirdMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 1);
+    BOOST_TEST(ms.getSelection() == 1u);
     // Click on non mission area => selection will not change
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + freeQuadrantMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 1);
+    BOOST_TEST(ms.getSelection() == 1u);
     // Click on mission area of first mission => selection will change because mission is playable
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + firstMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
 
     // Test selection
     // Activate first and second mission
     ms.setMissionsStatus({{true, false}, {true, false}, {false, false}});
     // Setting selection to third mission not possible because mission is not playable => stay at previous value
     ms.setSelection(2);
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     // Setting selection to second mission is possible because mission is playable
     ms.setSelection(1);
-    BOOST_TEST(ms.getCurrentSelection() == 1);
+    BOOST_TEST(ms.getSelection() == 1u);
     // Setting selection to invalid mission resets selection to not set
     ms.setSelection(3);
-    BOOST_TEST(ms.getCurrentSelection() == -1);
+    BOOST_TEST(!ms.getSelection());
     // Setting selection to third mission not possible because mission is not playable => stay at previous value
     ms.setSelection(2);
-    BOOST_TEST(ms.getCurrentSelection() == -1);
+    BOOST_TEST(!ms.getSelection());
     // Setting selection to first mission is possible because mission is playable
     ms.setSelection(0);
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
 
     // Activate all missions
     ms.setMissionsStatus({{true, false}, {true, false}, {true, false}});
@@ -190,15 +191,15 @@ void testMapSelection(Position const& windowPos, Extent const& windowExtent, Ext
     // Preview mode active selection cannot change
     ms.setSelection(0);
     ms.setPreview(true);
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + secondMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + thirdMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + freeQuadrantMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + firstMissionMidPoint));
-    BOOST_TEST(ms.getCurrentSelection() == 0);
+    BOOST_TEST(ms.getSelection() == 0u);
     ms.setPreview(false);
 
     // Click all four sides and corners and midpoint of each mission to ensure mapping of areas is correct
@@ -215,11 +216,11 @@ void testMapSelection(Position const& windowPos, Extent const& windowExtent, Ext
                 if(j == 1)
                     borderPoint.y--;
 
-                int deselectIndex = (mid + 1) < midPoints.size() ? (mid + 1) : 0;
+                const unsigned deselectIndex = (mid + 1) < midPoints.size() ? (mid + 1) : 0;
                 ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + midPoints[deselectIndex]));
-                BOOST_TEST(ms.getCurrentSelection() == deselectIndex);
+                BOOST_TEST(ms.getSelection() == deselectIndex);
                 ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + borderPoint));
-                BOOST_TEST(ms.getCurrentSelection() == static_cast<int>(mid));
+                BOOST_TEST(ms.getSelection() == mid);
             }
         }
     }

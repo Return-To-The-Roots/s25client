@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2023 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,8 +6,6 @@
 
 #include "desktops/Desktop.h"
 #include "network/CreateServerInfo.h"
-#include <boost/filesystem.hpp>
-#include <boost/optional.hpp>
 #include <boost/signals2/connection.hpp>
 
 struct CampaignDescription;
@@ -15,19 +13,20 @@ struct CampaignDescription;
 class dskCampaignMissionSelection : public Desktop
 {
 public:
-    dskCampaignMissionSelection(CreateServerInfo csi, boost::filesystem::path campaignFolder);
+    dskCampaignMissionSelection(CreateServerInfo csi, const CampaignDescription& campaign);
 
 private:
     void UpdateMissionPage();
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void StartServer(const boost::filesystem::path& mapPath, const boost::optional<boost::filesystem::path>& luaPath);
-    void UpdateEnabledStateOfNextPreviousButton();
-    boost::filesystem::path campaignFolder_;
+    void StartServer(unsigned missionIdx);
+    void UpdateStateOfNavigationButtons();
     CreateServerInfo csi_;
+    std::unique_ptr<CampaignDescription> campaign_;
+    const unsigned missionsPerPage_;
+    /// current page (zero based) in the paged mission list
     unsigned currentPage_;
-    unsigned lastPage_;
-    std::unique_ptr<CampaignDescription> settings_;
-    unsigned missionsPerPage_;
+    /// last page in the paged mission list
+    const unsigned lastPage_;
     boost::signals2::scoped_connection onErrorConnection_;
 };
