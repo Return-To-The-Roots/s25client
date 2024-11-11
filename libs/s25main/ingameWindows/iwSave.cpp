@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -24,22 +24,43 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "s25util/Log.h"
+#include <boost/range/adaptors.hpp>
 #include <utility>
+
+namespace {
+enum
+{
+    ID_tblSaveGames,
+    ID_edtFilename,
+    ID_btSaveOrLoad,
+    ID_txtAutoSave,
+    ID_cbAutoSaveInterval,
+    ID_txtSaveFolder,
+};
 
 using namespace std::chrono_literals;
 const auto AUTO_SAVE_INTERVALS = helpers::make_array(1min, 5min, 10min, 15min, 30min, 60min, 90min);
+} // namespace
 
-iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
-    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title,
+iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const unsigned addHeight)
+    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + addHeight), window_title,
                    LOADER.GetImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
-    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TextureColor::Green2, NormalFont,
+    AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(560, 300), TextureColor::Green2, NormalFont,
              ctrlTable::Columns{{_("Filename"), 270, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 250, SRT::Date},
                                 {_("Game Time"), 320, SRT::Time},
                                 {}});
+
+    AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
+            FontStyle::TOP, SmallFont)
+      ->setMaxWidth(510);
+    AddEdit(ID_edtFilename, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont);
+    AddImageButton(ID_btSaveOrLoad, DrawPoint(540, 341), Extent(40, 40), TextureColor::Green2, btImg);
+    // Initially fill the table
+    RefreshTable();
 }
 
 void iwSaveLoad::Msg_EditEnter(const unsigned /*ctrl_id*/)
@@ -47,29 +68,31 @@ void iwSaveLoad::Msg_EditEnter(const unsigned /*ctrl_id*/)
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+void iwSaveLoad::Msg_ButtonClick(const unsigned ctrl_id)
 {
+    RTTR_Assert(ctrl_id == ID_btSaveOrLoad);
     SaveLoad();
 }
 
 void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const boost::optional<unsigned>& selection)
 {
-    // Dateiname ins Edit schreiben, wenn wir entsprechende Einträge auswählen
-    GetCtrl<ctrlEdit>(1)->SetText(selection ? GetCtrl<ctrlTable>(0)->GetItemText(*selection, 0) : "");
+    // On selecting a table entry put the filename into the edit control
+    GetCtrl<ctrlEdit>(ID_edtFilename)
+      ->SetText(selection ? GetCtrl<ctrlTable>(ID_tblSaveGames)->GetItemText(*selection, 0) : "");
 }
 
 void iwSaveLoad::RefreshTable()
 {
     static bool loadedOnce = false;
 
-    GetCtrl<ctrlTable>(0)->DeleteAllItems();
+    auto* table = GetCtrl<ctrlTable>(ID_tblSaveGames);
+
+    table->DeleteAllItems();
 
     std::vector<boost::filesystem::path> saveFiles = ListDir(RTTRCONFIG.ExpandPath(s25::folders::save), "sav");
     for(const auto& saveFile : saveFiles)
     {
         Savegame save;
-
-        // Datei öffnen
         if(!save.Load(saveFile, SaveGameDataToLoad::Header))
         {
             // Show errors only first time this is loaded
@@ -81,121 +104,83 @@ void iwSaveLoad::RefreshTable()
             continue;
         }
 
-        // Zeitstring erstellen
-        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
-
-        // Dateiname noch rausextrahieren aus dem Pfad
-        if(!saveFile.has_filename())
-            continue;
-        // Just filename w/o extension
         const auto fileName = saveFile.stem().string();
+        const std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
+        const std::string gameTime = GAMECLIENT.FormatGFTime(save.start_gf);
 
-        std::string gameTime = GAMECLIENT.FormatGFTime(save.start_gf);
-
-        // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow({fileName, save.GetMapName(), dateStr, gameTime, saveFile.string()});
+        table->AddRow({fileName, save.GetMapName(), dateStr, gameTime, saveFile.string()});
     }
 
-    // Nach Zeit Sortieren
-    GetCtrl<ctrlTable>(0)->SortRows(2, TableSortDir::Descending);
+    // Sort by time
+    table->SortRows(2, TableSortDir::Descending);
     loadedOnce = true;
 }
 
 void iwSave::SaveLoad()
 {
-    // Speichern
     const boost::filesystem::path savePath =
-      RTTRCONFIG.ExpandPath(s25::folders::save) / (GetCtrl<ctrlEdit>(1)->GetText() + ".sav");
-
-    // Speichern
+      RTTRCONFIG.ExpandPath(s25::folders::save) / (GetCtrl<ctrlEdit>(ID_edtFilename)->GetText() + ".sav");
     GAMECLIENT.SaveToFile(savePath);
 
-    // Aktualisieren
     RefreshTable();
-
-    // Edit wieder leeren
-    GetCtrl<ctrlEdit>(1)->SetText("");
+    GetCtrl<ctrlEdit>(ID_edtFilename)->SetText("");
 }
 
-iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
+iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
 {
-    AddEdit(1, DrawPoint(20, 390), Extent(510, 22), TextureColor::Green2, NormalFont);
-    AddImageButton(2, DrawPoint(540, 386), Extent(40, 40), TextureColor::Green2, LOADER.GetImageN("io", 47));
+    const auto* fileNameEdit = GetCtrl<ctrlEdit>(ID_edtFilename);
+    DrawPoint pos(GetSize().x / 2, fileNameEdit->GetPos().y + fileNameEdit->GetSize().y + 10);
 
-    // Autospeicherzeug
-    AddText(3, DrawPoint(20, 350), _("Auto-Save every:"), 0xFFFFFF00, FontStyle{}, NormalFont);
-    ctrlComboBox* combo = AddComboBox(4, DrawPoint(270, 345), Extent(130, 22), TextureColor::Green2, NormalFont, 100);
+    ctrlComboBox* combo =
+      AddComboBox(ID_cbAutoSaveInterval, pos, Extent(130, 22), TextureColor::Green2, NormalFont, 100);
+    pos += DrawPoint(-5, 11);
+    AddText(ID_txtAutoSave, pos, _("Auto-Save every:"), 0xFFFFFF00, FontStyle::RIGHT | FontStyle::VCENTER, NormalFont);
 
-    /// Combobox füllen
-    combo->AddString(_("Disabled")); // deaktiviert
-
-    // Die Intervalle
+    // Add intervals
+    combo->AddString(_("Disabled"));
     for(const std::chrono::minutes interval : AUTO_SAVE_INTERVALS)
         combo->AddString((boost::format(_("%1% min")) % interval.count()).str());
-
     // Last entry is only for debugging
     if(SETTINGS.global.debugMode)
-    {
         combo->AddString(_("Every GF"));
-    }
 
-    // Richtigen Eintrag auswählen
-    bool found = false;
-    for(unsigned i = 0; i < AUTO_SAVE_INTERVALS.size(); ++i)
+    // Select interval
+    combo->SetSelection(0); // Use disabled by default and change if possible
+    if(SETTINGS.interface.autosave_interval == 1)
+        combo->SetSelection(AUTO_SAVE_INTERVALS.size() + 1);
+    else
     {
-        if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i] / SPEED_GF_LENGTHS[referenceSpeed])
+        // Start selection index at 1, 0 is "disabled"
+        for(const auto& i : AUTO_SAVE_INTERVALS | boost::adaptors::indexed(1))
         {
-            combo->SetSelection(i + 1);
-            found = true;
-            break;
+            if(SETTINGS.interface.autosave_interval == i.value() / SPEED_GF_LENGTHS[referenceSpeed])
+            {
+                combo->SetSelection(static_cast<unsigned>(i.index()));
+                break;
+            }
         }
     }
-    if(SETTINGS.interface.autosave_interval == 1)
-    {
-        combo->SetSelection(AUTO_SAVE_INTERVALS.size() + 1);
-        found = true;
-    }
-
-    // Ungültig oder 0 --> Deaktiviert auswählen
-    if(!found)
-        combo->SetSelection(0);
-
-    // Tabelle ausfüllen beim Start
-    RefreshTable();
 }
 
 void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
-    // Erster Eintrag --> deaktiviert
-    if(selection == 0)
+    if(selection == 0) // First entry is "disabled"
         SETTINGS.interface.autosave_interval = 0;
-    else if(selection >= AUTO_SAVE_INTERVALS.size())
+    else if(selection > AUTO_SAVE_INTERVALS.size()) // Last entry is "every GF" (in debug mode)
         SETTINGS.interface.autosave_interval = 1;
     else
     {
-        // ansonsten jeweilige GF-Zahl eintragen
+        // selection is the index into the array ignoring the first ("disabled") entry
+        RTTR_Assert(selection >= 1 && selection <= AUTO_SAVE_INTERVALS.size());
         SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1] / SPEED_GF_LENGTHS[referenceSpeed];
     }
 }
 
-iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(0, _("Load game!")), csi(std::move(csi))
-{
-    AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont);
-    AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TextureColor::Green2, LOADER.GetImageN("io", 48));
-    auto* text = AddText(3, DrawPoint(20, 375), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
-                         FontStyle::TOP, SmallFont);
-    text->setMaxWidth(510);
-    // Tabelle ausfüllen beim Start
-    RefreshTable();
-}
+iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(_("Load game!"), LOADER.GetTextureN("io", 48)), csi(std::move(csi)) {}
 
-/**
- *  Spiel laden.
- */
 void iwLoad::SaveLoad()
 {
-    // Server starten
-    auto* table = GetCtrl<ctrlTable>(0);
+    const auto* table = GetCtrl<ctrlTable>(ID_tblSaveGames);
     if(!table->GetSelection())
         return;
 
