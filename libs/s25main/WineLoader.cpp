@@ -30,7 +30,7 @@ bool isWineAddonJobType(Job job)
 }
 
 helpers::EnumArray<unsigned, BobTypes> bobIndex = {1,   17,  22,  27,  32,  37,  42,  48,  97,  146, 195, 204,
-                                                   253, 270, 282, 289, 295, 344, 361, 378, 395, 412, 461, 510,
+                                                   540, 270, 282, 289, 295, 600, 650, 700, 750, 412, 461, 510,
                                                    517, 525, 526, 527, 528, 529, 530, 532, 533, 535, 536};
 
 ITexture* GetWareTex(const GoodType good)

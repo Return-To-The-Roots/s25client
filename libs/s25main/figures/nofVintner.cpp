@@ -50,10 +50,7 @@ unsigned short nofVintner::GetCarryID() const
 
 void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    if(GetCurMoveDir() == Direction::NorthWest)
-        DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::VINTNER_CARRYING_WINE_IN_OUT] - 24);
-    else
-        DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::VINTNER_CARRYING_WINE_IN_OUT] - 8);
+    DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::VINTNER_CARRYING_WINE_IN_OUT]);
 }
 
 helpers::OptionalEnum<GoodType> nofVintner::ProduceWare()
