@@ -76,10 +76,7 @@ void nofTempleServant::DrawWalkingWithWare(DrawPoint drawPt)
                                                    {GoodType::Coal, BobTypes::TEMPLESERVANT_CARRYING_COAL_IN_OUT},
                                                    {GoodType::Stones, BobTypes::TEMPLESERVANT_CARRYING_STONE_IN_OUT}};
 
-    if(GetCurMoveDir() == Direction::NorthWest)
-        DrawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]] - 24);
-    else
-        DrawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]] - 8);
+    DrawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]]);
 }
 
 helpers::OptionalEnum<GoodType> nofTempleServant::ProduceWare()
