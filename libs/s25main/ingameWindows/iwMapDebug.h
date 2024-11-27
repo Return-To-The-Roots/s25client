@@ -23,7 +23,7 @@ private:
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
     void Msg_Timer(unsigned ctrl_id) override;
     void Msg_EditEnter(unsigned ctrl_id) override;
-    bool Msg_KeyDown(const KeyEvent& ke);
+    bool Msg_KeyDown(const KeyEvent& ke) override;
 
     void SetActive(bool activate) override;
 
