@@ -143,15 +143,16 @@ public:
     unsigned CalcWalkAnimationFrame() const;
     DrawPoint InterpolateWalkDrawPos(DrawPoint drawPt) const;
 
-    /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
+    /// Draw the current walk animation frame from "carrier.bob"
     void DrawWalkingCarrier(DrawPoint drawPt, helpers::OptionalEnum<GoodType> ware, bool fat);
-    /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
+    /// Draw the current walk animation frame from "jobs.bob"
     void DrawWalkingBobJobs(DrawPoint drawPt, Job job);
-    /// Zeichnet standardmäßig die Figur, wenn sie läuft
+    /// Draw the current walk animation frame using the start index into the given file
     void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat);
-    /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
+    /// Draw the current walk animation frame using the start index into the given LST archive
+    /// See @ref calcWalkFrameIndex
     void DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id);
-    /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei
+    /// Draw the current walk animation for this figure
     void DrawWalking(DrawPoint drawPt);
     /// Interpoliert die Positon zwischen zwei Knotenpunkten
     DrawPoint CalcFigurRelative() const;
@@ -225,4 +226,10 @@ public:
     /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays
     /// on board
     MapPoint ExamineRouteBeforeShipping(RoadPathDirection& newDir);
+
+private:
+    /// Calculate the index of the current frame for a figure walking in the given direction
+    /// The sprites start at `imgSetIndex` and contain 8 images per direction, starting at EAST going clockwise.
+    /// Some of the 48 indices might be empty entries in the archive if only specific directions can ever be drawn
+    static unsigned calcWalkFrameIndex(unsigned imgSetIndex, Direction dir, unsigned animationStep);
 };
