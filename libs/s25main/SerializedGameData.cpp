@@ -106,7 +106,7 @@
 /// 10: troop_limits state introduced to military buildings
 /// 11: wineaddon added, three new building types and two new goods
 /// 12:: leatheraddon added, three new building types and three new goods
-static const unsigned currentGameDataVersion = 11;
+static const unsigned currentGameDataVersion = 12;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

@@ -8,6 +8,7 @@
 #include "FindWhConditions.h"
 #include "GameInterface.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "TradePathCache.h"
@@ -266,8 +267,18 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
             continue;
 
+        if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
+            continue;
+
         Distribution& dist = distribution[i];
         helpers::popContainer(sgd, dist.percent_buildings);
+        // Set standard value otherwise its zero and Slaughterhouse never gets ham
+        // because the ham distribution was not there in earlier versions
+        if(sgd.GetGameDataVersion() < 12 && i == GoodType::Ham)
+        {
+            dist.percent_buildings[BuildingType::Slaughterhouse] = 8;
+        }
+
         if(sgd.GetGameDataVersion() < 7)
         {
             dist.client_buildings.resize(sgd.PopUnsignedInt());
@@ -284,15 +295,24 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     useCustomBuildOrder_ = sgd.PopBool();
 
-    if(sgd.GetGameDataVersion() < 11)
+    if(sgd.GetGameDataVersion() < 12)
     {
-        std::vector<BuildingType> build_order_raw(build_order.size() - 3);
+        auto countOfNotAvailableBuildingsInSaveGame = sgd.GetGameDataVersion() < 11 ? 6 : 3;
+        std::vector<BuildingType> build_order_raw(build_order.size() - countOfNotAvailableBuildingsInSaveGame);
         helpers::popContainer(sgd, build_order_raw, true);
-        build_order_raw.insert(build_order_raw.end(),
-                               {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+
+        if(sgd.GetGameDataVersion() < 11)
+            build_order_raw.insert(build_order_raw.end(),
+                                   {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+
+        if(sgd.GetGameDataVersion() < 12)
+            build_order_raw.insert(build_order_raw.end(),
+                                   {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
+
         std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
 
-        std::vector<uint8_t> transportPrio_raw(transportPrio.size() - 2);
+        auto countOfNotAvailableGoodsInSaveGame = sgd.GetGameDataVersion() < 11 ? 5 : 3;
+        std::vector<uint8_t> transportPrio_raw(transportPrio.size() - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, transportPrio_raw, true);
         std::copy(transportPrio_raw.begin(), transportPrio_raw.end(), transportPrio.begin());
     } else
@@ -308,13 +328,17 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     helpers::popContainer(sgd, tools_ordered);
     tools_ordered_delta = {};
 
-    if(sgd.GetGameDataVersion() < 11)
+    if(sgd.GetGameDataVersion() < 12)
     {
-        std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size() - 2);
+        auto countOfNotAvailableGoodsInSaveGame = sgd.GetGameDataVersion() < 11 ? 5 : 3;
+        std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size()
+                                                            - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, global_inventory_good_raw, true);
         std::copy(global_inventory_good_raw.begin(), global_inventory_good_raw.end(), global_inventory.goods.begin());
 
-        std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size() - 3);
+        auto countOfNotAvailableJobsInSaveGame = sgd.GetGameDataVersion() < 11 ? 6 : 3;
+        std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size()
+                                                              - countOfNotAvailableJobsInSaveGame);
         helpers::popContainer(sgd, global_inventory_people_raw, true);
         std::copy(global_inventory_people_raw.begin(), global_inventory_people_raw.end(),
                   global_inventory.people.begin());
