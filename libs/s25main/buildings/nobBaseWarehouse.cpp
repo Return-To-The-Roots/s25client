@@ -8,6 +8,7 @@
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "WineLoader.h"
@@ -170,6 +171,10 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     {
         if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
             continue;
+
+        if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
+            continue;
+
         inventory.visual[i] = sgd.PopUnsignedInt();
         inventory.real[i] = sgd.PopUnsignedInt();
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
@@ -178,6 +183,10 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     {
         if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonJobType(i))
             continue;
+
+        if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonJobType(i))
+            continue;
+
         inventory.visual[i] = sgd.PopUnsignedInt();
         inventory.real[i] = sgd.PopUnsignedInt();
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
