@@ -23,6 +23,7 @@ bool isLeatherAddonJobType(Job job);
 
 enum class BobTypes
 {
+    INVALID,
     SKINNER_SKINNING_ANIMAL_CARCASS_ANIMATION,
     SKINNER_WALKING,
     SKINNER_CARRYING_SKINS,
@@ -55,7 +56,7 @@ enum class BobTypes
     ARMOR_WARE_ON_GROUND_OF_FLAG,
     DONKEY_BOAT_CARRYING_ARMOR_WARE,
     STOP_COINS_X_SIGN_OVERRIDE,
-    STOP_ARMOR_X_SIGN
+    STOP_ARMOR_X_SIGN,
 };
 
 constexpr auto maxEnumValue(BobTypes)
@@ -70,5 +71,6 @@ ITexture* GetWareStackTex(GoodType good);
 ITexture* GetWareDonkeyTex(GoodType good);
 ITexture* GetJobTex(Job job);
 bool isAddonActive(const GameWorldBase& gwb);
+BobTypes wareToCarrierBobIndex(GoodType good, bool fat);
 
 } // namespace leatheraddon
