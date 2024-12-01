@@ -20,9 +20,7 @@ nofSkinner::nofSkinner(const MapPoint pos, const unsigned char player, nobUsual*
 
 nofSkinner::nofSkinner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofSkinner::DrawWorking(DrawPoint /*drawPt*/)
-{
-}
+void nofSkinner::DrawWorking(DrawPoint /*drawPt*/) {}
 
 unsigned short nofSkinner::GetCarryID() const
 {
