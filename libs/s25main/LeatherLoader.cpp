@@ -29,9 +29,9 @@ bool isLeatherAddonJobType(Job job)
     return job == Job::Skinner || job == Job::Tanner || job == Job::LeatherWorker;
 }
 
-helpers::EnumArray<unsigned, BobTypes> bobIndex = {0,   21,  69,  117, 125, 173, 189, 222, 270, 286, 293,
-                                                   301, 307, 313, 336, 354, 355, 356, 356, 357, 357, 358,
-                                                   359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369};
+helpers::EnumArray<unsigned, BobTypes> bobIndex = {0,   21,  69,  117, 125, 173, 221, 244, 292, 340, 388,
+                                                   436, 484, 532, 582, 628, 629, 630, 630, 631, 631, 632,
+                                                   633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643};
 
 ITexture* GetWareTex(const GoodType good)
 {

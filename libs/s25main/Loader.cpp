@@ -935,9 +935,9 @@ void Loader::fillCaches()
                             carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_ARMOR :
                                                 leatheraddon::BobTypes::THIN_CARRIER_CARRYING_ARMOR;
 
-                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
-                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(leather_bob_carrier.get(
-                          leatheraddon::bobIndex[carrierEnum] + static_cast<unsigned>(imgDir))));
+                        const unsigned bodyIdx = static_cast<unsigned>(imgDir) * 8 + ani_step;
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                          leather_bob_carrier.get(leatheraddon::bobIndex[carrierEnum] + bodyIdx)));
                     } else
                     {
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
