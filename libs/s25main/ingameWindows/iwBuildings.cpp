@@ -5,6 +5,7 @@
 #include "iwBuildings.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "WineLoader.h"
@@ -44,14 +45,17 @@ void iwBuildings::setBuildingOrder()
       BuildingType::Mill,           BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
       BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
       BuildingType::Charburner,
-      BuildingType::HarborBuilding,                                                 // entry 31
-      BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
+      BuildingType::HarborBuilding,                                                       // entry 31
+      BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple,       // entry 34
+      BuildingType::Skinner,        BuildingType::Tannery,    BuildingType::LeatherWorks, // entry 37
     };
 
     const auto isUnused = [&](BuildingType const& bld) {
         if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
             return true;
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        if(!leatheraddon::isAddonActive(gwv.GetWorld()) && leatheraddon::isLeatherAddonBuildingType(bld))
             return true;
         return false;
     };
@@ -64,6 +68,14 @@ const Extent bldContentOffset(30, 40);
 const Extent iconSpacing(40, 48);
 // Abstand der Schriften unter den Icons
 const unsigned short font_distance_y = 20;
+
+namespace {
+enum
+{
+    ID_Help,
+    ID_BuildingsStart,
+};
+}
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"),
@@ -84,14 +96,14 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
             Extent btSize = Extent(32, 32);
             DrawPoint btPos = bldContentOffset - btSize / 2 + iconSpacing * DrawPoint(x, y);
-            AddImageButton(y * 4 + x, btPos, btSize, TextureColor::Grey,
+            AddImageButton(ID_BuildingsStart + y * 4 + x, btPos, btSize, TextureColor::Grey,
                            LOADER.GetNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
     // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(35, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+    AddImageButton(ID_Help, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
                    LOADER.GetImageN("io", 225), _("Help"));
 }
 
@@ -123,7 +135,7 @@ void iwBuildings::Msg_PaintAfter()
 
 void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if(ctrl_id == 35) // Help button
+    if(ctrl_id == ID_Help) // Help button
     {
         WINDOWMANAGER.ReplaceWindow(
           std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
@@ -138,7 +150,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
     const GamePlayer& localPlayer = gwv.GetViewer().GetPlayer();
     const BuildingRegister& buildingRegister = localPlayer.GetBuildingRegister();
 
-    BuildingType bldType = bts[ctrl_id];
+    BuildingType bldType = bts[ctrl_id - ID_BuildingsStart];
     if(BuildingProperties::IsMilitary(bldType))
         GoToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.GetMilitaryBuildings());
     else if(bldType == BuildingType::HarborBuilding)

@@ -6,6 +6,7 @@
 #include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "Ware.h"
 #include "WindowManager.h"
@@ -264,6 +265,18 @@ void iwShip::DrawCargo()
                 LOADER
                   .GetPlayerImage("wine_bobs",
                                   wineaddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
+                  ->DrawFull(drawPt, COLOR_WHITE, owner.color);
+            } else if(leatheraddon::isLeatherAddonJobType(job))
+            {
+                leatheraddon::BobTypes type = leatheraddon::BobTypes::SKINNER_WALKING;
+                if(job == Job::Tanner)
+                    type = leatheraddon::BobTypes::TANNER_WALKING;
+                else if(job == Job::LeatherWorker)
+                    type = leatheraddon::BobTypes::LEATHERWORKER_WALKING;
+
+                LOADER
+                  .GetPlayerImage("leather_bobs",
+                                  leatheraddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
                   ->DrawFull(drawPt, COLOR_WHITE, owner.color);
             } else
             {

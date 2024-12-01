@@ -6,6 +6,7 @@
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "WineLoader.h"
@@ -798,6 +799,15 @@ void noFigure::DrawWalking(DrawPoint drawPt)
             break;
         case Job::TempleServant:
             DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
+            break;
+        case Job::Skinner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::SKINNER_WALKING]);
+            break;
+        case Job::Tanner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::TANNER_WALKING]);
+            break;
+        case Job::LeatherWorker:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::LEATHERWORKER_WALKING]);
             break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }

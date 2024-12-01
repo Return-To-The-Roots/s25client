@@ -28,6 +28,7 @@
 #include "figures/nofGeologist.h"
 #include "figures/nofHunter.h"
 #include "figures/nofIronfounder.h"
+#include "figures/nofLeatherWorker.h"
 #include "figures/nofMetalworker.h"
 #include "figures/nofMiller.h"
 #include "figures/nofMiner.h"
@@ -39,7 +40,9 @@
 #include "figures/nofScout_Free.h"
 #include "figures/nofScout_LookoutTower.h"
 #include "figures/nofShipWright.h"
+#include "figures/nofSkinner.h"
 #include "figures/nofStonemason.h"
+#include "figures/nofTanner.h"
 #include "figures/nofTempleServant.h"
 #include "figures/nofVintner.h"
 #include "figures/nofWellguy.h"
@@ -115,6 +118,15 @@ std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint
         case Job::Winegrower: return std::make_unique<nofWinegrower>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Vintner: return std::make_unique<nofVintner>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::TempleServant: return std::make_unique<nofTempleServant>(pt, player, &checkedCast<nobUsual>(goal));
+        case Job::Skinner:
+            RTTR_Assert(dynamic_cast<nobUsual*>(goal));
+            return std::make_unique<nofSkinner>(pt, player, static_cast<nobUsual*>(goal));
+        case Job::Tanner:
+            RTTR_Assert(dynamic_cast<nobUsual*>(goal));
+            return std::make_unique<nofTanner>(pt, player, static_cast<nobUsual*>(goal));
+        case Job::LeatherWorker:
+            RTTR_Assert(dynamic_cast<nobUsual*>(goal));
+            return std::make_unique<nofLeatherWorker>(pt, player, static_cast<nobUsual*>(goal));
         case Job::BoatCarrier:
             throw std::logic_error("Cannot create a boat carrier job (try creating Job::Helper).");
             break;

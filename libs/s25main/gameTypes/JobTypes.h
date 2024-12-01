@@ -45,11 +45,14 @@ enum class Job : uint8_t
     Winegrower,        // 32
     Vintner,           // 33
     TempleServant,     // 34
+    Skinner,           // 35
+    Tanner,            // 36
+    LeatherWorker,     // 37
 };
 
 constexpr auto maxEnumValue(Job)
 {
-    return Job::TempleServant;
+    return Job::LeatherWorker;
 }
 
 /// Job types of soldiers, weak ones first

@@ -61,4 +61,5 @@
 
 #include "addons/AddonAutoFlags.h"
 
+#include "addons/AddonLeather.h"
 #include "addons/AddonWine.h"
