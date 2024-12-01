@@ -44,15 +44,9 @@ void PreviewMinimap::SetMap(const libsiedler2::ArchivItem_Map& s2map)
         LOG.write(_("Failed to load game data!"));
     else
     {
-        DescIdx<LandscapeDesc> lt(0);
-        for(DescIdx<LandscapeDesc> i(0); i.value < worldDesc.landscapes.size(); i.value++)
+        const auto lt = worldDesc.landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
+        for(const TerrainDesc& ter : worldDesc.terrain)
         {
-            if(worldDesc.get(i).s2Id == gfxSet)
-                lt = i;
-        }
-        for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
-        {
-            const TerrainDesc& ter = worldDesc.get(i);
             if(ter.landscape == lt)
                 terrain2Clr[ter.s2Id] = ter.minimapColor;
         }

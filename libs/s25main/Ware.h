@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -49,6 +49,7 @@ private:
 public:
     Ware(GoodType type, noBaseBuilding* goal, noRoadNode* location);
     Ware(SerializedGameData& sgd, unsigned obj_id);
+    Ware(const Ware&) = delete;
 
     ~Ware() override;
 

@@ -221,7 +221,7 @@ void iwMusicPlayer::UpdateFromPlaylist(const Playlist& playlist)
     const auto& currentSong = playlist.getCurrentSong();
     if(!currentSong.empty())
     {
-        for(const auto i : helpers::Range<unsigned>{lstSongs->GetNumLines()})
+        for(const auto i : helpers::range<unsigned>(lstSongs->GetNumLines()))
         {
             if(currentSong == lstSongs->GetItemText(i))
             {
@@ -239,7 +239,7 @@ Playlist iwMusicPlayer::MakePlaylist()
 {
     const auto* lstSongs = GetCtrl<ctrlList>(ID_lstSongs);
     std::vector<std::string> songs;
-    for(const auto i : helpers::Range<unsigned>{lstSongs->GetNumLines()})
+    for(const auto i : helpers::range<unsigned>(lstSongs->GetNumLines()))
         songs.push_back(lstSongs->GetItemText(i));
 
     return Playlist(std::move(songs), GetRepeats(), GetRandomPlayback());
