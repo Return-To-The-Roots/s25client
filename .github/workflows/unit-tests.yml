@@ -107,12 +107,11 @@ jobs:
           - { compiler: gcc-11,   os: ubuntu-22.04, type: RelWithDebInfo, cmake: 3.22.1, boost: 1.74.0 }
           #
           #  Latest Compilers
-          #   GCC 12 needs boost 1.82 to compile correctly
+          #   Use default boost
           #   Use (compiler) default C++ 17 standard
           #   Use default cmake
-          - { compiler: gcc-12,   os: ubuntu-22.04, type: Debug, boost: 1.82.0 }
-          #   Use default boost
-          - { compiler: clang-16, os: ubuntu-20.04, type: Debug, externalSanitizer: true }
+          - { compiler: gcc-14,   os: ubuntu-24.04, type: Debug }
+          - { compiler: clang-18, os: ubuntu-24.04, type: Debug, externalSanitizer: true }
 
     runs-on: ${{matrix.os}}
 
