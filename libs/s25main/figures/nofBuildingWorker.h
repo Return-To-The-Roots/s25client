@@ -37,8 +37,10 @@ public:
         CatapultBackoff,             /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
         HunterWaitingForAnimalReady, /// Hunter: Arrived at shooting pos and waiting for animal to be ready to
                                      /// be shot
+        SkinnerWalkingToCarcass,     /// Skinner: walk to carcass
+        SkinnerSkinningCarcass,      /// Skinner: get skin from carcass
     };
-    friend constexpr auto maxEnumValue(State) { return State::HunterWaitingForAnimalReady; }
+    friend constexpr auto maxEnumValue(State) { return State::SkinnerSkinningCarcass; }
 
 protected:
     State state;
@@ -59,7 +61,7 @@ protected:
     void AbrogateWorkplace() override;
     /// Tries to start working.
     /// Checks preconditions (production enabled, wares available...) and starts the pre-Work-Waiting period if ok
-    void TryToWork();
+    virtual void TryToWork();
     /// Returns true, when there are enough wares available for working.
     /// Note: On false, we will wait for the next ware or production change till checking again
     virtual bool AreWaresAvailable() const;

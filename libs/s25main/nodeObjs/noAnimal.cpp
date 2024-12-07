@@ -9,6 +9,7 @@
 #include "SoundManager.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "figures/nofHunter.h"
+#include "figures/nofSkinner.h"
 #include "helpers/random.h"
 #include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
@@ -29,7 +30,7 @@ auto& getAnimalRng()
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
     : noMovable(NodalObjectType::Animal, pos), species(species), state(State::Walking), pause_way(5 + RANDOM_RAND(15)),
-      hunter(nullptr), sound_moment(0)
+      hunter(nullptr), skinner(nullptr), sound_moment(0)
 {}
 
 void noAnimal::Serialize(SerializedGameData& sgd) const
@@ -40,12 +41,16 @@ void noAnimal::Serialize(SerializedGameData& sgd) const
     sgd.PushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(pause_way);
     sgd.PushObject(hunter, true);
+    sgd.PushObject(skinner, true);
 }
 
 noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), species(sgd.Pop<Species>()), state(sgd.Pop<State>()), pause_way(sgd.PopUnsignedShort()),
-      hunter(sgd.PopObject<nofHunter>(GO_Type::NofHunter)), sound_moment(0)
-{}
+      hunter(sgd.PopObject<nofHunter>(GO_Type::NofHunter)), skinner(nullptr), sound_moment(0)
+{
+    if(sgd.GetGameDataVersion() >= 12)
+        skinner = {sgd.PopObject<nofSkinner>(GO_Type::NofSkinner)};
+}
 
 void noAnimal::StartLiving()
 {
@@ -154,9 +159,16 @@ void noAnimal::HandleEvent(const unsigned id)
         // Sterbe-Event
         case 2:
         {
-            // nun verschwinden
-            current_ev = GetEvMgr().AddEvent(this, 30, 3);
-            state = State::Disappearing;
+            // we stay in dead state until skinner has done his work, otherwise he has no change to reach the animal in
+            // time
+            if(skinner)
+                current_ev = GetEvMgr().AddEvent(this, 30, 2);
+            else
+            {
+                // nun verschwinden
+                current_ev = GetEvMgr().AddEvent(this, 30, 3);
+                state = State::Disappearing;
+            }
 
             // Jäger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
             if(hunter)
@@ -297,10 +309,44 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
     return boost::none;
 }
 
+bool noAnimal::CanSkinned() const
+{
+    return (species != Species::Duck && state == State::Dead && !skinner);
+}
+
+bool noAnimal::IsSkinned() const
+{
+    return skinner != nullptr;
+}
+
+void noAnimal::Skinned()
+{
+    // Event abmelden
+    if(!hunter)
+        GetEvMgr().RemoveEvent(current_ev);
+    // Reset skinner
+    skinner = nullptr;
+}
+
+void noAnimal::BeginSkinning(nofSkinner* skinner)
+{
+    this->skinner = skinner;
+}
+
+void noAnimal::StopSkinning()
+{
+    skinner = nullptr;
+}
+
 bool noAnimal::CanHunted() const
 {
     // Enten sowie Tiere, die bereits gejagt werden, oder schon tot daliegen, können nicht gejagt werden
     return (species != Species::Duck && state != State::Dead && state != State::Disappearing && !hunter);
+}
+
+bool noAnimal::IsHunted() const
+{
+    return hunter != nullptr;
 }
 
 void noAnimal::BeginHunting(nofHunter* hunter)
@@ -370,7 +416,8 @@ void noAnimal::Die()
 void noAnimal::Eviscerated()
 {
     // Event abmelden
-    GetEvMgr().RemoveEvent(current_ev);
+    if(!IsSkinned())
+        GetEvMgr().RemoveEvent(current_ev);
     // Reset hunter
     hunter = nullptr;
 }
