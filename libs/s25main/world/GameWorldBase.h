@@ -16,6 +16,7 @@
 #include <set>
 #include <vector>
 
+class Cheats;
 class EventManager;
 class FreePathFinder;
 class GameInterface;
@@ -61,6 +62,7 @@ class GameWorldBase : public World
     std::unique_ptr<SoundManager> soundManager;
     std::set<MapPoint, MapPointLess> ptsInsideComputerBarriers;
     LuaInterfaceGame* lua;
+    std::unique_ptr<Cheats> cheats;
 
 protected:
     /// Interface zum GUI
@@ -79,7 +81,7 @@ public:
     // Remaining initialization after loading (BQ...)
     void InitAfterLoad();
 
-    /// Setzt GameInterface
+    GameInterface* GetGameInterface() { return gi; }
     void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
 
     /// Get the economy mode handler if set.
@@ -94,6 +96,13 @@ public:
     bool IsOnRoad(const MapPoint& pt) const;
     /// Check if a flag is at a neighbour node
     bool IsFlagAround(const MapPoint& pt) const;
+
+    /** Checks if any of the neighboring nodes of a given map point are owned by any player.
+     *
+     * @param pt - The map point whose neighbors should be checked.
+     * @return true if any neighbor has an owner, false otherwise
+     */
+    bool IsAnyNeighborOwned(const MapPoint& pt) const;
 
     /// Berechnet BQ bei einer gebauten Stra�e
     void RecalcBQForRoad(MapPoint pt);
@@ -217,6 +226,9 @@ public:
     bool HasLua() const { return lua != nullptr; }
     LuaInterfaceGame& GetLua() const { return *lua; }
     void SetLua(LuaInterfaceGame* newLua) { lua = newLua; }
+
+    Cheats& GetCheats() const { return *cheats; }
+    bool IsCheatModeOn() const;
 
 protected:
     /// Called when the visibility of point changed for a player
