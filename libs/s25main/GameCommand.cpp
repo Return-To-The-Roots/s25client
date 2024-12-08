@@ -13,7 +13,8 @@ namespace gc {
 unsigned Deserializer::getCurrentVersion()
 {
     // 1: Add wine addon --> 3 new values in distribution
-    return 1;
+    // 2: Add leather addon --> 3 new values in distribution
+    return 2;
 }
 
 GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
@@ -37,6 +38,7 @@ GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
         case GCType::Attack: gc = new Attack(ser); break;
         case GCType::SeaAttack: gc = new SeaAttack(ser); break;
         case GCType::SetCoinsAllowed: gc = new SetCoinsAllowed(ser); break;
+        case GCType::SetArmorAllowed: gc = new SetArmorAllowed(ser); break;
         case GCType::SetProductionEnabled: gc = new SetProductionEnabled(ser); break;
         case GCType::SetInventorySetting: gc = new SetInventorySetting(ser); break;
         case GCType::SetAllInventorySettings: gc = new SetAllInventorySettings(ser); break;

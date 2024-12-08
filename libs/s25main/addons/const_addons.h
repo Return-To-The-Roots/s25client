@@ -74,7 +74,7 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
 
                  AUTOFLAGS = 0x00F00000,
 
-                 WINE = 0x01000000)
+                 WINE = 0x01000000, LEATHER = 0x01000001)
 //-V:AddonId:801
 
 enum class AddonGroup : unsigned
