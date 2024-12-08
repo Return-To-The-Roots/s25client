@@ -13,7 +13,8 @@ namespace gc {
 unsigned Deserializer::getCurrentVersion()
 {
     // 1: Add wine addon --> 3 new values in distribution
-    return 1;
+    // 2: Add leather addon --> 3 new values in distribution
+    return 2;
 }
 
 GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
