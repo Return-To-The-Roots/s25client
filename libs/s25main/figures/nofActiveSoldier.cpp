@@ -18,7 +18,6 @@
 nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
                                    const unsigned char rank, const SoldierState init_state)
     : nofSoldier(pos, player, home, rank), state(init_state), enemy(nullptr)
-
 {}
 
 nofActiveSoldier::nofActiveSoldier(const nofSoldier& other, const SoldierState init_state)
@@ -342,7 +341,10 @@ void nofActiveSoldier::InformTargetsAboutCancelling()
 
 void nofActiveSoldier::TakeHit()
 {
-    RTTR_Assert(hitpoints > 0u);
+    if(HasArmor())
+        SetArmor(false);
+    else
+        RTTR_Assert(hitpoints > 0u);
     --hitpoints;
 }
 
