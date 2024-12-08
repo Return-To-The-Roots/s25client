@@ -271,7 +271,7 @@ void iwShip::DrawCargo()
                 leatheraddon::BobTypes type = leatheraddon::BobTypes::SKINNER_WALKING;
                 if(job == Job::Tanner)
                     type = leatheraddon::BobTypes::TANNER_WALKING;
-                if(job == Job::LeatherWorker)
+                else if(job == Job::LeatherWorker)
                     type = leatheraddon::BobTypes::LEATHERWORKER_WALKING;
 
                 LOADER

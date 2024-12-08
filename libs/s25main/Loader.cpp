@@ -924,16 +924,18 @@ void Loader::fillCaches()
                     {
                         leatheraddon::BobTypes carrierEnum;
                         if(ware == GoodType::Skins)
+                        {
                             carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_SKINS :
                                                 leatheraddon::BobTypes::THIN_CARRIER_CARRYING_SKINS;
-
-                        if(ware == GoodType::Leather)
+                        } else if(ware == GoodType::Leather)
+                        {
                             carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_LEATHER :
                                                 leatheraddon::BobTypes::THIN_CARRIER_CARRYING_LEATHER;
-
-                        if(ware == GoodType::Armor)
+                        } else if(ware == GoodType::Armor)
+                        {
                             carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_ARMOR :
                                                 leatheraddon::BobTypes::THIN_CARRIER_CARRYING_ARMOR;
+                        }
 
                         const unsigned bodyIdx = static_cast<unsigned>(imgDir) * 8 + ani_step;
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(

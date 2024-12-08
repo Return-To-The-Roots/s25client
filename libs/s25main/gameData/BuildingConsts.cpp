@@ -130,7 +130,7 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
                "desired mineral can be selected by "
                "toggling the output button."),
   // Tannery building
-  gettext_noop("The tanner works animals skins to form leather. "
+  gettext_noop("The tanner works animal skins to form leather. "
                "Before tanning; the skins are cured, scraped and "
                "stretched on wooden frames made from boards. "
                "Leather is used to produce armor at the leatherworks."),
