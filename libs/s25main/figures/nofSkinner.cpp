@@ -63,7 +63,7 @@ void nofSkinner::DrawWalkingWithWare(DrawPoint drawPt)
     DrawWalking(drawPt, "leather_bobs", bobIndex[BobTypes::SKINNER_CARRYING_SKINS]);
 }
 
-void nofSkinner::HandleDerivedEvent(unsigned id)
+void nofSkinner::HandleDerivedEvent(unsigned)
 {
     switch(state)
     {
