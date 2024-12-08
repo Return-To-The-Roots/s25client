@@ -922,7 +922,7 @@ void Loader::fillCaches()
                           + static_cast<unsigned>(imgDir))));
                     } else if(leatheraddon::isLeatherAddonGoodType(ware))
                     {
-                        leatheraddon::BobTypes carrierEnum;
+                        leatheraddon::BobTypes carrierEnum = leatheraddon::BobTypes::FAT_CARRIER_CARRYING_SKINS;
                         if(ware == GoodType::Skins)
                         {
                             carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_SKINS :
