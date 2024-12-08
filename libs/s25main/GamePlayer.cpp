@@ -272,6 +272,13 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
         Distribution& dist = distribution[i];
         helpers::popContainer(sgd, dist.percent_buildings);
+        // Set standard value otherwise its zero and Slaughterhouse never gets ham
+        // because the ham distribution was not there in earlier versions
+        if(sgd.GetGameDataVersion() < 12 && i == GoodType::Ham)
+        {
+            dist.percent_buildings[BuildingType::Slaughterhouse] = 8;
+        }
+
         if(sgd.GetGameDataVersion() < 7)
         {
             dist.client_buildings.resize(sgd.PopUnsignedInt());
