@@ -17,6 +17,8 @@ protected:
     nobBaseMilitary* building;
     /// Hitpoints
     unsigned char hitpoints;
+    /// Armor
+    bool armor;
 
     /// Zeichnet den Soldaten beim ganz normalen Laufen
     void DrawSoldierWaiting(DrawPoint drawPt);
@@ -27,8 +29,9 @@ protected:
     explicit nofSoldier(const nofSoldier&) = default;
 
 public:
-    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobBaseMilitary* home, unsigned char rank);
-    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank);
+    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobBaseMilitary* home, unsigned char rank,
+               bool armor = false);
+    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank, bool armor = false);
     nofSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override
@@ -41,6 +44,8 @@ public:
     /// Liefert Rang des Soldaten
     unsigned char GetRank() const;
     unsigned char GetHitpoints() const;
+    bool HasArmor() const;
+    void SetArmor(bool armor);
     bool HasNoHome() const { return building == nullptr; }
 };
 

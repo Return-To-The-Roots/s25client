@@ -380,3 +380,33 @@ const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_C
     babylonians[BuildingType::Mint] = SmokeConst(3, {11, -58});
     return result;
 }();
+
+const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SIGN_CONSTS = []() {
+    std::remove_const_t<decltype(BUILDING_ARMOR_SIGN_CONSTS)> result{};
+    auto& africans = result[Nation::Africans];
+    africans[BuildingType::Barracks] = DrawPoint(11, -19);
+    africans[BuildingType::Guardhouse] = DrawPoint(8, -21);
+    africans[BuildingType::Watchtower] = DrawPoint(23, -38);
+    africans[BuildingType::Fortress] = DrawPoint(27, -42);
+    auto& japanese = result[Nation::Japanese];
+    japanese[BuildingType::Barracks] = DrawPoint(12, -18);
+    japanese[BuildingType::Guardhouse] = DrawPoint(13, -18);
+    japanese[BuildingType::Watchtower] = DrawPoint(25, -12);
+    japanese[BuildingType::Fortress] = DrawPoint(22, -19);
+    auto& romans = result[Nation::Romans];
+    romans[BuildingType::Barracks] = DrawPoint(15, -11);
+    romans[BuildingType::Guardhouse] = DrawPoint(14, -10);
+    romans[BuildingType::Watchtower] = DrawPoint(-19, 2);
+    romans[BuildingType::Fortress] = DrawPoint(20, -49);
+    auto& vikings = result[Nation::Vikings];
+    vikings[BuildingType::Barracks] = DrawPoint(14, -10);
+    vikings[BuildingType::Guardhouse] = DrawPoint(15, -7);
+    vikings[BuildingType::Watchtower] = DrawPoint(-7, -16);
+    vikings[BuildingType::Fortress] = DrawPoint(26, -13);
+    auto& babylonians = result[Nation::Babylonians];
+    babylonians[BuildingType::Barracks] = DrawPoint(5, -11);
+    babylonians[BuildingType::Guardhouse] = DrawPoint(19, -11);
+    babylonians[BuildingType::Watchtower] = DrawPoint(5, -28);
+    babylonians[BuildingType::Fortress] = DrawPoint(20, -34);
+    return result;
+}();

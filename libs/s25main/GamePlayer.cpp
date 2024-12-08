@@ -1015,9 +1015,11 @@ struct ClientForWare
 
 noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
 {
-    // Wenn es eine Goldmünze ist, wird das Ziel auf eine andere Art und Weise berechnet
+    // If the ware is a coin or an armor, the goal is determined by another logic
     if(ware.type == GoodType::Coins)
         return FindClientForCoin(ware);
+    else if(ware.type == GoodType::Armor)
+        return FindClientForArmor(ware);
 
     // Warentyp herausfinden
     GoodType gt = ware.type;
@@ -1188,6 +1190,38 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
     }
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
+    if(!bb)
+        bb = FindWarehouseForWare(ware);
+
+    return bb;
+}
+
+nobBaseMilitary* GamePlayer::FindClientForArmor(const Ware& ware) const
+{
+    nobBaseMilitary* bb = nullptr;
+    unsigned best_points = 0, points;
+
+    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+    {
+        unsigned way_points;
+
+        points = milBld->CalcArmorPoints();
+        // If 0, it does not want any armor (armor delivery stopped)
+        if(points)
+        {
+            // Find the nearest building
+            if(world.FindPathForWareOnRoads(*ware.GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
+            {
+                points -= way_points;
+                if(points > best_points)
+                {
+                    best_points = points;
+                    bb = milBld;
+                }
+            }
+        }
+    }
+
     if(!bb)
         bb = FindWarehouseForWare(ware);
 
