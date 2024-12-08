@@ -405,6 +405,25 @@ public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
+/// Allow/stop armor delivery to building
+class SetArmorAllowed : public Coords
+{
+    GC_FRIEND_DECL;
+    const bool enabled;
+
+protected:
+    SetArmorAllowed(const MapPoint pt, bool enabled) : Coords(GCType::SetArmorAllowed, pt), enabled(enabled) {}
+    SetArmorAllowed(Serializer& ser) : Coords(GCType::SetArmorAllowed, ser), enabled(ser.PopBool()) {}
+
+public:
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
+        ser.PushBool(enabled);
+    }
+    void Execute(GameWorld& world, uint8_t playerId) override;
+};
+
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
 class SetProductionEnabled : public Coords
 {
