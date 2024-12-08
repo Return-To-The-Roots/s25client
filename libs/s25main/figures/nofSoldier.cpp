@@ -84,5 +84,5 @@ bool nofSoldier::HasArmor() const
 
 void nofSoldier::SetArmor(bool armor)
 {
-    armor = armor;
+    this->armor = armor;
 }

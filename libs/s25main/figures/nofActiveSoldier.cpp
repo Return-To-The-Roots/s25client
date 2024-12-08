@@ -344,8 +344,10 @@ void nofActiveSoldier::TakeHit()
     if(HasArmor())
         SetArmor(false);
     else
+    {
         RTTR_Assert(hitpoints > 0u);
-    --hitpoints;
+        --hitpoints;
+    }
 }
 
 bool nofActiveSoldier::IsReadyForFight() const
