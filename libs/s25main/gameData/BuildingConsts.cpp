@@ -10,19 +10,19 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
   gettext_noop("Headquarters"),
   gettext_noop("Barracks"),
   gettext_noop("Guardhouse"),
-  "",
+  gettext_noop("Skinner"),
   gettext_noop("Watchtower"),
   gettext_noop("Vineyard"),
   gettext_noop("Winery"),
   gettext_noop("Temple"),
-  "",
+  gettext_noop("Tannery"),
   gettext_noop("Fortress"),
   gettext_noop("Granite mine"),
   gettext_noop("Coal mine"),
   gettext_noop("Iron mine"),
   gettext_noop("Gold mine"),
   gettext_noop("Lookout tower"),
-  "",
+  gettext_noop("Leatherworks"),
   gettext_noop("Catapult"),
   gettext_noop("Woodcutter"),
   gettext_noop("Fishery"),
@@ -92,8 +92,11 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
                "gold coins the soldiers here can "
                "not train and improve their "
                "skills."),
-  // Nothing
-  "",
+  // Skinner building
+  gettext_noop("Skins are gathered from animal carcasses "
+               "by the skinner. They are sent to the tannery "
+               "for leather production. The skinner can also "
+               "be supplied with pigs for extra skins."),
   // Watchtower
   gettext_noop("The watchtower with its large "
                "amount of space is best suited "
@@ -126,8 +129,11 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
                "working when mines become exhausted. The "
                "desired mineral can be selected by "
                "toggling the output button."),
-  "",
-  // Nothing
+  // Tannery building
+  gettext_noop("The tanner works animal skins to form leather. "
+               "Before tanning; the skins are cured, scraped and "
+               "stretched on wooden frames made from boards. "
+               "Leather is used to produce armor at the leatherworks."),
   // Fortress
   gettext_noop("The defensive capabilities and "
                "size of the fortress are "
@@ -168,8 +174,10 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
   gettext_noop("From the lookout tower you can "
                "see far into previously "
                "unexplored lands."),
-  // Nothing
-  "",
+  // Leatherworks building
+  gettext_noop("The leatherworker makes armor from finely "
+               "tanned leather. This is used to bolster "
+               "your soldiers' defence."),
   // Catapult
   gettext_noop("Thanks to its immense strength, "
                "the catapults represents an "
@@ -320,6 +328,8 @@ const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_C
     africans[BuildingType::Charburner] = SmokeConst(2, {-18, -52});
     africans[BuildingType::Bakery] = SmokeConst(4, {27, -39});
     africans[BuildingType::Mint] = SmokeConst(1, {17, -52});
+    africans[BuildingType::Skinner] = SmokeConst(3, {5, -45});
+    africans[BuildingType::Tannery] = SmokeConst(2, {24, -39});
     auto& japanese = result[Nation::Japanese];
     japanese[BuildingType::Armory] = SmokeConst(1, {-22, -43});
     japanese[BuildingType::Charburner] = SmokeConst(2, {-32, -55});
@@ -332,6 +342,8 @@ const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_C
     romans[BuildingType::Charburner] = SmokeConst(2, {-36, -38});
     romans[BuildingType::Bakery] = SmokeConst(4, {-15, -26});
     romans[BuildingType::Mint] = SmokeConst(4, {20, -50});
+    romans[BuildingType::Skinner] = SmokeConst(2, {6, -41});
+    romans[BuildingType::Tannery] = SmokeConst(3, {-23, -42});
     auto& vikings = result[Nation::Vikings];
     vikings[BuildingType::Woodcutter] = SmokeConst(1, {2, -36});
     vikings[BuildingType::Fishery] = SmokeConst(1, {4, -36});
@@ -352,11 +364,44 @@ const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_C
     vikings[BuildingType::DonkeyBreeder] = SmokeConst(4, {-27, -40});
     vikings[BuildingType::Vineyard] = SmokeConst(1, {18, -48});
     vikings[BuildingType::Winery] = SmokeConst(1, {-14, -32});
+    vikings[BuildingType::Skinner] = SmokeConst(1, {7, -39});
+    vikings[BuildingType::Tannery] = SmokeConst(3, {-12, -46});
+    vikings[BuildingType::LeatherWorks] = SmokeConst(2, {-15, -37});
     auto& babylonians = result[Nation::Babylonians];
     babylonians[BuildingType::Brewery] = SmokeConst(2, {-18, -43});
     babylonians[BuildingType::Armory] = SmokeConst(1, {-22, -47});
     babylonians[BuildingType::Ironsmelter] = SmokeConst(2, {-23, -36});
     babylonians[BuildingType::Bakery] = SmokeConst(4, {-27, -32});
     babylonians[BuildingType::Mint] = SmokeConst(3, {11, -58});
+    return result;
+}();
+
+const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SIGN_OFFSET_CONSTS = []() {
+    std::remove_const_t<decltype(BUILDING_ARMOR_SIGN_OFFSET_CONSTS)> result{};
+    auto& africans = result[Nation::Africans];
+    africans[BuildingType::Barracks] = DrawPoint(8, 15);
+    africans[BuildingType::Guardhouse] = DrawPoint(11, 18);
+    africans[BuildingType::Watchtower] = DrawPoint(0, 19);
+    africans[BuildingType::Fortress] = DrawPoint(2, 19);
+    auto& japanese = result[Nation::Japanese];
+    japanese[BuildingType::Barracks] = DrawPoint(0, 8);
+    japanese[BuildingType::Guardhouse] = DrawPoint(0, 8);
+    japanese[BuildingType::Watchtower] = DrawPoint(0, 10);
+    japanese[BuildingType::Fortress] = DrawPoint(-12, 5);
+    auto& romans = result[Nation::Romans];
+    romans[BuildingType::Barracks] = DrawPoint(0, 8);
+    romans[BuildingType::Guardhouse] = DrawPoint(0, 8);
+    romans[BuildingType::Watchtower] = DrawPoint(19, -2);
+    romans[BuildingType::Fortress] = DrawPoint(0, 10);
+    auto& vikings = result[Nation::Vikings];
+    vikings[BuildingType::Barracks] = DrawPoint(-19, 10);
+    vikings[BuildingType::Guardhouse] = DrawPoint(-20, 7);
+    vikings[BuildingType::Watchtower] = DrawPoint(0, 11);
+    vikings[BuildingType::Fortress] = DrawPoint(-9, 3);
+    auto& babylonians = result[Nation::Babylonians];
+    babylonians[BuildingType::Barracks] = DrawPoint(14, 5);
+    babylonians[BuildingType::Guardhouse] = DrawPoint(0, -9);
+    babylonians[BuildingType::Watchtower] = DrawPoint(0, 13);
+    babylonians[BuildingType::Fortress] = DrawPoint(0, 24);
     return result;
 }();

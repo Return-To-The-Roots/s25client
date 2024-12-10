@@ -5,6 +5,7 @@
 #include "iwBuildings.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "WineLoader.h"
@@ -44,14 +45,17 @@ void iwBuildings::setBuildingOrder()
       BuildingType::Mill,           BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
       BuildingType::Well,           BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
       BuildingType::Charburner,
-      BuildingType::HarborBuilding,                                                 // entry 31
-      BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple, // entry 34
+      BuildingType::HarborBuilding,                                                       // entry 31
+      BuildingType::Vineyard,       BuildingType::Winery,     BuildingType::Temple,       // entry 34
+      BuildingType::Skinner,        BuildingType::Tannery,    BuildingType::LeatherWorks, // entry 37
     };
 
     const auto isUnused = [&](BuildingType const& bld) {
         if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
             return true;
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        if(!leatheraddon::isAddonActive(gwv.GetWorld()) && leatheraddon::isLeatherAddonBuildingType(bld))
             return true;
         return false;
     };
@@ -91,7 +95,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
     // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(35, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+    AddImageButton(38, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
                    LOADER.GetImageN("io", 225), _("Help"));
 }
 
@@ -123,7 +127,7 @@ void iwBuildings::Msg_PaintAfter()
 
 void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if(ctrl_id == 35) // Help button
+    if(ctrl_id == 38) // Help button
     {
         WINDOWMANAGER.ReplaceWindow(
           std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "

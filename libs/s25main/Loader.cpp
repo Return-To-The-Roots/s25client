@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Loader.h"
+#include "LeatherLoader.h"
 #include "ListDir.h"
 #include "RttrConfig.h"
 #include "Settings.h"
@@ -185,6 +186,8 @@ ITexture* Loader::GetWareTex(GoodType ware)
 {
     if(wineaddon::isWineAddonGoodType(ware))
         return wineaddon::GetWareTex(ware);
+    else if(leatheraddon::isLeatherAddonGoodType(ware))
+        return leatheraddon::GetWareTex(ware);
     else
         return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
 }
@@ -193,6 +196,8 @@ ITexture* Loader::GetWareStackTex(GoodType ware)
 {
     if(wineaddon::isWineAddonGoodType(ware))
         return wineaddon::GetWareStackTex(ware);
+    else if(leatheraddon::isLeatherAddonGoodType(ware))
+        return leatheraddon::GetWareStackTex(ware);
     else
         return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
 }
@@ -201,6 +206,8 @@ ITexture* Loader::GetWareDonkeyTex(GoodType ware)
 {
     if(wineaddon::isWineAddonGoodType(ware))
         return wineaddon::GetWareDonkeyTex(ware);
+    if(leatheraddon::isLeatherAddonGoodType(ware))
+        return leatheraddon::GetWareDonkeyTex(ware);
     else
         return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
 }
@@ -209,6 +216,8 @@ ITexture* Loader::GetJobTex(Job job)
 {
     if(wineaddon::isWineAddonJobType(job))
         return wineaddon::GetJobTex(job);
+    else if(leatheraddon::isLeatherAddonJobType(job))
+        return leatheraddon::GetJobTex(job);
     else
         return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
 }
@@ -510,6 +519,9 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
         return false;
 
     if(!LoadResources({"wine_bobs"}))
+        return false;
+
+    if(!LoadResources({"leather_bobs"}))
         return false;
 
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
@@ -875,6 +887,7 @@ void Loader::fillCaches()
         throw std::runtime_error("carrier not found");
 
     libsiedler2::Archiv wine_bob_carrier = GetArchive("wine_bobs");
+    libsiedler2::Archiv leather_bob_carrier = GetArchive("leather_bobs");
 
     for(bool fat : {true, false})
     {
@@ -907,6 +920,26 @@ void Loader::fillCaches()
                           wineaddon::bobIndex[fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_WINE :
                                                     wineaddon::BobTypes::THIN_CARRIER_CARRYING_WINE]
                           + static_cast<unsigned>(imgDir))));
+                    } else if(leatheraddon::isLeatherAddonGoodType(ware))
+                    {
+                        leatheraddon::BobTypes carrierEnum = leatheraddon::BobTypes::FAT_CARRIER_CARRYING_SKINS;
+                        if(ware == GoodType::Skins)
+                        {
+                            carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_SKINS :
+                                                leatheraddon::BobTypes::THIN_CARRIER_CARRYING_SKINS;
+                        } else if(ware == GoodType::Leather)
+                        {
+                            carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_LEATHER :
+                                                leatheraddon::BobTypes::THIN_CARRIER_CARRYING_LEATHER;
+                        } else if(ware == GoodType::Armor)
+                        {
+                            carrierEnum = fat ? leatheraddon::BobTypes::FAT_CARRIER_CARRYING_ARMOR :
+                                                leatheraddon::BobTypes::THIN_CARRIER_CARRYING_ARMOR;
+                        }
+
+                        const unsigned bodyIdx = static_cast<unsigned>(imgDir) * 8 + ani_step;
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                          leather_bob_carrier.get(leatheraddon::bobIndex[carrierEnum] + bodyIdx)));
                     } else
                     {
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
