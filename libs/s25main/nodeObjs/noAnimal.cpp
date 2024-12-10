@@ -311,7 +311,7 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
 
 bool noAnimal::CanSkinned() const
 {
-    return (species != Species::Duck && state == State::Dead);
+    return (species != Species::Duck && state == State::Dead && !skinner);
 }
 
 bool noAnimal::IsSkinned() const
