@@ -367,10 +367,10 @@ void nobMilitary::HandleEvent(const unsigned id)
         {
             armor_upgrade_event = nullptr;
 
-            auto canidate = std::find_if(troops.begin(), troops.end(),
+            auto canidate = std::find_if(troops.rbegin(), troops.rend(),
                                          [](OwnedSortedTroops::value_type& troop) { return !troop->HasArmor(); });
 
-            if(canidate != troops.end())
+            if(canidate != troops.rend())
             {
                 (*canidate)->SetArmor(true);
 
