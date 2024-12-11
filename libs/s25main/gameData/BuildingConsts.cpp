@@ -364,7 +364,7 @@ const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_C
     vikings[BuildingType::DonkeyBreeder] = SmokeConst(4, {-27, -40});
     vikings[BuildingType::Vineyard] = SmokeConst(1, {18, -48});
     vikings[BuildingType::Winery] = SmokeConst(1, {-14, -32});
-    vikings[BuildingType::Skinner] = SmokeConst(1, {7, -39});
+    vikings[BuildingType::Skinner] = SmokeConst(1, {-7, -39});
     vikings[BuildingType::Tannery] = SmokeConst(3, {-12, -46});
     vikings[BuildingType::LeatherWorks] = SmokeConst(2, {-15, -37});
     auto& babylonians = result[Nation::Babylonians];
