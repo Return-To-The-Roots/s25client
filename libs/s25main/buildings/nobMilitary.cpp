@@ -255,8 +255,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
 
         if(armorDisabledVirtual)
             LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::STOP_ARMOR_X_SIGN])
-              ->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]
-                         + BUILDING_ARMOR_SIGN_OFFSET_CONSTS[nation][bldType_]);
+              ->DrawFull(drawPt + BUILDING_ARMOR_SIGN_CONSTS[nation][bldType_]);
     }
     // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     else

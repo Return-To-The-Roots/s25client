@@ -107,7 +107,7 @@ constexpr helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> SUPPRESS_UNUS
      {0, 0},    {14, -13}, {3, -17},  {0, -18},  {12, -10}, {16, 0},    {4, -16}, {-15, -11}, {-24, -9}, {0, 0}}}}};
 
 /// Offset of the armor stop signs per building
-extern const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SIGN_OFFSET_CONSTS;
+extern const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SIGN_CONSTS;
 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
