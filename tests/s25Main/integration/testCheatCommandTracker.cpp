@@ -22,7 +22,7 @@ struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, 1>
     void trackString(const std::string& str)
     {
         for(char c : str)
-            tracker_.trackKeyEvent(makeKeyEvent(c));
+            tracker_.onKeyEvent(makeKeyEvent(c));
     }
 };
 
@@ -43,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE(CheatModeCannotBeTurnedOn_IfCheatsAreUnavailable, CheatC
 {
     CheatCommandTracker tracker{nullptr};
     for(char c : "winter")
-        tracker.trackKeyEvent(makeKeyEvent(c));
+        tracker.onKeyEvent(makeKeyEvent(c));
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 }
 
@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenIncomplete, CheatCommandTrack
 BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenInterruptedByAnotherKeyType, CheatCommandTrackerFixture)
 {
     trackString("win");
-    tracker_.trackKeyEvent(makeKeyEvent(KeyType::F10));
+    tracker_.onKeyEvent(makeKeyEvent(KeyType::F10));
     trackString("ter");
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 }
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(CheatModeIsTurnedOn_EvenWhenWrongInputsWereProvidedBefor
     trackString("www");
     auto ke = makeKeyEvent('1');
     ke.alt = true;
-    tracker_.trackKeyEvent(ke);
+    tracker_.onKeyEvent(ke);
     trackString("interwitter");
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
     trackString("winter");

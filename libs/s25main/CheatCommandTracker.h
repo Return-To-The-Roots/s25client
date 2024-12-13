@@ -15,12 +15,12 @@ class CheatCommandTracker
 public:
     CheatCommandTracker(Cheats* cheats);
 
-    void trackKeyEvent(const KeyEvent& ke);
-    void trackChatCommand(const std::string& cmd);
+    void onKeyEvent(const KeyEvent& ke);
+    void onChatCommand(const std::string& cmd);
 
 private:
-    bool trackSpecialKeyEvent(const KeyEvent& ke);
-    void trackCharKeyEvent(const KeyEvent& ke);
+    bool checkSpecialKeyEvent(const KeyEvent& ke);
+    void onCharKeyEvent(const KeyEvent& ke);
 
     Cheats* cheats_;
     boost::circular_buffer<char> lastChars_;

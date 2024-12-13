@@ -739,7 +739,7 @@ bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
  */
 bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 {
-    cheatCommandTracker_.trackKeyEvent(ke);
+    cheatCommandTracker_.onKeyEvent(ke);
 
     switch(ke.kt)
     {
@@ -1097,7 +1097,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)
 {
-    cheatCommandTracker_.trackChatCommand(cmd);
+    cheatCommandTracker_.onChatCommand(cmd);
 
     if(cmd == "surrender")
         GAMECLIENT.Surrender();

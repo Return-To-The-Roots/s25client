@@ -16,18 +16,18 @@ const auto enableCheatsStr = makeCircularBuffer("winter");
 
 CheatCommandTracker::CheatCommandTracker(Cheats* cheats) : cheats_(cheats), lastChars_(enableCheatsStr.size()) {}
 
-void CheatCommandTracker::trackKeyEvent(const KeyEvent& ke)
+void CheatCommandTracker::onKeyEvent(const KeyEvent& ke)
 {
     if(!cheats_)
         return;
 
-    if(trackSpecialKeyEvent(ke))
+    if(checkSpecialKeyEvent(ke))
         lastChars_.clear();
     else
-        trackCharKeyEvent(ke);
+        onCharKeyEvent(ke);
 }
 
-void CheatCommandTracker::trackChatCommand(const std::string& cmd)
+void CheatCommandTracker::onChatCommand(const std::string& cmd)
 {
     if(!cheats_)
         return;
@@ -36,7 +36,7 @@ void CheatCommandTracker::trackChatCommand(const std::string& cmd)
         cheats_->armageddon();
 }
 
-bool CheatCommandTracker::trackSpecialKeyEvent(const KeyEvent& ke)
+bool CheatCommandTracker::checkSpecialKeyEvent(const KeyEvent& ke)
 {
     if(ke.kt == KeyType::Char)
         return false;
@@ -50,7 +50,7 @@ bool CheatCommandTracker::trackSpecialKeyEvent(const KeyEvent& ke)
     return true;
 }
 
-void CheatCommandTracker::trackCharKeyEvent(const KeyEvent& ke)
+void CheatCommandTracker::onCharKeyEvent(const KeyEvent& ke)
 {
     lastChars_.push_back(ke.c);
 
