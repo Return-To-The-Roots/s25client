@@ -8,7 +8,7 @@
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 
-BOOST_AUTO_TEST_SUITE(CheatsTests)
+BOOST_AUTO_TEST_SUITE(CheatCommandTrackerTests)
 
 namespace {
 struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, 1>

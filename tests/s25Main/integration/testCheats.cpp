@@ -8,6 +8,8 @@
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 
+BOOST_AUTO_TEST_SUITE(CheatsTests)
+
 namespace {
 template<unsigned T_numPlayers>
 struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, T_numPlayers>
@@ -55,3 +57,5 @@ BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOffRepeatedly, CheatWorldFixture1
     cheats.toggleCheatMode();
     BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == false);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
