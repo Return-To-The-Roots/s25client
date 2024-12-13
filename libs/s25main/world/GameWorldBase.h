@@ -62,7 +62,6 @@ class GameWorldBase : public World
     std::unique_ptr<SoundManager> soundManager;
     std::set<MapPoint, MapPointLess> ptsInsideComputerBarriers;
     LuaInterfaceGame* lua;
-    std::unique_ptr<Cheats> cheats;
 
 protected:
     /// Interface zum GUI
@@ -220,7 +219,7 @@ public:
     LuaInterfaceGame& GetLua() const { return *lua; }
     void SetLua(LuaInterfaceGame* newLua) { lua = newLua; }
 
-    Cheats& GetCheats() const { return *cheats; }
+    Cheats& GetCheats() const;
     bool IsCheatModeOn() const;
 
 protected:

@@ -5,6 +5,7 @@
 #include "world/GameWorldBase.h"
 #include "BQCalculator.h"
 #include "Cheats.h"
+#include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "MapGeometry.h"
@@ -30,8 +31,7 @@
 
 GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(std::move(players)),
-      gameSettings(gameSettings), em(em), soundManager(std::make_unique<SoundManager>()), lua(nullptr),
-      cheats(std::make_unique<Cheats>(*this)), gi(nullptr)
+      gameSettings(gameSettings), em(em), soundManager(std::make_unique<SoundManager>()), lua(nullptr), gi(nullptr)
 {}
 
 GameWorldBase::~GameWorldBase() = default;
@@ -258,9 +258,14 @@ Position GameWorldBase::GetNodePos(const MapPoint pt) const
     return ::GetNodePos(pt, GetNode(pt).altitude);
 }
 
+Cheats& GameWorldBase::GetCheats() const
+{
+    return gi->GI_GetCheats();
+}
+
 bool GameWorldBase::IsCheatModeOn() const
 {
-    return cheats->isCheatModeOn();
+    return GetCheats().isCheatModeOn();
 }
 
 void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility /*oldVis*/, Visibility /*newVis*/)
