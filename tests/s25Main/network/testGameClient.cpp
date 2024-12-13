@@ -23,6 +23,8 @@
 #include <boost/test/data/test_case.hpp>
 #include <boost/test/unit_test.hpp>
 
+using namespace std::literals;
+
 namespace bfs = boost::filesystem;
 
 // LCOV_EXCL_START
@@ -226,5 +228,159 @@ BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)
     clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, chunkSize, mapData.data(), remainingSize + 1u));
     BOOST_TEST(client.GetState() == ClientState::Stopped);
 }
+
+BOOST_AUTO_TEST_CASE(CanSetGFLengthReq)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(50ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 50);
+}
+
+BOOST_AUTO_TEST_CASE(CanSetGFLengthReq_Repeatedly)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(50ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 50);
+    client.SetGFLengthReq(40ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 40);
+}
+
+BOOST_AUTO_TEST_CASE(IncreaseSpeed_DecreasesGF_WhenDivisibleBy10_By10)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(50ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 50);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 40);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 30);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 20);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+}
+
+BOOST_AUTO_TEST_CASE(DecreaseSpeed_IncreasesGF_WhenDivisible10_By10)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(10ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 20);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 30);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 40);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 50);
+}
+
+BOOST_AUTO_TEST_CASE(IncreaseSpeed_DecreasesGF_WhenNotDivisibleBy10_RoundsDownTo10)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(25ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 25);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 20);
+
+    client.SetGFLengthReq(12ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 12);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+}
+
+BOOST_AUTO_TEST_CASE(DecreaseSpeed_IncreasesGF_WhenNotDivisibleBy10_RoundsUpTo10)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(25ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 25);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 30);
+
+    client.SetGFLengthReq(12ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 12);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 20);
+}
+
+#ifndef NDEBUG
+BOOST_AUTO_TEST_CASE(IncreaseSpeed_DecreasesGF_When10orLess_To1)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(10ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 1);
+
+    client.SetGFLengthReq(3ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 3);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(DecreaseSpeed_IncreasesGF_WhenLessThan10_To10)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(3ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 3);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+
+    client.SetGFLengthReq(1ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 1);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+}
+
+BOOST_AUTO_TEST_CASE(IncreaseSpeed_SetsGF_When1_To70)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(1ms);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 70);
+}
+
+BOOST_AUTO_TEST_CASE(DecreaseSpeed_SetsGF_WhenLimitReached_To1_ReplayModeOff)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(70ms);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 1);
+}
+#else
+BOOST_AUTO_TEST_CASE(IncreaseSpeed_SetsGF_When10OrLess_To70)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(10ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 70);
+
+    client.SetGFLengthReq(1ms);
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+    client.IncreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 70);
+}
+
+BOOST_AUTO_TEST_CASE(DecreaseSpeed_SetsGF_WhenLimitReached_To10_ReplayModeOff)
+{
+    GameClient client;
+
+    client.SetGFLengthReq(70ms);
+    client.DecreaseSpeed();
+    BOOST_TEST_REQUIRE(client.GetGFLengthReq().count() == 10);
+}
+#endif
 
 BOOST_AUTO_TEST_SUITE_END()
