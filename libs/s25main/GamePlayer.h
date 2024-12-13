@@ -193,8 +193,10 @@ public:
     /// Setzt neue Baureihenfolge-Einstellungen
     void ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& order_data);
 
-    /// Can this player and the other attack each other?
-    bool IsAttackable(unsigned char playerId) const;
+    /// Can this player attack the other player?
+    bool CanAttack(unsigned char otherPlayerId) const;
+    /// Called when the player is attacked
+    void OnAttackedBy(unsigned char attackerId);
     /// Are these players allied? (-> Teamview, attack support, ...)
     bool IsAlly(unsigned char playerId) const;
     /// Order troops of each rank according to `counts` without exceeding `total_max` in total
@@ -274,6 +276,8 @@ public:
     unsigned GetRemainingPactTime(PactType pt, unsigned char other_player) const;
     /// Setzt die initialen Bündnisse anhand der Teams
     void MakeStartPacts();
+    /// Creates a one-sided alliance from the player to the other player.
+    void MakeOneSidedAllianceTo(unsigned char otherPlayerId);
     /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
     void TestPacts();
 
@@ -422,6 +426,8 @@ private:
     void MakePact(PactType pt, unsigned char other_player, unsigned duration);
     /// Called after a pact was changed(added/removed) in both players
     void PactChanged(PactType pt);
+    /// Breaks a one-sided alliance from the player to the other player.
+    void BreakOneSidedAllianceTo(unsigned char otherPlayerId);
     // Sucht Weg für Job zu entsprechenden noRoadNode
     bool FindWarehouseForJob(Job job, noRoadNode* goal) const;
     /// Prüft, ob der Spieler besiegt wurde

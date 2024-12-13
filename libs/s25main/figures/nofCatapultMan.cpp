@@ -111,7 +111,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
                 if(building->GetGOT() == GO_Type::NobMilitary
-                   && world->GetPlayer(player).IsAttackable(building->GetPlayer()))
+                   && world->GetPlayer(player).CanAttack(building->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
                     if(world->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible

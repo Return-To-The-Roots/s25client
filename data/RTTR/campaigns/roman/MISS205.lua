@@ -1,14 +1,13 @@
 ------------------------------------------------------------------------------
 -- LUA-Script for MISS205.WLD (mission 6 of the original "Roman Campaign"   --
 --                                                                          --
--- Authors: CrazyL, Spikeone, ArthurMurray47                                --
+-- Authors: CrazyL, Spikeone, ArthurMurray47, kubaau                        --
 ------------------------------------------------------------------------------
 
 
 -------------------------------- TODO -----------------------------------------
 -- EnableNextMissions()
 -- Set Portraits
--- Set AI Agression Level
 -------------------------------------------------------------------------------
 
 
@@ -113,13 +112,11 @@ function onSettingsReady()
     rttr:GetPlayer(1):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Erik')           -- Enemy Name
-    rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Olof')           -- Enemy Name
-    rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
 function getAllowedChanges()
@@ -136,6 +133,8 @@ end
 
 -- start callback
 function onStart(isFirstStart)
+    -- no alliances in this mission
+
     for i = 0, 2 do                         -- set resources
         addPlayerRes(i, not isFirstStart)
         addPlayerBld(i, not isFirstStart)

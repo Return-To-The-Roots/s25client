@@ -213,6 +213,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     {
         case PactType::TreatyOfAlliance: image = LOADER.GetImageN("io", 61); break;
         case PactType::NonAgressionPact: image = LOADER.GetImageN("io", 100); break;
+        case PactType::OneSidedAlliance: RTTR_Assert(false); // this should never be suggested
     }
 
     // Bild als Orientierung, welchen Vertrag wir gerade bearbeiten

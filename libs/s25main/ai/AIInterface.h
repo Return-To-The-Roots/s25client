@@ -93,8 +93,8 @@ public:
     bool CanBuildCatapult() const { return player_.CanBuildCatapult(); }
     /// checks if the player is allowed to build the building type (lua maybe later addon?)
     bool CanBuildBuildingtype(BuildingType bt) const { return player_.IsBuildingEnabled(bt); }
-    /// Test whether a player is attackable or not (alliances, etc)
-    bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsAttackable(playerID); }
+    /// Can the current player (AI) attack the other player?
+    bool CanAttack(unsigned char otherPlayerId) const { return gwb.GetPlayer(GetPlayerId()).CanAttack(otherPlayerId); }
     /// player.FindWarehouse
     template<class T_IsWarehouseGood>
     nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
