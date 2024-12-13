@@ -6,6 +6,7 @@
 
 #include "nofBuildingWorker.h"
 class SerializedGameData;
+class nobBaseMilitary;
 class nobUsual;
 
 /// Arbeiter im Katapult
@@ -39,6 +40,7 @@ private:
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 0; }
+    bool CanAttackBuilding(nobBaseMilitary* bld) const;
 
 public:
     nofCatapultMan(MapPoint pos, unsigned char player, nobUsual* workplace);

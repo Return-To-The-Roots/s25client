@@ -6,8 +6,10 @@
 #include "CatapultStone.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "addons/AddonCatapultsAttackAllies.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "enum_cast.hpp"
@@ -94,6 +96,22 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
     }
 }
 
+bool nofCatapultMan::CanAttackBuilding(nobBaseMilitary* bld) const
+{
+    // only proper military buildings - no HQ's etc.
+    if(bld->GetGOT() != GO_Type::NobMilitary)
+        return false;
+
+    if(bld->CanBeAttackedBy(player))
+        return true;
+
+    // anyone but ourselves
+    if(world->GetGGS().isEnabled(AddonId::CATAPULTS_ATTACK_ALLIES))
+        return bld->GetPlayer() != player;
+
+    return false;
+}
+
 void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
@@ -109,9 +127,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
             for(auto* building : buildings)
             {
-                // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if(building->GetGOT() == GO_Type::NobMilitary
-                   && world->GetPlayer(player).CanAttack(building->GetPlayer()))
+                if(CanAttackBuilding(building))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
                     if(world->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible

@@ -65,6 +65,7 @@ void GlobalGameSettings::registerAllAddons()
         AddonBattlefieldPromotion,
         AddonBurnDuration,
         AddonCatapultGraphics,
+        AddonCatapultsAttackAllies,
         AddonChangeGoldDeposits,
         AddonCharburner,
         AddonCoinsCapturedBld,
