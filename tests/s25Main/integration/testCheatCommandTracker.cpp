@@ -14,7 +14,7 @@ namespace {
 struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, 1>
 {
     Cheats cheats_{world};
-    CheatCommandTracker tracker_{cheats_};
+    CheatCommandTracker tracker_{&cheats_};
 
     KeyEvent makeKeyEvent(unsigned c) { return {KeyType::Char, c, 0, 0, 0}; }
     KeyEvent makeKeyEvent(KeyType kt) { return {kt, 0, 0, 0, 0}; }
@@ -37,6 +37,14 @@ BOOST_FIXTURE_TEST_CASE(CheatModeCanBeTurnedOn, CheatCommandTrackerFixture)
 {
     trackString("winter");
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(CheatModeCannotBeTurnedOn_IfCheatsAreUnavailable, CheatCommandTrackerFixture)
+{
+    CheatCommandTracker tracker{nullptr};
+    for(char c : "winter")
+        tracker.trackKeyEvent(makeKeyEvent(c));
+    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 }
 
 BOOST_FIXTURE_TEST_CASE(CheatModeCanBeTurnedOff, CheatCommandTrackerFixture)

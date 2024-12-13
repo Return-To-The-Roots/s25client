@@ -6,21 +6,9 @@
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 
-Cheats::Cheats(GameWorldBase& world) : cheatCmdTracker_(*this), world_(world) {}
+Cheats::Cheats(GameWorldBase& world) : world_(world) {}
 
 Cheats::~Cheats() = default;
-
-void Cheats::trackKeyEvent(const KeyEvent& ke)
-{
-    if(areCheatsAllowed())
-        cheatCmdTracker_.trackKeyEvent(ke);
-}
-
-void Cheats::trackChatCommand(const std::string& cmd)
-{
-    if(areCheatsAllowed())
-        cheatCmdTracker_.trackChatCommand(cmd);
-}
 
 void Cheats::toggleCheatMode()
 {

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskGameInterface.h"
-#include "Cheats.h"
 #include "CollisionDetection.h"
 #include "EventManager.h"
 #include "Game.h"
@@ -103,10 +102,11 @@ enum
 dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<const NWFInfo> nwfInfo,
                                    unsigned playerIdx, bool initOGL)
     : Desktop(nullptr), game_(std::move(game)), nwfInfo_(std::move(nwfInfo)),
-      cheats_(std::make_unique<Cheats>(const_cast<Game&>(*game_).world_)),
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
-      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
+      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
+      cheats_(const_cast<Game&>(*game_).world_),
+      cheatCommandTracker_(game_->world_.IsSinglePlayer() ? &cheats_ : nullptr)
 {
     road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
@@ -739,7 +739,7 @@ bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
  */
 bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 {
-    GI_GetCheats().trackKeyEvent(ke);
+    cheatCommandTracker_.trackKeyEvent(ke);
 
     switch(ke.kt)
     {
@@ -1097,7 +1097,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)
 {
-    GI_GetCheats().trackChatCommand(cmd);
+    cheatCommandTracker_.trackChatCommand(cmd);
 
     if(cmd == "surrender")
         GAMECLIENT.Surrender();

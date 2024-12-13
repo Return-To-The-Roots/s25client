@@ -17,9 +17,6 @@ public:
     Cheats(GameWorldBase& world);
     ~Cheats(); // = default - for unique_ptr
 
-    void trackKeyEvent(const KeyEvent& ke);
-    void trackChatCommand(const std::string& cmd);
-
     void toggleCheatMode();
     bool isCheatModeOn() const { return isCheatModeOn_; }
 
@@ -29,7 +26,6 @@ public:
 private:
     bool areCheatsAllowed() const;
 
-    CheatCommandTracker cheatCmdTracker_;
     bool isCheatModeOn_ = false;
     GameWorldBase& world_;
 };

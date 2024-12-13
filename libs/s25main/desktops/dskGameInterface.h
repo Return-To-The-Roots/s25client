@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "CheatCommandTracker.h"
+#include "Cheats.h"
 #include "Desktop.h"
 #include "GameInterface.h"
 #include "IngameMinimap.h"
@@ -82,7 +84,7 @@ public:
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
     void GI_BuildRoad() override;
 
-    Cheats& GI_GetCheats() override { return *cheats_; }
+    Cheats& GI_GetCheats() override { return cheats_; }
 
     // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
     // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
@@ -142,7 +144,6 @@ protected:
     PostBox& GetPostBox();
     std::shared_ptr<const Game> game_;
     std::shared_ptr<const NWFInfo> nwfInfo_;
-    std::unique_ptr<Cheats> cheats_;
     GameWorldViewer worldViewer;
     GameWorldView gwv;
 
@@ -166,4 +167,7 @@ protected:
     Position startScrollPt;
     size_t zoomLvl;
     Subscription evBld;
+
+    Cheats cheats_;
+    CheatCommandTracker cheatCommandTracker_;
 };
