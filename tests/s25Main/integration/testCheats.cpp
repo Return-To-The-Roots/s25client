@@ -14,7 +14,7 @@ namespace {
 template<unsigned T_numPlayers>
 struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, T_numPlayers>
 {
-    Cheats cheats{world};
+    Cheats cheats{this->world};
 };
 
 using CheatWorldFixture1P = CheatWorldFixture<1>;

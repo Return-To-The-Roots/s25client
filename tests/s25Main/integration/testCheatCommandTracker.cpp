@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE(CheatCommandTrackerTests)
 namespace {
 struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, 1>
 {
-    Cheats cheats_{world};
+    Cheats cheats_{this->world};
     CheatCommandTracker tracker_{&cheats_};
 
     KeyEvent makeKeyEvent(unsigned c) { return {KeyType::Char, c, 0, 0, 0}; }
