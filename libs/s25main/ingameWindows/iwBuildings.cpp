@@ -69,6 +69,14 @@ const Extent iconSpacing(40, 48);
 // Abstand der Schriften unter den Icons
 const unsigned short font_distance_y = 20;
 
+namespace {
+enum
+{
+    ID_Help,
+    ID_BuildingsStart,
+};
+}
+
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"),
                    LOADER.GetImageN("resource", 41)),
@@ -88,14 +96,14 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
             Extent btSize = Extent(32, 32);
             DrawPoint btPos = bldContentOffset - btSize / 2 + iconSpacing * DrawPoint(x, y);
-            AddImageButton(y * 4 + x, btPos, btSize, TextureColor::Grey,
+            AddImageButton(ID_BuildingsStart + y * 4 + x, btPos, btSize, TextureColor::Grey,
                            LOADER.GetNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
     // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(38, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+    AddImageButton(ID_Help, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
                    LOADER.GetImageN("io", 225), _("Help"));
 }
 
@@ -127,7 +135,7 @@ void iwBuildings::Msg_PaintAfter()
 
 void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if(ctrl_id == 38) // Help button
+    if(ctrl_id == ID_Help) // Help button
     {
         WINDOWMANAGER.ReplaceWindow(
           std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
@@ -142,7 +150,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
     const GamePlayer& localPlayer = gwv.GetViewer().GetPlayer();
     const BuildingRegister& buildingRegister = localPlayer.GetBuildingRegister();
 
-    BuildingType bldType = bts[ctrl_id];
+    BuildingType bldType = bts[ctrl_id - ID_BuildingsStart];
     if(BuildingProperties::IsMilitary(bldType))
         GoToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.GetMilitaryBuildings());
     else if(bldType == BuildingType::HarborBuilding)
