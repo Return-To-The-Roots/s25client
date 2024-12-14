@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "world/GameWorldViewer.h"
+#include "Cheats.h"
+#include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "RttrForeachPt.h"
@@ -113,6 +115,10 @@ BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 
 Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 {
+    auto* const gi = GetWorld().GetGameInterface();
+    if(gi && gi->GI_GetCheats().isAllVisible())
+        return Visibility::Visible;
+
     /// Replaymodus und FoW aus? Dann alles sichtbar
     if(GAMECLIENT.IsReplayModeOn() && GAMECLIENT.IsReplayFOWDisabled())
         return Visibility::Visible;

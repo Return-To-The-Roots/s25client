@@ -43,6 +43,7 @@ bool CheatCommandTracker::checkSpecialKeyEvent(const KeyEvent& ke)
 
     switch(ke.kt)
     {
+        case KeyType::F7: cheats_.toggleAllVisible(); break;
         case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }
