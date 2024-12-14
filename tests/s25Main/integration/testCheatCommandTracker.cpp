@@ -16,8 +16,8 @@ struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, 1>
     Cheats cheats_{this->world};
     CheatCommandTracker tracker_{&cheats_};
 
-    KeyEvent makeKeyEvent(unsigned c) { return {KeyType::Char, c, 0, 0, 0}; }
-    KeyEvent makeKeyEvent(KeyType kt) { return {kt, 0, 0, 0, 0}; }
+    KeyEvent makeKeyEvent(unsigned c) { return {KeyType::Char, c, false, false, false}; }
+    KeyEvent makeKeyEvent(KeyType kt) { return {kt, 0, false, false, false}; }
 
     void trackString(const std::string& str)
     {
@@ -25,7 +25,6 @@ struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, 1>
             tracker_.onKeyEvent(makeKeyEvent(c));
     }
 };
-
 } // namespace
 
 BOOST_FIXTURE_TEST_CASE(CheatModeIsOffByDefault, CheatCommandTrackerFixture)

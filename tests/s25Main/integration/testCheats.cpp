@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Cheats.h"
-#include "GamePlayer.h"
-#include "network/GameClient.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 

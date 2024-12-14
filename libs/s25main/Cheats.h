@@ -4,24 +4,18 @@
 
 #pragma once
 
-#include "CheatCommandTracker.h"
-#include <memory>
-#include <string>
-
 class GameWorldBase;
-struct KeyEvent;
 
 class Cheats
 {
 public:
     Cheats(GameWorldBase& world);
-    ~Cheats(); // = default - for unique_ptr
 
     void toggleCheatMode();
     bool isCheatModeOn() const { return isCheatModeOn_; }
 
-    void toggleHumanAIPlayer();
-    void armageddon();
+    void toggleHumanAIPlayer() const;
+    void armageddon() const;
 
 private:
     bool areCheatsAllowed() const;

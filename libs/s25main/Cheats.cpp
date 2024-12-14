@@ -8,21 +8,19 @@
 
 Cheats::Cheats(GameWorldBase& world) : world_(world) {}
 
-Cheats::~Cheats() = default;
-
 void Cheats::toggleCheatMode()
 {
     if(areCheatsAllowed())
         isCheatModeOn_ = !isCheatModeOn_;
 }
 
-void Cheats::toggleHumanAIPlayer()
+void Cheats::toggleHumanAIPlayer() const
 {
     if(isCheatModeOn() && !GAMECLIENT.IsReplayModeOn())
         GAMECLIENT.ToggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
 }
 
-void Cheats::armageddon()
+void Cheats::armageddon() const
 {
     if(isCheatModeOn())
         GAMECLIENT.CheatArmageddon();
