@@ -6,8 +6,6 @@
 
 #include "gameTypes/MapCoordinates.h"
 
-class Window;
-
 /// Interface, welches vom Spiel angesprocehn werden kann, um beispielsweise GUI wichtige Nachrichten
 /// zu übermiteln
 class GameInterface

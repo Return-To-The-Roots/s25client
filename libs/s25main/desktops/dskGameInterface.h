@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "CheatCommandTracker.h"
+#include "Cheats.h"
 #include "Desktop.h"
 #include "GameInterface.h"
 #include "IngameMinimap.h"
@@ -162,7 +164,8 @@ protected:
     bool isScrolling;
     Position startScrollPt;
     size_t zoomLvl;
-    bool isCheatModeOn;
-    std::string curCheatTxt;
     Subscription evBld;
+
+    Cheats cheats_;
+    CheatCommandTracker cheatCommandTracker_;
 };
