@@ -71,6 +71,6 @@ ITexture* GetWareStackTex(GoodType good);
 ITexture* GetWareDonkeyTex(GoodType good);
 ITexture* GetJobTex(Job job);
 bool isAddonActive(const GameWorldBase& gwb);
-BobTypes wareToCarrierBobIndex(const GoodType good, const bool fat);
+BobTypes wareToCarrierBobIndex(GoodType good, bool fat);
 
 } // namespace leatheraddon
