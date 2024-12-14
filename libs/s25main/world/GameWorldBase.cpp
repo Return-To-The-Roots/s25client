@@ -4,8 +4,6 @@
 
 #include "world/GameWorldBase.h"
 #include "BQCalculator.h"
-#include "Cheats.h"
-#include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "MapGeometry.h"
@@ -256,16 +254,6 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, helpers::O
 Position GameWorldBase::GetNodePos(const MapPoint pt) const
 {
     return ::GetNodePos(pt, GetNode(pt).altitude);
-}
-
-Cheats& GameWorldBase::GetCheats() const
-{
-    return gi->GI_GetCheats();
-}
-
-bool GameWorldBase::IsCheatModeOn() const
-{
-    return GetCheats().isCheatModeOn();
 }
 
 void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility /*oldVis*/, Visibility /*newVis*/)

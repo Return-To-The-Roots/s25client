@@ -16,7 +16,6 @@
 #include <set>
 #include <vector>
 
-class Cheats;
 class EventManager;
 class FreePathFinder;
 class GameInterface;
@@ -218,9 +217,6 @@ public:
     bool HasLua() const { return lua != nullptr; }
     LuaInterfaceGame& GetLua() const { return *lua; }
     void SetLua(LuaInterfaceGame* newLua) { lua = newLua; }
-
-    Cheats& GetCheats() const;
-    bool IsCheatModeOn() const;
 
 protected:
     /// Called when the visibility of point changed for a player
