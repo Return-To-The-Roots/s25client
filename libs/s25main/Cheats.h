@@ -20,6 +20,9 @@ public:
     void toggleAllVisible();
     bool isAllVisible() const { return isAllVisible_; }
 
+    void toggleAllBuildingsEnabled();
+    bool areAllBuildingsEnabled() const { return areAllBuildingsEnabled_; }
+
     // RTTR cheats
     void toggleHumanAIPlayer() const;
     void armageddon() const;
@@ -27,5 +30,6 @@ public:
 private:
     bool isCheatModeOn_ = false;
     bool isAllVisible_ = false;
+    bool areAllBuildingsEnabled_ = false;
     GameWorldBase& world_;
 };

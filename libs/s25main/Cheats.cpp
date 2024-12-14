@@ -21,16 +21,27 @@ void Cheats::toggleCheatMode()
 
 void Cheats::toggleAllVisible()
 {
-    // In the original game if you enabled cheats, revealed the map and disabled cheats, you would be unable to unreveal
-    // the map. In RTTR, with cheats disabled, you can unreveal the map but cannot reveal it.
+    // In S2, if you enabled cheats, revealed the map and disabled cheats, you would be unable to unreveal the map.
+    // In RTTR, with cheats disabled, you can unreveal the map but cannot reveal it.
     if(isCheatModeOn() || isAllVisible())
     {
         isAllVisible_ = !isAllVisible_;
 
-        // The minimap in the original game is not updated immediately, but in RTTR this would mess up the minimap.
+        // In S2, the minimap is not updated immediately.
+        // In RTTR, the minimap would become messed up if it wasn't updated here.
         if(GameInterface* gi = world_.GetGameInterface())
             gi->GI_UpdateMapVisibility();
     }
+}
+
+void Cheats::toggleAllBuildingsEnabled()
+{
+    // In S2, if you enabled cheats you would automatically have all buildings enabled.
+    // In RTTR, because this may have unintended consequences when playing campaigns, the user must explicitly enable
+    // all buildings after enabling cheats. This function follows the same logic as toggleAllVisible in that it will
+    // allow disabling this feature even when cheats are off.
+    if(isCheatModeOn() || areAllBuildingsEnabled())
+        areAllBuildingsEnabled_ = !areAllBuildingsEnabled_;
 }
 
 void Cheats::toggleHumanAIPlayer() const

@@ -101,4 +101,22 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn_ButOnlyDisableAllVis
     BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == false);
 }
 
+BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_IfCheatModeIsOn_ButOnlyDisableThisFeature_IfCheatModeIsNotOn,
+                        CheatsFixture)
+{
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    cheats.toggleCheatMode();
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
+    cheats.toggleCheatMode();
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
