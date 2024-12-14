@@ -94,7 +94,7 @@ BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenOrderOfCharactersIsWrong, Che
 
 BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenOrderOfCharactersIsWrong_Wraparound, CheatCommandTrackerFixture)
 {
-    trackString("rwinet");
+    trackString("rwinte");
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 }
 
