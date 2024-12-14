@@ -4,7 +4,9 @@
 
 #include "world/GameWorldView.h"
 #include "CatapultStone.h"
+#include "Cheats.h"
 #include "FOWObjects.h"
+#include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -379,7 +381,10 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
                     auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
                     attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
                 }
-                continue;
+                // DO draw when object visible and cheat mode is on
+                if(gwv.GetVisibility(pt) != Visibility::Visible
+                   || !GetWorld().GetGameInterface()->GI_GetCheats().isCheatModeOn())
+                    continue;
             }
 
             // Draw object name
