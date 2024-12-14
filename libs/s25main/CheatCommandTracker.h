@@ -13,7 +13,7 @@ struct KeyEvent;
 class CheatCommandTracker
 {
 public:
-    CheatCommandTracker(Cheats* cheats);
+    CheatCommandTracker(Cheats& cheats);
 
     void onKeyEvent(const KeyEvent& ke);
     void onChatCommand(const std::string& cmd);
@@ -22,6 +22,6 @@ private:
     bool checkSpecialKeyEvent(const KeyEvent& ke);
     void onCharKeyEvent(const KeyEvent& ke);
 
-    Cheats* cheats_;
+    Cheats& cheats_;
     boost::circular_buffer<char> lastChars_;
 };

@@ -8,10 +8,14 @@
 
 Cheats::Cheats(GameWorldBase& world) : world_(world) {}
 
+bool Cheats::areCheatsAllowed() const
+{
+    return world_.IsSinglePlayer();
+}
+
 void Cheats::toggleCheatMode()
 {
-    if(areCheatsAllowed())
-        isCheatModeOn_ = !isCheatModeOn_;
+    isCheatModeOn_ = !isCheatModeOn_;
 }
 
 void Cheats::toggleHumanAIPlayer() const
@@ -24,9 +28,4 @@ void Cheats::armageddon() const
 {
     if(isCheatModeOn())
         GAMECLIENT.CheatArmageddon();
-}
-
-bool Cheats::areCheatsAllowed() const
-{
-    return world_.IsSinglePlayer();
 }

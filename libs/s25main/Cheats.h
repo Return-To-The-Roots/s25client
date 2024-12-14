@@ -11,6 +11,8 @@ class Cheats
 public:
     Cheats(GameWorldBase& world);
 
+    bool areCheatsAllowed() const;
+
     void toggleCheatMode();
     bool isCheatModeOn() const { return isCheatModeOn_; }
 
@@ -18,8 +20,6 @@ public:
     void armageddon() const;
 
 private:
-    bool areCheatsAllowed() const;
-
     bool isCheatModeOn_ = false;
     GameWorldBase& world_;
 };

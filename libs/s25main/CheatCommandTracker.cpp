@@ -14,11 +14,11 @@ auto makeCircularBuffer(const std::string& str)
 const auto enableCheatsStr = makeCircularBuffer("winter");
 } // namespace
 
-CheatCommandTracker::CheatCommandTracker(Cheats* cheats) : cheats_(cheats), lastChars_(enableCheatsStr.size()) {}
+CheatCommandTracker::CheatCommandTracker(Cheats& cheats) : cheats_(cheats), lastChars_(enableCheatsStr.size()) {}
 
 void CheatCommandTracker::onKeyEvent(const KeyEvent& ke)
 {
-    if(!cheats_)
+    if(!cheats_.areCheatsAllowed())
         return;
 
     if(checkSpecialKeyEvent(ke))
@@ -29,11 +29,11 @@ void CheatCommandTracker::onKeyEvent(const KeyEvent& ke)
 
 void CheatCommandTracker::onChatCommand(const std::string& cmd)
 {
-    if(!cheats_)
+    if(!cheats_.areCheatsAllowed())
         return;
 
     if(cmd == "apocalypsis")
-        cheats_->armageddon();
+        cheats_.armageddon();
 }
 
 bool CheatCommandTracker::checkSpecialKeyEvent(const KeyEvent& ke)
@@ -43,7 +43,7 @@ bool CheatCommandTracker::checkSpecialKeyEvent(const KeyEvent& ke)
 
     switch(ke.kt)
     {
-        case KeyType::F10: cheats_->toggleHumanAIPlayer(); break;
+        case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }
 
@@ -55,5 +55,5 @@ void CheatCommandTracker::onCharKeyEvent(const KeyEvent& ke)
     lastChars_.push_back(ke.c);
 
     if(lastChars_ == enableCheatsStr)
-        cheats_->toggleCheatMode();
+        cheats_.toggleCheatMode();
 }

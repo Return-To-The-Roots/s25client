@@ -10,33 +10,36 @@ BOOST_AUTO_TEST_SUITE(CheatsTests)
 
 namespace {
 template<unsigned T_numPlayers>
-struct CheatWorldFixture : WorldFixture<CreateEmptyWorld, T_numPlayers>
+struct CheatsFixture : WorldFixture<CreateEmptyWorld, T_numPlayers>
 {
     Cheats cheats{this->world};
 };
-
-using CheatWorldFixture1P = CheatWorldFixture<1>;
-using CheatWorldFixture2P = CheatWorldFixture<2>;
+using CheatsFixture1P = CheatsFixture<1>;
+using CheatsFixture2P = CheatsFixture<2>;
 } // namespace
 
-BOOST_FIXTURE_TEST_CASE(CheatModeIsOffByDefault, CheatWorldFixture1P)
+BOOST_FIXTURE_TEST_CASE(CheatsAreAllowed_InSinglePlayer, CheatsFixture1P)
+{
+    BOOST_TEST_REQUIRE(cheats.areCheatsAllowed() == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(CheatsAreNotAllowed_InMultiplayer, CheatsFixture2P)
+{
+    BOOST_TEST_REQUIRE(cheats.areCheatsAllowed() == false);
+}
+
+BOOST_FIXTURE_TEST_CASE(CheatModeIsOffByDefault, CheatsFixture1P)
 {
     BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == false);
 }
 
-BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOn, CheatWorldFixture1P)
+BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOn, CheatsFixture1P)
 {
     cheats.toggleCheatMode();
     BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == true);
 }
 
-BOOST_FIXTURE_TEST_CASE(CannotToggleCheatModeOn_IfMultiplayer, CheatWorldFixture2P)
-{
-    cheats.toggleCheatMode();
-    BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == false);
-}
-
-BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOff, CheatWorldFixture1P)
+BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOff, CheatsFixture1P)
 {
     cheats.toggleCheatMode();
     BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == true);
@@ -44,7 +47,7 @@ BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOff, CheatWorldFixture1P)
     BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == false);
 }
 
-BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOffRepeatedly, CheatWorldFixture1P)
+BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOffRepeatedly, CheatsFixture1P)
 {
     cheats.toggleCheatMode();
     BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == true);

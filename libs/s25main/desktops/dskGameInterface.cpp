@@ -105,8 +105,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
       actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
-      cheats_(const_cast<Game&>(*game_).world_),
-      cheatCommandTracker_(game_->world_.IsSinglePlayer() ? &cheats_ : nullptr)
+      cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
 {
     road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
