@@ -47,6 +47,7 @@ BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOffRepeatedly, CheatsFixture)
 namespace {
 MOCK_BASE_CLASS(MockGameInterface, GameInterface)
 {
+    // LCOV_EXCL_START
     MOCK_METHOD(GI_PlayerDefeated, 1)
     MOCK_METHOD(GI_UpdateMinimap, 1)
     MOCK_METHOD(GI_FlagDestroyed, 1)
@@ -58,6 +59,7 @@ MOCK_BASE_CLASS(MockGameInterface, GameInterface)
     MOCK_METHOD(GI_CancelRoadBuilding, 0)
     MOCK_METHOD(GI_BuildRoad, 0)
     MOCK_METHOD(GI_GetCheats, 0)
+    // LCOV_EXCL_STOP
 };
 } // namespace
 
