@@ -58,7 +58,9 @@ MOCK_BASE_CLASS(MockGameInterface, GameInterface)
     MOCK_METHOD(GI_StartRoadBuilding, 2)
     MOCK_METHOD(GI_CancelRoadBuilding, 0)
     MOCK_METHOD(GI_BuildRoad, 0)
-    MOCK_METHOD(GI_GetCheats, 0)
+    // clang-format off
+    MOCK_METHOD(GI_GetCheats, 0, Cheats&(void))
+    // clang-format on
     // LCOV_EXCL_STOP
 };
 } // namespace

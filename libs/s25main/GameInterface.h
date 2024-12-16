@@ -38,4 +38,5 @@ public:
     virtual void GI_BuildRoad() = 0;
 
     virtual Cheats& GI_GetCheats() = 0;
+    const Cheats& GI_GetCheats() const { return const_cast<GameInterface&>(*this).GI_GetCheats(); }
 };

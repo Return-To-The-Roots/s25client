@@ -115,7 +115,7 @@ BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 
 Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 {
-    auto* const gi = GetWorld().GetGameInterface();
+    const auto* const gi = GetWorld().GetGameInterface();
     if(gi && gi->GI_GetCheats().isAllVisible())
         return Visibility::Visible;
 
