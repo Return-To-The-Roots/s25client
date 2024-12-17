@@ -30,15 +30,17 @@ using CheatCommandTrackerFixture1P = CheatCommandTrackerFixture<1>;
 using CheatCommandTrackerFixture2P = CheatCommandTrackerFixture<2>;
 } // namespace
 
-BOOST_FIXTURE_TEST_CASE(CheatModeIsOffByDefault, CheatCommandTrackerFixture1P)
+BOOST_FIXTURE_TEST_CASE(CheatModeCanBeTurnedOnAndOffRepeatedly, CheatCommandTrackerFixture1P)
 {
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
-
-BOOST_FIXTURE_TEST_CASE(CheatModeCanBeTurnedOn, CheatCommandTrackerFixture1P)
-{
+    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false); // initially off
     trackString("winter");
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == true);
+    trackString("winter");
+    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
+    trackString("winter");
+    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == true);
+    trackString("winter");
+    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 }
 
 BOOST_FIXTURE_TEST_CASE(CheatModeCannotBeTurnedOn_InMultiplayer, CheatCommandTrackerFixture2P)
@@ -47,61 +49,23 @@ BOOST_FIXTURE_TEST_CASE(CheatModeCannotBeTurnedOn_InMultiplayer, CheatCommandTra
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 }
 
-BOOST_FIXTURE_TEST_CASE(CheatModeCanBeTurnedOff, CheatCommandTrackerFixture1P)
+BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_IfTheCheatStringIsWrong, CheatCommandTrackerFixture1P)
 {
-    trackString("winter");
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == true);
-    trackString("winter");
+    trackString("winte"); // incomplete
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
 
-BOOST_FIXTURE_TEST_CASE(CheatModeCanBeTurnedOnAndOffRepeatedly, CheatCommandTrackerFixture1P)
-{
-    trackString("winter");
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == true);
-    trackString("winter");
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-    trackString("winter");
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == true);
-    trackString("winter");
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
-
-BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenIncomplete, CheatCommandTrackerFixture1P)
-{
-    trackString("winte");
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
-
-BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenInterruptedByAnotherKeyType, CheatCommandTrackerFixture1P)
-{
     trackString("win");
-    tracker_.onKeyEvent(makeKeyEvent(KeyType::F10));
+    tracker_.onKeyEvent(makeKeyEvent(KeyType::F10)); // interrupted by another key type
     trackString("ter");
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
 
-BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenInterruptedByAnotherLetter, CheatCommandTrackerFixture1P)
-{
-    trackString("wainter");
+    trackString("wainter"); // interrupted by another letter
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
 
-BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenOrderOfCharactersIsWrong, CheatCommandTrackerFixture1P)
-{
-    trackString("winetr");
+    trackString("rwinte"); // order of characters is wrong
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
 
-BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenOrderOfCharactersIsWrong_Wraparound, CheatCommandTrackerFixture1P)
-{
-    trackString("rwinte");
-    BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
-}
-
-BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_WhenACharacterIsRepeated, CheatCommandTrackerFixture1P)
-{
-    trackString("winnter");
+    trackString("winnter"); // character repeated
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 }
 
