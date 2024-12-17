@@ -44,6 +44,20 @@ BOOST_FIXTURE_TEST_CASE(CanToggleCheatModeOnAndOffRepeatedly, CheatsFixture)
     BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == false);
 }
 
+BOOST_FIXTURE_TEST_CASE(TurningCheatModeOffDisablesAllCheats, CheatsFixture)
+{
+    cheats.toggleCheatMode();
+    cheats.toggleAllVisible();
+    BOOST_TEST_REQUIRE(cheats.isAllVisible() == true);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
+    cheats.toggleCheatMode();
+    BOOST_TEST_REQUIRE(cheats.isAllVisible() == false);
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    // testing toggleHumanAIPlayer would require GameClient::state==Loaded, which is guaranteed in code (because Cheats
+    // only exist after the game is loaded) but is not the case in tests - skipping
+}
+
 namespace {
 MOCK_BASE_CLASS(MockGameInterface, GameInterface)
 {
@@ -65,11 +79,11 @@ MOCK_BASE_CLASS(MockGameInterface, GameInterface)
 };
 } // namespace
 
-BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn_ButOnlyDisableAllVisible_IfCheatModeIsNotOn, CheatsFixture)
+BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn, CheatsFixture)
 {
     MockGameInterface mgi;
     MOCK_EXPECT(mgi.GI_GetCheats).returns(std::ref(gameDesktop.GI_GetCheats()));
-    MOCK_EXPECT(mgi.GI_UpdateMapVisibility).exactly(4); // because the actual toggling should occur 4 times
+    MOCK_EXPECT(mgi.GI_UpdateMapVisibility).exactly(3); // how many toggles should actually occur
     world.SetGameInterface(&mgi);
 
     MapPoint farawayPos = p1HQPos;
@@ -88,21 +102,12 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn_ButOnlyDisableAllVis
     BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == true);
 
     cheats.toggleAllVisible();
-    // now not visible
     BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == false);
-
     cheats.toggleAllVisible();
-    // visible again
     BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == true);
-
-    cheats.toggleCheatMode();
-    cheats.toggleAllVisible();
-    // again not visible, despite cheat mode being off
-    BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == false);
 }
 
-BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_IfCheatModeIsOn_ButOnlyDisableThisFeature_IfCheatModeIsNotOn,
-                        CheatsFixture)
+BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_IfCheatModeIsOn, CheatsFixture)
 {
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
     cheats.toggleAllBuildingsEnabled();
@@ -114,9 +119,6 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_IfCheatModeIsOn_ButOnlyDisa
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
     cheats.toggleAllBuildingsEnabled();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
-    cheats.toggleCheatMode();
-    cheats.toggleAllBuildingsEnabled();
-    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

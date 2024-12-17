@@ -24,12 +24,15 @@ public:
     bool areAllBuildingsEnabled() const { return areAllBuildingsEnabled_; }
 
     // RTTR cheats
-    void toggleHumanAIPlayer() const;
+    void toggleHumanAIPlayer();
     void armageddon() const;
 
 private:
+    void turnAllCheatsOff();
+
     bool isCheatModeOn_ = false;
     bool isAllVisible_ = false;
     bool areAllBuildingsEnabled_ = false;
+    bool isHumanAIPlayer_ = false;
     GameWorldBase& world_;
 };

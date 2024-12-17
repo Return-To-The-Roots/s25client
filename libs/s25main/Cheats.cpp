@@ -16,14 +16,18 @@ bool Cheats::areCheatsAllowed() const
 
 void Cheats::toggleCheatMode()
 {
+    // In S2, if you enabled cheat mode, revealed the map and disabled cheat mode, the map would remain revealed and you
+    // would be unable to unreveal the map.
+    // In RTTR, disabling cheat mode turns all cheats off and they have to be turned on again manually.
+    if(isCheatModeOn_)
+        turnAllCheatsOff();
+
     isCheatModeOn_ = !isCheatModeOn_;
 }
 
 void Cheats::toggleAllVisible()
 {
-    // In S2, if you enabled cheats, revealed the map and disabled cheats, you would be unable to unreveal the map.
-    // In RTTR, with cheats disabled, you can unreveal the map but cannot reveal it.
-    if(isCheatModeOn() || isAllVisible())
+    if(isCheatModeOn())
     {
         isAllVisible_ = !isAllVisible_;
 
@@ -38,20 +42,32 @@ void Cheats::toggleAllBuildingsEnabled()
 {
     // In S2, if you enabled cheats you would automatically have all buildings enabled.
     // In RTTR, because this may have unintended consequences when playing campaigns, the user must explicitly enable
-    // all buildings after enabling cheats. This function follows the same logic as toggleAllVisible in that it will
-    // allow disabling this feature even when cheats are off.
-    if(isCheatModeOn() || areAllBuildingsEnabled())
+    // all buildings after enabling cheats.
+    if(isCheatModeOn())
         areAllBuildingsEnabled_ = !areAllBuildingsEnabled_;
 }
 
-void Cheats::toggleHumanAIPlayer() const
+void Cheats::toggleHumanAIPlayer()
 {
     if(isCheatModeOn() && !GAMECLIENT.IsReplayModeOn())
+    {
         GAMECLIENT.ToggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
+        isHumanAIPlayer_ = !isHumanAIPlayer_;
+    }
 }
 
 void Cheats::armageddon() const
 {
     if(isCheatModeOn())
         GAMECLIENT.CheatArmageddon();
+}
+
+void Cheats::turnAllCheatsOff()
+{
+    if(isAllVisible_)
+        toggleAllVisible();
+    if(areAllBuildingsEnabled_)
+        toggleAllBuildingsEnabled();
+    if(isHumanAIPlayer_)
+        toggleHumanAIPlayer();
 }
