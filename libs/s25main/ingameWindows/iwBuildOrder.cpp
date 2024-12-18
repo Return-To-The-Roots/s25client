@@ -5,6 +5,7 @@
 #include "iwBuildOrder.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "WineLoader.h"
@@ -27,6 +28,8 @@ void iwBuildOrder::fillBuildOrder()
         if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
             return true;
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        if(!leatheraddon::isAddonActive(gwv.GetWorld()) && leatheraddon::isLeatherAddonBuildingType(bld))
             return true;
         return false;
     };
@@ -96,6 +99,13 @@ void iwBuildOrder::TransmitSettings()
 
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
             transmitPendingBuildOrder[i++] = BuildingType::Charburner;
+
+        if(!leatheraddon::isAddonActive(gwv.GetWorld()))
+        {
+            transmitPendingBuildOrder[i++] = BuildingType::Skinner;
+            transmitPendingBuildOrder[i++] = BuildingType::Tannery;
+            transmitPendingBuildOrder[i++] = BuildingType::LeatherWorks;
+        }
 
         if(GAMECLIENT.ChangeBuildOrder(useCustomBuildOrder, transmitPendingBuildOrder))
         {

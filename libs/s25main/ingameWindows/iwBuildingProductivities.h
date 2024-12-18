@@ -20,7 +20,7 @@ class iwBuildingProductivities : public IngameWindow
 public:
     iwBuildingProductivities(const GamePlayer& player);
 
-    static const std::array<BuildingType, 27> allIcons;
+    static const std::array<BuildingType, 30> allIcons;
 
 private:
     void UpdatePercents();
