@@ -24,6 +24,8 @@ add_library(testWorldFixtures STATIC
     worldFixtures/SeaWorldWithGCExecution.h
     worldFixtures/TestEventManager.cpp
     worldFixtures/TestEventManager.h
+    worldFixtures/terrainHelpers.cpp
+    worldFixtures/terrainHelpers.h
     worldFixtures/WorldFixture.h
     worldFixtures/WorldWithGCExecution.h
 )
@@ -36,7 +38,6 @@ add_subdirectory(audio)
 if(NOT RTTR_ENABLE_COVERAGE)
     add_subdirectory(autoplay)
 endif()
-add_subdirectory(campaign)
 add_subdirectory(drivers)
 add_subdirectory(integration)
 add_subdirectory(IO)

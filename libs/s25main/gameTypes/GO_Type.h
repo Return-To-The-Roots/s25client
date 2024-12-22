@@ -74,9 +74,14 @@ enum class GO_Type : uint16_t
     Charburnerpile,
     NofTradeleader,
     NofTradedonkey,
-    Economymodehandler
+    Economymodehandler,
+    NofWinegrower,
+    NofVintner,
+    NofTempleservant,
+    Grapefield,
+    NobTemple,
 };
 constexpr auto maxEnumValue(GO_Type)
 {
-    return GO_Type::Economymodehandler;
+    return GO_Type::NobTemple;
 }

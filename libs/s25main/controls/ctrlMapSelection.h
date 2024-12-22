@@ -7,6 +7,7 @@
 #include "DrawPoint.h"
 #include "Window.h"
 #include <gameData/SelectionMapInputData.h>
+#include <optional>
 
 class glArchivItem_Bitmap;
 namespace libsiedler2 {
@@ -28,7 +29,7 @@ public:
 
     void setMissionsStatus(const std::vector<MissionStatus>& status);
     void setSelection(size_t select);
-    int getCurrentSelection() const;
+    std::optional<unsigned> getSelection() const;
     void setPreview(bool previewOnly);
 
     bool Msg_LeftUp(const MouseCoords& mc) override;

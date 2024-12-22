@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,18 +8,18 @@
 #include "network/CreateServerInfo.h"
 #include <boost/filesystem/path.hpp>
 
-/// Fenster fürs Speichern UND(!) Laden von Spielständen
+/// Base class for the window for saving and loading games
 class iwSaveLoad : public IngameWindow
 {
 public:
-    iwSaveLoad(unsigned short add_height, const std::string& window_title);
+    iwSaveLoad(const std::string& window_title, ITexture* btImg, unsigned addHeight = 0);
 
 protected:
-    /// Aktualisiert die Tabelle
+    /// Re-fill the table with existing files
     void RefreshTable();
 
 private:
-    /// Speichert bzw. läd die angegebene Datei
+    /// Save or load the currently selected file
     virtual void SaveLoad() = 0;
 
     void Msg_EditEnter(unsigned ctrl_id) override;
@@ -33,7 +33,7 @@ public:
     iwSave();
 
 private:
-    // Speichert Datei
+    // Save game
     void SaveLoad() override;
 
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
@@ -41,7 +41,6 @@ private:
 
 class iwLoad : public iwSaveLoad
 {
-    /// Informationen zum Erstellen des Servers
     const CreateServerInfo csi;
 
 public:
@@ -51,6 +50,6 @@ private:
     /// Handle double click on the table
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
-    // Läd Datei
+    // Load game
     void SaveLoad() override;
 };

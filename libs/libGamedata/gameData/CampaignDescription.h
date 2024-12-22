@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2023 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -21,22 +21,20 @@ struct CampaignDescription
     std::string name;
     std::string shortDescription;
     std::string longDescription;
-    std::string image;
-    unsigned maxHumanPlayers = 0;
+    std::optional<std::string> image;
+    unsigned maxHumanPlayers = 1;
     std::string difficulty;
     std::string defaultChaptersEnabled;
     std::optional<SelectionMapInputData> selectionMapData;
 
     CampaignDescription() = default;
-    explicit CampaignDescription(const kaguya::LuaRef& table);
-    size_t getNumMaps() const { return mapNames.size(); }
-    const std::string& getMapName(const size_t idx) const { return mapNames.at(idx); }
+    explicit CampaignDescription(const boost::filesystem::path& campaignPath, const kaguya::LuaRef& table);
+    size_t getNumMaps() const { return mapNames_.size(); }
+    const std::string& getMapName(const size_t idx) const { return mapNames_.at(idx); }
     boost::filesystem::path getLuaFilePath(size_t idx) const;
     boost::filesystem::path getMapFilePath(size_t idx) const;
-    const std::optional<SelectionMapInputData>& getSelectionMapData() const;
 
 private:
-    std::string mapFolder;
-    std::string luaFolder;
-    std::vector<std::string> mapNames;
+    boost::filesystem::path mapFolder_, luaFolder_;
+    std::vector<std::string> mapNames_;
 };

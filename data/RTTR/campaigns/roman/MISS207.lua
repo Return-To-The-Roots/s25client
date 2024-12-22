@@ -20,7 +20,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 4
+local requiredFeature = 5
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -29,7 +29,7 @@ function checkVersion()
 end
 -------------------------------- mission events and texts --------------------
 -- Message-Window (mission statement and hints): 52 chars wide
-eIdx = {1, 98, 99}
+eIdx = {1, 99}
 
 rttr:RegisterTranslations(
 {
@@ -130,6 +130,11 @@ function onStart(isFirstStart)
         eHist = {["n"] = 0}
         MissionEvent(1)                         -- initial event / start screen
     end
+
+    rttr:GetWorld():SetComputerBarrier(10, 41, 122)
+    rttr:GetWorld():SetComputerBarrier(10, 72, 111)
+    rttr:GetWorld():SetComputerBarrier(15, 72, 97)
+    rttr:GetWorld():SetComputerBarrier(10, 19, 100)
 end
 
 function getAllowedChanges()
@@ -171,23 +176,7 @@ function addPlayerBld(p, onLoad)
     if not(p == 0) then
         rttr:GetPlayer(p):DisableBuilding(BLD_SHIPYARD, false)
         rttr:GetPlayer(p):DisableBuilding(BLD_HARBORBUILDING, false)
-        rttr:GetPlayer(p):SetRestrictedArea(
-            nil, nil,       -- enable the whole map
-                0,   0,
-                0, 143,
-                143, 143,
-                143,   0,
-            nil, nil,       -- R=15,    X=72,   Y=97    (change R -> 10, HQ!)
-                77,  87,
-                82,  97,
-                77, 107,
-                67, 107,
-                62,  97,
-                67,  87,
-                77,  87,
-            nil, nil        -- ignore   R=10,   X=41,   Y=122
-        )                   --          R=10,   X=72,   Y=111
-    end                     --          R=10,   X=19,   Y=100
+    end
 end
 
 -------------------------------- set resources --------------------------------
@@ -421,10 +410,6 @@ function onOccupied(p, x, y)
 
     if( (x == 11) and (y == 125) ) then MissionEvent(99)
     end
-    
-    if(not rttr:GetPlayer(1):IsInRestrictedArea(x, y)) then 
-        MissionEvent(98) -- for lifting restrictions
-    end
 end
 
 -- execute mission events, e == 1 is initial event, e == 99 is final event
@@ -435,11 +420,7 @@ function MissionEvent(e, onLoad)
     end
 
     -- call side effects for active events, check "eState[e] == 1" for multiple call events!
-    if(e == 98) then
-        rttr:GetPlayer(1):SetRestrictedArea()
-        rttr:GetPlayer(2):SetRestrictedArea()
-
-    elseif(e == 99) then
+    if(e == 99) then
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(11, 125, 561, 0xFFFF, 2)
         rttr:SetCampaignChapterCompleted("roman", 8)

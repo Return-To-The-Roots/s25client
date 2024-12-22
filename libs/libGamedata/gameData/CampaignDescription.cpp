@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2023 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,7 +10,7 @@
 #include "lua/LuaHelpers.h"
 #include "mygettext/mygettext.h"
 
-CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
+CampaignDescription::CampaignDescription(const boost::filesystem::path& campaignPath, const kaguya::LuaRef& table)
 {
     CheckedLuaTable luaData(table);
     luaData.getOrThrow(uid, "uid");
@@ -19,7 +19,9 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     luaData.getOrThrow(name, "name");
     luaData.getOrThrow(shortDescription, "shortDescription");
     luaData.getOrThrow(longDescription, "longDescription");
-    luaData.getOrThrow(image, "image");
+    image = luaData.getOptional<std::string>("image");
+    if(image && image->empty())
+        image = std::nullopt;
     luaData.getOrThrow(maxHumanPlayers, "maxHumanPlayers");
 
     if(maxHumanPlayers != 1)
@@ -30,28 +32,33 @@ CampaignDescription::CampaignDescription(const kaguya::LuaRef& table)
     if(difficulty != gettext_noop("easy") && difficulty != gettext_noop("medium") && difficulty != gettext_noop("hard"))
         throw std::invalid_argument(helpers::format(_("Invalid difficulty: %1%"), difficulty));
 
-    luaData.getOrThrow(mapFolder, "mapFolder");
-    luaData.getOrThrow(luaFolder, "luaFolder");
-    lua::validatePath(mapFolder);
-    lua::validatePath(luaFolder);
-    mapNames = luaData.getOrDefault("maps", std::vector<std::string>());
+    auto resolveFolder = [campaignPath](const std::string& folder) {
+        const boost::filesystem::path tmpPath = folder;
+        // If it is only a filename or empty use path relative to campaign folder
+        if(!tmpPath.has_parent_path())
+            return campaignPath / tmpPath;
+        // Otherwise it must be a valid path inside the game files
+        lua::validatePath(folder);
+        return RTTRCONFIG.ExpandPath(folder);
+    };
+
+    const auto mapFolder = luaData.getOrDefault("mapFolder", std::string{});
+    mapFolder_ = resolveFolder(mapFolder);
+    // Default lua folder to map folder, i.e. LUA files are side by side with the maps
+    luaFolder_ = resolveFolder(luaData.getOrDefault("luaFolder", mapFolder));
+    mapNames_ = luaData.getOrDefault("maps", std::vector<std::string>());
     defaultChaptersEnabled =
       luaData.getOrDefault("defaultChaptersEnabled", std::string{CampaignSaveCodes::defaultChaptersEnabled});
     selectionMapData = luaData.getOptional<SelectionMapInputData>("selectionMap");
     luaData.checkUnused();
 }
 
-const std::optional<SelectionMapInputData>& CampaignDescription::getSelectionMapData() const
-{
-    return selectionMapData;
-}
-
 boost::filesystem::path CampaignDescription::getLuaFilePath(const size_t idx) const
 {
-    return (RTTRCONFIG.ExpandPath(luaFolder) / getMapName(idx)).replace_extension("lua");
+    return (luaFolder_ / getMapName(idx)).replace_extension("lua");
 }
 
 boost::filesystem::path CampaignDescription::getMapFilePath(const size_t idx) const
 {
-    return RTTRCONFIG.ExpandPath(mapFolder) / getMapName(idx);
+    return mapFolder_ / getMapName(idx);
 }

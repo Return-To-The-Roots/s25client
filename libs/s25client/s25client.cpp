@@ -570,12 +570,12 @@ int main(int argc, char** argv)
         result = e.code;
     } catch(const std::exception& e)
     {
-        bnw::cerr << "An exception occurred: " << e.what() << "\n\n";
+        bnw::cerr << "An exception occurred: " << e.what() << std::endl;
         handleException(nullptr);
         result = 1;
     } catch(...)
     {
-        bnw::cerr << "An unknown exception occurred\n";
+        bnw::cerr << "An unknown exception occurred" << std::endl;
         handleException(nullptr);
         result = 1;
     }

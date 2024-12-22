@@ -14,6 +14,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"
+#include "gameTypes/TempleProductionMode.h"
 #include <vector>
 
 struct InventorySetting;
@@ -69,6 +70,7 @@ public:
     bool CancelPact(PactType pt, unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
     bool SetShipYardMode(MapPoint pt, bool buildShips);
+    bool SetTempleProductionMode(MapPoint pt, ProductionMode mode);
     /// Starts Preparation of an sea expedition in a habor
     bool StartStopExpedition(MapPoint pt, bool start);
     /// Lets a ship found a colony

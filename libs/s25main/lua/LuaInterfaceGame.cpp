@@ -59,6 +59,9 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
     ADD_LUA_CONST(Farm);
     ADD_LUA_CONST(DonkeyBreeder);
     ADD_LUA_CONST(HarborBuilding);
+    ADD_LUA_CONST(Vineyard);
+    ADD_LUA_CONST(Winery);
+    ADD_LUA_CONST(Temple);
 #undef ADD_LUA_CONST
 
 #define ADD_LUA_CONST(name) lua["JOB_" + s25util::toUpper(#name)] = Job::name
@@ -94,6 +97,9 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
     ADD_LUA_CONST(PackDonkey);
     ADD_LUA_CONST(BoatCarrier);
     ADD_LUA_CONST(CharBurner);
+    ADD_LUA_CONST(Winegrower);
+    ADD_LUA_CONST(Vintner);
+    ADD_LUA_CONST(TempleServant);
 #undef ADD_LUA_CONST
 
 #define ADD_LUA_CONST(name) lua["STAT_" + s25util::toUpper(#name)] = StatisticType::name
@@ -140,6 +146,8 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
     ADD_LUA_CONST(Coal);
     ADD_LUA_CONST(Meat);
     ADD_LUA_CONST(Ham);
+    ADD_LUA_CONST(Grapes);
+    ADD_LUA_CONST(Wine);
 #undef ADD_LUA_CONST
 
 #define ADD_LUA_CONST(name) lua["RES_" + s25util::toUpper(#name)] = ResourceType::name

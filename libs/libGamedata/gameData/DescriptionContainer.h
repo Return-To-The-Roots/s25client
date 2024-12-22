@@ -1,10 +1,12 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "DescIdx.h"
+#include "DescriptionVector.h"
+#include "helpers/containerUtils.h"
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -28,9 +30,18 @@ struct DescriptionContainer
     const T& get(DescIdx<T> idx) const;
     /// Return a mutable reference to the given item
     T& getMutable(DescIdx<T> idx);
+    /// Return the first item matching the predicate
+    template<class Predicate>
+    constexpr DescIdx<T> find(Predicate&& predicate) const;
+    /// Return all items matching the predicate
+    template<class Predicate>
+    std::vector<DescIdx<T>> findAll(Predicate&& predicate) const;
+
+    auto begin() const { return items.begin(); }
+    auto end() const { return items.end(); }
 
 private:
-    std::vector<T> items;
+    DescriptionVector<T, T> items;
     std::map<std::string, unsigned> name2Idx;
 };
 
@@ -63,7 +74,7 @@ inline const T* DescriptionContainer<T>::tryGet(const DescIdx<T> idx) const
 {
     if(!idx || idx.value >= size())
         return nullptr;
-    return &items[idx.value];
+    return &items[idx];
 }
 
 template<typename T>
@@ -75,11 +86,32 @@ inline const T* DescriptionContainer<T>::tryGet(const std::string& name) const
 template<typename T>
 inline const T& DescriptionContainer<T>::get(const DescIdx<T> idx) const
 {
-    return items[idx.value];
+    return items[idx];
 }
 
 template<typename T>
 inline T& DescriptionContainer<T>::getMutable(const DescIdx<T> idx)
 {
-    return items[idx.value];
+    return items[idx];
+}
+
+template<typename T>
+template<class Predicate>
+constexpr DescIdx<T> DescriptionContainer<T>::find(Predicate&& predicate) const
+{
+    const auto idx = helpers::indexOf_if(items, std::forward<Predicate>(predicate));
+    return idx >= 0 ? DescIdx<T>(static_cast<typename DescIdx<T>::value_type>(idx)) : DescIdx<T>();
+}
+
+template<typename T>
+template<class Predicate>
+std::vector<DescIdx<T>> DescriptionContainer<T>::findAll(Predicate&& predicate) const
+{
+    std::vector<DescIdx<T>> result;
+    for(const auto i : items.indices())
+    {
+        if(predicate(items[i]))
+            result.push_back(i);
+    }
+    return result;
 }
