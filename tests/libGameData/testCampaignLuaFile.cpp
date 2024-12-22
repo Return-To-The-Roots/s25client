@@ -30,6 +30,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
 
         file << R"(campaign ={
                 version = "1",
+                uid = "roman",
                 author = "Max Meier",
                 name = "My campaign",
                 shortDescription = "Very short description",
@@ -116,6 +117,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 
         file << R"(campaign ={
             version = "1",
+            uid = "roman",
             author = "Max Meier",
             name = "My campaign",
             shortDescription = "Very short description",
@@ -125,7 +127,8 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
             difficulty = "easy",
             mapFolder = "<RTTR_GAME>/DATA/MAPS",
             luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
-            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
+            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"},
+            defaultChaptersEnabled = "100000000"
         }
         )";
 
@@ -138,6 +141,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 
     // campaign description
     BOOST_TEST(desc.version == "1");
+    BOOST_TEST(desc.uid == "roman");
     BOOST_TEST(desc.author == "Max Meier");
     BOOST_TEST(desc.name == "My campaign");
     BOOST_TEST(desc.shortDescription == "Very short description");
@@ -145,6 +149,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     BOOST_TEST(desc.image == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");
     BOOST_TEST(desc.maxHumanPlayers == 1u);
     BOOST_TEST(desc.difficulty == "easy");
+    BOOST_TEST(desc.defaultChaptersEnabled == "100000000");
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
@@ -164,6 +169,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
         file << R"(
             campaign = {
                 version = "1",
+                uid = "roman",
                 author = "Max Meier",
                 name = "My campaign",
                 shortDescription = "short",
@@ -206,6 +212,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
         file << R"(
             campaign = {
                 version = "1",
+                uid = "roman",
                 author = "Max Meier",
                 name = "My campaign",
                 shortDescription = "short",
@@ -329,6 +336,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToIncorrectDifficulty)
 
         file << R"(campaign ={
             version = "1",
+            uid = "roman",
             author = "Max Meier",
             name = "My campaign",
             shortDescription = "Very short description",
@@ -360,6 +368,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
 
         file << R"(campaign ={
             version = "1",
+            uid = "roman",
             author = "Max Meier",
             name = "My campaign",
             shortDescription = "Very short description",
@@ -407,6 +416,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
 
         file << R"(campaign = {
             version = "1",
+            uid = "roman",
             author = "Max Meier",
             name = _"name",
             shortDescription = _"shortDescription",
@@ -431,6 +441,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
 
     // campaign description
     BOOST_TEST(desc.version == "1");
+    BOOST_TEST(desc.uid == "roman");
     BOOST_TEST(desc.author == "Max Meier");
     BOOST_TEST(desc.name == "My campaign");
     BOOST_TEST(desc.shortDescription == "Sehr kurze Beschreibung");
@@ -460,6 +471,7 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
 
         file << R"(campaign = {
             version = "1",
+            uid = "roman",
             author = "Max Meier",
             name = "My campaign",
             shortDescription = "Very short description",
@@ -496,6 +508,7 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
 
     // campaign description
     BOOST_TEST(desc.version == "1");
+    BOOST_TEST(desc.uid == "roman");
     BOOST_TEST(desc.author == "Max Meier");
     BOOST_TEST(desc.name == "My campaign");
     BOOST_TEST(desc.shortDescription == "Very short description");

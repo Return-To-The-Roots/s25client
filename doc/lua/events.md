@@ -107,3 +107,6 @@ Called when a pact has been canceled.
 
 **onPactCreated(PactType, suggestedByPlayerIdx, targetPlayerIdx, duration)**  
 Called when a pact has been confirmed.
+
+**onHumanWinner()**
+Called when the game is won by a human.

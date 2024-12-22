@@ -15,6 +15,7 @@ class LuaRef;
 
 struct CampaignDescription
 {
+    std::string uid;
     std::string version;
     std::string author;
     std::string name;
@@ -23,6 +24,7 @@ struct CampaignDescription
     std::optional<std::string> image;
     unsigned maxHumanPlayers = 1;
     std::string difficulty;
+    std::string defaultChaptersEnabled;
     std::optional<SelectionMapInputData> selectionMapData;
 
     CampaignDescription() = default;
