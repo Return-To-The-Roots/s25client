@@ -494,6 +494,7 @@ function MissionEvent(e, onLoad)
         rttr:GetWorld():AddStaticObject(148, 50, 561, 0xFFFF, 2)
         rttr:SetCampaignChapterCompleted("roman", 6)
         rttr:EnableCampaignChapter("roman", 7)
+        rttr:EnableCampaignChapter("roman", 8) -- TODO: remove this when chapter 7 is playable
     end
 
     -- update event state
