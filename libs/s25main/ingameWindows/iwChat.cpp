@@ -57,7 +57,7 @@ void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
     std::string text = edit->GetText();
     edit->SetText("");
 
-    if(text.size() > 3u && text[0] == '!')
+    if(text[0] == '!')
     {
         auto* listener = dynamic_cast<IChatCmdListener*>(GetParent());
         if(listener)
