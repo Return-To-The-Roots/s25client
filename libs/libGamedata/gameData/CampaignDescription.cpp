@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "CampaignDescription.h"
-#include "CampaignSaveCodes.h"
 #include "RttrConfig.h"
 #include "helpers/format.hpp"
 #include "lua/CheckedLuaTable.h"
@@ -13,7 +12,7 @@
 CampaignDescription::CampaignDescription(const boost::filesystem::path& campaignPath, const kaguya::LuaRef& table)
 {
     CheckedLuaTable luaData(table);
-    luaData.getOrThrow(uid, "uid");
+    uid = luaData.getOrDefault("uid", decltype(uid){""});
     luaData.getOrThrow(version, "version");
     luaData.getOrThrow(author, "author");
     luaData.getOrThrow(name, "name");
@@ -47,8 +46,8 @@ CampaignDescription::CampaignDescription(const boost::filesystem::path& campaign
     // Default lua folder to map folder, i.e. LUA files are side by side with the maps
     luaFolder_ = resolveFolder(luaData.getOrDefault("luaFolder", mapFolder));
     mapNames_ = luaData.getOrDefault("maps", std::vector<std::string>());
-    defaultChaptersEnabled =
-      luaData.getOrDefault("defaultChaptersEnabled", std::string{CampaignSaveCodes::defaultChaptersEnabled});
+    // enable chapters 1 and 2 (like in the Roman campaign and the FANpaign) unless specified otherwise
+    chaptersEnabled = luaData.getOrDefault<decltype(chaptersEnabled)>("chaptersEnabled", {0, 1});
     selectionMapData = luaData.getOptional<SelectionMapInputData>("selectionMap");
     luaData.checkUnused();
 }

@@ -17,7 +17,6 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorld.h"
 #include "gameTypes/Resource.h"
-#include "gameData/CampaignSaveCodes.h"
 #include "s25util/Serializer.h"
 #include "s25util/strAlgos.h"
 
@@ -327,40 +326,19 @@ void LuaInterfaceGame::PostMessageWithLocation(int playerIdx, const std::string&
                                                       gw.MakeMapPoint(Position(x, y))));
 }
 
-namespace {
-void MarkCampaignChapter(const std::string& campaignUid, unsigned char chapter, char code)
+void LuaInterfaceGame::EnableCampaignChapter(const CampaignID& campaignUid, ChapterID chapter)
 {
-    if(chapter < 1)
-        return;
-
-    auto& saveData = SETTINGS.campaigns.saveData[campaignUid];
-
-    if(saveData.length() < chapter)
-        saveData.resize(chapter);
-
-    auto& chapterSaveData = saveData[chapter - 1];
-
-    if(chapterSaveData == CampaignSaveCodes::chapterCompleted)
-        return;
-
-    chapterSaveData = code;
-}
-} // namespace
-
-void LuaInterfaceGame::EnableCampaignChapter(const std::string& campaignUid, unsigned char chapter)
-{
-    MarkCampaignChapter(campaignUid, chapter, CampaignSaveCodes::chapterEnabled);
+    SETTINGS.campaigns.enableChapter(campaignUid, chapter);
 }
 
-void LuaInterfaceGame::SetCampaignChapterCompleted(const std::string& campaignUid, unsigned char chapter)
+void LuaInterfaceGame::SetCampaignChapterCompleted(const CampaignID& campaignUid, ChapterID chapter)
 {
-    MarkCampaignChapter(campaignUid, chapter, CampaignSaveCodes::chapterCompleted);
-    GAMECLIENT.SetCampaignChapterCompleted(chapter);
+    SETTINGS.campaigns.setChapterCompleted(campaignUid, chapter);
 }
 
-void LuaInterfaceGame::SetCampaignCompleted(const std::string& /* campaignUid */)
+void LuaInterfaceGame::SetCampaignCompleted(const CampaignID& campaignUid)
 {
-    GAMECLIENT.SetCampaignCompleted(true);
+    SETTINGS.campaigns.setCampaignCompleted(campaignUid);
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(int playerIdx)

@@ -844,21 +844,6 @@ BOOST_AUTO_TEST_CASE(onExplored)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CampaignStatusCanBeChangedFromLua)
-{
-    initWorld();
-
-    SETTINGS.campaigns.saveData["campaign_id"] = "110";
-    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 2)");
-    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 4)");
-    executeLua("rttr:EnableCampaignChapter('campaign_id', 5)");
-    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 0)"); // noop - chapters start from 1
-    executeLua("rttr:EnableCampaignChapter('campaign_id', 0)");       // noop - chapters start from 1
-    executeLua("rttr:EnableCampaignChapter('campaign_id', 2)");       // noop - already completed
-    game.executeAICommands();
-    BOOST_TEST_REQUIRE(SETTINGS.campaigns.saveData["campaign_id"] == "12021");
-}
-
 BOOST_AUTO_TEST_CASE(LuaPacts)
 {
     initWorld();
@@ -919,6 +904,16 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     executeLua("assert(not player:IsAttackable(0))");
 
     BOOST_TEST_REQUIRE(getLog() == "Pact created\n");
+}
+
+BOOST_AUTO_TEST_CASE(CampaignStatusCanBeChangedFromLua)
+{
+    SETTINGS.campaigns.readSaveData("campaign_id", "110");
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 1)");
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 3)");
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 4)");
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 1)");       // noop - already completed
+    BOOST_TEST_REQUIRE(SETTINGS.campaigns.createSaveData()["campaign_id"] == "12021");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

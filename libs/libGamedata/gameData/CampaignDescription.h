@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#include "CampaignTypes.h"
 #include "SelectionMapInputData.h"
 #include <boost/filesystem/path.hpp>
 #include <optional>
@@ -24,7 +25,7 @@ struct CampaignDescription
     std::optional<std::string> image;
     unsigned maxHumanPlayers = 1;
     std::string difficulty;
-    std::string defaultChaptersEnabled;
+    std::vector<ChapterID> chaptersEnabled;
     std::optional<SelectionMapInputData> selectionMapData;
 
     CampaignDescription() = default;

@@ -434,8 +434,8 @@ function MissionEvent(e, onLoad)
     if(e == 99) then
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(19, 37, 561, 0xFFFF, 2)
-        rttr:SetCampaignChapterCompleted("roman", 5)
-        rttr:EnableCampaignChapter("roman", 6)
+        rttr:SetCampaignChapterCompleted("roman", 4)
+        rttr:EnableCampaignChapter("roman", 5)
     end
 
     -- update event state

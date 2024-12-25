@@ -151,7 +151,7 @@ void Settings::LoadDefaults()
 
     // campaigns
     // {
-    campaigns.saveData.clear();
+    campaigns = CampaignSettings{};
     // }
 
     LoadIngameDefaults();
@@ -327,7 +327,7 @@ void Settings::Load()
         for(unsigned campaign = 0; campaign < iniCampaigns->size(); ++campaign)
         {
             if(const auto* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniCampaigns->get(campaign)))
-                campaigns.saveData.emplace(item->getName(), item->getText());
+                campaigns.readSaveData(item->getName(), item->getText());
         }
         // }
 
@@ -495,7 +495,7 @@ void Settings::Save()
     // campaigns
     // {
     iniCampaigns->clear();
-    for(const auto& it : campaigns.saveData)
+    for(const auto& it : campaigns.createSaveData())
         iniCampaigns->setValue(it.first, it.second);
     // }
 

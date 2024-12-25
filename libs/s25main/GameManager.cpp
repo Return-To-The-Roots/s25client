@@ -184,10 +184,8 @@ bool GameManager::ShowMenu()
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
         windowManager_.Switch(std::make_unique<dskLobby>());
-    else if(GAMECLIENT.IsCampaignCompleted())
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignVictory>(0));
-    else if(const auto chapter = GAMECLIENT.GetCampaignChapterCompleted())
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignVictory>(chapter));
+    else if(SETTINGS.campaigns.shouldShowVictoryScreen())
+        WINDOWMANAGER.Switch(std::make_unique<dskCampaignVictory>());
     else
         // Hauptmenü zeigen
         windowManager_.Switch(std::make_unique<dskMainMenu>());

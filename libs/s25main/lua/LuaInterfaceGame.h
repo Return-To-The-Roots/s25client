@@ -7,6 +7,7 @@
 #include "LuaInterfaceGameBase.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
+#include "gameData/CampaignTypes.h"
 #include <memory>
 #include <string>
 
@@ -61,9 +62,9 @@ public:
     void PostMessageLua(int playerIdx, const std::string& msg);
     void PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);
 
-    void EnableCampaignChapter(const std::string& campaignUid, unsigned char chapter);
-    void SetCampaignChapterCompleted(const std::string& campaignUid, unsigned char chapter);
-    void SetCampaignCompleted(const std::string& campaignUid);
+    void EnableCampaignChapter(const CampaignID& campaignUid, ChapterID chapter);
+    void SetCampaignChapterCompleted(const CampaignID& campaignUid, ChapterID chapter);
+    void SetCampaignCompleted(const CampaignID& campaignUid);
 
 private:
     ILocalGameState& localGameState;

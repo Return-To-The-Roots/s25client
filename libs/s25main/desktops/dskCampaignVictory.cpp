@@ -4,22 +4,19 @@
 
 #include "dskCampaignVictory.h"
 #include "Loader.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "desktops/dskMainMenu.h"
-#include "network/GameClient.h"
 
-dskCampaignVictory::dskCampaignVictory(unsigned char chapter)
-    : Desktop(LOADER.GetImageN(ResourceId{chapter ? "setup896" : "setup895"}, 0))
+dskCampaignVictory::dskCampaignVictory()
+    : Desktop(LOADER.GetImageN(ResourceId{SETTINGS.campaigns.getCompletedCampaign() ? "setup895" : "setup896"}, 0))
 {
-    GAMECLIENT.SetCampaignChapterCompleted(0);
-    GAMECLIENT.SetCampaignCompleted(false);
-
-    if(!chapter)
-        return;
-
-    AddText(10, DrawPoint{800 / 2, 600 - 50},
-            _("You have successfully completed chapter") + std::string{" "} + std::to_string(chapter) + ".",
-            COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    if(!SETTINGS.campaigns.getCompletedCampaign())
+        AddText(10, DrawPoint{800 / 2, 600 - 50},
+                _("You have successfully completed chapter") + std::string{" "}
+                  + std::to_string(*SETTINGS.campaigns.getCompletedChapter()) + ".",
+                COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    SETTINGS.campaigns.resetCompletionStatus();
 }
 
 bool dskCampaignVictory::Msg_LeftDown(const MouseCoords&)

@@ -11,7 +11,7 @@ class MouseCoords;
 class dskCampaignVictory : public Desktop
 {
 public:
-    dskCampaignVictory(unsigned char chapter);
+    dskCampaignVictory();
 
 private:
     bool Msg_LeftDown(const MouseCoords&) override;
