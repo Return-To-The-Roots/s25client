@@ -133,7 +133,9 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
 
     const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
     unsigned commonFlags = SDL_WINDOW_OPENGL;
-    commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+    // TODO: Fix GUI scaling with High DPI support enabled.
+    // See https://github.com/Return-To-The-Roots/s25client/issues/1621
+    // commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
                               commonFlags | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
