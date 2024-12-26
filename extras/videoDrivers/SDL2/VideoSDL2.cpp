@@ -133,10 +133,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
 
     const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
     unsigned commonFlags = SDL_WINDOW_OPENGL;
-
-#if SDL_VERSION_ATLEAST(2, 0, 1)
     commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
-#endif
 
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
                               commonFlags | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
@@ -193,9 +190,7 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
         isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
         if(!isFullscreen_)
         {
-#if SDL_VERSION_ATLEAST(2, 0, 5)
             SDL_SetWindowResizable(window, SDL_TRUE);
-#endif
             MoveWindowToCenter();
         }
     }
@@ -391,10 +386,8 @@ bool VideoSDL2::MessageLoop()
             case SDL_MOUSEWHEEL:
             {
                 int y = ev.wheel.y;
-#if SDL_VERSION_ATLEAST(2, 0, 4)
                 if(ev.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                     y = -y;
-#endif
                 if(y > 0)
                     CallBack->Msg_WheelUp(mouse_xy);
                 else if(y < 0)
@@ -471,18 +464,11 @@ void* VideoSDL2::GetMapPointer() const
 void VideoSDL2::MoveWindowToCenter()
 {
     SDL_Rect usableBounds;
-#if SDL_VERSION_ATLEAST(2, 0, 5)
     CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
     int top, left, bottom, right;
     CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right));
     usableBounds.w -= left + right;
     usableBounds.h -= top + bottom;
-#else
-    CHECK_SDL(SDL_GetDisplayBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
-    // rough estimates
-    usableBounds.w -= 10;
-    usableBounds.h -= 30;
-#endif
     if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)
     {
         SDL_SetWindowSize(window, usableBounds.w, usableBounds.h);
