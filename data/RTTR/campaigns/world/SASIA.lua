@@ -60,3 +60,11 @@ function getAllowedChanges()
         ["aiTeam"]      = false
     }
 end
+
+-------------------------------- mission events -------------------------------
+function onHumanWinner()
+    rttr:SetCampaignChapterCompleted("world", 8)
+    rttr:EnableCampaignChapter("world", 2) -- africa
+    rttr:EnableCampaignChapter("world", 6) -- austra
+    rttr:EnableCampaignChapter("world", 7) -- nasia
+end
