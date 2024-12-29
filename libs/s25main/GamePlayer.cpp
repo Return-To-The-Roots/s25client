@@ -1194,17 +1194,47 @@ bool GamePlayer::IsAlly(const unsigned char playerId) const
     if(GetPlayerId() == playerId)
         return true;
     else
-        return GetPactState(PactType::TreatyOfAlliance, playerId) == PactState::Accepted;
+        return GetPactState(PactType::TreatyOfAlliance, playerId) == PactState::Accepted
+               || GetPactState(PactType::OneSidedAlliance, playerId) == PactState::Accepted;
 }
 
-bool GamePlayer::IsAttackable(const unsigned char playerId) const
+bool GamePlayer::CanAttack(const unsigned char otherPlayerId) const
 {
+    if(GetPactState(PactType::OneSidedAlliance, otherPlayerId) == PactState::Accepted)
+        return isHuman();
+
     // Verbündete dürfen nicht angegriffen werden
-    if(IsAlly(playerId))
+    if(IsAlly(otherPlayerId))
         return false;
     else
         // Ansonsten darf bei bestehendem Nichtangriffspakt ebenfalls nicht angegriffen werden
-        return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
+        return GetPactState(PactType::NonAgressionPact, otherPlayerId) != PactState::Accepted;
+}
+
+void GamePlayer::OnAttackedBy(unsigned char attackerId)
+{
+    BreakOneSidedAllianceTo(attackerId);
+
+    // also break alliances for our allies
+    const auto thisPlayerId = GetPlayerId();
+    for(auto i = 0u; i < world.GetNumPlayers(); ++i)
+    {
+        // skip ourselves
+        if(i == thisPlayerId)
+            continue;
+
+        // skip if we are not allied to them
+        if(!IsAlly(i))
+            continue;
+
+        auto& player = world.GetPlayer(i);
+
+        // skip if they are not allied to us
+        if(!player.IsAlly(thisPlayerId))
+            continue;
+
+        player.BreakOneSidedAllianceTo(attackerId);
+    }
 }
 
 void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts,
@@ -1747,12 +1777,29 @@ void GamePlayer::MakeStartPacts()
             continue;
         for(const auto z : helpers::enumRange<PactType>())
         {
+            if(z == PactType::OneSidedAlliance)
+                continue;
+
             pacts[i][z].duration = DURATION_INFINITE;
             pacts[i][z].start = 0;
             pacts[i][z].accepted = true;
             pacts[i][z].want_cancel = false;
         }
     }
+}
+
+void GamePlayer::MakeOneSidedAllianceTo(unsigned char otherPlayerId)
+{
+    auto& pact = pacts[otherPlayerId][PactType::OneSidedAlliance];
+    pact.duration = DURATION_INFINITE;
+    pact.accepted = true;
+}
+
+void GamePlayer::BreakOneSidedAllianceTo(unsigned char otherPlayerId)
+{
+    pacts[otherPlayerId][PactType::OneSidedAlliance].duration = 0;
+    // you can make a one-sided alliance but breaking one side of it breaks the other as well
+    world.GetPlayer(otherPlayerId).pacts[GetPlayerId()][PactType::OneSidedAlliance].duration = 0;
 }
 
 bool GamePlayer::IsWareRegistred(const Ware& ware)
