@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,6 +8,7 @@
 #include "RTTR_Version.h"
 #include "Replay.h"
 #include "Settings.h"
+#include "backtrace_config.h"
 #include "network/GameClient.h"
 #include "s25util/Log.h"
 #include <boost/endian/arithmetic.hpp>
@@ -17,22 +18,17 @@
 #include <memory>
 #include <vector>
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-#    define RTTR_USE_WIN_API
-#endif
-
-#ifdef RTTR_USE_WIN_API
-#    ifdef HAVE_DBGHELP_H
-#        include <windows.h>
+#if RTTR_BACKTRACE_HAS_DBGHELP
+#    include <windows.h>
 // Disable warning for faulty nameless enum typedef (check sfImage.../hdBase...)
-#        pragma warning(push)
-#        pragma warning(disable : 4091)
-#        include <dbghelp.h>
-#        pragma warning(pop)
+#    pragma warning(push)
+#    pragma warning(disable : 4091)
+#    include <dbghelp.h>
+#    pragma warning(pop)
 
-#        ifdef _MSC_VER
-#            pragma comment(lib, "dbgHelp.lib")
-#        else
+#    ifdef _MSC_VER
+#        pragma comment(lib, "dbgHelp.lib")
+#    else
 typedef WINBOOL(WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
 typedef WINBOOL(WINAPI* SymCleanupType)(HANDLE hProcess);
 typedef VOID(WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
@@ -41,20 +37,15 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
                                        PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
                                        PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
                                        PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
-#        endif // _MSC_VER
-#    endif     // HAVE_DBGHELP_H
-
-#else
-#    include <execinfo.h>
+#    endif // _MSC_VER
 #endif
 
 namespace {
-#ifdef RTTR_USE_WIN_API
-#    ifdef HAVE_DBGHELP_H
+#if RTTR_BACKTRACE_HAS_DBGHELP
 bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) noexcept
 {
     CONTEXT context;
-#        ifndef _MSC_VER
+#    ifndef _MSC_VER
 
     HMODULE kernel32 = LoadLibraryA("kernel32.dll");
     HMODULE dbghelp = LoadLibraryA("dbghelp.dll");
@@ -62,16 +53,16 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
     if(!kernel32 || !dbghelp)
         return false;
 
-#            if __GNUC__ >= 9
-#                pragma GCC diagnostic push
-#                pragma GCC diagnostic ignored "-Wcast-function-type"
+#        if __GNUC__ >= 9
+#            pragma GCC diagnostic push
+#            pragma GCC diagnostic ignored "-Wcast-function-type"
         // error: cast between incompatible function types from
         // 'FARPROC' {aka 'int (__attribute__((stdcall)) *)()'}
         // to
         // 'RtlCaptureContextType' {aka 'void (__attribute__((stdcall)) *)(CONTEXT*)'}
         // [-Werror=cast-function-type]
         // and so on
-#            endif
+#        endif
     RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
 
     SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
@@ -81,13 +72,13 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
       (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
     PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 =
       (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
-#            if __GNUC__ >= 9
-#                pragma GCC diagnostic pop
-#            endif
+#        if __GNUC__ >= 9
+#            pragma GCC diagnostic pop
+#        endif
 
     if(!SymInitialize || !StackWalk64 || !SymFunctionTableAccess64 || !SymGetModuleBase64 || !RtlCaptureContext)
         return false;
-#        endif
+#    endif
 
     const HANDLE process = GetCurrentProcess();
     if(!SymInitialize(process, nullptr, true))
@@ -103,26 +94,26 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
     STACKFRAME64 frame;
     memset(&frame, 0, sizeof(frame));
 
-#        ifdef _WIN64
+#    ifdef _WIN64
     frame.AddrPC.Offset = ctx->Rip;
     frame.AddrStack.Offset = ctx->Rsp;
     frame.AddrFrame.Offset = ctx->Rbp;
-#        else
+#    else
     frame.AddrPC.Offset = ctx->Eip;
     frame.AddrStack.Offset = ctx->Esp;
     frame.AddrFrame.Offset = ctx->Ebp;
-#        endif
+#    endif
 
     frame.AddrPC.Mode = AddrModeFlat;
     frame.AddrStack.Mode = AddrModeFlat;
     frame.AddrFrame.Mode = AddrModeFlat;
 
     HANDLE thread = GetCurrentThread();
-#        ifdef _WIN64
+#    ifdef _WIN64
     DWORD machineType = IMAGE_FILE_MACHINE_AMD64;
-#        else
+#    else
     DWORD machineType = IMAGE_FILE_MACHINE_I386;
-#        endif
+#    endif
 
     for(unsigned i = 0; i < stacktrace.size(); i++)
     {
@@ -139,18 +130,16 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
     SymCleanup(process);
     return true;
 }
-#    else  // HAVE_DBGHELP_H
-bool captureBacktrace(std::vector<void*>&, void* = nullptr) noexcept
-{
-    return false;
-}
-#    endif // HAVE_DBGHELP_H
-
-#else
+#elif RTTR_BACKTRACE_HAS_FUNCTION
 void captureBacktrace(std::vector<void*>& stacktrace) noexcept
 {
     unsigned num_frames = backtrace(&stacktrace[0], stacktrace.size());
     stacktrace.resize(num_frames);
+}
+#else
+bool captureBacktrace(std::vector<void*>&, void* = nullptr) noexcept
+{
+    return false;
 }
 #endif
 } // namespace
