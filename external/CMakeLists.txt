@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,12 +6,13 @@ include(RttrTestingCfg)
 option(RTTR_EXTERNAL_BUILD_TESTING "Enable tests of external dependencies" OFF)
 set(BUILD_TESTING ${RTTR_EXTERNAL_BUILD_TESTING})
 
-if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt)
-    set(devToolsExist ON)
-else()
-    set(devToolsExist OFF)
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt AND NOT DEFINED RTTR_INCLUDE_DEVTOOLS)
+    message(STATUS "Precompiled binaries are available to use for development."
+                   "They are not compatible with all platforms though."
+                   "Configure with -DRTTR_INCLUDE_DEVTOOLS=ON to make them available to CMake."
+            )
 endif()
-option(RTTR_INCLUDE_DEVTOOLS "Include folder with precompiled binaries for development" ${devToolsExist})
+option(RTTR_INCLUDE_DEVTOOLS "Include folder with precompiled binaries for development" OFF)
 if(RTTR_INCLUDE_DEVTOOLS)
     add_subdirectory(dev-tools)
     set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
