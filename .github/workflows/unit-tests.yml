@@ -64,7 +64,7 @@ jobs:
           echo "Configuring ${{matrix.generator}} for ${{matrix.type}} on ${{matrix.platform}}"
           cmake -G "${{matrix.generator}}" -A ${{matrix.platform}} ^
               -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR ^
-              -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_BENCHMARKS=ON ^
+              -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_BENCHMARKS=ON -DRTTR_INCLUDE_DEVTOOLS=ON ^
               %cmakeFlags% ..
       - name: 'Build'
         run: cmake --build build_dir --config ${{matrix.type}} --parallel 4
