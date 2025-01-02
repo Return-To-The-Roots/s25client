@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -142,18 +142,18 @@ jobs:
         run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON" >> $GITHUB_ENV
 
       # Coverage collection requires access to history to find merge-base
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: "!matrix.coverage"
         with:
           submodules: true
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: matrix.coverage
         with:
           submodules: true
           fetch-depth: 0 # Faster checkout
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
@@ -231,9 +231,6 @@ jobs:
           external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
           cat /tmp/boost.log || true
           ls -la ${BOOST_ROOT}/lib/ || true
-
-      - name: Setup environment
-        run: echo "TRAVIS_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Build
         run: tools/ci/build.sh
