@@ -164,7 +164,7 @@ jobs:
           if [[ "${{runner.os}}" =~ macOS ]]; then
             echo "HOMEBREW_PREFIX=$HOMEBREW_PREFIX"
             echo "HOMEBREW_CELLAR=$HOMEBREW_CELLAR"
-            brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc lua
+            brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc
             echo "Available Boost installs: $(ls "$HOMEBREW_CELLAR/boost/")"
             # Use the latest (last folder)
             BOOST_ROOT=$(find "$HOMEBREW_CELLAR/boost/"* -maxdepth 0 -type d | tail -n1)

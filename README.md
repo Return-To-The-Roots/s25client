@@ -75,7 +75,7 @@ All of them can be installed with the package manager.
 - sdl2_mixer
 - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
 - miniupnpc
-- lua 5.2
+- lua 5.1-5.3 (available via the `dev-tools` submodule included by default)
 
 All of them can be installed via homebrew
 
