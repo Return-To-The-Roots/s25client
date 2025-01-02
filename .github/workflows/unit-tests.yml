@@ -159,25 +159,23 @@ jobs:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
 
-      - name: Install system packages (Linux)
-        if: "!startsWith(runner.os, 'macos')"
+      - name: Install system packages
         run: |
-          compiler=${{matrix.compiler}}
-          compiler=${compiler/gcc-/g++-}
-          sudo apt update
-          sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
-
-      - name: Install system packages (OSX)
-        if: startsWith(runner.os, 'macos')
-        run: |
-          brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
-          echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
-          echo "Available Boost installs: $(ls /usr/local/Cellar/boost/)"
-          # Use the latest (last folder)
-          BOOST_ROOT=$(find /usr/local/Cellar/boost/* -maxdepth 0 -type d | tail -n1)
-          [[ -n "$BOOST_ROOT" ]]
-          echo "Choosen Boost: $BOOST_ROOT"
-          echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
+          if [[ "${{runner.os}}" =~ macOS ]]; then
+            brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
+            echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
+            echo "Available Boost installs: $(ls /usr/local/Cellar/boost/)"
+            # Use the latest (last folder)
+            BOOST_ROOT=$(find /usr/local/Cellar/boost/* -maxdepth 0 -type d | tail -n1)
+            [[ -n "$BOOST_ROOT" ]]
+            echo "Choosen Boost: $BOOST_ROOT"
+            echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
+          else
+            compiler=${{matrix.compiler}}
+            compiler=${compiler/gcc-/g++-}
+            sudo apt update
+            sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
+          fi
 
       - name: Setup CCache
         uses: hendrikmuhs/ccache-action@v1
@@ -186,14 +184,14 @@ jobs:
           max-size: 200M
 
       - name: Compile CMake (Linux)
-        if: "!startsWith(runner.os, 'macos')"
+        if: "!startsWith(runner.os, 'macOS')"
         run: |
           CMAKE_DIR="${DEPS_DIR}/cmake"
           external/libutil/tools/ci/installCMake.sh "${CMAKE_VERSION}" "${CMAKE_DIR}"
           echo "${CMAKE_DIR}/bin" >> $GITHUB_PATH
 
       - name: Compile Boost (Linux)
-        if: "!startsWith(runner.os, 'macos')"
+        if: "!startsWith(runner.os, 'macOS')"
         run: |
           BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
           echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
