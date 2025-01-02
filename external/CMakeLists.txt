@@ -6,13 +6,18 @@ include(RttrTestingCfg)
 option(RTTR_EXTERNAL_BUILD_TESTING "Enable tests of external dependencies" OFF)
 set(BUILD_TESTING ${RTTR_EXTERNAL_BUILD_TESTING})
 
+set(include_devtools_default OFF)
 if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt AND NOT DEFINED RTTR_INCLUDE_DEVTOOLS)
-    message(STATUS "Precompiled binaries are available to use for development."
-                   "They are not compatible with all platforms though."
-                   "Configure with -DRTTR_INCLUDE_DEVTOOLS=ON to make them available to CMake."
-            )
+    if(APPLE) # Lua 5.2 required which is not easily available on OSX
+      set(include_devtools_default ON)
+    else()
+      message(STATUS "Precompiled binaries are available to use for development."
+                     "They are not compatible with all platforms though."
+                     "Configure with -DRTTR_INCLUDE_DEVTOOLS=ON to make them available to CMake."
+              )
+    endif()
 endif()
-option(RTTR_INCLUDE_DEVTOOLS "Include folder with precompiled binaries for development" OFF)
+option(RTTR_INCLUDE_DEVTOOLS "Include folder with precompiled binaries for development" ${include_devtools_default})
 if(RTTR_INCLUDE_DEVTOOLS)
     add_subdirectory(dev-tools)
     set(CMAKE_SYSTEM_PREFIX_PATH ${CMAKE_SYSTEM_PREFIX_PATH} PARENT_SCOPE)
