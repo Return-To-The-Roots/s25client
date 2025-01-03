@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -18,7 +18,7 @@ else
     MAKE_TARGET="all"
 fi
 
-INSTALL_DIR="${TRAVIS_BUILD_DIR}/installed"
+INSTALL_DIR="${GITHUB_WORKSPACE}/installed"
 rm -rf "${INSTALL_DIR}"
 mkdir -p build && cd build
 if ! cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
