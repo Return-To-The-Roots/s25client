@@ -42,6 +42,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 
 namespace {
 #if RTTR_BACKTRACE_HAS_DBGHELP
+#    define RTTR_CONTEXT_PTR_TYPE LPCONTEXT
 bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) noexcept
 {
     CONTEXT context;
@@ -131,10 +132,11 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
     return true;
 }
 #elif RTTR_BACKTRACE_HAS_FUNCTION
-void captureBacktrace(std::vector<void*>& stacktrace) noexcept
+bool captureBacktrace(std::vector<void*>& stacktrace, void* = nullptr) noexcept
 {
     unsigned num_frames = backtrace(&stacktrace[0], stacktrace.size());
     stacktrace.resize(num_frames);
+    return true;
 }
 #else
 bool captureBacktrace(std::vector<void*>&, void* = nullptr) noexcept
@@ -182,14 +184,12 @@ DebugInfo::~DebugInfo()
 
 std::vector<void*> DebugInfo::GetStackTrace(void* ctx) noexcept
 {
-    std::vector<void*> stacktrace(256);
-#ifdef _MSC_VER
-    if(!captureBacktrace(stacktrace, static_cast<LPCONTEXT>(ctx)))
-        stacktrace.clear();
-#else
-    RTTR_UNUSED(ctx);
-    captureBacktrace(stacktrace);
+#ifndef RTTR_CONTEXT_PTR_TYPE
+    using RTTR_CONTEXT_PTR_TYPE = void*;
 #endif
+    std::vector<void*> stacktrace(256);
+    if(!captureBacktrace(stacktrace, static_cast<RTTR_CONTEXT_PTR_TYPE>(ctx)))
+        stacktrace.clear();
     return stacktrace;
 }
 
