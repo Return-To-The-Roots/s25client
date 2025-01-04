@@ -11,12 +11,12 @@
 #include "backtrace_config.h"
 #include "network/GameClient.h"
 #include "s25util/Log.h"
+#include <boost/core/ignore_unused.hpp>
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <bzlib.h>
 #include <memory>
-#include <vector>
 
 #if RTTR_BACKTRACE_HAS_DBGHELP
 #    include <windows.h>
@@ -43,7 +43,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 namespace {
 #if RTTR_BACKTRACE_HAS_DBGHELP
 #    define RTTR_CONTEXT_PTR_TYPE LPCONTEXT
-bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) noexcept
+bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, LPCONTEXT ctx) noexcept
 {
     CONTEXT context;
 #    ifndef _MSC_VER
@@ -131,17 +131,17 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr) n
     SymCleanup(process);
     return true;
 }
-#elif RTTR_BACKTRACE_HAS_FUNCTION
-bool captureBacktrace(std::vector<void*>& stacktrace, void* = nullptr) noexcept
+#else
+bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, void*) noexcept
 {
-    unsigned num_frames = backtrace(&stacktrace[0], stacktrace.size());
+#    if RTTR_BACKTRACE_HAS_FUNCTION
+    const auto num_frames = backtrace(&stacktrace[0], stacktrace.size());
     stacktrace.resize(num_frames);
     return true;
-}
-#else
-bool captureBacktrace(std::vector<void*>&, void* = nullptr) noexcept
-{
+#    else
+    boost::ignore_unused(stacktrace);
     return false;
+#    endif
 }
 #endif
 } // namespace
@@ -182,12 +182,12 @@ DebugInfo::~DebugInfo()
     sock.Close();
 }
 
-std::vector<void*> DebugInfo::GetStackTrace(void* ctx) noexcept
+DebugInfo::stacktrace_t DebugInfo::GetStackTrace(void* ctx) noexcept
 {
 #ifndef RTTR_CONTEXT_PTR_TYPE
     using RTTR_CONTEXT_PTR_TYPE = void*;
 #endif
-    std::vector<void*> stacktrace(256);
+    stacktrace_t stacktrace(stacktrace_t::static_capacity);
     if(!captureBacktrace(stacktrace, static_cast<RTTR_CONTEXT_PTR_TYPE>(ctx)))
         stacktrace.clear();
     return stacktrace;
@@ -248,7 +248,7 @@ bool DebugInfo::SendString(const std::string& str)
     return SendString(str.c_str(), str.length() + 1); // +1 to include nullptr terminator
 }
 
-bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
+bool DebugInfo::SendStackTrace(const stacktrace_t& stacktrace)
 {
     if(stacktrace.empty())
         return false;
