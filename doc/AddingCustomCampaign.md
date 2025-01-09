@@ -98,9 +98,11 @@ Hints:
 For example: `MISS01.WLD, MISS01.lua` is correct and `MISS01.WLD, miss01.lua` will not work on linux
 - The lua file of a map must have the same name as the map itself but with the extension `.lua` to be found.
 - The lua and the map file don't need to be in the same folder because the path can be specified separately.
-- If `mapFolder` is not specified or empty it defaults to the folder containing the campaign lua file.
-- If `luaFolder` is not specified it defaults to the `mapFolder`.
-- Both paths can start with placeholders like `<RTTR_GAME>`, otherwise they need to be only the name of a folder relative to the folder containing the campaign lua file. I.e. multiple levels are not supported.
+- If `luaFolder` is not specified it defaults to the `mapFolder`, which defaults to an empty value.
+- Both paths can start with placeholders like `<RTTR_GAME>`,  
+  otherwise they must be (only) the name of a folder relative to the folder containing the campaign lua file.
+  I.e. multiple levels are not supported.  
+  In particular an empty value refers to the folder containing the campaign lua file itself.
 
 ### Optional map selection screen {#selection-map}
 
