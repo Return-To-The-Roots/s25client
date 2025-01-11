@@ -152,6 +152,8 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 
     todo.push(&start);
 
+    bool reachingDestViaAttachedFlag = false;
+
     while(!todo.empty())
     {
         // Get node with current least estimate
@@ -161,7 +163,13 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         if(&best == &goal)
         {
             if(length)
+            {
                 *length = best.cost;
+                if (reachingDestViaAttachedFlag)
+                    *length += 500;
+                if (*length > max)
+                    return false;
+            }
 
             // Backtrace to get the last node that is not the start node (has a prev node) --> Next node from start on
             // path
@@ -214,7 +222,25 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 continue;
 
             unsigned cost = best.cost + route->GetLength();
-            cost += addCosts(best, dir);
+            unsigned add_cost = addCosts(best, dir);
+
+            // special case: the road from a building to its flag does not need a carrier
+            if (dir == Direction::NorthWest && add_cost >= 500)
+            {
+                noBase* no = gwb_.GetNO(gwb_.GetNeighbour(best.GetPos(), dir));
+                if (no == &goal)
+                {
+                    if(no->GetType() == NodalObjectType::Buildingsite || no->GetType() == NodalObjectType::Building)
+                    {
+                        if((cost + add_cost) > max)
+                            return false;
+                        reachingDestViaAttachedFlag = true;
+                        RTTR_Assert(add_cost >= 500);
+                        add_cost -= 500;
+                    }
+                }
+            }
+            cost += add_cost;
 
             if(cost > max)
                 continue;
@@ -298,7 +324,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
         if(forbidden)
             return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(),
                                 SegmentConstraints::AvoidSegment(forbidden), length, firstDir, firstNodePos);
-        else
+        else 
             return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::None(), length,
                                 firstDir, firstNodePos);
     } else
