@@ -165,9 +165,9 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(length)
             {
                 *length = best.cost;
-                if (reachingDestViaAttachedFlag)
+                if(reachingDestViaAttachedFlag)
                     *length += 500;
-                if (*length > max)
+                if(*length > max)
                     return false;
             }
 
@@ -225,10 +225,10 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             unsigned add_cost = addCosts(best, dir);
 
             // special case: the road from a building to its flag does not need a carrier
-            if (dir == Direction::NorthWest && add_cost >= 500)
+            if(dir == Direction::NorthWest && add_cost >= 500)
             {
                 noBase* no = gwb_.GetNO(gwb_.GetNeighbour(best.GetPos(), dir));
-                if (no == &goal)
+                if(no == &goal)
                 {
                     if(no->GetType() == NodalObjectType::Buildingsite || no->GetType() == NodalObjectType::Building)
                     {
@@ -324,7 +324,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
         if(forbidden)
             return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(),
                                 SegmentConstraints::AvoidSegment(forbidden), length, firstDir, firstNodePos);
-        else 
+        else
             return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::None(), length,
                                 firstDir, firstNodePos);
     } else
