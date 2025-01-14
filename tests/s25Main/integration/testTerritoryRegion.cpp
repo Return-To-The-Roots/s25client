@@ -5,6 +5,7 @@
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "buildings/nobHQ.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
@@ -308,6 +309,33 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
             }
         }
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
+{
+    // All points should belong to the HQ closest with and without improved alliances
+
+    const MapPoint hq0Pos = world.GetPlayer(0).GetHQPos();
+    const MapPoint hq1Pos = world.GetPlayer(1).GetHQPos();
+    auto distance = hq1Pos.x - hq0Pos.x;
+
+    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 1); }
+    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 2); }
+
+    // Remove HQ 1 and its fire to place it closer to HQ 0
+    world.DestroyNO(hq1Pos);
+    world.DestroyNO(hq1Pos);
+
+    this->ggs.setSelection(AddonId::NO_ALLIED_PUSH, true);
+    distance = 7; // Odd number such that there is no point in the same distance to both HQs
+    const MapPoint newHq1Pos = hq0Pos + MapPoint(distance, 0);
+    BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHq1Pos, 1, Nation::Africans);
+    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 1); }
+    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(newHq1Pos, distance / 2))
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 2); }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
