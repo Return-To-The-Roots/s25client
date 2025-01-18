@@ -99,7 +99,9 @@ struct And : private T_Func1, private T_Func2
 };
 } // namespace SegmentConstraints
 
-/// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Stra�en
+/// Path finding on roads using A* O(n lg n)
+/// \tparam T_AdditionalCosts Cost for each road segment but the one to the goal building
+/// \tparam T_SegmentConstraints Predicate whether a road is allowed
 template<class T_AdditionalCosts, class T_SegmentConstraints>
 bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max,
                                   const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
@@ -122,6 +124,10 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             *firstNodePos = start.GetPos();
         return true;
     }
+
+    // If the goal is a flag (unlikely) we have no goal building
+    // TODO(Replay): Change RoadPathFinder::FindPath to target flag instead of building for wares
+    const noRoadNode* goalBld = (goal.GetGOT() == GO_Type::Flag) ? nullptr : &goal;
 
     // Use a counter for the visited-states so we don't have to reset them on every invocation
     currentVisit++;
@@ -212,13 +218,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(!isSegmentAllowed(*route))
                 continue;
 
-            unsigned cost = best.cost + route->GetLength();
-            unsigned add_cost = addCosts(best, dir);
-
-            // special case: the road from a building to its flag does not need a carrier
-            if(dir == Direction::NorthWest && add_cost >= 500 && neighbour == &goal && goal.GetGOT() != GO_Type::Flag)
-                add_cost -= 500;
-            cost += add_cost;
+            const unsigned cost = best.cost + route->GetLength() + (neighbour != goalBld ? addCosts(best, dir) : 0);
 
             if(cost > max)
                 continue;
