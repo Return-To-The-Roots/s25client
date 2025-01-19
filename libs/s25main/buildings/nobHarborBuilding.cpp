@@ -841,7 +841,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         sc.dest = harbor_building;
         // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
         // loading&unloading
-        sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 510;
+        sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
         connections.push_back(sc);
     }
     return connections;

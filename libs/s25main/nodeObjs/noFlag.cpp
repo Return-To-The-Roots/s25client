@@ -232,6 +232,9 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 {
     constexpr auto PATHFINDING_PENALTY_CARRIER_ARRIVING = 50;
     constexpr auto PATHFINDING_PENALTY_NO_CARRIER = 500;
+    // This must be the same as "NO_CARRIER" for replay compatibility
+    // TODO(Replay): Move to `way_costs` in nobHarborBuilding::GetShipConnections
+    constexpr auto PATHFINDING_PENALTY_START_SHIPPING = 500;
     // 2 Points per ware as carrier has to walk to other point and back for each ware
     unsigned points = GetNumWaresForRoad(dir) * 2;
 
@@ -248,7 +251,11 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
         const bool isBuildingEntry = (dir == Direction::NorthWest) && (routeInDir->GetF2()->GetGOT() != GO_Type::Flag);
         // For entering a building no carrier is required
         // Only roads to buildings considered by path finding are those to harbors
-        if(!isBuildingEntry)
+        if(isBuildingEntry)
+        {
+            RTTR_Assert(routeInDir->GetF2()->GetGOT() == GO_Type::NobHarborbuilding);
+            points += PATHFINDING_PENALTY_START_SHIPPING;
+        } else
             points += PATHFINDING_PENALTY_NO_CARRIER;
     }
 

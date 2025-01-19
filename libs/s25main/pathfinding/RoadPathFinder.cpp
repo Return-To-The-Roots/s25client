@@ -125,6 +125,10 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         return true;
     }
 
+    // If the goal is a flag (unlikely) we have no goal building
+    // TODO(Replay): Change RoadPathFinder::FindPath to target flag instead of building for wares
+    const noRoadNode* goalBld = (goal.GetGOT() == GO_Type::Flag) ? nullptr : &goal;
+
     // Use a counter for the visited-states so we don't have to reset them on every invocation
     currentVisit++;
     // if the counter reaches its maximum, tidy up
@@ -214,7 +218,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(!isSegmentAllowed(*route))
                 continue;
 
-            const unsigned cost = best.cost + route->GetLength() + addCosts(best, dir);
+            const unsigned cost = best.cost + route->GetLength() + (neighbour != goalBld ? addCosts(best, dir) : 0);
 
             if(cost > max)
                 continue;
