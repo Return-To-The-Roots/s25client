@@ -22,6 +22,7 @@
 #include "gameTypes/GameTypesOutput.h"
 #include "rttr/test/testHelpers.hpp"
 #include <boost/test/unit_test.hpp>
+#include <iterator>
 
 // LCOV_EXCL_START
 #define RTTR_ENUM_OUTPUT(EnumName)                                                 \
@@ -34,9 +35,20 @@ RTTR_ENUM_OUTPUT(nobShipYard::Mode)
 // LCOV_EXCL_STOP
 
 namespace {
+
+using SmallSeaWorld = WorldFixture<CreateSeaWorld, 2, SmallSeaWorldDefault<2>::width, SmallSeaWorldDefault<2>::height>;
+
 std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
 {
     return FindPathForRoad(world, fromPt, toPt, false);
+}
+/// Helper to extract only the destinations(harbors) from the connections list
+std::set<const noRoadNode*> toHarbors(const std::vector<nobHarborBuilding::ShipConnection>& connections)
+{
+    std::set<const noRoadNode*> res;
+    std::transform(connections.begin(), connections.end(), std::inserter(res, res.begin()),
+                   [](const auto& con) { return con.dest; });
+    return res;
 }
 } // namespace
 
@@ -70,6 +82,59 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     const std::vector<Direction> road = FindRoadPath(world.GetNeighbour(hqPos, Direction::SouthEast),
                                                      world.GetNeighbour(hbPos, Direction::SouthEast), world);
     BOOST_TEST_REQUIRE(!road.empty());
+}
+
+BOOST_FIXTURE_TEST_CASE(ShipConnections, SmallSeaWorld)
+{
+    unsigned curPlayer = 0;
+    const auto createHarbor = [this, &curPlayer](HarborId hbId) -> nobHarborBuilding& {
+        MapPoint hbPos = world.GetHarborPoint(hbId);
+        auto* harbor = static_cast<nobHarborBuilding*>(
+          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
+        BOOST_TEST_REQUIRE(harbor);
+        return *harbor;
+    };
+    /* Layout of harbors (1 inner + 1 outer sea)
+     *       1
+     *       2
+     * 3  4      5  6
+     *       7
+     *       8
+     */
+    // I.e.:
+    constexpr SeaId sea1(1);
+    constexpr SeaId sea2(2);
+    BOOST_TEST(world.IsHarborAtSea(HarborId(1), sea1));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(3), sea1));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(6), sea1));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(8), sea1));
+
+    BOOST_TEST(world.IsHarborAtSea(HarborId(2), sea2));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(4), sea2));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(5), sea2));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(7), sea2));
+
+    const auto& hb1 = createHarbor(HarborId(1));
+    // No other harbor
+    BOOST_TEST(hb1.GetShipConnections().empty());
+    const auto& hb2 = createHarbor(HarborId(2));
+    // Different seas
+    BOOST_TEST(hb1.GetShipConnections().empty());
+    BOOST_TEST(hb2.GetShipConnections().empty());
+    using harbors_t = std::set<const noRoadNode*>;
+    // 3 and 1 share sea
+    const auto& hb3 = createHarbor(HarborId(3));
+    BOOST_TEST(toHarbors(hb1.GetShipConnections()) == harbors_t{&hb3});
+    BOOST_TEST(hb2.GetShipConnections().empty());
+    BOOST_TEST(toHarbors(hb3.GetShipConnections()) == harbors_t{&hb1});
+    // 2,4,5 share sea
+    const auto& hb4 = createHarbor(HarborId(4));
+    const auto& hb5 = createHarbor(HarborId(5));
+    BOOST_TEST(toHarbors(hb1.GetShipConnections()) == harbors_t{&hb3});
+    BOOST_TEST(toHarbors(hb2.GetShipConnections()) == (harbors_t{&hb4, &hb5}));
+    BOOST_TEST(toHarbors(hb3.GetShipConnections()) == harbors_t{&hb1});
+    BOOST_TEST(toHarbors(hb4.GetShipConnections()) == (harbors_t{&hb2, &hb5}));
+    BOOST_TEST(toHarbors(hb5.GetShipConnections()) == (harbors_t{&hb2, &hb4}));
 }
 
 BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
