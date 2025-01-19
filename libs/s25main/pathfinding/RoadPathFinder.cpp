@@ -125,10 +125,6 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         return true;
     }
 
-    // If the goal is a flag (unlikely) we have no goal building
-    // TODO(Replay): Change RoadPathFinder::FindPath to target flag instead of building for wares
-    const noRoadNode* goalBld = (goal.GetGOT() == GO_Type::Flag) ? nullptr : &goal;
-
     // Use a counter for the visited-states so we don't have to reset them on every invocation
     currentVisit++;
     // if the counter reaches its maximum, tidy up
@@ -218,7 +214,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(!isSegmentAllowed(*route))
                 continue;
 
-            const unsigned cost = best.cost + route->GetLength() + (neighbour != goalBld ? addCosts(best, dir) : 0);
+            const unsigned cost = best.cost + route->GetLength() + addCosts(best, dir);
 
             if(cost > max)
                 continue;
@@ -299,6 +295,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
 
     if(wareMode)
     {
+        // TODO(Replay): Change to target flag instead of its attached building
         if(forbidden)
             return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(),
                                 SegmentConstraints::AvoidSegment(forbidden), length, firstDir, firstNodePos);
@@ -323,6 +320,8 @@ bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
 {
     if(allowWaterRoads)
     {
+        // TODO(Replay): Change to target flag instead of its attached building.
+        // Likely combine with RoadPathFinder::FindPath
         if(forbidden)
             return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidSegment(forbidden));
         else

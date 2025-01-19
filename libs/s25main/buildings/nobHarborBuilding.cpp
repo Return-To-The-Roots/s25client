@@ -839,9 +839,9 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
     {
         ShipConnection sc;
         sc.dest = harbor_building;
-        // Als Kantengewicht nehmen wir die doppelte Entfernung (evtl muss ja das Schiff erst kommen)
-        // plus einer Kopfpauschale (Ein/Ausladen usw. dauert ja alles)
-        sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
+        // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
+        // loading&unloading
+        sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 510;
         connections.push_back(sc);
     }
     return connections;
