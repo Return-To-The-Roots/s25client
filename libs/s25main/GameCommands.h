@@ -248,7 +248,7 @@ class ChangeTransport : public GameCommand
 
 protected:
     ChangeTransport(const TransportOrders& data) : GameCommand(GCType::ChangeTransport), data(data) {}
-    ChangeTransport(Serializer& ser) : GameCommand(GCType::ChangeTransport) { helpers::popContainer(ser, data); }
+    ChangeTransport(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
