@@ -1444,12 +1444,18 @@ void nobMilitary::HitOfCatapultStone()
     // Ein Soldat weniger, falls es noch welche gibt
     if(!troops.empty())
     {
-        std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
-        helpers::pop_front(troops);
-        // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
-        soldier->RemoveFromInventory();
-        soldier->LeftBuilding();
-        soldier->Destroy();
+        // 30 percent chance to not die if the soldier has an armor
+        bool die = !(*troops.begin())->HasArmor() || (RANDOM_RAND(99) < 70);
+        if(die)
+        {
+            std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
+            helpers::pop_front(troops);
+            // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
+            soldier->RemoveFromInventory();
+            soldier->LeftBuilding();
+            soldier->Destroy();
+        } else
+            (*troops.begin())->SetArmor(false);
     }
 
     // If there are troops left, order some more, else this will be destroyed
