@@ -317,6 +317,8 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         std::vector<uint8_t> transportPrio_raw(transportPrio.size() - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, transportPrio_raw, true);
         std::copy(transportPrio_raw.begin(), transportPrio_raw.end(), transportPrio.begin());
+        std::transform(transportPrio.begin(), transportPrio.end() - countOfNotAvailableGoodsInSaveGame,
+                       transportPrio.begin(), [](uint8_t& prio) { return prio < 7 ? prio : prio + 1; });
     } else
     {
         helpers::popContainer(sgd, build_order);
