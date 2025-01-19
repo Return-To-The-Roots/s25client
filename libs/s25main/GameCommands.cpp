@@ -17,6 +17,7 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/SettingTypeConv.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -151,6 +152,27 @@ void SetBuildingSite::Execute(GameWorld& world, uint8_t playerId)
 void DestroyBuilding::Execute(GameWorld& world, uint8_t playerId)
 {
     world.DestroyBuilding(pt_, playerId);
+}
+
+ChangeTransport::ChangeTransport(Deserializer& ser) : GameCommand(GCType::ChangeTransport)
+{
+    if(ser.getDataVersion() >= 2)
+        helpers::popContainer(ser, data);
+    else
+    {
+        const unsigned leatherAddonAdditionalTransportOrders = 1;
+        std::vector<TransportOrders::value_type> tmpData(std::tuple_size<TransportOrders>::value
+                                                         - leatherAddonAdditionalTransportOrders);
+
+        helpers::popContainer(ser, tmpData, true);
+        std::copy(tmpData.begin(), tmpData.end(), data.begin());
+        // all transport prios greater equal 7 are increased by one because the new leatherwork
+        // uses prio 7
+        std::transform(data.begin(), data.end() - leatherAddonAdditionalTransportOrders, data.begin(),
+                       [](uint8_t& prio) { return prio < 7 ? prio : prio + 1; });
+        data[std::tuple_size<TransportOrders>::value - leatherAddonAdditionalTransportOrders] =
+          STD_TRANSPORT_PRIO[GoodType::Leather];
+    }
 }
 
 void ChangeTransport::Execute(GameWorld& world, uint8_t playerId)

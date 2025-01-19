@@ -25,7 +25,7 @@ using BuildOrders = std::array<BuildingType, helpers::NumEnumValues_v<BuildingTy
 /// Mapping transport priority -> standard transport priority of ware(group):
 /// E.g. std prio of coins = 0 -> TransportOrders[0] = stdPrio[COINS] = 0
 /// New prio of coins = 1 -> TransportOrders[1] = stdPrio[COINS] = 0
-using TransportOrders = std::array<uint8_t, 14>;
+using TransportOrders = std::array<uint8_t, 15>;
 using TransportPriorities = helpers::EnumArray<uint8_t, GoodType>;
 /// Priority of each tool
 using ToolSettings = helpers::EnumArray<uint8_t, Tool>;
