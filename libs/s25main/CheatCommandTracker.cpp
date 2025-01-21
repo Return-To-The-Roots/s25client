@@ -39,7 +39,7 @@ void CheatCommandTracker::onChatCommand(const std::string& cmd)
         cheats_.armageddon();
     else if(cmd == "impulse9")
         cheats_.toggleAllBuildingsEnabled();
-    else if(cmd == "iq")
+    else if(cmd == "spies")
         cheats_.toggleShowEnemyProductivityOverlay();
 }
 
