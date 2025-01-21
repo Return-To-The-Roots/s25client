@@ -381,9 +381,9 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
                     auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
                     attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
                 }
-                // DO draw when object visible and cheat to show enemy productivity overlay is on
-                if(gwv.GetVisibility(pt) != Visibility::Visible
-                   || !GetWorld().GetGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay())
+                // Do not draw enemy productivity overlay unless the object is visible AND the related cheat is on
+                if(!(gwv.GetVisibility(pt) == Visibility::Visible
+                     && GetWorld().GetGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay()))
                     continue;
             }
 
