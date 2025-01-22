@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -170,7 +170,7 @@ void showCrashMessage()
 
 void handleException(void* pCtx = nullptr) noexcept
 {
-    std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
+    const auto stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
     {
         LogTarget target = (LOG.getFileWriter()) ? LogTarget::FileAndStderr : LogTarget::Stderr;

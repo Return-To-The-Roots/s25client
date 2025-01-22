@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -64,7 +64,7 @@ jobs:
           echo "Configuring ${{matrix.generator}} for ${{matrix.type}} on ${{matrix.platform}}"
           cmake -G "${{matrix.generator}}" -A ${{matrix.platform}} ^
               -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR ^
-              -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_BENCHMARKS=ON ^
+              -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_BENCHMARKS=ON -DRTTR_INCLUDE_DEVTOOLS=ON ^
               %cmakeFlags% ..
       - name: 'Build'
         run: cmake --build build_dir --config ${{matrix.type}} --parallel 4
@@ -116,98 +116,67 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-      - run: echo "DEPS_DIR=${{runner.temp}}/.cache" >> $GITHUB_ENV
+      - name: Setup env and configure flags
+        run: |
+          echo "DEPS_DIR=${{runner.temp}}/.cache" >> $GITHUB_ENV
+          echo "BUILD_TYPE=${{matrix.type}}" >> $GITHUB_ENV
+          [[ -z "${{matrix.cmake}}" ]] || echo "CMAKE_VERSION=${{matrix.cmake}}" >> $GITHUB_ENV
+          [[ -z "${{matrix.boost}}" ]] || echo "BOOST_VERSION=${{matrix.boost}}" >> $GITHUB_ENV
+          [[ -z "${{matrix.cxx}}" ]] || ADDITIONAL_CMAKE_FLAGS+=" -DCMAKE_CXX_STANDARD=${{matrix.cxx}}"
+          [[ "${{matrix.coverage}}" != "true" ]] || ADDITIONAL_CMAKE_FLAGS+=" -DRTTR_ENABLE_COVERAGE=ON"
+          [[ "${{matrix.externalSanitizer}}" != "true" ]] || ADDITIONAL_CMAKE_FLAGS+=" -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
+          echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS}" >> $GITHUB_ENV
 
-      - name: Set BUILD_TYPE
-        run: echo "BUILD_TYPE=${{matrix.type}}" >> $GITHUB_ENV
-
-      - name: Set CMake version
-        if: matrix.cmake
-        run: echo "CMAKE_VERSION=${{matrix.cmake}}" >> $GITHUB_ENV
-
-      - name: Set Boost version
-        if: matrix.boost
-        run: echo "BOOST_VERSION=${{matrix.boost}}" >> $GITHUB_ENV
-
-      - name: Set C++ standard
-        if: matrix.cxx
-        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DCMAKE_CXX_STANDARD=${{matrix.cxx}}" >> $GITHUB_ENV
-
-      - name: Enable coverage collection
-        if: matrix.coverage
-        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
-
-      - name: Enable external sanitizer
-        if: matrix.externalSanitizer
-        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON" >> $GITHUB_ENV
+          CC=${{matrix.compiler}}
+          if [[ "$CC" =~ clang ]]; then
+            CXX=${CC/clang/clang++}
+          else
+            CXX=${CC/gcc/g++}
+          fi
+          ver=7 # default
+          if [[ "$CC" =~ gcc- ]]; then
+            ver="${CC##*gcc-}"
+          fi
+          GCOV=gcov-${ver}
+          echo "CC=$CC" >> $GITHUB_ENV
+          echo "CXX=$CXX" >> $GITHUB_ENV
+          echo "GCOV=$GCOV" >> $GITHUB_ENV
 
       # Coverage collection requires access to history to find merge-base
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: "!matrix.coverage"
         with:
           submodules: true
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: matrix.coverage
         with:
           submodules: true
           fetch-depth: 0 # Faster checkout
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
 
-      # clang-16 needs to be manually installed
-      - name: Install Compiler (Linux, clang-16)
-        if: matrix.compiler == 'clang-16' && matrix.os == 'ubuntu-20.04'
+      - name: Install system packages
         run: |
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main'
-          sudo apt update
-
-      - name: Install Compiler (Linux)
-        if: "!startsWith(runner.os, 'macos')"
-        run: |
-          pkgs=${{matrix.compiler}}
-          pkgs=${pkgs/gcc-/g++-}
-          sudo apt install $pkgs
-
-      # Setup CC, CXX and GCOV variables
-      - name: Setup compiler
-        run: |
-            CC=${{matrix.compiler}}
-            if [[ "$CC" =~ clang ]]; then
-              CXX=${CC/clang/clang++}
-            elif [[ "$CC" =~ gcc ]]; then
-              CXX=${CC/gcc/g++}
-            fi
-            ver=7 # default
-            if [[ "$CC" =~ gcc- ]]; then
-              ver="${CC##*gcc-}"
-            fi
-            GCOV=gcov-${ver}
-            echo "CC=$CC" >> $GITHUB_ENV
-            echo "CXX=$CXX" >> $GITHUB_ENV
-            echo "GCOV=$GCOV" >> $GITHUB_ENV
-
-      - name: Install system packages (Linux)
-        if: "!startsWith(runner.os, 'macos')"
-        run: |
-          sudo apt update
-          sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev
-
-      - name: Install system packages (OSX)
-        if: startsWith(runner.os, 'macos')
-        run: |
-          brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
-          echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
-          echo "Available Boost installs: $(ls /usr/local/Cellar/boost/)"
-          # Use the latest (last folder)
-          BOOST_ROOT=$(find /usr/local/Cellar/boost/* -maxdepth 0 -type d | tail -n1)
-          [[ -n "$BOOST_ROOT" ]]
-          echo "Choosen Boost: $BOOST_ROOT"
-          echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
+          if [[ "${{runner.os}}" =~ macOS ]]; then
+            echo "HOMEBREW_PREFIX=$HOMEBREW_PREFIX"
+            echo "HOMEBREW_CELLAR=$HOMEBREW_CELLAR"
+            brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc
+            echo "Available Boost installs: $(ls "$HOMEBREW_CELLAR/boost/")"
+            # Use the latest (last folder)
+            BOOST_ROOT=$(find "$HOMEBREW_CELLAR/boost/"* -maxdepth 0 -type d | tail -n1)
+            echo "Choosen Boost: $BOOST_ROOT"
+            [[ -n "$BOOST_ROOT" ]] || exit 1
+            echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
+          else
+            compiler=${{matrix.compiler}}
+            compiler=${compiler/gcc-/g++-}
+            sudo apt update
+            sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
+          fi
 
       - name: Setup CCache
         uses: hendrikmuhs/ccache-action@v1
@@ -216,14 +185,14 @@ jobs:
           max-size: 200M
 
       - name: Compile CMake (Linux)
-        if: "!startsWith(runner.os, 'macos')"
+        if: "!startsWith(runner.os, 'macOS')"
         run: |
           CMAKE_DIR="${DEPS_DIR}/cmake"
           external/libutil/tools/ci/installCMake.sh "${CMAKE_VERSION}" "${CMAKE_DIR}"
           echo "${CMAKE_DIR}/bin" >> $GITHUB_PATH
 
       - name: Compile Boost (Linux)
-        if: "!startsWith(runner.os, 'macos')"
+        if: "!startsWith(runner.os, 'macOS')"
         run: |
           BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
           echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
@@ -231,9 +200,6 @@ jobs:
           external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
           cat /tmp/boost.log || true
           ls -la ${BOOST_ROOT}/lib/ || true
-
-      - name: Setup environment
-        run: echo "TRAVIS_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Build
         run: tools/ci/build.sh
