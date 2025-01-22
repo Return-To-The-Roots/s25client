@@ -5,6 +5,7 @@
 #include "iwBuildingProductivities.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WineLoader.h"
 #include "addons/const_addons.h"
@@ -15,7 +16,7 @@
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
 
-const std::array<BuildingType, 27> iwBuildingProductivities::allIcons = {
+const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
   // clang-format off
   BuildingType::Woodcutter,    BuildingType::Slaughterhouse,
   BuildingType::Forester,      BuildingType::Metalworks,
@@ -30,7 +31,8 @@ const std::array<BuildingType, 27> iwBuildingProductivities::allIcons = {
   BuildingType::PigFarm,       BuildingType::GraniteMine,
   BuildingType::DonkeyBreeder, BuildingType::Charburner,
   BuildingType::Vineyard,      BuildingType::Winery,
-  BuildingType::Temple,
+  BuildingType::Temple,        BuildingType::Skinner,
+  BuildingType::Tannery,       BuildingType::LeatherWorks,
   // clang-format on
 };
 
@@ -42,6 +44,8 @@ void iwBuildingProductivities::setBuildingOrder()
         if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonBuildingType(bld))
             return true;
         if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
+            return true;
+        if(!leatheraddon::isAddonActive(player.GetGameWorld()) && leatheraddon::isLeatherAddonBuildingType(bld))
             return true;
         return false;
     };
