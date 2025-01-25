@@ -16,6 +16,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "helpers/containerUtils.h"
+#include "random/Random.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameTypes/BuildingQuality.h"
@@ -465,10 +466,12 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     const BuildingType biggestBld = GetBiggestAllowedMilBuilding().value();
 
     const Inventory& inventory = aii.GetInventory();
-    if(((rand() % 3) == 0 || inventory.people[Job::Private] < 15)
+    uint8_t playerId = aii.GetPlayerId();
+    if((RANDOM.Rand(RANDOM_CONTEXT2(playerId), 3) == 0 || inventory.people[Job::Private] < 15)
        && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
         bld = BuildingType::Guardhouse;
-    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && rand() % 10 != 0 && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
+    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && RANDOM.Rand(RANDOM_CONTEXT2(playerId), 10) != 0
+       && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
     {
         if(aii.CanBuildBuildingtype(BuildingType::Watchtower))
             return BuildingType::Watchtower;
@@ -478,13 +481,12 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     {
         if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
            && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0)
-           && rand() % 10 != 0)
+           && RANDOM.Rand(RANDOM_CONTEXT2(playerId), 10) != 0)
         {
             return biggestBld;
         }
     }
 
-    uint8_t playerId = aii.GetPlayerId();
     sortedMilitaryBlds military = aii.gwb.LookForMilitaryBuildings(pt, 3);
     for(const nobBaseMilitary* milBld : military)
     {
@@ -493,7 +495,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
         // Prüfen ob Feind in der Nähe
         if(milBld->GetPlayer() != playerId && distance < 35)
         {
-            int randmil = rand();
+            int randmil = RANDOM.Rand(RANDOM_CONTEXT2(playerId), std::numeric_limits<int>::max());
             bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult()
                                  && bldPlanner.GetNumAdditionalBuildingsWanted(BuildingType::Catapult) > 0;
             // another catapult within "min" radius? ->dont build here!
