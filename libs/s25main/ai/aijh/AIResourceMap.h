@@ -23,6 +23,7 @@ public:
     void init();
 
     void updateAround(const MapPoint& pt, int radius);
+    unsigned calcResources() const;
     unsigned calcResources(const MapPoint& pt, unsigned radius) const;
 
     /// Finds the best position for a specific resource in an area using the resource maps,

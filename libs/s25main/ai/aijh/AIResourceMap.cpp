@@ -10,6 +10,8 @@
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainDesc.h"
 
+#include <boost/concept/detail/has_constraints.hpp>
+
 namespace AIJH {
 
 static constexpr bool isDiminishable(AIResource res)
@@ -74,6 +76,19 @@ void AIResourceMap::updateAround(const MapPoint& pt, int radius)
         updateAroundReplinishable(pt, radius);
 }
 
+unsigned AIResourceMap::calcResources() const
+{
+    unsigned sum = 0;
+    for(unsigned i = 0; i < aiMap.Size(); i++)
+    {
+        auto node = aiMap[i];
+        if(node.reachable && node.owned && !node.farmed)
+        {
+            sum += map[i];
+        }
+    }
+    return sum;
+}
 unsigned AIResourceMap::calcResources(const MapPoint& pt, unsigned radius) const
 {
     unsigned sum = 0;

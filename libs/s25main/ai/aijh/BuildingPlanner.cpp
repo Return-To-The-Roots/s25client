@@ -28,6 +28,10 @@ void BuildingPlanner::Update(unsigned gf, AIPlayerJH& aijh)
 {
     RefreshBuildingNums(aijh);
     expansionRequired = CalcIsExpansionRequired(aijh, gf > 500 && gf % 500 == 0);
+    if(gf % 500 == 0)
+    {
+        woodAvailable = aijh.GetAvailableResources(AIResource::Wood);
+    }
 }
 
 void BuildingPlanner::RefreshBuildingNums(const AIPlayerJH& aijh)
@@ -132,10 +136,9 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
     std::size_t storehouses = aijh.player.GetBuildingRegister().GetStorehouses().size();
     if(numMilitaryBlds < AI_CONFIG.startupMilBuildings && storehouses < 2)
     {
-        setBuildingsWanted(GetStartupSet(aijh, numMilitaryBlds));
+        setBuildingsWanted(GetStartupSet(numMilitaryBlds, woodAvailable));
     } else
     {
-        auto woodAvailable = aijh.GetAvailableResources(AIResource::Wood);
         const Inventory& inventory = aijh.player.GetInventory();
 
         unsigned woodcutters = GetNumBuildings(BuildingType::Woodcutter);

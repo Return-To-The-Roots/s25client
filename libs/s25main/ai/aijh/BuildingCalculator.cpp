@@ -14,7 +14,7 @@ class GamePlayer;
 
 namespace AIJH {
 
-helpers::EnumArray<unsigned, BuildingType> GetStartupSet(const AIPlayerJH& aijh, unsigned numMilitaryBlds)
+helpers::EnumArray<unsigned, BuildingType> GetStartupSet(unsigned numMilitaryBlds, unsigned woodAvailable)
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
     values[BuildingType::Forester] = -1;
@@ -33,7 +33,6 @@ helpers::EnumArray<unsigned, BuildingType> GetStartupSet(const AIPlayerJH& aijh,
     values[BuildingType::Ironsmelter] = -1;
     values[BuildingType::Metalworks] = -1;
 
-    auto woodAvailable = aijh.GetAvailableResources(AIResource::Wood);
     if(woodAvailable < 10000)
     {
         values[BuildingType::Forester] = 1;

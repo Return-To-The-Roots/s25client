@@ -48,6 +48,8 @@ private:
     helpers::EnumArray<unsigned, BuildingType> buildingsWanted;
     bool expansionRequired;
 
+    unsigned woodAvailable = 0;
+
     void RefreshBuildingNums(const AIPlayerJH& aijh);
     bool CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const;
 };

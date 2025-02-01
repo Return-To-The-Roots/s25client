@@ -45,7 +45,9 @@
 #include <memory>
 #include <random>
 #include <stdexcept>
-#include <type_traits>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace {
 
@@ -77,19 +79,27 @@ std::map<BuildingType, int> GetBuildingsWantedMap(AIJH::BuildingPlanner bldPlann
     return bldMap;
 }
 
-std::ofstream createFile(std::string name)
+std::ofstream createCsvFile(std::string name)
 {
-    boost::format fmt("%s/%s.csv");
-    fmt % AI_CONFIG.statsPath %name;
+    std::string folderPath = AI_CONFIG.statsPath + AI_CONFIG.runId;
+    if(!fs::exists(folderPath))
+    {
+        if (fs::create_directory(folderPath)) {
+            std::cout << "Folder created: " << folderPath << std::endl;
+        } else {
+            std::cerr << "Failed to create folder: " << folderPath << std::endl;
+        }
+    }
+    boost::format fmt("%s/%s/%s.csv");
+    fmt % AI_CONFIG.statsPath % AI_CONFIG.runId % name;
     std::ofstream file(fmt.str(), std::ios::app);
 
     if(!file)
     {
-        std::cerr << "Unable to open buildingFile for appending!" << std::endl;
+        std::cerr << "Unable open " << name << " buildingFile for appending!" << std::endl;
     }
     return file;
 }
-
 
 unsigned getProductivity(GamePlayer player, BuildingType type)
 {
@@ -1094,12 +1104,13 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
 }
 unsigned AIPlayerJH::GetAvailableResources(AIResource resource) const
 {
-    int sum = 0;
-    for(auto storehouse : player.GetBuildingRegister().GetStorehouses())
-    {
-        sum += resourceMaps[resource].calcResources(storehouse->GetPos(), 12);
-    }
-    return sum;
+    return resourceMaps[resource].calcResources();
+    // int sum = 0;
+    // for(auto storehouse : player.GetBuildingRegister().GetStorehouses())
+    // {
+    //     sum += resourceMaps[resource].calcResources(storehouse->GetPos(), 12);
+    // }
+    // return sum;
 }
 
 unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
@@ -2599,9 +2610,9 @@ unsigned AIPlayerJH::CalcMilSettings()
 
 void AIPlayerJH::saveStats(unsigned int gf) const
 {
-    std::ofstream buildingFile = createFile("buildings.csv");
-    std::ofstream productivityFile = createFile("productivity.csv");
-    std::ofstream goodsFile = createFile("goods.csv");
+    std::ofstream buildingFile = createCsvFile("buildings");
+    std::ofstream productivityFile = createCsvFile("productivity");
+    std::ofstream goodsFile = createCsvFile("goods");
 
     if(gf == 0)
     {
@@ -2640,11 +2651,6 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     buildingFile << std::endl;
     buildingFile.close();
 
-    if(!productivityFile)
-    {
-        std::cerr << "Unable to open productivityFile for appending!" << std::endl;
-        return;
-    }
     if(gf == 0)
     {
         buildingFile << "GameFrame";
@@ -2675,8 +2681,8 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     {
         return;
     }
-    boost::format fmt("%s/ai_test_%010d.txt");
-    fmt % AI_CONFIG.statsPath % gf;
+    boost::format fmt("%s/%s/ai_test_%010d.txt");
+    fmt % AI_CONFIG.statsPath % AI_CONFIG.runId % gf;
     std::ofstream outfile(fmt.str(), std::ios::app);
     if(!outfile)
     {

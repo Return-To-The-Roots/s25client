@@ -198,20 +198,21 @@ void HeadlessGame::PrintState()
       HumanReadableNumber(em_.GetCurrentGF() - lastReportGf_).c_str()); // GF per second
     printConsole("└───────────────┴───────────────────────┴───────────────────────┴────────────────┘\n");
     printConsole("\n");
-    printConsole("┌────────────────────────┬─────────────────┬─────────────┬───────────┬───────────┐\n");
-    printConsole("│ Player                 │ Country         │ Buildings   │ Military  │ Gold      │\n");
-    printConsole("├────────────────────────┼─────────────────┼─────────────┼───────────┼───────────┤\n");
+    printConsole("┌────────────────────────┬─────────────────┬─────────────┬───────────┬───────────┬───────────┐\n");
+    printConsole("│ Player                 │ Country         │ Buildings   │ Military  │ Gold      │ Kills     │\n");
+    printConsole("├────────────────────────┼─────────────────┼─────────────┼───────────┼───────────┼───────────┤\n");
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
     {
         const GamePlayer& player = world_.GetPlayer(playerId);
-        printConsole("│ %s%-22s%s │ %15s │ %11s │ %9s │ %9s │\n", player.IsDefeated() ? "\x1b[9m" : "",
+        printConsole("│ %s%-22s%s │ %15s │ %11s │ %9s │ %9s │ %9s │\n", player.IsDefeated() ? "\x1b[9m" : "",
                      player.name.c_str(), player.IsDefeated() ? "\x1b[29m" : "",
                      HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Country)).c_str(),
                      HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Buildings)).c_str(),
                      HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Military)).c_str(),
-                     HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Gold)).c_str());
+                     HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Gold)).c_str(),
+                     HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Vanquished)).c_str());
     }
-    printConsole("└────────────────────────┴─────────────────┴─────────────┴───────────┴───────────┘\n");
+    printConsole("└────────────────────────┴─────────────────┴─────────────┴───────────┴───────────┴───────────┘\n");
 
     lastReportGf_ = em_.GetCurrentGF();
 }
@@ -219,6 +220,14 @@ void HeadlessGame::PrintState()
 std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
 {
     std::vector<PlayerInfo> ret;
+    PlayerInfo pi;
+    pi.ps = PlayerState::Locked;
+    pi.aiInfo = ais[0];
+    pi.name = "Stub";
+    pi.nation = Nation::Romans;
+    pi.team = Team::None;
+    ret.push_back(pi);
+
     for(const AI::Info& ai : ais)
     {
         PlayerInfo pi;

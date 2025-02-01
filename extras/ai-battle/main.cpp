@@ -8,11 +8,11 @@
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
 #include "addons/Addon.h"
+#include "ai/aijh/AIConfig.h"
 #include "files.h"
 #include "random/Random.h"
 #include "s25util/System.h"
 #include <yaml-cpp/yaml.h>
-#include "ai/aijh/AIConfig.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
@@ -100,32 +100,20 @@ int main(int argc, char** argv)
 
         const auto configfile = options["configfile"].as<std::string>();
         YAML::Node configNode = YAML::LoadFile(configfile);
-        try {
+        try
+        {
             YAML::Node configNode = YAML::LoadFile(configfile);
 
-            if (configNode["startup_mil_buildings"]) {
-                AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<unsigned int>();
-            }
-            if (configNode["farm_to_ironMine_ratio"]) {
-                AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<float>();
-            }
-            if (configNode["woodcutter_to_forester_ratio"]) {
-                AI_CONFIG.woodcutterToForesterRatio = configNode["woodcutter_to_forester_ratio"].as<float>();
-            }
-            if (configNode["woodcutter_to_storehouse_ratio"]) {
-                AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<float>();
-            }
-            if (configNode["brewery_to_armory_ratio"]) {
-                AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<float>();
-            }
-            if (configNode["mill_to_farm_ratio"]) {
-                AI_CONFIG.millToFarmRatio = configNode["mill_to_farm_ratio"].as<double>();
-            }
-            if (configNode["stats_path"]) {
-                AI_CONFIG.statsPath = configNode["stats_path"].as<std::string>();
-            }
-
-        } catch (const YAML::Exception& e) {
+            AI_CONFIG.runId = configNode["run_id"].as<std::string>();
+            AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<unsigned int>();
+            AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<float>();
+            AI_CONFIG.woodcutterToForesterRatio = configNode["woodcutter_to_forester_ratio"].as<float>();
+            AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<float>();
+            AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<float>();
+            AI_CONFIG.millToFarmRatio = configNode["mill_to_farm_ratio"].as<double>();
+            AI_CONFIG.statsPath = configNode["stats_path"].as<std::string>();
+        } catch(const YAML::Exception& e)
+        {
             std::cerr << "Error parsing YAML file: " << e.what() << std::endl;
             exit(1);
         }
@@ -170,8 +158,12 @@ int main(int argc, char** argv)
 
         game.Run(options["maxGF"].as<unsigned>());
         game.Close();
+
         if(savegame_path)
-            game.SaveGame(*savegame_path);
+        {
+            std::string saveTo = *savegame_path + AI_CONFIG.runId + "ai_run_final.sav";
+            game.SaveGame(saveTo);
+        }
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;

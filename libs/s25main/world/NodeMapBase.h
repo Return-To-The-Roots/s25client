@@ -31,6 +31,7 @@ public:
 
     const_iterator begin() const noexcept { return nodes.begin(); }
     const_iterator end() const noexcept { return nodes.end(); }
+    unsigned Size() const { return nodes.size(); }
 };
 
 //////////////////////////////////////////////////////////////////////////
