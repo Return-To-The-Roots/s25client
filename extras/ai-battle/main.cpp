@@ -7,9 +7,12 @@
 #include "QuickStartGame.h"
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
+#include "addons/Addon.h"
 #include "files.h"
 #include "random/Random.h"
 #include "s25util/System.h"
+#include <yaml-cpp/yaml.h>
+#include "ai/aijh/AIConfig.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
@@ -38,6 +41,8 @@ int main(int argc, char** argv)
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("domination"),"domination(default)|conquer")
+        ("configfile", po::value<std::string>()->required(), "AI configuration file")
+        ("start_wares", po::value<std::string>()->default_value("start_wares"),"Start wares")
         ("replay", po::value(&replay_path),"Filename to write replay to (optional)")
         ("save", po::value(&savegame_path),"Filename to write savegame to (optional)")
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
@@ -93,19 +98,72 @@ int main(int argc, char** argv)
         const bfs::path mapPath = RTTRCONFIG.ExpandPath(options["map"].as<std::string>());
         const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
 
+        const auto configfile = options["configfile"].as<std::string>();
+        YAML::Node configNode = YAML::LoadFile(configfile);
+        try {
+            YAML::Node configNode = YAML::LoadFile(configfile);
+
+            if (configNode["startup_mil_buildings"]) {
+                AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<unsigned int>();
+            }
+            if (configNode["farm_to_ironMine_ratio"]) {
+                AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<float>();
+            }
+            if (configNode["woodcutter_to_forester_ratio"]) {
+                AI_CONFIG.woodcutterToForesterRatio = configNode["woodcutter_to_forester_ratio"].as<float>();
+            }
+            if (configNode["woodcutter_to_storehouse_ratio"]) {
+                AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<float>();
+            }
+            if (configNode["brewery_to_armory_ratio"]) {
+                AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<float>();
+            }
+            if (configNode["mill_to_farm_ratio"]) {
+                AI_CONFIG.millToFarmRatio = configNode["mill_to_farm_ratio"].as<double>();
+            }
+            if (configNode["stats_path"]) {
+                AI_CONFIG.statsPath = configNode["stats_path"].as<std::string>();
+            }
+
+        } catch (const YAML::Exception& e) {
+            std::cerr << "Error parsing YAML file: " << e.what() << std::endl;
+            exit(1);
+        }
+
         GlobalGameSettings ggs;
         const auto objective = options["objective"].as<std::string>();
         if(objective == "domination")
             ggs.objective = GameObjective::TotalDomination;
         else if(objective == "conquer")
             ggs.objective = GameObjective::Conquer3_4;
+        else if(objective == "none")
+            ggs.objective = GameObjective::None;
         else
         {
             bnw::cerr << "unknown objective: " << objective << std::endl;
             return 1;
         }
 
-        ggs.objective = GameObjective::TotalDomination;
+        const auto startWares = options["start_wares"].as<std::string>();
+        if(startWares == "low")
+            ggs.startWares = StartWares::Low;
+        else if(startWares == "vlow")
+            ggs.startWares = StartWares::VLow;
+        else if(startWares == "normal")
+            ggs.startWares = StartWares::Normal;
+        else if(startWares == "alot")
+            ggs.startWares = StartWares::ALot;
+        else
+        {
+            bnw::cerr << "unknown start wares: " << startWares << std::endl;
+            return 1;
+        }
+
+        ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
+        ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
+        ggs.setSelection(AddonId::MAX_RANK, 4);
+
+        // ggs.objective = GameObjective::TotalDomination;
         HeadlessGame game(ggs, mapPath, ais);
         if(replay_path)
             game.RecordReplay(*replay_path, random_init);

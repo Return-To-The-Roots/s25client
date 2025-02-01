@@ -13,7 +13,7 @@
 using namespace std::chrono_literals;
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
 constexpr helpers::EnumArray<std::chrono::duration<unsigned, std::milli>, GameSpeed> SUPPRESS_UNUSED
-  SPEED_GF_LENGTHS = {{80ms, 60ms, 50ms, 40ms, 30ms}};
+  SPEED_GF_LENGTHS = {{80ms, 60ms, 50ms, 40ms, 25ms, 15ms}};
 
 /// Normal speed as reference speed for ingame time computations
 constexpr GameSpeed referenceSpeed = GameSpeed::Normal;

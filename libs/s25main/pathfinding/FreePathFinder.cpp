@@ -89,11 +89,11 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     const unsigned destId = gwb_.GetIdx(dest);
 
     bool prevStepEven = true; // flips between even and odd
-    unsigned stepsTilSwitch = 1;
+    // unsigned stepsTilSwitch = 1;
 
     // Add start node
     unsigned startId = gwb_.GetIdx(start);
-    todo.push_back(PathfindingPoint(startId, gwb_.CalcDistance(start, dest), 0));
+    todo.push_back(PathfindingPoint(startId, gwb_.CalcDistance(start, dest), 0, false));
     // And init it
     nodes[startId].prevEven = INVALID_PREV;
     nodes[startId].lastVisitedEven = currentVisit;
@@ -106,23 +106,25 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
     while(!todo.empty())
     {
-        if(!stepsTilSwitch) // counter for next step and switch condition
-        {
-            prevStepEven = !prevStepEven;
-            stepsTilSwitch = todo.size();
-            // prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) :
-            // LOG.write(("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
-        }
+        // if(!stepsTilSwitch) // counter for next step and switch condition
+        // {
+        //     prevStepEven = !prevStepEven;
+        //     stepsTilSwitch = todo.size();
+        //     // prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) :
+        //     // LOG.write(("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
+        // }
         // else
         // prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) :
         // LOG.write(("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
-        stepsTilSwitch--;
+        // stepsTilSwitch--;
 
         // Get node with lowest cost
-        PathfindingPoint best = *todo.begin();
+        // PathfindingPoint best = *todo.begin();
+        auto bestIter = std::min_element(todo.begin(), todo.end());
         // Knoten behandelt --> raus aus der todo Liste
-        todo.erase(todo.begin());
-
+        PathfindingPoint best = *bestIter;
+        todo.erase(bestIter);
+        prevStepEven = !best.even_;
         // printf("x: %u y: %u\n", best.x, best.y);
 
         // ID des besten Punktes ausrechnen
@@ -246,7 +248,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                 nodes[nbId].prevEven = bestId;
             }
 
-            todo.push_back(PathfindingPoint(nbId, gwb_.CalcDistance(neighbourPos, dest), way));
+            todo.push_back(PathfindingPoint(nbId, gwb_.CalcDistance(neighbourPos, dest), way, prevStepEven));
             // pf_nodes[xaid].it_p = ret.first;
         }
     }

@@ -74,6 +74,24 @@ void AIResourceMap::updateAround(const MapPoint& pt, int radius)
         updateAroundReplinishable(pt, radius);
 }
 
+unsigned AIResourceMap::calcResources(const MapPoint& pt, unsigned radius) const
+{
+    unsigned sum = 0;
+    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
+    for(const MapPoint& curPt : pts)
+    {
+        if(pt.x < map.GetSize().x && pt.y < map.GetSize().y)
+        {
+            const unsigned idx = map.GetIdx(curPt);
+            if(!aiMap[idx].reachable || !aiMap[idx].owned || aiMap[idx].farmed)
+                continue;
+            sum += map[idx];
+        }
+    }
+
+    return sum;
+}
+
 MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality size, unsigned radius, int minimum) const
 {
     MapPoint best = MapPoint::Invalid();

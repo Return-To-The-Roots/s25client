@@ -109,6 +109,7 @@ public:
     bool FindCarrierForRoad(RoadSegment* rs) const;
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
+    void RecalcToolSettings();
     /// Gibt erstes Lagerhaus zurück
     nobBaseWarehouse* GetFirstWH()
     {

@@ -3,9 +3,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AIPlayerJH.h"
+
+#include "AIConfig.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "FindWhConditions.h"
+#include "GameCommands.h"
 #include "GamePlayer.h"
 #include "Jobs.h"
 #include "RttrForeachPt.h"
@@ -38,12 +41,72 @@
 #include "gameData/ToolConsts.h"
 #include <algorithm>
 #include <array>
+#include <iomanip>
 #include <memory>
 #include <random>
 #include <stdexcept>
 #include <type_traits>
 
 namespace {
+
+std::map<BuildingType, int> GetBuildingsMap(AIJH::BuildingPlanner bldPlanner)
+{
+    std::map<BuildingType, int> bldMap;
+    for(auto type : helpers::EnumRange<BuildingType>{})
+    {
+        bldMap[type] = bldPlanner.GetNumBuildings(type);
+    }
+    return bldMap;
+}
+std::map<BuildingType, int> GetBuildingsSiteMap(AIJH::BuildingPlanner bldPlanner)
+{
+    std::map<BuildingType, int> bldMap;
+    for(auto type : helpers::EnumRange<BuildingType>{})
+    {
+        bldMap[type] = bldPlanner.GetNumBuildingSites(type);
+    }
+    return bldMap;
+}
+std::map<BuildingType, int> GetBuildingsWantedMap(AIJH::BuildingPlanner bldPlanner)
+{
+    std::map<BuildingType, int> bldMap;
+    for(auto type : helpers::EnumRange<BuildingType>{})
+    {
+        bldMap[type] = bldPlanner.GetNumAdditionalBuildingsWanted(type);
+    }
+    return bldMap;
+}
+
+std::ofstream createFile(std::string name)
+{
+    boost::format fmt("%s/%s.csv");
+    fmt % AI_CONFIG.statsPath %name;
+    std::ofstream file(fmt.str(), std::ios::app);
+
+    if(!file)
+    {
+        std::cerr << "Unable to open buildingFile for appending!" << std::endl;
+    }
+    return file;
+}
+
+
+unsigned getProductivity(GamePlayer player, BuildingType type)
+{
+    return player.GetBuildingRegister().CalcAverageProductivity(type);
+}
+
+std::string CurrentTimestamp()
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
+    std::tm* now_tm = std::localtime(&now_time_t);
+    std::stringstream ss;
+    ss << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S");
+
+    return ss.str();
+}
+
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
 {
     std::unique_ptr<AIEvent::Base> ev;
@@ -220,6 +283,10 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(defeated)
         return;
 
+    if(gf % 1000 == 0)
+    {
+        saveStats(gf);
+    }
     if(TestDefeat())
         return;
     if(!isInitGfCompleted)
@@ -234,6 +301,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     }
     if(gf == 100)
     {
+        saveStats(gf);
         if(aii.GetMilitaryBuildings().empty() && aii.GetStorehouses().size() < 2)
             aii.Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
     }
@@ -937,6 +1005,10 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             break;
         }
         case BuildingType::Forester:
+            if(construction->OtherUsualBuildingInRadius(around, 14, BuildingType::Farm))
+            {
+                break;
+            }
             // ensure some distance to other foresters and an minimal amount of plantspace
             if(!construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester)
                && GetDensity(around, AIResource::Plantspace, 7) > 15)
@@ -1003,6 +1075,10 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                 foundPos = MapPoint::Invalid();
             break;
         case BuildingType::Farm:
+            if(construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester))
+            {
+                break;
+            }
             foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
             if(foundPos.isValid())
                 foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
@@ -1015,6 +1091,15 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
         default: foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius); break;
     }
     return foundPos;
+}
+unsigned AIPlayerJH::GetAvailableResources(AIResource resource) const
+{
+    int sum = 0;
+    for(auto storehouse : player.GetBuildingRegister().GetStorehouses())
+    {
+        sum += resourceMaps[resource].calcResources(storehouse->GetPos(), 12);
+    }
+    return sum;
 }
 
 unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
@@ -1423,12 +1508,14 @@ void AIPlayerJH::MilUpgradeOptim()
                         // uses only SetTroopLimit then this can be removed
                         for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
                             aii.SetTroopLimit(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
-                    } else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier
-                                                     // at some point and the building is not new on the list-> cancel
-                                                     // road (and fix roadsystem if necessary)
-                    {
-                        RemoveUnusedRoad(*milBld->GetFlag(), Direction::NorthWest, true, true, true);
                     }
+                    // else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier
+                    //                                  // at some point and the building is not new on the list->
+                    //                                  cancel
+                    //                                  // road (and fix roadsystem if necessary)
+                    // {
+                    //     RemoveUnusedRoad(*milBld->GetFlag(), Direction::NorthWest, true, true, true);
+                    // }
                 } else if(milBld->GetFrontierDistance()
                           != FrontierDistance::Far) // frontier building - connect to road system
                 {
@@ -1727,7 +1814,7 @@ void AIPlayerJH::TrySeaAttack()
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(milBld);
-                    }  // else - no attackers - do nothing
+                    } // else - no attackers - do nothing
                 } else // normal target - check is done after random shuffle so we dont have to check every possible
                        // target and instead only enough to get 1 good one
                 {
@@ -2508,6 +2595,137 @@ unsigned AIPlayerJH::CalcMilSettings()
     }
     // LOG.write(("player %i inland milsetting %i \n",playerId,returnvalue);
     return returnValue;
+}
+
+void AIPlayerJH::saveStats(unsigned int gf) const
+{
+    std::ofstream buildingFile = createFile("buildings.csv");
+    std::ofstream productivityFile = createFile("productivity.csv");
+    std::ofstream goodsFile = createFile("goods.csv");
+
+    if(gf == 0)
+    {
+        buildingFile << "GameFrame";
+        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        {
+            buildingFile << "," << BUILDING_NAMES_1.at(type);
+        }
+        buildingFile << std::endl;
+
+        productivityFile << "GameFrame";
+        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        {
+            productivityFile << "," << BUILDING_NAMES_1.at(type);
+        }
+        productivityFile << std::endl;
+
+        goodsFile << "GameFrame";
+        for(GoodType type : helpers::EnumRange<GoodType>{})
+        {
+            goodsFile << "," << GOOD_NAMES_1.at(type);
+        }
+        goodsFile << std::endl;
+    }
+
+    auto bldMap = GetBuildingsMap(*bldPlanner);
+    auto sitesMap = GetBuildingsSiteMap(*bldPlanner);
+    auto wantedMap = GetBuildingsWantedMap(*bldPlanner);
+
+    buildingFile << gf;
+    for(BuildingType type : helpers::EnumRange<BuildingType>{})
+    {
+        int count = bldMap[type] + sitesMap[type];
+        buildingFile << "," << count;
+    }
+    buildingFile << std::endl;
+    buildingFile.close();
+
+    if(!productivityFile)
+    {
+        std::cerr << "Unable to open productivityFile for appending!" << std::endl;
+        return;
+    }
+    if(gf == 0)
+    {
+        buildingFile << "GameFrame";
+        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        {
+            productivityFile << "," << BUILDING_NAMES_1.at(type);
+        }
+        productivityFile << std::endl;
+    }
+
+    productivityFile << gf;
+    for(BuildingType type : helpers::EnumRange<BuildingType>{})
+    {
+        productivityFile << "," << getProductivity(player, type);
+    }
+    productivityFile << std::endl;
+    productivityFile.close();
+
+    goodsFile << gf;
+    for(GoodType type : helpers::EnumRange<GoodType>{})
+    {
+        goodsFile << "," << AmountInStorage(type);
+    }
+    goodsFile << std::endl;
+    goodsFile.close();
+
+    if(gf % 10000 != 0)
+    {
+        return;
+    }
+    boost::format fmt("%s/ai_test_%010d.txt");
+    fmt % AI_CONFIG.statsPath % gf;
+    std::ofstream outfile(fmt.str(), std::ios::app);
+    if(!outfile)
+    {
+        std::cerr << "Unable to open file for appending!" << std::endl;
+        return;
+    }
+
+    outfile << CurrentTimestamp() << std::endl;
+    outfile << player.name << std::endl;
+
+    outfile << " Score: ";
+    outfile << " Cou: " << player.GetStatisticCurrentValue(StatisticType::Country);
+    outfile << " Bui: " << player.GetStatisticCurrentValue(StatisticType::Buildings);
+    outfile << " Mer: " << player.GetStatisticCurrentValue(StatisticType::Merchandise);
+    outfile << " Mil: " << player.GetStatisticCurrentValue(StatisticType::Military);
+    outfile << " Gol: " << player.GetStatisticCurrentValue(StatisticType::Gold);
+    outfile << " Pro: " << player.GetStatisticCurrentValue(StatisticType::Productivity);
+    outfile << std::endl;
+
+    outfile << " Tools: " << std::endl;
+    for(Tool tool : helpers::EnumRange<Tool>{})
+    {
+        outfile << TOOL_NAMES_1.at(tool) << ":" << player.GetToolPriority(tool) << std::endl;
+        ;
+    }
+    outfile << std::endl;
+
+    outfile << " Goods: " << std::endl;
+    for(GoodType type : helpers::EnumRange<GoodType>{})
+    {
+        outfile << GOOD_NAMES_1.at(type) << ":" << AmountInStorage(type) << std::endl;
+    }
+    outfile << std::endl;
+
+    outfile << " Buildings: ";
+    outfile << std::endl;
+
+    for(BuildingType type : helpers::EnumRange<BuildingType>{})
+    {
+        outfile << BUILDING_NAMES_1.at(type) << "\t";
+        outfile << " Count:" << bldMap[type] - sitesMap[type];
+        outfile << " Sites:" << sitesMap[type];
+        outfile << " Wanted:" << wantedMap[type];
+        outfile << " Productivity: " << getProductivity(player, type);
+        outfile << std::endl;
+    }
+
+    outfile << std::endl;
+    outfile.close();
 }
 
 } // namespace AIJH

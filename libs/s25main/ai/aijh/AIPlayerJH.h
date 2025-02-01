@@ -56,6 +56,7 @@ public:
     /// return value is whatever has to be added to 4(=50%) for harbor and if anything is left that has to be added to 1
     /// bar setting
     unsigned CalcMilSettings();
+    void saveStats(unsigned gf) const;
     /// military & tool production settings
     void AdjustSettings();
     /// return number of seaIds with at least 2 harbor spots
@@ -135,6 +136,8 @@ public:
     MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const;
     /// Find a position for a specific building around a given point
     MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
+
+    unsigned GetAvailableResources (AIResource resource) const;
     /// Density in percent (0-100)
     unsigned GetDensity(MapPoint pt, AIResource res, int radius);
     /// Does some actions after a new military building is occupied

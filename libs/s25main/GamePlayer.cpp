@@ -67,6 +67,7 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     statisticCurrentMerchandiseData = {};
 
     RecalcDistribution();
+    RecalcToolSettings();
 }
 
 void GamePlayer::LoadStandardToolSettings()
@@ -641,6 +642,21 @@ bool GamePlayer::IsWarehouseValid(nobBaseWarehouse* wh) const
     return helpers::contains(buildings.GetStorehouses(), wh);
 }
 
+void GamePlayer::RecalcToolSettings()
+{
+    toolsSettings_[Tool::Tongs] = 2;
+    toolsSettings_[Tool::Hammer] = 2;
+    toolsSettings_[Tool::Axe] = 3;
+    toolsSettings_[Tool::Saw] = 3;
+    toolsSettings_[Tool::PickAxe] = 5;
+    toolsSettings_[Tool::Shovel] = 1;
+    toolsSettings_[Tool::Crucible] = 4;
+    toolsSettings_[Tool::RodAndLine] = 1;
+    toolsSettings_[Tool::Scythe] = 8;
+    toolsSettings_[Tool::Cleaver] = 3;
+    toolsSettings_[Tool::Rollingpin] = 3;
+    toolsSettings_[Tool::Bow] = 1;
+}
 void GamePlayer::RecalcDistribution()
 {
     GoodType lastWare = GoodType::Nothing;

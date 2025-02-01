@@ -11,9 +11,10 @@ struct PathfindingPoint
 public:
     const unsigned id_, distance_;
     unsigned estimate_;
+    bool even_;
 
-    PathfindingPoint(unsigned id, unsigned distance, unsigned curWay)
-        : id_(id), distance_(distance), estimate_(curWay + distance_)
+    PathfindingPoint(unsigned id, unsigned distance, unsigned curWay, bool even)
+        : id_(id), distance_(distance), estimate_(curWay + distance_), even_(even)
     {}
 
     /// Operator für den Vergleich

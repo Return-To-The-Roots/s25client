@@ -1,0 +1,98 @@
+2025-01-28 22:10:42
+AIJH 0
+ Score:  Cou: 4181 Bui: 145 Mer: 654 Mil: 114 Gol: 0 Pro: 83
+ Tools: 
+Tongs:0
+Hammer:0
+Axe:0
+Saw:0
+PickAxe:0
+Shovel:0
+Crucible:0
+RodAndLine:0
+Scythe:2
+Cleaver:0
+Rollingpin:0
+Bow:0
+
+ Goods: 
+Beer:10
+Tongs:3
+Hammer:8
+Axe:11
+Saw:3
+PickAxe:4
+Shovel:10
+Crucible:6
+RodAndLine:0
+Scythe:6
+WaterEmpty:0
+Water:46
+Cleaver:3
+Rollingpin:1
+Bow:4
+Boat:24
+Sword:1
+Iron:0
+Flour:0
+Fish:94
+Bread:22
+ShieldRomans:1
+Wood:0
+Boards:5
+Stones:94
+ShieldVikings:0
+ShieldAfricans:0
+Grain:0
+Coins:0
+Gold:0
+IronOre:6
+Coal:0
+Meat:51
+Ham:0
+ShieldJapanese:0
+Grapes:0
+Wine:0
+
+ Buildings: 
+Headquarters	 Count:1 Sites:0 Wanted:-1 Productivity: 0
+Barracks	 Count:17 Sites:4 Wanted:-21 Productivity: 0
+Guardhouse	 Count:8 Sites:1 Wanted:-9 Productivity: 0
+Nothing2	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Watchtower	 Count:8 Sites:1 Wanted:-9 Productivity: 0
+Vineyard	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Winery	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Temple	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Nothing6	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Fortress	 Count:1 Sites:0 Wanted:-1 Productivity: 0
+GraniteMine	 Count:0 Sites:0 Wanted:0 Productivity: 0
+CoalMine	 Count:5 Sites:2 Wanted:2 Productivity: 100
+IronMine	 Count:4 Sites:1 Wanted:1 Productivity: 87
+GoldMine	 Count:0 Sites:0 Wanted:2 Productivity: 0
+LookoutTower	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Nothing7	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Catapult	 Count:0 Sites:0 Wanted:4 Productivity: 0
+Woodcutter	 Count:18 Sites:1 Wanted:0 Productivity: 92
+Fishery	 Count:13 Sites:0 Wanted:0 Productivity: 100
+Quarry	 Count:6 Sites:0 Wanted:0 Productivity: 100
+Forester	 Count:4 Sites:0 Wanted:0 Productivity: 100
+Slaughterhouse	 Count:2 Sites:1 Wanted:0 Productivity: 32
+Hunter	 Count:4 Sites:0 Wanted:0 Productivity: 100
+Brewery	 Count:1 Sites:0 Wanted:0 Productivity: 37
+Armory	 Count:3 Sites:0 Wanted:0 Productivity: 54
+Metalworks	 Count:1 Sites:0 Wanted:0 Productivity: 100
+Ironsmelter	 Count:4 Sites:0 Wanted:1 Productivity: 65
+Charburner	 Count:0 Sites:0 Wanted:0 Productivity: 0
+PigFarm	 Count:2 Sites:1 Wanted:1 Productivity: 61
+Storehouse	 Count:5 Sites:1 Wanted:-6 Productivity: 0
+Nothing9	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Mill	 Count:5 Sites:1 Wanted:1 Productivity: 40
+Bakery	 Count:5 Sites:1 Wanted:0 Productivity: 28
+Sawmill	 Count:9 Sites:0 Wanted:0 Productivity: 99
+Mint	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Well	 Count:8 Sites:2 Wanted:2 Productivity: 95
+Shipyard	 Count:0 Sites:0 Wanted:0 Productivity: 0
+Farm	 Count:11 Sites:7 Wanted:1 Productivity: 59
+DonkeyBreeder	 Count:1 Sites:0 Wanted:0 Productivity: 100
+HarborBuilding	 Count:0 Sites:0 Wanted:0 Productivity: 0
+

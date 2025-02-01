@@ -28,6 +28,8 @@ public:
     /// Get amount of construction sites of military buildings
     unsigned GetNumMilitaryBldSites() const;
 
+    unsigned GetNumBuildingsWanted(BuildingType type) const;
+
     void InitBuildingsWanted(const AIPlayerJH& aijh);
     void UpdateBuildingsWanted(const AIPlayerJH& aijh);
 
@@ -37,7 +39,9 @@ public:
     bool WantMoreMilitaryBlds(const AIPlayerJH& aijh) const;
     bool IsExpansionRequired() const { return expansionRequired; }
 
+    void setBuildingsWanted(helpers::EnumArray<unsigned, BuildingType> values);
 private:
+
     /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
     BuildingCount buildingNums;
     /// Contains how many buildings of every type is wanted

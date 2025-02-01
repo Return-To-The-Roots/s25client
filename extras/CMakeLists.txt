@@ -25,6 +25,7 @@ endif()
 add_library(rttr_vld INTERFACE)
 add_library(rttr::vld ALIAS rttr_vld)
 target_compile_definitions(rttr_vld INTERFACE RTTR_HAS_VLD=$<BOOL:${RTTR_ENABLE_VLD}>)
+
 if(RTTR_ENABLE_VLD)
     find_package(VLD 2.5.1 REQUIRED)
     target_link_libraries(rttr_vld INTERFACE vld::vld)

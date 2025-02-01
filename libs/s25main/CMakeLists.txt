@@ -43,6 +43,9 @@ source_group(other FILES ${SOURCES_OTHER})
 set(s25Main_SRCS
     ${SOURCES_OTHER}
     ${SOURCES_SUBDIRS}
+        ai/aijh/BuildingCalculator.cpp
+        ai/aijh/AIConfig.cpp
+        ai/aijh/AIConfig.h
 )
 
 add_library(s25Main STATIC ${s25Main_SRCS})

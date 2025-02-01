@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "BuildingPlanner.h"
+#include "AIConfig.h"
 #include "AIPlayerJH.h"
+#include "BuildingCalculator.h"
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -92,6 +94,10 @@ unsigned BuildingPlanner::GetNumMilitaryBldSites() const
         result += GetNumBuildingSites(bld);
     return result;
 }
+unsigned BuildingPlanner::GetNumBuildingsWanted(BuildingType type) const
+{
+    return buildingsWanted[type];
+}
 
 void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
 {
@@ -123,52 +129,38 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
     // no military buildings -> usually start only
     const unsigned numMilitaryBlds = aijh.player.GetBuildingRegister().GetMilitaryBuildings().size();
 
-    if(numMilitaryBlds == 0 && aijh.player.GetBuildingRegister().GetStorehouses().size() < 2)
+    std::size_t storehouses = aijh.player.GetBuildingRegister().GetStorehouses().size();
+    if(numMilitaryBlds < AI_CONFIG.startupMilBuildings && storehouses < 2)
     {
-        buildingsWanted[BuildingType::Forester] = 1;
-        // probably only has 1 saw+carpenter but if that is the case the ai will try to produce 1 additional saw very
-        // quickly
-        buildingsWanted[BuildingType::Sawmill] = 2;
-        buildingsWanted[BuildingType::Woodcutter] = 2;
-        buildingsWanted[BuildingType::Quarry] = 2;
-        buildingsWanted[BuildingType::GraniteMine] = 0;
-        buildingsWanted[BuildingType::CoalMine] = 0;
-        buildingsWanted[BuildingType::IronMine] = 0;
-        buildingsWanted[BuildingType::GoldMine] = 0;
-        buildingsWanted[BuildingType::Catapult] = 0;
-        buildingsWanted[BuildingType::Fishery] = 0;
-        buildingsWanted[BuildingType::Hunter] = 0;
-        buildingsWanted[BuildingType::Farm] = 0;
-        buildingsWanted[BuildingType::Charburner] = 0;
+        setBuildingsWanted(GetStartupSet(aijh, numMilitaryBlds));
     } else
     {
-        // at least some expansion happened -> more buildings wanted
-        // building wanted usually limited by profession workers+tool for profession with some arbitrary limit. Some
-        // buildings which are linked to others in a chain / profession-tool-rivalry have additional limits.
+        auto woodAvailable = aijh.GetAvailableResources(AIResource::Wood);
         const Inventory& inventory = aijh.player.GetInventory();
 
-        // foresters
-        unsigned max_available_forester = inventory[Job::Forester] + inventory[GoodType::Shovel];
-        unsigned additional_forester = GetNumBuildings(BuildingType::Charburner);
-
-        // 1 mil -> 1 forester, 2 mil -> 2 forester, 4 mil -> 3 forester, 8 mil -> 4 forester, 16 mil -> 5 forester, ...
-        // wanted
-        if(numMilitaryBlds > 0)
-            buildingsWanted[BuildingType::Forester] = (unsigned)(1.45 * log(numMilitaryBlds) + 1);
-        // If we are low on wood, we need more foresters
-        if(aijh.player.GetBuildingRegister().GetBuildingSites().size()
-           > (inventory[GoodType::Boards] + inventory[GoodType::Wood]) * 2)
-            additional_forester++;
-
-        buildingsWanted[BuildingType::Forester] += additional_forester;
-        buildingsWanted[BuildingType::Forester] =
-          std::min(max_available_forester, buildingsWanted[BuildingType::Forester]);
+        unsigned woodcutters = GetNumBuildings(BuildingType::Woodcutter);
+        if((woodAvailable / woodcutters) < 2000)
+        {
+            buildingsWanted[BuildingType::Forester] = CalcForesters(aijh);
+        } else
+        {
+            buildingsWanted[BuildingType::Forester] = 0;
+        }
 
         // woodcutters
+        unsigned additional_woodcutters = 0;
+        if(woodAvailable > 20000)
+        {
+            additional_woodcutters += (woodAvailable - 20000) / 4000;
+        }
+
+        unsigned sawmills = GetNumBuildings(BuildingType::Sawmill);
         unsigned max_available_woodcutter = inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
         buildingsWanted[BuildingType::Woodcutter] =
           std::min(max_available_woodcutter,
-                   buildingsWanted[BuildingType::Forester] * 2 + 1); // two per forester + 1 for 'natural' forest
+                   sawmills + additional_woodcutters
+                     + (unsigned)(AI_CONFIG.woodcutterToForesterRatio * (buildingsWanted[BuildingType::Forester])
+                                  + (unsigned)(AI_CONFIG.woodcutterToStorehouseRatio * storehouses)));
 
         ////on maps with many trees the ai will build woodcutters all over the place which means the foresters are not
         /// really required
@@ -200,17 +192,15 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
             if(buildingsWanted[BuildingType::Quarry] > numMilitaryBlds)
                 buildingsWanted[BuildingType::Quarry] = numMilitaryBlds;
         }
+        buildingsWanted[BuildingType::Quarry] =
+          std::max(buildingsWanted[BuildingType::Quarry], (unsigned)(GetNumBuildings(BuildingType::Sawmill) / 1.5 + 1));
         // sawmills limited by woodcutters and carpenter+saws reduced by char burners minimum of 3
         int resourcelimit = inventory.people[Job::Carpenter] + inventory.goods[GoodType::Saw];
-        int numSawmillsFed = (static_cast<int>(GetNumBuildings(BuildingType::Woodcutter))
-                              - static_cast<int>(GetNumBuildings(BuildingType::Charburner) * 2))
-                             / 2;
-        buildingsWanted[BuildingType::Sawmill] =
-          std::max(std::min(numSawmillsFed, resourcelimit), 3); // min 3
-                                                                // iron smelters limited by iron mines or crucibles
-        buildingsWanted[BuildingType::Ironsmelter] =
-          std::min(inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder],
-                   GetNumBuildings(BuildingType::IronMine));
+        // int numSawmillsFed = (static_cast<int>(woodcutters) - static_cast<int>(GetNumBuildings(BuildingType::Charburner) * 2)) / 2;
+        buildingsWanted[BuildingType::Sawmill] = (unsigned)(5 + log2(2 * numMilitaryBlds));
+        // 4 + std::max(std::min(numSawmillsFed, resourcelimit), 3); // min 3
+
+        buildingsWanted[BuildingType::Ironsmelter] = (unsigned)(GetNumBuildings(BuildingType::IronMine) * 0.8) + 1;
 
         buildingsWanted[BuildingType::Mint] = GetNumBuildings(BuildingType::GoldMine);
         // armory count = smelter -metalworks if there is more than 1 smelter or 1 if there is just 1.
@@ -225,14 +215,22 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         if(GetNumBuildings(BuildingType::Armory) > 0 && GetNumBuildings(BuildingType::Farm) > 0)
         {
             if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-                buildingsWanted[BuildingType::Brewery] = 1 + GetNumBuildings(BuildingType::Armory) / 5;
+                buildingsWanted[BuildingType::Brewery] =
+                  1 + unsigned(GetNumBuildings(BuildingType::Armory) / AI_CONFIG.breweryToArmoryRatio);
             else
                 buildingsWanted[BuildingType::Brewery] = 1 + GetNumBuildings(BuildingType::Armory) / 6;
         } else
             buildingsWanted[BuildingType::Brewery] = 0;
+        unsigned ironsmelters = GetNumBuildings(BuildingType::Ironsmelter);
         // metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 iron
         // smelters
-        buildingsWanted[BuildingType::Metalworks] = (GetNumBuildings(BuildingType::Ironsmelter) > 0) ? 1 : 0;
+        if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
+        {
+            buildingsWanted[BuildingType::Metalworks] = (ironsmelters > 0) ? (5 + ironsmelters) / 6 : 0;
+        } else
+        {
+            buildingsWanted[BuildingType::Metalworks] = (ironsmelters > 0) ? 1 : 0;
+        }
 
         // max processing
         unsigned foodusers = GetNumBuildings(BuildingType::Charburner) + GetNumBuildings(BuildingType::Mill)
@@ -240,9 +238,10 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
                              + GetNumBuildings(BuildingType::DonkeyBreeder);
 
         if(GetNumBuildings(BuildingType::Farm) >= foodusers - GetNumBuildings(BuildingType::Mill))
-            buildingsWanted[BuildingType::Mill] =
-              std::min(GetNumBuildings(BuildingType::Farm) - (foodusers - GetNumBuildings(BuildingType::Mill)),
-                       GetNumBuildings(BuildingType::Bakery) + 1);
+            buildingsWanted[BuildingType::Mill] = std::min(
+              unsigned(AI_CONFIG.millToFarmRatio
+                       * (GetNumBuildings(BuildingType::Farm) - (foodusers - GetNumBuildings(BuildingType::Mill)))),
+              GetNumBuildings(BuildingType::Bakery) + 1);
         else
             buildingsWanted[BuildingType::Mill] = GetNumBuildings(BuildingType::Mill);
 
@@ -262,7 +261,8 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
           + buildingsWanted[BuildingType::DonkeyBreeder] + buildingsWanted[BuildingType::Brewery];
 
         buildingsWanted[BuildingType::Farm] =
-          std::min<unsigned>(inventory.goods[GoodType::Scythe] + inventory.people[Job::Farmer], foodusers + 3);
+          std::min<unsigned>(inventory.goods[GoodType::Scythe] + inventory.people[Job::Farmer] + 2,
+                             (unsigned)(foodusers * 1.25 + storehouses * 1.34));
 
         if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 3)
         {
@@ -294,17 +294,17 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
             {
                 if(aijh.ggs.isEnabled(
                      AddonId::INEXHAUSTIBLE_MINES)) // inexhaustible mines? -> more farms required for each mine
-                    buildingsWanted[BuildingType::IronMine] = std::min(GetNumBuildings(BuildingType::Ironsmelter) + 1,
-                                                                       GetNumBuildings(BuildingType::Farm) * 2 / 5);
+                    buildingsWanted[BuildingType::IronMine] =
+                      unsigned(GetNumBuildings(BuildingType::Farm) / AI_CONFIG.farmToIronMineRatio);
                 else
                     buildingsWanted[BuildingType::IronMine] =
                       std::min(GetNumBuildings(BuildingType::Farm) / 2, GetNumBuildings(BuildingType::Ironsmelter) + 1);
                 buildingsWanted[BuildingType::GoldMine] =
                   (GetNumBuildings(BuildingType::Mint) > 0) ?
                     GetNumBuildings(BuildingType::Ironsmelter) > 6 && GetNumBuildings(BuildingType::Mint) > 1 ?
-                    GetNumBuildings(BuildingType::Ironsmelter) > 10 ? 4 : 3 :
-                    2 :
-                    1;
+                    GetNumBuildings(BuildingType::Ironsmelter) > 10 ? 5 : 4 :
+                    3 :
+                    2;
                 buildingsWanted[BuildingType::DonkeyBreeder] = 1;
                 if(aijh.ggs.isEnabled(AddonId::CHARBURNER)
                    && (buildingsWanted[BuildingType::CoalMine] > GetNumBuildings(BuildingType::CoalMine) + 4))
@@ -338,13 +338,9 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
             if(GetNumBuildings(BuildingType::Quarry) + 1 < buildingsWanted[BuildingType::Quarry]
                && aijh.AmountInStorage(GoodType::Stones) < 100) // no quarry and low stones -> try granitemines.
             {
-                if(inventory.people[Job::Miner] > 6)
-                {
-                    buildingsWanted[BuildingType::GraniteMine] = std::min<int>(
-                      numMilitaryBlds / 15 + 1, // limit granite mines to military / 15
-                      std::max<int>(buildingsWanted[BuildingType::Quarry] - GetNumBuildings(BuildingType::Quarry), 1));
-                } else
-                    buildingsWanted[BuildingType::GraniteMine] = 1;
+                buildingsWanted[BuildingType::GraniteMine] = std::min<int>(
+                  numMilitaryBlds / 8 + 1, // limit granite mines to military / 10
+                  std::max<int>(buildingsWanted[BuildingType::Quarry] - GetNumBuildings(BuildingType::Quarry), 1));
             } else
                 buildingsWanted[BuildingType::GraniteMine] = 0;
         }
@@ -381,4 +377,15 @@ bool BuildingPlanner::WantMoreMilitaryBlds(const AIPlayerJH& aijh) const
     return (GetNumMilitaryBlds() + GetNumMilitaryBldSites() > 0);
 }
 
+void BuildingPlanner::setBuildingsWanted(helpers::EnumArray<unsigned, BuildingType> values)
+{
+    for(BuildingType type : helpers::EnumRange<BuildingType>{})
+    {
+        int value = values[type];
+        if(value != 0)
+        {
+            buildingsWanted[type] = value;
+        }
+    }
+}
 } // namespace AIJH

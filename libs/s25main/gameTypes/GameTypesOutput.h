@@ -55,7 +55,7 @@ RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
 RTTR_ENUM_OUTPUT(FlagType, Normal, Large, Water)
 RTTR_ENUM_OUTPUT(GameObjective, None, Conquer3_4, TotalDomination, EconomyMode, Tournament1, Tournament2, Tournament3,
                  Tournament4, Tournament5)
-RTTR_ENUM_OUTPUT(GameSpeed, VerySlow, Slow, Normal, Fast, VeryFast)
+RTTR_ENUM_OUTPUT(GameSpeed, VerySlow, Slow, Normal, Fast, VeryFast, SuperFast)
 RTTR_ENUM_OUTPUT(MapType, OldMap, Savegame)
 RTTR_ENUM_OUTPUT(PlayerState, Free, Occupied, Locked, AI)
 RTTR_ENUM_OUTPUT(PointRoad, None, Normal, Donkey, Boat)

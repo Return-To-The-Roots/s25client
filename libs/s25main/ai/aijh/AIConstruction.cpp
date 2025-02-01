@@ -24,6 +24,8 @@
 #include "gameTypes/Inventory.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/BuildingProperties.h"
+
+#include "s25util/Log.h"
 #include "s25util/warningSuppression.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
@@ -44,10 +46,13 @@ AIConstruction::~AIConstruction() = default;
 
 void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
 {
-    if(job->GetType() == BuildingType::Shipyard && aijh.IsInvalidShipyardPosition(job->GetAround()))
+    BuildingType jobType = job->GetType();
+    // MapPoint around = job->GetAround();
+    // std::string name = BUILDING_NAMES_1.at(jobType);
+    // LOG.write("AddBuildJob %s at %d,%d\n") % name % around.x % around.y;
+    if(jobType == BuildingType::Shipyard && aijh.IsInvalidShipyardPosition(job->GetAround()))
         return;
-    if(BuildingProperties::IsMilitary(
-         job->GetType())) // non military buildings can only be added once to the contruction que for every location
+    if(BuildingProperties::IsMilitary(jobType)) // non military buildings can only be added once to the contruction que for every location
     {
         if(front)
             buildJobs.push_front(std::move(job));
@@ -58,7 +63,7 @@ void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
         bool alreadyinlist = false;
         for(auto& buildJob : buildJobs)
         {
-            if(buildJob->GetType() == job->GetType() && buildJob->GetAround() == job->GetAround())
+            if(buildJob->GetType() == jobType && buildJob->GetAround() == job->GetAround())
             {
                 alreadyinlist = true;
                 break;
@@ -254,12 +259,12 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     // const unsigned short maxSearchRadius = 10;
 
     // flag of a military building? -> check if we really want to connect this right now
-    const MapPoint bldPos = aii.gwb.GetNeighbour(flag->GetPos(), Direction::NorthWest);
-    if(const auto* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
-    {
-        if(!MilitaryBuildingWantsRoad(*milBld))
-            return false;
-    }
+    // const MapPoint bldPos = aii.gwb.GetNeighbour(flag->GetPos(), Direction::NorthWest);
+    // if(const auto* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
+    // {
+    //     if(!MilitaryBuildingWantsRoad(*milBld))
+    //         return false;
+    // }
     // Ziel, das möglichst schnell erreichbar sein soll
     // noFlag *targetFlag = gwb->GetSpecObj<nobHQ>(player->hqPos)->GetFlag();
     noFlag* targetFlag = FindTargetStoreHouseFlag(flag->GetPos());
@@ -285,8 +290,8 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         tmpRoute.clear();
         unsigned length;
         // the flag should not be at a military building!
-        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag->GetPos(), Direction::NorthWest), true))
-            continue;
+        // if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag->GetPos(), Direction::NorthWest), true))
+        //     continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
         if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag->GetPos(), &tmpRoute, &length))
             continue;
@@ -326,9 +331,10 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         if(aii.FindPathOnRoads(*curFlag, *flag))
             continue;
 
+        unsigned odd = length % 2 != 0 ? 5: 0;
         // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
         // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
-        if(2 * length + distance + 10 * maxNonFlagPts < shortestLength)
+        if(odd + 2 * length + distance + 10 * maxNonFlagPts < shortestLength)
         {
             shortest = curFlag;
             shortestLength = 2 * length + distance + 10 * maxNonFlagPts;
@@ -355,7 +361,7 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
 {
     return BuildRoad(start, target, route);
     // TODO: Enable later after checking for performance and correctness
-    RTTR_IGNORE_UNREACHABLE_CODE
+    // RTTR_IGNORE_UNREACHABLE_CODE
     MapPoint pStart = start->GetPos(); //-V779
     for(unsigned i = 0; i + 1 < route.size(); i++)
     {
@@ -557,7 +563,7 @@ bool AIConstruction::Wanted(BuildingType type) const
         return bldPlanner.WantMoreMilitaryBlds(aijh);
     if(type == BuildingType::Sawmill && bldPlanner.GetNumBuildings(BuildingType::Sawmill) > 1)
     {
-        if(aijh.AmountInStorage(GoodType::Wood) < 15 * (bldPlanner.GetNumBuildingSites(BuildingType::Sawmill) + 1))
+        if(aijh.AmountInStorage(GoodType::Wood) < 15 * bldPlanner.GetNumBuildingSites(BuildingType::Sawmill))
             return false;
     }
     return constructionorders[type] < bldPlanner.GetNumAdditionalBuildingsWanted(type);
@@ -594,8 +600,8 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         route.clear();
         unsigned newLength;
         // the flag should not be at a military building!
-        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest), true))
-            continue;
+        // if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest), true))
+        //     continue;
 
         if(!IsConnectedToRoadSystem(&curFlag))
             continue;
@@ -624,17 +630,17 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         for(auto j : route)
         {
             t = aii.gwb.GetNeighbour(t, j);
-            MapPoint t2 = flag->GetPos();
+            // MapPoint t2 = flag->GetPos();
             // check if we cross the planned main road
-            for(auto k : mainroad)
-            {
-                t2 = aii.gwb.GetNeighbour(t2, k);
-                if(t2 == t)
-                {
-                    crossmainpath = true;
-                    break;
-                }
-            }
+            // for(auto k : mainroad)
+            // {
+            //     t2 = aii.gwb.GetNeighbour(t2, k);
+            //     if(t2 == t)
+            //     {
+            //         crossmainpath = true;
+            //         break;
+            //     }
+            // }
             RTTR_Assert(aii.GetBuildingQuality(t) == aijh.GetAINode(t).bq);
             if(aii.GetBuildingQuality(t) == BuildingQuality::Nothing)
                 temp++;

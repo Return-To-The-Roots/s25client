@@ -5,6 +5,8 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
+#include <string>
 
 enum class BuildingType : uint8_t
 {
@@ -57,3 +59,44 @@ constexpr auto maxEnumValue(BuildingType)
 
 /// Number of NOTHING entries (currently unused buildings)
 const unsigned NUM_UNUSED_BLD_TYPES = 4;
+
+const std::map<BuildingType, std::string> BUILDING_NAMES_1 = {{BuildingType::Headquarters, "Headquarters"},
+                                               {BuildingType::Barracks, "Barracks"},
+                                               {BuildingType::Guardhouse, "Guardhouse"},
+                                               {BuildingType::Nothing2, "Nothing2"},
+                                               {BuildingType::Watchtower, "Watchtower"},
+                                               {BuildingType::Vineyard, "Vineyard"},
+                                               {BuildingType::Winery, "Winery"},
+                                               {BuildingType::Temple, "Temple"},
+                                               {BuildingType::Nothing6, "Nothing6"},
+                                               {BuildingType::Fortress, "Fortress"},
+                                               {BuildingType::GraniteMine, "GraniteMine"},
+                                               {BuildingType::CoalMine, "CoalMine"},
+                                               {BuildingType::IronMine, "IronMine"},
+                                               {BuildingType::GoldMine, "GoldMine"},
+                                               {BuildingType::LookoutTower, "LookoutTower"},
+                                               {BuildingType::Nothing7, "Nothing7"},
+                                               {BuildingType::Catapult, "Catapult"},
+                                               {BuildingType::Woodcutter, "Woodcutter"},
+                                               {BuildingType::Fishery, "Fishery"},
+                                               {BuildingType::Quarry, "Quarry"},
+                                               {BuildingType::Forester, "Forester"},
+                                               {BuildingType::Slaughterhouse, "Slaughterhouse"},
+                                               {BuildingType::Hunter, "Hunter"},
+                                               {BuildingType::Brewery, "Brewery"},
+                                               {BuildingType::Armory, "Armory"},
+                                               {BuildingType::Metalworks, "Metalworks"},
+                                               {BuildingType::Ironsmelter, "Ironsmelter"},
+                                               {BuildingType::Charburner, "Charburner"},
+                                               {BuildingType::PigFarm, "PigFarm"},
+                                               {BuildingType::Storehouse, "Storehouse"},
+                                               {BuildingType::Nothing9, "Nothing9"},
+                                               {BuildingType::Mill, "Mill"},
+                                               {BuildingType::Bakery, "Bakery"},
+                                               {BuildingType::Sawmill, "Sawmill"},
+                                               {BuildingType::Mint, "Mint"},
+                                               {BuildingType::Well, "Well"},
+                                               {BuildingType::Shipyard, "Shipyard"},
+                                               {BuildingType::Farm, "Farm"},
+                                               {BuildingType::DonkeyBreeder, "DonkeyBreeder"},
+                                               {BuildingType::HarborBuilding, "HarborBuilding"}};

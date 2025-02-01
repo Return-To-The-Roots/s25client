@@ -12,11 +12,12 @@ enum class GameSpeed : uint8_t
     Slow,
     Normal,
     Fast,
-    VeryFast
+    VeryFast,
+    SuperFast,
 };
 constexpr auto maxEnumValue(GameSpeed)
 {
-    return GameSpeed::VeryFast;
+    return GameSpeed::SuperFast;
 }
 
 enum class GameObjective : uint8_t
