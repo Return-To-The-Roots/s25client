@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -65,13 +65,22 @@ target_link_libraries(s25Main PUBLIC
     PRIVATE BZip2::BZip2 Boost::iostreams Boost::locale Boost::nowide samplerate_cpp
 )
 
-if(WIN32)
+if(WIN32 OR CYGWIN)
     include(CheckIncludeFiles)
-    check_include_files("windows.h;dbghelp.h" HAVE_DBGHELP_H)
-    if(HAVE_DBGHELP_H)
-        target_compile_definitions(s25Main PUBLIC HAVE_DBGHELP_H)
-    endif()
+    check_include_files("windows.h;dbghelp.h" RTTR_BACKTRACE_HAS_DBGHELP)
+else()
+    set(RTTR_BACKTRACE_HAS_DBGHELP OFF)
 endif()
+if(NOT WIN32)
+    find_package(Backtrace)
+    if(Backtrace_FOUND)
+        target_include_directories(s25Main SYSTEM PRIVATE ${Backtrace_INCLUDE_DIRS})
+        target_link_libraries(s25Main PRIVATE ${Backtrace_LIBRARIES})
+    endif()
+    set(RTTR_BACKTRACE_HAS_FUNCTION ${Backtrace_FOUND})
+endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/backtrace_config.h.cmake backtrace_config.h @ONLY)
+target_include_directories(s25Main PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 # For clock_gettime etc. this is required on some platforms/compilers
 find_library(LIBRT rt)

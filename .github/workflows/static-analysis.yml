@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -21,12 +21,12 @@ jobs:
   StyleAndFormatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: git submodule update --init
       - name: Validation
         run: tools/ci/staticValidation.sh "$GITHUB_WORKSPACE"
       - name: Formatting
-        uses: DoozyX/clang-format-lint-action@v0.9
+        uses: DoozyX/clang-format-lint-action@v0.18.2
         with:
           source: "extras libs tests external/libendian external/liblobby external/libsiedler2 external/libutil external/mygettext external/s25edit external/s25update"
           clangFormatVersion: 10
@@ -37,7 +37,7 @@ jobs:
                  -prune -false -o \( -name '*.hpp' -or -name '*.h' \) \
                  -print0 | xargs -0 -n1 tools/ci/checkIncludeGuards.sh
       - name: Lint markdown files
-        uses: avto-dev/markdown-lint@v1.5.0
+        uses: avto-dev/markdown-lint@v1
         with:
           ignore: external data/RTTR/MAPS .
       - name: Check licensing
@@ -48,7 +48,7 @@ jobs:
   Clang-Tidy:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: git submodule update --init
       - name: Install dependencies
         run: |
