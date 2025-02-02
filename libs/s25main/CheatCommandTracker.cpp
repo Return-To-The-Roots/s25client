@@ -34,6 +34,8 @@ void CheatCommandTracker::onChatCommand(const std::string& cmd)
 
     if(cmd == "apocalypsis")
         cheats_.armageddon();
+    else if(cmd == "impulse9")
+        cheats_.toggleAllBuildingsEnabled();
 }
 
 bool CheatCommandTracker::checkSpecialKeyEvent(const KeyEvent& ke)
