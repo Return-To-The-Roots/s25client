@@ -20,8 +20,7 @@ struct RoadNodeComperatorGreater
     {
         if(lhs->estimate == rhs->estimate)
         {
-            // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
-            // monoton steigende Folge brauchen
+            // Use a tie-breaker to get strict ordering
             return (lhs->GetObjId() > rhs->GetObjId());
         }
 
@@ -100,7 +99,9 @@ struct And : private T_Func1, private T_Func2
 };
 } // namespace SegmentConstraints
 
-/// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Stra�en
+/// Path finding on roads using A* O(n lg n)
+/// \tparam T_AdditionalCosts Cost for each road segment but the one to the goal building
+/// \tparam T_SegmentConstraints Predicate whether a road is allowed
 template<class T_AdditionalCosts, class T_SegmentConstraints>
 bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max,
                                   const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
@@ -124,9 +125,12 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         return true;
     }
 
-    // increase current_visit_on_roads, so we don't have to clear the visited-states at every run
-    currentVisit++;
+    // If the goal is a flag (unlikely) we have no goal building
+    // TODO(Replay): Change RoadPathFinder::FindPath to target flag instead of building for wares
+    const noRoadNode* goalBld = (goal.GetGOT() == GO_Type::Flag) ? nullptr : &goal;
 
+    // Use a counter for the visited-states so we don't have to reset them on every invocation
+    currentVisit++;
     // if the counter reaches its maximum, tidy up
     if(currentVisit == std::numeric_limits<unsigned>::max())
     {
@@ -163,19 +167,20 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(length)
                 *length = best.cost;
 
-            // Backtrace to get the last node that is not the start node (has a prev node) --> Next node from start on
-            // path
-            const noRoadNode* firstNode = &best;
-            while(firstNode->prev != &start)
+            // Backtrack to get the last node that is not the start node (has a prev node)
+            // --> Next node from start on path
+            if(firstDir || firstNodePos)
             {
-                firstNode = firstNode->prev;
+                const noRoadNode* firstNode = &best;
+                while(firstNode->prev != &start)
+                    firstNode = firstNode->prev;
+
+                if(firstDir)
+                    *firstDir = firstNode->dir_;
+
+                if(firstNodePos)
+                    *firstNodePos = firstNode->GetPos();
             }
-
-            if(firstDir)
-                *firstDir = firstNode->dir_;
-
-            if(firstNodePos)
-                *firstNodePos = firstNode->GetPos();
 
             // Done, path found
             return true;
@@ -184,7 +189,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         const helpers::EnumArray<RoadSegment*, Direction> routes = best.getRoutes();
         const noRoadNode* prevNode = best.prev;
 
-        // Nachbarflagge bzw. Wege in allen 6 Richtungen verfolgen
+        // Check paths in all directions
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             const auto* route = routes[dir];
@@ -209,12 +214,11 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                     continue;
             }
 
-            // evtl verboten?
+            // Check if route is forbidden
             if(!isSegmentAllowed(*route))
                 continue;
 
-            unsigned cost = best.cost + route->GetLength();
-            cost += addCosts(best, dir);
+            const unsigned cost = best.cost + route->GetLength() + (neighbour != goalBld ? addCosts(best, dir) : 0);
 
             if(cost > max)
                 continue;
@@ -283,7 +287,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         }
     }
 
-    // Liste leer und kein Ziel erreicht --> kein Weg
+    // Queue is empty without reaching the goal --> No allowed, existing path
     return false;
 }
 
@@ -291,10 +295,11 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
                               const RoadSegment* const forbidden, unsigned* const length,
                               RoadPathDirection* const firstDir, MapPoint* const firstNodePos)
 {
-    RTTR_Assert(length || firstDir || firstNodePos); // If none of them is set use the \ref PathExist function!
+    RTTR_Assert_Msg(length || firstDir || firstNodePos, "Use PathExists instead!");
 
     if(wareMode)
     {
+        // TODO(Replay): Change to target flag instead of its attached building
         if(forbidden)
             return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(),
                                 SegmentConstraints::AvoidSegment(forbidden), length, firstDir, firstNodePos);
@@ -319,6 +324,8 @@ bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
 {
     if(allowWaterRoads)
     {
+        // TODO(Replay): Change to target flag instead of its attached building.
+        // Likely combine with RoadPathFinder::FindPath
         if(forbidden)
             return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidSegment(forbidden));
         else
