@@ -10,7 +10,6 @@
 #include "ai/aijh/AIResourceMap.h"
 #include "helpers/OptionalEnum.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/container/static_vector.hpp>
 #include <list>
 #include <memory>
 #include <queue>

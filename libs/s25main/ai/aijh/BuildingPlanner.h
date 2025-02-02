@@ -49,6 +49,7 @@ private:
     bool expansionRequired;
 
     unsigned woodAvailable = 0;
+    unsigned stoneAvailable = 0;
 
     void RefreshBuildingNums(const AIPlayerJH& aijh);
     bool CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const;

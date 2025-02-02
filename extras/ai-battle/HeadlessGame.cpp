@@ -221,20 +221,21 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
 {
     std::vector<PlayerInfo> ret;
     PlayerInfo pi;
-    pi.ps = PlayerState::Locked;
-    pi.aiInfo = ais[0];
-    pi.name = "Stub";
-    pi.nation = Nation::Romans;
-    pi.team = Team::None;
-    ret.push_back(pi);
 
     for(const AI::Info& ai : ais)
     {
         PlayerInfo pi;
-        pi.ps = PlayerState::Occupied;
         pi.aiInfo = ai;
+        if(ai.type == AI::Type::None)
+        {
+            pi.ps = PlayerState::Locked;
+        } else
+        {
+            pi.ps = PlayerState::Occupied;
+        }
         switch(ai.type)
         {
+            case AI::Type::None: pi.name = "None"; break;
             case AI::Type::Default: pi.name = "AIJH " + std::to_string(ret.size()); break;
             case AI::Type::Dummy:
             default: pi.name = "Dummy " + std::to_string(ret.size()); break;

@@ -32,12 +32,14 @@ int main(int argc, char** argv)
 
     boost::optional<std::string> replay_path;
     boost::optional<std::string> savegame_path;
+    boost::optional<std::string> runId;
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     po::options_description desc("Allowed options");
     // clang-format off
     desc.add_options()
         ("help,h", "Show help")
+        ("run_id,r", po::value(&runId),"Run Id")
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("domination"),"domination(default)|conquer")
@@ -112,6 +114,7 @@ int main(int argc, char** argv)
             AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<float>();
             AI_CONFIG.millToFarmRatio = configNode["mill_to_farm_ratio"].as<double>();
             AI_CONFIG.statsPath = configNode["stats_path"].as<std::string>();
+            AI_CONFIG.savesPath = configNode["saves_path"].as<std::string>();
         } catch(const YAML::Exception& e)
         {
             std::cerr << "Error parsing YAML file: " << e.what() << std::endl;
@@ -156,12 +159,17 @@ int main(int argc, char** argv)
         if(replay_path)
             game.RecordReplay(*replay_path, random_init);
 
+        if(runId)
+        {
+            AI_CONFIG.runId = *runId;
+        }
+
         game.Run(options["maxGF"].as<unsigned>());
         game.Close();
 
         if(savegame_path)
         {
-            std::string saveTo = *savegame_path + AI_CONFIG.runId + "ai_run_final.sav";
+            std::string saveTo = *savegame_path + "ai_run_final_" + AI_CONFIG.runId + ".sav";
             game.SaveGame(saveTo);
         }
     } catch(const std::exception& e)

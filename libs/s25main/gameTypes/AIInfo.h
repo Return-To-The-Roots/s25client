@@ -21,6 +21,7 @@ constexpr auto maxEnumValue(Level)
 
 enum class Type : uint8_t
 {
+    None,
     Dummy,
     Default
 };

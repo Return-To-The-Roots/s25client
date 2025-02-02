@@ -41,11 +41,11 @@
 #include "gameData/ToolConsts.h"
 #include <algorithm>
 #include <array>
+#include <filesystem>
 #include <iomanip>
 #include <memory>
 #include <random>
 #include <stdexcept>
-#include <filesystem>
 
 namespace fs = std::filesystem;
 
@@ -84,9 +84,11 @@ std::ofstream createCsvFile(std::string name)
     std::string folderPath = AI_CONFIG.statsPath + AI_CONFIG.runId;
     if(!fs::exists(folderPath))
     {
-        if (fs::create_directory(folderPath)) {
+        if(fs::create_directory(folderPath))
+        {
             std::cout << "Folder created: " << folderPath << std::endl;
-        } else {
+        } else
+        {
             std::cerr << "Failed to create folder: " << folderPath << std::endl;
         }
     }
@@ -1021,9 +1023,11 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             }
             // ensure some distance to other foresters and an minimal amount of plantspace
             if(!construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester)
-               && GetDensity(around, AIResource::Plantspace, 7) > 15)
+               && GetDensity(around, AIResource::Plantspace, 7) > 15 && GetDensity(around, AIResource::Fish, 3) > 5)
                 foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 0);
             break;
+            // ensure some distance to other foresters and an minimal amount of plantspace
+
         case BuildingType::Hunter:
         {
             // check if there are any animals in range
@@ -1041,6 +1045,17 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                 resourceMaps[AIResource::Stones].avoidPosition(foundPos);
                 foundPos = MapPoint::Invalid();
             }
+            break;
+        }
+        case BuildingType::Sawmill:
+        {
+            unsigned sawmills = bldPlanner->GetNumBuildings(BuildingType::Sawmill);
+            if(construction->OtherUsualBuildingInRadius(around, 2 * (sawmills - 1), BuildingType::Sawmill))
+            {
+                break;
+            }
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
+            break;
             break;
         }
         case BuildingType::Barracks:
@@ -2610,9 +2625,14 @@ unsigned AIPlayerJH::CalcMilSettings()
 
 void AIPlayerJH::saveStats(unsigned int gf) const
 {
+    if(player.ps == PlayerState::Locked)
+    {
+        return;
+    }
     std::ofstream buildingFile = createCsvFile("buildings");
     std::ofstream productivityFile = createCsvFile("productivity");
     std::ofstream goodsFile = createCsvFile("goods");
+    std::ofstream scoreFile = createCsvFile("score");
 
     if(gf == 0)
     {
@@ -2636,7 +2656,17 @@ void AIPlayerJH::saveStats(unsigned int gf) const
             goodsFile << "," << GOOD_NAMES_1.at(type);
         }
         goodsFile << std::endl;
+
+        scoreFile << "GameFrame,Country,Buildings,Military,Gold,Productivity,Kills" << std::endl;
     }
+    scoreFile << gf;
+    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Country);
+    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Buildings);
+    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Military);
+    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Gold);
+    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Productivity);
+    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Vanquished);
+    scoreFile << std::endl;
 
     auto bldMap = GetBuildingsMap(*bldPlanner);
     auto sitesMap = GetBuildingsSiteMap(*bldPlanner);

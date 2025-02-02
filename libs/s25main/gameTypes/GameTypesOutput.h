@@ -69,7 +69,7 @@ RTTR_ENUM_OUTPUT(Team, None, Random, Team1, Team2, Team3, Team4, Random1To2, Ran
 RTTR_ENUM_OUTPUT(ServerType, Lobby, Direct, Local, LAN)
 
 namespace AI {
-RTTR_ENUM_OUTPUT(Type, Dummy, Default)
+RTTR_ENUM_OUTPUT(Type, Dummy, Default, None)
 RTTR_ENUM_OUTPUT(Level, Easy, Medium, Hard)
 } // namespace AI
 
