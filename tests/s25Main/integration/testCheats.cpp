@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Cheats.h"
+#include "GameInterface.h"
 #include "GamePlayer.h"
-#include "desktops/dskGameInterface.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
+#include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include <turtle/mock.hpp>
 
 BOOST_AUTO_TEST_SUITE(CheatsTests)
@@ -17,17 +19,16 @@ constexpr auto worldWidth = 64;
 constexpr auto worldHeight = 64;
 struct CheatsFixture : WorldFixture<CreateEmptyWorld, numPlayers, worldWidth, worldHeight>
 {
-    CheatsFixture()
-        : cheats{gameDesktop.GI_GetCheats()}, viewer{gameDesktop.GetView().GetViewer()}, p1HQPos{p1.GetHQPos()}
-    {}
+    CheatsFixture() : cheats(world), p1(world.GetPlayer(0)), p1HQPos(p1.GetHQPos()), viewer(0, world) {}
 
-    dskGameInterface gameDesktop{game, nullptr, 0, false};
-    Cheats& cheats;
-    const GameWorldViewer& viewer;
+    const GameWorldViewer& getViewer() const { return viewer; }
 
-    GamePlayer& getPlayer(unsigned id) { return world.GetPlayer(id); }
-    GamePlayer& p1 = getPlayer(0);
+    Cheats cheats;
+    const GamePlayer& p1;
     const MapPoint p1HQPos;
+
+private:
+    GameWorldViewer viewer;
 };
 } // namespace
 
@@ -82,12 +83,14 @@ MOCK_BASE_CLASS(MockGameInterface, GameInterface)
 BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn, CheatsFixture)
 {
     MockGameInterface mgi;
-    MOCK_EXPECT(mgi.GI_GetCheats).returns(std::ref(gameDesktop.GI_GetCheats()));
+    MOCK_EXPECT(mgi.GI_GetCheats).returns(std::ref(this->cheats));
     MOCK_EXPECT(mgi.GI_UpdateMapVisibility).exactly(3); // how many toggles should actually occur
     world.SetGameInterface(&mgi);
 
     MapPoint farawayPos = p1HQPos;
     farawayPos.x += 20;
+
+    const auto& viewer = getViewer();
 
     // initially farawayPos is not visible
     BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == false);
