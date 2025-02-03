@@ -23,6 +23,9 @@ public:
     void toggleAllBuildingsEnabled();
     bool areAllBuildingsEnabled() const { return areAllBuildingsEnabled_; }
 
+    void toggleShowEnemyProductivityOverlay();
+    bool shouldShowEnemyProductivityOverlay() const { return shouldShowEnemyProductivityOverlay_; }
+
     // RTTR cheats
     void toggleHumanAIPlayer();
     void armageddon() const;
@@ -33,6 +36,7 @@ private:
     bool isCheatModeOn_ = false;
     bool isAllVisible_ = false;
     bool areAllBuildingsEnabled_ = false;
+    bool shouldShowEnemyProductivityOverlay_ = false;
     bool isHumanAIPlayer_ = false;
     GameWorldBase& world_;
 };
