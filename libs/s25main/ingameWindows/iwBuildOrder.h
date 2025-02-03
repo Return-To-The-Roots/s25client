@@ -5,6 +5,7 @@
 #pragma once
 
 #include "TransmitSettingsIgwAdapter.h"
+#include "gameTypes/SettingsTypes.h"
 #include <vector>
 
 class GameWorldViewer;
@@ -29,5 +30,5 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
 
-    void fillBuildOrder();
+    void fillBuildOrder(const BuildOrders& build_order);
 };
