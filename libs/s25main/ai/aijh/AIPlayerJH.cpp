@@ -344,7 +344,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
         DistributeGoodsByBlocking(GoodType::Boards, 30);
         DistributeGoodsByBlocking(GoodType::Stones, 50);
         // go to the picked random warehouse and try to build around it
-        int randomStore = AI::randomValue<int>(0, storehouses.size());
+        int randomStore = AI::randomValue<int>(0, storehouses.size() - 1);
         auto it = storehouses.begin();
         std::advance(it, randomStore);
         const MapPoint whPos = (*it)->GetPos();
@@ -365,7 +365,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     if(militaryBuildings.empty())
         return;
-    int randomMiliBld = AI::randomValue<int>(0, militaryBuildings.size());
+    int randomMiliBld = AI::randomValue<int>(0, militaryBuildings.size() - 1);
     auto it2 = militaryBuildings.begin();
     std::advance(it2, randomMiliBld);
     MapPoint bldPos = (*it2)->GetPos();
@@ -1209,7 +1209,7 @@ void AIPlayerJH::HandleExpedition(const noShip* ship)
         aii.FoundColony(ship);
     else
     {
-        const unsigned offset = AI::randomValue<unsigned>(0, helpers::MaxEnumValue_v<ShipDirection>);
+        const unsigned offset = AI::randomValue<unsigned>(0, helpers::MaxEnumValue_v<ShipDirection> - 1);
         for(auto dir : helpers::EnumRange<ShipDirection>{})
         {
             dir = ShipDirection((rttr::enum_cast(dir) + offset) % helpers::MaxEnumValue_v<ShipDirection>);
@@ -1254,7 +1254,7 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
 
     UpdateNodesAround(pt, 3);
 
-    if(AI::randomValue<int>(0, 2) == 0)
+    if(AI::randomValue<int>(0, 1) == 0)
         AddMilitaryBuildJob(pt);
     else // if (random % 12 == 0)
         AddBuildJob(BuildingType::Woodcutter, pt);
@@ -1536,7 +1536,7 @@ void AIPlayerJH::TryToAttack()
         // We skip the current building with a probability of limit/numMilBlds
         // -> For twice the number of blds as the limit we will most likely skip every 2nd building
         // This way we check roughly (at most) limit buildings but avoid any preference for one building over an other
-        if(AI::randomValue<unsigned>(0, numMilBlds) > limit)
+        if(AI::randomValue<unsigned>(0, numMilBlds - 1) > limit)
             continue;
 
         if(milBld->GetFrontierDistance() == FrontierDistance::Far) // inland building? -> skip it
@@ -1569,7 +1569,7 @@ void AIPlayerJH::TryToAttack()
 
     // shuffle everything but headquarters and harbors without any troops in them
     std::shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end(),
-                 std::mt19937(AI::randomValue<unsigned>(0, 2048)));
+                 std::mt19937(AI::randomValue<unsigned>(0, 2047)));
 
     // check for each potential attacking target the number of available attacking soldiers
     for(const nobBaseMilitary* target : potentialTargets)
@@ -1703,7 +1703,7 @@ void AIPlayerJH::TrySeaAttack()
     unsigned skip = 0;
     if(searcharoundharborspots.size() > 15)
         skip =
-          std::max<int>(AI::randomValue<int>(0, static_cast<int>(searcharoundharborspots.size() / 15 + 1) * 15), 1) - 1;
+          std::max<int>(AI::randomValue<int>(0, static_cast<int>(searcharoundharborspots.size() / 15) * 15), 1) - 1;
     for(unsigned i = skip; i < searcharoundharborspots.size() && limit > 0; i++)
     {
         limit--;
