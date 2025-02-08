@@ -10,13 +10,13 @@
 #include "addons/const_addons.h"
 #include "ai/AIInterface.h"
 #include "ai/aijh/AIPlayerJH.h"
+#include "ai/random.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "helpers/containerUtils.h"
-#include "random/Random.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameTypes/BuildingQuality.h"
@@ -467,10 +467,10 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
 
     const Inventory& inventory = aii.GetInventory();
     uint8_t playerId = aii.GetPlayerId();
-    if((RANDOM.Rand(RANDOM_CONTEXT2(playerId), 3) == 0 || inventory.people[Job::Private] < 15)
+    if((AI::randomValue<int>(0, 3) == 0 || inventory.people[Job::Private] < 15)
        && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
         bld = BuildingType::Guardhouse;
-    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && RANDOM.Rand(RANDOM_CONTEXT2(playerId), 10) != 0
+    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && AI::randomValue<int>(0, 10) != 0
        && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
     {
         if(aii.CanBuildBuildingtype(BuildingType::Watchtower))
@@ -481,7 +481,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     {
         if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
            && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0)
-           && RANDOM.Rand(RANDOM_CONTEXT2(playerId), 10) != 0)
+           && AI::randomValue<int>(0, 10) != 0)
         {
             return biggestBld;
         }
@@ -495,7 +495,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
         // Prüfen ob Feind in der Nähe
         if(milBld->GetPlayer() != playerId && distance < 35)
         {
-            int randmil = RANDOM.Rand(RANDOM_CONTEXT2(playerId), std::numeric_limits<int>::max());
+            int randmil = AI::randomValue<int>(0, std::numeric_limits<int>::max());
             bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult()
                                  && bldPlanner.GetNumAdditionalBuildingsWanted(BuildingType::Catapult) > 0;
             // another catapult within "min" radius? ->dont build here!
