@@ -467,10 +467,10 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
 
     const Inventory& inventory = aii.GetInventory();
     uint8_t playerId = aii.GetPlayerId();
-    if((AI::randomValue<int>(0, 3) == 0 || inventory.people[Job::Private] < 15)
+    if((AI::randomValue<int>(0, 2) == 0 || inventory.people[Job::Private] < 15)
        && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
         bld = BuildingType::Guardhouse;
-    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && AI::randomValue<int>(0, 10) != 0
+    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && AI::randomValue<int>(0, 9) != 0
        && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
     {
         if(aii.CanBuildBuildingtype(BuildingType::Watchtower))
@@ -481,7 +481,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     {
         if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
            && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0)
-           && AI::randomValue<int>(0, 10) != 0)
+           && AI::randomValue<int>(0, 9) != 0)
         {
             return biggestBld;
         }
