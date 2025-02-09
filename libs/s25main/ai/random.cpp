@@ -8,8 +8,7 @@ namespace AI {
 
 std::minstd_rand& getRandomGenerator()
 {
-    std::random_device rnd_dev;
-    static std::minstd_rand rng(rnd_dev());
+    static std::minstd_rand rng(std::random_device{}());
     return rng;
 }
 
