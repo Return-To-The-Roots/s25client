@@ -9,6 +9,7 @@
 #include "RttrConfig.h"
 #include "addons/Addon.h"
 #include "ai/aijh/AIConfig.h"
+#include "ai/aijh/StatsConfig.h"
 #include "files.h"
 #include "random/Random.h"
 #include "s25util/System.h"
@@ -20,6 +21,7 @@
 #include <boost/nowide/iostream.hpp>
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
+#include <filesystem>
 
 namespace bnw = boost::nowide;
 namespace bfs = boost::filesystem;
@@ -33,6 +35,8 @@ int main(int argc, char** argv)
     boost::optional<std::string> replay_path;
     boost::optional<std::string> savegame_path;
     boost::optional<std::string> runId;
+    boost::optional<std::string> runSetId;
+    boost::optional<unsigned int> startPeriod;
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     po::options_description desc("Allowed options");
@@ -40,15 +44,17 @@ int main(int argc, char** argv)
     desc.add_options()
         ("help,h", "Show help")
         ("run_id,r", po::value(&runId),"Run Id")
+        ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
+        ("maxGF", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
+        ("save", po::value(&savegame_path),"Filename to write savegame to (optional)")
+        ("stats_period", po::value(&startPeriod),"Stats period")
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("domination"),"domination(default)|conquer")
         ("configfile", po::value<std::string>()->required(), "AI configuration file")
         ("start_wares", po::value<std::string>()->default_value("start_wares"),"Start wares")
-        ("replay", po::value(&replay_path),"Filename to write replay to (optional)")
-        ("save", po::value(&savegame_path),"Filename to write savegame to (optional)")
+        ("replay", po::value(&replay_path),"Filename to write stats_interval to (optional)")
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
-        ("maxGF", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("version", "Show version information and exit")
         ;
     // clang-format on
@@ -106,15 +112,14 @@ int main(int argc, char** argv)
         {
             YAML::Node configNode = YAML::LoadFile(configfile);
 
-            AI_CONFIG.runId = configNode["run_id"].as<std::string>();
-            AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<unsigned int>();
-            AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<float>();
-            AI_CONFIG.woodcutterToForesterRatio = configNode["woodcutter_to_forester_ratio"].as<float>();
-            AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<float>();
-            AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<float>();
+            AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<double>();
+            AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<double>();
+            AI_CONFIG.woodcutterToForesterRatio = configNode["woodcutter_to_forester_ratio"].as<double>();
+            AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<double>();
+            AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<double>();
             AI_CONFIG.millToFarmRatio = configNode["mill_to_farm_ratio"].as<double>();
-            AI_CONFIG.statsPath = configNode["stats_path"].as<std::string>();
-            AI_CONFIG.savesPath = configNode["saves_path"].as<std::string>();
+            AI_CONFIG.maxMetalworks = configNode["max_metalworks"].as<double>();
+            AI_CONFIG.pigfarmMultiplier = configNode["pigfarm_multiplier"].as<double>();
         } catch(const YAML::Exception& e)
         {
             std::cerr << "Error parsing YAML file: " << e.what() << std::endl;
@@ -150,6 +155,11 @@ int main(int argc, char** argv)
             return 1;
         }
 
+        if(startPeriod)
+        {
+            STATS_CONFIG.stats_period = *startPeriod;
+        }
+
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
         ggs.setSelection(AddonId::MAX_RANK, 4);
@@ -160,16 +170,27 @@ int main(int argc, char** argv)
             game.RecordReplay(*replay_path, random_init);
 
         if(runId)
-        {
-            AI_CONFIG.runId = *runId;
-        }
+            STATS_CONFIG.runId = *runId;
+        if(runSetId)
+            STATS_CONFIG.runSetId = *runSetId;
+
+        std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
+        bfs::create_directory(runSetDir);
+        std::string runDir = runSetDir + "/" + *runId;
+        bfs::create_directory(runDir);
+        std::string statsDir = runDir + "/stats/";
+        bfs::create_directory(statsDir);
+        STATS_CONFIG.statsPath = statsDir;
+        std::string savesDir = runDir + "/saves/";
+        bfs::create_directory(savesDir);
+        STATS_CONFIG.savesPath = savesDir;
 
         game.Run(options["maxGF"].as<unsigned>());
         game.Close();
 
         if(savegame_path)
         {
-            std::string saveTo = *savegame_path + "ai_run_final_" + AI_CONFIG.runId + ".sav";
+            std::string saveTo = savesDir + "/ai_run_final_" + STATS_CONFIG.runId + ".sav";
             game.SaveGame(saveTo);
         }
     } catch(const std::exception& e)

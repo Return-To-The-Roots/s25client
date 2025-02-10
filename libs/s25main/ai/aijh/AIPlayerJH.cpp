@@ -4,7 +4,7 @@
 
 #include "AIPlayerJH.h"
 
-#include "AIConfig.h"
+#include "StatsConfig.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "FindWhConditions.h"
@@ -81,19 +81,8 @@ std::map<BuildingType, int> GetBuildingsWantedMap(AIJH::BuildingPlanner bldPlann
 
 std::ofstream createCsvFile(std::string name)
 {
-    std::string folderPath = AI_CONFIG.statsPath + AI_CONFIG.runId;
-    if(!fs::exists(folderPath))
-    {
-        if(fs::create_directory(folderPath))
-        {
-            std::cout << "Folder created: " << folderPath << std::endl;
-        } else
-        {
-            std::cerr << "Failed to create folder: " << folderPath << std::endl;
-        }
-    }
-    boost::format fmt("%s/%s/%s.csv");
-    fmt % AI_CONFIG.statsPath % AI_CONFIG.runId % name;
+    boost::format fmt("%s/%s.csv");
+    fmt % STATS_CONFIG.statsPath % name;
     std::ofstream file(fmt.str(), std::ios::app);
 
     if(!file)
@@ -295,7 +284,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(defeated)
         return;
 
-    if(gf % 1000 == 0)
+    if(gf % STATS_CONFIG.stats_period == 0)
     {
         saveStats(gf);
     }
@@ -1023,7 +1012,7 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             }
             // ensure some distance to other foresters and an minimal amount of plantspace
             if(!construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester)
-               && GetDensity(around, AIResource::Plantspace, 7) > 15 && GetDensity(around, AIResource::Fish, 3) > 5)
+               && GetDensity(around, AIResource::Plantspace, 7) > 15)
                 foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 0);
             break;
             // ensure some distance to other foresters and an minimal amount of plantspace
@@ -2629,24 +2618,32 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     {
         return;
     }
-    std::ofstream buildingFile = createCsvFile("buildings");
+    std::ofstream buildingCountFile = createCsvFile("buildings_count");
+    std::ofstream buildingSitesFile = createCsvFile("buildings_sites");
     std::ofstream productivityFile = createCsvFile("productivity");
     std::ofstream goodsFile = createCsvFile("goods");
     std::ofstream scoreFile = createCsvFile("score");
 
     if(gf == 0)
     {
-        buildingFile << "GameFrame";
+        buildingCountFile << "GameFrame";
         for(BuildingType type : helpers::EnumRange<BuildingType>{})
         {
-            buildingFile << "," << BUILDING_NAMES_1.at(type);
+            buildingCountFile << "," << BUILDING_NAMES_1.at(type) << "Count";
         }
-        buildingFile << std::endl;
+        buildingCountFile << std::endl;
+
+        buildingSitesFile << "GameFrame";
+        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        {
+            buildingSitesFile << "," << BUILDING_NAMES_1.at(type) << "Sites";
+        }
+        buildingSitesFile << std::endl;
 
         productivityFile << "GameFrame";
         for(BuildingType type : helpers::EnumRange<BuildingType>{})
         {
-            productivityFile << "," << BUILDING_NAMES_1.at(type);
+            productivityFile << "," << BUILDING_NAMES_1.at(type) << "Prod";
         }
         productivityFile << std::endl;
 
@@ -2672,24 +2669,23 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     auto sitesMap = GetBuildingsSiteMap(*bldPlanner);
     auto wantedMap = GetBuildingsWantedMap(*bldPlanner);
 
-    buildingFile << gf;
+    buildingCountFile << gf;
     for(BuildingType type : helpers::EnumRange<BuildingType>{})
     {
-        int count = bldMap[type] + sitesMap[type];
-        buildingFile << "," << count;
+        int count = bldMap[type];
+        buildingCountFile << "," << count;
     }
-    buildingFile << std::endl;
-    buildingFile.close();
+    buildingCountFile << std::endl;
+    buildingCountFile.close();
 
-    if(gf == 0)
+    buildingSitesFile << gf;
+    for(BuildingType type : helpers::EnumRange<BuildingType>{})
     {
-        buildingFile << "GameFrame";
-        for(BuildingType type : helpers::EnumRange<BuildingType>{})
-        {
-            productivityFile << "," << BUILDING_NAMES_1.at(type);
-        }
-        productivityFile << std::endl;
+        int count = sitesMap[type];
+        buildingSitesFile << "," << count;
     }
+    buildingSitesFile << std::endl;
+    buildingSitesFile.close();
 
     productivityFile << gf;
     for(BuildingType type : helpers::EnumRange<BuildingType>{})
@@ -2707,12 +2703,12 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     goodsFile << std::endl;
     goodsFile.close();
 
-    if(gf % 10000 != 0)
+    if(gf % 2500 != 0)
     {
         return;
     }
-    boost::format fmt("%s/%s/ai_test_%010d.txt");
-    fmt % AI_CONFIG.statsPath % AI_CONFIG.runId % gf;
+    boost::format fmt("%s/ai_test_%010d.txt");
+    fmt % STATS_CONFIG.statsPath % gf;
     std::ofstream outfile(fmt.str(), std::ios::app);
     if(!outfile)
     {

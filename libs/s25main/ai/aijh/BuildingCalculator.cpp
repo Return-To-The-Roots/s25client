@@ -17,9 +17,9 @@ namespace AIJH {
 helpers::EnumArray<unsigned, BuildingType> GetStartupSet(unsigned numMilitaryBlds, unsigned woodAvailable)
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
-    values[BuildingType::Forester] = -1;
+    values[BuildingType::Forester] = 1 + numMilitaryBlds / 7;
     values[BuildingType::Sawmill] = 3 + unsigned (numMilitaryBlds / 3);
-    values[BuildingType::Woodcutter] = 3 + numMilitaryBlds / 2;
+    values[BuildingType::Woodcutter] = 3 + numMilitaryBlds / 3;
     values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
     values[BuildingType::GraniteMine] = -1;
     values[BuildingType::CoalMine] = -1;
@@ -33,9 +33,9 @@ helpers::EnumArray<unsigned, BuildingType> GetStartupSet(unsigned numMilitaryBld
     values[BuildingType::Ironsmelter] = -1;
     values[BuildingType::Metalworks] = -1;
 
-    if(woodAvailable < 10000)
+    if(woodAvailable < 15000)
     {
-        values[BuildingType::Forester] = 1;
+        values[BuildingType::Forester]++;
     }
     return values;
 }

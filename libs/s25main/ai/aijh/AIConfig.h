@@ -1,20 +1,18 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-#include <string>
 
 struct AIConfig
 {
-    std::string runId = "000";
-    unsigned startupMilBuildings = 15;
-    float farmToIronMineRatio = 2.5;
-    float woodcutterToForesterRatio = 3.5;
-    float woodcutterToStorehouseRatio = 2;
-    float woodcutterToWoodRatio = 2500;
-    float breweryToArmoryRatio = 5;
+    double startupMilBuildings = 15.0;
+    double farmToIronMineRatio = 2.5;
+    double woodcutterToForesterRatio = 3.5;
+    double woodcutterToStorehouseRatio = 2.0;
+    double woodcutterToWoodRatio = 2500;
+    double breweryToArmoryRatio = 5;
     double ironsmelterToIronMineRatio = 0.9;
+    double pigfarmMultiplier = 1.0;
     double millToFarmRatio = 0.66;
-    std::string statsPath = "/home/pavel/Documents/settlers_ai/stats/";
-    std::string savesPath = "/home/pavel/Documents/settlers_ai/saves/";
+    double maxMetalworks = 2.0;
 };
 
 extern AIConfig AI_CONFIG;
