@@ -344,9 +344,8 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
         DistributeGoodsByBlocking(GoodType::Boards, 30);
         DistributeGoodsByBlocking(GoodType::Stones, 50);
         // go to the picked random warehouse and try to build around it
-        auto it = storehouses.begin();
-        std::advance(it, AI::randomIndex(storehouses));
-        const MapPoint whPos = (*it)->GetPos();
+        const auto* storehouse = AI::randomElement(storehouses);
+        const MapPoint whPos = storehouse->GetPos();
         UpdateNodesAround(whPos, 15); // update the area we want to build in first
         for(const BuildingType i : bldToTest)
         {
@@ -1532,10 +1531,10 @@ void AIPlayerJH::TryToAttack()
     constexpr unsigned limit = 40;
     for(const nobMilitary* milBld : militaryBuildings)
     {
-        // We skip the current building with a probability of limit/numMilBlds
+        // We handle the current building with a probability of limit/numMilBlds
         // -> For twice the number of blds as the limit we will most likely skip every 2nd building
         // This way we check roughly (at most) limit buildings but avoid any preference for one building over an other
-        if(AI::random(numMilBlds - 1u, limit))
+        if(!AI::random(numMilBlds, limit))
             continue;
 
         if(milBld->GetFrontierDistance() == FrontierDistance::Far) // inland building? -> skip it
