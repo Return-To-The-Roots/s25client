@@ -466,7 +466,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     const BuildingType biggestBld = GetBiggestAllowedMilBuilding().value();
 
     const Inventory& inventory = aii.GetInventory();
-    if((inventory.people[Job::Private] < 15 || AI::random())
+    if((inventory.people[Job::Private] < 15 || AI::random(3))
        && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
         bld = BuildingType::Guardhouse;
     if(aijh.getAIInterface().isHarborPosClose(pt, 19) && !AI::random(9) && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
