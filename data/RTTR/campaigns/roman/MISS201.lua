@@ -65,7 +65,7 @@ rttr:RegisterTranslations(
         msgh9   = 'Zajmi katapult a poté získáte přístup k bráně.',
 
         msg99   = '27. den devátého měsíce.\n\n\nVítěztví v bitvě je naše a ostrov jsme osídlili. Brána se znovu aktivovala. Jsem nadšený z vyhlídky, na jakou cestu nás zavede.Teď už o tom nemůže být pochyb, svědší o tom i latinské nápisi na bráně a objevené rujny které jsou římské architektury. Před námi tu musely být Římané. Kde ale jsou, jak se sem dostali, proč odešli, je tu mnoho otázek. Dostaneme na ně někdy odpovědí? Doufám, že vystopujeme kroky našich legendárních předků.',
-        msgh99  = 'Dokončil jsi tuto misi. Třetí kapitola čeká na tebe ...',
+        msgh99  = 'Dokončil jsi tuto misi. Třetí kapitola čeká na tebe ...'
     },
     de =
     {
@@ -129,7 +129,39 @@ rttr:RegisterTranslations(
         msgh9   = 'Capture the catapult and then gain access to the\ngateway.',
 
         msg99   = '27th Day of the Ninth Month.\n\n\nWe were victorious in battle and the island is ours.\nThe gateway has become active again. I am excited by\nthe prospect of where our journey will take us now.\nThe inscription on the gateway is in Latin. I hope\nthat we will retrace the steps of our\nlegendary predecessors when they journeyed to Rome...',
-        msgh99  = 'You have completed this mission. The third Chapter\nawaits you...',
+        msgh99  = 'You have completed this mission. The third Chapter\nawaits you...'
+    },
+	pl =
+    {
+        Diary   = 'Dziennik',
+		
+        msg1    = 'Trzeci Dzień Drugiego Roku.\n\n\nDotarliśmy do drugiej wyspy, która wydaje się być niezamieszkana. \n\nZapas narzędzi należących do dobrego starego Tortiusa powoli się wyczerpuje.\n\nPilnie potrzebujemy kuźni, aby wykonać nowe narzędzia.',
+        msgh1   = 'Wybuduj kuźnię i przenieś się w głąb wyspy. \nZwróć szczególną uwagę na zaopatrzenie w prowiant i surowce.',
+        
+		msg2    = 'Udało nam się odkryć niewielki kawałek terenów na północ i natknęliśmy się na przyjaznego człowieka. \n\nBył jedynym ocalałym z innego wraku statku i jest bardzo szczęśliwy, że znów widzi innych ludzi. \n\nMy również byliśmy zadowoleni; człowiek ten jest piwowarem. \n\nJeśli kiedykolwiek wejdziemy w wojenne spory, piwo podniesie odwagę naszych ludzi. \n\nŻołnierz potrzebuje znacznie więcej niż tylko tarczy i miecza!\n\nCzłowiek ten opowiada nam również o ruinach, które odkrył na wyspie. \n\nObawiam się, że wkrótce będziemy musieli być bardziej ostrożni.',
+        msgh2   = 'Posuwaj się w głąb wyspy. \nZwróć szczególną uwagę na zaopatrzenie w prowiant i surowce.',
+        
+		msg3    = 'Znaleźliśmy ruiny. Zawierały one plany budowy strażnicy. \n\nTeraz powinniśmy rozważyć budowę fortyfikacji. \n\nJestem bardziej przekonany niż kiedykolwiek, że nie jesteśmy sami na tej wyspie.',
+        msgh3   = 'Posuwaj się w głąb wyspy. \nZwróć szczególną uwagę na zaopatrzenie w prowiant i surowce.',
+        
+		msg4    = 'Znaleźliśmy ruiny. Zawierały one plany budowy wieży strażniczej. \n\nJakie jest pochodzenie tych struktur? \nKto je zbudował? \n\nObawiam się, że pokój wkrótce się skończy.',
+        msgh4   = 'Posuwaj się w głąb wyspy. \nZwróć szczególną uwagę na zaopatrzenie w prowiant i surowce.',
+        
+		msg5    = 'Ktokolwiek jest lub był na tej wyspie, zna się na budownictwie. \n\nZnaleźliśmy ruiny potężnej fortecy o wzorcowej konstrukcji. \n\nNasi architekci już sporządzili plany budowy.',
+        msgh5   = 'Posuwaj się w głąb wyspy. \nZwróć szczególną uwagę na zaopatrzenie w prowiant i surowce.',
+        
+		msg6    = 'Dwudziesty Szósty Dzień Trzeciego Miesiąca drugiego roku.\n\n\nMoje obawy znalazły dalsze potwierdzenie. \n\nMoi ludzie znaleźli szmacianą lalkę i dwa groty włóczni typowo kojarzone z plemionami Nubijczyków. \n\nTe artefakty nie wydają się być bardzo stare.',
+        
+		msg7    = 'Nasze terytorium się rozrasta, a trasy transportowe stają się coraz dłuższe. \n\nMusimy zbudować magazyn, aby móc szybciej reagować na potrzeby naszych ludzi.',
+        
+		msg8    = 'Dziennik Oktawiusza.\n\nCzwarty Dzień Czwartego Miesiąca drugiego roku.\n\nTo było do przewidzenia: natknęliśmy się na Nubijczyków. \n\nNa początku wszystko było bardzo przyjazne.\n\nNawet opowiedzieli nam o swojej świętej relikwii i szybko stało się jasne, że to jedna z bram. \n\nOdmówili nam dostępu do swojej świętej relikwii, więc będziemy musieli walczyć, aby się do niej dostać.',
+        msgh8   = 'Zaatakuj Nubijczyków i uzyskaj dostęp do ich bramy.',
+        
+		msg9    = 'Nubijczycy to marni wojownicy, ale mają katapultę, którą musimy zniszczyć. \n\nMoże wtedy uda nam się zdobyć plany pokazujące, jak zbudować taką broń?',
+        msgh9   = 'Zdobądź katapultę, a następnie uzyskaj dostęp do bramy.',
+        
+		msg99   = 'Dwudziesty Siódmy Dzień Dziewiątego Miesiąca.\n\n\nZwyciężyliśmy w bitwie i wyspa jest nasza.\nBrama znów stała się aktywna. \n\nJestem podekscytowany perspektywą, dokąd teraz zaprowadzi nasza podróż.\n\nNapis na bramie, jak poprzednio, jest po łacinie. \n\nMam nadzieję, że pójdziemy śladami naszych legendarnych poprzedników, gdy podróżowali do Rzymu...',
+        msgh99  = 'Ukończyłeś tę misję. \nTrzeci Rozdział czeka na ciebie...'
     }
 })
 

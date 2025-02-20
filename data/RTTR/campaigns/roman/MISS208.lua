@@ -63,7 +63,17 @@ rttr:RegisterTranslations(
 
         msg99   = 'We have found the gateway and occupied it. Let us\nremain here no longer than is necessary.',
         msg99   = 'You have completed this mission. The next Chapter\nawaits you...'
-    }
+    },
+    pl =
+    {
+        Diary   = 'Dziennik',
+		
+        msg1    = 'Znowu znajdujemy się w świecie, który składa się z popiołu i lawy. \n\nAtmosfera niesie ze sobą zgniły zapach siarki. \n\nWszystko to pochodzi z pobliskiego wulkanu, który wyrzuca swoje ohydne treści na ziemię.\n\nMoi ludzie nalegają, abyśmy wkrótce odeszli; \nmogę jedynie mieć nadzieję, że bogowie poprowadzą nasze kroki.',
+        msgh1   = 'Znajdź i zajmij bramę! \nRozważ możliwości budowy portu.',
+        
+		msg99   = 'Znaleźliśmy bramę i zajęliśmy ją. \n\nNie pozostawajmy tu dłużej niż to konieczne.',
+        msg99   = 'Ukończyłeś tę misję. \nNastępny rozdział czeka na ciebie...'
+    }	
 })
 
 -- format mission texts
