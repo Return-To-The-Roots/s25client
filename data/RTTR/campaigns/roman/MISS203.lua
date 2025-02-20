@@ -81,6 +81,22 @@ rttr:RegisterTranslations(
 
         msg99   = 'We have reached the gateway and activated it. The\nway is now clear.',
         msgh99  = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+	pl =
+    {
+        Diary   = 'Dziennik',
+		
+        msg1    = 'Dziewiąty Dzień Dziewiątego Miesiąca Czwartego Roku.\n\nWczoraj spotkaliśmy nieznajomego o naprawdę przerażającym wyglądzie. Jest ogromny, ma jasnoniebieskie oczy i świecące złote włosy. \n\nDawno temu w rzymskiej tawernie w porcie słyszałem opowieści o takich ludziach, którzy mieszkają na dalekiej północy. \n\nJak się tutaj dostał?\n\nJest podejrzliwy i odmawia rozmowy z nami. \n\nTraktujemy go jako naszego gościa przez kilka dni (biedak wydaje się być wygłodzony). \n\nMoże wtedy zmieni swoje nastawienie?',
+        msgh1   = 'Zbadaj okolicę.',
+        
+		msg2    = 'Szesnasty Dzień Dziewiątego Miesiąca Czwartego Roku.\n\nCóż, jakie cuda może zdziałać trochę hojności. \n\nBlond olbrzym powiedział nam, że jest członkiem rasy, która nazywa siebie \"Wikingami\". \n\nMówi, że mieszkali na dużej wyspie niedaleko na wschód, ale zostali podbici przez wrogi szczep. Nazywa się Erik. \n\nCo za dziwne imię! \n\nJeśli mamy mu wierzyć, jest szkutnikiem z zawodu. \n\nSerce bije mi szybciej na myśl, że wkrótce znów będziemy mogli wsiąść na statek, słyszeć fale pod kilem, krzyki mew i wiatr w żaglach... \n\nAle najpierw musimy zbudować stocznię i port.',
+        msgh2   = 'Zbuduj port i stocznię. \nW stoczni zbuduj duży statek handlowy i zorganizuj ekspedycję z portu.',
+        
+		msg3    = 'Na małej wyspie pośrodku archipelagu odkryliśmy wielki cmentarz wielorybów, na którym znajdowały się setki gigantycznych szkieletów. \n\nCo za imponujący widok. \n\nPoczątkowo nie mogliśmy zrozumieć, jak te stworzenia się tam dostały. \n\nErik wyjaśnił, że jego ludzie żyli z tych stworzeń i czcili je jako święte zwierzęta. \n\nDlatego po złowieniu ich kości były przynoszone do tego świętego miejsca. \n\nErik jest niespokojny, chce wyjechać, ponieważ boi się duchów martwych stworzeń.',
+        msgh3   = 'Zbadaj wyspę dalej. \nSzukaj następnej bramy.',
+        
+		msg99   = 'Dotarliśmy do bramy i ją aktywowaliśmy. \nDroga jest teraz wolna.',
+        msgh99  = 'Ukończyłeś tę misję. \nNastępny rozdział czeka na ciebie...'
     }
 })
 

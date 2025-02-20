@@ -75,6 +75,20 @@ rttr:RegisterTranslations(
 
         msg99   = 'We have found the gateway and occupied it. We can go\nthrough it whenever we want!',
         msgh99  = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+	pl =
+    {
+        Diary   = 'Dziennik',
+		
+        msg1    = 'Otacza nas tylko jałowa dzicz. \n\nKrawędzie tego świata wydają się być albo nieprzeniknionymi górami, albo strumieniami lawy.\n\nTutaj nie sposób śledzić czasu. \nNad wszystkim unosi się przyćmiona, wieczna szarówka i nie ma ani światła słonecznego, ani gwiezdnego.\n\nJakie cuda i niebezpieczeństwa kryją się tutaj?',
+        msgh1   = 'Kontynuuj poszukiwania bramy. \nJest ograniczona przestrzeń na budynki; starannie rozważ, jak wykorzystać swoje zasoby.',
+        
+		msg2    = 'Spotkaliśmy ludzi o znacznie dziwniejszym wyglądzie niż nasz wiking szkutnik.\n\nNazywają siebie \"Synami Nipponu\". Są niscy i szczupli, ale wyraźnie zręczni i wytrwali.\n\nNajdziwniejszą cechą jest ich kolor skóry. \n\nJest żółto-ochrowa, a ich oczy to tylko małe szparki. \n\nZachowują się przyjaźnie, chociaż ich dziwny wygląd budzi niepokój.',
+        
+		msg3    = '\"Synowie Nipponu\" na południu mają krewnych na północy. \nIch relacje wydają się bardzo przyjazne.\nWojna z jedną rasą oznacza wojnę z drugą. \n\nMusimy uważnie rozważyć perspektywę wojny...',
+        
+		msg99   = 'Znaleźliśmy bramę i zajęliśmy ją. \nMożemy przejść przez nią, kiedy tylko chcemy!',
+        msgh99  = 'Ukończyłeś tę misję. \nNastępny rozdział czeka na ciebie...'
     }
 })
 

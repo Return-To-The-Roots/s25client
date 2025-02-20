@@ -1,0 +1,50 @@
+                          RETURN TO THE ROOTS
+------------------------------------------------------------------------
+Globalny układ klawiatury w grze:
+
+Klawisze w nawiasach jeszcze nie działają.
+
+P:.................... Pauza
+
+H:.................... Idź do kwatery głównej
+B:.................... Wróć do pozycji startowej
+
+N:.................... Otwórz pocztę
+L:.................... Pokaż mapę
+M:.................... Główna selekcja
+I:.................... Otwórz ekwipunek
+
+SPACJA:............... Przełącz funkcję pomocy w budowie
+C:.................... Sprawdź informacje o budynkach
+S:.................... Pokaż status budynków
+
+Z:.................... Powiększenie obecnego okna
+V:.................... Przyspieszenie gry
+
+Alt-W, Esc:........... Zamknięcie aktywnego okna
+Alt-Q:................ Wyjście z gry
+
+F1:................... (Wczytaj grę)
+F2:................... Zapisz grę
+F8:................... Plik CzytajTo "Układ klawiatury"
+F9:................... Plik CzytajTo
+F11:.................. Odtwarzacz muzyki
+F12:.................. Okno opcji
+
+Poczta:
+
+DEL:.................. Usuń wiadomość
+G:.................... Przejdź do miejsca wydarzenia
++/-:.................. Następna/poprzednia wiadomość
+
+Klawisze strzałek: Przewijanie mapy głównej
+
+Dodatkowo w trybie powtórki:
+
+D:.................... Odkryj/ukryj niezbadany teren
+J:.................... Przejdź do konkretnego GF
+P:.................... Pauza/Wznów (także po skoku do GF)
+1-7:.................. Zmień na innego gracza
+------------------------------------------------------------------------
+https://www.siedler25.org        Copyright (C) 2005-2022 Settlers Freaks
+------------------------------------------------------------------------
