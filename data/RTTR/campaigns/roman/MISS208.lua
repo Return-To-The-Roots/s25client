@@ -68,11 +68,11 @@ rttr:RegisterTranslations(
     {
         Diary   = 'Dziennik',
 
-        msg1    = 'Znowu znajdujemy się w świecie, który składa się z popiołu i lawy. \n\nAtmosfera niesie ze sobą zgniły zapach siarki. \n\nWszystko to pochodzi z pobliskiego wulkanu, który wyrzuca swoje ohydne treści na ziemię.\n\nMoi ludzie nalegają, abyśmy wkrótce odeszli; \nmogę jedynie mieć nadzieję, że bogowie poprowadzą nasze kroki.',
-        msgh1   = 'Znajdź i zajmij bramę! \nRozważ możliwości budowy portu.',
+        msg1    = 'Znowu znajdujemy się w świecie, który składa się z popiołu i lawy.\n\nAtmosfera niesie ze sobą zgniły zapach siarki.\n\nWszystko to pochodzi z pobliskiego wulkanu, który wyrzuca swoje ohydne treści na ziemię.\n\nMoi ludzie nalegają, abyśmy wkrótce odeszli;\nmogę jedynie mieć nadzieję, że bogowie poprowadzą nasze kroki.',
+        msgh1   = 'Znajdź i zajmij bramę!\nRozważ możliwości budowy portu.',
 
-        msg99   = 'Znaleźliśmy bramę i zajęliśmy ją. \n\nNie pozostawajmy tu dłużej niż to konieczne.',
-        msg99   = 'Ukończyłeś tę misję. \nNastępny rozdział czeka na ciebie...'
+        msg99   = 'Znaleźliśmy bramę i zajęliśmy ją.\n\nNie pozostawajmy tu dłużej niż to konieczne.',
+        msg99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 

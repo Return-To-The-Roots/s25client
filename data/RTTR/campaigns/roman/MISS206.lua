@@ -80,15 +80,15 @@ rttr:RegisterTranslations(
     { 
         Diary   = 'Dziennik',
 
-        msg1    = 'Czwarty Dzień Jedenastego Miesiąca Szóstego Roku.\n\nWygląda na to, że nasz półwysep jest połączony z resztą kontynentu tylko przez dwie wąskie doliny. \n\nŚlady sugerują, że na południu jest barbarzyńska rasa Wikingów.',
+        msg1    = 'Czwarty Dzień Jedenastego Miesiąca Szóstego Roku.\n\nWygląda na to, że nasz półwysep jest połączony z resztą kontynentu tylko przez dwie wąskie doliny.\n\nŚlady sugerują, że na południu jest barbarzyńska rasa Wikingów.',
         msgh1   = 'Szukaj bramy.',
 
-        msg2    = 'Pojmany Wiking powiedział nam, że na półwyspie na zachód od nas żyje inny niezwykle bogaty szczep. \n\nMają duże zapasy złota. \n\nDostęp do ich regionu na zachód od dużej zatoki jest silnie ufortyfikowany. \n\nDokładniejsze szczegóły nie zostały uzyskane.',
+        msg2    = 'Pojmany Wiking powiedział nam, że na półwyspie na zachód od nas żyje inny niezwykle bogaty szczep.\n\nMają duże zapasy złota.\n\nDostęp do ich regionu na zachód od dużej zatoki jest silnie ufortyfikowany.\n\nDokładniejsze szczegóły nie zostały uzyskane.',
 
-        msg3    = 'Dziewiętnasty Dzień Czwartego Miesiąca Siódmego Roku.\n\nWikingowie wydają się być niezwykle silni. \n\nW jakiś sposób musimy uzyskać dostęp do ich twierdzy.\n\nInteresujące jest to, że ten szczep ma również cmentarz wielorybów na małym półwyspie na północ od ich kopalni złota.\n\nZastanawiam się, czy oni także boją się duchów wielorybów?',
+        msg3    = 'Dziewiętnasty Dzień Czwartego Miesiąca Siódmego Roku.\n\nWikingowie wydają się być niezwykle silni.\n\nW jakiś sposób musimy uzyskać dostęp do ich twierdzy.\n\nInteresujące jest to, że ten szczep ma również cmentarz wielorybów na małym półwyspie na północ od ich kopalni złota.\n\nZastanawiam się, czy oni także boją się duchów wielorybów?',
 
         msg99   = 'Znaleźliśmy bramę i zajęliśmy ją.',
-        msgh99  = 'Ukończyłeś tę misję. \nNastępny rozdział czeka na ciebie...' 
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...' 
     }
 })
 
