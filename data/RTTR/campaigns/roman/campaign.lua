@@ -21,7 +21,7 @@ rttr:RegisterTranslations(
     {
         name = 'Kampania Rzymian',
         shortDescription = 'Kampania Rzymian',
-		longDescription= 'Dziennik Oktawiusza:\n\n\nCzwarty dzień po rozbiciu statku.\n\n\nWczoraj wszyscy ocalali spotkali się, aby omówić sytuację.\n\nPonieważ nie ma perspektyw na szybką pomoc,\npostanowiliśmy osiedlić się na tej obcej wyspie.\n\nRzeczy uratowane ze statku będą dla nas wielką pomocą.\n\nNajważniejsze jest, by wykorzystać surowce z wyspy w celu założenia osady.\n\nPilnie potrzebujemy schronienia dla:\ndrwala, cieśli i kamieniarza.'
+        longDescription= 'Dziennik Oktawiusza:\n\n\nCzwarty dzień po rozbiciu statku.\n\n\nWczoraj wszyscy ocalali spotkali się, aby omówić sytuację.\n\nPonieważ nie ma perspektyw na szybką pomoc,\npostanowiliśmy osiedlić się na tej obcej wyspie.\n\nRzeczy uratowane ze statku będą dla nas wielką pomocą.\n\nNajważniejsze jest, by wykorzystać surowce z wyspy w celu założenia osady.\n\nPilnie potrzebujemy schronienia dla:\ndrwala, cieśli i kamieniarza.'
     }
 })
 

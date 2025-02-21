@@ -76,18 +76,18 @@ rttr:RegisterTranslations(
         msg99   = 'We have found the gateway and occupied it.',
         msgh99  = 'You have completed this mission. The next Chapter\nawaits you...'
     },
-	pl =
+    pl =
     { 
         Diary   = 'Dziennik',
-		
+
         msg1    = 'Ostatni Dzień Piątego Roku.\n\nRzeźby skalne sugerują, że na południowym zachodzie znajduje się wyspa. \n\nWygląda na to, że są tam znaczne złoża złota.',
         msgh1   = 'Znajdź i zajmij bramę! \nSprawdź możliwości budowy portu.',
-        
-		msg2    = 'Wikingowie mają osadę za dużym pasmem górskim na wschodzie naszej wyspy. \n\nZe szczytów gór można zobaczyć kolejny bardzo duży ląd na północnym wschodzie.\n\nNie znaleźliśmy jeszcze żadnych śladów bramy, a jeńcy wojenni twierdzą, że nic o niej nie wiedzą, ale są kiepskimi kłamcami.',
-        
-		msg3    = 'Zdobyliśmy mały obszar ziemi za pasmem górskim od Wikingów.\n\nWzięliśmy kolejnych jeńców, którzy powiedzieli nam, gdzie znajduje się brama. \n\nJak już podejrzewaliśmy, znajduje się ona na dalekim północnym wschodzie.\n\nPoza małym obszarem na południu tej krainy, całość jest w rękach Wikingów. \n\nMusimy szybko zbudować tam port i zdobyć świeże zapasy.',
-        
-		msg99   = 'Znaleźliśmy bramę i zajęliśmy ją.',
+
+        msg2    = 'Wikingowie mają osadę za dużym pasmem górskim na wschodzie naszej wyspy. \n\nZe szczytów gór można zobaczyć kolejny bardzo duży ląd na północnym wschodzie.\n\nNie znaleźliśmy jeszcze żadnych śladów bramy, a jeńcy wojenni twierdzą, że nic o niej nie wiedzą, ale są kiepskimi kłamcami.',
+
+        msg3    = 'Zdobyliśmy mały obszar ziemi za pasmem górskim od Wikingów.\n\nWzięliśmy kolejnych jeńców, którzy powiedzieli nam, gdzie znajduje się brama. \n\nJak już podejrzewaliśmy, znajduje się ona na dalekim północnym wschodzie.\n\nPoza małym obszarem na południu tej krainy, całość jest w rękach Wikingów. \n\nMusimy szybko zbudować tam port i zdobyć świeże zapasy.',
+
+        msg99   = 'Znaleźliśmy bramę i zajęliśmy ją.',
         msgh99  = 'Ukończyłeś tę misję. \nNastępny rozdział czeka na ciebie...'
     }
 })
