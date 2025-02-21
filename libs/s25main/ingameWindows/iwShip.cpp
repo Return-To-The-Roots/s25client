@@ -73,6 +73,9 @@ void iwShip::Draw_()
 {
     static boost::format valByValFmt{"%1%/%2%"};
     IngameWindow::Draw_();
+    if(IsMinimized())
+        return;
+
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     // Schiff holen
     noShip* ship = (player == 0xff) ? nullptr : owner.GetShipByID(ship_id);
