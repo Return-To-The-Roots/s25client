@@ -24,7 +24,7 @@ private:
     /// Order in which the teams are displayed
     std::vector<const EconomyModeHandler::EconTeam*> teamOrder;
 
-    void Draw_() override;
+    void DrawContent() override;
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_PaintBefore() override;

@@ -104,6 +104,8 @@ public:
 
 protected:
     void Draw_() override;
+    /// Called when not minimized after the frame and background have been drawn
+    virtual void DrawContent() {}
 
     /// Verschiebt Fenster in die Bildschirmmitte
     void MoveToCenter();

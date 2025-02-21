@@ -69,12 +69,9 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* 
           ->SetVisible(false);
 }
 
-void iwShip::Draw_()
+void iwShip::DrawContent()
 {
     static boost::format valByValFmt{"%1%/%2%"};
-    IngameWindow::Draw_();
-    if(IsMinimized())
-        return;
 
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     // Schiff holen
