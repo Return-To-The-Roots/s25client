@@ -68,11 +68,11 @@ rttr:RegisterTranslations(
     { 
         Diary   = 'Dziennik',
 
-        msg1    = 'Zwiadowcy powiedzieli mi o potężnym wrogu na zachodzie. \n\nMusimy spróbować zostać tutaj tak długo, jak to możliwe. \n\nW nagłym wypadku możemy zawsze uciec na wschód lub morzem...',
-        msgh1   = 'Szukaj bramy. \nRozważ możliwości budowy portu.',
+        msg1    = 'Zwiadowcy powiedzieli mi o potężnym wrogu na zachodzie.\n\nMusimy spróbować zostać tutaj tak długo, jak to możliwe.\n\nW nagłym wypadku możemy zawsze uciec na wschód lub morzem...',
+        msgh1   = 'Szukaj bramy.\nRozważ możliwości budowy portu.',
 
-        msg99   = 'Znaleźliśmy bramę i zajęliśmy ją. \n\nKiedy dotrzemy do naszego celu?',
-        msgh99   = 'Ukończyłeś tę misję. \nNastępny rozdział czeka na ciebie...'
+        msg99   = 'Znaleźliśmy bramę i zajęliśmy ją.\n\nKiedy dotrzemy do naszego celu?',
+        msgh99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
