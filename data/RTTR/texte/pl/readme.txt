@@ -8,7 +8,7 @@ B. Instalacja
   3. Mac OSX
   4. Katalog ustawień
 C. Gra
-  1. Utwórz grę
+  1. Stwórz grę
   2. Gra wieloosobowa
   3. Powtórki
   4. Opcje
@@ -34,8 +34,9 @@ B. Instalacja
     ale nie są oficjalnie wspierane.
     
     Aby zagrać w grę, wyszukaj katalogi "DATA" i "GFX" w oryginalnej grze
-    S2 Gold-Edition (lub S2 + Mission CD) (z pełnej instalacji lub bezpośrednio z CD)
-    i skopiuj je do folderu RttR w wersji official luub nightly (gdzie znajdziesz plik "Put your S2-Files in here").
+    S2 Gold-Edition (lub S2 + Mission CD) (z pełnej instalacji lub bezpośrednio 
+    z CD) i skopiuj je do folderu RttR w wersji official luub nightly 
+    (gdzie znajdziesz plik "Put your S2-Files in here").
     
     Alternatywnie możesz jako Administrator utworzyć symboliczne linki NTFS:
     mklink /D DATA "C:\S2\DATA"
@@ -43,7 +44,7 @@ B. Instalacja
     
     Aby zagrać w RTTR, wystarczy uruchomić s25client.exe.
     
-    (W wersjach nightly możesz zaktualizować za pomocą RTTR.BAT)
+    (W wersjach nightly możesz zaktualizować za pomocą pliku RTTR.BAT)
     
     Uwaga: RTTR nie zmienia żadnych plików z oryginalnej gry.
     Działa jako mod do gry.
@@ -95,286 +96,276 @@ B. Instalacja
     
     Katalog ustawień znajduje się w:
     
-    Windows: <UserDir>/Moje Gry/Return To The Roots
+    Windows: <UserDir>/Saved Games/Return To The Roots
     Linux:   ~/.s25rttr
     Mac OSX: ~/Library/Application Support/Return To The Roots
     
     Ten folder jest tworzony przy pierwszym uruchomieniu, jeśli nie istnieje.
-    Wszystkie logi, ustawienia, zapisy i powtórki znajdują się w podkatalogach tego folderu.
+    Wszystkie logi, ustawienia, zapisy i powtórki znajdują się w podkatalogach 
+    tego folderu.
 
 --------------------------------------------------------------------------------
 
-C. Game
+C. Gra
 
-  1. Create a game
+  1. Stwórz grę
 
-    There is a Singleplayer- and a Multiplayer-Modus which can be found in
-    the main menu. You can also play alone in the Multiplayer-Modus:
+    Istnieje tryb dla jednego gracza i tryb wieloosobowy, które można znaleźć 
+    w głównym menu. Możesz również grać samodzielnie w trybie wieloosobowym:
 
-    1. Choose "Multiplayer"
-    2. "Direct IP"
-    3. "Create game"
-    4. In the next window choose the name of the game, no password needed.
-    5. In the map screen you can choose from one of the categories on the
-       left side (similar to the original) and then a map or you can load
-       a game ("Load Game" button)
-    6. After choosing your map, click on "Continue" which leads you
-       to the host-menu.
-       The top part of this menu shows you the players and their
-       configuration.
-       Notice: To start the game you have to fill all player slots with
-       computer players or human players.
-       Alternatively you can close the slots by clicking on them.
+    1. Wybierz "Gra wieloosobowa"
+    2. "TCP/IP"
+    3. "Stwórz grę"
+    4. W następnym oknie wybierz nazwę gry, hasło nie jest wymagane.
+    5. Na ekranie mapy możesz wybrać jedną z kategorii po lewej stronie 
+       (podobnie jak w oryginale) i następnie mapę lub załadować 
+       grę (przycisk "Wczytaj grę").
+    6. Po wybraniu mapy kliknij "Kontynuuj", co przeniesie Cię do menu hosta. 
+        Górna część tego menu pokazuje graczy i ich konfigurację. 
+        Uwaga: Aby rozpocząć grę, musisz wypełnić wszystkie sloty graczami 
+        komputerowymi lub ludźmi. 
+        Alternatywnie możesz zamknąć sloty, klikając na nie.
 
-    For a quick Singleplayer-Game click "Unlimited Play" in the
-    Singleplayer-Menu and follow the steps 5 & 6 above.
+    Aby szybko rozpocząć grę dla jednego gracza, kliknij "Nieograniczona gra" 
+    w menu dla jednego gracza i wykonaj kroki 5 i 6 powyżej.
 
-  2. Multiplayer game
+  2. Gra wieloosobowa
 
-    a) Direct game
-       The proceeding is equivalent to point 1. Other human players
-       have to choose "Direct IP", "Join game" and then enter the IP or
-       hostname. "Connect" will lead them into the host menu.
+    a) Bezpośrednia gra: Procedura jest taka sama jak w punkcie 1. 
+       Inni gracze muszą wybrać "Direct IP", "Dołącz do gry" i następnie 
+       wprowadzić adres IP lub nazwę hosta. 
+       "Połącz" przeniesie ich do menu hosta.
 
-    b) Lobby access
-       The lobby is used for creating your own games or for joining
-       games of other players. A chat function is also integrated.
+    b) Dostęp do lobby: Lobby służy do tworzenia własnych gier lub dołączania 
+       do gier innych graczy. Zintegrowana jest również funkcja czatu. 
+       Potrzebujesz konta na forum na stronie http://www.siedler25.org 
+       i użyć go do zalogowania się do lobby gry.
 
-       You need to create a forum account on http://www.siedler25.org
-       and use that to login into the game lobby.
+    c) Gry sieciowe (LAN): Obszar LAN jest podobny do lobby, ale pokazuje 
+      tylko mapy utworzone w bieżącej sieci LAN i nie wymaga logowania do 
+       dołączenia. Możesz również użyć Hamachi lub podobnego programu do 
+       tworzenia wirtualnych sieci LAN przez Internet.
 
-    c) LAN games
-       The LAN area is similar to the lobby but shows only maps created
-       in the current LAN and does not require a login to join. You can
-       also use Hamachi or a similar program to create virtual LANs over
-       the internet.
+    RTTR używa portu 3665 (TCP). Ten port musi być otwarty, aby utworzyć grę 
+    i umożliwić innym osobom dołączenie. Jeśli używasz routera, musisz 
+    przekierować ten port do swojej stacji roboczej. Poszukaj "Wirtualny serwer" 
+    lub "Przekierowanie portów" w menu routera. Jeśli używasz osobistego zapory 
+    na swojej stacji roboczej, port TCP 3665 również musi być tam dozwolony. 
+    Ta metoda działa w Internecie i w sieci LAN. W trybie LAN używane są porty 
+    3666 i 3667 (UDP) do wyszukiwania gier.
 
-    RTTR uses port 3665 (TCP). This port must be open to create a
-    game and makes other people able to join your game. If you use a
-    router, you have to  forward this port to your workstation.
-    Look for "Virtual server" or "Port forwarding" in your router's
-    menu. If you use a personal firewall on your workstation, TCP port
-    3665 has to be allowed there too. This method works on internet
-    and LAN.
-    In LAN mode ports 3666 and 3667 (UDP) are used to find games.
+    Nie jest konieczne posiadanie mapy gry na każdym komputerze. Zostanie ona 
+    automatycznie przesłana z hosta do każdego gracza.
 
-    It's not necessary to have the game's map on every machine. It
-    will automatically be transfered from the host to every player.
+    Kolorowy symbol ślimaka w prawym górnym rogu ekranu wskazuje na 
+    złe połączenie z graczem o tym samym kolorze.
 
-    A coloured snail symbol in the top right of the display indicates
-    a bad connection to the player with same colour.
+    Gra zostanie zatrzymana, gdy host opuści i nie można jej kontynuować.
 
-    The game will be stopped when the host leaves and cannot be
-    continued.
+    Aby wstrzymać grę, naciśnij "P" (tylko host) i ponownie naciśnij "P", 
+    aby wznowić. 
+    Aby porozmawiać z innymi graczami, naciśnij "Enter".
 
-    To pause the game, press "P" (Host only) and again to unpause.
-    To chat with other players press "Enter".
+  3. Powtórki
 
-  3. Replays
+    Powtórki rejestrują każde działanie w grze. Możesz je oglądać, wybierając 
+    "Gra dla jednego gracza" - "Odtwórz powtórkę".
 
-    Replays record every action in a game. You can watch them by
-    choosing "Single player" - "Play replay".
+    Klawisze "+" i "-" zwiększą lub zmniejszą prędkość odtwarzania. 
+    "J" pozwoli ci przejść do określonej klatki gry.
 
-    The keys [+] and [-] will raise or lower the replay-speed. "J" will make
-    you able to jump to a specific gameframe.
+    Wszystkie powtórki można znaleźć w podfolderze "REPLAYS" w katalogu 
+    ustawień gry.
 
-    All replays can be found in the subfolder Replays in the game settings dir.
+  4. Zapisywanie
 
-  4. Save
+    Zapisywanie gry działa tak samo jak w oryginalnej grze. Działa również 
+    w dowolnym miejscu powtórki. Aby załadować zapis gry wieloosobowej, 
+    wybierz "Załaduj grę" w menu mapy. Dla trybu dla jednego gracza znajduje się 
+    przycisk w menu dla jednego gracza. Wystarczy, aby tylko jeden gracz miał 
+    plik zapisu gry.
 
-    Saving a game works just like in the original game. It also works at any
-    position in a replay.
-    To load a multiplayer savegame choose "Load game" in the map menu. 
-    For singleplayer there is a button in the singleplayer menu.
-    It is sufficient if only one player has the savegame file.
+  5. Opcje
 
+    Opcje w głównym menu powinny być jasne i zrozumiałe.
 
-  5. Options
+  D. Awarie i błędy
 
-    The options in the main menu are self-explanatory.
+  Mogą nadal występować awarie, asynchroniczności, błędy zapisu i inne błędy 
+  w grze. Obecnie bardzo ciężko nad tym pracujemy.
 
---------------------------------------------------------------------------------
+  Możemy lepiej odtworzyć błędy, jeśli dostępna jest powtórka. 
+  Możesz nam pomóc, wysyłając swoje powtórki (podfolder "REPLAYS" w folderze 
+  ustawień) z opisem błędu. Upewnij się, że używasz najnowszej wersji nightly.
 
-D. Crash and bugs
+  Jeśli wystąpi błąd asynchroniczny, znajdziesz dodatkowe logi w 
+  folderze "LOGS" w folderze ustawień. Wyślij nam logi KAŻDEGO gracza 
+  i wszystkie powtórki. Ważne jest, aby podać, której wersji RTTR używałeś. 
+  Na przykład: "20170630-49c9bb8 (nightly) lub 0.8.2".
+  Upewnij się również, że nie spowodowałeś asynchroniczności celowo poprzez 
+  oszukiwanie lub używanie różnych wersji.
 
-  There may still be crashes, asynchronities, save-bugs and other bugs
-  in the game. We are currently working on this very hard.
-
-  We can reproduce bugs better if there is a replay available. You
-  can help us by sending your replays (subfolder Replays in the settings 
-  folder) with a describtion of the bug. Be sure you used the latest 
-  nightly-build version.
-
-  If there is an async-bug you will find additional logs in the folder "Logs"
-  in the settings folder. Please send us the logs of EVERY player and all
-  of the replays accordingly.
-  It is important that you tell us which version of RTTR you used.
-  For example: "20170630-49c9bb8(nightly) or 0.8.2"
-
-  Also make sure you did not make the async on purpose by cheating
-  or using different versions.
-
-  If you find bugs, please report them on:
+  Jeśli znajdziesz błędy, zgłoś je na:
 
       https://github.com/Return-To-The-Roots/s25client
 
-  By using Github we can keep the bug reports organized. Also it makes it
-  easier for you to see if your bug is already fixed. It also allows further
-  communication between you and us, e.g. when we need more information
-  from you.
+  Korzystając z Githuba, możemy uporządkować raporty o błędach. 
+  Ułatwia to również sprawdzenie, czy twój błąd został już naprawiony. 
+  Pozwala również na dalszą komunikację między tobą a nami, 
+  np. gdy potrzebujemy od ciebie więcej informacji.
 
-  Alternatively you can post the bug in the forum or visit us on Discord:
-  https://discord.gg/kyTQsSx
-  You can also join the IRC-channel and Discord by visiting our homepage.
+  Alternatywnie możesz zamieścić błąd na forum lub odwiedzić nas 
+  na Discordzie: https://discord.gg/kyTQsSx Możesz również dołączyć 
+  do kanału IRC i Discorda, odwiedzając naszą stronę główną.
 
-  Thanks a lot
+  Dzięki!
 
   Settlers Freaks
-  July 7th 2017
+  7 lipca 2017
 
 --------------------------------------------------------------------------------
 
-E. Summary: Updates and changelog
+E. Podsumowanie: Aktualizacje i dziennik zmian
 
-  * 0.9.4 - 06.01.2022
+  * **0.9.4 - 06.01.2022**
   ------------------------------------------------------------------------------
-  - Various fixes for bugs leading to unloadable savegames and crashes
-  - Fix drawing issues related to high terrain
-  - Pressing ESC now does no longer discard pending changes of setting windows
-  - Fix uncloseable action window
-  - On game start reopen windows opened in last game and restorr their positions
-  - Fix faulty version handling (visual issues and unable to join other players)
+  - Różne poprawki błędów prowadzących do niemożliwości wczytania zapisów gry 
+    i awarii.
+  - Naprawiono problemy z rysowaniem związane z wysokim terenem.
+  - Naciśnięcie ESC nie powoduje już odrzucenia oczekujących zmian 
+    w oknach ustawień.
+  - Naprawiono okno akcji, które nie dało się zamknąć.
+  - Po uruchomieniu gry ponownie otwierane są okna otwarte w poprzedniej sesji 
+    i przywracane są ich pozycje.
+  - Naprawiono wadliwą obsługę wersji (problemy wizualne i niemożność dołączenia 
+    do innych graczy).
 
-  * 0.9.1 - 24.07.2021
+  * **0.9.1 - 24.07.2021**
   ------------------------------------------------------------------------------
-  - Fullscreen mode on all drivers and OSs
-  - Random map generator
-  - Allow special chars in user name
-  - Fix some bugs, crashes and asyncs
-  - Map editor included
-  - Improved performance
+  - Tryb pełnoekranowy na wszystkich sterownikach i systemach operacyjnych.
+  - Generator losowych map.
+  - Wsparcie znaków specjalnych w nazwie użytkownika.
+  - Naprawiono niektóre błędy, awarie i problemy z asynchronicznością.
+  - Dołączony edytor map.
+  - Ulepszono wydajność.
 
-  * 0.8.2 - 22.08.2017
+  * **0.8.2 - 22.08.2017**
   ------------------------------------------------------------------------------
-  - Many async fixes
-  - Usage of UTF8 to support more languages
-  - Many addons added
-  - Support for all S2 terrain types
-  - Zoom function
-  - Lua scripting
-  - LAN Lobby
-  - Code quality improvements
+  - Wiele poprawek asynchroniczności.
+  - Wprowadzono kodowanie UTF8 dla obsługi większej liczby języków.
+  - Dołączono wiele dodatków.
+  - Obsługa wszystkich typów terenu S2.
+  - Funkcja przybliżenia.
+  - Skryptowanie Lua.
+  - Lobby sieciowe (LAN).
+  - Poprawa jakości kodu.
 
-  * 0.8.1
+  * **0.8.1**
   ------------------------------------------------------------------------------
-  - Bug fixes
-  - AI Improvements
-  - Complete Seafaring
+  - Poprawki błędów.
+  - Ulepszenia sztucznej inteligencji.
+  - Pełna funkcjonalność żeglugi.
 
-  * 0.8.0
+  * **0.8.0**
   ------------------------------------------------------------------------------
-  - Greatly improved AI player
-  - A lot of bugs fixed
-  - Speed improvements
-  - Observation windows
+  - Znacznie ulepszona sztuczna inteligencja gracza.
+  - Naprawiono wiele błędów.
+  - Poprawa szybkości działania.
+  - Okna obserwacyjne.
 
- * 0.7.2 - 17.01.2011 *
+  * **0.7.2 - 17.01.2011**
   ------------------------------------------------------------------------------
-  - Critical Bugfixes
+  - Krytyczne poprawki błędów.
 
-  * 0.7 - Seventh version - 24.12.2010 *
+  * **0.7 - Siódma wersja - 24.12.2010**
   ------------------------------------------------------------------------------
   - OpenSource!
-  - Translation: Dutch
-  - Translation: Russian (Font is missing)
-  - Translation: Czech
-  - Translation: Estonian
-  - Translation: Italian
-  - Translation: Norwegian
-  - Translation: Polish
-  - Translation: Slovenian
-  - Translation: Slovak
-  - Statistics
-  - Postoffice
-  - Diplomacy - unfinished
-  - First AI (jh)
-  - Seafaring (not finished yet)
-  - Addon Menu
+  - Tłumaczenie: Holenderskie
+  - Tłumaczenie: Rosyjskie (brakuje czcionki)
+  - Tłumaczenie: Czeskie
+  - Tłumaczenie: Estońskie
+  - Tłumaczenie: Włoskie
+  - Tłumaczenie: Norweskie
+  - Tłumaczenie: Polskie
+  - Tłumaczenie: Słoweńskie
+  - Tłumaczenie: Słowackie
+  - Statystyki
+  - Poczta
+  - Dyplomacja - niedokończona
+  - Pierwsza sztuczna inteligencja (jh)
+  - Żegluga (jeszcze niedokończona)
+  - Menu dodatków
 
-  * 0.6 - Sixth version - 25.01.2009 *
+  * **0.6 - Szósta wersja - 25.01.2009**
   ------------------------------------------------------------------------------
-  - Fixed a lot of bugs
-  - Fog of War (with Teamview-option)
-  - Watchout tower added
-  - Minimap
-  - Minimap in hostgame-menu
-  - Planer
-  - Balancing
-  - Helper animations added
-  - Multilanguage-support
-  - Translation: Spanish
-  - Translation: Hungarian
-  - Translation: Swedish
-  - Translation: Finnish (not completed)
-  - Translation: French (not completed)
-  - Victory-messages
-  - HotKeys + Readme
-  - Hostmenu option: Demolition prohibition
-  - Building Info
-  - Some building animations added
+  - Naprawiono wiele błędów.
+  - Mgła wojny (z opcją widoku drużynowego).
+  - Dodano wieżę obserwacyjną.
+  - Minimapa.
+  - Minimapa w menu gry hosta.
+  - Planer.
+  - Balans gry.
+  - Dodano animacje pomocników.
+  - Wsparcie dla wielu języków.
+  - Tłumaczenie: Hiszpańskie
+  - Tłumaczenie: Węgierskie
+  - Tłumaczenie: Szwedzkie
+  - Tłumaczenie: Fińskie (niedokończone)
+  - Tłumaczenie: Francuskie (niedokończone)
+  - Komunikaty zwycięstwa.
+  - Klawisze skrótów + plik CzytajTo.
+  - Opcja w menu hosta: zakaz rozbiórki.
+  - Informacje o budynkach.
+  - Dodano kilka animacji budynków.
 
-  * 0.5 - Fifth version - 27.01.2008 *
+  * **0.5 - Piąta wersja - 27.01.2008**
   ------------------------------------------------------------------------------
-  - Fixed a lot of bugs
-  - Donkeyraods, Donkey breeder
-  - Boatroads with boats and shipyard (shipyard only builds boats)
-  - Mountain road
-  - Catapults
-  - Soldier-behaviour changed (queue)
-  - Burn down the depot makes all people escape somewhere
-  - Async-log
-  - Changed some action windows and tooltips
-  - Sound on/off in the game
+  - Naprawiono wiele błędów.
+  - Drogi dla osłów, hodowla osłów.
+  - Drogi wodne z łodziami i stocznią (stocznia buduje tylko łodzie).
+  - Droga górska.
+  - Katapulty.
+  - Zmienione zachowanie żołnierzy (kolejka).
+  - Podpalenie składu powoduje ucieczkę wszystkich ludzi.
+  - Log asynchroniczny.
+  - Zmieniono niektóre okna akcji i podpowiedzi.
+  - Włączanie/wyłączanie dźwięku w grze.
 
-  * 0.4 - Fourth version - 09.10.2007 *
+  * **0.4 - Czwarta wersja - 09.10.2007**
   ------------------------------------------------------------------------------
-  - Save and load games, Autosave
-  - Fixed very bad bugs
+  - Zapisywanie i wczytywanie gier, automatyczne zapisywanie.
+  - Naprawiono bardzo poważne błędy.
 
-  * 0.3 - Third version Fix01 -  13.09.2007 *
+  * **0.3 - Trzecia wersja - 12.09.2007**
   ------------------------------------------------------------------------------
-  - critical crash-bug fixed
+  - Naprawiono krytyczne błędy powodujące awarię gry.
+  - Osadnicy ustawiają się w kolejce, gdy miejsce przed nimi jest zajęte.
+  - Plik konfiguracyjny znajduje się odtąd w ~/.s25rttr (Linux).
+  - Nowy format plików konfiguracyjnych (GER-File).
+  - System budowania oparty na CMake (Linux).
+  - Bot CIA dla kanału IRC.
+  - Lobby.
+  - Przygotowania do zapisywania i wczytywania gry.
 
-  * 0.3 - Third version - 12.09.2007 *
-  ------------------------------------------------------------------------------
-  - fixed crash-bugs
-  - Settlers are in queue when the place in front is occupied
-  - Settings-file in ~/.s25rttr (Linux)
-  - New format for settings (GER-File)
-  - Build-System is now cmake (Linux)
-  - CIA-Bot for irc-channel
-  - Lobby
-  - Preperation for load and save
+  * **0.2 - Druga wersja - 15.07.2007**
+------------------------------------------------------------------------------
+  - Naprawiono wiele błędów.
+  - Nowe rozdzielczości ekranu.
+  - Możliwość wyrzucania asynchronicznych graczy.
+  - Okno inwentarza.
+  - Funkcja "Wyjmij/zatrzymaj magazynowanie" działa poprawnie.
+  - Przycisk "Gotowy" w menu hosta.
+  - Działa rozdzielanie towarów.
+  - Dodano obiekty dekoracyjne (ruiny, ...).
+  - Możliwość przejścia do każdego domu działa poprawnie.
+  - Niektóre obiekty dekoracyjne są niszczone podczas układania drogi.
+  - Widoczny status domów (C, S).
+  - Potwierdzenie przed rozbiórką.
+  - Okno drogi zamyka się po kliknięciu w innym miejscu.
 
-  * 0.2 - Second version - 15.07.2007 *
+  * 0.1 - Pierwsze Wydanie - 01.07.2007 *
   ------------------------------------------------------------------------------
-  - Fixed a lot of bugs
-  - New screen resolutions
-  - Kicking asynchron players now
-  - Inventory-window
-  - "Take out/stop storage" works now
-  - "Ready"-Button in host-menu
-  - Distribution of goods works
-  - Adornment objects added (Ruins,...)
-  - Jump to every house works now
-  - Some adornment object are demolished when setting a road
-  - Status of houses now visible (C, S)
-  - Demolish-interrogation
-  - RoadWindow closes now, when clicking somewhere else
-
-  * 0.1 - First Release - 01.07.2007 *
-  ------------------------------------------------------------------------------
-  - Everything! ;-)
+  - Wszystko! ;-)
 
 --------------------------------------------------------------------------------
 https://www.siedler25.org                Copyright (C) 2005-2022 Settlers Freaks
