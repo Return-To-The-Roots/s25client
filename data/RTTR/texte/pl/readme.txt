@@ -368,5 +368,5 @@ E. Podsumowanie: Aktualizacje i dziennik zmian
   - Wszystko! ;-)
 
 --------------------------------------------------------------------------------
-https://www.siedler25.org                Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org                Copyright (C) 2005-2025 Settlers Freaks
 --------------------------------------------------------------------------------
