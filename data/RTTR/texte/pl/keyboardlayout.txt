@@ -46,5 +46,5 @@ J:.................... Przejdź do konkretnego GF
 P:.................... Pauza/Wznów (także po skoku do GF)
 1-7:.................. Zmień na innego gracza
 ------------------------------------------------------------------------
-https://www.siedler25.org        Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org        Copyright (C) 2005-2025 Settlers Freaks
 ------------------------------------------------------------------------
