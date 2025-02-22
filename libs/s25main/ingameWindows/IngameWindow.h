@@ -103,7 +103,7 @@ public:
     GUI_ID GetGUIID() const { return static_cast<GUI_ID>(Window::GetID()); }
 
 protected:
-    void Draw_() override;
+    void Draw_() final;
     /// Called when not minimized after the frame and background have been drawn
     virtual void DrawContent() {}
 
