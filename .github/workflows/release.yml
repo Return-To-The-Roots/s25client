@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -18,7 +18,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Extract tag name
         id: get_tag
         run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
@@ -74,7 +74,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload source distribution
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -83,7 +83,7 @@ jobs:
           asset_name: ${{steps.filenames.outputs.src}}
           asset_content_type: application/tar.gz
       - name: Upload Dev Tools
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

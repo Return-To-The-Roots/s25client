@@ -46,8 +46,7 @@ public:
     std::unique_ptr<Ware> SelectWare(Direction roadDir, bool swap_wares, const noFigure* carrier);
     /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
     unsigned GetNumWaresForRoad(Direction dir) const;
-    /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden
-    /// müssen.
+    /// Penalty for transporting a ware in a specific direction
     unsigned GetPunishmentPoints(Direction dir) const override;
     /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
     void DestroyAttachedBuilding();

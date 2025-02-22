@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -69,6 +69,7 @@ cmake \
     -DRTTR_REVISION=OFF \
     -DRTTR_BUNDLE=ON \
     -DRTTR_EXTERNAL_BUILD_TESTING=ON \
+    -DRTTR_INCLUDE_DEVTOOLS=ON \
     $src_dir
 
 make -j4 package

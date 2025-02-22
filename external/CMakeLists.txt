@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,11 +12,22 @@ else()
     set(includeDevToolsDefault OFF)
 endif()
 
+set(includeDevToolsDefault OFF)
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt AND NOT DEFINED RTTR_INCLUDE_DEVTOOLS)
+    if(APPLE) # Lua 5.2 required which is not easily available on OSX
+      set(includeDevToolsDefault ON)
+    else()
+      message(STATUS "Precompiled binaries are available to use for development."
+                     "They are not compatible with all platforms though."
+                     "Configure with -DRTTR_INCLUDE_DEVTOOLS=ON to make them available to CMake."
+              )
+    endif()
+endif()
 option(RTTR_INCLUDE_DEVTOOLS "Include folder with precompiled binaries for development" ${includeDevToolsDefault})
 if(RTTR_INCLUDE_DEVTOOLS)
     add_subdirectory(dev-tools)
-    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
-    set(CMAKE_PROGRAM_PATH ${CMAKE_PROGRAM_PATH} PARENT_SCOPE)
+    set(CMAKE_SYSTEM_PREFIX_PATH ${CMAKE_SYSTEM_PREFIX_PATH} PARENT_SCOPE)
+    set(CMAKE_SYSTEM_PROGRAM_PATH ${CMAKE_SYSTEM_PROGRAM_PATH} PARENT_SCOPE)
     set(CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH} PARENT_SCOPE)
 endif()
 
