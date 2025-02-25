@@ -94,13 +94,8 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     }
 }
 
-void iwMilitaryBuilding::Draw_()
+void iwMilitaryBuilding::DrawContent()
 {
-    IngameWindow::Draw_();
-
-    if(IsMinimized())
-        return;
-
     // Schwarzer Untergrund für Goldanzeige
     const unsigned maxCoinCt = building->GetMaxCoinCt();
     DrawPoint goldPos = GetDrawPos() + DrawPoint((GetSize().x - 22 * maxCoinCt) / 2, 60);
