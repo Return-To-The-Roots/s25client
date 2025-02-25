@@ -262,13 +262,8 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned 
     }
 }
 
-void iwStatistics::Draw_()
+void iwStatistics::DrawContent()
 {
-    IngameWindow::Draw_();
-
-    if(IsMinimized())
-        return;
-
     // Draw the alliances and the colored boxes under the portraits
     DrawPlayerOverlays();
 
