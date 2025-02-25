@@ -47,7 +47,8 @@ fi
 
 BUILD_TYPE=Release
 
-rm -rf -- _CPack_Packages *.tar.bz2 *.zip CMakeFiles CMakeCache.txt
+rm -rf -- _CPack_Packages *.tar.bz2 *.zip CMakeCache.txt
+find . -type d -name "CMakeFiles" -exec rm -r {} +
 
 RTTR_VERSION=OFF
 if [ "$deploy_to" == "stable" ] ; then
