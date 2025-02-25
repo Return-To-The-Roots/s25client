@@ -47,7 +47,7 @@ fi
 
 BUILD_TYPE=Release
 
-rm -rf _CPack_Packages *.tar.bz2 *.zip CMakeFiles CMakeCache.txt
+rm -rf -- _CPack_Packages *.tar.bz2 *.zip CMakeFiles CMakeCache.txt
 
 RTTR_VERSION=OFF
 if [ "$deploy_to" == "stable" ] ; then
@@ -65,7 +65,7 @@ cmake \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
     -DRTTR_ENABLE_WERROR=ON \
     -DRTTR_USE_STATIC_BOOST=ON \
-    -DRTTR_VERSION=$RTTR_VERSION \
+    -DRTTR_VERSION="$RTTR_VERSION" \
     -DRTTR_REVISION=OFF \
     -DRTTR_BUNDLE=ON \
     -DRTTR_EXTERNAL_BUILD_TESTING=ON \
@@ -92,4 +92,5 @@ if [ -z "$files" ] ; then
     exit 1
 fi
 
+# shellcheck disable=SC2086
 cp -av $files $result_dir/
