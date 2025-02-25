@@ -33,9 +33,16 @@ iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"),
                    LOADER.GetImageN("resource", 41))
 {
-    AddText(ID_txtResolution, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    // Controls are in 2 columns, the left might be the label for the control on the right
+    constexpr auto leftColOffset = 15u;   // X-position of the left column
+    constexpr auto rightColOffset = 200u; // X-position of the right column
+    constexpr Extent ctrlSize(150, 22);
+    constexpr auto rowWidth = rightColOffset + ctrlSize.x;
+
+    AddText(ID_txtResolution, DrawPoint(leftColOffset, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
+            NormalFont);
     auto* cbResolution =
-      AddComboBox(ID_cbResolution, DrawPoint(200, 35), Extent(150, 22), TextureColor::Grey, NormalFont, 110);
+      AddComboBox(ID_cbResolution, DrawPoint(rightColOffset, 35), ctrlSize, TextureColor::Grey, NormalFont, 110);
 
     VIDEODRIVER.ListVideoModes(video_modes);
     for(unsigned i = 0; i < video_modes.size(); ++i)
@@ -52,19 +59,20 @@ iwSettings::iwSettings()
             --i;
         }
     }
-    AddText(ID_txtFullScreen, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(ID_txtFullScreen, DrawPoint(leftColOffset, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(200, 70), Extent(150, 22), TextureColor::Grey, _("Fullscreen"),
-                               NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(200, 95), Extent(150, 22), TextureColor::Grey, _("Windowed"),
-                               NormalFont);
+    DrawPoint curPos(rightColOffset, 70);
+    optiongroup->AddTextButton(ID_btOn, curPos, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
+    curPos.y += ctrlSize.y + 3;
+    optiongroup->AddTextButton(ID_btOff, curPos, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
     optiongroup->SetSelection(SETTINGS.video.fullscreen); //-V807
 
-    AddCheckBox(ID_cbInvertMouse, DrawPoint(15, 124), Extent(150, 26), TextureColor::Grey, _("Invert Mouse Pan"),
-                NormalFont, false)
+    curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
+    const auto cbSize = Extent(rowWidth, 26);
+    AddCheckBox(ID_cbInvertMouse, curPos, cbSize, TextureColor::Grey, _("Invert Mouse Pan"), NormalFont, false)
       ->setChecked(SETTINGS.interface.invertMouse);
-    AddCheckBox(ID_cbStatisticScale, DrawPoint(200, 124), Extent(150, 26), TextureColor::Grey, _("Statistics Scale"),
-                NormalFont, false)
+    curPos.y += cbSize.y + 3;
+    AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
       ->setChecked(SETTINGS.ingame.scale_statistics);
 }
 
