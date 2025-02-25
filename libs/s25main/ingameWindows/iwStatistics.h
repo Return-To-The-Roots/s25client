@@ -30,7 +30,7 @@ private:
     unsigned numPlayingPlayers;
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Draw_() override;
+    void DrawContent() override;
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void DrawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player);
     void DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player);

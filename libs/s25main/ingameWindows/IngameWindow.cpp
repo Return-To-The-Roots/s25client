@@ -427,6 +427,7 @@ void IngameWindow::Draw_()
             background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
 
         Window::Draw_();
+        DrawContent();
     }
 
     // The 2 rects on the bottom left and right

@@ -25,6 +25,6 @@ public:
     static void DemolitionNotAllowed(const GlobalGameSettings& ggs);
 
 private:
-    void Draw_() override;
+    void DrawContent() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };

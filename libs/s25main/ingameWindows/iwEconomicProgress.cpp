@@ -103,13 +103,8 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
 
 iwEconomicProgress::~iwEconomicProgress() = default;
 
-void iwEconomicProgress::Draw_()
+void iwEconomicProgress::DrawContent()
 {
-    IngameWindow::Draw_();
-
-    if(IsMinimized())
-        return;
-
     // draw team colors
     DrawPoint curTeamRectPos = GetDrawPos() + DrawPoint(padding1.x + wareIconSize.x + txtBoxWidth, padding1.y);
     for(auto& team : teamOrder)
