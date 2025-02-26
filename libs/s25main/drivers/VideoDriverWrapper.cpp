@@ -305,19 +305,19 @@ void VideoDriverWrapper::RenewViewport()
     if(!videodriver->IsOpenGL() || !renderer_)
         return;
 
-    const Extent renderSize = videodriver->GetRenderSize();
+    const Extent renderSize = getGuiScale().viewToScreen<Extent>(videodriver->GetRenderSize());
     const VideoMode windowSize = videodriver->GetWindowSize();
 
     // Set the viewport and scissor area to the entire window
-    glViewport(0, 0, windowSize.width, windowSize.height);
-    glScissor(0, 0, windowSize.width, windowSize.height);
+    glViewport(0, 0, renderSize.x, renderSize.y);
+    glScissor(0, 0, renderSize.x, renderSize.y);
 
     // Orthogonale Matrix erstellen
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
     // 0,0 should be top left corner
-    glOrtho(0, renderSize.x, renderSize.y, 0, -100, 100);
+    glOrtho(0, windowSize.width, windowSize.height, 0, -100, 100);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
