@@ -142,13 +142,8 @@ void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, cons
     }
 }
 
-void iwMerchandiseStatistics::Draw_()
+void iwMerchandiseStatistics::DrawContent()
 {
-    IngameWindow::Draw_();
-
-    if(IsMinimized())
-        return;
-
     DrawRectangles();
     DrawAxis();
     DrawStatistic();

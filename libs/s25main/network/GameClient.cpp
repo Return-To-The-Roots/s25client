@@ -1666,7 +1666,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char fromPlayerIdx
 
 bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
 {
-    mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), ChatDestination::System, "Saving game..."));
+    mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), ChatDestination::System, _("Saving game...")));
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -1694,7 +1694,7 @@ bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
         return save.Save(filepath, mapinfo.title);
     } catch(std::exception& e)
     {
-        SystemChat(std::string("Error during saving: ") + e.what());
+        SystemChat(std::string(_("Error during saving: ")) + e.what());
         return false;
     }
 }
