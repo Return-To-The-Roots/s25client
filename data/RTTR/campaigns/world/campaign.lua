@@ -16,6 +16,12 @@ rttr:RegisterTranslations(
         name = 'Welt Kampagne',
         shortDescription = 'Orginale Welt Kampagne',
         longDescription= 'Die orginale Welt Kampagne aus der Gold Edition.\n\nErobere die ganze Welt.'
+    },
+    pl =
+    {
+        name = 'Kampania podboju świata',
+        shortDescription = 'Oryginalna kampania podboju świata',
+        longDescription= 'Oryginalna kampania podboju świata ze złotej edycji.\n\nMusisz podbić całą ziemię.'
     }
 })
 
