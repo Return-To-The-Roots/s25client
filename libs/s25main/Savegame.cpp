@@ -69,7 +69,7 @@ bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
             return true;
 
         ReadGameData(file);
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
         return false;
