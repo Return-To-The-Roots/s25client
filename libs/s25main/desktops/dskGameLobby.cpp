@@ -353,7 +353,7 @@ void dskGameLobby::SetActive(bool activate /*= true*/)
         try
         {
             lua->EventSettingsReady();
-        } catch(LuaExecutionError&)
+        } catch(const LuaExecutionError&)
         {
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
               _("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,

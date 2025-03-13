@@ -36,7 +36,7 @@ public:
             ss << "_expectedVal = " << expectedValue << "\n";
             ss << "assert(_isVal == _expectedVal, 'xxx=' .. tostring(_isVal))";
             executeLua(ss.str());
-        } catch(std::runtime_error& e)
+        } catch(const std::runtime_error& e)
         {
             boost::test_tools::predicate_result result(false);
             std::string msg = e.what();

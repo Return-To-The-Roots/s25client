@@ -107,7 +107,7 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
                 // Do this here as it will init OGL
                 gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(),
                                                                    GAMECLIENT.GetPlayerId());
-            } catch(std::runtime_error& e)
+            } catch(const std::runtime_error& e)
             {
                 ShowErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
                 return;
