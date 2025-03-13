@@ -227,7 +227,7 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
         }
 
         lastGF_ = file_.ReadUnsignedInt();
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
         return false;
@@ -284,7 +284,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
                 }
                 break;
         }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
         return false;
@@ -333,7 +333,7 @@ std::optional<unsigned> Replay::ReadGF()
     try
     {
         return file_.ReadUnsignedInt();
-    } catch(std::runtime_error&)
+    } catch(const std::runtime_error&)
     {
         if(file_.IsEndOfFile())
             return std::nullopt;

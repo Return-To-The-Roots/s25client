@@ -66,7 +66,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
         {
             if(!world.GetLua().Serialize(luaSaveState))
                 throw SerializedGameData::Error(_("Failed to save lua state!"));
-        } catch(std::exception& e)
+        } catch(const std::exception& e)
         {
             throw SerializedGameData::Error(std::string(_("Failed to save lua state!")) + _("Error: ") + e.what());
         }

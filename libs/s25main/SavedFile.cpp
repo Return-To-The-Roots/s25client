@@ -77,7 +77,7 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
             lastErrorMsg = (fmt % read_version % GetVersion()).str();
             return false;
         }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
         return false;

@@ -317,7 +317,7 @@ void Settings::Load()
 
         LoadIngame();
         // }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\", using default values. Reason: " + e.what());
@@ -362,7 +362,7 @@ void Settings::LoadIngame()
             settings.isPinned = iniWindow->getValue("is_pinned", false);
             settings.isMinimized = iniWindow->getValue("is_minimized", false);
         }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use ingame settings from \"") + settingsPathIngame.string()
                          + "\", using default values. Reason: " + e.what());

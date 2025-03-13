@@ -65,7 +65,7 @@ bool CampaignDataLoader::Load()
             throw std::runtime_error("Campaign table variable missing.");
 
         campaignDesc_ = CampaignDescription(basePath_, entry);
-    } catch(std::exception& e)
+    } catch(const std::exception& e)
     {
         LOG.write("Failed to load campaign data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what()
           % curFile_;
