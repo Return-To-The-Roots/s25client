@@ -15,6 +15,7 @@
 #include "rttr/test/TmpFolder.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
+#include <boost/nowide/iostream.hpp>
 #include <boost/test/unit_test.hpp>
 #include <sstream>
 
@@ -126,6 +127,7 @@ BOOST_AUTO_TEST_CASE(DetectRecursion)
     GameDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
+    bnw::cerr << "Logged: " << logAcc.getLog(false) << "\n";
     RTTR_REQUIRE_LOG_CONTAINS("Maximum include depth", false);
 }
 
