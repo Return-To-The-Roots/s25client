@@ -44,7 +44,7 @@ bool GameDataLoader::Load()
     {
         if(!loadScript(curFile_))
             return false;
-    } catch(std::exception& e)
+    } catch(const std::exception& e)
     {
         LOG.write("Failed to load game data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
         return false;
