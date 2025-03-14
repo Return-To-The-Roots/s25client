@@ -126,8 +126,9 @@ BOOST_AUTO_TEST_CASE(DetectRecursion)
     WorldDescription desc;
     GameDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
-    BOOST_TEST(!loader.Load());
-    bnw::cerr << "Logged: " << logAcc.getLog(false) << "\n";
+    bool res = loader.Load();
+    BOOST_TEST(!res);
+    bnw::cerr << "res: " << res << " Logged: " << logAcc.getLog(false) << "\n";
     RTTR_REQUIRE_LOG_CONTAINS("Maximum include depth", false);
 }
 

@@ -42,13 +42,16 @@ bool GameDataLoader::Load()
     errorInIncludeFile_ = false;
     try
     {
-        if(!loadScript(curFile_))
-            return false;
+        LOG.write("Start load %1%\n") % curFile_;
+        bool res = !loadScript(curFile_);
+        LOG.write("End load %1% : %2%\n") % curFile_ % res;
+        return res;
     } catch(const std::exception& e)
     {
         LOG.write("Failed to load game data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
         return false;
     }
+    LOG.write("End2 load %1% : %2%\n") % curFile_ % errorInIncludeFile_;
     return !errorInIncludeFile_;
 }
 
