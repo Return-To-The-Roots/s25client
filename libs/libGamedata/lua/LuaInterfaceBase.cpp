@@ -83,7 +83,7 @@ bool LuaInterfaceBase::loadScriptString(const std::string& script, bool rethrowE
             return false;
         else
             script_ = script;
-    } catch(LuaExecutionError&)
+    } catch(const LuaExecutionError&)
     {
         if(rethrowError)
             throw;
