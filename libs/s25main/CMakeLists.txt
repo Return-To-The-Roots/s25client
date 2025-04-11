@@ -64,6 +64,7 @@ target_link_libraries(s25Main PUBLIC
     gamedata
     glad
     driver
+    yaml-cpp
     Boost::filesystem Boost::disable_autolinking
     PRIVATE BZip2::BZip2 Boost::iostreams Boost::locale Boost::nowide samplerate_cpp
 )

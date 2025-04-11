@@ -4,7 +4,7 @@
 
 #include "AIPlayerJH.h"
 
-#include "StatsConfig.h"
+#include "AIConfig.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "FindWhConditions.h"
@@ -12,6 +12,7 @@
 #include "GamePlayer.h"
 #include "Jobs.h"
 #include "RttrForeachPt.h"
+#include "StatsConfig.h"
 #include "addons/const_addons.h"
 #include "ai/AIEvents.h"
 #include "boost/filesystem/fstream.hpp"
@@ -1002,7 +1003,11 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
     {
         case BuildingType::Woodcutter:
         {
-            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 20);
+            if(construction->OtherUsualBuildingInRadius(around, 2, BuildingType::Forester)
+               || !construction->OtherUsualBuildingInRadius(around, 3, BuildingType::Woodcutter))
+            {
+                foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 20);
+            }
             break;
         }
         case BuildingType::Forester:
@@ -1016,7 +1021,17 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                 foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 0);
             break;
             // ensure some distance to other foresters and an minimal amount of plantspace
-
+        case BuildingType::Brewery:
+        case BuildingType::Armory:
+        case BuildingType::Metalworks:
+        case BuildingType::Ironsmelter:
+        case BuildingType::Mill:
+        case BuildingType::Well:
+            if(construction->OtherUsualBuildingInRadius(around, (unsigned) AI_CONFIG.foresterFreeRadius, BuildingType::Forester))
+            {
+                break;
+            }
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius); break;
         case BuildingType::Hunter:
         {
             // check if there are any animals in range
@@ -1106,15 +1121,24 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
     }
     return foundPos;
 }
-unsigned AIPlayerJH::GetAvailableResources(AIResource resource) const
+
+unsigned AIPlayerJH::GetAvailableResources(AISurfaceResource resource) const
 {
-    return resourceMaps[resource].calcResources();
-    // int sum = 0;
-    // for(auto storehouse : player.GetBuildingRegister().GetStorehouses())
-    // {
-    //     sum += resourceMaps[resource].calcResources(storehouse->GetPos(), 12);
-    // }
-    // return sum;
+    unsigned sum = 0;
+    for(unsigned i = 0; i < aiMap.Size(); i++)
+    {
+        auto node = aiMap[i];
+        if(node.owned)
+        {
+            const unsigned short x = i % aiMap.GetSize().x;
+            const unsigned short y = i / aiMap.GetSize().x;
+            if(aii.GetSurfaceResource(MapPoint(x, y)) == resource)
+            {
+                sum++;
+            }
+        }
+    }
+    return sum;
 }
 
 unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
@@ -2623,6 +2647,7 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     std::ofstream productivityFile = createCsvFile("productivity");
     std::ofstream goodsFile = createCsvFile("goods");
     std::ofstream scoreFile = createCsvFile("score");
+    std::ofstream otherFile = createCsvFile("other");
 
     if(gf == 0)
     {
@@ -2655,6 +2680,8 @@ void AIPlayerJH::saveStats(unsigned int gf) const
         goodsFile << std::endl;
 
         scoreFile << "GameFrame,Country,Buildings,Military,Gold,Productivity,Kills" << std::endl;
+
+        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable" << std::endl;
     }
     scoreFile << gf;
     scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Country);
@@ -2664,6 +2691,12 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Productivity);
     scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Vanquished);
     scoreFile << std::endl;
+
+    otherFile << gf;
+    otherFile << "," << bldPlanner->GetNumMilitaryBlds();
+    otherFile << "," << GetAvailableResources(AISurfaceResource::Wood);
+    otherFile << "," << GetAvailableResources(AISurfaceResource::Stones);
+    otherFile << std::endl;
 
     auto bldMap = GetBuildingsMap(*bldPlanner);
     auto sitesMap = GetBuildingsSiteMap(*bldPlanner);
@@ -2727,6 +2760,10 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     outfile << " Gol: " << player.GetStatisticCurrentValue(StatisticType::Gold);
     outfile << " Pro: " << player.GetStatisticCurrentValue(StatisticType::Productivity);
     outfile << std::endl;
+
+    outfile << " Resources: ";
+    outfile << " Wood: " << GetAvailableResources(AISurfaceResource::Wood);
+    outfile << " Stone: " << GetAvailableResources(AISurfaceResource::Stones);
 
     outfile << " Tools: " << std::endl;
     for(Tool tool : helpers::EnumRange<Tool>{})

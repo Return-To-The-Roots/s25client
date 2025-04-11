@@ -468,6 +468,10 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     if(!bld)
         return boost::none;
 
+    if(bldPlanner.GetNumMilitaryBlds() < 5)
+    {
+        return BuildingType::Barracks;
+    }
     const BuildingType biggestBld = GetBiggestAllowedMilBuilding().value();
 
     const Inventory& inventory = aii.GetInventory();
@@ -480,6 +484,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
             return BuildingType::Watchtower;
         return GetBiggestAllowedMilBuilding();
     }
+
     if(biggestBld == BuildingType::Watchtower || biggestBld == BuildingType::Fortress)
     {
         if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1

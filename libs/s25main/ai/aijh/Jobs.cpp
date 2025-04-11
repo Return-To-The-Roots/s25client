@@ -156,7 +156,7 @@ void BuildJob::TryToBuild()
         return;
     }
     target = foundPos;
-    state = JobState::ExecutingRoad1;
+        state = JobState::ExecutingRoad1;
     aiConstruction.ConstructionOrdered(*this);
 }
 

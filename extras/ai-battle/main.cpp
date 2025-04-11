@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     bnw::args _(argc, argv);
 
     boost::optional<std::string> replay_path;
-    boost::optional<std::string> savegame_path;
+    boost::optional<std::string> output_path;
     boost::optional<std::string> runId;
     boost::optional<std::string> runSetId;
     boost::optional<unsigned int> startPeriod;
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
         ("run_id,r", po::value(&runId),"Run Id")
         ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
         ("maxGF", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
-        ("save", po::value(&savegame_path),"Filename to write savegame to (optional)")
+        ("output_path", po::value(&output_path),"Filename to write savegame to (optional)")
         ("stats_period", po::value(&startPeriod),"Stats period")
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
@@ -107,24 +107,7 @@ int main(int argc, char** argv)
         const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
 
         const auto configfile = options["configfile"].as<std::string>();
-        YAML::Node configNode = YAML::LoadFile(configfile);
-        try
-        {
-            YAML::Node configNode = YAML::LoadFile(configfile);
-
-            AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<double>();
-            AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<double>();
-            AI_CONFIG.woodcutterToForesterRatio = configNode["woodcutter_to_forester_ratio"].as<double>();
-            AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<double>();
-            AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<double>();
-            AI_CONFIG.millToFarmRatio = configNode["mill_to_farm_ratio"].as<double>();
-            AI_CONFIG.maxMetalworks = configNode["max_metalworks"].as<double>();
-            AI_CONFIG.pigfarmMultiplier = configNode["pigfarm_multiplier"].as<double>();
-        } catch(const YAML::Exception& e)
-        {
-            std::cerr << "Error parsing YAML file: " << e.what() << std::endl;
-            exit(1);
-        }
+        initAIConfig(configfile);
 
         GlobalGameSettings ggs;
         const auto objective = options["objective"].as<std::string>();
@@ -174,6 +157,7 @@ int main(int argc, char** argv)
         if(runSetId)
             STATS_CONFIG.runSetId = *runSetId;
 
+        STATS_CONFIG.outputPath = *output_path;
         std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
         bfs::create_directory(runSetDir);
         std::string runDir = runSetDir + "/" + *runId;
@@ -188,9 +172,9 @@ int main(int argc, char** argv)
         game.Run(options["maxGF"].as<unsigned>());
         game.Close();
 
-        if(savegame_path)
+        if(output_path)
         {
-            std::string saveTo = savesDir + "/ai_run_final_" + STATS_CONFIG.runId + ".sav";
+            std::string saveTo = savesDir + "/ai_run_final_"+ STATS_CONFIG.runSetId +"_" + STATS_CONFIG.runId + ".sav";
             game.SaveGame(saveTo);
         }
     } catch(const std::exception& e)

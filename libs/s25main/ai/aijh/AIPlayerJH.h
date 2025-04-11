@@ -136,7 +136,7 @@ public:
     /// Find a position for a specific building around a given point
     MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
 
-    unsigned GetAvailableResources (AIResource resource) const;
+    unsigned GetAvailableResources (AISurfaceResource resource) const;
     /// Density in percent (0-100)
     unsigned GetDensity(MapPoint pt, AIResource res, int radius);
     /// Does some actions after a new military building is occupied
