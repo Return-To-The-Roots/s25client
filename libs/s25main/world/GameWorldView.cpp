@@ -202,7 +202,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
             between_line.obj.Draw(between_line.pos);
     }
 
-    if(show_names || show_productivity)
+    if(true || show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
@@ -363,15 +363,15 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             curPos.y -= 22;
 
             // Is object not belonging to local player?
-            if(no->GetPlayer() != gwv.GetPlayerId())
-            {
-                if(GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2 && gwv.GetNumSoldiersForAttack(pt) > 0)
-                {
-                    auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
-                    attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
-                }
-                continue;
-            }
+            // if(no->GetPlayer() != gwv.GetPlayerId())
+            // {
+                // if(GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2 && gwv.GetNumSoldiersForAttack(pt) > 0)
+                // {
+                //     auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
+                //     attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
+                // }
+                // continue;
+            // }
 
             // Draw object name
             if(show_names)

@@ -31,6 +31,7 @@ public:
     unsigned GetNumBuildingsWanted(BuildingType type) const;
 
     void InitBuildingsWanted(const AIPlayerJH& aijh);
+    unsigned GetNumBuildings(BuildingType type, unsigned wood_available);
     void UpdateBuildingsWanted(const AIPlayerJH& aijh);
 
     /// Return the number of buildings that we want to build of the current type

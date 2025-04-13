@@ -155,7 +155,7 @@ public:
     template<typename T>
     const T* GetSpecObj(MapPoint pt) const
     {
-        return dynamic_cast<const T*>(GetNode(pt).obj);
+        return dynamic_cast<const T*>(GetNode(pt).obj   );
     }
 
     /// Get left and right terrain from the point in the given direction

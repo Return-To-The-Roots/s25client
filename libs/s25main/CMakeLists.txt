@@ -46,6 +46,8 @@ set(s25Main_SRCS
         ai/aijh/BuildingCalculator.cpp
         ai/aijh/AIConfig.cpp
         ai/aijh/AIConfig.h
+        ai/aijh/PlannerHelper.cpp
+        ai/aijh/PlannerHelper.h
 )
 
 add_library(s25Main STATIC ${s25Main_SRCS})

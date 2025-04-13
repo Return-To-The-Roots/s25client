@@ -17,6 +17,7 @@ struct BuildParams
 
 struct AIConfig
 {
+    double foresterWoolLevel = 100.0;
     double startupMilBuildings = 15.0;
     double farmToIronMineRatio = 2.5;
     double woodcutterToForesterRatio = 3.5;
@@ -28,14 +29,15 @@ struct AIConfig
     double millToFarmRatio = 0.75;
     double maxMetalworks = 2.0;
     double foresterFreeRadius = 4.0;
-    BuildParams milToSawmill = {4.0, 0.1, {0.0, 2}, {0.0, 0.0}};
+    BuildParams farmToMil = {0, 0.6};
+    BuildParams milToSawmill = {4.0, 0.1, {0.0, 2}};
     BuildParams startupMilToSawmill = {3.0, 0.4};
     BuildParams startupMilToWoodcutter = {3.0, 0.4};
 };
 
 extern AIConfig AI_CONFIG;
 
-extern BuildParams parseBuildParams(YAML::Node node);
+extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& defaults);
 
 extern void initAIConfig(std::string configPath);
 

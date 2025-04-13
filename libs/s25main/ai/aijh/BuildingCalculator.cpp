@@ -3,6 +3,7 @@
 #include "AIConfig.h"
 #include "AIPlayerJH.h"
 #include "BuildingPlanner.h"
+#include "PlannerHelper.h"
 
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
@@ -14,7 +15,6 @@ struct Inventory;
 class GamePlayer;
 
 namespace AIJH {
-
 helpers::EnumArray<unsigned, BuildingType> GetStartupSet(unsigned numMilitaryBlds, unsigned woodAvailable)
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
@@ -48,7 +48,7 @@ unsigned doGetNumBuildings(const BuildingCount bldCount, BuildingType type)
     return bldCount.buildings[type] + bldCount.buildingSites[type];
 }
 
-unsigned CalcForesters(const AIPlayerJH& aijh)
+unsigned CalcForesters(const AIPlayerJH& aijh, unsigned woodAvailable)
 {
     const unsigned numMilitaryBlds = aijh.player.GetBuildingRegister().GetMilitaryBuildings().size();
 
@@ -60,6 +60,11 @@ unsigned CalcForesters(const AIPlayerJH& aijh)
     unsigned count = 0;
     if(numMilitaryBlds > 0)
         count = (unsigned)(std::log(2 + numMilitaryBlds) + 1);
+
+    if(woodAvailable > AI_CONFIG.foresterWoolLevel)
+    {
+        return std::min(count, unsigned (2));
+    }
     // If we are low on wood, we need more foresters
     if(aijh.player.GetBuildingRegister().GetBuildingSites().size()
        > (inventory[GoodType::Boards] + inventory[GoodType::Wood]) * 2)
@@ -69,5 +74,26 @@ unsigned CalcForesters(const AIPlayerJH& aijh)
     count = std::min(max_available_forester, count);
     return count;
 }
+unsigned CalcPigFarms(const BuildingCount buildingNums)
+{
+    if(AI_CONFIG.pigfarmMultiplier == 0)
+    {
+        return 0;
+    }
+    unsigned farms = GetNumBuildings(buildingNums, BuildingType::Farm);
+    unsigned wanted = (farms < 8) ? farms / 4 : (farms - 2) / 4;
+    unsigned slaughterhouses = GetNumBuildings(buildingNums, BuildingType::Slaughterhouse);
+    if(wanted > slaughterhouses + 1)
+        wanted = slaughterhouses + 1;
+    return wanted;
+}
+unsigned CalcFarms(const AIPlayerJH& aijh, unsigned numMilitaryBlds)
+{
+    return (unsigned) std::min<double>(maxFarmer(aijh) * 1.2, numMilitaryBlds * AI_CONFIG.farmToMil.linear);
+}
 
+unsigned GetNumBuildings(BuildingCount buildingNums, BuildingType type)
+{
+    return buildingNums.buildings[type] + buildingNums.buildingSites[type];
+}
 } // namespace AIJH
