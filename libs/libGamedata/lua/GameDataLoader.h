@@ -33,7 +33,6 @@ private:
     WorldDescription& worldDesc_;
     boost::filesystem::path basePath_, curFile_;
     int curIncludeDepth_;
-    bool errorInIncludeFile_;
 };
 
 void loadGameData(WorldDescription& worldDesc);
