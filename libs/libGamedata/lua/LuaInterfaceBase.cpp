@@ -23,7 +23,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), logger_(LOG), e
     lua.openlib("math", luaopen_math);
 
     Register(lua);
-    lua.setErrorHandler([this](int status, const char* msg) { errorHandler(status, msg); });
+    setThrowOnError(true);
     // Quasi-Standard translate function
     lua["_"] = kaguya::function([this](const std::string& s) { return translate(s); });
     // No-op translate (translated later)
