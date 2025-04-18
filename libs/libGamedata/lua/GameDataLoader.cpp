@@ -20,8 +20,7 @@
 namespace bfs = boost::filesystem;
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const boost::filesystem::path& basePath)
-    : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0),
-      errorInIncludeFile_(false)
+    : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0)
 {
     Register(lua);
 
@@ -39,17 +38,14 @@ bool GameDataLoader::Load()
 {
     curFile_ = basePath_ / "default.lua";
     curIncludeDepth_ = 0;
-    errorInIncludeFile_ = false;
     try
     {
-        if(!loadScript(curFile_))
-            return false;
+        return loadScript(curFile_);
     } catch(const std::exception& e)
     {
         LOG.write("Failed to load game data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
         return false;
     }
-    return !errorInIncludeFile_;
 }
 
 void GameDataLoader::Register(kaguya::State& state)
@@ -95,7 +91,8 @@ void GameDataLoader::Include(const std::string& filepath)
         const auto oldCurFile = curFile_;
         curFile_ = absFilePath;
         ++curIncludeDepth_;
-        errorInIncludeFile_ |= !loadScript(absFilePath);
+        if(!loadScript(absFilePath))
+            throw std::runtime_error(helpers::format("Include file '%1%' cannot be included", filepath));
         curFile_ = oldCurFile;
         RTTR_Assert(curIncludeDepth_ > 0);
         --curIncludeDepth_;
