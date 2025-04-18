@@ -61,9 +61,9 @@ unsigned CalcForesters(const AIPlayerJH& aijh, unsigned woodAvailable)
     if(numMilitaryBlds > 0)
         count = (unsigned)(std::log(2 + numMilitaryBlds) + 1);
 
-    if(woodAvailable > AI_CONFIG.foresterWoolLevel)
+    if(woodAvailable > AI_CONFIG.foresterWoodLevel)
     {
-        return std::min(count, unsigned (2));
+        return std::min(count, unsigned(2));
     }
     // If we are low on wood, we need more foresters
     if(aijh.player.GetBuildingRegister().GetBuildingSites().size()
@@ -87,9 +87,21 @@ unsigned CalcPigFarms(const BuildingCount buildingNums)
         wanted = slaughterhouses + 1;
     return wanted;
 }
+
 unsigned CalcFarms(const AIPlayerJH& aijh, unsigned numMilitaryBlds)
 {
-    return (unsigned) std::min<double>(maxFarmer(aijh) * 1.2, numMilitaryBlds * AI_CONFIG.farmToMil.linear);
+    return (unsigned)std::min<double>(maxFarmer(aijh) * 1.2, numMilitaryBlds * AI_CONFIG.farmToMil.linear);
+}
+
+unsigned CalcWells(const Inventory& inventory, helpers::EnumArray<unsigned, BuildingType> buildingsWanted)
+{
+    unsigned waterOnStore = inventory[GoodType::Water];
+    unsigned flourOnStore = inventory[GoodType::Flour];
+    unsigned users = buildingsWanted[BuildingType::Bakery] + buildingsWanted[BuildingType::PigFarm]
+                     + buildingsWanted[BuildingType::DonkeyBreeder] + buildingsWanted[BuildingType::Brewery];
+    users -= (unsigned)(waterOnStore / 50.0);
+    users += (unsigned)(flourOnStore / 50.0);
+    return (unsigned)(AI_CONFIG.wellToUsers.constant + AI_CONFIG.wellToUsers.linear * users);
 }
 
 unsigned GetNumBuildings(BuildingCount buildingNums, BuildingType type)

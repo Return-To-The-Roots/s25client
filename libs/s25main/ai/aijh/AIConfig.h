@@ -17,7 +17,7 @@ struct BuildParams
 
 struct AIConfig
 {
-    double foresterWoolLevel = 100.0;
+    double foresterWoodLevel = 100.0;
     double startupMilBuildings = 15.0;
     double farmToIronMineRatio = 2.5;
     double woodcutterToForesterRatio = 3.5;
@@ -26,10 +26,11 @@ struct AIConfig
     double breweryToArmoryRatio = 5;
     double ironsmelterToIronMineRatio = 0.9;
     double pigfarmMultiplier = 0.0;
-    double millToFarmRatio = 0.75;
     double maxMetalworks = 2.0;
     double foresterFreeRadius = 4.0;
-    BuildParams farmToMil = {0, 0.6};
+    BuildParams farmToMil = {0, 0.7};
+    BuildParams wellToUsers = {0, 1.2};
+    double millToFarmRatio = 0.75;
     BuildParams milToSawmill = {4.0, 0.1, {0.0, 2}};
     BuildParams startupMilToSawmill = {3.0, 0.4};
     BuildParams startupMilToWoodcutter = {3.0, 0.4};

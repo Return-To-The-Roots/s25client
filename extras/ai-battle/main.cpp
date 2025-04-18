@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
-        ggs.setSelection(AddonId::MAX_RANK, 4);
+        // ggs.setSelection(AddonId::MAX_RANK, 4);
 
         // ggs.objective = GameObjective::TotalDomination;
         HeadlessGame game(ggs, mapPath, ais);

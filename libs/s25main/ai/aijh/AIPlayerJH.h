@@ -108,6 +108,7 @@ public:
     /// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there
     /// is no warehouse left null
     nobBaseWarehouse* GetUpgradeBuildingWarehouse();
+    void SetSendingForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
     /// activate gathering of swords,shields,beer,privates(if there is an upgrade building), helpers(if necessary)
     void SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
     /// Initializes the nodes on start of the game
@@ -217,6 +218,8 @@ public:
 
     MapPoint UpgradeBldPos;
 
+    unsigned GetProductivity(BuildingType type) const;
+
 private:
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;
@@ -241,5 +244,4 @@ private:
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;
 };
-
 } // namespace AIJH

@@ -6,6 +6,7 @@ namespace AIJH {
     unsigned CalcForesters(const AIPlayerJH& aijh, unsigned woodAvailable);
     unsigned CalcPigFarms(BuildingCount buildingNums);
     unsigned CalcFarms(const AIPlayerJH& aijh, unsigned foodusers);
+    unsigned CalcWells(const Inventory& inventory, helpers::EnumArray<unsigned, BuildingType> buildingsWanted);
 
     unsigned GetNumBuildings(BuildingCount buildingNums, BuildingType type);
 

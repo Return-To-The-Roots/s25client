@@ -37,7 +37,7 @@ extern void initAIConfig(std::string configPath)
     {
         YAML::Node configNode = YAML::LoadFile(configPath);
 
-        AI_CONFIG.foresterWoolLevel = configNode["forester_wool_level"].as<double>();
+        AI_CONFIG.foresterWoodLevel = configNode["forester_wood_level"].as<double>();
         AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<double>();
         AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<double>();
         AI_CONFIG.woodcutterToForesterRatio = configNode["woodcutter_to_forester_ratio"].as<double>();
@@ -48,6 +48,7 @@ extern void initAIConfig(std::string configPath)
         AI_CONFIG.pigfarmMultiplier = configNode["pigfarm_multiplier"].as<double>();
 
         AI_CONFIG.farmToMil = parseBuildParams(configNode["farm_to_mil"], AI_CONFIG.farmToMil);
+        AI_CONFIG.wellToUsers = parseBuildParams(configNode["well_to_users"], AI_CONFIG.wellToUsers);
         AI_CONFIG.milToSawmill = parseBuildParams(configNode["military_to_sawmill"], AI_CONFIG.milToSawmill);
         AI_CONFIG.startupMilToSawmill = parseBuildParams(configNode["startup_mil_to_sawmill"], AI_CONFIG.startupMilToSawmill);
         AI_CONFIG.startupMilToWoodcutter = parseBuildParams(configNode["startup_mil_to_sawmill"], AI_CONFIG.startupMilToWoodcutter);
