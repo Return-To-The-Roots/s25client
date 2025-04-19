@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -40,15 +40,8 @@ bool GameDataLoader::Load()
     curFile_ = basePath_ / "default.lua";
     curIncludeDepth_ = 0;
     errorInIncludeFile_ = false;
-    try
-    {
-        if(!loadScript(curFile_))
-            return false;
-    } catch(const std::exception& e)
-    {
-        LOG.write("Failed to load game data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
+    if(!loadScript(curFile_))
         return false;
-    }
     return !errorInIncludeFile_;
 }
 
