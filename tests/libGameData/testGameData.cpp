@@ -1,9 +1,10 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
 #include "TerrainBQOutput.h"
+#include "files.h"
 #include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "legacy/TerrainData.h"
@@ -11,6 +12,7 @@
 #include "gameData/EdgeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
+#include "rttr/test/ConfigOverride.hpp"
 #include "rttr/test/LogAccessor.hpp"
 #include "rttr/test/TmpFolder.hpp"
 #include <boost/filesystem.hpp>
@@ -111,6 +113,29 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
         }
     }
     // TerrainData::PrintEdgePrios();
+}
+
+BOOST_AUTO_TEST_CASE(DetectError)
+{
+    rttr::test::TmpFolder tmp;
+    rttr::test::ConfigOverride _("RTTR", tmp);
+    auto worldPath = RTTRCONFIG.ExpandPath(s25::folders::gamedata) / "world";
+    create_directories(worldPath);
+    {
+        bnw::ofstream file(worldPath / "default.lua");
+        BOOST_TEST_REQUIRE(!!(file << "empty = true"));
+    }
+    WorldDescription desc;
+    BOOST_REQUIRE_NO_THROW(loadGameData(desc));
+
+    {
+        bnw::ofstream file(worldPath / "default.lua");
+        BOOST_TEST_REQUIRE(!!(file << "syntax{-error"));
+    }
+    GameDataLoader loader(desc, tmp);
+    rttr::test::LogAccessor logAcc;
+    BOOST_TEST(!loader.Load());
+    BOOST_CHECK_THROW(loadGameData(desc), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(DetectRecursion)
