@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2022 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,6 +12,7 @@
 #include "network/GameMessages.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "test/testConfig.h"
+#include "rttr/test/ConfigOverride.hpp"
 #include "rttr/test/LogAccessor.hpp"
 #include "rttr/test/random.hpp"
 #include "s25util/boostTestHelpers.h"
@@ -48,19 +49,13 @@ MOCK_BASE_CLASS(MockClientInterface, ClientInterface)
     // LCOV_EXCL_STOP
 };
 
-class CustomUserMapFolderFixture
+class CustomUserMapFolderFixture : rttr::test::ConfigOverride
 {
-    boost::filesystem::path oldUserData;
-
 public:
-    TmpFolder tmpUserdata;
-    CustomUserMapFolderFixture() : tmpUserdata(rttr::test::rttrTestDataDirOut)
+    CustomUserMapFolderFixture() : ConfigOverride("USERDATA", rttr::test::rttrTestDataDirOut)
     {
-        oldUserData = RTTRCONFIG.ExpandPath("<RTTR_USERDATA>");
-        RTTRCONFIG.overridePathMapping("USERDATA", tmpUserdata);
         bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
     }
-    ~CustomUserMapFolderFixture() { RTTRCONFIG.overridePathMapping("USERDATA", oldUserData); }
 };
 
 } // namespace
