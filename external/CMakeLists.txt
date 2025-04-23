@@ -67,7 +67,7 @@ else()
     FetchContent_Declare(
         LibSamplerate
         GIT_REPOSITORY https://github.com/libsndfile/libsamplerate
-        GIT_TAG        0.2.2
+        GIT_TAG        15c392d47e71b9395a759544b3818a1235fe1a1d # 0.2.2 with update of required CMake version
     )
     set(LIBSAMPLERATE_EXAMPLES OFF CACHE INTERNAL "")
     set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
