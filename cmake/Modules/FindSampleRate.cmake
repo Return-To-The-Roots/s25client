@@ -60,7 +60,7 @@ find_package_handle_standard_args(SampleRate
 
 if(SampleRate_FOUND)
   if(NOT TARGET SampleRate::samplerate)
-    add_library(SampleRate::samplerate UNKNOWN IMPORTED)
+    add_library(SampleRate::samplerate UNKNOWN IMPORTED GLOBAL)
     set_target_properties(SampleRate::samplerate PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${SampleRate_INCLUDE_DIR}"
       IMPORTED_LOCATION "${SampleRate_LIBRARY}")
