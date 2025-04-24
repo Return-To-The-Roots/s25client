@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-DIR=$(cd ${0%/*} && pwd -P)
+DIR=$(cd "${0%/*}" && pwd -P)
 
-chmod 0755 $DIR/../bin/rttr.sh $DIR/../libexec/s25rttr/s25update $DIR/../bin/s25client $DIR/../bin/s25edit >/dev/null 2>/dev/null
+chmod 0755 "$DIR/../bin/rttr.sh" "$DIR/../libexec/s25rttr/s25update" "$DIR/../bin/s25client" "$DIR/../bin/s25edit" >/dev/null 2>/dev/null
 
 if [ "$LD_LIBRARY_PATH" = "" ] ; then
 	export LD_LIBRARY_PATH="$DIR/../lib"
@@ -17,8 +17,8 @@ fi
 cmd=
 noupdate=0
 updateonly=0
-for I in $*; do
-	case $I in
+for I in "$@"; do
+	case "$I" in
 		debug)
 			noupdate=1
 			cmd=gdb
@@ -37,15 +37,17 @@ for I in $*; do
 done
 
 if [ $noupdate -eq 0 ] ; then
-	if [ -f $DIR/../libexec/s25rttr/s25update ] ; then
+	if [ -f "$DIR/../libexec/s25rttr/s25update" ] ; then
 		echo "checking for an update ..."
-		cp $DIR/../libexec/s25rttr/s25update /tmp/s25update.$$
+		cp "$DIR/../libexec/s25rttr/s25update" /tmp/s25update.$$
 		chmod 0755 /tmp/s25update.$$
 		/tmp/s25update.$$ --dir "$DIR/../" @STABLE_PARAM@
-		if [ -z "$(diff -q /tmp/s25update.$$ $DIR/../libexec/s25rttr/s25update)" ] ; then
+		if diff -q /tmp/s25update.$$ "$DIR/../libexec/s25rttr/s25update" &> /dev/null; then
 			PARAM=noupdate
+		else
+			PARAM=
 		fi
-		$DIR/../bin/rttr.sh $PARAM $*
+		"$DIR/../bin/rttr.sh" $PARAM "$@"
 		exit $?
 	fi
 else
@@ -53,8 +55,8 @@ else
 fi
 
 if [ $updateonly -eq 0 ] ; then
-	cd $DIR/../
-	if ! $cmd $DIR/../bin/s25client $* ; then
+	cd "$DIR/../"
+	if ! $cmd "$DIR/../bin/s25client" "$@" ; then
 		echo "An error occured: press enter to continue"
 		read N
 		exit 1
