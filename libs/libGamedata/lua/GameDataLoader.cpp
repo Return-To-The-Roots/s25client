@@ -84,11 +84,12 @@ void GameDataLoader::Include(const std::string& filepath)
         const auto oldCurFile = curFile_;
         curFile_ = absFilePath;
         ++curIncludeDepth_;
-        if(!loadScript(absFilePath))
-            throw std::runtime_error(helpers::format("Include file '%1%' cannot be included", filepath));
+        const bool fileLoaded = loadScript(absFilePath);
         curFile_ = oldCurFile;
         RTTR_Assert(curIncludeDepth_ > 0);
         --curIncludeDepth_;
+        if(!fileLoaded)
+            throw std::runtime_error(helpers::format("Include file '%1%' cannot be included", filepath));
     } catch(const LuaIncludeError& e)
     {
         throw std::runtime_error(helpers::format("Include file '%1%' cannot be included: %2%", filepath, e.what()));
