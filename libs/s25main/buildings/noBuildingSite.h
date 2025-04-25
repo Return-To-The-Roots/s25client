@@ -44,6 +44,8 @@ class noBuildingSite : public noBaseBuilding
     std::list<Ware*> ordered_boards, ordered_stones;
 
 public:
+    unsigned char getOrderedBoards() const { return ordered_boards.size(); }
+    unsigned char getOrderedStones() const { return ordered_stones.size(); }
     unsigned char getUsedBoards() const { return used_boards; }
     unsigned char getUsedStones() const { return used_stones; }
     unsigned char getBoards() const { return boards; }

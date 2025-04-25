@@ -185,3 +185,27 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
         return 0;
     return totalProductivity / numBlds;
 }
+
+signed BuildingRegister::CalcBoardsDemand() const
+{
+    unsigned boardShortage = 0;
+    for(const noBuildingSite* bld : building_sites)
+    {
+        BuildingQuality size = bld->GetSize();
+        switch(size)
+        {
+            case(BuildingQuality::Hut):
+            case(BuildingQuality::House):
+            {
+                boardShortage += 2;
+                break;
+            }
+            case(BuildingQuality::Castle):
+                boardShortage += 3;
+            default: break;
+        }
+        boardShortage -= (unsigned)bld->getBoards();
+        boardShortage -= (unsigned)bld->getUsedBoards();
+    }
+    return boardShortage;
+}

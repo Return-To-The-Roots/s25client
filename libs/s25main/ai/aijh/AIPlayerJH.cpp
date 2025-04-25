@@ -347,8 +347,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         AdjustSettings();
         // check for useless sawmills
-        const std::list<nobUsual*>& sawMills = aii.GetBuildings(BuildingType::Sawmill);
-        if(sawMills.size() > 3)
+        // const std::list<nobUsual*>& sawMills = aii.GetBuildings(BuildingType::Sawmill);
+        /*if(sawMills.size() > 3)
         {
             int burns = 0;
             for(const nobUsual* sawmill : sawMills)
@@ -361,7 +361,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
                     burns++;
                 }
             }
-        }
+        }*/
     }
 
     if((gf + playerId * 7) % build_interval == 0) // plan new buildings
@@ -1023,9 +1023,9 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
     {
         case BuildingType::Woodcutter:
         {
-            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 120);
+            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 320);
             if(!foundPos.isValid() && rand() % 5 == 0) {
-                foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 20);
+                foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 120);
             }
             if(construction->OtherUsualBuildingInRadius(foundPos, 2, BuildingType::Woodcutter)) {
                 foundPos = MapPoint::Invalid();
@@ -1111,6 +1111,11 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             {
                 resourceMaps[AIResource::Fish].avoidPosition(foundPos);
                 foundPos = MapPoint::Invalid();
+            }else
+            {
+                if(construction->OtherUsualBuildingInRadius(foundPos, 3, BuildingType::Fishery)) {
+                    foundPos = MapPoint::Invalid();
+                }
             }
             break;
         case BuildingType::Storehouse:
@@ -2544,45 +2549,57 @@ void AIPlayerJH::AdjustSettings()
                     // When we are missing tools produce some.
                     // Slightly higher priority if we don't have any tool at all.
                     if(requiredTools > (signed)numToolsAvailable)
-                        return (inventory[good] == 0) ? 4 : 2;
+                    {
+                        return TOOL_PRIORITY[tool];
+                        // if(tool == Tool::Scythe)
+                        // {
+                        //     return 2;
+                        // }
+                        // return (inventory[good] == 0 ) ? 4 : 2;
+                    }
                     numToolsAvailable -= requiredTools;
                 }
             }
             return 0;
         };
-        // Basic tools to produce stone, boards and iron are very important to have, do those first
-        for(const Tool tool : {Tool::Axe, Tool::Saw, Tool::PickAxe, Tool::Crucible})
-            toolsettings[tool] = calcToolPriority(tool);
-        // Set some minima
-        if(inventory[GoodType::Saw] + inventory[Job::Carpenter] < 2)
-            toolsettings[Tool::Saw] = 10;
-        if(inventory[GoodType::Axe] + inventory[Job::Woodcutter] < 2)
-            toolsettings[Tool::Axe] = 10;
-        if(inventory[GoodType::PickAxe] + inventory[Job::Stonemason] < 2)
-            toolsettings[Tool::PickAxe] = 7;
-        // Only if we haven't ordered any basic tool, we may order other tools
-        if(toolsettings[Tool::Axe] == 0 && toolsettings[Tool::PickAxe] == 0 && toolsettings[Tool::Saw] == 0
-           && toolsettings[Tool::Crucible] == 0)
+        for(const auto tool : helpers::enumRange<Tool>())
         {
-            // Order those as required for existing and planned buildings
-            for(const Tool tool : {Tool::Hammer, Tool::Scythe, Tool::Rollingpin, Tool::Shovel, Tool::Tongs,
-                                   Tool::Cleaver, Tool::RodAndLine, Tool::Bow})
-            {
-                toolsettings[tool] = calcToolPriority(tool);
-            }
-            // Always have at least one of those in stock for other stuff
-            for(const Tool tool : {Tool::Hammer, Tool::Shovel, Tool::Tongs})
-            {
-                if(inventory[TOOL_TO_GOOD[tool]] == 0)
-                    toolsettings[tool] = std::max<unsigned>(toolsettings[tool], 1u);
-            }
-            // We want about 12 woodcutters, so if we don't have axes produce some
-            if(inventory[GoodType::Axe] == 0 && inventory[Job::Woodcutter] < 12)
-            {
-                // Higher priority if we can't meet the building requirements as calculated above
-                toolsettings[Tool::Axe] = (toolsettings[Tool::Axe] == 0) ? 4 : 7;
-            }
+            toolsettings[tool] = calcToolPriority(tool);
+
         }
+        // // Basic tools to produce stone, boards and iron are very important to have, do those first
+        // for(const Tool tool : {Tool::Axe, Tool::Saw, Tool::PickAxe, Tool::Crucible})
+        //     toolsettings[tool] = calcToolPriority(tool);
+        // // Set some minima
+        // if(inventory[GoodType::Saw] + inventory[Job::Carpenter] < 2)
+        //     toolsettings[Tool::Saw] = 10;
+        // if(inventory[GoodType::Axe] + inventory[Job::Woodcutter] < 2)
+        //     toolsettings[Tool::Axe] = 10;
+        // if(inventory[GoodType::PickAxe] + inventory[Job::Stonemason] < 2)
+        //     toolsettings[Tool::PickAxe] = 7;
+        // // Only if we haven't ordered any basic tool, we may order other tools
+        // if(toolsettings[Tool::Axe] == 0 && toolsettings[Tool::PickAxe] == 0 && toolsettings[Tool::Saw] == 0
+        //    && toolsettings[Tool::Crucible] == 0)
+        // {
+        //     // Order those as required for existing and planned buildings
+        //     for(const Tool tool : {Tool::Hammer, Tool::Scythe, Tool::Rollingpin, Tool::Shovel, Tool::Tongs,
+        //                            Tool::Cleaver, Tool::RodAndLine, Tool::Bow})
+        //     {
+        //         toolsettings[tool] = calcToolPriority(tool);
+        //     }
+        //     // Always have at least one of those in stock for other stuff
+        //     for(const Tool tool : {Tool::Hammer, Tool::Shovel, Tool::Tongs})
+        //     {
+        //         if(inventory[TOOL_TO_GOOD[tool]] == 0)
+        //             toolsettings[tool] = std::max<unsigned>(toolsettings[tool], 1u);
+        //     }
+        //     // We want about 12 woodcutters, so if we don't have axes produce some
+        //     if(inventory[GoodType::Axe] == 0 && inventory[Job::Woodcutter] < 12)
+        //     {
+        //         // Higher priority if we can't meet the building requirements as calculated above
+        //         toolsettings[Tool::Axe] = (toolsettings[Tool::Axe] == 0) ? 4 : 7;
+        //     }
+        // }
 
         for(const auto tool : helpers::enumRange<Tool>())
         {
@@ -2714,7 +2731,7 @@ void AIPlayerJH::saveStats(unsigned int gf) const
 
         scoreFile << "GameFrame,Country,Buildings,Military,GoldCoins,Productivity,Kills" << std::endl;
 
-        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable" << std::endl;
+        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable,BoardsDemand" << std::endl;
     }
     scoreFile << gf;
     scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Country);
@@ -2729,6 +2746,7 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     otherFile << "," << bldPlanner->GetNumMilitaryBlds();
     otherFile << "," << GetAvailableResources(AISurfaceResource::Wood);
     otherFile << "," << GetAvailableResources(AISurfaceResource::Stones);
+    otherFile << "," << player.GetBuildingRegister().CalcBoardsDemand();
     otherFile << std::endl;
 
     auto bldMap = GetBuildingsMap(*bldPlanner);
@@ -2827,6 +2845,12 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     }
 
     outfile << std::endl;
+
+    outfile << " Other: " << std::endl;
+    outfile << "Mil. Builngs: " << bldPlanner->GetNumMilitaryBlds() << std::endl;;
+    outfile << "Wood available: " << GetAvailableResources(AISurfaceResource::Wood) << std::endl;;
+    outfile << "Stone available: " << GetAvailableResources(AISurfaceResource::Stones) << std::endl;;
+    outfile << "Boards demand: " << player.GetBuildingRegister().CalcBoardsDemand() << std::endl;;
     outfile.close();
 }
 

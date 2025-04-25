@@ -327,7 +327,7 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
             // Granit Typ 1
             case 0xCC:
             {
-                if(lc >= 0x01 && lc <= 0x06)
+                if(lc >= 0x01 && lc <= 0x07)
                     obj = new noGranite(GraniteType::One, lc - 1);
                 else
                     LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
@@ -337,7 +337,7 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
             // Granit Typ 2
             case 0xCD:
             {
-                if(lc >= 0x01 && lc <= 0x06)
+                if(lc >= 0x01 && lc <= 0x07)
                     obj = new noGranite(GraniteType::Two, lc - 1);
                 else
                     LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);

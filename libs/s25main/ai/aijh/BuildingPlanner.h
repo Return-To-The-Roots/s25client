@@ -50,6 +50,7 @@ private:
     helpers::EnumArray<unsigned, BuildingType> buildingsWanted;
     bool expansionRequired;
 
+    signed boardsBalance = 0;
     unsigned woodAvailable = 0;
     unsigned stoneAvailable = 0;
 

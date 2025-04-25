@@ -358,7 +358,7 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
                                             bool to_wh, bool use_boat_roads, unsigned* length,
                                             const RoadSegment* forbidden) const
 {
-    nobBaseWarehouse* best = nullptr;
+        nobBaseWarehouse* best = nullptr;
 
     unsigned best_length = std::numeric_limits<unsigned>::max();
 

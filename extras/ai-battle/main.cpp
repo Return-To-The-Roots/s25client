@@ -12,6 +12,8 @@
 #include "ai/aijh/StatsConfig.h"
 #include "files.h"
 #include "random/Random.h"
+
+#include "s25util/Log.h"
 #include "s25util/System.h"
 #include <yaml-cpp/yaml.h>
 
@@ -93,6 +95,28 @@ int main(int argc, char** argv)
 
     try
     {
+
+        if(runId)
+            STATS_CONFIG.runId = *runId;
+        if(runSetId)
+            STATS_CONFIG.runSetId = *runSetId;
+
+        STATS_CONFIG.outputPath = *output_path;
+        std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
+        bfs::create_directory(runSetDir);
+        std::string runDir = runSetDir + "/" + *runId;
+        bfs::create_directory(runDir);
+        std::string statsDir = runDir + "/stats/";
+        bfs::create_directory(statsDir);
+        STATS_CONFIG.statsPath = statsDir;
+        std::string savesDir = runDir + "/saves/";
+        bfs::create_directory(savesDir);
+        STATS_CONFIG.savesPath = savesDir;
+
+        std::string logsDir = runDir + "/logs/";
+        bfs::create_directory(logsDir);
+        LOG.setLogFilepath(logsDir);
+
         // We print arguments and seed in order to be able to reproduce crashes.
         for(int i = 0; i < argc; ++i)
             bnw::cout << argv[i] << " ";
@@ -152,22 +176,6 @@ int main(int argc, char** argv)
         if(replay_path)
             game.RecordReplay(*replay_path, random_init);
 
-        if(runId)
-            STATS_CONFIG.runId = *runId;
-        if(runSetId)
-            STATS_CONFIG.runSetId = *runSetId;
-
-        STATS_CONFIG.outputPath = *output_path;
-        std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
-        bfs::create_directory(runSetDir);
-        std::string runDir = runSetDir + "/" + *runId;
-        bfs::create_directory(runDir);
-        std::string statsDir = runDir + "/stats/";
-        bfs::create_directory(statsDir);
-        STATS_CONFIG.statsPath = statsDir;
-        std::string savesDir = runDir + "/saves/";
-        bfs::create_directory(savesDir);
-        STATS_CONFIG.savesPath = savesDir;
 
         game.Run(options["maxGF"].as<unsigned>());
         game.Close();

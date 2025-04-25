@@ -6,6 +6,7 @@
 
 #include "gameTypes/BuildingCount.h"
 #include <list>
+#include "gameTypes/GoodTypes.h"
 #include <vector>
 
 class noBuilding;
@@ -45,6 +46,8 @@ public:
     unsigned CalcAverageProductivity(BuildingType bldType) const;
     /// Calculate the average productivity for all buildings
     unsigned short CalcAverageProductivity() const;
+
+    signed CalcBoardsDemand() const;
 
 private:
     std::list<noBuildingSite*> building_sites;
