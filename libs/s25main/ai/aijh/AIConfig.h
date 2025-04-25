@@ -23,18 +23,18 @@ struct AIConfig
     double woodcutterToStorehouseRatio = 2.0;
     double woodcutterToWoodRatio = 2500;
     double breweryToArmoryRatio = 5;
-    double ironsmelterToIronMineRatio = 0.9;
     double pigfarmMultiplier = 0.0;
-    double maxMetalworks = 2.0;
+    double maxMetalworks = 4.0;
     double foresterFreeRadius = 4.0;
     BuildParams sawmillToWoodcutter = {1, 2};
-    BuildParams farmToMil = {0, 0.7};
+    BuildParams milToFarm = {0, 0.95};
     BuildParams wellToUsers = {0, 1.2};
-    double millToFarmRatio = 0.75;
+    BuildParams freeFarmToMill = {0.0, 0.95};
     BuildParams milToSawmill = {4.0, 0.1, {0.0, 2}};
     BuildParams milToForester = {0.1, 0.025, {2.0, 0.25}};
     BuildParams sawmillToForester = {0, 0.0, {2.0, 1}};
-    BuildParams metalworksToIronsmelter = {0.0, 0.00, {1.0, 1.0}};
+    BuildParams ironsmelterToMetalworks = {1.0, 0.00, {1.0, 1.0}};
+    BuildParams ironMineToIronsmelter = {0.0, 1.0};
     BuildParams breweryToArmory = {1.0, 0.2};
 
     BuildParams startupMilToSawmill = {3.0, 0.4};

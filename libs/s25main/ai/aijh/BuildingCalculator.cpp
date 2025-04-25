@@ -16,18 +16,19 @@ struct Inventory;
 class GamePlayer;
 
 namespace AIJH {
-helpers::EnumArray<unsigned, BuildingType> GetStartupSet(const AIPlayerJH& aijh, unsigned woodAvailable)
+BuildCalculator::BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingNums, const Inventory& inventory,
+                                 unsigned woodAvailable)
+    : aijh(aijh), buildingNums(buildingNums), inventory(inventory), woodAvailable(woodAvailable),
+      numMilitaryBlds(aijh.player.GetBuildingRegister().GetMilitaryBuildings().size())
+{}
+helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 {
-    const unsigned milCount = aijh.player.GetBuildingRegister().GetMilitaryBuildings().size();
-
     auto values = helpers::EnumArray<unsigned, BuildingType>();
-    auto milToSawmill = AI_CONFIG.startupMilToSawmill;
-    auto milToWoodcutter = AI_CONFIG.startupMilToWoodcutter;
-    values[BuildingType::Forester] = CalcForesters(aijh, woodAvailable);
-    values[BuildingType::Sawmill] = (unsigned)(milToSawmill.constant + milCount * milToSawmill.linear);
-    values[BuildingType::Woodcutter] = (unsigned)(milToWoodcutter.constant + milCount * milToWoodcutter.linear);
-    values[BuildingType::Quarry] = 1 + milCount / 3;
-    values[BuildingType::Fishery] = 1 + milCount / 5;
+    values[BuildingType::Forester] = CalcForesters();
+    values[BuildingType::Sawmill] = calcCount(numMilitaryBlds, AI_CONFIG.startupMilToSawmill);
+    values[BuildingType::Woodcutter] = calcCount(numMilitaryBlds, AI_CONFIG.startupMilToWoodcutter);
+    values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
+    values[BuildingType::Fishery] = 1 + numMilitaryBlds / 5;
     values[BuildingType::GraniteMine] = -1;
     values[BuildingType::CoalMine] = -1;
     values[BuildingType::IronMine] = -1;
@@ -42,19 +43,15 @@ helpers::EnumArray<unsigned, BuildingType> GetStartupSet(const AIPlayerJH& aijh,
     return values;
 }
 
-unsigned doGetNumBuildings(const BuildingCount bldCount, BuildingType type)
-{
-    return bldCount.buildings[type] + bldCount.buildingSites[type];
-}
-unsigned CalcWoodcutters(const AIPlayerJH& aijh, const BuildingCount bldCount, unsigned woodAvailable)
+unsigned BuildCalculator::CalcWoodcutters()
 {
     BuildParams params = AI_CONFIG.sawmillToWoodcutter;
-    auto sawmills = GetNumBuildings(bldCount, BuildingType::Sawmill);
+    auto sawmills = GetNumBuildings(BuildingType::Sawmill);
     unsigned baseWoodCutters = (unsigned)(params.constant + params.linear * sawmills);
 
-    unsigned woodcutters = GetNumBuildings(bldCount, BuildingType::Woodcutter);
+    unsigned woodcutters = GetNumBuildings(BuildingType::Woodcutter);
 
-    unsigned forestersActive = bldCount.buildings[BuildingType::Forester];
+    unsigned forestersActive = buildingNums.buildings[BuildingType::Forester];
     unsigned extraWood = woodAvailable - 6 * forestersActive;
 
     unsigned additional_woodcutters = 0;
@@ -64,20 +61,19 @@ unsigned CalcWoodcutters(const AIPlayerJH& aijh, const BuildingCount bldCount, u
     }
 
     unsigned max_available_woodcutter = maxWoodcutter(aijh);
-    return std::min(max_available_woodcutter + 2, additional_woodcutters + baseWoodCutters);
+    unsigned count = std::min(max_available_woodcutter + 2, additional_woodcutters + baseWoodCutters);
+    return std::min(count, sawmills * 3);
 }
 
-unsigned CalcForesters(const AIPlayerJH& aijh, unsigned woodAvailable)
+unsigned BuildCalculator::CalcForesters()
 {
-
-    BuildingCount bldCount = aijh.player.GetBuildingRegister().GetBuildingNums();
     const Inventory& inventory = aijh.player.GetInventory();
     unsigned max_available_forester = inventory[Job::Forester] + inventory[GoodType::Shovel];
-    unsigned additional_forester = doGetNumBuildings(bldCount, BuildingType::Charburner);
-    unsigned sawmills = doGetNumBuildings(bldCount, BuildingType::Sawmill);
+    unsigned additional_forester = GetNumBuildings(BuildingType::Charburner);
+    unsigned sawmills = GetNumBuildings(BuildingType::Sawmill);
     signed count = 0u;
 
-    count = CalcCount(sawmills, AI_CONFIG.sawmillToForester);
+    count = calcCount(sawmills, AI_CONFIG.sawmillToForester);
     count -= (unsigned)(woodAvailable / AI_CONFIG.foresterWoodLevel);
 
     count += additional_forester;
@@ -86,35 +82,35 @@ unsigned CalcForesters(const AIPlayerJH& aijh, unsigned woodAvailable)
     return count;
 }
 
-unsigned CalcCount(unsigned x, BuildParams params)
-{
-    Logarithmic paramsLog2 = params.logTwo;
-    return (unsigned)(params.constant + params.linear * x + std::log(paramsLog2.constant + paramsLog2.linear * x));
-}
-
-unsigned CalcPigFarms(const BuildingCount buildingNums)
+unsigned BuildCalculator::CalcPigFarms()
 {
     if(AI_CONFIG.pigfarmMultiplier == 0)
     {
         return 0;
     }
-    unsigned farms = GetNumBuildings(buildingNums, BuildingType::Farm);
+    unsigned farms = GetNumBuildings(BuildingType::Farm);
     unsigned wanted = (farms < 8) ? farms / 4 : (farms - 2) / 4;
-    unsigned slaughterhouses = GetNumBuildings(buildingNums, BuildingType::Slaughterhouse);
+    unsigned slaughterhouses = GetNumBuildings(BuildingType::Slaughterhouse);
     if(wanted > slaughterhouses + 1)
         wanted = slaughterhouses + 1;
     return wanted;
 }
 
-unsigned CalcFarms(const AIPlayerJH& aijh, unsigned numMilitaryBlds)
+unsigned BuildCalculator::CalcFarms()
 {
-    return (unsigned)std::min<double>(maxFarmer(aijh) * 1.2, numMilitaryBlds * AI_CONFIG.farmToMil.linear);
+    unsigned count = (unsigned)std::min<double>(maxFarmer(aijh) * 1.2, numMilitaryBlds * AI_CONFIG.milToFarm.linear);
+    unsigned grainUsers = calcGrainUsers();
+    if(grainUsers > 5)
+    {
+        return unsigned(std::min<double>(grainUsers * 1.75, count));
+    }
+    return count;
 }
 
-unsigned CalcBreweries(const AIPlayerJH& aijh, const BuildingCount buildingNums)
+unsigned BuildCalculator::CalcBreweries()
 {
-    unsigned armories = GetNumBuildings(buildingNums, BuildingType::Armory);
-    unsigned farms = GetNumBuildings(buildingNums, BuildingType::Farm);
+    unsigned armories = GetNumBuildings(BuildingType::Armory);
+    unsigned farms = GetNumBuildings(BuildingType::Farm);
     if(armories == 0 || farms < 3)
     {
         return 0;
@@ -124,11 +120,39 @@ unsigned CalcBreweries(const AIPlayerJH& aijh, const BuildingCount buildingNums)
         return unsigned(params.constant + armories * params.linear);
     return 1 + armories / 6;
 }
-
-unsigned CalcArmories(const AIPlayerJH& aijh, const BuildingCount buildingNums)
+unsigned BuildCalculator::CalcIronMines()
 {
-    unsigned ironsmelters = GetNumBuildings(buildingNums, BuildingType::Ironsmelter);
-    unsigned metalworks = GetNumBuildings(buildingNums, BuildingType::Metalworks);
+    unsigned count = 0;
+
+    if(GetNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
+    {
+        if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
+        {
+            count = unsigned(GetNumBuildings(BuildingType::Farm) / AI_CONFIG.farmToIronMineRatio);
+        } else
+            count = std::min(GetNumBuildings(BuildingType::Farm) / 2, GetNumBuildings(BuildingType::Ironsmelter) + 1);
+    } else
+    {
+        unsigned numFoodProducers = GetNumBuildings(BuildingType::Bakery)
+                                    + GetNumBuildings(BuildingType::Slaughterhouse)
+                                    + GetNumBuildings(BuildingType::Hunter) + GetNumBuildings(BuildingType::Fishery);
+        count = (inventory.people[Job::Miner] + inventory.goods[GoodType::PickAxe]
+                   > GetNumBuildings(BuildingType::CoalMine) + GetNumBuildings(BuildingType::GoldMine) + 1
+                 && numFoodProducers > 4) ?
+                  2 :
+                  1;
+    }
+    if(GetNumBuildings(BuildingType::IronMine) > 5 && aijh.GetProductivity(BuildingType::IronMine) < 70.0)
+    {
+        count = GetNumBuildings(BuildingType::IronMine);
+    }
+    return count;
+}
+
+unsigned BuildCalculator::CalcArmories()
+{
+    unsigned ironsmelters = GetNumBuildings(BuildingType::Ironsmelter);
+    unsigned metalworks = GetNumBuildings(BuildingType::Metalworks);
     if(ironsmelters < 2)
     {
         return 0;
@@ -142,9 +166,9 @@ unsigned CalcArmories(const AIPlayerJH& aijh, const BuildingCount buildingNums)
     return armoriesWanted;
 }
 
-unsigned CalcMetalworks(const AIPlayerJH& aijh, const BuildingCount buildingNums)
+unsigned BuildCalculator::CalcMetalworks()
 {
-    unsigned ironsmelters = GetNumBuildings(buildingNums, BuildingType::Ironsmelter);
+    unsigned ironsmelters = GetNumBuildings(BuildingType::Ironsmelter);
     if(ironsmelters == 0)
     {
         return 0;
@@ -153,21 +177,88 @@ unsigned CalcMetalworks(const AIPlayerJH& aijh, const BuildingCount buildingNums
     {
         return 1;
     }
-    return std::min(CalcCount(ironsmelters, AI_CONFIG.metalworksToIronsmelter), (unsigned)AI_CONFIG.maxMetalworks + 1);
+    return std::min(calcCount(ironsmelters, AI_CONFIG.ironsmelterToMetalworks), (unsigned)AI_CONFIG.maxMetalworks);
 }
-unsigned CalcWells(const Inventory& inventory, helpers::EnumArray<unsigned, BuildingType> buildingsWanted)
+
+unsigned BuildCalculator::CalcWells()
 {
     unsigned waterOnStore = inventory[GoodType::Water];
     unsigned flourOnStore = inventory[GoodType::Flour];
-    unsigned users = buildingsWanted[BuildingType::Bakery] + buildingsWanted[BuildingType::PigFarm]
-                     + buildingsWanted[BuildingType::DonkeyBreeder] + buildingsWanted[BuildingType::Brewery];
-    users -= (unsigned)(waterOnStore / 50.0);
-    users += (unsigned)(flourOnStore / 50.0);
-    return (unsigned)(AI_CONFIG.wellToUsers.constant + AI_CONFIG.wellToUsers.linear * users);
+    unsigned users = calcWaterUsers();
+    users -= unsigned(waterOnStore / 50.0);
+    users += unsigned(flourOnStore / 50.0);
+    return unsigned(AI_CONFIG.wellToUsers.constant + AI_CONFIG.wellToUsers.linear * users);
 }
 
-unsigned GetNumBuildings(BuildingCount buildingNums, BuildingType type)
+unsigned BuildCalculator::CalcMills()
+{
+    unsigned millsNum = GetNumBuildings(BuildingType::Mill);
+    unsigned foodusers = calcGrainUsers();
+    unsigned farms = buildingNums.buildings[BuildingType::Farm];
+    unsigned nonMillUsers = foodusers - millsNum;
+    if(farms >= nonMillUsers)
+        return calcCount(farms - nonMillUsers, AI_CONFIG.freeFarmToMill);
+    return millsNum;
+}
+
+unsigned BuildCalculator::CalcSawmills()
+{
+    return calcCount(numMilitaryBlds, AI_CONFIG.milToSawmill);
+}
+
+unsigned BuildCalculator::CalcIronsmelter()
+{
+    unsigned ironMines = GetNumBuildings(BuildingType::IronMine);
+    unsigned count = calcCount(ironMines, AI_CONFIG.ironMineToIronsmelter);
+    return std::min<unsigned>(count, maxIronFounder(aijh) + 2);
+}
+
+unsigned BuildCalculator::calcGrainUsers()
+{
+    return GetNumBuildings(BuildingType::Mill) + GetNumBuildings(BuildingType::Charburner)
+           + GetNumBuildings(BuildingType::Brewery) + GetNumBuildings(BuildingType::PigFarm)
+           + GetNumBuildings(BuildingType::DonkeyBreeder);
+}
+
+unsigned BuildCalculator::calcWaterUsers()
+{
+    return GetNumBuildings(BuildingType::Bakery) + GetNumBuildings(BuildingType::PigFarm)
+           + GetNumBuildings(BuildingType::DonkeyBreeder) + GetNumBuildings(BuildingType::Brewery);
+}
+
+unsigned BuildCalculator::CalcQuarry()
+{
+    unsigned count = 0;
+    if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 7 && inventory.people[Job::Stonemason] > 0
+       && inventory.people[Job::Miner] < 3)
+    {
+        count = std::max(std::min(inventory.people[Job::Stonemason], numMilitaryBlds), 2u);
+    } else
+    {
+        //>6miners = build up to 6 depending on resources, else max out at miners/2
+        if(inventory.people[Job::Miner] > 6)
+            count = std::min(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Stonemason], 6u);
+        else
+            count = inventory.people[Job::Miner] / 2;
+
+        if(count > numMilitaryBlds)
+            count = numMilitaryBlds;
+    }
+    unsigned sawmills = GetNumBuildings(BuildingType::Sawmill);
+    count = std::max(count, (unsigned)(sawmills / 1.2 + 1));
+    count = std::min(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Stonemason] + 2, count);
+    return count;
+}
+
+unsigned BuildCalculator::GetNumBuildings(BuildingType type)
 {
     return buildingNums.buildings[type] + buildingNums.buildingSites[type];
 }
+
+unsigned BuildCalculator::calcCount(unsigned x, BuildParams params)
+{
+    double log2Val = std::max(0.0, std::log(params.logTwo.constant + params.logTwo.linear * x));
+    return (unsigned)(params.constant + params.linear * x + log2Val);
+}
+
 } // namespace AIJH

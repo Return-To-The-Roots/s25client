@@ -135,6 +135,9 @@ void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
 
 void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
 {
+    const Inventory& inventory = aijh.player.GetInventory();
+    BuildCalculator calculator = BuildCalculator(aijh, buildingNums, inventory, woodAvailable);
+
     // no military buildings -> usually start only
     const unsigned numMilitaryBlds = aijh.player.GetBuildingRegister().GetMilitaryBuildings().size();
 
@@ -146,78 +149,34 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
 
     if(numMilitaryBlds < AI_CONFIG.startupMilBuildings && storehouses < 2)
     {
-        setBuildingsWanted(GetStartupSet(aijh, woodAvailable));
+        setBuildingsWanted(calculator.GetStartupSet());
     } else
     {
-        const Inventory& inventory = aijh.player.GetInventory();
-
-        buildingsWanted[BuildingType::Forester] = CalcForesters(aijh, woodAvailable);
-        buildingsWanted[BuildingType::Woodcutter] = CalcWoodcutters(aijh, buildingNums, woodAvailable);
+        buildingsWanted[BuildingType::Forester] = calculator.CalcForesters();
+        buildingsWanted[BuildingType::Woodcutter] = calculator.CalcWoodcutters();
 
         // fishery & hunter
         buildingsWanted[BuildingType::Fishery] = std::min(maxFishers(aijh), numMilitaryBlds + 1u);
         buildingsWanted[BuildingType::Hunter] = std::min(maxHunters(aijh), 4u);
 
-        // quarry: low ware games start at 2 otherwise build as many as we have stonemasons, higher ware games up to 6
-        // quarries
-        if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 7
-           && inventory.people[Job::Stonemason] > 0 && inventory.people[Job::Miner] < 3)
-        {
-            buildingsWanted[BuildingType::Quarry] =
-              std::max(std::min(inventory.people[Job::Stonemason], numMilitaryBlds), 2u);
-        } else
-        {
-            //>6miners = build up to 6 depending on resources, else max out at miners/2
-            if(inventory.people[Job::Miner] > 6)
-                buildingsWanted[BuildingType::Quarry] =
-                  std::min(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Stonemason], 6u);
-            else
-                buildingsWanted[BuildingType::Quarry] = inventory.people[Job::Miner] / 2;
+        buildingsWanted[BuildingType::Quarry] = calculator.CalcQuarry();
 
-            if(buildingsWanted[BuildingType::Quarry] > numMilitaryBlds)
-                buildingsWanted[BuildingType::Quarry] = numMilitaryBlds;
-        }
-        buildingsWanted[BuildingType::Quarry] =
-          std::max(buildingsWanted[BuildingType::Quarry], (unsigned)(GetNumBuildings(BuildingType::Sawmill) / 1.2 + 1));
-        buildingsWanted[BuildingType::Quarry] =
-          std::min(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Stonemason] + 2,
-                   buildingsWanted[BuildingType::Quarry]);
-        int resourcelimit = inventory.people[Job::Carpenter] + inventory.goods[GoodType::Saw];
-        const auto milToSaw = AI_CONFIG.milToSawmill;
-        buildingsWanted[BuildingType::Sawmill] =
-          (unsigned)(milToSaw.constant + log2(milToSaw.logTwo.constant + milToSaw.logTwo.linear * numMilitaryBlds));
-        // 4 + std::max(std::min(numSawmillsFed, resourcelimit), 3); // min 3
-
-        buildingsWanted[BuildingType::Ironsmelter] =
-          (unsigned)(GetNumBuildings(BuildingType::IronMine) * AI_CONFIG.ironsmelterToIronMineRatio) + 1;
-
+        buildingsWanted[BuildingType::Sawmill] = calculator.CalcSawmills();
+        buildingsWanted[BuildingType::Ironsmelter] = calculator.CalcIronsmelter();
         buildingsWanted[BuildingType::Mint] = GetNumBuildings(BuildingType::GoldMine);
-        buildingsWanted[BuildingType::Armory] = CalcArmories(aijh, buildingNums);
-        buildingsWanted[BuildingType::Brewery] = CalcBreweries(aijh, buildingNums);
-        buildingsWanted[BuildingType::Metalworks] = CalcMetalworks(aijh, buildingNums);
+        buildingsWanted[BuildingType::Armory] = calculator.CalcArmories();
+        buildingsWanted[BuildingType::Brewery] = calculator.CalcBreweries();
+        buildingsWanted[BuildingType::Metalworks] = calculator.CalcMetalworks();
+        buildingsWanted[BuildingType::Mill] = calculator.CalcMills();
 
         unsigned millsNum = GetNumBuildings(BuildingType::Mill);
-        // max processing
-        unsigned foodusers = GetNumBuildings(BuildingType::Charburner) + millsNum
-                             + GetNumBuildings(BuildingType::Brewery) + GetNumBuildings(BuildingType::PigFarm)
-                             + GetNumBuildings(BuildingType::DonkeyBreeder);
-
-        unsigned farms = buildingNums.buildings[BuildingType::Farm];
-        unsigned nonMillUsers = foodusers - millsNum;
-        if(farms >= nonMillUsers)
-            buildingsWanted[BuildingType::Mill] = unsigned(AI_CONFIG.millToFarmRatio * (farms - nonMillUsers));
-        else
-            buildingsWanted[BuildingType::Mill] = millsNum;
-
         buildingsWanted[BuildingType::Bakery] = std::min<unsigned>(millsNum, maxBakers(aijh) + 2);
 
-        buildingsWanted[BuildingType::PigFarm] = CalcPigFarms(buildingNums);
+        buildingsWanted[BuildingType::PigFarm] = calculator.CalcPigFarms();
         buildingsWanted[BuildingType::Slaughterhouse] =
           std::min(maxButcher(aijh), GetNumBuildings(BuildingType::PigFarm));
-
-        buildingsWanted[BuildingType::Well] = CalcWells(inventory, buildingsWanted);
-
-        buildingsWanted[BuildingType::Farm] = CalcFarms(aijh, numMilitaryBlds);
+        buildingsWanted[BuildingType::Well] = calculator.CalcWells();
+        buildingsWanted[BuildingType::Farm] = calculator.CalcFarms();
 
         if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 3)
         {
@@ -245,29 +204,19 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
                     > GetNumBuildings(BuildingType::Farm) + GetNumBuildings(BuildingType::Fishery) + 1)
                 buildingsWanted[BuildingType::CoalMine] =
                   (GetNumBuildings(BuildingType::Farm) + GetNumBuildings(BuildingType::Fishery)) / 2 + 2;
+
             if(GetNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
             {
                 if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
                 {
-                    // inexhaustible mines? -> more farms required for each mine
-                    buildingsWanted[BuildingType::IronMine] =
-                      unsigned(GetNumBuildings(BuildingType::Farm) / AI_CONFIG.farmToIronMineRatio);
-                    buildingsWanted[BuildingType::CoalMine] =
-                        unsigned(GetNumBuildings(BuildingType::IronMine) * 2);
-                } else
-                    buildingsWanted[BuildingType::IronMine] =
-                      std::min(GetNumBuildings(BuildingType::Farm) / 2, GetNumBuildings(BuildingType::Ironsmelter) + 1);
-                // buildingsWanted[BuildingType::GoldMine] =
-                //   (GetNumBuildings(BuildingType::Mint) > 0) ?
-                //     GetNumBuildings(BuildingType::Ironsmelter) > 6 && GetNumBuildings(BuildingType::Mint) > 1 ?
-                //     GetNumBuildings(BuildingType::Ironsmelter) > 10 ? 5 : 4 :
-                //     3 :
-                //     2;
+                    buildingsWanted[BuildingType::CoalMine] = unsigned(GetNumBuildings(BuildingType::IronMine) * 2);
+                }
+
                 buildingsWanted[BuildingType::DonkeyBreeder] = 1;
                 if(aijh.ggs.isEnabled(AddonId::CHARBURNER)
                    && (buildingsWanted[BuildingType::CoalMine] > GetNumBuildings(BuildingType::CoalMine) + 4))
                 {
-                    resourcelimit = inventory.people[Job::CharBurner] + inventory.goods[GoodType::Shovel] + 1;
+                    int resourcelimit = inventory.people[Job::CharBurner] + inventory.goods[GoodType::Shovel] + 1;
                     buildingsWanted[BuildingType::Charburner] = std::min<unsigned>(
                       std::min(buildingsWanted[BuildingType::CoalMine] - (GetNumBuildings(BuildingType::CoalMine) + 1),
                                3u),
@@ -275,19 +224,8 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
                 }
             } else
             {
-                // probably still limited in food supply go up to 4 coal 1 gold 2 iron (gold+coal->coin,
-                // iron+coal->tool, iron+coal+coal->weapon)
-                unsigned numFoodProducers =
-                  GetNumBuildings(BuildingType::Bakery) + GetNumBuildings(BuildingType::Slaughterhouse)
-                  + GetNumBuildings(BuildingType::Hunter) + GetNumBuildings(BuildingType::Fishery);
-                buildingsWanted[BuildingType::IronMine] =
-                  (inventory.people[Job::Miner] + inventory.goods[GoodType::PickAxe]
-                     > GetNumBuildings(BuildingType::CoalMine) + GetNumBuildings(BuildingType::GoldMine) + 1
-                   && numFoodProducers > 4) ?
-                    2 :
-                    1;
                 // buildingsWanted[BuildingType::GoldMine] = (inventory.people[Job::Miner] > 2) ? 1 : 0;
-                resourcelimit = inventory.people[Job::CharBurner] + inventory.goods[GoodType::Shovel];
+                int resourcelimit = inventory.people[Job::CharBurner] + inventory.goods[GoodType::Shovel];
                 if(aijh.ggs.isEnabled(AddonId::CHARBURNER)
                    && (GetNumBuildings(BuildingType::CoalMine) < 1
                        && (GetNumBuildings(BuildingType::IronMine) + GetNumBuildings(BuildingType::GoldMine) > 0)))
@@ -304,10 +242,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
                 buildingsWanted[BuildingType::GraniteMine] = 0;
         }
 
-        if(GetNumBuildings(BuildingType::IronMine) > 5 && aijh.GetProductivity(BuildingType::IronMine) < 70.0)
-        {
-            buildingsWanted[BuildingType::IronMine] = GetNumBuildings(BuildingType::IronMine);
-        }
+        buildingsWanted[BuildingType::IronMine] = calculator.CalcIronMines();
 
         // Only build catapults if we have more than 5 military blds and 50 stones. Then reserve 4 stones per catapult
         // but do not build more than 4 additions catapults Note: This is a max amount. A catapult is only placed if

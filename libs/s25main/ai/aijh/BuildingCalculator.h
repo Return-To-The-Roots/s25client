@@ -1,19 +1,43 @@
-#include "AIPlayerJH.h"
 #include "AIConfig.h"
+#include "AIPlayerJH.h"
 
 namespace AIJH {
-    helpers::EnumArray<unsigned, BuildingType> GetStartupSet(const AIPlayerJH& aijh, unsigned woodAvailable);
-    unsigned doGetNumBuildings(BuildingCount bldCount, BuildingType type);
-    unsigned CalcForesters(const AIPlayerJH& aijh, unsigned woodAvailable);
-    unsigned CalcWoodcutters(const AIPlayerJH& aijh, BuildingCount bldCount, unsigned woodAvailable);
-    unsigned CalcPigFarms(BuildingCount buildingNums);
-    unsigned CalcFarms(const AIPlayerJH& aijh, unsigned foodusers);
-    unsigned CalcArmories(const AIPlayerJH& aijh, BuildingCount buildingNums);
-    unsigned CalcBreweries(const AIPlayerJH& aijh, BuildingCount buildingNums);
-    unsigned CalcMetalworks(const AIPlayerJH& aijh, BuildingCount buildingNums);
-    unsigned CalcWells(const Inventory& inventory, helpers::EnumArray<unsigned, BuildingType> buildingsWanted);
+class BuildCalculator
+{
+public:
+    BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingNums, const Inventory& inventory,
+                    unsigned woodAvailable);
 
-    unsigned GetNumBuildings(BuildingCount buildingNums, BuildingType type);
-    unsigned CalcCount(unsigned x, BuildParams params);
+    helpers::EnumArray<unsigned, BuildingType> GetStartupSet();
+
+    unsigned CalcIronsmelter();
+    unsigned CalcForesters();
+    unsigned CalcWoodcutters();
+    unsigned CalcPigFarms();
+    unsigned CalcQuarry();
+    unsigned CalcMills();
+    unsigned CalcSawmills();
+    unsigned CalcMetalworks();
+    unsigned CalcArmories();
+    unsigned CalcWells();
+    unsigned CalcFarms();
+    unsigned CalcBreweries();
+    unsigned CalcIronMines();
+
+private:
+    const AIPlayerJH& aijh;
+    BuildingCount buildingNums;
+    const Inventory& inventory;
+    unsigned woodAvailable;
+    const unsigned numMilitaryBlds;
+
+    unsigned calcGrainUsers();
+    unsigned calcWaterUsers();
+    unsigned GetNumBuildings(BuildingType type);
+    unsigned calcCount(unsigned x, BuildParams params);
+};
+
+
+unsigned GetNumBuildings(BuildingCount buildingNums, BuildingType type);
 
 } // namespace AIJH

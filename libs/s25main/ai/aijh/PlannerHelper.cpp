@@ -36,3 +36,8 @@ unsigned maxWoodcutter(const AIJH::AIPlayerJH& aijh)
     const Inventory& inventory = aijh.player.GetInventory();
     return inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
 }
+unsigned maxIronFounder(const AIJH::AIPlayerJH& aijh)
+{
+    const Inventory& inventory = aijh.player.GetInventory();
+    return inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder];
+}
