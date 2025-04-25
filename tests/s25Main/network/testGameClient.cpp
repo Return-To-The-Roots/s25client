@@ -5,6 +5,7 @@
 #include "JoinPlayerInfo.h"
 #include "RttrConfig.h"
 #include "TestServer.h"
+#include "enum_cast.hpp"
 #include "files.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
@@ -28,6 +29,10 @@ namespace bfs = boost::filesystem;
 
 // LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(ClientState)
+static std::ostream& operator<<(std::ostream& os, const ConnectState& state)
+{
+    return os << rttr::enum_cast(state);
+}
 // LCOV_EXCL_STOP
 
 namespace {
