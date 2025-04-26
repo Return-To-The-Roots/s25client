@@ -214,9 +214,9 @@ rttr:RegisterTranslations(
 
         msg15   = 'Wiatrak zapewnia piekarzowi dostawy odpowiednich ilości mąki do wypieku chleba.',
 
-        msg16   = 'Nasi zwiadowcy odkryli przedziwny obiekt. Wygląda jak swego rodzaju brama.\n\nOczywiście oznacza to, że nie jesteśmy pierwszymi ludźmi, jacy dotarli na tę wyspę.\n\nZwiadowcy znaleźli nawet łacińską inskrypcję na bramie.\nJest dziwaczny i sprzeczny... A może to zagadka?\n\n\"Consiste ut procederas!\" - \"Osiądź w miejsc, aby posuwać się naprzód!\"\n\nCo to może oznaczać?!',
+        msg16   = 'Nasi zwiadowcy odkryli przedziwną konstrukcję. Wygląda ona jak swego rodzaju wrota.\n\nOczywiście oznacza to, że nie jesteśmy pierwszymi ludźmi, jacy dotarli na tę wyspę.\n\nZwiadowcy znaleźli nawet łacińską inskrypcję na tych wrotach.\nJest dziwaczna i sprzeczna... A może to zagadka?\n\n\"Consiste ut procederas!\" - \"Osiadając ruszaj dalej!\"\n\nCo to może oznaczać?!',
 
-        msg99   = 'Drugi Dzień Trzynastego Miesiąca po przybyciu na ląd.\n\n\nDrugi rok rozpoczął się wczoraj i wydaje się, że pomyślnie osiedliśmy na tej wyspie.\n\nZwiadowcy zameldowali o dziwnych wydarzeniach w pobliżu bramy.\n\nWygląda na to, że otworzył się portal, który może nas wyprowadzić z tej wyspy.\n\nChyba o to chodziło w tej przedziwnej zagadce: \"aby posunąć się naprzód, trzeba nam było osiąść w miejscu.\"\n\nSprawdzimy to - być może wszystkie drogi naprawdę prowadzą do Rzymu?',
+        msg99   = 'Drugi Dzień Trzynastego Miesiąca po przybyciu na ląd.\n\n\nDrugi rok rozpoczął się wczoraj i wydaje się, że pomyślnie osiedliśmy na tej wyspie.\n\nZwiadowcy zameldowali o dziwnych wydarzeniach w pobliżu wrót.\n\nWygląda na to, że otworzył się portal, który może nas wyprowadzić z tej wyspy.\n\nChyba o to chodziło w tej przedziwnej zagadce: \"aby posunąć się naprzód, trzeba nam było osiąść w miejscu.\"\n\nSprawdzimy to - być może wszystkie drogi naprawdę prowadzą do Rzymu?',
         msgh99  = 'Ukończyłeś tę misję. Drugi Rozdział czeka na ciebie...\n\nMożesz rozpocząć następną misję z menu głównego kiedy tylko chcesz.'
     }
 })

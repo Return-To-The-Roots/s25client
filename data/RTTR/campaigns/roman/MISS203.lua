@@ -93,9 +93,9 @@ rttr:RegisterTranslations(
         msgh2   = 'Zbuduj port i stocznię.\nW stoczni zbuduj duży statek handlowy i zorganizuj ekspedycję z portu.',
 
         msg3    = 'Na małej wyspie pośrodku archipelagu odkryliśmy wielki cmentarz wielorybów, na którym znajdowały się setki gigantycznych szkieletów.\n\nCo za imponujący widok.\n\nPoczątkowo nie mogliśmy zrozumieć, jak te stworzenia się tam dostały.\n\nErik wyjaśnił, że jego ludzie żyli z tych stworzeń i czcili je jako święte zwierzęta.\n\nDlatego po złowieniu ich kości były przynoszone do tego świętego miejsca.\n\nErik jest niespokojny, chce wyjechać, ponieważ boi się duchów martwych stworzeń.',
-        msgh3   = 'Zbadaj wyspę dalej.\nSzukaj następnej bramy.',
+        msgh3   = 'Zbadaj wyspę dalej.\nSzukaj następnych wrót.',
 
-        msg99   = 'Dotarliśmy do bramy i ją aktywowaliśmy.\nDroga jest teraz wolna.',
+        msg99   = 'Dotarliśmy do wrót i je aktywowaliśmy.\nDroga jest teraz wolna.',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })

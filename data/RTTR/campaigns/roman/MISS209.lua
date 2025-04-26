@@ -77,13 +77,13 @@ rttr:RegisterTranslations(
     { 
         Diary   = 'Dziennik',
 
-        msg1    = 'Powietrze jest pełne oczekiwania, a nawet trochę niechęci, gdy przygotowujemy się do rozpoczęcia ostatniego i najbardziej niebezpiecznego rozdziału naszej długiej podróży do domu.\n\nCzy kiedykolwiek zobaczymy Rzym ponownie?\n\nMusimy zebrać całą naszą siłę, ponieważ ta wyspa wydaje się być naszą najlepszą szansą...',
-        msgh1   = 'Uważaj. Nie atakuj, dopóki nie będziesz pewien, że możesz pokonać obu wrogów.',
+        msg1    = 'Powietrze przepełnione jest aurą oczekiwania, ale także swego rodzaju niepokojem, podczas gdy przygotowujemy się do rozpoczęcia ostatniego i najbardziej niebezpiecznego rozdziału naszej długiej podróży do domu.\n\nCzy kiedykolwiek zobaczymy Rzym ponownie?\n\nMusimy zebrać całą naszą siłę, ponieważ ta wyspa wydaje się być naszą najlepszą szansą...',
+        msgh1   = 'Bądź bardzo ostrożny. Nie atakuj, dopóki nie będziesz pewien, że możesz pokonać obu wrogów.',
 
-        msg2    = 'Siedemnasty Dzień Szóstego Miesiąca Dziesiątego Roku.\n\nRzymianie faktycznie stoją przed dziesiątą bramą.\nNie są wcale przyjaźni.\n\nMoże są drugą stroną medalu, wrogim bratem Remusem.\nMoże ich brama to ta, która zabierze nas z powrotem do ukochanego Rzymu.\n\nJak mówi stara legenda:\n\n\"Dla dobra Rzymu brat walczyć będzie przeciwko bratu.\"\n\nPrzez prawie dziesięć lat nieustannie marzyliśmy o naszej ojczyźnie.\n\nNie poddamy się teraz.',
+        msg2    = 'Siedemnasty Dzień Szóstego Miesiąca Dziesiątego Roku.\n\nRzymianie faktycznie stoją przed dziesiątą bramą.\nNie są wcale przyjaźni.\n\nMoże są drugą stroną medalu, wrogim bratem Remusem.\nByć może ich brama to ta, która zabierze nas z powrotem do ukochanego Rzymu.\n\nJak mówi stara legenda:\n\n\"Dla dobra Rzymu brat walczyć będzie przeciwko bratu.\"\n\nPrzez prawie dziesięć lat nieustannie marzyliśmy o naszej ojczyźnie.\n\nNie poddamy się teraz.',
         msgh2   = 'Zbierz wszystkie swoje siły, aby się przebić!\nZdobądź bramę!',
 
-        msg99   = 'Ostatni Dzień Dziesiątego Roku.\nOstatni wpis Oktawiusza w tym dzienniku.\n\nUdało się. Jutro wrócimy do Rzymu - równo dziesięć lat po tym, jak staliśmy się rozbitkami na tej wyspie.\n\nDziesięć lat, podczas których podążaliśmy śladami naszych przodków.\n\nDziesięć lat, podczas których nauczyliśmy się, co uczyniło Rzym wielkim.\n\nZłożymy wielką ucztę dziękczynną bogom i zobaczymy nasze rodziny i przyjaciół ponownie.\n\nNie mogę się doczekać.',
+        msg99   = 'Ostatni Dzień Dziesiątego Roku.\nOstatni wpis Oktawiusza w tym dzienniku.\n\nUdało się. Jutro wrócimy do Rzymu - równo dziesięć lat po tym, jak staliśmy się rozbitkami na wyspie.\n\nDziesięć lat, podczas których podążaliśmy śladami naszych przodków.\n\nDziesięć lat, podczas których nauczyliśmy się, co uczyniło Rzym wielkim.\n\nWyprawimy bogom wielką ucztę dziękczynną i ponownie zobaczymy nasze rodziny oraz przyjaciół.\n\nNie mogę się doczekać.',
         msgh99  = 'Udało ci się!'
     }
 })

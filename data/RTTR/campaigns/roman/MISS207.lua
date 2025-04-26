@@ -62,16 +62,16 @@ rttr:RegisterTranslations(
         msgh1   = 'Search for a gateway. Consider opportunities to build\na harbor.',
 
         msg99   = 'We have found the gateway and occupied it. When will\nwe reach our destination?',
-        msg99   = 'You have completed this mission. The next Chapter\nawaits you...'
+        msgh99   = 'You have completed this mission. The next Chapter\nawaits you...'
     },
     pl =
     { 
         Diary   = 'Dziennik',
 
         msg1    = 'Zwiadowcy powiedzieli mi o potężnym wrogu na zachodzie.\n\nMusimy spróbować zostać tutaj tak długo, jak to możliwe.\n\nW nagłym wypadku możemy zawsze uciec na wschód lub morzem...',
-        msgh1   = 'Szukaj bramy.\nRozważ możliwości budowy portu.',
+        msgh1   = 'Rozpocznij poszukiwania wrót.\nRozważ możliwości budowy portu.',
 
-        msg99   = 'Znaleźliśmy bramę i zajęliśmy ją.\n\nKiedy dotrzemy do naszego celu?',
+        msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nKiedy dotrzemy do naszego celu?',
         msgh99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })

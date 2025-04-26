@@ -86,16 +86,16 @@ rttr:RegisterTranslations(
     { 
         Diary   = 'Dziennik',
 
-        msg1    = 'Siedemnasty Dzień Trzeciego Miesiąca Trzeciego Roku.\n\nPopadliśmy już w coś na kształt rutyny w przygotowywaniu nowej osady.\n\nMam nadzieję, że tym razem wszystko pójdzie jak należy.\n\nNatknęliśmy się na kolejnego rozbitka. Ostrzegł nas przed wrogimi plemionami Nubijczyków na wschodzie wyspy.\n\nW górach na wschodzie rzekomo znajdują się również bogate złoża złota. Jest tylko jeden sposób, aby sprawdzić, ile warte są te plotki.\n\nCzłowiek ten nie wiedział nic o bramie, gdyż znał jedynie niewielką część wyspy.',
+        msg1    = 'Siedemnasty Dzień Trzeciego Miesiąca Trzeciego Roku.\n\nPopadliśmy już w coś na kształt rutyny w przygotowywaniu nowej osady.\n\nMam nadzieję, że tym razem wszystko pójdzie jak należy.\n\nNatknęliśmy się na kolejnego rozbitka. Ostrzegł nas przed wrogimi plemionami Nubijczyków na wschodzie wyspy.\n\nW górach na wschodzie rzekomo znajdują się również bogate złoża złota. Jest tylko jeden sposób, aby sprawdzić, ile warte są te plotki.\n\nCzłowiek ten nie wiedział nic o wrotach, gdyż znał jedynie niewielką część wyspy.',
         msgh1   = 'Przesuwaj się na wschód.',
 
         msg2    = 'Dwudziesty Trzeci Dzień Dwunastego Miesiąca Trzeciego Roku.\n\nNawiązaliśmy kontakt z Nubijczykami.\n\nIch postawa jest wroga, ale nie otwarcie agresywne.\n\nGotowym iść o zakład, że ich zachowanie wkrótce zmieni się. Na gorsze.\n\nPowinniśmy zbudować wieżę obserwacyjną, aby móc lepiej kontrolować ich poczynania.\n\nPogłoski o bogatych złożach złota wydają się być prawdziwe.\n\nWódz Nubijczyków paraduje w swojej złotej biżuterii niczym paw.',
-        msgh2   = 'Szukaj bramy.',
+        msgh2   = 'Szukaj wrót.',
 
-        msg3    = 'Pierwszy Dzień Drugiego Miesiąca Czwartego Roku od przybycia na brzeg.\n\nPlemię na północy blokuje nam drogę do kolejnej bramy.\n\nOni także pojmują ją jako swe święte miejsce.\n\nNie mamy wyboru. Będziemy walczyć.',
-        msgh3   = 'Zdobądź dostęp do bramy na północy.',
+        msg3    = 'Pierwszy Dzień Drugiego Miesiąca Czwartego Roku od przybycia na brzeg.\n\nPlemię na północy blokuje nam drogę do kolejnych wrót.\n\nOni także pojmują ją jako swe święte miejsce.\n\nNie mamy wyboru. Będziemy walczyć.',
+        msgh3   = 'Zdobądź dostęp do wrót na północy.',
 
-        msg99   = 'Dotarliśmy do bramy i ją aktywowaliśmy.\n\nNie wiemy, dokąd dotrzemy tym razem, lecz nie zamierzamy się zatrzymać.',
+        msg99   = 'Dotarliśmy do wrót i je aktywowaliśmy.\n\nNie wiemy, dokąd dotrzemy tym razem, lecz nie zamierzamy się zatrzymać.',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })

@@ -154,13 +154,13 @@ rttr:RegisterTranslations(
 
         msg7    = 'Nasze terytorium się rozrasta, a trasy transportowe stają się coraz dłuższe.\n\nMusimy zbudować magazyn, aby móc szybciej reagować na potrzeby naszych ludzi.',
 
-        msg8    = 'Dziennik Oktawiusza.\n\nCzwarty Dzień Czwartego Miesiąca drugiego roku.\n\nTo było do przewidzenia: natknęliśmy się na Nubijczyków.\n\nNa początku wszystko było bardzo przyjazne.\n\nNawet opowiedzieli nam o swojej świętej relikwii i szybko stało się jasne, że to jedna z bram.\n\nOdmówili nam dostępu do swojej świętej relikwii, więc będziemy musieli walczyć, aby się do niej dostać.',
-        msgh8   = 'Zaatakuj Nubijczyków i uzyskaj dostęp do ich bramy.',
+        msg8    = 'Dziennik Oktawiusza.\n\nCzwarty Dzień Czwartego Miesiąca drugiego roku.\n\nTo było do przewidzenia: natknęliśmy się na Nubijczyków.\n\nNa początku wszystko było bardzo przyjazne.\n\nNawet opowiedzieli nam o swojej świętej relikwii i szybko stało się jasne, że to jedne z wrót.\n\nOdmówili nam dostępu do swojej świętej relikwii, więc będziemy musieli walczyć, aby się do niej dostać.',
+        msgh8   = 'Zaatakuj Nubijczyków i uzyskaj dostęp do ich wrót.',
 
         msg9    = 'Nubijczycy to marni wojownicy, ale mają katapultę, którą musimy zniszczyć.\n\nMoże wtedy uda nam się zdobyć plany pokazujące, jak zbudować taką broń?',
-        msgh9   = 'Zdobądź katapultę, a następnie uzyskaj dostęp do bramy.',
+        msgh9   = 'Zdobądź katapultę, a następnie uzyskaj dostęp do wrót.',
 
-        msg99   = 'Dwudziesty Siódmy Dzień Dziewiątego Miesiąca.\n\n\nZwyciężyliśmy w bitwie i wyspa jest nasza.\nBrama znów stała się aktywna.\n\nJestem podekscytowany perspektywą, dokąd teraz zaprowadzi nasza podróż.\n\nNapis na bramie, jak poprzednio, jest po łacinie.\n\nMam nadzieję, że pójdziemy śladami naszych legendarnych poprzedników, gdy podróżowali do Rzymu...',
+        msg99   = 'Dwudziesty Siódmy Dzień Dziewiątego Miesiąca.\n\n\nZwyciężyliśmy w bitwie i wyspa jest nasza.\nWrota znów stały się aktywne.\n\nJestem podekscytowany perspektywą, dokąd teraz zaprowadzi nasza podróż.\n\nNapis na wrotach, jak poprzednio, jest po łacinie.\n\nMam nadzieję, że pójdziemy śladami naszych legendarnych poprzedników, gdy podróżowali do Rzymu...',
         msgh99  = 'Ukończyłeś tę misję.\nTrzeci Rozdział czeka na ciebie...'
     }
 })
