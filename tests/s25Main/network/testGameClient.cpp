@@ -15,6 +15,7 @@
 #include "test/testConfig.h"
 #include "rttr/test/ConfigOverride.hpp"
 #include "rttr/test/LogAccessor.hpp"
+#include "rttr/test/TmpFolder.hpp"
 #include "rttr/test/random.hpp"
 #include "s25util/boostTestHelpers.h"
 #include "s25util/tmpFile.h"
@@ -56,10 +57,13 @@ MOCK_BASE_CLASS(MockClientInterface, ClientInterface)
 
 class CustomUserMapFolderFixture
 {
+    rttr::test::TmpFolder tmpFolder_;
     rttr::test::ConfigOverride parent_;
 
 public:
-    CustomUserMapFolderFixture() : parent_("USERDATA", rttr::test::rttrTestDataDirOut)
+    // We need an empty folder for each test to avoid reusing maps downloaded in previous tests
+    // which breaks expected flow of events when this map is reused.
+    CustomUserMapFolderFixture() : parent_("USERDATA", tmpFolder_)
     {
         bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
     }
