@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -33,7 +33,6 @@ private:
     WorldDescription& worldDesc_;
     boost::filesystem::path basePath_, curFile_;
     int curIncludeDepth_;
-    bool errorInIncludeFile_;
 };
 
 void loadGameData(WorldDescription& worldDesc);
