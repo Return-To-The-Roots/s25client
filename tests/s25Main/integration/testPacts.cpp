@@ -35,11 +35,11 @@ BOOST_FIXTURE_TEST_CASE(InitialPactStates, WorldWithGCExecution3P)
             if(i == j)
             {
                 BOOST_TEST(player.IsAlly(j));
-                BOOST_TEST(!player.IsAttackable(j));
+                BOOST_TEST(!player.CanAttack(j));
             } else
             {
                 BOOST_TEST(!player.IsAlly(j));
-                BOOST_TEST(player.IsAttackable(j));
+                BOOST_TEST(player.CanAttack(j));
             }
             for(const auto p : helpers::enumRange<PactType>())
             {
@@ -77,12 +77,12 @@ void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned 
                        == playerFrom.GetRemainingPactTime(pact, playerIdTo));
 
     // Attackable must match
-    BOOST_TEST_REQUIRE(playerFrom.IsAttackable(playerIdTo) == playerTo.IsAttackable(playerIdFrom));
+    BOOST_TEST_REQUIRE(playerFrom.CanAttack(playerIdTo) == playerTo.CanAttack(playerIdFrom));
     // Ally must match
     BOOST_TEST_REQUIRE(playerFrom.IsAlly(playerIdTo) == playerTo.IsAlly(playerIdFrom));
 
     // Attackable only when non-agg. pact not accepted
-    BOOST_TEST_REQUIRE(playerFrom.IsAttackable(playerIdTo)
+    BOOST_TEST_REQUIRE(playerFrom.CanAttack(playerIdTo)
                        == (playerFrom.GetPactState(PactType::NonAgressionPact, playerIdTo) != PactState::Accepted));
     // Ally when treaty of alliance accepted
     BOOST_TEST_REQUIRE(playerFrom.IsAlly(playerIdTo)
@@ -259,6 +259,198 @@ BOOST_FIXTURE_TEST_CASE(SuggestNewPactAfterExpiration, PactCreatedFixture,
     this->AcceptPact(msg->GetPactId(), PactType::NonAgressionPact, msg->GetPlayerId());
     // pact state must be accepted
     CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+}
+
+using EmptyWorldFixture2P = WorldFixture<CreateEmptyWorld, 2>;
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_AlliancesDoNotNeedToBeSymmetric, EmptyWorldFixture2P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+
+    p0.MakeOneSidedAllianceTo(1);
+
+    BOOST_TEST_REQUIRE(p0.IsAlly(1) == true);
+    BOOST_TEST_REQUIRE(p1.IsAlly(0) == false);
+}
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_AICanAttackAnyoneByDefault, EmptyWorldFixture2P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    p0.ps = PlayerState::AI;
+    p1.ps = PlayerState::AI;
+
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == true);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_AICannotAttackAllies, EmptyWorldFixture2P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    p0.ps = PlayerState::AI;
+    p1.ps = PlayerState::AI;
+
+    p0.MakeOneSidedAllianceTo(1);
+
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_HumansCanAttackAnyone, EmptyWorldFixture2P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    p1.ps = PlayerState::AI;
+
+    p0.MakeOneSidedAllianceTo(1);
+    p1.MakeOneSidedAllianceTo(0);
+
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == true);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == false);
+}
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_AllianceIsBrokenWhenAttacked, EmptyWorldFixture2P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    p0.ps = PlayerState::AI;
+    p1.ps = PlayerState::AI;
+
+    p0.MakeOneSidedAllianceTo(1);
+    BOOST_TEST_REQUIRE(p0.IsAlly(1) == true);
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == false);
+
+    p0.OnAttackedBy(1);
+    BOOST_TEST_REQUIRE(p0.IsAlly(1) == false);
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_AllianceIsBrokenBothWaysWhenAttacked, EmptyWorldFixture2P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    p1.ps = PlayerState::AI;
+
+    p0.MakeOneSidedAllianceTo(1);
+    p1.MakeOneSidedAllianceTo(0);
+    BOOST_TEST_REQUIRE(p0.IsAlly(1) == true);
+    BOOST_TEST_REQUIRE(p1.IsAlly(0) == true);
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == true);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == false);
+
+    p1.OnAttackedBy(0);
+    BOOST_TEST_REQUIRE(p0.IsAlly(1) == false);
+    BOOST_TEST_REQUIRE(p1.IsAlly(0) == false);
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == true);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == true);
+}
+
+using EmptyWorldFixture3P = WorldFixture<CreateEmptyWorld, 3>;
+
+BOOST_FIXTURE_TEST_CASE(
+  OneSidedAlliances_BeingAttacked_AlsoBreaksAlliancesForPlayers_WhoAreAlliedToUs_AndWhoWeAreAlliedTo,
+  EmptyWorldFixture3P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    auto& p2 = world.GetPlayer(2);
+    p0.ps = PlayerState::AI;
+    p1.ps = PlayerState::AI;
+    p2.ps = PlayerState::AI;
+
+    p0.MakeOneSidedAllianceTo(1);
+    p0.MakeOneSidedAllianceTo(2);
+    p1.MakeOneSidedAllianceTo(0);
+    p1.MakeOneSidedAllianceTo(2);
+    p2.MakeOneSidedAllianceTo(0);
+
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == false);
+    BOOST_TEST_REQUIRE(p0.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(1) == true);
+
+    p1.OnAttackedBy(2);
+
+    // alliance from p1 to p2 is broken
+    // but alliance between p0 and p2 is broken as well
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == false);
+    BOOST_TEST_REQUIRE(p0.CanAttack(2) == true);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(2) == true);
+    BOOST_TEST_REQUIRE(p2.CanAttack(0) == true);
+    BOOST_TEST_REQUIRE(p2.CanAttack(1) == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_BeingAttacked_DoesNotAlsoBreakAlliancesForPlayers_WhoAreNotOurAlliedToUs,
+                        EmptyWorldFixture3P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    auto& p2 = world.GetPlayer(2);
+    p0.ps = PlayerState::AI;
+    p1.ps = PlayerState::AI;
+    p2.ps = PlayerState::AI;
+
+    p0.MakeOneSidedAllianceTo(2);
+    p1.MakeOneSidedAllianceTo(0);
+    p1.MakeOneSidedAllianceTo(2);
+    p2.MakeOneSidedAllianceTo(0);
+
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == true);
+    BOOST_TEST_REQUIRE(p0.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(1) == true);
+
+    p1.OnAttackedBy(2);
+
+    // alliance from p1 to p2 is broken
+    // alliance from p0 to p2 remains
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == true);
+    BOOST_TEST_REQUIRE(p0.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(2) == true);
+    BOOST_TEST_REQUIRE(p2.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(1) == true);
+}
+
+BOOST_FIXTURE_TEST_CASE(OneSidedAlliances_BeingAttacked_DoesNotAlsoBreakAlliancesForPlayers_WhoWeAreNotAlliedTo,
+                        EmptyWorldFixture3P)
+{
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    auto& p2 = world.GetPlayer(2);
+    p0.ps = PlayerState::AI;
+    p1.ps = PlayerState::AI;
+    p2.ps = PlayerState::AI;
+
+    p0.MakeOneSidedAllianceTo(1);
+    p0.MakeOneSidedAllianceTo(2);
+    p1.MakeOneSidedAllianceTo(2);
+    p2.MakeOneSidedAllianceTo(0);
+
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == false);
+    BOOST_TEST_REQUIRE(p0.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == true);
+    BOOST_TEST_REQUIRE(p1.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(1) == true);
+
+    p1.OnAttackedBy(2);
+
+    // alliance from p1 to p2 is broken
+    // alliance from p0 to p2 remains
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == false);
+    BOOST_TEST_REQUIRE(p0.CanAttack(2) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == true);
+    BOOST_TEST_REQUIRE(p1.CanAttack(2) == true);
+    BOOST_TEST_REQUIRE(p2.CanAttack(0) == false);
+    BOOST_TEST_REQUIRE(p2.CanAttack(1) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
