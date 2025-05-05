@@ -7,6 +7,7 @@
 #include "QuickStartGame.h"
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
+#include "ai/random.h"
 #include "files.h"
 #include "random/Random.h"
 #include "s25util/System.h"
@@ -30,6 +31,7 @@ int main(int argc, char** argv)
     boost::optional<std::string> replay_path;
     boost::optional<std::string> savegame_path;
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+    unsigned random_ai_init = random_init;
 
     po::options_description desc("Allowed options");
     // clang-format off
@@ -41,6 +43,7 @@ int main(int argc, char** argv)
         ("replay", po::value(&replay_path),"Filename to write replay to (optional)")
         ("save", po::value(&savegame_path),"Filename to write savegame to (optional)")
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
+        ("random_ai_init", po::value(&random_ai_init),"Seed value for the AI random number generator (optional)")
         ("maxGF", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("version", "Show version information and exit")
         ;
@@ -85,10 +88,12 @@ int main(int argc, char** argv)
             bnw::cout << argv[i] << " ";
         bnw::cout << std::endl;
         bnw::cout << "random_init: " << random_init << std::endl;
+        bnw::cout << "random_ai_init: " << random_ai_init << std::endl;
         bnw::cout << std::endl;
 
         RTTRCONFIG.Init();
         RANDOM.Init(random_init);
+        AI::getRandomGenerator().seed(random_ai_init);
 
         const bfs::path mapPath = RTTRCONFIG.ExpandPath(options["map"].as<std::string>());
         const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
