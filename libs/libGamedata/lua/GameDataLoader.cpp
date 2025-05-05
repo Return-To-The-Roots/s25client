@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -40,15 +40,8 @@ bool GameDataLoader::Load()
     curFile_ = basePath_ / "default.lua";
     curIncludeDepth_ = 0;
     errorInIncludeFile_ = false;
-    try
-    {
-        if(!loadScript(curFile_))
-            return false;
-    } catch(const std::exception& e)
-    {
-        LOG.write("Failed to load game data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
+    if(!loadScript(curFile_))
         return false;
-    }
     return !errorInIncludeFile_;
 }
 
@@ -72,7 +65,7 @@ void GameDataLoader::Include(const std::string& filepath)
     {
         constexpr int maxIncludeDepth = 10;
         // Protect against cycles and stack overflows
-        if(++curIncludeDepth_ >= maxIncludeDepth)
+        if(curIncludeDepth_ >= maxIncludeDepth)
             throw LuaIncludeError(helpers::format("Maximum include depth of %1% is reached!", maxIncludeDepth));
         const auto isAllowedChar = [](const char c) {
             return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '/'
@@ -94,6 +87,7 @@ void GameDataLoader::Include(const std::string& filepath)
             throw LuaIncludeError("File is outside the lua data directory!");
         const auto oldCurFile = curFile_;
         curFile_ = absFilePath;
+        ++curIncludeDepth_;
         errorInIncludeFile_ |= !loadScript(absFilePath);
         curFile_ = oldCurFile;
         RTTR_Assert(curIncludeDepth_ > 0);
