@@ -1,5 +1,6 @@
 #include "AIPlayerJH.h"
 
+extern unsigned maxWorkers(const AIJH::AIPlayerJH& aijh, BuildingType type);
 extern unsigned maxFishers(const AIJH::AIPlayerJH& aijh);
 extern unsigned maxHunters(const AIJH::AIPlayerJH& aijh);
 extern unsigned maxBakers(const AIJH::AIPlayerJH& aijh);

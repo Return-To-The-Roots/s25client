@@ -4,6 +4,22 @@
 
 #include "PlannerHelper.h"
 
+#include "gameData/BuildingConsts.h"
+#include "gameData/JobConsts.h"
+
+unsigned maxWorkers(const AIJH::AIPlayerJH& aijh, BuildingType type)
+{
+    const Inventory& inventory = aijh.player.GetInventory();
+    helpers::OptionalEnum<Job> job = BLD_WORK_DESC[type].job;
+    if(job.has_value())
+    {
+        Job jobVal = job.value();
+        GoodType requiredTool = JOB_CONSTS[jobVal].tool.get();
+        return inventory.goods[requiredTool] + inventory.people[jobVal];
+    }
+    return inventory.people[Job::Helper];
+}
+
 unsigned maxFishers(const AIJH::AIPlayerJH& aijh)
 {
     const Inventory& inventory = aijh.player.GetInventory();

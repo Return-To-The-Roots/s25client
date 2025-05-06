@@ -10,6 +10,8 @@ public:
 
     helpers::EnumArray<unsigned, BuildingType> GetStartupSet();
 
+    unsigned Calc(BuildingType type);
+
     unsigned CalcIronsmelter();
     unsigned CalcForesters();
     unsigned CalcWoodcutters();
@@ -17,7 +19,6 @@ public:
     unsigned CalcQuarry();
     unsigned CalcMills();
     unsigned CalcSawmills();
-    unsigned CalcMetalworks();
     unsigned CalcArmories();
     unsigned CalcWells();
     unsigned CalcFarms();
@@ -31,6 +32,7 @@ private:
     unsigned woodAvailable;
     const unsigned numMilitaryBlds;
 
+    unsigned doCalc(BuildingType type);
     unsigned calcGrainUsers();
     unsigned calcWaterUsers();
     unsigned GetNumBuildings(BuildingType type);

@@ -25,7 +25,8 @@ helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
     values[BuildingType::Forester] = CalcForesters();
-    values[BuildingType::Sawmill] = calcCount(numMilitaryBlds, AI_CONFIG.startupMilToSawmill);
+    values[BuildingType::Sawmill] =
+      doCalc(BuildingType::Sawmill); // calcCount(numMilitaryBlds, AI_CONFIG.startupMilToSawmill);
     values[BuildingType::Woodcutter] = calcCount(numMilitaryBlds, AI_CONFIG.startupMilToWoodcutter);
     values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
     values[BuildingType::Fishery] = 1 + numMilitaryBlds / 5;
@@ -41,6 +42,67 @@ helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
     values[BuildingType::Metalworks] = -1;
 
     return values;
+}
+unsigned BuildCalculator::Calc(BuildingType type)
+{
+    switch(type)
+    {
+        case BuildingType::Sawmill: return doCalc(type);
+        case BuildingType::Mill: return doCalc(type);
+        case BuildingType::Bakery: return doCalc(type);
+        case BuildingType::Armory: return doCalc(type);
+        case BuildingType::Metalworks: return doCalc(type);
+        case BuildingType::Brewery: return doCalc(type);
+        case BuildingType::IronMine: return doCalc(type);
+        case BuildingType::CoalMine: return doCalc(type);
+        default: return 0u;
+    }
+}
+
+unsigned BuildCalculator::doCalc(BuildingType type)
+{
+    WantedParams wantedParams = AI_CONFIG.wantedParams[type];
+    unsigned workersAvailable = maxWorkers(aijh, type);
+    unsigned maxBld = workersAvailable + calcCount(workersAvailable, wantedParams.workersAdvance);
+    unsigned currentBld = GetNumBuildings(type);
+    if(currentBld >= maxBld)
+    {
+        return maxBld;
+    }
+    if(buildingNums.buildings[type] > 0 && aijh.GetProductivity(type) < wantedParams.minProductivity)
+    {
+        return currentBld;
+    }
+    unsigned count = 0;
+    for(const auto type : helpers::enumRange<BuildingType>())
+    {
+        BuildParams params = wantedParams.bldWeights[type];
+        unsigned bldCount = GetNumBuildings(type);
+        if(bldCount >= params.min)
+        {
+            count += calcCount(bldCount, params);
+        }
+    }
+    for(const auto goodType : helpers::enumRange<GoodType>())
+    {
+        BuildParams params = wantedParams.goodWeights[goodType];
+        unsigned goodCount = inventory.goods[goodType];
+        if(goodCount >= params.min)
+        {
+            count += calcCount(goodCount, params);
+        }
+    }
+    for(const auto statType : helpers::enumRange<StatisticType>())
+    {
+        BuildParams params = wantedParams.statsWeights[statType];
+        unsigned statValue = aijh.player.GetStatisticCurrentValue(statType);
+        if(statValue >= params.min)
+        {
+            count += calcCount(statValue, params);
+        }
+    }
+    count = std::max<unsigned>(0, count);
+    return std::min<unsigned>(std::min<unsigned>(count, maxBld), wantedParams.max);
 }
 
 unsigned BuildCalculator::CalcWoodcutters()
@@ -98,7 +160,7 @@ unsigned BuildCalculator::CalcPigFarms()
 
 unsigned BuildCalculator::CalcFarms()
 {
-    unsigned count = (unsigned)std::min<double>(maxFarmer(aijh) * 1.2, numMilitaryBlds * AI_CONFIG.milToFarm.linear);
+    unsigned count = (unsigned)std::min<double>(maxFarmer(aijh) * 1.1, numMilitaryBlds * AI_CONFIG.milToFarm.linear);
     unsigned grainUsers = calcGrainUsers();
     if(grainUsers > 5)
     {
@@ -116,9 +178,7 @@ unsigned BuildCalculator::CalcBreweries()
         return 0;
     }
     BuildParams params = AI_CONFIG.breweryToArmory;
-    if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-        return unsigned(params.constant + armories * params.linear);
-    return 1 + armories / 6;
+    return unsigned(params.constant + armories * params.linear);
 }
 unsigned BuildCalculator::CalcIronMines()
 {
@@ -126,11 +186,7 @@ unsigned BuildCalculator::CalcIronMines()
 
     if(GetNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
     {
-        if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-        {
-            count = unsigned(GetNumBuildings(BuildingType::Farm) / AI_CONFIG.farmToIronMineRatio);
-        } else
-            count = std::min(GetNumBuildings(BuildingType::Farm) / 2, GetNumBuildings(BuildingType::Ironsmelter) + 1);
+        count = unsigned(GetNumBuildings(BuildingType::Farm) / AI_CONFIG.farmToIronMineRatio);
     } else
     {
         unsigned numFoodProducers = GetNumBuildings(BuildingType::Bakery)
@@ -159,25 +215,7 @@ unsigned BuildCalculator::CalcArmories()
     }
     unsigned armoriesWanted = std::max(0, static_cast<int>(ironsmelters - metalworks));
 
-    if(aijh.ggs.isEnabled(AddonId::HALF_COST_MIL_EQUIP))
-    {
-        armoriesWanted = armoriesWanted * 2;
-    }
     return armoriesWanted;
-}
-
-unsigned BuildCalculator::CalcMetalworks()
-{
-    unsigned ironsmelters = GetNumBuildings(BuildingType::Ironsmelter);
-    if(ironsmelters == 0)
-    {
-        return 0;
-    }
-    if(!aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-    {
-        return 1;
-    }
-    return std::min(calcCount(ironsmelters, AI_CONFIG.ironsmelterToMetalworks), (unsigned)AI_CONFIG.maxMetalworks);
 }
 
 unsigned BuildCalculator::CalcWells()

@@ -7,6 +7,8 @@
 #include <s25util/warningSuppression.h>
 #include <array>
 #include <cstdint>
+#include <map>
+#include <string>
 
 enum class Job : uint8_t
 {
@@ -46,6 +48,43 @@ enum class Job : uint8_t
     Vintner,           // 33
     TempleServant,     // 34
 };
+const std::map<Job, std::string> JOB_NAMES_1 = {
+    {Job::Helper, "Helper"},
+    {Job::Woodcutter, "Woodcutter"},
+    {Job::Fisher, "Fisher"},
+    {Job::Forester, "Forester"},
+    {Job::Carpenter, "Carpenter"},
+    {Job::Stonemason, "Stonemason"},
+    {Job::Hunter, "Hunter"},
+    {Job::Farmer, "Farmer"},
+    {Job::Miller, "Miller"},
+    {Job::Baker, "Baker"},
+    {Job::Butcher, "Butcher"},
+    {Job::Miner, "Miner"},
+    {Job::Brewer, "Brewer"},
+    {Job::PigBreeder, "PigBreeder"},
+    {Job::DonkeyBreeder, "DonkeyBreeder"},
+    {Job::IronFounder, "IronFounder"},
+    {Job::Minter, "Minter"},
+    {Job::Metalworker, "Metalworker"},
+    {Job::Armorer, "Armorer"},
+    {Job::Builder, "Builder"},
+    {Job::Planer, "Planer"},
+    {Job::Private, "Private"},
+    {Job::PrivateFirstClass, "PrivateFirstClass"},
+    {Job::Sergeant, "Sergeant"},
+    {Job::Officer, "Officer"},
+    {Job::General, "General"},
+    {Job::Geologist, "Geologist"},
+    {Job::Shipwright, "Shipwright"},
+    {Job::Scout, "Scout"},
+    {Job::PackDonkey, "PackDonkey"},
+    {Job::BoatCarrier, "BoatCarrier"},
+    {Job::CharBurner, "CharBurner"},
+    {Job::Winegrower, "Winegrower"},
+    {Job::Vintner, "Vintner"},
+    {Job::TempleServant, "TempleServant"}
+    };
 
 constexpr auto maxEnumValue(Job)
 {

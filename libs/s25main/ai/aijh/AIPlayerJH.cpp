@@ -2696,6 +2696,7 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     std::ofstream buildingSitesFile = createCsvFile("buildings_sites");
     std::ofstream productivityFile = createCsvFile("productivity");
     std::ofstream goodsFile = createCsvFile("goods");
+    std::ofstream jobsFile = createCsvFile("jobs");
     std::ofstream scoreFile = createCsvFile("score");
     std::ofstream otherFile = createCsvFile("other");
 
@@ -2726,6 +2727,13 @@ void AIPlayerJH::saveStats(unsigned int gf) const
         for(GoodType type : helpers::EnumRange<GoodType>{})
         {
             goodsFile << "," << GOOD_NAMES_1.at(type);
+        }
+        goodsFile << std::endl;
+
+        jobsFile << "GameFrame";
+        for(Job job : helpers::EnumRange<Job>{})
+        {
+            jobsFile << "," << JOB_NAMES_1.at(job);
         }
         goodsFile << std::endl;
 
@@ -2787,6 +2795,14 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     goodsFile << std::endl;
     goodsFile.close();
 
+    jobsFile << gf;
+    for(Job job : helpers::EnumRange<Job>{})
+    {
+        jobsFile << "," << AmountInStorage(job);
+    }
+    jobsFile << std::endl;
+    jobsFile.close();
+
     if(gf % 2500 != 0)
     {
         return;
@@ -2842,6 +2858,13 @@ void AIPlayerJH::saveStats(unsigned int gf) const
         outfile << " Wanted:" << wantedMap[type];
         outfile << " Productivity: " << GetProductivity(type);
         outfile << std::endl;
+    }
+    outfile << std::endl;
+
+    outfile << " Jobs: " << std::endl;
+    for(Job job : helpers::EnumRange<Job>{})
+    {
+        outfile << JOB_NAMES_1.at(job) << ":" << AmountInStorage(job) << std::endl;
     }
 
     outfile << std::endl;

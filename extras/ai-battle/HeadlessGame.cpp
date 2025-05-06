@@ -7,6 +7,7 @@
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
 #include "Savegame.h"
+#include "ai/aijh/StatsConfig.h"
 #include "factories/AIFactory.h"
 #include "network/PlayerGameCommands.h"
 #include "world/GameWorld.h"
@@ -108,6 +109,12 @@ void HeadlessGame::Run(unsigned maxGF)
         {
             nextReport += std::chrono::seconds(1);
             PrintState();
+        }
+        auto currentGF = em_.GetCurrentGF();
+        if(currentGF % 10000 == 0)
+        {
+            std::string saveTo = STATS_CONFIG.savesPath + "/ai_run_" + std::to_string(currentGF) +"_"+ STATS_CONFIG.runSetId +"_" + STATS_CONFIG.runId + ".sav";
+            SaveGame(saveTo);
         }
     }
     PrintState();
