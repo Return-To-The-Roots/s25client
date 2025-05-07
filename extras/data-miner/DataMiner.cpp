@@ -5,7 +5,8 @@
 #include "DataMiner.h"
 #include "Game.h"
 #include "GamePlayer.h"
-#include "PlayerInfo.h"
+#include "PlayerInfo.h"d
+#include "ClickhouseWriter.h"
 #include "ai/aijh/StatsConfig.h"
 #include "helpers/format.hpp"
 #include <arrow/api.h>
@@ -44,6 +45,39 @@ void DataMiner::Run()
             mineBuildings(player);
         }
     }
+}
+
+void DataMiner::WriteToClickhouse(GamePlayer& player) {
+    // Initialize ClickHouse writer
+    // Replace these with your actual ClickHouse connection details
+    ClickhouseWriter writer("localhost", 9000, "game_ai", "raw_metrics");
+
+    // Collect statistics data
+    std::vector<std::pair<std::string, uint32_t>> statistics;
+    for (StatisticType type : helpers::EnumRange<StatisticType>{}) {
+        uint32_t value = player.GetStatisticCurrentValue(type);
+        statistics.emplace_back(StatisticTypeName(type), value);
+    }
+
+    // Collect buildings data
+    std::vector<std::tuple<std::string, uint16_t, uint16_t>> buildings;
+    const auto& building_nums = player.GetBuildingRegister().GetBuildingNums();
+    for (BuildingType type : helpers::EnumRange<BuildingType>{}) {
+        unsigned count = building_nums.buildings[type];
+        unsigned sites = building_nums.buildings[type];
+        buildings.emplace_back(BUILDING_NAMES_1.at(type), count, sites);
+    }
+
+    // Collect merchandise data
+    std::map<std::string, uint32_t> merchandise;
+    Inventory inventory = player.GetInventory();
+    for (GoodType type : helpers::EnumRange<GoodType>{}) {
+        unsigned count = inventory.goods[type];
+        merchandise[GOOD_NAMES_1.at(type)] = count;
+    }
+
+    // Write data to ClickHouse
+    writer.WriteToClickhouse(run_id_, gf_, statistics, buildings, merchandise);
 }
 
 void DataMiner::mineBuildings(GamePlayer& player)

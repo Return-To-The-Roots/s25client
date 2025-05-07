@@ -53,3 +53,17 @@ inline unsigned short decrStatIndex(unsigned short i, unsigned short amount)
 {
     return (i < amount) ? NUM_STAT_STEPS - (amount - i) - 1 : i - amount;
 }
+static const std::unordered_map<StatisticType, std::string> statistic_names = {
+    {StatisticType::Country, "Country"},
+    {StatisticType::Buildings, "Buildings"},
+    {StatisticType::Inhabitants, "Inhabitants"},
+    {StatisticType::Merchandise, "Merchandise"},
+    {StatisticType::Gold, "GoldCoins"},
+    {StatisticType::Productivity, "Productivity"},
+    {StatisticType::Vanquished, "Vanquished"},
+    {StatisticType::Tournament, "Tournament"}
+};
+
+std::string StatisticTypeName(StatisticType type) {
+    return statistic_names.at(type);
+}

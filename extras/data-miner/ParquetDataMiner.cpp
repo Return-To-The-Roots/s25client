@@ -72,6 +72,34 @@ void ParquetDataMiner::RecordFrameData(GamePlayer& player, unsigned gf) {
         FlushAll();
     }
 }
+void ParquetDataMiner::PrintData(GamePlayer& player)
+{
+    std::cout <<  " gameframe: " << gf_ << std::endl;
+    std::cout <<  " run_id: " << run_id_ << std::endl;
+    // Macro statistics
+    for (StatisticType type : helpers::EnumRange<StatisticType>{})
+    {
+        uint32_t value = player.GetStatisticCurrentValue(type);
+        std::cout << StatisticTypeName(type) << value << std::endl;
+    }
+    const auto& building_nums = player.GetBuildingRegister().GetBuildingNums();
+
+    // buildings data
+    for (BuildingType type : helpers::EnumRange<BuildingType>{})
+    {
+        unsigned count = building_nums.buildings[type];
+        unsigned sites = building_nums.buildings[type];
+        std::cout << BUILDING_NAMES_1.at(type) << " count: " << count << " sites: " << sites << std::endl;
+    }
+
+    // Merchandise
+    Inventory inventory = player.GetInventory();
+    for (GoodType type : helpers::EnumRange<GoodType>{})
+    {
+        unsigned count = inventory.goods[type];
+        std::cout << GOOD_NAMES_1.at(type) << " count: " << std::endl;
+    }
+}
 
 void ParquetDataMiner::RecordMacroStats(GamePlayer& player) {
     arrow::UInt32Builder gameframe_builder;
@@ -85,6 +113,7 @@ void ParquetDataMiner::RecordMacroStats(GamePlayer& player) {
     // Assuming StatisticType enum has these in order
     for (StatisticType type : helpers::EnumRange<StatisticType>{}) {
         uint32_t value = player.GetStatisticCurrentValue(type);
+
         switch (type) {
             case StatisticType::Country: ARROW_CHECK_OK(country_builder.Append(value)); break;
             case StatisticType::Buildings: ARROW_CHECK_OK(buildings_builder.Append(value)); break;
