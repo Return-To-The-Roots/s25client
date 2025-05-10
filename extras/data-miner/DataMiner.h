@@ -1,29 +1,31 @@
-//
-// Created by pavel on 01.05.25.
-//
-
 #ifndef DATAMINER_H
 #define DATAMINER_H
 
-#include "PlayerInfo.h"
-#include "GamePlayer.h"
-#include "Game.h"
+#include <nlohmann/json.hpp>
+#include <vector>
+#include <string>
+
+class GamePlayer;  // Forward declaration of GamePlayer class
+class Inventory;   // Forward declaration of Inventory class
 
 class DataMiner {
 public:
-    DataMiner(unsigned gf, Game& game);
-    void Run();
+    // Constructor (Optional: You could initialize run_id_ and gameframe_ here)
+    DataMiner(const std::string& run_id)
+        : run_id_(run_id) {}
+
+    // Method to process a single snapshot of GamePlayer
+    void ProcessSnapshot(GamePlayer& player, uint32_t gameframe);
+
+    // Method to flush all accumulated data to a file
+    void flush(const std::string& directory);
 
 private:
-    void mineBuildings(GamePlayer& player);
-    void mineBuildingsSites(GamePlayer& player);
-    void mineStats(GamePlayer& player);
+    // Internal container to store processed snapshots
+    std::vector<nlohmann::json> snapshots_;
 
-    unsigned gf_;
-    Game& game_;
-    GameWorld& world_;
+    // Member variables for run_id and gameframe
+    std::string run_id_;
 };
 
-
-
-#endif //DATAMINER_H
+#endif // DATAMINER_H

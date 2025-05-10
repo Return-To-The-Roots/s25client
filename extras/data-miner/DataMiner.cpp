@@ -1,127 +1,79 @@
-//
-// Created by pavel on 01.05.25.
-//
-
 #include "DataMiner.h"
-#include "Game.h"
+
 #include "GamePlayer.h"
-#include "PlayerInfo.h"d
-#include "ClickhouseWriter.h"
-#include "ai/aijh/StatsConfig.h"
-#include "helpers/format.hpp"
-#include <arrow/api.h>
-#include <arrow/io/api.h>
-#include <parquet/arrow/writer.h>
+#include "helpers/EnumRange.h"
+
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/StatisticTypes.h"
+#include <boost/filesystem/directory.hpp>
 
 #include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
+#include <sstream>
 
-namespace fs = std::filesystem;
-namespace {
-std::ofstream SUPPRESS_UNUSED createCsvFile(std::string name)
+using json = nlohmann::json;
+namespace fs = boost::filesystem;
+
+void DataMiner::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
 {
-    boost::format fmt("%s/%s.csv");
-    fmt % STATS_CONFIG.statsPath % name;
-    std::ofstream file(fmt.str(), std::ios::app);
+    json snapshot;
 
-    if(!file)
+    snapshot["run_id"] = run_id_;
+    snapshot["gameframe"] = gameframe;
+
+    // Macro statistics
+    for (StatisticType type : helpers::EnumRange<StatisticType>{})
     {
-        std::cerr << "Unable open " << name << " buildingFile for appending!" << std::endl;
-    }
-    return file;
-}
-}
-
-DataMiner::DataMiner(unsigned gf, Game& game): gf_(gf), game_(game), world_(game.world_)
-{
-}
-
-void DataMiner::Run()
-{
-    for (unsigned i = 0; i < world_.GetNumPlayers(); ++i) {
-        GamePlayer& player = world_.GetPlayer(i);
-        if(player.isUsed())
-        {
-            mineStats(player);
-            mineBuildings(player);
-        }
-    }
-}
-
-void DataMiner::WriteToClickhouse(GamePlayer& player) {
-    // Initialize ClickHouse writer
-    // Replace these with your actual ClickHouse connection details
-    ClickhouseWriter writer("localhost", 9000, "game_ai", "raw_metrics");
-
-    // Collect statistics data
-    std::vector<std::pair<std::string, uint32_t>> statistics;
-    for (StatisticType type : helpers::EnumRange<StatisticType>{}) {
         uint32_t value = player.GetStatisticCurrentValue(type);
-        statistics.emplace_back(StatisticTypeName(type), value);
+        snapshot["statistics.type"].push_back(StatisticTypeName(type));
+        snapshot["statistics.value"].push_back(value);
     }
 
-    // Collect buildings data
-    std::vector<std::tuple<std::string, uint16_t, uint16_t>> buildings;
+    // Buildings
     const auto& building_nums = player.GetBuildingRegister().GetBuildingNums();
-    for (BuildingType type : helpers::EnumRange<BuildingType>{}) {
-        unsigned count = building_nums.buildings[type];
-        unsigned sites = building_nums.buildings[type];
-        buildings.emplace_back(BUILDING_NAMES_1.at(type), count, sites);
+    for (BuildingType type : helpers::EnumRange<BuildingType>{})
+    {
+        snapshot["buildings.type"].push_back(BUILDING_NAMES_1.at(type));
+        snapshot["buildings.count"].push_back(building_nums.buildings[type]);  // Replace with actual count
+        snapshot["buildings.sites"].push_back(building_nums.buildings[type]);  // Replace with actual sites
     }
 
-    // Collect merchandise data
-    std::map<std::string, uint32_t> merchandise;
+    // Merchandise
     Inventory inventory = player.GetInventory();
-    for (GoodType type : helpers::EnumRange<GoodType>{}) {
-        unsigned count = inventory.goods[type];
-        merchandise[GOOD_NAMES_1.at(type)] = count;
+    json merchandise;
+    for (GoodType type : helpers::EnumRange<GoodType>{})
+    {
+        merchandise[GOOD_NAMES_1.at(type)] = inventory.goods[type];
     }
+    snapshot["merchandise"] = merchandise;
 
-    // Write data to ClickHouse
-    writer.WriteToClickhouse(run_id_, gf_, statistics, buildings, merchandise);
+    std::cout << "Successfully processed gameframe " << gameframe << std::endl;
+
+    snapshots_.push_back(snapshot);
 }
 
-void DataMiner::mineBuildings(GamePlayer& player)
+void DataMiner::flush(const std::string& directory)
 {
-    std::cout << "GameFrame";
-    for(BuildingType type : helpers::EnumRange<BuildingType>{})
-    {
-        std::cout << "," << BUILDING_NAMES_1.at(type) << "Count";
-    }
-    std::cout << std::endl;
-    std::cout << gf_;
-    for(BuildingType type : helpers::EnumRange<BuildingType>{})
-    {
-        int count = player.GetBuildingRegister().GetBuildingNums().buildings[type];
-        std::cout << "," << count;
-    }
-    std::cout << std::endl;
-}
+    // Construct the output filename based on run_id only (no gameframe)
+    std::ostringstream filename;
+    filename << "stats_" << run_id_ << ".ndjson";
 
-void DataMiner::mineBuildingsSites(GamePlayer& player)
-{
-    std::cout << "GameFrame";
-    for(BuildingType type : helpers::EnumRange<BuildingType>{})
-    {
-        std::cout << "," << BUILDING_NAMES_1.at(type) << "Sites";
-    }
-    std::cout << std::endl;
-    std::cout << gf_;
-    for(BuildingType type : helpers::EnumRange<BuildingType>{})
-    {
-        int count = player.GetBuildingRegister().GetBuildingNums().buildingSites[type];
-        std::cout << "," << count;
-    }
-    std::cout << std::endl;
-}
+    // Combine directory path with filename to get full file path
+    fs::path filePath = fs::path(directory) / filename.str();
 
-void DataMiner::mineStats(GamePlayer& player)
-{
-        std::cout << "GameFrame,Country,Buildings,Military,GoldCoins,Productivity,Kills" << std::endl;
-        std::cout << gf_;
-        for(StatisticType type : helpers::EnumRange<StatisticType>{})
+    // Write all snapshots to the file
+    std::ofstream out(filePath, std::ios::app); // append mode
+    if (out.is_open())
+    {
+        for (const auto& snapshot : snapshots_)
         {
-            int count =  player.GetStatisticCurrentValue(type);
-            std::cout << "," << count;
+            out << snapshot.dump() << std::endl; // Write each snapshot as a JSON line
         }
+    }
+    else
+    {
+        std::cerr << "Failed to open file: " << filePath << std::endl;
+    }
 }
-

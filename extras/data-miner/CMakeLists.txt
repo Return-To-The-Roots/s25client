@@ -5,12 +5,10 @@
 add_executable(data-miner main.cpp
         DataMiner.cpp
         DataMiner.h
-        ParquetDataMiner.cpp
-        ParquetDataMiner.h
-        ClickhouseWriter.cpp
-        ClickhouseWriter.h)
+        SnapshotLoader.h
+        SnapshotLoader.cpp
+)
 find_package(yaml-cpp REQUIRED)
-find_package(clickhouse-cpp REQUIRED)
 find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
 
@@ -20,9 +18,7 @@ target_link_libraries(
             Boost::program_options
             Boost::nowide
             yaml-cpp
-            clickhouse-cpp
-            Arrow::arrow_shared
-            Parquet::parquet_shared
+            nlohmann_json::nlohmann_json
 )
 
 target_include_directories(
