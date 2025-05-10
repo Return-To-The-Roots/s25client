@@ -1,31 +1,25 @@
-#ifndef DATAMINER_H
-#define DATAMINER_H
+#pragma once
 
-#include <nlohmann/json.hpp>
-#include <vector>
 #include <string>
+#include <vector>
+#include <unordered_map>
+#include <set>
+#include <cstdint>
 
-class GamePlayer;  // Forward declaration of GamePlayer class
-class Inventory;   // Forward declaration of Inventory class
+class GamePlayer;
 
-class DataMiner {
+// Define the snapshot data type
+using SnapshotData = std::unordered_map<std::string, int>;
+
+class DataMiner
+{
 public:
-    // Constructor (Optional: You could initialize run_id_ and gameframe_ here)
-    DataMiner(const std::string& run_id)
-        : run_id_(run_id) {}
+    DataMiner() = default;
 
-    // Method to process a single snapshot of GamePlayer
     void ProcessSnapshot(GamePlayer& player, uint32_t gameframe);
-
-    // Method to flush all accumulated data to a file
-    void flush(const std::string& directory);
+    void flush(const std::string& filePath);
 
 private:
-    // Internal container to store processed snapshots
-    std::vector<nlohmann::json> snapshots_;
-
-    // Member variables for run_id and gameframe
-    std::string run_id_;
+    std::vector<SnapshotData> snapshots_;
+    std::set<std::string> fieldNames_; // To track all column headers
 };
-
-#endif // DATAMINER_H

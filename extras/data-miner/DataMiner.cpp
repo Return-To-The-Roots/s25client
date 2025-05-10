@@ -7,73 +7,141 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/StatisticTypes.h"
 #include <boost/filesystem/directory.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <fstream>
 #include <iostream>
-#include <nlohmann/json.hpp>
 #include <sstream>
+#include <vector>
+#include <unordered_map>
+#include <set>
 
-using json = nlohmann::json;
+// Fast-CSV is a header-only library
+#define CSV_IO_NO_THREAD
+#include "csv.h"
+
 namespace fs = boost::filesystem;
 
 void DataMiner::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
 {
-    json snapshot;
+    // Create a snapshot object that will hold all data for this gameframe
+    SnapshotData snapshot;
 
-    snapshot["run_id"] = run_id_;
-    snapshot["gameframe"] = gameframe;
+    // Add gameframe info
+    snapshot["GameFrame"] = gameframe;
 
-    // Macro statistics
+    // Process statistics
     for (StatisticType type : helpers::EnumRange<StatisticType>{})
     {
         uint32_t value = player.GetStatisticCurrentValue(type);
-        snapshot["statistics.type"].push_back(StatisticTypeName(type));
-        snapshot["statistics.value"].push_back(value);
+        snapshot[StatisticTypeName(type)] = value;
     }
 
-    // Buildings
+    // Process buildings
     const auto& building_nums = player.GetBuildingRegister().GetBuildingNums();
     for (BuildingType type : helpers::EnumRange<BuildingType>{})
     {
-        snapshot["buildings.type"].push_back(BUILDING_NAMES_1.at(type));
-        snapshot["buildings.count"].push_back(building_nums.buildings[type]);  // Replace with actual count
-        snapshot["buildings.sites"].push_back(building_nums.buildings[type]);  // Replace with actual sites
+        std::string buildingName = BUILDING_NAMES_1.at(type);
+        snapshot[buildingName + "Count"] = building_nums.buildings[type];
+        snapshot[buildingName + "Sites"] = building_nums.buildings[type]; // Replace with actual sites
+        // Add production data
+        snapshot[buildingName + "Prod"] = player.GetBuildingRegister().CalcAverageProductivity(type);
     }
 
-    // Merchandise
+    // Process merchandise (inventory)
     Inventory inventory = player.GetInventory();
-    json merchandise;
     for (GoodType type : helpers::EnumRange<GoodType>{})
     {
-        merchandise[GOOD_NAMES_1.at(type)] = inventory.goods[type];
+        std::string goodName = GOOD_NAMES_1.at(type);
+        snapshot[goodName] = inventory.goods[type];
     }
-    snapshot["merchandise"] = merchandise;
 
     std::cout << "Successfully processed gameframe " << gameframe << std::endl;
 
     snapshots_.push_back(snapshot);
+
+    // Keep track of all field names for headers
+    for (const auto& [field, _] : snapshot)
+    {
+        fieldNames_.insert(field);
+    }
 }
 
-void DataMiner::flush(const std::string& directory)
+void DataMiner::flush(const std::string& filePath)
 {
-    // Construct the output filename based on run_id only (no gameframe)
-    std::ostringstream filename;
-    filename << "stats_" << run_id_ << ".ndjson";
-
-    // Combine directory path with filename to get full file path
-    fs::path filePath = fs::path(directory) / filename.str();
-
-    // Write all snapshots to the file
-    std::ofstream out(filePath, std::ios::app); // append mode
-    if (out.is_open())
-    {
-        for (const auto& snapshot : snapshots_)
-        {
-            out << snapshot.dump() << std::endl; // Write each snapshot as a JSON line
-        }
+    // Skip if no snapshots to write
+    if (snapshots_.empty()) {
+        return;
     }
-    else
-    {
-        std::cerr << "Failed to open file: " << filePath << std::endl;
+
+    // Create a boost::filesystem::path from the provided path string
+    fs::path outputFilePath(filePath);
+
+    // Delete file if it already exists
+    if (fs::exists(outputFilePath)) {
+        fs::remove(outputFilePath);
+    }
+
+    try {
+        // Make sure the directory exists
+        fs::path parentDir = outputFilePath.parent_path();
+        if (!parentDir.empty() && !fs::exists(parentDir)) {
+            fs::create_directories(parentDir);
+        }
+
+        // Convert to vector and sort for consistent column order
+        std::vector<std::string> headers(fieldNames_.begin(), fieldNames_.end());
+        std::sort(headers.begin(), headers.end());
+
+        // Open the output file
+        std::ofstream outFile(outputFilePath.string());
+        if (!outFile.is_open()) {
+            throw std::runtime_error("Failed to open file: " + outputFilePath.string());
+        }
+
+        // Write header row
+        bool first = true;
+        for (const auto& header : headers) {
+            if (!first) outFile << ",";
+            first = false;
+
+            // Handle special characters in CSV
+            if (header.find(',') != std::string::npos ||
+                header.find('\"') != std::string::npos ||
+                header.find('\n') != std::string::npos) {
+                outFile << "\"" << header << "\"";
+            } else {
+                outFile << header;
+            }
+        }
+        outFile << "\n";
+
+        // Write data rows
+        for (const auto& snapshot : snapshots_) {
+            first = true;
+            for (const auto& header : headers) {
+                if (!first) outFile << ",";
+                first = false;
+
+                auto it = snapshot.find(header);
+                if (it != snapshot.end()) {
+                    outFile << it->second;
+                } else {
+                    outFile << "0"; // Default value for missing fields
+                }
+            }
+            outFile << "\n";
+        }
+
+        outFile.close();
+
+        std::cout << "Successfully wrote " << snapshots_.size() << " snapshots to " << outputFilePath << std::endl;
+
+        // Clear snapshots after successful write
+        snapshots_.clear();
+        // Don't clear fieldNames_ as we want to keep the same headers structure for future flushes
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error writing CSV: " << e.what() << std::endl;
     }
 }
