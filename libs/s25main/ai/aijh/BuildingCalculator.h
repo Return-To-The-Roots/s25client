@@ -20,9 +20,7 @@ public:
     unsigned CalcMills();
     unsigned CalcSawmills();
     unsigned CalcArmories();
-    unsigned CalcWells();
     unsigned CalcFarms();
-    unsigned CalcBreweries();
     unsigned CalcIronMines();
 
 private:
@@ -34,7 +32,6 @@ private:
 
     unsigned doCalc(BuildingType type);
     unsigned calcGrainUsers();
-    unsigned calcWaterUsers();
     unsigned GetNumBuildings(BuildingType type);
     unsigned calcCount(unsigned x, BuildParams params);
 };

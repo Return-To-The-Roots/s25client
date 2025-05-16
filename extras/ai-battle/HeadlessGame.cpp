@@ -7,6 +7,7 @@
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
 #include "Savegame.h"
+#include "ai/aijh/AIConfig.h"
 #include "ai/aijh/StatsConfig.h"
 #include "factories/AIFactory.h"
 #include "network/PlayerGameCommands.h"
@@ -17,6 +18,7 @@
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 #include <cstdio>
+#include <iomanip>
 #include <sstream>
 #ifdef WIN32
 #    include "Windows.h"
@@ -111,13 +113,19 @@ void HeadlessGame::Run(unsigned maxGF)
             PrintState();
         }
         auto currentGF = em_.GetCurrentGF();
-        if(currentGF % 10000 == 0)
+        if(currentGF == 1 || currentGF % STATS_CONFIG.save_period == 0)
         {
-            std::string saveTo = STATS_CONFIG.savesPath + "/ai_run_" + std::to_string(currentGF) +"_"+ STATS_CONFIG.runSetId +"_" + STATS_CONFIG.runId + ".sav";
+            std::string saveTo = STATS_CONFIG.savesPath + "/ai_run_" + STATS_CONFIG.runSetId +"_" + STATS_CONFIG.runId + "_"+ toPaddedString(currentGF, 8) + ".sav";
             SaveGame(saveTo);
         }
     }
     PrintState();
+}
+
+std::string HeadlessGame::toPaddedString(unsigned int value, int width) {
+    std::ostringstream oss;
+    oss << std::setw(width) << std::setfill('0') << value;
+    return oss.str();
 }
 
 void HeadlessGame::Close()
@@ -190,6 +198,7 @@ std::string HumanReadableNumber(unsigned num)
 
 void HeadlessGame::PrintState()
 {
+    bnw::cout << "frame:" << em_.GetCurrentGF() << '\n';
     static bool first_run = true;
     if(first_run)
         first_run = false;

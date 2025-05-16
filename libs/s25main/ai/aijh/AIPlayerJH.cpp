@@ -281,7 +281,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if(gf % STATS_CONFIG.stats_period == 0)
     {
-        saveStats(gf);
+        // saveStats(gf);
     }
     if(TestDefeat())
         return;
@@ -297,7 +297,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     }
     if(gf == 100)
     {
-        saveStats(gf);
+        // saveStats(gf);
         if(aii.GetMilitaryBuildings().empty() && aii.GetStorehouses().size() < 2)
             aii.Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
     }

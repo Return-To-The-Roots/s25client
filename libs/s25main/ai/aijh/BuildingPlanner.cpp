@@ -168,10 +168,10 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         buildingsWanted[BuildingType::Metalworks] = calculator.Calc(BuildingType::Metalworks);
         buildingsWanted[BuildingType::Mill] = calculator.Calc(BuildingType::Mill);
         buildingsWanted[BuildingType::Bakery] = calculator.Calc(BuildingType::Bakery);
+        buildingsWanted[BuildingType::Well] = calculator.Calc(BuildingType::Well);
         buildingsWanted[BuildingType::PigFarm] = calculator.CalcPigFarms();
         buildingsWanted[BuildingType::Slaughterhouse] =
           std::min(maxButcher(aijh), GetNumBuildings(BuildingType::PigFarm));
-        buildingsWanted[BuildingType::Well] = calculator.CalcWells();
         buildingsWanted[BuildingType::Farm] = calculator.CalcFarms();
         buildingsWanted[BuildingType::Mint] = GetNumBuildings(BuildingType::GoldMine);
 

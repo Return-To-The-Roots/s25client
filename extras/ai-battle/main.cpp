@@ -39,6 +39,7 @@ int main(int argc, char** argv)
     boost::optional<std::string> runId;
     boost::optional<std::string> runSetId;
     boost::optional<unsigned int> startPeriod;
+    boost::optional<unsigned int> savePeriod;
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     po::options_description desc("Allowed options");
@@ -47,14 +48,15 @@ int main(int argc, char** argv)
         ("help,h", "Show help")
         ("run_id,r", po::value(&runId),"Run Id")
         ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
-        ("maxGF", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
+        ("max_gf", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("output_path", po::value(&output_path),"Filename to write savegame to (optional)")
         ("stats_period", po::value(&startPeriod),"Stats period")
+        ("save_period", po::value(&savePeriod),"Save period")
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
-        ("objective", po::value<std::string>()->default_value("domination"),"domination(default)|conquer")
-        ("configfile", po::value<std::string>()->required(), "AI configuration file")
-        ("start_wares", po::value<std::string>()->default_value("start_wares"),"Start wares")
+        ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
+        ("config_file", po::value<std::string>()->required(), "AI configuration file")
+        ("start_wares", po::value<std::string>()->default_value("alot"),"Start wares")
         ("replay", po::value(&replay_path),"Filename to write stats_interval to (optional)")
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
         ("version", "Show version information and exit")
@@ -95,7 +97,6 @@ int main(int argc, char** argv)
 
     try
     {
-
         if(runId)
             STATS_CONFIG.runId = *runId;
         if(runSetId)
@@ -130,7 +131,7 @@ int main(int argc, char** argv)
         const bfs::path mapPath = RTTRCONFIG.ExpandPath(options["map"].as<std::string>());
         const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
 
-        const auto configfile = options["configfile"].as<std::string>();
+        const auto configfile = options["config_file"].as<std::string>();
         initAIConfig(configfile);
 
         GlobalGameSettings ggs;
@@ -166,6 +167,10 @@ int main(int argc, char** argv)
         {
             STATS_CONFIG.stats_period = *startPeriod;
         }
+        if(savePeriod)
+        {
+            STATS_CONFIG.save_period = *savePeriod;
+        }
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
@@ -177,14 +182,14 @@ int main(int argc, char** argv)
             game.RecordReplay(*replay_path, random_init);
 
 
-        game.Run(options["maxGF"].as<unsigned>());
+        game.Run(options["max_gf"].as<unsigned>());
         game.Close();
 
-        if(output_path)
+        /*if(output_path)
         {
             std::string saveTo = savesDir + "/ai_run_final_"+ STATS_CONFIG.runSetId +"_" + STATS_CONFIG.runId + ".sav";
             game.SaveGame(saveTo);
-        }
+        }*/
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;

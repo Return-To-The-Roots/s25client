@@ -64,13 +64,22 @@ WantedParams parseWantedParams(const YAML::Node& node)
 
 extern void initDefaults()
 {
+    helpers::EnumArray<BuildParams, BuildingType> wellBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
+    wellBldParams[BuildingType::Bakery] = {0, 1};
+    wellBldParams[BuildingType::PigFarm] = {0, 1};
+    wellBldParams[BuildingType::DonkeyBreeder] = {0, 1};
+    wellBldParams[BuildingType::Brewery] = {0, 1};
+    helpers::EnumArray<BuildParams, GoodType> wellGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
+    wellGoodParams[GoodType::Water] = {0, -0.02, {}, {}, 50};
+    wellGoodParams[GoodType::Flour] = {0, 0.02, {}, {}, 50};
+    AI_CONFIG.wantedParams[BuildingType::Well] = {wellBldParams, wellGoodParams};
+
     helpers::EnumArray<BuildParams, BuildingType> sawmillBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
     helpers::EnumArray<BuildParams, GoodType> sawmillGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
     helpers::EnumArray<BuildParams, StatisticType> sawmillStatParams = helpers::EnumArray<BuildParams, StatisticType>{};
     sawmillStatParams[StatisticType::Country] = {2, 0.001, {-3, 0.05}};
     AI_CONFIG.wantedParams[BuildingType::Sawmill] = {sawmillBldParams, sawmillGoodParams, {2}, 9999, 70,
                                                      sawmillStatParams};
-
     helpers::EnumArray<BuildParams, BuildingType> millBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
     millBldParams[BuildingType::Farm] = {0, 0.9};
     millBldParams[BuildingType::DonkeyBreeder] = {0, -1};
@@ -116,6 +125,11 @@ extern void initDefaults()
     ironmineWantedParams.minProductivity = 70;
     AI_CONFIG.wantedParams[BuildingType::Armory] = armoryWantedParams;
 
+    WantedParams breweryWantedParams = {};
+    breweryWantedParams.bldWeights[BuildingType::Armory] = {1, 0.20, {}, {}, 1};
+    breweryWantedParams.minProductivity = 70;
+    AI_CONFIG.wantedParams[BuildingType::Brewery] = breweryWantedParams;
+
     helpers::EnumArray<BuildParams, BuildingType> breweryBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
     breweryBldParams[BuildingType::Armory] = {0, 0.25};
     breweryBldParams[BuildingType::Farm] = {1, 0.0, {}, {}, 3};
@@ -136,7 +150,6 @@ extern void initAIConfig(std::string configPath)
         AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<double>();
         AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<double>();
         AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<double>();
-        AI_CONFIG.maxMetalworks = configNode["max_metalworks"].as<double>();
         AI_CONFIG.pigfarmMultiplier = configNode["pigfarm_multiplier"].as<double>();
 
         AI_CONFIG.milToFarm = parseBuildParams(configNode["farm_to_mil"], AI_CONFIG.milToFarm);

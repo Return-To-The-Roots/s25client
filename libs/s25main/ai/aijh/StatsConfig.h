@@ -9,6 +9,7 @@ struct StatsConfig
     std::string runId = "000";
     std::string runSetId = "000";
     unsigned stats_period = 500;
+    unsigned save_period = 500;
 
     std::string outputPath = "/home/pavel/Documents/settlers_ai/runsets/";
     std::string statsPath = "/home/pavel/Documents/settlers_ai/stats/";

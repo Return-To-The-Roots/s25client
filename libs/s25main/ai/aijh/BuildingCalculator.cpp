@@ -47,6 +47,7 @@ unsigned BuildCalculator::Calc(BuildingType type)
 {
     switch(type)
     {
+        case BuildingType::Well: return doCalc(type);
         case BuildingType::Sawmill: return doCalc(type);
         case BuildingType::Mill: return doCalc(type);
         case BuildingType::Bakery: return doCalc(type);
@@ -169,17 +170,6 @@ unsigned BuildCalculator::CalcFarms()
     return count;
 }
 
-unsigned BuildCalculator::CalcBreweries()
-{
-    unsigned armories = GetNumBuildings(BuildingType::Armory);
-    unsigned farms = GetNumBuildings(BuildingType::Farm);
-    if(armories == 0 || farms < 3)
-    {
-        return 0;
-    }
-    BuildParams params = AI_CONFIG.breweryToArmory;
-    return unsigned(params.constant + armories * params.linear);
-}
 unsigned BuildCalculator::CalcIronMines()
 {
     unsigned count = 0;
@@ -218,16 +208,6 @@ unsigned BuildCalculator::CalcArmories()
     return armoriesWanted;
 }
 
-unsigned BuildCalculator::CalcWells()
-{
-    unsigned waterOnStore = inventory[GoodType::Water];
-    unsigned flourOnStore = inventory[GoodType::Flour];
-    unsigned users = calcWaterUsers();
-    users -= unsigned(waterOnStore / 50.0);
-    users += unsigned(flourOnStore / 50.0);
-    return unsigned(AI_CONFIG.wellToUsers.constant + AI_CONFIG.wellToUsers.linear * users);
-}
-
 unsigned BuildCalculator::CalcMills()
 {
     unsigned millsNum = GetNumBuildings(BuildingType::Mill);
@@ -256,12 +236,6 @@ unsigned BuildCalculator::calcGrainUsers()
     return GetNumBuildings(BuildingType::Mill) + GetNumBuildings(BuildingType::Charburner)
            + GetNumBuildings(BuildingType::Brewery) + GetNumBuildings(BuildingType::PigFarm)
            + GetNumBuildings(BuildingType::DonkeyBreeder);
-}
-
-unsigned BuildCalculator::calcWaterUsers()
-{
-    return GetNumBuildings(BuildingType::Bakery) + GetNumBuildings(BuildingType::PigFarm)
-           + GetNumBuildings(BuildingType::DonkeyBreeder) + GetNumBuildings(BuildingType::Brewery);
 }
 
 unsigned BuildCalculator::CalcQuarry()

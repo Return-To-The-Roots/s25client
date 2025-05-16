@@ -90,8 +90,19 @@ void DataMiner::flush(const std::string& filePath)
         }
 
         // Convert to vector and sort for consistent column order
-        std::vector<std::string> headers(fieldNames_.begin(), fieldNames_.end());
-        std::sort(headers.begin(), headers.end());
+        // std::vector<std::string> headers(fieldNames_.begin(), fieldNames_.end());
+        std::vector<std::string> headers;
+        headers.reserve(fieldNames_.size());  // Pre-allocate for efficiency
+
+        // First, add the two special fields if they exist
+        headers.push_back("GameFrame");
+
+        // Then add all other fields except those two
+        for (const auto& name : fieldNames_) {
+            if (name != "GameFrame") {
+                headers.push_back(name);
+            }
+        }
 
         // Open the output file
         std::ofstream outFile(outputFilePath.string());

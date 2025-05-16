@@ -44,4 +44,6 @@ private:
 
     unsigned lastReportGf_ = 0;
     std::chrono::steady_clock::time_point gameStartTime_;
+
+    std::string toPaddedString(unsigned int value, int width);
 };
