@@ -21,6 +21,7 @@ BuildCalculator::BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingN
     : aijh(aijh), buildingNums(buildingNums), inventory(inventory), woodAvailable(woodAvailable),
       numMilitaryBlds(aijh.player.GetBuildingRegister().GetMilitaryBuildings().size())
 {}
+
 helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
@@ -51,11 +52,13 @@ unsigned BuildCalculator::Calc(BuildingType type)
         case BuildingType::Sawmill: return doCalc(type);
         case BuildingType::Mill: return doCalc(type);
         case BuildingType::Bakery: return doCalc(type);
+        case BuildingType::Ironsmelter: return doCalc(type);
         case BuildingType::Armory: return doCalc(type);
         case BuildingType::Metalworks: return doCalc(type);
         case BuildingType::Brewery: return doCalc(type);
         case BuildingType::IronMine: return doCalc(type);
         case BuildingType::CoalMine: return doCalc(type);
+        case BuildingType::DonkeyBreeder: return doCalc(type);
         default: return 0u;
     }
 }
@@ -168,67 +171,6 @@ unsigned BuildCalculator::CalcFarms()
         return unsigned(std::min<double>(grainUsers * 1.75, count));
     }
     return count;
-}
-
-unsigned BuildCalculator::CalcIronMines()
-{
-    unsigned count = 0;
-
-    if(GetNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
-    {
-        count = unsigned(GetNumBuildings(BuildingType::Farm) / AI_CONFIG.farmToIronMineRatio);
-    } else
-    {
-        unsigned numFoodProducers = GetNumBuildings(BuildingType::Bakery)
-                                    + GetNumBuildings(BuildingType::Slaughterhouse)
-                                    + GetNumBuildings(BuildingType::Hunter) + GetNumBuildings(BuildingType::Fishery);
-        count = (inventory.people[Job::Miner] + inventory.goods[GoodType::PickAxe]
-                   > GetNumBuildings(BuildingType::CoalMine) + GetNumBuildings(BuildingType::GoldMine) + 1
-                 && numFoodProducers > 4) ?
-                  2 :
-                  1;
-    }
-    if(GetNumBuildings(BuildingType::IronMine) > 5 && aijh.GetProductivity(BuildingType::IronMine) < 70.0)
-    {
-        count = GetNumBuildings(BuildingType::IronMine);
-    }
-    return count;
-}
-
-unsigned BuildCalculator::CalcArmories()
-{
-    unsigned ironsmelters = GetNumBuildings(BuildingType::Ironsmelter);
-    unsigned metalworks = GetNumBuildings(BuildingType::Metalworks);
-    if(ironsmelters < 2)
-    {
-        return 0;
-    }
-    unsigned armoriesWanted = std::max(0, static_cast<int>(ironsmelters - metalworks));
-
-    return armoriesWanted;
-}
-
-unsigned BuildCalculator::CalcMills()
-{
-    unsigned millsNum = GetNumBuildings(BuildingType::Mill);
-    unsigned foodusers = calcGrainUsers();
-    unsigned farms = buildingNums.buildings[BuildingType::Farm];
-    unsigned nonMillUsers = foodusers - millsNum;
-    if(farms >= nonMillUsers)
-        return calcCount(farms - nonMillUsers, AI_CONFIG.freeFarmToMill);
-    return millsNum;
-}
-
-unsigned BuildCalculator::CalcSawmills()
-{
-    return calcCount(numMilitaryBlds, AI_CONFIG.milToSawmill);
-}
-
-unsigned BuildCalculator::CalcIronsmelter()
-{
-    unsigned ironMines = GetNumBuildings(BuildingType::IronMine);
-    unsigned count = calcCount(ironMines, AI_CONFIG.ironMineToIronsmelter);
-    return std::min<unsigned>(count, maxIronFounder(aijh) + 2);
 }
 
 unsigned BuildCalculator::calcGrainUsers()

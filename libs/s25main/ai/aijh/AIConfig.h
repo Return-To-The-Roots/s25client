@@ -62,8 +62,11 @@ struct AIConfig
 extern AIConfig AI_CONFIG;
 
 extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& defaults);
-extern WantedParams parseWantedParams(const YAML::Node& node);
+extern WantedParams parseWantedParams(const YAML::Node& node, WantedParams params);
+extern WantedParams parseWeights(const YAML::Node& rootNode);
+
 extern void initDefaults();
+extern void applyWeightsCfg(std::string weightCfgPath);
 extern void initAIConfig(std::string configPath);
 
 #endif

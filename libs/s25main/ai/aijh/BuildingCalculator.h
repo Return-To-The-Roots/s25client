@@ -12,16 +12,11 @@ public:
 
     unsigned Calc(BuildingType type);
 
-    unsigned CalcIronsmelter();
     unsigned CalcForesters();
     unsigned CalcWoodcutters();
     unsigned CalcPigFarms();
     unsigned CalcQuarry();
-    unsigned CalcMills();
-    unsigned CalcSawmills();
-    unsigned CalcArmories();
     unsigned CalcFarms();
-    unsigned CalcIronMines();
 
 private:
     const AIPlayerJH& aijh;

@@ -4,6 +4,8 @@
 
 #include "AIConfig.h"
 
+#include "helpers/EnumRange.h"
+
 #include "gameTypes/GoodTypes.h"
 
 #include <iostream>
@@ -14,7 +16,7 @@ AIConfig AI_CONFIG;
 
 extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& defaults)
 {
-    BuildParams params = defaults; // Start with default values
+    BuildParams params = defaults;
 
     if(node["constant"])
         params.constant = node["constant"].as<double>();
@@ -32,25 +34,22 @@ extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& d
     return params;
 }
 
-WantedParams parseWantedParams(const YAML::Node& node)
+WantedParams parseWantedParams(const YAML::Node& node, WantedParams params)
 {
-    WantedParams params;
-
-    if(node["weights"])
-        for(const auto& weightEntry : node["weights"])
+    if(node["bldWeights"])
+        for(const auto& weightEntry : node["bldWeights"])
         {
             std::string buildingStr = weightEntry.first.as<std::string>();
-            BuildingType buildingType;
-            // This assumes you have a way to convert string to enum (like a map or RTTR)
+            BuildingType bldType;
             try
             {
-                buildingType = BUILDING_NAME_MAP.at(buildingStr);
+                bldType = BUILDING_NAME_MAP.at(buildingStr);
             } catch(...)
             {
-                continue; // Skip unknown building types
+                continue;
             }
 
-            params.bldWeights[buildingType] = parseBuildParams(weightEntry.second, {});
+            params.bldWeights[bldType] = parseBuildParams(weightEntry.second, params.bldWeights[bldType]);
         }
 
     if(node["workersAdvance"])
@@ -64,6 +63,15 @@ WantedParams parseWantedParams(const YAML::Node& node)
 
 extern void initDefaults()
 {
+    helpers::EnumArray<BuildParams, BuildingType> donkeyBreederBldParams =
+      helpers::EnumArray<BuildParams, BuildingType>{};
+    helpers::EnumArray<BuildParams, GoodType> donkeyBreederGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
+    helpers::EnumArray<BuildParams, StatisticType> donkeyBreederStatsParams =
+      helpers::EnumArray<BuildParams, StatisticType>{};
+    donkeyBreederStatsParams[StatisticType::Country] = {1, 0, {}, {}, 2000};
+    AI_CONFIG.wantedParams[BuildingType::DonkeyBreeder] = {donkeyBreederBldParams,  donkeyBreederGoodParams, {}, 1, 2,
+                                                           donkeyBreederStatsParams};
+
     helpers::EnumArray<BuildParams, BuildingType> wellBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
     wellBldParams[BuildingType::Bakery] = {0, 1};
     wellBldParams[BuildingType::PigFarm] = {0, 1};
@@ -94,7 +102,7 @@ extern void initDefaults()
     AI_CONFIG.wantedParams[BuildingType::Bakery] = {bakeryBldParams, bakeryGoodParams, {2}};
 
     WantedParams ironmineWantedParams = {};
-    ironmineWantedParams.workersAdvance= {2};
+    ironmineWantedParams.workersAdvance = {2};
     ironmineWantedParams.bldWeights[BuildingType::Farm] = {0, 0.34};
     ironmineWantedParams.goodWeights[GoodType::IronOre] = {-1, -0.02, {}, {}, 50};
     ironmineWantedParams.goodWeights[GoodType::Bread] = {0, 0.02, {}, {}, 0};
@@ -113,13 +121,20 @@ extern void initDefaults()
     coalmineWantedParams.minProductivity = 70;
     AI_CONFIG.wantedParams[BuildingType::CoalMine] = coalmineWantedParams;
 
+    WantedParams ironsmelterWantedParams = {};
+    ironsmelterWantedParams.workersAdvance = {2};
+    ironmineWantedParams.bldWeights[BuildingType::IronMine] = {0, 1, {}, {}, 0};
+    coalmineWantedParams.goodWeights[GoodType::Iron] = {0, -0.02, {}, {}, 50};
+    ironmineWantedParams.minProductivity = 70;
+    AI_CONFIG.wantedParams[BuildingType::Ironsmelter] = ironsmelterWantedParams;
+
     helpers::EnumArray<BuildParams, BuildingType> metalworksBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
     metalworksBldParams[BuildingType::Ironsmelter] = {0, 1};
     helpers::EnumArray<BuildParams, GoodType> metalworksGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
     AI_CONFIG.wantedParams[BuildingType::Metalworks] = {metalworksBldParams, metalworksGoodParams, {2}, 3};
 
     WantedParams armoryWantedParams = {};
-    armoryWantedParams.workersAdvance= {2};
+    armoryWantedParams.workersAdvance = {2};
     ironmineWantedParams.bldWeights[BuildingType::Ironsmelter] = {0, 1, {}, {}, 2};
     ironmineWantedParams.bldWeights[BuildingType::Metalworks] = {0, -1};
     ironmineWantedParams.minProductivity = 70;
@@ -138,9 +153,33 @@ extern void initDefaults()
     AI_CONFIG.wantedParams[BuildingType::Brewery] = {breweryBldParams, breweryGoodParams, {2}, 3};
 }
 
+extern void applyWeightsCfg(std::string weightCfgPath)
+{
+    try
+    {
+        YAML::Node rootNode = YAML::LoadFile(weightCfgPath);
+        std::string bldName;
+        BuildingType bldType;
+        for(const auto& weightsNode : rootNode)
+        {
+            try
+            {
+                bldName = weightsNode.first.as<std::string>();
+                bldType = BUILDING_NAME_MAP.at(bldName);
+                parseWantedParams(weightsNode.second, AI_CONFIG.wantedParams[bldType]);
+            } catch(...)
+            {
+                continue;
+            }
+        }
+    } catch(const YAML::Exception& e)
+    {
+        std::cerr << "Error parsing weights YAML file: " << e.what() << std::endl;
+        exit(1);
+    }
+}
 extern void initAIConfig(std::string configPath)
 {
-    YAML::Node configNode = YAML::LoadFile(configPath);
     try
     {
         YAML::Node configNode = YAML::LoadFile(configPath);

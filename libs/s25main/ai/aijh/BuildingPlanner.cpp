@@ -161,14 +161,17 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
 
         buildingsWanted[BuildingType::Quarry] = calculator.CalcQuarry();
 
+        buildingsWanted[BuildingType::Well] = calculator.Calc(BuildingType::Well);
         buildingsWanted[BuildingType::Sawmill] = calculator.Calc(BuildingType::Sawmill);
-        buildingsWanted[BuildingType::Ironsmelter] = calculator.CalcIronsmelter();
-        buildingsWanted[BuildingType::Armory] = calculator.CalcArmories();
-        buildingsWanted[BuildingType::Brewery] = calculator.Calc(BuildingType::Brewery);
-        buildingsWanted[BuildingType::Metalworks] = calculator.Calc(BuildingType::Metalworks);
         buildingsWanted[BuildingType::Mill] = calculator.Calc(BuildingType::Mill);
         buildingsWanted[BuildingType::Bakery] = calculator.Calc(BuildingType::Bakery);
-        buildingsWanted[BuildingType::Well] = calculator.Calc(BuildingType::Well);
+        buildingsWanted[BuildingType::Ironsmelter] = calculator.Calc(BuildingType::Ironsmelter);
+        buildingsWanted[BuildingType::Armory] = calculator.Calc(BuildingType::Armory);
+        buildingsWanted[BuildingType::Metalworks] = calculator.Calc(BuildingType::Metalworks);
+        buildingsWanted[BuildingType::Brewery] = calculator.Calc(BuildingType::Brewery);
+        buildingsWanted[BuildingType::IronMine] = calculator.Calc(BuildingType::IronMine);
+        buildingsWanted[BuildingType::CoalMine] = calculator.Calc(BuildingType::CoalMine);
+        buildingsWanted[BuildingType::DonkeyBreeder] = calculator.Calc(BuildingType::DonkeyBreeder);
         buildingsWanted[BuildingType::PigFarm] = calculator.CalcPigFarms();
         buildingsWanted[BuildingType::Slaughterhouse] =
           std::min(maxButcher(aijh), GetNumBuildings(BuildingType::PigFarm));
