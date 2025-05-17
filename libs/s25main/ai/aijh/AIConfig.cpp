@@ -31,13 +31,17 @@ extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& d
         if(nodeLog2["linear"])
             params.logTwo.linear = nodeLog2["linear"].as<double>();
     }
+    if(node["min"])
+    {
+        params.min = node["min"].as<unsigned>();
+    }
     return params;
 }
 
 WantedParams parseWantedParams(const YAML::Node& node, WantedParams params)
 {
-    if(node["bldWeights"])
-        for(const auto& weightEntry : node["bldWeights"])
+    if(node["buildings"])
+        for(const auto& weightEntry : node["buildings"])
         {
             std::string buildingStr = weightEntry.first.as<std::string>();
             BuildingType bldType;
@@ -51,106 +55,50 @@ WantedParams parseWantedParams(const YAML::Node& node, WantedParams params)
 
             params.bldWeights[bldType] = parseBuildParams(weightEntry.second, params.bldWeights[bldType]);
         }
+    if(node["goods"])
+        for(const auto& weightEntry : node["goods"])
+        {
+            std::string statStr = weightEntry.first.as<std::string>();
+            GoodType goodType;
+            try
+            {
+                goodType = GOOD_NAMES_MAP.at(statStr);
+            } catch(...)
+            {
+                continue;
+            }
 
+            params.goodWeights[goodType] = parseBuildParams(weightEntry.second, params.goodWeights[goodType]);
+        }
+    if(node["stats"])
+        for(const auto& weightEntry : node["stats"])
+        {
+            std::string statStr = weightEntry.first.as<std::string>();
+            StatisticType statType;
+            try
+            {
+                statType = STATS_NAME_MAP.at(statStr);
+            } catch(...)
+            {
+                continue;
+            }
+
+            params.statsWeights[statType] = parseBuildParams(weightEntry.second, params.statsWeights[statType]);
+        }
     if(node["workersAdvance"])
         params.workersAdvance = parseBuildParams(node["workersAdvance"], {});
 
     if(node["max"])
         params.max = node["max"].as<unsigned>();
 
+    if(node["minProductivity"])
+        params.minProductivity = node["minProductivity"].as<unsigned>();
+
     return params;
 }
 
 extern void initDefaults()
 {
-    helpers::EnumArray<BuildParams, BuildingType> donkeyBreederBldParams =
-      helpers::EnumArray<BuildParams, BuildingType>{};
-    helpers::EnumArray<BuildParams, GoodType> donkeyBreederGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
-    helpers::EnumArray<BuildParams, StatisticType> donkeyBreederStatsParams =
-      helpers::EnumArray<BuildParams, StatisticType>{};
-    donkeyBreederStatsParams[StatisticType::Country] = {1, 0, {}, {}, 2000};
-    AI_CONFIG.wantedParams[BuildingType::DonkeyBreeder] = {donkeyBreederBldParams,  donkeyBreederGoodParams, {}, 1, 2,
-                                                           donkeyBreederStatsParams};
-
-    helpers::EnumArray<BuildParams, BuildingType> wellBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
-    wellBldParams[BuildingType::Bakery] = {0, 1};
-    wellBldParams[BuildingType::PigFarm] = {0, 1};
-    wellBldParams[BuildingType::DonkeyBreeder] = {0, 1};
-    wellBldParams[BuildingType::Brewery] = {0, 1};
-    helpers::EnumArray<BuildParams, GoodType> wellGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
-    wellGoodParams[GoodType::Water] = {0, -0.02, {}, {}, 50};
-    wellGoodParams[GoodType::Flour] = {0, 0.02, {}, {}, 50};
-    AI_CONFIG.wantedParams[BuildingType::Well] = {wellBldParams, wellGoodParams};
-
-    helpers::EnumArray<BuildParams, BuildingType> sawmillBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
-    helpers::EnumArray<BuildParams, GoodType> sawmillGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
-    helpers::EnumArray<BuildParams, StatisticType> sawmillStatParams = helpers::EnumArray<BuildParams, StatisticType>{};
-    sawmillStatParams[StatisticType::Country] = {2, 0.001, {-3, 0.05}};
-    AI_CONFIG.wantedParams[BuildingType::Sawmill] = {sawmillBldParams, sawmillGoodParams, {2}, 9999, 70,
-                                                     sawmillStatParams};
-    helpers::EnumArray<BuildParams, BuildingType> millBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
-    millBldParams[BuildingType::Farm] = {0, 0.9};
-    millBldParams[BuildingType::DonkeyBreeder] = {0, -1};
-    millBldParams[BuildingType::Brewery] = {0, -1};
-    helpers::EnumArray<BuildParams, GoodType> millGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
-    millGoodParams[GoodType::Flour] = {-1, -0.02, {}, {}, 50};
-    AI_CONFIG.wantedParams[BuildingType::Mill] = {millBldParams, millGoodParams, {2}};
-
-    helpers::EnumArray<BuildParams, BuildingType> bakeryBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
-    bakeryBldParams[BuildingType::Mill] = {0, 1};
-    helpers::EnumArray<BuildParams, GoodType> bakeryGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
-    AI_CONFIG.wantedParams[BuildingType::Bakery] = {bakeryBldParams, bakeryGoodParams, {2}};
-
-    WantedParams ironmineWantedParams = {};
-    ironmineWantedParams.workersAdvance = {2};
-    ironmineWantedParams.bldWeights[BuildingType::Farm] = {0, 0.34};
-    ironmineWantedParams.goodWeights[GoodType::IronOre] = {-1, -0.02, {}, {}, 50};
-    ironmineWantedParams.goodWeights[GoodType::Bread] = {0, 0.02, {}, {}, 0};
-    ironmineWantedParams.goodWeights[GoodType::Fish] = {0, 0.02, {}, {}, 0};
-    ironmineWantedParams.goodWeights[GoodType::Meat] = {0, 0.02, {}, {}, 0};
-    ironmineWantedParams.minProductivity = 70;
-    AI_CONFIG.wantedParams[BuildingType::IronMine] = ironmineWantedParams;
-
-    WantedParams coalmineWantedParams = {};
-    coalmineWantedParams.workersAdvance = {2};
-    coalmineWantedParams.bldWeights[BuildingType::Farm] = {0, 0.66};
-    coalmineWantedParams.goodWeights[GoodType::Coal] = {-1, -0.02, {}, {}, 50};
-    coalmineWantedParams.goodWeights[GoodType::Bread] = {0, 0.02, {}, {}, 0};
-    coalmineWantedParams.goodWeights[GoodType::Fish] = {0, 0.02, {}, {}, 0};
-    coalmineWantedParams.goodWeights[GoodType::Meat] = {0, 0.02, {}, {}, 0};
-    coalmineWantedParams.minProductivity = 70;
-    AI_CONFIG.wantedParams[BuildingType::CoalMine] = coalmineWantedParams;
-
-    WantedParams ironsmelterWantedParams = {};
-    ironsmelterWantedParams.workersAdvance = {2};
-    ironmineWantedParams.bldWeights[BuildingType::IronMine] = {0, 1, {}, {}, 0};
-    coalmineWantedParams.goodWeights[GoodType::Iron] = {0, -0.02, {}, {}, 50};
-    ironmineWantedParams.minProductivity = 70;
-    AI_CONFIG.wantedParams[BuildingType::Ironsmelter] = ironsmelterWantedParams;
-
-    helpers::EnumArray<BuildParams, BuildingType> metalworksBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
-    metalworksBldParams[BuildingType::Ironsmelter] = {0, 1};
-    helpers::EnumArray<BuildParams, GoodType> metalworksGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
-    AI_CONFIG.wantedParams[BuildingType::Metalworks] = {metalworksBldParams, metalworksGoodParams, {2}, 3};
-
-    WantedParams armoryWantedParams = {};
-    armoryWantedParams.workersAdvance = {2};
-    ironmineWantedParams.bldWeights[BuildingType::Ironsmelter] = {0, 1, {}, {}, 2};
-    ironmineWantedParams.bldWeights[BuildingType::Metalworks] = {0, -1};
-    ironmineWantedParams.minProductivity = 70;
-    AI_CONFIG.wantedParams[BuildingType::Armory] = armoryWantedParams;
-
-    WantedParams breweryWantedParams = {};
-    breweryWantedParams.bldWeights[BuildingType::Armory] = {1, 0.20, {}, {}, 1};
-    breweryWantedParams.minProductivity = 70;
-    AI_CONFIG.wantedParams[BuildingType::Brewery] = breweryWantedParams;
-
-    helpers::EnumArray<BuildParams, BuildingType> breweryBldParams = helpers::EnumArray<BuildParams, BuildingType>{};
-    breweryBldParams[BuildingType::Armory] = {0, 0.25};
-    breweryBldParams[BuildingType::Farm] = {1, 0.0, {}, {}, 3};
-    auto breweryGoodParams = helpers::EnumArray<BuildParams, GoodType>{};
-    breweryGoodParams[GoodType::Beer] = {-1, -0.02, {}, {}, 50};
-    AI_CONFIG.wantedParams[BuildingType::Brewery] = {breweryBldParams, breweryGoodParams, {2}, 3};
 }
 
 extern void applyWeightsCfg(std::string weightCfgPath)
@@ -158,15 +106,16 @@ extern void applyWeightsCfg(std::string weightCfgPath)
     try
     {
         YAML::Node rootNode = YAML::LoadFile(weightCfgPath);
+        auto plannerNode = rootNode["buildPlanner"];
         std::string bldName;
         BuildingType bldType;
-        for(const auto& weightsNode : rootNode)
+        for(const auto& weightsNode : plannerNode)
         {
             try
             {
                 bldName = weightsNode.first.as<std::string>();
                 bldType = BUILDING_NAME_MAP.at(bldName);
-                parseWantedParams(weightsNode.second, AI_CONFIG.wantedParams[bldType]);
+                AI_CONFIG.wantedParams[bldType] = parseWantedParams(weightsNode.second, AI_CONFIG.wantedParams[bldType]);
             } catch(...)
             {
                 continue;

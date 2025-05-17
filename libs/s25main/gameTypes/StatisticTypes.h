@@ -64,6 +64,17 @@ static const std::map<StatisticType, std::string> statistic_names = {
     {StatisticType::Vanquished, "Vanquished"},
     {StatisticType::Tournament, "Tournament"}
 };
+static const std::map<std::string, StatisticType> STATS_NAME_MAP = {
+    {"Country", StatisticType::Country},
+    {"Buildings", StatisticType::Buildings},
+    {"Inhabitants", StatisticType::Inhabitants},
+    {"Merchandise", StatisticType::Merchandise},
+    {"Military", StatisticType::Military},
+    {"GoldCoins", StatisticType::Gold},
+    {"Productivity", StatisticType::Productivity},
+    {"Vanquished", StatisticType::Vanquished},
+    {"Tournament", StatisticType::Tournament}
+};
 
 inline std::string StatisticTypeName(StatisticType type) {
     return statistic_names.at(type);

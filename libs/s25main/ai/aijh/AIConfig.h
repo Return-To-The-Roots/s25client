@@ -23,6 +23,7 @@ struct BuildParams
 
 struct WantedParams
 {
+    bool enables = false;
     helpers::EnumArray<BuildParams, BuildingType> bldWeights = helpers::EnumArray<BuildParams, BuildingType>{};
     helpers::EnumArray<BuildParams, GoodType> goodWeights = helpers::EnumArray<BuildParams, GoodType>{};
     BuildParams workersAdvance = {1};

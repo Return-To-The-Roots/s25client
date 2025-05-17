@@ -11,12 +11,10 @@
 
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <vector>
 #include <unordered_map>
 #include <set>
 
-// Fast-CSV is a header-only library
 #define CSV_IO_NO_THREAD
 #include "csv.h"
 
@@ -43,7 +41,7 @@ void DataMiner::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
     {
         std::string buildingName = BUILDING_NAMES_1.at(type);
         snapshot[buildingName + "Count"] = building_nums.buildings[type];
-        snapshot[buildingName + "Sites"] = building_nums.buildings[type]; // Replace with actual sites
+        snapshot[buildingName + "Sites"] = building_nums.buildingSites[type];
         // Add production data
         snapshot[buildingName + "Prod"] = player.GetBuildingRegister().CalcAverageProductivity(type);
     }

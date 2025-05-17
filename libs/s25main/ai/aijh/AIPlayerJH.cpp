@@ -279,9 +279,9 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(defeated)
         return;
 
-    if(gf % STATS_CONFIG.stats_period == 0)
+    if(STATS_CONFIG.stats_period > 0 && gf % STATS_CONFIG.stats_period == 0)
     {
-        // saveStats(gf);
+        saveStats(gf);
     }
     if(TestDefeat())
         return;

@@ -38,8 +38,9 @@ int main(int argc, char** argv)
     boost::optional<std::string> output_path;
     boost::optional<std::string> runId;
     boost::optional<std::string> runSetId;
-    boost::optional<unsigned int> startPeriod;
+    boost::optional<unsigned int> statsPeriod;
     boost::optional<unsigned int> savePeriod;
+    boost::optional<unsigned int> debugStatsPeriod;
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     po::options_description desc("Allowed options");
@@ -50,8 +51,9 @@ int main(int argc, char** argv)
         ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
         ("max_gf", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("output_path", po::value(&output_path),"Filename to write savegame to (optional)")
-        ("stats_period", po::value(&startPeriod),"Stats period")
+        ("stats_period", po::value(&statsPeriod),"Stats period")
         ("save_period", po::value(&savePeriod),"Save period")
+        ("debug_stats_period", po::value(&savePeriod),"Save period")
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
@@ -166,14 +168,8 @@ int main(int argc, char** argv)
             return 1;
         }
 
-        if(startPeriod)
-        {
-            STATS_CONFIG.stats_period = *startPeriod;
-        }
-        if(savePeriod)
-        {
-            STATS_CONFIG.save_period = *savePeriod;
-        }
+        STATS_CONFIG.stats_period = statsPeriod.get_value_or(0);
+        STATS_CONFIG.save_period = savePeriod.get_value_or(0);
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
