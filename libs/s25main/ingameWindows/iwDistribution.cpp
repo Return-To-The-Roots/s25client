@@ -79,7 +79,10 @@ void iwDistribution::TransmitSettings()
     if(settings_changed)
     {
         // Read values from the progress ctrls to the struct
-        Distributions newDistribution{0};
+        Distributions newDistribution;
+        // Set default values for all distributions because groups with only one entry are not shown and will not be set
+        std::transform(distributionMap.begin(), distributionMap.end(), newDistribution.begin(),
+                       [](DistributionMapping const& mapping) { return std::get<2>(mapping); });
 
         for(unsigned i = 0; i < groups.size(); ++i)
         {
