@@ -43,5 +43,4 @@ CheckOptions:
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
   - key: performance-unnecessary-value-param.AllowedTypes
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
-AnalyzeTemporaryDtors: false
 ...
