@@ -15,7 +15,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 SRC_DIR="$(cd .. && pwd)"
 FILTER="extras|libs|tests|external/(libendian|liblobby|libsiedler2|libutil|mygettext|s25edit|s25update)"
 
-script -q -c "run-clang-tidy-10 -p . \
+script -q -c "run-clang-tidy-18 -p . \
     -quiet \
     -header-filter \"${SRC_DIR}/(${FILTER})\" \
     \"${SRC_DIR}/(${FILTER})\"" /dev/null \
