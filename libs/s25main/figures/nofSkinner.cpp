@@ -157,11 +157,12 @@ void nofSkinner::TryStartSkinning()
         HandleStateWaiting1();
     else
     {
+        const int SQUARE_SIZE = 19;
         std::vector<noAnimal*> available_animals;
         Position curPos;
-        for(curPos.y = pos.y - MAX_SKINNING_DISTANCE; curPos.y <= pos.y + MAX_SKINNING_DISTANCE; ++curPos.y)
+        for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
         {
-            for(curPos.x = pos.x - MAX_SKINNING_DISTANCE; curPos.x <= pos.x + MAX_SKINNING_DISTANCE; ++curPos.x)
+            for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
             {
                 MapPoint curMapPos = world->MakeMapPoint(curPos);
                 for(auto& figure : world->GetFigures(curMapPos))
