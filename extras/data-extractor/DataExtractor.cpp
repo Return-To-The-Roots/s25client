@@ -131,16 +131,12 @@ void DataExtractor::flush(OutputFormat format)
             std::cerr << "Successfully wrote 1 snapshot as CSV to stdout." << std::endl;
 
         } else if (format == OutputFormat::JSON) {
-            nlohmann::json j_array = nlohmann::json::array();
-            // nlohmann::json can directly convert std::unordered_map
-            j_array.push_back(snapshot_to_write); 
+            // Directly convert the map (SnapshotData) to a nlohmann::json object
+            nlohmann::json j_object = snapshot_to_write; 
             
-            // Output JSON to std::cout
-            // The previous version used dump(4) for pretty printing, 
-            // the version from the user's last message used dump().
-            // I'll use dump() to match the provided file.
-            std::cout << j_array.dump() << std::endl; 
-            std::cerr << "Successfully wrote 1 snapshot as JSON to stdout." << std::endl;
+            // Output JSON object to std::cout
+            std::cout << j_object.dump() << std::endl; 
+            std::cerr << "Successfully wrote 1 snapshot as JSON object to stdout." << std::endl;
         }
 
         currentSnapshot_.reset(); // Clear the stored snapshot
