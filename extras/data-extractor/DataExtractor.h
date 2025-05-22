@@ -17,7 +17,7 @@ public:
     DataExtractor() = default;
 
     void ProcessSnapshot(GamePlayer& player, uint32_t gameframe);
-    void flush(const std::string& filePath);
+    void flush(); // Changed signature
 
 private:
     std::vector<SnapshotData> snapshots_;

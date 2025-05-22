@@ -6,10 +6,10 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/StatisticTypes.h"
-#include <boost/filesystem/directory.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/directory.hpp> // Not strictly needed anymore for flush
+#include <boost/filesystem/operations.hpp> // Not strictly needed anymore for flush
 
-#include <fstream>
+#include <fstream> // Not strictly needed anymore for flush
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -18,7 +18,7 @@
 #define CSV_IO_NO_THREAD
 #include "csv.h" // Note: csv.h seems to be included for the macro, not active use in writing.
 
-namespace fs = boost::filesystem;
+namespace fs = boost::filesystem; // Not strictly needed anymore for flush
 
 void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
 {
@@ -54,51 +54,25 @@ void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
         snapshot[goodName] = inventory.goods[type];
     }
 
-    std::cout << "Successfully processed gameframe " << gameframe << std::endl;
+    std::cerr << "Successfully processed gameframe " << gameframe << std::endl; // Using cerr for progress messages
 
     snapshots_.push_back(snapshot);
 
     // Keep track of all field names for headers
-    for (const auto& pair : snapshot) // Changed from structured binding for clarity if needed
+    for (const auto& pair : snapshot)
     {
         fieldNames_.insert(pair.first);
     }
 }
 
-void DataExtractor::flush(const std::string& filePath)
+void DataExtractor::flush() // Changed signature
 {
     // Skip if no snapshots to write
     if (snapshots_.empty()) {
         return;
     }
 
-    fs::path outputFilePath(filePath);
-
     try {
-        // Make sure the parent directory exists
-        fs::path parentDir = outputFilePath.parent_path();
-        if (!parentDir.empty() && !fs::exists(parentDir)) {
-            fs::create_directories(parentDir);
-        }
-
-        bool writeHeaders = true;
-        if (fs::exists(outputFilePath) && !fs::is_empty(outputFilePath)) {
-            writeHeaders = false; // File exists and has content, so don't write headers
-        }
-
-        std::ofstream outFile;
-        if (writeHeaders) {
-            // Create/overwrite file (if empty or new) and prepare to write headers
-            outFile.open(outputFilePath.string(), std::ios_base::out | std::ios_base::trunc);
-        } else {
-            // Append to existing file
-            outFile.open(outputFilePath.string(), std::ios_base::app);
-        }
-
-        if (!outFile.is_open()) {
-            throw std::runtime_error("Failed to open file: " + outputFilePath.string());
-        }
-
         // Prepare headers (GameFrame first, then others sorted)
         std::vector<std::string> headers;
         headers.reserve(fieldNames_.size());
@@ -111,56 +85,54 @@ void DataExtractor::flush(const std::string& filePath)
             }
         }
 
-        if (writeHeaders) {
-            bool firstHeader = true;
-            for (const auto& header : headers) {
-                if (!firstHeader) outFile << ",";
-                firstHeader = false;
+        // Always write headers to std::cout
+        bool firstHeader = true;
+        for (const auto& header : headers) {
+            if (!firstHeader) std::cout << ",";
+            firstHeader = false;
 
-                // Handle special characters in CSV headers (quote if necessary, escape internal quotes)
-                bool needsQuotes = header.find_first_of(",\"\n") != std::string::npos;
-                if (needsQuotes) {
-                    outFile << "\"";
-                    for (char c : header) {
-                        if (c == '"') outFile << "\"\""; // Double up internal quotes
-                        else outFile << c;
-                    }
-                    outFile << "\"";
-                } else {
-                    outFile << header;
+            // Handle special characters in CSV headers (quote if necessary, escape internal quotes)
+            bool needsQuotes = header.find_first_of(",\"\n") != std::string::npos;
+            if (needsQuotes) {
+                std::cout << "\"";
+                for (char c : header) {
+                    if (c == '"') std::cout << "\"\""; // Double up internal quotes
+                    else std::cout << c;
                 }
+                std::cout << "\"";
+            } else {
+                std::cout << header;
             }
-            outFile << "\n";
         }
+        std::cout << "\n";
 
-        // Write data rows
+        // Write data rows to std::cout
         for (const auto& snapshot : snapshots_) {
             bool firstCell = true;
             for (const auto& header : headers) {
-                if (!firstCell) outFile << ",";
+                if (!firstCell) std::cout << ",";
                 firstCell = false;
 
                 auto it = snapshot.find(header);
                 if (it != snapshot.end()) {
-                    outFile << it->second; // Data is int, no special quoting needed for int
+                    std::cout << it->second; // Data is int, no special quoting needed for int
                 } else {
-                    outFile << "0"; // Default value for missing fields
+                    std::cout << "0"; // Default value for missing fields
                 }
             }
-            outFile << "\n";
+            std::cout << "\n";
         }
 
-        outFile.close();
-
-        std::cout << "Successfully wrote " << snapshots_.size() << " snapshot(s) to " << outputFilePath << std::endl;
+        std::cerr << "Successfully wrote " << snapshots_.size() << " snapshot(s) to stdout." << std::endl; // Using cerr for status
 
         snapshots_.clear();
-        // fieldNames_ is not cleared. For single-file processing per run, it will reflect
-        // the fields of that single snapshot. If appending, this means the set of headers
-        // used for ordering data comes from the current snapshot. This assumes consistency
-        // with pre-existing headers if appending.
+        // fieldNames_ is not cleared here. If DataExtractor instance is reused for multiple
+        // ProcessSnapshot calls before a flush, fieldNames_ will accumulate.
+        // For the current main.cpp logic (one snapshot per run), this is fine.
+        // If DataExtractor were to process multiple files internally before one flush,
+        // fieldNames_ should ideally be cleared along with snapshots_ or at the start of a new "batch".
     }
     catch (const std::exception& e) {
-        std::cerr << "Error writing CSV: " << e.what() << std::endl;
+        std::cerr << "Error writing CSV to stdout: " << e.what() << std::endl;
     }
 }
