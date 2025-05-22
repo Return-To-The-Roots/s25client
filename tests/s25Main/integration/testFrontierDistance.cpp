@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -39,7 +39,7 @@ struct FrontierWorld : public WorldFixture<T_WorldCreator, 2, T_width, T_height>
         const GamePlayer& p1 = world.GetPlayer(1);
         milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
         milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
-        if(std::is_same<T_WorldCreator, CreateEmptyWorld>::value)
+        if(std::is_same_v<T_WorldCreator, CreateEmptyWorld>)
         { // Assumed by distributions and sizes
             BOOST_TEST_REQUIRE(milBld0Pos.y == milBld1Pos.y);
         }

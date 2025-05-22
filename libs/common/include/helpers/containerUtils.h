@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -21,6 +21,8 @@ namespace detail {
     template<class T>
     struct has_pop_front<T, std::void_t<decltype(T::pop_front())>> : std::true_type
     {};
+    template<class T>
+    constexpr bool has_pop_front_v = has_pop_front<T>::value;
 
     template<class T, class U, typename = void>
     struct has_find : std::false_type
@@ -29,6 +31,8 @@ namespace detail {
     template<class T, class U>
     struct has_find<T, U, std::void_t<decltype(std::declval<T>().find(std::declval<U>()))>> : std::true_type
     {};
+    template<class T, class U>
+    constexpr bool has_find_v = has_find<T, U>::value;
 } // namespace detail
 
 /// Removes an element from a container by its reverse iterator and returns an iterator to the next element
@@ -62,7 +66,7 @@ template<typename T>
 void pop_front(T& container)
 {
     RTTR_Assert(!container.empty());
-    if constexpr(detail::has_pop_front<T>::value)
+    if constexpr(detail::has_pop_front_v<T>)
         container.pop_front();
     else
         container.erase(container.begin());
@@ -72,7 +76,7 @@ void pop_front(T& container)
 template<typename T, typename U>
 auto find(T& container, const U& value)
 {
-    if constexpr(detail::has_find<T, U>::value)
+    if constexpr(detail::has_find_v<T, U>)
         return container.find(value);
     else
     {
