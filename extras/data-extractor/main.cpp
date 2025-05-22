@@ -4,7 +4,7 @@
 #include <string>
 #include <algorithm>
 
-#include "DataMiner.h"
+#include "DataExtractor.h"
 #include "RttrConfig.h"
 #include "SnapshotLoader.h"
 
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     // Sort files for consistent processing order (optional but recommended)
     std::sort(snapshot_files.begin(), snapshot_files.end());
 
-    DataMiner miner{};
+    DataExtractor miner{};
 
     for (const auto& path : snapshot_files) {
         auto snapshot = Snapshot::GetActivePlayer(path);

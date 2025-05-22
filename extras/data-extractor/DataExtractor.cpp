@@ -1,4 +1,4 @@
-#include "DataMiner.h"
+#include "DataExtractor.h"
 
 #include "GamePlayer.h"
 #include "helpers/EnumRange.h"
@@ -20,7 +20,7 @@
 
 namespace fs = boost::filesystem;
 
-void DataMiner::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
+void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
 {
     // Create a snapshot object that will hold all data for this gameframe
     SnapshotData snapshot;
@@ -65,7 +65,7 @@ void DataMiner::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
     }
 }
 
-void DataMiner::flush(const std::string& filePath)
+void DataExtractor::flush(const std::string& filePath)
 {
     // Skip if no snapshots to write
     if (snapshots_.empty()) {

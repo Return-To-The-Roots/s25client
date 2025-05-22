@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(data-miner main.cpp
-        DataMiner.cpp
-        DataMiner.h
+add_executable(data-extractor main.cpp
+        DataExtractor.cpp
+        DataExtractor.h
         SnapshotLoader.h
         SnapshotLoader.cpp
 )
@@ -23,7 +23,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fast-cpp-csv-parser)
 
 target_link_libraries(
-        data-miner
+        data-extractor
         PRIVATE s25Main
             Boost::program_options
             Boost::nowide
@@ -31,13 +31,13 @@ target_link_libraries(
 )
 
 target_include_directories(
-        data-miner
+        data-extractor
         PRIVATE ${fast-cpp-csv-parser_SOURCE_DIR}
 )
 # Add a definition to use C++17 filesystem (required by some CSV parsers)
-target_compile_definitions(data-miner PRIVATE USE_CXX17_FILESYSTEM)
+target_compile_definitions(data-extractor PRIVATE USE_CXX17_FILESYSTEM)
 
 if(WIN32)
     include(GatherDll)
-    gather_dll_copy(data-miner)
+    gather_dll_copy(data-extractor)
 endif()

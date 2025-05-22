@@ -11,10 +11,10 @@ class GamePlayer;
 // Define the snapshot data type
 using SnapshotData = std::unordered_map<std::string, int>;
 
-class DataMiner
+class DataExtractor
 {
 public:
-    DataMiner() = default;
+    DataExtractor() = default;
 
     void ProcessSnapshot(GamePlayer& player, uint32_t gameframe);
     void flush(const std::string& filePath);
