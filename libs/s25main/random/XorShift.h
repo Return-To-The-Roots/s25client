@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -25,7 +25,7 @@ public:
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit XorShift(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr)
+    explicit XorShift(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral_v<T_SeedSeq>>* = nullptr)
     {
         seed(seedSeq);
     }
@@ -33,7 +33,7 @@ public:
     void seed() { seed(0x1337); }
     void seed(uint64_t newSeed);
     template<class T_SeedSeq>
-    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr);
+    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral_v<T_SeedSeq>>* = nullptr);
 
     /// Return random value in [min, max]
     result_type operator()();
@@ -53,7 +53,7 @@ private:
 };
 
 template<class T_SeedSeq>
-inline void XorShift::seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>*)
+inline void XorShift::seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral_v<T_SeedSeq>>*)
 {
     std::array<uint32_t, 2> seeds;
     seedSeq.generate(seeds.begin(), seeds.end());

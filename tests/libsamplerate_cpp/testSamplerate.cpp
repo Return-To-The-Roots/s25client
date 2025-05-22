@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(CtorAndBaseFuncsWork)
     s1.setRatio(44100. / 22050.); // No exceptions thrown
 }
 
-template<typename T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
+template<typename T, std::enable_if_t<std::is_copy_constructible_v<T>>* = nullptr>
 void cloneTests(T& s1)
 {
     samplerate::State s2 = s1;
@@ -56,7 +56,7 @@ void cloneTests(T& s1)
     BOOST_TEST(s1.getState() != s3.getState());
 }
 
-template<typename T, std::enable_if_t<!std::is_copy_constructible<T>::value>* = nullptr>
+template<typename T, std::enable_if_t<!std::is_copy_constructible_v<T>>* = nullptr>
 void cloneTests(const T&)
 {}
 

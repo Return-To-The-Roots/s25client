@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -14,13 +14,17 @@ namespace helpers {
 template<class T>
 struct MaxEnumValue
 {
-    static_assert(std::is_enum<T>::value, "T must be an enum");
+    static_assert(std::is_enum_v<T>, "T must be an enum");
     static constexpr T value = maxEnumValue(T{});
 };
 
-/// Return the maximum value of an Enum
+/// Return the highest enumerator of an enum type
 template<class T_Enum>
-inline constexpr unsigned MaxEnumValue_v = static_cast<std::underlying_type_t<T_Enum>>(MaxEnumValue<T_Enum>::value);
+inline constexpr T_Enum MaxEnumerator_v = MaxEnumValue<T_Enum>::value;
+
+/// Return the maximum numeric value of an Enum
+template<class T_Enum>
+inline constexpr unsigned MaxEnumValue_v = static_cast<std::underlying_type_t<T_Enum>>(MaxEnumerator_v<T_Enum>);
 
 /// Return the number of enumerators for an enum type
 template<class T_Enum>

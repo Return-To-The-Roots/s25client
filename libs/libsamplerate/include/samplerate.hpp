@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -44,8 +44,10 @@ namespace detail {
     template<class T>
     struct has_src_clone<T, std::void_t<decltype(src_clone(std::declval<T>(), nullptr))>> : std::true_type
     {};
+    template<class T>
+    constexpr bool has_src_clone_v = has_src_clone<T>::value;
 
-    template<typename T, bool = has_src_clone<T*>::value>
+    template<typename T, bool = has_src_clone_v<T*>>
     class State
     {
         T* state_;
