@@ -6,36 +6,37 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/StatisticTypes.h"
-#include <boost/filesystem/directory.hpp> // Not strictly needed anymore for flush
-#include <boost/filesystem/operations.hpp> // Not strictly needed anymore for flush
+#include <boost/filesystem/directory.hpp> 
+#include <boost/filesystem/operations.hpp> 
 
-#include <fstream> // Not strictly needed anymore for flush
+#include <fstream> 
 #include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <set>
-#include <string> // Required for std::string operations
+#include <string> 
+#include <optional> // Ensure it's included, though DataExtractor.h already does
 
 #include <nlohmann/json.hpp> // For JSON output
 
 #define CSV_IO_NO_THREAD
-#include "csv.h" // Note: csv.h seems to be included for the macro, not active use in writing.
+#include "csv.h" 
 
-namespace fs = boost::filesystem; // Not strictly needed anymore for flush
+namespace fs = boost::filesystem; 
 
 void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
 {
     // Create a snapshot object that will hold all data for this gameframe
-    SnapshotData snapshot;
+    SnapshotData snapshot_data_map; // Renamed to avoid conflict with a type if any
 
     // Add gameframe info
-    snapshot["GameFrame"] = gameframe;
+    snapshot_data_map["GameFrame"] = gameframe;
 
     // Process statistics
     for (StatisticType type : helpers::EnumRange<StatisticType>{})
     {
         uint32_t value = player.GetStatisticCurrentValue(type);
-        snapshot[StatisticTypeName(type)] = value;
+        snapshot_data_map[StatisticTypeName(type)] = value;
     }
 
     // Process buildings
@@ -43,10 +44,10 @@ void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
     for (BuildingType type : helpers::EnumRange<BuildingType>{})
     {
         std::string buildingName = BUILDING_NAMES_1.at(type);
-        snapshot[buildingName + "Count"] = building_nums.buildings[type];
-        snapshot[buildingName + "Sites"] = building_nums.buildingSites[type];
+        snapshot_data_map[buildingName + "Count"] = building_nums.buildings[type];
+        snapshot_data_map[buildingName + "Sites"] = building_nums.buildingSites[type];
         // Add production data
-        snapshot[buildingName + "Prod"] = player.GetBuildingRegister().CalcAverageProductivity(type);
+        snapshot_data_map[buildingName + "Prod"] = player.GetBuildingRegister().CalcAverageProductivity(type);
     }
 
     // Process merchandise (inventory)
@@ -54,26 +55,30 @@ void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
     for (GoodType type : helpers::EnumRange<GoodType>{})
     {
         std::string goodName = GOOD_NAMES_1.at(type);
-        snapshot[goodName] = inventory.goods[type];
+        snapshot_data_map[goodName] = inventory.goods[type];
     }
 
-    std::cerr << "Successfully processed gameframe " << gameframe << std::endl; // Using cerr for progress messages
+    std::cerr << "Successfully processed gameframe " << gameframe << std::endl; 
 
-    snapshots_.push_back(snapshot);
+    currentSnapshot_ = snapshot_data_map; // Assign to the single optional snapshot
 
     // Keep track of all field names for headers
-    for (const auto& pair : snapshot)
+    fieldNames_.clear(); // Clear previous field names if any (for potential reuse)
+    for (const auto& pair : snapshot_data_map)
     {
         fieldNames_.insert(pair.first);
     }
 }
 
-void DataExtractor::flush(OutputFormat format) // Changed signature
+void DataExtractor::flush(OutputFormat format)
 {
-    // Skip if no snapshots to write
-    if (snapshots_.empty()) {
+    // Skip if no snapshot data to write
+    if (!currentSnapshot_) {
+        std::cerr << "No snapshot data to flush." << std::endl;
         return;
     }
+
+    const SnapshotData& snapshot_to_write = *currentSnapshot_;
 
     try {
         if (format == OutputFormat::CSV) {
@@ -95,12 +100,11 @@ void DataExtractor::flush(OutputFormat format) // Changed signature
                 if (!firstHeader) std::cout << ",";
                 firstHeader = false;
 
-                // Handle special characters in CSV headers (quote if necessary, escape internal quotes)
                 bool needsQuotes = header.find_first_of(",\"\n") != std::string::npos;
                 if (needsQuotes) {
                     std::cout << "\"";
                     for (char c : header) {
-                        if (c == '"') std::cout << "\"\""; // Double up internal quotes
+                        if (c == '"') std::cout << "\"\""; 
                         else std::cout << c;
                     }
                     std::cout << "\"";
@@ -110,39 +114,37 @@ void DataExtractor::flush(OutputFormat format) // Changed signature
             }
             std::cout << "\n";
 
-            // Write data rows to std::cout
-            for (const auto& snapshot : snapshots_) {
-                bool firstCell = true;
-                for (const auto& header : headers) {
-                    if (!firstCell) std::cout << ",";
-                    firstCell = false;
+            // Write data row to std::cout
+            bool firstCell = true;
+            for (const auto& header : headers) {
+                if (!firstCell) std::cout << ",";
+                firstCell = false;
 
-                    auto it = snapshot.find(header);
-                    if (it != snapshot.end()) {
-                        std::cout << it->second;
-                    } else {
-                        std::cout << "0"; // Default value for missing fields
-                    }
+                auto it = snapshot_to_write.find(header);
+                if (it != snapshot_to_write.end()) {
+                    std::cout << it->second;
+                } else {
+                    std::cout << "0"; // Default value for missing fields
                 }
-                std::cout << "\n";
             }
-            std::cerr << "Successfully wrote " << snapshots_.size() << " snapshot(s) as CSV to stdout." << std::endl;
+            std::cout << "\n";
+            std::cerr << "Successfully wrote 1 snapshot as CSV to stdout." << std::endl;
 
         } else if (format == OutputFormat::JSON) {
             nlohmann::json j_array = nlohmann::json::array();
-            for (const auto& snapshot_data : snapshots_) {
-                // nlohmann::json can directly convert std::unordered_map
-                j_array.push_back(snapshot_data);
-            }
-            // Output JSON to std::cout, with an indent of 4 for pretty printing
-            std::cout << j_array.dump() << std::endl;
-            std::cerr << "Successfully wrote " << snapshots_.size() << " snapshot(s) as JSON to stdout." << std::endl;
+            // nlohmann::json can directly convert std::unordered_map
+            j_array.push_back(snapshot_to_write); 
+            
+            // Output JSON to std::cout
+            // The previous version used dump(4) for pretty printing, 
+            // the version from the user's last message used dump().
+            // I'll use dump() to match the provided file.
+            std::cout << j_array.dump() << std::endl; 
+            std::cerr << "Successfully wrote 1 snapshot as JSON to stdout." << std::endl;
         }
 
-        snapshots_.clear();
-        // fieldNames_ is not cleared here. For the current main.cpp logic (one snapshot per run),
-        // this is fine. If DataExtractor were to process multiple files internally before one flush,
-        // fieldNames_ might need to be managed differently depending on desired behavior.
+        currentSnapshot_.reset(); // Clear the stored snapshot
+        fieldNames_.clear();      // Clear field names for potential reuse
     }
     catch (const std::exception& e) {
         std::cerr << "Error writing data to stdout: " << e.what() << std::endl;

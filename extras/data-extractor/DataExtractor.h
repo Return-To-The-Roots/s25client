@@ -5,11 +5,12 @@
 #include <unordered_map>
 #include <set>
 #include <cstdint>
+#include <optional> // Required for std::optional
 
 class GamePlayer;
 
 // Define the snapshot data type
-using SnapshotData = std::unordered_map<std::string, uint32_t>; // Changed int to uint32_t
+using SnapshotData = std::unordered_map<std::string, uint32_t>;
 
 class DataExtractor
 {
@@ -22,9 +23,9 @@ public:
     DataExtractor() = default;
 
     void ProcessSnapshot(GamePlayer& player, uint32_t gameframe);
-    void flush(OutputFormat format); // Changed signature to include format
+    void flush(OutputFormat format);
 
 private:
-    std::vector<SnapshotData> snapshots_;
+    std::optional<SnapshotData> currentSnapshot_; // Changed from std::vector
     std::set<std::string> fieldNames_; // To track all column headers
 };
