@@ -14,10 +14,15 @@ using SnapshotData = std::unordered_map<std::string, uint32_t>; // Changed int t
 class DataExtractor
 {
 public:
+    enum class OutputFormat {
+        CSV,
+        JSON
+    };
+
     DataExtractor() = default;
 
     void ProcessSnapshot(GamePlayer& player, uint32_t gameframe);
-    void flush(); // Changed signature
+    void flush(OutputFormat format); // Changed signature to include format
 
 private:
     std::vector<SnapshotData> snapshots_;

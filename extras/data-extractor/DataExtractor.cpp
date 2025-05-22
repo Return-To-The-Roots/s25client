@@ -14,6 +14,9 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <string> // Required for std::string operations
+
+#include <nlohmann/json.hpp> // For JSON output
 
 #define CSV_IO_NO_THREAD
 #include "csv.h" // Note: csv.h seems to be included for the macro, not active use in writing.
@@ -65,7 +68,7 @@ void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
     }
 }
 
-void DataExtractor::flush() // Changed signature
+void DataExtractor::flush(OutputFormat format) // Changed signature
 {
     // Skip if no snapshots to write
     if (snapshots_.empty()) {
@@ -73,66 +76,75 @@ void DataExtractor::flush() // Changed signature
     }
 
     try {
-        // Prepare headers (GameFrame first, then others sorted)
-        std::vector<std::string> headers;
-        headers.reserve(fieldNames_.size());
-        if (fieldNames_.count("GameFrame")) {
-            headers.push_back("GameFrame");
-        }
-        for (const auto& name : fieldNames_) { // std::set iterates in sorted order
-            if (name != "GameFrame") {
-                headers.push_back(name);
+        if (format == OutputFormat::CSV) {
+            // Prepare headers (GameFrame first, then others sorted)
+            std::vector<std::string> headers;
+            headers.reserve(fieldNames_.size());
+            if (fieldNames_.count("GameFrame")) {
+                headers.push_back("GameFrame");
             }
-        }
-
-        // Always write headers to std::cout
-        bool firstHeader = true;
-        for (const auto& header : headers) {
-            if (!firstHeader) std::cout << ",";
-            firstHeader = false;
-
-            // Handle special characters in CSV headers (quote if necessary, escape internal quotes)
-            bool needsQuotes = header.find_first_of(",\"\n") != std::string::npos;
-            if (needsQuotes) {
-                std::cout << "\"";
-                for (char c : header) {
-                    if (c == '"') std::cout << "\"\""; // Double up internal quotes
-                    else std::cout << c;
+            for (const auto& name : fieldNames_) { // std::set iterates in sorted order
+                if (name != "GameFrame") {
+                    headers.push_back(name);
                 }
-                std::cout << "\"";
-            } else {
-                std::cout << header;
             }
-        }
-        std::cout << "\n";
 
-        // Write data rows to std::cout
-        for (const auto& snapshot : snapshots_) {
-            bool firstCell = true;
+            // Always write headers to std::cout
+            bool firstHeader = true;
             for (const auto& header : headers) {
-                if (!firstCell) std::cout << ",";
-                firstCell = false;
+                if (!firstHeader) std::cout << ",";
+                firstHeader = false;
 
-                auto it = snapshot.find(header);
-                if (it != snapshot.end()) {
-                    std::cout << it->second; // Data is int, no special quoting needed for int
+                // Handle special characters in CSV headers (quote if necessary, escape internal quotes)
+                bool needsQuotes = header.find_first_of(",\"\n") != std::string::npos;
+                if (needsQuotes) {
+                    std::cout << "\"";
+                    for (char c : header) {
+                        if (c == '"') std::cout << "\"\""; // Double up internal quotes
+                        else std::cout << c;
+                    }
+                    std::cout << "\"";
                 } else {
-                    std::cout << "0"; // Default value for missing fields
+                    std::cout << header;
                 }
             }
             std::cout << "\n";
+
+            // Write data rows to std::cout
+            for (const auto& snapshot : snapshots_) {
+                bool firstCell = true;
+                for (const auto& header : headers) {
+                    if (!firstCell) std::cout << ",";
+                    firstCell = false;
+
+                    auto it = snapshot.find(header);
+                    if (it != snapshot.end()) {
+                        std::cout << it->second;
+                    } else {
+                        std::cout << "0"; // Default value for missing fields
+                    }
+                }
+                std::cout << "\n";
+            }
+            std::cerr << "Successfully wrote " << snapshots_.size() << " snapshot(s) as CSV to stdout." << std::endl;
+
+        } else if (format == OutputFormat::JSON) {
+            nlohmann::json j_array = nlohmann::json::array();
+            for (const auto& snapshot_data : snapshots_) {
+                // nlohmann::json can directly convert std::unordered_map
+                j_array.push_back(snapshot_data);
+            }
+            // Output JSON to std::cout, with an indent of 4 for pretty printing
+            std::cout << j_array.dump(4) << std::endl;
+            std::cerr << "Successfully wrote " << snapshots_.size() << " snapshot(s) as JSON to stdout." << std::endl;
         }
 
-        std::cerr << "Successfully wrote " << snapshots_.size() << " snapshot(s) to stdout." << std::endl; // Using cerr for status
-
         snapshots_.clear();
-        // fieldNames_ is not cleared here. If DataExtractor instance is reused for multiple
-        // ProcessSnapshot calls before a flush, fieldNames_ will accumulate.
-        // For the current main.cpp logic (one snapshot per run), this is fine.
-        // If DataExtractor were to process multiple files internally before one flush,
-        // fieldNames_ should ideally be cleared along with snapshots_ or at the start of a new "batch".
+        // fieldNames_ is not cleared here. For the current main.cpp logic (one snapshot per run),
+        // this is fine. If DataExtractor were to process multiple files internally before one flush,
+        // fieldNames_ might need to be managed differently depending on desired behavior.
     }
     catch (const std::exception& e) {
-        std::cerr << "Error writing CSV to stdout: " << e.what() << std::endl;
+        std::cerr << "Error writing data to stdout: " << e.what() << std::endl;
     }
 }
