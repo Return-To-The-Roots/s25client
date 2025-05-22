@@ -15,7 +15,13 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 SRC_DIR="$(cd .. && pwd)"
 FILTER="extras|libs|tests|external/(libendian|liblobby|libsiedler2|libutil|mygettext|s25edit|s25update)"
 
-script -q -c "run-clang-tidy-18 -p . \
+CLANG_TIDY_CMD="run-clang-tidy-18.py"
+if ! which "${CLANG_TIDY_CMD}" &> /dev/null; then
+    echo "clang-tidy not found. Tried: ${CLANG_TIDY_CMD}" >&2
+    exit 1
+fi
+
+script -q -c "${CLANG_TIDY_CMD} -p . \
     -quiet \
     -header-filter \"${SRC_DIR}/(${FILTER})\" \
     \"${SRC_DIR}/(${FILTER})\"" /dev/null \
