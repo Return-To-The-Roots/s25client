@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -37,6 +37,8 @@ struct has_reserve : std::false_type
 template<class T>
 struct has_reserve<T, std::void_t<decltype(std::declval<T>().reserve(0u))>> : std::true_type
 {};
+template<class T>
+constexpr bool has_reserve_v = has_reserve<T>::value;
 
 template<class T, typename = void>
 struct has_push_back : std::false_type
@@ -50,11 +52,13 @@ struct has_push_back<T, std::void_t<decltype(std::declval<T>().push_back(std::de
 {
     static auto get(T& collection) { return std::back_inserter(collection); }
 };
+template<class T>
+constexpr bool has_push_back_v = has_push_back<T>::value;
 
 template<class T>
 auto get_back_inserter(T& collection)
 {
-    if constexpr(detail::has_push_back<T>::value)
+    if constexpr(detail::has_push_back_v<T>)
         return std::back_inserter(collection);
     else
         return std::inserter(collection, collection.end());
@@ -164,9 +168,9 @@ public:
 
     /// Read a trivial type (integral, enum, ...)
     template<typename T>
-    std::enable_if_t<std::is_enum<T>::value, T> Pop();
+    std::enable_if_t<std::is_enum_v<T>, T> Pop();
     template<typename T>
-    std::enable_if_t<!std::is_enum<T>::value, T> Pop();
+    std::enable_if_t<!std::is_enum_v<T>, T> Pop();
 
     MapPoint PopMapPoint() { return helpers::popPoint<MapPoint>(*this); }
 
@@ -242,7 +246,7 @@ void SerializedGameData::PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Typ
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
-    if constexpr(detail::has_reserve<decltype(gos)>::value)
+    if constexpr(detail::has_reserve_v<decltype(gos)>)
         gos.reserve(size);
 
     auto it = detail::get_back_inserter(gos);
@@ -275,7 +279,7 @@ helpers::OptionalEnum<T> SerializedGameData::PopOptionalEnum()
 }
 
 template<typename T>
-std::enable_if_t<std::is_enum<T>::value, T> SerializedGameData::Pop()
+std::enable_if_t<std::is_enum_v<T>, T> SerializedGameData::Pop()
 {
     try
     {
@@ -286,7 +290,7 @@ std::enable_if_t<std::is_enum<T>::value, T> SerializedGameData::Pop()
     }
 }
 template<typename T>
-std::enable_if_t<!std::is_enum<T>::value, T> SerializedGameData::Pop()
+std::enable_if_t<!std::is_enum_v<T>, T> SerializedGameData::Pop()
 {
     return Serializer::Pop<T>();
 }

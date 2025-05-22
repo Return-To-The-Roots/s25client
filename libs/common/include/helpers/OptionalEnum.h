@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,7 +16,7 @@ namespace helpers {
 template<class T>
 class OptionalEnum
 {
-    static_assert(std::is_enum<T>::value, "Only works for enums");
+    static_assert(std::is_enum_v<T>, "Only works for enums");
     using underlying_type = std::underlying_type_t<T>;
 
 public:

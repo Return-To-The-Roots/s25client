@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -19,7 +19,7 @@ T randomValue(RandomT& rng, T min = std::numeric_limits<T>::min(), T max = std::
     // 1 byte types are not supported, expand to 2 bytes instead
     using IntDistribution = std::uniform_int_distribution<std::conditional_t<sizeof(T) == 1, int16_t, T>>;
     using Distribution =
-      std::conditional_t<std::is_floating_point<T>::value, std::uniform_real_distribution<T>, IntDistribution>;
+      std::conditional_t<std::is_floating_point_v<T>, std::uniform_real_distribution<T>, IntDistribution>;
     Distribution distr(min, max);
     return static_cast<T>(distr(rng));
 }

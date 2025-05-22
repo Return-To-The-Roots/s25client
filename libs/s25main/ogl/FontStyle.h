@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,7 +9,9 @@
 namespace detail {
 template<class T>
 struct GetFontStyleMask;
-}
+template<class T>
+constexpr unsigned GetFontStyleMask_v = GetFontStyleMask<T>::value;
+} // namespace detail
 
 class FontStyle
 {
@@ -38,20 +40,20 @@ public:
     };
 
     constexpr FontStyle() = default;
-    template<class T_Enum, typename = std::enable_if_t<std::is_enum<T_Enum>::value>>
+    template<class T_Enum, typename = std::enable_if_t<std::is_enum_v<T_Enum>>>
     constexpr FontStyle(T_Enum style) : value(style)
     {}
 
-    template<class T_Enum, typename = std::enable_if_t<std::is_enum<T_Enum>::value>>
+    template<class T_Enum, typename = std::enable_if_t<std::is_enum_v<T_Enum>>>
     constexpr FontStyle operator|(T_Enum style) const
     {
-        return (value & ~detail::GetFontStyleMask<T_Enum>::value) | style;
+        return (value & ~detail::GetFontStyleMask_v<T_Enum>) | style;
     }
 
-    template<class T_Enum, typename = std::enable_if_t<std::is_enum<T_Enum>::value>>
+    template<class T_Enum, typename = std::enable_if_t<std::is_enum_v<T_Enum>>>
     constexpr bool is(T_Enum style) const
     {
-        return (value & detail::GetFontStyleMask<T_Enum>::value) == style;
+        return (value & detail::GetFontStyleMask_v<T_Enum>) == style;
     }
 
 private:
