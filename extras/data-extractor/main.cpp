@@ -16,55 +16,43 @@ namespace fs = boost::filesystem;
 
 int main(int argc, char* argv[]) {
     RTTRCONFIG.Init();
-    LOG.setLogFilepath("/tmp/logs");
+    LOG.setLogFilepath("/tmp/logs"); // Note: Ensure this path is suitable for your logging setup.
     if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <snapshot_dir> <output_file>\n";
+        std::cerr << "Usage: " << argv[0] << " <snapshot_file> <output_file>\n";
         return 1;
     }
 
-    fs::path snapshot_dir = argv[1];
-    std::string output_file = argv[2];
+    fs::path snapshot_file_path = argv[1];
+    std::string output_file_str = argv[2];
 
-    if (!fs::exists(snapshot_dir) || !fs::is_directory(snapshot_dir)) {
-        std::cerr << "Snapshot directory not found: " << snapshot_dir << "\n";
+    if (!fs::exists(snapshot_file_path)) {
+        std::cerr << "Snapshot file not found: " << snapshot_file_path << "\n";
+        return 1;
+    }
+    if (!fs::is_regular_file(snapshot_file_path)) {
+        std::cerr << "Snapshot path is not a regular file: " << snapshot_file_path << "\n";
+        return 1;
+    }
+    if (snapshot_file_path.extension() != ".sav") {
+        std::cerr << "Snapshot file must have a .sav extension: " << snapshot_file_path << "\n";
         return 1;
     }
 
-    if (!fs::exists(output_file)) {
-        std::cout << "Output directory doesn't exist. Creating it: " << output_file << "\n";
-        fs::create_directories(output_file);
-    }
-
-    // Collect all .sav files
-    std::vector<fs::path> snapshot_files;
-    for (const auto& entry : fs::directory_iterator(snapshot_dir)) {
-        if (is_regular_file(entry) && entry.path().extension() == ".sav") {
-            snapshot_files.push_back(entry.path());
-        }
-    }
-
-    if (snapshot_files.empty()) {
-        std::cerr << "No .sav files found in: " << snapshot_dir << "\n";
-        return 1;
-    }
-
-    // Sort files for consistent processing order (optional but recommended)
-    std::sort(snapshot_files.begin(), snapshot_files.end());
+    // The DataExtractor::flush method will handle creating parent directories for the output file.
+    // No need to explicitly create directories for output_file_str here.
 
     DataExtractor miner{};
 
-    for (const auto& path : snapshot_files) {
-        auto snapshot = Snapshot::GetActivePlayer(path);
-        if (!snapshot) {
-            std::cerr << "Skipping file due to load failure or missing player: " << path << "\n";
-            continue;
-        }
-        miner.ProcessSnapshot(*snapshot->player, snapshot->gameframe);
+    auto snapshot = Snapshot::GetActivePlayer(snapshot_file_path);
+    if (!snapshot) {
+        std::cerr << "Skipping file due to load failure or missing player: " << snapshot_file_path << "\n";
+        return 1; // Exit if the single specified file cannot be processed
     }
+    miner.ProcessSnapshot(*snapshot->player, snapshot->gameframe);
 
-    // Save all results to a single JSON file
-    miner.flush(output_file);
+    // Save/append results to the CSV file
+    miner.flush(output_file_str);
 
-    std::cout << "All snapshots processed and written to: " << output_file << "\n";
+    std::cout << "Snapshot " << snapshot_file_path.filename() << " processed and data appended to: " << output_file_str << "\n";
     return 0;
 }

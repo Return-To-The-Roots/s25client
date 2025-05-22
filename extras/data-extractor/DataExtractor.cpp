@@ -16,7 +16,7 @@
 #include <set>
 
 #define CSV_IO_NO_THREAD
-#include "csv.h"
+#include "csv.h" // Note: csv.h seems to be included for the macro, not active use in writing.
 
 namespace fs = boost::filesystem;
 
@@ -59,9 +59,9 @@ void DataExtractor::ProcessSnapshot(GamePlayer& player, uint32_t gameframe)
     snapshots_.push_back(snapshot);
 
     // Keep track of all field names for headers
-    for (const auto& [field, _] : snapshot)
+    for (const auto& pair : snapshot) // Changed from structured binding for clarity if needed
     {
-        fieldNames_.insert(field);
+        fieldNames_.insert(pair.first);
     }
 }
 
@@ -72,69 +72,77 @@ void DataExtractor::flush(const std::string& filePath)
         return;
     }
 
-    // Create a boost::filesystem::path from the provided path string
     fs::path outputFilePath(filePath);
 
-    // Delete file if it already exists
-    if (fs::exists(outputFilePath)) {
-        fs::remove(outputFilePath);
-    }
-
     try {
-        // Make sure the directory exists
+        // Make sure the parent directory exists
         fs::path parentDir = outputFilePath.parent_path();
         if (!parentDir.empty() && !fs::exists(parentDir)) {
             fs::create_directories(parentDir);
         }
 
-        // Convert to vector and sort for consistent column order
-        // std::vector<std::string> headers(fieldNames_.begin(), fieldNames_.end());
+        bool writeHeaders = true;
+        if (fs::exists(outputFilePath) && !fs::is_empty(outputFilePath)) {
+            writeHeaders = false; // File exists and has content, so don't write headers
+        }
+
+        std::ofstream outFile;
+        if (writeHeaders) {
+            // Create/overwrite file (if empty or new) and prepare to write headers
+            outFile.open(outputFilePath.string(), std::ios_base::out | std::ios_base::trunc);
+        } else {
+            // Append to existing file
+            outFile.open(outputFilePath.string(), std::ios_base::app);
+        }
+
+        if (!outFile.is_open()) {
+            throw std::runtime_error("Failed to open file: " + outputFilePath.string());
+        }
+
+        // Prepare headers (GameFrame first, then others sorted)
         std::vector<std::string> headers;
-        headers.reserve(fieldNames_.size());  // Pre-allocate for efficiency
-
-        // First, add the two special fields if they exist
-        headers.push_back("GameFrame");
-
-        // Then add all other fields except those two
-        for (const auto& name : fieldNames_) {
+        headers.reserve(fieldNames_.size());
+        if (fieldNames_.count("GameFrame")) {
+            headers.push_back("GameFrame");
+        }
+        for (const auto& name : fieldNames_) { // std::set iterates in sorted order
             if (name != "GameFrame") {
                 headers.push_back(name);
             }
         }
 
-        // Open the output file
-        std::ofstream outFile(outputFilePath.string());
-        if (!outFile.is_open()) {
-            throw std::runtime_error("Failed to open file: " + outputFilePath.string());
-        }
+        if (writeHeaders) {
+            bool firstHeader = true;
+            for (const auto& header : headers) {
+                if (!firstHeader) outFile << ",";
+                firstHeader = false;
 
-        // Write header row
-        bool first = true;
-        for (const auto& header : headers) {
-            if (!first) outFile << ",";
-            first = false;
-
-            // Handle special characters in CSV
-            if (header.find(',') != std::string::npos ||
-                header.find('\"') != std::string::npos ||
-                header.find('\n') != std::string::npos) {
-                outFile << "\"" << header << "\"";
-            } else {
-                outFile << header;
+                // Handle special characters in CSV headers (quote if necessary, escape internal quotes)
+                bool needsQuotes = header.find_first_of(",\"\n") != std::string::npos;
+                if (needsQuotes) {
+                    outFile << "\"";
+                    for (char c : header) {
+                        if (c == '"') outFile << "\"\""; // Double up internal quotes
+                        else outFile << c;
+                    }
+                    outFile << "\"";
+                } else {
+                    outFile << header;
+                }
             }
+            outFile << "\n";
         }
-        outFile << "\n";
 
         // Write data rows
         for (const auto& snapshot : snapshots_) {
-            first = true;
+            bool firstCell = true;
             for (const auto& header : headers) {
-                if (!first) outFile << ",";
-                first = false;
+                if (!firstCell) outFile << ",";
+                firstCell = false;
 
                 auto it = snapshot.find(header);
                 if (it != snapshot.end()) {
-                    outFile << it->second;
+                    outFile << it->second; // Data is int, no special quoting needed for int
                 } else {
                     outFile << "0"; // Default value for missing fields
                 }
@@ -144,11 +152,13 @@ void DataExtractor::flush(const std::string& filePath)
 
         outFile.close();
 
-        std::cout << "Successfully wrote " << snapshots_.size() << " snapshots to " << outputFilePath << std::endl;
+        std::cout << "Successfully wrote " << snapshots_.size() << " snapshot(s) to " << outputFilePath << std::endl;
 
-        // Clear snapshots after successful write
         snapshots_.clear();
-        // Don't clear fieldNames_ as we want to keep the same headers structure for future flushes
+        // fieldNames_ is not cleared. For single-file processing per run, it will reflect
+        // the fields of that single snapshot. If appending, this means the set of headers
+        // used for ordering data comes from the current snapshot. This assumes consistency
+        // with pre-existing headers if appending.
     }
     catch (const std::exception& e) {
         std::cerr << "Error writing CSV: " << e.what() << std::endl;
