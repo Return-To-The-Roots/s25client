@@ -135,7 +135,7 @@ void DataExtractor::flush(OutputFormat format) // Changed signature
                 j_array.push_back(snapshot_data);
             }
             // Output JSON to std::cout, with an indent of 4 for pretty printing
-            std::cout << j_array.dump(4) << std::endl;
+            std::cout << j_array.dump() << std::endl;
             std::cerr << "Successfully wrote " << snapshots_.size() << " snapshot(s) as JSON to stdout." << std::endl;
         }
 
