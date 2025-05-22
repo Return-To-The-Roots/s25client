@@ -9,7 +9,7 @@
 class GamePlayer;
 
 // Define the snapshot data type
-using SnapshotData = std::unordered_map<std::string, int>;
+using SnapshotData = std::unordered_map<std::string, uint32_t>; // Changed int to uint32_t
 
 class DataExtractor
 {

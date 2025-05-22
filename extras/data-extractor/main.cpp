@@ -49,6 +49,6 @@ int main(int argc, char* argv[]) {
     // Output results to stdout
     miner.flush();
 
-    std::cout << "Snapshot " << snapshot_file_path.filename() << " processed and data output to stdout.\n";
+    // std::cout << "Snapshot " << snapshot_file_path.filename() << " processed and data output to stdout.\n";
     return 0;
 }

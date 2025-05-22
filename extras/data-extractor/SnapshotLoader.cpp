@@ -13,7 +13,7 @@ std::unique_ptr<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& s
 {
     try
     {
-        std::cout << "Processing: " << save_path.filename().string() << std::endl;
+        std::cerr << "Processing: " << save_path.filename().string() << std::endl;
 
         Savegame savegame;
         if(!savegame.Load(save_path, SaveGameDataToLoad::All))
