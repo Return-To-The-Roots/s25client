@@ -21,7 +21,7 @@ if ! which "${CLANG_TIDY_CMD}" &> /dev/null; then
     exit 1
 fi
 
-script -q -c ${CLANG_TIDY_CMD} -p . \
+script -q -c "${CLANG_TIDY_CMD} -p . \
     -quiet \
     -header-filter \"${SRC_DIR}/(${FILTER})\" \
     \"${SRC_DIR}/(${FILTER})\"" /dev/null \
