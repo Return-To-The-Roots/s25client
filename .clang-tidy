@@ -39,6 +39,7 @@ Checks: >-
   -readability-uppercase-literal-suffix,
   -readability-identifier-naming,
   -clang-diagnostic-inconsistent-missing-override,
+# Checks come in after clang tidy 10 => disable for now
   -bugprone-assignment-in-if-condition,
   -bugprone-casting-through-void,
   -bugprone-empty-catch,
