@@ -37,20 +37,22 @@ The interface distinguishes between them by using naming conventions like `playe
 
 ## Versioning
 
-The lua interface is versioned according to SemVer (semantic versioning).
-This means there is a version number consisting of a major and minor version, e.g. `1.0`.
-Everytime a feature is added the minor version is increased.
-When a breaking change is made (e.g. a function is removed or changes behavior considerably) the major version is increased and the minor version reset to zero.
+The lua interface is versioned using a main version and a feature level.
+Everytime a feature is added the feature level is increased.
+When a breaking change is made (e.g. a function is removed or changes behavior considerably) the main version is increased and the feature level reset to zero.
 
 Every map script must have 1 function:  
 **getRequiredLuaVersion()**  
-You need to implement this and return the major version your script works with.
+You need to implement this and return the major/main version your script works with.
 If it does not match the current version an error will be shown and the script will not be used.
-See `rttr:GetVersion()`.
+See also `rttr:GetFeatureLevel()`.
 
 ## Example
 
 ```lua
+    function getRequiredLuaVersion()
+        return 1
+
     -- start callback, called after everything is set up
     function onStart(isFirstStart)
         if(not isFirstStart) then

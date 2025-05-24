@@ -1,12 +1,12 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "IngameWindow.h"
+#include "variant.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/variant.hpp>
 #include <array>
 
 class GameInterface;
@@ -26,7 +26,7 @@ public:
                     /// werden
         WaterFlag   /// Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
     };
-    using Params = boost::variant<FlagType, SoldierCount>;
+    using Params = boost_variant2<FlagType, SoldierCount>;
 
     enum class BuildTab
     {

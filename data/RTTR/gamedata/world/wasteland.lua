@@ -91,7 +91,7 @@ rttr:AddTerrain{
 	-- Can be left out. A size of 0 (w and/or h) is interpreted as the remaining image
 	pos = {0, 0, 30, 30},
 	-- Index of the palette animation in the file, default -1 for no animation
-	palAnimIdx = 11,
+	palAnimIdx = 7,
 	-- Color used to display this on the minimap
 	color = 0xFF860000
 }
@@ -268,7 +268,7 @@ rttr:AddTerrain{
 	texture = texFile,
 	pos = {193, 105, 53, 54},
 	texType = "rotated",
-	palAnimIdx = 11,
+	palAnimIdx = 7,
 	color = 0xFFC32020
 }
 rttr:AddTerrain{
@@ -321,7 +321,7 @@ rttr:AddTerrain{
 	texture = texFile,
 	pos = {66, 222, 31, 33},
 	texType = "stacked",
-	palAnimIdx = 11,
+	palAnimIdx = 7,
 	color = 0xFFC32020
 }
 rttr:AddTerrain{
@@ -334,7 +334,7 @@ rttr:AddTerrain{
 	texture = texFile,
 	pos = {99, 222, 31, 33},
 	texType = "stacked",
-	palAnimIdx = 11,
+	palAnimIdx = 7,
 	color = 0xFFC32020
 }
 rttr:AddTerrain{
@@ -347,7 +347,7 @@ rttr:AddTerrain{
 	texture = texFile,
 	pos = {132, 222, 31, 33},
 	texType = "stacked",
-	palAnimIdx = 11,
+	palAnimIdx = 7,
 	color = 0xFFC32020
 }
 rttr:AddTerrain{
@@ -373,6 +373,6 @@ rttr:AddTerrain{
 	texture = texFile,
 	pos = {193, 105, 53, 54},
 	texType = "rotated",
-	palAnimIdx = 11,
+	palAnimIdx = 7,
 	color = 0xFFC32020
 }

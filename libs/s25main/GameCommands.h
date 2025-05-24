@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,6 +16,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/TempleProductionMode.h"
 #include "s25util/Serializer.h"
 #include <cstdint>
 #include <utility>
@@ -133,7 +134,7 @@ class ChangeDistribution : public GameCommand
 
 protected:
     ChangeDistribution(const Distributions& data) : GameCommand(GCType::ChangeDistribution), data(data) {}
-    ChangeDistribution(Serializer& ser) : GameCommand(GCType::ChangeDistribution) { helpers::popContainer(ser, data); }
+    ChangeDistribution(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
@@ -211,29 +212,30 @@ public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
-/// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
-class SendSoldiersHome : public Coords
+/// Set the desired garrison size of a military building
+class SetTroopLimit : public Coords
 {
     GC_FRIEND_DECL;
+    const uint8_t rank;
+    const uint32_t count;
 
 protected:
-    SendSoldiersHome(const MapPoint pt) : Coords(GCType::SendSoldiersHome, pt) {}
-    SendSoldiersHome(Serializer& ser) : Coords(GCType::SendSoldiersHome, ser) {}
+    SetTroopLimit(const MapPoint pt, const uint8_t rank, const uint32_t count)
+        : Coords(GCType::SetTroopLimit, pt), rank(rank), count(count)
+    {}
+    SetTroopLimit(Serializer& ser)
+        : Coords(GCType::SetTroopLimit, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+    {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
-};
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
 
-/// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
-class OrderNewSoldiers : public Coords
-{
-    GC_FRIEND_DECL;
+        ser.PushUnsignedChar(rank);
+        ser.PushUnsignedInt(count);
+    }
 
-protected:
-    OrderNewSoldiers(const MapPoint pt) : Coords(GCType::OrderNewSoldiers, pt) {}
-    OrderNewSoldiers(Serializer& ser) : Coords(GCType::OrderNewSoldiers, ser) {}
-
-public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
@@ -440,11 +442,11 @@ public:
 class SetInventorySetting : public Coords
 {
     GC_FRIEND_DECL;
-    boost::variant<GoodType, Job> what;
+    boost_variant2<GoodType, Job> what;
     InventorySetting state;
 
 protected:
-    SetInventorySetting(const MapPoint pt, boost::variant<GoodType, Job> what, const InventorySetting state)
+    SetInventorySetting(const MapPoint pt, boost_variant2<GoodType, Job> what, const InventorySetting state)
         : Coords(GCType::SetInventorySetting, pt), what(std::move(what)), state(state)
     {}
     SetInventorySetting(Serializer& ser) : Coords(GCType::SetInventorySetting, ser)
@@ -463,7 +465,7 @@ public:
         Coords::Serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
-        boost::apply_visitor([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
+        visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
         ser.PushUnsignedChar(static_cast<uint8_t>(state));
     }
 
@@ -683,6 +685,29 @@ public:
     }
 };
 
+/// Switch output of temple
+class SetTempleProductionMode : public Coords
+{
+    GC_FRIEND_DECL;
+    const ProductionMode productionMode;
+
+protected:
+    SetTempleProductionMode(const MapPoint pt, ProductionMode productionMode)
+        : Coords(GCType::SetTempleProductionMode, pt), productionMode(productionMode)
+    {}
+    SetTempleProductionMode(Serializer& ser)
+        : Coords(GCType::SetTempleProductionMode, ser), productionMode(helpers::popEnum<ProductionMode>(ser))
+    {}
+
+public:
+    void Execute(GameWorld& world, uint8_t playerId) override;
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
+        helpers::pushEnum<uint8_t>(ser, productionMode);
+    }
+};
+
 /// Expedition starten
 class StartStopExpedition : public Coords
 {
@@ -774,13 +799,13 @@ private:
 class TradeOverLand : public Coords
 {
     GC_FRIEND_DECL;
-    boost::variant<GoodType, Job> what;
+    boost_variant2<GoodType, Job> what;
     /// Number of wares/figures we want to trade
     uint32_t count;
 
 protected:
     /// Note: Can only trade wares or figures!
-    TradeOverLand(const MapPoint pt, boost::variant<GoodType, Job> what, const uint32_t count)
+    TradeOverLand(const MapPoint pt, boost_variant2<GoodType, Job> what, const uint32_t count)
         : Coords(GCType::Trade, pt), what(std::move(what)), count(count)
     {}
     TradeOverLand(Serializer& ser) : Coords(GCType::Trade, ser)
@@ -798,7 +823,7 @@ public:
         Coords::Serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
-        boost::apply_visitor([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
+        visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
         ser.PushUnsignedInt(count);
     }
 

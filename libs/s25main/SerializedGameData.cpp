@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -20,6 +20,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobStorehouse.h"
+#include "buildings/nobTemple.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofArmorer.h"
 #include "figures/nofAttacker.h"
@@ -51,10 +52,13 @@
 #include "figures/nofScout_LookoutTower.h"
 #include "figures/nofShipWright.h"
 #include "figures/nofStonemason.h"
+#include "figures/nofTempleServant.h"
 #include "figures/nofTradeDonkey.h"
 #include "figures/nofTradeLeader.h"
+#include "figures/nofVintner.h"
 #include "figures/nofWarehouseWorker.h"
 #include "figures/nofWellguy.h"
+#include "figures/nofWinegrower.h"
 #include "figures/nofWoodcutter.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
@@ -70,6 +74,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noGrainfield.h"
 #include "nodeObjs/noGranite.h"
+#include "nodeObjs/noGrapefield.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noShipBuildingSite.h"
 #include "nodeObjs/noSign.h"
@@ -83,7 +88,7 @@
 /// Usage: Always save for the most current version but include loading code that can cope with file format changes
 /// If a format change occurred that can still be handled increase this version and handle it in the loading code.
 /// If the change is to big to handle increase the version in Savegame.cpp and remove all code referencing GetGameDataVersion.
-/// Then reset this number to 1.
+/// Then reset this number to 0.
 /// TODO: Let GO_Type start at 0 again when resetting this
 /// Changelog:
 /// 2: All player buildings together, variable width size for containers and ship names
@@ -95,7 +100,9 @@
 /// 7: Use helpers::push/popContainer (uses var size)
 /// 8: noFlag::Wares converted to static_vector
 /// 9: Drop serialization of node BQ
-static const unsigned currentGameDataVersion = 9;
+/// 10: troop_limits state introduced to military buildings
+/// 11:: wineaddon added, three new building types and two new goods
+static const unsigned currentGameDataVersion = 11;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
@@ -168,6 +175,11 @@ std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type 
         RTTR_CREATE_GO(GO_Type::Shipbuildingsite, noShipBuildingSite);
         RTTR_CREATE_GO(GO_Type::Charburnerpile, noCharburnerPile);
         RTTR_CREATE_GO(GO_Type::Economymodehandler, EconomyModeHandler);
+        RTTR_CREATE_GO(GO_Type::NofWinegrower, nofWinegrower);
+        RTTR_CREATE_GO(GO_Type::NofVintner, nofVintner);
+        RTTR_CREATE_GO(GO_Type::NofTempleservant, nofTempleServant);
+        RTTR_CREATE_GO(GO_Type::Grapefield, noGrapefield);
+        RTTR_CREATE_GO(GO_Type::NobTemple, nobTemple);
         case GO_Type::Nothing: RTTR_Assert(false); break;
 #undef RTTR_CREATE_GO
     }

@@ -16,6 +16,7 @@
 #include <cstring>
 #include <iostream>
 #include <limits>
+#include <winuser.h>
 
 /**
  *  Zeiger auf die aktuelle Instanz.
@@ -441,6 +442,11 @@ bool VideoWinAPI::MessageLoop()
         DispatchMessage(&msg);
     }
     return true;
+}
+
+void VideoWinAPI::ShowErrorMessage(const std::string& title, const std::string& message)
+{
+    MessageBoxA(nullptr, message.c_str(), title.c_str(), MB_OK | MB_ICONEXCLAMATION);
 }
 
 /**

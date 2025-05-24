@@ -43,7 +43,7 @@ bool GameManager::Start()
     /// Videotreiber laden
     if(!videoDriver_.LoadDriver(settings_.driver.video))
     {
-        s25util::error(_("Video driver couldn't be loaded!\n"));
+        s25util::error(_("Video driver couldn't be loaded!"));
         return false;
     }
 
@@ -52,13 +52,14 @@ bool GameManager::Start()
       settings_.video.fullscreen ? settings_.video.fullscreenSize : settings_.video.windowedSize; //-V807
     if(!videoDriver_.CreateScreen(screenSize, settings_.video.fullscreen))
         return false;
-    videoDriver_.setTargetFramerate(settings_.video.vsync);
+    videoDriver_.setTargetFramerate(settings_.video.framerate);
     videoDriver_.SetMouseWarping(settings_.global.smartCursor);
+    videoDriver_.setGuiScalePercent(settings_.video.guiScale);
 
     /// Audiodriver laden
     if(!audioDriver_.LoadDriver(settings_.driver.audio))
     {
-        s25util::warning(_("Audio driver couldn't be loaded!\n"));
+        s25util::warning(_("Audio driver couldn't be loaded!"));
         // return false;
     }
 
@@ -164,7 +165,7 @@ bool GameManager::ShowSplashscreen()
     auto image = boost::dynamic_pointer_cast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
     {
-        s25util::error(_("Splash screen couldn't be loaded!\n"));
+        s25util::error(_("Splash screen couldn't be loaded!"));
         return false;
     }
     windowManager_.Switch(std::make_unique<dskSplash>(std::move(image)));

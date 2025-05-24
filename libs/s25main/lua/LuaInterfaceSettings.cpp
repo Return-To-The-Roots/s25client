@@ -166,7 +166,7 @@ kaguya::LuaRef LuaInterfaceSettings::GetAllowedChanges()
     kaguya::LuaRef getGeneralConfig = lua["getAllowedChanges"];
     if(getGeneralConfig.type() == LUA_TFUNCTION)
     {
-        kaguya::LuaRef cfg = getGeneralConfig.call<kaguya::LuaRef>();
+        auto cfg = getGeneralConfig.call<kaguya::LuaRef>();
         if(cfg.type() == LUA_TTABLE)
             return cfg;
     }
@@ -236,4 +236,14 @@ std::vector<AddonId> LuaInterfaceSettings::GetAllowedAddons()
             LOG.write("Invalid type returned by getAllowedAddons");
     }
     return std::vector<AddonId>();
+}
+
+bool LuaInterfaceSettings::IsMapPreviewEnabled()
+{
+    kaguya::LuaRef func = lua["isMapPreviewEnabled"];
+    if(func.type() == LUA_TFUNCTION)
+    {
+        return func.call<bool>();
+    }
+    return true;
 }

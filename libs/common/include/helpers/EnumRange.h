@@ -6,12 +6,23 @@
 
 #include "MaxEnumValue.h"
 #include <boost/config.hpp>
+#include <iterator>
 #include <type_traits>
 
 // Using BOOST_FORCEINLINE mostly for increased debug performance (doesn't work for MSVC though)
 #define RTTR_CONSTEXPR_INLINE constexpr BOOST_FORCEINLINE
 
 namespace helpers {
+template<class T>
+struct EnumIterTraits
+{
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = T;
+    using difference_type = std::make_signed_t<std::common_type_t<std::underlying_type_t<T>, int>>;
+    using pointer = T*;
+    using reference = T&;
+};
+
 /// Can be used in range-based for loops to iterate over each enum value
 /// Requires: T must be an enum with MaxEnumValue trait specialized
 ///           T must be simple: Start at zero, no gaps
@@ -19,7 +30,7 @@ template<class T>
 struct EnumRange
 {
     static_assert(std::is_enum<T>::value, "Must be an enum!");
-    class iterator
+    class iterator : public EnumIterTraits<T>
     {
         unsigned value;
 
@@ -41,7 +52,7 @@ template<class T>
 struct EnumRangeWithOffset
 {
     static_assert(std::is_enum<T>::value, "Must be an enum!");
-    class iterator
+    class iterator : public EnumIterTraits<T>
     {
         unsigned value;
 

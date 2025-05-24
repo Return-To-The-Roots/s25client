@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,6 +12,7 @@
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
 #include "factories/BuildingFactory.h"
+#include "helpers/containerUtils.h"
 #include "network/GameMessage_Chat.h"
 #include "notifications/NodeNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
@@ -19,6 +20,7 @@
 #include "nodeObjs/noTree.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameData/BuildingProperties.h"
+#include "gameData/MilitaryConsts.h"
 #include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 #include <memory>
@@ -33,9 +35,8 @@ using EmptyWorldFixture2P = WorldFixture<CreateEmptyWorld, 2>;
 template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
 {
-    return std::find_if(collection.begin(), collection.end(),
-                        [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; })
-           != collection.end();
+    return helpers::contains_if(collection,
+                                [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; });
 }
 
 inline bool playerHasBld(const GamePlayer& player, BuildingType type)
@@ -127,7 +128,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             BOOST_TEST_INFO(pt);
-            BOOST_TEST_REQUIRE(this->world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
+            BOOST_TEST(this->world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
         }
     };
     const auto assertBqEqualAround = [this, &aijh](const unsigned lineNr, MapPoint pt, unsigned radius) {
@@ -136,7 +137,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
           pt, radius,
           [&](const MapPoint curPt, unsigned) {
               BOOST_TEST_INFO(curPt);
-              BOOST_TEST_REQUIRE(this->world.GetBQ(curPt, curPlayer) == aijh.GetAINode(curPt).bq);
+              BOOST_TEST(this->world.GetBQ(curPt, curPlayer) == aijh.GetAINode(curPt).bq);
               return false;
           },
           true);
@@ -293,14 +294,14 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
            && playerHasBld(player, BuildingType::Forester))
             break;
     }
-    BOOST_TEST_REQUIRE(playerHasBld(player, BuildingType::Sawmill));
-    BOOST_TEST_REQUIRE(playerHasBld(player, BuildingType::Woodcutter));
-    BOOST_TEST_REQUIRE(playerHasBld(player, BuildingType::Forester));
+    BOOST_TEST(playerHasBld(player, BuildingType::Sawmill));
+    BOOST_TEST(playerHasBld(player, BuildingType::Woodcutter));
+    BOOST_TEST(playerHasBld(player, BuildingType::Forester));
 }
 
-BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
+namespace {
+void forceExpansion(const GamePlayer& player, GameWorld& world)
 {
-    const GamePlayer& player = world.GetPlayer(curPlayer);
     // No space for saw mill due to altitude diff of 3 in range 2 -> Huts only
     for(unsigned y = 0; y < world.GetHeight(); y += 2)
     {
@@ -309,11 +310,14 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
     }
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) <= BuildingQuality::Hut);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, player.GetPlayerId()) <= BuildingQuality::Hut);
     }
+}
+
+void runUntilMilitaryBuildingSiteFound(TestEventManager& em, unsigned curPlayer, GameWorld& world,
+                                       const std::list<noBuildingSite*>& bldSites)
+{
     auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
-    const std::list<noBuildingSite*>& bldSites = player.GetBuildingRegister().GetBuildingSites();
-    // Can't build sawmill -> Expand anyway
     for(unsigned gf = 0; gf < 2000;)
     {
         std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
@@ -329,8 +333,62 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
         if(containsBldType(bldSites, BuildingType::Barracks) || containsBldType(bldSites, BuildingType::Guardhouse))
             break;
     }
+}
+} // namespace
+
+BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
+{
+    const auto& player = world.GetPlayer(curPlayer);
+    const auto& bldSites = player.GetBuildingRegister().GetBuildingSites();
+
+    forceExpansion(player, world);
+    runUntilMilitaryBuildingSiteFound(em, curPlayer, world, bldSites);
+
     BOOST_TEST_REQUIRE(
       (containsBldType(bldSites, BuildingType::Barracks) || containsBldType(bldSites, BuildingType::Guardhouse)));
+}
+
+BOOST_FIXTURE_TEST_CASE(DoNotBuildMilitaryBuildingsWithinComputerBarrier, BiggerWorldWithGCExecution)
+{
+    const auto& player = world.GetPlayer(curPlayer);
+    const auto& bldSites = player.GetBuildingRegister().GetBuildingSites();
+
+    const auto& barrierPt = player.GetHQPos();
+    constexpr auto radius = HQ_RADIUS;
+
+    world.SetComputerBarrier(barrierPt, radius);
+    forceExpansion(player, world);
+    runUntilMilitaryBuildingSiteFound(em, curPlayer, world, bldSites);
+
+    BOOST_TEST_REQUIRE(
+      !(containsBldType(bldSites, BuildingType::Barracks) || containsBldType(bldSites, BuildingType::Guardhouse)));
+}
+
+BOOST_FIXTURE_TEST_CASE(DoBuildMilitaryBuildingsOutsideComputerBarrier, BiggerWorldWithGCExecution)
+{
+    const auto& player = world.GetPlayer(curPlayer);
+    const auto& bldSites = player.GetBuildingRegister().GetBuildingSites();
+
+    auto barrierPt = player.GetHQPos();
+    // move barrier 2 tiles west of HQ, now military buildings should be buildable to the east
+    barrierPt.x -= 2;
+    constexpr auto radius = HQ_RADIUS;
+
+    world.SetComputerBarrier(barrierPt, radius);
+    forceExpansion(player, world);
+    runUntilMilitaryBuildingSiteFound(em, curPlayer, world, bldSites);
+
+    BOOST_TEST_REQUIRE(
+      (containsBldType(bldSites, BuildingType::Barracks) || containsBldType(bldSites, BuildingType::Guardhouse)));
+
+    for(noBuildingSite* bldSite : bldSites)
+        BOOST_TEST_REQUIRE(!world.CheckPointsInRadius(
+          barrierPt, radius,
+          [bldSite](const MapPoint& pt, unsigned) {
+              const auto type = bldSite->GetBuildingType();
+              return (type == BuildingType::Barracks || type == BuildingType::Guardhouse) && pt == bldSite->GetPos();
+          },
+          true));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

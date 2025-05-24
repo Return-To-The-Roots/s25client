@@ -6,6 +6,7 @@
 
 #include "DriverWrapper.h"
 #include "Point.h"
+#include "driver/GuiScale.h"
 #include "driver/KeyEvent.h"
 #include "driver/VideoMode.h"
 #include "s25util/Singleton.h"
@@ -70,6 +71,18 @@ public:
     Extent GetRenderSize() const;
     bool IsFullscreen() const;
 
+    /// Get the factor required to scale "normal" DPI to the display DPI
+    float getDpiScale() const;
+
+    /// Get the scale applied to the user interface
+    const GuiScale& getGuiScale() const;
+
+    /// Set the scale applied to the user interface in percent
+    void setGuiScalePercent(unsigned percent);
+
+    /// Get minimum, maximum, and recommended GUI scale percentages for the current window and render size
+    GuiScaleRange getGuiScaleRange() const;
+
     bool IsLeftDown();
     bool IsRightDown();
     // setzt den Mausstatus
@@ -80,6 +93,8 @@ public:
 
     // Nachrichtenschleife
     bool Run();
+
+    void ShowErrorMessage(const std::string& title, const std::string& message);
 
     unsigned GetTickCount();
     /// Set framerate target (FPS)

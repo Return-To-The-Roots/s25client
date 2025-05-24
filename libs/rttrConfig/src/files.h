@@ -35,7 +35,11 @@ namespace folders {
     constexpr auto mapsPlayed = "<RTTR_USERDATA>/MAPS"; // downloaded maps
     constexpr auto mapsRttr = "<RTTR_RTTR>/MAPS/NEW";   // maps added by RTTR
     constexpr auto mapsSea = "<RTTR_RTTR>/MAPS/SEA";    // seafaring maps
-    constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB";      // nation graphics
+    constexpr auto campaignsBuiltin =
+      "<RTTR_RTTR>/campaigns"; // builtin campaigns, contains one folder for each campaign
+    constexpr auto campaignsUser =
+      "<RTTR_USERDATA>/campaigns";                 // user defined campaigns, contains one folder for each campaign
+    constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB"; // nation graphics
     constexpr auto music = "<RTTR_RTTR>/MUSIC";
     constexpr auto playlists = "<RTTR_USERDATA>/playlists";
     constexpr auto replays = "<RTTR_USERDATA>/REPLAYS";

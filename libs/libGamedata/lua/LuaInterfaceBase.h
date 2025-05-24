@@ -1,8 +1,10 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+
+#include <cstdint> // Required here for missing include in kaguya/native_function.hpp
 
 #include <kaguya/kaguya.hpp>
 #include <boost/filesystem/path.hpp>

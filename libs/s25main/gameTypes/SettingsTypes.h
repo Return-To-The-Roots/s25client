@@ -16,7 +16,7 @@
 /// 1 mapping of a required good to its building and default setting
 using DistributionMapping = std::tuple<GoodType, BuildingType, uint8_t>;
 /// List of all possible distribution mappings ordered by GoodType
-using DistributionMap = std::array<DistributionMapping, 23>;
+using DistributionMap = std::array<DistributionMapping, 26>;
 extern const DistributionMap distributionMap;
 /// List of the percentage a building should get from a specific ware
 using Distributions = std::array<uint8_t, std::tuple_size<DistributionMap>::value>;

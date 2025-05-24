@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "GameCommand.h"
+#include "variant.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
@@ -13,7 +14,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"
-#include <boost/variant.hpp>
+#include "gameTypes/TempleProductionMode.h"
 #include <vector>
 
 struct InventorySetting;
@@ -38,10 +39,8 @@ public:
     bool SetBuildingSite(MapPoint pt, BuildingType bt);
     /// Destroys a building on a spot
     bool DestroyBuilding(MapPoint pt);
-    /// send out soldiers
-    bool SendSoldiersHome(MapPoint pt);
-    /// order new soldiers
-    bool OrderNewSoldiers(MapPoint pt);
+    /// Set garrison size of a military building
+    bool SetTroopLimit(MapPoint pt, unsigned char rank, unsigned limit);
     bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);
@@ -59,7 +58,7 @@ public:
     bool SetProductionEnabled(MapPoint pt, bool enabled);
     bool NotifyAlliesOfLocation(MapPoint pt);
     /// Sets inventory settings for a warehouse
-    bool SetInventorySetting(MapPoint pt, const boost::variant<GoodType, Job>& what, InventorySetting state);
+    bool SetInventorySetting(MapPoint pt, const boost_variant2<GoodType, Job>& what, InventorySetting state);
     bool SetAllInventorySettings(MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
     bool ChangeReserve(MapPoint pt, unsigned char rank, unsigned count);
     bool CheatArmageddon();
@@ -71,6 +70,7 @@ public:
     bool CancelPact(PactType pt, unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
     bool SetShipYardMode(MapPoint pt, bool buildShips);
+    bool SetTempleProductionMode(MapPoint pt, ProductionMode mode);
     /// Starts Preparation of an sea expedition in a habor
     bool StartStopExpedition(MapPoint pt, bool start);
     /// Lets a ship found a colony
@@ -80,7 +80,7 @@ public:
     /// Cancels an expedition
     bool CancelExpedition(unsigned shipID);
     bool StartStopExplorationExpedition(MapPoint pt, bool start);
-    bool TradeOverLand(MapPoint pt, const boost::variant<GoodType, Job>& what, unsigned count);
+    bool TradeOverLand(MapPoint pt, const boost_variant2<GoodType, Job>& what, unsigned count);
 
 protected:
     virtual ~GameCommandFactory() = default;

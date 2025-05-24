@@ -1,22 +1,20 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-#include <boost/variant.hpp>
-#include <type_traits>
+#include <boost/variant2/variant.hpp>
+
+/// Shortcuts to avoid typing out boost::variant2
+template<typename... T>
+using boost_variant2 = boost::variant2::variant<T...>;
+
+using boost::variant2::get;
+using boost::variant2::get_if;
+using boost::variant2::holds_alternative;
 
 namespace detail {
-template<typename...>
-struct indexOf;
-template<typename T, typename... Rest>
-struct indexOf<T, T, Rest...> : std::integral_constant<size_t, 0>
-{};
-template<typename T, typename U, typename... Rest>
-struct indexOf<T, U, Rest...> : std::integral_constant<size_t, 1 + indexOf<T, Rest...>::value>
-{};
-
 template<typename... Lambdas>
 struct lambda_visitor;
 
@@ -35,12 +33,6 @@ struct lambda_visitor<Lambda1> : public Lambda1
     lambda_visitor(Lambda1 l1) : Lambda1(l1) {}
 };
 } // namespace detail
-
-template<class T, class... Types>
-bool holds_alternative(const boost::variant<Types...>& v) noexcept
-{
-    return v.which() == detail::indexOf<T, Types...>::value;
-}
 
 template<class... Fs>
 auto composeVisitor(Fs&&... fs)

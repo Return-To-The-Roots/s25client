@@ -66,8 +66,8 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
         return;
     }
 
-    for(DescIdx<LandscapeDesc> i(0); i.value < desc.landscapes.size(); i.value++)
-        landscapeNames[desc.get(i).s2Id] = _(desc.get(i).name);
+    for(const auto& l : desc.landscapes)
+        landscapeNames[l.s2Id] = _(l.name);
 
     // Die Tabelle für die Maps
     using SRT = ctrlTable::SortType;
@@ -312,7 +312,7 @@ void dskSelectMap::CreateRandomMap()
         // create a random map and save filepath
         rttr::mapGenerator::CreateRandomMap(mapPath, rndMapSettings);
         newRandMapPath = mapPath;
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         randMapGenError = e.what();
     }
@@ -350,7 +350,7 @@ void dskSelectMap::StartServer()
         const std::string& mapPath = table->GetItemText(*selection, 5);
 
         // Server starten
-        if(!GAMECLIENT.HostGame(csi, mapPath, MapType::OldMap))
+        if(!GAMECLIENT.HostGame(csi, {mapPath, MapType::OldMap}))
             GoBack();
         else
         {

@@ -8,11 +8,11 @@
 #include "ctrlScrollBar.h"
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
+#include "helpers/mathFuncs.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
 #include "s25util/strAlgos.h"
 #include <algorithm>
-#include <cmath>
 #include <numeric>
 #include <sstream>
 
@@ -465,7 +465,7 @@ void ctrlTable::ResetButtonWidths()
     for(unsigned i = 0; i < columns_.size(); ++i)
     {
         auto* button = GetCtrl<ctrlButton>(i + 1);
-        button->SetWidth(std::lround(columns_[i].width * sizeFactor));
+        button->SetWidth(helpers::iround<unsigned>(columns_[i].width * sizeFactor));
         button->SetPos(btPos);
         btPos.x += button->GetSize().x;
     }

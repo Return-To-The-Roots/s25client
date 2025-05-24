@@ -67,7 +67,7 @@ void nofStonemason::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt) const
+nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // An dieser Position muss es nur Stein geben
     return ((world->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PointQuality::Class1 :

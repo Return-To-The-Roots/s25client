@@ -14,7 +14,7 @@ public:
     ctrlBaseTooltip(std::string tooltip = "") : tooltip_(std::move(tooltip)) {}
     virtual ~ctrlBaseTooltip();
 
-    void SetTooltip(const std::string& tooltip) { tooltip_ = tooltip; }
+    void SetTooltip(const std::string& tooltip);
     const std::string& GetTooltip() const { return tooltip_; }
     /// Swap the tooltips of those controls
     void SwapTooltip(ctrlBaseTooltip& other);

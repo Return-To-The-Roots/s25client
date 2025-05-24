@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,6 +10,7 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
+#include "WineLoader.h"
 #include "commonDefines.h"
 #include "factories/JobFactory.h"
 #include "figures/nofAggressiveDefender.h"
@@ -66,8 +67,18 @@ void nobBaseWarehouse::DestroyBuilding()
 {
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
     for(noFigure* dependent_figure : dependent_figures)
-        dependent_figure->GoHome();
+    {
+        // Only send figures home that are not already at this position.
+        if(dependent_figure->GetPos() == GetPos())
+        {
+            dependent_figure->SetGoalTonullptr();
+            dependent_figure->CutCurrentRoad();
+            dependent_figure->StartWandering();
+        } else
+            dependent_figure->GoHome();
+    }
     dependent_figures.clear();
+
     for(Ware* dependent_ware : dependent_wares)
         WareNotNeeded(dependent_ware);
     dependent_wares.clear();
@@ -157,12 +168,16 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
 
     for(const auto i : helpers::enumRange<GoodType>())
     {
+        if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
+            continue;
         inventory.visual[i] = sgd.PopUnsignedInt();
         inventory.real[i] = sgd.PopUnsignedInt();
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
     for(const auto i : helpers::enumRange<Job>())
     {
+        if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonJobType(i))
+            continue;
         inventory.visual[i] = sgd.PopUnsignedInt();
         inventory.real[i] = sgd.PopUnsignedInt();
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
@@ -357,7 +372,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
         return;
     }
 
-    std::vector<boost::variant<GoodType, Job>> possibleTypes;
+    std::vector<boost_variant2<GoodType, Job>> possibleTypes;
     // Waren und Figuren zum Auslagern zusammensuchen
     // Wenn keine Platz an Flagge, dann keine Waren raus
     if(GetFlag()->HasSpaceForWare())
@@ -387,7 +402,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     if(holds_alternative<GoodType>(selectedId))
     {
         // Ware
-        const auto goodType = boost::get<GoodType>(selectedId);
+        const auto goodType = get<GoodType>(selectedId);
         auto ware = std::make_unique<Ware>(goodType, nullptr, this);
         noBaseBuilding* wareGoal = world->GetPlayer(player).FindClientForWare(*ware);
         if(wareGoal != this)
@@ -408,7 +423,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
             world->GetPlayer(player).RemoveWare(*ware);
     } else
     {
-        const auto jobType = boost::get<Job>(selectedId);
+        const auto jobType = get<Job>(selectedId);
         nobBaseWarehouse* wh =
           world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(jobType), true, false);
         if(wh != this)
@@ -858,42 +873,37 @@ void nobBaseWarehouse::TakeWare(Ware* ware)
     dependent_wares.push_back(ware);
 }
 
-void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst)
+void nobBaseWarehouse::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max)
 {
-    // Soldaten durchgehen und count rausschicken
+    unsigned start, limit;
+    int step;
 
-    // Ränge durchgehen, absteigend, starke zuerst
-    if(world->GetPlayer(player).GetMilitarySetting(1) >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
+    if(world->GetPlayer(player).GetMilitarySetting(1) >= MILITARY_SETTINGS_SCALE[1] / 2)
     {
-        for(unsigned i = SOLDIER_JOBS.size(); i && count; --i)
-        {
-            const Job curRank = SOLDIER_JOBS[i - 1];
-            // Vertreter der Ränge ggf rausschicken
-            while(inventory[curRank] && count)
-            {
-                auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, goal, goal, i - 1);
-                inventory.real.Remove(curRank);
-                goal->GotWorker(curRank, *soldier);
-                AddLeavingFigure(std::move(soldier));
-                --count;
-            }
-        }
+        // Ränge durchgehen, absteigend, starke zuerst
+        start = SOLDIER_JOBS.size();
+        step = -1;
+        limit = 0;
+    } else
+    {
+        // Ränge durchgehen, aufsteigend, schwache zuerst
+        start = 1;
+        step = 1;
+        limit = SOLDIER_JOBS.size() + 1;
     }
-    // Ränge durchgehen, aufsteigend, schwache zuerst
-    else
+
+    for(unsigned i = start; i != limit && max; i += step)
     {
-        for(unsigned i = 1; i <= SOLDIER_JOBS.size() && count; ++i)
+        const Job curRank = SOLDIER_JOBS[i - 1];
+        // Vertreter der Ränge ggf rausschicken
+        while(inventory[curRank] && max && counts[i - 1])
         {
-            const Job curRank = SOLDIER_JOBS[i - 1];
-            // Vertreter der Ränge ggf rausschicken
-            while(inventory[curRank] && count)
-            {
-                auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, goal, goal, i - 1);
-                inventory.real.Remove(curRank);
-                goal->GotWorker(curRank, *soldier);
-                AddLeavingFigure(std::move(soldier));
-                --count;
-            }
+            auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, goal, goal, i - 1);
+            inventory.real.Remove(curRank);
+            goal->GotWorker(curRank, *soldier);
+            AddLeavingFigure(std::move(soldier));
+            --max;
+            --counts[i - 1];
         }
     }
 }
@@ -1169,20 +1179,20 @@ InventorySetting nobBaseWarehouse::GetInventorySetting(const GoodType ware) cons
 }
 
 /// Verändert Ein/Auslagerungseinstellungen (visuell)
-void nobBaseWarehouse::SetInventorySettingVisual(const boost::variant<GoodType, Job>& what, InventorySetting state)
+void nobBaseWarehouse::SetInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state)
 {
     state.MakeValid();
-    boost::apply_visitor([this, state](auto type) { inventorySettingsVisual[type] = state; }, what);
+    visit([this, state](auto type) { inventorySettingsVisual[type] = state; }, what);
 
     NotifyListeners(1);
 }
 
 /// Verändert Ein/Auslagerungseinstellungen (real)
-void nobBaseWarehouse::SetInventorySetting(const boost::variant<GoodType, Job>& what, InventorySetting state)
+void nobBaseWarehouse::SetInventorySetting(const boost_variant2<GoodType, Job>& what, InventorySetting state)
 {
     state.MakeValid();
     InventorySetting& selectedSetting =
-      boost::apply_visitor([this](auto type) -> InventorySetting& { return inventorySettings[type]; }, what);
+      visit([this](auto type) -> InventorySetting& { return inventorySettings[type]; }, what);
 
     InventorySetting oldState = selectedSetting;
     selectedSetting = state;
@@ -1203,7 +1213,7 @@ void nobBaseWarehouse::SetInventorySetting(const boost::variant<GoodType, Job>& 
         // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues
         // anmelden
         auto getWaresOrJobs = [this](auto type) { return inventory[type]; };
-        if(!empty_event && boost::apply_visitor(getWaresOrJobs, what))
+        if(!empty_event && visit(getWaresOrJobs, what))
             empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
     } else if(!oldState.IsSet(EInventorySetting::Collect) && state.IsSet(EInventorySetting::Collect))
     {
@@ -1335,7 +1345,7 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
     // ansonsten ists gleich und alles ist in Ordnung!
 }
 
-void nobBaseWarehouse::CheckOuthousing(const boost::variant<GoodType, Job>& what)
+void nobBaseWarehouse::CheckOuthousing(const boost_variant2<GoodType, Job>& what)
 {
     // Check if we need to send this ware or figure and register an event for this
     // If we already have an event, we don't need to do anything
@@ -1343,12 +1353,12 @@ void nobBaseWarehouse::CheckOuthousing(const boost::variant<GoodType, Job>& what
         return;
 
     const InventorySetting setting =
-      boost::apply_visitor(composeVisitor(
-                             [this](Job job) { // Bootsträger in Träger umwandeln, der evtl dann raus soll
-                                 return GetInventorySetting((job == Job::BoatCarrier) ? Job::Helper : job);
-                             },
-                             [this](GoodType good) { return GetInventorySetting(good); }),
-                           what);
+      visit(composeVisitor(
+              [this](Job job) { // Bootsträger in Träger umwandeln, der evtl dann raus soll
+                  return GetInventorySetting((job == Job::BoatCarrier) ? Job::Helper : job);
+              },
+              [this](GoodType good) { return GetInventorySetting(good); }),
+            what);
 
     if(setting.IsSet(EInventorySetting::Send))
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
@@ -1384,7 +1394,7 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 }
 
 /// Starts a trade caravane from this warehouse
-void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& what, const unsigned count,
+void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& what, const unsigned count,
                                           const TradeRoute& tr, nobBaseWarehouse* goal)
 {
     auto tlOwned = std::make_unique<nofTradeLeader>(pos, player, tr, this->GetPos(), goal->GetPos());
@@ -1412,19 +1422,19 @@ void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& w
     owner.DecreaseInventoryJob(Job::Helper, 1);
 
     // Also diminish the count of donkeys
-    boost::apply_visitor(composeVisitor(
-                           [&](const Job job) {
-                               // remove the jobs
-                               inventory.real.Remove(job, count);
-                               owner.DecreaseInventoryJob(job, count);
-                           },
-                           [&](const GoodType gt) {
-                               // Diminish the goods in the warehouse
-                               inventory.real.Remove(gt, count);
-                               owner.DecreaseInventoryWare(gt, count);
-                               // now that we have removed the goods lets remove the donkeys
-                               inventory.real.Remove(Job::PackDonkey, count);
-                               owner.DecreaseInventoryJob(Job::PackDonkey, count);
-                           }),
-                         what);
+    visit(composeVisitor(
+            [&](const Job job) {
+                // remove the jobs
+                inventory.real.Remove(job, count);
+                owner.DecreaseInventoryJob(job, count);
+            },
+            [&](const GoodType gt) {
+                // Diminish the goods in the warehouse
+                inventory.real.Remove(gt, count);
+                owner.DecreaseInventoryWare(gt, count);
+                // now that we have removed the goods lets remove the donkeys
+                inventory.real.Remove(Job::PackDonkey, count);
+                owner.DecreaseInventoryJob(Job::PackDonkey, count);
+            }),
+          what);
 }

@@ -4,6 +4,7 @@
 
 #include "MockupVideoDriver.h"
 #include <boost/nowide/iostream.hpp>
+#include <iostream>
 
 MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), tickCount_(1)
 {
@@ -80,4 +81,9 @@ KeyEvent MockupVideoDriver::GetModKeyState() const
 void* MockupVideoDriver::GetMapPointer() const
 {
     return nullptr;
+}
+
+void MockupVideoDriver::ShowErrorMessage(const std::string& title, const std::string& message)
+{
+    std::cerr << title << ": " << message << std::endl;
 }

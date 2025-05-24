@@ -66,7 +66,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
         {
             if(!world.GetLua().Serialize(luaSaveState))
                 throw SerializedGameData::Error(_("Failed to save lua state!"));
-        } catch(std::exception& e)
+        } catch(const std::exception& e)
         {
             throw SerializedGameData::Error(std::string(_("Failed to save lua state!")) + _("Error: ") + e.what());
         }
@@ -87,18 +87,11 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
 
     // Headinformationen
     const auto size = helpers::popPoint<MapExtent>(sgd);
-    DescIdx<LandscapeDesc> lt(0);
+    DescIdx<LandscapeDesc> lt;
     if(sgd.GetGameDataVersion() < 3)
     {
         uint8_t gfxSet = sgd.PopUnsignedChar();
-        for(DescIdx<LandscapeDesc> i(0); i.value < world.GetDescription().landscapes.size(); i.value++)
-        {
-            if(world.GetDescription().get(i).s2Id == gfxSet)
-            {
-                lt = i;
-                break;
-            }
-        }
+        lt = world.GetDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
     } else
     {
         std::string sLandscape = sgd.PopString();
@@ -113,11 +106,8 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     if(sgd.GetGameDataVersion() < 3)
     {
         // Assumes the order of the terrain in the description file is the same as in the prior RTTR versions
-        for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
-        {
-            if(world.GetDescription().get(t).landscape == lt)
-                landscapeTerrains.push_back(t);
-        }
+        landscapeTerrains =
+          world.GetDescription().terrain.findAll([lt](const TerrainDesc& t) { return t.landscape == lt; });
     }
     // Alle Weltpunkte
     MapPoint curPos(0, 0);
@@ -152,7 +142,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     const unsigned numHarborPositions = sgd.PopUnsignedInt();
     world.harbor_pos.clear();
     world.harbor_pos.reserve(numHarborPositions);
-    for(const auto i : helpers::Range<unsigned>{numHarborPositions})
+    for(const auto i : helpers::range<unsigned>(numHarborPositions))
     {
         RTTR_UNUSED(i);
         world.harbor_pos.emplace_back(sgd.PopMapPoint());
@@ -162,7 +152,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         {
             const unsigned numNeighbors = sgd.PopUnsignedInt();
             neighbor.reserve(numNeighbors);
-            for(const auto j : helpers::Range<unsigned>{numNeighbors})
+            for(const auto j : helpers::range<unsigned>(numNeighbors))
             {
                 RTTR_UNUSED(j);
                 const auto id = sgd.PopUnsignedInt();
@@ -179,11 +169,9 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     {
         if(sgd.PopUnsignedInt() != 0xC0DEBA5E)
             throw SerializedGameData::Error(_("Invalid id for lua data"));
-        // If there is a script, there is also save data. Pop that first
-        unsigned luaSaveSize = sgd.PopUnsignedInt();
-        Serializer luaSaveState;
-        sgd.PopRawData(luaSaveState.GetDataWritable(luaSaveSize), luaSaveSize);
-        luaSaveState.SetLength(luaSaveSize);
+        // If there is a script, there is also save data. Store reference to that
+        const auto luaSaveSize = sgd.PopUnsignedInt();
+        Serializer luaSaveState(sgd.PopAndDiscard(luaSaveSize), luaSaveSize);
         if(sgd.PopUnsignedInt() != 0xC001C0DE)
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 

@@ -8,11 +8,11 @@
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskGameLobby.h"
+#include "helpers/mathFuncs.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
-#include <cmath>
 
 namespace {
 enum
@@ -92,7 +92,7 @@ void iwConnecting::CI_NextConnectState(const ConnectState cs)
 
 void iwConnecting::CI_MapPartReceived(uint32_t bytesReceived, uint32_t bytesTotal)
 {
-    downloadProgress_ = static_cast<unsigned short>(std::lround(bytesReceived * 100. / bytesTotal));
+    downloadProgress_ = helpers::iround<unsigned short>(bytesReceived * 100. / bytesTotal);
 }
 
 void iwConnecting::setStatus(const std::string& status)

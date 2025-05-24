@@ -45,7 +45,7 @@ bool RTTR_SetBreakOnAssertFailure(bool enabled);
         do                                                               \
         {                                                                \
             RTTR_IGNORE_UNREACHABLE_CODE                                 \
-            if(!(cond))                                                  \
+            if(!(cond)) /* NOLINT(readability-simplify-boolean-expr)*/   \
             {                                                            \
                 if(RTTR_IsBreakOnAssertFailureEnabled())                 \
                 {                                                        \

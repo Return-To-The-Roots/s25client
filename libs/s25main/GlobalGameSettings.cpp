@@ -99,7 +99,9 @@ void GlobalGameSettings::registerAllAddons()
         AddonShipSpeed,
         AddonStatisticsVisibility,
         AddonToolOrdering,
-        AddonTrade
+        AddonTrade,
+        AddonAutoFlags,
+        AddonWine
     >;
     // clang-format on
     using namespace boost::mp11;

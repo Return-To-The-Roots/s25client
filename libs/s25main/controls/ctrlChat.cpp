@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,7 +8,6 @@
 #include "ctrlScrollBar.h"
 #include "driver/MouseCoords.h"
 #include "ogl/glFont.h"
-#include "variant.h"
 #include "s25util/Log.h"
 
 /// Breite der Scrollbar
@@ -118,7 +117,7 @@ void ctrlChat::Draw_()
     for(unsigned i = 0; i < show_lines; ++i)
     {
         DrawPoint curTextPos = textPos;
-        if(PrimaryChatLine* line = boost::get<PrimaryChatLine>(&chat_lines[i + pos]))
+        if(PrimaryChatLine* line = get_if<PrimaryChatLine>(&chat_lines[i + pos]))
         {
             // Zeit, Spieler und danach Textnachricht
             if(!line->time_string.empty())
@@ -140,7 +139,7 @@ void ctrlChat::Draw_()
                 curTextPos.x += bracket2_size;
             }
         }
-        boost::apply_visitor(
+        visit(
           [this, curTextPos](const auto& line) { // Draw msg
               this->font->Draw(curTextPos, line.msg, FontStyle{}, line.msg_color);
           },

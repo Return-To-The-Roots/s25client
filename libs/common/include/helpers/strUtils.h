@@ -19,7 +19,7 @@ bool tryFromString(const std::string& value, T& outValue)
     {
         outValue = boost::lexical_cast<T>(value);
         return true;
-    } catch(boost::bad_lexical_cast&)
+    } catch(const boost::bad_lexical_cast&)
     {
         return false;
     }

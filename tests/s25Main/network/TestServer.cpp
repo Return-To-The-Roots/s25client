@@ -41,7 +41,6 @@ bool TestServer::run(bool waitForConnection)
         {
             if(set.InSet(connections[id].so))
             {
-                // nachricht empfangen
                 if(connections[id].recvQueue.recv(connections[id].so) < 0)
                     connections.erase(connections.begin() + id);
                 else
@@ -49,7 +48,9 @@ bool TestServer::run(bool waitForConnection)
                     msgReceived = true;
                     ++id;
                 }
-            } else
+            } else if(!connections[id].so.isValid())
+                connections.erase(connections.begin() + id); // LCOV_EXCL_LINE
+            else
                 ++id;
         }
     } while(msgReceived);

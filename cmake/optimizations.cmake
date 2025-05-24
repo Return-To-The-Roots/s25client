@@ -13,7 +13,7 @@ if(MSVC)
 else()
     include(CheckAndAddFlag)
     include(SetIfUnset)
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
         include(ArmConfig)
         set(RTTR_TARGET_BOARD "OFF" CACHE STRING "Set to your target device to enable extra optimization flags. Available: ${RTTR_AVAILABLE_ARM_CFGS}")
         set_property(CACHE RTTR_TARGET_BOARD PROPERTY STRINGS ${RTTR_AVAILABLE_ARM_CFGS})
@@ -51,7 +51,7 @@ else()
         # Need to check this because Clang-9 with GLIBC > 1.31 generates undefined references to buildins
         # https://bugs.llvm.org/show_bug.cgi?id=45034
         include(CheckCXXSourceCompiles)
-        set(CMAKE_REQUIRED_FLAGS -ffastmath)
+        set(CMAKE_REQUIRED_FLAGS -ffast-math)
         check_cxx_source_compiles("
 #include <cmath>
 

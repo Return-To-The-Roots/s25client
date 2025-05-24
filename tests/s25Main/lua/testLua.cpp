@@ -588,6 +588,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_TEST(obj2->GetItemID() == 501u);
     BOOST_TEST(obj2->GetItemFile() == 0xFFFFu);
     BOOST_TEST(obj2->GetSize() == 1u);
+    BOOST_TEST(!obj2->IsAnimated());
     // ID and File (replace env obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
@@ -596,6 +597,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_TEST(obj2->GetItemID() == 5u);
     BOOST_TEST(obj2->GetItemFile() == 3u);
     BOOST_TEST(obj2->GetSize() == 1u);
+    BOOST_TEST(!obj2->IsAnimated());
     // ID, File and Size (replace static obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 2)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
@@ -604,6 +606,26 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_TEST(obj2->GetItemID() == 5u);
     BOOST_TEST(obj2->GetItemFile() == 3u);
     BOOST_TEST(obj2->GetSize() == 2u);
+    BOOST_TEST(!obj2->IsAnimated());
+    // check static object isAnimated
+    executeLua(boost::format("world:AddStaticObject(%1%, %2%, 561, 0xFFFF, 2)") % envPt2.x % envPt2.y);
+    obj2 = world.GetSpecObj<noStaticObject>(envPt);
+    BOOST_TEST_REQUIRE(obj2);
+    BOOST_TEST(obj2->GetGOT() == GO_Type::Staticobject);
+    BOOST_TEST(obj2->GetItemID() == 561u);
+    BOOST_TEST(obj2->GetItemFile() == 0xFFFFu);
+    BOOST_TEST(obj2->GetSize() == 2u);
+    BOOST_TEST(obj2->IsAnimated());
+    // check static object not isAnimated
+    executeLua(boost::format("world:AddStaticObject(%1%, %2%, 560, 0xFFFF, 2)") % envPt2.x % envPt2.y);
+    obj2 = world.GetSpecObj<noStaticObject>(envPt);
+    BOOST_TEST_REQUIRE(obj2);
+    BOOST_TEST(obj2->GetGOT() == GO_Type::Staticobject);
+    BOOST_TEST(obj2->GetItemID() == 560u);
+    BOOST_TEST(obj2->GetItemFile() == 0xFFFFu);
+    BOOST_TEST(obj2->GetSize() == 2u);
+    BOOST_TEST(!obj2->IsAnimated());
+
     // Invalid Size
     BOOST_CHECK_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y),
                       std::runtime_error);
@@ -654,6 +676,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     BOOST_TEST_REQUIRE(serData.GetLength() == 0u);
     BOOST_TEST_REQUIRE(lua.Deserialize(serData));
     lua.EventOccupied(1, pt1);
+    lua.EventAttack(0, 1, 5);
     lua.EventExplored(1, pt2, 0);
     lua.EventGameFrame(0);
     lua.EventResourceFound(1, pt3, ResourceType::Gold, 1);
@@ -730,6 +753,12 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // Else owner-1 = playerIdx
     lua.EventExplored(0, pt2, 2);
     BOOST_TEST_REQUIRE(getLog() == (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % 1).str());
+
+    executeLua(
+      "function onAttack(attacker_player_id, defender_player_id, attacker_count)\n"
+      "  rttr:Log('attack: '..attacker_player_id..'->'..defender_player_id..' (Attacker: '..attacker_count..')')\nend");
+    lua.EventAttack(0, 1, 4);
+    BOOST_TEST_REQUIRE(getLog() == (boost::format("attack: %1%->%2% (Attacker: %3%)\n") % 0 % 1 % 4).str());
 
     executeLua("function onGameFrame(gameframe_number)\n  rttr:Log('gf: '..gameframe_number)\nend");
     lua.EventGameFrame(0);

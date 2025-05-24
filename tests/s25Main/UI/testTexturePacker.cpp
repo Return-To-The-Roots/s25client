@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(SizeAndPosCorrect)
 
     // Sizes must be correct
     BOOST_TEST_REQUIRE(packer.getTextures().size() == 1u);
-    const Point<float> size(packer.getTextures()[0].getSize());
+    const PointF size(packer.getTextures()[0].getSize());
     for(const auto& bmp : smartBmps)
     {
         const auto curTexSize = bmp.texCoords[2] - bmp.texCoords[0];

@@ -15,13 +15,15 @@ def transformIntoStep(architecture, dockerImage, buildScript) {
     return {
         timeout(120) {
             def wspwd = pwd()
+            def ccache_dir_host = "$HOME/.ccache-$architecture"
             dir("build-$architecture") {
                 sh 'touch .git-keep'
+                sh "mkdir -p '$ccache_dir_host'"
                 withDockerRegistry( registry: [credentialsId: dockerCredentials, url: 'https://'+dockerRegistry ] ) {
                     withDockerContainer(
                         image: dockerRegistry+dockerImage,
                         args: " \
-                            -v $HOME/.ccache:/.ccache \
+                            -v $ccache_dir_host:/.ccache \
                             -v $wspwd/source:/source:ro \
                             -v $wspwd/result:/result \
                         ") {
@@ -74,6 +76,8 @@ pipeline {
                     sh """
                         git status
                         git submodule foreach git status
+                        git restore-mtime -c || echo "Unable to restore file modification time" >&2
+                        git submodule foreach "git restore-mtime -c || echo "Unable to restore file modification time" >&2"
                     """
                 }
                 sh 'rm -rf result'

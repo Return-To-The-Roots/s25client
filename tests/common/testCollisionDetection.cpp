@@ -36,6 +36,9 @@ BOOST_AUTO_TEST_CASE(PointInRect)
     BOOST_TEST(!IsPointInRect(Position(12, 31), rect));
     // Right
     BOOST_TEST(!IsPointInRect(Position(16, 25), rect));
+
+    // Right, overload
+    BOOST_TEST(!IsPointInRect(16, 25, rect.getOrigin().x, rect.getOrigin().y, rect.getSize().x, rect.getSize().y));
 }
 
 BOOST_AUTO_TEST_CASE(RectIntersect)

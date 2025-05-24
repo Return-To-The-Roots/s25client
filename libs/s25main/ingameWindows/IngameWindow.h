@@ -4,13 +4,17 @@
 
 #pragma once
 
+#include "DrawPoint.h"
+#include "SnapOffset.h"
 #include "Window.h"
+#include "helpers/EnumArray.h"
 #include "gameData/const_gui_ids.h"
 #include <array>
 #include <vector>
 
 class glArchivItem_Bitmap;
 class MouseCoords;
+struct PersistentWindowSettings;
 template<typename T>
 struct Point;
 
@@ -23,6 +27,17 @@ enum CloseBehavior
     /// Same as Regular, but doesn't (auto-)close on right-click
     NoRightClick,
 };
+
+enum class IwButton
+{
+    Close,
+    Title, /// Pseudo-button to respond to double-clicks on the title bar
+    PinOrMinimize
+};
+constexpr auto maxEnumValue(IwButton)
+{
+    return IwButton::PinOrMinimize;
+}
 
 class IngameWindow : public Window
 {
@@ -55,11 +70,13 @@ public:
     void SetIwSize(const Extent& newSize);
     /// Get the size of the (expanded) content area
     Extent GetIwSize() const;
+    /// Get the full size of the window, even when minimized
+    Extent GetFullSize() const;
     /// Get the current lower right corner of the content area
     DrawPoint GetRightBottomBoundary();
 
     /// Set the position for the window after adjusting newPos so the window is in the visible area
-    void SetPos(DrawPoint newPos);
+    void SetPos(DrawPoint newPos, bool saveRestorePos = true);
 
     /// merkt das Fenster zum Schließen vor.
     virtual void Close();
@@ -70,6 +87,9 @@ public:
     void SetMinimized(bool minimized = true);
     /// ist das Fenster minimiert?
     bool IsMinimized() const { return isMinimized_; }
+
+    void SetPinned(bool pinned = true);
+    bool IsPinned() const { return isPinned_; }
 
     CloseBehavior getCloseBehavior() const { return closeBehavior_; }
 
@@ -83,7 +103,9 @@ public:
     GUI_ID GetGUIID() const { return static_cast<GUI_ID>(Window::GetID()); }
 
 protected:
-    void Draw_() override;
+    void Draw_() final;
+    /// Called when not minimized after the frame and background have been drawn
+    virtual void DrawContent() {}
 
     /// Verschiebt Fenster in die Bildschirmmitte
     void MoveToCenter();
@@ -99,24 +121,24 @@ protected:
     std::string title_;
     glArchivItem_Bitmap* background;
     DrawPoint lastMousePos;
-    bool last_down;
-    bool last_down2;
-    std::array<ButtonState, 2> buttonState;
 
     /// Offset from left and top to actual content
     Extent contentOffset;
     /// Offset from content to right and bottom boundary
     Extent contentOffsetEnd;
 
-    /// Get bounds of close button (left)
-    Rect GetCloseButtonBounds() const;
-    /// Get bounds of minimize button (right)
-    Rect GetMinimizeButtonBounds() const;
-
 private:
+    /// Get bounds of given button
+    Rect GetButtonBounds(IwButton btn) const;
+
     bool isModal_;
     bool closeme;
+    bool isPinned_;
     bool isMinimized_;
     bool isMoving;
+    SnapOffset snapOffset_;
     CloseBehavior closeBehavior_;
+    helpers::EnumArray<ButtonState, IwButton> buttonStates_;
+    PersistentWindowSettings* windowSettings_;
+    DrawPoint restorePos_;
 };

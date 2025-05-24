@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,6 +17,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
 #include "helpers/containerUtils.h"
+#include "helpers/mathFuncs.h"
 #include "helpers/reverse.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/BuildingNote.h"
@@ -37,7 +38,6 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainDesc.h"
 #include <algorithm>
-#include <cmath>
 #include <functional>
 #include <set>
 #include <stdexcept>
@@ -199,7 +199,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         return;
     }
 
-    // Gucken, ob der Weg überhaupt noch gebaut werden kann
+    // See if the road can still be built at all
     PathConditionRoad<GameWorldBase> roadChecker(*this, boat_road);
     MapPoint curPt(start);
     for(unsigned i = 0; i + 1 < route.size(); ++i)
@@ -209,7 +209,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         roadOk &= roadChecker.IsNodeOk(curPt);
         if(!roadOk)
         {
-            // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
+            // No? Then check whether the desired road is already there
             if(!RoadAlreadyBuilt(boat_road, start, route))
                 GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
@@ -218,10 +218,10 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
 
     curPt = GetNeighbour(curPt, route.back());
 
-    // Prüfen, ob am Ende auch eine Flagge steht oder eine gebaut werden kann
+    // Check whether there is a flag at the end or whether one can be built
     if(GetNO(curPt)->GetGOT() == GO_Type::Flag)
     {
-        // Falscher Spieler?
+        // Wrong player?
         if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
         {
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
@@ -235,11 +235,11 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
-        // keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
+        // no flag so far, but possible to place one -> Do it
         SetFlag(curPt, playerId);
     }
 
-    // Evtl Zierobjekte abreißen (Anfangspunkt)
+    // Destroy possible decorative objects at start
     if(HasRemovableObjForRoad(start))
         DestroyNO(start);
 
@@ -250,7 +250,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         RecalcBQForRoad(end);
         end = GetNeighbour(end, i);
 
-        // Evtl Zierobjekte abreißen
+        // Destroy possible decorative objects at end
         if(HasRemovableObjForRoad(end))
             DestroyNO(end);
     }
@@ -261,9 +261,21 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
     GetSpecObj<noFlag>(end)->SetRoute(route.back() + 3u, rs);
 
-    // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
+    // Tell the economy that a new road has been built
     GetPlayer(playerId).NewRoadConnection(rs);
     GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
+
+    // Add flags on land roads for human players if addon is enabled
+    if(GetGGS().isEnabled(AddonId::AUTOFLAGS) && rs->GetRoadType() != RoadType::Water && GetPlayer(playerId).isHuman())
+    {
+        MapPoint roadPt = GetSpecObj<noFlag>(start)->GetPos();
+        for(const Direction curDir : route)
+        {
+            roadPt = GetNeighbour(roadPt, curDir);
+            if(!IsFlagAround(roadPt))
+                SetFlag(roadPt, playerId);
+        }
+    }
 }
 
 bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const
@@ -275,7 +287,7 @@ bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const
 // When defined the game tries to remove "blocks" of border stones that look ugly (TODO: Example?)
 // DISABLED: This currently leads to bugs. If you enable/fix this, please add tests and document the conditions this
 // tries to fix
-//#define PREVENT_BORDER_STONE_BLOCKING
+// #define PREVENT_BORDER_STONE_BLOCKING
 
 void GameWorld::RecalcBorderStones(Position startPt, Extent areaSize)
 {
@@ -401,26 +413,20 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
             sizeChanges[oldOwner - 1]--;
     }
 
-    std::set<MapPoint, MapPointLess> ptsHandled;
+    const std::vector<MapPoint> ptsToHandle = GetAllNeighboursUnion(ptsWithChangedOwners);
+
     // Destroy everything from old player on all nodes where the owner has changed
-    for(const MapPoint& curMapPt : ptsWithChangedOwners)
+    for(const MapPoint& curMapPt : ptsToHandle)
     {
-        // Destroy everything around this point as this is at best a border node where nothing should be around
         // Do not destroy the triggering building or its flag
-        // TODO: What about this point?
-        const uint8_t owner = GetNode(curMapPt).owner;
-        for(const MapPoint neighbourPt : GetNeighbours(curMapPt))
-        {
-            if(ptsHandled.insert(neighbourPt).second)
-                DestroyPlayerRests(neighbourPt, owner, &building);
-        }
+        DestroyPlayerRests(curMapPt, GetNode(curMapPt).owner, &building);
 
         if(gi)
             gi->GI_UpdateMinimap(curMapPt);
     }
 
-    // Destroy remaining roads going through non-owned territory
-    for(const MapPoint& curMapPt : ptsWithChangedOwners)
+    // Destroy remaining roads going through non-owned and border territory
+    for(const MapPoint& curMapPt : ptsToHandle)
     {
         // Skip if there is an object. We are looking only for roads going through, not ending here
         // (objects here are already destroyed and if the road ended there it would have been as well)
@@ -428,8 +434,14 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
             continue;
         Direction dir;
         noFlag* flag = GetRoadFlag(curMapPt, dir);
-        if(!flag || flag->GetPlayer() + 1 == GetNode(curMapPt).owner)
+
+        if(!flag)
             continue;
+
+        const uint8_t owner = GetNode(curMapPt).owner;
+        if(flag->GetPlayer() + 1 == owner && IsPlayerTerritory(curMapPt, owner))
+            continue;
+
         flag->DestroyRoad(dir);
     }
 
@@ -437,7 +449,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
     for(const MapPoint& curMapPt : ptsWithChangedOwners)
         GetNotifications().publish(NodeNote(NodeNote::Owner, curMapPt));
 
-    for(const MapPoint& pt : ptsHandled)
+    for(const MapPoint& pt : ptsToHandle)
     {
         // BQ neu berechnen
         RecalcBQ(pt);
@@ -562,30 +574,32 @@ void GameWorld::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeRea
 {
     if(GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH))
     {
-        const unsigned char ownerOfTriggerBld = GetNode(triggerBld.GetPos()).owner;
-        const unsigned char newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(triggerBld.GetPos()));
+        const bool isHq = triggerBld.GetBuildingType() == BuildingType::Headquarters;
+        const auto newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(triggerBld.GetPos()));
+        // An HQ can be placed independently of the current owner.
+        // So ensure the HQ position is always considered to belong to the HQ owner
+        const auto ownerOfTriggerBld = isHq ? newOwnerOfTriggerBld : GetNode(triggerBld.GetPos()).owner;
 
         RTTR_FOREACH_PT(Position, region.size)
         {
             const MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
-            const unsigned char oldOwner = GetNode(curMapPt).owner;
-            const unsigned char newOwner = region.GetOwner(pt);
+            const auto oldOwner = GetNode(curMapPt).owner;
+            const auto newOwner = region.GetOwner(pt);
 
             // If nothing changed, there is nothing to do (ownerChanged was already initialized)
             if(oldOwner == newOwner)
                 continue;
 
-            // rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can
-            // take territory
             const bool ownersAllied = oldOwner > 0 && newOwner > 0 && GetPlayer(oldOwner - 1).IsAlly(newOwner - 1);
-            if((ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
-                && triggerBld.GetBuildingType() != BuildingType::Headquarters)
-               ||
-               // rule 2: do not gain territory when you lose a building (captured or destroyed)
-               (ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build) ||
-               // rule 3: do not lose territory when you gain a building (newBuilt or capture)
-               ((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
-                || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured)))
+            if(
+              // rule 1: only take territory from an ally if that ally loses a building
+              // special case: headquarter can take territory
+              (ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build) && !isHq) ||
+              // rule 2: do not gain territory when you lose a building (captured or destroyed)
+              (ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build) ||
+              // rule 3: do not lose territory when you gain a building (newBuilt or capture)
+              ((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
+               || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured)))
             {
                 region.SetOwner(pt, oldOwner);
             }
@@ -658,8 +672,8 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
        && noType != NodalObjectType::Buildingsite)
         return;
 
-    // is the building on a node with a different owner?
-    if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 == newOwner)
+    // is the building on a node with a different owner? Border is allways destroyed.
+    if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 == newOwner && !IsBorderNode(pt, newOwner))
         return;
 
     // Do not destroy military buildings that hold territory on their own
@@ -786,6 +800,11 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
         pa.soldier->getHome()->SendAttacker(pa.soldier, *attacked_building);
         curNumSoldiers++;
     }
+
+    if(curNumSoldiers > 0 && HasLua())
+    {
+        GetLua().EventAttack(player_attacker, attacked_building->GetPlayer(), curNumSoldiers);
+    }
 }
 
 /// Compare sea attackers by their rank, then by their distance
@@ -828,6 +847,11 @@ void GameWorld::AttackViaSea(const unsigned char player_attacker, const MapPoint
             break;
         pa.soldier->getHome()->SendAttacker(pa.soldier, attacked_building, pa.harbor);
         counter++;
+    }
+
+    if(counter > 0 && HasLua())
+    {
+        GetLua().EventAttack(player_attacker, attacked_building.GetPlayer(), counter);
     }
 }
 
@@ -1335,8 +1359,8 @@ void GameWorld::PlaceAndFixWater()
             }
         }
         if(minHumidity)
-            curNodeResource = Resource(
-              ResourceType::Water, waterEverywhere ? 7 : static_cast<uint8_t>(std::lround(minHumidity * 7. / 100.)));
+            curNodeResource =
+              Resource(ResourceType::Water, waterEverywhere ? 7 : helpers::iround<uint8_t>(minHumidity * 7. / 100.));
         else
             curNodeResource = Resource(ResourceType::Nothing, 0);
 

@@ -13,7 +13,13 @@ class GameWorldViewer;
 
 class iwDistribution final : public TransmitSettingsIgwAdapter
 {
-    struct DistributionGroup;
+    struct DistributionGroup
+    {
+        DistributionGroup(std::string name, glArchivItem_Bitmap* img) : name(std::move(name)), img(img) {}
+        std::string name;
+        glArchivItem_Bitmap* img;
+        std::vector<std::tuple<std::string, unsigned>> entries;
+    };
 
 public:
     iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
@@ -32,7 +38,7 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
 
     /// Groups for the settings
-    static std::vector<DistributionGroup> groups;
+    std::vector<DistributionGroup> groups;
     /// Initialize the groups structure
-    static void CreateGroups();
+    void CreateGroups();
 };

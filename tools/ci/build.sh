@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -18,7 +18,7 @@ else
     MAKE_TARGET="all"
 fi
 
-INSTALL_DIR="${TRAVIS_BUILD_DIR}/installed"
+INSTALL_DIR="${GITHUB_WORKSPACE}/installed"
 rm -rf "${INSTALL_DIR}"
 mkdir -p build && cd build
 if ! cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
@@ -53,9 +53,9 @@ export RTTR_DISABLE_ASSERT_BREAKPOINT=1
 export UBSAN_OPTIONS=print_stacktrace=1
 export AUDIODEV=null # Avoid errors like: ALSA lib confmisc.c:768:(parse_card) cannot find card '0'
 export SDL_VIDEODRIVER=dummy # Avoid crash on travis
-if ! ctest --output-on-failure -j2; then
+if ! ctest --output-on-failure -C "${BUILD_TYPE}" -j2; then
     cat CMakeCache.txt
     echo "LD:${LD_LIBRARY_PATH:-}"
     echo "DYLD:${DYLD_LIBRARY_PATH:-}"
-    ctest --output-on-failure --rerun-failed --extra-verbose
+    ctest --output-on-failure -C "${BUILD_TYPE}" --rerun-failed --extra-verbose
 fi

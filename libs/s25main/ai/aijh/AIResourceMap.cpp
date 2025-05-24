@@ -43,23 +43,24 @@ void AIResourceMap::init()
     map.Resize(mapSize);
     // Calculate value for each point.
     // This is quite expensive so do just for the diminishable resources to sort out ones where there will never be
-    // anything, which allows an optimization when calculating the value which must always be done on demand
+    // anything, which allows to skip calculating the value when updating the resource map
     if(isDiminishableResource)
     {
+        ETerrain requiredTerrain;
+        if(res == AIResource::Fish || res == AIResource::Stones)
+            requiredTerrain = ETerrain::Buildable;
+        else
+        {
+            RTTR_Assert(helpers::contains(
+              std::vector<AIResource>{AIResource::Gold, AIResource::Ironore, AIResource::Coal, AIResource::Granite},
+              res));
+            requiredTerrain = ETerrain::Mineable;
+        }
         RTTR_FOREACH_PT(MapPoint, mapSize)
         {
-            bool isValid = true;
-            if(res == AIResource::Fish)
-            {
-                isValid =
-                  aii.gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.kind == TerrainKind::Water; });
-            } else if(res == AIResource::Stones)
-            {
-                isValid = aii.gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Buildable); });
-            } else //= granite,gold,iron,coal
-            {
-                isValid = aii.gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); });
-            }
+            // Calculate only if we can build there
+            const bool isValid =
+              aii.gwb.IsOfTerrain(pt, [requiredTerrain](const TerrainDesc& desc) { return desc.Is(requiredTerrain); });
             map[pt] = isValid ? aii.CalcResourceValue(pt, res) : 0;
         }
     }
@@ -93,7 +94,9 @@ MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality siz
             // special case fish -> check for other fishery buildings
             if(res == AIResource::Fish && aii.isBuildingNearby(BuildingType::Fishery, curPt, 5))
                 continue;
-            if(res == AIResource::Borderland && aii.gwb.IsOnRoad(aii.gwb.GetNeighbour(curPt, Direction::SouthEast)))
+            if(res == AIResource::Borderland
+               && (aii.gwb.IsOnRoad(aii.gwb.GetNeighbour(curPt, Direction::SouthEast))
+                   || aii.gwb.IsInsideComputerBarrier(curPt)))
                 continue;
             // dont build next to empty harborspots
             if(aii.isHarborPosClose(curPt, 2, true))

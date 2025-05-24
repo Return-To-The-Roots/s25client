@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -655,8 +655,8 @@ GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, cons
         for(auto& itBld : tmp)
         {
             // Check if the building was already inserted
-            auto oldBldIt = std::find_if(buildings.begin(), buildings.end(),
-                                         nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld.building));
+            auto oldBldIt =
+              helpers::find_if(buildings, nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld.building));
             if(oldBldIt == buildings.end())
             {
                 // Not found -> Add
@@ -680,8 +680,7 @@ GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, cons
         // Soldaten hinzufügen
         for(nofPassiveSoldier* soldier : tmp_soldiers)
         {
-            RTTR_Assert(std::find_if(attackers.begin(), attackers.end(), PotentialSeaAttacker::CmpSoldier(soldier))
-                        == attackers.end());
+            RTTR_Assert(!helpers::contains_if(attackers, PotentialSeaAttacker::CmpSoldier(soldier)));
             attackers.push_back(PotentialSeaAttacker(soldier, bld.harbor, bld.distance));
         }
     }
@@ -696,4 +695,15 @@ void GameWorldBase::RecalcBQ(const MapPoint pt)
     {
         GetNotifications().publish(NodeNote(NodeNote::BQ, pt));
     }
+}
+
+void GameWorldBase::SetComputerBarrier(const MapPoint& pt, unsigned radius)
+{
+    for(const auto& pt : GetPointsInRadiusWithCenter(pt, radius))
+        ptsInsideComputerBarriers.insert(pt);
+}
+
+bool GameWorldBase::IsInsideComputerBarrier(const MapPoint& pt) const
+{
+    return helpers::contains(ptsInsideComputerBarriers, pt);
 }

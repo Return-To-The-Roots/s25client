@@ -170,7 +170,7 @@ void Game::CheckObjective()
     }
 
     // We have a winner!
-    if(finished_)
+    if(world_.GetGameInterface() && finished_)
     {
         // If there is a team that is best and it does not only consist of the best player
         // then it is a team victory, else a single players victory

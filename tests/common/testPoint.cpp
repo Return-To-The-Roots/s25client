@@ -17,7 +17,7 @@ using SignedTypes = std::tuple<int8_t, int16_t, int32_t, int64_t, float, double>
 // Custom trait to support float/double
 template<typename T>
 using make_unsigned_t =
-  typename std::conditional_t<std::is_floating_point<T>::value, detail::type_identity<T>, std::make_unsigned<T>>::type;
+  typename std::conditional_t<std::is_floating_point_v<T>, detail::type_identity<T>, std::make_unsigned<T>>::type;
 
 template<typename T>
 constexpr T abs(T val)
@@ -282,4 +282,13 @@ BOOST_AUTO_TEST_CASE(ProdOfComponents)
     BOOST_TEST(prodOfComponents(ptI) == 256 * 256);
     Point<float> ptF(256.5, 256.5);
     BOOST_TEST(prodOfComponents(ptF) == 256.5f * 256.5f);
+}
+
+BOOST_AUTO_TEST_CASE(ConvertFloatToIntPoints)
+{
+    BOOST_TEST(Point<int>(Point<float>(1.5f, 3.4f)) == Point<int>(2, 3));
+    BOOST_TEST(Point<int>(Point<int>::Truncate, Point<float>(1.5f, 3.4f)) == Point<int>(1, 3));
+
+    BOOST_TEST(Point<int>(Point<float>(-1.5f, -3.4f)) == Point<int>(-2, -3));
+    BOOST_TEST(Point<int>(Point<int>::Truncate, Point<float>(-1.5f, -3.4f)) == Point<int>(-1, -3));
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -42,6 +42,7 @@ private:
 public:
     nofPlaner(MapPoint pos, unsigned char player, noBuildingSite* building_site);
     nofPlaner(SerializedGameData& sgd, unsigned obj_id);
+    nofPlaner(const nofPlaner&) = delete;
 
     void Serialize(SerializedGameData& sgd) const override;
 

@@ -1,8 +1,9 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GamePlayer.h"
+#include "Cheats.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GameInterface.h"
@@ -11,6 +12,7 @@
 #include "SerializedGameData.h"
 #include "TradePathCache.h"
 #include "Ware.h"
+#include "WineLoader.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHarborBuilding.h"
@@ -26,7 +28,6 @@
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostManager.h"
 #include "random/Random.h"
-#include "variant.h"
 #include "world/GameWorld.h"
 #include "world/TradeRoute.h"
 #include "nodeObjs/noFlag.h"
@@ -44,6 +45,7 @@
 #include "gameData/ToolConsts.h"
 #include "s25util/Log.h"
 #include <limits>
+#include <numeric>
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorld& world)
     : GamePlayerInfo(playerId, playerInfo), world(world), hqPos(MapPoint::Invalid()), emergency(false)
@@ -133,6 +135,8 @@ void GamePlayer::LoadStandardDistribution()
     distribution[GoodType::Stones].client_buildings.push_back(
       BuildingType::Headquarters); // BuildingType::Headquarters = Baustellen!
     distribution[GoodType::Stones].client_buildings.push_back(BuildingType::Catapult);
+    distribution[GoodType::Grapes].client_buildings.push_back(BuildingType::Winery);
+    distribution[GoodType::Wine].client_buildings.push_back(BuildingType::Temple);
 
     // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
     for(const auto i : helpers::enumRange<GoodType>())
@@ -256,8 +260,12 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     hqPos = sgd.PopMapPoint();
 
-    for(Distribution& dist : distribution)
+    for(const auto i : helpers::enumRange<GoodType>())
     {
+        if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
+            continue;
+
+        Distribution& dist = distribution[i];
         helpers::popContainer(sgd, dist.percent_buildings);
         if(sgd.GetGameDataVersion() < 7)
         {
@@ -275,8 +283,23 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     useCustomBuildOrder_ = sgd.PopBool();
 
-    helpers::popContainer(sgd, build_order);
-    helpers::popContainer(sgd, transportPrio);
+    if(sgd.GetGameDataVersion() < 11)
+    {
+        std::vector<BuildingType> build_order_raw(build_order.size() - 3);
+        helpers::popContainer(sgd, build_order_raw, true);
+        build_order_raw.insert(build_order_raw.end(),
+                               {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+        std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
+
+        std::vector<uint8_t> transportPrio_raw(transportPrio.size() - 2);
+        helpers::popContainer(sgd, transportPrio_raw, true);
+        std::copy(transportPrio_raw.begin(), transportPrio_raw.end(), transportPrio.begin());
+    } else
+    {
+        helpers::popContainer(sgd, build_order);
+        helpers::popContainer(sgd, transportPrio);
+    }
+
     helpers::popContainer(sgd, militarySettings_);
     helpers::popContainer(sgd, toolsSettings_);
 
@@ -284,8 +307,21 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     helpers::popContainer(sgd, tools_ordered);
     tools_ordered_delta = {};
 
-    helpers::popContainer(sgd, global_inventory.goods);
-    helpers::popContainer(sgd, global_inventory.people);
+    if(sgd.GetGameDataVersion() < 11)
+    {
+        std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size() - 2);
+        helpers::popContainer(sgd, global_inventory_good_raw, true);
+        std::copy(global_inventory_good_raw.begin(), global_inventory_good_raw.end(), global_inventory.goods.begin());
+
+        std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size() - 3);
+        helpers::popContainer(sgd, global_inventory_people_raw, true);
+        std::copy(global_inventory_people_raw.begin(), global_inventory_people_raw.end(),
+                  global_inventory.people.begin());
+    } else
+    {
+        helpers::popContainer(sgd, global_inventory.goods);
+        helpers::popContainer(sgd, global_inventory.people);
+    }
 
     // Visuelle Einstellungen festlegen
 
@@ -1172,20 +1208,25 @@ bool GamePlayer::IsAttackable(const unsigned char playerId) const
         return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
 }
 
-void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst) const
+void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts,
+                             unsigned total_max) const
 {
     // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
     nobBaseWarehouse* wh;
+    unsigned sum = 0;
     do
     {
-        wh = FindWarehouse(*goal, FW::HasMinSoldiers(1), false, false);
+        std::array<bool, NUM_SOLDIER_RANKS> desiredRanks;
+        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
+            desiredRanks[i] = counts[i] > 0;
+
+        wh = FindWarehouse(*goal, FW::HasAnyMatchingSoldier(desiredRanks), false, false);
         if(wh)
         {
-            unsigned order_count = std::min(wh->GetNumSoldiers(), count);
-            count -= order_count;
-            wh->OrderTroops(goal, order_count, ignoresettingsendweakfirst);
+            wh->OrderTroops(goal, counts, total_max);
+            sum = std::accumulate(counts.begin(), counts.end(), 0u);
         }
-    } while(count && wh);
+    } while(total_max && sum && wh);
 }
 
 void GamePlayer::RegulateAllTroops()
@@ -1539,7 +1580,6 @@ void GamePlayer::SuggestPact(const unsigned char targetPlayerId, const PactType 
 
     if(!pacts[targetPlayerId][pt].accepted && duration > 0)
     {
-        pacts[targetPlayerId][pt].accepted = false;
         pacts[targetPlayerId][pt].duration = duration;
         pacts[targetPlayerId][pt].start = world.GetEvMgr().GetCurrentGF();
         GamePlayer targetPlayer = world.GetPlayer(targetPlayerId);
@@ -2057,9 +2097,12 @@ void GamePlayer::TestPacts()
             {
                 // Pact was running but is expired -> Cancel for both players
                 pacts[i][pact].duration = 0;
+                pacts[i][pact].accepted = false;
                 GamePlayer& otherPlayer = world.GetPlayer(i);
                 RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].duration);
+                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].accepted);
                 otherPlayer.pacts[GetPlayerId()][pact].duration = 0;
+                otherPlayer.pacts[GetPlayerId()][pact].accepted = false;
                 // And notify
                 PactChanged(pact);
                 otherPlayer.PactChanged(pact);
@@ -2162,7 +2205,7 @@ struct WarehouseDistanceComparator
 };
 
 /// Send wares to warehouse wh
-void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, Job>& what, unsigned count) const
+void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, Job>& what, unsigned count) const
 {
     if(!world.GetGGS().isEnabled(AddonId::TRADE))
         return;
@@ -2187,9 +2230,9 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
     {
         // Get available wares
         const unsigned available =
-          boost::apply_visitor(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
-                                              [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
-                               what);
+          boost::variant2::visit(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
+                                                [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
+                                 what);
         if(available == 0)
             continue;
 
@@ -2210,6 +2253,11 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
                 return;
         }
     }
+}
+
+bool GamePlayer::IsBuildingEnabled(BuildingType type) const
+{
+    return building_enabled[type] || (isHuman() && world.GetGameInterface()->GI_GetCheats().areAllBuildingsEnabled());
 }
 
 void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
@@ -2237,7 +2285,7 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
 INSTANTIATE_FINDWH(FW::HasMinWares);
 INSTANTIATE_FINDWH(FW::HasFigure);
 INSTANTIATE_FINDWH(FW::HasWareAndFigure);
-INSTANTIATE_FINDWH(FW::HasMinSoldiers);
+INSTANTIATE_FINDWH(FW::HasAnyMatchingSoldier);
 INSTANTIATE_FINDWH(FW::AcceptsWare);
 INSTANTIATE_FINDWH(FW::AcceptsFigure);
 INSTANTIATE_FINDWH(FW::CollectsWare);

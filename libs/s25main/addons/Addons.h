@@ -58,3 +58,7 @@
 #include "addons/AddonDurableGeologistSigns.h"
 #include "addons/AddonEconomyModeGameLength.h"
 #include "addons/AddonPeacefulMode.h"
+
+#include "addons/AddonAutoFlags.h"
+
+#include "addons/AddonWine.h"

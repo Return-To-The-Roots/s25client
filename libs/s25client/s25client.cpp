@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -170,7 +170,7 @@ void showCrashMessage()
 
 void handleException(void* pCtx = nullptr) noexcept
 {
-    std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
+    const auto stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
     {
         LogTarget target = (LOG.getFileWriter()) ? LogTarget::FileAndStderr : LogTarget::Stderr;
@@ -473,8 +473,15 @@ int RunProgram(po::variables_map& options)
         if(!InitGame(gameManager))
             return 2;
 
-        if(options.count("map") && !QuickStartGame(options["map"].as<std::string>()))
-            return 1;
+        if(options.count("map"))
+        {
+            std::vector<std::string> aiPlayers;
+            if(options.count("ai"))
+                aiPlayers = options["ai"].as<std::vector<std::string>>();
+
+            if(!QuickStartGame(options["map"].as<std::string>(), aiPlayers))
+                return 1;
+        }
 
         // Hauptschleife
 
@@ -488,7 +495,7 @@ int RunProgram(po::variables_map& options)
         // Spiel beenden
         gameManager.Stop();
         libsiedler2::setAllocator(nullptr);
-    } catch(RTTR_AssertError& error)
+    } catch(const RTTR_AssertError& error)
     {
         // Write to log file, but don't throw any errors if this fails too
         try
@@ -522,6 +529,7 @@ int main(int argc, char** argv)
     desc.add_options()
         ("help,h", "Show help")
         ("map,m", po::value<std::string>(),"Map to load")
+        ("ai", po::value<std::vector<std::string>>(),"AI player(s) to add")
         ("version", "Show version information and exit")
         ("convert-sounds", "Convert sounds and exit")
         ;
@@ -562,12 +570,12 @@ int main(int argc, char** argv)
         result = e.code;
     } catch(const std::exception& e)
     {
-        bnw::cerr << "An exception occurred: " << e.what() << "\n\n";
+        bnw::cerr << "An exception occurred: " << e.what() << std::endl;
         handleException(nullptr);
         result = 1;
     } catch(...)
     {
-        bnw::cerr << "An unknown exception occurred\n";
+        bnw::cerr << "An unknown exception occurred" << std::endl;
         handleException(nullptr);
         result = 1;
     }

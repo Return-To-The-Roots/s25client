@@ -75,7 +75,7 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    if(!textures.bmp)
+    if(IsAnimated() || !textures.bmp)
     {
         textures = getTextures(file, id);
         RTTR_Assert(textures.bmp);
@@ -92,22 +92,32 @@ void noStaticObject::Draw(DrawPoint drawPt)
 noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsigned short id)
 {
     Textures textures{};
-    if(file == 0xFFFF)
+    if(IsOpenGateway(file, id))
+        textures.bmp = &LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1];
+    else if(file == 0xFFFF)
+        textures = {LOADER.GetMapTexture(id), LOADER.GetMapTexture(id + 100)};
+    else if(file < 8)
     {
-        if(id == 561)
-            textures.bmp = &LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1];
-        else
-            textures = {LOADER.GetMapTexture(id), LOADER.GetMapTexture(id + 100)};
-    } else if(file < 7)
-    {
-        static const std::array<ResourceId, 7> files = {"mis0bobs", "mis1bobs", "mis2bobs",       "mis3bobs",
-                                                        "mis4bobs", "mis5bobs", "charburner_bobs"};
+        static const std::array<ResourceId, 8> files = {"mis0bobs", "mis1bobs", "mis2bobs",        "mis3bobs",
+                                                        "mis4bobs", "mis5bobs", "charburner_bobs", "wine_bobs"};
         textures.bmp = LOADER.GetTextureN(files[file], id);
         // Use only shadows where available
         if(file < 6)
             textures.shadow = LOADER.GetTextureN(files[file], id + 1);
+        else if(file == 7)
+            textures.shadow = LOADER.GetTextureN(files[file], id + 10);
     } else
         throw std::runtime_error("Invalid file number for static object");
 
     return textures;
+}
+
+bool noStaticObject::IsAnimated() const
+{
+    return IsOpenGateway(file, id);
+}
+
+bool noStaticObject::IsOpenGateway(unsigned short file, unsigned short id)
+{
+    return file == 0xFFFF && id == 561;
 }

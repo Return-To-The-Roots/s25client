@@ -10,6 +10,7 @@
 #include "GlobalGameSettings.h"
 #include "JoinPlayerInfo.h"
 #include "NWFInfo.h"
+#include "gameTypes/MapDescription.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
@@ -38,8 +39,7 @@ public:
     ~GameServer();
 
     /// Starts the server
-    bool Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type,
-               const std::string& hostPw);
+    bool Start(const CreateServerInfo& csi, const MapDescription& map, const std::string& hostPw);
 
     void Run();
 

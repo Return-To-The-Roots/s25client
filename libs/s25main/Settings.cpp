@@ -70,11 +70,12 @@ void Settings::LoadDefaults()
 {
     // global
     // {
-    // 0 = ask user at start,1 = enabled, 2 = disabled
+    // 0 = ask user at start, 1 = enabled, 2 = always ask
     global.submit_debug_data = 0;
-    global.use_upnp = 2;
+    global.use_upnp = false;
     global.smartCursor = true;
     global.debugMode = false;
+    global.showGFInfo = false;
     // }
 
     // video
@@ -89,9 +90,10 @@ void Settings::LoadDefaults()
         video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
         video.fullscreen = false;
     }
-    video.vsync = 0;
+    video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
     video.shared_textures = true;
+    video.guiScale = 0; // special value indicating automatic selection
     // }
 
     // language
@@ -137,7 +139,9 @@ void Settings::LoadDefaults()
     // interface
     // {
     interface.autosave_interval = 0;
-    interface.revert_mouse = false;
+    interface.invertMouse = false;
+    interface.enableWindowPinning = false;
+    interface.windowSnapDistance = 8;
     // }
 
     // addons
@@ -201,34 +205,32 @@ void Settings::Load()
             throw std::runtime_error("Missing section");
         }
         // stimmt die Settingsversion?
-        if(iniGlobal->getValueI("version") != VERSION)
-        {
+        if(iniGlobal->getValue("version", 0) != VERSION)
             throw std::runtime_error("Wrong version");
-        }
 
         // global
         // {
-        // stimmt die Spielrevision überein?
         if(iniGlobal->getValue("gameversion") != rttr::version::GetRevision())
-            s25util::warning("Your application version has changed - please recheck your settings!\n");
+            s25util::warning("Your application version has changed - please recheck your settings!");
 
-        global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
-        global.use_upnp = iniGlobal->getValueI("use_upnp");
-        global.smartCursor = (iniGlobal->getValue("smartCursor").empty() || iniGlobal->getValueI("smartCursor") != 0);
-        global.debugMode = (iniGlobal->getValueI("debugMode") != 0);
-
+        global.submit_debug_data = iniGlobal->getIntValue("submit_debug_data");
+        global.use_upnp = iniGlobal->getBoolValue("use_upnp");
+        global.smartCursor = iniGlobal->getValue("smartCursor", true);
+        global.debugMode = iniGlobal->getValue("debugMode", false);
+        global.showGFInfo = iniGlobal->getValue("showGFInfo", false);
         // };
 
         // video
         // {
-        video.windowedSize.width = iniVideo->getValueI("windowed_width");
-        video.windowedSize.height = iniVideo->getValueI("windowed_height");
-        video.fullscreenSize.width = iniVideo->getValueI("fullscreen_width");
-        video.fullscreenSize.height = iniVideo->getValueI("fullscreen_height");
-        video.fullscreen = (iniVideo->getValueI("fullscreen") != 0);
-        video.vsync = iniVideo->getValueI("vsync");
-        video.vbo = (iniVideo->getValueI("vbo") != 0);
-        video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
+        video.windowedSize.width = iniVideo->getIntValue("windowed_width");
+        video.windowedSize.height = iniVideo->getIntValue("windowed_height");
+        video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
+        video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
+        video.fullscreen = iniVideo->getBoolValue("fullscreen");
+        video.framerate = iniVideo->getValue("framerate", 0);
+        video.vbo = iniVideo->getBoolValue("vbo");
+        video.shared_textures = iniVideo->getBoolValue("shared_textures");
+        video.guiScale = iniVideo->getValue("gui_scale", 0);
         // };
 
         if(video.fullscreenSize.width == 0 || video.fullscreenSize.height == 0 || video.windowedSize.width == 0
@@ -250,10 +252,10 @@ void Settings::Load()
 
         // sound
         // {
-        sound.musicEnabled = (iniSound->getValueI("musik") != 0);
-        sound.musicVolume = iniSound->getValueI("musik_volume");
-        sound.effectsEnabled = (iniSound->getValueI("effekte") != 0);
-        sound.effectsVolume = iniSound->getValueI("effekte_volume");
+        sound.musicEnabled = iniSound->getBoolValue("musik");
+        sound.musicVolume = iniSound->getIntValue("musik_volume");
+        sound.effectsEnabled = iniSound->getBoolValue("effekte");
+        sound.effectsVolume = iniSound->getIntValue("effekte_volume");
         sound.playlist = iniSound->getValue("playlist");
         // }
 
@@ -261,7 +263,7 @@ void Settings::Load()
         // {
         lobby.name = iniLobby->getValue("name");
         lobby.password = iniLobby->getValue("password");
-        lobby.save_password = (iniLobby->getValueI("save_password") != 0);
+        lobby.save_password = iniLobby->getBoolValue("save_password");
         // }
 
         if(lobby.name.empty())
@@ -272,7 +274,7 @@ void Settings::Load()
         server.last_ip = iniServer->getValue("last_ip");
         boost::optional<uint16_t> port = validate::checkPort(iniServer->getValue("local_port"));
         server.localPort = port.value_or(3665);
-        server.ipv6 = (iniServer->getValueI("ipv6") != 0);
+        server.ipv6 = iniServer->getBoolValue("ipv6");
         // }
 
         // proxy
@@ -280,7 +282,7 @@ void Settings::Load()
         proxy.hostname = iniProxy->getValue("proxy");
         port = validate::checkPort(iniProxy->getValue("port"));
         proxy.port = port.value_or(1080);
-        proxy.type = ProxyType(iniProxy->getValueI("typ"));
+        proxy.type = ProxyType(iniProxy->getIntValue("typ"));
         // }
 
         // leere proxyadresse deaktiviert proxy komplett
@@ -296,8 +298,10 @@ void Settings::Load()
 
         // interface
         // {
-        interface.autosave_interval = iniInterface->getValueI("autosave_interval");
-        interface.revert_mouse = (iniInterface->getValueI("revert_mouse") != 0);
+        interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
+        interface.invertMouse = iniInterface->getValue("invert_mouse", false);
+        interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
+        interface.windowSnapDistance = iniInterface->getValue("window_snap_distance", 8);
         // }
 
         // addons
@@ -313,7 +317,7 @@ void Settings::Load()
 
         LoadIngame();
         // }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\", using default values. Reason: " + e.what());
@@ -337,11 +341,11 @@ void Settings::LoadIngame()
             throw std::runtime_error("Missing section");
         // ingame
         // {
-        ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") != 0);
-        ingame.showBQ = (iniIngame->getValueI("show_building_quality") != 0);
-        ingame.showNames = (iniIngame->getValueI("show_names") != 0);
-        ingame.showProductivity = (iniIngame->getValueI("show_productivity") != 0);
-        ingame.minimapExtended = (iniIngame->getValueI("minimap_extended") != 0);
+        ingame.scale_statistics = iniIngame->getBoolValue("scale_statistics");
+        ingame.showBQ = iniIngame->getBoolValue("show_building_quality");
+        ingame.showNames = iniIngame->getBoolValue("show_names");
+        ingame.showProductivity = iniIngame->getBoolValue("show_productivity");
+        ingame.minimapExtended = iniIngame->getBoolValue("minimap_extended");
         // }
         // ingame windows
         for(const auto& window : persistentWindows)
@@ -349,11 +353,16 @@ void Settings::LoadIngame()
             const auto* iniWindow = static_cast<const libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
             if(!iniWindow)
                 continue;
-            windows.persistentSettings[window.first].lastPos.x = iniWindow->getValueI("pos_x");
-            windows.persistentSettings[window.first].lastPos.y = iniWindow->getValueI("pos_y");
-            windows.persistentSettings[window.first].isOpen = iniWindow->getValueI("is_open");
+            auto& settings = windows.persistentSettings[window.first];
+            const auto lastPos = settings.lastPos =
+              DrawPoint(iniWindow->getIntValue("pos_x"), iniWindow->getIntValue("pos_y"));
+            settings.restorePos = DrawPoint(iniWindow->getValue("restore_pos_x", lastPos.x),
+                                            iniWindow->getValue("restore_pos_y", lastPos.y));
+            settings.isOpen = iniWindow->getIntValue("is_open");
+            settings.isPinned = iniWindow->getValue("is_pinned", false);
+            settings.isMinimized = iniWindow->getValue("is_minimized", false);
         }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use ingame settings from \"") + settingsPathIngame.string()
                          + "\", using default values. Reason: " + e.what());
@@ -392,8 +401,9 @@ void Settings::Save()
     iniGlobal->setValue("gameversion", rttr::version::GetRevision());
     iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
     iniGlobal->setValue("use_upnp", global.use_upnp);
-    iniGlobal->setValue("smartCursor", global.smartCursor ? 1 : 0);
-    iniGlobal->setValue("debugMode", global.debugMode ? 1 : 0);
+    iniGlobal->setValue("smartCursor", global.smartCursor);
+    iniGlobal->setValue("debugMode", global.debugMode);
+    iniGlobal->setValue("showGFInfo", global.showGFInfo);
     // };
 
     // video
@@ -402,10 +412,11 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
-    iniVideo->setValue("fullscreen", (video.fullscreen ? 1 : 0));
-    iniVideo->setValue("vsync", video.vsync);
-    iniVideo->setValue("vbo", (video.vbo ? 1 : 0));
-    iniVideo->setValue("shared_textures", (video.shared_textures ? 1 : 0));
+    iniVideo->setValue("fullscreen", video.fullscreen);
+    iniVideo->setValue("framerate", video.framerate);
+    iniVideo->setValue("vbo", video.vbo);
+    iniVideo->setValue("shared_textures", video.shared_textures);
+    iniVideo->setValue("gui_scale", video.guiScale);
     // };
 
     // language
@@ -421,9 +432,9 @@ void Settings::Save()
 
     // sound
     // {
-    iniSound->setValue("musik", (sound.musicEnabled ? 1 : 0));
+    iniSound->setValue("musik", sound.musicEnabled);
     iniSound->setValue("musik_volume", sound.musicVolume);
-    iniSound->setValue("effekte", (sound.effectsEnabled ? 1 : 0));
+    iniSound->setValue("effekte", sound.effectsEnabled);
     iniSound->setValue("effekte_volume", sound.effectsVolume);
     iniSound->setValue("playlist", sound.playlist);
     // }
@@ -432,14 +443,14 @@ void Settings::Save()
     // {
     iniLobby->setValue("name", lobby.name);
     iniLobby->setValue("password", lobby.password);
-    iniLobby->setValue("save_password", (lobby.save_password ? 1 : 0));
+    iniLobby->setValue("save_password", lobby.save_password);
     // }
 
     // server
     // {
     iniServer->setValue("last_ip", server.last_ip);
     iniServer->setValue("local_port", server.localPort);
-    iniServer->setValue("ipv6", (server.ipv6 ? 1 : 0));
+    iniServer->setValue("ipv6", server.ipv6);
     // }
 
     // proxy
@@ -452,14 +463,16 @@ void Settings::Save()
     // interface
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
-    iniInterface->setValue("revert_mouse", (interface.revert_mouse ? 1 : 0));
+    iniInterface->setValue("invert_mouse", interface.invertMouse);
+    iniInterface->setValue("enable_window_pinning", interface.enableWindowPinning);
+    iniInterface->setValue("window_snap_distance", interface.windowSnapDistance);
     // }
 
     // addons
     // {
     iniAddons->clear();
     for(const auto& it : addons.configuration)
-        iniAddons->addValue(s25util::toStringClassic(it.first), s25util::toStringClassic(it.second));
+        iniAddons->setValue(s25util::toStringClassic(it.first), s25util::toStringClassic(it.second));
     // }
 
     bfs::path settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
@@ -487,11 +500,11 @@ void Settings::SaveIngame()
 
     // ingame
     // {
-    iniIngame->setValue("scale_statistics", (ingame.scale_statistics ? 1 : 0));
-    iniIngame->setValue("show_building_quality", (ingame.showBQ ? 1 : 0));
-    iniIngame->setValue("show_names", (ingame.showNames ? 1 : 0));
-    iniIngame->setValue("show_productivity", (ingame.showProductivity ? 1 : 0));
-    iniIngame->setValue("minimap_extended", (ingame.minimapExtended ? 1 : 0));
+    iniIngame->setValue("scale_statistics", ingame.scale_statistics);
+    iniIngame->setValue("show_building_quality", ingame.showBQ);
+    iniIngame->setValue("show_names", ingame.showNames);
+    iniIngame->setValue("show_productivity", ingame.showProductivity);
+    iniIngame->setValue("minimap_extended", ingame.minimapExtended);
     // }
 
     // ingame windows
@@ -500,9 +513,18 @@ void Settings::SaveIngame()
         auto* iniWindow = static_cast<libsiedler2::ArchivItem_Ini*>(settingsIngame.find(window.second));
         if(!iniWindow)
             continue;
-        iniWindow->setValue("pos_x", windows.persistentSettings[window.first].lastPos.x);
-        iniWindow->setValue("pos_y", windows.persistentSettings[window.first].lastPos.y);
-        iniWindow->setValue("is_open", windows.persistentSettings[window.first].isOpen);
+        const auto& settings = windows.persistentSettings[window.first];
+        iniWindow->setValue("pos_x", settings.lastPos.x);
+        iniWindow->setValue("pos_y", settings.lastPos.y);
+        if(settings.restorePos != settings.lastPos)
+        {
+            // only save if different; defaults to lastPos on load
+            iniWindow->setValue("restore_pos_x", settings.restorePos.x);
+            iniWindow->setValue("restore_pos_y", settings.restorePos.y);
+        }
+        iniWindow->setValue("is_open", settings.isOpen);
+        iniWindow->setValue("is_pinned", settings.isPinned);
+        iniWindow->setValue("is_minimized", settings.isMinimized);
     }
 
     bfs::path settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);

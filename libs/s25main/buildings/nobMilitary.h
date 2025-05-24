@@ -71,6 +71,7 @@ private:
     bool is_regulating_troops;
     /// Soldatenbesatzung
     OwnedSortedTroops troops;
+    std::array<uint8_t, NUM_SOLDIER_RANKS> troop_limits;
 
     /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
     void CancelOrders();
@@ -85,6 +86,7 @@ private:
     void PrepareUpgrading();
     /// Gets the total amount of soldiers (ordered, stationed, on mission)
     size_t GetTotalSoldiers() const;
+    std::array<unsigned, NUM_SOLDIER_RANKS> GetTotalSoldiersByRank() const;
     /// Looks for the next far-away-capturer waiting around and calls it to the flag
     void CallNextFarAwayCapturer(nofAttacker& attacker);
 
@@ -137,6 +139,10 @@ public:
     unsigned GetNumTroops() const { return troops.size(); }
     auto GetTroops() const { return helpers::nonNullPtrSpan(troops); }
     bool IsInTroops(const nofPassiveSoldier& soldier) const;
+
+    /// Get/Set the maximum number of soldiers of rank `rank` allowed in this building
+    unsigned GetTroopLimit(const unsigned rank) const { return troop_limits[rank]; }
+    void SetTroopLimit(unsigned rank, unsigned limit);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
     void TakeWare(Ware* ware) override;
@@ -223,11 +229,6 @@ public:
 
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
     bool DefendersAvailable() const override { return GetNumTroops() > 0; }
-
-    /// send all soldiers of the highest rank home (if highest=lowest keep 1)
-    void SendSoldiersHome();
-    /// order new troops
-    void OrderNewSoldiers();
 
     /// Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
     bool IsDemolitionAllowed() const;

@@ -60,6 +60,9 @@ public:
     MapCoord GetXA(MapPoint pt, Direction dir) const;
     // Gets all neighbors (in all directions) for given position
     helpers::EnumArray<MapPoint, Direction> GetNeighbours(MapPoint pt) const;
+    // Gets union of given points and all their neighbors without duplicates
+    // For a single point it returns itself and all neighbours
+    std::vector<MapPoint> GetAllNeighboursUnion(const std::vector<MapPoint>& points) const;
 
     /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius

@@ -37,8 +37,10 @@ public:
     void Draw(DrawPoint drawPt) override;
 
     static Textures getTextures(unsigned short file, unsigned short id);
+    bool IsAnimated() const;
 
 protected:
+    static bool IsOpenGateway(unsigned short file, unsigned short id);
     unsigned short id;
     unsigned short file;
     unsigned char size;

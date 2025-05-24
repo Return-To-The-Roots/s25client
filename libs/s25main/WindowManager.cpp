@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,7 +13,7 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
-#include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "helpers/reverse.h"
 #include "ingameWindows/IngameWindow.h"
 #include "ogl/FontStyle.h"
@@ -132,11 +132,14 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
         return; // No windows -> nothing to do
 
     // ESC or ALT+W closes the active window
-    if(ke.kt == KeyType::Escape || (ke.c == 'w' && ke.alt))
+    const auto escape = (ke.kt == KeyType::Escape);
+    if(escape || (ke.c == 'w' && ke.alt))
     {
         // Find one which isn't yet marked for closing so multiple ESC in between draw calls can close multiple windows
-        const auto itActiveWnd =
-          std::find_if(windows.rbegin(), windows.rend(), [](const auto& wnd) { return !wnd->ShouldBeClosed(); });
+        // ESC doesn't close pinned windows
+        const auto itActiveWnd = std::find_if(windows.rbegin(), windows.rend(), [escape](const auto& wnd) {
+            return !wnd->ShouldBeClosed() && !(escape && wnd->IsPinned());
+        });
         if(itActiveWnd != windows.rend() && (*itActiveWnd)->getCloseBehavior() != CloseBehavior::Custom)
             (*itActiveWnd)->Close();
     } else if(!CALL_MEMBER_FN(*windows.back(), msg)(ke)) // send to active window
@@ -418,10 +421,12 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         }
         if(foundWindow)
         {
-            // Close it if requested
+            // Close it if requested (unless pinned)
             if(foundWindow->getCloseBehavior() == CloseBehavior::Regular)
-                foundWindow->Close();
-            else
+            {
+                if(!foundWindow->IsPinned())
+                    foundWindow->Close();
+            } else
             {
                 SetActiveWindow(*foundWindow);
                 foundWindow->Msg_RightDown(mc);
@@ -660,8 +665,7 @@ IngameWindow* WindowManager::GetTopMostWindow() const
 
 void WindowManager::DoClose(IngameWindow* window)
 {
-    const auto it =
-      std::find_if(windows.begin(), windows.end(), [window](const auto& it) { return it.get() == window; });
+    const auto it = helpers::findPtr(windows, window);
 
     RTTR_Assert(it != windows.end());
 
@@ -736,11 +740,11 @@ void WindowManager::DoDesktopSwitch()
 void WindowManager::CloseMarkedIngameWnds()
 {
     auto isWndMarkedForClose = [](const auto& wnd) { return wnd->ShouldBeClosed(); };
-    auto it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
+    auto it = helpers::find_if(windows, isWndMarkedForClose);
     while(it != windows.end())
     {
         DoClose(it->get());
-        it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
+        it = helpers::find_if(windows, isWndMarkedForClose);
     }
 }
 
@@ -776,8 +780,9 @@ void WindowManager::SetActiveWindow(Window& wnd)
 
 void WindowManager::TakeScreenshot() const
 {
-    libsiedler2::PixelBufferBGRA buffer(curRenderSize.x, curRenderSize.y);
-    glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    const auto windowSize = VIDEODRIVER.GetWindowSize();
+    libsiedler2::PixelBufferBGRA buffer(windowSize.width, windowSize.height);
+    glReadPixels(0, 0, windowSize.width, windowSize.height, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
     const bfs::path outFilepath =
       RTTRCONFIG.ExpandPath(s25::folders::screenshots) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
@@ -798,12 +803,21 @@ class WindowManager::Tooltip
     const glFont* font;
     std::vector<std::string> lines;
     unsigned width = 0, height = 0;
+    unsigned short maxWidth;
 
 public:
     Tooltip(const ctrlBaseTooltip* showingCtrl, const std::string& text, unsigned short maxWidth)
-        : showingCtrl(showingCtrl), font(NormalFont),
-          lines(font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text))
+        : showingCtrl(showingCtrl), font(NormalFont), maxWidth(maxWidth)
     {
+        setText(text);
+    }
+
+    auto getShowingCtrl() const { return showingCtrl; }
+    auto getWidth() const { return width; }
+
+    void setText(const std::string& text)
+    {
+        lines = font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text);
         if(lines.empty())
             return;
         width = 0;
@@ -812,9 +826,6 @@ public:
         width += BORDER_SIZE * 2;
         height = lines.size() * font->getHeight() + BORDER_SIZE * 2;
     }
-
-    auto getShowingCtrl() const { return showingCtrl; }
-    auto getWidth() const { return width; }
 
     void draw(DrawPoint pos) const
     {
@@ -829,7 +840,7 @@ public:
     }
 };
 
-void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip)
+void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent)
 {
     // Max width of tooltip
     constexpr unsigned short MAX_TOOLTIP_WIDTH = 260;
@@ -838,6 +849,10 @@ void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& to
     {
         if(curTooltip && (!ttw || curTooltip->getShowingCtrl() == ttw))
             curTooltip.reset();
+    } else if(updateCurrent)
+    {
+        if(curTooltip && curTooltip->getShowingCtrl() == ttw)
+            curTooltip->setText(tooltip);
     } else
         curTooltip = std::make_unique<Tooltip>(ttw, tooltip, MAX_TOOLTIP_WIDTH);
 }
@@ -847,9 +862,11 @@ void WindowManager::DrawToolTip()
     // Tooltip zeichnen
     if(curTooltip && lastMousePos.isValid())
     {
-        // Horizontal pace between mouse position and tooltip border
-        constexpr unsigned rightSpacing = 25;
-        constexpr unsigned leftSpacing = 10;
+        constexpr unsigned cursorWidth = 32;
+        constexpr unsigned cursorPadding = 5;
+        // Horizontal space between mouse position and tooltip border
+        constexpr unsigned rightSpacing = cursorWidth + cursorPadding;
+        constexpr unsigned leftSpacing = cursorPadding;
         DrawPoint ttPos = DrawPoint(lastMousePos.x + rightSpacing, lastMousePos.y);
         unsigned right_edge = ttPos.x + curTooltip->getWidth();
 
@@ -858,4 +875,56 @@ void WindowManager::DrawToolTip()
             ttPos.x = lastMousePos.x - leftSpacing - curTooltip->getWidth();
         curTooltip->draw(ttPos);
     }
+}
+
+SnapOffset WindowManager::snapWindow(Window* wnd, const Rect& wndRect) const
+{
+    const auto snapDistance = static_cast<int>(SETTINGS.interface.windowSnapDistance);
+    if(snapDistance == 0)
+        return SnapOffset::all(0); // No snapping
+
+    /// Progressive minimum distance to another window edge; initial value limits to at most snapDistance
+    auto minDist = Extent::all(snapDistance + 1);
+    /// (Smallest) offset (signed distance) the window should be moved; initially zero, so no snapping
+    SnapOffset minOffset = SnapOffset::all(0);
+
+    const auto setOffsetIfLowerDist = [](int a, int b, unsigned& minDist, int& minOffset) {
+        const int offset = b - a;
+        const unsigned dist = std::abs(offset);
+        if(dist < minDist)
+        {
+            minDist = dist;
+            minOffset = offset;
+        }
+    };
+    const auto setOffsetIfLowerDistX = [&](int x1, int x2) { setOffsetIfLowerDist(x1, x2, minDist.x, minOffset.x); };
+    const auto setOffsetIfLowerDistY = [&](int y1, int y2) { setOffsetIfLowerDist(y1, y2, minDist.y, minOffset.y); };
+
+    for(const auto& curWnd : windows)
+    {
+        if(curWnd.get() == wnd)
+            continue;
+
+        const Rect curWndRect = curWnd->GetBoundaryRect();
+
+        // Calculate smallest offset for each parallel pair of window edges, iff the windows overlap along the
+        // orthogonal axis (± snap distance)
+        if(wndRect.top <= (curWndRect.bottom + snapDistance) && wndRect.bottom >= (curWndRect.top - snapDistance))
+        {
+            setOffsetIfLowerDistX(wndRect.left, curWndRect.left);
+            setOffsetIfLowerDistX(wndRect.left, curWndRect.right);
+            setOffsetIfLowerDistX(wndRect.right, curWndRect.left);
+            setOffsetIfLowerDistX(wndRect.right, curWndRect.right);
+        }
+
+        if(wndRect.left <= (curWndRect.right + snapDistance) && wndRect.right >= (curWndRect.left - snapDistance))
+        {
+            setOffsetIfLowerDistY(wndRect.top, curWndRect.top);
+            setOffsetIfLowerDistY(wndRect.top, curWndRect.bottom);
+            setOffsetIfLowerDistY(wndRect.bottom, curWndRect.top);
+            setOffsetIfLowerDistY(wndRect.bottom, curWndRect.bottom);
+        }
+    }
+
+    return minOffset;
 }

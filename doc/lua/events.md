@@ -56,6 +56,9 @@ end
 Only meaningfull if `addonsAll=false` and `addonsSome=true`:
 Return a list with addonIds that the host can change.
 
+**isMapPreviewEnabled()**  
+Is map preview enabled. Default is true
+
 ## Game
 
 **onStart(isFirstStart)**  
@@ -74,6 +77,10 @@ Needs to return true on success or false on error.
 
 **onOccupied(playerIdx, x, y)**  
 Called every time a point on the map gets occupied by a player.
+
+**onAttack(attackerPlayerId, defenderPlayerId, attackerCount)**  
+Called every time a player attacks another player. The attackerCount is the number
+of attackers send out.
 
 **onExplored(playerIdx, x, y, owner)**  
 Called every time a point on the map becomes visible for a player.

@@ -10,6 +10,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
+#include "gameData/DescriptionVector.h"
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <array>
@@ -18,6 +19,7 @@
 
 class GameWorldViewer;
 class glArchivItem_Bitmap;
+struct EdgeDesc;
 struct TerrainDesc;
 struct WorldDescription;
 
@@ -27,8 +29,6 @@ glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp);
 class TerrainRenderer : private boost::noncopyable
 {
 public:
-    using PointF = Point<float>;
-
     TerrainRenderer();
     ~TerrainRenderer();
 
@@ -105,9 +105,9 @@ private:
 
     struct Borders
     {
-        std::array<unsigned char, 2> left_right;
-        std::array<unsigned char, 2> right_left;
-        std::array<unsigned char, 2> top_down;
+        std::array<DescIdx<EdgeDesc>, 2> left_right;
+        std::array<DescIdx<EdgeDesc>, 2> right_left;
+        std::array<DescIdx<EdgeDesc>, 2> top_down;
         std::array<unsigned, 2> left_right_offset;
         std::array<unsigned, 2> right_left_offset;
         std::array<unsigned, 2> top_down_offset;
@@ -139,8 +139,8 @@ private:
     std::vector<Borders> borders;
 
     using BmpPtr = std::unique_ptr<glArchivItem_Bitmap>;
-    std::vector<TerrainTexture> terrainTextures;
-    std::vector<BmpPtr> edgeTextures;
+    DescriptionVector<TerrainTexture, TerrainDesc> terrainTextures;
+    DescriptionVector<BmpPtr, EdgeDesc> edgeTextures;
     /// Flat 2D array: [Landscape][RoadType]
     std::vector<BmpPtr> roadTextures;
 

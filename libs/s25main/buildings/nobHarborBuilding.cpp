@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -244,13 +244,11 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
-            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
-              ->DrawFull(boardsPos - DrawPoint(0, i * 4));
+            LOADER.GetWareStackTex(GoodType::Boards)->DrawFull(boardsPos - DrawPoint(0, i * 4));
         DrawPoint stonesPos = drawPt + STONES_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
-            LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
-              ->DrawFull(stonesPos - DrawPoint(0, i * 4));
+            LOADER.GetWareStackTex(GoodType::Stones)->DrawFull(stonesPos - DrawPoint(0, i * 4));
 
         // Und den Bauarbeiter, falls er schon da ist
         if(expedition.builder)
@@ -691,7 +689,9 @@ void nobHarborBuilding::AddFigure(std::unique_ptr<noFigure> figure, const bool i
     // Brauchen wir einen Bauarbeiter für die Expedition?
     if(figure->GetJobType() == Job::Builder && expedition.active && !expedition.builder)
     {
-        nobBaseWarehouse::RemoveDependentFigure(*figure);
+        // Make sure the figure came from outside and was not already here waiting for a ship
+        if(IsDependentFigure(*figure))
+            nobBaseWarehouse::RemoveDependentFigure(*figure);
         GetEvMgr().AddToKillList(std::move(figure));
 
         expedition.builder = true;
@@ -701,7 +701,9 @@ void nobHarborBuilding::AddFigure(std::unique_ptr<noFigure> figure, const bool i
     // Brauchen wir einen Spähter für die Expedition?
     else if(figure->GetJobType() == Job::Scout && exploration_expedition.active && !IsExplorationExpeditionReady())
     {
-        nobBaseWarehouse::RemoveDependentFigure(*figure);
+        // Make sure the figure came from outside and was not already here waiting for a ship
+        if(IsDependentFigure(*figure))
+            nobBaseWarehouse::RemoveDependentFigure(*figure);
         GetEvMgr().AddToKillList(std::move(figure));
 
         ++exploration_expedition.scouts;
@@ -837,8 +839,8 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
     {
         ShipConnection sc;
         sc.dest = harbor_building;
-        // Als Kantengewicht nehmen wir die doppelte Entfernung (evtl muss ja das Schiff erst kommen)
-        // plus einer Kopfpauschale (Ein/Ausladen usw. dauert ja alles)
+        // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
+        // loading&unloading
         sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
         connections.push_back(sc);
     }
@@ -1105,8 +1107,8 @@ std::unique_ptr<Ware> nobHarborBuilding::CancelWareForShip(Ware* ware)
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobHarborBuilding::CancelFigure(noFigure* figure)
 {
-    const auto it = std::find_if(figures_for_ships.begin(), figures_for_ships.end(),
-                                 [figure](const FigureForShip& it) { return it.fig.get() == figure; });
+    const auto it =
+      helpers::find_if(figures_for_ships, [figure](const FigureForShip& it) { return it.fig.get() == figure; });
 
     // Figur ggf. aus der List entfernen
     if(it != figures_for_ships.end())
@@ -1179,7 +1181,7 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
-        auto it2 = std::find(buildings.begin(), buildings.end(), static_cast<nobMilitary*>(all_building));
+        auto it2 = helpers::find(buildings, static_cast<nobMilitary*>(all_building));
         // Noch nicht vorhanden?
         if(it2 == buildings.end())
         {
@@ -1313,7 +1315,6 @@ std::unique_ptr<nofDefender> nobHarborBuilding::ProvideDefender(nofAttacker& att
         soldiers_for_ships.pop_front();
         defender = std::make_unique<nofDefender>(pos, player, *this, defender_attacker->GetRank(), attacker);
         defender_attacker->CancelSeaAttack();
-        defender_attacker->Abrogate();
         defender_attacker->Destroy();
     }
 

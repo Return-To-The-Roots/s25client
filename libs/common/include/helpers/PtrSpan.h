@@ -25,8 +25,8 @@ namespace detail {
 } // namespace detail
 
 /// View type (access to current underlying container) which provides iterable access to a range of pointer-like
-/// elements Those can be raw pointers or smart pointers and are assumed to be non-NULL Iteration yields references to
-/// the pointed-to type
+/// elements. Those can be raw pointers or smart pointers and are assumed to be non-NULL.
+/// Iteration yields references to the pointed-to type
 template<class TRange>
 class NonNullPtrSpan
 {
@@ -69,6 +69,7 @@ public:
     RTTR_CONSTEXPR_INLINE Iterator begin() const { return Iterator(range.begin()); }
     RTTR_CONSTEXPR_INLINE Iterator end() const { return Iterator(range.end()); }
     RTTR_CONSTEXPR_INLINE typename Iterator::reference front() const { return **range.begin(); }
+    RTTR_CONSTEXPR_INLINE typename Iterator::reference back() const { return **range.rbegin(); }
     RTTR_CONSTEXPR_INLINE bool empty() const { return range.empty(); }
     RTTR_CONSTEXPR_INLINE auto size() const { return range.size(); }
 };
