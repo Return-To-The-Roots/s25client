@@ -18,6 +18,7 @@ Checks: >-
   -bugprone-switch-missing-default-case,
   -bugprone-too-small-loop-variable,
   -clang-analyzer-osx.*,
+  -misc-confusable-identifiers,
   -misc-non-private-member-variables-in-classes,
   -misc-unused-parameters,
   -modernize-avoid-c-arrays,
@@ -50,4 +51,6 @@ CheckOptions:
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
   - key: performance-unnecessary-value-param.AllowedTypes
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
+  - key: readability-function-cognitive-complexity.IgnoreMacros
+    value: true
 ...
