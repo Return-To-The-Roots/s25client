@@ -20,6 +20,7 @@
 #include <sstream>
 
 using namespace libsiedler2;
+namespace tt = boost::test_tools;
 
 namespace libsiedler2 {
 static std::ostream& boost_test_print_type(std::ostream& os, const ColorBGRA color)
@@ -354,47 +355,49 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
 
 BOOST_AUTO_TEST_CASE(DrawPercent)
 {
-    // TODO: check for proper ceil/floor behaviour
+    // Make sure that test passes across different image heights
+    for(int i = 0; i < 100; ++i)
+    {
+        auto bmpSrc = createRandBmp(0);
+        const Extent size(bmpSrc->getWidth(), bmpSrc->getHeight());
+        glSmartBitmap smartBmp;
+        smartBmp.add(bmpSrc.get());
 
-    auto bmpSrc = createRandBmp(0);
-    const Extent size(bmpSrc->getWidth(), bmpSrc->getHeight());
-    glSmartBitmap smartBmp;
-    smartBmp.add(bmpSrc.get());
+        RTTR_STUB_FUNCTION(glVertexPointer, rttrOglMock2::glVertexPointer);
+        RTTR_STUB_FUNCTION(glDrawArrays, rttrOglMock2::glDrawArrays);
+        RTTR_STUB_FUNCTION(glEnableClientState, rttrOglMock2::glEnableClientState);
+        RTTR_STUB_FUNCTION(glTexCoordPointer, rttrOglMock2::glTexCoordPointer);
+        RTTR_STUB_FUNCTION(glColorPointer, rttrOglMock2::glColorPointer);
+        RTTR_STUB_FUNCTION(glDisableClientState, rttrOglMock2::glDisableClientState);
+        RTTR_STUB_FUNCTION(glBindTexture, rttrOglMock2::glBindTexture);
 
-    RTTR_STUB_FUNCTION(glVertexPointer, rttrOglMock2::glVertexPointer);
-    RTTR_STUB_FUNCTION(glDrawArrays, rttrOglMock2::glDrawArrays);
-    RTTR_STUB_FUNCTION(glEnableClientState, rttrOglMock2::glEnableClientState);
-    RTTR_STUB_FUNCTION(glTexCoordPointer, rttrOglMock2::glTexCoordPointer);
-    RTTR_STUB_FUNCTION(glColorPointer, rttrOglMock2::glColorPointer);
-    RTTR_STUB_FUNCTION(glDisableClientState, rttrOglMock2::glDisableClientState);
-    RTTR_STUB_FUNCTION(glBindTexture, rttrOglMock2::glBindTexture);
+        // drawPercent(0) shouldn't do a thing
+        rttrOglMock2::callCount = 0;
+        smartBmp.drawPercent(DrawPoint::all(0), 0);
+        BOOST_TEST(rttrOglMock2::callCount == 0);
 
-    // drawPercent(0) shouldn't do a thing
-    rttrOglMock2::callCount = 0;
-    smartBmp.drawPercent(DrawPoint::all(0), 0);
-    BOOST_TEST(rttrOglMock2::callCount == 0);
+        smartBmp.drawPercent(DrawPoint::all(0), 50);
+        BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
+        // All top texture coords have same Y component
+        BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
+        // All bottom texture coords have same Y component
+        BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
+        // Bottom starts at bottom
+        BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
+        // Top starts at given percentage
+        BOOST_TEST(std::abs((rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y) - .5f) <= 1.f / size.y);
 
-    smartBmp.drawPercent(DrawPoint::all(0), 50);
-    BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
-    // All top texture coords have same Y component
-    BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
-    // All bottom texture coords have same Y component
-    BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
-    // Bottom starts at bottom
-    BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
-    // Top starts at given percentage
-    BOOST_TEST(rttrOglMock2::textureCoords[0].y == (smartBmp.texCoords[0].y + smartBmp.texCoords[1].y) / 2);
-
-    smartBmp.drawPercent(DrawPoint::all(0), 100);
-    BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
-    // All top texture coords have same Y component
-    BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
-    // All bottom texture coords have same Y component
-    BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
-    // Top texture Y components match top of the texture
-    BOOST_TEST(rttrOglMock2::textureCoords[0].y == smartBmp.texCoords[0].y);
-    // Bottom texture Y components match bottom of the texture
-    BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
+        smartBmp.drawPercent(DrawPoint::all(0), 100);
+        BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
+        // All top texture coords have same Y component
+        BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
+        // All bottom texture coords have same Y component
+        BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
+        // Top texture Y components match top of the texture
+        BOOST_TEST(rttrOglMock2::textureCoords[0].y == smartBmp.texCoords[0].y);
+        // Bottom texture Y components match bottom of the texture
+        BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

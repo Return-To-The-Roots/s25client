@@ -258,8 +258,8 @@ void glSmartBitmap::drawPercent(DrawPoint drawPt, unsigned percent, unsigned col
     RTTR_Assert(percent <= 100);
 
     const float partDrawn = percent / 100.f;
-    auto startY = int(std::floor(size_.y * (1 - partDrawn)));
-    auto endY = int(std::ceil(size_.y * partDrawn));
+    auto startY = int(std::round(size_.y * (1 - partDrawn)));
+    auto endY = size_.y - startY;
     Rect dstArea(drawPt.x, drawPt.y + startY, size_.x, endY);
     Rect srcArea(0, startY, size_.x, endY);
     drawRect(dstArea, srcArea, color, player_color);
