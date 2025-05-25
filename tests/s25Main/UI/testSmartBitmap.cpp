@@ -15,6 +15,7 @@
 #include <s25util/warningSuppression.h>
 #include <glad/glad.h>
 #include <boost/test/unit_test.hpp>
+#include <helpers/make_array.h>
 #include <iomanip>
 #include <locale>
 #include <sstream>
@@ -61,9 +62,8 @@ void APIENTRY glDrawArrays(GLenum mode, GLint first, GLsizei count)
     std::copy(&vertexPointer[first], &vertexPointer[first + count], vertexCoords.begin());
 }
 
-void APIENTRY glEnableClientState(GLenum array)
+void APIENTRY glEnableClientState(GLenum)
 {
-    RTTR_UNUSED(array);
     ++callCount;
 }
 
@@ -76,26 +76,19 @@ void APIENTRY glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const v
     texturePointer = static_cast<const Point<float>*>(pointer);
 }
 
-void APIENTRY glColorPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
+void APIENTRY glColorPointer(GLint, GLenum, GLsizei, const void*)
 {
     ++callCount;
-    RTTR_UNUSED(size);
-    RTTR_UNUSED(type);
-    RTTR_UNUSED(stride);
-    RTTR_UNUSED(pointer);
 }
 
-void APIENTRY glDisableClientState(GLenum array)
+void APIENTRY glDisableClientState(GLenum)
 {
     ++callCount;
-    RTTR_UNUSED(array);
 }
 
-void APIENTRY glBindTexture(GLenum target, GLuint texture)
+void APIENTRY glBindTexture(GLenum, GLuint)
 {
     ++callCount;
-    RTTR_UNUSED(target);
-    RTTR_UNUSED(texture);
 }
 
 RTTR_POP_DIAGNOSTIC
@@ -103,11 +96,10 @@ RTTR_POP_DIAGNOSTIC
 
 namespace {
 
-std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent)
+std::unique_ptr<ArchivItem_Bitmap_Raw> createBmp(Extent size, unsigned percentTransparent)
 {
     const auto* pal = LOADER.GetPaletteN("pal5");
     auto bmp = std::make_unique<ArchivItem_Bitmap_Raw>();
-    const Extent size = rttr::test::randomPoint<Extent>(10, 50);
     bmp->init(size.x, size.y, TextureFormat::BGRA);
     const auto offset = rttr::test::randomPoint<Position>(-100, 100);
     bmp->setNx(offset.x);
@@ -120,6 +112,13 @@ std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent
     }
     return bmp;
 }
+
+std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent)
+{
+    const Extent size = rttr::test::randomPoint<Extent>(10, 50);
+    return createBmp(size, percentTransparent);
+}
+
 std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTransparent)
 {
     const auto* pal = LOADER.GetPaletteN("colors");
@@ -355,21 +354,27 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
 
 BOOST_AUTO_TEST_CASE(DrawPercent)
 {
-    // Make sure that test passes across different image heights
-    for(int i = 0; i < 100; ++i)
+    // Make sure that test passes across different image heights, including some random ones
+    auto testCases =
+      helpers::make_array<Extent>(Extent{rttr::test::randomValue<unsigned int>(10, 50), 50},
+                                  Extent{rttr::test::randomValue<unsigned int>(10, 50), 35},
+                                  rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50),
+                                  rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50));
+
+    RTTR_STUB_FUNCTION(glVertexPointer, rttrOglMock2::glVertexPointer);
+    RTTR_STUB_FUNCTION(glDrawArrays, rttrOglMock2::glDrawArrays);
+    RTTR_STUB_FUNCTION(glEnableClientState, rttrOglMock2::glEnableClientState);
+    RTTR_STUB_FUNCTION(glTexCoordPointer, rttrOglMock2::glTexCoordPointer);
+    RTTR_STUB_FUNCTION(glColorPointer, rttrOglMock2::glColorPointer);
+    RTTR_STUB_FUNCTION(glDisableClientState, rttrOglMock2::glDisableClientState);
+    RTTR_STUB_FUNCTION(glBindTexture, rttrOglMock2::glBindTexture);
+
+    for(const auto& testCase : testCases)
     {
-        auto bmpSrc = createRandBmp(0);
+        auto bmpSrc = createBmp(testCase, 0);
         const Extent size(bmpSrc->getWidth(), bmpSrc->getHeight());
         glSmartBitmap smartBmp;
         smartBmp.add(bmpSrc.get());
-
-        RTTR_STUB_FUNCTION(glVertexPointer, rttrOglMock2::glVertexPointer);
-        RTTR_STUB_FUNCTION(glDrawArrays, rttrOglMock2::glDrawArrays);
-        RTTR_STUB_FUNCTION(glEnableClientState, rttrOglMock2::glEnableClientState);
-        RTTR_STUB_FUNCTION(glTexCoordPointer, rttrOglMock2::glTexCoordPointer);
-        RTTR_STUB_FUNCTION(glColorPointer, rttrOglMock2::glColorPointer);
-        RTTR_STUB_FUNCTION(glDisableClientState, rttrOglMock2::glDisableClientState);
-        RTTR_STUB_FUNCTION(glBindTexture, rttrOglMock2::glBindTexture);
 
         // drawPercent(0) shouldn't do a thing
         rttrOglMock2::callCount = 0;
@@ -386,17 +391,17 @@ BOOST_AUTO_TEST_CASE(DrawPercent)
         BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
         // Top starts at given percentage
         BOOST_TEST(std::abs((rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y) - .5f) <= 1.f / size.y);
+        // BOOST_TEST(rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y == .5f, tt::tolerance(1.f / size.y));
 
         smartBmp.drawPercent(DrawPoint::all(0), 100);
         BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
-        // All top texture coords have same Y component
-        BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
-        // All bottom texture coords have same Y component
-        BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
-        // Top texture Y components match top of the texture
-        BOOST_TEST(rttrOglMock2::textureCoords[0].y == smartBmp.texCoords[0].y);
-        // Bottom texture Y components match bottom of the texture
-        BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
+        for(int i = 0; i < 4; ++i)
+        {
+            BOOST_TEST(rttrOglMock2::textureCoords[0] == smartBmp.texCoords[0]);
+            BOOST_TEST(rttrOglMock2::textureCoords[1] == smartBmp.texCoords[1]);
+            BOOST_TEST(rttrOglMock2::textureCoords[2] == smartBmp.texCoords[2]);
+            BOOST_TEST(rttrOglMock2::textureCoords[3] == smartBmp.texCoords[3]);
+        }
     }
 }
 

@@ -17,8 +17,14 @@ MOCK_BASE_CLASS(TestTexture, ITexture)
 {
 public:
     TestTexture(Extent size, Position origin) : size_(size), origin_(origin) {}
-    Position GetOrigin() const override { return origin_; }
-    Extent GetSize() const override { return size_; }
+    Position GetOrigin() const override
+    {
+        return origin_;
+    }
+    Extent GetSize() const override
+    {
+        return size_;
+    }
     MOCK_NON_CONST_METHOD(DrawFull, 2) // LCOV_EXCL_LINE
     MOCK_NON_CONST_METHOD(Draw, 3)
 
