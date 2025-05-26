@@ -1224,7 +1224,13 @@ void AIPlayerJH::HandleNewMilitaryBuildingOccupied(const MapPoint pt)
     // remove the storehouse from the building test list if we are close to another storehouse already
     for(const nobBaseWarehouse* bldSite : aii.GetStorehouses())
     {
-        if(gwb.CalcDistance(bldSite->GetPos(), pt) < 20)
+        unsigned minDistance = 20;
+        if(aii.GetStorehouses().size() < 2 )
+        {
+            minDistance = 20;
+        }
+
+        if(gwb.CalcDistance(bldSite->GetPos(), pt) < minDistance)
         {
             bldToTestStartIdx = 1;
             break;

@@ -35,6 +35,10 @@ extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& d
     {
         params.min = node["min"].as<unsigned>();
     }
+    if(node["max"])
+    {
+        params.max = node["max"].as<unsigned>();
+    }
     return params;
 }
 

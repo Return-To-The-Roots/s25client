@@ -159,8 +159,8 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         buildingsWanted[BuildingType::Fishery] = std::min(maxFishers(aijh), numMilitaryBlds + 1u);
         buildingsWanted[BuildingType::Hunter] = std::min(maxHunters(aijh), 4u);
 
-        buildingsWanted[BuildingType::Quarry] = calculator.CalcQuarry();
-
+        // buildingsWanted[BuildingType::Quarry] = calculator.CalcQuarry();
+        buildingsWanted[BuildingType::Quarry] = calculator.Calc(BuildingType::Quarry);
         buildingsWanted[BuildingType::Well] = calculator.Calc(BuildingType::Well);
         buildingsWanted[BuildingType::Sawmill] = calculator.Calc(BuildingType::Sawmill);
         buildingsWanted[BuildingType::Mill] = calculator.Calc(BuildingType::Mill);

@@ -28,7 +28,7 @@ helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
     values[BuildingType::Forester] = CalcForesters();
     values[BuildingType::Sawmill] =
       doCalc(BuildingType::Sawmill); // calcCount(numMilitaryBlds, AI_CONFIG.startupMilToSawmill);
-    values[BuildingType::Woodcutter] = calcCount(numMilitaryBlds, AI_CONFIG.startupMilToWoodcutter);
+    values[BuildingType::Woodcutter] = (unsigned)calcCount(numMilitaryBlds, AI_CONFIG.startupMilToWoodcutter);
     values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
     values[BuildingType::Fishery] = 1 + numMilitaryBlds / 5;
     values[BuildingType::GraniteMine] = -1;
@@ -48,6 +48,7 @@ unsigned BuildCalculator::Calc(BuildingType type)
 {
     switch(type)
     {
+        case BuildingType::Quarry: return doCalc(type);
         case BuildingType::Well: return doCalc(type);
         case BuildingType::Sawmill: return doCalc(type);
         case BuildingType::Mill: return doCalc(type);
@@ -67,7 +68,7 @@ unsigned BuildCalculator::doCalc(BuildingType type)
 {
     WantedParams wantedParams = AI_CONFIG.wantedParams[type];
     unsigned workersAvailable = maxWorkers(aijh, type);
-    unsigned maxBld = workersAvailable + calcCount(workersAvailable, wantedParams.workersAdvance);
+    unsigned maxBld = workersAvailable + (unsigned)calcCount(workersAvailable, wantedParams.workersAdvance);
     unsigned currentBld = GetNumBuildings(type);
     if(currentBld >= maxBld)
     {
@@ -77,14 +78,15 @@ unsigned BuildCalculator::doCalc(BuildingType type)
     {
         return currentBld;
     }
-    unsigned count = 0;
+    double count = 0;
     for(const auto type : helpers::enumRange<BuildingType>())
     {
         BuildParams params = wantedParams.bldWeights[type];
         unsigned bldCount = GetNumBuildings(type);
         if(bldCount >= params.min)
         {
-            count += calcCount(bldCount, params);
+            double value = calcCount(bldCount, params);
+            count += std::min<double>(value, params.max);
         }
     }
     for(const auto goodType : helpers::enumRange<GoodType>())
@@ -93,7 +95,8 @@ unsigned BuildCalculator::doCalc(BuildingType type)
         unsigned goodCount = inventory.goods[goodType];
         if(goodCount >= params.min)
         {
-            count += calcCount(goodCount, params);
+            double value = calcCount(goodCount, params);
+            count += std::min<double>(value, params.max);
         }
     }
     for(const auto statType : helpers::enumRange<StatisticType>())
@@ -102,11 +105,12 @@ unsigned BuildCalculator::doCalc(BuildingType type)
         unsigned statValue = aijh.player.GetStatisticCurrentValue(statType);
         if(statValue >= params.min)
         {
-            count += calcCount(statValue, params);
+            double value = calcCount(statValue, params);
+            count += std::min<double>(value, params.max);
         }
     }
-    count = std::max<unsigned>(0, count);
-    return std::min<unsigned>(std::min<unsigned>(count, maxBld), wantedParams.max);
+    unsigned result = std::max<unsigned>(0, static_cast<unsigned>(count));
+    return std::min<unsigned>(std::min<unsigned>(result, maxBld), wantedParams.max);
 }
 
 unsigned BuildCalculator::CalcWoodcutters()
@@ -139,7 +143,7 @@ unsigned BuildCalculator::CalcForesters()
     unsigned sawmills = GetNumBuildings(BuildingType::Sawmill);
     signed count = 0u;
 
-    count = calcCount(sawmills, AI_CONFIG.sawmillToForester);
+    count = (unsigned)calcCount(sawmills, AI_CONFIG.sawmillToForester);
     count -= (unsigned)(woodAvailable / AI_CONFIG.foresterWoodLevel);
 
     count += additional_forester;
@@ -209,10 +213,10 @@ unsigned BuildCalculator::GetNumBuildings(BuildingType type)
     return buildingNums.buildings[type] + buildingNums.buildingSites[type];
 }
 
-unsigned BuildCalculator::calcCount(unsigned x, BuildParams params)
+double BuildCalculator::calcCount(unsigned x, BuildParams params)
 {
     double log2Val = std::max(0.0, std::log(params.logTwo.constant + params.logTwo.linear * x));
-    return (unsigned)(params.constant + params.linear * x + log2Val);
+    return params.constant + params.linear * x + log2Val;
 }
 
 } // namespace AIJH

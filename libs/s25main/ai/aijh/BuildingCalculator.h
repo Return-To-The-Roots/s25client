@@ -28,7 +28,7 @@ private:
     unsigned doCalc(BuildingType type);
     unsigned calcGrainUsers();
     unsigned GetNumBuildings(BuildingType type);
-    unsigned calcCount(unsigned x, BuildParams params);
+    double calcCount(unsigned x, BuildParams params);
 };
 
 
