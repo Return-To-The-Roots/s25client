@@ -10,6 +10,8 @@
 #include "ai/aijh/AIConfig.h"
 #include "ai/aijh/StatsConfig.h"
 #include "factories/AIFactory.h"
+#include "helpers/format.hpp"
+#include "helpers/random.h"
 #include "network/PlayerGameCommands.h"
 #include "world/GameWorld.h"
 #include "world/MapLoader.h"
@@ -115,8 +117,9 @@ void HeadlessGame::Run(unsigned maxGF)
         auto currentGF = em_.GetCurrentGF();
         if(currentGF == 1 || currentGF % STATS_CONFIG.save_period == 0)
         {
-            std::string saveTo = STATS_CONFIG.savesPath + "/ai_run_" + STATS_CONFIG.runSetId +"_" + STATS_CONFIG.runId + "_"+ toPaddedString(currentGF, 8) + ".sav";
-            SaveGame(saveTo);
+            boost::format fmt("%s/ai_run_%s_%s_%s.save");
+            fmt % STATS_CONFIG.savesPath % STATS_CONFIG.runSetId % STATS_CONFIG.runId % toPaddedString(currentGF, 8);
+            SaveGame(fmt.str());
         }
     }
     PrintState();
@@ -256,12 +259,14 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
             case AI::Type::Dummy:
             default: pi.name = "Dummy " + std::to_string(ret.size()); break;
         }
-        pi.nation = Nation::Romans;
+        static std::random_device rd;
+        pi.nation = ai_random::randomEnum<Nation>();
         pi.team = Team::None;
         ret.push_back(pi);
     }
     return ret;
 }
+
 
 #ifdef WIN32
 HANDLE setupStdOut()

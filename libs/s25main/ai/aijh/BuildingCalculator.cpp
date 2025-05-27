@@ -9,6 +9,8 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 
+#include <boost/math/special_functions/sign.hpp>
+
 #include <cmath>
 
 class AIPlayer;
@@ -25,9 +27,8 @@ BuildCalculator::BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingN
 helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
-    values[BuildingType::Forester] = CalcForesters();
-    values[BuildingType::Sawmill] =
-      doCalc(BuildingType::Sawmill); // calcCount(numMilitaryBlds, AI_CONFIG.startupMilToSawmill);
+    values[BuildingType::Forester] = doCalc(BuildingType::Forester);
+    values[BuildingType::Sawmill] = doCalc(BuildingType::Sawmill);
     values[BuildingType::Woodcutter] = (unsigned)calcCount(numMilitaryBlds, AI_CONFIG.startupMilToWoodcutter);
     values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
     values[BuildingType::Fishery] = 1 + numMilitaryBlds / 5;
@@ -48,6 +49,8 @@ unsigned BuildCalculator::Calc(BuildingType type)
 {
     switch(type)
     {
+        case BuildingType::Forester: return doCalc(type);
+        case BuildingType::Farm: return doCalc(type);
         case BuildingType::Quarry: return doCalc(type);
         case BuildingType::Well: return doCalc(type);
         case BuildingType::Sawmill: return doCalc(type);
@@ -82,6 +85,9 @@ unsigned BuildCalculator::doCalc(BuildingType type)
     for(const auto type : helpers::enumRange<BuildingType>())
     {
         BuildParams params = wantedParams.bldWeights[type];
+        if(!params.enabled)
+            continue;
+
         unsigned bldCount = GetNumBuildings(type);
         if(bldCount >= params.min)
         {
@@ -92,6 +98,8 @@ unsigned BuildCalculator::doCalc(BuildingType type)
     for(const auto goodType : helpers::enumRange<GoodType>())
     {
         BuildParams params = wantedParams.goodWeights[goodType];
+        if(!params.enabled)
+            continue;
         unsigned goodCount = inventory.goods[goodType];
         if(goodCount >= params.min)
         {
@@ -102,7 +110,21 @@ unsigned BuildCalculator::doCalc(BuildingType type)
     for(const auto statType : helpers::enumRange<StatisticType>())
     {
         BuildParams params = wantedParams.statsWeights[statType];
+        if(!params.enabled)
+            continue;
         unsigned statValue = aijh.player.GetStatisticCurrentValue(statType);
+        if(statValue >= params.min)
+        {
+            double value = calcCount(statValue, params);
+            count += std::min<double>(value, params.max);
+        }
+    }
+    for(const auto resType : helpers::enumRange<AIResource>())
+    {
+        BuildParams params = wantedParams.resourceWeights[resType];
+        if(!params.enabled)
+            continue;
+        unsigned statValue = getAvailableResource(resType);
         if(statValue >= params.min)
         {
             double value = calcCount(statValue, params);
@@ -135,23 +157,6 @@ unsigned BuildCalculator::CalcWoodcutters()
     return std::min(count, sawmills * 3);
 }
 
-unsigned BuildCalculator::CalcForesters()
-{
-    const Inventory& inventory = aijh.player.GetInventory();
-    unsigned max_available_forester = inventory[Job::Forester] + inventory[GoodType::Shovel];
-    unsigned additional_forester = GetNumBuildings(BuildingType::Charburner);
-    unsigned sawmills = GetNumBuildings(BuildingType::Sawmill);
-    signed count = 0u;
-
-    count = (unsigned)calcCount(sawmills, AI_CONFIG.sawmillToForester);
-    count -= (unsigned)(woodAvailable / AI_CONFIG.foresterWoodLevel);
-
-    count += additional_forester;
-    count = std::max(1, count);
-    count = std::min((signed)max_available_forester + 1, count);
-    return count;
-}
-
 unsigned BuildCalculator::CalcPigFarms()
 {
     if(AI_CONFIG.pigfarmMultiplier == 0)
@@ -177,35 +182,20 @@ unsigned BuildCalculator::CalcFarms()
     return count;
 }
 
+unsigned BuildCalculator::getAvailableResource(AIResource resType)
+{
+    switch(resType)
+    {
+        case AIResource::Wood: return woodAvailable;
+        default: return 0;
+    }
+}
+
 unsigned BuildCalculator::calcGrainUsers()
 {
     return GetNumBuildings(BuildingType::Mill) + GetNumBuildings(BuildingType::Charburner)
            + GetNumBuildings(BuildingType::Brewery) + GetNumBuildings(BuildingType::PigFarm)
            + GetNumBuildings(BuildingType::DonkeyBreeder);
-}
-
-unsigned BuildCalculator::CalcQuarry()
-{
-    unsigned count = 0;
-    if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 7 && inventory.people[Job::Stonemason] > 0
-       && inventory.people[Job::Miner] < 3)
-    {
-        count = std::max(std::min(inventory.people[Job::Stonemason], numMilitaryBlds), 2u);
-    } else
-    {
-        //>6miners = build up to 6 depending on resources, else max out at miners/2
-        if(inventory.people[Job::Miner] > 6)
-            count = std::min(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Stonemason], 6u);
-        else
-            count = inventory.people[Job::Miner] / 2;
-
-        if(count > numMilitaryBlds)
-            count = numMilitaryBlds;
-    }
-    unsigned sawmills = GetNumBuildings(BuildingType::Sawmill);
-    count = std::max(count, (unsigned)(sawmills / 1.2 + 1));
-    count = std::min(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Stonemason] + 2, count);
-    return count;
 }
 
 unsigned BuildCalculator::GetNumBuildings(BuildingType type)
@@ -215,8 +205,9 @@ unsigned BuildCalculator::GetNumBuildings(BuildingType type)
 
 double BuildCalculator::calcCount(unsigned x, BuildParams params)
 {
-    double log2Val = std::max(0.0, std::log(params.logTwo.constant + params.logTwo.linear * x));
-    return params.constant + params.linear * x + log2Val;
+    double log2_linear = abs(params.logTwo.linear);
+    double log2Val = std::max(0.0, std::log(params.logTwo.constant + log2_linear * x));
+    return params.constant + params.linear * x + boost::math::sign(params.logTwo.linear) * log2Val;
 }
 
 } // namespace AIJH

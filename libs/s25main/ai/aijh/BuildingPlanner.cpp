@@ -152,7 +152,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         setBuildingsWanted(calculator.GetStartupSet());
     } else
     {
-        buildingsWanted[BuildingType::Forester] = calculator.CalcForesters();
+        // buildingsWanted[BuildingType::Forester] = calculator.CalcForesters();
         buildingsWanted[BuildingType::Woodcutter] = calculator.CalcWoodcutters();
 
         // fishery & hunter
@@ -160,6 +160,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         buildingsWanted[BuildingType::Hunter] = std::min(maxHunters(aijh), 4u);
 
         // buildingsWanted[BuildingType::Quarry] = calculator.CalcQuarry();
+        buildingsWanted[BuildingType::Forester] = calculator.Calc(BuildingType::Forester);
         buildingsWanted[BuildingType::Quarry] = calculator.Calc(BuildingType::Quarry);
         buildingsWanted[BuildingType::Well] = calculator.Calc(BuildingType::Well);
         buildingsWanted[BuildingType::Sawmill] = calculator.Calc(BuildingType::Sawmill);
@@ -175,7 +176,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         buildingsWanted[BuildingType::PigFarm] = calculator.CalcPigFarms();
         buildingsWanted[BuildingType::Slaughterhouse] =
           std::min(maxButcher(aijh), GetNumBuildings(BuildingType::PigFarm));
-        buildingsWanted[BuildingType::Farm] = calculator.CalcFarms();
+        buildingsWanted[BuildingType::Farm] =  calculator.Calc(BuildingType::Farm); //calculator.CalcFarms();
         buildingsWanted[BuildingType::Mint] = GetNumBuildings(BuildingType::GoldMine);
 
         if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 3)

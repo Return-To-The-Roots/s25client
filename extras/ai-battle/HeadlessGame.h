@@ -7,8 +7,11 @@
 #include "Game.h"
 #include "Replay.h"
 #include "ai/AIPlayer.h"
+#include "helpers/random.h"
 #include "gameTypes/AIInfo.h"
+
 #include <boost/filesystem.hpp>
+#include <bits/random.h>
 #include <chrono>
 #include <limits>
 #include <vector>
@@ -47,3 +50,19 @@ private:
 
     std::string toPaddedString(unsigned int value, int width);
 };
+namespace ai_random {
+template<typename T>
+T randomEnum()
+{
+    static_assert(std::is_enum_v<T>, "randomEnum() requires an enum type.");
+
+    // Create a random device and generator
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    // Define distribution (0 to Count-1)
+    std::uniform_int_distribution<std::underlying_type_t<T>> dist(0, helpers::MaxEnumValue_v<T>);
+
+    return static_cast<T>(dist(gen));
+}
+} // namespace ai_random

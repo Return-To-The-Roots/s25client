@@ -7,6 +7,7 @@
 struct StatsConfig
 {
     std::string runId = "000";
+    std::string profileId = "000";
     std::string runSetId = "000";
     unsigned stats_period = 500;
     unsigned save_period = 500;
@@ -15,6 +16,8 @@ struct StatsConfig
     std::string outputPath = "/home/pavel/s2/manual/runsets/";
     std::string statsPath = "/home/pavel/s2/manual/stats/";
     std::string savesPath = "/home/pavel/s2/manual/saves/";
+
+    std::string weightsPath = "/home/pavel/s2/volume/config/weights.yaml";
 };
 
 extern StatsConfig STATS_CONFIG;

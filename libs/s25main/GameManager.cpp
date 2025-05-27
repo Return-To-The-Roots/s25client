@@ -9,6 +9,8 @@
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
+#include "ai/aijh/AIConfig.h"
+#include "ai/aijh/StatsConfig.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskSplash.h"

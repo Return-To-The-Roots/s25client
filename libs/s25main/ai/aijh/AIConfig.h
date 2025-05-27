@@ -1,5 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
+#include "ai/AIResource.h"
 #include "helpers/EnumArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
@@ -7,6 +8,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+enum class AIResource;
+enum class AISurfaceResource;
 struct Logarithmic
 {
     double constant = 0.0;
@@ -20,17 +23,19 @@ struct BuildParams
     Logarithmic logE = {0.0, 0.0};
     unsigned min = 0;
     unsigned max = 99999;
+    bool enabled = false;
 };
 
 struct WantedParams
 {
-    bool enables = false;
+    bool enabled = false;
     helpers::EnumArray<BuildParams, BuildingType> bldWeights = helpers::EnumArray<BuildParams, BuildingType>{};
     helpers::EnumArray<BuildParams, GoodType> goodWeights = helpers::EnumArray<BuildParams, GoodType>{};
+    helpers::EnumArray<BuildParams, StatisticType> statsWeights = helpers::EnumArray<BuildParams, StatisticType>{};
+    helpers::EnumArray<BuildParams, AIResource> resourceWeights = helpers::EnumArray<BuildParams, AIResource>{};
     BuildParams workersAdvance = {1};
     unsigned max = 10000;
     unsigned minProductivity = 0;
-    helpers::EnumArray<BuildParams, StatisticType> statsWeights = helpers::EnumArray<BuildParams, StatisticType>{};
 };
 
 struct AIConfig

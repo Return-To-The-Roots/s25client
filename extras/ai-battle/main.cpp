@@ -37,6 +37,7 @@ int main(int argc, char** argv)
     boost::optional<std::string> replay_path;
     boost::optional<std::string> output_path;
     boost::optional<std::string> runId;
+    boost::optional<std::string> profileId;
     boost::optional<std::string> runSetId;
     boost::optional<unsigned int> statsPeriod;
     boost::optional<unsigned int> savePeriod;
@@ -48,6 +49,7 @@ int main(int argc, char** argv)
     desc.add_options()
         ("help,h", "Show help")
         ("run_id,r", po::value(&runId),"Run Id")
+        ("profile_id,p", po::value(&profileId),"Profile Id")
         ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
         ("max_gf", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("output_path", po::value(&output_path),"Filename to write savegame to (optional)")
@@ -59,7 +61,7 @@ int main(int argc, char** argv)
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
         ("config_file", po::value<std::string>()->required(), "AI configuration file")
         ("weights_file", po::value<std::string>()->required(), "AI weights file")
-        ("start_wares", po::value<std::string>()->default_value("alot"),"Start wares")
+        ("start_wares",c po::value<std::string>()->default_value("alot"),"Start wares")
         ("replay", po::value(&replay_path),"Filename to write stats_interval to (optional)")
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
         ("version", "Show version information and exit")
@@ -108,7 +110,9 @@ int main(int argc, char** argv)
         STATS_CONFIG.outputPath = *output_path;
         std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
         bfs::create_directory(runSetDir);
-        std::string runDir = runSetDir + "/" + *runId;
+        std::string profileDir = runSetDir + "/" + *profileId;
+        bfs::create_directory(profileDir);
+        std::string runDir = profileDir + "/" + *runId;
         bfs::create_directory(runDir);
         std::string statsDir = runDir + "/stats/";
         bfs::create_directory(statsDir);

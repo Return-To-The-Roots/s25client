@@ -11,6 +11,8 @@
 #include "Settings.h"
 #include "SignalHandler.h"
 #include "WindowManager.h"
+#include "ai/aijh/AIConfig.h"
+#include "ai/aijh/StatsConfig.h"
 #include "commands.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -448,6 +450,7 @@ int RunProgram(po::variables_map& options)
     atexit(&ExitHandler);
     if(!InitDirectories())
         return 1;
+    applyWeightsCfg(STATS_CONFIG.weightsPath);
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere
     // (spielentscheidende) wird unser Generator verwendet)

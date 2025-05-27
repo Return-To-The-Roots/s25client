@@ -6,6 +6,8 @@
 
 #include "helpers/MaxEnumValue.h"
 #include <cstdint>
+#include <map>
+#include <string>
 
 enum class ResourceType : uint8_t
 {
@@ -21,6 +23,16 @@ constexpr auto maxEnumValue(ResourceType)
 {
     return ResourceType::Fish;
 }
+
+static const std::map<std::string, ResourceType> RESOURCE_NAME_MAP = {
+    {"Nothing", ResourceType::Nothing},
+    {"Iron", ResourceType::Iron},
+    {"Gold", ResourceType::Gold},
+    {"Coal", ResourceType::Coal},
+    {"Granite", ResourceType::Granite},
+    {"Water", ResourceType::Water},
+    {"Fish", ResourceType::Fish}
+};
 
 /// Holds a resource and its value.
 /// Maximum number of resource types and amount is 15!

@@ -12,10 +12,8 @@ public:
 
     unsigned Calc(BuildingType type);
 
-    unsigned CalcForesters();
     unsigned CalcWoodcutters();
     unsigned CalcPigFarms();
-    unsigned CalcQuarry();
     unsigned CalcFarms();
 
 private:
@@ -29,6 +27,7 @@ private:
     unsigned calcGrainUsers();
     unsigned GetNumBuildings(BuildingType type);
     double calcCount(unsigned x, BuildParams params);
+    unsigned getAvailableResource(AIResource resType);
 };
 
 

@@ -6,6 +6,8 @@
 
 #include "helpers/EnumArray.h"
 #include "s25util/warningSuppression.h"
+#include <map>
+#include <string>
 
 // Note: This enums are constructed for performance and easy conversion.
 // AIResource must be contiguous and it is assumed that only valid enumerators are used
@@ -46,6 +48,17 @@ constexpr auto maxEnumValue(AIResource)
 {
     return AIResource::Borderland;
 }
+static const std::map<std::string, AIResource> AI_RESOURCE_NAME_MAP = {
+    {"Gold", AIResource::Gold},
+    {"Ironore", AIResource::Ironore},
+    {"Coal", AIResource::Coal},
+    {"Granite", AIResource::Granite},
+    {"Fish", AIResource::Fish},
+    {"Wood", AIResource::Wood},
+    {"Stones", AIResource::Stones},
+    {"Plantspace", AIResource::Plantspace},
+    {"Borderland", AIResource::Borderland},
+};
 
 /// AI resources which can be above the surface
 enum class AISurfaceResource
@@ -54,6 +67,13 @@ enum class AISurfaceResource
     Stones,
     Blocked = static_cast<unsigned>(AINodeResource::Blocked),
     Nothing = static_cast<unsigned>(AINodeResource::Nothing),
+};
+
+static const std::map<std::string, AISurfaceResource> SURFACE_RESOURCE_NAME_MAP = {
+    {"Wood", AISurfaceResource::Wood},
+    {"Stones", AISurfaceResource::Stones},
+    {"Blocked", AISurfaceResource::Blocked},
+    {"Nothing", AISurfaceResource::Nothing},
 };
 
 /// AI resources which can be above the surface

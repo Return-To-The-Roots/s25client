@@ -4,6 +4,8 @@
 
 #include "AIConfig.h"
 
+#include "StatsConfig.h"
+#include "ai/AIResource.h"
 #include "helpers/EnumRange.h"
 
 #include "gameTypes/GoodTypes.h"
@@ -17,12 +19,13 @@ AIConfig AI_CONFIG;
 extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& defaults)
 {
     BuildParams params = defaults;
-
+    params.enabled = true;
     if(node["constant"])
         params.constant = node["constant"].as<double>();
     if(node["linear"])
+    {
         params.linear = node["linear"].as<double>();
-
+    }
     if(node["logTwo"])
     {
         YAML::Node nodeLog2 = node["logTwo"];
@@ -44,6 +47,7 @@ extern BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& d
 
 WantedParams parseWantedParams(const YAML::Node& node, WantedParams params)
 {
+    params.enabled = true;
     if(node["buildings"])
         for(const auto& weightEntry : node["buildings"])
         {
@@ -89,6 +93,21 @@ WantedParams parseWantedParams(const YAML::Node& node, WantedParams params)
 
             params.statsWeights[statType] = parseBuildParams(weightEntry.second, params.statsWeights[statType]);
         }
+    if(node["resources"])
+        for(const auto& weightEntry : node["resources"])
+        {
+            std::string resourceStr = weightEntry.first.as<std::string>();
+            AIResource resourceType;
+            try
+            {
+                resourceType = AI_RESOURCE_NAME_MAP.at(resourceStr);
+            } catch(...)
+            {
+                continue;
+            }
+
+            params.resourceWeights[resourceType] = parseBuildParams(weightEntry.second, params.resourceWeights[resourceType]);
+        }
     if(node["workersAdvance"])
         params.workersAdvance = parseBuildParams(node["workersAdvance"], {});
 
@@ -101,12 +120,9 @@ WantedParams parseWantedParams(const YAML::Node& node, WantedParams params)
     return params;
 }
 
-extern void initDefaults()
-{
-}
-
 extern void applyWeightsCfg(std::string weightCfgPath)
 {
+    std::locale oldLocale = std::locale::global(std::locale("C"));
     try
     {
         YAML::Node rootNode = YAML::LoadFile(weightCfgPath);
@@ -120,8 +136,8 @@ extern void applyWeightsCfg(std::string weightCfgPath)
                 bldName = weightsNode.first.as<std::string>();
                 bldType = BUILDING_NAME_MAP.at(bldName);
                 AI_CONFIG.wantedParams[bldType] = parseWantedParams(weightsNode.second, AI_CONFIG.wantedParams[bldType]);
-            } catch(...)
-            {
+            } catch (const YAML::TypedBadConversion<double>& e) {
+                std::cerr << "Warning: Invalid value for 'linear', using default. Error: " << e.what() << std::endl;
                 continue;
             }
         }
@@ -130,6 +146,7 @@ extern void applyWeightsCfg(std::string weightCfgPath)
         std::cerr << "Error parsing weights YAML file: " << e.what() << std::endl;
         exit(1);
     }
+    std::locale::global(oldLocale);
 }
 extern void initAIConfig(std::string configPath)
 {
@@ -170,7 +187,7 @@ extern void initAIConfig(std::string configPath)
 namespace {
 struct ConfigInitializer
 {
-    ConfigInitializer() { initDefaults(); }
+    ConfigInitializer() { }
 };
 ConfigInitializer _initializer; // Runs before main()
 } // namespace
