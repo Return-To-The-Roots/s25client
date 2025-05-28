@@ -61,7 +61,7 @@ int main(int argc, char** argv)
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
         ("config_file", po::value<std::string>()->required(), "AI configuration file")
         ("weights_file", po::value<std::string>()->required(), "AI weights file")
-        ("start_wares",c po::value<std::string>()->default_value("alot"),"Start wares")
+        ("start_wares", po::value<std::string>()->default_value("alot"),"Start wares")
         ("replay", po::value(&replay_path),"Filename to write stats_interval to (optional)")
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
         ("version", "Show version information and exit")
@@ -106,6 +106,8 @@ int main(int argc, char** argv)
             STATS_CONFIG.runId = *runId;
         if(runSetId)
             STATS_CONFIG.runSetId = *runSetId;
+        if(profileId)
+            STATS_CONFIG.profileId = *profileId;
 
         STATS_CONFIG.outputPath = *output_path;
         std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;

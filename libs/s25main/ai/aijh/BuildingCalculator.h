@@ -11,10 +11,7 @@ public:
     helpers::EnumArray<unsigned, BuildingType> GetStartupSet();
 
     unsigned Calc(BuildingType type);
-
-    unsigned CalcWoodcutters();
     unsigned CalcPigFarms();
-    unsigned CalcFarms();
 
 private:
     const AIPlayerJH& aijh;
@@ -24,7 +21,6 @@ private:
     const unsigned numMilitaryBlds;
 
     unsigned doCalc(BuildingType type);
-    unsigned calcGrainUsers();
     unsigned GetNumBuildings(BuildingType type);
     double calcCount(unsigned x, BuildParams params);
     unsigned getAvailableResource(AIResource resType);

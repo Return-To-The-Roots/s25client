@@ -153,13 +153,12 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
     } else
     {
         // buildingsWanted[BuildingType::Forester] = calculator.CalcForesters();
-        buildingsWanted[BuildingType::Woodcutter] = calculator.CalcWoodcutters();
 
         // fishery & hunter
         buildingsWanted[BuildingType::Fishery] = std::min(maxFishers(aijh), numMilitaryBlds + 1u);
         buildingsWanted[BuildingType::Hunter] = std::min(maxHunters(aijh), 4u);
 
-        // buildingsWanted[BuildingType::Quarry] = calculator.CalcQuarry();
+        buildingsWanted[BuildingType::Woodcutter] = calculator.Calc(BuildingType::Woodcutter);
         buildingsWanted[BuildingType::Forester] = calculator.Calc(BuildingType::Forester);
         buildingsWanted[BuildingType::Quarry] = calculator.Calc(BuildingType::Quarry);
         buildingsWanted[BuildingType::Well] = calculator.Calc(BuildingType::Well);
@@ -173,10 +172,10 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         buildingsWanted[BuildingType::IronMine] = calculator.Calc(BuildingType::IronMine);
         buildingsWanted[BuildingType::CoalMine] = calculator.Calc(BuildingType::CoalMine);
         buildingsWanted[BuildingType::DonkeyBreeder] = calculator.Calc(BuildingType::DonkeyBreeder);
-        buildingsWanted[BuildingType::PigFarm] = calculator.CalcPigFarms();
-        buildingsWanted[BuildingType::Slaughterhouse] =
-          std::min(maxButcher(aijh), GetNumBuildings(BuildingType::PigFarm));
-        buildingsWanted[BuildingType::Farm] =  calculator.Calc(BuildingType::Farm); //calculator.CalcFarms();
+        buildingsWanted[BuildingType::PigFarm] = calculator.Calc(BuildingType::PigFarm);
+        buildingsWanted[BuildingType::Slaughterhouse] = calculator.Calc(BuildingType::Slaughterhouse);
+        buildingsWanted[BuildingType::Farm] =  calculator.Calc(BuildingType::Farm);
+
         buildingsWanted[BuildingType::Mint] = GetNumBuildings(BuildingType::GoldMine);
 
         if(inventory.goods[GoodType::PickAxe] + inventory.people[Job::Miner] < 3)

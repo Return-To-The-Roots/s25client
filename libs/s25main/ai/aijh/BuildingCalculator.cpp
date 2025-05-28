@@ -49,6 +49,9 @@ unsigned BuildCalculator::Calc(BuildingType type)
 {
     switch(type)
     {
+        case BuildingType::PigFarm: return doCalc(type);
+        case BuildingType::Slaughterhouse: return doCalc(type);
+        case BuildingType::Woodcutter: return doCalc(type);
         case BuildingType::Forester: return doCalc(type);
         case BuildingType::Farm: return doCalc(type);
         case BuildingType::Quarry: return doCalc(type);
@@ -135,28 +138,6 @@ unsigned BuildCalculator::doCalc(BuildingType type)
     return std::min<unsigned>(std::min<unsigned>(result, maxBld), wantedParams.max);
 }
 
-unsigned BuildCalculator::CalcWoodcutters()
-{
-    BuildParams params = AI_CONFIG.sawmillToWoodcutter;
-    auto sawmills = GetNumBuildings(BuildingType::Sawmill);
-    unsigned baseWoodCutters = (unsigned)(params.constant + params.linear * sawmills);
-
-    unsigned woodcutters = GetNumBuildings(BuildingType::Woodcutter);
-
-    unsigned forestersActive = buildingNums.buildings[BuildingType::Forester];
-    unsigned extraWood = woodAvailable - 6 * forestersActive;
-
-    unsigned additional_woodcutters = 0;
-    if(baseWoodCutters > 0 && extraWood / baseWoodCutters > 20)
-    {
-        additional_woodcutters = std::min((unsigned)(woodcutters * 0.4), extraWood / 20);
-    }
-
-    unsigned max_available_woodcutter = maxWoodcutter(aijh);
-    unsigned count = std::min(max_available_woodcutter + 2, additional_woodcutters + baseWoodCutters);
-    return std::min(count, sawmills * 3);
-}
-
 unsigned BuildCalculator::CalcPigFarms()
 {
     if(AI_CONFIG.pigfarmMultiplier == 0)
@@ -171,17 +152,6 @@ unsigned BuildCalculator::CalcPigFarms()
     return wanted;
 }
 
-unsigned BuildCalculator::CalcFarms()
-{
-    unsigned count = (unsigned)std::min<double>(maxFarmer(aijh) * 1.1, numMilitaryBlds * AI_CONFIG.milToFarm.linear);
-    unsigned grainUsers = calcGrainUsers();
-    if(grainUsers > 5)
-    {
-        return unsigned(std::min<double>(grainUsers * 1.75, count));
-    }
-    return count;
-}
-
 unsigned BuildCalculator::getAvailableResource(AIResource resType)
 {
     switch(resType)
@@ -189,13 +159,6 @@ unsigned BuildCalculator::getAvailableResource(AIResource resType)
         case AIResource::Wood: return woodAvailable;
         default: return 0;
     }
-}
-
-unsigned BuildCalculator::calcGrainUsers()
-{
-    return GetNumBuildings(BuildingType::Mill) + GetNumBuildings(BuildingType::Charburner)
-           + GetNumBuildings(BuildingType::Brewery) + GetNumBuildings(BuildingType::PigFarm)
-           + GetNumBuildings(BuildingType::DonkeyBreeder);
 }
 
 unsigned BuildCalculator::GetNumBuildings(BuildingType type)
