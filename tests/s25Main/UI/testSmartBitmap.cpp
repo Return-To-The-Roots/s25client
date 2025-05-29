@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
 BOOST_AUTO_TEST_CASE(DrawPercent)
 {
     // Make sure that test passes across different image heights, including some random ones
-    auto testCases =
+    auto sizes =
       helpers::make_array<Extent>(Extent{rttr::test::randomValue<unsigned int>(10, 50), 50},
                                   Extent{rttr::test::randomValue<unsigned int>(10, 50), 35},
                                   rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50),
@@ -369,40 +369,38 @@ BOOST_AUTO_TEST_CASE(DrawPercent)
     RTTR_STUB_FUNCTION(glDisableClientState, rttrOglMock2::glDisableClientState);
     RTTR_STUB_FUNCTION(glBindTexture, rttrOglMock2::glBindTexture);
 
-    for(const auto& testCase : testCases)
-    {
-        auto bmpSrc = createBmp(testCase, 0);
-        const Extent size(bmpSrc->getWidth(), bmpSrc->getHeight());
-        glSmartBitmap smartBmp;
-        smartBmp.add(bmpSrc.get());
-
-        // drawPercent(0) shouldn't do a thing
-        rttrOglMock2::callCount = 0;
-        smartBmp.drawPercent(DrawPoint::all(0), 0);
-        BOOST_TEST(rttrOglMock2::callCount == 0);
-
-        smartBmp.drawPercent(DrawPoint::all(0), 50);
-        BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
-        // All top texture coords have same Y component
-        BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
-        // All bottom texture coords have same Y component
-        BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
-        // Bottom starts at bottom
-        BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
-        // Top starts at given percentage
-        BOOST_TEST(std::abs((rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y) - .5f) <= 1.f / size.y);
-        // BOOST_TEST(rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y == .5f, tt::tolerance(1.f / size.y));
-
-        smartBmp.drawPercent(DrawPoint::all(0), 100);
-        BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
-        for(int i = 0; i < 4; ++i)
+    for(const auto& size : sizes)
+        BOOST_TEST_CONTEXT("Bitmap size: " << size)
         {
+            auto bmpSrc = createBmp(size, 0);
+            glSmartBitmap smartBmp;
+            smartBmp.add(bmpSrc.get());
+
+            // drawPercent(0) shouldn't do a thing
+            rttrOglMock2::callCount = 0;
+            smartBmp.drawPercent(DrawPoint::all(0), 0);
+            BOOST_TEST(rttrOglMock2::callCount == 0);
+
+            smartBmp.drawPercent(DrawPoint::all(0), 50);
+            BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
+            // All top texture coords have same Y component
+            BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
+            // All bottom texture coords have same Y component
+            BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
+            // Bottom starts at bottom
+            BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
+            // Top starts at given percentage
+            BOOST_TEST(std::abs((rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y) - .5f) <= 1.f / size.y);
+            // BOOST_TEST(rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y == .5f, tt::tolerance(1.f /
+            // size.y));
+
+            smartBmp.drawPercent(DrawPoint::all(0), 100);
+            BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
             BOOST_TEST(rttrOglMock2::textureCoords[0] == smartBmp.texCoords[0]);
             BOOST_TEST(rttrOglMock2::textureCoords[1] == smartBmp.texCoords[1]);
             BOOST_TEST(rttrOglMock2::textureCoords[2] == smartBmp.texCoords[2]);
             BOOST_TEST(rttrOglMock2::textureCoords[3] == smartBmp.texCoords[3]);
         }
-    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
