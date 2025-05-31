@@ -30,7 +30,7 @@ constexpr auto ID_btOff = 0;
 } // namespace
 
 iwSettings::iwSettings()
-    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"),
+    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 199), _("Settings"),
                    LOADER.GetImageN("resource", 41))
 {
     // Controls are in 2 columns, the left might be the label for the control on the right
@@ -68,7 +68,7 @@ iwSettings::iwSettings()
     optiongroup->SetSelection(SETTINGS.video.fullscreen); //-V807
 
     curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
-    const auto cbSize = Extent(rowWidth, 26);
+    const auto cbSize = Extent(rowWidth - curPos.x, 26);
     AddCheckBox(ID_cbInvertMouse, curPos, cbSize, TextureColor::Grey, _("Invert Mouse Pan"), NormalFont, false)
       ->setChecked(SETTINGS.interface.invertMouse);
     curPos.y += cbSize.y + 3;
