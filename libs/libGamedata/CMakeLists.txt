@@ -15,8 +15,9 @@ AddDirectory(lua)
 file(GLOB SOURCES_OTHER *.cpp *.h)
 source_group(other FILES ${SOURCES_OTHER})
 
-find_package(Lua 5.1 REQUIRED)
-
+#find_package(Lua 5.1 REQUIRED)
+set(LUA_LIBRARIES /src/contrib/lua-5.4.7/build/lib/liblua.a)
+set(LUA_INCLUDE_DIR /src/contrib/lua-5.4.7/build/include)
 include(GatherDll)
 gather_dll(Lua)
 

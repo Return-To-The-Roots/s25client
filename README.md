@@ -3,6 +3,14 @@ Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 
 SPDX-License-Identifier: GPL-2.0-or-later
 -->
+# emscripten build (wasm)
+
+1. checkout and build `boost-1.86.0` with following command 
+```bash
+docker run --rm -v $(pwd):/src emscripten-image sh -c './b2 install toolset=emscripten link=static runtime-link=static variant=release -j 1 --prefix=/src/contrib/boost --with-program_options --with-nowide --with-filesystem --with-iostreams --with-locale --with-thread --with-system --with-regex'
+```
+2. download lua `lua-5.4.7` update config its Makefile add both C and LD flags `-fwasm-exceptions -sSUPPORT_LONGJMP=wasm` and then build
+3. run standard build
 
 # Return To The Roots
 

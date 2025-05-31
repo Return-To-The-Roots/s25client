@@ -1,7 +1,12 @@
 # Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
-
+if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+    set(USE_FLAGS "-fwasm-exceptions -sSUPPORT_LONGJMP=wasm")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USE_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${USE_FLAGS}")
+endif ()
 # Add Icon to Application
 if(WIN32)
     set(rcDir ${PROJECT_SOURCE_DIR}/data/win32)

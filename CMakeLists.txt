@@ -27,7 +27,7 @@ if(CMAKE_VERSION VERSION_LESS 3.14)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/libutil/cmake/cmake_3.14")
 endif()
 
-include(EnableCCache)
+#include(EnableCCache)
 
 set(checkSubmodules FALSE)
 # Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
@@ -297,16 +297,18 @@ include(RttrTestingCfg)
 
 set(rttrContribBoostDir ${CMAKE_CURRENT_SOURCE_DIR}/contrib/boost)
 if(EXISTS ${rttrContribBoostDir} AND IS_DIRECTORY ${rttrContribBoostDir})
-    set(BOOST_ROOT ${rttrContribBoostDir} CACHE PATH "Path to find boost at")
+    set(BOOST_ROOT "${rttrContribBoostDir}" CACHE PATH "Path to find boost at")
+    set(Boost_INCLUDE_DIR "${rttrContribBoostDir}/include" CACHE PATH "Path to find boost at")
+    set(Boost_LIBRARY_DIR "${rttrContribBoostDir}/lib" CACHE PATH "Path to find boost at")
 endif()
 
 set(BoostPackages filesystem iostreams locale program_options)
 if(BUILD_TESTING)
     # Avoid having to search for this in all tests speeding up configure
-    list(APPEND BoostPackages unit_test_framework)
+    #list(APPEND BoostPackages unit_test_framework)
 endif()
 
-find_package(Boost 1.71 COMPONENTS ${BoostPackages})
+find_package(Boost 1.86 COMPONENTS ${BoostPackages})
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.71) into contrib/boost or set (as CMake or environment variable) "
     "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
@@ -315,7 +317,7 @@ if(NOT Boost_FOUND)
 endif()
 
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
-
+set(RTTR_USE_SYSTEM_BOOST_NOWIDE ON)
 if(Boost_VERSION_MINOR GREATER_EQUAL "74" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
     # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
     find_package(Boost COMPONENTS nowide)
@@ -335,6 +337,8 @@ add_subdirectory(external)
 add_subdirectory(libs)
 add_subdirectory(extras)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+else ()
 find_package(Gettext REQUIRED)
 file(GLOB RTTR_PO_FILES external/languages/*.po)
 set(RTTR_TRANSLATION_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gen/languages) # Used by copyDepsToBuildDir
@@ -353,7 +357,7 @@ endif()
 configure_file(copyDepsToBuildDir.cmake . @ONLY)
 add_custom_command(TARGET translations POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIG> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
-
+endif ()
 if(ClangFormat_FOUND)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs TRUE)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extras TRUE)
