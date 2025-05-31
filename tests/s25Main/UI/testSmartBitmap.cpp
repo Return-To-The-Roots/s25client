@@ -11,12 +11,17 @@
 #include <libsiedler2/ArchivItem_Palette.h>
 #include <libsiedler2/PixelBufferBGRA.h>
 #include <rttr/test/random.hpp>
+#include <rttr/test/stubFunction.hpp>
+#include <s25util/warningSuppression.h>
+#include <glad/glad.h>
 #include <boost/test/unit_test.hpp>
+#include <helpers/make_array.h>
 #include <iomanip>
 #include <locale>
 #include <sstream>
 
 using namespace libsiedler2;
+namespace tt = boost::test_tools;
 
 namespace libsiedler2 {
 static std::ostream& boost_test_print_type(std::ostream& os, const ColorBGRA color)
@@ -26,13 +31,75 @@ static std::ostream& boost_test_print_type(std::ostream& os, const ColorBGRA col
 }
 } // namespace libsiedler2
 
+namespace rttrOglMock2 {
+RTTR_IGNORE_DIAGNOSTIC("-Wmissing-declarations")
+
+const Point<float>* texturePointer;
+const Point<float>* vertexPointer;
+std::vector<Point<float>> textureCoords;
+std::vector<Point<float>> vertexCoords;
+int callCount;
+
+void APIENTRY glVertexPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
+{
+    ++callCount;
+    RTTR_Assert(type == GL_FLOAT);
+    RTTR_Assert(stride == 0);
+    RTTR_Assert(size == 2);
+    vertexPointer = static_cast<const Point<float>*>(pointer);
+}
+
+void APIENTRY glDrawArrays(GLenum mode, GLint first, GLsizei count)
+{
+    ++callCount;
+    RTTR_Assert(mode == GL_QUADS);
+    RTTR_Assert(texturePointer != nullptr);
+
+    textureCoords.resize(count);
+    std::copy(&texturePointer[first], &texturePointer[first + count], textureCoords.begin());
+
+    vertexCoords.resize(count);
+    std::copy(&vertexPointer[first], &vertexPointer[first + count], vertexCoords.begin());
+}
+
+void APIENTRY glEnableClientState(GLenum)
+{
+    ++callCount;
+}
+
+void APIENTRY glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
+{
+    ++callCount;
+    RTTR_Assert(type == GL_FLOAT);
+    RTTR_Assert(stride == 0);
+    RTTR_Assert(size == 2);
+    texturePointer = static_cast<const Point<float>*>(pointer);
+}
+
+void APIENTRY glColorPointer(GLint, GLenum, GLsizei, const void*)
+{
+    ++callCount;
+}
+
+void APIENTRY glDisableClientState(GLenum)
+{
+    ++callCount;
+}
+
+void APIENTRY glBindTexture(GLenum, GLuint)
+{
+    ++callCount;
+}
+
+RTTR_POP_DIAGNOSTIC
+} // namespace rttrOglMock2
+
 namespace {
 
-std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent)
+std::unique_ptr<ArchivItem_Bitmap_Raw> createBmp(Extent size, unsigned percentTransparent)
 {
     const auto* pal = LOADER.GetPaletteN("pal5");
     auto bmp = std::make_unique<ArchivItem_Bitmap_Raw>();
-    const Extent size = rttr::test::randomPoint<Extent>(10, 50);
     bmp->init(size.x, size.y, TextureFormat::BGRA);
     const auto offset = rttr::test::randomPoint<Position>(-100, 100);
     bmp->setNx(offset.x);
@@ -45,6 +112,13 @@ std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent
     }
     return bmp;
 }
+
+std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent)
+{
+    const Extent size = rttr::test::randomPoint<Extent>(10, 50);
+    return createBmp(size, percentTransparent);
+}
+
 std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTransparent)
 {
     const auto* pal = LOADER.GetPaletteN("colors");
@@ -276,6 +350,63 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
             // LCOV_EXCL_STOP
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE(DrawPercent)
+{
+    // Make sure that test passes across different image heights, including some random ones
+    auto sizes =
+      helpers::make_array<Extent>(Extent{rttr::test::randomValue<unsigned int>(10, 50), 50},
+                                  Extent{rttr::test::randomValue<unsigned int>(10, 50), 35},
+                                  rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50),
+                                  rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50));
+
+    RTTR_STUB_FUNCTION(glVertexPointer, rttrOglMock2::glVertexPointer);
+    RTTR_STUB_FUNCTION(glDrawArrays, rttrOglMock2::glDrawArrays);
+    RTTR_STUB_FUNCTION(glEnableClientState, rttrOglMock2::glEnableClientState);
+    RTTR_STUB_FUNCTION(glTexCoordPointer, rttrOglMock2::glTexCoordPointer);
+    RTTR_STUB_FUNCTION(glColorPointer, rttrOglMock2::glColorPointer);
+    RTTR_STUB_FUNCTION(glDisableClientState, rttrOglMock2::glDisableClientState);
+    RTTR_STUB_FUNCTION(glBindTexture, rttrOglMock2::glBindTexture);
+
+    for(const auto& size : sizes)
+        BOOST_TEST_CONTEXT("Bitmap size: " << size)
+        {
+            auto bmpSrc = createBmp(size, 0);
+            glSmartBitmap smartBmp;
+            smartBmp.add(bmpSrc.get());
+
+            // drawPercent(0) shouldn't do a thing
+            rttrOglMock2::callCount = 0;
+            smartBmp.drawPercent(DrawPoint::all(0), 0);
+            BOOST_TEST(rttrOglMock2::callCount == 0);
+
+            auto ratio = rttr::test::randomValue<float>(.1f, .9f);
+            BOOST_TEST_CONTEXT("Draw percentage: " << ratio * 100)
+            {
+                smartBmp.drawPercent(DrawPoint::all(0), helpers::iround<int>(100 * ratio));
+                BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
+                // All top texture coords have same Y component
+                BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
+                // All bottom texture coords have same Y component
+                BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
+                // Bottom starts at bottom
+                BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
+                // Top starts at given percentage, draw accuracy is +- 1px
+                auto expectedPixelHeight = ratio * size.y;
+                const auto actualRatio = (rttrOglMock2::textureCoords[1].y - rttrOglMock2::textureCoords[0].y)
+                                         / (smartBmp.texCoords[1].y - smartBmp.texCoords[0].y);
+                auto actualPixelHeight = actualRatio * size.y;
+                BOOST_TEST(std::abs(expectedPixelHeight - actualPixelHeight) <= 1);
+            }
+
+            smartBmp.drawPercent(DrawPoint::all(0), 100);
+            BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
+            BOOST_TEST(rttrOglMock2::textureCoords[0] == smartBmp.texCoords[0]);
+            BOOST_TEST(rttrOglMock2::textureCoords[1] == smartBmp.texCoords[1]);
+            BOOST_TEST(rttrOglMock2::textureCoords[2] == smartBmp.texCoords[2]);
+            BOOST_TEST(rttrOglMock2::textureCoords[3] == smartBmp.texCoords[3]);
+        }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
