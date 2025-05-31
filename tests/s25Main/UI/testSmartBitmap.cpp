@@ -381,18 +381,22 @@ BOOST_AUTO_TEST_CASE(DrawPercent)
             smartBmp.drawPercent(DrawPoint::all(0), 0);
             BOOST_TEST(rttrOglMock2::callCount == 0);
 
-            smartBmp.drawPercent(DrawPoint::all(0), 50);
-            BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
-            // All top texture coords have same Y component
-            BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
-            // All bottom texture coords have same Y component
-            BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
-            // Bottom starts at bottom
-            BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
-            // Top starts at given percentage
-            BOOST_TEST(std::abs((rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y) - .5f) <= 1.f / size.y);
-            // BOOST_TEST(rttrOglMock2::textureCoords[0].y / smartBmp.texCoords[1].y == .5f, tt::tolerance(1.f /
-            // size.y));
+            auto ratio = rttr::test::randomValue<float>(.1f, .9f);
+            BOOST_TEST_CONTEXT("Draw percentage: " << ratio * 100)
+            {
+                smartBmp.drawPercent(DrawPoint::all(0), helpers::iround<int>(100 * ratio));
+                BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
+                // All top texture coords have same Y component
+                BOOST_TEST(rttrOglMock2::textureCoords[0].y == rttrOglMock2::textureCoords[3].y);
+                // All bottom texture coords have same Y component
+                BOOST_TEST(rttrOglMock2::textureCoords[1].y == rttrOglMock2::textureCoords[2].y);
+                // Bottom starts at bottom
+                BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
+                // Top starts at given percentage
+                auto actualRatio =
+                  ((rttrOglMock2::textureCoords[1].y - rttrOglMock2::textureCoords[0].y) / smartBmp.texCoords[1].y);
+                BOOST_TEST(std::abs(actualRatio - ratio) <= 1.f / size.y);
+            }
 
             smartBmp.drawPercent(DrawPoint::all(0), 100);
             BOOST_TEST(rttrOglMock2::textureCoords.size() == size_t(4));
