@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -61,6 +61,14 @@ const PostMsg* PostBox::GetMsg(unsigned idx) const
     if(idx >= numMessages)
         return nullptr;
     return messages[idx].get();
+}
+
+const PostMsg* PostBox::GetCurrentMsg() const
+{
+    if(numMessages == 0 || currMsgIdx > static_cast<int>(numMessages) - 1)
+        return nullptr;
+    unsigned idx = currMsgIdx >= 0 ? currMsgIdx : numMessages - 1;
+    return GetMsg(idx);
 }
 
 void PostBox::SetCurrentMissionGoal(const std::string& goal)
