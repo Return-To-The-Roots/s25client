@@ -394,8 +394,8 @@ BOOST_AUTO_TEST_CASE(DrawPercent)
                 BOOST_TEST(rttrOglMock2::textureCoords[1].y == smartBmp.texCoords[1].y);
                 // Top starts at given percentage, draw accuracy is +- 1px
                 auto expectedPixelHeight = ratio * size.y;
-                auto actualRatio =
-                  ((rttrOglMock2::textureCoords[1].y - rttrOglMock2::textureCoords[0].y) / smartBmp.texCoords[1].y);
+                const auto actualRatio = (rttrOglMock2::textureCoords[1].y - rttrOglMock2::textureCoords[0].y)
+                                         / (smartBmp.texCoords[1].y - smartBmp.texCoords[0].y);
                 auto actualPixelHeight = actualRatio * size.y;
                 BOOST_TEST(std::abs(expectedPixelHeight - actualPixelHeight) <= 1);
             }
