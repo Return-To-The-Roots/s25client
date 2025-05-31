@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -71,7 +71,7 @@ public:
     template<typename T>
     T RandomValue(T min, T max)
     {
-        static_assert(std::is_integral<T>::value, "T must be an integral type.");
+        static_assert(std::is_integral_v<T>, "T must be an integral type.");
         std::uniform_int_distribution<T> distr(min, max);
         return distr(rng_);
     }

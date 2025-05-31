@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -36,12 +36,12 @@ template<typename T, typename U>
 constexpr U clamp(T val, U min, U max) noexcept
 {
     using Common = std::common_type_t<T, U>;
-    if(std::is_signed<T>::value && !std::is_signed<U>::value)
+    if(std::is_signed_v<T> && !std::is_signed_v<U>)
     {
         // min/max is unsigned -> No negative values possible
         if(val < 0)
             return min;
-    } else if(!std::is_signed<T>::value && std::is_signed<U>::value)
+    } else if(!std::is_signed_v<T> && std::is_signed_v<U>)
     {
         // min/max is signed
         if(max < 0)
@@ -86,12 +86,12 @@ constexpr T inverseLerp(const T startVal, const T endVal, const T value) noexcep
 // TODO can be constexpr in C++20
 /// Arithmetically round floating point values to integers
 template<typename IntType, typename FloatType,
-         std::enable_if_t<std::is_integral<IntType>::value && std::is_floating_point<FloatType>::value, int> = 0>
+         std::enable_if_t<std::is_integral_v<IntType> && std::is_floating_point_v<FloatType>, int> = 0>
 IntType iround(const FloatType val) noexcept
 {
     RTTR_Assert(std::isfinite(val));
 
-    if(std::is_unsigned<IntType>::value)
+    if(std::is_unsigned_v<IntType>)
         RTTR_Assert_Msg(!(val < 0), "Floating-point value must not be negative when casting to unsigned integer type.");
 
     return static_cast<IntType>(std::lround(val));
