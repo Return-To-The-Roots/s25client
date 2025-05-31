@@ -50,6 +50,17 @@
 #    include <csignal>
 #endif
 
+#ifdef __EMSCRIPTEN__
+#    include <emscripten.h>
+void main_loop()
+{
+    if (!GAMEMANAGER.Run())
+    {
+        emscripten_cancel_main_loop();
+    }
+}
+#endif
+
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
 namespace po = boost::program_options;
@@ -484,14 +495,16 @@ int RunProgram(po::variables_map& options)
         }
 
         // Hauptschleife
-
+#ifdef __EMSCRIPTEN__
+        emscripten_set_main_loop(&main_loop, 0, true);
+#else
         while(gameManager.Run())
         {
 #ifndef _WIN32
             killme = false;
 #endif // !_WIN32
         }
-
+#endif
         // Spiel beenden
         gameManager.Stop();
         libsiedler2::setAllocator(nullptr);

@@ -337,8 +337,6 @@ add_subdirectory(external)
 add_subdirectory(libs)
 add_subdirectory(extras)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-else ()
 find_package(Gettext REQUIRED)
 file(GLOB RTTR_PO_FILES external/languages/*.po)
 set(RTTR_TRANSLATION_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gen/languages) # Used by copyDepsToBuildDir
@@ -357,7 +355,7 @@ endif()
 configure_file(copyDepsToBuildDir.cmake . @ONLY)
 add_custom_command(TARGET translations POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIG> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
-endif ()
+
 if(ClangFormat_FOUND)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs TRUE)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extras TRUE)
