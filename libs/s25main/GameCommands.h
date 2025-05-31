@@ -248,7 +248,7 @@ class ChangeTransport : public GameCommand
 
 protected:
     ChangeTransport(const TransportOrders& data) : GameCommand(GCType::ChangeTransport), data(data) {}
-    ChangeTransport(Serializer& ser) : GameCommand(GCType::ChangeTransport) { helpers::popContainer(ser, data); }
+    ChangeTransport(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
@@ -395,6 +395,25 @@ class SetCoinsAllowed : public Coords
 protected:
     SetCoinsAllowed(const MapPoint pt, bool enabled) : Coords(GCType::SetCoinsAllowed, pt), enabled(enabled) {}
     SetCoinsAllowed(Serializer& ser) : Coords(GCType::SetCoinsAllowed, ser), enabled(ser.PopBool()) {}
+
+public:
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
+        ser.PushBool(enabled);
+    }
+    void Execute(GameWorld& world, uint8_t playerId) override;
+};
+
+/// Allow/stop armor delivery to building
+class SetArmorAllowed : public Coords
+{
+    GC_FRIEND_DECL;
+    const bool enabled;
+
+protected:
+    SetArmorAllowed(const MapPoint pt, bool enabled) : Coords(GCType::SetArmorAllowed, pt), enabled(enabled) {}
+    SetArmorAllowed(Serializer& ser) : Coords(GCType::SetArmorAllowed, ser), enabled(ser.PopBool()) {}
 
 public:
     void Serialize(Serializer& ser) const override
