@@ -75,7 +75,7 @@ enum CtrlIds
     ID_txtNoPreview = 70,
     ID_txtMapName = 71,
     ID_miniMap = 70,
-    ID_btReady = 1,
+    ID_btPlayerState = 1,
     ID_btNation = 3,
     ID_btColor = 4,
     ID_btTeam = 5,
@@ -95,8 +95,8 @@ enum CtrlIds
     ID_optChatTab,
     ID_btChatGame,
     ID_btChatLobby,
-    ID_grpPlayerStart,                          // up to and including ID_grpPlayerStart + MAX_PLAYERS - 1
-    ID_btSwap = ID_grpPlayerStart + MAX_PLAYERS // up to and including ID_btSwap + MAX_PLAYERS - 1,
+    ID_grpPlayerStart,                           // up to and including ID_grpPlayerStart + MAX_PLAYERS - 1
+    ID_btSwap = ID_grpPlayerStart + MAX_PLAYERS, // up to and including ID_btSwap + MAX_PLAYERS - 1
 };
 template<typename T>
 constexpr T nextEnumValue(T value)
@@ -320,7 +320,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     {
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
-            int rowPos = GetCtrl<Window>(ID_grpPlayerStart + i)->GetCtrl<Window>(ID_btReady)->GetPos().y;
+            int rowPos = GetCtrl<Window>(ID_grpPlayerStart + i)->GetCtrl<Window>(ID_btPlayerState)->GetPos().y;
             ctrlButton* bt =
               AddTextButton(ID_btSwap + i, DrawPoint(5, 0), Extent(22, 22), TextureColor::Red1, _("-"), NormalFont);
             bt->SetPos(DrawPoint(bt->GetPos().x, rowPos));
@@ -416,10 +416,11 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
     if(gameLobby_->isHost() && !player.isHost && IsChangeAllowed("playerState"))
-        group->AddTextButton(ID_btReady, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont);
+        group->AddTextButton(ID_btPlayerState, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont);
     else
-        group->AddTextDeepening(ID_btReady, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont, COLOR_YELLOW);
-    auto* text = group->GetCtrl<ctrlBaseText>(ID_btReady);
+        group->AddTextDeepening(ID_btPlayerState, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont,
+                                COLOR_YELLOW);
+    auto* text = group->GetCtrl<ctrlBaseText>(ID_btPlayerState);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
@@ -524,7 +525,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
 
     switch(ctrl_id)
     {
-        case ID_btStartGame:
+        case ID_btPlayerState:
         {
             if(gameLobby_->isHost())
                 lobbyController->TogglePlayerState(playerId);
