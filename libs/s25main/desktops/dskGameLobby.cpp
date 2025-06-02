@@ -185,10 +185,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
             chatTab->SetSelection(ID_btChatGame, true);
         } else
         {
-            // Chatfenster
             gameChat = AddChatCtrl(ID_chatGame, DrawPoint(20, 320), Extent(360, 218), TextureColor::Grey, NormalFont);
         }
-        // Edit für Chatfenster
         AddEdit(ID_edtChatMsg, DrawPoint(20, 540), Extent(360, 22), TextureColor::Grey, NormalFont);
     }
 
@@ -231,10 +229,10 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     AddText(ID_txtGoals, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(ID_cbGoals, DrawPoint(600, 340), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         readonlySettings);
-    combo->AddString(_("None"));               // Kein Spielziel
-    combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
-    combo->AddString(_("Total domination"));   // Alleinherrschaft
-    combo->AddString(_("Economy mode"));       // Wirtschaftsmodus
+    combo->AddString(_("None"));
+    combo->AddString(_("Conquer 3/4 of map"));
+    combo->AddString(_("Total domination"));
+    combo->AddString(_("Economy mode"));
 
     // Lobby game?
     if(lobbyClient_ && lobbyClient_->IsLoggedIn())
@@ -247,11 +245,11 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     AddText(ID_txtSpeed, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(ID_cbSpeed, DrawPoint(600, 310), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         !gameLobby_->isHost());
-    combo->AddString(_("Very slow")); // Sehr Langsam
-    combo->AddString(_("Slow"));      // Langsam
-    combo->AddString(_("Normal"));    // Normal
-    combo->AddString(_("Fast"));      // Schnell
-    combo->AddString(_("Very fast")); // Sehr Schnell
+    combo->AddString(_("Very slow"));
+    combo->AddString(_("Slow"));
+    combo->AddString(_("Normal"));
+    combo->AddString(_("Fast"));
+    combo->AddString(_("Very fast"));
 
     // Karte laden, um Kartenvorschau anzuzeigen
     if(!gameLobby_->isSavegame())
@@ -397,7 +395,6 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
     ctrlGroup* group = AddGroup(ID_grpPlayerStart + row);
 
     std::string name;
-    // Name
     switch(player.ps)
     {
         default: name.clear(); break;
@@ -1028,19 +1025,12 @@ void dskGameLobby::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
 {
     const GlobalGameSettings& ggs = gameLobby_->getSettings();
 
-    // Geschwindigkeit
     GetCtrl<ctrlComboBox>(ID_cbSpeed)->SetSelection(static_cast<unsigned short>(ggs.speed));
-    // Ziel
     GetCtrl<ctrlComboBox>(ID_cbGoals)->SetSelection(static_cast<unsigned short>(ggs.objective));
-    // Waren
     GetCtrl<ctrlComboBox>(ID_cbGoods)->SetSelection(static_cast<unsigned short>(ggs.startWares));
-    // Aufklärung
     GetCtrl<ctrlComboBox>(ID_cbExploration)->SetSelection(static_cast<unsigned short>(ggs.exploration));
-    // Teams
     GetCtrl<ctrlCheck>(ID_chkLockTeams)->setChecked(ggs.lockedTeams);
-    // Team-Sicht
     GetCtrl<ctrlCheck>(ID_chkSharedView)->setChecked(ggs.teamView);
-    // random location
     GetCtrl<ctrlCheck>(ID_chkRandomSpawn)->setChecked(ggs.randomStartPosition);
 
     SetPlayerReady(localPlayerId_, false);
