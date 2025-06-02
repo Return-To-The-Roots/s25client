@@ -320,10 +320,10 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     {
         for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
         {
-            DrawPoint rowPos = GetCtrl<Window>(ID_grpPlayerStart + i)->GetCtrl<Window>(1)->GetPos(); // 1??
+            int rowPos = GetCtrl<Window>(ID_grpPlayerStart + i)->GetCtrl<Window>(ID_btReady)->GetPos().y;
             ctrlButton* bt =
               AddTextButton(ID_btSwap + i, DrawPoint(5, 0), Extent(22, 22), TextureColor::Red1, _("-"), NormalFont);
-            bt->SetPos(DrawPoint(bt->GetPos().x, rowPos.y));
+            bt->SetPos(DrawPoint(bt->GetPos().x, rowPos));
         }
     }
     CI_GGSChanged(gameLobby_->getSettings());
@@ -419,7 +419,7 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
         group->AddTextButton(ID_btReady, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont);
     else
         group->AddTextDeepening(ID_btReady, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont, COLOR_YELLOW);
-    auto* text = group->GetCtrl<ctrlBaseText>(1); // 1??
+    auto* text = group->GetCtrl<ctrlBaseText>(ID_btReady);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
@@ -791,7 +791,8 @@ void dskGameLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
 {
     switch(msgbox_id)
     {
-        case 0: // Verbindung zu Server verloren?
+        case ID_mbMapLoadError:
+        case ID_mbError:
         {
             GAMECLIENT.Stop();
 
