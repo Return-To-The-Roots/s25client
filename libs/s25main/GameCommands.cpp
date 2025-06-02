@@ -102,7 +102,7 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
         auto const additionalDistributions =
           leatherAddonAdditionalDistributions + (ser.getDataVersion() < 1 ? wineAddonAdditionalDistributions : 0);
 
-        std::vector<Distributions::value_type> tmpData(std::tuple_size_v<Distributions>::value - additionalDistributions);
+        std::vector<Distributions::value_type> tmpData(std::tuple_size_v<Distributions> - additionalDistributions);
 
         auto skipBuilding = [&](DistributionMapping const& mapping) {
             // Skipped and standard distribution in skipped case
