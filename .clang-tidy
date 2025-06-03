@@ -19,8 +19,11 @@ Checks: >-
   -bugprone-too-small-loop-variable,
   -clang-analyzer-osx.*,
   -misc-confusable-identifiers,
+  -misc-include-cleaner,
   -misc-non-private-member-variables-in-classes,
+  -misc-no-recursion,
   -misc-unused-parameters,
+  -misc-use-anonymous-namespace,
   -modernize-avoid-c-arrays,
   -modernize-raw-string-literal,
   -modernize-return-braced-init-list,
@@ -52,5 +55,7 @@ CheckOptions:
   - key: performance-unnecessary-value-param.AllowedTypes
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
   - key: readability-function-cognitive-complexity.IgnoreMacros
+    value: true
+  - key: readability-simplify-boolean-expr.IgnoreMacros
     value: true
 ...
