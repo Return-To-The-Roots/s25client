@@ -10,6 +10,9 @@
 #include <limits>
 #include <type_traits>
 
+template<typename Source, typename Target>
+constexpr bool is_float_to_int_v = std::conjunction_v<std::is_floating_point<Source>, std::is_integral<Target>>;
+
 /// Type for describing a 2D value (position, size, offset...)
 /// Note: Combining a signed with an unsigned point will result in a signed type!
 /// Allowed operations:
@@ -35,15 +38,15 @@ struct Point //-V690
     T x, y;
     constexpr Point() noexcept : x(getInvalidValue()), y(getInvalidValue()) {}
     constexpr Point(const T x, const T y) noexcept : x(x), y(y) {}
-    template<typename U, std::enable_if_t<!(std::is_integral_v<T> && std::is_floating_point_v<U>), int> = 0>
+    template<typename U, std::enable_if_t<!is_float_to_int_v<U, T>, int> = 0>
     constexpr explicit Point(const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
     /// Convert floating-point to integer by truncating
-    template<typename U, std::enable_if_t<std::is_integral_v<T> && std::is_floating_point_v<U>, int> = 0>
+    template<typename U, std::enable_if_t<is_float_to_int_v<U, T>, int> = 0>
     constexpr explicit Point(Truncate_t, const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
     /// Convert floating-point to integer with rounding (default behavior)
-    template<typename U, std::enable_if_t<std::is_integral_v<T> && std::is_floating_point_v<U>, int> = 0>
+    template<typename U, std::enable_if_t<is_float_to_int_v<U, T>, int> = 0>
     constexpr explicit Point(const Point<U>& pt) noexcept : x(helpers::iround<T>(pt.x)), y(helpers::iround<T>(pt.y))
     {}
     constexpr Point(const Point&) = default;

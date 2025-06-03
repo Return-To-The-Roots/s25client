@@ -70,7 +70,8 @@ constexpr T interpolate(const T startVal, const T endVal, const U elapsedTime, c
 }
 
 /// Linear interpolation, similar to C++20's std::lerp()
-constexpr float lerp(const float startVal, const float endVal, const float ratio) noexcept
+template<typename T>
+constexpr T lerp(const T startVal, const T endVal, const T ratio) noexcept
 {
     return startVal + ratio * (endVal - startVal);
 }
