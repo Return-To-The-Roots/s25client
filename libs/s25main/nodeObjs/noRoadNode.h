@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -37,6 +37,7 @@ public:
 
     noRoadNode(NodalObjectType nop, MapPoint pos, unsigned char player);
     noRoadNode(SerializedGameData& sgd, unsigned obj_id);
+    noRoadNode(const noRoadNode&) = delete;
     ~noRoadNode() override;
 
     void Destroy() override;

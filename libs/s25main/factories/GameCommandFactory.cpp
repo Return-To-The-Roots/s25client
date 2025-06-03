@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -51,14 +51,9 @@ bool GameCommandFactory::DestroyBuilding(const MapPoint pt)
     return AddGC(new gc::DestroyBuilding(pt));
 }
 
-bool GameCommandFactory::SendSoldiersHome(const MapPoint pt)
+bool GameCommandFactory::SetTroopLimit(const MapPoint pt, unsigned char rank, unsigned limit)
 {
-    return AddGC(new gc::SendSoldiersHome(pt));
-}
-
-bool GameCommandFactory::OrderNewSoldiers(const MapPoint pt)
-{
-    return AddGC(new gc::OrderNewSoldiers(pt));
+    return AddGC(new gc::SetTroopLimit(pt, rank, limit));
 }
 
 bool GameCommandFactory::ChangeTransport(const TransportOrders& data)
@@ -107,7 +102,7 @@ bool GameCommandFactory::NotifyAlliesOfLocation(const MapPoint pt)
     return AddGC(new gc::NotifyAlliesOfLocation(pt));
 }
 
-bool GameCommandFactory::SetInventorySetting(const MapPoint pt, const boost::variant<GoodType, Job>& what,
+bool GameCommandFactory::SetInventorySetting(const MapPoint pt, const boost_variant2<GoodType, Job>& what,
                                              InventorySetting state)
 {
     return AddGC(new gc::SetInventorySetting(pt, what, state));
@@ -159,6 +154,11 @@ bool GameCommandFactory::SetShipYardMode(const MapPoint pt, bool buildShips)
     return AddGC(new gc::SetShipYardMode(pt, buildShips));
 }
 
+bool GameCommandFactory::SetTempleProductionMode(MapPoint pt, ProductionMode mode)
+{
+    return AddGC(new gc::SetTempleProductionMode(pt, mode));
+}
+
 bool GameCommandFactory::StartStopExpedition(const MapPoint pt, bool start)
 {
     return AddGC(new gc::StartStopExpedition(pt, start));
@@ -194,7 +194,7 @@ bool GameCommandFactory::StartStopExplorationExpedition(const MapPoint pt, bool 
     return AddGC(new gc::StartStopExplorationExpedition(pt, start));
 }
 
-bool GameCommandFactory::TradeOverLand(const MapPoint pt, const boost::variant<GoodType, Job>& what, unsigned count)
+bool GameCommandFactory::TradeOverLand(const MapPoint pt, const boost_variant2<GoodType, Job>& what, unsigned count)
 {
     return AddGC(new gc::TradeOverLand(pt, what, count));
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,6 +16,7 @@
 #include "commonDefines.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
+#include "helpers/mathFuncs.h"
 #include "helpers/random.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameMessages.h"
@@ -36,7 +37,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/nowide/convert.hpp>
 #include <boost/nowide/fstream.hpp>
-#include <cmath>
 #include <helpers/chronoIO.h>
 #include <iomanip>
 #include <iterator>
@@ -106,9 +106,9 @@ GameServer::~GameServer()
     Stop();
 }
 
-// Host the game.
-bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type,
-                       const std::string& hostPw)
+///////////////////////////////////////////////////////////////////////////////
+// Spiel hosten
+bool GameServer::Start(const CreateServerInfo& csi, const MapDescription& map, const std::string& hostPw)
 {
     Stop();
 
@@ -119,8 +119,8 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
     config.servertype = csi.type;
     config.port = csi.port;
     config.ipv6 = csi.ipv6;
-    mapinfo.type = map_type;
-    mapinfo.filepath = map_path;
+    mapinfo.type = map.map_type;
+    mapinfo.filepath = map.map_path;
 
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
     switch(mapinfo.type)
@@ -180,7 +180,10 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
     if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
 
-    bfs::path luaFilePath = bfs::path(mapinfo.filepath).replace_extension("lua");
+    if(map.lua_path.has_value() && !bfs::is_regular_file(*map.lua_path))
+        return false;
+
+    bfs::path luaFilePath = map.lua_path.get_value_or(bfs::path(mapinfo.filepath).replace_extension("lua"));
     if(bfs::is_regular_file(luaFilePath))
     {
         if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))
@@ -747,7 +750,7 @@ void GameServer::ExecuteNWF()
         using MsDouble = duration<double, std::milli>;
         double newNWFLen =
           framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
-        newInfo.nextNWF = lastNWF + std::max(1l, std::lround(newNWFLen));
+        newInfo.nextNWF = lastNWF + std::max(1u, helpers::iround<unsigned>(newNWFLen));
     }
     SendNWFDone(newInfo);
 }
@@ -1472,8 +1475,7 @@ bfs::path GameServer::SaveAsyncLog()
     unsigned numEntries = 0;
     for(AsyncLog& log : asyncLogs)
     {
-        auto it = std::find_if(log.randEntries.begin(), log.randEntries.end(),
-                               [maxCtr](const auto& e) { return e.counter == maxCtr; });
+        auto it = helpers::find_if(log.randEntries, [maxCtr](const auto& e) { return e.counter == maxCtr; });
         log.randEntries.erase(log.randEntries.begin(), it);
         if(numEntries < log.randEntries.size())
             numEntries = log.randEntries.size();

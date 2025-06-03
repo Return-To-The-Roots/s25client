@@ -1,9 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
+#include "CheatCommandTracker.h"
+#include "Cheats.h"
 #include "Desktop.h"
 #include "GameInterface.h"
 #include "IngameMinimap.h"
@@ -82,6 +84,8 @@ public:
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
     void GI_BuildRoad() override;
 
+    Cheats& GI_GetCheats() override { return cheats_; }
+
     // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
     // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
     // Punkt reichen. Dann werden die Zielkoordinaten geändert, daher
@@ -133,7 +137,8 @@ protected:
 
     void StopScrolling();
     void StartScrolling(const Position& mousePos);
-
+    void ToggleFoW();              // Switch Fog of War mode if possible
+    void DisableFoW(bool hideFOW); // Set Fog of War mode if possible
     void ShowPersistentWindowsAfterSwitch();
 
     PostBox& GetPostBox();
@@ -161,7 +166,8 @@ protected:
     bool isScrolling;
     Position startScrollPt;
     size_t zoomLvl;
-    bool isCheatModeOn;
-    std::string curCheatTxt;
     Subscription evBld;
+
+    Cheats cheats_;
+    CheatCommandTracker cheatCommandTracker_;
 };

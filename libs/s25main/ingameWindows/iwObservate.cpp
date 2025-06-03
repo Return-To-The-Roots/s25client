@@ -8,6 +8,7 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlImageButton.h"
+#include "controls/ctrlTimer.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -22,6 +23,11 @@
 const Extent SmallWndSize(260, 190);
 const Extent MediumWndSize(300, 250);
 const Extent BigWndSize(340, 310);
+
+enum
+{
+    ID_tmrUpdateFollow = 5
+};
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     : IngameWindow(CGI_OBSERVATION, IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr, false,
@@ -48,6 +54,15 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     // Fenster vergroessern/verkleinern
     btPos.x += btSize.x;
     AddImageButton(4, btPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 109), _("Resize window"));
+
+    // Synchronize visibility of HUD elements with parentView
+    parentView.CopyHudSettingsTo(*view, false);
+    gwvSettingsConnection =
+      parentView.onHudSettingsChanged.connect([this]() { parentView.CopyHudSettingsTo(*view, false); });
+
+    // Check the followed object periodically
+    using namespace std::chrono_literals;
+    AddTimer(ID_tmrUpdateFollow, 1s)->Stop();
 }
 
 void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
@@ -71,8 +86,10 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
         case 2:
         {
             if(followMovableId)
+            {
                 followMovableId = 0;
-            else
+                GetCtrl<ctrlTimer>(ID_tmrUpdateFollow)->Stop();
+            } else
             {
                 const DrawPoint centerDrawPt = DrawPoint(view->GetSize() / 2u);
 
@@ -112,6 +129,8 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
                         }
                     }
                 }
+                if(followMovableId)
+                    GetCtrl<ctrlTimer>(ID_tmrUpdateFollow)->Start();
             }
 
             break;
@@ -143,15 +162,24 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
             for(unsigned i = 1; i <= 4; ++i)
                 GetCtrl<ctrlImageButton>(i)->SetPos(
                   DrawPoint(GetCtrl<ctrlImageButton>(i)->GetPos().x - diff, GetSize().y - 50));
-
-            DrawPoint maxPos(VIDEODRIVER.GetRenderSize() - GetSize() - Extent::all(1));
-            DrawPoint newPos = elMin(maxPos, GetPos());
-            if(newPos != GetPos())
-                SetPos(newPos);
     }
 }
 
-void iwObservate::Draw_()
+void iwObservate::Msg_Timer(const unsigned ctrl_id)
+{
+    switch(ctrl_id)
+    {
+        case ID_tmrUpdateFollow:
+            if(followMovableId && !MoveToFollowedObj())
+            {
+                followMovableId = 0;
+                GetCtrl<ctrlTimer>(ID_tmrUpdateFollow)->Stop();
+            }
+            break;
+    }
+}
+
+void iwObservate::DrawContent()
 {
     if(GetPos() != lastWindowPos)
     {
@@ -159,24 +187,13 @@ void iwObservate::Draw_()
         lastWindowPos = GetPos();
     }
 
-    if(followMovableId)
-    {
-        if(!MoveToFollowedObj())
-            followMovableId = 0;
-    }
+    RoadBuildState road;
+    road.mode = RoadBuildMode::Disabled;
 
-    if(!IsMinimized())
-    {
-        RoadBuildState road;
-        road.mode = RoadBuildMode::Disabled;
-
-        view->Draw(road, parentView.GetSelectedPt(), false);
-        // Draw indicator for center point
-        if(!followMovableId)
-            LOADER.GetMapTexture(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);
-    }
-
-    return IngameWindow::Draw_();
+    view->Draw(road, parentView.GetSelectedPt(), false);
+    // Draw indicator for center point
+    if(!followMovableId)
+        LOADER.GetMapTexture(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);
 }
 
 bool iwObservate::MoveToFollowedObj()
@@ -231,7 +248,7 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-        if(SETTINGS.interface.revert_mouse)
+        if(SETTINGS.interface.invertMouse)
             acceleration = -acceleration;
 
         view->MoveBy((mc.GetPos() - scrollOrigin) * acceleration);

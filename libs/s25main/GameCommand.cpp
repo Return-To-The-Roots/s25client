@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,7 +9,14 @@
 
 namespace gc {
 
-GameCommandPtr GameCommand::Deserialize(Serializer& ser)
+/// Current version of the game commands, see VersionedDeserializer.
+unsigned Deserializer::getCurrentVersion()
+{
+    // 1: Add wine addon --> 3 new values in distribution
+    return 1;
+}
+
+GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
 {
     auto gcType = helpers::popEnum<GCType>(ser);
     GameCommand* gc;
@@ -38,6 +45,7 @@ GameCommandPtr GameCommand::Deserialize(Serializer& ser)
         case GCType::AcceptPact: gc = new AcceptPact(ser); break;
         case GCType::CancelPact: gc = new CancelPact(ser); break;
         case GCType::SetShipyardMode: gc = new SetShipYardMode(ser); break;
+        case GCType::SetTempleProductionMode: gc = new SetTempleProductionMode(ser); break;
         case GCType::StartStopExpedition: gc = new StartStopExpedition(ser); break;
         case GCType::StartStopExplorationExpedition: gc = new StartStopExplorationExpedition(ser); break;
         case GCType::ExpeditionCommand: gc = new ExpeditionCommand(ser); break;
@@ -46,8 +54,7 @@ GameCommandPtr GameCommand::Deserialize(Serializer& ser)
         case GCType::CheatArmageddon: gc = new CheatArmageddon(ser); break;
         case GCType::DestroyAll: gc = new DestroyAll(ser); break;
         case GCType::UpgradeRoad: gc = new UpgradeRoad(ser); break;
-        case GCType::OrderNewSoldiers: gc = new OrderNewSoldiers(ser); break;
-        case GCType::SendSoldiersHome: gc = new SendSoldiersHome(ser); break;
+        case GCType::SetTroopLimit: gc = new SetTroopLimit(ser); break;
         case GCType::NotifyAlliesOfLocation: gc = new NotifyAlliesOfLocation(ser); break;
         default: throw std::logic_error("Invalid GC Type: " + helpers::toString(rttr::enum_cast(gcType)));
     }

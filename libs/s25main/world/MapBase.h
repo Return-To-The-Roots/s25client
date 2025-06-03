@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -60,6 +60,9 @@ public:
     MapCoord GetXA(MapPoint pt, Direction dir) const;
     // Gets all neighbors (in all directions) for given position
     helpers::EnumArray<MapPoint, Direction> GetNeighbours(MapPoint pt) const;
+    // Gets union of given points and all their neighbors without duplicates
+    // For a single point it returns itself and all neighbours
+    std::vector<MapPoint> GetAllNeighboursUnion(const std::vector<MapPoint>& points) const;
 
     /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
@@ -120,7 +123,7 @@ detail::GetPointsResult_t<T_TransformPt> MapBase::GetPointsInRadius(const MapPoi
     ::detail::GetPointsResult_t<T_TransformPt> result;
     if(T_maxResults > 0)
         result.reserve(T_maxResults);
-    else if(std::is_same<T_IsValidPt, AlwaysTrue>::value)
+    else if(std::is_same_v<T_IsValidPt, AlwaysTrue>)
     {
         // For every additional radius we get 6 * curRadius more points. Hence we have 6 * sum(1..radius) points + the
         // center point if requested This can be reduced via the gauss formula to the following:

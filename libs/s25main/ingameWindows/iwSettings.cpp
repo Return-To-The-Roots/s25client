@@ -15,52 +15,72 @@
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
 
+namespace {
+enum
+{
+    ID_txtResolution,
+    ID_txtFullScreen,
+    ID_grpFullscreen,
+    ID_cbResolution,
+    ID_cbInvertMouse,
+    ID_cbStatisticScale,
+};
+constexpr auto ID_btOn = 1;
+constexpr auto ID_btOff = 0;
+} // namespace
+
 iwSettings::iwSettings()
-    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"),
+    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 199), _("Settings"),
                    LOADER.GetImageN("resource", 41))
 {
-    AddText(46, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddText(47, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddCheckBox(4, DrawPoint(200, 124), Extent(150, 26), TextureColor::Grey, _("Statistics Scale"), NormalFont, false);
-    GetCtrl<ctrlCheck>(4)->setChecked(SETTINGS.ingame.scale_statistics);
+    // Controls are in 2 columns, the left might be the label for the control on the right
+    constexpr auto leftColOffset = 15u;   // X-position of the left column
+    constexpr auto rightColOffset = 200u; // X-position of the right column
+    constexpr Extent ctrlSize(150, 22);
+    constexpr auto rowWidth = rightColOffset + ctrlSize.x;
 
-    // "Vollbild"
-    ctrlOptionGroup* optiongroup = AddOptionGroup(3, GroupSelectType::Check);
-    optiongroup->AddTextButton(1, DrawPoint(200, 70), Extent(150, 22), TextureColor::Grey, _("Fullscreen"), NormalFont);
-    optiongroup->AddTextButton(2, DrawPoint(200, 95), Extent(150, 22), TextureColor::Grey, _("Windowed"), NormalFont);
+    AddText(ID_txtResolution, DrawPoint(leftColOffset, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
+            NormalFont);
+    auto* cbResolution =
+      AddComboBox(ID_cbResolution, DrawPoint(rightColOffset, 35), ctrlSize, TextureColor::Grey, NormalFont, 110);
 
-    // "Vollbild" setzen
-    optiongroup = GetCtrl<ctrlOptionGroup>(3);
-    optiongroup->SetSelection((SETTINGS.video.fullscreen ? 1 : 2)); //-V807
     VIDEODRIVER.ListVideoModes(video_modes);
-
-    // "Auflösung"
-    AddComboBox(0, DrawPoint(200, 35), Extent(150, 22), TextureColor::Grey, NormalFont, 110);
-
-    // Und zu der Combobox hinzufügen
     for(unsigned i = 0; i < video_modes.size(); ++i)
     {
         // >=800x600, alles andere macht keinen Sinn
         if(video_modes[i].width >= 800 && video_modes[i].height >= 600)
         {
-            GetCtrl<ctrlComboBox>(0)->AddString(helpers::format("%ux%u", video_modes[i].width, video_modes[i].height));
-
-            // Ist das die aktuelle Auflösung? Dann selektieren
+            cbResolution->AddString(helpers::format("%ux%u", video_modes[i].width, video_modes[i].height));
             if(video_modes[i] == SETTINGS.video.fullscreenSize)
-                GetCtrl<ctrlComboBox>(0)->SetSelection(i);
+                cbResolution->SetSelection(i);
         } else
         {
             video_modes.erase(video_modes.begin() + i);
             --i;
         }
     }
+    AddText(ID_txtFullScreen, DrawPoint(leftColOffset, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
+    DrawPoint curPos(rightColOffset, 70);
+    optiongroup->AddTextButton(ID_btOn, curPos, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
+    curPos.y += ctrlSize.y + 3;
+    optiongroup->AddTextButton(ID_btOff, curPos, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
+    optiongroup->SetSelection(SETTINGS.video.fullscreen); //-V807
+
+    curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
+    const auto cbSize = Extent(rowWidth - curPos.x, 26);
+    AddCheckBox(ID_cbInvertMouse, curPos, cbSize, TextureColor::Grey, _("Invert Mouse Pan"), NormalFont, false)
+      ->setChecked(SETTINGS.interface.invertMouse);
+    curPos.y += cbSize.y + 3;
+    AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
+      ->setChecked(SETTINGS.ingame.scale_statistics);
 }
 
 iwSettings::~iwSettings()
 {
     try
     {
-        auto* SizeCombo = GetCtrl<ctrlComboBox>(0);
+        auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
         if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
@@ -85,7 +105,7 @@ void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned se
 {
     switch(ctrl_id)
     {
-        case 3: SETTINGS.video.fullscreen = (selection == 1); break;
+        case ID_grpFullscreen: SETTINGS.video.fullscreen = selection == ID_btOn; break;
     }
 }
 
@@ -93,10 +113,7 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     switch(ctrl_id)
     {
-        case 4:
-        {
-            SETTINGS.ingame.scale_statistics = checked;
-            break;
-        }
+        case ID_cbInvertMouse: SETTINGS.interface.invertMouse = checked; break;
+        case ID_cbStatisticScale: SETTINGS.ingame.scale_statistics = checked; break;
     }
 }

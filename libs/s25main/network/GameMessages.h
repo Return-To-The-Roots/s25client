@@ -336,7 +336,6 @@ public:
     }
 };
 
-/// ausgehende Player-Name-Nachricht
 class GameMessage_Player_Portrait : public GameMessageWithPlayer
 {
 public:

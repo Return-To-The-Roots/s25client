@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,17 +6,29 @@ include(RttrTestingCfg)
 option(RTTR_EXTERNAL_BUILD_TESTING "Enable tests of external dependencies" OFF)
 set(BUILD_TESTING ${RTTR_EXTERNAL_BUILD_TESTING})
 
-if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt)
-    set(devToolsExist ON)
+if(NOT RTTR_USE_SYSTEM_LIBS AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt)
+    set(includeDevToolsDefault ON)
 else()
-    set(devToolsExist OFF)
+    set(includeDevToolsDefault OFF)
 endif()
-option(RTTR_INCLUDE_DEVTOOLS "Include folder with precompiled binaries for development" ${devToolsExist})
+
+set(includeDevToolsDefault OFF)
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt AND NOT DEFINED RTTR_INCLUDE_DEVTOOLS)
+    if(APPLE) # Lua 5.2 required which is not easily available on OSX
+      set(includeDevToolsDefault ON)
+    else()
+      message(STATUS "Precompiled binaries are available to use for development."
+                     "They are not compatible with all platforms though."
+                     "Configure with -DRTTR_INCLUDE_DEVTOOLS=ON to make them available to CMake."
+              )
+    endif()
+endif()
+option(RTTR_INCLUDE_DEVTOOLS "Include folder with precompiled binaries for development" ${includeDevToolsDefault})
 if(RTTR_INCLUDE_DEVTOOLS)
-  add_subdirectory(dev-tools)
-  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
-  set(CMAKE_PROGRAM_PATH ${CMAKE_PROGRAM_PATH} PARENT_SCOPE)
-  set(CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH} PARENT_SCOPE)
+    add_subdirectory(dev-tools)
+    set(CMAKE_SYSTEM_PREFIX_PATH ${CMAKE_SYSTEM_PREFIX_PATH} PARENT_SCOPE)
+    set(CMAKE_SYSTEM_PROGRAM_PATH ${CMAKE_SYSTEM_PROGRAM_PATH} PARENT_SCOPE)
+    set(CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH} PARENT_SCOPE)
 endif()
 
 # Building the updater when using non-default paths (especially absolute paths)
@@ -46,20 +58,25 @@ endif()
 
 option(RTTR_USE_SYSTEM_LIBSAMPLERATE "Use system installed libsamplerate. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 if(RTTR_USE_SYSTEM_LIBSAMPLERATE)
-    find_package(Samplerate 0.1.9 REQUIRED)
+    find_package(SampleRate 0.1.9 REQUIRED)
     unset(samplerate_LIB_DEPENDS CACHE)
-    add_library(samplerate INTERFACE)
-    target_link_libraries(samplerate INTERFACE Samplerate::Samplerate)
 else()
-    include(FetchContent)
-    FetchContent_Declare(
-        LibSamplerate
-        GIT_REPOSITORY https://github.com/Flamefire/libsamplerate
-        GIT_TAG        b5d39fbfc86b656fed68c935ac7b0a06349e4aa1
-    )
-    set(LIBSAMPLERATE_TESTS OFF CACHE INTERNAL "")
-    set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
-    FetchContent_MakeAvailable(LibSamplerate)
+    find_package(SampleRate 0.1.9)
+    if(NOT SampleRate_FOUND)
+        message(STATUS "Downloading libsamplerate")
+        include(FetchContent)
+        FetchContent_Declare(
+            SampleRate
+            GIT_REPOSITORY https://github.com/libsndfile/libsamplerate
+            GIT_TAG        15c392d47e71b9395a759544b3818a1235fe1a1d # 0.2.2 with update of required CMake version
+        )
+        set(LIBSAMPLERATE_EXAMPLES OFF CACHE INTERNAL "")
+        set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
+        set(old_BUILD_TESTING ${BUILD_TESTING})
+        set(BUILD_TESTING OFF)
+        FetchContent_MakeAvailable(SampleRate)
+        set(BUILD_TESTING ${old_BUILD_TESTING})
+    endif()
 endif()
 
 # No tests for turtle

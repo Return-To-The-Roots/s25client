@@ -6,6 +6,7 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/MapCoordinates.h"
+#include <boost/signals2.hpp>
 
 class GameWorldView;
 class MouseCoords;
@@ -30,16 +31,19 @@ class iwObservate : public IngameWindow
     /// id of object currently followed or INVALID_ID
     unsigned followMovableId;
 
+    boost::signals2::scoped_connection gwvSettingsConnection;
+
 public:
     iwObservate(GameWorldView& gwv, MapPoint selectedPt);
 
 private:
-    void Draw_() override;
+    void DrawContent() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_RightDown(const MouseCoords& mc) override;
     bool Msg_RightUp(const MouseCoords& mc) override;
+    void Msg_Timer(unsigned ctrl_id) override;
     /// Move view to the object we currently follow, return true if it can still be found
     bool MoveToFollowedObj();
-    inline bool MoveToFollowedObj(MapPoint ptToCheck);
+    bool MoveToFollowedObj(MapPoint ptToCheck);
 };

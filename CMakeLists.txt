@@ -1,13 +1,13 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-cmake_minimum_required(VERSION 3.9)
-if(POLICY CMP0093)
-  cmake_policy(SET CMP0093 NEW) # Use Boost_VERSION x.y.z in CMake >= 3.15 or BoostConfig
+cmake_minimum_required(VERSION 3.16..3.25)
+if(POLICY CMP0177)
+  cmake_policy(SET CMP0177 NEW)  # Normalize install() DESTINATION paths
 endif()
-if (POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW) # find_package uses <PackageName>_ROOT variables
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 OLD)  # FindBoost is removed, keep for now
 endif()
 
 if(NOT RTTR_VERSION)
@@ -306,37 +306,29 @@ if(BUILD_TESTING)
     list(APPEND BoostPackages unit_test_framework)
 endif()
 
-find_package(Boost 1.69 COMPONENTS ${BoostPackages})
+find_package(Boost 1.71 COMPONENTS ${BoostPackages})
 if(NOT Boost_FOUND)
-    message(FATAL_ERROR "You have to install boost (>=1.69) into contrib/boost or set (as CMake or environment variable) "
+    message(FATAL_ERROR "You have to install boost (>=1.71) into contrib/boost or set (as CMake or environment variable) "
     "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
     "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}') "
     "since cmake was unable to find boost!")
-endif()
-if(Boost_VERSION VERSION_EQUAL 1.70)
-    # Bug in Boost 1.70: https://github.com/boostorg/boost_install/issues/5
-    if(Boost_USE_STATIC_LIBS)
-        set(BUILD_SHARED_LIBS OFF)
-    else()
-        set(BUILD_SHARED_LIBS ON)
-    endif()
 endif()
 
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 
 if(Boost_VERSION_MINOR GREATER_EQUAL "74" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
-  # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
-  find_package(Boost COMPONENTS nowide)
+    # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
+    find_package(Boost COMPONENTS nowide)
 endif()
 # Prefer system version, either as part of Boost or preinstalled
 if(NOT Boost_NOWIDE_FOUND)
-  if(RTTR_USE_SYSTEM_BOOST_NOWIDE)
-    set(bnw_required REQUIRED)
-  else()
-    set(bnw_required QUIET)
-  endif()
-  find_package(boost_nowide 11.0.0 ${bnw_required})
-  # Fallback in libutil, but find_package must be done here so all subprojects can use it
+    if(RTTR_USE_SYSTEM_BOOST_NOWIDE)
+        set(bnw_required REQUIRED)
+    else()
+        set(bnw_required QUIET)
+    endif()
+    find_package(boost_nowide 11.0.0 ${bnw_required})
+    # Fallback in libutil, but find_package must be done here so all subprojects can use it
 endif()
 
 add_subdirectory(external)

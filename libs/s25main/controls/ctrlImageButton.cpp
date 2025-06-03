@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "ctrlImageButton.h"
+#include <ogl/ITexture.h>
 
 ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
                                  const TextureColor tc, ITexture* const image, const std::string& tooltip)
@@ -11,8 +12,17 @@ ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& p
 
 void ctrlImageButton::DrawContent() const
 {
-    DrawPoint pos = GetDrawPos() - GetImageRect().getOrigin() + DrawPoint::all(2);
-    Extent size = GetSize() - Extent::all(4);
+    // Adding of origin compensates for its substraction inside ITexture::Draw()
+    auto pos = GetDrawPos() + GetImage()->GetOrigin();
+    auto size = GetSize();
+
+    if(hasBorder)
+    {
+        // Ensure that 3D border is not drawn on
+        const unsigned borderThickness = 2;
+        pos += DrawPoint::all(borderThickness);
+        size -= Extent::all(2 * borderThickness);
+    }
 
     if((state == ButtonState::Pressed || isChecked) && isEnabled)
     {

@@ -17,10 +17,10 @@ LandscapeDesc::LandscapeDesc(CheckedLuaTable luaData, const WorldDescription&)
     s2Id = luaData.getOrDefault<uint8_t>("s2Id", 0xFF);
     isWinter = luaData.getOrDefault("isWinter", false);
 
-    CheckedLuaTable roadData = luaData.getOrThrow<CheckedLuaTable>("roads");
+    auto roadData = luaData.getOrThrow<CheckedLuaTable>("roads");
     for(const auto i : helpers::enumRange<LandRoadType>())
     {
-        CheckedLuaTable texData = roadData.getOrThrow<CheckedLuaTable>(roadTypeNames[i]);
+        auto texData = roadData.getOrThrow<CheckedLuaTable>(roadTypeNames[i]);
         texData.getOrThrow(roadTexDesc[i].texturePath, "texture");
         lua::validatePath(roadTexDesc[i].texturePath);
         roadTexDesc[i].posInTexture = texData.getRectOrDefault("pos", Rect());

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,10 +16,10 @@
 /// 1 mapping of a required good to its building and default setting
 using DistributionMapping = std::tuple<GoodType, BuildingType, uint8_t>;
 /// List of all possible distribution mappings ordered by GoodType
-using DistributionMap = std::array<DistributionMapping, 23>;
+using DistributionMap = std::array<DistributionMapping, 26>;
 extern const DistributionMap distributionMap;
 /// List of the percentage a building should get from a specific ware
-using Distributions = std::array<uint8_t, std::tuple_size<DistributionMap>::value>;
+using Distributions = std::array<uint8_t, std::tuple_size_v<DistributionMap>>;
 /// Ordering of building types by priority. All buildings in here except unused and HQ
 using BuildOrders = std::array<BuildingType, helpers::NumEnumValues_v<BuildingType> - NUM_UNUSED_BLD_TYPES - 1>;
 /// Mapping transport priority -> standard transport priority of ware(group):

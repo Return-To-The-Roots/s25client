@@ -74,7 +74,9 @@ BOOST_AUTO_TEST_CASE(AllGoodTypesWork)
             GD_IRONORE,
             GD_COAL,
             GD_MEAT,
-            GD_HAM
+            GD_HAM,
+            GD_GRAPES,
+            GD_WINE
         )
     )LUA");
     executeLua(R"LUA(
@@ -124,7 +126,10 @@ BOOST_AUTO_TEST_CASE(AllBuildingTypesWork)
             BLD_SHIPYARD,
             BLD_FARM,
             BLD_DONKEYBREEDER,
-            BLD_HARBORBUILDING
+            BLD_HARBORBUILDING,
+            BLD_VINEYARD,
+            BLD_WINERY,
+            BLD_TEMPLE
         )
     )LUA");
     executeLua(R"LUA(
@@ -172,13 +177,41 @@ BOOST_AUTO_TEST_CASE(AllJobTypesWork)
             JOB_SCOUT,
             JOB_PACKDONKEY,
             JOB_BOATCARRIER,
-            JOB_CHARBURNER
+            JOB_CHARBURNER,
+            JOB_WINEGROWER,
+            JOB_VINTNER,
+            JOB_TEMPLESERVANT
         )
     )LUA");
     executeLua(R"LUA(
         for i, job in elements(jobs) do
             assert(job ~= nil, "nil at " .. tostring(i))
             num = player:GetNumPeople(job)
+            assert(num >= 0)
+        end
+    )LUA");
+}
+
+BOOST_AUTO_TEST_CASE(AllStatisticTypesWork)
+{
+    executeLua("player = rttr:GetPlayer(0); assert(player)");
+    executeLua(R"LUA(
+        stats = table.pack(
+            STAT_COUNTRY,
+            STAT_BUILDINGS,
+            STAT_INHABITANTS,
+            STAT_MERCHANDISE,
+            STAT_MILITARY,
+            STAT_GOLD,
+            STAT_PRODUCTIVITY,
+            STAT_VANQUISHED,
+            STAT_TOURNAMENT
+        )
+    )LUA");
+    executeLua(R"LUA(
+        for i, stat in elements(stats) do
+            assert(stat ~= nil, "nil at " .. tostring(i))
+            num = player:GetStatisticsValue(stat)
             assert(num >= 0)
         end
     )LUA");

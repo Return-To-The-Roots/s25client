@@ -977,13 +977,8 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             foundPos = FindBestPosition(around, AIResource::Ironore, BuildingQuality::Mine, searchRadius);
             break;
         case BuildingType::GraniteMine:
-            if(!ggs.isEnabled(
-                 AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
-                foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, searchRadius);
-            else
-                foundPos = SimpleFindPosition(around, BuildingQuality::Mine, searchRadius);
+            foundPos = FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, searchRadius);
             break;
-
         case BuildingType::Fishery:
             foundPos = FindBestPosition(around, AIResource::Fish, BUILDING_SIZE[type], searchRadius);
             if(foundPos.isValid() && !ValidFishInRange(foundPos))
@@ -1369,9 +1364,17 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
     const auto* mil = gwb.GetSpecObj<nobMilitary>(pt);
     if(mil)
     {
-        if(mil->GetFrontierDistance() != FrontierDistance::Far && mil->IsGoldDisabled())
+        if(mil->GetFrontierDistance() != FrontierDistance::Far)
         {
-            aii.SetCoinsAllowed(pt, true);
+            if(mil->IsGoldDisabled())
+                aii.SetCoinsAllowed(pt, true);
+
+            // Fill up with soldiers
+            for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+            {
+                if(mil->GetTroopLimit(rank) != mil->GetMaxTroopsCt())
+                    aii.SetTroopLimit(mil->GetPos(), rank, mil->GetMaxTroopsCt());
+            }
         }
         if(mil->GetBuildingType() != construction->GetBiggestAllowedMilBuilding())
         {
@@ -1412,7 +1415,14 @@ void AIPlayerJH::MilUpgradeOptim()
                 {
                     if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
                     {
-                        aii.SendSoldiersHome(milBld->GetPos());
+                        aii.SetTroopLimit(milBld->GetPos(), 0, 1);
+                        for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
+                            aii.SetTroopLimit(milBld->GetPos(), rank, 0);
+
+                        // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it
+                        // uses only SetTroopLimit then this can be removed
+                        for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+                            aii.SetTroopLimit(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
                     } else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier
                                                      // at some point and the building is not new on the list-> cancel
                                                      // road (and fix roadsystem if necessary)
@@ -1442,11 +1452,11 @@ void AIPlayerJH::MilUpgradeOptim()
             {
                 aii.SetCoinsAllowed(milBld->GetPos(), true);
             }
-            if(milBld->HasMaxRankSoldier()) // has max rank soldier? send it/them out!
-                aii.SendSoldiersHome(milBld->GetPos());
-            if(SoldierAvailable(0)
-               && milBld->GetNumTroops() < milBld->GetMaxTroopsCt()) // building not full and privates in a warehouse?
-                aii.OrderNewSoldiers(milBld->GetPos());              // order new!
+            // Keep 0 max rank soldiers, 1 of each other rank and fill the rest with privates
+            aii.SetTroopLimit(milBld->GetPos(), 0, milBld->GetMaxTroopsCt());
+            for(unsigned rank = 1; rank < ggs.GetMaxMilitaryRank(); ++rank)
+                aii.SetTroopLimit(milBld->GetPos(), rank, 1);
+            aii.SetTroopLimit(milBld->GetPos(), ggs.GetMaxMilitaryRank(), 0);
         }
         count++;
     }
@@ -2080,31 +2090,34 @@ void AIPlayerJH::InitDistribution()
     goodSettings[1] = 10; // food coal
     goodSettings[2] = 10; // food iron
     goodSettings[3] = 10; // food gold
+    goodSettings[4] = 2;  // food temple
 
-    goodSettings[4] = 10; // grain mill
-    goodSettings[5] = 10; // grain pigfarm
-    goodSettings[6] = 10; // grain donkeybreeder
-    goodSettings[7] = 10; // grain brewery
-    goodSettings[8] = 10; // grain charburner
+    goodSettings[5] = 10; // grain mill
+    goodSettings[6] = 10; // grain pigfarm
+    goodSettings[7] = 10; // grain donkeybreeder
+    goodSettings[8] = 10; // grain brewery
+    goodSettings[9] = 10; // grain charburner
 
-    goodSettings[9] = 10;  // iron armory
-    goodSettings[10] = 10; // iron metalworks
+    goodSettings[10] = 10; // iron armory
+    goodSettings[11] = 10; // iron metalworks
 
-    goodSettings[11] = 10; // coal armory
-    goodSettings[12] = 10; // coal ironsmelter
-    goodSettings[13] = 10; // coal mint
+    goodSettings[12] = 10; // coal armory
+    goodSettings[13] = 10; // coal ironsmelter
+    goodSettings[14] = 10; // coal mint
 
-    goodSettings[14] = 10; // wood sawmill
-    goodSettings[15] = 10; // wood charburner
+    goodSettings[15] = 10; // wood sawmill
+    goodSettings[16] = 10; // wood charburner
+    goodSettings[17] = 2;  // wood vineyard
 
-    goodSettings[16] = 10; // boards new buildings
-    goodSettings[17] = 4;  // boards metalworks
-    goodSettings[18] = 2;  // boards shipyard
+    goodSettings[18] = 10; // boards new buildings
+    goodSettings[19] = 4;  // boards metalworks
+    goodSettings[20] = 2;  // boards shipyard
 
-    goodSettings[19] = 10; // water bakery
-    goodSettings[20] = 10; // water brewery
-    goodSettings[21] = 10; // water pigfarm
-    goodSettings[22] = 10; // water donkeybreeder
+    goodSettings[21] = 10; // water bakery
+    goodSettings[22] = 10; // water brewery
+    goodSettings[23] = 10; // water pigfarm
+    goodSettings[24] = 10; // water donkeybreeder
+    goodSettings[25] = 2;  // water vineyard
     aii.ChangeDistribution(goodSettings);
 }
 

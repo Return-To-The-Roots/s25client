@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,14 +17,16 @@ namespace detail {
     template<typename T>
     struct isResizableContainer<T, decltype(std::declval<T>().resize(size_t{}))> : std::true_type
     {};
+    template<typename T>
+    constexpr bool isResizableContainer_v = isResizableContainer<T>::value;
 
     template<typename T>
-    std::enable_if_t<std::is_enum<T>::value, T> popEnumOrIntegral(Serializer& ser)
+    std::enable_if_t<std::is_enum_v<T>, T> popEnumOrIntegral(Serializer& ser)
     {
         return popEnum<T>(ser);
     }
     template<typename T>
-    std::enable_if_t<!std::is_enum<T>::value, T> popEnumOrIntegral(Serializer& ser)
+    std::enable_if_t<!std::is_enum_v<T>, T> popEnumOrIntegral(Serializer& ser)
     {
         return ser.Pop<T>();
     }
@@ -33,8 +35,8 @@ namespace detail {
     void pushContainer(Serializer& ser, const T& container, long)
     {
         using Type = typename T::value_type;
-        using Integral = typename std::conditional_t<std::is_enum<Type>::value, std::underlying_type<Type>,
-                                                     std::common_type<Type>>::type;
+        using Integral =
+          typename std::conditional_t<std::is_enum_v<Type>, std::underlying_type<Type>, std::common_type<Type>>::type;
         for(const auto el : container)
         {
             // Cast also required for bool vector -.-
@@ -49,12 +51,12 @@ namespace detail {
 
     // If the container is resizable, pop the size and resize it
     template<typename T>
-    std::enable_if_t<isResizableContainer<T>::value> maybePopSizeAndResize(Serializer& ser, T& container)
+    std::enable_if_t<isResizableContainer_v<T>> maybePopSizeAndResize(Serializer& ser, T& container)
     {
         container.resize(ser.PopVarSize());
     }
     template<typename T>
-    std::enable_if_t<!isResizableContainer<T>::value> maybePopSizeAndResize(Serializer&, T&)
+    std::enable_if_t<!isResizableContainer_v<T>> maybePopSizeAndResize(Serializer&, T&)
     {}
 
     template<typename T>
@@ -66,7 +68,7 @@ namespace detail {
     }
     template<typename T>
     auto popContainer(Serializer& ser, T& container, int)
-      -> std::enable_if_t<sizeof(*container.data()) == 1u && !std::is_enum<typename T::value_type>::value>
+      -> std::enable_if_t<sizeof(*container.data()) == 1u && !std::is_enum_v<typename T::value_type>>
     {
         ser.PopRawData(container.data(), container.size());
     }
@@ -77,10 +79,9 @@ template<typename T>
 void pushContainer(Serializer& ser, const T& container, bool ignoreSize = false)
 {
     using Type = typename T::value_type;
-    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
-                  "Only integral types and enums are possible");
+    static_assert(std::is_integral_v<Type> || std::is_enum_v<Type>, "Only integral types and enums are possible");
 
-    if(detail::isResizableContainer<T>::value && !ignoreSize)
+    if(detail::isResizableContainer_v<T> && !ignoreSize)
         ser.PushVarSize(container.size());
     detail::pushContainer(ser, container, int());
 }
@@ -89,8 +90,7 @@ template<typename T>
 void popContainer(Serializer& ser, T&& result, bool ignoreSize = false)
 {
     using Type = typename std::remove_reference_t<T>::value_type;
-    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
-                  "Only integral types and enums are possible");
+    static_assert(std::is_integral_v<Type> || std::is_enum_v<Type>, "Only integral types and enums are possible");
 
     if(!ignoreSize)
         detail::maybePopSizeAndResize(ser, result);

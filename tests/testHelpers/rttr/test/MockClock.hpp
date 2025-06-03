@@ -6,19 +6,19 @@
 
 #include "Clock.h"
 
-namespace rttr { namespace test {
-    struct MockClock : public BaseClock
-    {
-        duration& currentTime;
-        MockClock(duration& timeRef) : currentTime(timeRef) {}
-        duration time_since_epoch() override { return currentTime; }
-    };
+namespace rttr::test {
+struct MockClock : public BaseClock
+{
+    duration& currentTime;
+    MockClock(duration& timeRef) : currentTime(timeRef) {}
+    duration time_since_epoch() override { return currentTime; }
+};
 
-    struct MockClockFixture
-    {
-        MockClock::duration currentTime;
+struct MockClockFixture
+{
+    MockClock::duration currentTime;
 
-        MockClockFixture() : currentTime(0) { Clock::setClock(std::make_unique<MockClock>(currentTime)); }
-        ~MockClockFixture() { Clock::setClock(std::make_unique<BaseClock>()); }
-    };
-}} // namespace rttr::test
+    MockClockFixture() : currentTime(0) { Clock::setClock(std::make_unique<MockClock>(currentTime)); }
+    ~MockClockFixture() { Clock::setClock(std::make_unique<BaseClock>()); }
+};
+} // namespace rttr::test

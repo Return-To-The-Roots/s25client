@@ -117,8 +117,7 @@ void noFlag::Draw(DrawPoint drawPt)
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = wares.size(); i > 0; --i)
     {
-        LOADER.GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(wares[i - 1]->type))
-          ->DrawFull(drawPt + WARES_POS[i - 1]);
+        LOADER.GetWareStackTex(wares[i - 1]->type)->DrawFull(drawPt + WARES_POS[i - 1]);
     }
 }
 
@@ -229,13 +228,14 @@ unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
     return helpers::count_if(wares, [roadDir](const auto& ware) { return ware->GetNextDir() == roadDir; });
 }
 
-/**
- *  Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte
- *  Richtung noch transportiert werden müssen.
- */
 unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 {
-    // Waren zählen, die in diese Richtung transportiert werden müssen
+    constexpr auto PATHFINDING_PENALTY_CARRIER_ARRIVING = 50;
+    constexpr auto PATHFINDING_PENALTY_NO_CARRIER = 500;
+    // This must be the same as "NO_CARRIER" for replay compatibility
+    // TODO(Replay): Move to `way_costs` in nobHarborBuilding::GetShipConnections
+    constexpr auto PATHFINDING_PENALTY_START_SHIPPING = 500;
+    // 2 Points per ware as carrier has to walk to other point and back for each ware
     unsigned points = GetNumWaresForRoad(dir) * 2;
 
     const RoadSegment* routeInDir = GetRoute(dir);
@@ -244,9 +244,20 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     {
         // normal carrier has been ordered from the warehouse but has not yet arrived and no donkey
         if(humanCarrier->GetCarrierState() == CarrierState::FigureWork && !routeInDir->hasCarrier(1))
-            points += 50;
+            points += PATHFINDING_PENALTY_CARRIER_ARRIVING;
     } else if(!routeInDir->hasCarrier(1))
-        points += 500; // No carrier at all -> Large penalty
+    {
+        // Routes are either between flags or from a flag to a building, see the ctor of noBaseBuilding
+        const bool isBuildingEntry = (dir == Direction::NorthWest) && (routeInDir->GetF2()->GetGOT() != GO_Type::Flag);
+        // For entering a building no carrier is required
+        // Only roads to buildings considered by path finding are those to harbors
+        if(isBuildingEntry)
+        {
+            RTTR_Assert(routeInDir->GetF2()->GetGOT() == GO_Type::NobHarborbuilding);
+            points += PATHFINDING_PENALTY_START_SHIPPING;
+        } else
+            points += PATHFINDING_PENALTY_NO_CARRIER;
+    }
 
     return points;
 }

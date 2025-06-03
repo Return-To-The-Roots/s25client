@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 
 SPDX-License-Identifier: GPL-2.0-or-later
 -->
@@ -18,7 +18,6 @@ See more information on <http://www.rttr.info>
 ## Current Build Info
 
 Build & Tests:
- [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)](https://ci.appveyor.com/project/Flow86/s25client/branch/master)
  ![GHA Unit tests](https://github.com/Return-To-The-Roots/s25client/workflows/Unit%20tests/badge.svg)
  ![Static analysis](https://github.com/Return-To-The-Roots/s25client/workflows/Static%20analysis/badge.svg)
 
@@ -41,6 +40,12 @@ Coverage:
 Putting RttR in a symlinked folder should work though.
 
 ## How to build
+
+### Development tools / Prebuilt libraries
+
+The `dev-tools` submodule contains prebuild binaries for various platforms that can be used to quickly start building.  
+However they are not compatible with all systems, e.g. not with musl libc, so they are not used by default.
+You can configure (run CMake) with `-DRTTR_INCLUDE_DEVTOOLS=ON` to allow CMake to find them.
 
 ### On Linux or Darwin/MacOSX
 
@@ -70,6 +75,7 @@ All of them can be installed with the package manager.
 - sdl2_mixer
 - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
 - miniupnpc
+- lua 5.1-5.3 (available via the `dev-tools` submodule included by default)
 
 All of them can be installed via homebrew
 
@@ -90,29 +96,6 @@ make
 
 Note: by using the `-G` option of `cmake` you can specify a generator, e.g. `cmake -G Xcode -DCMAKE_BUILD_TYPE=Release ..` will generate an Xcode project.
 Please check `cmake --help` for more options.
-
-#### Optimizations
-
-There are various CMake options to control the build and optimization including ARM (Raspberry PI etc.) related ones.
-Examples:
-
-- RTTR_ENABLE_OPTIMIZATIONS/RTTR_ENABLE_WERROR
-- RTTR_OPTIMIZATION_VECTOR_EXT (Non-Windows x86/x64 only)
-- RTTR_OPTIMIZATION_TUNE (Non-Windows only)
-- RTTR_TARGET_BOARD (ARM only)
-See the description in CMake-GUI/ccmake for details.
-
-Note that due to the use of submodules you always need to `git pull && git submodule update --init --recursive` to get the latest version.
-(The `--init` and `--recursive` arguments are only required should we add *new* submodules to the existing set.)
-
-#### Tests
-
-Especially for developing you should build in Debug mode (`-DCMAKE_BUILD_TYPE=Debug`) and run the tests after executing `make` via `make test` or `ctest --output-on-failure`.
-There is also an option to enable checks for undefined behavior (UBSAN) and memory errors (ASAN) like use-after-free or leaks.
-Just pass `-DRTTR_ENABLE_SANITIZERS=ON` to CMake and use a recent GCC or Clang compiler to build.
-Then just run (tests or application) as usual.
-
-**Note**: Boost.Endian < 1.67 is known to have UB so use at least 1.67 when running the sanitizers.
 
 ### On Windows
 
@@ -162,6 +145,28 @@ Then just run (tests or application) as usual.
     - Press ok
   - Press generate
 - Open and use build/RTTR.sln
+
+### Optimizations
+
+There are various CMake options to control the build and optimization including ARM (Raspberry PI etc.) related ones.
+Examples:
+
+- RTTR_ENABLE_OPTIMIZATIONS/RTTR_ENABLE_WERROR
+- RTTR_OPTIMIZATION_VECTOR_EXT (Non-Windows x86/x64 only)
+- RTTR_OPTIMIZATION_TUNE (Non-Windows only)
+- RTTR_TARGET_BOARD (ARM only)
+See the description in CMake-GUI/ccmake for details.
+
+Note that due to the use of submodules you always need to `git pull && git submodule update --init --recursive` to get the latest version.
+(The `--init` and `--recursive` arguments are only required should we add *new* submodules to the existing set.)
+
+### Tests
+
+Especially for developing you should build in Debug mode (`-DCMAKE_BUILD_TYPE=Debug`) and run the tests after executing `make` via `make test` or `ctest --output-on-failure`.
+There is also an option to enable checks for undefined behavior (UBSAN) and memory errors (ASAN) like use-after-free or leaks.
+Just pass `-DRTTR_ENABLE_SANITIZERS=ON` to CMake and use a recent GCC or Clang compiler to build.
+Then just run (tests or application) as usual.
+
 
 --
 

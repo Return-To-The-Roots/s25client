@@ -9,7 +9,7 @@ endif()
 
 # specify the cross compiler
 set(usedToolchain)
-foreach(COMPILER_PREFIX i386-apple-darwin15 i686-apple-darwin10)
+foreach(COMPILER_PREFIX x86_64-apple-darwin22.2 i386-apple-darwin15 i686-apple-darwin10)
     foreach(var CMAKE_C_COMPILER CMAKE_CXX_COMPILER)
         unset(${var} CACHE)
         unset(${var})
@@ -22,9 +22,21 @@ foreach(COMPILER_PREFIX i386-apple-darwin15 i686-apple-darwin10)
     endif()
 endforeach()
 
+find_program(CMAKE_AR NAMES ${usedToolchain}-ar)
+find_program(CMAKE_RANLIB NAMES ${usedToolchain}-ranlib)
 find_program(CMAKE_INSTALL_NAME_TOOL NAMES ${usedToolchain}-install_name_tool)
 
-set(OSX_SDKS "/usr/lib/apple/SDKs/MacOSX10.11.sdk" "/usr/lib/apple/SDKs/MacOSX10.5.sdk" "/usr/lib/apple/SDKs/MacOSX10.4u.sdk")
+set(OSX_SDKS
+    "/usr/lib/apple/SDKs/MacOSX13.1.sdk"
+    "/usr/lib/apple/SDKs/MacOSX12.3.sdk"
+    "/usr/lib/apple/SDKs/MacOSX12.1.sdk"
+    "/usr/lib/apple/SDKs/MacOSX11.3.sdk"
+    "/usr/lib/apple/SDKs/MacOSX10.15.sdk"
+    "/usr/lib/apple/SDKs/MacOSX10.13.sdk"
+    "/usr/lib/apple/SDKs/MacOSX10.11.sdk"
+    "/usr/lib/apple/SDKs/MacOSX10.5.sdk"
+    "/usr/lib/apple/SDKs/MacOSX10.4u.sdk"
+)
 
 # set SDK (use newest first)
 unset(CMAKE_OSX_SYSROOT)
@@ -58,12 +70,19 @@ if(NOT CMAKE_SYSTEM_VERSION)
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    if(osx_version MATCHES "^10\\.([0-9]+)")
+    if(osx_version MATCHES "^(1[0-9]+)\\.([0-9]+)")
         #  10.x == Mac OSX 10.6 (Snow Leopard)
         #  11.x == Mac OSX 10.7 (Lion)
         #  12.x == Mac OSX 10.8 (Mountain Lion)
+        #  ...
+		#  22.x == Mac OSX 13.X
         #  etc.
-        math(EXPR majorVersion "4 + ${CMAKE_MATCH_1}")
+		if("${CMAKE_MATCH_1}" STREQUAL "10")
+			math(EXPR majorVersion "4 + ${CMAKE_MATCH_2}")
+		else()
+			math(EXPR majorVersion "9 + ${CMAKE_MATCH_1}")
+		endif()
+
         set(CMAKE_SYSTEM_VERSION "${majorVersion}.0.0")
     else()
         message(FATAL_ERROR "Could not parse SDK version: ${osx_version}")
@@ -77,3 +96,5 @@ set(CMAKE_FIND_ROOT_PATH ${CMAKE_OSX_SYSROOT})
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)

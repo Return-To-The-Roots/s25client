@@ -35,6 +35,7 @@ public:
     bool IsChangeAllowed(const std::string& name, bool defaultVal = false);
     /// Get addons that are allowed to be changed
     std::vector<AddonId> GetAllowedAddons();
+    bool IsMapPreviewEnabled();
 
 private:
     IGameLobbyController& lobbyServerController_;

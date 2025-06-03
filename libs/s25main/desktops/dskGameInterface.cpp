@@ -18,6 +18,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
+#include "buildings/nobTemple.h"
 #include "buildings/nobUsual.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
@@ -55,6 +56,7 @@
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwStatistics.h"
+#include "ingameWindows/iwTempleBuilding.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTools.h"
 #include "ingameWindows/iwTrade.h"
@@ -103,7 +105,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
       actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
-      isCheatModeOn(false)
+      cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
 {
     road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
@@ -141,7 +143,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
     if(initOGL)
         worldViewer.InitTerrainRenderer();
 
-    VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync); // Use requested setting for ingame
+    VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate); // Use requested setting for ingame
 }
 
 void dskGameInterface::InitPlayer()
@@ -216,6 +218,19 @@ void dskGameInterface::StartScrolling(const Position& mousePos)
     startScrollPt = mousePos;
     isScrolling = true;
     WINDOWMANAGER.SetCursor(Cursor::Scroll);
+}
+
+void dskGameInterface::ToggleFoW()
+{
+    DisableFoW(!GAMECLIENT.IsReplayFOWDisabled());
+}
+
+void dskGameInterface::DisableFoW(const bool hideFOW)
+{
+    GAMECLIENT.SetReplayFOW(hideFOW);
+    // Notify viewer and minimap to recalculate the visibility
+    worldViewer.RecalcAllColors();
+    minimap.UpdateAll();
 }
 
 void dskGameInterface::ShowPersistentWindowsAfterSwitch()
@@ -346,45 +361,51 @@ void dskGameInterface::Msg_PaintAfter()
 {
     Desktop::Msg_PaintAfter();
 
-    /* NWF-Anzeige (vorläufig)*/
-    std::array<char, 256> nwf_string;
-
     const GameWorldBase& world = worldViewer.GetWorld();
-    if(GAMECLIENT.IsReplayModeOn())
+
+    if(SETTINGS.global.showGFInfo)
     {
-        snprintf(nwf_string.data(), nwf_string.size(),
-                 _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
-                 GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
-                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
-    } else
-        snprintf(nwf_string.data(), nwf_string.size(),
-                 _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                 GAMECLIENT.GetNWFLength(),
-                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                 worldViewer.GetPlayer().ping);
+        std::array<char, 256> nwf_string;
+        if(GAMECLIENT.IsReplayModeOn())
+        {
+            snprintf(nwf_string.data(), nwf_string.size(),
+                     _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
+                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
+                     GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
+                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
+        } else
+            snprintf(nwf_string.data(), nwf_string.size(),
+                     _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
+                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                     GAMECLIENT.GetNWFLength(),
+                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                     worldViewer.GetPlayer().ping);
+        NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
+    }
 
     // tournament mode?
-    unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
-
-    if(tmd)
+    const unsigned tournamentDuration = GAMECLIENT.GetTournamentModeDuration();
+    if(tournamentDuration)
     {
         unsigned curGF = world.GetEvMgr().GetCurrentGF();
         std::string tournamentNotice;
-        if(curGF >= tmd)
+        if(curGF >= tournamentDuration)
             tournamentNotice = _("Tournament finished");
         else
-            tournamentNotice = helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tmd - curGF));
+        {
+            tournamentNotice =
+              helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tournamentDuration - curGF));
+        }
+        NormalFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize().x - 30, 1), tournamentNotice, FontStyle::AlignH::RIGHT,
+                         COLOR_YELLOW);
     }
-
-    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
+    {
         NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(),
                          FontStyle::BOTTOM, COLOR_YELLOW);
-    else
+    } else
     {
         // Laggende Spieler anzeigen in Form von Schnecken
         DrawPoint snailPos(VIDEODRIVER.GetRenderSize().x - 70, 35);
@@ -403,7 +424,7 @@ void dskGameInterface::Msg_PaintAfter()
     DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
 
     // Draw cheating indicator icon (WINTER)
-    if(isCheatModeOn)
+    if(cheats_.isCheatModeOn())
     {
         glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
         cheatingImg->DrawFull(iconPos);
@@ -560,6 +581,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             else if(BuildingProperties::IsMilitary(bt))
                 WINDOWMANAGER.Show(std::make_unique<iwMilitaryBuilding>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
+            else if(bt == BuildingType::Temple)
+                WINDOWMANAGER.Show(std::make_unique<iwTempleBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobTemple>(cSel)));
             else
                 WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
@@ -685,7 +709,7 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 
     int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-    if(SETTINGS.interface.revert_mouse)
+    if(SETTINGS.interface.invertMouse)
         acceleration = -acceleration;
 
     gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
@@ -714,6 +738,8 @@ bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
  */
 bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 {
+    cheatCommandTracker_.onKeyEvent(ke);
+
     switch(ke.kt)
     {
         default: break;
@@ -742,54 +768,25 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
             return true;
         case KeyType::F3: // Map debug window/ Multiplayer coordinates
-            WINDOWMANAGER.ToggleWindow(
-              std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
+        {
+            const bool replayMode = GAMECLIENT.IsReplayModeOn();
+            if(replayMode)
+                DisableFoW(true);
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || replayMode));
             return true;
+        }
         case KeyType::F8: // Tastaturbelegung
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
         case KeyType::F9: // Readme
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
-        case KeyType::F10:
-        {
-#ifdef NDEBUG
-            const bool allowHumanAI = isCheatModeOn;
-#else
-            const bool allowHumanAI = true;
-#endif // !NDEBUG
-            if(GAMECLIENT.GetState() == ClientState::Game && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
-                GAMECLIENT.ToggleHumanAIPlayer();
-            return true;
-        }
         case KeyType::F11: // Music player (midi files)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
         case KeyType::F12: // Optionsfenster
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>(gwv.GetSoundMgr()));
             return true;
-    }
-
-    static std::string winterCheat = "winter";
-    switch(ke.c)
-    {
-        case 'w':
-        case 'i':
-        case 'n':
-        case 't':
-        case 'e':
-        case 'r':
-            curCheatTxt += char(ke.c);
-            if(winterCheat.find(curCheatTxt) == 0)
-            {
-                if(curCheatTxt == winterCheat)
-                {
-                    isCheatModeOn = !isCheatModeOn;
-                    curCheatTxt.clear();
-                }
-            } else
-                curCheatTxt.clear();
-            break;
     }
 
     switch(ke.c)
@@ -843,11 +840,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             gwv.ToggleShowNames();
             return true;
         case 'd': // Replay: FoW an/ausschalten
-            // GameClient Bescheid sagen
-            GAMECLIENT.ToggleReplayFOW();
-            // Sichtbarkeiten neu setzen auf der Map-Anzeige und der Minimap
-            worldViewer.RecalcAllColors();
-            minimap.UpdateAll();
+            ToggleFoW();
             return true;
         case 'h': // Zum HQ springen
         {
@@ -1103,9 +1096,9 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)
 {
-    if(cmd == "apocalypsis")
-        GAMECLIENT.CheatArmageddon();
-    else if(cmd == "surrender")
+    cheatCommandTracker_.onChatCommand(cmd);
+
+    if(cmd == "surrender")
         GAMECLIENT.Surrender();
     else if(cmd == "async")
         (void)RANDOM.Rand(RANDOM_CONTEXT2(0), 255);

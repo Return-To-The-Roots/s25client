@@ -41,7 +41,13 @@ void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
 void JoinPlayerInfo::SetAIName(unsigned playerId)
 {
     RTTR_Assert(ps == PlayerState::AI);
-    name = (boost::format((aiInfo.type == AI::Type::Dummy) ? _("Dummy %u") : _("Computer %u")) % playerId).str();
+    name = MakeAIName(aiInfo, playerId);
+}
+
+std::string JoinPlayerInfo::MakeAIName(const AI::Info& aiInfo, unsigned playerId)
+{
+    std::string name =
+      (boost::format((aiInfo.type == AI::Type::Dummy) ? _("Dummy %u") : _("Computer %u")) % playerId).str();
     name += _(" (AI)");
 
     if(aiInfo.type == AI::Type::Default)
@@ -53,4 +59,6 @@ void JoinPlayerInfo::SetAIName(unsigned playerId)
             case AI::Level::Hard: name += _(" (hard)"); break;
         }
     }
+
+    return name;
 }

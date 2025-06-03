@@ -153,6 +153,13 @@ BOOST_AUTO_TEST_CASE(Events)
     BOOST_TEST_REQUIRE(allowedAddons[0] == AddonId::LIMIT_CATAPULTS);
     BOOST_TEST_REQUIRE(allowedAddons[1] == AddonId::CHARBURNER);
     BOOST_TEST_REQUIRE(allowedAddons[2] == AddonId::TRADE);
+
+    BOOST_TEST(lua.IsMapPreviewEnabled()); // Not defined in lua -> Default to enabled
+    executeLua("function isMapPreviewEnabled()\n  return false\nend");
+    BOOST_TEST(!lua.IsMapPreviewEnabled());
+    executeLua("function isMapPreviewEnabled()\n  return true\nend");
+    BOOST_TEST(lua.IsMapPreviewEnabled());
+
     // Return invalid type -> ignored, but log output
     clearLog();
     executeLua("function getAllowedAddons()\n  return {'ADDON_FAIL_ME'}\nend");

@@ -1,11 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "Window.h"
-#include <boost/variant.hpp>
+#include "variant.h"
 #include <vector>
 class MouseCoords;
 class glFont;
@@ -64,7 +64,7 @@ private:
         /// Farbe der Chatnachricht
         unsigned msg_color;
     };
-    using ChatLine = boost::variant<PrimaryChatLine, SecondaryChatLine>;
+    using ChatLine = boost_variant2<PrimaryChatLine, SecondaryChatLine>;
 
     TextureColor tc;    /// Hintergrundtextur.
     const glFont* font; /// Schriftart.

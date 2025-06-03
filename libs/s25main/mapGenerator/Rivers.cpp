@@ -6,78 +6,78 @@
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
 
-namespace rttr { namespace mapGenerator {
+namespace rttr::mapGenerator {
 
-    River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
-                       unsigned splitRate)
+River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
+                   unsigned splitRate)
+{
+    const MapExtent& size = map.size;
+
+    River river;
+    std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
+
+    auto& textures = map.textureMap;
+    const auto water = textures.Find(IsWater);
+
+    MapPoint currentNode = source;
+    Direction currentDir = direction;
+
+    for(unsigned node = 0; node < length; ++node)
     {
-        const MapExtent& size = map.size;
+        const auto& triangles = GetTriangles(currentNode, size, currentDir);
 
-        River river;
-        std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
-
-        auto& textures = map.textureMap;
-        const auto water = textures.Find(IsWater);
-
-        MapPoint currentNode = source;
-        Direction currentDir = direction;
-
-        for(unsigned node = 0; node < length; ++node)
+        for(const auto& triangle : triangles)
         {
-            const auto& triangles = GetTriangles(currentNode, size, currentDir);
+            textures.Set(triangle, water);
 
-            for(const auto& triangle : triangles)
+            const auto& edges = GetTriangleEdges(triangle, size);
+            for(const MapPoint& edge : edges)
             {
-                textures.Set(triangle, water);
-
-                const auto& edges = GetTriangleEdges(triangle, size);
-                for(const MapPoint& edge : edges)
-                {
-                    river.insert(edge);
-                }
-            }
-
-            if(map.z[currentNode] == map.height.minimum)
-            {
-                return river;
-            }
-
-            const auto lastDir = currentDir;
-
-            while(currentDir == lastDir || helpers::contains(exlcuded, currentDir))
-            {
-                currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
-            }
-
-            currentNode = map.getTextures().GetNeighbour(currentNode, lastDir);
-
-            if(rnd.ByChance(splitRate))
-            {
-                auto splitDirection = direction + (rnd.ByChance(50) ? 5 : 1);
-                auto anotherRivers = CreateStream(rnd, map, currentNode, splitDirection, length / 2, splitRate / 2);
-
-                for(const MapPoint& node : anotherRivers)
-                {
-                    river.insert(node);
-                }
+                river.insert(edge);
             }
         }
 
-        auto seaLevel = static_cast<unsigned>(map.height.minimum);
-        auto& z = map.z;
-
-        for(const MapPoint& node : river)
+        if(map.z[currentNode] == map.height.minimum)
         {
-            if(z[node] > 0)
-            {
-                z[node] = std::max(static_cast<unsigned>(z[node] - 1), seaLevel);
-            } else
-            {
-                z[node] = seaLevel;
-            }
+            return river;
         }
 
-        return river;
+        const auto lastDir = currentDir;
+
+        while(currentDir == lastDir || helpers::contains(exlcuded, currentDir))
+        {
+            currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
+        }
+
+        currentNode = map.getTextures().GetNeighbour(currentNode, lastDir);
+
+        if(rnd.ByChance(splitRate))
+        {
+            auto splitDirection = direction + (rnd.ByChance(50) ? 5 : 1);
+            auto anotherRivers = CreateStream(rnd, map, currentNode, splitDirection, length / 2, splitRate / 2);
+
+            for(const MapPoint& node : anotherRivers)
+            {
+                river.insert(node);
+            }
+        }
     }
 
-}} // namespace rttr::mapGenerator
+    auto seaLevel = static_cast<unsigned>(map.height.minimum);
+    auto& z = map.z;
+
+    for(const MapPoint& node : river)
+    {
+        if(z[node] > 0)
+        {
+            z[node] = std::max(static_cast<unsigned>(z[node] - 1), seaLevel);
+        } else
+        {
+            z[node] = seaLevel;
+        }
+    }
+
+    return river;
+}
+
+} // namespace rttr::mapGenerator

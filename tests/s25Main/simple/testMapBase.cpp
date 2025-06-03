@@ -14,6 +14,37 @@
 
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
 
+BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
+{
+    MapBase world;
+
+    // No points -> empty result
+    BOOST_TEST(world.GetAllNeighboursUnion(std::vector<MapPoint>{}).empty());
+
+    // 3 points where the last 2 share neighbours and are neighbours to each other
+    const std::vector<MapPoint> testPoints{MapPoint(1, 1), MapPoint(10, 10), MapPoint(10, 11)};
+    // ((center + hexagon (6 points)) * 3 points input) - 4 common points = 17 points
+    std::vector<MapPoint> expectedResultPoints{
+      // Original point
+      MapPoint(1, 1),
+      // Neighbours
+      MapPoint(1, 0), MapPoint(2, 0), MapPoint(0, 1), MapPoint(2, 1), MapPoint(1, 2), MapPoint(2, 2),
+      // Originals points
+      MapPoint(10, 10), // Duplicate
+      MapPoint(10, 11), // Duplicate
+      // Neighbours
+      MapPoint(9, 9), MapPoint(10, 9), MapPoint(9, 10), MapPoint(11, 11), MapPoint(10, 12), MapPoint(11, 12),
+      // Duplicates
+      MapPoint(11, 10), MapPoint(9, 11)};
+
+    auto resultPoints = world.GetAllNeighboursUnion(testPoints);
+
+    std::sort(resultPoints.begin(), resultPoints.end(), MapPointLess());
+    std::sort(expectedResultPoints.begin(), expectedResultPoints.end(), MapPointLess());
+
+    BOOST_TEST(resultPoints == expectedResultPoints, boost::test_tools::per_element());
+}
+
 BOOST_AUTO_TEST_CASE(NeighbourPts)
 {
     MapBase world;

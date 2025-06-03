@@ -4,21 +4,30 @@
 
 #include "iwWares.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlText.h"
 #include "iwHelp.h"
 #include "ogl/FontStyle.h"
+#include "world/GameWorld.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
 namespace {
 constexpr unsigned ID_pageOffset = 100;
-}
+constexpr unsigned rowHeight = 42;
+constexpr unsigned topMargin = 21;
+constexpr unsigned bottomMargin = 11;
+constexpr unsigned buttonRowHeight = 34;
+constexpr unsigned spacingBetweenLastRowAndButtonRow = 16;
+} // namespace
 
 static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPos, const Extent btSize,
                        const unsigned idOffset, const std::string& name, ITexture* img, const bool allow_outhousing)
@@ -59,16 +68,16 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
     page.AddText(600 + idOffset, txtPos, "", COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font);
 }
 
-// 167, 416
-iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing,
-                 const glFont* font, const Inventory& inventory, const GamePlayer& player)
-    : IngameWindow(id, pos, size, title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player), numPages(0)
+iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, const std::string& title,
+                 bool allow_outhousing, const glFont* font, const Inventory& inventory, const GamePlayer& player)
+    : IngameWindow(id, pos, Extent(167, 416), title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player),
+      numPages(0)
 {
     if(!font)
         font = SmallFont;
 
     // Zuordnungs-IDs
-    constexpr std::array<GoodType, 31> WARE_DISPLAY_ORDER{
+    std::vector<GoodType> WARE_DISPLAY_ORDER{
       GoodType::Wood,    GoodType::Boards,   GoodType::Stones,
       GoodType::Ham,     GoodType::Grain,    GoodType::Flour,
       GoodType::Fish,    GoodType::Meat,     GoodType::Bread,
@@ -79,17 +88,57 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
       GoodType::Shovel,  GoodType::Crucible, GoodType::RodAndLine,
       GoodType::Scythe,  GoodType::Cleaver,  GoodType::Rollingpin,
       GoodType::Bow,     GoodType::Sword,    GoodType::ShieldRomans /* nation specific */,
-      GoodType::Boat};
+      GoodType::Boat,    GoodType::Grapes,   GoodType::Wine};
 
-    constexpr std::array<Job, 31> JOB_DISPLAY_ORDER{
-      Job::Helper,      Job::Builder,     Job::Planer,     Job::Woodcutter,
-      Job::Forester,    Job::Stonemason,  Job::Fisher,     Job::Hunter,
-      Job::Carpenter,   Job::Farmer,      Job::PigBreeder, Job::DonkeyBreeder,
-      Job::Miller,      Job::Baker,       Job::Butcher,    Job::Brewer,
-      Job::Miner,       Job::IronFounder, Job::Armorer,    Job::Minter,
-      Job::Metalworker, Job::Shipwright,  Job::Geologist,  Job::Scout,
-      Job::PackDonkey,  Job::CharBurner,  Job::Private,    Job::PrivateFirstClass,
-      Job::Sergeant,    Job::Officer,     Job::General};
+    std::vector<Job> JOB_DISPLAY_ORDER{Job::Helper,
+                                       Job::Builder,
+                                       Job::Planer,
+                                       Job::Woodcutter,
+                                       Job::Forester,
+                                       Job::Stonemason,
+                                       Job::Fisher,
+                                       Job::Hunter,
+                                       Job::Carpenter,
+                                       Job::Farmer,
+                                       Job::PigBreeder,
+                                       Job::DonkeyBreeder,
+                                       Job::Miller,
+                                       Job::Baker,
+                                       Job::Butcher,
+                                       Job::Brewer,
+                                       Job::Miner,
+                                       Job::IronFounder,
+                                       Job::Armorer,
+                                       Job::Minter,
+                                       Job::Metalworker,
+                                       Job::Shipwright,
+                                       Job::Geologist,
+                                       Job::Scout,
+                                       Job::PackDonkey,
+                                       Job::CharBurner,
+                                       Job::Winegrower,
+                                       Job::Vintner,
+                                       Job::TempleServant,
+                                       Job::Private,
+                                       Job::PrivateFirstClass,
+                                       Job::Sergeant,
+                                       Job::Officer,
+                                       Job::General};
+
+    const auto isUnusedWare = [&](GoodType const& type) {
+        return !wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonGoodType(type);
+    };
+
+    auto isUnusedJob = [&](Job const& job) {
+        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonJobType(job))
+            return true;
+        if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && job == Job::CharBurner)
+            return true;
+        return false;
+    };
+
+    helpers::erase_if(WARE_DISPLAY_ORDER, isUnusedWare);
+    helpers::erase_if(JOB_DISPLAY_ORDER, isUnusedJob);
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();
@@ -99,8 +148,9 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
     peoplePageID = figuresPage.GetID();
 
     bool isRowWithFourElemens = true;
-    constexpr unsigned numElements = std::max(WARE_DISPLAY_ORDER.size(), JOB_DISPLAY_ORDER.size());
-    for(unsigned idx = 0, x = 0, y = 0; idx < numElements; ++x, ++idx)
+    const unsigned numElements = std::max(WARE_DISPLAY_ORDER.size(), JOB_DISPLAY_ORDER.size());
+    unsigned y = 0;
+    for(unsigned idx = 0, x = 0; idx < numElements; ++x, ++idx)
     {
         // Alternating rows with 4 and 5 items
         if(x >= (isRowWithFourElemens ? 4u : 5u))
@@ -112,7 +162,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         }
 
         const Extent btSize(26, 26);
-        const DrawPoint btPos((isRowWithFourElemens ? btSize.x + 1 : btSize.x / 2) + x * 28, 21 + y * 42);
+        const DrawPoint btPos((isRowWithFourElemens ? btSize.x + 1 : btSize.x / 2) + x * 28, topMargin + y * rowHeight);
 
         if(idx < WARE_DISPLAY_ORDER.size())
         {
@@ -130,12 +180,16 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         }
     }
 
-    // "Blättern"
-    AddImageButton(0, DrawPoint(52, GetSize().y - 47), Extent(66, 32), TextureColor::Grey, LOADER.GetImageN("io", 84),
-                   _("Next page"));
-    // Hilfe
-    AddImageButton(12, DrawPoint(16, GetSize().y - 47), Extent(32, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
-                   _("Help"));
+    // compute the final window size
+    Resize(Extent(GetSize().x, topMargin + (y + 1) * rowHeight + spacingBetweenLastRowAndButtonRow + additionalYSpace
+                                 + buttonRowHeight + bottomMargin));
+
+    // "Next page" button
+    AddImageButton(0, DrawPoint(52, GetFullSize().y - 47), Extent(66, 32), TextureColor::Grey,
+                   LOADER.GetImageN("io", 84), _("Next page"));
+    // "Help" button
+    AddImageButton(12, DrawPoint(16, GetFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
+                   LOADER.GetImageN("io", 225), _("Help"));
 
     waresPage.SetVisible(true);
     curPage_ = warePageID;

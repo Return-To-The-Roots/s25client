@@ -6,9 +6,9 @@
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "helpers/mathFuncs.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
-#include <cmath>
 
 ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size,
                            const TextureColor tc, unsigned short button_minus, unsigned short button_plus,
@@ -140,8 +140,8 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
     Extent progressSize = GetSize() - Extent((GetSize().y + 1) * 2, 8) - padding_ * 2u;
     if(IsPointInRect(mc.GetPos(), Rect(progressOrigin, progressSize)))
     {
-        position = static_cast<uint16_t>(
-          std::lround(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x));
+        position =
+          helpers::iround<uint16_t>(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
 
         if(GetParent())
             GetParent()->Msg_ProgressChange(GetID(), position);

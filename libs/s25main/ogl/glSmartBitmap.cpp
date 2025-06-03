@@ -219,8 +219,6 @@ void glSmartBitmap::generateTexture()
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufSize.x, bufSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 
-    using PointF = Point<float>;
-
     /* 0--3/4--7
      * |  |    |
      * 1--2/5--6
@@ -252,6 +250,21 @@ void glSmartBitmap::draw(DrawPoint drawPt, unsigned color, unsigned player_color
     drawPercent(drawPt, 100, color, player_color);
 }
 
+void glSmartBitmap::drawPercent(DrawPoint drawPt, unsigned percent, unsigned color, unsigned player_color)
+{
+    // nothing to draw?
+    if(!percent)
+        return;
+    RTTR_Assert(percent <= 100);
+
+    const float partDrawn = percent / 100.f;
+    auto startY = int(std::round(size_.y * (1 - partDrawn)));
+    auto height = size_.y - startY;
+    Rect dstArea(drawPt.x, drawPt.y + startY, size_.x, height);
+    Rect srcArea(0, startY, size_.x, height);
+    drawRect(dstArea, srcArea, color, player_color);
+}
+
 void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFFFFFFFF*/, unsigned player_color /*= 0*/)
 {
     if(!texture)
@@ -281,20 +294,17 @@ void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFF
     colors[0].a = GetAlpha(color);
     colors[3] = colors[2] = colors[1] = colors[0];
 
-    // vertical coords
-    curTexCoords[0] = texCoords[0];
-    curTexCoords[1] = texCoords[1];
-    curTexCoords[2] = texCoords[2];
-    curTexCoords[3] = texCoords[3];
-    curTexCoords[0].y = curTexCoords[3].y = helpers::lerp(
-      texCoords[0].y, texCoords[1].y, helpers::inverseLerp(.0f, float(size_.y), float(srcArea.getOrigin().y)));
-    curTexCoords[1].y = curTexCoords[2].y = helpers::lerp(
-      texCoords[0].y, texCoords[1].y, helpers::inverseLerp(.0f, float(size_.y), float(srcArea.getEndPt().y)));
-    // horizontal coords
-    curTexCoords[0].x = curTexCoords[1].x = helpers::lerp(
-      texCoords[0].x, texCoords[3].x, helpers::inverseLerp(.0f, float(size_.x), float(srcArea.getOrigin().x)));
-    curTexCoords[2].x = curTexCoords[3].x = helpers::lerp(
-      texCoords[0].x, texCoords[3].x, helpers::inverseLerp(.0f, float(size_.x), float(srcArea.getEndPt().x)));
+    //  0--3/4--7
+    //  |   |   |
+    //  1--2/5--6
+    // Remap srcArea to texture coords
+    curTexCoords[0].x = helpers::lerp(texCoords[0].x, texCoords[3].x, srcArea.getOrigin().x / float(size_.x));
+    curTexCoords[0].y = helpers::lerp(texCoords[0].y, texCoords[1].y, srcArea.getOrigin().y / float(size_.y));
+    curTexCoords[2].x = helpers::lerp(texCoords[0].x, texCoords[3].x, srcArea.getEndPt().x / float(size_.x));
+    curTexCoords[2].y = helpers::lerp(texCoords[0].y, texCoords[1].y, srcArea.getEndPt().y / float(size_.y));
+
+    curTexCoords[1] = PointF(curTexCoords[0].x, curTexCoords[2].y);
+    curTexCoords[3] = PointF(curTexCoords[2].x, curTexCoords[0].y);
 
     int numQuads;
     if(player_color && hasPlayer)
@@ -324,19 +334,4 @@ void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFF
     VIDEODRIVER.BindTexture(texture);
     glDrawArrays(GL_QUADS, 0, numQuads);
     glDisableClientState(GL_COLOR_ARRAY);
-}
-
-void glSmartBitmap::drawPercent(DrawPoint drawPt, unsigned percent, unsigned color, unsigned player_color)
-{
-    // nothing to draw?
-    if(!percent)
-        return;
-    RTTR_Assert(percent <= 100);
-
-    const float partDrawn = percent / 100.f;
-    auto startY = int(std::floor(size_.y * (1 - partDrawn)));
-    auto endY = int(std::ceil(size_.y * partDrawn));
-    Rect dstArea(drawPt.x, drawPt.y + startY, size_.x, endY);
-    Rect srcArea(0, startY, size_.x, endY);
-    drawRect(dstArea, srcArea, color, player_color);
 }

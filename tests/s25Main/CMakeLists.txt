@@ -24,6 +24,8 @@ add_library(testWorldFixtures STATIC
     worldFixtures/SeaWorldWithGCExecution.h
     worldFixtures/TestEventManager.cpp
     worldFixtures/TestEventManager.h
+    worldFixtures/terrainHelpers.cpp
+    worldFixtures/terrainHelpers.h
     worldFixtures/WorldFixture.h
     worldFixtures/WorldWithGCExecution.h
 )
@@ -50,7 +52,7 @@ add_subdirectory(UI)
 
 option(RTTR_ENABLE_BENCHMARKS "Build the benchmarks" OFF)
 if(RTTR_ENABLE_BENCHMARKS)
-  add_subdirectory(benchmarks)
+    add_subdirectory(benchmarks)
 endif()
 
 if(WIN32)

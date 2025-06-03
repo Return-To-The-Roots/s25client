@@ -24,7 +24,7 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(AI::Info)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(JoinPlayerInfo)
 
 template<typename T>
-static std::enable_if_t<std::is_enum<T>::value, std::ostream&> operator<<(std::ostream& os, T enumVal)
+static std::enable_if_t<std::is_enum_v<T>, std::ostream&> operator<<(std::ostream& os, T enumVal)
 {
     return os << rttr::enum_cast(enumVal);
 }
@@ -203,8 +203,8 @@ BOOST_AUTO_TEST_CASE(Serialization)
         BOOST_TEST(msgOut->player2 == msgIn.player2);
     }
     {
-        const GameMessage_Map_Info msgIn(randString(), randomEnum<MapType>(), randomValue<unsigned>(),
-                                         randomValue<unsigned>(), randomValue<unsigned>(), randomValue<unsigned>());
+        auto rv = [] { return randomValue<unsigned>(); };
+        const GameMessage_Map_Info msgIn(randString(), randomEnum<MapType>(), rv(), rv(), rv(), rv());
         const auto msgOut = serializeDeserializeMessage(msgIn);
         BOOST_TEST(msgOut->filename == msgIn.filename);
         BOOST_TEST(msgOut->mt == msgIn.mt);

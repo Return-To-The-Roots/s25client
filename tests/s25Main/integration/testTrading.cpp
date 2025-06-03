@@ -14,7 +14,7 @@
 #include "gameData/JobConsts.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/variant/variant.hpp>
+#include <variant.h>
 
 struct TradeFixture : public WorldWithGCExecution3P
 {

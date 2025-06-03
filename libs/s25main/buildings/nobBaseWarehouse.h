@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,10 +6,10 @@
 
 #include "DataChangedObservable.h"
 #include "nobBaseMilitary.h"
+#include "variant.h"
 #include "gameTypes/GoodsAndPeopleArray.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
-#include <boost/variant.hpp>
 #include <array>
 #include <list>
 #include <memory>
@@ -89,13 +89,13 @@ private:
     friend class gc::SetInventorySetting;
     friend class gc::SetAllInventorySettings;
     /// Verändert Ein/Auslagerungseinstellungen
-    void SetInventorySetting(const boost::variant<GoodType, Job>& what, InventorySetting state);
+    void SetInventorySetting(const boost_variant2<GoodType, Job>& what, InventorySetting state);
 
     /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
     void SetAllInventorySettings(bool isJob, const std::vector<InventorySetting>& states);
 
     /// Lässt einen bestimmten Waren/Job-Typ ggf auslagern
-    void CheckOuthousing(const boost::variant<GoodType, Job>& what);
+    void CheckOuthousing(const boost_variant2<GoodType, Job>& what);
     void HandleCollectEvent();
     void HandleSendoutEvent();
     void HandleRecrutingEvent();
@@ -169,7 +169,7 @@ public:
         return GetInventorySetting(ware).IsSet(setting);
     }
 
-    void SetInventorySettingVisual(const boost::variant<GoodType, Job>& what, InventorySetting state);
+    void SetInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state);
 
     /// Bestellt einen Träger
     void OrderCarrier(noRoadNode& goal, RoadSegment& workplace);
@@ -246,8 +246,9 @@ public:
         return GetNumRealFigures(Job::Private) + GetNumRealFigures(Job::PrivateFirstClass)
                + GetNumRealFigures(Job::Sergeant) + GetNumRealFigures(Job::Officer) + GetNumRealFigures(Job::General);
     }
-    /// Bestellt Soldaten
-    void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);
+    /// Order troops of each rank according to `counts` without exceeding `max` in total. The number of soldiers
+    /// of each rank that is sent out is subtracted from the corresponding count in `counts` and from `max`.
+    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max);
 
     /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
     nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;
@@ -277,7 +278,7 @@ public:
     /// Available figures of a specific type that can be used for trading
     unsigned GetAvailableFiguresForTrading(Job job) const;
     /// Starts a trade caravane from this warehouse
-    void StartTradeCaravane(const boost::variant<GoodType, Job>& what, unsigned count, const TradeRoute& tr,
+    void StartTradeCaravane(const boost_variant2<GoodType, Job>& what, unsigned count, const TradeRoute& tr,
                             nobBaseWarehouse* goal);
 
     /// For debug only

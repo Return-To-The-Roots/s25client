@@ -16,6 +16,7 @@
 #include "ctrlImage.h"
 #include "ctrlImageButton.h"
 #include "ctrlList.h"
+#include "ctrlMapSelection.h"
 #include "ctrlMultiSelectGroup.h"
 #include "ctrlMultiline.h"
 #include "ctrlOptionGroup.h"

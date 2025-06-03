@@ -111,7 +111,7 @@ namespace detail {
     template<size_t numDims>
     constexpr size_t getFlatIndex(const std::array<size_t, numDims>& idxs, const std::array<size_t, numDims>& shape)
     {
-        static_assert(numDims > 0, "");
+        static_assert(numDims > 0);
         size_t result = idxs[0];
         for(size_t i = 1; i < numDims; i++)
         {

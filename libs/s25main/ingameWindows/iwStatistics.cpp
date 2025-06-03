@@ -12,13 +12,29 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
+#include "helpers/Range.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
+#include "ogl/glFont.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/PortraitConsts.h"
 #include "gameData/const_gui_ids.h"
+
+namespace {
+
+std::string getPlayerStatus(const GamePlayer& player)
+{
+    if(player.IsDefeated())
+        return "---";
+    else if(player.isHuman())
+        return "#" + std::to_string(player.GetPlayerId() + 1);
+    else
+        return _("COMP");
+}
+
+} // namespace
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     : IngameWindow(CGI_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 336), _("Statistics"),
@@ -223,16 +239,21 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned 
     }
 }
 
-void iwStatistics::Draw_()
+void iwStatistics::DrawContent()
 {
-    IngameWindow::Draw_();
+    // Draw the alliances and the colored boxes under the portraits
+    DrawPlayerOverlays();
 
-    if(IsMinimized())
-        return;
+    // Koordinatenachsen malen
+    DrawAxis();
 
-    // Die farbigen Boxen unter den Spielerportraits malen
-    unsigned short startX = 126 - numPlayingPlayers * 17;
-    DrawPoint drawPt = GetDrawPos() + DrawPoint(startX, 68);
+    // Statistiklinien malen
+    DrawStatistic(currentView);
+}
+
+void iwStatistics::DrawPlayerOverlays()
+{
+    DrawPoint drawPt = GetDrawPos() + DrawPoint(126 - numPlayingPlayers * 17, 22);
     for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
@@ -240,15 +261,41 @@ void iwStatistics::Draw_()
             continue;
 
         if(activePlayers[i])
-            DrawRectangle(Rect(drawPt, Extent(34, 12)), player.color);
+        {
+            // Draw the alliances at top of the player image
+            DrawPlayerAlliances(drawPt, player);
+            // Draw player boxes and player status at bottom
+            DrawPlayerBox(drawPt, player);
+        }
         drawPt.x += 34;
     }
+}
 
-    // Koordinatenachsen malen
-    DrawAxis();
+void iwStatistics::DrawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player)
+{
+    auto const playerBoxRect = Rect(DrawPoint(drawPt.x, drawPt.y + 47), Extent(34, 12));
+    auto const playerStatusPosition =
+      DrawPoint(playerBoxRect.getOrigin() + playerBoxRect.getSize() / 2 + DrawPoint(0, 1));
+    DrawRectangle(playerBoxRect, player.color);
+    SmallFont->Draw(playerStatusPosition, getPlayerStatus(player), FontStyle::CENTER | FontStyle::VCENTER,
+                    COLOR_YELLOW);
+}
 
-    // Statistiklinien malen
-    DrawStatistic(currentView);
+void iwStatistics::DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player)
+{
+    constexpr unsigned spacingAllianceRects = 1;
+    constexpr Extent allianceRectExtent(4, 6);
+    constexpr unsigned allianceRectOffset = allianceRectExtent.x + spacingAllianceRects;
+
+    auto pactPos = drawPt + DrawPoint::all(spacingAllianceRects);
+    for(auto idxOther : helpers::range(gwv.GetWorld().GetNumPlayers()))
+    {
+        if(idxOther != player.GetPlayerId() && player.IsAlly(idxOther))
+        {
+            DrawRectangle(Rect(pactPos, allianceRectExtent), gwv.GetWorld().GetPlayer(idxOther).color);
+            pactPos.x += allianceRectOffset;
+        }
+    }
 }
 
 void iwStatistics::DrawStatistic(StatisticType type)

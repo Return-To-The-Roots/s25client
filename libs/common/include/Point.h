@@ -1,13 +1,17 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
+#include "helpers/mathFuncs.h"
 #include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
+
+template<typename Source, typename Target>
+constexpr bool is_float_to_int_v = std::conjunction_v<std::is_floating_point<Source>, std::is_integral<Target>>;
 
 /// Type for describing a 2D value (position, size, offset...)
 /// Note: Combining a signed with an unsigned point will result in a signed type!
@@ -19,13 +23,31 @@ template<typename T>
 struct Point //-V690
 {
     using ElementType = T;
-    static_assert(std::is_arithmetic<ElementType>::value, "Requires an arithmetic type");
+    static_assert(std::is_arithmetic_v<ElementType>, "Requires an arithmetic type");
+
+    static constexpr auto MinElementValue = std::numeric_limits<T>::min();
+    static constexpr auto MaxElementValue = std::numeric_limits<T>::max();
+
+    struct Truncate_t
+    {
+        constexpr explicit Truncate_t() = default;
+    };
+
+    static constexpr Truncate_t Truncate{};
 
     T x, y;
     constexpr Point() noexcept : x(getInvalidValue()), y(getInvalidValue()) {}
     constexpr Point(const T x, const T y) noexcept : x(x), y(y) {}
-    template<typename U>
+    template<typename U, std::enable_if_t<!is_float_to_int_v<U, T>, int> = 0>
     constexpr explicit Point(const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
+    {}
+    /// Convert floating-point to integer by truncating
+    template<typename U, std::enable_if_t<is_float_to_int_v<U, T>, int> = 0>
+    constexpr explicit Point(Truncate_t, const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
+    {}
+    /// Convert floating-point to integer with rounding (default behavior)
+    template<typename U, std::enable_if_t<is_float_to_int_v<U, T>, int> = 0>
+    constexpr explicit Point(const Point<U>& pt) noexcept : x(helpers::iround<T>(pt.x)), y(helpers::iround<T>(pt.y))
     {}
     constexpr Point(const Point&) = default;
     constexpr Point& operator=(const Point&) = default;
@@ -46,6 +68,7 @@ private:
 using Position = Point<int>;
 /// Type for describing an extent/size etc. (unsigned type)
 using Extent = Point<unsigned>;
+using PointF = Point<float>;
 //-V:all:810
 
 //////////////////////////////////////////////////////////////////////////
@@ -79,7 +102,7 @@ struct type_identity
 /// Convert the type T to a signed type if the condition is true (safe for float types)
 template<bool cond, typename T>
 using make_signed_if_t =
-  typename std::conditional_t<cond && !std::is_signed<T>::value, std::make_signed<T>, type_identity<T>>::type;
+  typename std::conditional_t<cond && !std::is_signed_v<T>, std::make_signed<T>, type_identity<T>>::type;
 
 // clang-format off
 
@@ -89,26 +112,25 @@ using make_signed_if_t =
 template<typename T, typename U>
 using mixed_type_t =
   make_signed_if_t<
-    std::is_signed<T>::value || std::is_signed<U>::value,
+    std::is_signed_v<T> || std::is_signed_v<U>,
     typename std::conditional_t<
-        std::is_floating_point<T>::value == std::is_floating_point<U>::value, // both are FP or not FP?
+        std::is_floating_point_v<T> == std::is_floating_point_v<U>, // both are FP or not FP?
         std::conditional<(sizeof(T) > sizeof(U)), T, U>, // Take the larger type
-        std::conditional<std::is_floating_point<T>::value, T, U> // Take the floating point type
+        std::conditional<std::is_floating_point_v<T>, T, U> // Take the floating point type
     >::type
   >;
 
 template<typename T, typename U>
-using IsNonLossyOp = std::integral_constant<bool,
+constexpr bool is_lossles_op_v = 
     // We can do T = T <op> U (except overflow) if:
-    std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value
->;
+    std::is_floating_point_v<T> || std::is_signed_v<T> || std::is_unsigned_v<U>;
 
 // clang-format on
 
 template<typename T, typename U>
-using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;
+using require_lossless_op = std::enable_if_t<is_lossles_op_v<T, U>>;
 template<typename T>
-using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
+using require_arithmetic = std::enable_if_t<std::is_arithmetic_v<T>>;
 
 } // namespace detail
 
@@ -133,7 +155,7 @@ constexpr auto prodOfComponents(const Point<T>& pt) noexcept
 {
     // Let the compiler handle conversion to at least 32 bits keeping float types
     using op_type = decltype(T{} * uint32_t{});
-    using ResultType = ::detail::make_signed_if_t<std::is_signed<T>::value, op_type>;
+    using ResultType = ::detail::make_signed_if_t<std::is_signed_v<T>, op_type>;
     return static_cast<ResultType>(pt.x * pt.y);
 }
 
@@ -178,7 +200,7 @@ RTTR_GEN_ARITH(/)
 
 // Scaling operators
 
-template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
+template<typename T, typename U, class = detail::require_lossless_op<T, U>>
 constexpr Point<T>& operator*=(Point<T>& lhs, U factor) noexcept
 {
     return lhs *= Point<T>::all(factor);
@@ -196,7 +218,7 @@ constexpr auto operator*(const T left, const Point<U>& factor) noexcept
     return factor * left;
 }
 
-template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
+template<typename T, typename U, class = detail::require_lossless_op<T, U>>
 constexpr Point<T>& operator/=(Point<T>& lhs, U div) noexcept
 {
     return lhs /= Point<T>::all(div);

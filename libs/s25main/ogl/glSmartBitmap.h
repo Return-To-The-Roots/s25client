@@ -35,7 +35,7 @@ private:
     void calcDimensions();
 
 public:
-    std::array<Point<float>, 8> texCoords;
+    std::array<PointF, 8> texCoords;
 
     glSmartBitmap();
     ~glSmartBitmap();

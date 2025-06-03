@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,6 +6,14 @@ name: Unit tests
 
 on:
   push:
+    branches:
+      - master
+      - main
+      - develop
+      - bugfix/**
+      - feature/**
+      - fix/**
+      - pr/**
   pull_request:
 
 concurrency:
@@ -13,138 +21,195 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  BOOST_VERSION: 1.69.0
+  # Default versions from Jenkins Toolchain
+  CMAKE_VERSION: 3.26.0
+  BOOST_VERSION: 1.81.0
   ADDITIONAL_CMAKE_FLAGS: -DRTTR_ENABLE_BENCHMARKS=ON
 
 jobs:
+  Windows:
+    strategy:
+      matrix:
+        include:
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Debug,   platform: Win32}
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Debug,   platform: x64}
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Release, platform: Win32}
+          - { os: windows-2019, generator: Visual Studio 16 2019, type: Release, platform: x64}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Debug,   platform: Win32}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Debug,   platform: x64}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Release, platform: Win32}
+          - { os: windows-2022, generator: Visual Studio 17 2022, type: Release, platform: x64}
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.4.5
+        id: install-boost
+        with:
+          boost_version: ${{env.BOOST_VERSION}}
+          platform_version: ${{matrix.os == 'windows-2019' &&  '2019' || '2022'}}
+          toolset: msvc
+      - name: 'Configure'
+        env:
+          BOOST_ROOT: ${{steps.install-boost.outputs.BOOST_ROOT}}
+        shell: cmd
+        run: |
+          set "INSTALL_DIR=%GITHUB_WORKSPACE%\installed"
+          mkdir build_dir
+          cd build_dir
+          rem Enable LTCG for release builds (speeds up linking as /GL compiled modules are used)
+          if ${{matrix.type}} == Release (set "cmakeFlags=-DCMAKE_EXE_LINKER_FLAGS=/LTCG -DCMAKE_SHARED_LINKER_FLAGS=/LTCG")
+          echo "Configuring ${{matrix.generator}} for ${{matrix.type}} on ${{matrix.platform}}"
+          cmake -G "${{matrix.generator}}" -A ${{matrix.platform}} ^
+              -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR ^
+              -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_BENCHMARKS=ON -DRTTR_INCLUDE_DEVTOOLS=ON ^
+              %cmakeFlags% ..
+      - name: 'Build'
+        run: cmake --build build_dir --config ${{matrix.type}} --parallel 4
+      - name: 'Test'
+        run: ctest --test-dir build_dir --output-on-failure -C ${{matrix.type}} --parallel 4
+
   Linux:
     strategy:
       matrix:
         include:
-          - { compiler: gcc-6,    os: ubuntu-18.04, buildType: Release }
-          - { compiler: gcc-6,    os: ubuntu-18.04, buildType: Debug, coverage: true }
-          - { compiler: clang-7,  os: ubuntu-18.04, buildType: Release }
-          - { compiler: clang-7,  os: ubuntu-18.04, buildType: Debug }
-          - { compiler: clang  ,  os: macos-10.15,  buildType: Debug, boostVersion: 1.74.0 } # Multiple bugs with recent OSX until 1.74
-          # GCC 9 is known to show a few warnings that GCC 10 has "fixed", make sure this doesn't happen for us
-          - { compiler: gcc-9,    os: ubuntu-18.04, buildType: Debug }
-          # Latest GCC
-          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 14 }
-          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
-          - { compiler: gcc-11,   os: ubuntu-20.04, buildType: Release }
-          # Latest Clang with externals
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 14, externalSanitizer: true }
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, cxxStandard: 17 }
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Release }
-          # Latest Clang with latest boost
-          - { compiler: clang-13, os: ubuntu-20.04, buildType: Debug, boostVersion: 1.78.0, externalSanitizer: true }
+          # MacOSX:
+          #  Use system clang (15)
+          #   Use system cmake (version gets ignored below)
+          #   Use boost installed via brew
+          - { compiler: clang,    os: macos-14,     type: Debug }
+
+          # Linux:
+          #  Oldest Compilers 
+          #   GCC 9 also known to show a few warnings that newer versions dont show
+          #   Use system cmake
+          #   Use boost 1.73 (min version)
+          - { compiler: gcc-9,    os: ubuntu-22.04, type: Debug, cmake: 3.16.3, boost: 1.73.0 }
+          - { compiler: clang-12, os: ubuntu-22.04, type: Debug, cmake: 3.16.3, boost: 1.73.0, externalSanitizer: true }
+          #
+          #   Default compiler for Ubuntu 20.04
+          #   Use default cmake
+          #   Use default boost
+          - { compiler: gcc-10,   os: ubuntu-22.04, type: Debug, coverage: true }
+          #
+          #   Default compilers for Ubuntu 22.04
+          #   Use C++ 17 standard (default for gcc-11)
+          #   Use system cmake
+          #   Use system boost
+          #   Also include a (semi-)optimized build to a) shake out issues there an b) run the replay tests
+          - { compiler: clang-14, os: ubuntu-22.04, type: Debug,          cmake: 3.22.1, boost: 1.74.0, cxx: 17 }
+          - { compiler: gcc-11,   os: ubuntu-22.04, type: Debug,          cmake: 3.22.1, boost: 1.74.0 }
+          - { compiler: gcc-11,   os: ubuntu-22.04, type: RelWithDebInfo, cmake: 3.22.1, boost: 1.74.0 }
+          #
+          #  Latest Compilers
+          #   Use default boost
+          #   Use (compiler) default C++ 17 standard
+          #   Use default cmake
+          - { compiler: gcc-14,   os: ubuntu-24.04, type: Debug }
+          - { compiler: clang-18, os: ubuntu-24.04, type: Debug, externalSanitizer: true }
 
     runs-on: ${{matrix.os}}
 
     steps:
-      - run: echo "DEPS_DIR=${{runner.temp}}/.cache" >> $GITHUB_ENV
-      - run: echo "BOOST_VERSION=${{matrix.boostVersion}}" >> $GITHUB_ENV
-        if: matrix.boostVersion
-      - run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON" >> $GITHUB_ENV
-        if: matrix.externalSanitizer
+      - name: Setup env and configure flags
+        run: |
+          echo "DEPS_DIR=${{runner.temp}}/.cache" >> $GITHUB_ENV
+          echo "BUILD_TYPE=${{matrix.type}}" >> $GITHUB_ENV
+          [[ -z "${{matrix.cmake}}" ]] || echo "CMAKE_VERSION=${{matrix.cmake}}" >> $GITHUB_ENV
+          [[ -z "${{matrix.boost}}" ]] || echo "BOOST_VERSION=${{matrix.boost}}" >> $GITHUB_ENV
+          [[ -z "${{matrix.cxx}}" ]] || ADDITIONAL_CMAKE_FLAGS+=" -DCMAKE_CXX_STANDARD=${{matrix.cxx}}"
+          [[ "${{matrix.coverage}}" != "true" ]] || ADDITIONAL_CMAKE_FLAGS+=" -DRTTR_ENABLE_COVERAGE=ON"
+          [[ "${{matrix.externalSanitizer}}" != "true" ]] || ADDITIONAL_CMAKE_FLAGS+=" -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
+          echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS}" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v2
+          CC=${{matrix.compiler}}
+          if [[ "$CC" =~ clang ]]; then
+            CXX=${CC/clang/clang++}
+          else
+            CXX=${CC/gcc/g++}
+          fi
+          ver=7 # default
+          if [[ "$CC" =~ gcc- ]]; then
+            ver="${CC##*gcc-}"
+          fi
+          GCOV=gcov-${ver}
+          echo "CC=$CC" >> $GITHUB_ENV
+          echo "CXX=$CXX" >> $GITHUB_ENV
+          echo "GCOV=$GCOV" >> $GITHUB_ENV
+
+      # Coverage collection requires access to history to find merge-base
+      - uses: actions/checkout@v4
         if: "!matrix.coverage"
         with:
           submodules: true
-      # Coverage collection requires access to history to find merge-base
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         if: matrix.coverage
         with:
           submodules: true
-          fetch-depth: 0
+          fetch-depth: 0 # Faster checkout
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
 
-      - name: Add LLVM repo
-        if: matrix.compiler == 'clang-13' && matrix.os == 'ubuntu-20.04'
+      - name: Install system packages
         run: |
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
-          sudo apt update
-      - name: Install Compiler
-        if: "!startsWith(runner.os, 'macos')"
-        run: |
-          pkgs=${{matrix.compiler}}
-          pkgs=${pkgs/gcc-/g++-}
-          sudo apt install $pkgs
-      - name: Setup compiler
-        run: |
-            CC=${{matrix.compiler}}
-            if [[ "$CC" =~ clang ]]; then
-              CXX=${CC/clang/clang++}
-            elif [[ "$CC" =~ gcc ]]; then
-              CXX=${CC/gcc/g++}
-            fi
-            ver=7 # default
-            if [[ "$CC" =~ gcc- ]]; then
-              ver="${CC##*gcc-}"
-            fi
-            GCOV=gcov-${ver}
-            echo "CC=$CC" >> $GITHUB_ENV
-            echo "CXX=$CXX" >> $GITHUB_ENV
-            echo "GCOV=$GCOV" >> $GITHUB_ENV
-
-      - name: Install system packages (Linux)
-        if: "!startsWith(runner.os, 'macos')"
-        run: |
-          sudo apt update
-          sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev
-      - name: Install system packages (OSX)
-        if: startsWith(runner.os, 'macos')
-        run: |
-          brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
-          echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
+          if [[ "${{runner.os}}" =~ macOS ]]; then
+            echo "HOMEBREW_PREFIX=$HOMEBREW_PREFIX"
+            echo "HOMEBREW_CELLAR=$HOMEBREW_CELLAR"
+            brew install cmake boost sdl2 sdl2_mixer gettext miniupnpc
+            echo "Available Boost installs: $(ls "$HOMEBREW_CELLAR/boost/")"
+            # Use the latest (last folder)
+            BOOST_ROOT=$(find "$HOMEBREW_CELLAR/boost/"* -maxdepth 0 -type d | tail -n1)
+            echo "Choosen Boost: $BOOST_ROOT"
+            [[ -n "$BOOST_ROOT" ]] || exit 1
+            echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
+          else
+            compiler=${{matrix.compiler}}
+            compiler=${compiler/gcc-/g++-}
+            sudo apt update
+            sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
+          fi
 
       - name: Setup CCache
         uses: hendrikmuhs/ccache-action@v1
         with:
-          key: ${{matrix.os}}-${{matrix.compiler}}-${{matrix.buildType}}-${{matrix.boostVersion}}
+          key: ${{matrix.os}}-${{matrix.compiler}}-${{matrix.type}}-${{matrix.boost}}
           max-size: 200M
 
-      - name: Install dependencies
+      - name: Compile CMake (Linux)
+        if: "!startsWith(runner.os, 'macOS')"
         run: |
-          # Minimum requirements: CMake 3.9, Boost 1.69
           CMAKE_DIR="${DEPS_DIR}/cmake"
-          external/libutil/tools/ci/installCMake.sh "3.9.6" "${CMAKE_DIR}"
+          external/libutil/tools/ci/installCMake.sh "${CMAKE_VERSION}" "${CMAKE_DIR}"
           echo "${CMAKE_DIR}/bin" >> $GITHUB_PATH
 
+      - name: Compile Boost (Linux)
+        if: "!startsWith(runner.os, 'macOS')"
+        run: |
           BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
           echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
           echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON -DBoost_NO_BOOST_CMAKE=ON" >> $GITHUB_ENV
           external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
+          cat /tmp/boost.log || true
+          ls -la ${BOOST_ROOT}/lib/ || true
 
-      - name: Enable coverage collection
-        if: matrix.coverage
-        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
-
-      - name: Set C++ standard
-        if: matrix.cxxStandard
-        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DCMAKE_CXX_STANDARD=${{matrix.cxxStandard}}" >> $GITHUB_ENV
-
-      - name: Setup environment
-        run: |
-          echo "BUILD_TYPE=${{matrix.buildType}}" >> $GITHUB_ENV
-          echo "TRAVIS_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Build
-        run: tools/ci/travisBuild.sh
+        run: tools/ci/build.sh
 
       - run: tools/ci/collectCoverageData.sh && external/libutil/tools/ci/uploadCoverageData.sh
         if: matrix.coverage && success()
+
       - run: tools/ci/checkTestCoverage.sh
         if: matrix.coverage && success()
+
       - name: Upload coverage (Coveralls)
         if: matrix.coverage && success()
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           path-to-lcov: srccov.info

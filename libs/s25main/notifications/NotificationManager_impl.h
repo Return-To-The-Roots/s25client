@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -75,7 +75,7 @@ void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback) noexcept
     RTTR_Assert(callback->IsSubscribed());
     Subscribers& subs = noteId2Subscriber[T_Note::getNoteId()];
     CallbackList& callbacks = subs.callbacks;
-    auto itEl = std::find(callbacks.begin(), callbacks.end(), callback);
+    auto itEl = helpers::find(callbacks, callback);
     RTTR_Assert(itEl != callbacks.end());
     // We can't modify the list while iterating over it
     if(subs.isPublishing)

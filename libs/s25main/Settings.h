@@ -10,6 +10,7 @@
 #include "s25util/Singleton.h"
 #include <boost/optional.hpp>
 #include <array>
+#include <cstdint>
 #include <gameData/const_gui_ids.h>
 #include <map>
 #include <string>
@@ -23,11 +24,11 @@ bool checkPort(int port);
 
 struct PersistentWindowSettings
 {
-    DrawPoint lastPos;
-    bool isOpen;
-
-    PersistentWindowSettings(DrawPoint lastPos, bool isOpen) : lastPos(lastPos), isOpen(isOpen) {}
-    PersistentWindowSettings() : lastPos(DrawPoint::Invalid()), isOpen(false) {}
+    DrawPoint lastPos = DrawPoint::Invalid();
+    DrawPoint restorePos = DrawPoint::Invalid();
+    bool isOpen = false;
+    bool isPinned = false;
+    bool isMinimized = false;
 };
 
 /// Configuration class
@@ -51,19 +52,18 @@ protected:
 public:
     struct
     {
-        unsigned submit_debug_data;
-        unsigned use_upnp;
-        bool smartCursor;
-        bool debugMode;
+        uint8_t submit_debug_data;
+        bool use_upnp, smartCursor, debugMode, showGFInfo;
     } global;
 
     struct
     {
         VideoMode fullscreenSize, windowedSize;
-        signed short vsync; // <0 for unlimited, 0 for HW Vsync
+        signed short framerate; // <0 for unlimited, 0 for HW Vsync
         bool fullscreen;
         bool vbo;
         bool shared_textures;
+        unsigned guiScale; ///< UI scaling in percent; 0 indicates automatic selection
     } video;
 
     struct
@@ -80,9 +80,9 @@ public:
     struct
     {
         bool musicEnabled;
-        unsigned char musicVolume;
+        uint8_t musicVolume;
         bool effectsEnabled;
-        unsigned char effectsVolume;
+        uint8_t effectsVolume;
         std::string playlist; /// musicplayer playlist name
     } sound;
 
@@ -106,7 +106,9 @@ public:
     struct
     {
         unsigned autosave_interval;
-        bool revert_mouse;
+        bool invertMouse;
+        bool enableWindowPinning;
+        unsigned windowSnapDistance;
     } interface;
 
     struct

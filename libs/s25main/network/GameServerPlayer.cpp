@@ -21,7 +21,7 @@ int durationToInt(const T_Duration& duration)
 GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
     : NetworkPlayer(id), state_(JustConnectedState())
 {
-    boost::get<JustConnectedState>(state_).timer.start();
+    get<JustConnectedState>(state_).timer.start();
     this->socket = socket;
 }
 
@@ -42,7 +42,7 @@ void GameServerPlayer::setActive()
 
 void GameServerPlayer::doPing()
 {
-    ActiveState* state = boost::get<ActiveState>(&state_);
+    ActiveState* state = get_if<ActiveState>(&state_);
     if(state && !state->isPinging
        && (!state->pingTimer.isRunning() || state->pingTimer.getElapsed() >= seconds(PING_RATE)))
     {
@@ -54,7 +54,7 @@ void GameServerPlayer::doPing()
 
 unsigned GameServerPlayer::calcPingTime()
 {
-    auto& state = boost::get<ActiveState>(state_);
+    auto& state = get<ActiveState>(state_);
     if(!state.isPinging)
         return 0u;
     int result = durationToInt(std::chrono::duration_cast<std::chrono::milliseconds>(state.pingTimer.getElapsed()));
@@ -67,7 +67,7 @@ unsigned GameServerPlayer::calcPingTime()
 
 bool GameServerPlayer::hasTimedOut() const
 {
-    return boost::apply_visitor(
+    return visit(
       composeVisitor(
         [](const JustConnectedState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT); },
         [](const MapSendingState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT) + s.estimatedSendTime; },
@@ -77,7 +77,7 @@ bool GameServerPlayer::hasTimedOut() const
 
 unsigned GameServerPlayer::getLagTimeOut() const
 {
-    const ActiveState& state = boost::get<ActiveState>(state_);
+    const auto& state = get<ActiveState>(state_);
     if(!state.lagTimer.isRunning())
         return LAG_TIMEOUT;
     int timeout =
@@ -87,10 +87,10 @@ unsigned GameServerPlayer::getLagTimeOut() const
 
 void GameServerPlayer::setLagging()
 {
-    boost::get<ActiveState>(state_).lagTimer.restart();
+    get<ActiveState>(state_).lagTimer.restart();
 }
 
 void GameServerPlayer::setNotLagging()
 {
-    boost::get<ActiveState>(state_).lagTimer.stop();
+    get<ActiveState>(state_).lagTimer.stop();
 }

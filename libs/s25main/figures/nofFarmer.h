@@ -27,7 +27,8 @@ private:
     void WorkAborted() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt) const override;
+    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
+    using nofFarmhand::GetPointQuality;
 
 public:
     nofFarmer(MapPoint pos, unsigned char player, nobUsual* workplace);

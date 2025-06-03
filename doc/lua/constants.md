@@ -15,6 +15,7 @@ They are also used when an event is called.
 - [Resources](#Resources)  
 - [Animals](#Animals)  
 - [Pacts](#Pacts)  
+- [Statistics](#Statistics)  
 
 ## Wares / Goods
 
@@ -150,4 +151,17 @@ SPEC_SHEEP
 --> [gameTypes/PactTypes.h](../../libs/s25main/gameTypes/PactTypes.h)  
 NON_AGGRESSION_PACT  
 TREATY_OF_ALLIANCE  
-DURATION_INFINITE
+DURATION_INFINITE  
+
+## Statistics
+
+--> [gameTypes/StatisticTypes.h](../../libs/s25main/gameTypes/StatisticTypes.h)  
+STAT_COUNTRY  
+STAT_BUILDINGS  
+STAT_INHABITANTS  
+STAT_MERCHANDISE  
+STAT_MILITARY  
+STAT_GOLD  
+STAT_PRODUCTIVITY  
+STAT_VANQUISHED  
+STAT_TOURNAMENT  

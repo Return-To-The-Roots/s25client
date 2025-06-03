@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "Point.h"
+#include "Rect.h"
+#include "SnapOffset.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "s25util/Singleton.h"
 #include <list>
@@ -102,7 +103,7 @@ public:
     /// Verarbeitung Keyboard-Event
     void Msg_KeyDown(const KeyEvent& ke) override;
     // setzt den Tooltip
-    void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip);
+    void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent = false);
 
     /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
     void WindowResized() override;
@@ -121,6 +122,8 @@ public:
 
     void SetCursor(Cursor cursor = Cursor::Hand);
     Cursor GetCursor() const { return cursor_; }
+
+    SnapOffset snapWindow(Window* wnd, const Rect& wndRect) const;
 
 private:
     class Tooltip;

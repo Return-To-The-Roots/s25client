@@ -9,11 +9,13 @@
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Timer.h"
+#include "WineLoader.h"
 #include "addons/const_addons.h"
 #include "commonDefines.h"
 #include "convertSounds.h"
 #include "files.h"
 #include "helpers/EnumRange.h"
+#include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
@@ -21,6 +23,7 @@
 #include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 #include "ogl/glArchivItem_Bob.h"
+#include "ogl/glArchivItem_Sound_Wave.h"
 #include "ogl/glFont.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePacker.h"
@@ -153,9 +156,15 @@ glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
-ITexture* Loader::GetNationTex(Nation nation, unsigned nr)
+ITexture* Loader::GetBuildingTex(Nation nation, BuildingType bld)
 {
-    return checkedCast<ITexture*>(GetNationImage(nation, nr));
+    if(bld == BuildingType::Charburner)
+    {
+        unsigned id = rttr::enum_cast(nation) * 8;
+        return GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1));
+    } else
+        return checkedCast<ITexture*>(GetNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
+    return nullptr;
 }
 
 glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(Nation nation, unsigned nr)
@@ -171,6 +180,38 @@ glArchivItem_Bitmap* Loader::GetMapImage(unsigned nr)
 ITexture* Loader::GetMapTexture(unsigned nr)
 {
     return convertChecked<ITexture*>(map_gfx->get(nr));
+}
+
+ITexture* Loader::GetWareTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareTex(ware);
+    else
+        return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetWareStackTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareStackTex(ware);
+    else
+        return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetWareDonkeyTex(GoodType ware)
+{
+    if(wineaddon::isWineAddonGoodType(ware))
+        return wineaddon::GetWareDonkeyTex(ware);
+    else
+        return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+}
+
+ITexture* Loader::GetJobTex(Job job)
+{
+    if(wineaddon::isWineAddonJobType(job))
+        return wineaddon::GetJobTex(job);
+    else
+        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
 }
 
 glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
@@ -271,12 +312,12 @@ bool Loader::LoadFonts()
         return false;
     fonts.clear();
     const auto& loadedFonts = GetArchive("fonts");
-    for(unsigned i = 0; i <= helpers::MaxEnumValue_v<FontSize>; i++)
+    for(const auto i : helpers::enumRange<FontSize>())
     {
-        const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[i]);
+        const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[rttr::enum_cast(i)]);
         if(!curFont)
         {
-            logger_.write(_("Unable to load font at index %1%\n")) % i;
+            logger_.write(_("Unable to load font at index %1%\n")) % rttr::enum_cast(i);
             return false;
         }
         fonts.emplace_back(*curFont);
@@ -289,25 +330,25 @@ void Loader::LoadDummyGUIFiles()
     // Palettes
     {
         auto palette = std::make_unique<libsiedler2::ArchivItem_Palette>();
-        for(int i = 0; i < 256; i++)
+        for(const auto i : helpers::range(256))
             palette->set(i, libsiedler2::ColorRGB(42, 137, i));
         files_["pal5"].archive.pushC(*palette);
         // Player color palette
-        for(int i = 128; i < 128 + libsiedler2::ArchivItem_Bitmap_Player::numPlayerClrs; i++)
+        for(const auto i : helpers::range(128, 128 + libsiedler2::ArchivItem_Bitmap_Player::numPlayerClrs))
             palette->set(i, libsiedler2::ColorRGB(i, i, i));
         files_["colors"].archive.push(std::move(palette));
     }
     // GUI elements
     libsiedler2::Archiv& resource = files_["resource"].archive;
     resource.alloc(57);
-    for(unsigned id = 4; id < 36; id++)
+    for(const auto id : helpers::range(4u, 36u))
     {
         auto bmp = std::make_unique<glArchivItem_Bitmap_RLE>();
         libsiedler2::PixelBufferBGRA buffer(1, 1);
         bmp->create(buffer);
         resource.set(id, std::move(bmp));
     }
-    for(unsigned id = 36; id < 57; id++)
+    for(const auto id : helpers::range(36u, 57u))
     {
         auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
         libsiedler2::PixelBufferBGRA buffer(1, 1);
@@ -315,25 +356,34 @@ void Loader::LoadDummyGUIFiles()
         resource.set(id, std::move(bmp));
     }
     libsiedler2::Archiv& io = files_["io"].archive;
-    for(unsigned id = 0; id < 264; id++)
+    for([[maybe_unused]] const auto id : helpers::range(264u))
     {
         auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
         libsiedler2::PixelBufferBGRA buffer(1, 1);
         bmp->create(buffer);
         io.push(std::move(bmp));
     }
+    libsiedler2::Archiv& io_new = files_["io_new"].archive;
+    for([[maybe_unused]] const auto id : helpers::range(21u))
+    {
+        auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
+        bmp->create(buffer);
+        io_new.push(std::move(bmp));
+    }
     // Fonts
     auto* palette = GetPaletteN("colors");
     libsiedler2::PixelBufferBGRA buffer(15, 16);
-    for(unsigned i = 0; i <= helpers::MaxEnumValue_v<FontSize>; i++)
+    for(const auto i : helpers::enumRange<FontSize>())
     {
         auto font = std::make_unique<libsiedler2::ArchivItem_Font>();
-        const unsigned dx = 9 + i * (helpers::MaxEnumValue_v<FontSize> + 1);
-        const unsigned dy = 10 + i * (helpers::MaxEnumValue_v<FontSize> + 1);
+        const auto offset = rttr::enum_cast(i) * (helpers::MaxEnumValue_v<FontSize> + 1);
+        const unsigned dx = 9 + offset;
+        const unsigned dy = 10 + offset;
         font->setDx(dx);
         font->setDy(dy);
         font->alloc(255);
-        for(unsigned id = 0x20; id < 255; id++)
+        for(const auto id : helpers::range(0x20u, 255u))
         {
             auto bmp = std::make_unique<glArchivItem_Bitmap_Player>();
             bmp->create(dx, dy, buffer, palette, 0);
@@ -351,7 +401,7 @@ void Loader::LoadDummyMapFiles()
     const auto pushRange = [&map](unsigned from, unsigned to) {
         map.alloc_inc(to - map.size() + 1);
         libsiedler2::PixelBufferBGRA buffer(1, 1);
-        for(unsigned i = from; i <= to; i++)
+        for(const auto i : helpers::range(from, to + 1))
         {
             auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
             bmp->create(buffer);
@@ -370,17 +420,29 @@ void Loader::LoadDummyMapFiles()
     pushRange(350, 432);
     pushRange(440, 484);
     pushRange(500, 527);
+    pushRange(560, 561);
 
-    for(int j = 0; j <= 5; j++)
+    for(const auto j : helpers::range(0, 6))
     {
         libsiedler2::Archiv& bobs = files_[ResourceId("mis" + std::to_string(j) + "bobs")].archive;
         libsiedler2::PixelBufferBGRA buffer(1, 1);
-        for(unsigned i = 0; i <= 10; i++)
+        for([[maybe_unused]] const auto i : helpers::range(0, 11))
         {
             auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
             bmp->create(buffer);
             bobs.push(std::move(bmp));
         }
+    }
+}
+
+void Loader::LoadDummySoundFiles()
+{
+    libsiedler2::Archiv& archive = files_["sound"].archive;
+    archive.alloc(116);
+    for(const auto id : helpers::range<unsigned>(51u, archive.size()))
+    {
+        auto snd = std::make_unique<glArchivItem_Sound_Wave>();
+        archive.set(id, std::move(snd));
     }
 }
 
@@ -457,6 +519,9 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     if(!LoadResources({"charburner", "charburner_bobs"}))
         return false;
 
+    if(!LoadResources({"wine_bobs"}))
+        return false;
+
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
     if(!Load(mapGFXFile, pal5))
         return false;
@@ -508,7 +573,7 @@ void Loader::fillCaches()
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            for(unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
+            for(const auto ani_step : helpers::range(ANIMALCONSTS[species].animation_steps))
             {
                 glSmartBitmap& bmp = getAnimalSprite(Species(species), dir, ani_step);
 
@@ -601,7 +666,7 @@ void Loader::fillCaches()
         // FLAGS
         for(const auto type : helpers::enumRange<FlagType>())
         {
-            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            for(const auto ani_step : helpers::range(8))
             {
                 // Flaggentyp berücksichtigen
                 int nr = ani_step + 100 + 20 * rttr::enum_cast(type);
@@ -622,7 +687,7 @@ void Loader::fillCaches()
         {
             for(Direction dir : helpers::EnumRange<Direction>{})
             {
-                for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                for(const auto ani_step : helpers::range(8u))
                 {
                     glSmartBitmap& bmp = bob_jobs_cache[nation][job][dir][ani_step];
                     bmp.reset();
@@ -643,7 +708,7 @@ void Loader::fillCaches()
         // Fat carrier
         for(Direction dir : helpers::EnumRange<Direction>{})
         {
-            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            for(const auto ani_step : helpers::range(8u))
             {
                 glSmartBitmap& bmp = fat_carrier_cache[nation][dir][ani_step];
                 bmp.reset();
@@ -679,14 +744,14 @@ void Loader::fillCaches()
         const auto& altNatFightAnimIds = FIGHT_ANIMATIONS[fallbackNation];
         const auto& natHitIds = HIT_SOLDIERS[nation];
         const auto& altNatHitIds = HIT_SOLDIERS[fallbackNation];
-        for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+        for(const auto rank : helpers::range(NUM_SOLDIER_RANKS))
         {
-            for(unsigned dir = 0; dir < 2; ++dir)
+            for(const auto dir : helpers::range(2))
             {
                 FightSprites& sprites = fight_cache[nation][rank][dir];
                 const auto& fightAnimIds = natFightAnimIds[rank][dir];
                 const auto& altFightAnimIds = altNatFightAnimIds[rank][dir];
-                for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                for(const auto ani_step : helpers::range(8u))
                 {
                     glSmartBitmap& bmp = sprites.attacking[ani_step];
                     bmp.reset();
@@ -694,9 +759,9 @@ void Loader::fillCaches()
                     stp->add(bmp);
                 }
 
-                for(unsigned i = 0; i < sprites.defending.size(); i++)
+                for(const auto i : helpers::range(sprites.defending.size()))
                 {
-                    for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                    for(const auto ani_step : helpers::range(8u))
                     {
                         glSmartBitmap& bmp = sprites.defending[i][ani_step];
                         bmp.reset();
@@ -716,7 +781,7 @@ void Loader::fillCaches()
 
     // BUILDING FLAG ANIMATION (for military buildings)
     /*
-        for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+        for(const auto ani_step: helpers::range(8))
         {
             glSmartBitmap &bmp = building_flag_cache[ani_step];
 
@@ -733,9 +798,9 @@ void Loader::fillCaches()
         }
     */
     // Trees
-    for(unsigned type = 0; type < 9; ++type)
+    for(const auto type : helpers::range(9))
     {
-        for(unsigned ani_step = 0; ani_step < 15; ++ani_step)
+        for(const auto ani_step : helpers::range(15))
         {
             glSmartBitmap& bmp = tree_cache[type][ani_step];
 
@@ -751,7 +816,7 @@ void Loader::fillCaches()
     // Granite
     for(const auto type : helpers::enumRange<GraniteType>())
     {
-        for(unsigned size = 0; size < 6; ++size)
+        for(const auto size : helpers::range(6))
         {
             glSmartBitmap& bmp = granite_cache[type][size];
 
@@ -765,9 +830,9 @@ void Loader::fillCaches()
     }
 
     // Grainfields
-    for(unsigned type = 0; type < 2; ++type)
+    for(const auto type : helpers::range(2))
     {
-        for(unsigned size = 0; size < 4; ++size)
+        for(const auto size : helpers::range(4))
         {
             glSmartBitmap& bmp = grainfield_cache[type][size];
 
@@ -783,7 +848,7 @@ void Loader::fillCaches()
     // Donkeys
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+        for(const auto ani_step : helpers::range(8u))
         {
             glSmartBitmap& bmp = getDonkeySprite(dir, ani_step);
 
@@ -799,7 +864,7 @@ void Loader::fillCaches()
     // Boats
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+        for(const auto ani_step : helpers::range(8u))
         {
             glSmartBitmap& bmp = getBoatCarrierSprite(dir, ani_step);
 
@@ -812,10 +877,14 @@ void Loader::fillCaches()
         }
     }
 
+    wineaddon::fillCache(*stp);
+
     // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBob("carrier");
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
+
+    libsiedler2::Archiv wine_bob_carrier = GetArchive("wine_bobs");
 
     for(bool fat : {true, false})
     {
@@ -823,7 +892,7 @@ void Loader::fillCaches()
         {
             for(Direction dir : helpers::EnumRange<Direction>{})
             {
-                for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                for(const auto ani_step : helpers::range(8u))
                 {
                     glSmartBitmap& bmp = getCarrierSprite(ware, fat, dir, ani_step);
                     bmp.reset();
@@ -834,9 +903,26 @@ void Loader::fillCaches()
 
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
-                    bmp.add(
-                      dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                    if(ware == GoodType::Grapes)
+                    {
+                        const unsigned bodyIdx = static_cast<unsigned>(imgDir) * 8 + ani_step;
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(wine_bob_carrier.get(
+                          wineaddon::bobIndex[fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_GRAPES :
+                                                    wineaddon::BobTypes::THIN_CARRIER_CARRYING_GRAPES]
+                          + bodyIdx)));
+                    } else if(ware == GoodType::Wine)
+                    {
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(wine_bob_carrier.get(
+                          wineaddon::bobIndex[fat ? wineaddon::BobTypes::FAT_CARRIER_CARRYING_WINE :
+                                                    wineaddon::BobTypes::THIN_CARRIER_CARRYING_WINE]
+                          + static_cast<unsigned>(imgDir))));
+                    } else
+                    {
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                          bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                    }
                     bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
@@ -864,15 +950,15 @@ void Loader::fillCaches()
             image->print(&buffer.front(), width, height, libsiedler2::TextureFormat::Paletted, palette, 0, 0, 0, 0,
                          width, height);
 
-            for(unsigned char i = 0; i < color_count; ++i)
+            for(const auto i : helpers::range(color_count))
             {
                 glSmartBitmap& bmp = gateway_cache[i + 1];
 
                 bmp.reset();
 
-                for(unsigned x = 0; x < width; ++x)
+                for(const auto x : helpers::range(width))
                 {
-                    for(unsigned y = 0; y < height; ++y)
+                    for(const auto y : helpers::range(height))
                     {
                         if(buffer[y * width + x] >= start_index && buffer[y * width + x] < start_index + color_count)
                         {
@@ -895,7 +981,7 @@ void Loader::fillCaches()
             }
         } else
         {
-            for(unsigned char i = 0; i < color_count; ++i)
+            for(const auto i : helpers::range(color_count))
             {
                 glSmartBitmap& bmp = gateway_cache[i + 1];
 
@@ -957,7 +1043,7 @@ std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArch
     anim.firstClr = start_index;
     anim.lastClr = start_index + color_count - 1u;
     const libsiedler2::ArchivItem_Palette* curPal = nullptr;
-    for(unsigned i = 0; i < color_count; ++i)
+    for(const auto i : helpers::range(color_count))
     {
         auto newPal = (i == 0) ? clone(srcImg.getPalette()) : anim.apply(*curPal);
         auto bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();

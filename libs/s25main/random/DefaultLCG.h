@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -23,7 +23,7 @@ public:
     DefaultLCG() { seed(); }
     explicit DefaultLCG(result_type initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit DefaultLCG(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr)
+    explicit DefaultLCG(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral_v<T_SeedSeq>>* = nullptr)
     {
         seed(seedSeq);
     }
@@ -31,7 +31,7 @@ public:
     void seed() { seed(0x1337); }
     void seed(unsigned newSeed) { state_ = newSeed; }
     template<class T_SeedSeq>
-    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr);
+    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral_v<T_SeedSeq>>* = nullptr);
 
     /// Return random value in [min, max]
     result_type operator()();
@@ -51,7 +51,7 @@ private:
 };
 
 template<class T_SeedSeq>
-inline void DefaultLCG::seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>*)
+inline void DefaultLCG::seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral_v<T_SeedSeq>>*)
 {
     unsigned seedVal;
     seedSeq.generate(&seedVal, (&seedVal) + 1);

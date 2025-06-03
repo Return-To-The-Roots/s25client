@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -30,7 +30,7 @@ bool Savegame::Save(const boost::filesystem::path& filepath, const std::string& 
 {
     BinaryFile file;
 
-    return file.Open(filepath, OFM_WRITE) && Save(file, mapName);
+    return file.Open(filepath, OpenFileMode::Write) && Save(file, mapName);
 }
 
 bool Savegame::Save(BinaryFile& file, const std::string& mapName)
@@ -47,7 +47,7 @@ bool Savegame::Load(const boost::filesystem::path& filePath, const SaveGameDataT
 {
     BinaryFile file;
 
-    return file.Open(filePath, OFM_READ) && Load(file, what);
+    return file.Open(filePath, OpenFileMode::Read) && Load(file, what);
 }
 
 bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
@@ -69,7 +69,7 @@ bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
             return true;
 
         ReadGameData(file);
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
         return false;

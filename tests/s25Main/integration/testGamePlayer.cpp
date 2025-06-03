@@ -53,7 +53,7 @@ RTTR_ATTRIBUTE_NO_UBSAN(vptr) void setProductivity(nobUsual* bld, unsigned short
 }
 } // namespace
 
-using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEnumValue_v<BuildingType>, 4>;
+using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEnumValue_v<BuildingType> + 6, 4>;
 BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
 {
     using boost::test_tools::per_element;
@@ -62,8 +62,16 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == 0u);
 
+    const auto buildingTypesEnum = helpers::EnumRange<BuildingType>{};
+    std::vector<BuildingType> buildingTypes(buildingTypesEnum.begin(), buildingTypesEnum.end());
+
+    // Sort buildings so military buildings are created first
+    // and no buildings are destroyed when borders are recalculated
+    std::partition(buildingTypes.begin(), buildingTypes.end(),
+                   [](BuildingType bld) { return !BuildingProperties::IsUsual(bld); });
+
     MapPoint curPos(0, 0);
-    for(const auto bldType : helpers::EnumRange<BuildingType>{})
+    for(const auto bldType : buildingTypes)
     {
         if(!BuildingProperties::IsValid(bldType))
             continue;
@@ -80,7 +88,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
             BOOST_TEST_REQUIRE((curPos.x += 2) < world.GetSize().x);
         }
         // Test productivity calculation for all buildings shown in the productivity window
-        if(helpers::contains(iwBuildingProductivities::icons, bldType))
+        if(helpers::contains(iwBuildingProductivities::allIcons, bldType))
         {
             auto* productionBld = dynamic_cast<nobUsual*>(bld);
             BOOST_TEST_REQUIRE(productionBld);
@@ -91,12 +99,12 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     }
     BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
     unsigned avgProd = std::accumulate(expectedProductivity.begin(), expectedProductivity.end(), 0u)
-                       / iwBuildingProductivities::icons.size();
+                       / iwBuildingProductivities::allIcons.size();
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
 
     // Average productivity over multiple buildings of same type
     avgProd = 0;
-    for(const BuildingType bldType : iwBuildingProductivities::icons)
+    for(const BuildingType bldType : iwBuildingProductivities::allIcons)
     {
         auto* bld =
           static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, bldType, curPos, 0, Nation::Babylonians));
@@ -107,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
         avgProd += productivity + expectedProductivity[bldType];
         expectedProductivity[bldType] = (productivity + expectedProductivity[bldType]) / 2;
     }
-    avgProd /= iwBuildingProductivities::icons.size() * 2;
+    avgProd /= iwBuildingProductivities::allIcons.size() * 2;
     BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
 }

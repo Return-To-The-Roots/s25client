@@ -10,6 +10,7 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "dskCampaignSelection.h"
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"
 #include "files.h"
@@ -39,9 +40,8 @@ dskSinglePlayer::dskSinglePlayer()
     AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Resume last game"), NormalFont);
     AddTextButton(7, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Load game"), NormalFont);
 
-    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2,
-                  std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)
-      ->SetEnabled(false);
+    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, std::string(_("Campaigns")),
+                  NormalFont);
     AddTextButton(6, DrawPoint(115, 280), Extent(220, 22), TextureColor::Green2, _("Unlimited Play"), NormalFont);
 
     AddTextButton(4, DrawPoint(115, 320), Extent(220, 22), TextureColor::Green2, _("Play Replay"), NormalFont);
@@ -88,7 +88,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
                 WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-                if(GAMECLIENT.HostGame(csi, mostRecentFilepath, MapType::Savegame))
+                if(GAMECLIENT.HostGame(csi, {mostRecentFilepath, MapType::Savegame}))
                     WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
                 else
                 {
@@ -108,10 +108,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 5: // "Kampagne"
         {
-            /// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-              _("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this,
-              MsgboxButton::Ok, MsgboxIcon::ExclamationGreen));
+            WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(createLocalGameInfo(_("Campaign"))));
         }
         break;
         case 6: // "Freies Spiel"

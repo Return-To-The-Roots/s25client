@@ -11,7 +11,9 @@
 #include "ILocalGameState.h"
 #include "NetworkPlayer.h"
 #include "factories/GameCommandFactory.h"
+#include "gameTypes/AIInfo.h"
 #include "gameTypes/ChatDestination.h"
+#include "gameTypes/MapDescription.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/ServerType.h"
@@ -78,8 +80,9 @@ public:
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port,
                  bool host, bool use_ipv6);
+
     /// Start the server and connect to it
-    bool HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type);
+    bool HostGame(const CreateServerInfo& csi, const MapDescription& map);
     void Run();
     void Stop();
 
@@ -130,11 +133,17 @@ public:
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const boost::filesystem::path& path);
+
+    /// When a non-empty vector is given then an AI battle with the given AIs is started
+    void SetAIBattlePlayers(std::vector<AI::Info> aiInfos);
+    const std::vector<AI::Info>& GetAIBattlePlayers() const { return aiBattlePlayers_; }
+    bool IsAIBattleModeOn() const { return !aiBattlePlayers_.empty(); }
+
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
-    /// Schaltet FoW im Replaymodus ein/aus
-    void ToggleReplayFOW();
-    /// Prüft, ob FoW im Replaymodus ausgeschalten ist
+    /// Hide or show the fog-of-war. Only in replay mode
+    void SetReplayFOW(bool hideFOW);
+    /// Return whether we are in replay mode and fog-of-war is disabled
     bool IsReplayFOWDisabled() const;
     /// Gibt Replay-Ende (GF) zurück
     unsigned GetLastReplayGF() const;
@@ -165,7 +174,8 @@ public:
     void SystemChat(const std::string& text) override;
     void SystemChat(const std::string& text, unsigned char fromPlayerIdx);
 
-    void ToggleHumanAIPlayer();
+    /// Toggle current player to be an AI player of the given type
+    void ToggleHumanAIPlayer(const AI::Info& aiInfo);
 
     NetworkPlayer& GetMainPlayer() { return mainPlayer; }
 
@@ -302,6 +312,9 @@ private:
 
     std::unique_ptr<ReplayInfo> replayinfo;
     bool replayMode;
+
+    /// Configured players for an AI battle.
+    std::vector<AI::Info> aiBattlePlayers_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

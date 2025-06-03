@@ -8,6 +8,7 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "helpers/containerUtils.h"
@@ -236,7 +237,7 @@ void noFigure::StartWalking(const Direction dir)
 
 void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Direction dir)
 {
-    auto* bitmap = LOADER.GetMapTexture(900 + rttr::enum_cast(dir + 3u) * 8 + anistep);
+    auto* bitmap = LOADER.GetMapTexture(calcWalkFrameIndex(900, dir, anistep));
     if(bitmap)
         bitmap->DrawFull(drawPt, COLOR_SHADOW);
 }
@@ -735,6 +736,15 @@ unsigned noFigure::CalcWalkAnimationFrame() const
     return waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 }
 
+/// Calculate the index of the current frame for a figure walking in the given direction
+/// The sprites start at `imgSetIndex` and contain 8 images per direction, starting at EAST going clockwise.
+/// Note that some of the 48 indices might be empty entries in the archive if only specific directions can ever be drawn
+unsigned noFigure::calcWalkFrameIndex(const unsigned imgSetIndex, const Direction dir, const unsigned animationStep)
+{
+    RTTR_Assert(animationStep < 8);
+    return imgSetIndex + rttr::enum_cast(toImgDir(dir)) * 8 + animationStep;
+}
+
 DrawPoint noFigure::InterpolateWalkDrawPos(DrawPoint drawPt) const
 {
     // Add an offset relative to the starting point calculated by how far we already walked
@@ -771,20 +781,18 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
-/// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
 void noFigure::DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id)
 {
     const unsigned ani_step = CalcWalkAnimationFrame();
     drawPt = InterpolateWalkDrawPos(drawPt);
 
-    LOADER.GetPlayerImage(file, id + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)
+    LOADER.GetPlayerImage(file, calcWalkFrameIndex(id, GetCurMoveDir(), ani_step))
       ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt)
 {
-    // Figurentyp unterscheiden
     switch(job_)
     {
         case Job::PackDonkey:
@@ -792,13 +800,21 @@ void noFigure::DrawWalking(DrawPoint drawPt)
             const unsigned ani_step = CalcWalkAnimationFrame();
             drawPt = InterpolateWalkDrawPos(drawPt);
 
-            // Esel
-            LOADER.GetMapTexture(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
-            // Schatten des Esels
+            LOADER.GetMapTexture(calcWalkFrameIndex(2000, GetCurMoveDir(), ani_step))->DrawFull(drawPt);
+            // donkey shadow
             LOADER.GetMapTexture(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
         }
         break;
         case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
+        case Job::Vintner:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::VINTNER_WALKING]);
+            break;
+        case Job::Winegrower:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::WINEGROWER_WALKING_WITH_SHOVEL]);
+            break;
+        case Job::TempleServant:
+            DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
+            break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }
 }

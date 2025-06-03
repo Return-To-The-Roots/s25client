@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
+#include "uiHelper/uiHelpers.hpp"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "world/GameWorldView.h"
@@ -19,6 +20,8 @@ using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
 
 BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
 {
+    uiHelper::initGUITests(); // Required for GameWorldView
+
     GameWorldViewer gwv(0, world);
     const auto viewSize = rttr::test::randomPoint<Extent>(100, 1000);
     GameWorldView view(gwv, Position(0, 0), viewSize);
@@ -78,6 +81,8 @@ BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
 
 BOOST_FIXTURE_TEST_CASE(GetsCorrectMaxHeight, EmptyWorldFixture1P)
 {
+    uiHelper::initGUITests(); // Required for GameWorldView
+
     GameWorldViewer gwv(0, world);
     const auto viewSize = rttr::test::randomPoint<Extent>(100, 1000);
     GameWorldView view(gwv, Position(0, 0), viewSize);

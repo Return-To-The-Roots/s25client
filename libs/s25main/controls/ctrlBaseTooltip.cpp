@@ -10,6 +10,12 @@ ctrlBaseTooltip::~ctrlBaseTooltip()
     HideTooltip();
 }
 
+void ctrlBaseTooltip::SetTooltip(const std::string& tooltip)
+{
+    tooltip_ = tooltip;
+    WINDOWMANAGER.SetToolTip(this, tooltip_, true);
+}
+
 void ctrlBaseTooltip::SwapTooltip(ctrlBaseTooltip& other)
 {
     std::swap(tooltip_, other.tooltip_);

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "TransmitSettingsIgwAdapter.h"
-#include "gameTypes/SettingsTypes.h"
+#include <vector>
 
 class GameWorldViewer;
 
@@ -13,7 +13,7 @@ class iwBuildOrder final : public TransmitSettingsIgwAdapter
 {
     const GameWorldViewer& gwv;
 
-    BuildOrders pendingBuildOrder;
+    std::vector<BuildingType> pendingBuildOrder;
     bool useCustomBuildOrder;
 
 public:
@@ -28,4 +28,6 @@ private:
     void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+
+    void fillBuildOrder();
 };
