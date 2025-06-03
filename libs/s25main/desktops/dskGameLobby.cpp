@@ -82,7 +82,7 @@ enum CtrlIds
     ID_chkReady,
     ID_txtPing,
     ID_cbMove,
-    ID_mbLuaLoadError = 100,
+    ID_mbLuaLoadError,
     ID_mbLuaVersionError,
     ID_mbMapLoadError,
     ID_mbError,
