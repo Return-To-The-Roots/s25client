@@ -5,6 +5,7 @@
 #include "iwWares.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "WineLoader.h"
@@ -88,51 +89,44 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
       GoodType::Shovel,  GoodType::Crucible, GoodType::RodAndLine,
       GoodType::Scythe,  GoodType::Cleaver,  GoodType::Rollingpin,
       GoodType::Bow,     GoodType::Sword,    GoodType::ShieldRomans /* nation specific */,
-      GoodType::Boat,    GoodType::Grapes,   GoodType::Wine};
+      GoodType::Boat,    GoodType::Grapes,   GoodType::Wine,
+      GoodType::Skins,   GoodType::Leather,  GoodType::Armor,
+    };
 
-    std::vector<Job> JOB_DISPLAY_ORDER{Job::Helper,
-                                       Job::Builder,
-                                       Job::Planer,
-                                       Job::Woodcutter,
-                                       Job::Forester,
-                                       Job::Stonemason,
-                                       Job::Fisher,
-                                       Job::Hunter,
-                                       Job::Carpenter,
-                                       Job::Farmer,
-                                       Job::PigBreeder,
-                                       Job::DonkeyBreeder,
-                                       Job::Miller,
-                                       Job::Baker,
-                                       Job::Butcher,
-                                       Job::Brewer,
-                                       Job::Miner,
-                                       Job::IronFounder,
-                                       Job::Armorer,
-                                       Job::Minter,
-                                       Job::Metalworker,
-                                       Job::Shipwright,
-                                       Job::Geologist,
-                                       Job::Scout,
-                                       Job::PackDonkey,
-                                       Job::CharBurner,
-                                       Job::Winegrower,
-                                       Job::Vintner,
-                                       Job::TempleServant,
-                                       Job::Private,
-                                       Job::PrivateFirstClass,
-                                       Job::Sergeant,
-                                       Job::Officer,
+    std::vector<Job> JOB_DISPLAY_ORDER{Job::Helper,        Job::Builder,
+                                       Job::Planer,        Job::Woodcutter,
+                                       Job::Forester,      Job::Stonemason,
+                                       Job::Fisher,        Job::Hunter,
+                                       Job::Carpenter,     Job::Farmer,
+                                       Job::PigBreeder,    Job::DonkeyBreeder,
+                                       Job::Miller,        Job::Baker,
+                                       Job::Butcher,       Job::Brewer,
+                                       Job::Miner,         Job::IronFounder,
+                                       Job::Armorer,       Job::Minter,
+                                       Job::Metalworker,   Job::Shipwright,
+                                       Job::Geologist,     Job::Scout,
+                                       Job::PackDonkey,    Job::CharBurner,
+                                       Job::Winegrower,    Job::Vintner,
+                                       Job::TempleServant, Job::Skinner,
+                                       Job::Tanner,        Job::LeatherWorker,
+                                       Job::Private,       Job::PrivateFirstClass,
+                                       Job::Sergeant,      Job::Officer,
                                        Job::General};
 
     const auto isUnusedWare = [&](GoodType const& type) {
-        return !wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonGoodType(type);
+        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonGoodType(type))
+            return true;
+        if(!leatheraddon::isAddonActive(player.GetGameWorld()) && leatheraddon::isLeatherAddonGoodType(type))
+            return true;
+        return false;
     };
 
     auto isUnusedJob = [&](Job const& job) {
         if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonJobType(job))
             return true;
         if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && job == Job::CharBurner)
+            return true;
+        if(!leatheraddon::isAddonActive(player.GetGameWorld()) && leatheraddon::isLeatherAddonJobType(job))
             return true;
         return false;
     };
