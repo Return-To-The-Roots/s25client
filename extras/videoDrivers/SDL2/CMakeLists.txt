@@ -16,7 +16,7 @@ if(SDL2_FOUND)
                 COMPILE_FLAGS "${USE_FLAGS}"
                 LINK_FLAGS "${USE_FLAGS}"
         )
-        target_link_libraries(videoSDL2 PRIVATE videodrv s25util::common glad Boost::nowide)
+        target_link_libraries(videoSDL2 PRIVATE videodrv s25util::common Boost::nowide)
     else ()
         add_library(videoSDL2 SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL2.cpp VideoSDL2.h icon.h icon.cpp)
         target_link_libraries(videoSDL2 PRIVATE videodrv s25util::common glad Boost::nowide SDL2::SDL2)

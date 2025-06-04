@@ -6,8 +6,13 @@
 #include "DrawPoint.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include "openglCfg.hpp"
 #include <glad/glad.h>
+#endif
 
 void OpenGLRenderer::synchronize()
 {
@@ -123,8 +128,10 @@ void OpenGLRenderer::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsi
 
 bool OpenGLRenderer::initOpenGL(OpenGL_Loader_Proc loader)
 {
-#if RTTR_OGL_ES
+#if defined(RTTR_OGL_ES)
     return gladLoadGLES2Loader(loader) != 0;
+#elif __EMSCRIPTEN__
+    return loader != NULL;
 #else
     return gladLoadGLLoader(loader) != 0;
 #endif

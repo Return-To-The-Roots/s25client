@@ -7,7 +7,12 @@
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "libsiedler2/PixelBufferBGRA.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 
 namespace {
 struct GL_RGBAColor

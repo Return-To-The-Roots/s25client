@@ -12,12 +12,15 @@
 #include "mygettext/mygettext.h"
 #include "ogl/DummyRenderer.h"
 #include "ogl/OpenGLRenderer.h"
-#include "openglCfg.hpp"
 #include "s25util/Log.h"
 #include "s25util/error.h"
-#include <glad/glad.h>
 #ifdef __EMSCRIPTEN__
+#include <gl4esinit.h>
 #include "../../../extras/videoDrivers/SDL2/VideoSDL2.h"
+#include "SDL/SDL_opengl.h"
+#else
+#include "openglCfg.hpp"
+#include <glad/glad.h>
 #endif
 #include <ctime>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
@@ -67,8 +70,11 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver)
 
 bool VideoDriverWrapper::LoadDriver()
 {
+#ifdef __EMSCRIPTEN__
+    initialize_gl4es();
+#endif
     UnloadDriver();
-    videodriver = Handle(CreateVideoInstance(&WINDOWMANAGER), &FreeVideoInstance);
+    videodriver = Handle(CreateVideoInstance(&WINDOWMANAGER), FreeVideoInstance);
     return Initialize();
 }
 
@@ -388,7 +394,7 @@ bool VideoDriverWrapper::LoadAllExtensions()
         return false;
     }
 #else
-    LOG.write(_("OpenGL ES 2.0 (%1%")) % reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    LOG.write(_("OpenGL ES 2.0 (%1%)\n")) % reinterpret_cast<const char*>(glGetString(GL_VERSION));
 #endif
 
 // auf VSync-Extension testen

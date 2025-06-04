@@ -203,7 +203,7 @@ void GameManager::ResetAverageGFPS()
     gfCounter_ = FrameCounter(FrameCounter::clock::duration::max()); // Never update
 }
 
-static GameManager* globalGameManager = nullptr;
+GameManager* globalGameManager;
 
 GameManager& getGlobalGameManager()
 {

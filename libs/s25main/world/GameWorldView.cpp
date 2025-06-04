@@ -30,7 +30,12 @@
 #include "gameData/MapConsts.h"
 #include "s25util/error.h"
 #include "s25util/warningSuppression.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <boost/format.hpp>
 #include <cmath>
 

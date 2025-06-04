@@ -11,7 +11,12 @@
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/PixelBufferBGRA.h"
 #include "s25util/colors.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <cmath>
 #include <limits>
 

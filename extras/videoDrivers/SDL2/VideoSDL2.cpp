@@ -10,7 +10,9 @@
 #include "helpers/LSANUtils.h"
 #include "helpers/containerUtils.h"
 #include "icon.h"
+#ifndef __EMSCRIPTEN__
 #include "openglCfg.hpp"
+#endif
 #include <s25util/utf8.h>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>

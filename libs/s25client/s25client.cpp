@@ -55,13 +55,6 @@
 EM_JS(void, main_ready, (), {
   Module?.gameReady?.();
 });
-void main_loop()
-{
-    if (!GAMEMANAGER.Run())
-    {
-        emscripten_cancel_main_loop();
-    }
-}
 #endif
 
 namespace bfs = boost::filesystem;
@@ -449,6 +442,17 @@ bool InitGame(GameManager& gameManager)
     return true;
 }
 
+#ifdef __EMSCRIPTEN__
+static void mainLoop()
+{
+    killme = false;
+    if (!GAMEMANAGER.Run())
+    {
+        emscripten_cancel_main_loop();
+    }
+}
+#endif
+
 int RunProgram(po::variables_map& options)
 {
     LOG.write("%1%\n\n", LogTarget::Stdout) % GetProgramDescription();
@@ -480,11 +484,10 @@ int RunProgram(po::variables_map& options)
         }
     }
 
-    SetGlobalInstanceWrapper<GameManager> gameManager(setGlobalGameManager, LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER,
-                                                      WINDOWMANAGER);
+    setGlobalGameManager(new GameManager(LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER, WINDOWMANAGER));
     try
     {
-        if(!InitGame(gameManager))
+        if(!InitGame(GAMEMANAGER))
             return 2;
 
         if(options.count("map"))
@@ -500,9 +503,9 @@ int RunProgram(po::variables_map& options)
         // Hauptschleife
 #ifdef __EMSCRIPTEN__
         main_ready();
-        emscripten_set_main_loop(&main_loop, 0, true);
+        emscripten_set_main_loop(&mainLoop, 0, true);
 #else
-        while(gameManager.Run())
+        while(GAMEMANAGER.Run())
         {
 #ifndef _WIN32
             killme = false;
@@ -510,7 +513,7 @@ int RunProgram(po::variables_map& options)
         }
 #endif
         // Spiel beenden
-        gameManager.Stop();
+        GAMEMANAGER.Stop();
         libsiedler2::setAllocator(nullptr);
     } catch(const RTTR_AssertError& error)
     {

@@ -49,6 +49,8 @@ private:
     boost::optional<SkipReport> lastSkipReport;
 };
 
+extern GameManager *globalGameManager;
+
 GameManager& getGlobalGameManager();
 void setGlobalGameManager(GameManager* gameManager);
 
