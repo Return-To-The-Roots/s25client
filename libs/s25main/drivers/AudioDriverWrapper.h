@@ -36,6 +36,7 @@ public:
     /// Loads the driver
     bool LoadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver);
     bool LoadDriver(std::string& preference);
+    bool LoadDriver();
     /// Unloads the driver resetting all open handles
     void UnloadDriver();
 

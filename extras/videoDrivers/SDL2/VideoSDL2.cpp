@@ -54,7 +54,7 @@ void FreeVideoInstance(IVideoDriver* driver)
     delete driver;
 }
 
-const char* GetDriverName()
+const char* GetVideoDriverName()
 {
     return "(SDL2) OpenGL via SDL2-Library";
 }
@@ -68,7 +68,7 @@ VideoSDL2::~VideoSDL2()
 
 const char* VideoSDL2::GetName() const
 {
-    return GetDriverName();
+    return GetVideoDriverName();
 }
 
 bool VideoSDL2::Initialize()
@@ -112,6 +112,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     if(!initialized)
         return false;
 
+#ifndef __EMSCRIPTEN__
     // GL-Attributes
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
@@ -128,6 +129,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
+#endif
 
     int wndPos = SDL_WINDOWPOS_CENTERED;
 
@@ -170,6 +172,11 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
 
     context = SDL_GL_CreateContext(window);
 
+    if(!context)
+    {
+        PrintError(SDL_GetError());
+        return false;
+    }
 #ifdef _WIN32
     SetWindowTextW(GetConsoleWindow(), boost::nowide::widen(title).c_str());
 #endif

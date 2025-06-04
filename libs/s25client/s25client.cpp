@@ -52,6 +52,9 @@
 
 #ifdef __EMSCRIPTEN__
 #    include <emscripten.h>
+EM_JS(void, main_ready, (), {
+  Module?.gameReady?.();
+});
 void main_loop()
 {
     if (!GAMEMANAGER.Run())
@@ -496,6 +499,7 @@ int RunProgram(po::variables_map& options)
 
         // Hauptschleife
 #ifdef __EMSCRIPTEN__
+        main_ready();
         emscripten_set_main_loop(&main_loop, 0, true);
 #else
         while(gameManager.Run())

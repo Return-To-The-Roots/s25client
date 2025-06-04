@@ -16,6 +16,9 @@
 #include "s25util/Log.h"
 #include "s25util/error.h"
 #include <glad/glad.h>
+#ifdef __EMSCRIPTEN__
+#include "../../../extras/videoDrivers/SDL2/VideoSDL2.h"
+#endif
 #include <ctime>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #    include <valgrind/memcheck.h>
@@ -61,6 +64,14 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver)
     videodriver = Handle(existingDriver, [](IVideoDriver* p) { delete p; });
     return Initialize();
 }
+
+bool VideoDriverWrapper::LoadDriver()
+{
+    UnloadDriver();
+    videodriver = Handle(CreateVideoInstance(&WINDOWMANAGER), &FreeVideoInstance);
+    return Initialize();
+}
+
 
 bool VideoDriverWrapper::LoadDriver(std::string& preference)
 {
@@ -368,6 +379,7 @@ bool VideoDriverWrapper::LoadAllExtensions()
         renderer_ = std::make_unique<DummyRenderer>();
     if(!renderer_->initOpenGL(videodriver->GetLoaderFunction()))
         return false;
+#ifndef __EMSCRIPTEN__
     LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
     if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
     {
@@ -375,6 +387,9 @@ bool VideoDriverWrapper::LoadAllExtensions()
           % ((RTTR_OGL_ES) ? "ES" : "") % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
         return false;
     }
+#else
+    LOG.write(_("OpenGL ES 2.0 (%1%")) % reinterpret_cast<const char*>(glGetString(GL_VERSION));
+#endif
 
 // auf VSync-Extension testen
 #ifdef _WIN32

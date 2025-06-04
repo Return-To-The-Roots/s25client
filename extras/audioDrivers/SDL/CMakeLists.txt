@@ -4,6 +4,7 @@
 
 set(SDL_BUILDING_LIBRARY ON)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+    set(SDL_MIXER_FOUND TRUE)
 else ()
 find_package(SDL_mixer 2.0.1)
 endif ()
@@ -20,6 +21,11 @@ else()
 
     if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
         add_library(audioSDL STATIC ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h)
+        set(USE_FLAGS "--use-port=sdl2_mixer -sSDL2_MIXER_FORMATS=ogg")
+        set_target_properties(audioSDL PROPERTIES
+                COMPILE_FLAGS "${USE_FLAGS}"
+                LINK_FLAGS "${USE_FLAGS}"
+        )
         target_link_libraries(audioSDL PRIVATE audiodrv)
     else ()
         add_library(audioSDL SHARED ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h)

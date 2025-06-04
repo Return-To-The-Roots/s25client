@@ -41,7 +41,11 @@ bool GameManager::Start()
     settings_.Load();
 
     /// Videotreiber laden
+#ifdef __EMSCRIPTEN__
+    if(!videoDriver_.LoadDriver())
+#else
     if(!videoDriver_.LoadDriver(settings_.driver.video))
+#endif
     {
         s25util::error(_("Video driver couldn't be loaded!"));
         return false;
@@ -57,7 +61,11 @@ bool GameManager::Start()
     videoDriver_.setGuiScalePercent(settings_.video.guiScale);
 
     /// Audiodriver laden
+#ifdef __EMSCRIPTEN__
+    if(!audioDriver_.LoadDriver())
+#else
     if(!audioDriver_.LoadDriver(settings_.driver.audio))
+#endif
     {
         s25util::warning(_("Audio driver couldn't be loaded!"));
         // return false;

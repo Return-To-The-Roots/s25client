@@ -305,7 +305,7 @@ endif()
 set(BoostPackages filesystem iostreams locale program_options)
 if(BUILD_TESTING)
     # Avoid having to search for this in all tests speeding up configure
-    #list(APPEND BoostPackages unit_test_framework)
+    list(APPEND BoostPackages unit_test_framework)
 endif()
 
 find_package(Boost 1.86 COMPONENTS ${BoostPackages})
