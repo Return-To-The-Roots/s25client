@@ -27,7 +27,7 @@ if(CMAKE_VERSION VERSION_LESS 3.14)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/libutil/cmake/cmake_3.14")
 endif()
 
-#include(EnableCCache)
+include(EnableCCache)
 
 set(checkSubmodules FALSE)
 # Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
@@ -297,9 +297,11 @@ include(RttrTestingCfg)
 
 set(rttrContribBoostDir ${CMAKE_CURRENT_SOURCE_DIR}/contrib/boost)
 if(EXISTS ${rttrContribBoostDir} AND IS_DIRECTORY ${rttrContribBoostDir})
-    set(BOOST_ROOT "${rttrContribBoostDir}" CACHE PATH "Path to find boost at")
-    set(Boost_INCLUDE_DIR "${rttrContribBoostDir}/include" CACHE PATH "Path to find boost at")
-    set(Boost_LIBRARY_DIR "${rttrContribBoostDir}/lib" CACHE PATH "Path to find boost at")
+    set(BOOST_ROOT ${rttrContribBoostDir} CACHE PATH "Path to find boost at")
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+        set(Boost_INCLUDE_DIR "${rttrContribBoostDir}/include" CACHE PATH "Path to find boost at")
+        set(Boost_LIBRARY_DIR "${rttrContribBoostDir}/lib" CACHE PATH "Path to find boost at")
+    endif ()
 endif()
 
 set(BoostPackages filesystem iostreams locale program_options)
@@ -317,7 +319,9 @@ if(NOT Boost_FOUND)
 endif()
 
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 set(RTTR_USE_SYSTEM_BOOST_NOWIDE ON)
+endif ()
 if(Boost_VERSION_MINOR GREATER_EQUAL "74" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
     # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
     find_package(Boost COMPONENTS nowide)
