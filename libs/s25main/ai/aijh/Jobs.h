@@ -68,12 +68,13 @@ class BuildJob : public AIJob, public JobWithTarget
 {
 public:
     BuildJob(AIPlayerJH& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SearchMode::Radius)
-        : AIJob(aijh), type(type), around(around), searchMode(searchMode)
+        : AIJob(aijh),  priority(10000), type(type), around(around), searchMode(searchMode)
     {}
 
     void ExecuteJob() override;
     inline BuildingType GetType() const { return type; }
     inline MapPoint GetAround() const { return around; }
+    unsigned priority;
 
 private:
     BuildingType type;
@@ -84,6 +85,13 @@ private:
     void TryToBuild();
     void BuildMainRoad();
     void TryToBuildSecondaryRoad();
+};
+
+struct CompareByPriority {
+    bool operator()(const BuildJob& a, const BuildJob& b) const {
+        // Ensure uniqueness in set: avoid two with same priority
+        return a.priority > b.priority;
+    }
 };
 
 class ConnectJob : public AIJob, public JobWithTarget

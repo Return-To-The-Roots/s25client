@@ -6,9 +6,14 @@
 
 #include "AIMap.h"
 #include "ai/AIResource.h"
+#include "ai/RatedPoint.h"
+
 #include "world/NodeMapBase.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/BuildingType.h"
+
+#include <optional>
+#include <set>
 
 class AIInterface;
 namespace AIJH {
@@ -28,7 +33,10 @@ public:
 
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    MapPoint findBestPosition(const MapPoint& pt, BuildingQuality size, unsigned radius, int minimum) const;
+    std::pair<MapPoint,int> findBestPosition(const MapPoint& pt, BuildingQuality size, unsigned radius, int minimum) const;
+    RatedPointSet findBestPositions(const MapPoint& pt, BuildingQuality size, unsigned radius,
+                                                         int minimum, int maxCount) const;
+    int getResourcesAt(const MapPoint& pt) const;
 
     /// Marks a position to be avoided.
     /// Only has an effect on diminishable resources where this blocks this point forever
@@ -52,5 +60,4 @@ private:
     const AIInterface& aii;
     const AIMap& aiMap;
 };
-
 } // namespace AIJH

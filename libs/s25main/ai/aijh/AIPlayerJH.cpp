@@ -212,7 +212,7 @@ template<size_t... I>
 static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap, std::index_sequence<I...>)
 {
     return helpers::EnumArray<AIResourceMap, AIResource>{
-        AIResourceMap(AIResource(I), isUnlimitedResource(AIResource(I), aii.gwb.GetGGS()), aii, aiMap)...};
+      AIResourceMap(AIResource(I), isUnlimitedResource(AIResource(I), aii.gwb.GetGGS()), aii, aiMap)...};
 }
 static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 {
@@ -222,7 +222,7 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
       isInitGfCompleted(false), defeated(player.IsDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
-      construction(std::make_unique<AIConstruction>(*this))
+      construction(std::make_unique<AIConstruction>(*this)), positionFinder(std::make_unique<PositionFinder>(*this))
 {
     InitNodes();
     InitResourceMaps();
@@ -234,16 +234,16 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     {
         case AI::Level::Easy:
             attack_interval = 2500;
-        build_interval = 1000;
-        break;
+            build_interval = 1000;
+            break;
         case AI::Level::Medium:
             attack_interval = 750;
-        build_interval = 400;
-        break;
+            build_interval = 400;
+            break;
         case AI::Level::Hard:
             attack_interval = 100;
-        build_interval = 200;
-        break;
+            build_interval = 200;
+            break;
         default: throw std::invalid_argument("Invalid AI level!");
     }
     // TODO: Maybe remove the AIEvents where possible and call the handler functions directly
@@ -379,16 +379,18 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
 
     // pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of
     // the building type)
-    std::array<BuildingType, 24> bldToTest = {
-        {BuildingType::HarborBuilding, BuildingType::Shipyard,   BuildingType::Sawmill,
-         BuildingType::Forester,       BuildingType::Farm,       BuildingType::Fishery,
-         BuildingType::Woodcutter,     BuildingType::Quarry,     BuildingType::GoldMine,
-         BuildingType::IronMine,       BuildingType::CoalMine,   BuildingType::GraniteMine,
-         BuildingType::Hunter,         BuildingType::Charburner, BuildingType::Ironsmelter,
-         BuildingType::Mint,           BuildingType::Armory,     BuildingType::Metalworks,
-         BuildingType::Brewery,        BuildingType::Mill,       BuildingType::PigFarm,
-         BuildingType::Slaughterhouse, BuildingType::Bakery,     BuildingType::DonkeyBreeder}};
-    const unsigned numResGatherBlds = 14; /* The first n buildings in the above list, that gather resources */
+    std::array<BuildingType, 22> bldToTest = {
+      {BuildingType::HarborBuilding, BuildingType::Shipyard, BuildingType::Sawmill, BuildingType::Forester,
+       /*BuildingType::Farm,*/
+       BuildingType::Fishery, /*BuildingType::Woodcutter,*/ BuildingType::Quarry, BuildingType::GoldMine,
+       BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine, BuildingType::Hunter,
+       BuildingType::Charburner, BuildingType::Ironsmelter, BuildingType::Mint, BuildingType::Armory,
+       BuildingType::Metalworks, BuildingType::Brewery, BuildingType::Mill, BuildingType::PigFarm,
+       BuildingType::Slaughterhouse, BuildingType::Bakery, BuildingType::DonkeyBreeder}};
+
+    std::array<BuildingType, 2> globalBldToTest = {{BuildingType::Farm, BuildingType::Woodcutter}};
+
+    // const unsigned numResGatherBlds = 13; /* The first n buildings in the above list, that gather resources */
 
     // LOG.write(("new buildorders %i whs and %i mil for player %i
     // \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerId);
@@ -421,6 +423,13 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
                 AddBuildJobAroundEveryWarehouse(i); // add a buildorder for the picked buildingtype at every warehouse
             }
         }
+        for(const BuildingType i : globalBldToTest)
+        {
+            if(construction->Wanted(i))
+            {
+                AddGlobalBuildJob(i);
+            }
+        }
         if(gf > 1500 || aii.GetInventory().goods[GoodType::Boards] > 11)
             AddMilitaryBuildJob(whPos);
     }
@@ -434,15 +443,15 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     auto it2 = militaryBuildings.begin();
     std::advance(it2, randomMiliBld);
     MapPoint bldPos = (*it2)->GetPos();
-    UpdateNodesAround(bldPos, 15);
-    // resource gathering buildings only around military; processing only close to warehouses
-    for(unsigned i = 0; i < numResGatherBlds; i++)
-    {
-        if(construction->Wanted(bldToTest[i]))
-        {
-            AddBuildJobAroundEveryMilBld(bldToTest[i]);
-        }
-    }
+    // UpdateNodesAround(bldPos, 15);
+    // // resource gathering buildings only around military; processing only close to warehouses
+    // for(unsigned i = 0; i < numResGatherBlds; i++)
+    // {
+    //     if(construction->Wanted(bldToTest[i]))
+    //     {
+    //         AddBuildJobAroundEveryMilBld(bldToTest[i]);
+    //     }
+    // }
     AddMilitaryBuildJob(bldPos);
     if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed() && randomMiliBld != UpdateUpgradeBuilding())
     {
@@ -480,7 +489,7 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 
     if(uub >= 0
        && storehouses.size() > 1) // upgradebuilding exists and more than 1 warehouse -> find warehouse closest to the
-           // upgradebuilding - gather stuff there and deactivate gathering in the previous one
+                                  // upgradebuilding - gather stuff there and deactivate gathering in the previous one
     {
         auto upgradeBldIt = aii.GetMilitaryBuildings().begin();
         std::advance(upgradeBldIt, uub);
@@ -499,14 +508,57 @@ void AIPlayerJH::AddMilitaryBuildJob(MapPoint pt)
         AddBuildJob(*milBld, pt);
 }
 
+void AIPlayerJH::AddGlobalBuildJob(BuildingType type)
+{
+    construction->AddGlobalBuildJob(std::make_unique<BuildJob>(*this, type, MapPoint::Invalid(), SearchMode::Global));
+}
+
 void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front, bool searchPosition)
 {
     construction->AddBuildJob(
       std::make_unique<BuildJob>(*this, type, pt, searchPosition ? SearchMode::Radius : SearchMode::None), front);
 }
 
+MapPoint AIPlayerJH::FindBestPosition(BuildingType bt)
+{
+    return positionFinder->FindBestPosition(bt);
+}
 void AIPlayerJH::AddBuildJobAroundEveryWarehouse(BuildingType bt)
 {
+    // if (bt == BuildingType::Farm)
+    // {
+    //     // A vector to store warehouse positions with their resValue
+    //     std::vector<std::pair<const nobBaseWarehouse*, int>> warehousesWithValue;
+    //
+    //     for (const nobBaseWarehouse* wh : aii.GetStorehouses())
+    //     {
+    //         auto pt = wh->GetPos();
+    //         auto bestPt = FindPositionForBuildingAround(bt, pt);
+    //         if(bestPt.isValid())
+    //         {
+    //             auto resMap = resourceMaps[AIResource::Plantspace];
+    //             resMap.updateAround(bestPt, 11);
+    //             int resValue = resMap.getResourcesAt(bestPt);
+    //
+    //             warehousesWithValue.emplace_back(wh, resValue);
+    //         }
+    //     }
+    //
+    //     // Sort warehouses by descending resValue
+    //     std::sort(warehousesWithValue.begin(), warehousesWithValue.end(),
+    //               [](const auto& a, const auto& b) {
+    //                   return a.second > b.second;
+    //               });
+    //
+    //     // Take the top 5 (or all if less than 5)
+    //     int count = std::min(static_cast<int>(warehousesWithValue.size()), 5);
+    //     for (int i = 0; i < count; ++i)
+    //     {
+    //         auto* wh = warehousesWithValue[i].first;
+    //         AddBuildJob(bt, wh->GetPos(), false);
+    //     }
+    // }
+    // else
     for(const nobBaseWarehouse* wh : aii.GetStorehouses())
     {
         AddBuildJob(bt, wh->GetPos(), false);
@@ -761,7 +813,7 @@ MapPoint AIPlayerJH::FindBestPosition(const MapPoint& pt, AIResource res, Buildi
                                       int minimum)
 {
     resourceMaps[res].updateAround(pt, radius);
-    return resourceMaps[res].findBestPosition(pt, size, radius, minimum);
+    return resourceMaps[res].findBestPosition(pt, size, radius, minimum).first;
 }
 
 void AIPlayerJH::ExecuteAIJob()
@@ -1023,23 +1075,24 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
     {
         case BuildingType::Woodcutter:
         {
-            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 320);
-            if(!foundPos.isValid() && rand() % 5 == 0) {
+            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 50);
+            /*if(!foundPos.isValid() && rand() % 5 == 0)
+            {
                 foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 120);
-            }
-            if(construction->OtherUsualBuildingInRadius(foundPos, 2, BuildingType::Woodcutter)) {
+            }*/
+            if(construction->OtherUsualBuildingInRadius(foundPos, 2, BuildingType::Woodcutter))
+            {
                 foundPos = MapPoint::Invalid();
             }
             break;
         }
         case BuildingType::Forester:
-            if(construction->OtherUsualBuildingInRadius(around, 14, BuildingType::Farm))
+            if(construction->OtherUsualBuildingInRadius(around, 8, BuildingType::Farm))
             {
                 break;
             }
             // ensure some distance to other foresters and an minimal amount of plantspace
-            if(!construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester)
-               && GetDensity(around, AIResource::Plantspace, 7) > 15)
+            if(!construction->OtherUsualBuildingInRadius(around, 8, BuildingType::Forester))
                 foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 0);
             break;
             // ensure some distance to other foresters and an minimal amount of plantspace
@@ -1052,7 +1105,9 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
         case BuildingType::Well:
         {
             foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
-            if(construction->OtherUsualBuildingInRadius(foundPos, (unsigned) AI_CONFIG.foresterFreeRadius, BuildingType::Forester)) {
+            if(construction->OtherUsualBuildingInRadius(foundPos, (unsigned)AI_CONFIG.foresterFreeRadius,
+                                                        BuildingType::Forester))
+            {
                 foundPos = MapPoint::Invalid();
             }
             break;
@@ -1111,9 +1166,10 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             {
                 resourceMaps[AIResource::Fish].avoidPosition(foundPos);
                 foundPos = MapPoint::Invalid();
-            }else
+            } else
             {
-                if(construction->OtherUsualBuildingInRadius(foundPos, 3, BuildingType::Fishery)) {
+                if(construction->OtherUsualBuildingInRadius(foundPos, 3, BuildingType::Fishery))
+                {
                     foundPos = MapPoint::Invalid();
                 }
             }
@@ -1134,13 +1190,11 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                 foundPos = MapPoint::Invalid();
             break;
         case BuildingType::Farm:
-            if(construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester))
+            if(construction->OtherUsualBuildingInRadius(around, 6, BuildingType::Forester))
             {
                 break;
             }
             foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
-            if(foundPos.isValid())
-                foundPos = FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
             break;
         case BuildingType::Catapult:
             foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
@@ -1216,16 +1270,17 @@ void AIPlayerJH::HandleNewMilitaryBuildingOccupied(const MapPoint pt)
 
     // try to build one the following buildings around the new military building
 
-    std::array<BuildingType, 11> bldToTest = {
-      BuildingType::Storehouse, BuildingType::Woodcutter, BuildingType::Quarry,      BuildingType::GoldMine,
-      BuildingType::CoalMine,   BuildingType::IronMine,   BuildingType::GraniteMine, BuildingType::Fishery,
-      BuildingType::Farm,       BuildingType::Hunter,     BuildingType::Forester};
+    std::array<BuildingType, 11> bldToTest = {BuildingType::Storehouse,
+                                              // BuildingType::Woodcutter,
+                                              BuildingType::Quarry, BuildingType::GoldMine, BuildingType::CoalMine,
+                                              BuildingType::IronMine, BuildingType::GraniteMine, BuildingType::Fishery,
+                                              /*BuildingType::Farm,  */ BuildingType::Hunter, BuildingType::Forester};
     unsigned bldToTestStartIdx = 0;
     // remove the storehouse from the building test list if we are close to another storehouse already
     for(const nobBaseWarehouse* bldSite : aii.GetStorehouses())
     {
         unsigned minDistance = 20;
-        if(aii.GetStorehouses().size() < 2 )
+        if(aii.GetStorehouses().size() < 2)
         {
             minDistance = 20;
         }
@@ -1418,8 +1473,8 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
 
     if(random % 2 == 0)
         AddMilitaryBuildJob(pt);
-    else // if (random % 12 == 0)
-        AddBuildJob(BuildingType::Woodcutter, pt);
+    // else // if (random % 12 == 0)
+    // AddBuildJob(BuildingType::Woodcutter, pt);
 }
 
 void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType bld)
@@ -1478,11 +1533,11 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     AddMilitaryBuildJob(pt);
 
     // and try to rebuild the same building
-    if(bld != BuildingType::Hunter)
+    if(bld != BuildingType::Hunter && bld != BuildingType::Woodcutter)
         AddBuildJob(bld, pt);
 
     // farm is always good!
-    AddBuildJob(BuildingType::Farm, pt);
+    // AddBuildJob(BuildingType::Farm, pt);
 }
 
 void AIPlayerJH::HandleShipBuilt(const MapPoint pt)
@@ -2551,7 +2606,7 @@ void AIPlayerJH::AdjustSettings()
                 bool diff = numBuildingsRequiringWorker - inventory[job];
                 if(diff > 0)
                 {
-                    const signed requiredTools = (signed)(numBuildingsRequiringWorker) - inventory[job];
+                    const signed requiredTools = (signed)(numBuildingsRequiringWorker)-inventory[job];
                     // When we are missing tools produce some.
                     // Slightly higher priority if we don't have any tool at all.
                     if(requiredTools > (signed)numToolsAvailable)
@@ -2571,7 +2626,6 @@ void AIPlayerJH::AdjustSettings()
         for(const auto tool : helpers::enumRange<Tool>())
         {
             toolsettings[tool] = calcToolPriority(tool);
-
         }
         // // Basic tools to produce stone, boards and iron are very important to have, do those first
         // for(const Tool tool : {Tool::Axe, Tool::Saw, Tool::PickAxe, Tool::Crucible})
@@ -2876,10 +2930,14 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     outfile << std::endl;
 
     outfile << " Other: " << std::endl;
-    outfile << "Mil. Builngs: " << bldPlanner->GetNumMilitaryBlds() << std::endl;;
-    outfile << "Wood available: " << GetAvailableResources(AISurfaceResource::Wood) << std::endl;;
-    outfile << "Stone available: " << GetAvailableResources(AISurfaceResource::Stones) << std::endl;;
-    outfile << "Boards demand: " << player.GetBuildingRegister().CalcBoardsDemand() << std::endl;;
+    outfile << "Mil. Builngs: " << bldPlanner->GetNumMilitaryBlds() << std::endl;
+    ;
+    outfile << "Wood available: " << GetAvailableResources(AISurfaceResource::Wood) << std::endl;
+    ;
+    outfile << "Stone available: " << GetAvailableResources(AISurfaceResource::Stones) << std::endl;
+    ;
+    outfile << "Boards demand: " << player.GetBuildingRegister().CalcBoardsDemand() << std::endl;
+    ;
     outfile.close();
 }
 

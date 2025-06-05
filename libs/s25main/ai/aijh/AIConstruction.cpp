@@ -44,6 +44,24 @@ AIConstruction::AIConstruction(AIPlayerJH& aijh)
 
 AIConstruction::~AIConstruction() = default;
 
+void AIConstruction::AddGlobalBuildJob(std::unique_ptr<BuildJob> job)
+{
+    BuildingType jobType = job->GetType();
+    bool alreadyinlist = false;
+    for(auto& buildJob : globalBuildJobs)
+    {
+        if(buildJob.GetType() == jobType)
+        {
+            alreadyinlist = true;
+            break;
+        }
+    }
+    if(!alreadyinlist)
+    {
+        globalBuildJobs.emplace(std::move(*job));
+    }
+}
+
 void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
 {
     BuildingType jobType = job->GetType();
@@ -52,7 +70,8 @@ void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
     // LOG.write("AddBuildJob %s at %d,%d\n") % name % around.x % around.y;
     if(jobType == BuildingType::Shipyard && aijh.IsInvalidShipyardPosition(job->GetAround()))
         return;
-    if(BuildingProperties::IsMilitary(jobType)) // non military buildings can only be added once to the contruction que for every location
+    if(BuildingProperties::IsMilitary(
+         jobType)) // non military buildings can only be added once to the contruction que for every location
     {
         if(front)
             buildJobs.push_front(std::move(job));
@@ -93,8 +112,9 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     unsigned i = 0; // count up to limit
     unsigned initconjobs = std::min<unsigned>(connectJobs.size(), 5);
     unsigned initbuildjobs = std::min<unsigned>(buildJobs.size(), 5);
-    for(; i < limit && !connectJobs.empty() && i < initconjobs;
-        i++) // go through list, until limit is reached or list empty or when every entry has been checked
+    // go through list, until limit is reached or list empty or when every entry has been checked
+
+    for(; i < limit && !connectJobs.empty() && i < initconjobs; i++)
     {
         auto job = std::move(connectJobs.front());
         connectJobs.pop_front();
@@ -105,12 +125,30 @@ void AIConstruction::ExecuteJobs(unsigned limit)
             connectJobs.push_back(std::move(job));
         }
     }
+
+    std::vector<BuildJob> unfinishedJobs;
+    for(; i < limit && !globalBuildJobs.empty() && i < (initconjobs + initbuildjobs); i++)
+    {
+        auto job = PopGlobalBuildJob();
+        job->ExecuteJob();
+        // couldnt do job? -> move to back of list
+        if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
+        {
+            job->priority--;
+            globalBuildJobs.emplace(std::move(*job));
+        }
+    }
+    for (auto& job : unfinishedJobs)
+    {
+        globalBuildJobs.emplace(std::move(job));
+    }
+
     for(; i < limit && !buildJobs.empty() && i < (initconjobs + initbuildjobs); i++)
     {
         auto job = GetBuildJob();
         job->ExecuteJob();
-        if(job->GetState() != JobState::Finished
-           && job->GetState() != JobState::Failed) // couldnt do job? -> move to back of list
+        // couldnt do job? -> move to back of list
+        if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
         {
             buildJobs.push_back(std::move(job));
         }
@@ -133,6 +171,17 @@ void AIConstruction::SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir
         aii.SetFlag(curPos);
         constructionlocations.push_back(curPos);
     }
+}
+
+std::unique_ptr<BuildJob> AIConstruction::PopGlobalBuildJob()
+{
+    if(globalBuildJobs.empty())
+        return nullptr;
+
+    auto iter = globalBuildJobs.begin();
+    BuildJob topJob = *iter;
+    globalBuildJobs.erase(iter);
+    return std::make_unique<BuildJob>(std::move(topJob));
 }
 
 std::unique_ptr<BuildJob> AIConstruction::GetBuildJob()
@@ -331,7 +380,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         if(aii.FindPathOnRoads(*curFlag, *flag))
             continue;
 
-        unsigned odd = length % 2 != 0 ? 5: 0;
+        unsigned odd = length % 2 != 0 ? 5 : 0;
         // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
         // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
         if(odd + 2 * length + distance + 10 * maxNonFlagPts < shortestLength)

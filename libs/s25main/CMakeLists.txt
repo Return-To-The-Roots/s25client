@@ -48,6 +48,9 @@ set(s25Main_SRCS
         ai/aijh/AIConfig.h
         ai/aijh/PlannerHelper.cpp
         ai/aijh/PlannerHelper.h
+        ai/aijh/PositionFinder.cpp
+        ai/aijh/PositionFinder.h
+        ai/RatedPoint.h
 )
 
 add_library(s25Main STATIC ${s25Main_SRCS})

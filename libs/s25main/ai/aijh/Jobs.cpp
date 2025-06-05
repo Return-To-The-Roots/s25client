@@ -65,35 +65,22 @@ void BuildJob::TryToBuild()
 {
     AIConstruction& aiConstruction = aijh.GetConstruction();
 
-    if(aijh.GetInterface().GetBuildingSites().size() > 40)
-    {
-        return;
-    }
-
     if(!aiConstruction.Wanted(type))
     {
         state = JobState::Finished;
         return;
     }
 
-    if(searchMode == SearchMode::Global)
+    if(aijh.GetInterface().GetBuildingSites().size() > 40)
     {
-        // TODO: tmp solution for testing: only woodcutter
-        // hier machen für mehre gebäude
-        /*erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
-        if (type == BuildingType::Woodcutter)
-        {
-            PositionSearch *search = new PositionSearch(around, WOOD, 20, BuildingType::Woodcutter, true);
-            SearchJob *job = new SearchJob(aijh, search);
-            aijh.AddJob(job, true);
-            status = JobState::Finished;
-            return;
-        }*/
-        searchMode = SearchMode::Radius;
+        return;
     }
 
     MapPoint foundPos = MapPoint::Invalid();
-    if(searchMode == SearchMode::Radius)
+    if(searchMode == SearchMode::Global)
+    {
+        foundPos = aijh.FindBestPosition(type);
+    } else if(searchMode == SearchMode::Radius)
     {
         foundPos = aijh.FindPositionForBuildingAround(type, around);
         if(BuildingProperties::IsMilitary(type))
@@ -156,7 +143,7 @@ void BuildJob::TryToBuild()
         return;
     }
     target = foundPos;
-        state = JobState::ExecutingRoad1;
+    state = JobState::ExecutingRoad1;
     aiConstruction.ConstructionOrdered(*this);
 }
 
@@ -178,7 +165,10 @@ void BuildJob::BuildMainRoad()
                       << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.GetAINode(target).bq = bq;
-            aijh.AddBuildJob(type, around);
+            if(searchMode == SearchMode::Global)
+                aijh.AddGlobalBuildJob(type);
+            else
+                aijh.AddBuildJob(type, around);
         }
         return;
     }
@@ -211,7 +201,10 @@ void BuildJob::BuildMainRoad()
             aijh.GetAINode(target).failed_penalty = 20;
             aiInterface.DestroyBuilding(target);
             aiInterface.DestroyFlag(houseFlag->GetPos());
-            aijh.AddBuildJob(type, around);
+            if(searchMode == SearchMode::Global)
+                aijh.AddGlobalBuildJob(type);
+            else
+                aijh.AddBuildJob(type, around);
             return;
         }
     }
@@ -222,12 +215,13 @@ void BuildJob::BuildMainRoad()
 
     switch(type)
     {
-        case BuildingType::Forester: aijh.AddBuildJob(BuildingType::Woodcutter, target); break;
+        // case BuildingType::Forester: aijh.AddBuildJob(BuildingType::Woodcutter, target); break;
         case BuildingType::Charburner:
         case BuildingType::Farm:
         {
             aijh.SetFarmedNodes(target, true);
-            aijh.AddBuildJob(BuildingType::Well, target); break;
+            aijh.AddBuildJob(BuildingType::Well, target);
+            break;
         }
         case BuildingType::Mill: aijh.AddBuildJob(BuildingType::Bakery, target); break;
         case BuildingType::PigFarm: aijh.AddBuildJob(BuildingType::Slaughterhouse, target); break;

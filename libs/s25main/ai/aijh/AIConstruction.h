@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Jobs.h"
 #include "helpers/EnumArray.h"
 #include "helpers/OptionalEnum.h"
 #include "gameTypes/BuildingType.h"
@@ -11,6 +12,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include <deque>
 #include <memory>
+#include <set>
 #include <vector>
 
 class AIInterface;
@@ -36,7 +38,9 @@ public:
 
     /// Adds a build job to the queue
     void AddBuildJob(std::unique_ptr<BuildJob> job, bool front);
+    void AddGlobalBuildJob(std::unique_ptr<BuildJob> job);
 
+    std::unique_ptr<BuildJob> PopGlobalBuildJob();
     std::unique_ptr<BuildJob> GetBuildJob();
     unsigned GetBuildJobNum() const { return buildJobs.size(); }
     unsigned GetConnectJobNum() const { return connectJobs.size(); }
@@ -88,8 +92,12 @@ private:
     AIPlayerJH& aijh;
     AIInterface& aii;
     const BuildingPlanner& bldPlanner;
-    /// Contains the build jobs the AI should try to execute
+
     std::deque<std::unique_ptr<BuildJob>> buildJobs;
+
+    /// Contains the build jobs the AI should try to execute
+    std::multiset<BuildJob, CompareByPriority> globalBuildJobs;
+    std::deque<std::unique_ptr<BuildJob>> milBuildJobs;
     std::deque<std::unique_ptr<ConnectJob>> connectJobs;
     /// contains the locations pt at which the ai has done some kind of construction since the last nwf
     // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next

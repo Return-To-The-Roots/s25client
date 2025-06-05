@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "PositionFinder.h"
 #include "ai/AIEventManager.h"
 #include "ai/AIPlayer.h"
 #include "ai/aijh/AIMap.h"
@@ -22,6 +23,7 @@ class Base;
 }
 
 namespace AIJH {
+class PositionFinder;
 class BuildingPlanner;
 class AIConstruction;
 class AIJob;
@@ -92,9 +94,11 @@ public:
     /// If searchPosition is true, then the point is searched for a good position (around that pt) otherwise the point
     /// is taken
     void AddBuildJob(BuildingType type, MapPoint pt, bool front = false, bool searchPosition = true);
+    void AddGlobalBuildJob(BuildingType type);
     /// Build a new military building at that position
     void AddMilitaryBuildJob(MapPoint pt);
     /// adds buildjobs for a buildingtype around every warehouse or military building
+    MapPoint FindBestPosition(BuildingType bt);
     void AddBuildJobAroundEveryWarehouse(BuildingType bt);
     void AddBuildJobAroundEveryMilBld(BuildingType bt);
     /// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they
@@ -240,6 +244,7 @@ private:
     AIEventManager eventManager;
     std::unique_ptr<BuildingPlanner> bldPlanner;
     std::unique_ptr<AIConstruction> construction;
+    std::unique_ptr<PositionFinder> positionFinder;
 
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;
