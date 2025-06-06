@@ -121,7 +121,12 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::WaitingForFight:
         case SoldierState::AttackingWaitingAroundBuilding:
         case SoldierState::AttackingWaitingForDefender:
-        case SoldierState::DefendingWaiting: DrawSoldierWaiting(drawPt); break;
+        case SoldierState::DefendingWaiting:
+        {
+            DrawSoldierWaiting(drawPt);
+            DrawArmorNotWalking(drawPt);
+            break;
+        }
         case SoldierState::FigureWork:
         case SoldierState::MeetEnemy:
         case SoldierState::AttackingWalkingToGoal:
@@ -133,7 +138,12 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::AttackingCapturingNext:
         case SoldierState::AttackingAttackingFlag:
         case SoldierState::SeaattackingGoToHarbor:
-        case SoldierState::SeaattackingReturnToShip: DrawWalkingBobJobs(drawPt, job_); break;
+        case SoldierState::SeaattackingReturnToShip:
+        {
+            DrawWalkingBobJobs(drawPt, job_);
+            DrawArmorWalking(drawPt);
+            break;
+        }
     }
 }
 

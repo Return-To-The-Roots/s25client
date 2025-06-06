@@ -4,21 +4,19 @@
 
 #pragma once
 
-#include "figures/noFigure.h"
+#include "figures/nofArmored.h"
 
 class nobBaseMilitary;
 class SerializedGameData;
 
 /// Basisklasse für alle Soldatentypen
-class nofSoldier : public noFigure
+class nofSoldier : public nofArmored
 {
 protected:
     /// Heimatgebäude, ist bei Soldaten aus HQs das HQ!
     nobBaseMilitary* building;
     /// Hitpoints
     unsigned char hitpoints;
-    /// Armor
-    bool armor;
 
     /// Zeichnet den Soldaten beim ganz normalen Laufen
     void DrawSoldierWaiting(DrawPoint drawPt);
@@ -44,8 +42,6 @@ public:
     /// Liefert Rang des Soldaten
     unsigned char GetRank() const;
     unsigned char GetHitpoints() const;
-    bool HasArmor() const;
-    void SetArmor(bool armor);
     bool HasNoHome() const { return building == nullptr; }
 };
 

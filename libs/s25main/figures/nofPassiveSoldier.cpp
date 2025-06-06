@@ -49,6 +49,7 @@ void nofPassiveSoldier::Draw(DrawPoint drawPt)
 {
     // Soldat normal laufend zeichnen
     DrawWalkingBobJobs(drawPt, job_);
+    DrawArmorWalking(drawPt);
 }
 
 void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
