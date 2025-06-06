@@ -26,6 +26,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/LanDiscoveryCfg.h"
 #include "gameData/MaxPlayers.h"
+#include "gameData/PortraitConsts.h"
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
@@ -1040,9 +1041,10 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Portrait& msg)
     int playerID = GetTargetPlayer(msg);
     if(playerID < 0)
         return true;
+    if(msg.playerPortraitIndex < 0 || Portraits.size() <= msg.playerPortraitIndex)
+        return true;
 
     LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_PORTRAIT(%u)\n") % playerID % msg.playerPortraitIndex;
-
     playerInfos[playerID].portraitIndex = msg.playerPortraitIndex;
     SendToAll(GameMessage_Player_Portrait(playerID, msg.playerPortraitIndex));
     PlayerDataChanged(playerID);

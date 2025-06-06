@@ -11,6 +11,7 @@
 #include "files.h"
 #include "helpers/strUtils.h"
 #include "languages.h"
+#include "gameData/PortraitConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
@@ -270,6 +271,11 @@ void Settings::Load()
 
         if(lobby.name.empty())
             lobby.name = System::getUserName();
+
+        if(lobby.portraitIndex < 0 || Portraits.size() <= lobby.portraitIndex)
+        {
+            lobby.portraitIndex = 0;
+        }
 
         // server
         // {

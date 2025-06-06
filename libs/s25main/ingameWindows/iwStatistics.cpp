@@ -63,6 +63,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
         if(!curPlayer.isUsed())
             continue;
 
+        RTTR_Assert(0 <= curPlayer.portraitIndex && curPlayer.portraitIndex < Portraits.size());
         const auto& portrait = Portraits[curPlayer.portraitIndex];
         AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
                        LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), curPlayer.name)
