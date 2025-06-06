@@ -99,6 +99,7 @@ void noFighting::Draw(DrawPoint drawPt)
                     drawPt.x += 12;
                 LOADER.GetPlayerImage("rom_bobs", 903 + curAnimFrame - 4)->DrawFull(drawPt, COLOR_WHITE, owner.color);
             }
+            soldiers[turn - 3]->DrawArmorNotWalking(drawPt);
 
             // Sterbesound abspielen
             if(curAnimFrame == 6)
@@ -117,6 +118,7 @@ void noFighting::Draw(DrawPoint drawPt)
                                                          (i == 0) ? Direction::West : Direction::East,
                                                          GAMECLIENT.Interpolate(8, current_ev));
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
+                soldiers[i]->DrawArmorNotWalking(drawPt);
                 drawPt.x += 2 * x_diff;
             }
         }
@@ -168,6 +170,7 @@ void noFighting::Draw(DrawPoint drawPt)
                             fightAnim.defending[0][0].drawForPlayer(drawPt, owner.color);
                     }
                 }
+                soldiers[i]->DrawArmorNotWalking(drawPt + DrawPoint(i == 0 ? -12 : 12, 0));
             }
 
             // Angriffssound
