@@ -10,7 +10,7 @@
 #include "helpers/LSANUtils.h"
 #include "helpers/containerUtils.h"
 #include "icon.h"
-#ifndef __EMSCRIPTEN__
+#if !__EMSCRIPTEN__
 #include "openglCfg.hpp"
 #endif
 #include <s25util/utf8.h>
@@ -114,7 +114,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     if(!initialized)
         return false;
 
-#ifndef __EMSCRIPTEN__
+#if !__EMSCRIPTEN__
     // GL-Attributes
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));

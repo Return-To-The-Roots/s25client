@@ -37,7 +37,7 @@ bfs::path RttrConfig::GetPrefixPath()
     // Get path to current executable (at least for checks)
     bfs::path fullExeFilepath = System::getExecutablePath();
     // This should always work unless we have some missing implementation or a bad error
-#ifndef __EMSCRIPTEN__
+#if !__EMSCRIPTEN__
     if(fullExeFilepath.empty())
     {
         LOG.write("Could not get path to current executable\n", LogTarget::Stderr);
