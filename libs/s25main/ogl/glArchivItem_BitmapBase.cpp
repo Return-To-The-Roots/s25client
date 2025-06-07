@@ -5,7 +5,12 @@
 #include "glArchivItem_BitmapBase.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 
 /** @class glArchivItem_BitmapBase
  *
