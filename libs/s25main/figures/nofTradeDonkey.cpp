@@ -16,14 +16,15 @@
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
                                const boost_variant2<GoodType, Job>& what)
-    : noFigure(holds_alternative<Job>(what) ? get<Job>(what) : Job::PackDonkey, pos, player), successor(nullptr)
+    : nofArmored(holds_alternative<Job>(what) ? get<Job>(what) : Job::PackDonkey, pos, player),
+      successor(nullptr)
 {
     if(holds_alternative<GoodType>(what))
         gt = get<GoodType>(what);
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
+    : nofArmored(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
       gt(sgd.PopOptionalEnum<GoodType>())
 {
     if(sgd.GetGameDataVersion() < 6)
@@ -114,7 +115,10 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
             LOADER.GetWareDonkeyTex(*gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
         }
     } else
+    {
         DrawWalking(drawPt);
+        DrawArmorWalking(drawPt);
+    }
 }
 
 void nofTradeDonkey::LostWork() {}
