@@ -17,6 +17,10 @@ nofArmored::nofArmored(Job job, MapPoint pos, unsigned char player, noRoadNode* 
     : noFigure(job, pos, player, goal), armor(armor)
 {}
 
+nofArmored::nofArmored(Job job, MapPoint pos, unsigned char player, bool armor)
+    : noFigure(job, pos, player), armor(armor)
+{}
+
 void nofArmored::Serialize(SerializedGameData& sgd) const
 {
     noFigure::Serialize(sgd);
