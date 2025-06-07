@@ -68,3 +68,17 @@ constexpr unsigned getSoldierRank(Job soldierJob)
 {
     return static_cast<uint8_t>(soldierJob) - static_cast<uint8_t>(Job::Private);
 }
+
+enum class ArmoredSoldier : uint8_t
+{
+    Private,           // 0
+    PrivateFirstClass, // 1
+    Sergeant,          // 2
+    Officer,           // 3
+    General,           // 4
+};
+
+constexpr auto maxEnumValue(ArmoredSoldier)
+{
+    return ArmoredSoldier::General;
+}

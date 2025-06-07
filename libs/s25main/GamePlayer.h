@@ -185,6 +185,8 @@ public:
     void DecreaseInventoryWare(GoodType ware, unsigned count);
     void IncreaseInventoryJob(const Job job, unsigned count) { global_inventory.Add(job, count); }
     void DecreaseInventoryJob(const Job job, unsigned count) { global_inventory.Remove(job, count); }
+    void IncreaseInventoryJob(const ArmoredSoldier job, unsigned count) { global_inventory.Add(job, count); }
+    void DecreaseInventoryJob(const ArmoredSoldier job, unsigned count) { global_inventory.Remove(job, count); }
 
     /// Gibt Inventory-Settings zurück
     const Inventory& GetInventory() const { return global_inventory; }

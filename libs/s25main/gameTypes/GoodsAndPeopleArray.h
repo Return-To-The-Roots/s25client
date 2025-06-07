@@ -14,9 +14,12 @@ struct GoodsAndPeopleArray
 {
     helpers::EnumArray<T, GoodType> goods = {};
     helpers::EnumArray<T, Job> people = {};
+    helpers::EnumArray<T, ArmoredSoldier> armoredSoldiers = {};
 
     const T& operator[](GoodType good) const { return goods[good]; }
     T& operator[](GoodType good) { return goods[good]; }
     const T& operator[](Job job) const { return people[job]; }
     T& operator[](Job job) { return people[job]; }
+    const T& operator[](ArmoredSoldier soldier) const { return armoredSoldiers[soldier]; }
+    T& operator[](ArmoredSoldier soldier) { return armoredSoldiers[soldier]; }
 };
