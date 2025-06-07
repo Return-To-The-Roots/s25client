@@ -19,10 +19,9 @@ else()
 endif()
 
 add_executable(s25client s25client.cpp commands.cpp ${s25client_RC})
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     set(USE_FLAGS "-fwasm-exceptions \
-    --use-port=sdl2 --use-port=sdl2_image --use-port=sdl2_mixer -sSDL2_MIXER_FORMATS=ogg \
-    -O1 -gsource-map")
+    --use-port=sdl2 --use-port=sdl2_image --use-port=sdl2_mixer -sSDL2_MIXER_FORMATS=ogg")
 
     set_target_properties(s25client PROPERTIES
             COMPILE_FLAGS "${USE_FLAGS}"
@@ -34,8 +33,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
               -sEXPORT_ALL -sEXPORTED_RUNTIME_METHODS=callMain,addRunDependency,removeRunDependency \
               -sEXIT_RUNTIME \
               -sFULL_ES2 -L/src/contrib/gl4es/lib/ -lgl4es \
-              -lwebsocket.js -lidbfs.js -sCASE_INSENSITIVE_FS \
-              --profiling-funcs -sASSERTIONS=2"
+              -lwebsocket.js -lidbfs.js -sCASE_INSENSITIVE_FS"
             SUFFIX ".js"
     )
     target_link_libraries(s25client PRIVATE s25Main Boost::program_options rttr::vld)

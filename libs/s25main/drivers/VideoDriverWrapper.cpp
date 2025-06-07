@@ -383,9 +383,9 @@ bool VideoDriverWrapper::LoadAllExtensions()
         renderer_ = std::make_unique<OpenGLRenderer>();
     else
         renderer_ = std::make_unique<DummyRenderer>();
+#ifndef __EMSCRIPTEN__
     if(!renderer_->initOpenGL(videodriver->GetLoaderFunction()))
         return false;
-#ifndef __EMSCRIPTEN__
     LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
     if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
     {

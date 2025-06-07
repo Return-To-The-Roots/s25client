@@ -15,7 +15,7 @@ AddDirectory(lua)
 file(GLOB SOURCES_OTHER *.cpp *.h)
 source_group(other FILES ${SOURCES_OTHER})
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     set(LUA_LIBRARIES /src/contrib/lua-5.4.7/build/lib/liblua.a)
     set(LUA_INCLUDE_DIR /src/contrib/lua-5.4.7/build/include)
 else ()

@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 set(SDL2_BUILDING_LIBRARY ON)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     set(SDL2_FOUND TRUE)
 else ()
 find_package(SDL2 2.0.5)
 endif ()
 if(SDL2_FOUND)
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+    if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
         add_library(videoSDL2 STATIC ${RTTR_DRIVER_INTERFACE} VideoSDL2.cpp VideoSDL2.h icon.h icon.cpp)
         set(USE_FLAGS "--use-port=sdl2 --use-port=sdl2_image")
         set_target_properties(videoSDL2 PROPERTIES

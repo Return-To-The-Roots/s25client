@@ -126,13 +126,13 @@ void OpenGLRenderer::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsi
     glEnable(GL_TEXTURE_2D);
 }
 
+#if !__EMSCRIPTEN__
 bool OpenGLRenderer::initOpenGL(OpenGL_Loader_Proc loader)
 {
-#if defined(RTTR_OGL_ES)
+#    if RTTR_OGL_ES
     return gladLoadGLES2Loader(loader) != 0;
-#elif __EMSCRIPTEN__
-    return loader != NULL;
-#else
+#    else
     return gladLoadGLLoader(loader) != 0;
-#endif
+#    endif
 }
+#endif
