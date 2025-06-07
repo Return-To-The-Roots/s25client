@@ -29,7 +29,11 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
 {
-    helpers::popContainer(sgd, people);
+    helpers::popContainer(sgd, people.people);
+    if(sgd.GetGameDataVersion() >= 12)
+        helpers::popContainer(sgd, people.armoredSoldiers);
+    else
+        std::fill(people.armoredSoldiers.begin(), people.armoredSoldiers.end(), 0);
 }
 
 BurnedWarehouse::~BurnedWarehouse() = default;
@@ -45,7 +49,8 @@ void BurnedWarehouse::Serialize(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedInt(go_out_phase);
-    helpers::pushContainer(sgd, people);
+    helpers::pushContainer(sgd, people.people);
+    helpers::pushContainer(sgd, people.armoredSoldiers);
 }
 
 void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
@@ -66,7 +71,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // No way out for figures -> all die and we can remove this object
         GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
         for(const auto i : helpers::enumRange<Job>())
-            world->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
+            world->GetPlayer(player).DecreaseInventoryJob(i, people.people[i]);
 
         return;
     }
@@ -76,14 +81,14 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // In the last phase all remaining ones leave, else only some
         unsigned count;
         if(go_out_phase + 1 >= GO_OUT_PHASES)
-            count = people[job];
+            count = people.people[job];
         else
-            count = people[job] / (GO_OUT_PHASES - go_out_phase);
+            count = people.people[job] / (GO_OUT_PHASES - go_out_phase);
         if(count == 0)
             continue;
 
         // Remove from inventory
-        people[job] -= count;
+        people.people[job] -= count;
 
         // Distribute in all directions starting at a random one of the possible ones
         const unsigned startIdx = (possibleDirs.size() <= 1u) ? 0 : RANDOM_RAND(possibleDirs.size());
@@ -101,6 +106,15 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             {
                 // Create job and send moving into the current direction
                 auto& figure = world->AddFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
+                if(isSoldier(job))
+                {
+                    auto const armoredSoldier = figureToAmoredSoldierEnum(&figure);
+                    if(people.armoredSoldiers[armoredSoldier] > 0)
+                    {
+                        figure.SetArmor(true);
+                        people.Remove(armoredSoldier);
+                    }
+                }
                 figure.StartWandering(GetObjId());
                 figure.StartWalking(curDir);
             }
@@ -114,7 +128,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // All done
         GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
         // There shouldn't be any more
-        for(unsigned int it : people)
+        for(unsigned int it : people.people)
             RTTR_Assert(it == 0);
     } else // Not done yet
         GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);

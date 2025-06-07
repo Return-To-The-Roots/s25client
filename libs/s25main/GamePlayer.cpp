@@ -203,6 +203,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     helpers::pushContainer(sgd, tools_ordered);
     helpers::pushContainer(sgd, global_inventory.goods);
     helpers::pushContainer(sgd, global_inventory.people);
+    helpers::pushContainer(sgd, global_inventory.armoredSoldiers);
 
     // für Statistik
     for(const Statistic& curStatistic : statistic)
@@ -346,10 +347,13 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         helpers::popContainer(sgd, global_inventory_people_raw, true);
         std::copy(global_inventory_people_raw.begin(), global_inventory_people_raw.end(),
                   global_inventory.people.begin());
+
+        std::fill(global_inventory.armoredSoldiers.begin(), global_inventory.armoredSoldiers.end(), 0);
     } else
     {
         helpers::popContainer(sgd, global_inventory.goods);
         helpers::popContainer(sgd, global_inventory.people);
+        helpers::popContainer(sgd, global_inventory.armoredSoldiers);
     }
 
     // Visuelle Einstellungen festlegen

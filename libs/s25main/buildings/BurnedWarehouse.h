@@ -7,6 +7,7 @@
 #include "helpers/EnumArray.h"
 #include "nodeObjs/noCoordBase.h"
 #include "gameTypes/JobTypes.h"
+#include "gameTypes/Inventory.h"
 #include <array>
 class SerializedGameData;
 
@@ -14,9 +15,9 @@ class SerializedGameData;
 class BurnedWarehouse : public noCoordBase
 {
 public:
-    using PeopleArray = helpers::EnumArray<uint32_t, Job>;
+    using PeopleArray = Inventory;
 
-    BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& people);
+    BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& peopleArray);
     BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
     ~BurnedWarehouse() override;

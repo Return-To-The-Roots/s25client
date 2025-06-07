@@ -372,10 +372,12 @@ void nobMilitary::HandleEvent(const unsigned id)
 
             if(canidate != troops.rend())
             {
-                (*canidate)->SetArmor(true);
+                auto& soldier = *canidate;
+                soldier->SetArmor(true);
 
                 --numArmor;
                 world->GetPlayer(player).DecreaseInventoryWare(GoodType::Armor, 1);
+                world->GetPlayer(player).IncreaseInventoryJob(figureToAmoredSoldierEnum(soldier.get()), 1);
 
                 PrepareArmorUpgrading();
                 SearchArmor();

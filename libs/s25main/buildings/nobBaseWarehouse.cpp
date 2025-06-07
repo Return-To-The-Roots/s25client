@@ -110,7 +110,7 @@ void nobBaseWarehouse::DestroyBuilding()
     }
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
-    world->AddFigure(pos, std::make_unique<BurnedWarehouse>(pos, player, inventory.real.people));
+    world->AddFigure(pos, std::make_unique<BurnedWarehouse>(pos, player, inventory.real));
 
     nobBaseMilitary::DestroyBuilding();
 }
@@ -146,6 +146,11 @@ void nobBaseWarehouse::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedInt(inventory.visual[i]);
         sgd.PushUnsignedInt(inventory.real[i]);
         sgd.PushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
+    }
+    for(const auto i : helpers::enumRange<ArmoredSoldier>())
+    {
+        sgd.PushUnsignedInt(inventory.visual[i]);
+        sgd.PushUnsignedInt(inventory.real[i]);
     }
 }
 
@@ -190,6 +195,14 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         inventory.visual[i] = sgd.PopUnsignedInt();
         inventory.real[i] = sgd.PopUnsignedInt();
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
+    }
+    if(sgd.GetGameDataVersion() >= 12)
+    {
+        for(const auto i : helpers::enumRange<ArmoredSoldier>())
+        {
+            inventory.visual[i] = sgd.PopUnsignedInt();
+            inventory.real[i] = sgd.PopUnsignedInt();
+        }
     }
 }
 
@@ -618,6 +631,20 @@ void nobBaseWarehouse::HandleLeaveEvent()
             } else
                 inventory.visual.Remove(fig.GetJobType());
 
+            if(isSoldier(fig.GetJobType()))
+            {
+                nofArmored* armoredFigure = dynamic_cast<nofArmored*>(&fig);
+                RTTR_Assert(armoredFigure != nullptr);
+                if(armoredFigure)
+                {
+                    if(inventory.visual.armoredSoldiers[figureToAmoredSoldierEnum(armoredFigure)] > 0)
+                    {
+                        armoredFigure->SetArmor(true);
+                        inventory.visual.Remove(figureToAmoredSoldierEnum(armoredFigure));
+                    }
+                }
+            }
+
             if(fig.GetGOT() == GO_Type::NofTradedonkey)
             {
                 // Trade donkey carrying wares?
@@ -809,6 +836,22 @@ void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool in
                 inventory.real.Add(Job::Helper);
                 inventory.real.Add(GoodType::Boat);
             }
+        } else if(isSoldier(figure->GetJobType()))
+        {
+            nofArmored* armoredFigure = dynamic_cast<nofArmored*>(figure.get());
+            RTTR_Assert(armoredFigure != nullptr);
+
+            if(increase_visual_counts)
+            {
+                inventory.Add(figure->GetJobType());
+                if(armoredFigure && armoredFigure->HasArmor())
+                    inventory.Add(figureToAmoredSoldierEnum(armoredFigure));
+            } else
+            {
+                inventory.real.Add(figure->GetJobType());
+                if(armoredFigure && armoredFigure->HasArmor())
+                    inventory.real.Add(figureToAmoredSoldierEnum(armoredFigure));
+            }
         } else
         {
             if(increase_visual_counts)
@@ -938,7 +981,11 @@ void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldie
     if(helpers::contains(leave_house, soldier))
         inventory.real.Add(soldier->GetJobType());
     else
+    {
         inventory.Add(SOLDIER_JOBS[soldier->GetRank()]);
+        if(soldier->HasArmor())
+            inventory.Add(figureToAmoredSoldierEnum(soldier.get()));
+    }
 
     // Evtl. geht der Soldat wieder in die Reserve
     RefreshReserve(soldier->GetRank());
