@@ -282,6 +282,17 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode& goal, const bool allo
     }
 
     std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, goal);
+    if(isSoldier(fig->GetJobType()))
+    {
+        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(fig.get());
+        RTTR_Assert(armoredFigure != nullptr);
+        if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(job)] > 0)
+        {
+            inventory.real.Remove(jobEnumToAmoredSoldierEnum(job));
+            armoredFigure->SetArmor(true);
+        }
+    }
+
     // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
     if(goal.GetType() != NodalObjectType::Flag)
         checkedCast<noBaseBuilding>(goal).GotWorker(job, *fig);
