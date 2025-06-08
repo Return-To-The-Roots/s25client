@@ -12,6 +12,7 @@
 #include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "figures/nofArmored.h"
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "nofCarrier.h"
