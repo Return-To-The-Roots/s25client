@@ -7,7 +7,8 @@
 #include <s25util/warningSuppression.h>
 #include <array>
 #include <cstdint>
-#include <figures/nofArmored.h>
+
+class nofArmored;
 
 enum class Job : uint8_t
 {
@@ -84,12 +85,5 @@ constexpr auto maxEnumValue(ArmoredSoldier)
     return ArmoredSoldier::General;
 }
 
-ArmoredSoldier jobEnumToAmoredSoldierEnum(const Job job)
-{
-    return static_cast<ArmoredSoldier>(getSoldierRank(job));
-}
-
-ArmoredSoldier figureToAmoredSoldierEnum(const nofArmored* figure)
-{
-    return jobEnumToAmoredSoldierEnum(figure->GetJobType());
-}
+ArmoredSoldier jobEnumToAmoredSoldierEnum(const Job job);
+ArmoredSoldier figureToAmoredSoldierEnum(const nofArmored* figure);
