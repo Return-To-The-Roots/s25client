@@ -228,6 +228,22 @@ void iwWares::Msg_PaintBefore()
                   (curPage_ == warePageID) ? inventory[static_cast<GoodType>(i)] : inventory[static_cast<Job>(i)];
                 text->SetText(std::to_string(amount));
                 text->SetTextColor((amount == 0) ? COLOR_RED : COLOR_YELLOW);
+
+                if(leatheraddon::isAddonActive(player.GetGameWorld()))
+                {
+                    if(peoplePageID == curPage_ && isSoldier(static_cast<Job>(i)))
+                    {
+                        auto* tooltip = group->GetCtrl<ctrlBaseTooltip>(100 + i);
+                        std::string toolTip = _(JOB_NAMES[static_cast<Job>(i)]);
+
+                        toolTip += std::string(" (")
+                                   + std::to_string(inventory[jobEnumToAmoredSoldierEnum(static_cast<Job>(i))])
+                                   + std::string("/") + std::to_string(amount) + std::string(" ")
+                                   + std::string(_("with armor)"));
+
+                        tooltip->SetTooltip(toolTip);
+                    }
+                }
             }
         }
     }
