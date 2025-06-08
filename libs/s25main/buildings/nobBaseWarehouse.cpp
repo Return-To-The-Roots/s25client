@@ -58,6 +58,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     producinghelpers_event = GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM_RAND(PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
     reserve_soldiers_available.fill(0);
+    reserve_soldiers_available_with_armor.fill(0);
     reserve_soldiers_claimed_visual.fill(0);
     reserve_soldiers_claimed_real.fill(0);
 }
@@ -106,7 +107,11 @@ void nobBaseWarehouse::DestroyBuilding()
     for(unsigned rank = 0; rank < world->GetGGS().GetMaxMilitaryRank(); ++rank)
     {
         if(reserve_soldiers_available[rank] > 0)
+        {
             inventory.real.Add(SOLDIER_JOBS[rank], reserve_soldiers_available[rank]);
+            inventory.real.Add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank]),
+                               reserve_soldiers_available_with_armor[rank]);
+        }
     }
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
@@ -132,6 +137,7 @@ void nobBaseWarehouse::Serialize(SerializedGameData& sgd) const
     {
         // Nur das Reale, nicht das visuelle speichern, das wäre sinnlos!, beim Laden ist das visuelle = realem
         sgd.PushUnsignedInt(reserve_soldiers_available[i]);
+        sgd.PushUnsignedInt(reserve_soldiers_available_with_armor[i]);
         sgd.PushUnsignedInt(reserve_soldiers_claimed_real[i]);
     }
 
@@ -166,9 +172,13 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     empty_event = sgd.PopEvent();
     store_event = sgd.PopEvent();
 
+    reserve_soldiers_available_with_armor.fill(0);
     for(unsigned i = 0; i < 5; ++i)
     {
         reserve_soldiers_available[i] = sgd.PopUnsignedInt();
+        if(sgd.GetGameDataVersion() >= 12)
+            reserve_soldiers_available_with_armor[i] = sgd.PopUnsignedInt();
+
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.PopUnsignedInt();
     }
 
@@ -210,8 +220,12 @@ void nobBaseWarehouse::Clear()
 {
     // Add reserve soldiers back
     for(unsigned i = 0; i < reserve_soldiers_available.size(); i++)
+    {
         inventory.Add(SOLDIER_JOBS[i], reserve_soldiers_available[i]);
+        inventory.Add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]), reserve_soldiers_available_with_armor[i]);
+    }
     reserve_soldiers_available.fill(0);
+    reserve_soldiers_available_with_armor.fill(0);
 
     GamePlayer& owner = world->GetPlayer(player);
     for(const auto i : helpers::enumRange<GoodType>())
@@ -1070,11 +1084,18 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
                 if(r == rank)
                 {
                     // diesen Soldaten wollen wir
+                    auto defender = std::make_unique<nofDefender>(pos, player, *this, i, attacker);
                     --reserve_soldiers_available[i];
                     // bei der visuellen Warenanzahl wieder hinzufügen, da er dann wiederrum von der abgezogen wird,
                     // wenn er rausgeht und es so ins minus rutschen würde
                     inventory.visual.Add(SOLDIER_JOBS[i]);
-                    return std::make_unique<nofDefender>(pos, player, *this, i, attacker);
+                    if(reserve_soldiers_available_with_armor[i] > 0)
+                    {
+                        defender->SetArmor(true);
+                        --reserve_soldiers_available_with_armor[i];
+                        inventory.visual.Add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]));
+                    }
+                    return defender;
                 }
                 ++r;
             }
@@ -1397,20 +1418,29 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
             unsigned add = std::min(inventory[SOLDIER_JOBS[rank]],                                           // möglich
                                     reserve_soldiers_claimed_real[rank] - reserve_soldiers_available[rank]); // nötig
 
+            unsigned armor = std::min(add, inventory[jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank])]);
+
             // Bei der Reserve hinzufügen
             reserve_soldiers_available[rank] += add;
+            reserve_soldiers_available_with_armor[rank] += armor;
             // vom Warenbestand abziehen
             inventory.Remove(SOLDIER_JOBS[rank], add);
+            inventory.Remove(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank]), armor);
         }
     } else if(reserve_soldiers_available[rank] > reserve_soldiers_claimed_real[rank])
     {
         // Zuviele, dann wieder welche freigeben
         unsigned subtract = reserve_soldiers_available[rank] - reserve_soldiers_claimed_real[rank];
+        unsigned subtractArmor = 0u;
+        if(reserve_soldiers_available_with_armor[rank] > reserve_soldiers_claimed_real[rank])
+            subtractArmor = reserve_soldiers_available_with_armor[rank] - reserve_soldiers_claimed_real[rank];
 
         // Bei der Reserve abziehen
         reserve_soldiers_available[rank] -= subtract;
+        reserve_soldiers_available_with_armor[rank] -= subtractArmor;
         // beim Warenbestand hinzufügen
         inventory.Add(SOLDIER_JOBS[rank], subtract);
+        inventory.Add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank]), subtractArmor);
         // if the rank is supposed to be send away, do it!
         CheckOuthousing(SOLDIER_JOBS[rank]);
         // Ggf. Truppen in die Militärgebäude schicken

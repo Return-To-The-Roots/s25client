@@ -70,9 +70,10 @@ protected:
     const GameEvent* store_event;
 
     /// Soldaten-Reserve-Einstellung
-    std::array<unsigned, 5> reserve_soldiers_available;      /// einkassierte Soldaten zur Reserve
-    std::array<unsigned, 5> reserve_soldiers_claimed_visual; /// geforderte Soldaten zur Reserve - visuell
-    std::array<unsigned, 5> reserve_soldiers_claimed_real;   /// geforderte Soldaten zur Reserve - real
+    std::array<unsigned, 5> reserve_soldiers_available;            /// einkassierte Soldaten zur Reserve
+    std::array<unsigned, 5> reserve_soldiers_available_with_armor; /// how many soldiers of the reserve have armor
+    std::array<unsigned, 5> reserve_soldiers_claimed_visual;       /// geforderte Soldaten zur Reserve - visuell
+    std::array<unsigned, 5> reserve_soldiers_claimed_real;         /// geforderte Soldaten zur Reserve - real
 
     /// Inventory of the building, real is the usable amount, visual is the total amount currently in the wh
     VirtualInventory inventory;
