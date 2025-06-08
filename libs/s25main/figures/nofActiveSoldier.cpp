@@ -352,7 +352,10 @@ void nofActiveSoldier::InformTargetsAboutCancelling()
 void nofActiveSoldier::TakeHit()
 {
     if(HasArmor())
+    {
         SetArmor(false);
+        world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(this), 1);
+    }
     else
     {
         RTTR_Assert(hitpoints > 0u);

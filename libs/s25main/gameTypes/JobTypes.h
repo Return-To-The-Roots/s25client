@@ -84,7 +84,12 @@ constexpr auto maxEnumValue(ArmoredSoldier)
     return ArmoredSoldier::General;
 }
 
+constexpr ArmoredSoldier jobEnumToAmoredSoldierEnum(const Job job)
+{
+    return static_cast<ArmoredSoldier>(getSoldierRank(job));
+}
+
 constexpr ArmoredSoldier figureToAmoredSoldierEnum(const nofArmored* figure)
 {
-    return static_cast<ArmoredSoldier>(getSoldierRank(figure->GetJobType()));
+    return jobEnumToAmoredSoldierEnum(figure->GetJobType());
 }

@@ -851,7 +851,12 @@ void noFigure::RemoveFromInventory()
         world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
         world->GetPlayer(player).DecreaseInventoryWare(GoodType::Boat, 1);
     } else
+    {
         world->GetPlayer(player).DecreaseInventoryJob(job_, 1);
+        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(this);
+        if(armoredFigure && armoredFigure->HasArmor())
+            world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(armoredFigure), 1);
+    }
 }
 
 void noFigure::DieFailedTrade()
