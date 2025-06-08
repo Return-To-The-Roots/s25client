@@ -638,13 +638,10 @@ void nobBaseWarehouse::HandleLeaveEvent()
             {
                 nofArmored* armoredFigure = dynamic_cast<nofArmored*>(&fig);
                 RTTR_Assert(armoredFigure != nullptr);
-                if(armoredFigure)
+                if(armoredFigure && armoredFigure->HasArmor())
                 {
-                    if(inventory.visual.armoredSoldiers[figureToAmoredSoldierEnum(armoredFigure)] > 0)
-                    {
-                        armoredFigure->SetArmor(true);
-                        inventory.visual.Remove(figureToAmoredSoldierEnum(armoredFigure));
-                    }
+                    RTTR_Assert(inventory.visual.armoredSoldiers[figureToAmoredSoldierEnum(armoredFigure)] > 0);
+                    inventory.visual.Remove(figureToAmoredSoldierEnum(armoredFigure));
                 }
             }
 
@@ -987,8 +984,11 @@ void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldie
 {
     // Add soldier. If he is still in the leave-queue, then don't add him to the visual settings again
     if(helpers::contains(leave_house, soldier))
+    {
         inventory.real.Add(soldier->GetJobType());
-    else
+        if(soldier->HasArmor())
+            inventory.real.Add(figureToAmoredSoldierEnum(soldier.get()));
+    } else
     {
         inventory.Add(SOLDIER_JOBS[soldier->GetRank()]);
         if(soldier->HasArmor())
@@ -1440,11 +1440,24 @@ void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& w
     auto& tl = *tlOwned;
     AddLeavingFigure(std::move(tlOwned));
 
+    GamePlayer& owner = world->GetPlayer(player);
+
     // Create the donkeys or other people
+    bool isSoldierType = holds_alternative<Job>(what) && isSoldier(get<1>(what));
     nofTradeDonkey* last = nullptr;
     for(unsigned i = 0; i < count; ++i)
     {
         auto next = std::make_unique<nofTradeDonkey>(pos, player, what);
+        if(isSoldierType)
+        {
+            auto const job = get<1>(what);
+            if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(job)] > 0)
+            {
+                next->SetArmor(true);
+                inventory.real.Remove(jobEnumToAmoredSoldierEnum(job), 1);
+                owner.DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(job), 1);
+            }
+        }
 
         if(last)
             last->SetSuccessor(next.get());
@@ -1455,7 +1468,6 @@ void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& w
         AddLeavingFigure(std::move(next));
     }
 
-    GamePlayer& owner = world->GetPlayer(player);
     // Remove leader
     inventory.real.Remove(Job::Helper);
     owner.DecreaseInventoryJob(Job::Helper, 1);
@@ -1466,13 +1478,6 @@ void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& w
                 // remove the jobs
                 inventory.real.Remove(job, count);
                 owner.DecreaseInventoryJob(job, count);
-                if (isSoldier(job))
-                {
-                    auto const armorCount =
-                      std::min(count, inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(job)]);
-                    inventory.real.Remove(jobEnumToAmoredSoldierEnum(job), armorCount);
-                    owner.DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(job), armorCount);
-                }
             },
             [&](const GoodType gt) {
                 // Diminish the goods in the warehouse
