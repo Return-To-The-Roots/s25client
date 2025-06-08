@@ -455,6 +455,12 @@ void nobBaseWarehouse::HandleSendoutEvent()
         {
             auto fig = std::make_unique<nofPassiveWorker>(jobType, pos, player, nullptr);
 
+            if(isSoldier(jobType) && inventory.real.armoredSoldiers[figureToAmoredSoldierEnum(fig.get())] > 0)
+            {
+                fig->SetArmor(true);
+                inventory.real.Remove(figureToAmoredSoldierEnum(fig.get()));
+            }
+
             if(wh)
                 fig->GoHome(wh);
             else
@@ -983,6 +989,11 @@ nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker& att
     auto soldier = std::make_unique<nofAggressiveDefender>(pos, player, *this, rank - 1, attacker);
     nofAggressiveDefender& soldierRef = *soldier;
     inventory.real.Remove(SOLDIER_JOBS[rank - 1]);
+    if(inventory.real.armoredSoldiers[figureToAmoredSoldierEnum(soldier.get())] > 0)
+    {
+        soldier->SetArmor(true);
+        inventory.real.Remove(figureToAmoredSoldierEnum(soldier.get()));
+    }
     AddLeavingFigure(std::move(soldier));
 
     troops_on_mission.push_back(&soldierRef);
@@ -1060,8 +1071,14 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
                 if(r == rank)
                 {
                     // diesen Soldaten wollen wir
+                    auto defender = std::make_unique<nofDefender>(pos, player, *this, i, attacker);
                     inventory.real.Remove(SOLDIER_JOBS[i]);
-                    return std::make_unique<nofDefender>(pos, player, *this, i, attacker);
+                    if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i])] > 0)
+                    {
+                        defender->SetArmor(true);
+                        inventory.real.Remove(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]));
+                    }
+                    return defender;
                 }
                 ++r;
             }
@@ -1100,6 +1117,7 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
         soldier->Abrogate();
 
         auto defender = std::make_unique<nofDefender>(pos, player, *this, soldier->GetRank(), attacker);
+        defender->SetArmor(soldier->HasArmor());
         soldier->Destroy();
         return defender;
     }
@@ -1165,6 +1183,16 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
         CheckUsesForNewWare(i);
     }
 
+    for(const auto i : helpers::enumRange<ArmoredSoldier>())
+    {
+        if(!goods.armoredSoldiers[i])
+            continue;
+
+        inventory.Add(i, goods.armoredSoldiers[i]);
+        if(addToPlayer)
+            owner.IncreaseInventoryJob(i, goods.armoredSoldiers[i]);
+    }
+
     for(const auto i : helpers::enumRange<Job>())
     {
         if(!goods.people[i])
@@ -1186,6 +1214,9 @@ void nobBaseWarehouse::AddToInventory()
         owner.IncreaseInventoryWare(i, inventory[i]);
 
     for(const auto i : helpers::enumRange<Job>())
+        owner.IncreaseInventoryJob(i, inventory[i]);
+
+    for(const auto i : helpers::enumRange<ArmoredSoldier>())
         owner.IncreaseInventoryJob(i, inventory[i]);
 }
 
