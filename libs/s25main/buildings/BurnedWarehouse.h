@@ -6,8 +6,8 @@
 
 #include "helpers/EnumArray.h"
 #include "nodeObjs/noCoordBase.h"
-#include "gameTypes/JobTypes.h"
 #include "gameTypes/Inventory.h"
+#include "gameTypes/JobTypes.h"
 #include <array>
 class SerializedGameData;
 

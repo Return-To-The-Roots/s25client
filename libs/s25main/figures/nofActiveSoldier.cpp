@@ -355,8 +355,7 @@ void nofActiveSoldier::TakeHit()
     {
         SetArmor(false);
         world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(this), 1);
-    }
-    else
+    } else
     {
         RTTR_Assert(hitpoints > 0u);
         --hitpoints;

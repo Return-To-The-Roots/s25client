@@ -820,9 +820,10 @@ struct CmpSeaAttacker : private T_RankCmp
         {
             if(lhs.soldier->HasArmor() == rhs.soldier->HasArmor())
             {
-                if(lhs.distance
-                        == rhs.distance) return (lhs.soldier->GetObjId() < rhs.soldier->GetObjId()); // tie breaker
-                else return lhs.distance < rhs.distance;
+                if(lhs.distance == rhs.distance)
+                    return (lhs.soldier->GetObjId() < rhs.soldier->GetObjId()); // tie breaker
+                else
+                    return lhs.distance < rhs.distance;
             } else
                 return T_RankCmp::operator()(lhs.soldier->HasArmor() ? 1 : 0, rhs.soldier->HasArmor() ? 1 : 0);
         } else

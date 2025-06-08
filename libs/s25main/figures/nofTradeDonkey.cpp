@@ -16,8 +16,7 @@
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
                                const boost_variant2<GoodType, Job>& what)
-    : nofArmored(holds_alternative<Job>(what) ? get<Job>(what) : Job::PackDonkey, pos, player),
-      successor(nullptr)
+    : nofArmored(holds_alternative<Job>(what) ? get<Job>(what) : Job::PackDonkey, pos, player), successor(nullptr)
 {
     if(holds_alternative<GoodType>(what))
         gt = get<GoodType>(what);

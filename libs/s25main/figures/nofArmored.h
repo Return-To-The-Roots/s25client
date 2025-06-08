@@ -24,7 +24,6 @@ public:
 
 public:
     nofArmored(Job job, MapPoint pos, unsigned char player, noRoadNode* goal, bool armor = false);
-    /// Konstruktor für Figuren, die im Job-Modus starten
     nofArmored(Job job, MapPoint pos, unsigned char player, bool armor = false);
     nofArmored(SerializedGameData& sgd, unsigned obj_id);
 
