@@ -1458,8 +1458,11 @@ void nobMilitary::HitOfCatapultStone()
             soldier->Destroy();
         } else
         {
-            (*troops.begin())->SetArmor(false);
-            world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum((*troops.begin()).get()), 1);
+            std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
+            helpers::pop_front(troops);
+            soldier->SetArmor(false);
+            world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(soldier.get()), 1);
+            troops.insert(std::move(soldier));
         }
     }
 
