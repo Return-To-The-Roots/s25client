@@ -1457,7 +1457,10 @@ void nobMilitary::HitOfCatapultStone()
             soldier->LeftBuilding();
             soldier->Destroy();
         } else
+        {
             (*troops.begin())->SetArmor(false);
+            world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum((*troops.begin()).get()), 1);
+        }
     }
 
     // If there are troops left, order some more, else this will be destroyed

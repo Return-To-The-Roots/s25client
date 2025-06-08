@@ -1250,6 +1250,8 @@ void nobHarborBuilding::AddSeaAttacker(std::unique_ptr<nofAttacker> attacker)
     }
 
     inventory.visual.Add(attacker->GetJobType());
+    if(attacker->HasArmor())
+        inventory.visual.Add(figureToAmoredSoldierEnum(attacker.get()));
     soldiers_for_ships.emplace_back(SoldierForShip{std::move(attacker), world->GetHarborPoint(best_harbor_point)});
 
     OrderShip();

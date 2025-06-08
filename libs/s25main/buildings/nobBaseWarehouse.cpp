@@ -220,6 +220,9 @@ void nobBaseWarehouse::Clear()
     for(const auto i : helpers::enumRange<Job>())
         owner.DecreaseInventoryJob(i, inventory[i]);
 
+    for(const auto i : helpers::enumRange<ArmoredSoldier>())
+        owner.DecreaseInventoryJob(i, inventory[i]);
+
     inventory.clear();
 
     for(auto& waiting_ware : waiting_wares)
@@ -1458,6 +1461,13 @@ void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& w
                 // remove the jobs
                 inventory.real.Remove(job, count);
                 owner.DecreaseInventoryJob(job, count);
+                if (isSoldier(job))
+                {
+                    auto const armorCount =
+                      std::min(count, inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(job)]);
+                    inventory.real.Remove(jobEnumToAmoredSoldierEnum(job), armorCount);
+                    owner.DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(job), armorCount);
+                }
             },
             [&](const GoodType gt) {
                 // Diminish the goods in the warehouse
