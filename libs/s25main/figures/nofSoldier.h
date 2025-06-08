@@ -57,8 +57,7 @@ struct ComparatorSoldiersByRank
                 return left->GetObjId() < right->GetObjId();
             else
                 return (left->HasArmor() ? 1 : 0) < (right->HasArmor() ? 1 : 0);
-        }
-        else
+        } else
             return left->GetRank() < right->GetRank();
     }
 };
