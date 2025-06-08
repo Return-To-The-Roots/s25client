@@ -45,14 +45,19 @@ public:
     bool HasNoHome() const { return building == nullptr; }
 };
 
-/// Comparator to sort soldiers by rank (and ID for ties), weak ones first
+/// Comparator to sort soldiers by rank and armor (and ID for ties), weak ones first
 struct ComparatorSoldiersByRank
 {
     template<typename TSoldierPtr>
     bool operator()(const TSoldierPtr& left, const TSoldierPtr& right) const
     {
         if(left->GetRank() == right->GetRank())
-            return left->GetObjId() < right->GetObjId();
+        {
+            if(left->HasArmor() == right->HasArmor())
+                return left->GetObjId() < right->GetObjId();
+            else
+                return (left->HasArmor() ? 1 : 0) < (right->HasArmor() ? 1 : 0);
+        }
         else
             return left->GetRank() < right->GetRank();
     }

@@ -809,19 +809,22 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
     }
 }
 
-/// Compare sea attackers by their rank, then by their distance
+/// Compare sea attackers by their rank, armor, then by their distance
 template<class T_RankCmp>
 struct CmpSeaAttacker : private T_RankCmp
 {
     bool operator()(const GameWorldBase::PotentialSeaAttacker& lhs, const GameWorldBase::PotentialSeaAttacker& rhs)
     {
-        // Sort after rank, then distance then objId
+        // Sort after rank, then armor then distance then objId
         if(lhs.soldier->GetRank() == rhs.soldier->GetRank())
         {
-            if(lhs.distance == rhs.distance)
-                return (lhs.soldier->GetObjId() < rhs.soldier->GetObjId()); // tie breaker
-            else
-                return lhs.distance < rhs.distance;
+            if(lhs.soldier->HasArmor() == rhs.soldier->HasArmor())
+            {
+                if(lhs.distance
+                        == rhs.distance) return (lhs.soldier->GetObjId() < rhs.soldier->GetObjId()); // tie breaker
+                else return lhs.distance < rhs.distance;
+            } else
+                return T_RankCmp::operator()(lhs.soldier->HasArmor() ? 1 : 0, rhs.soldier->HasArmor() ? 1 : 0);
         } else
             return T_RankCmp::operator()(lhs.soldier->GetRank(), rhs.soldier->GetRank());
     }
