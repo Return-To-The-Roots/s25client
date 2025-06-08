@@ -13,6 +13,7 @@
 #include "controls/ctrlButton.h"
 #include "factories/GameCommandFactory.h"
 #include "figures/noFigure.h"
+#include "figures/nofSoldier.h"
 #include "helpers/EnumArray.h"
 #include "helpers/EnumRange.h"
 #include "iwHelp.h"
@@ -202,8 +203,18 @@ void iwShip::DrawCargo()
 
     // Count figures by type
     helpers::EnumArray<unsigned short, Job> orderedFigures{};
+    helpers::EnumArray<unsigned short, ArmoredSoldier> armoredFigures{};
     for(const noFigure& figure : ship->GetFigures())
+    {
         orderedFigures[figure.GetJobType()]++;
+
+        if(isSoldier(figure.GetJobType()))
+        {
+            auto* worker = dynamic_cast<nofSoldier const*>(&figure);
+            if(worker->HasArmor())
+                armoredFigures[figureToAmoredSoldierEnum(worker)]++;
+        }
+    }
 
     // Count wares by type
     helpers::EnumArray<unsigned short, GoodType> orderedWares{};
@@ -283,6 +294,18 @@ void iwShip::DrawCargo()
                 const auto& spriteData = JOB_SPRITE_CONSTS[job];
                 LOADER.GetBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,
                                             spriteData.isFat(), 0, drawPt, owner.color);
+            }
+
+            if(isSoldier(job) && armoredFigures[jobEnumToAmoredSoldierEnum(job)] > 0)
+            {
+                armoredFigures[jobEnumToAmoredSoldierEnum(job)]--;
+                SmallFont->Draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
+                SmallFont->Draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
+
+                LOADER
+                  .GetImageN("leather_bobs",
+                             leatheraddon::bobIndex[leatheraddon::BobTypes::DONKEY_BOAT_CARRYING_ARMOR_WARE])
+                  ->DrawFull(drawPt + DrawPoint(-2, -22));
             }
 
             drawPt.x += xStep;
