@@ -937,6 +937,11 @@ void nobBaseWarehouse::OrderTroops(nobMilitary& goal, std::array<unsigned, NUM_S
         {
             auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, &goal, &goal, i - 1);
             inventory.real.Remove(curRank);
+            if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(curRank)] > 0)
+            {
+                inventory.real.Remove(jobEnumToAmoredSoldierEnum(curRank));
+                soldier->SetArmor(true);
+            }
             goal.GotWorker(curRank, *soldier);
             AddLeavingFigure(std::move(soldier));
             --max;
