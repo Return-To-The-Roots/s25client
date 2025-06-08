@@ -65,6 +65,7 @@ protected:
 
     /// Soldaten-Reserve-Einstellung
     std::array<unsigned, 5> reserve_soldiers_available;      /// einkassierte Soldaten zur Reserve
+    std::array<unsigned, 5> reserve_soldiers_available_with_armor; /// how many soldiers of the reserve have armor
     std::array<unsigned, 5> reserve_soldiers_claimed_visual; /// geforderte Soldaten zur Reserve - visuell
     std::array<unsigned, 5> reserve_soldiers_claimed_real;   /// geforderte Soldaten zur Reserve - real
 
