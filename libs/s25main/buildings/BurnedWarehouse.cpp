@@ -72,6 +72,8 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
         for(const auto i : helpers::enumRange<Job>())
             world->GetPlayer(player).DecreaseInventoryJob(i, people.people[i]);
+        for(const auto i : helpers::enumRange<ArmoredSoldier>())
+            world->GetPlayer(player).DecreaseInventoryJob(i, people.armoredSoldiers[i]);
 
         return;
     }
