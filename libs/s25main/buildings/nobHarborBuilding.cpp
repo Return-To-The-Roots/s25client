@@ -522,6 +522,7 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
             if(it->dest == ship_dest)
             {
                 inventory.visual.Remove(it->attacker->GetJobType());
+                RemoveArmoredFigurFromVisualInventory(it->attacker.get());
                 attackers.push_back(std::move(it->attacker));
                 it = soldiers_for_ships.erase(it);
             } else
@@ -595,8 +596,10 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
                 {
                     it->fig->StartShipJourney();
                     if(it->fig->GetJobType() != Job::BoatCarrier)
+                    {
                         inventory.visual.Remove(it->fig->GetJobType());
-                    else
+                        RemoveArmoredFigurFromVisualInventory(it->fig.get());
+                    } else
                     {
                         inventory.visual.Remove(Job::Helper);
                         inventory.visual.Remove(GoodType::Boat);
@@ -853,8 +856,10 @@ void nobHarborBuilding::AddFigureForShip(std::unique_ptr<noFigure> fig, MapPoint
     RTTR_Assert(!world->HasFigureAt(fig->GetPos(), *fig)); // Figure is in the harbor, so it cannot be outside
     // Anzahl visuell erhöhen
     if(fig->GetJobType() != Job::BoatCarrier)
+    {
         inventory.visual.Add(fig->GetJobType());
-    else
+        AddArmoredFigurToVisualInventory(fig.get());
+    } else
     {
         inventory.visual.Add(Job::Helper);
         inventory.visual.Add(GoodType::Boat);
@@ -1010,8 +1015,10 @@ bool nobHarborBuilding::UseFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNo
         // Reduce figure count because figures don't go through the house leaving process
         // And therefore the visual count reducement
         if(fig->GetJobType() != Job::BoatCarrier)
+        {
             inventory.visual.Remove(fig->GetJobType());
-        else
+            RemoveArmoredFigurFromVisualInventory(fig.get());
+        } else
         {
             inventory.visual.Remove(Job::Helper);
             inventory.visual.Remove(GoodType::Boat);
@@ -1055,7 +1062,10 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>
                     inventory.visual.Add(Job::Helper);
                     inventory.visual.Add(GoodType::Boat);
                 } else
+                {
                     inventory.visual.Add(figure->GetJobType());
+                    AddArmoredFigurToVisualInventory(figure.get());
+                }
                 AddLeavingFigure(std::move(figure));
             } else if(nextDir == RoadPathDirection::Ship)
             {
