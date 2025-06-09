@@ -37,28 +37,26 @@ nofArmored::nofArmored(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 
 void nofArmored::DrawArmorWalking(DrawPoint drawPt)
 {
-    DrawArmor(drawPt, CalcFigurRelative());
+    if(HasArmor())
+        DrawArmor(drawPt, CalcFigurRelative());
 }
 
 void nofArmored::DrawArmor(DrawPoint drawPt, DrawPoint offset)
 {
-    if(HasArmor())
+    if(world->GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
     {
-        if(world->GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
-        {
-            SmallFont->Draw(drawPt + DrawPoint(7, -20) + CalcFigurRelative(), "+", FontStyle::CENTER, COLOR_RED);
-            SmallFont->Draw(drawPt + DrawPoint(10, -20) + CalcFigurRelative(), "1", FontStyle::CENTER, COLOR_RED);
-        }
-
-        LOADER
-          .GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::DONKEY_BOAT_CARRYING_ARMOR_WARE])
-          ->DrawFull(drawPt + DrawPoint(0, -22) + CalcFigurRelative());
+        SmallFont->Draw(drawPt + DrawPoint(7, -20) + offset, "+", FontStyle::CENTER, COLOR_RED);
+        SmallFont->Draw(drawPt + DrawPoint(10, -20) + offset, "1", FontStyle::CENTER, COLOR_RED);
     }
+
+    LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::DONKEY_BOAT_CARRYING_ARMOR_WARE])
+      ->DrawFull(drawPt + DrawPoint(0, -22) + offset);
 }
 
 void nofArmored::DrawArmorNotWalking(DrawPoint drawPt)
 {
-    DrawArmorWalking(drawPt);
+    if(HasArmor())
+        DrawArmor(drawPt);
 }
 
 bool nofArmored::HasArmor() const
