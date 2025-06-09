@@ -131,6 +131,7 @@ void nobMilitary::DestroyBuilding()
 
     // übriggebliebene Goldmünzen in der Inventur abmelden
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
+    world->GetPlayer(player).DecreaseInventoryWare(GoodType::Armor, numArmor);
 
     nobBaseMilitary::DestroyBuilding();
     // If this was occupied, recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
@@ -1029,6 +1030,9 @@ void nobMilitary::Capture(const unsigned char new_owner)
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
     world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
+
+    world->GetPlayer(player).DecreaseInventoryWare(GoodType::Armor, numArmor);
+    world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Armor, numArmor);
 
     // Reset desired troop setting
     troop_limits.fill(GetMaxTroopsCt());
