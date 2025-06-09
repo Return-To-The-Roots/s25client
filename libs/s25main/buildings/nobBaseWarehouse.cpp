@@ -665,16 +665,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
             } else
                 inventory.visual.Remove(fig.GetJobType());
 
-            if(isSoldier(fig.GetJobType()))
-            {
-                nofArmored* armoredFigure = dynamic_cast<nofArmored*>(&fig);
-                RTTR_Assert(armoredFigure != nullptr);
-                if(armoredFigure && armoredFigure->HasArmor())
-                {
-                    RTTR_Assert(inventory.visual.armoredSoldiers[figureToAmoredSoldierEnum(armoredFigure)] > 0);
-                    inventory.visual.Remove(figureToAmoredSoldierEnum(armoredFigure));
-                }
-            }
+            RemoveArmoredFigurFromVisualInventory(&fig);
 
             if(fig.GetGOT() == GO_Type::NofTradedonkey)
             {
@@ -899,6 +890,33 @@ void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool in
 
     CheckJobsForNewFigure(figure->GetJobType());
     GetEvMgr().AddToKillList(std::move(figure));
+}
+
+void nobBaseWarehouse::RemoveArmoredFigurFromVisualInventory(noFigure* figure)
+{
+    if(isSoldier(figure->GetJobType()))
+    {
+        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(figure);
+        RTTR_Assert(armoredFigure != nullptr);
+        if(armoredFigure && armoredFigure->HasArmor())
+        {
+            RTTR_Assert(inventory.visual.armoredSoldiers[figureToAmoredSoldierEnum(armoredFigure)] > 0);
+            inventory.visual.Remove(figureToAmoredSoldierEnum(armoredFigure));
+        }
+    }
+}
+
+void nobBaseWarehouse::AddArmoredFigurToVisualInventory(noFigure* figure)
+{
+    if(isSoldier(figure->GetJobType()))
+    {
+        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(figure);
+        RTTR_Assert(armoredFigure != nullptr);
+        if(armoredFigure && armoredFigure->HasArmor())
+        {
+            inventory.visual.Add(figureToAmoredSoldierEnum(armoredFigure));
+        }
+    }
 }
 
 void nobBaseWarehouse::FetchWare()
