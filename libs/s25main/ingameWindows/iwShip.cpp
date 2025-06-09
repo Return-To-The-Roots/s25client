@@ -10,6 +10,7 @@
 #include "Loader.h"
 #include "Ware.h"
 #include "WindowManager.h"
+#include "addons/const_addons.h"
 #include "controls/ctrlButton.h"
 #include "factories/GameCommandFactory.h"
 #include "figures/noFigure.h"
@@ -299,13 +300,11 @@ void iwShip::DrawCargo()
             if(isSoldier(job) && armoredFigures[jobEnumToAmoredSoldierEnum(job)] > 0)
             {
                 armoredFigures[jobEnumToAmoredSoldierEnum(job)]--;
-                SmallFont->Draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
-                SmallFont->Draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
-
-                LOADER
-                  .GetImageN("leather_bobs",
-                             leatheraddon::bobIndex[leatheraddon::BobTypes::DONKEY_BOAT_CARRYING_ARMOR_WARE])
-                  ->DrawFull(drawPt + DrawPoint(-2, -22));
+                if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
+                {
+                    SmallFont->Draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
+                    SmallFont->Draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
+                }
             }
 
             drawPt.x += xStep;
