@@ -18,6 +18,8 @@ protected:
 
     explicit nofArmored(const nofArmored&) = default;
 
+    void DrawArmor(DrawPoint drawPt, DrawPoint offset = {0, 0});
+
 public:
     void DrawArmorWalking(DrawPoint drawPt);
     void DrawArmorNotWalking(DrawPoint drawPt);
