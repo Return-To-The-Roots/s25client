@@ -2,14 +2,11 @@
 
 #include "AIConfig.h"
 #include "AIPlayerJH.h"
+#include "WeightParams.h"
 #include "BuildingPlanner.h"
-#include "GlobalGameSettings.h"
 #include "PlannerHelper.h"
 #include "addons/const_addons.h"
 #include "gameTypes/GoodTypes.h"
-#include "gameTypes/JobTypes.h"
-
-#include <boost/math/special_functions/sign.hpp>
 
 #include <cmath>
 
@@ -29,7 +26,7 @@ helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
     auto values = helpers::EnumArray<unsigned, BuildingType>();
     values[BuildingType::Forester] = doCalc(BuildingType::Forester);
     values[BuildingType::Sawmill] = doCalc(BuildingType::Sawmill);
-    values[BuildingType::Woodcutter] = (unsigned)calcCount(numMilitaryBlds, AI_CONFIG.startupMilToWoodcutter);
+    values[BuildingType::Woodcutter] = doCalc(BuildingType::Woodcutter);
     values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
     values[BuildingType::Fishery] = 1 + numMilitaryBlds / 5;
     values[BuildingType::GraniteMine] = -1;
@@ -74,7 +71,7 @@ unsigned BuildCalculator::doCalc(BuildingType type)
 {
     WantedParams wantedParams = AI_CONFIG.wantedParams[type];
     unsigned workersAvailable = maxWorkers(aijh, type);
-    unsigned maxBld = workersAvailable + (unsigned)calcCount(workersAvailable, wantedParams.workersAdvance);
+    unsigned maxBld = workersAvailable + (unsigned)CALC::calcCount(workersAvailable, wantedParams.workersAdvance);
     unsigned currentBld = GetNumBuildings(type);
     if(currentBld >= maxBld)
     {
@@ -94,7 +91,7 @@ unsigned BuildCalculator::doCalc(BuildingType type)
         unsigned bldCount = GetNumBuildings(bldType);
         if(bldCount >= params.min)
         {
-            double value = calcCount(bldCount, params);
+            double value = CALC::calcCount(bldCount, params);
             count += std::min<double>(value, params.max);
         }
     }
@@ -106,7 +103,7 @@ unsigned BuildCalculator::doCalc(BuildingType type)
         unsigned goodCount = inventory.goods[goodType];
         if(goodCount >= params.min)
         {
-            double value = calcCount(goodCount, params);
+            double value = CALC::calcCount(goodCount, params);
             count += std::min<double>(value, params.max);
         }
     }
@@ -118,7 +115,7 @@ unsigned BuildCalculator::doCalc(BuildingType type)
         unsigned statValue = aijh.player.GetStatisticCurrentValue(statType);
         if(statValue >= params.min)
         {
-            double value = calcCount(statValue, params);
+            double value = CALC::calcCount(statValue, params);
             count += std::min<double>(value, params.max);
         }
     }
@@ -127,10 +124,10 @@ unsigned BuildCalculator::doCalc(BuildingType type)
         BuildParams params = wantedParams.resourceWeights[resType];
         if(!params.enabled)
             continue;
-        unsigned statValue = getAvailableResource(resType);
-        if(statValue >= params.min)
+        unsigned resValue = getAvailableResource(resType);
+        if(resValue >= params.min)
         {
-            double value = calcCount(statValue, params);
+            double value = CALC::calcCount(resValue, params);
             count += std::min<double>(value, params.max);
         }
     }
@@ -164,13 +161,6 @@ unsigned BuildCalculator::getAvailableResource(AIResource resType)
 unsigned BuildCalculator::GetNumBuildings(BuildingType type)
 {
     return buildingNums.buildings[type] + buildingNums.buildingSites[type];
-}
-
-double BuildCalculator::calcCount(unsigned x, BuildParams params)
-{
-    double log2_linear = abs(params.logTwo.linear);
-    double log2Val = std::max(0.0, std::log(params.logTwo.constant + log2_linear * x));
-    return params.constant + params.linear * x + boost::math::sign(params.logTwo.linear) * log2Val;
 }
 
 } // namespace AIJH

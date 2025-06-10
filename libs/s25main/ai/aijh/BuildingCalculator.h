@@ -22,7 +22,6 @@ private:
 
     unsigned doCalc(BuildingType type);
     unsigned GetNumBuildings(BuildingType type);
-    double calcCount(unsigned x, BuildParams params);
     unsigned getAvailableResource(AIResource resType);
 };
 

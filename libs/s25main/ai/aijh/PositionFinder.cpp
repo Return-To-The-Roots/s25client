@@ -1,9 +1,10 @@
 
 #include "PositionFinder.h"
 
+#include "AIConfig.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
-#include "ai/aijh/AIMap.h"
+#include "WeightParams.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/BuildingConsts.h"
@@ -47,9 +48,12 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
     {
         case BuildingType::Sawmill:
         {
+            auto locationParam = AI_CONFIG.locationParams[BuildingType::Sawmill];
             MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
             unsigned sawmills = aijh.GetBldPlanner().GetNumBuildings(BuildingType::Sawmill);
-            if(construction.OtherUsualBuildingInRadius(point, 2 * sawmills, BuildingType::Sawmill))
+            auto proximity = locationParam.proximity[BuildingType::Sawmill];
+            unsigned minRadius = (unsigned) CALC::calcCount(sawmills, proximity.minimal);
+            if(construction.OtherUsualBuildingInRadius(point, minRadius, BuildingType::Sawmill))
             {
                 break;
             }

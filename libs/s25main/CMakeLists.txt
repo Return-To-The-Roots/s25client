@@ -52,6 +52,7 @@ set(s25Main_SRCS
         ai/aijh/PositionFinder.h
         ai/RatedPoint.h
         ai/aijh/WeightParser.h
+        ai/aijh/WeightParams.h
 )
 
 add_library(s25Main STATIC ${s25Main_SRCS})
