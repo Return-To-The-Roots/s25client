@@ -36,7 +36,7 @@ namespace detail {
     {
         using Type = typename T::value_type;
         using Integral =
-          typename std::conditional_t<std::is_enum_v<Type>, std::underlying_type<Type>, std::common_type<Type>>::type;
+          std::conditional_t_t<std::is_enum_v<Type>, std::underlying_type<Type>, std::common_type<Type>>;
         for(const auto el : container)
         {
             // Cast also required for bool vector -.-

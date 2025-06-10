@@ -46,7 +46,7 @@ struct BldWorkDescription
     /// Ware produced, if any
     helpers::OptionalEnum<GoodType> producedWare = boost::none;
     /// Wares the building needs, if any
-    WaresNeeded waresNeeded = {};
+    WaresNeeded waresNeeded;
     /// How many wares of each type can be stored
     uint8_t numSpacesPerWare = 6;
     /// True if one of each waresNeeded is used per production cycle

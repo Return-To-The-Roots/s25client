@@ -93,7 +93,7 @@ constexpr bool ResourceId::isValid(const char* name, unsigned length)
     for(int i = 0; i < iLen; i++)
     {
         const char c = name[i];
-        if(!(('0' <= c && c <= '9') || ('a' <= c && c <= 'z') || c == '_'))
+        if(('0' > c || c > '9') && ('a' > c || c > 'z') && c != '_')
             return false;
     }
     return true;
