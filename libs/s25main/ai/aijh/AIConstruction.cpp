@@ -722,6 +722,24 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
     return false;
 }
 
+int AIConstruction::CountUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt)
+{
+    unsigned count = 0;
+    for(const nobUsual* bld : aii.GetBuildings(bt))
+    {
+        if(aii.gwb.CalcDistance(bld->GetPos(), pt) < radius)
+            count++;
+    }
+    for(const noBuildingSite* bldSite : aii.GetBuildingSites())
+    {
+        if(bldSite->GetBuildingType() == bt)
+        {
+            if(aii.gwb.CalcDistance(bldSite->GetPos(), pt) < radius)
+                count++;
+        }
+    }
+    return count;
+}
 bool AIConstruction::OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt)
 {
     for(const nobUsual* bld : aii.GetBuildings(bt))

@@ -38,7 +38,7 @@ public:
     }
     auto begin() const { return elements_.begin(); }
     auto end() const { return elements_.end(); }
-    const SetType& data() const { return elements_; }
+    auto size() const { return elements_.size(); }
 
 private:
     size_t maxSize_;

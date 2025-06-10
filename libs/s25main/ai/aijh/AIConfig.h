@@ -26,6 +26,22 @@ struct BuildParams
     bool enabled = false;
 };
 
+struct RatingParams
+{
+    bool enabled = false;
+};
+
+struct ProximityParams
+{
+    helpers::EnumArray<BuildParams, BuildingType> minimals = helpers::EnumArray<BuildParams, BuildingType>{};
+    RatingParams ratingParams = {false};
+};
+
+struct LocationParams
+{
+    bool enabled = false;
+};
+
 struct WantedParams
 {
     bool enabled = false;
@@ -64,6 +80,7 @@ struct AIConfig
     BuildParams startupMilToWoodcutter = {3.0, 0.4};
 
     helpers::EnumArray<WantedParams, BuildingType> wantedParams;
+    helpers::EnumArray<LocationParams, BuildingType> locationParams;
 };
 
 extern AIConfig AI_CONFIG;

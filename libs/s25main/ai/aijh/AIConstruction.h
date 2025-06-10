@@ -74,6 +74,8 @@ public:
 
     bool OtherStoreInRadius(MapPoint pt, unsigned radius);
 
+    int CountUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt);
+
     bool OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt);
 
     noFlag* FindTargetStoreHouseFlag(MapPoint pt) const;

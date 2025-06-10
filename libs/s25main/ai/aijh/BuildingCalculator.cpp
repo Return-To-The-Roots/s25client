@@ -85,13 +85,13 @@ unsigned BuildCalculator::doCalc(BuildingType type)
         return currentBld;
     }
     double count = 0;
-    for(const auto type : helpers::enumRange<BuildingType>())
+    for(const auto bldType : helpers::enumRange<BuildingType>())
     {
-        BuildParams params = wantedParams.bldWeights[type];
+        BuildParams params = wantedParams.bldWeights[bldType];
         if(!params.enabled)
             continue;
 
-        unsigned bldCount = GetNumBuildings(type);
+        unsigned bldCount = GetNumBuildings(bldType);
         if(bldCount >= params.min)
         {
             double value = calcCount(bldCount, params);

@@ -379,8 +379,8 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
 
     // pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of
     // the building type)
-    std::array<BuildingType, 22> bldToTest = {
-      {BuildingType::HarborBuilding, BuildingType::Shipyard, BuildingType::Sawmill, BuildingType::Forester,
+    std::array<BuildingType, 20> bldToTest = {
+      {BuildingType::HarborBuilding, BuildingType::Shipyard, // BuildingType::Sawmill, //BuildingType::Forester,
        /*BuildingType::Farm,*/
        BuildingType::Fishery, /*BuildingType::Woodcutter,*/ BuildingType::Quarry, BuildingType::GoldMine,
        BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine, BuildingType::Hunter,
@@ -388,7 +388,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
        BuildingType::Metalworks, BuildingType::Brewery, BuildingType::Mill, BuildingType::PigFarm,
        BuildingType::Slaughterhouse, BuildingType::Bakery, BuildingType::DonkeyBreeder}};
 
-    std::array<BuildingType, 2> globalBldToTest = {{BuildingType::Farm, BuildingType::Woodcutter}};
+    std::array<BuildingType, 4> globalBldToTest = {{BuildingType::Sawmill,BuildingType::Farm, BuildingType::Woodcutter, BuildingType::Forester}};
 
     // const unsigned numResGatherBlds = 13; /* The first n buildings in the above list, that gather resources */
 
@@ -1073,34 +1073,13 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
     MapPoint foundPos = MapPoint::Invalid();
     switch(type)
     {
-        case BuildingType::Woodcutter:
-        {
-            foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 50);
-            /*if(!foundPos.isValid() && rand() % 5 == 0)
-            {
-                foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 120);
-            }*/
-            if(construction->OtherUsualBuildingInRadius(foundPos, 2, BuildingType::Woodcutter))
-            {
-                foundPos = MapPoint::Invalid();
-            }
-            break;
-        }
-        case BuildingType::Forester:
-            if(construction->OtherUsualBuildingInRadius(around, 8, BuildingType::Farm))
-            {
-                break;
-            }
-            // ensure some distance to other foresters and an minimal amount of plantspace
-            if(!construction->OtherUsualBuildingInRadius(around, 8, BuildingType::Forester))
-                foundPos = FindBestPosition(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 0);
-            break;
-            // ensure some distance to other foresters and an minimal amount of plantspace
         case BuildingType::Bakery:
         case BuildingType::Brewery:
         case BuildingType::Armory:
         case BuildingType::Metalworks:
         case BuildingType::Ironsmelter:
+        case BuildingType::Slaughterhouse:
+        case BuildingType::PigFarm:
         case BuildingType::Mill:
         case BuildingType::Well:
         {
@@ -1129,17 +1108,6 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                 resourceMaps[AIResource::Stones].avoidPosition(foundPos);
                 foundPos = MapPoint::Invalid();
             }
-            break;
-        }
-        case BuildingType::Sawmill:
-        {
-            unsigned sawmills = bldPlanner->GetNumBuildings(BuildingType::Sawmill);
-            if(construction->OtherUsualBuildingInRadius(around, 2 * (sawmills - 1), BuildingType::Sawmill))
-            {
-                break;
-            }
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
-            break;
             break;
         }
         case BuildingType::Barracks:
@@ -1406,7 +1374,7 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
         case BuildingType::Shipyard: aii.SetShipYardMode(pt, true); break;
 
         case BuildingType::Storehouse: break;
-        case BuildingType::Woodcutter: AddBuildJob(BuildingType::Sawmill, pt); break;
+        // case BuildingType::Woodcutter: AddBuildJob(BuildingType::Sawmill, pt); break;
         default: break;
     }
 }
