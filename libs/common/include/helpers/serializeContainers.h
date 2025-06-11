@@ -35,9 +35,11 @@ namespace detail {
     void pushContainer(Serializer& ser, const T& container, long)
     {
         using Type = typename T::value_type;
-        // NOLINTNEXTLINE(modernize-type-traits) Deactivated to bug in clang-tidy
+        // Deactivated to bug in clang-tidy
+        // NOLINTBEGIN(modernize-type-traits)
         using Integral =
           typename std::conditional_t<std::is_enum_v<Type>, std::underlying_type<Type>, std::common_type<Type>>::type;
+        // NOLINTEND(modernize-type-traits)
         for(const auto el : container)
         {
             // Cast also required for bool vector -.-

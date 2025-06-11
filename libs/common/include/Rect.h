@@ -20,9 +20,11 @@ template<typename T>
 struct RectBase
 {
     using position_type = Point<T>;
-    // NOLINTNEXTLINE(modernize-type-traits) Deactivated to bug in clang-tidy
+    // Deactivated to bug in clang-tidy
+    // NOLINTBEGIN(modernize-type-traits)
     using extent_elem_type =
       typename std::conditional_t<std::is_integral_v<T>, std::make_unsigned<T>, std::common_type<T>>::type;
+    // NOLINTEND(modernize-type-traits)
     using extent_type = Point<extent_elem_type>;
     T left, top, right, bottom;
     constexpr RectBase() : RectBase(position_type::all(0), extent_type::all(0)) {}
