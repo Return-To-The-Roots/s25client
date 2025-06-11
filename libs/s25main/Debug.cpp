@@ -132,7 +132,7 @@ bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, LPCONTEXT ctx) noexce
     return true;
 }
 #else
-bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, void*) noexcept
+bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, void*) noexcept(false)
 {
 #    if RTTR_BACKTRACE_HAS_FUNCTION
     const auto num_frames = backtrace(stacktrace.data(), stacktrace.size());
@@ -182,7 +182,7 @@ DebugInfo::~DebugInfo()
     sock.Close();
 }
 
-DebugInfo::stacktrace_t DebugInfo::GetStackTrace(void* ctx) noexcept
+DebugInfo::stacktrace_t DebugInfo::GetStackTrace(void* ctx) noexcept(false)
 {
 #ifndef RTTR_CONTEXT_PTR_TYPE
     using RTTR_CONTEXT_PTR_TYPE = void*;
