@@ -4,7 +4,6 @@
 
 #include "BasePlayerInfo.h"
 #include "helpers/serializeEnums.h"
-#include "s25util/VersionedDeserializer.h"
 #include "s25util/colors.h"
 
 BasePlayerInfo::BasePlayerInfo()
@@ -14,8 +13,6 @@ BasePlayerInfo::BasePlayerInfo()
 BasePlayerInfo::BasePlayerInfo(Serializer& ser, int serializedVersion, bool lightData)
     : ps(helpers::popEnum<PlayerState>(ser)), aiInfo(!lightData || ps == PlayerState::AI ? ser : AI::Info())
 {
-    auto versionedDeserializer = s25util::VersionedDeserializer<BasePlayerInfo>(ser, serializedVersion);
-
     if(lightData && !isUsed())
     {
         portraitIndex = 0;
@@ -59,4 +56,11 @@ int BasePlayerInfo::GetColorIdx(unsigned color) //-V688
             return i;
     }
     return -1;
+}
+
+int BasePlayerInfo::getCurrentVersion()
+{
+    // 0: Initial
+    // 1: Added portraitIndex
+    return 1;
 }

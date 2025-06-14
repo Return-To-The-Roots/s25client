@@ -39,7 +39,5 @@ struct BasePlayerInfo
     int GetColorIdx() const;
     static int GetColorIdx(unsigned color);
 
-    // 0: Initial
-    // 1: Added portraitIndex
-    static inline constexpr int getCurrentVersion() { return 1; }
+    static int getCurrentVersion();
 };
