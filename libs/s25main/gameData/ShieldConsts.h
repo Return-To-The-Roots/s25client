@@ -16,14 +16,14 @@ const helpers::EnumArray<GoodType, Nation> SUPPRESS_UNUSED SHIELD_TYPES = {
 
 /// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
 /// die Warensysteme usw
-inline constexpr GoodType ConvertShields(const GoodType& good)
+constexpr GoodType ConvertShields(const GoodType& good)
 {
     return (good == GoodType::ShieldVikings || good == GoodType::ShieldAfricans || good == GoodType::ShieldJapanese) ?
              GoodType::ShieldRomans :
              good;
 }
 
-inline constexpr GoodType convertShieldToNation(const GoodType good, const Nation nation)
+constexpr GoodType convertShieldToNation(const GoodType good, const Nation nation)
 {
     return (good == GoodType::ShieldRomans) ? SHIELD_TYPES[nation] : good;
 }

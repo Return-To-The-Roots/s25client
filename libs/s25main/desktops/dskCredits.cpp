@@ -28,7 +28,6 @@ using namespace std::chrono_literals;
 const auto PAGE_TIME = 12900ms;
 /// Duration for fading between pages
 const auto FADING_TIME = 2s;
-using std::chrono::duration_cast;
 
 namespace {
 enum

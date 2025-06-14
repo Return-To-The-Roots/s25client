@@ -160,7 +160,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     sgd.PushEnum<uint8_t>(ps);
 
     // Nur richtige Spieler serialisieren
-    if(!(ps == PlayerState::Occupied || ps == PlayerState::AI))
+    if(ps != PlayerState::Occupied && ps != PlayerState::AI)
         return;
 
     sgd.PushBool(isDefeated);
@@ -234,7 +234,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     // Ehemaligen PS auslesen
     auto origin_ps = sgd.Pop<PlayerState>();
     // Nur richtige Spieler serialisieren
-    if(!(origin_ps == PlayerState::Occupied || origin_ps == PlayerState::AI))
+    if(origin_ps != PlayerState::Occupied && origin_ps != PlayerState::AI)
         return;
 
     isDefeated = sgd.PopBool();
@@ -614,14 +614,14 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs) const
     {
         // dann braucht man Träger UND Boot
         best[0] = FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
-                                &length[0], rs);
+                                length.data(), rs);
         // 2. Flagge des Weges
         best[1] = FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
                                 &length[1], rs);
     } else
     {
         // 1. Flagge des Weges
-        best[0] = FindWarehouse(*rs->GetF1(), FW::HasFigure(Job::Helper, false), false, false, &length[0], rs);
+        best[0] = FindWarehouse(*rs->GetF1(), FW::HasFigure(Job::Helper, false), false, false, length.data(), rs);
         // 2. Flagge des Weges
         best[1] = FindWarehouse(*rs->GetF2(), FW::HasFigure(Job::Helper, false), false, false, &length[1], rs);
     }
@@ -878,7 +878,7 @@ nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road) const
     std::array<nobBaseWarehouse*, 2> best;
 
     // 1. Flagge des Weges
-    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[0], road);
+    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(Job::PackDonkey, false), false, false, length.data(), road);
     // 2. Flagge des Weges
     best[1] = FindWarehouse(*road->GetF2(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[1], road);
 
