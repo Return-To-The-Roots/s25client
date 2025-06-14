@@ -11,9 +11,11 @@ BasePlayerInfo::BasePlayerInfo()
     : ps(PlayerState::Free), portraitIndex(0), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(Team::None)
 {}
 
-BasePlayerInfo::BasePlayerInfo(s25util::VersionedDeserializer<BasePlayerInfo>& ser, bool lightData)
+BasePlayerInfo::BasePlayerInfo(Serializer& ser, int version, bool lightData)
     : ps(helpers::popEnum<PlayerState>(ser)), aiInfo(!lightData || ps == PlayerState::AI ? ser : AI::Info())
 {
+    auto versionedDeserializer = s25util::VersionedDeserializer<BasePlayerInfo>(ser, version);
+
     if(lightData && !isUsed())
     {
         portraitIndex = 0;
@@ -23,7 +25,7 @@ BasePlayerInfo::BasePlayerInfo(s25util::VersionedDeserializer<BasePlayerInfo>& s
     } else
     {
         name = ser.PopLongString();
-        portraitIndex = (ser.getDataVersion() >= 1) ? ser.PopUnsignedInt() : 0;
+        portraitIndex = (version >= 1) ? ser.PopUnsignedInt() : 0;
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
         team = helpers::popEnum<Team>(ser);

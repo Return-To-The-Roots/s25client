@@ -272,7 +272,7 @@ void Settings::Load()
         if(lobby.name.empty())
             lobby.name = System::getUserName();
 
-        if(lobby.portraitIndex < 0 || Portraits.size() <= lobby.portraitIndex)
+        if(lobby.portraitIndex >= Portraits.size())
         {
             lobby.portraitIndex = 0;
         }

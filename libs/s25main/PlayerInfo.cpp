@@ -4,15 +4,13 @@
 
 #include "PlayerInfo.h"
 #include "s25util/Serializer.h"
-#include "s25util/VersionedDeserializer.h"
 
 PlayerInfo::PlayerInfo() : isHost(false), ping(0) {}
 
 PlayerInfo::PlayerInfo(const BasePlayerInfo& baseInfo) : BasePlayerInfo(baseInfo), isHost(false), ping(0) {}
 
 PlayerInfo::PlayerInfo(Serializer& ser, int basePlayerInfoVersion)
-    : BasePlayerInfo(s25util::VersionedDeserializer<BasePlayerInfo>(ser, basePlayerInfoVersion), false),
-      isHost(ser.PopBool()), ping(ser.PopUnsignedInt())
+    : BasePlayerInfo(ser, basePlayerInfoVersion, false), isHost(ser.PopBool()), ping(ser.PopUnsignedInt())
 {}
 
 void PlayerInfo::Serialize(Serializer& ser) const

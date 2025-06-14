@@ -9,7 +9,6 @@
 #include "libendian/ConvertEndianess.h"
 #include "s25util/BinaryFile.h"
 #include "s25util/Serializer.h"
-#include "s25util/VersionedDeserializer.h"
 #include <boost/format.hpp>
 #include <algorithm>
 #include <mygettext/mygettext.h>
@@ -147,8 +146,7 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     for(unsigned i = 0; i < playerCt; i++)
     {
         // TODO(Replay) TODO(Savegame) minor versions will change their meaning when major is bumped
-        s25util::VersionedDeserializer<BasePlayerInfo> playerDeserializer(ser, GetMinorVersion() >= 1 ? 1 : 0);
-        BasePlayerInfo player(playerDeserializer, true);
+        BasePlayerInfo player(ser, GetMinorVersion() >= 1 ? 1 : 0, true);
         // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
         if(player.team > Team::Team4)
             player.team = Team(rttr::enum_cast(player.team) - 3); // Was random team 2-4

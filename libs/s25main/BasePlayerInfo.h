@@ -10,11 +10,6 @@
 #include "gameTypes/TeamTypes.h"
 #include <string>
 
-namespace s25util {
-template<typename T>
-class VersionedDeserializer;
-} // namespace s25util
-
 class Serializer;
 
 /// Basic player info (saved in replays and savegames)
@@ -31,7 +26,7 @@ struct BasePlayerInfo
 
     BasePlayerInfo();
     /// Deserialize data. If lightData is true, unused data is not read (e.g. unused slot -> Skip rest)
-    BasePlayerInfo(s25util::VersionedDeserializer<BasePlayerInfo>& ser, bool lightData);
+    BasePlayerInfo(Serializer& ser, int version, bool lightData);
     /// Serialize data. If lightData is true, unused data is not written (e.g. unused slot -> Skip rest)
     void Serialize(Serializer& ser, bool lightData) const;
 

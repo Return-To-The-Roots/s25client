@@ -1041,7 +1041,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Portrait& msg)
     int playerID = GetTargetPlayer(msg);
     if(playerID < 0)
         return true;
-    if(msg.playerPortraitIndex < 0 || Portraits.size() <= msg.playerPortraitIndex)
+    if(msg.playerPortraitIndex >= Portraits.size())
         return true;
 
     LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_PORTRAIT(%u)\n") % playerID % msg.playerPortraitIndex;

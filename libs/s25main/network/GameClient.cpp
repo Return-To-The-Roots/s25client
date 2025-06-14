@@ -461,7 +461,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Portrait& msg)
         return true;
     if(msg.player >= gameLobby->getNumPlayers())
         return true;
-    if(msg.playerPortraitIndex < 0 || Portraits.size() <= msg.playerPortraitIndex)
+    if(msg.playerPortraitIndex >= Portraits.size())
         return true;
     gameLobby->getPlayer(msg.player).portraitIndex = msg.playerPortraitIndex;
     if(ci)
