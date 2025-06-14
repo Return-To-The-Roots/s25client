@@ -4,6 +4,7 @@
 
 #include "GameCommands.h"
 #include "GamePlayer.h"
+#include "LeatherLoader.h"
 #include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -16,6 +17,7 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/SettingTypeConv.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -90,19 +92,43 @@ void UpgradeRoad::Execute(GameWorld& world, uint8_t playerId)
 
 ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::ChangeDistribution)
 {
-    if(ser.getDataVersion() >= 1)
+    if(ser.getDataVersion() >= 2)
         helpers::popContainer(ser, data);
     else
     {
-        std::array<Distributions::value_type,
-                   std::tuple_size_v<Distributions> - 3> tmpData; // 3 entries for wine addon
-        helpers::popContainer(ser, tmpData);
+        const unsigned wineAddonAdditionalDistributions = 3;
+        const unsigned leatherAddonAdditionalDistributions = 3;
+
+        auto const additionalDistributions =
+          leatherAddonAdditionalDistributions + (ser.getDataVersion() < 1 ? wineAddonAdditionalDistributions : 0);
+
+        std::vector<Distributions::value_type> tmpData(std::tuple_size_v<Distributions> - additionalDistributions);
+
+        auto skipBuilding = [&](DistributionMapping const& mapping) {
+            // Skipped and standard distribution in skipped case
+            std::tuple<bool, unsigned int> result = {false, 0};
+            if(ser.getDataVersion() < 1)
+            {
+                // skip over wine buildings
+                std::get<0>(result) |= wineaddon::isWineAddonBuildingType(std::get<BuildingType>(mapping));
+            }
+
+            // skip over leather addon buildings and leather addon wares only
+            std::get<0>(result) |= leatheraddon::isLeatherAddonBuildingType(std::get<BuildingType>(mapping));
+
+            if(std::get<BuildingType>(mapping) == BuildingType::Slaughterhouse
+               && (std::get<GoodType>(mapping) == GoodType::Ham))
+                result = {true, 8};
+            return result;
+        };
+
+        helpers::popContainer(ser, tmpData, true);
         size_t srcIdx = 0, tgtIdx = 0;
         for(const auto& mapping : distributionMap)
         {
-            // skip over wine buildings in tmpData
-            const auto setting =
-              wineaddon::isWineAddonBuildingType(std::get<BuildingType>(mapping)) ? 0 : tmpData[srcIdx++];
+            // skip over not stored buildings in tmpData
+            const auto skipped = skipBuilding(mapping);
+            const auto setting = std::get<0>(skipped) ? std::get<1>(skipped) : tmpData[srcIdx++];
             data[tgtIdx++] = setting;
         }
     }
@@ -126,6 +152,27 @@ void SetBuildingSite::Execute(GameWorld& world, uint8_t playerId)
 void DestroyBuilding::Execute(GameWorld& world, uint8_t playerId)
 {
     world.DestroyBuilding(pt_, playerId);
+}
+
+ChangeTransport::ChangeTransport(Deserializer& ser) : GameCommand(GCType::ChangeTransport)
+{
+    if(ser.getDataVersion() >= 2)
+        helpers::popContainer(ser, data);
+    else
+    {
+        const unsigned leatherAddonAdditionalTransportOrders = 1;
+        std::vector<TransportOrders::value_type> tmpData(std::tuple_size<TransportOrders>::value
+                                                         - leatherAddonAdditionalTransportOrders);
+
+        helpers::popContainer(ser, tmpData, true);
+        std::copy(tmpData.begin(), tmpData.end(), data.begin());
+        // all transport prios greater equal 7 are increased by one because the new leatherwork
+        // uses prio 7
+        std::transform(data.begin(), data.end() - leatherAddonAdditionalTransportOrders, data.begin(),
+                       [](uint8_t& prio) { return prio < 7 ? prio : prio + 1; });
+        data[std::tuple_size<TransportOrders>::value - leatherAddonAdditionalTransportOrders] =
+          STD_TRANSPORT_PRIO[GoodType::Leather];
+    }
 }
 
 void ChangeTransport::Execute(GameWorld& world, uint8_t playerId)
@@ -170,6 +217,13 @@ void SetCoinsAllowed::Execute(GameWorld& world, uint8_t playerId)
     auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetCoinsAllowed(enabled);
+}
+
+void SetArmorAllowed::Execute(GameWorld& world, uint8_t playerId)
+{
+    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
+    if(bld && bld->GetPlayer() == playerId)
+        bld->SetArmorAllowed(enabled);
 }
 
 void SetTroopLimit::Execute(GameWorld& world, uint8_t playerId)

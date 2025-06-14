@@ -499,6 +499,54 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
     BOOST_TEST_REQUIRE(milBld1->IsGoldDisabled());
 }
 
+BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonEnable, AttackFixture<>)
+{
+    this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 1); // addon is active on second run
+
+    initGameRNG();
+    AddSoldiers(milBld0Pos, 1, 5);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+
+    // ensure that armor are disabled
+    milBld1->SetArmorAllowed(false);
+    BOOST_TEST_REQUIRE(milBld1->IsArmorDisabled());
+
+    // Start attack -> 1
+    this->Attack(milBld1Pos, 6, false);
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 1u);
+
+    RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
+
+    // check if armor were enabled after building was captured
+    BOOST_TEST_REQUIRE(!milBld1->IsArmorDisabled());
+}
+
+BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonDisable, AttackFixture<>)
+{
+    this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 2); // addon is active on second run
+
+    initGameRNG();
+    AddSoldiers(milBld0Pos, 1, 5);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+
+    // ensure that armor are enabled
+    milBld1->SetArmorAllowed(true);
+    BOOST_TEST_REQUIRE(!milBld1->IsArmorDisabled());
+
+    // Start attack -> 1
+    this->Attack(milBld1Pos, 6, false);
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 1u);
+
+    RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
+
+    // check if armor were disabled after building was captured
+    BOOST_TEST_REQUIRE(milBld1->IsArmorDisabled());
+}
+
 using AttackFixture4P = AttackFixture<4, 32, 34>;
 BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 {

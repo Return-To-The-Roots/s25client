@@ -6,11 +6,13 @@
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "figures/nofArmored.h"
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "nofCarrier.h"
@@ -815,6 +817,15 @@ void noFigure::DrawWalking(DrawPoint drawPt)
         case Job::TempleServant:
             DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
             break;
+        case Job::Skinner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::SKINNER_WALKING]);
+            break;
+        case Job::Tanner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::TANNER_WALKING]);
+            break;
+        case Job::LeatherWorker:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::LEATHERWORKER_WALKING]);
+            break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }
 }
@@ -841,7 +852,12 @@ void noFigure::RemoveFromInventory()
         world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
         world->GetPlayer(player).DecreaseInventoryWare(GoodType::Boat, 1);
     } else
+    {
         world->GetPlayer(player).DecreaseInventoryJob(job_, 1);
+        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(this);
+        if(armoredFigure && armoredFigure->HasArmor())
+            world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(armoredFigure), 1);
+    }
 }
 
 void noFigure::DieFailedTrade()
