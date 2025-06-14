@@ -9,6 +9,7 @@
 #include "libendian/ConvertEndianess.h"
 #include "s25util/BinaryFile.h"
 #include "s25util/Serializer.h"
+#include "s25util/VersionedDeserializer.h"
 #include <boost/format.hpp>
 #include <algorithm>
 #include <mygettext/mygettext.h>
@@ -22,13 +23,24 @@ SavedFile::SavedFile() : saveTime_(0)
 
 SavedFile::~SavedFile() = default;
 
+uint8_t SavedFile::GetMinorVersion() const
+{
+    return minorVersion_;
+}
+
+uint8_t SavedFile::GetMajorVersion() const
+{
+    return majorVersion_;
+}
+
 void SavedFile::WriteFileHeader(BinaryFile& file) const
 {
     // Signature
     const std::string signature = GetSignature();
     file.WriteRawData(signature.c_str(), signature.length());
     // Format version
-    file.WriteUnsignedShort(GetVersion());
+    file.WriteUnsignedChar(GetLatestMajorVersion());
+    file.WriteUnsignedChar(GetLatestMinorVersion());
 }
 
 void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
@@ -67,14 +79,15 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
         }
 
         // Version überprüfen
-        uint16_t read_version = file.ReadUnsignedShort();
-        if(read_version != GetVersion())
+        majorVersion_ = file.ReadUnsignedChar();
+        minorVersion_ = file.ReadUnsignedChar();
+        if(majorVersion_ != GetLatestMajorVersion())
         {
             boost::format fmt = boost::format(
-              (read_version < GetVersion()) ?
+              (majorVersion_ < GetLatestMajorVersion()) ?
                 _("File has an old version and cannot be used (version: %1%, expected: %2%)!") :
                 _("File was created with more recent program and cannot be used (version: %1%, expected: %2%)!"));
-            lastErrorMsg = (fmt % read_version % GetVersion()).str();
+            lastErrorMsg = (fmt % majorVersion_ % GetLatestMajorVersion()).str();
             return false;
         }
     } catch(const std::runtime_error& e)
@@ -133,7 +146,9 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     players.reserve(playerCt);
     for(unsigned i = 0; i < playerCt; i++)
     {
-        BasePlayerInfo player(ser, true);
+        // TODO(Replay) TODO(Savegame) minor versions will change their meaning when major is bumped
+        s25util::VersionedDeserializer<BasePlayerInfo> playerDeserializer(ser, GetMinorVersion() >= 1 ? 1 : 0);
+        BasePlayerInfo player(playerDeserializer, true);
         // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
         if(player.team > Team::Team4)
             player.team = Team(rttr::enum_cast(player.team) - 3); // Was random team 2-4

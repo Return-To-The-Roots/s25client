@@ -10,6 +10,11 @@
 #include "gameTypes/TeamTypes.h"
 #include <string>
 
+namespace s25util {
+template<typename T>
+class VersionedDeserializer;
+} // namespace s25util
+
 class Serializer;
 
 /// Basic player info (saved in replays and savegames)
@@ -26,7 +31,7 @@ struct BasePlayerInfo
 
     BasePlayerInfo();
     /// Deserialize data. If lightData is true, unused data is not read (e.g. unused slot -> Skip rest)
-    BasePlayerInfo(Serializer& ser, bool lightData);
+    BasePlayerInfo(s25util::VersionedDeserializer<BasePlayerInfo>& ser, bool lightData);
     /// Serialize data. If lightData is true, unused data is not written (e.g. unused slot -> Skip rest)
     void Serialize(Serializer& ser, bool lightData) const;
 
@@ -38,4 +43,8 @@ struct BasePlayerInfo
     /// Returns index of color in PLAYER_COLORS array or -1 if not found
     int GetColorIdx() const;
     static int GetColorIdx(unsigned color);
+
+    // 0: Initial
+    // 1: Added portraitIndex
+    static inline constexpr int getCurrentVersion() { return 1; }
 };

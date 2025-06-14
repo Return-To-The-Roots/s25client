@@ -4,14 +4,14 @@
 
 #include "BasePlayerInfo.h"
 #include "helpers/serializeEnums.h"
-#include "s25util/Serializer.h"
+#include "s25util/VersionedDeserializer.h"
 #include "s25util/colors.h"
 
 BasePlayerInfo::BasePlayerInfo()
     : ps(PlayerState::Free), portraitIndex(0), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(Team::None)
 {}
 
-BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
+BasePlayerInfo::BasePlayerInfo(s25util::VersionedDeserializer<BasePlayerInfo>& ser, bool lightData)
     : ps(helpers::popEnum<PlayerState>(ser)), aiInfo(!lightData || ps == PlayerState::AI ? ser : AI::Info())
 {
     if(lightData && !isUsed())
@@ -23,7 +23,7 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
     } else
     {
         name = ser.PopLongString();
-        portraitIndex = ser.PopUnsignedInt();
+        portraitIndex = (ser.getDataVersion() >= 1) ? ser.PopUnsignedInt() : 0;
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
         team = helpers::popEnum<Team>(ser);

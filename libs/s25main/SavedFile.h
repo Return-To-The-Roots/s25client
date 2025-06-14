@@ -22,8 +22,14 @@ public:
 
     /// Return the file signature. Must be at most 32 bytes
     virtual std::string GetSignature() const = 0;
-    /// Return the file format version
-    virtual uint16_t GetVersion() const = 0;
+    /// Return the maximum supported file format version
+    virtual uint8_t GetLatestMinorVersion() const = 0;
+    virtual uint8_t GetLatestMajorVersion() const = 0;
+
+    /// Return the file format version returned from file - minor part
+    uint8_t GetMinorVersion() const;
+    /// Return the file format version returned from file - major part
+    uint8_t GetMajorVersion() const;
 
     /// Schreibt Signatur und Version der Datei
     void WriteFileHeader(BinaryFile& file) const;
@@ -74,4 +80,6 @@ private:
     /// Mapname
     std::string mapName_;
     std::vector<std::string> playerNames_;
+    uint8_t minorVersion_;
+    uint8_t majorVersion_;
 };

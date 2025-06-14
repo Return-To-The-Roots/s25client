@@ -35,7 +35,13 @@ static const uint8_t currentReplayDataVersion = 1;
 // clang-format on
 
 /// Format version of replay files
-uint16_t Replay::GetVersion() const
+uint8_t Replay::GetLatestMinorVersion() const
+{
+    // 8.1: Portraits support
+    return 1;
+}
+
+uint8_t Replay::GetLatestMajorVersion() const
 {
     // Search for "TODO(Replay)" when increasing this (breaking Replay compatibility)
     // and handle/remove the relevant code
