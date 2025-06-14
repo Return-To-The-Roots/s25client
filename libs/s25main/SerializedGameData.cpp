@@ -102,8 +102,7 @@
 /// 9: Drop serialization of node BQ
 /// 10: troop_limits state introduced to military buildings
 /// 11: wineaddon added, three new building types and two new goods
-/// 12: Add portrait index serialization in player state
-static const unsigned currentGameDataVersion = 12;
+static const unsigned currentGameDataVersion = 11;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
