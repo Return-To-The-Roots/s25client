@@ -13,10 +13,17 @@ std::string Savegame::GetSignature() const
     return "RTTRSV";
 }
 
-uint16_t Savegame::GetVersion() const
+uint8_t Savegame::GetLatestMinorVersion() const
+{
+    // 4.1: Portraits support
+    return 1;
+}
+
+uint8_t Savegame::GetLatestMajorVersion() const
 {
     // Note: If you increase the version, reset currentGameDataVersion in SerializedGameData.cpp (see note there)
     // Note2: Also remove the workaround for the team in BasePlayerInfo & CompressedFlag here
+    // Search for "TODO(Savegame)" when increasing this (breaking Savegame compatibility)
     return 4; // SaveGameVersion -- Updater signature, do NOT remove
 }
 
