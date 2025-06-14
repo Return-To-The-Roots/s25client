@@ -99,7 +99,7 @@ public:
     noRoadNode* GetLocation() { return location; }
     const noRoadNode* GetLocation() const { return location; }
     /// Ist die Ware eine LostWare (Ware, die kein Ziel mehr hat und irgendwo sinnlos rumliegt)?
-    bool IsLostWare() const { return ((goal ? false : true) && state != State::OnShip); }
+    bool IsLostWare() const { return ((goal == nullptr) && state != State::OnShip); }
     /// Informiert Ware, dass eine Schiffsreise beginnt
     void StartShipJourney();
     /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt

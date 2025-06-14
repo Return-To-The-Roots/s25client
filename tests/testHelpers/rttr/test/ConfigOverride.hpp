@@ -19,6 +19,6 @@ public:
     {
         RTTRCONFIG.overridePathMapping(entry, newPath);
     }
-    ~ConfigOverride() { RTTRCONFIG.overridePathMapping(entry, std::move(oldPath)); }
+    ~ConfigOverride() { RTTRCONFIG.overridePathMapping(entry, oldPath); }
 };
 } // namespace rttr::test

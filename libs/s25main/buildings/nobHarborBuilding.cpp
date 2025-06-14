@@ -1255,7 +1255,7 @@ void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
 {
     // Ist überhaupt eine Expedition im Gang und ein entsprechender Warentyp
-    if(!expedition.active || !(type == GoodType::Boards || type == GoodType::Stones))
+    if(!expedition.active || (type != GoodType::Boards && type != GoodType::Stones))
         return 0;
 
     unsigned ordered_boards = 0, ordered_stones = 0;

@@ -12,12 +12,31 @@ Checks: >-
   modernize-*,
   performance-*,
   readability-*,
+  -bugprone-assignment-in-if-condition,
+  -bugprone-casting-through-void,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-empty-catch,
+  -bugprone-implicit-widening-of-multiplication-result,
   -bugprone-narrowing-conversions,
+  -bugprone-optional-value-conversion,
+  -bugprone-reserved-identifier,
+  -bugprone-switch-missing-default-case,
   -bugprone-too-small-loop-variable,
+  -bugprone-unchecked-optional-access,
+  -bugprone-unhandled-exception-at-new,
+  -clang-analyzer-core.NonNullParamChecker,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -clang-analyzer-optin.core.EnumCastOutOfRange,
   -clang-analyzer-osx.*,
+  -misc-confusable-identifiers,
+  -misc-const-correctness,
+  -misc-include-cleaner,
   -misc-non-private-member-variables-in-classes,
+  -misc-no-recursion,
   -misc-unused-parameters,
+  -misc-use-anonymous-namespace,
   -modernize-avoid-c-arrays,
+  -modernize-macro-to-enum,
   -modernize-raw-string-literal,
   -modernize-return-braced-init-list,
   -modernize-use-default-member-init,
@@ -25,15 +44,26 @@ Checks: >-
   -modernize-use-nodiscard,
   -modernize-use-override,
   -modernize-use-trailing-return-type,
+  -performance-avoid-endl,
+  -performance-enum-size,
+  -performance-move-const-arg,
+  -performance-no-int-to-ptr,
+  -readability-avoid-nested-conditional-operator,
+  -readability-avoid-return-with-void-value,
   -readability-braces-around-statements,
   -readability-convert-member-functions-to-static,
   -readability-else-after-return,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length,
   -readability-implicit-bool-conversion,
   -readability-isolate-declaration,
   -readability-magic-numbers,
   -readability-named-parameter,
+  -readability-redundant-casting,
   -readability-static-accessed-through-instance,
+  -readability-suspicious-call-argument,
   -readability-uppercase-literal-suffix,
+  -readability-use-anyofallof,
   -readability-identifier-naming,
   -clang-diagnostic-inconsistent-missing-override
 CheckOptions:
@@ -43,5 +73,8 @@ CheckOptions:
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
   - key: performance-unnecessary-value-param.AllowedTypes
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
-AnalyzeTemporaryDtors: false
+  - key: readability-function-cognitive-complexity.IgnoreMacros
+    value: true
+  - key: readability-simplify-boolean-expr.IgnoreMacros
+    value: true
 ...

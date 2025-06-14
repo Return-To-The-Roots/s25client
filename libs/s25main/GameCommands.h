@@ -447,7 +447,7 @@ class SetInventorySetting : public Coords
 
 protected:
     SetInventorySetting(const MapPoint pt, boost_variant2<GoodType, Job> what, const InventorySetting state)
-        : Coords(GCType::SetInventorySetting, pt), what(std::move(what)), state(state)
+        : Coords(GCType::SetInventorySetting, pt), what(what), state(state)
     {}
     SetInventorySetting(Serializer& ser) : Coords(GCType::SetInventorySetting, ser)
 
@@ -806,7 +806,7 @@ class TradeOverLand : public Coords
 protected:
     /// Note: Can only trade wares or figures!
     TradeOverLand(const MapPoint pt, boost_variant2<GoodType, Job> what, const uint32_t count)
-        : Coords(GCType::Trade, pt), what(std::move(what)), count(count)
+        : Coords(GCType::Trade, pt), what(what), count(count)
     {}
     TradeOverLand(Serializer& ser) : Coords(GCType::Trade, ser)
     {

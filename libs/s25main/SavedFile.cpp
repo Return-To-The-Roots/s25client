@@ -49,7 +49,7 @@ void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
     mapName_ = mapName;
 
     // Program version
-    file.WriteRawData(&revision[0], revision.size());
+    file.WriteRawData(revision.data(), revision.size());
     s25util::time64_t tmpTime = libendian::ConvertEndianess<false>::fromNative(saveTime_);
     file.WriteRawData(&tmpTime, sizeof(tmpTime));
     file.WriteShortString(mapName);
@@ -68,7 +68,7 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
         throw std::range_error("Program signature is to long!");
     try
     {
-        file.ReadRawData(&read_signature[0], signature.size());
+        file.ReadRawData(read_signature.data(), signature.size());
 
         // Signatur überprüfen
         if(!std::equal(signature.begin(), signature.end(), read_signature.begin()))
@@ -100,7 +100,7 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
 
 bool SavedFile::ReadExtHeader(BinaryFile& file)
 {
-    file.ReadRawData(&revision[0], revision.size());
+    file.ReadRawData(revision.data(), revision.size());
     file.ReadRawData(&saveTime_, sizeof(saveTime_));
     saveTime_ = libendian::ConvertEndianess<false>::toNative(saveTime_);
     mapName_ = file.ReadShortString();
