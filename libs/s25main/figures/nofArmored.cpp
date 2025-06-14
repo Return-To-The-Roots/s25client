@@ -38,19 +38,19 @@ nofArmored::nofArmored(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 void nofArmored::DrawArmorWalking(DrawPoint drawPt)
 {
     if(HasArmor())
-        DrawArmor(drawPt, CalcFigurRelative());
+        DrawArmor(InterpolateWalkDrawPos(drawPt));
 }
 
-void nofArmored::DrawArmor(DrawPoint drawPt, DrawPoint offset)
+void nofArmored::DrawArmor(DrawPoint drawPt)
 {
     if(world->GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
     {
-        SmallFont->Draw(drawPt + DrawPoint(7, -20) + offset, "+", FontStyle::CENTER, COLOR_RED);
-        SmallFont->Draw(drawPt + DrawPoint(10, -20) + offset, "1", FontStyle::CENTER, COLOR_RED);
+        SmallFont->Draw(drawPt + DrawPoint(7, -20), "+", FontStyle::CENTER, COLOR_RED);
+        SmallFont->Draw(drawPt + DrawPoint(10, -20), "1", FontStyle::CENTER, COLOR_RED);
     }
 
     LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::DONKEY_BOAT_CARRYING_ARMOR_WARE])
-      ->DrawFull(drawPt + DrawPoint(0, -22) + offset);
+      ->DrawFull(drawPt + DrawPoint(0, -22));
 }
 
 void nofArmored::DrawArmorNotWalking(DrawPoint drawPt)
