@@ -102,7 +102,9 @@ void GlobalGameSettings::registerAllAddons()
         AddonTrade,
         AddonAutoFlags,
         AddonWine,
-        AddonLeather
+        AddonLeather,
+        AddonNoArmorDefault,
+        AddonArmorCapturedBld
     >;
     // clang-format on
     using namespace boost::mp11;

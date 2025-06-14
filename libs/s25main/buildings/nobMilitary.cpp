@@ -71,6 +71,12 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
         coinsDisabled = true;
         coinsDisabledVirtual = true;
     }
+
+    if(world->GetGGS().isEnabled(AddonId::NO_ARMOR_DEFAULT))
+    {
+        armorDisabled = true;
+        armorDisabledVirtual = true;
+    }
 }
 
 nobMilitary::~nobMilitary() = default;
@@ -1138,6 +1144,18 @@ void nobMilitary::Capture(const unsigned char new_owner)
         case 2: // disable coin order
             coinsDisabled = true;
             coinsDisabledVirtual = true;
+            break;
+    }
+
+    switch(world->GetGGS().getSelection(AddonId::ARMOR_CAPTURED_BLD))
+    {
+        case 1: // enable armor order
+            armorDisabled = false;
+            armorDisabledVirtual = false;
+            break;
+        case 2: // disable armor order
+            armorDisabled = true;
+            armorDisabledVirtual = true;
             break;
     }
 }
