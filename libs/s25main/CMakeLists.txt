@@ -59,11 +59,23 @@ target_link_libraries(s25Main PUBLIC
     s25Common
     rttrConfig
     gamedata
-    glad
     driver
     Boost::filesystem Boost::disable_autolinking
     PRIVATE BZip2::BZip2 Boost::iostreams Boost::locale Boost::nowide samplerate_cpp
 )
+if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+    target_link_libraries(s25Main PUBLIC videoSDL2 audioSDL)
+    set(USE_FLAGS "--use-port=sdl2 --use-port=sdl2_image \
+        --use-port=sdl2_mixer -sSDL2_MIXER_FORMATS=ogg \
+        -I/src/contrib/gl4es/include")
+    set_target_properties(s25Main PROPERTIES
+            COMPILE_FLAGS "${USE_FLAGS}"
+            LINK_FLAGS "${USE_FLAGS} -sFULL_ES2 -L/src/contrib/gl4es/lib/ -lgl4es"
+    )
+    add_definitions(-DRTTR_OGL_ES=0)
+else ()
+    target_link_libraries(s25Main PUBLIC glad)
+endif ()
 
 if(WIN32 OR CYGWIN)
     include(CheckIncludeFiles)

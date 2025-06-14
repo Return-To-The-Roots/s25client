@@ -11,7 +11,9 @@ class glArchivItem_Bitmap;
 class DummyRenderer : public IRenderer
 {
 public:
+#if !__EMSCRIPTEN__
     bool initOpenGL(OpenGL_Loader_Proc) override;
+#endif
     void Draw3DBorder(const Rect&, bool /*elevated*/, glArchivItem_Bitmap& /*texture*/) override {}
     void Draw3DContent(const Rect&, bool /*elevated*/, glArchivItem_Bitmap& /*texture*/, bool /*illuminated*/,
                        unsigned /*color*/) override
