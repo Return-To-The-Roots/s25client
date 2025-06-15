@@ -92,6 +92,11 @@ bool GameCommandFactory::SetCoinsAllowed(const MapPoint pt, bool enabled)
     return AddGC(new gc::SetCoinsAllowed(pt, enabled));
 }
 
+bool GameCommandFactory::SetArmorAllowed(const MapPoint pt, bool enabled)
+{
+    return AddGC(new gc::SetArmorAllowed(pt, enabled));
+}
+
 bool GameCommandFactory::SetProductionEnabled(const MapPoint pt, bool enabled)
 {
     return AddGC(new gc::SetProductionEnabled(pt, enabled));

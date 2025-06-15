@@ -9,4 +9,5 @@ void Inventory::clear()
 {
     std::fill(goods.begin(), goods.end(), 0);
     std::fill(people.begin(), people.end(), 0);
+    std::fill(armoredSoldiers.begin(), armoredSoldiers.end(), 0);
 }
