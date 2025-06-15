@@ -483,7 +483,6 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
     const unsigned oldWeakSoldierCt = attackedPlInventory.people[Job::Private];
     const unsigned oldWeakSoldierWithArmorCt =
       attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)];
-    const unsigned oldAttackerStrongSoldierCt = world.GetPlayer(curPlayer).GetInventory().people[Job::Private];
 
     // Once an attacker reaches the flag, the bld will send a defender
     BOOST_TEST_REQUIRE(!milBld1->GetDefender());
@@ -502,6 +501,7 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
     RTTR_EXEC_TILL(1000, milBld1->GetDefender()->HasArmor() == false);
     BOOST_TEST_REQUIRE(attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)]
                        == oldWeakSoldierWithArmorCt - 1);
+    BOOST_TEST_REQUIRE(attackedPlInventory.people[Job::Private] == oldWeakSoldierCt);
     BOOST_TEST_REQUIRE(milBld1->GetDefender()->GetHitpoints() == HITPOINTS[milBld1->GetDefender()->GetRank()]);
 }
 
