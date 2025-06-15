@@ -7,6 +7,7 @@
 #include "GlobalGameSettings.h"
 #include "s25util/MyTime.h"
 #include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,9 +27,9 @@ public:
     virtual uint8_t GetLatestMinorVersion() const = 0;
     virtual uint8_t GetLatestMajorVersion() const = 0;
 
-    /// Return the file format version returned from file - minor part
+    /// Return the file format version read from file - minor part
     uint8_t GetMinorVersion() const;
-    /// Return the file format version returned from file - major part
+    /// Return the file format version read from file - major part
     uint8_t GetMajorVersion() const;
 
     /// Schreibt Signatur und Version der Datei
@@ -80,6 +81,6 @@ private:
     /// Mapname
     std::string mapName_;
     std::vector<std::string> playerNames_;
-    uint8_t minorVersion_;
-    uint8_t majorVersion_;
+    std::optional<uint8_t> minorVersion_;
+    std::optional<uint8_t> majorVersion_;
 };

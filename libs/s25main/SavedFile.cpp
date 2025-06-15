@@ -24,12 +24,12 @@ SavedFile::~SavedFile() = default;
 
 uint8_t SavedFile::GetMinorVersion() const
 {
-    return minorVersion_;
+    return minorVersion_.value();
 }
 
 uint8_t SavedFile::GetMajorVersion() const
 {
-    return majorVersion_;
+    return majorVersion_.value();
 }
 
 void SavedFile::WriteFileHeader(BinaryFile& file) const
@@ -80,13 +80,16 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
         // Version überprüfen
         majorVersion_ = file.ReadUnsignedChar();
         minorVersion_ = file.ReadUnsignedChar();
-        if(majorVersion_ != GetLatestMajorVersion())
+        if(majorVersion_ != GetLatestMajorVersion() || minorVersion_ > GetLatestMinorVersion())
         {
-            boost::format fmt = boost::format(
-              (majorVersion_ < GetLatestMajorVersion()) ?
-                _("File has an old version and cannot be used (version: %1%, expected: %2%)!") :
-                _("File was created with more recent program and cannot be used (version: %1%, expected: %2%)!"));
-            lastErrorMsg = (fmt % majorVersion_ % GetLatestMajorVersion()).str();
+            boost::format fmt =
+              boost::format((majorVersion_ < GetLatestMajorVersion()) ?
+                              _("File has an old version and cannot be used (version: %1%.%2%, expected: %3%.%4%)!") :
+                              _("File was created with more recent program and cannot be used (version: %1%.%2%, "
+                                "expected: %3%.%4%)!"));
+            lastErrorMsg =
+              (fmt % majorVersion_.value() % minorVersion_.value() % GetLatestMajorVersion() % GetLatestMinorVersion())
+                .str();
             return false;
         }
     } catch(const std::runtime_error& e)

@@ -963,6 +963,7 @@ void dskGameLobby::ChangeNation(const unsigned player, const Nation nation)
 
 void dskGameLobby::ChangePortrait(const unsigned player, const unsigned portraitIndex)
 {
+    RTTR_Assert(portraitIndex < Portraits.size());
     const auto& portrait = Portraits[portraitIndex];
     auto* ctrl = GetCtrl<ctrlGroup>(ID_grpPlayerStart + player)->GetCtrl<ctrlImageButton>(ID_btPortrait);
     ctrl->SetImage(LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex));
