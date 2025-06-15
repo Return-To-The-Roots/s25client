@@ -41,6 +41,7 @@
 #include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GameConsts.h"
+#include "gameData/PortraitConsts.h"
 #include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
@@ -454,6 +455,20 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Name& msg)
     return true;
 }
 
+bool GameClient::OnGameMessage(const GameMessage_Player_Portrait& msg)
+{
+    if(state != ClientState::Config)
+        return true;
+    if(msg.player >= gameLobby->getNumPlayers())
+        return true;
+    if(msg.playerPortraitIndex >= Portraits.size())
+        return true;
+    gameLobby->getPlayer(msg.player).portraitIndex = msg.playerPortraitIndex;
+    if(ci)
+        ci->CI_PlayerDataChanged(msg.player);
+    return true;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// player joined
 /// @param message  Nachricht, welche ausgeführt wird
@@ -718,6 +733,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
     }
 
     mainPlayer.sendMsgAsync(new GameMessage_Player_Name(0xFF, SETTINGS.lobby.name));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Portrait(0xFF, SETTINGS.lobby.portraitIndex));
     mainPlayer.sendMsgAsync(new GameMessage_MapRequest(true));
 
     AdvanceState(ConnectState::QueryMapInfo);

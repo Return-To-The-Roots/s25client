@@ -34,6 +34,7 @@ Message* GameMessage::create_game(unsigned short id)
         case NMS_CANCEL_COUNTDOWN: msg = new GameMessage_CancelCountdown(); break;
         case NMS_PLAYER_ID: msg = new GameMessage_Player_Id(); break;
         case NMS_PLAYER_NAME: msg = new GameMessage_Player_Name(); break;
+        case NMS_PLAYER_PORTRAIT: msg = new GameMessage_Player_Portrait(); break;
         case NMS_PLAYER_LIST: msg = new GameMessage_Player_List(); break;
         case NMS_PLAYER_STATE: msg = new GameMessage_Player_State(); break;
         case NMS_PLAYER_NATION: msg = new GameMessage_Player_Nation(); break;
