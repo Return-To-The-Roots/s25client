@@ -838,7 +838,7 @@ void noFigure::RemoveFromInventory()
     } else
     {
         world->GetPlayer(player).DecreaseInventoryJob(job_, 1);
-        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(this);
+        auto* armoredFigure = dynamic_cast<nofArmored*>(this);
         if(armoredFigure && armoredFigure->HasArmor())
             world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(armoredFigure), 1);
     }

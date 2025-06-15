@@ -24,7 +24,6 @@ public:
     void DrawArmorWalking(DrawPoint drawPt);
     void DrawArmorNotWalking(DrawPoint drawPt);
 
-public:
     nofArmored(Job job, MapPoint pos, unsigned char player, noRoadNode* goal, bool armor = false);
     nofArmored(Job job, MapPoint pos, unsigned char player, bool armor = false);
     nofArmored(SerializedGameData& sgd, unsigned obj_id);

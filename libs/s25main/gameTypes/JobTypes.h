@@ -90,5 +90,5 @@ constexpr auto maxEnumValue(ArmoredSoldier)
     return ArmoredSoldier::General;
 }
 
-ArmoredSoldier jobEnumToAmoredSoldierEnum(const Job job);
+ArmoredSoldier jobEnumToAmoredSoldierEnum(Job job);
 ArmoredSoldier figureToAmoredSoldierEnum(const nofArmored* figure);

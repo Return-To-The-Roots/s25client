@@ -284,7 +284,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode& goal, const bool allo
     std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, goal);
     if(isSoldier(fig->GetJobType()))
     {
-        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(fig.get());
+        auto* armoredFigure = dynamic_cast<nofArmored*>(fig.get());
         RTTR_Assert(armoredFigure != nullptr);
         if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(job)] > 0)
         {
@@ -860,7 +860,7 @@ void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool in
             }
         } else if(isSoldier(figure->GetJobType()))
         {
-            nofArmored* armoredFigure = dynamic_cast<nofArmored*>(figure.get());
+            auto* armoredFigure = dynamic_cast<nofArmored*>(figure.get());
             RTTR_Assert(armoredFigure != nullptr);
 
             if(increase_visual_counts)
@@ -896,7 +896,7 @@ void nobBaseWarehouse::RemoveArmoredFigurFromVisualInventory(noFigure* figure)
 {
     if(isSoldier(figure->GetJobType()))
     {
-        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(figure);
+        auto* armoredFigure = dynamic_cast<nofArmored*>(figure);
         RTTR_Assert(armoredFigure != nullptr);
         if(armoredFigure && armoredFigure->HasArmor())
         {
@@ -910,7 +910,7 @@ void nobBaseWarehouse::AddArmoredFigurToVisualInventory(noFigure* figure)
 {
     if(isSoldier(figure->GetJobType()))
     {
-        nofArmored* armoredFigure = dynamic_cast<nofArmored*>(figure);
+        auto* armoredFigure = dynamic_cast<nofArmored*>(figure);
         RTTR_Assert(armoredFigure != nullptr);
         if(armoredFigure && armoredFigure->HasArmor())
         {

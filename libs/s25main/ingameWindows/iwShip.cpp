@@ -211,7 +211,7 @@ void iwShip::DrawCargo()
 
         if(isSoldier(figure.GetJobType()))
         {
-            auto* worker = dynamic_cast<nofSoldier const*>(&figure);
+            const auto* worker = dynamic_cast<nofSoldier const*>(&figure);
             if(worker->HasArmor())
                 armoredFigures[figureToAmoredSoldierEnum(worker)]++;
         }

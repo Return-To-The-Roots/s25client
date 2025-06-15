@@ -38,7 +38,7 @@ nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    nofArmored::Serialize(sgd);
 
     sgd.PushObject(successor, true);
     sgd.PushOptionalEnum<uint8_t>(gt);
