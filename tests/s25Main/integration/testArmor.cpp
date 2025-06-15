@@ -16,7 +16,7 @@ struct ArmoredSoldierFixture : public WorldWithGCExecution3P
     {
         for(auto i = 0; i < 3; i++)
         {
-            nobBaseWarehouse* curWh = world.GetSpecObj<nobBaseWarehouse>(world.GetPlayer(i).GetHQPos());
+            auto* curWh = world.GetSpecObj<nobBaseWarehouse>(world.GetPlayer(i).GetHQPos());
             BOOST_TEST_REQUIRE(curWh);
             Inventory newGoods;
             for(auto soldier : SOLDIER_JOBS)
