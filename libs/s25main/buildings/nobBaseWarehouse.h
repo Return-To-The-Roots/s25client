@@ -154,8 +154,10 @@ public:
     /// Gibt Anzahl der Waren bzw. Figuren zurück
     unsigned GetNumRealWares(GoodType type) const { return inventory.real[type]; }
     unsigned GetNumRealFigures(Job job) const { return inventory.real[job]; }
+    unsigned GetNumRealArmoredFigures(ArmoredSoldier job) const { return inventory.real[job]; }
     unsigned GetNumVisualWares(GoodType type) const { return inventory.visual[type]; }
     unsigned GetNumVisualFigures(Job job) const { return inventory.visual[job]; }
+    unsigned GetNumVisualArmoredFigures(ArmoredSoldier job) const { return inventory.visual[job]; }
 
     /// Gibt Ein/Auslagerungseinstellungen zurück
     InventorySetting GetInventorySettingVisual(Job job) const;
@@ -278,6 +280,10 @@ public:
 
     /// Gibt Zeiger auf dir Reserve zurück für das GUI
     const unsigned* GetReserveAvailablePointer(unsigned rank) const { return &reserve_soldiers_available[rank]; }
+    const unsigned* GetReserveArmoredAvailablePointer(unsigned rank) const
+    {
+        return &reserve_soldiers_available_with_armor[rank];
+    }
     const unsigned* GetReserveClaimedVisualPointer(unsigned rank) const
     {
         return &reserve_soldiers_claimed_visual[rank];
