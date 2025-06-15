@@ -409,8 +409,9 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
         // Does the HQ have a position?
         if(i >= hqPositions.size() || !hqPositions[i].isValid())
         {
-            LOG.write(_("Player %u does not have a valid start position!")) % i;
-            return false;
+            LOG.write(_("Player %u does not have a valid start position!\n")) % i;
+            if(!world.HasLua()) // HQ can be placed in the script, so don't signal error
+                return false;
         }
 
         BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, hqPositions[i], i,
