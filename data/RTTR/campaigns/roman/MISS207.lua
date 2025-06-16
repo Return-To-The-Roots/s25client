@@ -72,7 +72,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Rozpocznij poszukiwania wrót.\nRozważ możliwości budowy portu.',
 
         msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nKiedy dotrzemy do naszego celu?',
-        msgh99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
