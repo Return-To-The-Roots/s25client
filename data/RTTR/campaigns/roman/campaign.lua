@@ -9,7 +9,7 @@ rttr:RegisterTranslations(
     {
         name = 'Roman campaign',
         shortDescription = 'Roman campaign',
-        longDescription= 'Diary of Octavius:\n\n\nFourth Day After Shipwreck.\n\n\nYesterday all the survivors met in order to discuss\nthe situation. Because there is no prospect of\nearly rescue, we decided to settle on this foreign\nisland. The items salvaged from the ship will be a\ngreat help to us. The most important thing is to\nmake use of the raw materials on the island in order\nto establish a settlement. We urgently need\naccommodations for a woodcutter, carpenter and\nstonemason.'
+        longDescription = 'Diary of Octavius:\n\n\nFourth Day After Shipwreck.\n\n\nYesterday all the survivors met in order to discuss\nthe situation. Because there is no prospect of\nearly rescue, we decided to settle on this foreign\nisland. The items salvaged from the ship will be a\ngreat help to us. The most important thing is to\nmake use of the raw materials on the island in order\nto establish a settlement. We urgently need\naccommodations for a woodcutter, carpenter and\nstonemason.'
     },
     de =
     {

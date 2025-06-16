@@ -42,7 +42,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Vyhledej bránu. Zvaž vhodné příležitosti k vybudování přístavu.',
 
         msg99   = 'Našli jsme bránu a obsadili ji. Kdy dorazíme do cíle?',
-        msgh99   = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
+        msgh99  = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
     },
     de =
     {
@@ -52,7 +52,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Suchen Sie nach einem Tor. Achten Sie auf eventuell\nvorhandene Möglichkeiten zum Hafenbau.',
 
         msg99   = 'Wir haben das Tor gefunden und besetzt. Wann werden\nwir unser Ziel wohl erreichen?',
-        msgh99   = 'Sie haben diese Mission erfüllt. Das nächste Kapitel\nwartet auf Sie...'
+        msgh99  = 'Sie haben diese Mission erfüllt. Das nächste Kapitel\nwartet auf Sie...'
     },
     en =
     { 
@@ -72,7 +72,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Rozpocznij poszukiwania wrót.\nRozważ możliwości budowy portu.',
 
         msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nKiedy dotrzemy do naszego celu?',
-        msgh99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
