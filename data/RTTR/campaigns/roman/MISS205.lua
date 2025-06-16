@@ -83,7 +83,7 @@ rttr:RegisterTranslations(
         msg1    = 'Ostatni Dzień Piątego Roku.\n\nRzeźby skalne sugerują, że na południowym zachodzie znajduje się wyspa.\n\nWygląda na to, że są tam znaczne złoża złota.',
         msgh1   = 'Znajdź i zajmij wrota!\nSprawdź możliwości budowy portu.',
 
-        msg2    = 'Wikingowie mają osadę za dużym pasmem górskim na wschodzie naszej wyspy.\n\nZe szczytów gór można zobaczyć kolejny bardzo duży fragment lądu na północnym wschodzie.\n\nNie znaleźliśmy jeszcze żadnych śladów wrót, a jeńcy wojenni twierdzą, że nic o nich nie wiedzą... \n\nSą jednak kiepskimi kłamcami.',
+        msg2    = 'Wikingowie mają osadę za dużym pasmem górskim na wschodzie naszej wyspy.\n\nZe szczytów gór można zobaczyć kolejny bardzo duży fragment lądu na północnym wschodzie.\n\nNie znaleźliśmy jeszcze żadnych śladów wrót, a jeńcy wojenni twierdzą, że nic o nich nie wiedzą...\n\nSą jednak kiepskimi kłamcami.',
 
         msg3    = 'Zdobyliśmy mały obszar ziemi za pasmem górskim od Wikingów.\n\nWzięliśmy kolejnych jeńców, którzy powiedzieli nam, gdzie znajdują się wrota.\n\nJak już podejrzewaliśmy, znajdują się one na dalekim północnym wschodzie.\n\nPoza małym obszarem na południu tej krainy, całość jest w rękach Wikingów.\n\nMusimy szybko zbudować tam port i zdobyć świeże zapasy.',
 
