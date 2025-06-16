@@ -52,7 +52,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Suchen Sie nach einem Tor. Achten Sie auf eventuell\nvorhandene Möglichkeiten zum Hafenbau.',
 
         msg99   = 'Wir haben das Tor gefunden und besetzt. Wann werden\nwir unser Ziel wohl erreichen?',
-        msgh99   = 'Sie haben diese Mission erfüllt. Das nächste Kapitel\nwartet auf Sie...'
+        msgh99  = 'Sie haben diese Mission erfüllt. Das nächste Kapitel\nwartet auf Sie...'
     },
     en =
     { 
