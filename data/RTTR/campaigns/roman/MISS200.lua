@@ -49,7 +49,7 @@ rttr:RegisterTranslations(
         msgh3   = 'Postavte kasárna u severní hranice našeho území.',
 
         msg4    = 'Pátý den třetího měsíce.\n\n\nNaše území se rozšířilo až k horám na severu. Náš geolog tam provede terénní průzkum. Z dlouhodobého hlediska potřebujeme uhlí a stavební materiály, stejně jako zbraně a zlato. Musíme tedy najít železnou rudu, zlato, uhlí a kámen.',
-        msgh4   = 'Postavte cestu do hor a \npošlete tam našeho geologa.',
+        msgh4   = 'Postavte cestu do hor a\npošlete tam našeho geologa.',
 
         msg5    = 'Šestnáctý den šestého měsíce.\n\n\nNašli jsme železnou rudu a nyní jsme schopni vyrábět nzbraně. Poté můžeme bezpečně provést další průzkum ostrova. Nejprve musíme postavit důl na železnou rudu a slévárnu. Zbrojíř pak může začít vyrábět meče a štíty. Horníkům musíme také poskytnout jídlo, zásoby jsou téměř vyčerpané. Potřebujeme lovce a rybáře!',
         msgh5   = 'Postavte důl na železnou rudu, slévárnu a zbrojírnu.',
@@ -125,13 +125,13 @@ rttr:RegisterTranslations(
         msg16   = 'Ein seltsames Ding haben unsere Gelehrten entdeckt.\nEs sieht aus wie ein Tor. Offensichtlich waren also\ndoch bereits Menschen vor uns auf dieser Insel.\nSogar eine Inschrift in latinischen Buchstaben\nentdeckten sie auf dem Tor. Sie ist sehr seltsam und\nwidersprüchlich, vielleicht ein Rätsel: \'Consiste ut\nprocederas!\' \'Laß Dich nieder, um fortzuschreiten!\'\nWer weiß, was das bedeutet?!',
 
         msg99   = 'Zweiter Tag des dreizehnten Monats nach der Landung.\n\n\nGestern begann das zweite Jahr, und wir scheinen es\ngeschafft zu haben. Die Gelehrten berichten von\nseltsamen Aktivitäten am Tor. Es sieht so aus, als\nhabe sich ein Weg geöffnet, der uns von dieser Insel\nwegführen kann. Das scheint der Sinn des Rätsels zu\nsein: Man muß sich niederlassen und siedeln, um\nweiterzukommen. Mal sehen. Vielleicht führen ja\nwirklich alle Wege nach Rom.',
-        msgh99  = 'Sie haben diese Mission erfüllt. Das zweite Kapitel\nwartet schon auf Sie... \n\nWann immer Sie wollen, können Sie im Hauptmenü die\nnächste Mission starten.'
+        msgh99  = 'Sie haben diese Mission erfüllt. Das zweite Kapitel\nwartet schon auf Sie...\n\nWann immer Sie wollen, können Sie im Hauptmenü die\nnächste Mission starten.'
     },
     en =
     {
         Diary   = 'Diary',
 
-        msg1    = 'Diary of Octavius:\n\n\nFourth Day After Shipwreck.\n\n\nYesterday all the survivors met in order to discuss\nthe situation. Because there is no prospect of\nearly rescue, we decided to settle on this foreign\nisland. The items salvaged from the ship will be a\ngreat help to us. The most important thing is to\nmake use of the raw materials on the island in order\nto establish a settlement. We urgently need \naccommodations for a woodcutter, carpenter and \nstonemason.', 
+        msg1    = 'Diary of Octavius:\n\n\nFourth Day After Shipwreck.\n\n\nYesterday all the survivors met in order to discuss\nthe situation. Because there is no prospect of\nearly rescue, we decided to settle on this foreign\nisland. The items salvaged from the ship will be a\ngreat help to us. The most important thing is to\nmake use of the raw materials on the island in order\nto establish a settlement. We urgently need\naccommodations for a woodcutter, carpenter and\nstonemason.', 
         msgh1   = 'Build accommodations for a woodcutter, carpenter and\nstonemason.',
 
         msg2    = 'Eighth Day After Shipwreck.\n\n\nThe basic requirements for building up our\nsettlement have been met. However, the supply of\ntrees in this region will not last long. We need a\nforester to ensure a long-term supply of timber.',
@@ -171,8 +171,54 @@ rttr:RegisterTranslations(
         msg16   = 'Our geologists have discovered a strange object. It\nlooks like a gateway. We are obviously not the first\nhumans on this island. They have even found an\ninscription on the gateway in Latin. It is bizarre\nand contradictory, perhaps it is a riddle:\n\'Consiste ut procederas!\' - \'Settle down in order to make progress!\'.\nWhat can this mean?!',
 
         msg99   = 'Second Day of Thirteenth Month After Coming Ashore.\n\n\nThe second year began yesterday and we seem to have\nsucceeded in settling this island. The geologists\nreport strange goings on near the gateway. It\nappears that a path has opened up that can lead us\nfrom this island. This seems to be the meaning of\nthe riddle: we must settle in order to move on. We\nshall take a look, perhaps all roads really do lead\nto Rome.',
-        msgh99  = 'You have completed this mission. The second Chapter\nawaits you...\n\nYou can begin the next mission from the main menu\nwhenever you want.',
+        msgh99  = 'You have completed this mission. The second Chapter\nawaits you...\n\nYou can begin the next mission from the main menu\nwhenever you want.'
     },
+    pl =
+    {
+        Diary   = 'Dziennik',
+
+        msg1    = 'Dziennik Oktawiusza:\n\n\nCzwarty Dzień po rozbiciu statku.\n\n\nDnia wczorajszego, wszyscy, którzy przetrwali, zgromadzili się, aby przedyskutować naszą obecną sytuację.\n\nZ racji, iż nie mamy perspektyw na szybki ratunek, zdecydowaliśmy, że osiądziemy na tej nieznanej wyspie.\n\nRzeczy uratowane ze statku będą dla nas wielką pomocą.\n\nNajważniejsze jest, by wykorzystać surowce z wyspy w celu założenia osady.\n\nPilnie potrzebujemy usług:\ndrwala, cieśli i kamieniarza.',
+        msgh1   = 'Zbuduj kwatery dla drwala, cieśli i kamieniarza.',
+
+        msg2    = 'Ósmy Dzień po rozbiciu statku.\n\n\nPodstawy naszej osady zostały stworzone.\n\nJednak znajdujące się w tej okolicy drzewa nie wystarczą nam na długo.\n\nPotrzebujemy leśnika, który zapewni nam długotrwałe dostawy drewna.',
+        msgh2   = 'Zbuduj kwaterę dla leśnika.',
+
+        msg3    = 'Jedenasty Dzień Drugiego Miesiąca po rozbiciu statku.\n\n\nWciąż nie jesteśmy pewni, czy jesteśmy jedynymi ludźmi na tej wyspie.\n\nJako środek ostrożności powinniśmy postawić koszary\nna naszej granicy na północ od osady.',
+        msgh3   = 'Zbuduj koszary na północnej granicy swojej osady.',
+
+        msg4    = 'Piąty Dzień Trzeciego Miesiąca.\n\n\nNasze terytorium rozciągnęło się aż do gór na północy.\n\nNasz geolog przeprowadzi tam badania terenu.\n\nNa dłuższą metę potrzebujemy paliwa i materiałów budowlanych oraz broni i złotych monet.\n\nMusimy więc znaleźć rudę żelaza, złoto, węgiel i granit.',
+        msgh4   = 'Zbuduj drogę w górach i wyślij tam swojego geologa.',
+
+        msg5    = 'Szesnasty Dzień Szóstego Miesiąca.\n\n\nZnaleźliśmy rudę żelaza i teraz możemy produkować broń.\nNie będzie wtedy żadnych przeszkód dla dalszej eksploracji wyspy.\n\nNajpierw musimy zbudować kopalnię żelaza i hutę żelaza.\nKowal będzie mógł rozpocząć  produkcję mieczy i tarcz.\n\nMusimy również zapewnić górnikom jedzenie, a nasze zapasy są prawie wyczerpane.\n\nPotrzebujemy myśliwych i rybaków!',
+        msgh5   = 'Zbuduj kopalnię żelaza, hutę żelaza i kuźnię.',
+
+        msg6    = 'Ostatni Dzień Ósmego Miesiąca po przybyciu na ląd.\n\n\nNa północ od naszego nowego posterunku granicznego znajduje się otwarta, żyzna równina.\n\nTo zapewni wiele nowych możliwości rozbudowy naszej osady, ale potrzebujemy więcej żołnierzy, aby to zrobić.',
+        msgh6   = 'Idź na północną równinę i kontynuuj umacnianie granicy.',
+
+        msg7    = 'Dwunasty Dzień Dziewiątego Miesiąca.\n\n\nPo dalszej ekspansji na północ w końcu znaleźliśmy dostatecznie dużo miejsca, aby zbudować większe budynki i farmy.\n\nTeraz zamierzamy poszukiwać surowców w okolicznych górach.',
+        msgh7   = 'Rozpocznij poszukiwania nowych surowców i zabezpiecz dostawy jedzenia.\nZbadaj całą wyspę.',
+
+        msg8    = 'Nasz geolog znalazł źródło.\n\nTeraz możemy zapewnić sobie zapas świeżej wody.',
+
+        msg9    = 'Zapewniliśmy dostawy paliwa dla kuźni, znajdując węgiel w zachodnich górach.\n\nTeraz możemy bez problemów przetwarzać nasze rudy metali.\n\nWszystko idzie niezwykle dobrze.',
+
+        msg10   = 'Geolodzy odkryli złoża granitu w górach,\nco na jakiś czas zapewni zapas kamienia.',
+
+        msg11   = 'Odkryliśmy żyłę złota i możemy teraz produkować cenne monety w mennicy.\n\nŻycie staje się powoli znośne - wraz ze środkiem płatniczym, stanie się ono niemal tak wygodne jak w domu.',
+
+        msg12   = 'Wybiliśmy pierwsze złote monety i teraz możemy płacić za szkolenie naszych żołnierzy.',
+
+        msg13   = 'Budowa naszej pierwszej farmy zbożowej została zakończona.\n\nZboże można przetworzyć na mąkę w młynie lub karmić nim świnie.\n\nSytuacja z zaopatrzeniem żywności powinna się teraz poprawić.',
+
+        msg14   = 'Nasz nowy chlew zapewnia dostawy zwierząt dla rzeźnika.',
+
+        msg15   = 'Wiatrak zapewnia piekarzowi dostawy odpowiednich ilości mąki do wypieku chleba.',
+
+        msg16   = 'Nasi zwiadowcy odkryli przedziwną konstrukcję. Wygląda ona jak swego rodzaju wrota.\n\nOczywiście oznacza to, że nie jesteśmy pierwszymi ludźmi, jacy dotarli na tę wyspę.\n\nZwiadowcy znaleźli nawet łacińską inskrypcję na tych wrotach.\nJest dziwaczna i sprzeczna... A może to zagadka?\n\n\"Consiste ut procederas!\" - \"Osiadając ruszaj dalej!\"\n\nCo to może oznaczać?!',
+
+        msg99   = 'Drugi Dzień Trzynastego Miesiąca po przybyciu na ląd.\n\n\nDrugi rok rozpoczął się wczoraj i wydaje się, że pomyślnie osiedliśmy na tej wyspie.\n\nZwiadowcy zameldowali o dziwnych wydarzeniach w pobliżu wrót.\n\nWygląda na to, że otworzył się portal, który może nas wyprowadzić z tej wyspy.\n\nChyba o to chodziło w tej przedziwnej zagadce: \"aby posunąć się naprzód, trzeba nam było osiąść w miejscu.\"\n\nSprawdzimy to - być może wszystkie drogi naprawdę prowadzą do Rzymu?',
+        msgh99  = 'Ukończyłeś tę misję. Drugi Rozdział czeka na ciebie...\n\nMożesz rozpocząć następną misję z menu głównego kiedy tylko chcesz.'
+    }
 })
 
 -- format mission texts
