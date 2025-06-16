@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,7 +17,7 @@ std::range_error makeOutOfRange(unsigned value, unsigned maxValue);
 template<typename T_SavedType, typename T>
 void pushEnum(Serializer& ser, const T val)
 {
-    static_assert(std::is_same<T_SavedType, std::underlying_type_t<T>>::value,
+    static_assert(std::is_same_v<T_SavedType, std::underlying_type_t<T>>,
                   "Wrong saved type"); // Required for the popEnum method
     constexpr auto maxValue = helpers::MaxEnumValue_v<T>;
     static_assert(std::numeric_limits<T_SavedType>::max() >= maxValue, "SavedType cannot hold all enum values");

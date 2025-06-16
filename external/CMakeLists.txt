@@ -58,23 +58,25 @@ endif()
 
 option(RTTR_USE_SYSTEM_LIBSAMPLERATE "Use system installed libsamplerate. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 if(RTTR_USE_SYSTEM_LIBSAMPLERATE)
-    find_package(Samplerate 0.1.9 REQUIRED)
+    find_package(SampleRate 0.1.9 REQUIRED)
     unset(samplerate_LIB_DEPENDS CACHE)
-    add_library(samplerate INTERFACE)
-    target_link_libraries(samplerate INTERFACE Samplerate::Samplerate)
 else()
-    include(FetchContent)
-    FetchContent_Declare(
-        LibSamplerate
-        GIT_REPOSITORY https://github.com/libsndfile/libsamplerate
-        GIT_TAG        0.2.2
-    )
-    set(LIBSAMPLERATE_EXAMPLES OFF CACHE INTERNAL "")
-    set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
-    set(old_BUILD_TESTING ${BUILD_TESTING})
-    set(BUILD_TESTING OFF)
-    FetchContent_MakeAvailable(LibSamplerate)
-    set(BUILD_TESTING ${old_BUILD_TESTING})
+    find_package(SampleRate 0.1.9)
+    if(NOT SampleRate_FOUND)
+        message(STATUS "Downloading libsamplerate")
+        include(FetchContent)
+        FetchContent_Declare(
+            SampleRate
+            GIT_REPOSITORY https://github.com/libsndfile/libsamplerate
+            GIT_TAG        15c392d47e71b9395a759544b3818a1235fe1a1d # 0.2.2 with update of required CMake version
+        )
+        set(LIBSAMPLERATE_EXAMPLES OFF CACHE INTERNAL "")
+        set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
+        set(old_BUILD_TESTING ${BUILD_TESTING})
+        set(BUILD_TESTING OFF)
+        FetchContent_MakeAvailable(SampleRate)
+        set(BUILD_TESTING ${old_BUILD_TESTING})
+    endif()
 endif()
 
 # No tests for turtle

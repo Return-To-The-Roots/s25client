@@ -312,7 +312,7 @@ void dskSelectMap::CreateRandomMap()
         // create a random map and save filepath
         rttr::mapGenerator::CreateRandomMap(mapPath, rndMapSettings);
         newRandMapPath = mapPath;
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         randMapGenError = e.what();
     }

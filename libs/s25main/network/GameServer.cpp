@@ -217,7 +217,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const MapDescription& map, c
         lanAnnouncer.Start();
     else if(config.servertype == ServerType::Lobby)
     {
-        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (config.password.length() != 0), config.port);
+        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (!config.password.empty()), config.port);
         LOBBYCLIENT.AddListener(this);
     }
     AnnounceStatusChange();
@@ -733,6 +733,7 @@ void GameServer::ExecuteNWF()
 
         // Notify players
         std::vector<unsigned> checksumHashes;
+        checksumHashes.reserve(networkPlayers.size());
         for(const GameServerPlayer& player : networkPlayers)
             checksumHashes.push_back(nwfInfo.getPlayerCmds(player.playerId).checksum.getHash());
         SendToAll(GameMessage_Server_Async(checksumHashes));

@@ -2,12 +2,12 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-cmake_minimum_required(VERSION 3.9..3.25)
-if(POLICY CMP0093)
-    cmake_policy(SET CMP0093 NEW) # Use Boost_VERSION x.y.z in CMake >= 3.15 or BoostConfig
+cmake_minimum_required(VERSION 3.16..3.25)
+if(POLICY CMP0177)
+  cmake_policy(SET CMP0177 NEW)  # Normalize install() DESTINATION paths
 endif()
-if (POLICY CMP0074)
-    cmake_policy(SET CMP0074 NEW) # find_package uses <PackageName>_ROOT variables
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 OLD)  # FindBoost is removed, keep for now
 endif()
 
 if(NOT RTTR_VERSION)

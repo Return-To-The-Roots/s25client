@@ -32,9 +32,9 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
 
     Extent btSize = Extent::all(size.y);
     AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(btMinusRes, button_minus),
-                   (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")));
+                   (!button_minus_tooltip.empty() ? button_minus_tooltip : _("Less")));
     AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(btPlusRes, button_plus),
-                   (button_plus_tooltip.length() ? button_plus_tooltip : _("More")));
+                   (!button_plus_tooltip.empty() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar
     padding_.x -= 2;

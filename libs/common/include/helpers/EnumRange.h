@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -29,7 +29,7 @@ struct EnumIterTraits
 template<class T>
 struct EnumRange
 {
-    static_assert(std::is_enum<T>::value, "Must be an enum!");
+    static_assert(std::is_enum_v<T>, "Must be an enum!");
     class iterator : public EnumIterTraits<T>
     {
         unsigned value;
@@ -51,7 +51,7 @@ struct EnumRange
 template<class T>
 struct EnumRangeWithOffset
 {
-    static_assert(std::is_enum<T>::value, "Must be an enum!");
+    static_assert(std::is_enum_v<T>, "Must be an enum!");
     class iterator : public EnumIterTraits<T>
     {
         unsigned value;

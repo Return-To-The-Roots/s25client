@@ -132,10 +132,10 @@ bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, LPCONTEXT ctx) noexce
     return true;
 }
 #else
-bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, void*) noexcept
+bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, void*) noexcept(false)
 {
 #    if RTTR_BACKTRACE_HAS_FUNCTION
-    const auto num_frames = backtrace(&stacktrace[0], stacktrace.size());
+    const auto num_frames = backtrace(stacktrace.data(), stacktrace.size());
     stacktrace.resize(num_frames);
     return true;
 #    else
@@ -182,7 +182,7 @@ DebugInfo::~DebugInfo()
     sock.Close();
 }
 
-DebugInfo::stacktrace_t DebugInfo::GetStackTrace(void* ctx) noexcept
+DebugInfo::stacktrace_t DebugInfo::GetStackTrace(void* ctx) noexcept(false)
 {
 #ifndef RTTR_CONTEXT_PTR_TYPE
     using RTTR_CONTEXT_PTR_TYPE = void*;
@@ -267,7 +267,7 @@ bool DebugInfo::SendStackTrace(const stacktrace_t& stacktrace)
         endStacktrace.push_back(reinterpret_cast<littleVoid_t::value_type>(ptr));
 
     unsigned stacktraceLen = sizeof(littleVoid_t) * endStacktrace.size();
-    return SendString(reinterpret_cast<const char*>(&endStacktrace[0]), stacktraceLen);
+    return SendString(reinterpret_cast<const char*>(endStacktrace.data()), stacktraceLen);
 }
 
 bool DebugInfo::SendReplay()

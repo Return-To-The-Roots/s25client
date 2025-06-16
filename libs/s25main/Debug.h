@@ -21,7 +21,7 @@ public:
     DebugInfo();
     ~DebugInfo();
 
-    static stacktrace_t GetStackTrace(void* ctx = nullptr) noexcept;
+    static stacktrace_t GetStackTrace(void* ctx = nullptr) noexcept(false);
 
     bool Send(const void* buffer, size_t length);
     bool SendSigned(int32_t i);

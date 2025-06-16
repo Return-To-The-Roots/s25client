@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2022 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "JoinPlayerInfo.h"
 #include "RttrConfig.h"
 #include "TestServer.h"
+#include "enum_cast.hpp"
 #include "files.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
@@ -12,12 +13,16 @@
 #include "network/GameMessages.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "test/testConfig.h"
+#include "rttr/test/ConfigOverride.hpp"
 #include "rttr/test/LogAccessor.hpp"
+#include "rttr/test/TmpFolder.hpp"
 #include "rttr/test/random.hpp"
 #include "s25util/boostTestHelpers.h"
 #include "s25util/tmpFile.h"
 #include <turtle/mock.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/mpl/for_each.hpp>
+#include <boost/mpl/list.hpp>
 #include <boost/nowide/cstdio.hpp>
 #include <boost/pointer_cast.hpp>
 #include <boost/test/data/test_case.hpp>
@@ -27,6 +32,10 @@ namespace bfs = boost::filesystem;
 
 // LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(ClientState)
+static std::ostream& operator<<(std::ostream& os, const ConnectState& state)
+{
+    return os << rttr::enum_cast(state);
+}
 // LCOV_EXCL_STOP
 
 namespace {
@@ -50,17 +59,16 @@ MOCK_BASE_CLASS(MockClientInterface, ClientInterface)
 
 class CustomUserMapFolderFixture
 {
-    boost::filesystem::path oldUserData;
+    rttr::test::TmpFolder tmpFolder_;
+    rttr::test::ConfigOverride parent_;
 
 public:
-    TmpFolder tmpUserdata;
-    CustomUserMapFolderFixture() : tmpUserdata(rttr::test::rttrTestDataDirOut)
+    // We need an empty folder for each test to avoid reusing maps downloaded in previous tests
+    // which breaks expected flow of events when this map is reused.
+    CustomUserMapFolderFixture() : parent_("USERDATA", tmpFolder_)
     {
-        oldUserData = RTTRCONFIG.ExpandPath("<RTTR_USERDATA>");
-        RTTRCONFIG.overridePathMapping("USERDATA", tmpUserdata);
         bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
     }
-    ~CustomUserMapFolderFixture() { RTTRCONFIG.overridePathMapping("USERDATA", oldUserData); }
 };
 
 } // namespace
@@ -180,6 +188,48 @@ BOOST_DATA_TEST_CASE(ClientFollowsConnectProtocol, usesLuaScriptValues, usesLuaS
         clientMsgInterface.OnGameMessage(GameMessage_GGSChange());
         BOOST_TEST(client.GetMainPlayer().sendQueue.empty());
         // And done
+        BOOST_TEST_REQUIRE(client.GetState() == ClientState::Config);
+    }
+
+    // Reuse existing map (stored after previous connect)
+    {
+        mock::sequence s;
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::Initiated).once();
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::VerifyServer).once();
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QueryPw).once();
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QueryMapInfo).once();
+        // Skip ReceiveMap
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::VerifyMap).once();
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QueryServerName).once();
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QueryPlayerList).once();
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QuerySettings).once();
+        MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::Finished).once();
+
+        client.Stop();
+        BOOST_TEST_REQUIRE(client.Connect("localhost", pw, serverType, serverPort, false, false));
+        clientMsgInterface.OnGameMessage(GameMessage_Player_Id(1));
+        clientMsgInterface.OnGameMessage(GameMessage_Server_TypeOK(GameMessage_Server_TypeOK::StatusCode::Ok, ""));
+        clientMsgInterface.OnGameMessage(GameMessage_Server_Password("true"));
+        clientMsgInterface.OnGameMessage(GameMessage_Map_Info(testMapPath.filename().string(), MapType::OldMap,
+                                                              mapInfo.mapData.uncompressedLength, mapDataSize,
+                                                              mapInfo.luaData.uncompressedLength, luaDataSize));
+
+        using msg_types = boost::mpl::list<GameMessage_Server_Type, GameMessage_Server_Password,
+                                           GameMessage_Player_Name, GameMessage_MapRequest>;
+        boost::mpl::for_each<msg_types>([&client](auto arg) {
+            using msg_type = decltype(arg);
+            auto msg = client.GetMainPlayer().sendQueue.pop();
+            BOOST_TEST_REQUIRE(boost::dynamic_pointer_cast<msg_type>(std::move(msg)));
+        });
+        const auto msg = boost::dynamic_pointer_cast<GameMessage_Map_Checksum>(client.GetMainPlayer().sendQueue.pop());
+        BOOST_TEST_REQUIRE(msg);
+        BOOST_TEST(msg->mapChecksum == mapInfo.mapChecksum);
+        BOOST_TEST(msg->luaChecksum == mapInfo.luaChecksum);
+        // Remaining packets
+        clientMsgInterface.OnGameMessage(GameMessage_Map_ChecksumOK(true, false));
+        clientMsgInterface.OnGameMessage(GameMessage_Server_Name(rttr::test::randString(10)));
+        clientMsgInterface.OnGameMessage(GameMessage_Player_List(std::vector<JoinPlayerInfo>(3)));
+        clientMsgInterface.OnGameMessage(GameMessage_GGSChange());
         BOOST_TEST_REQUIRE(client.GetState() == ClientState::Config);
     }
 }

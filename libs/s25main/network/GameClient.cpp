@@ -750,7 +750,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
     try
     {
         StartGame(msg.random_init);
-    } catch(SerializedGameData::Error& error)
+    } catch(const SerializedGameData::Error& error)
     {
         LOG.write("Error when loading game: %s\n") % error.what();
         Stop();
@@ -1343,7 +1343,7 @@ void GameClient::ExecuteGameFrame()
                     replayinfo->replay.UpdateLastGF(curGF);
             }
 
-        } catch(LuaExecutionError& e)
+        } catch(const LuaExecutionError& e)
         {
             SystemChat((boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
             OnError(ClientError::InvalidMap);
@@ -1537,7 +1537,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     try
     {
         StartGame(replayinfo->replay.getSeed());
-    } catch(SerializedGameData::Error& error)
+    } catch(const SerializedGameData::Error& error)
     {
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
         OnError(ClientError::InvalidMap);
@@ -1692,7 +1692,7 @@ bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
         save.sgd.MakeSnapshot(*game);
         // Und alles speichern
         return save.Save(filepath, mapinfo.title);
-    } catch(std::exception& e)
+    } catch(const std::exception& e)
     {
         SystemChat(std::string(_("Error during saving: ")) + e.what());
         return false;
