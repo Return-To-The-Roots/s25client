@@ -42,7 +42,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Vyhledej bránu. Zvaž vhodné příležitosti k vybudování přístavu.',
 
         msg99   = 'Našli jsme bránu a obsadili ji. Kdy dorazíme do cíle?',
-        msgh99   = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
+        msgh99  = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
     },
     de =
     {
