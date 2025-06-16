@@ -28,6 +28,7 @@ A. Nota referencyjna
 --------------------------------------------------------------------------------
 
 B. Instalacja
+
   1. Windows
   
     Obsługiwane są Windows 7 i 10. Windows Vista lub starsze mogą działać,
