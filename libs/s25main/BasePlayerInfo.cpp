@@ -4,6 +4,7 @@
 
 #include "BasePlayerInfo.h"
 #include "helpers/serializeEnums.h"
+#include "gameData/PortraitConsts.h"
 #include "s25util/colors.h"
 
 BasePlayerInfo::BasePlayerInfo()
@@ -23,6 +24,10 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, int serializedVersion, bool ligh
     {
         name = ser.PopLongString();
         portraitIndex = (serializedVersion >= 1) ? ser.PopUnsignedInt() : 0;
+        if(portraitIndex >= Portraits.size())
+        {
+            portraitIndex = 0;
+        }
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
         team = helpers::popEnum<Team>(ser);
