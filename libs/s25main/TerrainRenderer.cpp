@@ -20,7 +20,12 @@
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "s25util/Log.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <boost/pointer_cast.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
