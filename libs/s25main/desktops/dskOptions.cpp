@@ -12,6 +12,7 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlGroup.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlProgress.h"
 #include "driver/VideoDriver.h"
@@ -28,6 +29,7 @@
 #include "ingameWindows/iwTextfile.h"
 #include "languages.h"
 #include "ogl/FontStyle.h"
+#include "gameData/PortraitConsts.h"
 #include "s25util/StringConversion.h"
 #include "s25util/colors.h"
 #include <mygettext/mygettext.h>
@@ -94,6 +96,9 @@ enum
     ID_grpEffects,
     ID_pgEffectsVol,
     ID_btMusicPlayer,
+    ID_txtCommonPortrait,
+    ID_btCommonPortrait,
+    ID_cbCommonPortrait,
 };
 // Use these as IDs in dedicated groups
 constexpr auto ID_btOn = 1;
@@ -164,6 +169,27 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlEdit* name =
       groupAllgemein->AddEdit(ID_edtName, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
     name->SetText(SETTINGS.lobby.name);
+    curPos.y += 30;
+
+    const auto& currentPortrait = Portraits[SETTINGS.lobby.portraitIndex];
+    groupAllgemein->AddImageButton(ID_btCommonPortrait, DrawPoint(500, curPos.y - 5), Extent(40, 54),
+                                   TextureColor::Grey,
+                                   LOADER.GetImageN(currentPortrait.resourceId, currentPortrait.resourceIndex));
+
+    groupAllgemein->AddText(ID_txtCommonPortrait, DrawPoint(80, curPos.y), _("Portrait:"), COLOR_YELLOW, FontStyle{},
+                            NormalFont);
+    combo = groupAllgemein->AddComboBox(ID_cbCommonPortrait, DrawPoint(280, curPos.y - 5), Extent(190, 20),
+                                        TextureColor::Grey, NormalFont, 100);
+
+    for(unsigned i = 0; i < Portraits.size(); ++i)
+    {
+        combo->AddString(_(Portraits[i].name));
+        if(SETTINGS.lobby.portraitIndex == i)
+        {
+            combo->SetSelection(i);
+        }
+    }
+
     curPos.y += 30;
 
     groupAllgemein->AddText(ID_txtLanguage, curPos, _("Language:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -469,6 +495,10 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
 
     switch(ctrl_id)
     {
+        case ID_cbCommonPortrait:
+            SETTINGS.lobby.portraitIndex = selection;
+            updatePortraitControls();
+            break;
         case ID_cbLanguage:
         {
             // Language changed?
@@ -645,6 +675,10 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsign
     switch(ctrl_id)
     {
         default: break;
+        case ID_btCommonPortrait:
+            SETTINGS.lobby.portraitIndex = (SETTINGS.lobby.portraitIndex + 1) % Portraits.size();
+            updatePortraitControls();
+            break;
         case ID_btMusicPlayer: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>()); break;
         case ID_btKeyboardLayout:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
@@ -763,4 +797,17 @@ void dskOptions::scrollGuiScale(bool up)
         SETTINGS.video.guiScale = guiScales_[newSelection];
         VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
     }
+}
+
+void dskOptions::updatePortraitControls()
+{
+    const auto& newPortrait = Portraits[SETTINGS.lobby.portraitIndex];
+    auto* groupCommon = GetCtrl<ctrlGroup>(ID_grpGeneral);
+
+    auto* portraitButton = groupCommon->GetCtrl<ctrlImageButton>(ID_btCommonPortrait);
+    auto* newPortraitTexture = LOADER.GetTextureN(newPortrait.resourceId, newPortrait.resourceIndex);
+    portraitButton->SetImage(newPortraitTexture);
+
+    auto* portraitCombo = groupCommon->GetCtrl<ctrlComboBox>(ID_cbCommonPortrait);
+    portraitCombo->SetSelection(SETTINGS.lobby.portraitIndex);
 }

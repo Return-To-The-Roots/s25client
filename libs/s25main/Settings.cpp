@@ -11,6 +11,7 @@
 #include "files.h"
 #include "helpers/strUtils.h"
 #include "languages.h"
+#include "gameData/PortraitConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
@@ -122,6 +123,7 @@ void Settings::LoadDefaults()
     // {
 
     lobby.name = System::getUserName();
+    lobby.portraitIndex = 0;
     lobby.password.clear();
     lobby.save_password = false;
     // }
@@ -262,12 +264,18 @@ void Settings::Load()
         // lobby
         // {
         lobby.name = iniLobby->getValue("name");
+        lobby.portraitIndex = iniLobby->getIntValue("portrait_index");
         lobby.password = iniLobby->getValue("password");
         lobby.save_password = iniLobby->getBoolValue("save_password");
         // }
 
         if(lobby.name.empty())
             lobby.name = System::getUserName();
+
+        if(lobby.portraitIndex >= Portraits.size())
+        {
+            lobby.portraitIndex = 0;
+        }
 
         // server
         // {
@@ -442,6 +450,7 @@ void Settings::Save()
     // lobby
     // {
     iniLobby->setValue("name", lobby.name);
+    iniLobby->setValue("portrait_index", lobby.portraitIndex);
     iniLobby->setValue("password", lobby.password);
     iniLobby->setValue("save_password", lobby.save_password);
     // }

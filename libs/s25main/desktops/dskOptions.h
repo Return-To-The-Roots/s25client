@@ -38,4 +38,5 @@ private:
     std::size_t recommendedGuiScaleIndex_; ///< Index of the recommended GUI scale percentage
 
     void loadVideoModes();
+    void updatePortraitControls();
 };

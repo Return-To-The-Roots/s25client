@@ -30,4 +30,5 @@ public:
     void Close();
     void SetAI(unsigned level);
     void SetName(const std::string& name);
+    void SetPortrait(unsigned int portraitIndex);
 };
