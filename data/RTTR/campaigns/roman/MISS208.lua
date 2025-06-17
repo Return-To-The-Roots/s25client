@@ -42,7 +42,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Najdi a obsaďt bránu! Zvaž vhodné příležitosti k vybudování přístavu.',
 
         msg99   = 'Našli jsme bránu a obsadili ji. Nezůstávejme tady déle, než je nezbytně nutné.',
-        msg99   = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
+        msgh99   = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
     },
     de =
     {
@@ -62,7 +62,17 @@ rttr:RegisterTranslations(
         msgh1   = 'Find and occupy the gateway! Consider opportunities\nto build a harbor.',
 
         msg99   = 'We have found the gateway and occupied it. Let us\nremain here no longer than is necessary.',
-        msg99   = 'You have completed this mission. The next Chapter\nawaits you...'
+        msgh99   = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+    pl =
+    {
+        Diary   = 'Dziennik',
+
+        msg1    = 'Znowu znajdujemy się w świecie, który składa się głównie z popiołów i lawy.\n\nAtmosfera niesie ze sobą zgniły i drażniący zapach siarki.\n\nWszystko to pochodzi z pobliskiego wulkanu, który wyrzuca swoje ohydne treści na powierzchnię ziemi.\n\nMoi ludzie nalegają, abyśmy jak najszybciej stąd odeszli - mogę jedynie mieć nadzieję, że bogowie poprowadzą nasze kroki.',
+        msgh1   = 'Znajdź i zajmij wrota!\nRozważ możliwości budowy portu.',
+
+        msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nNie pozostawajmy tu dłużej niż to konieczne.',
+        msgh99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 

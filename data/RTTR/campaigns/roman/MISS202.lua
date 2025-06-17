@@ -60,7 +60,7 @@ rttr:RegisterTranslations(
         msg2    = '23.Tag im 12.Monat des 3.Jahres.\n\nWir sind auf die Nubier getroffen. Sie verhalten\nsich sehr drohend, aber noch nicht offen aggressiv.\nDas wird wahrscheinlich nicht lange so bleiben. Wir\nsollten einen Spähturm bauen, um ihr Land besser\nüberwachen zu können.\n\nDie Berichte von den reichen Goldvorkommen scheinen\nzu stimmen. Ihr Häuptling stolziert in seinem\nGoldschmuck einher wie ein Pfau.',
         msgh2   = 'Suchen Sie nach dem Tor.',
 
-        msg3    = 'Erster Tag des zweiten Monats \nim 4.Jahr der Landung. \n\nDer Stamm im Norden versperrt uns den Weg zu einem\nweiteren Tor. Auch er betrachtet dieses als sein\nHeiligtum. Uns bleibt wieder nichts anderes übrig,\nals zu kämpfen.',
+        msg3    = 'Erster Tag des zweiten Monats\nim 4.Jahr der Landung.\n\nDer Stamm im Norden versperrt uns den Weg zu einem\nweiteren Tor. Auch er betrachtet dieses als sein\nHeiligtum. Uns bleibt wieder nichts anderes übrig,\nals zu kämpfen.',
         msgh3   = 'Suchen Sie nach dem Tor im Norden.',
 
         msg99   = 'Wir haben das Tor erreicht und aktiviert. Wir wissen\nnicht, wohin uns der nächste Schritt führt, aber wir\nwerden ihn gehen.',
@@ -81,6 +81,22 @@ rttr:RegisterTranslations(
 
         msg99   = 'We have reached the gateway and activated it. We\nknow not where our next step will take us, but we\nshall go on.',
         msgh99  = 'You have completed this mission.\nThe next Chapter awaits you... '
+    },
+    pl =
+    { 
+        Diary   = 'Dziennik',
+
+        msg1    = 'Siedemnasty Dzień Trzeciego Miesiąca Trzeciego Roku.\n\nPopadliśmy już w coś na kształt rutyny w przygotowywaniu nowej osady.\n\nMam nadzieję, że tym razem wszystko pójdzie jak należy.\n\nNatknęliśmy się na kolejnego rozbitka. Ostrzegł nas przed wrogimi plemionami Nubijczyków na wschodzie wyspy.\n\nW górach na wschodzie rzekomo znajdują się również bogate złoża złota. Jest tylko jeden sposób, aby sprawdzić, ile warte są te plotki.\n\nCzłowiek ten nie wiedział nic o wrotach, gdyż znał jedynie niewielką część wyspy.',
+        msgh1   = 'Przesuwaj się na wschód.',
+
+        msg2    = 'Dwudziesty Trzeci Dzień Dwunastego Miesiąca Trzeciego Roku.\n\nNawiązaliśmy kontakt z Nubijczykami.\n\nIch postawa jest wroga, ale nie otwarcie agresywne.\n\nGotowym iść o zakład, że ich zachowanie wkrótce zmieni się. Na gorsze.\n\nPowinniśmy zbudować wieżę obserwacyjną, aby móc lepiej kontrolować ich poczynania.\n\nPogłoski o bogatych złożach złota wydają się być prawdziwe.\n\nWódz Nubijczyków paraduje w swojej złotej biżuterii niczym paw.',
+        msgh2   = 'Szukaj wrót.',
+
+        msg3    = 'Pierwszy Dzień Drugiego Miesiąca Czwartego Roku od przybycia na brzeg.\n\nPlemię na północy blokuje nam drogę do kolejnych wrót.\n\nOni także pojmują ją jako swe święte miejsce.\n\nNie mamy wyboru. Będziemy walczyć.',
+        msgh3   = 'Zdobądź dostęp do wrót na północy.',
+
+        msg99   = 'Dotarliśmy do wrót i je aktywowaliśmy.\n\nNie wiemy, dokąd dotrzemy tym razem, lecz nie zamierzamy się zatrzymać.',
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
