@@ -159,11 +159,7 @@ protected:
     ChangeBuildOrder(const bool useCustomBuildOrder, const BuildOrders& data)
         : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(useCustomBuildOrder), data(data)
     {}
-    ChangeBuildOrder(Serializer& ser) : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
-    {
-        for(BuildingType& i : data)
-            i = helpers::popEnum<BuildingType>(ser);
-    }
+    ChangeBuildOrder(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
@@ -503,13 +499,7 @@ protected:
     SetAllInventorySettings(const MapPoint pt, bool isJob, std::vector<InventorySetting> states)
         : Coords(GCType::SetAllInventorySettings, pt), isJob(isJob), states(std::move(states))
     {}
-    SetAllInventorySettings(Serializer& ser) : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
-    {
-        const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
-        states.reserve(numStates);
-        for(unsigned i = 0; i < numStates; i++)
-            states.push_back(InventorySetting(ser.PopUnsignedChar()));
-    }
+    SetAllInventorySettings(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
