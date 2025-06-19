@@ -139,6 +139,32 @@ void ChangeDistribution::Execute(GameWorld& world, uint8_t playerId)
     world.GetPlayer(playerId).ChangeDistribution(data);
 }
 
+ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
+    : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
+{
+    if(ser.getDataVersion() >= 2)
+    {
+        for(BuildingType& i : data)
+            i = helpers::popEnum<BuildingType>(ser);
+    } else
+    {
+        auto countOfNotAvailableBuildingsInSaveGame = ser.getDataVersion() < 1 ? 6 : 3;
+        std::vector<BuildingType> buildOrder(data.size() - countOfNotAvailableBuildingsInSaveGame);
+
+        if(ser.getDataVersion() < 1)
+            buildOrder.insert(buildOrder.end(), {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+
+        if(ser.getDataVersion() < 2)
+            buildOrder.insert(buildOrder.end(),
+                              {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
+
+        for(size_t i = 0; i < data.size() - countOfNotAvailableBuildingsInSaveGame; i++)
+            buildOrder[i] = helpers::popEnum<BuildingType>(ser);
+
+        std::copy(buildOrder.begin(), buildOrder.end(), data.begin());
+    }
+}
+
 void ChangeBuildOrder::Execute(GameWorld& world, uint8_t playerId)
 {
     world.GetPlayer(playerId).ChangeBuildOrder(useCustomBuildOrder, data);
@@ -245,6 +271,71 @@ void SetInventorySetting::Execute(GameWorld& world, uint8_t playerId)
     auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetInventorySetting(what, state);
+}
+
+SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
+    : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
+{
+    const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
+    if(ser.getDataVersion() >= 2)
+    {
+        for(unsigned i = 0; i < numStates; i++)
+            states.push_back(InventorySetting(ser.PopUnsignedChar()));
+    } else
+    {
+        states.resize(numStates);
+        if(isJob)
+        {
+            auto skipJobs = [&](Job const& job) {
+                std::tuple<bool, InventorySetting> result = {false, InventorySetting{}};
+                if(ser.getDataVersion() < 1)
+                {
+                    // skip over wine jobs
+                    std::get<0>(result) |= wineaddon::isWineAddonJobType(job);
+                }
+
+                // skip over leather addon jobs
+                std::get<0>(result) |= leatheraddon::isLeatherAddonJobType(job);
+                return result;
+            };
+
+            size_t tgtIdx = 0;
+            for(const auto i : helpers::enumRange<Job>())
+            {
+                // skip over not stored jobs
+                const auto skipped = skipJobs(i);
+                const auto state =
+                  std::get<0>(skipped) ? std::get<1>(skipped) : InventorySetting(ser.PopUnsignedChar());
+                states[tgtIdx++] = state;
+            }
+        }
+
+        if(!isJob)
+        {
+            auto skipWares = [&](GoodType const& ware) {
+                std::tuple<bool, InventorySetting> result = {false, InventorySetting{}};
+                if(ser.getDataVersion() < 1)
+                {
+                    // skip over wine wares
+                    std::get<0>(result) |= wineaddon::isWineAddonGoodType(ware);
+                }
+
+                // skip over leather addon wares
+                std::get<0>(result) |= leatheraddon::isLeatherAddonGoodType(ware);
+                return result;
+            };
+
+            size_t tgtIdx = 0;
+            for(const auto i : helpers::enumRange<GoodType>())
+            {
+                // skip over not stored wares
+                const auto skipped = skipWares(i);
+                const auto state =
+                  std::get<0>(skipped) ? std::get<1>(skipped) : InventorySetting(ser.PopUnsignedChar());
+                states[tgtIdx++] = state;
+            }
+        }
+    }
 }
 
 void SetAllInventorySettings::Execute(GameWorld& world, uint8_t playerId)
