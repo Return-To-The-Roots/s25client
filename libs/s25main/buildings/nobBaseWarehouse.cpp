@@ -172,13 +172,13 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     empty_event = sgd.PopEvent();
     store_event = sgd.PopEvent();
 
+    reserve_soldiers_available_with_armor.fill(0);
     for(unsigned i = 0; i < 5; ++i)
     {
         reserve_soldiers_available[i] = sgd.PopUnsignedInt();
         if(sgd.GetGameDataVersion() >= 12)
-        {
             reserve_soldiers_available_with_armor[i] = sgd.PopUnsignedInt();
-        }
+
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.PopUnsignedInt();
     }
 
