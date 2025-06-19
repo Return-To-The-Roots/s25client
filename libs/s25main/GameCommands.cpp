@@ -283,17 +283,6 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
             states.push_back(InventorySetting(ser.PopUnsignedChar()));
     } else
     {
-        const unsigned wineAddonAdditionalJobs = 3;
-        const unsigned wineAddonAdditionalWares = 2;
-        const unsigned leatherAddonAdditionalJobs = 3;
-        const unsigned leatherAddonAdditionalWares = 3;
-
-        auto const additionalJobs =
-          leatherAddonAdditionalJobs + (ser.getDataVersion() < 1 ? wineAddonAdditionalJobs : 0);
-
-        auto const additionalWares =
-          leatherAddonAdditionalWares + (ser.getDataVersion() < 1 ? wineAddonAdditionalWares : 0);
-
         if(isJob)
         {
             auto skipJobs = [&](Job const& job) {
