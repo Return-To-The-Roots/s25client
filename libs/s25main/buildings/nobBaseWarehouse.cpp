@@ -1482,8 +1482,9 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
     {
         // Zuviele, dann wieder welche freigeben
         unsigned subtract = reserve_soldiers_available[rank] - reserve_soldiers_claimed_real[rank];
-        unsigned subtractArmor =
-          std::max(0u, reserve_soldiers_available_with_armor[rank] - reserve_soldiers_claimed_real[rank]);
+        unsigned subtractArmor = 0u;
+        if(reserve_soldiers_available_with_armor[rank] > reserve_soldiers_claimed_real[rank])
+            subtractArmor = reserve_soldiers_available_with_armor[rank] - reserve_soldiers_claimed_real[rank];
 
         // Bei der Reserve abziehen
         reserve_soldiers_available[rank] -= subtract;
