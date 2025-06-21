@@ -69,7 +69,7 @@ DLL_BLACKLIST=(
   GDI32.dll KERNEL32.dll msvcrt.dll OPENGL32.dll USER32.dll	ADVAPI32.dll
   IPHLPAPI.DLL ole32.dll SHELL32.dll WS2_32.dll WINMM.DLL CRYPT32.dll
   wldap32.dll IMM32.DLL OLEAUT32.dll VERSION.dll api-ms-win-core-synch-l1-2-0.dll
-  SETUPAPI.DLL
+  SETUPAPI.DLL secur32.dll
 )
 is_blacklisted_dll()
 {

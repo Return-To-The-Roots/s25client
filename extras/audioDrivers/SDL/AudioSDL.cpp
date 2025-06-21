@@ -142,7 +142,7 @@ driver::RawSoundHandle AudioSDL::LoadEffect(const std::string& filepath)
 
 driver::RawSoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::string& /*ext*/)
 {
-    SDL_RWops* rwOps = SDL_RWFromConstMem(&data[0], static_cast<int>(data.size()));
+    SDL_RWops* rwOps = SDL_RWFromConstMem(data.data(), static_cast<int>(data.size()));
     Mix_Chunk* sound = Mix_LoadWAV_RW(rwOps, true); //-V601
 
     if(sound == nullptr)

@@ -9,7 +9,7 @@
 struct GetEstimateFromPtr
 {
     template<typename T>
-    static inline unsigned GetValue(T* el)
+    static unsigned GetValue(T* el)
     {
         return el->estimate;
     }

@@ -554,14 +554,14 @@ TerritoryRegion GameWorld::CreateTerritoryRegion(const noBaseBuilding& building,
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(bldPos, 3);
     for(const nobBaseMilitary* milBld : buildings)
     {
-        if(!(reason == TerritoryChangeReason::Destroyed && milBld == &building))
+        if(reason != TerritoryChangeReason::Destroyed || milBld != &building)
             region.CalcTerritoryOfBuilding(*milBld);
     }
 
     // Baustellen von Häfen mit einschließen
     for(const noBuildingSite* bldSite : harbor_building_sites_from_sea)
     {
-        if(!(reason == TerritoryChangeReason::Destroyed && bldSite == &building))
+        if(reason != TerritoryChangeReason::Destroyed || bldSite != &building)
             region.CalcTerritoryOfBuilding(*bldSite);
     }
     CleanTerritoryRegion(region, reason, building);

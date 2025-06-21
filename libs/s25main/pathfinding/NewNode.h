@@ -24,11 +24,11 @@ struct NewNode
     unsigned prev = INVALID_PREV;
     unsigned prevEven = INVALID_PREV;
     /// Iterator auf Position in der Prioritätswarteschlange (std::set), freies Pathfinding
-    std::set<PathfindingPoint>::iterator it_p = {};
+    std::set<PathfindingPoint>::iterator it_p;
     /// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
     unsigned lastVisited = 0;
     unsigned lastVisitedEven = 0; // used for road pathfinding (for ai only for now)
-    MapPoint mapPt = {};
+    MapPoint mapPt;
 };
 
 struct FreePathNode : BinaryHeapPosMarker

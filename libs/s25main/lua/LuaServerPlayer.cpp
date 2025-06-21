@@ -28,7 +28,8 @@ void LuaServerPlayer::Register(kaguya::State& state)
                                .addFunction("SetColor", &LuaServerPlayer::SetColor)
                                .addFunction("Close", &LuaServerPlayer::Close)
                                .addFunction("SetAI", &LuaServerPlayer::SetAI)
-                               .addFunction("SetName", &LuaServerPlayer::SetName));
+                               .addFunction("SetName", &LuaServerPlayer::SetName)
+                               .addFunction("SetPortrait", &LuaServerPlayer::SetPortrait));
 }
 
 void LuaServerPlayer::SetNation(lua::SafeEnum<Nation> nat)
@@ -78,4 +79,9 @@ void LuaServerPlayer::SetAI(unsigned level)
 void LuaServerPlayer::SetName(const std::string& name)
 {
     lobbyServerController_.SetName(playerId, name);
+}
+
+void LuaServerPlayer::SetPortrait(unsigned int portraitIndex)
+{
+    lobbyServerController_.SetPortrait(playerId, portraitIndex);
 }

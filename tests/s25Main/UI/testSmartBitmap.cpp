@@ -21,7 +21,6 @@
 #include <sstream>
 
 using namespace libsiedler2;
-namespace tt = boost::test_tools;
 
 namespace libsiedler2 {
 static std::ostream& boost_test_print_type(std::ostream& os, const ColorBGRA color)

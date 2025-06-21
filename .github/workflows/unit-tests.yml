@@ -31,10 +31,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: windows-2019, generator: Visual Studio 16 2019, type: Debug,   platform: Win32}
-          - { os: windows-2019, generator: Visual Studio 16 2019, type: Debug,   platform: x64}
-          - { os: windows-2019, generator: Visual Studio 16 2019, type: Release, platform: Win32}
-          - { os: windows-2019, generator: Visual Studio 16 2019, type: Release, platform: x64}
           - { os: windows-2022, generator: Visual Studio 17 2022, type: Debug,   platform: Win32}
           - { os: windows-2022, generator: Visual Studio 17 2022, type: Debug,   platform: x64}
           - { os: windows-2022, generator: Visual Studio 17 2022, type: Release, platform: Win32}
