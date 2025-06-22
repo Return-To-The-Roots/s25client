@@ -69,6 +69,11 @@ protected:
     /// 0xFFFFFFFF
     unsigned burned_wh_id;
 
+    static const RoadSegment emulated_wanderroad;
+
+    /// Speichert letzten Animationsframes (zum Abspielen von Sounds)
+    unsigned last_id;
+
     /*
        The armor variable should be a member of nofArmored. But this is not possible due to a circular dependency
        between objects during object deserialization. If a soldier is sent to a military building from a warehouse, the
@@ -93,11 +98,6 @@ protected:
        soldier depends on the job id, which is deserialized in noFigure before the goal is deserialized.
     */
     bool armor;
-
-    static const RoadSegment emulated_wanderroad;
-
-    /// Speichert letzten Animationsframes (zum Abspielen von Sounds)
-    unsigned last_id;
 
     explicit noFigure(const noFigure&) = default;
 
