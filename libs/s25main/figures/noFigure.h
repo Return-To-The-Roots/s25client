@@ -38,6 +38,13 @@ protected:
     FigureState fs; // aktueller Status
     Job job_;       // Beruf(sart)
     unsigned char player;
+    /*
+       The armor variable should be a member of nofArmored. But this is not possible due to a circular dependency
+       between objects during object deserialization. If we have a soldier in the leave queue of a warehouse and this
+       soldier is sent to a military building, the soldier is inserted into the ordered_troops list of the military
+       building.
+    */
+    bool armor;
 
     // Straßenlaufzeug: (nur genutzt beim Laufen im Straßennetz!)
 

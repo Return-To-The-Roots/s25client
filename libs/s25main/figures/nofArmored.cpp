@@ -14,26 +14,22 @@
 #include "gameTypes/JobTypes.h"
 
 nofArmored::nofArmored(Job job, MapPoint pos, unsigned char player, noRoadNode* goal, bool armor)
-    : noFigure(job, pos, player, goal), armor(armor)
-{}
+    : noFigure(job, pos, player, goal)
+{
+    this->armor = armor;
+}
 
-nofArmored::nofArmored(Job job, MapPoint pos, unsigned char player, bool armor)
-    : noFigure(job, pos, player), armor(armor)
-{}
+nofArmored::nofArmored(Job job, MapPoint pos, unsigned char player, bool armor) : noFigure(job, pos, player)
+{
+    this->armor = armor;
+}
 
 void nofArmored::Serialize(SerializedGameData& sgd) const
 {
     noFigure::Serialize(sgd);
-    sgd.PushBool(armor);
 }
 
-nofArmored::nofArmored(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
-{
-    if(sgd.GetGameDataVersion() >= 12)
-        armor = sgd.PopBool();
-    else
-        armor = false;
-}
+nofArmored::nofArmored(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id) {}
 
 void nofArmored::DrawArmorWalking(DrawPoint drawPt)
 {
