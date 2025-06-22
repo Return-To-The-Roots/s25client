@@ -13,9 +13,6 @@ class SerializedGameData;
 class nofArmored : public noFigure
 {
 protected:
-    /// Armor
-    bool armor;
-
     explicit nofArmored(const nofArmored&) = default;
 
     void DrawArmor(DrawPoint drawPt);
