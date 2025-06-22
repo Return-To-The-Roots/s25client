@@ -283,6 +283,7 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
             states.push_back(InventorySetting(ser.PopUnsignedChar()));
     } else
     {
+        states.resize(numStates);
         if(isJob)
         {
             auto skipJobs = [&](Job const& job) {
