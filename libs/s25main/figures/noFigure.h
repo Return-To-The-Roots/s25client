@@ -74,6 +74,31 @@ protected:
     /// Speichert letzten Animationsframes (zum Abspielen von Sounds)
     unsigned last_id;
 
+    /*
+       The armor variable should be a member of nofArmored. But this is not possible due to a circular dependency
+       between objects during object deserialization. If a soldier is sent to a military building from a warehouse, the
+       soldier is inserted into the ordered_troops list of the military building. This soldier is also in the leave
+       queue of the warehouse after some time. When the game is stored in this state a circular dependency exists.
+
+       What happens during deserialization?
+
+       The warehouse is deserialized first. And therefore deserialization of the soldier in the leave queue will start.
+       The deserialization is done by going up the class hierarchy. In the top base class GameObject the new obejct is
+       inserted into the líst of already deserialized objects. But at this time the object is not yet fully constructed.
+       In the base class noFigure the goal for the soldier is deserialized. The goal is a military building and holds
+       the ordered_troops list. When this list is deserialized we try to deserialize the soldier, we are currently
+       creating, again. Because the soldier is in the líst of already deserialized objects we get back a reference to
+       this instance from the list instead of creating it new. The soldier is inserted into the ordered_troops list.
+       Because this list is a sorted list a comparator is called to do the insertion. The comparator in this case is the
+       ComparatorSoldiersByRank. This comparator uses the rank of the soldier, the objectId and the armor for
+       comparison. But at this time the armor variable in the nofArmored subclass of the soldier is not yet deserialized
+       and has a random value. This leads to wrong insertion into the sorted list. And later on to a wrong application
+       state. Because after loading, when in the game the ordered soldier reaches the building the removing from the
+       ordered_troops list will fail. This problem does not exist for the rank of the soldier. Because the rank of a
+       soldier depends on the job id, which is deserialized in noFigure before the goal is deserialized.
+    */
+    bool armor;
+
     explicit noFigure(const noFigure&) = default;
 
 private:
