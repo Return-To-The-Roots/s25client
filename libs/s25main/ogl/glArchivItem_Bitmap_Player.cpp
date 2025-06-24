@@ -111,13 +111,15 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
     colors[4].a = GetAlpha(player_color);
     colors[7] = colors[6] = colors[5] = colors[4];
 
-    glEnableClientState(GL_COLOR_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertices.data());
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
-    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
     VIDEODRIVER.BindTexture(GetTexture());
-    glDrawArrays(GL_QUADS, 0, 8);
-    glDisableClientState(GL_COLOR_ARRAY);
+
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 8; ++i) {
+        glColor4ub(colors[i].r, colors[i].g, colors[i].b, colors[i].a);
+        glTexCoord2f(texCoords[i].x, texCoords[i].y);
+        glVertex2f(vertices[i].x, vertices[i].y);
+    }
+    glEnd();
 }
 
 void glArchivItem_Bitmap_Player::FillTexture()

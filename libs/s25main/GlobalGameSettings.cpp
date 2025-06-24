@@ -16,6 +16,9 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+#if __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 GlobalGameSettings::GlobalGameSettings()
     : speed(GameSpeed::Normal), objective(GameObjective::None), startWares(StartWares::Normal), lockedTeams(false),
@@ -192,6 +195,10 @@ void GlobalGameSettings::SaveSettings() const
     SETTINGS.addons.configuration.clear();
     for(const AddonWithState& addon : addons)
         SETTINGS.addons.configuration.insert(std::make_pair(static_cast<unsigned>(addon.addon->getId()), addon.status));
+    EM_ASM(FS.syncfs(err => {
+        if (err) console.error("Failed to sync fs", err);
+        return true;
+    }));
 }
 
 /**

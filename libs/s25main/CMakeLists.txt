@@ -66,11 +66,10 @@ target_link_libraries(s25Main PUBLIC
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     target_link_libraries(s25Main PUBLIC videoSDL2 audioSDL)
     set(USE_FLAGS "--use-port=sdl2 --use-port=sdl2_image \
-        --use-port=sdl2_mixer -sSDL2_MIXER_FORMATS=ogg \
-        -I/src/contrib/gl4es/include")
+        --use-port=sdl2_mixer -sSDL2_MIXER_FORMATS=ogg")
     set_target_properties(s25Main PROPERTIES
-            COMPILE_FLAGS "${USE_FLAGS}"
-            LINK_FLAGS "${USE_FLAGS} -sFULL_ES2 -L/src/contrib/gl4es/lib/ -lgl4es"
+            COMPILE_FLAGS "${USE_FLAGS} -I/src/contrib/gl4es/include"
+            LINK_FLAGS "${USE_FLAGS}"
     )
     add_definitions(-DRTTR_OGL_ES=0)
 else ()

@@ -61,11 +61,25 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
     texCoords[0].y = texCoords[3].y = srcOrig.y;
     texCoords[1].y = texCoords[2].y = srcEndPt.y;
 
-    glVertexPointer(2, GL_FLOAT, 0, vertices.data());
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
-    VIDEODRIVER.BindTexture(GetTexture());
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
-    glDrawArrays(GL_QUADS, 0, 4);
+    if (isCursor)
+    {
+        glVertexPointer(2, GL_FLOAT, 0, vertices.data());
+        glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
+        VIDEODRIVER.BindTexture(GetTexture());
+        glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+        glDrawArrays(GL_QUADS, 0, 4);
+    }
+    else
+    {
+        VIDEODRIVER.BindTexture(GetTexture());
+        glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+        glBegin(GL_QUADS);
+            glTexCoord2f(texCoords[0].x, texCoords[0].y); glVertex2f(vertices[0].x, vertices[0].y);
+            glTexCoord2f(texCoords[1].x, texCoords[1].y); glVertex2f(vertices[1].x, vertices[1].y);
+            glTexCoord2f(texCoords[2].x, texCoords[2].y); glVertex2f(vertices[2].x, vertices[2].y);
+            glTexCoord2f(texCoords[3].x, texCoords[3].y); glVertex2f(vertices[3].x, vertices[3].y);
+        glEnd();
+    }
 }
 
 void glArchivItem_Bitmap::DrawFull(const Rect& destArea, unsigned color)
@@ -77,6 +91,14 @@ void glArchivItem_Bitmap::DrawFull(const DrawPoint& dstPos, unsigned color)
 {
     DrawFull(Rect(dstPos, GetSize()), color);
 }
+
+void glArchivItem_Bitmap::DrawCursor(const DrawPoint& dstPos)
+{
+    isCursor = true;
+    DrawFull(Rect(dstPos, GetSize()), COLOR_WHITE);
+    isCursor = false;
+}
+
 
 void glArchivItem_Bitmap::DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color)
 {

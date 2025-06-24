@@ -58,7 +58,7 @@ void WindowManager::DrawCursor()
         default: break;
     }
     if(resId)
-        LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
+        LOADER.GetImageN("resource", resId)->DrawCursor(VIDEODRIVER.GetMousePos());
 }
 
 /**

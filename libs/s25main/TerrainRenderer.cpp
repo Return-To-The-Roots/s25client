@@ -230,7 +230,11 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             break;
         case Visibility::Visible:
             // Normal sichtbar
+#if __EMSCRIPTEN__
+            GetVertex(pt).color = clr;
+#else
             GetVertex(pt).color = clr / 2.f;
+#endif
             break;
     }
 }
@@ -797,7 +801,11 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     }
 
     // Modulate2x
+#if __EMSCRIPTEN__
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#else
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+#endif
     glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
 
     // Disable alpha blending
@@ -988,50 +996,41 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     {
         if(itRoad.value().empty())
             continue;
-        Tex2C3Ver2* curVertexData = vertexData.get();
         const glArchivItem_Bitmap& texture = *roadTextures[itRoad.index()];
         PointF scaledTexSize = texture.GetSize() / PointF(texture.GetTexSize());
 
+        VIDEODRIVER.BindTexture(texture.GetTextureNoCreate());
+
+        glBegin(GL_QUADS);
         for(const auto& it : itRoad.value())
         {
-            curVertexData->tx = 0.0f;
-            curVertexData->ty = 0.0f;
-            curVertexData->r = curVertexData->g = curVertexData->b = it.color1;
-            Position tmpP = it.pos + begin_end_coords[it.dir][0];
-            curVertexData->x = GLfloat(tmpP.x);
-            curVertexData->y = GLfloat(tmpP.y);
+            const auto& coords = begin_end_coords[it.dir];
 
-            curVertexData++;
+            GLfloat r1 = it.color1;
+            GLfloat r2 = it.color2;
 
-            curVertexData->tx = 0.0f;
-            curVertexData->ty = scaledTexSize.y;
-            curVertexData->r = curVertexData->g = curVertexData->b = it.color1;
-            tmpP = it.pos + begin_end_coords[it.dir][1];
-            curVertexData->x = GLfloat(tmpP.x);
-            curVertexData->y = GLfloat(tmpP.y);
+            Position p0 = it.pos + coords[0];
+            Position p1 = it.pos + coords[1];
+            Position p2 = it.pos2 + coords[2];
+            Position p3 = it.pos2 + coords[3];
 
-            curVertexData++;
+            // Vertex 0
+            glColor3f(r1, r1, r1);
+            glTexCoord2f(0.0f, 0.0f); glVertex2f(GLfloat(p0.x), GLfloat(p0.y));
 
-            curVertexData->tx = scaledTexSize.x;
-            curVertexData->ty = scaledTexSize.y;
-            curVertexData->r = curVertexData->g = curVertexData->b = it.color2;
-            tmpP = it.pos2 + begin_end_coords[it.dir][2];
-            curVertexData->x = GLfloat(tmpP.x);
-            curVertexData->y = GLfloat(tmpP.y);
+            // Vertex 1
+            glColor3f(r1, r1, r1);
+            glTexCoord2f(0.0f, scaledTexSize.y); glVertex2f(GLfloat(p1.x), GLfloat(p1.y));
 
-            curVertexData++;
-            curVertexData->tx = scaledTexSize.x;
-            curVertexData->ty = 0.0f;
-            curVertexData->r = curVertexData->g = curVertexData->b = it.color2;
-            tmpP = it.pos2 + begin_end_coords[it.dir][3];
-            curVertexData->x = GLfloat(tmpP.x);
-            curVertexData->y = GLfloat(tmpP.y);
+            // Vertex 2
+            glColor3f(r2, r2, r2);
+            glTexCoord2f(scaledTexSize.x, scaledTexSize.y); glVertex2f(GLfloat(p2.x), GLfloat(p2.y));
 
-            curVertexData++;
+            // Vertex 3
+            glColor3f(r2, r2, r2);
+            glTexCoord2f(scaledTexSize.x, 0.0f); glVertex2f(GLfloat(p3.x), GLfloat(p3.y));
         }
-
-        VIDEODRIVER.BindTexture(texture.GetTextureNoCreate());
-        glDrawArrays(GL_QUADS, 0, itRoad.value().size() * 4);
+        glEnd();
     }
     // Note: No glDisableClientState as we did not enable it
 }
