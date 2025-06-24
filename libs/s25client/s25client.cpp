@@ -52,9 +52,6 @@
 
 #ifdef __EMSCRIPTEN__
 #    include <emscripten.h>
-EM_JS(void, main_ready, (), {
-  Module?.gameReady?.();
-});
 #endif
 
 namespace bfs = boost::filesystem;
@@ -502,7 +499,9 @@ int RunProgram(po::variables_map& options)
 
         // Hauptschleife
 #ifdef __EMSCRIPTEN__
-        main_ready();
+        EM_ASM({
+          Module?.gameReady?.();
+        });
         emscripten_set_main_loop(&mainLoop, 0, true);
 #else
         while(GAMEMANAGER.Run())
