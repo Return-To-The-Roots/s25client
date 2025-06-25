@@ -172,7 +172,8 @@ void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
         case 4:
         case 5:
         case 6:
-        case 7: // Spielerportraits
+        case 7:
+        case 8: // Spielerportraits
             activePlayers[ctrl_id - 1] = !activePlayers[ctrl_id - 1];
             break;
         case 25: // Hilfe
