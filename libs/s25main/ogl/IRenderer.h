@@ -18,7 +18,9 @@ public:
     using OpenGL_Loader_Proc = void* (*)(const char*);
 
     virtual ~IRenderer() = default;
+#if !__EMSCRIPTEN__
     virtual bool initOpenGL(OpenGL_Loader_Proc) = 0;
+#endif
     /// Synchronize the rendering pipeline. Usually not required unless measuring something
     virtual void synchronize(){};
     /// Draw a border around rect with 3D effect

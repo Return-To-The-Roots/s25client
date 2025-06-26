@@ -30,7 +30,12 @@
 #include "gameData/MapConsts.h"
 #include "s25util/error.h"
 #include "s25util/warningSuppression.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <boost/format.hpp>
 #include <cmath>
 
@@ -109,17 +114,43 @@ float GameWorldView::GetCurrentTargetZoomFactor() const
     return targetZoomFactor_;
 }
 
-struct ObjectBetweenLines
+struct ObjDraw
 {
-    noBase& obj;
-    DrawPoint pos; // Zeichenposition
+    noBase* obj;
+    DrawPoint pos;
+    ObjDraw(noBase* obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
+};
 
-    ObjectBetweenLines(noBase& obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
+struct ObjFOW
+{
+    const FOWObject* obj;
+    DrawPoint pos;
+    ObjFOW(const FOWObject* obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
+};
+
+struct ObjConstructionAid
+{
+    ITexture* obj;
+    DrawPoint pos;
+    ObjConstructionAid(ITexture* obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
+};
+
+struct ObjBS
+{
+    glSmartBitmap& obj;
+    DrawPoint pos;
+    unsigned color;
+    unsigned player_color;
+    ObjBS(glSmartBitmap& obj, const DrawPoint& pos, unsigned color, unsigned player_color) : obj(obj), pos(pos), color(color), player_color(player_color) {}
 };
 
 void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water)
 {
     SetNextZoomFactor();
+    std::vector<ObjDraw> renderQueueObjects;
+    std::vector<ObjFOW> renderQueueFOW;
+    std::vector<ObjConstructionAid> renderQueueBQ;
+    std::vector<ObjBS> renderQueueBS;
 
     const auto windowSize = VIDEODRIVER.GetWindowSize();
     const auto& guiScale = VIDEODRIVER.getGuiScale();
@@ -154,9 +185,6 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     for(int y = firstPt.y; y <= lastPt.y; ++y)
     {
-        // Figuren speichern, die in dieser Zeile gemalt werden müssen
-        // und sich zwischen zwei Zeilen befinden, da sie dazwischen laufen
-        std::vector<ObjectBetweenLines> between_lines;
 
         for(int x = firstPt.x; x <= lastPt.x; ++x)
         {
@@ -175,31 +203,72 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
             Visibility visibility = gwv.GetVisibility(curPt);
 
-            DrawBoundaryStone(curPt, curPos, visibility);
+            DrawBoundaryStone(curPt, curPos, visibility, renderQueueBS);
 
             if(visibility == Visibility::Visible)
             {
-                DrawObject(curPt, curPos);
-                DrawMovingFiguresFromBelow(terrainRenderer, Position(x, y), between_lines);
-                DrawFigures(curPt, curPos, between_lines);
+                renderQueueObjects.push_back(ObjDraw(GetWorld().GetNode(curPt).obj, curPos));
+
+                DrawMovingFiguresFromBelow(Direction::NorthEast, terrainRenderer, Position(x, y), renderQueueObjects);
+                DrawMovingFiguresFromBelow(Direction::NorthWest, terrainRenderer, Position(x, y), renderQueueObjects);
+
+                //Draw figures
+                for(noBase& figure : GetWorld().GetFigures(curPt))
+                {
+                    if(figure.IsMoving())
+                    {
+                        // Drawn from above
+                        Direction curMoveDir = static_cast<noMovable&>(figure).GetCurMoveDir();
+                        if(Direction::NorthEast == curMoveDir || curMoveDir == Direction::NorthWest)
+                            continue;
+                        // Draw later
+                        renderQueueObjects.push_back(ObjDraw(&figure, curPos));
+                    }
+                    else
+                    {
+                        // Ansonsten jetzt schon zeichnen (not now, but in different layer)
+                        renderQueueObjects.push_back(ObjDraw(&figure, curPos));
+                    }
+                }
 
                 // Construction aid mode
                 if(show_bq)
-                    DrawConstructionAid(curPt, curPos);
+                {
+                    DrawConstructionAid(curPt, curPos, renderQueueBQ);
+                }
             } else if(visibility == Visibility::FogOfWar)
             {
-                const FOWObject* fowobj = gwv.GetYoungestFOWObject(MapPoint(curPt));
-                if(fowobj)
-                    fowobj->Draw(curPos);
+                renderQueueFOW.push_back(ObjFOW(gwv.GetYoungestFOWObject(MapPoint(curPt)), curPos));
             }
 
             for(IDrawNodeCallback* callback : drawNodeCallbacks)
+            {
                 callback->onDraw(curPt, curPos);
+            }
         }
+    }
+    // just group draw calls this gives +5fps in emscripten build
+    for(auto& bs : renderQueueBS)
+    {
+        bs.obj.draw(bs.pos, bs.color, bs.player_color);
+    }
 
-        // Figuren zwischen den Zeilen zeichnen
-        for(auto& between_line : between_lines)
-            between_line.obj.Draw(between_line.pos);
+    for(auto& renderQueueObject : renderQueueObjects)
+    {
+        if (!renderQueueObject.obj) continue;
+        renderQueueObject.obj->Draw(renderQueueObject.pos);
+    }
+
+    for(auto& fow : renderQueueFOW)
+    {
+        if (!fow.obj) continue;
+        fow.obj->Draw(fow.pos);
+    }
+
+    for(auto& bq : renderQueueBQ)
+    {
+        if (!bq.obj) continue;
+        bq.obj->DrawFull(bq.pos);
     }
 
     if(show_names || show_productivity)
@@ -439,45 +508,19 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     }
 }
 
-void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
-                                std::vector<ObjectBetweenLines>& between_lines) const
+void GameWorldView::DrawMovingFiguresFromBelow(Direction dir, const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
+                                               std::vector<ObjDraw>& rq)
 {
-    for(noBase& figure : GetWorld().GetFigures(pt))
-    {
-        if(figure.IsMoving())
-        {
-            // Drawn from above
-            Direction curMoveDir = static_cast<noMovable&>(figure).GetCurMoveDir();
-            if(curMoveDir == Direction::NorthEast || curMoveDir == Direction::NorthWest)
-                continue;
-            // Draw later
-            between_lines.push_back(ObjectBetweenLines(figure, curPos));
-        } else if(figure.GetGOT() == GO_Type::Ship)
-            between_lines.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
-        else
-            // Ansonsten jetzt schon zeichnen
-            figure.Draw(curPos);
-    }
-}
+    // Get figures opposite the current dir and check if they are moving in this dir
+    // Coordinates transform
+    Position curOffset;
+    MapPoint curPt = terrainRenderer.ConvertCoords(GetNeighbour(curPos, dir + 3u), &curOffset);
+    Position figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
-void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
-                                               std::vector<ObjectBetweenLines>& between_lines)
-{
-    // First draw figures moving towards this point from below
-    static const std::array<Direction, 2> aboveDirs = {{Direction::NorthEast, Direction::NorthWest}};
-    for(Direction dir : aboveDirs)
+    for(noBase& figure : GetWorld().GetFigures(curPt))
     {
-        // Get figures opposite the current dir and check if they are moving in this dir
-        // Coordinates transform
-        Position curOffset;
-        MapPoint curPt = terrainRenderer.ConvertCoords(GetNeighbour(curPos, dir + 3u), &curOffset);
-        Position figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
-
-        for(noBase& figure : GetWorld().GetFigures(curPt))
-        {
-            if(figure.IsMoving() && static_cast<noMovable&>(figure).GetCurMoveDir() == dir)
-                between_lines.push_back(ObjectBetweenLines(figure, figPos));
-        }
+        if(figure.IsMoving() && static_cast<noMovable&>(figure).GetCurMoveDir() == dir)
+            rq.push_back(ObjDraw(&figure, figPos));
     }
 }
 
@@ -493,7 +536,7 @@ constexpr auto getBqImgs()
     return imgs;
 }
 
-void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos)
+void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjConstructionAid> &rq)
 {
     BuildingQuality bq = gwv.GetBQ(pt);
     if(bq != BuildingQuality::Nothing)
@@ -501,59 +544,59 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
         constexpr auto bqImgs = getBqImgs();
         auto* bm = LOADER.GetMapTexture(bqImgs[bq]);
         // Draw building quality icon
-        bm->DrawFull(curPos);
+        //bm->DrawFull(curPos);
+        rq.push_back(ObjConstructionAid(bm, curPos));
         // Show ability to construct military buildings
         if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
             if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId())
-               && (bq == BuildingQuality::Hut || bq == BuildingQuality::House || bq == BuildingQuality::Castle
+               && (bq == BuildingQuality::Hut
+                   || bq == BuildingQuality::House
+                   || bq == BuildingQuality::Castle
                    || bq == BuildingQuality::Harbor))
-                LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->GetSize().y + 5));
+            {
+                //LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->GetSize().y + 5));
+                rq.push_back(ObjConstructionAid(LOADER.GetImageN("map_new", 20000), curPos - DrawPoint(-1, bm->GetSize().y + 5)));
+            }
         }
     }
 }
 
-void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos) const
+void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis, std::vector<ObjBS>& rq)
 {
-    noBase* obj = GetWorld().GetNode(pt).obj;
-    if(!obj)
-        return;
-
-    obj->Draw(curPos);
-}
-
-void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
-{
-    if(vis == Visibility::Invisible)
-        return;
+    if(vis == Visibility::Invisible) return;
 
     const bool isFoW = vis == Visibility::FogOfWar;
 
-    const BoundaryStones& boundary_stones =
-      isFoW ? gwv.GetYoungestFOWNode(pt).boundary_stones : GetWorld().GetNode(pt).boundary_stones;
+    const BoundaryStones& boundary_stones = isFoW
+        ? gwv.GetYoungestFOWNode(pt).boundary_stones
+        : GetWorld().GetNode(pt).boundary_stones;
     const unsigned char owner = boundary_stones[BorderStonePos::OnPoint];
 
-    if(!owner)
-        return;
+    if(!owner) return;
 
     const Nation nation = GetWorld().GetPlayer(owner - 1).nation;
     unsigned player_color = GetWorld().GetPlayer(owner - 1).color;
     if(isFoW)
+    {
         player_color = CalcPlayerFOWDrawColor(player_color);
+    }
 
     const auto curVertexPos = gwv.GetTerrainRenderer().GetVertexPos(pt);
     for(const auto bPos : helpers::EnumRange<BorderStonePos>{})
     {
         DrawPoint curPos;
         if(bPos == BorderStonePos::OnPoint)
+        {
             curPos = pos;
+        }
         else if(boundary_stones[bPos])
-            curPos = pos
-                     - DrawPoint((curVertexPos - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, toDirection(bPos)))
-                                 / 2.0f);
-        else
-            continue;
-        LOADER.boundary_stone_cache[nation].draw(curPos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
+        {
+            curPos = pos - DrawPoint((curVertexPos - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, toDirection(bPos))) / 2.0f);
+        }
+        else continue;
+        rq.push_back(ObjBS(LOADER.boundary_stone_cache[nation], curPos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color));
+        //LOADER.boundary_stone_cache[nation].draw(curPos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
     }
 }
 

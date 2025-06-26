@@ -7,6 +7,9 @@
 #include "s25util/BinaryFile.h"
 #include <boost/filesystem/operations.hpp>
 #include <boost/nowide/fstream.hpp>
+#if __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 std::string Savegame::GetSignature() const
 {
@@ -46,7 +49,9 @@ bool Savegame::Save(BinaryFile& file, const std::string& mapName)
     WritePlayerData(file);
     WriteGGS(file);
     WriteGameData(file);
-
+#if __EMSCRIPTEN__
+    EM_ASM(Module.requireSync?.());
+#endif
     return true;
 }
 

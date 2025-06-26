@@ -86,7 +86,7 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
                  Extent(secondColumnExtentX, mutlilineExtentY), TextureColor::Grey, NormalFont);
 
     AddTextButton(ID_btBack, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(ID_Next, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont);
+    AddTextButton(ID_Next, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont)->SetEnabled(false);
 
     showCampaignInfo(false);
 

@@ -8,7 +8,12 @@
 #include "ogl/glTexturePackerNode.h"
 #include "ogl/saveBitmap.h"
 #include "libsiedler2/PixelBufferBGRA.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <algorithm>
 #include <memory>
 #include <utility>

@@ -29,7 +29,7 @@ void FreeAudioInstance(driver::IAudioDriver* driver)
     delete driver;
 }
 
-const char* GetDriverName()
+const char* GetAudioDriverName()
 {
     return "(SDL2) Audio via SDL2_mixer-Library";
 }
@@ -62,7 +62,7 @@ AudioSDL::~AudioSDL()
  */
 const char* AudioSDL::GetName() const
 {
-    return GetDriverName();
+    return GetAudioDriverName();
 }
 
 static AudioSDL* currentInstance = nullptr;

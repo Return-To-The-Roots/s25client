@@ -20,6 +20,9 @@
 #include "gameData/const_gui_ids.h"
 #include "s25util/Log.h"
 #include <boost/filesystem.hpp>
+#if __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 namespace bfs = boost::filesystem;
 
@@ -223,4 +226,7 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
             PopulateTable();
         }
     }
+#if __EMSCRIPTEN__
+    EM_ASM(Module.requireSync?.());
+#endif
 }

@@ -11,7 +11,12 @@
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/PixelBufferBGRA.h"
 #include "s25util/colors.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <cmath>
 #include <limits>
 
@@ -327,11 +332,11 @@ void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFF
     } else
         numQuads = 4;
 
-    glEnableClientState(GL_COLOR_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertices.data());
-    glTexCoordPointer(2, GL_FLOAT, 0, curTexCoords.data());
-    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
     VIDEODRIVER.BindTexture(texture);
-    glDrawArrays(GL_QUADS, 0, numQuads);
-    glDisableClientState(GL_COLOR_ARRAY);
+    glBegin(GL_QUADS);
+    for(int i = 0; i < numQuads; ++i) {
+        glColor4ub(colors[i].r, colors[i].g, colors[i].b, colors[i].a);
+        glTexCoord2f(curTexCoords[i].x, curTexCoords[i].y); glVertex2f(vertices[i].x, vertices[i].y);
+    }
+    glEnd();
 }
