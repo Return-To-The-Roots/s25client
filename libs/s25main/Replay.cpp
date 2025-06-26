@@ -12,6 +12,9 @@
 #include <boost/filesystem.hpp>
 #include <memory>
 #include <mygettext/mygettext.h>
+#if __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 std::string Replay::GetSignature() const
 {
@@ -107,7 +110,13 @@ bool Replay::StopRecording()
         // All done. Replace uncompressed replay
         compressedReplay.Close();
         file.Close();
+#if __EMSCRIPTEN__ // prevent replay rename fault with link external fs exception
+        boost::filesystem::copy_file(tmpReplayFile.filePath, filepath_, boost::filesystem::copy_options::overwrite_existing);
+        boost::filesystem::remove(tmpReplayFile.filePath);
+        EM_ASM(Module.requireSync?.());
+#elif
         boost::filesystem::rename(tmpReplayFile.filePath, filepath_);
+#endif
         return true;
     } catch(const std::exception& e)
     {

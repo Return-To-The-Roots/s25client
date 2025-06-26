@@ -49,12 +49,9 @@ bool Savegame::Save(BinaryFile& file, const std::string& mapName)
     WritePlayerData(file);
     WriteGGS(file);
     WriteGameData(file);
-
-    EM_ASM(FS.syncfs(err => {
-        if (err) console.error("Failed to sync fs", err);
-        return true;
-    }));
-
+#if __EMSCRIPTEN__
+    EM_ASM(Module.requireSync?.());
+#endif
     return true;
 }
 

@@ -39,6 +39,7 @@ dskMainMenu::dskMainMenu()
     // "Einzelspieler"
     AddTextButton(ID_btSingleplayer, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Singleplayer"),
                   NormalFont);
+
 #if !__EMSCRIPTEN__ // again requires emscripten libwebsocket patching and dedicated websocket <-> tcp/udp proxy server
     // "Mehrspieler"
     AddTextButton(ID_btMultiplayer, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Multiplayer"),
