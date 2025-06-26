@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -33,6 +33,10 @@ public:
     /// Get message by index or nullptr if invalid index
     /// Oldest message is at index 0
     const PostMsg* GetMsg(unsigned idx) const;
+    /// Set the currently/last opened message
+    void SetCurrentMsg(int idx) { currMsgIdx = idx; }
+    /// Get the currently/last opened message
+    const PostMsg* GetCurrentMsg() const;
     /// Set callback that receives new message and message count everytime a message is added
     void ObserveNewMsg(const NewMsgCallback& callback) { evNewMsg = callback; }
     /// Set callback that receives new message count everytime a message is deleted
@@ -47,6 +51,7 @@ private:
     bool DeleteMsg(unsigned idx, bool notify);
     std::array<std::unique_ptr<const PostMsg>, MAX_MESSAGES> messages;
     unsigned numMessages = 0;
+    int currMsgIdx = -1;
     /// Current mission goal. Shown as a special message
     std::string currentMissionGoal;
     NewMsgCallback evNewMsg;
