@@ -26,6 +26,7 @@
 // 00E Jonathan
 // 00F Jarno
 // 010 aztimh
+// 011 kubaau
 
 // Do not forget to add your Addon to GlobalGameSettings::registerAllAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -74,7 +75,9 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
 
                  AUTOFLAGS = 0x00F00000,
 
-                 WINE = 0x01000000)
+                 WINE = 0x01000000,
+
+                 CATAPULTS_ATTACK_ALLIES = 0x01100000)
 //-V:AddonId:801
 
 enum class AddonGroup : unsigned

@@ -125,7 +125,7 @@ public:
     /// gibt setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
     void NewEnemyMilitaryBuilding(FrontierDistance distance);
     bool IsUseless() const;
-    bool IsAttackable(unsigned playerIdx) const override;
+    bool CanBeAttackedBy(unsigned playerIdx) const override;
     /// Gibt Distanz zurück
     FrontierDistance GetFrontierDistance() const { return frontier_distance; }
 

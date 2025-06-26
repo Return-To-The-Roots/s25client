@@ -121,7 +121,7 @@ public:
     bool IsUnderAttack() const { return !aggressors.empty(); };
 
     /// Return whether this building can be attacked by the given player.
-    virtual bool IsAttackable(unsigned playerIdx) const;
+    virtual bool CanBeAttackedBy(unsigned playerIdx) const;
 
     /// Debugging
     bool IsAggressor(const nofAttacker& attacker) const;
