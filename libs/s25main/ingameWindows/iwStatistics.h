@@ -6,27 +6,30 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/StatisticTypes.h"
+#include <array>
 
 class ctrlText;
 class GameWorldViewer;
 class GamePlayer;
 
-/// Fenster mit den Statistiken.
+/// Window showing player statistics
 class iwStatistics : public IngameWindow
 {
 public:
     iwStatistics(const GameWorldViewer& gwv);
     ~iwStatistics() override;
 
+    static constexpr auto MAX_TIME_LABELS = 7;
+
 private:
     const GameWorldViewer& gwv;
     StatisticType currentView;
     StatisticTime currentTime;
     ctrlText* headline;
-    ctrlText* maxValue;
-    ctrlText* minValue;
-    std::vector<ctrlText*> timeAnnotations;
-    std::vector<bool> activePlayers;
+    ctrlText* txtMaxValueY;
+    ctrlText* txtMinValueY;
+    std::array<ctrlText*, MAX_TIME_LABELS> timeAnnotations;
+    std::vector<bool> showStatistic;
     unsigned numPlayingPlayers;
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
