@@ -36,30 +36,29 @@ std::string getPlayerStatus(const GamePlayer& player)
 
 enum Controls
 {
-    ID_STATISTIC_FIELD = 1,
-    ID_STATISTIC_TYPE_BUTTON_GROUP = 2,
-    ID_STATISTIC_SIZE_OF_COUNTRY = 3,
-    ID_STATISTIC_BUILDINGS = 4,
-    ID_STATISTIC_INHABITANTS = 5,
-    ID_STATISTIC_MERCHANDISE = 6,
-    ID_STATISTIC_MILITARY_STRENGTH = 7,
-    ID_STATISTIC_GOLD = 8,
-    ID_STATISTIC_PRODUCTIVITY = 9,
-    ID_STATISTIC_KILLED_ENEMIES = 10,
-    ID_TIME_BUTTON_GROUP = 11,
-    ID_TIME_15_MINUTES = 12,
-    ID_TIME_1_HOUR = 13,
-    ID_TIME_4_HOURS = 14,
-    ID_TIME_16_HOURS = 15,
-    ID_HEADLINE_FOR_STATISTIC = 16,
-    ID_MAX_Y_VALUE = 17,
-    ID_MIN_Y_VALUE = 18,
-    ID_HELP_BUTTON = 19,
-    ID_FIRST_X_AXIS_VALUE = 20,
-    ID_LAST_X_AXIS_VALUE = 26,
-    // Add only id's before this entry and increase the id here accordingly
-    // Because the number of portrait id's depends on the number of players
-    ID_FIRST_PLAYER_PORTRAIT = 27,
+    ID_imgStatistic,
+    ID_grpStatType,
+    ID_btTypeSize,
+    ID_btTypeBuildings,
+    ID_btTypeInhabitants,
+    ID_btTypeMerchandise,
+    ID_btTypeMilitary,
+    ID_btTypeGold,
+    ID_btTypeProductivity,
+    ID_btTypeVanquishedEnemies,
+    ID_grpTime,
+    ID_time15m,
+    ID_time1h,
+    ID_time4h,
+    ID_time16h,
+    ID_txtHeader,
+    ID_txtMaxY,
+    ID_txtMinY,
+    ID_btHelp,
+    ID_txtXAxisValuesStart,
+    ID_txtXAxisValuesEnd,
+    // Add IDs only before this entry because the number of portrait IDs depends on the number of players
+    ID_btPlayer_Start,
 };
 
 } // namespace
@@ -93,7 +92,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
         RTTR_Assert(curPlayer.portraitIndex < Portraits.size());
         const auto& portrait = Portraits[curPlayer.portraitIndex];
-        AddImageButton(ID_FIRST_PLAYER_PORTRAIT + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47),
+        AddImageButton(ID_btPlayer_Start + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47),
                        TextureColor::Green1, LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex),
                        curPlayer.name)
           ->SetBorder(false);
@@ -111,14 +110,14 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
             {
                 const bool visible = gwv.GetPlayer().IsAlly(i);
                 activePlayers[i] = visible;
-                GetCtrl<ctrlButton>(ID_FIRST_PLAYER_PORTRAIT + i)->SetEnabled(visible);
+                GetCtrl<ctrlButton>(ID_btPlayer_Start + i)->SetEnabled(visible);
             }
             break;
             case 2: // Nur man selber
             {
                 const bool visible = (gwv.GetPlayerId() == i);
                 activePlayers[i] = visible;
-                GetCtrl<ctrlButton>(ID_FIRST_PLAYER_PORTRAIT + i)->SetEnabled(visible);
+                GetCtrl<ctrlButton>(ID_btPlayer_Start + i)->SetEnabled(visible);
             }
             break;
         }
@@ -127,69 +126,68 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     }
 
     // Statistikfeld
-    AddImage(ID_STATISTIC_FIELD, DrawPoint(11 + 115, 84 + 81), LOADER.GetImageN("io", 228));
+    AddImage(ID_imgStatistic, DrawPoint(11 + 115, 84 + 81), LOADER.GetImageN("io", 228));
 
     // Die Buttons zum Wechseln der Statistiken
-    ctrlOptionGroup* statChanger = AddOptionGroup(ID_STATISTIC_TYPE_BUTTON_GROUP, GroupSelectType::Illuminate);
-    statChanger->AddImageButton(ID_STATISTIC_SIZE_OF_COUNTRY, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey,
+    ctrlOptionGroup* statChanger = AddOptionGroup(ID_grpStatType, GroupSelectType::Illuminate);
+    statChanger->AddImageButton(ID_btTypeSize, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 167), _("Size of country"));
-    statChanger->AddImageButton(ID_STATISTIC_BUILDINGS, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeBuildings, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 168), _("Buildings"));
-    statChanger->AddImageButton(ID_STATISTIC_INHABITANTS, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeInhabitants, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 169), _("Inhabitants"));
-    statChanger->AddImageButton(ID_STATISTIC_MERCHANDISE, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeMerchandise, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 170), _("Merchandise"));
-    statChanger->AddImageButton(ID_STATISTIC_MILITARY_STRENGTH, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeMilitary, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 171), _("Military strength"));
-    statChanger->AddImageButton(ID_STATISTIC_GOLD, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeGold, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 172), _("Gold"));
-    statChanger->AddImageButton(ID_STATISTIC_PRODUCTIVITY, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeProductivity, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 173), _("Productivity"));
-    statChanger->AddImageButton(ID_STATISTIC_KILLED_ENEMIES, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeVanquishedEnemies, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 217), _("Vanquished enemies"));
 
     // Zeit-Buttons
-    ctrlOptionGroup* timeChanger = AddOptionGroup(ID_TIME_BUTTON_GROUP, GroupSelectType::Illuminate);
-    timeChanger->AddTextButton(ID_TIME_15_MINUTES, DrawPoint(51, 288), Extent(43, 28), TextureColor::Grey, _("15 m"),
+    ctrlOptionGroup* timeChanger = AddOptionGroup(ID_grpTime, GroupSelectType::Illuminate);
+    timeChanger->AddTextButton(ID_time15m, DrawPoint(51, 288), Extent(43, 28), TextureColor::Grey, _("15 m"),
                                NormalFont);
-    timeChanger->AddTextButton(ID_TIME_1_HOUR, DrawPoint(96, 288), Extent(43, 28), TextureColor::Grey, _("1 h"),
+    timeChanger->AddTextButton(ID_time1h, DrawPoint(96, 288), Extent(43, 28), TextureColor::Grey, _("1 h"), NormalFont);
+    timeChanger->AddTextButton(ID_time4h, DrawPoint(141, 288), Extent(43, 28), TextureColor::Grey, _("4 h"),
                                NormalFont);
-    timeChanger->AddTextButton(ID_TIME_4_HOURS, DrawPoint(141, 288), Extent(43, 28), TextureColor::Grey, _("4 h"),
-                               NormalFont);
-    timeChanger->AddTextButton(ID_TIME_16_HOURS, DrawPoint(186, 288), Extent(43, 28), TextureColor::Grey, _("16 h"),
+    timeChanger->AddTextButton(ID_time16h, DrawPoint(186, 288), Extent(43, 28), TextureColor::Grey, _("16 h"),
                                NormalFont);
 
     // Hilfe-Button
-    AddImageButton(ID_HELP_BUTTON, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
+    AddImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
                    _("Help"));
 
     // Aktuelle Überschrift über der Statistik
-    headline = AddText(ID_HEADLINE_FOR_STATISTIC, DrawPoint(130, 120), _("Size of country"),
-                       MakeColor(255, 136, 96, 52), FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE,
+    headline = AddText(ID_txtHeader, DrawPoint(130, 120), _("Size of country"), MakeColor(255, 136, 96, 52),
+                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE,
                        NormalFont); // qx: fix for bug #1106952
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(ID_MAX_Y_VALUE, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
+    maxValue = AddText(ID_txtMaxY, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
                        FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Aktueller Minimalwert an der y-Achse
-    minValue = AddText(ID_MIN_Y_VALUE, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52),
+    minValue = AddText(ID_txtMinY, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52),
                        FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Zeit-Werte an der x-Achse
-    auto const timeAnnotationLabelCount = ID_LAST_X_AXIS_VALUE - ID_FIRST_X_AXIS_VALUE + 1;
+    auto const timeAnnotationLabelCount = ID_txtXAxisValuesEnd - ID_txtXAxisValuesStart + 1;
     timeAnnotations = std::vector<ctrlText*>(timeAnnotationLabelCount); // TODO nach oben
     for(unsigned i = 0; i < timeAnnotationLabelCount; ++i)
     {
         timeAnnotations[i] =
-          AddText(ID_FIRST_X_AXIS_VALUE + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
+          AddText(ID_txtXAxisValuesStart + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
                   FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
     // Standardansicht: 15min / Landesgröße
-    statChanger->SetSelection(ID_STATISTIC_SIZE_OF_COUNTRY);
+    statChanger->SetSelection(ID_btTypeSize);
     currentView = StatisticType::Country;
-    timeChanger->SetSelection(ID_TIME_15_MINUTES);
+    timeChanger->SetSelection(ID_time15m);
     currentTime = StatisticTime::T15Minutes;
 
     if(!SETTINGS.ingame.scale_statistics)
@@ -201,11 +199,11 @@ iwStatistics::~iwStatistics() = default;
 void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {
     // Spielerportraits
-    if(ctrl_id >= ID_FIRST_PLAYER_PORTRAIT && ctrl_id < (ID_FIRST_PLAYER_PORTRAIT + activePlayers.size()))
-        activePlayers[ctrl_id - ID_FIRST_PLAYER_PORTRAIT] = !activePlayers[ctrl_id - ID_FIRST_PLAYER_PORTRAIT];
+    if(ctrl_id >= ID_btPlayer_Start && ctrl_id < (ID_btPlayer_Start + activePlayers.size()))
+        activePlayers[ctrl_id - ID_btPlayer_Start] = !activePlayers[ctrl_id - ID_btPlayer_Start];
 
     // Hilfe
-    if(ctrl_id == ID_HELP_BUTTON)
+    if(ctrl_id == ID_btHelp)
     {
         WINDOWMANAGER.ReplaceWindow(
           std::make_unique<iwHelp>(_("This window allows a direct comparison with the enemies. "
@@ -219,50 +217,50 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned 
 {
     switch(ctrl_id)
     {
-        case ID_STATISTIC_TYPE_BUTTON_GROUP: // Statistikart wählen
+        case ID_grpStatType: // Statistikart wählen
             switch(selection)
             {
-                case ID_STATISTIC_SIZE_OF_COUNTRY:
+                case ID_btTypeSize:
                     currentView = StatisticType::Country;
                     headline->SetText(_("Size of country"));
                     break;
-                case ID_STATISTIC_BUILDINGS:
+                case ID_btTypeBuildings:
                     currentView = StatisticType::Buildings;
                     headline->SetText(_("Buildings"));
                     break;
-                case ID_STATISTIC_INHABITANTS:
+                case ID_btTypeInhabitants:
                     currentView = StatisticType::Inhabitants;
                     headline->SetText(_("Inhabitants"));
                     break;
-                case ID_STATISTIC_MERCHANDISE:
+                case ID_btTypeMerchandise:
                     currentView = StatisticType::Merchandise;
                     headline->SetText(_("Merchandise"));
                     break;
-                case ID_STATISTIC_MILITARY_STRENGTH:
+                case ID_btTypeMilitary:
                     currentView = StatisticType::Military;
                     headline->SetText(_("Military strength"));
                     break;
-                case ID_STATISTIC_GOLD:
+                case ID_btTypeGold:
                     currentView = StatisticType::Gold;
                     headline->SetText(_("Gold"));
                     break;
-                case ID_STATISTIC_PRODUCTIVITY:
+                case ID_btTypeProductivity:
                     currentView = StatisticType::Productivity;
                     headline->SetText(_("Productivity"));
                     break;
-                case ID_STATISTIC_KILLED_ENEMIES:
+                case ID_btTypeVanquishedEnemies:
                     currentView = StatisticType::Vanquished;
                     headline->SetText(_("Vanquished enemies"));
                     break;
             }
             break;
-        case ID_TIME_BUTTON_GROUP: // Zeitbereich wählen
+        case ID_grpTime: // Zeitbereich wählen
             switch(selection)
             {
-                case ID_TIME_15_MINUTES: currentTime = StatisticTime::T15Minutes; break;
-                case ID_TIME_1_HOUR: currentTime = StatisticTime::T1Hour; break;
-                case ID_TIME_4_HOURS: currentTime = StatisticTime::T4Hours; break;
-                case ID_TIME_16_HOURS: currentTime = StatisticTime::T16Hours; break;
+                case ID_time15m: currentTime = StatisticTime::T15Minutes; break;
+                case ID_time1h: currentTime = StatisticTime::T1Hour; break;
+                case ID_time4h: currentTime = StatisticTime::T4Hours; break;
+                case ID_time16h: currentTime = StatisticTime::T16Hours; break;
             }
             break;
     }
