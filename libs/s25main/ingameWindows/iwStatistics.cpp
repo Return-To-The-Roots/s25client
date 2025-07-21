@@ -33,6 +33,9 @@ constexpr DrawPoint topLeftRel(37, 124);
 constexpr DrawPoint playerButtonsCenterPos(126, 22);
 constexpr Extent playerBtSize(34, 47);
 
+/// Distance between statistic values on the x-axis
+constexpr int stepX = diagramSize.x / NUM_STAT_STEPS;
+
 std::string getPlayerStatus(const GamePlayer& player)
 {
     if(player.IsDefeated())
@@ -167,9 +170,9 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
                            FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Time values on the x-axis
-    for(unsigned i = 0; i < timeAnnotations.size(); ++i)
+    for(const auto i : helpers::range(timeAnnotations.size()))
     {
-        timeAnnotations[i] = AddText(ID_txtXAxisValuesStart + i, DrawPoint(211 + i, 125 + i), "", labelColor,
+        timeAnnotations[i] = AddText(ID_txtXAxisValuesStart + i, DrawPoint(0, 0), "", labelColor,
                                      FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
@@ -315,13 +318,9 @@ void iwStatistics::DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer
 
 void iwStatistics::DrawStatistic(StatisticType type)
 {
-    constexpr int stepX = diagramSize.x / NUM_STAT_STEPS;
-
-    unsigned currentIndex;
-    unsigned max = 1;
-    unsigned min = unsigned(-1);
-
     // Find min and max value
+    unsigned max = 1;
+    auto min = unsigned(-1);
     const GameWorldBase& world = gwv.GetWorld();
     for(const auto p : helpers::range(world.GetNumPlayers()))
     {
@@ -329,7 +328,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
-        currentIndex = stat.currentIndex;
+        const auto currentIndex = stat.currentIndex;
         for(const auto i : helpers::range(NUM_STAT_STEPS))
         {
             const auto idx = (currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex);
@@ -351,16 +350,17 @@ void iwStatistics::DrawStatistic(StatisticType type)
 
     // Draw the line diagram
     const DrawPoint topLeft = GetPos() + topLeftRel;
-    DrawPoint previousPos(0, 0);
+    DrawPoint previousPos;
 
     for(const auto p : helpers::range(world.GetNumPlayers()))
     {
         if(!showStatistic[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
+        const auto playerColor = world.GetPlayer(p).color;
 
-        currentIndex = stat.currentIndex;
-        for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
+        const auto currentIndex = stat.currentIndex;
+        for(const auto i : helpers::range(NUM_STAT_STEPS))
         {
             DrawPoint curPos = topLeft + DrawPoint((NUM_STAT_STEPS - i) * stepX, diagramSize.y);
             unsigned curStatVal =
@@ -370,7 +370,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
             else
                 curPos.y -= (curStatVal * diagramSize.y) / max;
             if(i != 0)
-                DrawLine(curPos, previousPos, 2, world.GetPlayer(p).color);
+                DrawLine(curPos, previousPos, 2, playerColor);
             previousPos = curPos;
         }
     }
@@ -382,8 +382,9 @@ void iwStatistics::DrawAxis()
     const auto axisColor = MakeColor(255, 88, 44, 16);
 
     // X-axis, horizontal
-    DrawLine(topLeft + DrawPoint(6, diagramSize.y + 2), // slightly lower to see zero line and start a bit to the right
-             topLeft + diagramSize + DrawPoint(0, 2), 1, axisColor);
+    // slightly lower to see zero line, offset so it starts with last (leftmost) value of right-aligned graph
+    const auto startPoint = topLeft + DrawPoint(stepX, diagramSize.y + 2);
+    DrawLine(startPoint, topLeft + diagramSize + DrawPoint(0, 2), 1, axisColor);
 
     // Y-axis, vertical
     DrawLine(topLeft + DrawPoint(diagramSize.x, 0), topLeft + diagramSize + DrawPoint(0, 5), 1, axisColor);
@@ -443,7 +444,7 @@ void iwStatistics::updateTimeAxisLabels()
             numMarks = 5;
             break;
     }
-    constexpr DrawPoint offset(6, 6);
+    constexpr DrawPoint offset(stepX, 6);
     DrawPoint curPos = topLeftRel + offset + DrawPoint(0, diagramSize.y);
     for(const auto i : helpers::range(1, numMarks))
     {
