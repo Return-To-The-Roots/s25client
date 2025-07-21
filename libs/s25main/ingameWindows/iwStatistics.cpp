@@ -176,7 +176,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     // Default values:
     statChanger->SetSelection(ID_btTypeSize);
     currentView = StatisticType::Country;
-    timeChanger->SetSelection(ID_time15m);
+    timeChanger->SetSelection(ID_time15m, true);
     currentTime = StatisticTime::T15Minutes;
 
     if(!SETTINGS.ingame.scale_statistics)
@@ -249,6 +249,7 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned 
                 case ID_time4h: currentTime = StatisticTime::T4Hours; break;
                 case ID_time16h: currentTime = StatisticTime::T16Hours; break;
             }
+            updateTimeAxisLabels();
             break;
     }
 }
@@ -378,173 +379,82 @@ void iwStatistics::DrawStatistic(StatisticType type)
 void iwStatistics::DrawAxis()
 {
     const DrawPoint topLeft = GetPos() + topLeftRel;
+    const auto axisColor = MakeColor(255, 88, 44, 16);
 
     // X-axis, horizontal
     DrawLine(topLeft + DrawPoint(6, diagramSize.y + 2), // slightly lower to see zero line and start a bit to the right
-             topLeft + diagramSize + DrawPoint(0, 2), 1, MakeColor(255, 88, 44, 16));
+             topLeft + diagramSize + DrawPoint(0, 2), 1, axisColor);
 
     // Y-axis, vertical
-    DrawLine(topLeft + DrawPoint(diagramSize.x, 0), topLeft + diagramSize + DrawPoint(0, 5), 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(diagramSize.x, 0), topLeft + diagramSize + DrawPoint(0, 5), 1, axisColor);
 
     // Marks on y-axis
-    DrawLine(topLeft + DrawPoint(diagramSize.x - 3, 0), topLeft + DrawPoint(diagramSize.x + 4, 0), 1,
-             MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(diagramSize.x - 3, 0), topLeft + DrawPoint(diagramSize.x + 4, 0), 1, axisColor);
     DrawLine(topLeft + DrawPoint(diagramSize.x - 3, diagramSize.y / 2),
-             topLeft + DrawPoint(diagramSize.x + 4, diagramSize.y / 2), 1,
-             MakeColor(255, 88, 44, 16));
+             topLeft + DrawPoint(diagramSize.x + 4, diagramSize.y / 2), 1, axisColor);
 
-    // Marks on x-axis and labels
-    // Zero first, used for all time periods
-    timeAnnotations[6]->SetPos(topLeftRel + diagramSize + DrawPoint(0, 6));
-    timeAnnotations[6]->SetText("0");
-    timeAnnotations[6]->SetVisible(true);
+    // Marks on x-axis
+    for(const auto* lbl : timeAnnotations)
+    {
+        if(lbl->IsVisible())
+        {
+            const auto lblPos = lbl->GetDrawPos();
+            DrawLine(lblPos - DrawPoint(0, 4), lblPos - DrawPoint(0, 2), 1, axisColor);
+        }
+    }
+}
 
+void iwStatistics::updateTimeAxisLabels()
+{
+    // Labels on x-axis
+
+    int numMarks = 0;
     switch(currentTime)
     {
         case StatisticTime::T15Minutes:
-            // -15
-            DrawLine(topLeft + DrawPoint(6, diagramSize.y + 2), topLeft + DrawPoint(6, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, diagramSize.y + 6));
-            timeAnnotations[0]->SetText("-15");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -12
-            DrawLine(topLeft + DrawPoint(40, diagramSize.y + 2), topLeft + DrawPoint(40, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(40, diagramSize.y + 6));
-            timeAnnotations[1]->SetText("-12");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -9
-            DrawLine(topLeft + DrawPoint(75, diagramSize.y + 2), topLeft + DrawPoint(75, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(75, diagramSize.y + 6));
-            timeAnnotations[2]->SetText("-9");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -6
-            DrawLine(topLeft + DrawPoint(110, diagramSize.y + 2), topLeft + DrawPoint(110, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(110, diagramSize.y + 6));
-            timeAnnotations[3]->SetText("-6");
-            timeAnnotations[3]->SetVisible(true);
-
-            // -3
-            DrawLine(topLeft + DrawPoint(145, diagramSize.y + 2), topLeft + DrawPoint(145, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(145, diagramSize.y + 6));
-            timeAnnotations[4]->SetText("-3");
-            timeAnnotations[4]->SetVisible(true);
-
-            timeAnnotations[5]->SetVisible(false);
+            timeAnnotations[1]->SetText("-15");
+            timeAnnotations[2]->SetText("-12");
+            timeAnnotations[3]->SetText("-9");
+            timeAnnotations[4]->SetText("-6");
+            timeAnnotations[5]->SetText("-3");
+            numMarks = 6;
             break;
         case StatisticTime::T1Hour:
-            // -60
-            DrawLine(topLeft + DrawPoint(6, diagramSize.y + 2), topLeft + DrawPoint(6, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, diagramSize.y + 6));
-            timeAnnotations[0]->SetText("-60");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -50
-            DrawLine(topLeft + DrawPoint(35, diagramSize.y + 2), topLeft + DrawPoint(35, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(35, diagramSize.y + 6));
-            timeAnnotations[1]->SetText("-50");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -40
-            DrawLine(topLeft + DrawPoint(64, diagramSize.y + 2), topLeft + DrawPoint(64, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(64, diagramSize.y + 6));
-            timeAnnotations[2]->SetText("-40");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -30
-            DrawLine(topLeft + DrawPoint(93, diagramSize.y + 2), topLeft + DrawPoint(93, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(93, diagramSize.y + 6));
-            timeAnnotations[3]->SetText("-30");
-            timeAnnotations[3]->SetVisible(true);
-
-            // -20
-            DrawLine(topLeft + DrawPoint(122, diagramSize.y + 2), topLeft + DrawPoint(122, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(122, diagramSize.y + 6));
-            timeAnnotations[4]->SetText("-20");
-            timeAnnotations[4]->SetVisible(true);
-
-            // -10
-            DrawLine(topLeft + DrawPoint(151, diagramSize.y + 2), topLeft + DrawPoint(151, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[5]->SetPos(topLeftRel + DrawPoint(151, diagramSize.y + 6));
-            timeAnnotations[5]->SetText("-10");
-            timeAnnotations[5]->SetVisible(true);
+            timeAnnotations[1]->SetText("-60");
+            timeAnnotations[2]->SetText("-50");
+            timeAnnotations[3]->SetText("-40");
+            timeAnnotations[4]->SetText("-30");
+            timeAnnotations[5]->SetText("-20");
+            timeAnnotations[6]->SetText("-10");
+            numMarks = 7;
             break;
         case StatisticTime::T4Hours:
-            // -240
-            DrawLine(topLeft + DrawPoint(6, diagramSize.y + 2), topLeft + DrawPoint(6, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, diagramSize.y + 6));
-            timeAnnotations[0]->SetText("-240");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -180
-            DrawLine(topLeft + DrawPoint(49, diagramSize.y + 2), topLeft + DrawPoint(49, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, diagramSize.y + 6));
-            timeAnnotations[1]->SetText("-180");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -120
-            DrawLine(topLeft + DrawPoint(93, diagramSize.y + 2), topLeft + DrawPoint(93, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, diagramSize.y + 6));
-            timeAnnotations[2]->SetText("-120");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -60
-            DrawLine(topLeft + DrawPoint(136, diagramSize.y + 2), topLeft + DrawPoint(136, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, diagramSize.y + 6));
-            timeAnnotations[3]->SetText("-60");
-            timeAnnotations[3]->SetVisible(true);
-
-            timeAnnotations[4]->SetVisible(false);
-            timeAnnotations[5]->SetVisible(false);
+            timeAnnotations[1]->SetText("-240");
+            timeAnnotations[2]->SetText("-180");
+            timeAnnotations[3]->SetText("-120");
+            timeAnnotations[4]->SetText("-60");
+            numMarks = 5;
             break;
         case StatisticTime::T16Hours:
-            // -960
-            DrawLine(topLeft + DrawPoint(6, diagramSize.y + 2), topLeft + DrawPoint(6, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, diagramSize.y + 6));
-            timeAnnotations[0]->SetText("-960");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -720
-            DrawLine(topLeft + DrawPoint(49, diagramSize.y + 2), topLeft + DrawPoint(49, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, diagramSize.y + 6));
-            timeAnnotations[1]->SetText("-720");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -480
-            DrawLine(topLeft + DrawPoint(93, diagramSize.y + 2), topLeft + DrawPoint(93, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, diagramSize.y + 6));
-            timeAnnotations[2]->SetText("-480");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -240
-            DrawLine(topLeft + DrawPoint(136, diagramSize.y + 2), topLeft + DrawPoint(136, diagramSize.y + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, diagramSize.y + 6));
-            timeAnnotations[3]->SetText("-240");
-            timeAnnotations[3]->SetVisible(true);
-
-            timeAnnotations[4]->SetVisible(false);
-            timeAnnotations[5]->SetVisible(false);
+            timeAnnotations[1]->SetText("-960");
+            timeAnnotations[2]->SetText("-720");
+            timeAnnotations[3]->SetText("-480");
+            timeAnnotations[4]->SetText("-240");
+            numMarks = 5;
             break;
     }
+    constexpr DrawPoint offset(6, 6);
+    DrawPoint curPos = topLeftRel + offset + DrawPoint(0, diagramSize.y);
+    for(const auto i : helpers::range(1, numMarks))
+    {
+        timeAnnotations[i]->SetPos(curPos);
+        timeAnnotations[i]->SetVisible(true);
+        curPos.x += (diagramSize.x - offset.x) / (numMarks - 1);
+    }
+    for(const auto i : helpers::range<unsigned>(numMarks, timeAnnotations.size()))
+        timeAnnotations[i]->SetVisible(false);
+
+    // Zero is used for all time periods
+    timeAnnotations[0]->SetPos(topLeftRel + diagramSize + DrawPoint(0, offset.y)); // Exactly at the end of the x-axis
+    timeAnnotations[0]->SetText("0");
 }

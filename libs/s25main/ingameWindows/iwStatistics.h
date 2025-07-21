@@ -40,4 +40,6 @@ private:
     void DrawPlayerOverlays();
     void DrawStatistic(StatisticType type);
     void DrawAxis();
+
+    void updateTimeAxisLabels();
 };
