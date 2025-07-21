@@ -153,25 +153,24 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     AddImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
                    _("Help"));
 
+    const auto labelColor = MakeColor(255, 136, 96, 52);
     // Current header
-    headline = AddText(ID_txtHeader, DrawPoint(130, 120), _("Size of country"), MakeColor(255, 136, 96, 52),
-                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE,
-                       NormalFont); // qx: fix for bug #1106952
+    headline = AddText(ID_txtHeader, DrawPoint(130, 120), _("Size of country"), labelColor,
+                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE, NormalFont);
 
     // Current maximum of y-axis
-    txtMaxValueY = AddText(ID_txtMaxY, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
-                       FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
+    txtMaxValueY = AddText(ID_txtMaxY, DrawPoint(211, 125), "1", labelColor,
+                           FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Current minimum of y-axis
-    txtMinValueY = AddText(ID_txtMinY, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52),
-                       FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
+    txtMinValueY = AddText(ID_txtMinY, DrawPoint(211, 200), "0", labelColor,
+                           FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Time values on the x-axis
     for(unsigned i = 0; i < timeAnnotations.size(); ++i)
     {
-        timeAnnotations[i] =
-          AddText(ID_txtXAxisValuesStart + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
-                  FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
+        timeAnnotations[i] = AddText(ID_txtXAxisValuesStart + i, DrawPoint(211 + i, 125 + i), "", labelColor,
+                                     FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
     // Default values:
