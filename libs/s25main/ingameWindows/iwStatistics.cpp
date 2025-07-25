@@ -271,7 +271,7 @@ void iwStatistics::DrawContent()
 
 void iwStatistics::DrawPlayerOverlays()
 {
-    DrawPoint drawPt = getDrawPos() + playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
+    DrawPoint drawPt = GetDrawPos() + playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
 
     for(const auto i : helpers::range(gwv.GetWorld().GetNumPlayers()))
     {
