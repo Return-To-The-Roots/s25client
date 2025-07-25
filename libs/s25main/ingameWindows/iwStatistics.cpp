@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -21,8 +21,21 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/PortraitConsts.h"
 #include "gameData/const_gui_ids.h"
+#include <limits>
 
 namespace {
+
+/// Size of the diagram area
+constexpr Extent diagramSize(180, 80);
+/// Starting point of the diagram (relative to window position)
+constexpr DrawPoint topLeftRel(37, 124);
+
+/// (Horizontal) center position of all player portrait buttons
+constexpr DrawPoint playerButtonsCenterPos(126, 22);
+constexpr Extent playerBtSize(34, 47);
+
+/// Distance between statistic values on the x-axis
+constexpr int stepX = diagramSize.x / NUM_STAT_STEPS;
 
 std::string getPlayerStatus(const GamePlayer& player)
 {
@@ -34,157 +47,160 @@ std::string getPlayerStatus(const GamePlayer& player)
         return _("COMP");
 }
 
+enum
+{
+    ID_btPlayer_Start,
+    ID_imgStatistic = ID_btPlayer_Start + MAX_PLAYERS,
+    ID_grpStatType,
+    ID_btTypeSize,
+    ID_btTypeBuildings,
+    ID_btTypeInhabitants,
+    ID_btTypeMerchandise,
+    ID_btTypeMilitary,
+    ID_btTypeGold,
+    ID_btTypeProductivity,
+    ID_btTypeVanquishedEnemies,
+    ID_grpTime,
+    ID_time15m,
+    ID_time1h,
+    ID_time4h,
+    ID_time16h,
+    ID_txtHeader,
+    ID_txtXAxisValuesStart,
+    ID_txtMaxY = ID_txtXAxisValuesStart + iwStatistics::MAX_TIME_LABELS,
+    ID_txtMinY,
+    ID_btHelp,
+};
+
 } // namespace
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     : IngameWindow(CGI_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 336), _("Statistics"),
                    LOADER.GetImageN("resource", 41)),
-      gwv(gwv)
+      gwv(gwv), showStatistic(MAX_PLAYERS)
 {
-    activePlayers = std::vector<bool>(MAX_PLAYERS);
-
-    // Spieler zählen
+    // Count active players
     numPlayingPlayers = 0;
     const GameWorldBase& world = gwv.GetWorld();
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(const auto i : helpers::range(world.GetNumPlayers()))
     {
         if(world.GetPlayer(i).isUsed())
             numPlayingPlayers++;
     }
 
-    // Bilder für die spielenden Spieler malen (nur vier in Gebrauch, da kein einzelner Anführer auswählbar)
-    unsigned short startX = 126 - (numPlayingPlayers - 1) * 17;
-    unsigned pos = 0;
+    DrawPoint curBtPos = playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
 
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(const auto i : helpers::range(world.GetNumPlayers()))
     {
-        // nicht belegte Spielplätze rauswerfen
+        // Ignore unused players
         const GamePlayer& curPlayer = world.GetPlayer(i);
         if(!curPlayer.isUsed())
             continue;
 
-        RTTR_Assert(curPlayer.portraitIndex < Portraits.size());
-        const auto& portrait = Portraits[curPlayer.portraitIndex];
-        AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TextureColor::Green1,
-                       LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), curPlayer.name)
-          ->SetBorder(false);
-
-        // Statistik-Sichtbarkeit abhängig von Auswahl
+        // Set visibility based on addon setting
         switch(GAMECLIENT.IsReplayModeOn() ? 0 : world.GetGGS().getSelection(AddonId::STATISTICS_VISIBILITY))
         {
-            default: // Passiert eh nicht, nur zur Sicherheit
-                activePlayers[i] = false;
+            default:
+                RTTR_Assert_Msg(false, "Invalid Addon Setting");
+                showStatistic[i] = false;
                 break;
-            case 0: // Alle sehen alles
-                activePlayers[i] = true;
+            case 0: // Visible for all
+                showStatistic[i] = true;
                 break;
-            case 1: // Nur Verbündete teilen Sicht
-            {
-                const bool visible = gwv.GetPlayer().IsAlly(i);
-                activePlayers[i] = visible;
-                GetCtrl<ctrlButton>(1 + i)->SetEnabled(visible);
-            }
-            break;
-            case 2: // Nur man selber
-            {
-                const bool visible = (gwv.GetPlayerId() == i);
-                activePlayers[i] = visible;
-                GetCtrl<ctrlButton>(1 + i)->SetEnabled(visible);
-            }
-            break;
+            case 1: // Only for allies
+                showStatistic[i] = gwv.GetPlayer().IsAlly(i);
+                break;
+            case 2: // Only own statistic
+                showStatistic[i] = (gwv.GetPlayerId() == i);
+                break;
         }
 
-        pos++;
+        RTTR_Assert(curPlayer.portraitIndex < Portraits.size());
+        const auto& portrait = Portraits[curPlayer.portraitIndex];
+        auto* btPortrait =
+          AddImageButton(ID_btPlayer_Start + i, curBtPos, playerBtSize, TextureColor::Green1,
+                         LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), curPlayer.name);
+        curBtPos.x += playerBtSize.x;
+        btPortrait->SetBorder(false);
+        btPortrait->SetEnabled(showStatistic[i]);
     }
 
-    // Statistikfeld
-    AddImage(10, DrawPoint(11 + 115, 84 + 81), LOADER.GetImageN("io", 228));
+    AddImage(ID_imgStatistic, DrawPoint(126, 165), LOADER.GetImageN("io", 228));
 
-    // Die Buttons zum Wechseln der Statistiken
-    ctrlOptionGroup* statChanger = AddOptionGroup(19, GroupSelectType::Illuminate);
-    statChanger->AddImageButton(11, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 167),
-                                _("Size of country"));
-    statChanger->AddImageButton(12, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 168),
-                                _("Buildings"));
-    statChanger->AddImageButton(13, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 169),
-                                _("Inhabitants"));
-    statChanger->AddImageButton(14, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey, LOADER.GetImageN("io", 170),
-                                _("Merchandise"));
-    statChanger->AddImageButton(15, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
+    // Buttons for changing the statistic type shown
+    ctrlOptionGroup* statChanger = AddOptionGroup(ID_grpStatType, GroupSelectType::Illuminate);
+    statChanger->AddImageButton(ID_btTypeSize, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 167), _("Size of country"));
+    statChanger->AddImageButton(ID_btTypeBuildings, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 168), _("Buildings"));
+    statChanger->AddImageButton(ID_btTypeInhabitants, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 169), _("Inhabitants"));
+    statChanger->AddImageButton(ID_btTypeMerchandise, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey,
+                                LOADER.GetImageN("io", 170), _("Merchandise"));
+    statChanger->AddImageButton(ID_btTypeMilitary, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 171), _("Military strength"));
-    statChanger->AddImageButton(16, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeGold, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 172), _("Gold"));
-    statChanger->AddImageButton(17, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeProductivity, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 173), _("Productivity"));
-    statChanger->AddImageButton(18, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->AddImageButton(ID_btTypeVanquishedEnemies, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.GetImageN("io", 217), _("Vanquished enemies"));
 
-    // Zeit-Buttons
-    ctrlOptionGroup* timeChanger = AddOptionGroup(20, GroupSelectType::Illuminate);
-    timeChanger->AddTextButton(21, DrawPoint(51, 288), Extent(43, 28), TextureColor::Grey, _("15 m"), NormalFont);
-    timeChanger->AddTextButton(22, DrawPoint(96, 288), Extent(43, 28), TextureColor::Grey, _("1 h"), NormalFont);
-    timeChanger->AddTextButton(23, DrawPoint(141, 288), Extent(43, 28), TextureColor::Grey, _("4 h"), NormalFont);
-    timeChanger->AddTextButton(24, DrawPoint(186, 288), Extent(43, 28), TextureColor::Grey, _("16 h"), NormalFont);
+    // Buttons for duration
+    constexpr Extent timeBtSize(43, 28);
+    ctrlOptionGroup* timeChanger = AddOptionGroup(ID_grpTime, GroupSelectType::Illuminate);
+    timeChanger->AddTextButton(ID_time15m, DrawPoint(51, 288), timeBtSize, TextureColor::Grey, _("15 m"), NormalFont);
+    timeChanger->AddTextButton(ID_time1h, DrawPoint(96, 288), timeBtSize, TextureColor::Grey, _("1 h"), NormalFont);
+    timeChanger->AddTextButton(ID_time4h, DrawPoint(141, 288), timeBtSize, TextureColor::Grey, _("4 h"), NormalFont);
+    timeChanger->AddTextButton(ID_time16h, DrawPoint(186, 288), timeBtSize, TextureColor::Grey, _("16 h"), NormalFont);
 
-    // Hilfe-Button
-    AddImageButton(25, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
+                   _("Help"));
 
-    // Aktuelle Überschrift über der Statistik
-    headline = AddText(30, DrawPoint(130, 120), _("Size of country"), MakeColor(255, 136, 96, 52),
-                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE,
-                       NormalFont); // qx: fix for bug #1106952
+    const auto labelColor = MakeColor(255, 136, 96, 52);
+    // Current header
+    headline = AddText(ID_txtHeader, DrawPoint(130, 120), _("Size of country"), labelColor,
+                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE, NormalFont);
 
-    // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(31, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
-                       FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
+    // Current maximum of y-axis
+    txtMaxValueY = AddText(ID_txtMaxY, DrawPoint(211, 125), "1", labelColor,
+                           FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
-    // Aktueller Minimalwert an der y-Achse
-    minValue = AddText(40, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52),
-                       FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
+    // Current minimum of y-axis
+    txtMinValueY = AddText(ID_txtMinY, DrawPoint(211, 200), "0", labelColor,
+                           FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
-    // Zeit-Werte an der x-Achse
-    timeAnnotations = std::vector<ctrlText*>(7); // TODO nach oben
-    for(unsigned i = 0; i < 7; ++i)
+    // Time values on the x-axis
+    for(const auto i : helpers::range(timeAnnotations.size()))
     {
-        timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
+        timeAnnotations[i] = AddText(ID_txtXAxisValuesStart + i, DrawPoint(0, 0), "", labelColor,
                                      FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
-    // Standardansicht: 15min / Landesgröße
-    statChanger->SetSelection(11);
+    // Default values:
+    statChanger->SetSelection(ID_btTypeSize);
     currentView = StatisticType::Country;
-    timeChanger->SetSelection(21);
+    timeChanger->SetSelection(ID_time15m, true);
     currentTime = StatisticTime::T15Minutes;
 
     if(!SETTINGS.ingame.scale_statistics)
-        minValue->SetVisible(false);
+        txtMinValueY->SetVisible(false);
 }
 
 iwStatistics::~iwStatistics() = default;
 
 void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    switch(ctrl_id)
+    const unsigned playerIndex = ctrl_id - ID_btPlayer_Start;
+    if(playerIndex < showStatistic.size())
+        showStatistic[playerIndex] = !showStatistic[playerIndex];
+    else if(ctrl_id == ID_btHelp)
     {
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8: // Spielerportraits
-            activePlayers[ctrl_id - 1] = !activePlayers[ctrl_id - 1];
-            break;
-        case 25: // Hilfe
-        {
-            WINDOWMANAGER.ReplaceWindow(
-              std::make_unique<iwHelp>(_("This window allows a direct comparison with the enemies. "
-                                         "Factors such as the wealth, territorial area, inhabitants, "
-                                         "etc. of all parties can be compared. This data can be shown "
-                                         "over four different time periods.")));
-        }
-        break;
+        WINDOWMANAGER.ReplaceWindow(
+          std::make_unique<iwHelp>(_("This window allows a direct comparison with the enemies. "
+                                     "Factors such as the wealth, territorial area, inhabitants, "
+                                     "etc. of all parties can be compared. This data can be shown "
+                                     "over four different time periods.")));
     }
 }
 
@@ -192,51 +208,52 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned 
 {
     switch(ctrl_id)
     {
-        case 19: // Statistikart wählen
+        case ID_grpStatType:
             switch(selection)
             {
-                case 11:
+                case ID_btTypeSize:
                     currentView = StatisticType::Country;
                     headline->SetText(_("Size of country"));
                     break;
-                case 12:
+                case ID_btTypeBuildings:
                     currentView = StatisticType::Buildings;
                     headline->SetText(_("Buildings"));
                     break;
-                case 13:
+                case ID_btTypeInhabitants:
                     currentView = StatisticType::Inhabitants;
                     headline->SetText(_("Inhabitants"));
                     break;
-                case 14:
+                case ID_btTypeMerchandise:
                     currentView = StatisticType::Merchandise;
                     headline->SetText(_("Merchandise"));
                     break;
-                case 15:
+                case ID_btTypeMilitary:
                     currentView = StatisticType::Military;
                     headline->SetText(_("Military strength"));
                     break;
-                case 16:
+                case ID_btTypeGold:
                     currentView = StatisticType::Gold;
                     headline->SetText(_("Gold"));
                     break;
-                case 17:
+                case ID_btTypeProductivity:
                     currentView = StatisticType::Productivity;
                     headline->SetText(_("Productivity"));
                     break;
-                case 18:
+                case ID_btTypeVanquishedEnemies:
                     currentView = StatisticType::Vanquished;
                     headline->SetText(_("Vanquished enemies"));
                     break;
             }
             break;
-        case 20: // Zeitbereich wählen
+        case ID_grpTime:
             switch(selection)
             {
-                case 21: currentTime = StatisticTime::T15Minutes; break;
-                case 22: currentTime = StatisticTime::T1Hour; break;
-                case 23: currentTime = StatisticTime::T4Hours; break;
-                case 24: currentTime = StatisticTime::T16Hours; break;
+                case ID_time15m: currentTime = StatisticTime::T15Minutes; break;
+                case ID_time1h: currentTime = StatisticTime::T1Hour; break;
+                case ID_time4h: currentTime = StatisticTime::T4Hours; break;
+                case ID_time16h: currentTime = StatisticTime::T16Hours; break;
             }
+            updateTimeAxisLabels();
             break;
     }
 }
@@ -246,30 +263,30 @@ void iwStatistics::DrawContent()
     // Draw the alliances and the colored boxes under the portraits
     DrawPlayerOverlays();
 
-    // Koordinatenachsen malen
     DrawAxis();
 
-    // Statistiklinien malen
+    // Draw lines making up the statistic
     DrawStatistic(currentView);
 }
 
 void iwStatistics::DrawPlayerOverlays()
 {
-    DrawPoint drawPt = GetDrawPos() + DrawPoint(126 - numPlayingPlayers * 17, 22);
-    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
+    DrawPoint drawPt = GetDrawPos() + playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
+
+    for(const auto i : helpers::range(gwv.GetWorld().GetNumPlayers()))
     {
         const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
         if(!player.isUsed())
             continue;
 
-        if(activePlayers[i])
+        if(showStatistic[i])
         {
             // Draw the alliances at top of the player image
             DrawPlayerAlliances(drawPt, player);
             // Draw player boxes and player status at bottom
             DrawPlayerBox(drawPt, player);
         }
-        drawPt.x += 34;
+        drawPt.x += playerBtSize.x;
     }
 }
 
@@ -302,69 +319,59 @@ void iwStatistics::DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer
 
 void iwStatistics::DrawStatistic(StatisticType type)
 {
-    // Ein paar benötigte Werte...
-    const Extent size(180, 80);
-    const int stepX = size.x / NUM_STAT_STEPS;
-
-    unsigned short currentIndex;
+    // Find min and max value
     unsigned max = 1;
-    unsigned min = 65000;
-
-    // Maximal- und Minimalwert suchen
+    auto min = std::numeric_limits<unsigned>::max();
     const GameWorldBase& world = gwv.GetWorld();
-    for(unsigned p = 0; p < world.GetNumPlayers(); ++p)
+    for(const auto p : helpers::range(world.GetNumPlayers()))
     {
-        if(!activePlayers[p])
+        if(!showStatistic[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
-        currentIndex = stat.currentIndex;
-        for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
+        const auto currentIndex = stat.currentIndex;
+        for(const auto i : helpers::range(NUM_STAT_STEPS))
         {
-            if(max < stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)])
-            {
-                max = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)];
-            }
-            if(SETTINGS.ingame.scale_statistics //-V807
-               && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)])
-            {
-                min = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)];
-            }
+            const auto idx = (currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex);
+            max = std::max(max, stat.data[type][idx]);
+            if(SETTINGS.ingame.scale_statistics) //-V807
+                min = std::min(min, stat.data[type][idx]);
         }
     }
 
-    if(SETTINGS.ingame.scale_statistics && max == min)
+    if(max == min)
     {
         --min;
         ++max;
     }
-    // Maximalen/Minimalen Wert an die Achse schreiben
-    maxValue->SetText(std::to_string(max));
+    // Add values to axis
+    txtMaxValueY->SetText(std::to_string(max));
     if(SETTINGS.ingame.scale_statistics)
-        minValue->SetText(std::to_string(min));
+        txtMinValueY->SetText(std::to_string(min));
 
-    // Statistiklinien zeichnen
-    const DrawPoint topLeft = GetPos() + DrawPoint(34, 124);
-    DrawPoint previousPos(0, 0);
+    // Draw the line diagram
+    const DrawPoint topLeft = GetPos() + topLeftRel;
+    DrawPoint previousPos;
 
-    for(unsigned p = 0; p < world.GetNumPlayers(); ++p)
+    for(const auto p : helpers::range(world.GetNumPlayers()))
     {
-        if(!activePlayers[p])
+        if(!showStatistic[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
+        const auto playerColor = world.GetPlayer(p).color;
 
-        currentIndex = stat.currentIndex;
-        for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
+        const auto currentIndex = stat.currentIndex;
+        for(const auto i : helpers::range(NUM_STAT_STEPS))
         {
-            DrawPoint curPos = topLeft + DrawPoint((NUM_STAT_STEPS - i) * stepX, size.y);
+            DrawPoint curPos = topLeft + DrawPoint((NUM_STAT_STEPS - i) * stepX, diagramSize.y);
             unsigned curStatVal =
               stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)];
             if(SETTINGS.ingame.scale_statistics)
-                curPos.y -= ((curStatVal - min) * size.y) / (max - min);
+                curPos.y -= ((curStatVal - min) * diagramSize.y) / (max - min);
             else
-                curPos.y -= (curStatVal * size.y) / max;
+                curPos.y -= (curStatVal * diagramSize.y) / max;
             if(i != 0)
-                DrawLine(curPos, previousPos, 2, world.GetPlayer(p).color);
+                DrawLine(curPos, previousPos, 2, playerColor);
             previousPos = curPos;
         }
     }
@@ -372,176 +379,84 @@ void iwStatistics::DrawStatistic(StatisticType type)
 
 void iwStatistics::DrawAxis()
 {
-    // Ein paar benötigte Werte...
-    const int sizeX = 180;
-    const int sizeY = 80;
-    const DrawPoint topLeft = GetPos() + DrawPoint(34, 124);
-    const DrawPoint topLeftRel(37, 124);
+    const DrawPoint topLeft = GetPos() + topLeftRel;
+    const auto axisColor = MakeColor(255, 88, 44, 16);
 
-    // X-Achse, horizontal, war irgendwie zu lang links :S
-    DrawLine(topLeft + DrawPoint(6, sizeY + 2), // bisschen tiefer, damit man nulllinien noch sieht
-             topLeft + DrawPoint(sizeX, sizeY + 1), 1, MakeColor(255, 88, 44, 16));
+    // X-axis, horizontal
+    // slightly lower to see zero line, offset so it starts with last (leftmost) value of right-aligned graph
+    const auto startPoint = topLeft + DrawPoint(stepX, diagramSize.y + 2);
+    DrawLine(startPoint, topLeft + diagramSize + DrawPoint(0, 2), 1, axisColor);
 
-    // Y-Achse, vertikal
-    DrawLine(topLeft + DrawPoint(sizeX, 0), topLeft + DrawPoint(sizeX, sizeY + 5), 1, MakeColor(255, 88, 44, 16));
+    // Y-axis, vertical
+    DrawLine(topLeft + DrawPoint(diagramSize.x, 0), topLeft + diagramSize + DrawPoint(0, 5), 1, axisColor);
 
-    // Striche an der Y-Achse
-    DrawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, MakeColor(255, 88, 44, 16));
-    DrawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2), topLeft + DrawPoint(sizeX + 4, sizeY / 2), 1,
-             MakeColor(255, 88, 44, 16));
+    // Marks on y-axis
+    DrawLine(topLeft + DrawPoint(diagramSize.x - 3, 0), topLeft + DrawPoint(diagramSize.x + 4, 0), 1, axisColor);
+    DrawLine(topLeft + DrawPoint(diagramSize.x - 3, diagramSize.y / 2),
+             topLeft + DrawPoint(diagramSize.x + 4, diagramSize.y / 2), 1, axisColor);
 
-    // Striche an der X-Achse + Beschriftung
-    // Zunächst die 0, die haben alle
-    timeAnnotations[6]->SetPos(topLeftRel + DrawPoint(180, sizeY + 6));
-    timeAnnotations[6]->SetText("0");
-    timeAnnotations[6]->SetVisible(true);
+    // Marks on x-axis
+    for(const auto* lbl : timeAnnotations)
+    {
+        if(lbl->IsVisible())
+        {
+            const auto lblPos = lbl->GetDrawPos();
+            DrawLine(lblPos - DrawPoint(0, 4), lblPos - DrawPoint(0, 2), 1, axisColor);
+        }
+    }
+}
 
+void iwStatistics::updateTimeAxisLabels()
+{
+    // Labels on x-axis
+
+    int numMarks = 0;
     switch(currentTime)
     {
         case StatisticTime::T15Minutes:
-            // -15
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-15");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -12
-            DrawLine(topLeft + DrawPoint(40, sizeY + 2), topLeft + DrawPoint(40, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(40, sizeY + 6));
-            timeAnnotations[1]->SetText("-12");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -9
-            DrawLine(topLeft + DrawPoint(75, sizeY + 2), topLeft + DrawPoint(75, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(75, sizeY + 6));
-            timeAnnotations[2]->SetText("-9");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -6
-            DrawLine(topLeft + DrawPoint(110, sizeY + 2), topLeft + DrawPoint(110, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(110, sizeY + 6));
-            timeAnnotations[3]->SetText("-6");
-            timeAnnotations[3]->SetVisible(true);
-
-            // -3
-            DrawLine(topLeft + DrawPoint(145, sizeY + 2), topLeft + DrawPoint(145, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(145, sizeY + 6));
-            timeAnnotations[4]->SetText("-3");
-            timeAnnotations[4]->SetVisible(true);
-
-            timeAnnotations[5]->SetVisible(false);
+            timeAnnotations[1]->SetText("-15");
+            timeAnnotations[2]->SetText("-12");
+            timeAnnotations[3]->SetText("-9");
+            timeAnnotations[4]->SetText("-6");
+            timeAnnotations[5]->SetText("-3");
+            numMarks = 6;
             break;
         case StatisticTime::T1Hour:
-            // -60
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-60");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -50
-            DrawLine(topLeft + DrawPoint(35, sizeY + 2), topLeft + DrawPoint(35, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(35, sizeY + 6));
-            timeAnnotations[1]->SetText("-50");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -40
-            DrawLine(topLeft + DrawPoint(64, sizeY + 2), topLeft + DrawPoint(64, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(64, sizeY + 6));
-            timeAnnotations[2]->SetText("-40");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -30
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
-            timeAnnotations[3]->SetText("-30");
-            timeAnnotations[3]->SetVisible(true);
-
-            // -20
-            DrawLine(topLeft + DrawPoint(122, sizeY + 2), topLeft + DrawPoint(122, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(122, sizeY + 6));
-            timeAnnotations[4]->SetText("-20");
-            timeAnnotations[4]->SetVisible(true);
-
-            // -10
-            DrawLine(topLeft + DrawPoint(151, sizeY + 2), topLeft + DrawPoint(151, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[5]->SetPos(topLeftRel + DrawPoint(151, sizeY + 6));
-            timeAnnotations[5]->SetText("-10");
-            timeAnnotations[5]->SetVisible(true);
+            timeAnnotations[1]->SetText("-60");
+            timeAnnotations[2]->SetText("-50");
+            timeAnnotations[3]->SetText("-40");
+            timeAnnotations[4]->SetText("-30");
+            timeAnnotations[5]->SetText("-20");
+            timeAnnotations[6]->SetText("-10");
+            numMarks = 7;
             break;
         case StatisticTime::T4Hours:
-            // -240
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-240");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -180
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
-            timeAnnotations[1]->SetText("-180");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -120
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
-            timeAnnotations[2]->SetText("-120");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -60
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
-            timeAnnotations[3]->SetText("-60");
-            timeAnnotations[3]->SetVisible(true);
-
-            timeAnnotations[4]->SetVisible(false);
-            timeAnnotations[5]->SetVisible(false);
+            timeAnnotations[1]->SetText("-240");
+            timeAnnotations[2]->SetText("-180");
+            timeAnnotations[3]->SetText("-120");
+            timeAnnotations[4]->SetText("-60");
+            numMarks = 5;
             break;
         case StatisticTime::T16Hours:
-            // -960
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-960");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -720
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
-            timeAnnotations[1]->SetText("-720");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -480
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
-            timeAnnotations[2]->SetText("-480");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -240
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
-            timeAnnotations[3]->SetText("-240");
-            timeAnnotations[3]->SetVisible(true);
-
-            timeAnnotations[4]->SetVisible(false);
-            timeAnnotations[5]->SetVisible(false);
+            timeAnnotations[1]->SetText("-960");
+            timeAnnotations[2]->SetText("-720");
+            timeAnnotations[3]->SetText("-480");
+            timeAnnotations[4]->SetText("-240");
+            numMarks = 5;
             break;
     }
+    constexpr DrawPoint offset(stepX, 6);
+    DrawPoint curPos = topLeftRel + offset + DrawPoint(0, diagramSize.y);
+    for(const auto i : helpers::range(1, numMarks))
+    {
+        timeAnnotations[i]->SetPos(curPos);
+        timeAnnotations[i]->SetVisible(true);
+        curPos.x += (diagramSize.x - offset.x) / (numMarks - 1);
+    }
+    for(const auto i : helpers::range<unsigned>(numMarks, timeAnnotations.size()))
+        timeAnnotations[i]->SetVisible(false);
+
+    // Zero is used for all time periods
+    timeAnnotations[0]->SetPos(topLeftRel + diagramSize + DrawPoint(0, offset.y)); // Exactly at the end of the x-axis
+    timeAnnotations[0]->SetText("0");
 }
