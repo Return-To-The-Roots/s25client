@@ -66,24 +66,6 @@ extern void applyBldPlannerCfg(YAML::Node plannerNode)
         }
     }
 }
-extern void initAIConfig(std::string configPath)
-{
-    try
-    {
-        YAML::Node configNode = YAML::LoadFile(configPath);
-
-        AI_CONFIG.foresterWoodLevel = configNode["forester_wood_level"].as<double>();
-        AI_CONFIG.startupMilBuildings = configNode["startup_mil_buildings"].as<double>();
-        AI_CONFIG.farmToIronMineRatio = configNode["farm_to_ironMine_ratio"].as<double>();
-        AI_CONFIG.woodcutterToStorehouseRatio = configNode["woodcutter_to_storehouse_ratio"].as<double>();
-        AI_CONFIG.breweryToArmoryRatio = configNode["brewery_to_armory_ratio"].as<double>();
-        AI_CONFIG.pigfarmMultiplier = configNode["pigfarm_multiplier"].as<double>();
-    } catch(const YAML::Exception& e)
-    {
-        std::cerr << "Error parsing YAML file: " << e.what() << std::endl;
-        exit(1);
-    }
-}
 
 namespace {
 struct ConfigInitializer

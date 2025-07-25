@@ -48,9 +48,9 @@ int main(int argc, char** argv)
     // clang-format off
     desc.add_options()
         ("help,h", "Show help")
-        ("run_id,r", po::value(&runId),"Run Id")
-        ("profile_id,p", po::value(&profileId),"Profile Id")
-        ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
+        // ("run_id,r", po::value(&runId),"Run Id")
+        // ("profile_id,p", po::value(&profileId),"Profile Id")
+        // ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
         ("max_gf", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("output_path", po::value(&output_path),"Filename to write savegame to (optional)")
         ("stats_period", po::value(&statsPeriod),"Stats period")
@@ -59,7 +59,6 @@ int main(int argc, char** argv)
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
-        ("config_file", po::value<std::string>()->required(), "AI configuration file")
         ("weights_file", po::value<std::string>()->required(), "AI weights file")
         ("start_wares", po::value<std::string>()->default_value("alot"),"Start wares")
         ("replay", po::value(&replay_path),"Filename to write stats_interval to (optional)")
@@ -102,28 +101,28 @@ int main(int argc, char** argv)
 
     try
     {
-        if(runId)
-            STATS_CONFIG.runId = *runId;
-        if(runSetId)
-            STATS_CONFIG.runSetId = *runSetId;
-        if(profileId)
-            STATS_CONFIG.profileId = *profileId;
+        // if(runId)
+        //     STATS_CONFIG.runId = *runId;
+        // if(runSetId)
+        //     STATS_CONFIG.runSetId = *runSetId;
+        // if(profileId)
+        //     STATS_CONFIG.profileId = *profileId;
 
         STATS_CONFIG.outputPath = *output_path;
-        std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
-        bfs::create_directory(runSetDir);
-        std::string profileDir = runSetDir + "/" + *profileId;
-        bfs::create_directory(profileDir);
-        std::string runDir = profileDir + "/" + *runId;
-        bfs::create_directory(runDir);
-        std::string statsDir = runDir + "/stats/";
+        // std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
+        // bfs::create_directory(runSetDir);
+        // std::string profileDir = runSetDir + "/" + *profileId;
+        // bfs::create_directory(profileDir);
+        // std::string runDir = profileDir + "/" + *runId;
+        // bfs::create_directory(runDir);
+        std::string statsDir = *output_path + "/stats/";
         bfs::create_directory(statsDir);
         STATS_CONFIG.statsPath = statsDir;
-        std::string savesDir = runDir + "/saves/";
+        std::string savesDir = *output_path + "/saves/";
         bfs::create_directory(savesDir);
         STATS_CONFIG.savesPath = savesDir;
 
-        std::string logsDir = runDir + "/logs/";
+        std::string logsDir = *output_path + "/logs/";
         bfs::create_directory(logsDir);
         LOG.setLogFilepath(logsDir);
 
@@ -140,8 +139,6 @@ int main(int argc, char** argv)
         const bfs::path mapPath = RTTRCONFIG.ExpandPath(options["map"].as<std::string>());
         const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
 
-        const auto configfile = options["config_file"].as<std::string>();
-        initAIConfig(configfile);
         const auto weightsFile = options["weights_file"].as<std::string>();
         applyWeightsCfg(weightsFile);
 

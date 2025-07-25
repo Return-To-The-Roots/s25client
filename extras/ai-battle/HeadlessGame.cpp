@@ -117,8 +117,8 @@ void HeadlessGame::Run(unsigned maxGF)
         auto currentGF = em_.GetCurrentGF();
         if(STATS_CONFIG.save_period>0 && (currentGF == 1 || currentGF % STATS_CONFIG.save_period == 0))
         {
-            boost::format fmt("%s/ai_run_%s_%s_%s_%s.sav");
-            fmt % STATS_CONFIG.savesPath % STATS_CONFIG.runSetId % STATS_CONFIG.profileId % STATS_CONFIG.runId % toPaddedString(currentGF, 8);
+            boost::format fmt("%s/ai_run_%s.sav");
+            fmt % STATS_CONFIG.savesPath % toPaddedString(currentGF, 8);
             SaveGame(fmt.str());
         }
     }

@@ -137,10 +137,6 @@ unsigned BuildCalculator::doCalc(BuildingType type)
 
 unsigned BuildCalculator::CalcPigFarms()
 {
-    if(AI_CONFIG.pigfarmMultiplier == 0)
-    {
-        return 0;
-    }
     unsigned farms = GetNumBuildings(BuildingType::Farm);
     unsigned wanted = (farms < 8) ? farms / 4 : (farms - 2) / 4;
     unsigned slaughterhouses = GetNumBuildings(BuildingType::Slaughterhouse);

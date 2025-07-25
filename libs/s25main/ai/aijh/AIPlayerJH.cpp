@@ -1084,7 +1084,7 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
         case BuildingType::Well:
         {
             foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
-            if(construction->OtherUsualBuildingInRadius(foundPos, (unsigned)AI_CONFIG.foresterFreeRadius,
+            if(construction->OtherUsualBuildingInRadius(foundPos, 4, // TODO move to weights
                                                         BuildingType::Forester))
             {
                 foundPos = MapPoint::Invalid();
