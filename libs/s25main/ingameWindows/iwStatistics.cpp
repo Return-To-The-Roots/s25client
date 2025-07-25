@@ -21,6 +21,7 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/PortraitConsts.h"
 #include "gameData/const_gui_ids.h"
+#include <limits>
 
 namespace {
 
@@ -270,7 +271,7 @@ void iwStatistics::DrawContent()
 
 void iwStatistics::DrawPlayerOverlays()
 {
-    DrawPoint drawPt = playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
+    DrawPoint drawPt = getDrawPos() + playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
 
     for(const auto i : helpers::range(gwv.GetWorld().GetNumPlayers()))
     {
@@ -320,7 +321,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
 {
     // Find min and max value
     unsigned max = 1;
-    auto min = unsigned(-1);
+    auto min = std::numeric_limits<unsigned>::max();
     const GameWorldBase& world = gwv.GetWorld();
     for(const auto p : helpers::range(world.GetNumPlayers()))
     {
