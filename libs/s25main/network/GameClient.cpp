@@ -11,6 +11,7 @@
 #include "GameManager.h"
 #include "GameMessage_GameCommand.h"
 #include "JoinPlayerInfo.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "NWFInfo.h"
 #include "PlayerGameCommands.h"
@@ -1556,6 +1557,22 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
         OnError(ClientError::InvalidMap);
         return false;
+    }
+
+    if(!mapinfo.savegame && replayinfo->replay.GetMinorVersion() < 2)
+    {
+        for(unsigned i = 0; i < game->world_.GetNumPlayers(); i++)
+        {
+            auto newDistributions = default_settings.distribution;
+            unsigned idx = 0;
+            for(const DistributionMapping& mapping : distributionMap)
+            {
+                if(leatheraddon::isLeatherAddonBuildingType(std::get<1>(mapping)))
+                    newDistributions[idx] = 0;
+                idx++;
+            }
+            game->world_.GetPlayer(i).ChangeDistribution(newDistributions);
+        }
     }
 
     replayinfo->next_gf = replayinfo->replay.ReadGF();

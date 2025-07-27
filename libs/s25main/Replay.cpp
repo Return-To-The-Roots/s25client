@@ -38,7 +38,8 @@ static const uint8_t currentReplayDataVersion = 1;
 uint8_t Replay::GetLatestMinorVersion() const
 {
     // 8.1: Portraits support
-    return 1;
+    // 8.2: Set correct initial distributions if replay starts without savegame for leather addon
+    return 2;
 }
 
 uint8_t Replay::GetLatestMajorVersion() const
