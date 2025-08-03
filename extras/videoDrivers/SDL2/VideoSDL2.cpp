@@ -232,7 +232,13 @@ void VideoSDL2::PrintError(const std::string& msg) const
 void VideoSDL2::ShowErrorMessage(const std::string& title, const std::string& message)
 {
     // window==nullptr is okay too ("no parent")
+#ifdef __linux__
+    // When using window, SDL will try to use a system tool like "zenity" which isn't always installed on every distro so rttr will crash
+    // But without a window it will use an x11 backend that should be available on x11 AND wayland for compatibility reasons
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), nullptr);
+#else
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), window);
+#endif
 }
 
 void VideoSDL2::HandlePaste()
