@@ -25,6 +25,9 @@
 #include "s25util/Log.h"
 #include "s25util/MyTime.h"
 #include <algorithm>
+#ifdef __EMSCRIPTEN__
+#include <SDL/SDL_opengl.h>
+#endif
 
 WindowManager::WindowManager()
     : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0),
@@ -55,7 +58,7 @@ void WindowManager::DrawCursor()
         default: break;
     }
     if(resId)
-        LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
+        LOADER.GetImageN("resource", resId)->DrawCursor(VIDEODRIVER.GetMousePos());
 }
 
 /**

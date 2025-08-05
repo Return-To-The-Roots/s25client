@@ -22,6 +22,8 @@ public:
     void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE);
     /// Draw the texture to the given position with full size
     void DrawFull(const DrawPoint& dstPos, unsigned color = COLOR_WHITE) override;
+    /// Draw cursor to the given position (todo: figure out why glBegin/End not rendering cursor, fix it, remove DrawCursor as it's dirty fix)
+    void DrawCursor(const DrawPoint& dstPos);
     /// Draw a rectangular part of the texture. offset specifies the offset from the origin of the texture
     void DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color = COLOR_WHITE);
     /// Draw a rectangular part of the texture from the origin of it
@@ -36,4 +38,6 @@ public:
 protected:
     void FillTexture() override;
     Extent CalcTextureSize() const override;
+
+    bool isCursor = false;
 };

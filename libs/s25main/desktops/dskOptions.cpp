@@ -113,7 +113,7 @@ constexpr auto sectionSpacingCommon = 10;
 constexpr auto tabButtonsStartPosition = DrawPoint(80, 510);
 constexpr auto optionRowsStartPosition = DrawPoint(80, 80);
 } // namespace
-
+#if !__EMSCRIPTEN__
 static VideoMode getAspectRatio(const VideoMode& vm)
 {
     // First some a bit off values where the aspect ratio is defined by convention
@@ -133,7 +133,7 @@ static VideoMode getAspectRatio(const VideoMode& vm)
     else
         return ratio;
 }
-
+#endif
 dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     AddText(ID_txtOptions, DrawPoint(400, 10), _("Options"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
@@ -307,6 +307,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     mainGroup->SetSelection(SETTINGS.global.showGFInfo);
 
     curPos = optionRowsStartPosition;
+#if !__EMSCRIPTEN__ // all this stuff in emscripten build is controlled by browser's API and launcher; emscripten adds too bloated and buggy shim in lib lhtml5
     groupGraphics->AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
                            NormalFont);
     groupGraphics->AddComboBox(ID_cbResolution, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 150);
@@ -317,7 +318,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     mainGroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
     mainGroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
     curPos.y += rowHeight + sectionSpacing;
-
+#endif
     groupGraphics->AddText(ID_txtFramerate, curPos, _("Limit Framerate:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     groupGraphics->AddComboBox(ID_cbFramerate, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 150);
     curPos.y += rowHeight + sectionSpacing;
@@ -402,7 +403,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // Graphics
     // {
-
+#if !__EMSCRIPTEN__
     loadVideoModes();
 
     // Und zu der Combobox hinzufügen
@@ -427,7 +428,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Vollbild" setzen
     groupGraphics->GetCtrl<ctrlOptionGroup>(ID_grpFullscreen)->SetSelection(SETTINGS.video.fullscreen); //-V807
-
+#endif
     // "Limit Framerate" füllen
     auto* cbFrameRate = groupGraphics->GetCtrl<ctrlComboBox>(ID_cbFramerate);
     if(VIDEODRIVER.HasVSync())

@@ -8,7 +8,12 @@
 #include "enum_cast.hpp"
 #include "ogl/BufferHandle.h"
 #include "ogl/constants.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <stdexcept>
 #include <type_traits>
 

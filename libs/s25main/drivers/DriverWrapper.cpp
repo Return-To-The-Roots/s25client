@@ -106,8 +106,17 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         nameOrError = _("Invalid API version!");
         return false;
     }
+    std::string driverNameGetter;
+    if(dt == DriverType::Video)
+    {
+        driverNameGetter = "GetVideoDriverName";
+    }
+    else
+    {
+        driverNameGetter = "GetAudioDriverName";
+    }
 
-    auto GetDriverName = dll.get<GetDriverName_t>("GetDriverName");
+    auto GetDriverName = dll.get<GetDriverName_t>(driverNameGetter);
     std::string createName, freeName;
     if(dt == DriverType::Video)
     {
