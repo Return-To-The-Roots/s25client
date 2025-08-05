@@ -11,11 +11,12 @@
 enum class PactType : uint8_t
 {
     TreatyOfAlliance,
-    NonAgressionPact
+    NonAgressionPact,
+    OneSidedAlliance,
 };
 constexpr auto maxEnumValue(PactType)
 {
-    return PactType::NonAgressionPact;
+    return PactType::OneSidedAlliance;
 }
 
 constexpr unsigned DURATION_INFINITE = 0xFFFFFFFF;
