@@ -49,9 +49,9 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
         case BuildingType::Sawmill:
         {
             auto locationParam = AI_CONFIG.locationParams[BuildingType::Sawmill];
-            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
             unsigned sawmills = aijh.GetBldPlanner().GetNumBuildings(BuildingType::Sawmill);
             auto proximity = locationParam.proximity[BuildingType::Sawmill];
+            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
             unsigned minRadius = (unsigned) CALC::calcCount(sawmills, proximity.minimal);
             if(construction.OtherUsualBuildingInRadius(point, minRadius, BuildingType::Sawmill))
             {
