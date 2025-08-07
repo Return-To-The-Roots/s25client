@@ -44,21 +44,27 @@ MapPoint PositionFinder::FindBestPosition(BuildingType bt)
 RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint& around, int searchRadius)
 {
     AIConstruction& construction = aijh.GetConstruction();
+    
+    // First check the general minRadius condition for all building types
+    auto locationParam = AI_CONFIG.locationParams[type];
+    if(locationParam.enabled)
+    {
+        unsigned buildingCount = aijh.GetBldPlanner().GetNumBuildings(type);
+        auto proximity = locationParam.proximity[type];
+        if(proximity.enabled)
+        {
+            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
+            unsigned minRadius = (unsigned) CALC::calcCount(buildingCount, proximity.minimal);
+            if(construction.OtherUsualBuildingInRadius(point, minRadius, type))
+            {
+                return {MapPoint::Invalid(), 0};
+            }
+        }
+    }
+    
+    // Then apply specific logic for certain building types
     switch(type)
     {
-        case BuildingType::Sawmill:
-        {
-            auto locationParam = AI_CONFIG.locationParams[BuildingType::Sawmill];
-            unsigned sawmills = aijh.GetBldPlanner().GetNumBuildings(BuildingType::Sawmill);
-            auto proximity = locationParam.proximity[BuildingType::Sawmill];
-            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
-            unsigned minRadius = (unsigned) CALC::calcCount(sawmills, proximity.minimal);
-            if(construction.OtherUsualBuildingInRadius(point, minRadius, BuildingType::Sawmill))
-            {
-                break;
-            }
-            return {point, 1};;
-        }
         case BuildingType::Woodcutter:
         {
             auto results = FindBestPositions(around, AIResource::Wood, BUILDING_SIZE[type], searchRadius, 50);
@@ -109,9 +115,16 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
             }
             break;
         }
-        default: break;
+        default: 
+        {
+            // For all other building types, just return a simple position if the minRadius check passed
+            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
+            if(point.isValid())
+                return {point, 1};
+            break;
+        }
     }
-    return {MapPoint::Invalid(), 0};;
+    return {MapPoint::Invalid(), 0};
 }
 
 RatedPointSet PositionFinder::FindBestPositions(const MapPoint& pt, const AIResource res, BuildingQuality size,
