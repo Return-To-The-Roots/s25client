@@ -14,6 +14,7 @@ public:
     ctrlBaseTooltip(std::string tooltip = "") : tooltip_(std::move(tooltip)) {}
     virtual ~ctrlBaseTooltip();
 
+    /// Set the text to be shown, updates the tooltip if currently shown
     void SetTooltip(const std::string& tooltip);
     const std::string& GetTooltip() const { return tooltip_; }
     /// Swap the tooltips of those controls
