@@ -12,9 +12,6 @@ ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, ITexture
 
 ctrlImage::~ctrlImage() = default;
 
-/**
- *  zeichnet das Fenster.
- */
 void ctrlImage::Draw_()
 {
     DrawImage(Rect(GetDrawPos(), GetImageRect().getSize()));
@@ -22,15 +19,18 @@ void ctrlImage::Draw_()
 
 bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
 {
-    // gültiges Bild?
     if(GetImage())
     {
-        // Jeweils Tooltip ein- und ausblenden, wenn die Maus über dem Bild ist
-        if(IsPointInRect(mc.GetPos(), Rect::move(GetImageRect(), GetDrawPos())))
+        if(IsMouseOver(mc.GetPos()))
             ShowTooltip();
         else
             HideTooltip();
     }
 
     return false;
+}
+
+Rect ctrlImage::GetBoundaryRect() const
+{
+    return Rect::move(GetImageRect(), GetDrawPos());
 }
