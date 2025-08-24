@@ -404,9 +404,16 @@ bool VideoSDL2::MessageLoop()
             }
             break;
             case SDL_MOUSEMOTION:
-                mouse_xy.pos = getGuiScale().screenToView(Position(ev.motion.x, ev.motion.y));
-                CallBack->Msg_MouseMove(mouse_xy);
-                break;
+            {
+                const auto newPos = getGuiScale().screenToView(Position(ev.motion.x, ev.motion.y));
+                // Avoid duplicate events especially when warping the mouse
+                if(newPos != mouse_xy.pos)
+                {
+                    mouse_xy.pos = newPos;
+                    CallBack->Msg_MouseMove(mouse_xy);
+                }
+            }
+            break;
         }
     }
 
