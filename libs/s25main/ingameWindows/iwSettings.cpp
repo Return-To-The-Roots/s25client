@@ -23,6 +23,7 @@ enum
     ID_grpFullscreen,
     ID_cbResolution,
     ID_cbInvertMouse,
+    ID_cbSmartCursor,
     ID_cbStatisticScale,
 };
 constexpr auto ID_btOn = 1;
@@ -30,7 +31,7 @@ constexpr auto ID_btOff = 0;
 } // namespace
 
 iwSettings::iwSettings()
-    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 199), _("Settings"),
+    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 228), _("Settings"),
                    LOADER.GetImageN("resource", 41))
 {
     // Controls are in 2 columns, the left might be the label for the control on the right
@@ -71,6 +72,10 @@ iwSettings::iwSettings()
     const auto cbSize = Extent(rowWidth - curPos.x, 26);
     AddCheckBox(ID_cbInvertMouse, curPos, cbSize, TextureColor::Grey, _("Invert Mouse Pan"), NormalFont, false)
       ->setChecked(SETTINGS.interface.invertMouse);
+    curPos.y += cbSize.y + 3;
+    AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart cursor placement"), NormalFont, false)
+      ->setChecked(SETTINGS.global.smartCursor)
+      ->setTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
       ->setChecked(SETTINGS.ingame.scale_statistics);
@@ -114,6 +119,10 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
     switch(ctrl_id)
     {
         case ID_cbInvertMouse: SETTINGS.interface.invertMouse = checked; break;
+        case ID_cbSmartCursor:
+            SETTINGS.global.smartCursor = checked;
+            VIDEODRIVER.SetMouseWarping(checked);
+            break;
         case ID_cbStatisticScale: SETTINGS.ingame.scale_statistics = checked; break;
     }
 }
