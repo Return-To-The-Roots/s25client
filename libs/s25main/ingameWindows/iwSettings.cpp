@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -75,7 +75,7 @@ iwSettings::iwSettings()
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart cursor placement"), NormalFont, false)
       ->setChecked(SETTINGS.global.smartCursor)
-      ->setTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
+      ->SetTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
       ->setChecked(SETTINGS.ingame.scale_statistics);

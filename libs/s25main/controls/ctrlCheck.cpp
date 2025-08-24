@@ -17,12 +17,6 @@ ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 
-ctrlCheck* ctrlCheck::setTooltip(std::string tooltip)
-{
-    tooltip_ = std::move(tooltip);
-    return this;
-}
-
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 {
     if(!readonly && IsPointInRect(mc.GetPos(), GetDrawRect()))
