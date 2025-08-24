@@ -26,13 +26,13 @@ void ctrlButton::SetActive(bool activate)
     Window::SetActive(activate);
     if(!activate)
         state = ButtonState::Up;
-    else if(IsMouseOver(VIDEODRIVER.GetMousePos()))
+    else if(IsMouseOver())
         state = ButtonState::Hover;
 }
 
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc.GetPos()))
+    if(isEnabled && IsMouseOver(mc))
     {
         if(state != ButtonState::Pressed)
             state = ButtonState::Hover;
@@ -47,14 +47,9 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
     }
 }
 
-bool ctrlButton::IsMouseOver(const Position& mousePos) const
-{
-    return IsPointInRect(mousePos, GetDrawRect());
-}
-
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc.GetPos()))
+    if(isEnabled && IsMouseOver(mc))
     {
         state = ButtonState::Pressed;
         return true;
@@ -67,7 +62,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
 {
     if(state == ButtonState::Pressed)
     {
-        if(isEnabled && IsMouseOver(mc.GetPos()))
+        if(isEnabled && IsMouseOver(mc))
         {
             state = ButtonState::Hover;
             GetParent()->Msg_ButtonClick(GetID());

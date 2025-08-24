@@ -564,3 +564,13 @@ bool Window::IsInLockedRegion(const Position& pos, const Window* exception) cons
     }
     return false;
 }
+
+bool Window::IsMouseOver() const
+{
+    return IsMouseOver(VIDEODRIVER.GetMousePos());
+}
+
+bool Window::IsMouseOver(const MouseCoords& mousePos) const
+{
+    return IsPointInRect(mousePos.GetPos(), GetDrawRect());
+}
