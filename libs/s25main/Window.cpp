@@ -572,5 +572,5 @@ bool Window::IsMouseOver() const
 
 bool Window::IsMouseOver(const MouseCoords& mousePos) const
 {
-    return IsPointInRect(mousePos.GetPos(), GetDrawRect());
+    return IsPointInRect(mousePos.GetPos(), GetBoundaryRect());
 }
