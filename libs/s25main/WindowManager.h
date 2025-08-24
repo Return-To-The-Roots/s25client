@@ -102,7 +102,10 @@ public:
     void Msg_MouseMove(const MouseCoords& mc) override;
     /// Verarbeitung Keyboard-Event
     void Msg_KeyDown(const KeyEvent& ke) override;
-    // setzt den Tooltip
+    // Show a tooltip
+    // ttw: Window that the tooltip is for, used when updating current tooltip
+    // tooltip: The tooltip text, empty to hide
+    // updateCurrent: If true, only update if the current tooltip is for ttw
     void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent = false);
 
     /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
