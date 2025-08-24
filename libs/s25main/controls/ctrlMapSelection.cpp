@@ -119,7 +119,7 @@ void ctrlMapSelection::setPreview(bool previewOnly)
 
 bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
 {
-    if(!preview && IsMouseOver(mc.GetPos()))
+    if(!preview && IsMouseOver(mc))
     {
         const auto pickPos = invertScale(mc.GetPos() - getMapPosition());
 
@@ -139,11 +139,6 @@ bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
         return true;
     }
     return false;
-}
-
-bool ctrlMapSelection::IsMouseOver(const Position& mousePos) const
-{
-    return IsPointInRect(mousePos, GetDrawRect());
 }
 
 float ctrlMapSelection::getScaleFactor()

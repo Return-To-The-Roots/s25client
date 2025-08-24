@@ -35,7 +35,6 @@ public:
     bool Msg_LeftUp(const MouseCoords& mc) override;
 
 protected:
-    bool IsMouseOver(const Position& mousePos) const;
     void Draw_() override;
 
     void updateEnabledMask();
