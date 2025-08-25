@@ -298,6 +298,10 @@ include(RttrTestingCfg)
 set(rttrContribBoostDir ${CMAKE_CURRENT_SOURCE_DIR}/contrib/boost)
 if(EXISTS ${rttrContribBoostDir} AND IS_DIRECTORY ${rttrContribBoostDir})
     set(BOOST_ROOT ${rttrContribBoostDir} CACHE PATH "Path to find boost at")
+    if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+        set(Boost_INCLUDE_DIR "${rttrContribBoostDir}/include" CACHE PATH "Path to find boost at")
+        set(Boost_LIBRARY_DIR "${rttrContribBoostDir}/lib" CACHE PATH "Path to find boost at")
+    endif ()
 endif()
 
 set(BoostPackages filesystem iostreams locale program_options)
@@ -306,7 +310,7 @@ if(BUILD_TESTING)
     list(APPEND BoostPackages unit_test_framework)
 endif()
 
-find_package(Boost 1.71 COMPONENTS ${BoostPackages})
+find_package(Boost 1.86 COMPONENTS ${BoostPackages})
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.71) into contrib/boost or set (as CMake or environment variable) "
     "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
@@ -315,7 +319,9 @@ if(NOT Boost_FOUND)
 endif()
 
 option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
-
+if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+set(RTTR_USE_SYSTEM_BOOST_NOWIDE ON)
+endif ()
 if(Boost_VERSION_MINOR GREATER_EQUAL "74" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
     # Boost 1.73 contains Boost.Nowide, 1.74 a required fix
     find_package(Boost COMPONENTS nowide)

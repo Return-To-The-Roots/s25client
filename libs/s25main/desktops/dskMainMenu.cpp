@@ -39,9 +39,12 @@ dskMainMenu::dskMainMenu()
     // "Einzelspieler"
     AddTextButton(ID_btSingleplayer, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Singleplayer"),
                   NormalFont);
+
+#if !__EMSCRIPTEN__ // again requires emscripten libwebsocket patching and dedicated websocket <-> tcp/udp proxy server
     // "Mehrspieler"
     AddTextButton(ID_btMultiplayer, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Multiplayer"),
                   NormalFont);
+#endif
     // "Optionen"
     AddTextButton(ID_btOptions, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, _("Options"), NormalFont);
     // "Intro"
@@ -51,9 +54,10 @@ dskMainMenu::dskMainMenu()
     AddTextButton(ID_btReadme, DrawPoint(115, 310), Extent(220, 22), TextureColor::Green2, _("Readme"), NormalFont);
     // "Credits"
     AddTextButton(ID_btCredits, DrawPoint(115, 340), Extent(220, 22), TextureColor::Green2, _("Credits"), NormalFont);
+#if !__EMSCRIPTEN__
     // "Programm verlassen"
     AddTextButton(ID_btQuit, DrawPoint(115, 390), Extent(220, 22), TextureColor::Red1, _("Quit program"), NormalFont);
-
+#endif
     AddImage(ID_logo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 
     using namespace std::chrono_literals;

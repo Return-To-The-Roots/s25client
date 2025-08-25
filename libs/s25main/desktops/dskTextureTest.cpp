@@ -14,7 +14,12 @@
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 #include <boost/filesystem/path.hpp>
 #include <array>
 

@@ -19,7 +19,27 @@ else()
 endif()
 
 add_executable(s25client s25client.cpp commands.cpp ${s25client_RC})
-target_link_libraries(s25client PRIVATE s25Main Boost::program_options Boost::nowide rttr::vld)
+if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+    set(USE_FLAGS "-fwasm-exceptions \
+    --use-port=sdl2 --use-port=sdl2_image --use-port=sdl2_mixer -sSDL2_MIXER_FORMATS=ogg")
+
+    set_target_properties(s25client PROPERTIES
+            COMPILE_FLAGS "${USE_FLAGS}"
+            LINK_FLAGS "${USE_FLAGS} \
+              -sALLOW_MEMORY_GROWTH -sINITIAL_MEMORY=256mb -sMEMORY_GROWTH_LINEAR_STEP=128mb \
+              -sSTACK_SIZE=1024kb \
+              -sENVIRONMENT=web \
+              -sMODULARIZE \
+              -sEXPORT_ALL -sEXPORTED_RUNTIME_METHODS=callMain,addRunDependency,removeRunDependency \
+              -sEXIT_RUNTIME \
+              -sFULL_ES2 -L/src/contrib/gl4es/lib/ -lgl4es \
+              -lwebsocket.js -lidbfs.js -sCASE_INSENSITIVE_FS --profiling-funcs"
+            SUFFIX ".js"
+    )
+    target_link_libraries(s25client PRIVATE s25Main Boost::program_options rttr::vld)
+else ()
+    target_link_libraries(s25client PRIVATE s25Main Boost::program_options Boost::nowide rttr::vld)
+endif ()
 add_dependencies(s25client drivers)
 
 if(WIN32)

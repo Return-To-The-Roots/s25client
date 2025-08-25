@@ -4,7 +4,12 @@
 
 #pragma once
 
+#ifdef __EMSCRIPTEN__
+#include "SDL/SDL.h"
+#include "SDL/SDL_opengl.h"
+#else
 #include <glad/glad.h>
+#endif
 
 namespace ogl {
 enum class Target : GLenum

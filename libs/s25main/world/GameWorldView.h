@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DrawPoint.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include <boost/signals2.hpp>
@@ -26,7 +27,10 @@ public:
     virtual void onDraw(const MapPoint& pt, const DrawPoint& displayPt) = 0;
 };
 
-struct ObjectBetweenLines;
+struct ObjDraw;
+struct ObjFOW;
+struct ObjConstructionAid;
+struct ObjBS;
 
 class GameWorldView
 {
@@ -126,12 +130,9 @@ public:
 
 private:
     void CalcFxLx();
-    void DrawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis);
-    void DrawObject(const MapPoint& pt, const DrawPoint& curPos) const;
-    void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
-    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines) const;
-    void DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
-                                    std::vector<ObjectBetweenLines>& between_lines);
+    void DrawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis, std::vector<ObjBS>& rq);
+    void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjConstructionAid>& rq);
+    void DrawMovingFiguresFromBelow(Direction dir, const TerrainRenderer& terrainRenderer, const DrawPoint& curPos, std::vector<ObjDraw>& rq);
 
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);

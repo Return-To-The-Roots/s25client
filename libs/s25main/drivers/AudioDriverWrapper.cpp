@@ -14,6 +14,10 @@
 #include <ostream>
 #include <vector>
 
+#ifdef __EMSCRIPTEN__
+#include "../../../extras/audioDrivers/SDL/AudioSDL.h"
+#endif
+
 using ovectorstream = boost::interprocess::basic_ovectorstream<std::vector<char>>;
 
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(nullptr, nullptr) {}
@@ -87,6 +91,12 @@ bool AudioDriverWrapper::Init()
 bool AudioDriverWrapper::LoadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver)
 {
     audiodriver_ = Handle(audioDriver.release(), [](driver::IAudioDriver* p) { delete p; });
+    return Init();
+}
+
+bool AudioDriverWrapper::LoadDriver()
+{
+    audiodriver_ = Handle(CreateAudioInstance(this, VIDEODRIVER.GetMapPointer()), &FreeAudioInstance);
     return Init();
 }
 

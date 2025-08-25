@@ -248,11 +248,15 @@ void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
     for(GlPoint& pt : texList.texCoords)
         pt /= texSize;
 
-    glVertexPointer(2, GL_FLOAT, 0, texList.vertices.data());
-    glTexCoordPointer(2, GL_FLOAT, 0, texList.texCoords.data());
     VIDEODRIVER.BindTexture(texture);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
-    glDrawArrays(GL_QUADS, 0, texList.vertices.size());
+
+    glBegin(GL_QUADS);
+    for (size_t i = 0, l = texList.vertices.size(); i < l; ++i) {
+        glTexCoord2f(texList.texCoords[i].x, texList.texCoords[i].y);
+        glVertex2f(texList.vertices[i].x, texList.vertices[i].y);
+    }
+    glEnd();
 }
 
 template<bool T_limitWidth>

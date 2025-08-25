@@ -32,6 +32,7 @@ public:
     /// Do not use this class unless this returned true!
     bool LoadDriver(IVideoDriver* existingDriver);
     bool LoadDriver(std::string& preference);
+    bool LoadDriver();
     void UnloadDriver();
     IVideoDriver* GetDriver() const { return videodriver.get(); }
 
