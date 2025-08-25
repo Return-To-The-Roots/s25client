@@ -100,7 +100,9 @@ public:
     void FreeRegion(Window* window);
     /// Check if the given point is in a region locked by any window other than exception
     bool IsInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
+    /// Check if the mouse is hovering over this control, i.e. inside its boundary.
     bool IsMouseOver() const;
+    /// Check if the given mouse position inside the boundary of this control.
     bool IsMouseOver(const MouseCoords& mousePos) const;
 
     /// Set the position for the window
