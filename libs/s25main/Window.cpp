@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -563,4 +563,14 @@ bool Window::IsInLockedRegion(const Position& pos, const Window* exception) cons
             return true;
     }
     return false;
+}
+
+bool Window::IsMouseOver() const
+{
+    return IsMouseOver(VIDEODRIVER.GetMousePos());
+}
+
+bool Window::IsMouseOver(const MouseCoords& mousePos) const
+{
+    return IsPointInRect(mousePos.GetPos(), GetBoundaryRect());
 }

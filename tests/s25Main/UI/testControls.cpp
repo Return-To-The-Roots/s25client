@@ -14,6 +14,7 @@
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
 #include "helpers/mathFuncs.h"
+#include "mockupDrivers/MockupVideoDriver.h"
 #include "ogl/glFont.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
@@ -27,6 +28,7 @@
 #include <boost/test/unit_test.hpp>
 #include <Loader.h>
 #include <array>
+#include <limits>
 #include <numeric>
 
 // LCOV_EXCL_START
@@ -53,6 +55,26 @@ static std::unique_ptr<glFont> createMockFont(const std::vector<char32_t>& chars
 }
 
 BOOST_AUTO_TEST_SUITE(Controls)
+
+BOOST_FIXTURE_TEST_CASE(MouseOver, uiHelper::Fixture)
+{
+    const auto pos = rttr::test::randomPoint<DrawPoint>(0, std::numeric_limits<DrawPoint::ElementType>::max() / 2);
+    const auto size = rttr::test::randomPoint<Extent>(10, std::numeric_limits<DrawPoint::ElementType>::max() / 2);
+    const auto font = createMockFont({'H', 'e', 'l', 'o', '?'});
+    ctrlTextButton bt(nullptr, 1, pos, size, TextureColor::Bricks, "Hello", font.get(), "");
+    BOOST_TEST(bt.IsMouseOver(pos));
+    BOOST_TEST(!bt.IsMouseOver(pos - DrawPoint(1, 0)));
+    BOOST_TEST(!bt.IsMouseOver(pos - DrawPoint(0, 1)));
+    BOOST_TEST(bt.IsMouseOver(pos + size / 2u));
+    BOOST_TEST(bt.IsMouseOver(pos + size - DrawPoint(1, 1)));
+    BOOST_TEST(!bt.IsMouseOver(pos + size));
+    BOOST_TEST(!bt.IsMouseOver(pos + size + DrawPoint(0, 1)));
+    // Without argument asks the video driver for the mouse position
+    uiHelper::GetVideoDriver()->SetMousePos(pos + size / 2u);
+    BOOST_TEST(bt.IsMouseOver());
+    uiHelper::GetVideoDriver()->SetMousePos(pos + size * 2u);
+    BOOST_TEST(!bt.IsMouseOver());
+}
 
 static void resizeMap(libsiedler2::ArchivItem_Map& glMap, const Extent& size)
 {

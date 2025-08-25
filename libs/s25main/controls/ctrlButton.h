@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -41,7 +41,6 @@ protected:
     void Draw_() override;
     /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
     virtual void DrawContent() const = 0;
-    bool IsMouseOver(const Position& mousePos) const;
 
     /// Texturfarbe des Buttons
     TextureColor tc;
