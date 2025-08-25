@@ -55,7 +55,8 @@ public:
     void Surrender(bool destroyBlds);
     std::pair<unsigned, unsigned> GetHQPos() const;
     bool IsAlly(unsigned char otherPlayerId);
-    bool IsAttackable(unsigned char otherPlayerId);
+    bool CanAttack(unsigned char otherPlayerId);
     void SuggestPact(unsigned char otherPlayerId, lua::SafeEnum<PactType> pt, unsigned duration);
     void CancelPact(lua::SafeEnum<PactType> pt, unsigned char otherPlayerId);
+    void MakeOneSidedAllianceTo(unsigned char otherPlayerId);
 };
