@@ -73,7 +73,7 @@ iwSettings::iwSettings()
     AddCheckBox(ID_cbInvertMouse, curPos, cbSize, TextureColor::Grey, _("Invert Mouse Pan"), NormalFont, false)
       ->setChecked(SETTINGS.interface.invertMouse);
     curPos.y += cbSize.y + 3;
-    AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart cursor placement"), NormalFont, false)
+    AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
       ->setChecked(SETTINGS.global.smartCursor)
       ->SetTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
     curPos.y += cbSize.y + 3;
