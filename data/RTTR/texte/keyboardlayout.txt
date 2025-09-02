@@ -2,19 +2,17 @@
 ------------------------------------------------------------------------
 Global keyboard layout in game:
 
-Bracketed keys do not work yet.
-
 P:.................... Pause
 
 H:.................... Go to headquarters
-B:.................... Go back to start position
+B:.................... Go back to previous position
 
 N:.................... Open post office
 L:.................... Show map
 M:.................... Main selection
 I:.................... Open inventory
 
-SPACE:................ Switch contruction aid function
+SPACE:................ Switch construction aid function
 C:.................... Check information about houses
 S:.................... Show status of houses
 
@@ -24,11 +22,10 @@ V:.................... Game acceleration
 Alt-W, Esc:........... Close active window
 Alt-Q:................ Exit from game
 
-F1:................... (Load game)
 F2:................... Save game
 F8:................... Readme "Keyboard layout"
 F9:................... Readme
-F11:.................. Musicplayer
+F11:.................. Music player
 F12:.................. Options window
 
 Post office:
@@ -39,12 +36,12 @@ G:.................... Go to site of event
 
 Arrow keys: Scroll the main map
 
-Additionally when in Replay-mode:
+Additionally, when in Replay-mode:
 
 D:.................... Discover/hide unexplored land
 J:.................... Go to specific GF
 P:.................... Pause/Resume (also after GF jump)
 1-7:.................. Change to other player
 ------------------------------------------------------------------------
-https://www.siedler25.org        Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org        Copyright (C) 2005-2024 Settlers Freaks
 ------------------------------------------------------------------------
