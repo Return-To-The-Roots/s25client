@@ -11,6 +11,7 @@
 #include "RttrForeachPt.h"
 #include "addons/const_addons.h"
 #include "ai/AIEvents.h"
+#include "ai/random.h"
 #include "boost/filesystem/fstream.hpp"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHarborBuilding.h"
@@ -39,7 +40,6 @@
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <random>
 #include <stdexcept>
 #include <type_traits>
 
@@ -344,10 +344,8 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
         DistributeGoodsByBlocking(GoodType::Boards, 30);
         DistributeGoodsByBlocking(GoodType::Stones, 50);
         // go to the picked random warehouse and try to build around it
-        int randomStore = rand() % (storehouses.size());
-        auto it = storehouses.begin();
-        std::advance(it, randomStore);
-        const MapPoint whPos = (*it)->GetPos();
+        const auto storehouse = AI::randomElement(storehouses);
+        const MapPoint whPos = storehouse->GetPos();
         UpdateNodesAround(whPos, 15); // update the area we want to build in first
         for(const BuildingType i : bldToTest)
         {
@@ -365,7 +363,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     if(militaryBuildings.empty())
         return;
-    int randomMiliBld = rand() % militaryBuildings.size();
+    const int randomMiliBld = static_cast<int>(AI::randomIndex(militaryBuildings));
     auto it2 = militaryBuildings.begin();
     std::advance(it2, randomMiliBld);
     MapPoint bldPos = (*it2)->GetPos();
@@ -1209,7 +1207,7 @@ void AIPlayerJH::HandleExpedition(const noShip* ship)
         aii.FoundColony(ship);
     else
     {
-        const unsigned offset = rand() % helpers::MaxEnumValue_v<ShipDirection>;
+        const unsigned offset = AI::randomValue(0u, helpers::MaxEnumValue_v<ShipDirection> - 1u);
         for(auto dir : helpers::EnumRange<ShipDirection>{})
         {
             dir = ShipDirection((rttr::enum_cast(dir) + offset) % helpers::MaxEnumValue_v<ShipDirection>);
@@ -1254,9 +1252,7 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
 
     UpdateNodesAround(pt, 3);
 
-    int random = rand();
-
-    if(random % 2 == 0)
+    if(AI::random())
         AddMilitaryBuildJob(pt);
     else // if (random % 12 == 0)
         AddBuildJob(BuildingType::Woodcutter, pt);
@@ -1535,10 +1531,10 @@ void AIPlayerJH::TryToAttack()
     constexpr unsigned limit = 40;
     for(const nobMilitary* milBld : militaryBuildings)
     {
-        // We skip the current building with a probability of limit/numMilBlds
+        // We handle the current building with a probability of limit/numMilBlds
         // -> For twice the number of blds as the limit we will most likely skip every 2nd building
         // This way we check roughly (at most) limit buildings but avoid any preference for one building over an other
-        if(rand() % numMilBlds > limit)
+        if(!AI::random(numMilBlds, limit))
             continue;
 
         if(milBld->GetFrontierDistance() == FrontierDistance::Far) // inland building? -> skip it
@@ -1571,7 +1567,7 @@ void AIPlayerJH::TryToAttack()
 
     // shuffle everything but headquarters and harbors without any troops in them
     std::shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end(),
-                 std::mt19937(std::random_device()()));
+                 AI::getRandomGenerator());
 
     // check for each potential attacking target the number of available attacking soldiers
     for(const nobBaseMilitary* target : potentialTargets)
@@ -1704,7 +1700,7 @@ void AIPlayerJH::TrySeaAttack()
     unsigned limit = 15;
     unsigned skip = 0;
     if(searcharoundharborspots.size() > 15)
-        skip = std::max<int>(rand() % (searcharoundharborspots.size() / 15 + 1) * 15, 1) - 1;
+        skip = AI::randomValue(0u, static_cast<unsigned>(searcharoundharborspots.size() / 15u)) * 15u;
     for(unsigned i = skip; i < searcharoundharborspots.size() && limit > 0; i++)
     {
         limit--;
