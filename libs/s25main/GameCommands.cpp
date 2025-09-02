@@ -4,6 +4,7 @@
 
 #include "GameCommands.h"
 #include "GamePlayer.h"
+#include "LeatherLoader.h"
 #include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -16,6 +17,7 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/SettingTypeConv.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -90,19 +92,43 @@ void UpgradeRoad::Execute(GameWorld& world, uint8_t playerId)
 
 ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::ChangeDistribution)
 {
-    if(ser.getDataVersion() >= 1)
+    if(ser.getDataVersion() >= 2)
         helpers::popContainer(ser, data);
     else
     {
-        std::array<Distributions::value_type,
-                   std::tuple_size_v<Distributions> - 3> tmpData; // 3 entries for wine addon
-        helpers::popContainer(ser, tmpData);
+        const unsigned wineAddonAdditionalDistributions = 3;
+        const unsigned leatherAddonAdditionalDistributions = 3;
+
+        auto const additionalDistributions =
+          leatherAddonAdditionalDistributions + (ser.getDataVersion() < 1 ? wineAddonAdditionalDistributions : 0);
+
+        std::vector<Distributions::value_type> tmpData(std::tuple_size_v<Distributions> - additionalDistributions);
+
+        auto skipBuilding = [&](DistributionMapping const& mapping) {
+            // Skipped and standard distribution in skipped case
+            std::tuple<bool, unsigned int> result = {false, 0};
+            if(ser.getDataVersion() < 1)
+            {
+                // skip over wine buildings
+                std::get<0>(result) |= wineaddon::isWineAddonBuildingType(std::get<BuildingType>(mapping));
+            }
+
+            // skip over leather addon buildings and leather addon wares only
+            std::get<0>(result) |= leatheraddon::isLeatherAddonBuildingType(std::get<BuildingType>(mapping));
+
+            if(std::get<BuildingType>(mapping) == BuildingType::Slaughterhouse
+               && (std::get<GoodType>(mapping) == GoodType::Ham))
+                result = {true, 8};
+            return result;
+        };
+
+        helpers::popContainer(ser, tmpData, true);
         size_t srcIdx = 0, tgtIdx = 0;
         for(const auto& mapping : distributionMap)
         {
-            // skip over wine buildings in tmpData
-            const auto setting =
-              wineaddon::isWineAddonBuildingType(std::get<BuildingType>(mapping)) ? 0 : tmpData[srcIdx++];
+            // skip over not stored buildings in tmpData
+            const auto skipped = skipBuilding(mapping);
+            const auto setting = std::get<0>(skipped) ? std::get<1>(skipped) : tmpData[srcIdx++];
             data[tgtIdx++] = setting;
         }
     }
@@ -111,6 +137,32 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
 void ChangeDistribution::Execute(GameWorld& world, uint8_t playerId)
 {
     world.GetPlayer(playerId).ChangeDistribution(data);
+}
+
+ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
+    : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
+{
+    if(ser.getDataVersion() >= 2)
+    {
+        for(BuildingType& i : data)
+            i = helpers::popEnum<BuildingType>(ser);
+    } else
+    {
+        auto countOfNotAvailableBuildingsInSaveGame = ser.getDataVersion() < 1 ? 6 : 3;
+        std::vector<BuildingType> buildOrder(data.size() - countOfNotAvailableBuildingsInSaveGame);
+
+        if(ser.getDataVersion() < 1)
+            buildOrder.insert(buildOrder.end(), {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+
+        if(ser.getDataVersion() < 2)
+            buildOrder.insert(buildOrder.end(),
+                              {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
+
+        for(size_t i = 0; i < data.size() - countOfNotAvailableBuildingsInSaveGame; i++)
+            buildOrder[i] = helpers::popEnum<BuildingType>(ser);
+
+        std::copy(buildOrder.begin(), buildOrder.end(), data.begin());
+    }
 }
 
 void ChangeBuildOrder::Execute(GameWorld& world, uint8_t playerId)
@@ -126,6 +178,27 @@ void SetBuildingSite::Execute(GameWorld& world, uint8_t playerId)
 void DestroyBuilding::Execute(GameWorld& world, uint8_t playerId)
 {
     world.DestroyBuilding(pt_, playerId);
+}
+
+ChangeTransport::ChangeTransport(Deserializer& ser) : GameCommand(GCType::ChangeTransport)
+{
+    if(ser.getDataVersion() >= 2)
+        helpers::popContainer(ser, data);
+    else
+    {
+        const unsigned leatherAddonAdditionalTransportOrders = 1;
+        std::vector<TransportOrders::value_type> tmpData(std::tuple_size<TransportOrders>::value
+                                                         - leatherAddonAdditionalTransportOrders);
+
+        helpers::popContainer(ser, tmpData, true);
+        std::copy(tmpData.begin(), tmpData.end(), data.begin());
+        // all transport prios greater equal 7 are increased by one because the new leatherwork
+        // uses prio 7
+        std::transform(data.begin(), data.end() - leatherAddonAdditionalTransportOrders, data.begin(),
+                       [](uint8_t& prio) { return prio < 7 ? prio : prio + 1; });
+        data[std::tuple_size<TransportOrders>::value - leatherAddonAdditionalTransportOrders] =
+          STD_TRANSPORT_PRIO[GoodType::Leather];
+    }
 }
 
 void ChangeTransport::Execute(GameWorld& world, uint8_t playerId)
@@ -172,6 +245,13 @@ void SetCoinsAllowed::Execute(GameWorld& world, uint8_t playerId)
         bld->SetCoinsAllowed(enabled);
 }
 
+void SetArmorAllowed::Execute(GameWorld& world, uint8_t playerId)
+{
+    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
+    if(bld && bld->GetPlayer() == playerId)
+        bld->SetArmorAllowed(enabled);
+}
+
 void SetTroopLimit::Execute(GameWorld& world, uint8_t playerId)
 {
     auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
@@ -191,6 +271,71 @@ void SetInventorySetting::Execute(GameWorld& world, uint8_t playerId)
     auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetInventorySetting(what, state);
+}
+
+SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
+    : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
+{
+    const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
+    if(ser.getDataVersion() >= 2)
+    {
+        for(unsigned i = 0; i < numStates; i++)
+            states.push_back(InventorySetting(ser.PopUnsignedChar()));
+    } else
+    {
+        states.resize(numStates);
+        if(isJob)
+        {
+            auto skipJobs = [&](Job const& job) {
+                std::tuple<bool, InventorySetting> result = {false, InventorySetting{}};
+                if(ser.getDataVersion() < 1)
+                {
+                    // skip over wine jobs
+                    std::get<0>(result) |= wineaddon::isWineAddonJobType(job);
+                }
+
+                // skip over leather addon jobs
+                std::get<0>(result) |= leatheraddon::isLeatherAddonJobType(job);
+                return result;
+            };
+
+            size_t tgtIdx = 0;
+            for(const auto i : helpers::enumRange<Job>())
+            {
+                // skip over not stored jobs
+                const auto skipped = skipJobs(i);
+                const auto state =
+                  std::get<0>(skipped) ? std::get<1>(skipped) : InventorySetting(ser.PopUnsignedChar());
+                states[tgtIdx++] = state;
+            }
+        }
+
+        if(!isJob)
+        {
+            auto skipWares = [&](GoodType const& ware) {
+                std::tuple<bool, InventorySetting> result = {false, InventorySetting{}};
+                if(ser.getDataVersion() < 1)
+                {
+                    // skip over wine wares
+                    std::get<0>(result) |= wineaddon::isWineAddonGoodType(ware);
+                }
+
+                // skip over leather addon wares
+                std::get<0>(result) |= leatheraddon::isLeatherAddonGoodType(ware);
+                return result;
+            };
+
+            size_t tgtIdx = 0;
+            for(const auto i : helpers::enumRange<GoodType>())
+            {
+                // skip over not stored wares
+                const auto skipped = skipWares(i);
+                const auto state =
+                  std::get<0>(skipped) ? std::get<1>(skipped) : InventorySetting(ser.PopUnsignedChar());
+                states[tgtIdx++] = state;
+            }
+        }
+    }
 }
 
 void SetAllInventorySettings::Execute(GameWorld& world, uint8_t playerId)

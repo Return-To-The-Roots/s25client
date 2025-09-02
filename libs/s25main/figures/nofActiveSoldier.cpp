@@ -18,7 +18,6 @@
 nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
                                    const unsigned char rank, const SoldierState init_state)
     : nofSoldier(pos, player, home, rank), state(init_state), enemy(nullptr)
-
 {}
 
 nofActiveSoldier::nofActiveSoldier(const nofSoldier& other, const SoldierState init_state)
@@ -122,7 +121,12 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::WaitingForFight:
         case SoldierState::AttackingWaitingAroundBuilding:
         case SoldierState::AttackingWaitingForDefender:
-        case SoldierState::DefendingWaiting: DrawSoldierWaiting(drawPt); break;
+        case SoldierState::DefendingWaiting:
+        {
+            DrawSoldierWaiting(drawPt);
+            DrawArmorNotWalking(drawPt);
+            break;
+        }
         case SoldierState::FigureWork:
         case SoldierState::MeetEnemy:
         case SoldierState::AttackingWalkingToGoal:
@@ -134,7 +138,12 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::AttackingCapturingNext:
         case SoldierState::AttackingAttackingFlag:
         case SoldierState::SeaattackingGoToHarbor:
-        case SoldierState::SeaattackingReturnToShip: DrawWalkingBobJobs(drawPt, job_); break;
+        case SoldierState::SeaattackingReturnToShip:
+        {
+            DrawWalkingBobJobs(drawPt, job_);
+            DrawArmorWalking(drawPt);
+            break;
+        }
     }
 }
 
@@ -342,8 +351,15 @@ void nofActiveSoldier::InformTargetsAboutCancelling()
 
 void nofActiveSoldier::TakeHit()
 {
-    RTTR_Assert(hitpoints > 0u);
-    --hitpoints;
+    if(HasArmor())
+    {
+        SetArmor(false);
+        world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(this), 1);
+    } else
+    {
+        RTTR_Assert(hitpoints > 0u);
+        --hitpoints;
+    }
 }
 
 bool nofActiveSoldier::IsReadyForFight() const
