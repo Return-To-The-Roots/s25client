@@ -163,6 +163,9 @@ jobs:
             BOOST_ROOT=$(find "$HOMEBREW_CELLAR/boost/"* -maxdepth 0 -type d | tail -n1)
             echo "Choosen Boost: $BOOST_ROOT"
             [[ -n "$BOOST_ROOT" ]] || exit 1
+            ls "$BOOST_ROOT/include"
+            echo "CMake config files:"
+            find "$BOOST_ROOT"/lib/cmake -type f
             echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
           else
             compiler=${{matrix.compiler}}
