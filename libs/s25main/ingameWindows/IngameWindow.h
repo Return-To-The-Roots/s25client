@@ -104,6 +104,8 @@ public:
 
 protected:
     void Draw_() final;
+    /// Called when not minimized before drawing the frame
+    virtual void DrawBackground();
     /// Called when not minimized after the frame and background have been drawn
     virtual void DrawContent() {}
 

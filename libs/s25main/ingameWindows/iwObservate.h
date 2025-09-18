@@ -37,7 +37,7 @@ public:
     iwObservate(GameWorldView& gwv, MapPoint selectedPt);
 
 private:
-    void DrawContent() override;
+    void DrawBackground() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_RightDown(const MouseCoords& mc) override;
