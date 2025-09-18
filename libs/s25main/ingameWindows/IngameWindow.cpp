@@ -295,7 +295,8 @@ void IngameWindow::Draw_()
 {
     if(isModal_ && !IsActive())
         SetActive(true);
-
+    if(!isMinimized_)
+        DrawBackground();
     // Black border
     // TODO: It would be better if this was included in the windows size. But the controls are added with absolute
     // positions so adding the border to the size would move the border imgs inward into the content.
@@ -423,7 +424,6 @@ void IngameWindow::Draw_()
     // Client area
     if(!isMinimized_)
     {
-        DrawBackground();
         Window::Draw_();
         DrawContent();
     }
