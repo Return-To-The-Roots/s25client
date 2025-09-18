@@ -423,9 +423,7 @@ void IngameWindow::Draw_()
     // Client area
     if(!isMinimized_)
     {
-        if(background)
-            background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
-
+        DrawBackground();
         Window::Draw_();
         DrawContent();
     }
@@ -433,6 +431,12 @@ void IngameWindow::Draw_()
     // The 2 rects on the bottom left and right
     bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, GetSize().y - bottomBorderSideImg->getHeight()));
     bottomBorderSideImg->DrawFull(GetPos() + GetSize() - bottomBorderSideImg->GetSize());
+}
+
+void IngameWindow::DrawBackground()
+{
+    if(background)
+        background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
 }
 
 void IngameWindow::MoveToCenter()

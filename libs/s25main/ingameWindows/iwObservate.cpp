@@ -179,7 +179,7 @@ void iwObservate::Msg_Timer(const unsigned ctrl_id)
     }
 }
 
-void iwObservate::DrawContent()
+void iwObservate::DrawBackground()
 {
     if(GetPos() != lastWindowPos)
     {
