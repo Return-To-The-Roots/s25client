@@ -41,7 +41,7 @@ jobs:
         with:
           submodules: true
       - name: Install boost
-        uses: MarkusJx/install-boost@v2
+        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
         id: install-boost
         with:
           boost_version: ${{env.BOOST_VERSION}}
