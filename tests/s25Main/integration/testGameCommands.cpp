@@ -621,6 +621,33 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(!bld->IsGoldDisabled());
 }
 
+BOOST_FIXTURE_TEST_CASE(ChangeArmorAccept, WorldWithGCExecution2P)
+{
+    const MapPoint bldPt = hqPos + MapPoint(3, 0);
+    auto* bld = dynamic_cast<nobMilitary*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, Nation::Romans));
+    BOOST_TEST_REQUIRE(bld);
+    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled()); //-V522
+
+    // Enable (already is)
+    this->SetArmorAllowed(bldPt, true);
+    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+
+    // Disable
+    this->SetArmorAllowed(bldPt, false);
+    BOOST_TEST_REQUIRE(bld->IsArmorDisabled());
+
+    // Reenable
+    this->SetArmorAllowed(bldPt, true);
+    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+
+    // Production should have no effect
+    this->SetProductionEnabled(bldPt, true);
+    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+    this->SetProductionEnabled(bldPt, false);
+    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+}
+
 BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
@@ -645,6 +672,12 @@ BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
     this->SetCoinsAllowed(bldPt, true);
     BOOST_TEST_REQUIRE(!bld->IsProductionDisabled());
     this->SetCoinsAllowed(bldPt, false);
+    BOOST_TEST_REQUIRE(!bld->IsProductionDisabled());
+
+    // Armor should have no effect
+    this->SetArmorAllowed(bldPt, true);
+    BOOST_TEST_REQUIRE(!bld->IsProductionDisabled());
+    this->SetArmorAllowed(bldPt, false);
     BOOST_TEST_REQUIRE(!bld->IsProductionDisabled());
 }
 

@@ -22,6 +22,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include <rttr/test/testHelpers.hpp>
 #include <boost/test/unit_test.hpp>
@@ -110,7 +111,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
         BOOST_TEST_REQUIRE(world.GetPointRoad(start, road.front()) == PointRoad::Normal);
     }
 
-    void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank)
+    void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank, unsigned numArmoredSoldiers = 0)
     {
         BOOST_TEST_REQUIRE(rank <= world.GetGGS().GetMaxMilitaryRank());
         auto* bld = world.template GetSpecObj<nobMilitary>(bldPos);
@@ -121,9 +122,15 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
             auto& soldier =
               world.AddFigure(bldPos, std::make_unique<nofPassiveSoldier>(bldPos, bld->GetPlayer(), bld, bld, rank));
             world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier.GetJobType(), 1);
+            if(numArmoredSoldiers > 0)
+            {
+                world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(figureToAmoredSoldierEnum(&soldier), 1);
+                soldier.SetArmor(true);
+            }
             // Let him "walk" to goal -> Already reached -> Added and all internal states set correctly
             soldier.WalkToGoal();
             BOOST_TEST_REQUIRE(soldier.HasNoGoal());
+            numArmoredSoldiers--;
         }
         BOOST_TEST_REQUIRE(bld->GetNumTroops() == oldNumSoldiers + numSoldiers);
     }
@@ -451,6 +458,53 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
+{
+    initGameRNG();
+
+    AddSoldiersWithRank(milBld0Pos, 3, 0, 2);
+    AddSoldiersWithRank(milBld1Pos, 1, 0, 1);
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+    // Start attack ->1 (weak one first)
+    this->Attack(milBld1Pos, 1, false);
+    this->Attack(milBld1Pos, 2, false);
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 3u);
+    BOOST_TEST_REQUIRE(milBld1->GetNumTroops() == 1u);
+    // Run till attackers reach bld. 1 Soldier will leave for them.
+    // 1 stays inside till an attacker is at door
+    // 20 GFs/node + 30 GFs for leaving
+    const unsigned distance = world.CalcDistance(milBld0Pos, milBld1Pos);
+    RTTR_EXEC_TILL(distance * 20 + 30, milBld1->GetNumTroops() == 1);
+    BOOST_TEST_REQUIRE(milBld1->GetNumTroops() + milBld1->GetLeavingFigures().size() == 1u);
+    const Inventory& attackedPlInventory = world.GetPlayer(1).GetInventory();
+    const unsigned oldWeakSoldierCt = attackedPlInventory.people[Job::Private];
+    const unsigned oldWeakSoldierWithArmorCt =
+      attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)];
+
+    // Once an attacker reaches the flag, the bld will send a defender
+    BOOST_TEST_REQUIRE(!milBld1->GetDefender());
+    RTTR_EXEC_TILL(300, milBld1->GetNumTroops() == 0);
+    // Defender deployed, attacker at flag
+    BOOST_TEST_REQUIRE(milBld1->GetDefender());
+    {
+        const auto figures = world.GetFigures(milBld1->GetFlagPos());
+        BOOST_TEST_REQUIRE(figures.size() == 1u);
+        const auto& attacker = dynamic_cast<const nofAttacker&>(*figures.begin());
+        BOOST_TEST_REQUIRE(static_cast<const nofAttacker&>(attacker).GetPlayer() == curPlayer);
+    }
+
+    // Lets fight until defender has no armor anymore
+    // He should not lose a hitpoint but the armor
+    RTTR_EXEC_TILL(1000, milBld1->GetDefender()->HasArmor() == false);
+    BOOST_TEST_REQUIRE(attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)]
+                       == oldWeakSoldierWithArmorCt - 1);
+    BOOST_TEST_REQUIRE(attackedPlInventory.people[Job::Private] == oldWeakSoldierCt);
+    BOOST_TEST_REQUIRE(milBld1->GetDefender()->GetHitpoints() == HITPOINTS[milBld1->GetDefender()->GetRank()]);
+}
+
 BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonEnable, AttackFixture<>)
 {
     this->ggs.setSelection(AddonId::COINS_CAPTURED_BLD, 1); // addon is active on second run
@@ -497,6 +551,54 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
 
     // check if coins were disabled after building was captured
     BOOST_TEST_REQUIRE(milBld1->IsGoldDisabled());
+}
+
+BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonEnable, AttackFixture<>)
+{
+    this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 1); // addon is active on second run
+
+    initGameRNG();
+    AddSoldiers(milBld0Pos, 1, 5);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+
+    // ensure that armor are disabled
+    milBld1->SetArmorAllowed(false);
+    BOOST_TEST_REQUIRE(milBld1->IsArmorDisabled());
+
+    // Start attack -> 1
+    this->Attack(milBld1Pos, 6, false);
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 1u);
+
+    RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
+
+    // check if armor were enabled after building was captured
+    BOOST_TEST_REQUIRE(!milBld1->IsArmorDisabled());
+}
+
+BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonDisable, AttackFixture<>)
+{
+    this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 2); // addon is active on second run
+
+    initGameRNG();
+    AddSoldiers(milBld0Pos, 1, 5);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+
+    // ensure that armor are enabled
+    milBld1->SetArmorAllowed(true);
+    BOOST_TEST_REQUIRE(!milBld1->IsArmorDisabled());
+
+    // Start attack -> 1
+    this->Attack(milBld1Pos, 6, false);
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 1u);
+
+    RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
+
+    // check if armor were disabled after building was captured
+    BOOST_TEST_REQUIRE(milBld1->IsArmorDisabled());
 }
 
 using AttackFixture4P = AttackFixture<4, 32, 34>;

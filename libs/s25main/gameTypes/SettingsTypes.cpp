@@ -31,10 +31,14 @@ const DistributionMap distributionMap = {{
   DistributionMapping(GoodType::Boards, BuildingType::Headquarters, 10),
   DistributionMapping(GoodType::Boards, BuildingType::Metalworks, 4),
   DistributionMapping(GoodType::Boards, BuildingType::Shipyard, 2),
+  DistributionMapping(GoodType::Boards, BuildingType::Tannery, 1),
 
   DistributionMapping(GoodType::Water, BuildingType::Bakery, 6),
   DistributionMapping(GoodType::Water, BuildingType::Brewery, 3),
   DistributionMapping(GoodType::Water, BuildingType::PigFarm, 2),
   DistributionMapping(GoodType::Water, BuildingType::DonkeyBreeder, 2),
   DistributionMapping(GoodType::Water, BuildingType::Vineyard, 2),
+
+  DistributionMapping(GoodType::Ham, BuildingType::Slaughterhouse, 8),
+  DistributionMapping(GoodType::Ham, BuildingType::Skinner, 3),
 }};
