@@ -58,8 +58,8 @@ BOOST_AUTO_TEST_SUITE(Controls)
 
 BOOST_FIXTURE_TEST_CASE(MouseOver, uiHelper::Fixture)
 {
-    const auto pos = rttr::test::randomPoint<DrawPoint>(0, std::numeric_limits<DrawPoint::ElementType>::max() / 2);
-    const auto size = rttr::test::randomPoint<Extent>(10, std::numeric_limits<DrawPoint::ElementType>::max() / 2);
+    const auto pos = rttr::test::randomPoint<DrawPoint>();
+    const auto size = rttr::test::randomPoint<Extent>(10);
     const auto font = createMockFont({'H', 'e', 'l', 'o', '?'});
     ctrlTextButton bt(nullptr, 1, pos, size, TextureColor::Bricks, "Hello", font.get(), "");
     BOOST_TEST(bt.IsMouseOver(pos));
