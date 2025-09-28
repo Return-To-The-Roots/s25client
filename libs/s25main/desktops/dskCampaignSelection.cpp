@@ -88,6 +88,7 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
     AddTextButton(ID_btBack, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     AddTextButton(ID_Next, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont);
 
+    GetCtrl<ctrlButton>(ID_Next)->SetEnabled(false);
     showCampaignInfo(false);
 
     // Delay loading until screen is shown such that possible error message boxes are shown after switching to this
