@@ -18,9 +18,20 @@ else()
     set(s25client_RC )
 endif()
 
-add_executable(s25client s25client.cpp commands.cpp ${s25client_RC})
-target_link_libraries(s25client PRIVATE s25Main Boost::program_options Boost::nowide rttr::vld)
-add_dependencies(s25client drivers)
+if(RTTR_BUILD_LIB)
+    add_library(s25client SHARED s25client.cpp commands.cpp ${s25client_RC})
+else()
+    add_executable(s25client s25client.cpp commands.cpp ${s25client_RC})
+endif()
+
+if(ANDROID)
+    find_package(SDL2 2.0.5) # SDL2 android needs a specific sdl function(SDL_main) as entry point.
+    target_link_libraries(s25client PRIVATE s25Main Boost::program_options Boost::nowide rttr::vld SDL2::SDL2)
+else()
+    target_link_libraries(s25client PRIVATE s25Main Boost::program_options Boost::nowide rttr::vld)
+endif()
+
+add_dependencies(s25client drivers translations)
 
 if(WIN32)
     target_include_directories(s25client PRIVATE ${rcDir})
