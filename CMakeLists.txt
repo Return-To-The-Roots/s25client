@@ -242,6 +242,7 @@ include(RttrCoverageCfg)
 include(EnableSanitizers)
 
 option(RTTR_USE_SYSTEM_LIBS "Default to using system-wide installed libs for external dependencies that have known system versions." OFF)
+option(RTTR_BUILD_LIB "Executables will be build as shared library." OFF)
 
 ################################################################################
 # Configure files
