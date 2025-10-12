@@ -398,176 +398,63 @@ void iwStatistics::DrawStatistic(StatisticType type)
 
 void iwStatistics::DrawAxis()
 {
-    // Ein paar benötigte Werte...
+    // constants / locals
     const int sizeX = 180;
     const int sizeY = 80;
-    const DrawPoint topLeft = GetPos() + DrawPoint(34, 124);
+    const DrawPoint topLeft   = GetPos() + DrawPoint(34, 124);
     const DrawPoint topLeftRel(37, 124);
+    const auto col = MakeColor(255, 88, 44, 16);
 
-    // X-Achse, horizontal, war irgendwie zu lang links :S
-    DrawLine(topLeft + DrawPoint(6, sizeY + 2), // bisschen tiefer, damit man nulllinien noch sieht
-             topLeft + DrawPoint(sizeX, sizeY + 1), 1, MakeColor(255, 88, 44, 16));
+    // lambdas
+    auto drawTick = [&](int x){ DrawLine(topLeft + DrawPoint(x, sizeY + 2),
+                                         topLeft + DrawPoint(x, sizeY + 4), 1, col); };
 
-    // Y-Achse, vertikal
-    DrawLine(topLeft + DrawPoint(sizeX, 0), topLeft + DrawPoint(sizeX, sizeY + 5), 1, MakeColor(255, 88, 44, 16));
+    auto setAnno = [&](int slot, int x, const char* text, bool vis=true){
+        timeAnnotations[slot]->SetPos(topLeftRel + DrawPoint(x, sizeY + 6));
+        timeAnnotations[slot]->SetText(text);
+        timeAnnotations[slot]->SetVisible(vis);
+    };
 
-    // Striche an der Y-Achse
-    DrawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, MakeColor(255, 88, 44, 16));
-    DrawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2), topLeft + DrawPoint(sizeX + 4, sizeY / 2), 1,
-             MakeColor(255, 88, 44, 16));
+    // 1) Axes
+    DrawLine(topLeft + DrawPoint(6, sizeY + 2),        // X axis
+             topLeft + DrawPoint(sizeX, sizeY + 1), 1, col);
+    DrawLine(topLeft + DrawPoint(sizeX, 0),            // Y axis
+             topLeft + DrawPoint(sizeX, sizeY + 5), 1, col);
 
-    // Striche an der X-Achse + Beschriftung
-    // Zunächst die 0, die haben alle
-    timeAnnotations[6]->SetPos(topLeftRel + DrawPoint(180, sizeY + 6));
-    timeAnnotations[6]->SetText("0");
-    timeAnnotations[6]->SetVisible(true);
+    // Y tick marks
+    DrawLine(topLeft + DrawPoint(sizeX - 3, 0),            topLeft + DrawPoint(sizeX + 4, 0),            1, col);
+    DrawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2),    topLeft + DrawPoint(sizeX + 4, sizeY / 2),    1, col);
 
+    // 2) Build X ticks for currentTime
+    // Each entry: {pixel_x, label}
+    std::vector<std::pair<int, const char*>> ticks;
     switch(currentTime)
     {
         case StatisticTime::T15Minutes:
-            // -15
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-15");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -12
-            DrawLine(topLeft + DrawPoint(40, sizeY + 2), topLeft + DrawPoint(40, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(40, sizeY + 6));
-            timeAnnotations[1]->SetText("-12");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -9
-            DrawLine(topLeft + DrawPoint(75, sizeY + 2), topLeft + DrawPoint(75, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(75, sizeY + 6));
-            timeAnnotations[2]->SetText("-9");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -6
-            DrawLine(topLeft + DrawPoint(110, sizeY + 2), topLeft + DrawPoint(110, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(110, sizeY + 6));
-            timeAnnotations[3]->SetText("-6");
-            timeAnnotations[3]->SetVisible(true);
-
-            // -3
-            DrawLine(topLeft + DrawPoint(145, sizeY + 2), topLeft + DrawPoint(145, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(145, sizeY + 6));
-            timeAnnotations[4]->SetText("-3");
-            timeAnnotations[4]->SetVisible(true);
-
-            timeAnnotations[5]->SetVisible(false);
+            ticks = { {6,"-15"}, {40,"-12"}, {75,"-9"}, {110,"-6"}, {145,"-3"} };
             break;
         case StatisticTime::T1Hour:
-            // -60
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-60");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -50
-            DrawLine(topLeft + DrawPoint(35, sizeY + 2), topLeft + DrawPoint(35, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(35, sizeY + 6));
-            timeAnnotations[1]->SetText("-50");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -40
-            DrawLine(topLeft + DrawPoint(64, sizeY + 2), topLeft + DrawPoint(64, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(64, sizeY + 6));
-            timeAnnotations[2]->SetText("-40");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -30
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
-            timeAnnotations[3]->SetText("-30");
-            timeAnnotations[3]->SetVisible(true);
-
-            // -20
-            DrawLine(topLeft + DrawPoint(122, sizeY + 2), topLeft + DrawPoint(122, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(122, sizeY + 6));
-            timeAnnotations[4]->SetText("-20");
-            timeAnnotations[4]->SetVisible(true);
-
-            // -10
-            DrawLine(topLeft + DrawPoint(151, sizeY + 2), topLeft + DrawPoint(151, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[5]->SetPos(topLeftRel + DrawPoint(151, sizeY + 6));
-            timeAnnotations[5]->SetText("-10");
-            timeAnnotations[5]->SetVisible(true);
+            ticks = { {6,"-60"}, {35,"-50"}, {64,"-40"}, {93,"-30"}, {122,"-20"}, {151,"-10"} };
             break;
         case StatisticTime::T4Hours:
-            // -240
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-240");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -180
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
-            timeAnnotations[1]->SetText("-180");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -120
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
-            timeAnnotations[2]->SetText("-120");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -60
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
-            timeAnnotations[3]->SetText("-60");
-            timeAnnotations[3]->SetVisible(true);
-
-            timeAnnotations[4]->SetVisible(false);
-            timeAnnotations[5]->SetVisible(false);
+            ticks = { {6,"-240"}, {49,"-180"}, {93,"-120"}, {136,"-60"} };
             break;
         case StatisticTime::T16Hours:
-            // -960
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
-            timeAnnotations[0]->SetText("-960");
-            timeAnnotations[0]->SetVisible(true);
-
-            // -720
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
-            timeAnnotations[1]->SetText("-720");
-            timeAnnotations[1]->SetVisible(true);
-
-            // -480
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
-            timeAnnotations[2]->SetText("-480");
-            timeAnnotations[2]->SetVisible(true);
-
-            // -240
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
-            timeAnnotations[3]->SetText("-240");
-            timeAnnotations[3]->SetVisible(true);
-
-            timeAnnotations[4]->SetVisible(false);
-            timeAnnotations[5]->SetVisible(false);
+            ticks = { {6,"-960"}, {49,"-720"}, {93,"-480"}, {136,"-240"} };
             break;
     }
+
+    // 3) Hide all annotations first (0..6)
+    for(int i = 0; i <= 6; ++i) timeAnnotations[i]->SetVisible(false);
+
+    // 4) Draw ticks + labels (use slots 0..n-1)
+    int slot = 0;
+    for(const auto& [x, label] : ticks)
+    {
+        drawTick(x);
+        setAnno(slot++, x, label, true);
+    }
+
+    // 5) Draw and show the zero at the end (fixed at x=180, slot 6)
+    setAnno(6, 180, "0", true);
 }

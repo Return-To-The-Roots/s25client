@@ -20,6 +20,7 @@ struct BuildParams
 {
     double constant = 0.0;
     double linear = 0.0;
+    double exponential = 0.0;
     Logarithmic logTwo = {0.0, 0.0};
     Logarithmic logE = {0.0, 0.0};
     unsigned min = 0;
@@ -55,6 +56,7 @@ struct WantedParams
     BuildParams workersAdvance = {1};
     unsigned max = 10000;
     unsigned minProductivity = 0;
+    BuildParams productivity = {};
 };
 
 namespace CALC {

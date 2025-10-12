@@ -39,14 +39,16 @@ public:
     DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : font(*NormalFont), ai(ai), overlay(overlay)
     {
         // Cache images
-        for(const auto i : helpers::enumRange<BuildingQuality>())
-        {
-            bqImgs[i] = LOADER.GetMapTexture(49 + rttr::enum_cast(i));
-        }
+        bqImgs[BuildingQuality::Nothing] = nullptr;
+        bqImgs[BuildingQuality::Flag] = LOADER.GetMapTexture(50);
+        bqImgs[BuildingQuality::Hut] = LOADER.GetMapTexture(51);
+        bqImgs[BuildingQuality::House] = LOADER.GetMapTexture(52);
+        bqImgs[BuildingQuality::Castle] = LOADER.GetMapTexture(53);
+        bqImgs[BuildingQuality::Mine] = LOADER.GetMapTexture(54);
+        bqImgs[BuildingQuality::Harbor] = LOADER.GetMapTexture(55);
+
         ticks[0] = LOADER.GetTextureN("io", 40);
         ticks[1] = LOADER.GetTextureN("io", 32);
-        bqImgs[BuildingQuality::Nothing] = nullptr;
-        bqImgs[BuildingQuality::Harbor] = ticks[0]; // Invalid marker
     }
 
     const AIJH::AIPlayerJH* ai;

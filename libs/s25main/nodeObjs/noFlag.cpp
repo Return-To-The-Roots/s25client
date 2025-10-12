@@ -10,7 +10,6 @@
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
-#include "enum_cast.hpp"
 #include "figures/nofCarrier.h"
 #include "helpers/EnumRange.h"
 #include "network/GameClient.h"
@@ -18,6 +17,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorld.h"
 #include "gameData/TerrainDesc.h"
+#include "gameTypes/GoodTypes.h"
 #include <algorithm>
 
 noFlag::noFlag(const MapPoint pos, const unsigned char player)
@@ -58,6 +58,11 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     } else
         sgd.PopObjectContainer(wares, GO_Type::Ware);
 
+    for(const auto i : helpers::enumRange<GoodType>())
+    {
+        inventory.visual[i] = sgd.PopUnsignedInt();
+        inventory.real[i] = sgd.PopUnsignedInt();
+    }
     // BWUs laden
     for(auto& bwu : bwus)
     {
@@ -94,7 +99,11 @@ void noFlag::Serialize(SerializedGameData& sgd) const
 
     sgd.PushEnum<uint8_t>(flagtype);
     sgd.PushObjectContainer(wares, true);
-
+    for(const auto i : helpers::enumRange<GoodType>())
+    {
+        sgd.PushUnsignedInt(inventory.visual[i]);
+        sgd.PushUnsignedInt(inventory.real[i]);
+    }
     // BWUs speichern
     for(const auto& bwu : bwus)
     {
@@ -136,6 +145,9 @@ std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
  */
 void noFlag::AddWare(std::unique_ptr<Ware> ware)
 {
+    const GoodType good = ware->type;
+
+    inventory.Add(good, 1);
     // First add ware, then tell carrier. So get the info from the ware first
     const RoadPathDirection nextDir = ware->GetNextDir();
     wares.push_back(std::move(ware));
@@ -363,4 +375,9 @@ void noFlag::ImpossibleForBWU(const unsigned bwu_id)
     // Den ältesten dann schließlich überschreiben
     bwus[oldest_account_id].id = bwu_id;
     bwus[oldest_account_id].last_gf = oldest_gf;
+}
+
+const Inventory& noFlag::GetInventory() const
+{
+    return inventory.visual;
 }

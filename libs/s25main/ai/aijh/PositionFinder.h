@@ -5,9 +5,10 @@
 #ifndef POSITIONFINDER_H
 #define POSITIONFINDER_H
 #include "AIPlayerJH.h"
+#include "WeightParams.h"
 #include "ai/RatedPoint.h"
-#include "gameTypes/BuildingType.h"
 #include "ai/aijh/AIMap.h"
+#include "gameTypes/BuildingType.h"
 
 namespace AIJH {
 class AIPlayerJH;
@@ -20,6 +21,7 @@ public:
     RatedPoint FindPositionAround(BuildingType type, const MapPoint& around, int searchRadius);
     RatedPointSet FindBestPositions(const MapPoint& pt, AIResource res, BuildingQuality size, unsigned radius,
                                           int minimum);
+    bool CheckProximity(BuildingType type, const MapPoint& pt);
 private:
     AIPlayerJH& aijh;
 };

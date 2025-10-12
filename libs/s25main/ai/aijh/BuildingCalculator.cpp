@@ -2,9 +2,9 @@
 
 #include "AIConfig.h"
 #include "AIPlayerJH.h"
-#include "WeightParams.h"
 #include "BuildingPlanner.h"
 #include "PlannerHelper.h"
+#include "WeightParams.h"
 #include "addons/const_addons.h"
 #include "gameTypes/GoodTypes.h"
 
@@ -77,11 +77,18 @@ unsigned BuildCalculator::doCalc(BuildingType type)
     {
         return maxBld;
     }
-    if(buildingNums.buildings[type] > 0 && aijh.GetProductivity(type) < wantedParams.minProductivity)
-    {
-        return currentBld;
-    }
+
     double count = 0;
+    double productivity = aijh.GetProductivity(type);
+    if(buildingNums.buildings[type] > 0 && productivity < wantedParams.minProductivity)
+        return currentBld;
+    if(buildingNums.buildings[type] > 2 && wantedParams.productivity.enabled)
+    {
+        double diff = 100 - productivity;
+        double malus = std::pow(diff * wantedParams.productivity.linear,  wantedParams.productivity.exponential);
+        count -= malus;
+    }
+
     for(const auto bldType : helpers::enumRange<BuildingType>())
     {
         BuildParams params = wantedParams.bldWeights[bldType];
@@ -131,6 +138,7 @@ unsigned BuildCalculator::doCalc(BuildingType type)
             count += std::min<double>(value, params.max);
         }
     }
+    count = std::max<double>(0.0, count);
     unsigned result = std::max<unsigned>(0, static_cast<unsigned>(count));
     return std::min<unsigned>(std::min<unsigned>(result, maxBld), wantedParams.max);
 }

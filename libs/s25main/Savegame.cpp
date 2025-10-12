@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <sys/stat.h>
 #include "Savegame.h"
 #include "gameTypes/CompressedData.h"
 #include "s25util/BinaryFile.h"
@@ -29,8 +30,10 @@ Savegame::~Savegame() = default;
 bool Savegame::Save(const boost::filesystem::path& filepath, const std::string& mapName)
 {
     BinaryFile file;
-
-    return file.Open(filepath, OpenFileMode::Write) && Save(file, mapName);
+    mode_t old_umask = umask(0077); // Restrict to owner only
+    bool result = file.Open(filepath, OpenFileMode::Write) && Save(file, mapName);
+    umask(old_umask);
+    return result;
 }
 
 bool Savegame::Save(BinaryFile& file, const std::string& mapName)

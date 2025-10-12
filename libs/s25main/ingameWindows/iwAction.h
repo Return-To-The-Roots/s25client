@@ -43,13 +43,13 @@ public:
     {
     public:
         /// Haupttabs
-        bool build, setflag, watch, flag, cutroad, upgradeRoad, attack, sea_attack;
+        bool build, setflag, watch, flag, cutroad, upgradeRoad, attack, sea_attack, info;
         /// Gebäude-Bau-Tabs
         BuildTab build_tabs;
 
         Tabs()
             : build(false), setflag(false), watch(false), flag(false), cutroad(false), upgradeRoad(false),
-              attack(false), sea_attack(false), build_tabs(BuildTab::Hut)
+              attack(false), sea_attack(false), info(false), build_tabs(BuildTab::Hut)
         {}
     };
 
@@ -91,6 +91,7 @@ private:
     inline void Msg_ButtonClick_TabSeaAttack(unsigned ctrl_id);
     inline void Msg_ButtonClick_TabSetFlag(unsigned ctrl_id);
     inline void Msg_ButtonClick_TabWatch(unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabInfo(const unsigned ctrl_id);
 
     void DisableMousePosResetOnClose();
 

@@ -228,7 +228,7 @@ void iwWares::Msg_PaintBefore()
         for(unsigned i = 0; i < count; ++i)
         {
             auto* text = group->GetCtrl<ctrlText>(600 + i);
-            if(text)
+                if(text)
             {
                 const unsigned amount =
                   (curPage_ == warePageID) ? inventory[static_cast<GoodType>(i)] : inventory[static_cast<Job>(i)];

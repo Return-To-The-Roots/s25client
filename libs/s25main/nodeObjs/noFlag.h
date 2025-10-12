@@ -7,6 +7,8 @@
 #include "noRoadNode.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/VirtualInventory.h"
+
 #include <boost/container/static_vector.hpp>
 #include <array>
 #include <memory>
@@ -59,9 +61,11 @@ public:
     /// Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
     void ImpossibleForBWU(unsigned bwu_id);
 
+    const Inventory& GetInventory() const;
 private:
     unsigned short ani_offset;
     FlagType flagtype;
+    VirtualInventory inventory;
 
     /// Die Waren, die an dieser Flagge liegen
     boost::container::static_vector<std::unique_ptr<Ware>, 8> wares;

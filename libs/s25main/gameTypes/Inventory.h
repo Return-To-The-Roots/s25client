@@ -8,6 +8,7 @@
 #include "GoodsAndPeopleArray.h"
 #include "JobTypes.h"
 #include "RTTR_Assert.h"
+#include "Ware.h"
 
 /// Struct for wares and people (for HQs, warehouses etc)
 struct Inventory : GoodsAndPeopleArray<unsigned>

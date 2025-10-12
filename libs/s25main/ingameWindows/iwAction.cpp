@@ -16,6 +16,7 @@
 #include "controls/ctrlTab.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "iwDemolishBuilding.h"
+#include "iwRoadStats.h"
 #include "iwMilitaryBuilding.h"
 #include "iwObservate.h"
 #include "network/GameClient.h"
@@ -38,7 +39,8 @@ enum TabID
     TAB_FLAG,
     TAB_CUTROAD,
     TAB_ATTACK,
-    TAB_SEAATTACK
+    TAB_SEAATTACK,
+    TAB_INFO,
 };
 
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt,
@@ -196,14 +198,16 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         {
             case FlagType::Normal:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(45, 36), TextureColor::Grey,
+                group->AddImageButton(1, DrawPoint(0, 45), Extent(36, 36), TextureColor::Grey,
                                       LOADER.GetImageN("io", 65), _("Build road"));
-                group->AddImageButton(3, DrawPoint(45, 45), Extent(45, 36), TextureColor::Grey,
+                group->AddImageButton(3, DrawPoint(36, 45), Extent(36, 36), TextureColor::Grey,
                                       LOADER.GetImageN("io", 118), _("Pull down flag"));
-                group->AddImageButton(4, DrawPoint(90, 45), Extent(45, 36), TextureColor::Grey,
+                group->AddImageButton(4, DrawPoint(72, 45), Extent(36, 36), TextureColor::Grey,
                                       LOADER.GetImageN("io", 20), _("Call in geologist"));
-                group->AddImageButton(5, DrawPoint(135, 45), Extent(45, 36), TextureColor::Grey,
+                group->AddImageButton(5, DrawPoint(108, 45), Extent(36, 36), TextureColor::Grey,
                                       LOADER.GetImageN("io", 96), _("Send out scout"));
+                group->AddImageButton(6, DrawPoint(144, 45), Extent(36, 36), TextureColor::Grey,
+                    LOADER.GetImageN("io", 135),_("Road info"));
             }
             break;
             case FlagType::WaterFlag:
@@ -304,6 +308,19 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         curPos.x += btSize.x;
         group->AddImageButton(4, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 107),
                               _("Notify allies of this location"));
+    }
+
+    // road info
+    if(tabs.info)
+    {
+        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 135), _("Road info"), TAB_INFO);
+
+        // Straße aufwerten ggf anzeigen
+        Extent btSize(180, 36);
+        unsigned btPosX = 0;
+
+        group->AddImageButton(1, DrawPoint(btPosX, 45), btSize, TextureColor::Grey, LOADER.GetImageN("io", 135),
+                              _("Road info"));
     }
 
     main_tab->SetSelection(0, true);
@@ -438,12 +455,18 @@ void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned
             Msg_ButtonClick_TabWatch(ctrl_id);
         }
         break;
+
+        case TAB_INFO:
+        {
+            Msg_ButtonClick_TabInfo(ctrl_id);
+        }
+        break;
     }
 }
 
 void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id)
 {
-    switch(ctrl_id)
+        switch(ctrl_id)
     {
         case 0: // Haupttabs
         {
@@ -452,6 +475,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
             {
                 case TAB_FLAG:
                 case TAB_CUTROAD:
+                case TAB_INFO:
                 case TAB_SETFLAG:
                 case TAB_WATCH: height = 138; break;
                 case TAB_BUILD:
@@ -482,7 +506,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
         }
         break;
     }
-}
+    }
 
 void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
 {
@@ -651,6 +675,10 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
                 Close();
         }
         break;
+        case 6:
+        const noFlag* flag = gwv.GetWorld().GetSpecObj<noFlag>(selectedPt);//GetRoadFlag(selectedPt, flag_dir);
+        WINDOWMANAGER.ToggleWindow(std::make_unique<iwRoadStats>(gwv.GetViewer().GetPlayer(), flag));
+        break;
     }
 }
 
@@ -731,6 +759,18 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
             if(GAMECLIENT.NotifyAlliesOfLocation(selectedPt))
                 Close();
             break;
+    }
+}
+
+void iwAction::Msg_ButtonClick_TabInfo(const unsigned ctrl_id)
+{
+    switch(ctrl_id)
+    {
+        case 1:
+            Direction flag_dir;
+            const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwRoadStats>(gwv.GetViewer().GetPlayer(), flag));
+        break;
     }
 }
 

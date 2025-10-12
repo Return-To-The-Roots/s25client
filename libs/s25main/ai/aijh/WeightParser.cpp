@@ -45,6 +45,10 @@ BuildParams Weights::parseBuildParams(const YAML::Node& node, const BuildParams&
     {
         params.linear = node["linear"].as<double>();
     }
+    if(node["exponential"])
+    {
+        params.exponential = node["exponential"].as<double>();
+    }
     if(node["logTwo"])
     {
         YAML::Node nodeLog2 = node["logTwo"];
@@ -130,7 +134,7 @@ WantedParams Weights::parseWantedParams(const YAML::Node& node, WantedParams par
               Weights::parseBuildParams(weightEntry.second, params.resourceWeights[resourceType]);
         }
     if(node["workersAdvance"])
-        params.workersAdvance = Weights::parseBuildParams(node["workersAdvance"], {});
+        params.workersAdvance = parseBuildParams(node["workersAdvance"], {});
 
     if(node["max"])
         params.max = node["max"].as<unsigned>();
@@ -138,5 +142,7 @@ WantedParams Weights::parseWantedParams(const YAML::Node& node, WantedParams par
     if(node["minProductivity"])
         params.minProductivity = node["minProductivity"].as<unsigned>();
 
+    if(node["productivity"])
+        params.productivity = parseBuildParams(node["productivity"], {});
     return params;
 }

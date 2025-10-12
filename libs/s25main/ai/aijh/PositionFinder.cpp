@@ -6,6 +6,7 @@
 #include "BuildingPlanner.h"
 #include "WeightParams.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobHQ.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/BuildingConsts.h"
 
@@ -22,10 +23,8 @@ MapPoint PositionFinder::FindBestPosition(BuildingType bt)
     {
         arounds.push_back(mil->GetPos());
     }
-    for(const nobBaseWarehouse* wh : aii.GetStorehouses())
-    {
-        arounds.push_back(wh->GetPos());
-    }
+    arounds.push_back(aii.GetHeadquarter()->GetPos());
+
     for(const MapPoint around : arounds)
     {
         auto point = FindPositionAround(bt, around, 11);
@@ -44,24 +43,21 @@ MapPoint PositionFinder::FindBestPosition(BuildingType bt)
 RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint& around, int searchRadius)
 {
     AIConstruction& construction = aijh.GetConstruction();
-    
+
     // First check the general minRadius condition for all building types
-    auto locationParam = AI_CONFIG.locationParams[type];
-    if(locationParam.enabled)
+    // auto locationParam = AI_CONFIG.locationParams[type];
+    // unsigned buildingCount = aijh.GetBldPlanner().GetNumBuildings(type);
+    // auto proximity = locationParam.proximity[type];
+    /*if(proximity.enabled)
     {
-        unsigned buildingCount = aijh.GetBldPlanner().GetNumBuildings(type);
-        auto proximity = locationParam.proximity[type];
-        if(proximity.enabled)
+        MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
+        unsigned minRadius = (unsigned)CALC::calcCount(buildingCount, proximity.minimal);
+        if(construction.OtherUsualBuildingInRadius(point, minRadius, type))
         {
-            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
-            unsigned minRadius = (unsigned) CALC::calcCount(buildingCount, proximity.minimal);
-            if(construction.OtherUsualBuildingInRadius(point, minRadius, type))
-            {
-                return {MapPoint::Invalid(), 0};
-            }
+            return {MapPoint::Invalid(), 0};
         }
-    }
-    
+    }*/
+
     // Then apply specific logic for certain building types
     switch(type)
     {
@@ -86,18 +82,7 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
 
             for(auto& point : results)
             {
-                if(construction.OtherUsualBuildingInRadius(point.pt, 11, BuildingType::Forester))
-                {
-                    continue;
-                }
-                if(construction.OtherUsualBuildingInRadius(point.pt, 8, BuildingType::Farm))
-                {
-                    continue;
-                }
-                if(construction.OtherStoreInRadius(point.pt, 11))
-                {
-                    continue;
-                }
+                if(!CheckProximity(type, point.pt)) continue;
                 int woodcutters = construction.CountUsualBuildingInRadius(point.pt, 6, BuildingType::Woodcutter);
                 return {point.pt, point.rating + woodcutters * 50};
             }
@@ -115,16 +100,40 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
             }
             break;
         }
-        default: 
+        default:
         {
             // For all other building types, just return a simple position if the minRadius check passed
-            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 3);
-            if(point.isValid())
+            MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 6);
+            if(CheckProximity(type, point))
                 return {point, 1};
             break;
         }
     }
     return {MapPoint::Invalid(), 0};
+}
+
+bool PositionFinder::CheckProximity(BuildingType type, const MapPoint& pt){
+    if(!pt.isValid())
+    {
+        return false;
+    }
+    AIConstruction& construction = aijh.GetConstruction();
+    auto locationParam = AI_CONFIG.locationParams[type];
+    unsigned buildingCount = aijh.GetBldPlanner().GetNumBuildings(type);
+    for(const auto otherType : helpers::enumRange<BuildingType>())
+    {
+        ProximityParams proximity = locationParam.proximity[otherType];
+        if(proximity.enabled)
+        {
+            unsigned minRadius = (unsigned)CALC::calcCount(buildingCount, proximity.minimal);
+            if(otherType == BuildingType::Storehouse)
+            {
+                return !construction.OtherStoreInRadius(pt, minRadius);
+            }
+            return !construction.OtherUsualBuildingInRadius(pt, minRadius, otherType);
+        }
+    }
+    return true;
 }
 
 RatedPointSet PositionFinder::FindBestPositions(const MapPoint& pt, const AIResource res, BuildingQuality size,

@@ -30,6 +30,7 @@ enum class StatisticTime
 {
     T15Minutes,
     T1Hour,
+    // T2Hours,
     T4Hours,
     T16Hours
 };

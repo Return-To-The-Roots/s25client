@@ -1,7 +1,3 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
-//
-// SPDX-License-Identifier: GPL-2.0-or-later
-
 #include "GlobalGameSettings.h"
 #include "HeadlessGame.h"
 #include "QuickStartGame.h"
@@ -45,12 +41,8 @@ int main(int argc, char** argv)
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     po::options_description desc("Allowed options");
-    // clang-format off
     desc.add_options()
         ("help,h", "Show help")
-        // ("run_id,r", po::value(&runId),"Run Id")
-        // ("profile_id,p", po::value(&profileId),"Profile Id")
-        // ("run_set_id,rs", po::value(&runSetId),"Run Set Id")
         ("max_gf", po::value<unsigned>()->default_value(std::numeric_limits<unsigned>::max()),"Maximum number of game frames to run (optional)")
         ("output_path", po::value(&output_path),"Filename to write savegame to (optional)")
         ("stats_period", po::value(&statsPeriod),"Stats period")
@@ -65,7 +57,6 @@ int main(int argc, char** argv)
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
         ("version", "Show version information and exit")
         ;
-    // clang-format on
 
     if(argc == 1)
     {
@@ -101,20 +92,7 @@ int main(int argc, char** argv)
 
     try
     {
-        // if(runId)
-        //     STATS_CONFIG.runId = *runId;
-        // if(runSetId)
-        //     STATS_CONFIG.runSetId = *runSetId;
-        // if(profileId)
-        //     STATS_CONFIG.profileId = *profileId;
-
         STATS_CONFIG.outputPath = *output_path;
-        // std::string runSetDir = STATS_CONFIG.outputPath + STATS_CONFIG.runSetId;
-        // bfs::create_directory(runSetDir);
-        // std::string profileDir = runSetDir + "/" + *profileId;
-        // bfs::create_directory(profileDir);
-        // std::string runDir = profileDir + "/" + *runId;
-        // bfs::create_directory(runDir);
         std::string statsDir = *output_path + "/stats/";
         bfs::create_directory(statsDir);
         STATS_CONFIG.statsPath = statsDir;
@@ -126,7 +104,6 @@ int main(int argc, char** argv)
         bfs::create_directory(logsDir);
         LOG.setLogFilepath(logsDir);
 
-        // We print arguments and seed in order to be able to reproduce crashes.
         for(int i = 0; i < argc; ++i)
             bnw::cout << argv[i] << " ";
         bnw::cout << std::endl;
@@ -176,9 +153,6 @@ int main(int argc, char** argv)
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
-        // ggs.setSelection(AddonId::MAX_RANK, 4);
-
-        // ggs.objective = GameObjective::TotalDomination;
         HeadlessGame game(ggs, mapPath, ais);
         if(replay_path)
             game.RecordReplay(*replay_path, random_init);
@@ -187,11 +161,6 @@ int main(int argc, char** argv)
         game.Run(options["max_gf"].as<unsigned>());
         game.Close();
 
-        /*if(output_path)
-        {
-            std::string saveTo = savesDir + "/ai_run_final_"+ STATS_CONFIG.runSetId +"_" + STATS_CONFIG.runId + ".sav";
-            game.SaveGame(saveTo);
-        }*/
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;
