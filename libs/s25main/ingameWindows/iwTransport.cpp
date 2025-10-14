@@ -22,11 +22,8 @@ void iwTransport::fillTransportOrder(const TransportOrders& transport_order)
 {
     pendingOrder.assign(transport_order.begin(), transport_order.end());
 
-    auto isUnused = [&](uint8_t const& stdTransportPrio) {
-        return !leatheraddon::isAddonActive(gwv.GetWorld())
-               && stdTransportPrio == STD_TRANSPORT_PRIO[GoodType::Leather];
-    };
-    helpers::erase_if(pendingOrder, isUnused);
+    if(!leatheraddon::isAddonActive(gwv.GetWorld()))
+        helpers::erase(pendingOrder, STD_TRANSPORT_PRIO[GoodType::Leather]);
 }
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)

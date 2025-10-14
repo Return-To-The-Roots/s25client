@@ -73,21 +73,21 @@ constexpr unsigned getSoldierRank(Job soldierJob)
 
 enum class ArmoredSoldier : uint8_t
 {
-    Private,           // 0
-    PrivateFirstClass, // 1
-    Sergeant,          // 2
-    Officer,           // 3
-    General,           // 4
+    Private,
+    PrivateFirstClass,
+    Sergeant,
+    Officer,
+    General,
 };
-
-constexpr bool isSoldier(const Job job)
-{
-    return job >= Job::Private && job <= Job::General;
-}
 
 constexpr auto maxEnumValue(ArmoredSoldier)
 {
     return ArmoredSoldier::General;
+}
+
+constexpr bool isSoldier(const Job job)
+{
+    return job >= Job::Private && job <= Job::General;
 }
 
 ArmoredSoldier jobEnumToAmoredSoldierEnum(Job job);

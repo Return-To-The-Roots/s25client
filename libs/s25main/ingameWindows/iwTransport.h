@@ -25,7 +25,7 @@ private:
 
     static constexpr auto numButtons = std::tuple_size_v<TransportOrders>;
     std::array<ButtonData, numButtons> buttonData;
-    std::vector<uint8_t> pendingOrder;
+    std::vector<TransportOrders::value_type> pendingOrder;
 
 public:
     iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
