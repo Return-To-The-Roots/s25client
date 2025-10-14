@@ -12,8 +12,6 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
 
-using namespace leatheraddon;
-
 nofTanner::nofTanner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Tanner, pos, player, workplace)
 {}
@@ -26,7 +24,9 @@ void nofTanner::DrawWorking(DrawPoint drawPt)
 
     unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 
-    LOADER.GetPlayerImage("leather_bobs", bobIndex[BobTypes::TANNERY_WORK_WINDOW_ANIMATION] + (now_id) % 8)
+    LOADER
+      .GetPlayerImage("leather_bobs",
+                      leatheraddon::bobIndex[leatheraddon::BobTypes::TANNERY_WORK_WINDOW_ANIMATION] + (now_id) % 8)
       ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
 
     last_id = now_id;
@@ -39,7 +39,7 @@ unsigned short nofTanner::GetCarryID() const
 
 void nofTanner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", bobIndex[BobTypes::TANNER_CARRYING_LEATHER_IN_OUT]);
+    DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::TANNER_CARRYING_LEATHER_IN_OUT]);
 }
 
 helpers::OptionalEnum<GoodType> nofTanner::ProduceWare()
