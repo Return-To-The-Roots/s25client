@@ -159,7 +159,7 @@ ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
                               {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
 
         std::generate(buildOrder.begin(), buildOrder.end() - countOfNotAvailableBuildingsInSaveGame,
-                      [&]() { helpers::popEnum<BuildingType>(ser); });
+                      [&]() { return helpers::popEnum<BuildingType>(ser); });
 
         std::copy(buildOrder.begin(), buildOrder.end(), data.begin());
     }
