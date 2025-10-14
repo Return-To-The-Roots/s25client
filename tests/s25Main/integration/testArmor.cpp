@@ -69,7 +69,7 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
         world.CreateTradeGraphs();
     }
 
-    void testExpectedWares() const
+    void testExpectedFigures() const
     {
         BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) == numHelpers);
         BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::PackDonkey) == numDonkeys);
@@ -85,7 +85,7 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
         // But helpers can be produced in the meantime
         BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
         numHelpers = curWh->GetNumRealFigures(Job::Helper);
-        testExpectedWares();
+        testExpectedFigures();
         // Visual count should match real count
         BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::Helper) == numHelpers);
         BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::PackDonkey) == numDonkeys);
@@ -103,21 +103,21 @@ BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 3);
-    testExpectedWares();
+    testExpectedFigures();
 
     // Enable trading
     this->ggs.setSelection(AddonId::TRADE, 1);
 
     // Trade nothing -> Wrong
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 0);
-    testExpectedWares();
+    testExpectedFigures();
 
     // For figures we don't need donkeys
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 3);
     numSoldiers -= 3;
     numArmoredSoldiers -= 2;
     numHelpers -= 1;
-    testExpectedWares();
+    testExpectedFigures();
     testAfterLeaving(6);
 
     // Let caravan arrive (20GFs per node)
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
     // helpers can be produced in the meantime
     BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
-    testExpectedWares();
+    testExpectedFigures();
 }
 
 BOOST_AUTO_TEST_CASE(ArmorTradeFail)
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFail)
     numSoldiers -= 3;
     numArmoredSoldiers -= 2;
     numHelpers -= 1;
-    testExpectedWares();
+    testExpectedFigures();
     testAfterLeaving(3);
 
     // Make sure all of them are a bit outside
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFail)
     // helpers can be produced in the meantime
     BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
-    testExpectedWares();
+    testExpectedFigures();
 }
 
 BOOST_AUTO_TEST_CASE(ArmorTradeFailDie)
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFailDie)
     numSoldiers -= 3;
     numArmoredSoldiers -= 2;
     numHelpers -= 1;
-    testExpectedWares();
+    testExpectedFigures();
     testAfterLeaving(3);
 
     // Let them walk a bit
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFailDie)
     RTTR_SKIP_GFS(50);
     // Don't care about helpers but check the rest: Still gone
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
-    testExpectedWares();
+    testExpectedFigures();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
