@@ -283,14 +283,12 @@ BOOST_FIXTURE_TEST_CASE(AddSoldierWithArmor, EmptyWorldFixture1P)
 {
     GamePlayer& player = world.GetPlayer(0);
 
-    for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
-        player.GetFirstWH()->SetRealReserve(i, 0);
-
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
+    for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
+        hq->SetRealReserve(i, 0);
 
     auto soldierWithArmor =
       std::make_unique<nofPassiveSoldier>(player.GetHQPos(), 0, nullptr, nullptr, getSoldierRank(Job::Sergeant));
-
     soldierWithArmor->SetArmor(true);
 
     hq->AddFigure(std::move(soldierWithArmor));
@@ -308,7 +306,6 @@ BOOST_FIXTURE_TEST_CASE(CheckReserveSoldierWithArmor, EmptyWorldFixture1P)
 
     auto soldierWithArmor =
       std::make_unique<nofPassiveSoldier>(player.GetHQPos(), 0, nullptr, nullptr, getSoldierRank(Job::Sergeant));
-
     soldierWithArmor->SetArmor(true);
 
     hq->AddFigure(std::move(soldierWithArmor));
