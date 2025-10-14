@@ -99,12 +99,12 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
         const unsigned wineAddonAdditionalDistributions = 3;
         const unsigned leatherAddonAdditionalDistributions = 3;
 
-        auto const additionalDistributions =
+        auto const numNotSavedDistributions =
           leatherAddonAdditionalDistributions + (ser.getDataVersion() < 1 ? wineAddonAdditionalDistributions : 0);
 
-        std::vector<Distributions::value_type> tmpData(std::tuple_size_v<Distributions> - additionalDistributions);
+        std::vector<Distributions::value_type> tmpData(std::tuple_size_v<Distributions> - numNotSavedDistributions);
 
-        auto skipBuilding = [&](DistributionMapping const& mapping) {
+        auto getSkipBuildingAndDefault = [&](DistributionMapping const& mapping) {
             // Skipped and standard distribution in skipped case
             std::tuple<bool, unsigned int> result = {false, 0};
             if(ser.getDataVersion() < 1)
@@ -127,8 +127,8 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
         for(const auto& mapping : distributionMap)
         {
             // skip over not stored buildings in tmpData
-            const auto skipped = skipBuilding(mapping);
-            const auto setting = std::get<0>(skipped) ? std::get<1>(skipped) : tmpData[srcIdx++];
+            const auto [skipped, defaultValue] = getSkipBuildingAndDefault(mapping);
+            const auto setting = skipped ? defaultValue : tmpData[srcIdx++];
             data[tgtIdx++] = setting;
         }
     }
@@ -158,8 +158,8 @@ ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
             buildOrder.insert(buildOrder.end(),
                               {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
 
-        for(size_t i = 0; i < data.size() - countOfNotAvailableBuildingsInSaveGame; i++)
-            buildOrder[i] = helpers::popEnum<BuildingType>(ser);
+        std::generate(buildOrder.begin(), buildOrder.end() - countOfNotAvailableBuildingsInSaveGame,
+                      [&]() { helpers::popEnum<BuildingType>(ser); });
 
         std::copy(buildOrder.begin(), buildOrder.end(), data.begin());
     }
@@ -286,53 +286,33 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
         states.resize(numStates);
         if(isJob)
         {
-            auto skipJobs = [&](Job const& job) {
-                std::tuple<bool, InventorySetting> result = {false, InventorySetting{}};
-                if(ser.getDataVersion() < 1)
-                {
-                    // skip over wine jobs
-                    std::get<0>(result) |= wineaddon::isWineAddonJobType(job);
-                }
-
-                // skip over leather addon jobs
-                std::get<0>(result) |= leatheraddon::isLeatherAddonJobType(job);
-                return result;
+            auto isJobSkipped = [&](Job const& job) {
+                return (ser.getDataVersion() < 1 && wineaddon::isWineAddonJobType(job))
+                       || leatheraddon::isLeatherAddonJobType(job);
             };
 
             size_t tgtIdx = 0;
             for(const auto i : helpers::enumRange<Job>())
             {
                 // skip over not stored jobs
-                const auto skipped = skipJobs(i);
-                const auto state =
-                  std::get<0>(skipped) ? std::get<1>(skipped) : InventorySetting(ser.PopUnsignedChar());
-                states[tgtIdx++] = state;
+                if(!isJobSkipped(i))
+                    states[tgtIdx] = InventorySetting(ser.PopUnsignedChar());
+                tgtIdx++;
             }
-        }
-
-        if(!isJob)
+        } else
         {
-            auto skipWares = [&](GoodType const& ware) {
-                std::tuple<bool, InventorySetting> result = {false, InventorySetting{}};
-                if(ser.getDataVersion() < 1)
-                {
-                    // skip over wine wares
-                    std::get<0>(result) |= wineaddon::isWineAddonGoodType(ware);
-                }
-
-                // skip over leather addon wares
-                std::get<0>(result) |= leatheraddon::isLeatherAddonGoodType(ware);
-                return result;
+            auto isWareSkipped = [&](GoodType const& ware) {
+                return (ser.getDataVersion() < 1 && wineaddon::isWineAddonGoodType(ware))
+                       || leatheraddon::isLeatherAddonGoodType(ware);
             };
 
             size_t tgtIdx = 0;
             for(const auto i : helpers::enumRange<GoodType>())
             {
                 // skip over not stored wares
-                const auto skipped = skipWares(i);
-                const auto state =
-                  std::get<0>(skipped) ? std::get<1>(skipped) : InventorySetting(ser.PopUnsignedChar());
-                states[tgtIdx++] = state;
+                if(!isWareSkipped(i))
+                    states[tgtIdx] = InventorySetting(ser.PopUnsignedChar());
+                tgtIdx++;
             }
         }
     }
