@@ -135,8 +135,12 @@ void iwMilitaryBuilding::DrawContent()
     }
     btOffsetY += HEIGHT_OF_ROW;
 
+    glArchivItem_Bitmap* armorWareIcon = nullptr;
     if(leatheraddon::isAddonActive(gwv.GetWorld()))
     {
+        armorWareIcon =
+          LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::ARMOR_WARE_ICON]);
+
         // Black background for armor display
         const unsigned maxArmorCt = building->GetMaxArmorCt();
         DrawPoint armorPos = GetDrawPos() + DrawPoint((GetSize().x - 22 * maxArmorCt) / 2, btOffsetY);
@@ -145,8 +149,7 @@ void iwMilitaryBuilding::DrawContent()
         armorPos += DrawPoint(12, 12);
         for(unsigned short i = 0; i < maxArmorCt; ++i)
         {
-            LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::ARMOR_WARE_ICON])
-              ->DrawFull(armorPos, (i >= building->GetNumArmor() ? 0xFFA0A0A0 : 0xFFFFFFFF));
+            armorWareIcon->DrawFull(armorPos, (i >= building->GetNumArmor() ? 0xFFA0A0A0 : 0xFFFFFFFF));
             armorPos.x += 22;
         }
         btOffsetY += HEIGHT_OF_ROW;
@@ -177,8 +180,7 @@ void iwMilitaryBuilding::DrawContent()
     {
         if(leatheraddon::isAddonActive(gwv.GetWorld()) && soldier->HasArmor())
         {
-            LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::ARMOR_WARE_ICON])
-              ->DrawFull(curTroopsPos, 0xFFA0A0A0);
+            armorWareIcon->DrawFull(curTroopsPos, 0xFFA0A0A0);
         }
         LOADER.GetMapTexture(2321 + soldier->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
