@@ -730,17 +730,17 @@ void Loader::fillCaches()
         };
         // Special handling for non-native nations: Use roman animations if own are missing
         const Nation fallbackNation = rttr::enum_cast(nation) < NUM_NATIVE_NATIONS ? nation : Nation::Romans;
-        const auto& natFightAnimIds = FIGHT_ANIMATIONS[nation];
-        const auto& altNatFightAnimIds = FIGHT_ANIMATIONS[fallbackNation];
-        const auto& natHitIds = HIT_SOLDIERS[nation];
-        const auto& altNatHitIds = HIT_SOLDIERS[fallbackNation];
+        const auto natFightAnimIds = FIGHT_ANIMATIONS[nation];
+        const auto altNatFightAnimIds = FIGHT_ANIMATIONS[fallbackNation];
+        const auto natHitIds = HIT_SOLDIERS[nation];
+        const auto altNatHitIds = HIT_SOLDIERS[fallbackNation];
         for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
         {
             for(unsigned dir = 0; dir < 2; ++dir)
             {
                 FightSprites& sprites = fight_cache[nation][rank][dir];
-                const auto& fightAnimIds = natFightAnimIds[rank][dir];
-                const auto& altFightAnimIds = altNatFightAnimIds[rank][dir];
+                const auto fightAnimIds = natFightAnimIds[rank][dir];
+                const auto altFightAnimIds = altNatFightAnimIds[rank][dir];
                 for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
                     glSmartBitmap& bmp = sprites.attacking[ani_step];

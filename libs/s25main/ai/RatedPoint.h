@@ -49,7 +49,7 @@ private:
         if(elements_.size() > maxSize_)
         {
             auto it = std::prev(elements_.end());  // least important due to reversed sorting
-            RatedPoint evicted = std::move(*it);
+            RatedPoint evicted = *it;
             elements_.erase(it);
             return evicted;
         }
