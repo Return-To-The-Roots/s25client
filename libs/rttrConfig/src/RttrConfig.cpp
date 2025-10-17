@@ -7,6 +7,7 @@
 #include "s25util/Log.h"
 #include "s25util/System.h"
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
 #include <build_paths.h>
 #include <stdexcept>
 
@@ -51,13 +52,8 @@ bfs::path RttrConfig::GetPrefixPath()
     bfs::path rttrBinDir(RTTR_BINDIR);
 
     // Allow overwrite with RTTR_PREFIX_DIR
-    bfs::path prefixPath = System::getPathFromEnvVar("RTTR_PREFIX_DIR");
-    if(!prefixPath.empty())
-    {
-        LOG.write("Note: Prefix path manually set to %1%\n", LogTarget::Stdout) % prefixPath;
-    } else if(rttrBinDir.is_absolute())
-        prefixPath = RTTR_INSTALL_PREFIX;
-    else
+    bfs::path prefixPath = getEnvOverride("PREFIX", RTTR_INSTALL_PREFIX);
+    if(!rttrBinDir.is_absolute())
     {
         // Go up one level for each entry (folder) in rttrBinDir
         prefixPath = fullExeFilepath.parent_path();
@@ -130,13 +126,24 @@ bool RttrConfig::Init()
     bfs::current_path(prefixPath_);
     homePath = System::getHomePath();
     pathMappings.clear();
-    pathMappings["BIN"] = RTTR_BINDIR;
-    pathMappings["EXTRA_BIN"] = RTTR_EXTRA_BINDIR;
-    pathMappings["DATA"] = RTTR_DATADIR;
-    pathMappings["GAME"] = RTTR_GAMEDIR;
-    pathMappings["LIB"] = RTTR_LIBDIR;
-    pathMappings["DRIVER"] = RTTR_DRIVERDIR;
-    pathMappings["RTTR"] = RTTR_DATADIR "/RTTR";
-    pathMappings["USERDATA"] = RTTR_USERDATADIR;
+    pathMappings["BIN"] = getEnvOverride("BIN", RTTR_BINDIR);
+    pathMappings["EXTRA_BIN"] = getEnvOverride("EXTRA_BIN", RTTR_EXTRA_BINDIR);
+    pathMappings["DATA"] = getEnvOverride("DATA", RTTR_DATADIR);
+    pathMappings["GAME"] = getEnvOverride("GAME", RTTR_GAMEDIR);
+    pathMappings["LIB"] = getEnvOverride("LIB", RTTR_LIBDIR);
+    pathMappings["DRIVER"] = getEnvOverride("DRIVER", RTTR_DRIVERDIR);
+    pathMappings["RTTR"] = getEnvOverride("RTTR", RTTR_DATADIR "/RTTR");
+    pathMappings["USERDATA"] = getEnvOverride("USERDATA", RTTR_USERDATADIR);
     return true;
+}
+
+bfs::path RttrConfig::getEnvOverride(const std::string& id, const bfs::path& defaultPath) {
+    bfs::path path = System::getPathFromEnvVar("RTTR_" + id + "_DIR");
+    if(!path.empty())
+    {
+        LOG.write("Note: %1% path manually set to %2%\n", LogTarget::Stdout) % id % path;
+    } else
+        return defaultPath;
+
+    return path;
 }
