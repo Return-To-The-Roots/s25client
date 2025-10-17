@@ -7,7 +7,6 @@
 #include "s25util/Log.h"
 #include "s25util/System.h"
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 #include <build_paths.h>
 #include <stdexcept>
 
@@ -52,8 +51,13 @@ bfs::path RttrConfig::GetPrefixPath()
     bfs::path rttrBinDir(RTTR_BINDIR);
 
     // Allow overwrite with RTTR_PREFIX_DIR
-    bfs::path prefixPath = getEnvOverride("PREFIX", RTTR_INSTALL_PREFIX);
-    if(!rttrBinDir.is_absolute())
+    bfs::path prefixPath = System::getPathFromEnvVar("RTTR_PREFIX_DIR");
+    if(!prefixPath.empty())
+    {
+        LOG.write("Note: Prefix path manually set to %1%\n", LogTarget::Stdout) % prefixPath;
+    } else if(rttrBinDir.is_absolute())
+        prefixPath = RTTR_INSTALL_PREFIX;
+    else
     {
         // Go up one level for each entry (folder) in rttrBinDir
         prefixPath = fullExeFilepath.parent_path();
