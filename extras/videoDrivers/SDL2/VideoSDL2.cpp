@@ -25,6 +25,9 @@
 #    include <windows.h> // Avoid "Windows headers require the default packing option" due to SDL2
 #    include <SDL_syswm.h>
 #endif // _WIN32
+#if RTTR_OGL_GL4ES == 1
+#    include <gl4esinit.h>
+#endif
 
 #define CHECK_SDL(call)                 \
     do                                  \
@@ -127,7 +130,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
     SDL_GLprofile profile;
-    if((RTTR_OGL_ES))
+    if((RTTR_OGL_ES) || (RTTR_OGL_GL4ES == 1))
         profile = SDL_GL_CONTEXT_PROFILE_ES;
     else if((RTTR_OGL_COMPAT))
         profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
@@ -456,7 +459,11 @@ void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
 
 OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 {
+#if RTTR_OGL_GL4ES == 1
+    return gl4es_GetProcAddress;
+#else
     return SDL_GL_GetProcAddress;
+#endif
 }
 
 void VideoSDL2::SetMousePos(Position pos)

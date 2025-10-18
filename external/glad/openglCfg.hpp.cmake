@@ -12,5 +12,8 @@
 #define RTTR_OGL_ES @RTTR_OGL_ES@
 // True(thy) if OpenGL compatibility profile should be used
 #define RTTR_OGL_COMPAT @RTTR_OGL_COMPAT@
+// True(thy) if gl4es should be used
+#define RTTR_OGL_GL4ES @RTTR_OGL_GL4ES@
+
 
 #endif
