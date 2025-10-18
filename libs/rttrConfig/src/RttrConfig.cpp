@@ -141,7 +141,8 @@ bool RttrConfig::Init()
     return true;
 }
 
-bfs::path RttrConfig::getEnvOverride(const std::string& id, const bfs::path& defaultPath) {
+bfs::path RttrConfig::getEnvOverride(const std::string& id, const bfs::path& defaultPath)
+{
     bfs::path path = System::getPathFromEnvVar("RTTR_" + id + "_DIR");
     if(!path.empty())
     {
