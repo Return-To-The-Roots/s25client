@@ -26,9 +26,8 @@
 #    include <SDL_syswm.h>
 #endif // _WIN32
 #if RTTR_OGL_GL4ES == 1
-#   include <gl4esinit.h>
+#    include <gl4esinit.h>
 #endif
-
 
 #define CHECK_SDL(call)                 \
     do                                  \
@@ -490,7 +489,8 @@ void VideoSDL2::MoveWindowToCenter()
     SDL_Rect usableBounds;
     CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
     int top, left, bottom, right;
-    CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right));
+    if(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right) != 0)
+        top = left = bottom = right = 0;
     usableBounds.w -= left + right;
     usableBounds.h -= top + bottom;
     if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)

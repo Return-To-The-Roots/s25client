@@ -23,7 +23,7 @@ if(SDL2_FOUND)
             )
         endif()
         # gl4es generates "GL" library
-        target_link_libraries(videoSDL2 PRIVATE videodrv s25util::common glad Boost::nowide SDL2::SDL2 GL)
+        target_link_libraries(videoSDL2 PRIVATE videodrv s25util::common glad Boost::nowide SDL2::SDL2 GL log)
     else()
         target_link_libraries(videoSDL2 PRIVATE videodrv s25util::common glad Boost::nowide SDL2::SDL2)
     endif()
