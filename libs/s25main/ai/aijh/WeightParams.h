@@ -22,7 +22,6 @@ struct BuildParams
     double linear = 0.0;
     double exponential = 0.0;
     Logarithmic logTwo = {0.0, 0.0};
-    Logarithmic logE = {0.0, 0.0};
     unsigned min = 0;
     unsigned max = 99999;
     bool enabled = false;

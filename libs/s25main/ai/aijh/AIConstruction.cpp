@@ -65,9 +65,7 @@ void AIConstruction::AddGlobalBuildJob(std::unique_ptr<BuildJob> job)
 void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
 {
     BuildingType jobType = job->GetType();
-    // MapPoint around = job->GetAround();
-    // std::string name = BUILDING_NAMES_1.at(jobType);
-    // LOG.write("AddBuildJob %s at %d,%d\n") % name % around.x % around.y;
+
     if(jobType == BuildingType::Shipyard && aijh.IsInvalidShipyardPosition(job->GetAround()))
         return;
     if(BuildingProperties::IsMilitary(

@@ -43,6 +43,7 @@
 #include <algorithm>
 #include <array>
 #include <filesystem>
+#include <limits>
 #include <iomanip>
 #include <memory>
 #include <random>
@@ -525,40 +526,6 @@ MapPoint AIPlayerJH::FindBestPosition(BuildingType bt)
 }
 void AIPlayerJH::AddBuildJobAroundEveryWarehouse(BuildingType bt)
 {
-    // if (bt == BuildingType::Farm)
-    // {
-    //     // A vector to store warehouse positions with their resValue
-    //     std::vector<std::pair<const nobBaseWarehouse*, int>> warehousesWithValue;
-    //
-    //     for (const nobBaseWarehouse* wh : aii.GetStorehouses())
-    //     {
-    //         auto pt = wh->GetPos();
-    //         auto bestPt = FindPositionForBuildingAround(bt, pt);
-    //         if(bestPt.isValid())
-    //         {
-    //             auto resMap = resourceMaps[AIResource::Plantspace];
-    //             resMap.updateAround(bestPt, 11);
-    //             int resValue = resMap.getResourcesAt(bestPt);
-    //
-    //             warehousesWithValue.emplace_back(wh, resValue);
-    //         }
-    //     }
-    //
-    //     // Sort warehouses by descending resValue
-    //     std::sort(warehousesWithValue.begin(), warehousesWithValue.end(),
-    //               [](const auto& a, const auto& b) {
-    //                   return a.second > b.second;
-    //               });
-    //
-    //     // Take the top 5 (or all if less than 5)
-    //     int count = std::min(static_cast<int>(warehousesWithValue.size()), 5);
-    //     for (int i = 0; i < count; ++i)
-    //     {
-    //         auto* wh = warehousesWithValue[i].first;
-    //         AddBuildJob(bt, wh->GetPos(), false);
-    //     }
-    // }
-    // else
     for(const nobBaseWarehouse* wh : aii.GetStorehouses())
     {
         AddBuildJob(bt, wh->GetPos(), false);
@@ -1050,6 +1017,9 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
 MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const
 {
     std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, radius);
+    MapPoint bestFallback = MapPoint::Invalid();
+    int bestQualityDelta = std::numeric_limits<int>::max();
+
     for(const MapPoint& curPt : pts)
     {
         if(!aiMap[curPt].reachable || aiMap[curPt].farmed || !aii.IsOwnTerritory(curPt))
@@ -1060,11 +1030,21 @@ MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size
                 continue;
         }
         RTTR_Assert(aii.GetBuildingQuality(curPt) == GetAINode(curPt).bq);
-        if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
+        const BuildingQuality nodeBq = aii.GetBuildingQuality(curPt);
+        if(nodeBq == size)
             return curPt;
+        if(canUseBq(nodeBq, size))
+        {
+            const int delta = static_cast<int>(nodeBq) - static_cast<int>(size);
+            if(delta < bestQualityDelta)
+            {
+                bestQualityDelta = delta;
+                bestFallback = curPt;
+            }
+        }
     }
 
-    return MapPoint::Invalid();
+    return bestFallback;
 }
 
 MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapPoint& around)

@@ -218,7 +218,7 @@ bool BuildingPlanner::IsGoldEnabled(const AIPlayerJH& aijh)
 
 bool BuildingPlanner::WantMoreMilitaryBlds(const AIPlayerJH& aijh) const
 {
-    if(GetNumMilitaryBldSites() >= GetNumMilitaryBlds() + 3)
+    if(GetNumMilitaryBldSites() >= std::min(8u,GetNumMilitaryBlds() + 3))
         return false;
     if(expansionRequired)
         return true;
