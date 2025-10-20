@@ -5,6 +5,7 @@
 #pragma once
 
 #include "notifications/Subscription.h"
+#include <cstdint>
 #include <deque>
 #include <functional>
 #include <unordered_map>
