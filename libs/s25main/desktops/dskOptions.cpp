@@ -4,10 +4,8 @@
 
 #include "dskOptions.h"
 #include "GlobalGameSettings.h"
-#include "GlobalVars.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
-#include "RTTR_Assert.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
@@ -30,7 +28,6 @@
 #include "ingameWindows/iwTextfile.h"
 #include "languages.h"
 #include "ogl/FontStyle.h"
-#include "gameTypes/TextureColor.h"
 #include "gameData/PortraitConsts.h"
 #include "s25util/StringConversion.h"
 #include "s25util/colors.h"
@@ -272,7 +269,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     curPos.y += rowHeight + sectionSpacingCommon;
 
     groupCommon->AddText(ID_txtMouseMode, curPos, _("Mouse mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = groupCommon->AddComboBox(ID_cbMouseMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
+    combo =
+        groupCommon->AddComboBox(ID_cbMouseMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Original (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
     combo->AddString(_("Inverted (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
     combo->AddString(_("Natural  (Map moves with your cursor when scrolling/panning.)"));

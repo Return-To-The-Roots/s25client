@@ -119,7 +119,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         mouse.pos = startPos + Position(4, 3);
         WINDOWMANAGER.Msg_MouseMove(mouse);
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        BOOST_TEST_REQUIRE(view->GetOffset() == pos + Position(4, 3));
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos - Position(4, 3));
         mouse.rdown = false;
         WINDOWMANAGER.Msg_RightUp(mouse);
         SETTINGS.interface.mouseMode = 0;

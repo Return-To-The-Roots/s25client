@@ -54,7 +54,7 @@ bool VideoDriver::GetMouseStateR() const
  * Funktion zum Auslesen ob momentan touch verwendet wird.
  *
  *  @return @p true bei touch, @p false bei maus
-*/
+ */
 bool VideoDriver::GetMouseTouch() const
 {
     return mouse_xy.num_tfingers > 0;

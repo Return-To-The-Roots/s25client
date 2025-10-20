@@ -24,10 +24,10 @@ public:
     {}
 
     Position pos;
-    bool ldown;                 /// Linke Maustaste gedrückt
-    bool rdown;                 /// Rechte Maustaste gedrückt
-    bool dbl_click;             /// Linke Maustaste - Doppelklick
-    unsigned int num_tfingers;  /// Anzahl Finger auf dem Display
+    bool ldown;            /// Linke Maustaste gedrückt
+    bool rdown;            /// Rechte Maustaste gedrückt
+    bool dbl_click;        /// Linke Maustaste - Doppelklick
+    unsigned num_tfingers; /// Anzahl Finger auf dem Display
 
     Position GetPos() const { return pos; }
 };

@@ -309,7 +309,8 @@ void dskGameInterface::Resize(const Extent& newSize)
     gwv.Resize(newSize);
 }
 
-bool dskGameInterface::ContextClick(const MouseCoords& mc) {
+bool dskGameInterface::ContextClick(const MouseCoords& mc)
+{
     // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
     if(road.mode != RoadBuildMode::Disabled)
     {
@@ -697,12 +698,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         return ContextClick(mc);
 
-    } else if(mc.num_tfingers < 2) {
+    } else if(mc.num_tfingers < 2)
+    {
         touchDuration = VIDEODRIVER.GetTickCount();
 
     } else if(isScrolling) // Bei 2 Fingern soll gezoomt werden kein klick oder bewegen der Karte
         StopScrolling();
-    
+
     return true;
 }
 
