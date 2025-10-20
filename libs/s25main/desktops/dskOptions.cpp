@@ -270,7 +270,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     groupCommon->AddText(ID_txtMouseMode, curPos, _("Mouse mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo =
-        groupCommon->AddComboBox(ID_cbMouseMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
+      groupCommon->AddComboBox(ID_cbMouseMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
     combo->AddString(_("Original (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
     combo->AddString(_("Inverted (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
     combo->AddString(_("Natural  (Map moves with your cursor when scrolling/panning.)"));

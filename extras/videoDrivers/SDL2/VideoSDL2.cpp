@@ -425,7 +425,7 @@ bool VideoSDL2::MessageLoop()
             {
                 VideoMode wnSize = GetWindowSize();
                 mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
-                                                                        static_cast<int>(ev.tfinger.y * wnSize.height)));
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = true;
                 mouse_xy.num_tfingers++;
                 CallBack->Msg_LeftDown(mouse_xy);
@@ -435,7 +435,7 @@ bool VideoSDL2::MessageLoop()
             {
                 VideoMode wnSize = GetWindowSize();
                 mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
-                                                                        static_cast<int>(ev.tfinger.y * wnSize.height)));
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = false;
                 CallBack->Msg_LeftUp(mouse_xy);
                 mouse_xy.num_tfingers--; // Dirty way to count leftUp as touch event without extra isTouch bool
@@ -445,8 +445,8 @@ bool VideoSDL2::MessageLoop()
             {
 
                 VideoMode wnSize = GetWindowSize();
-                const auto newPos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
-                                                                                                static_cast<int>(ev.tfinger.y * wnSize.height)));
+                const auto newPos = getGuiScale().screenToView(Position(
+                  static_cast<int>(ev.tfinger.x * wnSize.width), static_cast<int>(ev.tfinger.y * wnSize.height)));
 
                 if(newPos != mouse_xy.pos)
                 {
