@@ -328,7 +328,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     }
     if(((gf + playerId * 17) % 73 == 0) && (level != AI::Level::Easy))
     {
-        MilUpgradeOptim();
+        // MilUpgradeOptim();
     }
 
     if((gf + 41 + playerId * 17) % attack_interval == 0)
@@ -2217,34 +2217,34 @@ void AIPlayerJH::InitStoreAndMilitarylists()
 }
 int AIPlayerJH::UpdateUpgradeBuilding()
 {
-    std::vector<const nobMilitary*> backup;
-    if(!aii.GetStorehouses().empty())
-    {
-        unsigned count = 0;
-        for(const nobMilitary* milBld : aii.GetMilitaryBuildings())
-        {
-            // inland building, tower or fortress
-            BuildingType bld = milBld->GetBuildingType();
-            if((bld == BuildingType::Watchtower || bld == BuildingType::Fortress)
-               && milBld->GetFrontierDistance() == FrontierDistance::Far)
-            {
-                if(construction->IsConnectedToRoadSystem(milBld->GetFlag()))
-                {
-                    // LOG.write(("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",itObj->GetX(),
-                    // itObj->GetY(), playerId, count);
-                    UpgradeBldPos = milBld->GetPos();
-                    return count;
-                }
-                backup.push_back(milBld);
-            }
-            count++;
-        }
-    }
-    // no valid upgrade building yet - try to reconnect correctly flagged buildings
-    for(const nobMilitary* milBld : backup)
-    {
-        construction->AddConnectFlagJob(milBld->GetFlag());
-    }
+    // std::vector<const nobMilitary*> backup;
+    // if(!aii.GetStorehouses().empty())
+    // {
+    //     unsigned count = 0;
+    //     for(const nobMilitary* milBld : aii.GetMilitaryBuildings())
+    //     {
+    //         // inland building, tower or fortress
+    //         BuildingType bld = milBld->GetBuildingType();
+    //         if((bld == BuildingType::Watchtower || bld == BuildingType::Fortress)
+    //            && milBld->GetFrontierDistance() == FrontierDistance::Far)
+    //         {
+    //             if(construction->IsConnectedToRoadSystem(milBld->GetFlag()))
+    //             {
+    //                 // LOG.write(("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",itObj->GetX(),
+    //                 // itObj->GetY(), playerId, count);
+    //                 UpgradeBldPos = milBld->GetPos();
+    //                 return count;
+    //             }
+    //             backup.push_back(milBld);
+    //         }
+    //         count++;
+    //     }
+    // }
+    // // no valid upgrade building yet - try to reconnect correctly flagged buildings
+    // for(const nobMilitary* milBld : backup)
+    // {
+    //     construction->AddConnectFlagJob(milBld->GetFlag());
+    // }
     UpgradeBldPos = MapPoint::Invalid();
     return -1;
 }

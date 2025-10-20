@@ -43,10 +43,10 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
       coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(nullptr),
       upgrade_event(nullptr), is_regulating_troops(false)
 {
-    // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
+    // Register this building as military and insert it into a military grid square
     world->GetMilitarySquares().Add(this);
 
-    // Größe ermitteln
+    // Determine the building size
     switch(type)
     {
         case BuildingType::Barracks: size = 0; break;
@@ -60,10 +60,10 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
     }
     troop_limits.fill(GetMaxTroopsCt());
 
-    // Tür aufmachen, bis Gebäude besetzt ist
+    // Keep the door open until the building is occupied
     OpenDoor();
 
-    // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
+    // Stop the gold supply if new military buildings should not receive coins
     if(world->GetGGS().isEnabled(AddonId::NO_COINS_DEFAULT))
     {
         coinsDisabled = true;
@@ -103,10 +103,10 @@ void nobMilitary::DestroyBuilding()
     // Remove from military square and buildings first, to avoid e.g. sending canceled soldiers back to this building
     world->GetMilitarySquares().Remove(this);
 
-    // Bestellungen stornieren
+    // Cancel outstanding orders
     CancelOrders();
 
-    // Soldaten rausschicken
+    // Send stationed soldiers outside
     for(auto& troop : troops)
     {
         troop->LeftBuilding();
@@ -121,11 +121,11 @@ void nobMilitary::DestroyBuilding()
         far_away_capturer->AttackedGoalDestroyed();
     far_away_capturers.clear();
 
-    // Events ggf. entfernen
+    // Remove pending events if necessary
     GetEvMgr().RemoveEvent(goldorder_event);
     GetEvMgr().RemoveEvent(upgrade_event);
 
-    // übriggebliebene Goldmünzen in der Inventur abmelden
+    // Remove remaining gold coins from the player's stock
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
 
     nobBaseMilitary::DestroyBuilding();
@@ -172,7 +172,7 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     else
         helpers::popContainer(sgd, troop_limits);
 
-    // ins Militärquadrat einfügen
+    // Insert into the military grid square
     world->GetMilitarySquares().Add(this);
 
     if(capturing && capturing_soldiers == 0 && aggressors.empty())
@@ -186,10 +186,10 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
 
 void nobMilitary::Draw(DrawPoint drawPt)
 {
-    // Gebäude an sich zeichnen
+    // Draw the building itself
     DrawBaseBuilding(drawPt);
 
-    // (max 4) Besatzungs-Fähnchen zeichnen
+    // Draw up to four occupant flags
     auto flags = std::min<unsigned>(troops.size() + this->leave_house.size(), 4);
 
     for(unsigned i = 0; i < flags; ++i)
@@ -200,7 +200,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
                           world->GetPlayer(player).color);
     }
 
-    // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
+    // Draw the flag that shows how far the building is from the border
     FrontierDistance frontier_distance_tmp = frontier_distance;
     ITexture* bitmap = nullptr;
     unsigned animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
@@ -209,7 +209,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
         // don't draw a flag for new buildings - fixes bug #215
     } else if(frontier_distance_tmp == FrontierDistance::Harbor)
     {
-        // todo Hafenflagge
+        // TODO: harbor flag
         bitmap = LOADER.GetTextureN("map_new", 3150 + animationFrame);
     } else
     {
@@ -220,7 +220,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
     if(bitmap)
         bitmap->DrawFull(drawPt + BORDER_FLAG_OFFSET[nation][size]);
 
-    // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
+    // Draw the exterior sign if the gold supply is currently disabled
     if(coinsDisabledVirtual)
         LOADER.GetMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 }
@@ -229,22 +229,22 @@ void nobMilitary::HandleEvent(const unsigned id)
 {
     switch(id)
     {
-        // "Rausgeh-Event"
+        // "Exit" event
         case 0:
         {
             leaving_event = nullptr;
 
-            // Sind Leute da, die noch rausgehen wollen?
+            // Are there still people waiting to leave?
             if(!leave_house.empty())
             {
-                // Dann raus mit denen
+                // Send the next person out
                 noFigure& soldier = world->AddFigure(pos, std::move(leave_house.front()));
                 leave_house.pop_front();
 
                 soldier.ActAtFirst();
             }
 
-            // Wenn noch weitere drin sind, die müssen auch noch raus
+            // Schedule another exit if more figures remain inside
             if(!leave_house.empty())
                 leaving_event = GetEvMgr().AddEvent(this, 30 + RANDOM_RAND(10));
             else
@@ -253,64 +253,50 @@ void nobMilitary::HandleEvent(const unsigned id)
             RegulateTroops();
         }
         break;
-        // Goldbestell-Event
+        // Coin ordering event
         case 1:
         {
             goldorder_event = nullptr;
 
-            // ggf. nach neuen Goldmünzen suchen
+            // Check again for a new gold coin delivery
             SearchCoins();
         }
         break;
-        // Beförderungs-Event
+        // Promotion event
         case 2:
         {
             upgrade_event = nullptr;
 
-            // Soldaten befördern
-            // Von hinten durchgehen
-            // Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
-            // wird dieser ebenfalls befördert usw.!
-            std::vector<std::unique_ptr<nofPassiveSoldier>> soldiersToUpgrade;
-            // Rang des letzten beförderten Soldaten, MaxRank am Anfang setzen, damit keiner über den maximalen Rang
-            // befördert wird
-            uint8_t last_rank = world->GetGGS().GetMaxMilitaryRank();
-            for(auto it = troops.rbegin(); it != troops.rend();)
+            // Promote exactly one lowest-ranked soldier if possible
+            const uint8_t maxRank = world->GetGGS().GetMaxMilitaryRank();
+            nofPassiveSoldier* soldierToUpgrade = nullptr;
+            uint8_t bestRank = maxRank;
+            for(auto& soldier : troops)
             {
-                auto& soldier = *it;
-                // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
-                // als der letzte haben, damit er auch noch befördert werden kann
-                if(soldier->GetRank() < last_rank)
+                const uint8_t rank = soldier->GetRank();
+                if(rank < bestRank)
                 {
-                    // Rang merken
-                    last_rank = soldier->GetRank();
-                    // Remove from sorted container as changing it breaks sorting
-                    soldiersToUpgrade.push_back(std::move(soldier));
-                    it = helpers::erase_reverse(troops, it);
-                } else
-                    ++it;
+                    soldierToUpgrade = soldier.get();
+                    bestRank = rank;
+                }
             }
 
-            // Wurde jemand befördert?
-            if(!soldiersToUpgrade.empty())
+            if(soldierToUpgrade && numCoins > 0 && bestRank < maxRank)
             {
-                // Reinsert upgraded soldiers
-                for(auto& upgradedSoldier : soldiersToUpgrade)
-                {
-                    upgradedSoldier->Upgrade();
-                    troops.insert(std::move(upgradedSoldier));
-                }
+                auto upgradedSoldier = helpers::extractPtr(troops, soldierToUpgrade);
+                upgradedSoldier->Upgrade();
+                troops.insert(std::move(upgradedSoldier));
 
-                // Goldmünze verbrauchen
+                // Consume one gold coin
                 --numCoins;
                 world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, 1);
 
                 RegulateTroops();
 
-                // Evtl neues Beförderungsevent anmelden
+                // Queue another promotion event if required
                 PrepareUpgrading();
 
-                // Ggf. neue Goldmünzen bestellen
+                // Order new gold coins if needed
                 SearchCoins();
             }
         }
@@ -335,7 +321,7 @@ unsigned nobMilitary::GetMaxTroopsCt() const
 
 void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 {
-    // Umgebung nach Militärgebäuden absuchen
+    // Search the surrounding area for military buildings
     sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
     frontier_distance = FrontierDistance::Far;
 
@@ -343,7 +329,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 
     for(auto* building : buildings)
     {
-        // feindliches Militärgebäude?
+        // Is it an enemy military building?
         if(building != exception && building->GetPlayer() != player
            && world->GetPlayer(building->GetPlayer()).IsAttackable(player))
         {
@@ -375,11 +361,11 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                 newFrontierDistance = FrontierDistance::Far;
             }
 
-            // override own frontier distance, if its nearer to a border
+            // Override our own frontier distance if this building is closer to the border
             if(newFrontierDistance > frontier_distance)
                 frontier_distance = newFrontierDistance;
 
-            // set calculated frontier distance to checked building.
+            // Apply the calculated frontier distance to the checked building
             if(BuildingProperties::IsMilitary(building->GetBuildingType()))
                 static_cast<nobMilitary*>(building)->NewEnemyMilitaryBuilding(newFrontierDistance);
         }
@@ -395,16 +381,16 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 
 void nobMilitary::NewEnemyMilitaryBuilding(const FrontierDistance distance)
 {
-    // Neues Grenzgebäude in der Nähe --> Distanz entsprechend setzen
+    // New frontier building nearby -> adjust our own frontier distance accordingly
     if(distance == FrontierDistance::Near)
     {
-        // Nah
+        // Close range
         frontier_distance = FrontierDistance::Near;
     }
     // in mittlerem Umkreis?
     else if(distance == FrontierDistance::Mid)
     {
-        // Mittel (nur wenns vorher auf weit weg war)
+        // Medium distance (only if we were previously far away)
         if(frontier_distance == FrontierDistance::Far)
             frontier_distance = FrontierDistance::Mid;
     }
@@ -416,7 +402,7 @@ void nobMilitary::RegulateTroops()
     RTTR_Assert(helpers::contains(world->GetPlayer(player).GetBuildingRegister().GetMilitaryBuildings(),
                                   this)); // If this fails, the building is Being destroyed!
 
-    // Wenn das Gebäude eingenommen wird, erstmal keine neuen Truppen und warten, wieviele noch reinkommen
+    // Skip adjustments while the building is being captured and wait for the final garrison count
     if(IsBeingCaptured())
         return;
 
@@ -475,12 +461,12 @@ void nobMilitary::RegulateTroops()
         }
     }
 
-    // Zu viele oder zu wenig Truppen?
+    // Do we have too many or too few troops?
     int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
     if(diff < 0)
     {
-        // Zu viel --> überflüssige Truppen nach Hause schicken
-        // Zuerst die bestellten Soldaten wegschicken
+        // Too many -> send surplus troops home
+        // First send back the ordered soldiers
         // Weak ones first
         std::vector<nofPassiveSoldier*> notNeededSoldiers;
         GamePlayer& owner = world->GetPlayer(player);
@@ -508,11 +494,11 @@ void nobMilitary::RegulateTroops()
             notNeededSoldier->NotNeeded();
         }
 
-        // Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
+        // Only send them away if a path to a warehouse exists
         if(owner.FindWarehouse(*this, FW::NoCondition(), true, false))
         {
-            // Dann den Rest (einer muss immer noch drinbleiben!)
-            // erst die schwachen Soldaten raus
+            // Then send out the remainder (at least one must stay inside)
+            // Remove the weaker soldiers first
             if(owner.GetMilitarySetting(1) > MILITARY_SETTINGS_SCALE[1] / 2)
             {
                 for(auto it = troops.begin(); diff && troops.size() > 1; ++diff)
@@ -522,7 +508,7 @@ void nobMilitary::RegulateTroops()
                     it = troops.erase(it);
                 }
             }
-            // erst die starken Soldaten raus
+            // Remove the stronger soldiers first
             else
             {
                 for(auto it = troops.rbegin(); diff && troops.size() > 1; ++diff)
@@ -536,10 +522,9 @@ void nobMilitary::RegulateTroops()
 
     } else if(diff > 0)
     {
-        // Zu wenig Truppen
+        // Not enough troops
 
-        // Gebäude wird angegriffen und
-        // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
+        // Building is under attack and the addon limits replacements to the defender setting
         if(IsUnderAttack() && world->GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
         {
             diff = (world->GetPlayer(player).GetMilitarySetting(2) * diff) / MILITARY_SETTINGS_SCALE[2];
@@ -603,30 +588,30 @@ bool nobMilitary::IsInTroops(const nofPassiveSoldier& soldier) const
 
 void nobMilitary::TakeWare(Ware* ware)
 {
-    // Goldmünze in Bestellliste aufnehmen
+    // Add the gold coin to the order list
     RTTR_Assert(!helpers::contains(ordered_coins, ware));
     ordered_coins.push_back(ware);
 }
 
 void nobMilitary::AddWare(std::unique_ptr<Ware> ware)
 {
-    // Ein Golstück mehr
+    // One more gold piece stored
     ++numCoins;
-    // aus der Bestellliste raushaun
+    // Remove it from the order list
     RTTR_Assert(helpers::contains(ordered_coins, ware.get()));
     ordered_coins.remove(ware.get());
 
-    // Ware vernichten
+    // Delete the ware entity
     world->GetPlayer(player).RemoveWare(*ware);
     ware.reset();
 
-    // Evtl. Soldaten befördern
+    // Trigger soldier upgrades if possible
     PrepareUpgrading();
 }
 
 void nobMilitary::WareLost(Ware& ware)
 {
-    // Ein Goldstück konnte nicht kommen --> aus der Bestellliste entfernen
+    // A gold coin failed to arrive -> remove it from the order list
     RTTR_Assert(helpers::contains(ordered_coins, &ware));
     ordered_coins.remove(&ware);
 }
@@ -645,13 +630,13 @@ void nobMilitary::GotWorker(Job /*job*/, noFigure& worker)
 
 void nobMilitary::CancelOrders()
 {
-    // Soldaten zurückschicken
+    // Send ordered soldiers back
     for(auto* ordered_troop : ordered_troops)
         ordered_troop->NotNeeded();
 
     ordered_troops.clear();
 
-    // Goldmünzen zurückschicken
+    // Return ordered gold coins
     for(auto* ordered_coin : ordered_coins)
         WareNotNeeded(ordered_coin);
 
@@ -660,8 +645,7 @@ void nobMilitary::CancelOrders()
 
 void nobMilitary::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
 {
-    // aktiver Soldat, eingetroffen werden --> dieser muss erst in einen passiven Soldaten
-    // umoperiert werden (neu erzeugt und alter zerstört) werden
+    // An active soldier returned -> convert him into a passive soldier (clone and destroy original)
     AddPassiveSoldier(std::make_unique<nofPassiveSoldier>(*soldier));
 
     soldier->ResetHome();
@@ -696,32 +680,32 @@ void nobMilitary::AddPassiveSoldier(std::unique_ptr<nofPassiveSoldier> soldier)
     ordered_troops.erase(soldier.get());
     troops.insert(std::move(soldier));
 
-    // Wurde dieses Gebäude zum ersten Mal besetzt?
+    // Was this building occupied for the first time?
     if(new_built)
     {
         SendPostMessage(
           player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Military building occupied"),
                                                         PostCategory::Military, *this, SoundEffect::Fanfare));
-        // Ist nun besetzt
+        // Mark as occupied
         new_built = false;
-        // Landgrenzen verschieben
+        // Update territory borders
         world->RecalcTerritory(*this, TerritoryChangeReason::Build);
-        // Tür zumachen
+        // Close the door
         CloseDoor();
         world->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, bldType_));
     } else
     {
-        // Evtl. Soldaten befördern
+        // Try to promote soldiers
         PrepareUpgrading();
     }
 
-    // Goldmünzen suchen, evtl sinds ja neue Soldaten
+    // Search for gold coins; new soldiers might need upgrades
     SearchCoins();
 }
 
 void nobMilitary::SoldierLost(nofSoldier* soldier)
 {
-    // Soldat konnte nicht (mehr) kommen --> rauswerfen und ggf. neue Soldaten rufen
+    // Soldier failed to arrive -> remove him and request replacements if necessary
     if(soldier->GetGOT() == GO_Type::NofPassivesoldier)
     {
         RTTR_Assert(helpers::contains(ordered_troops, static_cast<nofPassiveSoldier*>(soldier)));
@@ -766,18 +750,18 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
         }
     }
 
-    // ID ausrechnen
+    // Compute the index of the desired rank
     unsigned rank = ((rank_count - 1) * world->GetPlayer(player).GetMilitarySetting(1)) / MILITARY_SETTINGS_SCALE[1];
 
     unsigned r = 0;
 
-    // richtigen Rang suchen
+    // Look for the matching rank
     for(auto* candidate : candidates)
     {
         if(candidate)
         {
             if(r == rank)
-                // diesen Soldaten wollen wir
+                // This is the soldier we are looking for
                 return candidate;
 
             ++r;
@@ -795,7 +779,7 @@ nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker& attacker
     nofPassiveSoldier* soldier = ChooseSoldier();
     if(soldier)
     {
-        // neuen aggressiven Verteidiger daraus erzeugen
+        // Create a new aggressive defender from that soldier
         auto defender = std::make_unique<nofAggressiveDefender>(*soldier, attacker);
         soldier->LeftBuilding();
         helpers::extractPtr(troops, soldier)->Destroy();
@@ -807,11 +791,10 @@ nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker& attacker
         return nullptr;
 }
 
-/// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
+/// Returns the number of soldiers available to attack a specific target
 unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
 {
-    // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
-    // Militäreinstellungen zum Angriff eingestellt wurden
+    // Determine how many soldiers we may take based on the attack settings
 
     unsigned short soldiers_count =
       (GetNumTroops() > 1) ?
@@ -820,10 +803,10 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
 
     unsigned distance = world->CalcDistance(pos, dest);
 
-    // Falls Entfernung größer als Basisreichweite, Soldaten subtrahieren
+    // Subtract soldiers if the distance exceeds the base attack range
     if(distance > BASE_ATTACKING_DISTANCE)
     {
-        // je einen soldaten zum entfernen vormerken für jeden EXTENDED_ATTACKING_DISTANCE großen Schritt
+        // Remove one soldier for every EXTENDED_ATTACKING_DISTANCE step
         unsigned short soldiers_to_remove =
           ((distance - BASE_ATTACKING_DISTANCE + EXTENDED_ATTACKING_DISTANCE - 1) / EXTENDED_ATTACKING_DISTANCE);
         if(soldiers_to_remove < soldiers_count)
@@ -832,15 +815,15 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
             return 0;
     }
 
-    // und auch der Weg zu Fuß darf dann nicht so weit sein, wenn das alles bestanden ist, können wir ihn nehmen..
+    // The walking path must not exceed the limit either; only then can we commit the soldiers
     if(soldiers_count && world->FindHumanPath(pos, dest, MAX_ATTACKING_RUN_DISTANCE))
-        // Soldaten davon nehmen
+        // Use that many soldiers
         return soldiers_count;
     else
         return 0;
 }
 
-/// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
+/// Returns the soldiers available to attack a specific target
 std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint dest) const
 {
     std::vector<nofPassiveSoldier*> soldiers;
@@ -855,7 +838,7 @@ std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint
     return soldiers;
 }
 
-/// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
+/// Returns the total strength of soldiers available to attack a specific target
 unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, unsigned& soldiers_count) const
 {
     unsigned strength = 0;
@@ -874,7 +857,7 @@ unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, unsigned
     return strength;
 }
 
-/// Gibt die Stärke eines Militärgebäudes zurück
+/// Returns the strength of the soldiers stationed inside this military building
 unsigned nobMilitary::GetSoldiersStrength() const
 {
     unsigned strength = 0;
@@ -897,7 +880,7 @@ std::unique_ptr<nofDefender> nobMilitary::ProvideDefender(nofAttacker& attacker)
     nofPassiveSoldier* soldier = ChooseSoldier();
     if(!soldier)
     {
-        /// Soldaten, die noch auf Mission gehen wollen, canceln und für die Verteidigung mit einziehen
+        /// Cancel soldiers that still want to go on a mission and pull them back for defense
         CancelJobs();
         // Nochmal versuchen
         soldier = ChooseSoldier();
@@ -918,18 +901,18 @@ void nobMilitary::Capture(const unsigned char new_owner)
 {
     RTTR_Assert(IsBeingCaptured());
 
-    // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
+    // Transfer the stored gold coins from the old player to the new owner
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
     world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
 
     // Reset desired troop setting
     troop_limits.fill(GetMaxTroopsCt());
 
-    // Soldaten, die auf Mission sind, Bescheid sagen
+    // Notify soldiers that are currently on missions
     for(auto* it : troops_on_mission)
         it->HomeDestroyed();
 
-    // Bestellungen die hierher unterwegs sind canceln
+    // Cancel orders that are still en route to this building
     CancelOrders();
 
     // Tell agressive defending soldiers and far away capturers that their goal is gone
@@ -942,37 +925,37 @@ void nobMilitary::Capture(const unsigned char new_owner)
     aggressive_defenders.clear();
     far_away_capturers.clear();
 
-    // Alten Besitzer merken
+    // Remember the previous owner
     unsigned char old_player = player;
     world->GetPlayer(old_player).RemoveBuilding(this, bldType_);
-    // neuer Spieler
+    // Change ownership to the new player
     player = new_owner;
-    // In der Wirtschaftsverwaltung dieses Gebäude jetzt zum neuen Spieler zählen und beim alten raushauen
+    // Update the economic records for both players
     world->GetPlayer(new_owner).AddBuilding(this, bldType_);
 
-    // Flagge davor auch übernehmen
+    // Transfer ownership of the flag in front of the building
     GetFlag()->Capture(new_owner);
 
-    // Territorium neu berechnen
+    // Recalculate territory
     world->RecalcTerritory(*this, TerritoryChangeReason::Captured);
 
-    // Sichtbarkeiten berechnen für alten Spieler
+    // Update visibility for the former owner
     world->RecalcVisibilitiesAroundPoint(pos, GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, nullptr);
 
-    // Grenzflagge entsprechend neu setzen von den Feinden
+    // Recalculate frontier flags for enemies
     LookForEnemyBuildings();
-    // und von den Verbündeten (da ja ein Feindgebäude weg ist)!
+    // And for allies as the enemy building disappeared
     sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 4);
     for(auto* building : buildings)
     {
-        // verbündetes Gebäude?
+        // Allied building?
         if(world->GetPlayer(building->GetPlayer()).IsAttackable(old_player)
            && BuildingProperties::IsMilitary(building->GetBuildingType()))
-            // Grenzflaggen von dem neu berechnen
+            // Recalculate that building's border flags
             static_cast<nobMilitary*>(building)->LookForEnemyBuildings();
     }
 
-    // ehemalige Leute dieses Gebäudes nach Hause schicken, die ggf. grad auf dem Weg rein/raus waren
+    // Send former occupants home if they were on their way in or out
     std::array<MapPoint, 2> coords = {pos, world->GetNeighbour(pos, Direction::SouthEast)};
     for(const auto& coord : coords)
     {
@@ -1004,7 +987,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
             ++it;
     }
 
-    // Post verschicken, an den alten Besitzer und an den neuen Besitzer
+    // Send notifications to both the old owner and the new owner
     SendPostMessage(old_player,
                     std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Military building lost"),
                                                           PostCategory::Military, *this));
@@ -1044,32 +1027,31 @@ void nobMilitary::NeedOccupyingTroops()
 
     if(needed_soldiers > currentSoldiers)
     {
-        // Soldaten absuchen
+        // Look through the attackers
         for(auto* aggressor : aggressors)
         {
             // Is the soldier standing around and owned by the player?
             if(!aggressor->IsAttackerReady() || aggressor->GetPlayer() != player)
                 continue;
-            // Näher als der bisher beste?
+            // Closer than the current best candidate?
             if(aggressor->GetRadius() >= best_radius)
                 continue;
-            // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die vor ihm ihn den Weg
-            // versperren)?
+            // And can the soldier actually reach the flag or is he blocked by others in front?
             if(world->FindHumanPath(aggressor->GetPos(), world->GetNeighbour(pos, Direction::SouthEast), 10, false))
             {
-                // Dann is das der bisher beste
+                // Then this is the best candidate so far
                 best_attacker = aggressor;
                 best_radius = best_attacker->GetRadius();
             }
         }
 
-        // Einen gefunden?
+        // Found someone?
         if(best_attacker)
         {
-            // Dann soll der hingehen
+            // Send that soldier inside
             best_attacker->CaptureBuilding();
             ++capturing_soldiers;
-            // und raus hier
+            // Nothing more to do now
             return;
         }
 
@@ -1099,8 +1081,8 @@ void nobMilitary::NeedOccupyingTroops()
     for(auto it = aggressors.begin(); it != aggressors.end();)
     {
         nofAttacker* attacker = *it;
-        // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
-        // also: dont remove attackers owned by players not allied with the new owner!
+        // Do not remove soldiers that are still capturing the building
+        // i.e. ignore attackers from players that are not allied with the new owner
         if(attacker->GetState() != nofActiveSoldier::SoldierState::AttackingCapturingNext
            && !world->GetPlayer(attacker->GetPlayer()).IsAttackable(player))
         {
@@ -1116,9 +1098,9 @@ void nobMilitary::SetCoinsAllowed(const bool enabled)
     if(coinsDisabled == !enabled)
         return;
 
-    // Umstellen
+    // Apply the new setting
     coinsDisabled = !enabled;
-    // Wenn das von einem fremden Spieler umgestellt wurde (oder vom Replay), muss auch das visuelle umgestellt werden
+    // If another player or a replay changed this, keep the visual indicator in sync
     if(GAMECLIENT.GetPlayerId() != player || GAMECLIENT.IsReplayModeOn())
         coinsDisabledVirtual = coinsDisabled;
 
@@ -1142,22 +1124,21 @@ void nobMilitary::SetCoinsAllowed(const bool enabled)
 
 unsigned nobMilitary::CalcCoinsPoints() const
 {
-    // Will ich überhaupt Goldmünzen, wenn nich, sofort raus
+    // Abort immediately if we do not want gold coins here
     if(!WantCoins())
         return 0;
 
-    // 10000 als Basis wählen, damit man auch noch was abziehen kann
+    // Start with a base value of 10000 so we can subtract from it
     int points = 10000;
 
-    // Wenn hier schon Münzen drin sind oder welche bestellt sind, wirkt sich das natürlich negativ auf die
-    // "Wichtigkeit" aus
+    // Existing or ordered coins reduce the priority of requesting more
     points -= (numCoins + ordered_coins.size()) * 30;
 
     const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();
-    // Beförderbare Soldaten zählen
+    // Count soldiers that can still be promoted
     for(const auto& soldier : troops)
     {
-        // Solange es kein Max Rank ist, kann der Soldat noch befördert werden
+        // As long as the soldier is below max rank he can be promoted
         if(soldier->GetRank() < maxRank)
             points += 20;
     }
@@ -1170,34 +1151,34 @@ unsigned nobMilitary::CalcCoinsPoints() const
 
 bool nobMilitary::WantCoins() const
 {
-    // Wenn die Goldzufuhr gestoppt wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
+    // Do not request coins if supply is disabled, storage is full, or the building is still new
     return (!coinsDisabled && numCoins + ordered_coins.size() != GetMaxCoinCt() && !new_built);
 }
 
 void nobMilitary::SearchCoins()
 {
-    // Brauche ich überhaupt Goldmünzen bzw. hab ich vielleicht schon ein Event angemeldet?
+    // Only proceed if we want gold coins and no order event is pending
     if(WantCoins() && !goldorder_event)
     {
-        // Lagerhaus mit Goldmünzen suchen
+        // Look for a warehouse that has gold coins
         nobBaseWarehouse* wh =
           world->GetPlayer(player).FindWarehouse(*this, FW::HasMinWares(GoodType::Coins), false, false);
         if(wh)
         {
-            // Wenns eins gibt, dort eine Goldmünze bestellen
+            // Order one gold coin from that warehouse
             Ware* ware = wh->OrderWare(GoodType::Coins, this);
 
             if(!ware)
             {
                 RTTR_Assert(false);
-                // Ware dürfte nicht 0 werden, da ja ein Lagerhaus MIT GOLDMÜNZEN bereits gesucht wird
+                // A warehouse with coins should always provide a ware, so this should never happen
                 LOG.write("nobMilitary::SearchCoins: WARNING: ware = nullptr. Bug alarm!\n");
                 return;
             }
 
             RTTR_Assert(helpers::contains(ordered_coins, ware));
 
-            // Nach einer Weile nochmal nach evtl neuen Goldmünzen gucken
+            // Schedule another check for additional gold coins
             goldorder_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 1);
         }
     }
@@ -1205,15 +1186,15 @@ void nobMilitary::SearchCoins()
 
 void nobMilitary::PrepareUpgrading()
 {
-    // Goldmünzen da?
+    // Abort if no gold coins are available
     if(!numCoins)
         return;
 
-    // Gibts auch noch kein Beförderungsevent?
+    // Skip if a promotion event is already scheduled
     if(upgrade_event)
         return;
 
-    // Noch Soldaten, die befördert werden können?
+    // Check if there are soldiers that can be promoted
     bool soldiers_available = false;
 
     const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();
@@ -1221,7 +1202,7 @@ void nobMilitary::PrepareUpgrading()
     {
         if(troop->GetRank() < maxRank)
         {
-            // es wurde ein Soldat gefunden, der befördert werden kann
+            // Found a soldier who can be promoted
             soldiers_available = true;
             break;
         }
@@ -1230,13 +1211,13 @@ void nobMilitary::PrepareUpgrading()
     if(!soldiers_available)
         return;
 
-    // Alles da --> Beförderungsevent anmelden
+    // Everything is ready -> schedule the promotion event
     upgrade_event = GetEvMgr().AddEvent(this, UPGRADE_TIME + RANDOM_RAND(UPGRADE_TIME_RANDOM), 2);
 }
 
 void nobMilitary::HitOfCatapultStone()
 {
-    // Ein Soldat weniger, falls es noch welche gibt
+    // Remove one soldier if any remain
     if(!troops.empty())
     {
         std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
@@ -1251,14 +1232,14 @@ void nobMilitary::HitOfCatapultStone()
     if(!troops.empty())
         RegulateTroops();
 
-    // Post verschicken
+    // Send a notification
     SendPostMessage(player,
                     std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("A catapult is firing upon us!"),
                                                           PostCategory::Military, *this));
 }
 
 /**
- *  Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
+ *  Determine whether the military building may be demolished (respecting demolition restrictions).
  */
 bool nobMilitary::IsDemolitionAllowed() const
 {
@@ -1268,14 +1249,14 @@ bool nobMilitary::IsDemolitionAllowed() const
             break;
         case 1: // under attack
         {
-            // Prüfen, ob das Gebäude angegriffen wird
+            // Check if the building is under attack
             if(!aggressors.empty())
                 return false;
         }
         break;
         case 2: // near frontiers
         {
-            // Prüfen, ob es in Grenznähe steht
+            // Check if the building is close to the border
             if(frontier_distance == FrontierDistance::Near)
                 return false;
         }
@@ -1306,9 +1287,9 @@ void nobMilitary::CapturingSoldierArrived()
         NeedOccupyingTroops();
         if(capturing_soldiers > 0)
             return; // Found more
-        // Einnahme beendet
+        // Capturing finished
         capturing = false;
-        // Nun die Besetzung prüfen
+        // Re-evaluate the garrison
         RegulateTroops();
     }
 }

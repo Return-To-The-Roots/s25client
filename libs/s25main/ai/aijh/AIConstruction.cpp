@@ -282,20 +282,21 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
     return flags;
 }
 
-bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
-{
-    if(milbld.GetFrontierDistance() != FrontierDistance::Far) // close to front or harbor? connect!
-        return true;
-    if(!aijh.UpgradeBldPos.isValid()) // no upgrade bld on last update -> connect all that want to connect
-        return true;
-    if(aijh.UpgradeBldPos
-       == milbld.GetPos()) // upgrade bld should have road already but just in case it doesnt -> get a road asap
-        return true;
-    // TODO: This probably does not do what is wanted...
-    const auto bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
-    return bldIdx
-           > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds());
-}
+// bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
+// {
+//     return true;
+    // if(milbld.GetFrontierDistance() != FrontierDistance::Far) // close to front or harbor? connect!
+    //     return true;
+    // if(!aijh.UpgradeBldPos.isValid()) // no upgrade bld on last update -> connect all that want to connect
+    //     return true;
+    // if(aijh.UpgradeBldPos
+    //    == milbld.GetPos()) // upgrade bld should have road already but just in case it doesnt -> get a road asap
+    //     return true;
+    // // TODO: This probably does not do what is wanted...
+    // const auto bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
+    // return bldIdx
+    //        > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds());
+// }
 
 bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route,
                                             unsigned maxSearchRadius /*= 14*/)
@@ -532,15 +533,15 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
         return GetBiggestAllowedMilBuilding();
     }
 
-    if(biggestBld == BuildingType::Watchtower || biggestBld == BuildingType::Fortress)
-    {
-        if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
-           && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0)
-           && rand() % 10 != 0)
-        {
-            return biggestBld;
-        }
-    }
+    // if(biggestBld == BuildingType::Watchtower || biggestBld == BuildingType::Fortress)
+    // {
+    //     if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
+    //        && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0)
+    //        && rand() % 10 != 0)
+    //     {
+    //         return biggestBld;
+    //     }
+    // }
 
     uint8_t playerId = aii.GetPlayerId();
     sortedMilitaryBlds military = aii.gwb.LookForMilitaryBuildings(pt, 3);

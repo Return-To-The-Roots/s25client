@@ -158,15 +158,15 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         // Skip special handling building types
         if (bldType == BuildingType::Fishery || bldType == BuildingType::Hunter || 
             bldType == BuildingType::HarborBuilding || bldType == BuildingType::Shipyard ||
-            bldType == BuildingType::Catapult || bldType == BuildingType::Mint ||
+            bldType == BuildingType::Catapult ||
             bldType == BuildingType::GraniteMine || bldType == BuildingType::Charburner)
             continue;
 
         // Special handling for Mint
-        if (bldType == BuildingType::Mint) {
-            buildingsWanted[bldType] = GetNumBuildings(BuildingType::GoldMine);
-            continue;
-        }
+        // if (bldType == BuildingType::Mint) {
+            // buildingsWanted[bldType] = GetNumBuildings(BuildingType::GoldMine);
+            // continue;
+        // }
 
         // Special handling for Catapult
         if (bldType == BuildingType::Catapult) {

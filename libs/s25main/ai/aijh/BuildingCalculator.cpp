@@ -26,9 +26,9 @@ BuildCalculator::BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingN
 helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
-    values[BuildingType::Forester] = doCalc(BuildingType::Forester);
-    values[BuildingType::Sawmill] = doCalc(BuildingType::Sawmill);
-    values[BuildingType::Woodcutter] = doCalc(BuildingType::Woodcutter);
+    values[BuildingType::Forester] = Calc(BuildingType::Forester);
+    values[BuildingType::Sawmill] = Calc(BuildingType::Sawmill);
+    values[BuildingType::Woodcutter] = Calc(BuildingType::Woodcutter);
     values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
     values[BuildingType::Fishery] = 1 + numMilitaryBlds / 5;
     values[BuildingType::GraniteMine] = -1;
@@ -46,32 +46,11 @@ helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 }
 unsigned BuildCalculator::Calc(BuildingType type)
 {
-    switch(type)
-    {
-        case BuildingType::PigFarm: return doCalc(type);
-        case BuildingType::Slaughterhouse: return doCalc(type);
-        case BuildingType::Woodcutter: return doCalc(type);
-        case BuildingType::Forester: return doCalc(type);
-        case BuildingType::Farm: return doCalc(type);
-        case BuildingType::Quarry: return doCalc(type);
-        case BuildingType::Well: return doCalc(type);
-        case BuildingType::Sawmill: return doCalc(type);
-        case BuildingType::Mill: return doCalc(type);
-        case BuildingType::Bakery: return doCalc(type);
-        case BuildingType::Ironsmelter: return doCalc(type);
-        case BuildingType::Armory: return doCalc(type);
-        case BuildingType::Metalworks: return doCalc(type);
-        case BuildingType::Brewery: return doCalc(type);
-        case BuildingType::IronMine: return doCalc(type);
-        case BuildingType::CoalMine: return doCalc(type);
-        case BuildingType::DonkeyBreeder: return doCalc(type);
-        default: return 0u;
-    }
-}
-
-unsigned BuildCalculator::doCalc(BuildingType type)
-{
     WantedParams wantedParams = AI_CONFIG.wantedParams[type];
+    if(!wantedParams.enabled)
+    {
+        return 0u;
+    }
     unsigned workersAvailable = maxWorkers(aijh, type);
     unsigned maxBld = workersAvailable + (unsigned)CALC::calcCount(workersAvailable, wantedParams.workersAdvance);
     unsigned currentBld = GetNumBuildings(type);

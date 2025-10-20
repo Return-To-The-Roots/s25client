@@ -51,7 +51,7 @@ public:
     /// Finds flags in the area around pt
     std::vector<const noFlag*> FindFlags(MapPoint pt, unsigned short radius);
     /// returns true if the military building should be connected to the roadsystem
-    bool MilitaryBuildingWantsRoad(const nobMilitary& milbld);
+    // bool MilitaryBuildingWantsRoad(const nobMilitary& milbld);
     /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the
     /// future road.
     bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius = 14);
