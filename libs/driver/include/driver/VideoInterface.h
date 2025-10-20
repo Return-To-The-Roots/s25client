@@ -57,6 +57,8 @@ public:
     virtual bool GetMouseStateL() const = 0;
     /// Return true when right mouse button is pressed
     virtual bool GetMouseStateR() const = 0;
+    /// Return true when touch is being used
+    virtual bool GetMouseTouch() const = 0;
 
     /// Get the size of the window in screen coordinates
     virtual VideoMode GetWindowSize() const = 0;

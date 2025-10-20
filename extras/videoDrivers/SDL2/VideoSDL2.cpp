@@ -14,6 +14,7 @@
 #include <s25util/utf8.h>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
+#include <SDL_hints.h>
 #include <algorithm>
 #include <memory>
 
@@ -89,6 +90,9 @@ bool VideoSDL2::Initialize()
 {
     initialized = false;
     rttr::ScopedLeakDisabler _;
+    // Do not emulate mouse events using touch and the other way around
+    SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+    SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         PrintError(SDL_GetError());
@@ -427,6 +431,40 @@ bool VideoSDL2::MessageLoop()
                 }
             }
             break;
+            case SDL_FINGERDOWN:
+            {
+                VideoMode wnSize = GetWindowSize();
+                mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
+                mouse_xy.ldown = true;
+                mouse_xy.num_tfingers++;
+                CallBack->Msg_LeftDown(mouse_xy);
+                break;
+            }
+            case SDL_FINGERUP:
+            {
+                VideoMode wnSize = GetWindowSize();
+                mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
+                mouse_xy.ldown = false;
+                CallBack->Msg_LeftUp(mouse_xy);
+                mouse_xy.num_tfingers--; // Dirty way to count leftUp as touch event without extra isTouch bool
+                break;
+            }
+            case SDL_FINGERMOTION:
+            {
+                VideoMode wnSize = GetWindowSize();
+                const auto newPos = getGuiScale().screenToView(Position(
+                  static_cast<int>(ev.tfinger.x * wnSize.width), static_cast<int>(ev.tfinger.y * wnSize.height)));
+
+                if(newPos != mouse_xy.pos)
+                {
+                    mouse_xy.pos = newPos;
+                    CallBack->Msg_MouseMove(mouse_xy);
+                }
+                tfingerEv = ev.tfinger;
+                break;
+            }
         }
     }
 

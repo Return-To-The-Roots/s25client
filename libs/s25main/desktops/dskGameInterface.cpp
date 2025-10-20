@@ -479,23 +479,9 @@ void dskGameInterface::Msg_PaintAfter()
     }
 }
 
-bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+bool dskGameInterface::ContextClick(const MouseCoords& mc)
 {
-    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
-    Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
-        return false;
-
-    // Start scrolling also on Ctrl + left click
-    if(VIDEODRIVER.GetModKeyState().ctrl)
-    {
-        Msg_RightDown(mc);
-        return true;
-    } else if(isScrolling)
-        StopScrolling();
-
-    // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
+    // Handle road building mode if active
     if(road.mode != RoadBuildMode::Disabled)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
@@ -555,7 +541,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     ShowRoadWindow(mc.pos);
             }
         }
-    } else
+    } else // Not in road building mode
     {
         bool enable_military_buildings = false;
 
@@ -707,12 +693,48 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
+bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+{
+    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    Extent btSize = Extent(37, 32) * 4u;
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
+        return false;
+
+    if(!VIDEODRIVER.IsTouch())
+    {
+        // Start scrolling also on Ctrl + left click
+        if(VIDEODRIVER.GetModKeyState().ctrl)
+        {
+            Msg_RightDown(mc);
+            return true;
+        } else if(isScrolling)
+            StopScrolling();
+
+        return ContextClick(mc);
+
+    } else if(mc.num_tfingers < 2)
+    {
+        touchDuration = VIDEODRIVER.GetTickCount();
+
+    } else if(isScrolling) // Bei 2 Fingern soll gezoomt werden kein klick oder bewegen der Karte
+        StopScrolling();
+
+    return true;
+}
+
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
     if(isScrolling)
     {
         StopScrolling();
         return true;
+    }
+    // num_tfingers wird erst reduziert nachdem diese Funktion läuft :/
+    // Herausfinden ob kurz genug unten um context click auszuführen
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < 250)
+    {
+        return ContextClick(mc);
     }
     return false;
 }
@@ -720,18 +742,34 @@ bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
 bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
-        return false;
+    {
+        if(mc.num_tfingers == 1)
+        {
+            StartScrolling(mc.pos);
+        } else
+            return false;
+    }
 
-    int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
-
-    if(SETTINGS.interface.invertMouse)
-        acceleration = -acceleration;
-
-    gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
-    VIDEODRIVER.SetMousePos(startScrollPt);
-
-    if(!SETTINGS.global.smartCursor)
+    // Natural scrolling
+    if(SETTINGS.interface.mouseMode == 2)
+    {
+        float zoomFactor = gwv.GetCurrentTargetZoomFactor();
+        gwv.MoveBy(-(Position(PointF(mc.pos) / zoomFactor) - Position(PointF(startScrollPt) / zoomFactor)));
         startScrollPt = mc.pos;
+    } else
+    {
+        int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
+
+        if(SETTINGS.interface.mouseMode == 1)
+            acceleration = -acceleration;
+
+        gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
+        VIDEODRIVER.SetMousePos(startScrollPt);
+
+        if(!SETTINGS.global.smartCursor)
+            startScrollPt = mc.pos;
+    }
+
     return true;
 }
 

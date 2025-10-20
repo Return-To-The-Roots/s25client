@@ -22,7 +22,8 @@ enum
     ID_txtFullScreen,
     ID_grpFullscreen,
     ID_cbResolution,
-    ID_cbInvertMouse,
+    ID_txtMouseMode,
+    ID_cbMouseMode,
     ID_cbSmartCursor,
     ID_cbStatisticScale,
 };
@@ -70,8 +71,17 @@ iwSettings::iwSettings()
 
     curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
     const auto cbSize = Extent(rowWidth - curPos.x, 26);
-    AddCheckBox(ID_cbInvertMouse, curPos, cbSize, TextureColor::Grey, _("Invert Mouse Pan"), NormalFont, false)
-      ->setChecked(SETTINGS.interface.invertMouse);
+
+    AddText(ID_txtMouseMode, DrawPoint(leftColOffset, curPos.y + 5), _("Mouse mode:"), COLOR_YELLOW, FontStyle{},
+            NormalFont);
+    ctrlComboBox* cbMouseMode =
+      AddComboBox(ID_cbMouseMode, DrawPoint(rightColOffset, curPos.y), ctrlSize, TextureColor::Grey, NormalFont, 100);
+    cbMouseMode->AddString(
+      _("Original (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    cbMouseMode->AddString(_("Inverted (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
+    cbMouseMode->AddString(_("Natural (Map moves with your cursor when scrolling/panning.)"));
+    cbMouseMode->SetSelection(SETTINGS.interface.mouseMode);
+
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
       ->setChecked(SETTINGS.global.smartCursor)
@@ -85,6 +95,9 @@ iwSettings::~iwSettings()
 {
     try
     {
+        auto* MouseMdCombo = GetCtrl<ctrlComboBox>(ID_cbMouseMode);
+        SETTINGS.interface.mouseMode = MouseMdCombo->GetSelection().get();
+
         auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
@@ -118,7 +131,6 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     switch(ctrl_id)
     {
-        case ID_cbInvertMouse: SETTINGS.interface.invertMouse = checked; break;
         case ID_cbSmartCursor:
             SETTINGS.global.smartCursor = checked;
             VIDEODRIVER.SetMouseWarping(checked);

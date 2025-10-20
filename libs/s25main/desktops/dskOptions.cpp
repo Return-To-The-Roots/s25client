@@ -4,7 +4,6 @@
 
 #include "dskOptions.h"
 #include "GlobalGameSettings.h"
-#include "GlobalVars.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
 #include "Settings.h"
@@ -69,8 +68,8 @@ enum
     ID_grpDebugData,
     ID_txtUPNP,
     ID_grpUPNP,
-    ID_txtInvertScroll,
-    ID_grpInvertScroll,
+    ID_txtMouseMode,
+    ID_cbMouseMode,
     ID_txtSmartCursor,
     ID_grpSmartCursor,
     ID_txtWindowPinning,
@@ -276,13 +275,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacingCommon;
-    groupCommon->AddText(ID_txtInvertScroll, curPos, _("Invert Mouse Pan:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlOptionGroup* invertScroll = groupCommon->AddOptionGroup(ID_grpInvertScroll, GroupSelectType::Check);
-    invertScroll->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
-                                _("Map moves in the opposite direction the mouse is moved when scrolling/panning."));
-    invertScroll->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
-                                _("Map moves in the same direction the mouse is moved when scrolling/panning."));
-    invertScroll->SetSelection(SETTINGS.interface.invertMouse);
+    groupCommon->AddText(ID_txtMouseMode, curPos, _("Mouse mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo =
+      groupCommon->AddComboBox(ID_cbMouseMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
+    combo->AddString(_("Original (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    combo->AddString(_("Inverted (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
+    combo->AddString(_("Natural  (Map moves with your cursor when scrolling/panning.)"));
+    combo->SetSelection(SETTINGS.interface.mouseMode);
     curPos.y += rowHeight;
 
     groupCommon->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -562,6 +561,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                   ->GetCtrl<ctrlButton>(1)
                   ->SetEnabled(true);
             break;
+        case ID_cbMouseMode: SETTINGS.interface.mouseMode = selection; break;
         case ID_cbResolution: SETTINGS.video.fullscreenSize = video_modes[selection]; break;
         case ID_cbFramerate:
             if(VIDEODRIVER.HasVSync())
@@ -608,7 +608,6 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             SETTINGS.global.submit_debug_data = selection;
             break;
         case ID_grpUPNP: SETTINGS.global.use_upnp = enabled; break;
-        case ID_grpInvertScroll: SETTINGS.interface.invertMouse = enabled; break;
         case ID_grpSmartCursor:
             SETTINGS.global.smartCursor = enabled;
             VIDEODRIVER.SetMouseWarping(enabled);
