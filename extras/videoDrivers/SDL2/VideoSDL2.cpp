@@ -443,7 +443,6 @@ bool VideoSDL2::MessageLoop()
             }
             case SDL_FINGERMOTION:
             {
-
                 VideoMode wnSize = GetWindowSize();
                 const auto newPos = getGuiScale().screenToView(Position(
                   static_cast<int>(ev.tfinger.x * wnSize.width), static_cast<int>(ev.tfinger.y * wnSize.height)));

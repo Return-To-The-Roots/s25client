@@ -74,7 +74,7 @@ iwSettings::iwSettings()
 
     AddText(ID_txtMouseMode, DrawPoint(leftColOffset, curPos.y + 5), _("Mouse mode:"), COLOR_YELLOW, FontStyle{},
             NormalFont);
-    ctrlComboBox* cbMouseMode = 
+    ctrlComboBox* cbMouseMode =
       AddComboBox(ID_cbMouseMode, DrawPoint(rightColOffset, curPos.y), ctrlSize, TextureColor::Grey, NormalFont, 100);
     cbMouseMode->AddString(
       _("Original (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
