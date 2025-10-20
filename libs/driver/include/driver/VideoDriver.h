@@ -27,6 +27,9 @@ public:
     /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
     bool GetMouseStateR() const override;
 
+    /// Funktion zum Auslesen ob momentan touch verwendet wird.
+    bool GetMouseTouch() const override;
+
     VideoMode GetWindowSize() const override final { return windowSize_; }
     Extent GetRenderSize() const override final { return scaledRenderSize_; }
     bool IsFullscreen() const override final { return isFullscreen_; }

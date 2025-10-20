@@ -325,176 +325,8 @@ void dskGameInterface::Resize(const Extent& newSize)
     gwv.Resize(newSize);
 }
 
-void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
+bool dskGameInterface::ContextClick(const MouseCoords& mc)
 {
-    switch(ctrl_id)
-    {
-        case ID_btMap: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv)); break;
-        case ID_btOptions: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT)); break;
-        case ID_btConstructionAid:
-            if(WINDOWMANAGER.IsDesktopActive())
-                gwv.ToggleShowBQ();
-            break;
-        case ID_btPost:
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
-            UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
-            break;
-    }
-}
-
-void dskGameInterface::Msg_PaintBefore()
-{
-    Desktop::Msg_PaintBefore();
-
-    // Spiel ausführen
-    Run();
-
-    /// Padding of the figures
-    const DrawPoint figPadding(12, 12);
-    const DrawPoint screenSize(VIDEODRIVER.GetRenderSize());
-    // Rahmen zeichnen
-    borders[0]->DrawFull(DrawPoint(0, 0));                                      // oben (mit Ecken)
-    borders[1]->DrawFull(DrawPoint(0, screenSize.y - figPadding.y));            // unten (mit Ecken)
-    borders[2]->DrawFull(DrawPoint(0, figPadding.y));                           // links
-    borders[3]->DrawFull(DrawPoint(screenSize.x - figPadding.x, figPadding.y)); // rechts
-
-    // The figure/statues and the button bar
-    glArchivItem_Bitmap& imgFigLeftTop = *LOADER.GetImageN("resource", 17);
-    glArchivItem_Bitmap& imgFigRightTop = *LOADER.GetImageN("resource", 18);
-    glArchivItem_Bitmap& imgFigLeftBot = *LOADER.GetImageN("resource", 19);
-    glArchivItem_Bitmap& imgFigRightBot = *LOADER.GetImageN("resource", 20);
-    imgFigLeftTop.DrawFull(figPadding);
-    imgFigRightTop.DrawFull(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
-    imgFigLeftBot.DrawFull(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
-    imgFigRightBot.DrawFull(screenSize - figPadding - imgFigRightBot.GetSize());
-
-    glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
-    imgButtonBar.DrawFull(
-      DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
-}
-
-void dskGameInterface::Msg_PaintAfter()
-{
-    Desktop::Msg_PaintAfter();
-
-    const GameWorldBase& world = worldViewer.GetWorld();
-
-    if(SETTINGS.global.showGFInfo)
-    {
-        std::array<char, 256> nwf_string;
-        if(GAMECLIENT.IsReplayModeOn())
-        {
-            snprintf(nwf_string.data(), nwf_string.size(),
-                     _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
-                     GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
-                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
-        } else
-            snprintf(nwf_string.data(), nwf_string.size(),
-                     _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                     GAMECLIENT.GetNWFLength(),
-                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                     worldViewer.GetPlayer().ping);
-        NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
-    }
-
-    // tournament mode?
-    const unsigned tournamentDuration = GAMECLIENT.GetTournamentModeDuration();
-    if(tournamentDuration)
-    {
-        unsigned curGF = world.GetEvMgr().GetCurrentGF();
-        std::string tournamentNotice;
-        if(curGF >= tournamentDuration)
-            tournamentNotice = _("Tournament finished");
-        else
-        {
-            tournamentNotice =
-              helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tournamentDuration - curGF));
-        }
-        NormalFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize().x - 30, 1), tournamentNotice, FontStyle::AlignH::RIGHT,
-                         COLOR_YELLOW);
-    }
-
-    // Replaydateianzeige in der linken unteren Ecke
-    if(GAMECLIENT.IsReplayModeOn())
-    {
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(),
-                         FontStyle::BOTTOM, COLOR_YELLOW);
-    } else
-    {
-        // Laggende Spieler anzeigen in Form von Schnecken
-        DrawPoint snailPos(VIDEODRIVER.GetRenderSize().x - 70, 35);
-        for(const NWFPlayerInfo& player : nwfInfo_->getPlayerInfos())
-        {
-            if(player.isLagging)
-            {
-                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE,
-                                                           game_->world_.GetPlayer(player.id).color);
-                snailPos.x -= 40;
-            }
-        }
-    }
-
-    // Show icons in the upper right corner of the game interface
-    DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
-
-    // Draw cheating indicator icon (WINTER)
-    if(cheats_.isCheatModeOn())
-    {
-        glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
-        cheatingImg->DrawFull(iconPos);
-        iconPos -= DrawPoint(cheatingImg->getWidth() + 6, 0);
-    }
-
-    // Draw speed indicator icon
-    const int speedStep = static_cast<int>(REFERENCE_SPEED / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
-
-    if(speedStep != 0)
-    {
-        glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
-
-        runnerImg->DrawFull(iconPos);
-
-        if(speedStep != 1)
-        {
-            std::string multiplier = helpers::toString(std::abs(speedStep));
-            NormalFont->Draw(iconPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
-                             speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
-        }
-        iconPos -= DrawPoint(runnerImg->getWidth() + 4, 0);
-    }
-
-    // Draw zoom level indicator icon
-    if(gwv.GetCurrentTargetZoomFactor() != 1.f) //-V550
-    {
-        glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
-
-        magnifierImg->DrawFull(iconPos);
-
-        std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
-        NormalFont->Draw(iconPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER,
-                         COLOR_YELLOW);
-        iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
-    }
-}
-
-bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
-{
-    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
-    Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
-        return false;
-
-    // Start scrolling also on Ctrl + left click
-    if(VIDEODRIVER.GetModKeyState().ctrl)
-    {
-        Msg_RightDown(mc);
-        return true;
-    } else if(isScrolling)
-        StopScrolling();
-
     // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
     if(road.mode != RoadBuildMode::Disabled)
     {
@@ -707,12 +539,203 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
+void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
+{
+    switch(ctrl_id)
+    {
+        case ID_btMap: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv)); break;
+        case ID_btOptions: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT)); break;
+        case ID_btConstructionAid:
+            if(WINDOWMANAGER.IsDesktopActive())
+                gwv.ToggleShowBQ();
+            break;
+        case ID_btPost:
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
+            UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
+            break;
+    }
+}
+
+void dskGameInterface::Msg_PaintBefore()
+{
+    Desktop::Msg_PaintBefore();
+
+    // Spiel ausführen
+    Run();
+
+    /// Padding of the figures
+    const DrawPoint figPadding(12, 12);
+    const DrawPoint screenSize(VIDEODRIVER.GetRenderSize());
+    // Rahmen zeichnen
+    borders[0]->DrawFull(DrawPoint(0, 0));                                      // oben (mit Ecken)
+    borders[1]->DrawFull(DrawPoint(0, screenSize.y - figPadding.y));            // unten (mit Ecken)
+    borders[2]->DrawFull(DrawPoint(0, figPadding.y));                           // links
+    borders[3]->DrawFull(DrawPoint(screenSize.x - figPadding.x, figPadding.y)); // rechts
+
+    // The figure/statues and the button bar
+    glArchivItem_Bitmap& imgFigLeftTop = *LOADER.GetImageN("resource", 17);
+    glArchivItem_Bitmap& imgFigRightTop = *LOADER.GetImageN("resource", 18);
+    glArchivItem_Bitmap& imgFigLeftBot = *LOADER.GetImageN("resource", 19);
+    glArchivItem_Bitmap& imgFigRightBot = *LOADER.GetImageN("resource", 20);
+    imgFigLeftTop.DrawFull(figPadding);
+    imgFigRightTop.DrawFull(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
+    imgFigLeftBot.DrawFull(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
+    imgFigRightBot.DrawFull(screenSize - figPadding - imgFigRightBot.GetSize());
+
+    glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
+    imgButtonBar.DrawFull(
+      DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
+}
+
+void dskGameInterface::Msg_PaintAfter()
+{
+    Desktop::Msg_PaintAfter();
+
+    const GameWorldBase& world = worldViewer.GetWorld();
+
+    if(SETTINGS.global.showGFInfo)
+    {
+        std::array<char, 256> nwf_string;
+        if(GAMECLIENT.IsReplayModeOn())
+        {
+            snprintf(nwf_string.data(), nwf_string.size(),
+                     _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
+                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
+                     GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
+                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
+        } else
+            snprintf(nwf_string.data(), nwf_string.size(),
+                     _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
+                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                     GAMECLIENT.GetNWFLength(),
+                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                     worldViewer.GetPlayer().ping);
+        NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
+    }
+
+    // tournament mode?
+    const unsigned tournamentDuration = GAMECLIENT.GetTournamentModeDuration();
+    if(tournamentDuration)
+    {
+        unsigned curGF = world.GetEvMgr().GetCurrentGF();
+        std::string tournamentNotice;
+        if(curGF >= tournamentDuration)
+            tournamentNotice = _("Tournament finished");
+        else
+        {
+            tournamentNotice =
+              helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tournamentDuration - curGF));
+        }
+        NormalFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize().x - 30, 1), tournamentNotice, FontStyle::AlignH::RIGHT,
+                         COLOR_YELLOW);
+    }
+
+    // Replaydateianzeige in der linken unteren Ecke
+    if(GAMECLIENT.IsReplayModeOn())
+    {
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(),
+                         FontStyle::BOTTOM, COLOR_YELLOW);
+    } else
+    {
+        // Laggende Spieler anzeigen in Form von Schnecken
+        DrawPoint snailPos(VIDEODRIVER.GetRenderSize().x - 70, 35);
+        for(const NWFPlayerInfo& player : nwfInfo_->getPlayerInfos())
+        {
+            if(player.isLagging)
+            {
+                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE,
+                                                           game_->world_.GetPlayer(player.id).color);
+                snailPos.x -= 40;
+            }
+        }
+    }
+
+    // Show icons in the upper right corner of the game interface
+    DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
+
+    // Draw cheating indicator icon (WINTER)
+    if(cheats_.isCheatModeOn())
+    {
+        glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
+        cheatingImg->DrawFull(iconPos);
+        iconPos -= DrawPoint(cheatingImg->getWidth() + 6, 0);
+    }
+
+    // Draw speed indicator icon
+    const int speedStep =
+      static_cast<int>(SPEED_GF_LENGTHS[referenceSpeed] / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
+
+    if(speedStep != 0)
+    {
+        glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
+
+        runnerImg->DrawFull(iconPos);
+
+        if(speedStep != 1)
+        {
+            std::string multiplier = helpers::toString(std::abs(speedStep));
+            NormalFont->Draw(iconPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
+                             speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
+        }
+        iconPos -= DrawPoint(runnerImg->getWidth() + 4, 0);
+    }
+
+    // Draw zoom level indicator icon
+    if(gwv.GetCurrentTargetZoomFactor() != 1.f) //-V550
+    {
+        glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
+
+        magnifierImg->DrawFull(iconPos);
+
+        std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
+        NormalFont->Draw(iconPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER,
+                         COLOR_YELLOW);
+        iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
+    }
+}
+
+bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+{
+    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    Extent btSize = Extent(37, 32) * 4u;
+    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
+        return false;
+
+    if(!VIDEODRIVER.IsTouch())
+    {
+        // Start scrolling also on Ctrl + left click
+        if(VIDEODRIVER.GetModKeyState().ctrl)
+        {
+            Msg_RightDown(mc);
+            return true;
+        } else if(isScrolling)
+            StopScrolling();
+
+        return ContextClick(mc);
+
+    } else if(mc.num_tfingers < 2)
+    {
+        touchDuration = VIDEODRIVER.GetTickCount();
+
+    } else if(isScrolling) // Bei 2 Fingern soll gezoomt werden kein klick oder bewegen der Karte
+        StopScrolling();
+
+    return true;
+}
+
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
     if(isScrolling)
     {
         StopScrolling();
         return true;
+    }
+    // num_tfingers wird erst reduziert nachdem diese Funktion läuft :/
+    // Herausfinden ob kurz genug unten um context click auszuführen
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < 250)
+    {
+        return ContextClick(mc);
     }
     return false;
 }
@@ -720,18 +743,34 @@ bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
 bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
-        return false;
+    {
+        if(mc.num_tfingers == 1)
+        {
+            StartScrolling(mc.pos);
+        } else
+            return false;
+    }
 
-    int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
+    // Natural scrolling
+    if(SETTINGS.interface.mouseMode == 2)
+    {
+        float zoomFactor = gwv.GetCurrentTargetZoomFactor();
+        gwv.MoveBy(-(Position(PointF(mc.GetPos()) / zoomFactor) - Position(PointF(startScrollPt) / zoomFactor)));
+        startScrollPt = mc.GetPos();
+    } else
+    {
+        int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-    if(SETTINGS.interface.invertMouse)
-        acceleration = -acceleration;
+        if(SETTINGS.interface.mouseMode == 1)
+            acceleration = -acceleration;
 
-    gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
-    VIDEODRIVER.SetMousePos(startScrollPt);
+        gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
+        VIDEODRIVER.SetMousePos(startScrollPt);
 
-    if(!SETTINGS.global.smartCursor)
-        startScrollPt = mc.pos;
+        if(!SETTINGS.global.smartCursor)
+            startScrollPt = mc.GetPos();
+    }
+
     return true;
 }
 

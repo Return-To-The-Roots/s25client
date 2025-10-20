@@ -107,7 +107,7 @@ public:
     struct
     {
         unsigned autosave_interval;
-        bool invertMouse;
+        unsigned mouseMode; // default/original:0 inverted:1 natural:2
         bool enableWindowPinning;
         unsigned windowSnapDistance;
     } interface;
