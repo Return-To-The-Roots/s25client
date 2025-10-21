@@ -99,6 +99,9 @@ int main(int argc, char** argv)
         std::string savesDir = *output_path + "/saves/";
         bfs::create_directory(savesDir);
         STATS_CONFIG.savesPath = savesDir;
+        std::string screensDir = *output_path + "/screens/";
+        bfs::create_directory(screensDir);
+        STATS_CONFIG.screensPath = screensDir;
 
         std::string logsDir = *output_path + "/logs/";
         bfs::create_directory(logsDir);
@@ -147,6 +150,7 @@ int main(int argc, char** argv)
             bnw::cerr << "unknown start wares: " << startWares << std::endl;
             return 1;
         }
+        ggs.exploration = Exploration::Disabled;
 
         STATS_CONFIG.stats_period = statsPeriod.get_value_or(0);
         STATS_CONFIG.save_period = savePeriod.get_value_or(0);

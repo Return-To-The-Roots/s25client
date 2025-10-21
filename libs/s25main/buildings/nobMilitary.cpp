@@ -867,6 +867,13 @@ unsigned nobMilitary::GetSoldiersStrength() const
     return strength;
 }
 
+bool nobMilitary::HasUpgradeableSoldier() const
+{
+    const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();
+    return helpers::contains_if(troops,
+                                [maxRank](const auto& soldier) { return soldier->GetRank() < maxRank; });
+}
+
 /// is there a max rank soldier in the building?
 bool nobMilitary::HasMaxRankSoldier() const
 {
@@ -1151,12 +1158,32 @@ unsigned nobMilitary::CalcCoinsPoints() const
 
 bool nobMilitary::WantCoins() const
 {
-    // Do not request coins if supply is disabled, storage is full, or the building is still new
-    return (!coinsDisabled && numCoins + ordered_coins.size() != GetMaxCoinCt() && !new_built);
+    // Do not request coins if supply is disabled, storage is full, the building is still new, or nobody can be promoted
+    return (!coinsDisabled && numCoins + ordered_coins.size() != GetMaxCoinCt() && !new_built && HasUpgradeableSoldier());
 }
 
 void nobMilitary::SearchCoins()
 {
+    if(!HasUpgradeableSoldier())
+    {
+        if(goldorder_event)
+        {
+            GetEvMgr().RemoveEvent(goldorder_event);
+            goldorder_event = nullptr;
+        }
+
+        for(auto it = ordered_coins.begin(); it != ordered_coins.end();)
+        {
+            if((*it)->GetLocation() != this)
+            {
+                WareNotNeeded(*it);
+                it = ordered_coins.erase(it);
+            } else
+                ++it;
+        }
+        return;
+    }
+
     // Only proceed if we want gold coins and no order event is pending
     if(WantCoins() && !goldorder_event)
     {
@@ -1194,21 +1221,8 @@ void nobMilitary::PrepareUpgrading()
     if(upgrade_event)
         return;
 
-    // Check if there are soldiers that can be promoted
-    bool soldiers_available = false;
-
-    const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();
-    for(auto& troop : troops)
-    {
-        if(troop->GetRank() < maxRank)
-        {
-            // Found a soldier who can be promoted
-            soldiers_available = true;
-            break;
-        }
-    }
-
-    if(!soldiers_available)
+    // Abort if there are no soldiers that can be promoted
+    if(!HasUpgradeableSoldier())
         return;
 
     // Everything is ready -> schedule the promotion event

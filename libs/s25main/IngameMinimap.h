@@ -8,6 +8,8 @@
 #include "gameTypes/MapTypes.h"
 #include <vector>
 
+#include <boost/filesystem/path.hpp>
+
 class GameWorldViewer;
 
 class IngameMinimap : public Minimap
@@ -51,6 +53,8 @@ public:
     void ToggleTerritory();
     void ToggleHouses();
     void ToggleRoads();
+    /// Speichert die aktuelle Minimap in eine Bitmap-Datei
+    void SaveToFile(const boost::filesystem::path& filepath);
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)

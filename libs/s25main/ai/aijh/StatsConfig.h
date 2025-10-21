@@ -16,6 +16,7 @@ struct StatsConfig
     std::string outputPath = "/home/pavel/s2/manual/runsets/";
     std::string statsPath = "/home/pavel/s2/manual/stats/";
     std::string savesPath = "/home/pavel/s2/manual/saves/";
+    std::string screensPath = "/home/pavel/s2/manual/screens/";
 
     std::string weightsPath = "/home/pavel/s2/volume/config/weights_D.yaml";
 };

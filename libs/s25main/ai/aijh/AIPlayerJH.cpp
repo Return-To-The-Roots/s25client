@@ -10,6 +10,7 @@
 #include "FindWhConditions.h"
 #include "GameCommands.h"
 #include "GamePlayer.h"
+#include "IngameMinimap.h"
 #include "Jobs.h"
 #include "RttrForeachPt.h"
 #include "StatsConfig.h"
@@ -30,6 +31,7 @@
 #include "notifications/RoadNote.h"
 #include "notifications/ShipNote.h"
 #include "pathfinding/PathConditionRoad.h"
+#include "world/GameWorldViewer.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
@@ -48,6 +50,7 @@
 #include <memory>
 #include <random>
 #include <stdexcept>
+#include <boost/filesystem/path.hpp>
 
 namespace fs = std::filesystem;
 
@@ -2887,6 +2890,24 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     outfile << "Boards demand: " << player.GetBuildingRegister().CalcBoardsDemand() << std::endl;
     ;
     outfile.close();
+
+    if(STATS_CONFIG.screensPath.empty())
+        return;
+
+    const boost::filesystem::path screenDir(STATS_CONFIG.screensPath);
+    boost::format screenFmt("ai_minimap_p%02u_%010u.bmp");
+    screenFmt % static_cast<unsigned>(playerId) % gf;
+    const boost::filesystem::path screenshotPath = screenDir / screenFmt.str();
+
+    try
+    {
+        GameWorldViewer viewer(playerId, const_cast<GameWorldBase&>(gwb));
+        IngameMinimap minimap(viewer);
+        minimap.SaveToFile(screenshotPath);
+    } catch(const std::exception& e)
+    {
+        std::cerr << "Unable to save minimap image: " << e.what() << std::endl;
+    }
 }
 
 } // namespace AIJH

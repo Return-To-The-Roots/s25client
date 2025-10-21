@@ -81,6 +81,8 @@ private:
     std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) override;
     /// Will/kann das Gebäude noch Münzen bekommen?
     bool WantCoins() const;
+    /// Checks whether any stationed soldier can still be promoted
+    bool HasUpgradeableSoldier() const;
     /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
     /// Beförderungsevent an
     void PrepareUpgrading();

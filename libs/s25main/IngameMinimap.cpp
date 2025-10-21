@@ -10,7 +10,12 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainDesc.h"
+#include "ogl/saveBitmap.h"
 #include "libsiedler2/ColorBGRA.h"
+#include "libsiedler2/ErrorCodes.h"
+#include "libsiedler2/PixelBufferBGRA.h"
+#include <boost/filesystem/operations.hpp>
+#include <stdexcept>
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv)
     : Minimap(gwv.GetWorld().GetSize()), gwv(gwv), nodes_updated(GetMapSize().x * GetMapSize().y, false),
@@ -280,4 +285,26 @@ void IngameMinimap::ToggleRoads()
 {
     roads = !roads;
     UpdateAll(DrawnObject::Road);
+}
+
+void IngameMinimap::SaveToFile(const boost::filesystem::path& filepath)
+{
+    if(GetMapSize().x == 0 || GetMapSize().y == 0)
+        throw std::runtime_error("Cannot save minimap without map data");
+
+    BeforeDrawing();
+
+    const Extent texSize = map.GetSize();
+    if(texSize.x == 0 || texSize.y == 0)
+        throw std::runtime_error("Minimap texture is empty");
+
+    libsiedler2::PixelBufferBGRA buffer(texSize.x, texSize.y);
+    if(int ec = map.print(buffer))
+        throw std::runtime_error(libsiedler2::getErrorString(ec));
+
+    const boost::filesystem::path directory = filepath.parent_path();
+    if(!directory.empty())
+        boost::filesystem::create_directories(directory);
+
+    saveBitmap(buffer, filepath);
 }

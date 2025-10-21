@@ -17,8 +17,10 @@
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/GameConsts.h"
+#include "s25util/colors.h"
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
+#include <cstddef>
 #include <cstdio>
 #include <iomanip>
 #include <sstream>
@@ -239,7 +241,9 @@ void HeadlessGame::PrintState()
 std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
 {
     std::vector<PlayerInfo> ret;
-    PlayerInfo pi;
+    ret.reserve(ais.size());
+
+    std::size_t nextColorIdx = 0;
 
     for(const AI::Info& ai : ais)
     {
@@ -251,6 +255,13 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
         } else
         {
             pi.ps = PlayerState::Occupied;
+            if(nextColorIdx < PLAYER_COLORS.size())
+                pi.color = PLAYER_COLORS[nextColorIdx++];
+            else
+            {
+                // Fallback: reuse colors if the number of AIs exceeds the available set
+                pi.color = PLAYER_COLORS[nextColorIdx++ % PLAYER_COLORS.size()];
+            }
         }
         switch(ai.type)
         {
@@ -259,7 +270,6 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
             case AI::Type::Dummy:
             default: pi.name = "Dummy " + std::to_string(ret.size()); break;
         }
-        static std::random_device rd;
         pi.nation = ai_random::randomEnum<Nation>();
         pi.team = Team::None;
         ret.push_back(pi);
