@@ -1573,35 +1573,39 @@ void AIPlayerJH::MilUpgradeOptim()
         {
             if(upb >= 0) // we do have an upgrade building
             {
-                if(!milBld->IsGoldDisabled()) // deactivate gold for all other buildings
+                const FrontierDistance frontierDistance = milBld->GetFrontierDistance();
+                if(frontierDistance == FrontierDistance::Far)
                 {
-                    aii.SetCoinsAllowed(milBld->GetPos(), false);
-                }
-                if(milBld->GetFrontierDistance() == FrontierDistance::Far
-                   && (((unsigned)count + GetNumPlannedConnectedInlandMilitaryBlds())
-                       < militaryBuildings.size())) // send out troops until 1 private is left, then cancel road
-                {
-                    if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
-                    {
-                        aii.SetTroopLimit(milBld->GetPos(), 0, 1);
-                        for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
-                            aii.SetTroopLimit(milBld->GetPos(), rank, 0);
+                    if(!milBld->IsGoldDisabled()) // deactivate gold for inland buildings
+                        aii.SetCoinsAllowed(milBld->GetPos(), false);
 
-                        // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it
-                        // uses only SetTroopLimit then this can be removed
-                        for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
-                            aii.SetTroopLimit(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
+                    if(((unsigned)count + GetNumPlannedConnectedInlandMilitaryBlds())
+                       < militaryBuildings.size()) // send out troops until 1 private is left, then cancel road
+                    {
+                        if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
+                        {
+                            aii.SetTroopLimit(milBld->GetPos(), 0, 1);
+                            for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
+                                aii.SetTroopLimit(milBld->GetPos(), rank, 0);
+
+                            // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it
+                            // uses only SetTroopLimit then this can be removed
+                            for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+                                aii.SetTroopLimit(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
+                        }
+                        // else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier
+                        //                                  // at some point and the building is not new on the list->
+                        //                                  cancel
+                        //                                  // road (and fix roadsystem if necessary)
+                        // {
+                        //     RemoveUnusedRoad(*milBld->GetFlag(), Direction::NorthWest, true, true, true);
+                        // }
                     }
-                    // else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier
-                    //                                  // at some point and the building is not new on the list->
-                    //                                  cancel
-                    //                                  // road (and fix roadsystem if necessary)
-                    // {
-                    //     RemoveUnusedRoad(*milBld->GetFlag(), Direction::NorthWest, true, true, true);
-                    // }
-                } else if(milBld->GetFrontierDistance()
-                          != FrontierDistance::Far) // frontier building - connect to road system
+                } else // frontier building - keep coin supply active and connected
                 {
+                    if(milBld->IsGoldDisabled())
+                        aii.SetCoinsAllowed(milBld->GetPos(), true);
+
                     construction->AddConnectFlagJob(milBld->GetFlag());
                 }
             } else // no upgrade building? -> activate gold for frontier buildings
@@ -1773,7 +1777,7 @@ void AIPlayerJH::TryToAttack()
         if((level == AI::Level::Hard) && (target->GetGOT() == GO_Type::NobMilitary))
         {
             const auto* enemyTarget = static_cast<const nobMilitary*>(target);
-            if(attackersStrength <= enemyTarget->GetSoldiersStrength() || enemyTarget->GetNumTroops() == 0)
+            if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 2 || enemyTarget->GetNumTroops() == 0)
                 continue;
         }
 
