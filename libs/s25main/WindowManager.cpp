@@ -359,6 +359,14 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.GetPos() == lastLeftClickPos)
     {
         mc.dbl_click = true;
+
+        // If event is touch, close window (double tap)
+        if(VIDEODRIVER.IsTouch())
+        {
+            IngameWindow* window = FindWindowAtPos(mc.GetPos());
+            if(window && !window->IsPinned())
+                window->Close();
+        }
     } else
     {
         // Werte wieder erneut speichern

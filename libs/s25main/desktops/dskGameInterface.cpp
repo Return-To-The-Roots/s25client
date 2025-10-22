@@ -726,7 +726,7 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     if(!isScrolling)
     {
         if(mc.num_tfingers == 1)
-            StartScrolling(mc.pos);
+            Msg_RightDown(mc);
         else
             return false;
     }
@@ -734,7 +734,7 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     // Natural scrolling
     if(SETTINGS.interface.mouseMode == 2)
     {
-        Position mapPos = gwv.ViewPosToMap(mc.GetPos());
+        const Position mapPos = gwv.ViewPosToMap(mc.GetPos());
         gwv.MoveBy(-(mapPos - startScrollPt));
         startScrollPt = mapPos;
     } else
