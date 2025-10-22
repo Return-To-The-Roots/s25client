@@ -322,7 +322,6 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(!GAMECLIENT.IsReplayModeOn())
             {
-                // NC senden
                 if(gcFactory.SetArmorAllowed(building->GetPos(), building->IsArmorDisabledVirtual()))
                 {
                     building->ToggleArmorVirtual();
