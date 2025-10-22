@@ -715,10 +715,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         return ContextClick(mc);
 
     } else if(mc.num_tfingers < 2)
-    {
         touchDuration = VIDEODRIVER.GetTickCount();
-
-    } else if(isScrolling) // Bei 2 Fingern soll gezoomt werden kein klick oder bewegen der Karte
+    else if(isScrolling) // Bei 2 Fingern soll gezoomt werden kein klick oder bewegen der Karte
         StopScrolling();
 
     return true;
@@ -734,9 +732,8 @@ bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
     // num_tfingers wird erst reduziert nachdem diese Funktion läuft :/
     // Herausfinden ob kurz genug unten um context click auszuführen
     if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < 250)
-    {
         return ContextClick(mc);
-    }
+
     return false;
 }
 
@@ -745,18 +742,17 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     if(!isScrolling)
     {
         if(mc.num_tfingers == 1)
-        {
             StartScrolling(mc.pos);
-        } else
+        else
             return false;
     }
 
     // Natural scrolling
     if(SETTINGS.interface.mouseMode == 2)
     {
-        float zoomFactor = gwv.GetCurrentTargetZoomFactor();
-        gwv.MoveBy(-(Position(PointF(mc.GetPos()) / zoomFactor) - Position(PointF(startScrollPt) / zoomFactor)));
-        startScrollPt = mc.GetPos();
+        Position mapPos = gwv.ViewPosToMap(mc.GetPos());
+        gwv.MoveBy(-(mapPos - startScrollPt));
+        startScrollPt = mapPos;
     } else
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
@@ -776,7 +772,10 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    StartScrolling(mc.pos);
+    if(SETTINGS.interface.mouseMode == 2)
+        StartScrolling(gwv.ViewPosToMap(mc.GetPos()));
+    else
+        StartScrolling(mc.pos);
     return true;
 }
 
