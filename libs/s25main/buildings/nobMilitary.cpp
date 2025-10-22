@@ -42,7 +42,7 @@
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false),
       coinsDisabledVirtual(false), numArmor(0), armorDisabled(false), armorDisabledVirtual(false), capturing(false),
-      capturing_soldiers(0), goldorder_event(nullptr), armororder_event(nullptr), upgrade_event(nullptr),
+      capturing_soldiers(0), gold_order_event(nullptr), armor_order_event(nullptr), upgrade_event(nullptr),
       armor_upgrade_event(nullptr), is_regulating_troops(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
@@ -130,8 +130,8 @@ void nobMilitary::DestroyBuilding()
     far_away_capturers.clear();
 
     // Events ggf. entfernen
-    GetEvMgr().RemoveEvent(goldorder_event);
-    GetEvMgr().RemoveEvent(armororder_event);
+    GetEvMgr().RemoveEvent(gold_order_event);
+    GetEvMgr().RemoveEvent(armor_order_event);
     GetEvMgr().RemoveEvent(upgrade_event);
     GetEvMgr().RemoveEvent(armor_upgrade_event);
 
@@ -157,7 +157,7 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(size);
     sgd.PushBool(capturing);
     sgd.PushUnsignedInt(capturing_soldiers);
-    sgd.PushEvent(goldorder_event);
+    sgd.PushEvent(gold_order_event);
     sgd.PushEvent(upgrade_event);
 
     sgd.PushObjectContainer(ordered_troops, true);
@@ -168,7 +168,7 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(numArmor);
     sgd.PushBool(armorDisabled);
-    sgd.PushEvent(armororder_event);
+    sgd.PushEvent(armor_order_event);
     sgd.PushEvent(armor_upgrade_event);
     sgd.PushObjectContainer(ordered_armor, true);
 }
@@ -177,7 +177,7 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
       coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.Pop<FrontierDistance>()),
       size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()),
-      goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
+      gold_order_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
 {
     sgd.PopObjectContainer(ordered_troops, GO_Type::NofPassivesoldier);
     sgd.PopObjectContainer(ordered_coins, GO_Type::Ware);
@@ -193,14 +193,14 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     {
         numArmor = sgd.PopUnsignedChar();
         armorDisabledVirtual = armorDisabled = sgd.PopBool();
-        armororder_event = sgd.PopEvent();
+        armor_order_event = sgd.PopEvent();
         armor_upgrade_event = sgd.PopEvent();
         sgd.PopObjectContainer(ordered_armor, GO_Type::Ware);
     } else
     {
         numArmor = 0;
         armorDisabledVirtual = armorDisabled = false;
-        armororder_event = nullptr;
+        armor_order_event = nullptr;
         armor_upgrade_event = nullptr;
     }
 
@@ -303,7 +303,7 @@ void nobMilitary::HandleEvent(const unsigned id)
         // Goldbestell-Event
         case 1:
         {
-            goldorder_event = nullptr;
+            gold_order_event = nullptr;
 
             // ggf. nach neuen Goldmünzen suchen
             SearchCoins();
@@ -365,7 +365,7 @@ void nobMilitary::HandleEvent(const unsigned id)
         // Order armor event
         case 3:
         {
-            armororder_event = nullptr;
+            armor_order_event = nullptr;
             SearchArmor();
         }
         break;
@@ -1356,7 +1356,7 @@ bool nobMilitary::WantCoins() const
 void nobMilitary::SearchCoins()
 {
     // Brauche ich überhaupt Goldmünzen bzw. hab ich vielleicht schon ein Event angemeldet?
-    if(WantCoins() && !goldorder_event)
+    if(WantCoins() && !gold_order_event)
     {
         // Lagerhaus mit Goldmünzen suchen
         nobBaseWarehouse* wh =
@@ -1377,7 +1377,7 @@ void nobMilitary::SearchCoins()
             RTTR_Assert(helpers::contains(ordered_coins, ware));
 
             // Nach einer Weile nochmal nach evtl neuen Goldmünzen gucken
-            goldorder_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 1);
+            gold_order_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 1);
         }
     }
 }
@@ -1393,7 +1393,7 @@ void nobMilitary::SearchArmor()
     if(!leatheraddon::isAddonActive(world->GetPlayer(player).GetGameWorld()))
         return;
 
-    if(WantArmor() && !armororder_event)
+    if(WantArmor() && !armor_order_event)
     {
         nobBaseWarehouse* wh =
           world->GetPlayer(player).FindWarehouse(*this, FW::HasMinWares(GoodType::Armor), false, false);
@@ -1411,7 +1411,7 @@ void nobMilitary::SearchArmor()
             RTTR_Assert(helpers::contains(ordered_armor, ware));
 
             // After some time, try to order new armor
-            armororder_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 3);
+            armor_order_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 3);
         }
     }
 }
@@ -1468,20 +1468,19 @@ void nobMilitary::HitOfCatapultStone()
     // Ein Soldat weniger, falls es noch welche gibt
     if(!troops.empty())
     {
-        // 30 percent chance to not die if the soldier has an armor
-        bool die = !(*troops.begin())->HasArmor() || (RANDOM_RAND(99) < 70);
-        if(die)
+        std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
+        helpers::pop_front(troops);
+
+        // 30 percent chance to survive if the soldier has an armor
+        const bool survived = soldier->HasArmor() && (RANDOM_RAND(100) < 30);
+        if(!survived)
         {
-            std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
-            helpers::pop_front(troops);
             // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
             soldier->RemoveFromInventory();
             soldier->LeftBuilding();
             soldier->Destroy();
         } else
         {
-            std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
-            helpers::pop_front(troops);
             soldier->SetArmor(false);
             world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(soldier.get()), 1);
             troops.insert(std::move(soldier));

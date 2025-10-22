@@ -67,8 +67,8 @@ private:
     /// but who are still quite far away (didn't stand around the building)
     std::list<nofAttacker*> far_away_capturers;
     /// Gold-Bestell-Event
-    const GameEvent* goldorder_event;
-    const GameEvent* armororder_event;
+    const GameEvent* gold_order_event;
+    const GameEvent* armor_order_event;
     /// Beförderung-Event
     const GameEvent* upgrade_event;
     const GameEvent* armor_upgrade_event;
