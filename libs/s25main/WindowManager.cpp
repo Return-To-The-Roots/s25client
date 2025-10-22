@@ -269,19 +269,24 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     if(!curDesktop)
         return;
 
-    // Check for double-click
-    const auto time_now = VIDEODRIVER.GetTickCount();
-    if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
-        mc.dbl_click = true;
+    // Ggf. Doppelklick untersuche
+    unsigned time_now = VIDEODRIVER.GetTickCount();
 
-        // If event is touch, close window (double tap)
-        if(VIDEODRIVER.IsTouch())
+    // Sehr schwierig auf touch mit dem default dbl-click interval z.B. Mails zu löschen ohne das Fenster zu schließen
+    if(time_now - lastLeftClickTime < (VIDEODRIVER.IsTouch() ? DOUBLE_CLICK_INTERVAL / 3 : DOUBLE_CLICK_INTERVAL))
+    {
+        if(mc.GetPos() == lastLeftClickPos)
+            mc.dbl_click = true;
+        else if(VIDEODRIVER.IsTouch()) // Fast unmöglich 2 mal auf den exakt selben punkt zu tippen
         {
+            // Wenn doppeltippen -> fenster schließen
             IngameWindow* window = FindWindowAtPos(mc.GetPos());
             if(window && !window->IsPinned())
                 window->Close();
         }
-    } else
+    }
+
+    if(!mc.dbl_click)
     {
         // Just single click, store values for next possible double click
         lastLeftClickPos = mc.pos;
