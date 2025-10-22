@@ -455,7 +455,6 @@ bool VideoSDL2::MessageLoop()
                     mouse_xy.pos = newPos;
                     CallBack->Msg_MouseMove(mouse_xy);
                 }
-                tfingerEv = ev.tfinger;
                 break;
             }
             case SDL_MULTIGESTURE:

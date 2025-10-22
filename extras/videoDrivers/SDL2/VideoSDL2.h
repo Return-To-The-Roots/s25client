@@ -6,7 +6,6 @@
 
 #include "driver/VideoDriver.h"
 #include <SDL.h>
-#include <SDL_events.h>
 
 class VideoDriverLoaderInterface;
 struct VideoMode;
@@ -60,8 +59,6 @@ private:
     void UpdateCurrentSizes();
     void MoveWindowToCenter();
 
-    /// Stores the last touch finger event
-    SDL_TouchFingerEvent tfingerEv;
     SDL_Window* window;
     SDL_GLContext context;
 };
