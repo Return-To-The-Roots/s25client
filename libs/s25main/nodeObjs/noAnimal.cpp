@@ -49,7 +49,7 @@ noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
       hunter(sgd.PopObject<nofHunter>(GO_Type::NofHunter)), skinner(nullptr), sound_moment(0)
 {
     if(sgd.GetGameDataVersion() >= 12)
-        skinner = {sgd.PopObject<nofSkinner>(GO_Type::NofSkinner)};
+        skinner = sgd.PopObject<nofSkinner>(GO_Type::NofSkinner);
 }
 
 void noAnimal::StartLiving()
@@ -159,7 +159,7 @@ void noAnimal::HandleEvent(const unsigned id)
         // Sterbe-Event
         case 2:
         {
-            // we stay in dead state until skinner has done his work, otherwise he has no change to reach the animal in
+            // we stay in dead state until skinner has done his work, otherwise he has no chance to reach the animal in
             // time
             if(skinner)
                 current_ev = GetEvMgr().AddEvent(this, 30, 2);
