@@ -84,7 +84,7 @@ public:
     float GetCurrentTargetZoomFactor() const;
     void SetNextZoomFactor();
 
-    // Converts a screen coordinate to map position
+    // Converts a view coordinate to map position
     Position ViewPosToMap(Position pos) const;
 
     /// Show or hide construction aid

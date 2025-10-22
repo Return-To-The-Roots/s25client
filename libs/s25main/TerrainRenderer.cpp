@@ -24,6 +24,7 @@
 #include <boost/pointer_cast.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
+#include <openglCfg.hpp>
 #include <set>
 
 /* Terrain rendering works like that:
@@ -219,6 +220,16 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             // Unsichtbar -> schwarz
             GetVertex(pt).color = 0.0f;
             break;
+#if RTTR_OGL_GL4ES == 1
+        case Visibility::FogOfWar:
+            // Fog of War -> abgedunkelt
+            GetVertex(pt).color = clr / 2.f;
+            break;
+        case Visibility::Visible:
+            // Normal sichtbar
+            GetVertex(pt).color = clr / 1.f;
+            break;
+#else
         case Visibility::FogOfWar:
             // Fog of War -> abgedunkelt
             GetVertex(pt).color = clr / 4.f;
@@ -227,6 +238,7 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             // Normal sichtbar
             GetVertex(pt).color = clr / 2.f;
             break;
+#endif
     }
 }
 
@@ -791,9 +803,14 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
         glColorPointer(3, GL_FLOAT, 0, &gl_colors.front());
     }
 
+#if RTTR_OGL_GL4ES == 1
+    // Gl4es does not like GL_COMBINE...
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#else
     // Modulate2x
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
     glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
+#endif
 
     // Disable alpha blending
     glDisable(GL_BLEND);

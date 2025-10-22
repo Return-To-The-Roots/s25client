@@ -272,8 +272,16 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     // Check for double-click
     const auto time_now = VIDEODRIVER.GetTickCount();
     if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
+    {
         mc.dbl_click = true;
-    else
+        // If event is touch, close window (double tap)
+        if(VIDEODRIVER.IsTouch())
+        {
+            IngameWindow* window = FindWindowAtPos(mc.pos);
+            if(window && !window->IsPinned())
+                window->Close();
+        }
+    } else
     {
         // Just single click, store values for next possible double click
         lastLeftClickPos = mc.pos;

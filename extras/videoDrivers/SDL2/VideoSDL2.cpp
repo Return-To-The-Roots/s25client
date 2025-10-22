@@ -71,7 +71,11 @@ void FreeVideoInstance(IVideoDriver* driver)
 
 const char* GetDriverName()
 {
+#if RTTR_OGL_GL4ES == 1
+    return "(SDL2) OpenGL-ES(gl4es) via SDL2-Library";
+#else
     return "(SDL2) OpenGL via SDL2-Library";
+#endif
 }
 
 VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(nullptr), context(nullptr) {}
@@ -462,6 +466,17 @@ bool VideoSDL2::MessageLoop()
                     CallBack->Msg_MouseMove(mouse_xy);
                 }
                 tfingerEv = ev.tfinger;
+                break;
+            }
+            case SDL_MULTIGESTURE:
+            {
+                if(std::fabs(ev.mgesture.dDist) > 0.001)
+                {
+                    if(ev.mgesture.dDist > 0)
+                        CallBack->Msg_WheelUp(mouse_xy);
+                    else
+                        CallBack->Msg_WheelDown(mouse_xy);
+                }
                 break;
             }
         }
