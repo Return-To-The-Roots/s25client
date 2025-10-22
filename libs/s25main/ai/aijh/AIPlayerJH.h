@@ -17,6 +17,8 @@
 
 class noFlag;
 class noShip;
+class nobBaseMilitary;
+class nobMilitary;
 class nobBaseWarehouse;
 namespace AIEvent {
 class Base;
@@ -225,7 +227,16 @@ public:
     unsigned GetProductivity(BuildingType type) const;
 
 private:
-    void UpdateAttackHoldStatus();
+    enum class CombatMode
+    {
+        AttackMode,
+        DefenseMode
+    };
+
+    void UpdateCombatMode();
+    bool CanAttackInDefenseMode(const nobBaseMilitary& target, unsigned attackersCount) const;
+    bool IsLonelyEnemyStronghold(const nobBaseMilitary& target) const;
+    double ComputeFulfillmentLevel() const;
 
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;
@@ -243,7 +254,7 @@ private:
     int isInitGfCompleted;
     /// resigned yes/no
     bool defeated;
-    bool attackOnHold;
+    CombatMode attackMode;
     AIEventManager eventManager;
     std::unique_ptr<BuildingPlanner> bldPlanner;
     std::unique_ptr<AIConstruction> construction;

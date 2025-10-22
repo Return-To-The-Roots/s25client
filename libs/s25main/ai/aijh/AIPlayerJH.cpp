@@ -42,6 +42,8 @@
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/ToolConsts.h"
+#include "gameData/MilitaryConsts.h"
+#include "figures/nofPassiveSoldier.h"
 #include <algorithm>
 #include <array>
 #include <filesystem>
@@ -50,6 +52,8 @@
 #include <memory>
 #include <random>
 #include <stdexcept>
+#include <cmath>
+#include <cstdlib>
 #include <boost/filesystem/path.hpp>
 
 namespace fs = std::filesystem;
@@ -225,7 +229,7 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
-      isInitGfCompleted(false), defeated(player.IsDefeated()), attackOnHold(false),
+      isInitGfCompleted(false), defeated(player.IsDefeated()), attackMode(CombatMode::DefenseMode),
       bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this)), positionFinder(std::make_unique<PositionFinder>(*this))
 {
@@ -325,8 +329,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         bldPlanner->UpdateBuildingsWanted(*this);
     ExecuteAIJob();
 
-    if((gf + playerId * 29) % 2000 == 0)
-        UpdateAttackHoldStatus();
+    if((gf + playerId * 29) % 200 == 0)
+        UpdateCombatMode();
 
     if((gf + playerId * 17) % attack_interval == 0)
     {
@@ -1701,64 +1705,157 @@ void AIPlayerJH::CheckGranitMine()
     }
 }
 
-void AIPlayerJH::UpdateAttackHoldStatus()
+namespace {
+const std::array<unsigned, NUM_SOLDIER_RANKS> kSoldierAttackWeights = {3, 4, 5, 6, 7};
+
+double rollProbability()
 {
-    struct FrontierGarrisonStats
-    {
-        unsigned frontierCount = 0;
-        unsigned criticalCount = 0;
-        unsigned totalRequired = 0;
-        unsigned totalAvailable = 0;
-    } stats;
+    return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+}
+} // namespace
+
+double AIPlayerJH::ComputeFulfillmentLevel() const
+{
+    double totalWeight = 0.0;
+    unsigned frontierCount = 0;
 
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     for(const nobMilitary* milBld : militaryBuildings)
     {
         if(!milBld)
             continue;
-        if(milBld->GetFrontierDistance() == FrontierDistance::Far)
+        if(milBld->GetFrontierDistance() != FrontierDistance::Near)
             continue;
         if(milBld->IsNewBuilt())
             continue;
 
-        ++stats.frontierCount;
+        const noFlag* flag = milBld->GetFlag();
+        if(!flag)
+            continue;
 
-        const unsigned requiredTroops = std::max(1u, milBld->CalcRequiredNumTroops());
-        const unsigned availableTroops = milBld->GetNumTroops();
+        ++frontierCount;
 
-        stats.totalRequired += requiredTroops;
-        stats.totalAvailable += availableTroops;
+        std::vector<nofPassiveSoldier*> attackers = milBld->GetSoldiersForAttack(flag->GetPos());
+        if(attackers.empty())
+            continue;
 
-        if(availableTroops <= 1 || availableTroops * 100 < requiredTroops * 30)
-            ++stats.criticalCount;
+        bool skippedHighest = false;
+        for(nofPassiveSoldier* soldier : attackers)
+        {
+            if(!soldier)
+                continue;
+            if(!skippedHighest)
+            {
+                skippedHighest = true;
+                continue;
+            }
+
+            const size_t rankIdx = std::min<size_t>(soldier->GetRank(), kSoldierAttackWeights.size() - 1);
+            totalWeight += kSoldierAttackWeights[rankIdx];
+        }
     }
 
-    if(stats.frontierCount == 0 || stats.totalRequired == 0)
+    if(frontierCount == 0)
+        return 0.0;
+
+    return totalWeight / static_cast<double>(frontierCount);
+}
+
+void AIPlayerJH::UpdateCombatMode()
+{
+    constexpr double lowLevel = 1.0;    // Average force threshold that should trigger defensive stance
+    constexpr double mediumLevel = 2.0;
+    constexpr double highLevel = 3.0;  // Ready-to-strike threshold
+    const double halfPi = std::acos(-1.0) * 0.5;
+
+    const double fulfillment = ComputeFulfillmentLevel();
+
+    if(fulfillment >= highLevel)
     {
-        attackOnHold = false;
+        attackMode = CombatMode::AttackMode;
         return;
     }
 
-    const bool overallWeak = stats.totalAvailable * 100 < stats.totalRequired * 50;
-    const bool tooManyCritical = stats.criticalCount >= std::max(1u, stats.frontierCount / 3);
-    const bool refilledEnough =
-      stats.totalAvailable * 100 >= stats.totalRequired * 60 && stats.criticalCount == 0;
+    if(attackMode == CombatMode::DefenseMode)
+    {
+        if(fulfillment <= lowLevel)
+            return;
 
-    if(attackOnHold)
+        if(fulfillment > mediumLevel && fulfillment < highLevel)
+        {
+            double normalized = (highLevel - fulfillment) / (highLevel - mediumLevel);
+            normalized = std::clamp(normalized, 0.0, 1.0);
+            const double probability = std::cos(normalized * halfPi);
+            if(rollProbability() <= probability)
+                attackMode = CombatMode::AttackMode;
+        }
+    } else
     {
-        if(refilledEnough)
-            attackOnHold = false;
-    } else if(overallWeak || tooManyCritical)
-    {
-        attackOnHold = true;
+        if(fulfillment <= lowLevel)
+        {
+            attackMode = CombatMode::DefenseMode;
+            return;
+        }
+
+        if(fulfillment > lowLevel && fulfillment < mediumLevel)
+        {
+            double normalized = (fulfillment - lowLevel) / (mediumLevel - lowLevel);
+            normalized = std::clamp(normalized, 0.0, 1.0);
+            const double probability = std::cos(normalized * halfPi);
+            if(rollProbability() <= probability)
+                attackMode = CombatMode::DefenseMode;
+        }
     }
+}
+
+bool AIPlayerJH::CanAttackInDefenseMode(const nobBaseMilitary& target, const unsigned attackersCount) const
+{
+    if(attackersCount == 0)
+        return false;
+
+    if(!IsLonelyEnemyStronghold(target))
+        return false;
+
+    const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(&target);
+    const unsigned defenders = target.GetNumTroops();
+    if(enemyMilitary)
+    {
+        if(attackersCount <= defenders)
+            return false;
+    } else
+    {
+        if(target.DefendersAvailable() && attackersCount <= defenders)
+            return false;
+    }
+
+    return true;
+}
+
+bool AIPlayerJH::IsLonelyEnemyStronghold(const nobBaseMilitary& target) const
+{
+    const sortedMilitaryBlds nearby = gwb.LookForMilitaryBuildings(target.GetPos(), 15);
+    unsigned nearbyEnemy = 0;
+
+    for(const nobBaseMilitary* candidate : nearby)
+    {
+        if(candidate == &target)
+            continue;
+        if(candidate->GetPlayer() != target.GetPlayer())
+            continue;
+        if(candidate->GetGOT() != GO_Type::NobMilitary)
+            continue;
+
+        ++nearbyEnemy;
+        if(nearbyEnemy > 1)
+            return false;
+    }
+
+    return true;
 }
 
 void AIPlayerJH::TryToAttack()
 {
-    if(attackOnHold)
-        return;
-
+    const bool inDefenseMode = (attackMode == CombatMode::DefenseMode);
     unsigned hq_or_harbor_without_soldiers = 0;
     std::vector<const nobBaseMilitary*> potentialTargets;
 
@@ -1840,6 +1937,9 @@ void AIPlayerJH::TryToAttack()
             if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 2 || enemyTarget->GetNumTroops() == 0)
                 continue;
         }
+
+        if(inDefenseMode && !CanAttackInDefenseMode(*target, attackersCount))
+            continue;
 
         aii.Attack(dest, attackersCount, true);
         return;
