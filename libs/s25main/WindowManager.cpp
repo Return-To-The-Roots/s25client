@@ -369,7 +369,9 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
             if(window && !window->IsPinned())
                 window->Close();
         }
-    } else
+    }
+
+    if(!mc.dbl_click)
     {
         // Werte wieder erneut speichern
         lastLeftClickPos = mc.GetPos();
