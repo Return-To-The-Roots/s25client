@@ -21,10 +21,10 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "s25util/Log.h"
 #include <glad/glad.h>
-#include <openglCfg.hpp>
 #include <boost/pointer_cast.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
+#include <openglCfg.hpp>
 #include <set>
 
 /* Terrain rendering works like that:
@@ -220,7 +220,7 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             // Unsichtbar -> schwarz
             GetVertex(pt).color = 0.0f;
             break;
-    #if RTTR_OGL_GL4ES == 1
+#if RTTR_OGL_GL4ES == 1
         case Visibility::FogOfWar:
             // Fog of War -> abgedunkelt
             GetVertex(pt).color = clr / 2.f;
@@ -229,7 +229,7 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             // Normal sichtbar
             GetVertex(pt).color = clr / 1.f;
             break;
-    #else
+#else
         case Visibility::FogOfWar:
             // Fog of War -> abgedunkelt
             GetVertex(pt).color = clr / 4.f;
@@ -238,7 +238,7 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             // Normal sichtbar
             GetVertex(pt).color = clr / 2.f;
             break;
-    #endif
+#endif
     }
 }
 
