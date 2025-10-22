@@ -76,60 +76,73 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
 
     Position startPos(10, 15);
     MouseCoords mouse(startPos);
-    // Regular scrolling: Right down, 2 moves, right up
+    mouse.rdown = true;
+
+    // First time with mouse, second time with touch
+    for(unsigned i = 0; i < 2; i++)
     {
+        // Regular scrolling: Right down, 2 moves, right up
+        {
+            WINDOWMANAGER.Msg_RightDown(mouse);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+            DrawPoint pos = view->GetOffset();
+            mouse.pos = startPos + Position(4, 3);
+            WINDOWMANAGER.Msg_MouseMove(mouse);
+            pos += acceleration * Position(4, 3);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+            BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+            mouse.pos = startPos + Position(-6, 7);
+            WINDOWMANAGER.Msg_MouseMove(mouse);
+            pos += acceleration * Position(-6, 7);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+            BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+            mouse.rdown = false;
+            WINDOWMANAGER.Msg_RightUp(mouse);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Hand);
+            BOOST_TEST_REQUIRE(view->GetOffset() == pos);
+            checkNotScrolling(*view);
+        }
+
+        // Inverted scrolling
+        {
+            SETTINGS.interface.mouseMode = 1;
+            WINDOWMANAGER.Msg_RightDown(mouse);
+            startPos = mouse.pos;
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+            const DrawPoint pos = view->GetOffset();
+            mouse.pos = startPos + Position(4, 3);
+            WINDOWMANAGER.Msg_MouseMove(mouse);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+            BOOST_TEST_REQUIRE(view->GetOffset() == pos - acceleration * Position(4, 3));
+            mouse.rdown = false;
+            WINDOWMANAGER.Msg_RightUp(mouse);
+            SETTINGS.interface.mouseMode = 0;
+        }
+
+        // Natural scrolling
+        {
+            SETTINGS.interface.mouseMode = 2;
+            WINDOWMANAGER.Msg_RightDown(mouse);
+            startPos = mouse.pos;
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+            const DrawPoint pos = view->GetOffset();
+            mouse.pos = startPos + Position(4, 3);
+            WINDOWMANAGER.Msg_MouseMove(mouse);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+            BOOST_TEST_REQUIRE(view->GetOffset() == pos - Position(4, 3));
+            mouse.rdown = false;
+            WINDOWMANAGER.Msg_RightUp(mouse);
+            SETTINGS.interface.mouseMode = 0;
+        }
+
+        // Reset mouse
+        mouse = MouseCoords(startPos);
         mouse.rdown = true;
-        WINDOWMANAGER.Msg_RightDown(mouse);
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        DrawPoint pos = view->GetOffset();
-        mouse.pos = startPos + Position(4, 3);
-        WINDOWMANAGER.Msg_MouseMove(mouse);
-        pos += acceleration * Position(4, 3);
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-        mouse.pos = startPos + Position(-6, 7);
-        WINDOWMANAGER.Msg_MouseMove(mouse);
-        pos += acceleration * Position(-6, 7);
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-        mouse.rdown = false;
-        WINDOWMANAGER.Msg_RightUp(mouse);
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Hand);
-        BOOST_TEST_REQUIRE(view->GetOffset() == pos);
-        checkNotScrolling(*view);
+        // Emulate touch input for second run
+        mouse.num_tfingers = 1;
     }
 
-    // Inverted scrolling
-    {
-        SETTINGS.interface.mouseMode = 1;
-        WINDOWMANAGER.Msg_RightDown(mouse);
-        startPos = mouse.pos;
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        const DrawPoint pos = view->GetOffset();
-        mouse.pos = startPos + Position(4, 3);
-        WINDOWMANAGER.Msg_MouseMove(mouse);
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        BOOST_TEST_REQUIRE(view->GetOffset() == pos - acceleration * Position(4, 3));
-        mouse.rdown = false;
-        WINDOWMANAGER.Msg_RightUp(mouse);
-        SETTINGS.interface.mouseMode = 0;
-    }
-
-    // Natural scrolling
-    {
-        SETTINGS.interface.mouseMode = 2;
-        WINDOWMANAGER.Msg_RightDown(mouse);
-        startPos = mouse.pos;
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        const DrawPoint pos = view->GetOffset();
-        mouse.pos = startPos + Position(4, 3);
-        WINDOWMANAGER.Msg_MouseMove(mouse);
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
-        BOOST_TEST_REQUIRE(view->GetOffset() == pos - Position(4, 3));
-        mouse.rdown = false;
-        WINDOWMANAGER.Msg_RightUp(mouse);
-        SETTINGS.interface.mouseMode = 0;
-    }
+    mouse.num_tfingers = 0;
 
     // Opening a window does not cancel scrolling
     {
