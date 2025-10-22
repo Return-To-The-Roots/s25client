@@ -225,6 +225,8 @@ public:
     unsigned GetProductivity(BuildingType type) const;
 
 private:
+    void UpdateAttackHoldStatus();
+
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;
     /// List of coordinates at which military buildings should be
@@ -241,6 +243,7 @@ private:
     int isInitGfCompleted;
     /// resigned yes/no
     bool defeated;
+    bool attackOnHold;
     AIEventManager eventManager;
     std::unique_ptr<BuildingPlanner> bldPlanner;
     std::unique_ptr<AIConstruction> construction;

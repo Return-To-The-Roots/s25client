@@ -225,7 +225,8 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
-      isInitGfCompleted(false), defeated(player.IsDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
+      isInitGfCompleted(false), defeated(player.IsDefeated()), attackOnHold(false),
+      bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this)), positionFinder(std::make_unique<PositionFinder>(*this))
 {
     InitNodes();
@@ -323,6 +324,9 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(gf % 100 == 0)
         bldPlanner->UpdateBuildingsWanted(*this);
     ExecuteAIJob();
+
+    if((gf + playerId * 29) % 2000 == 0)
+        UpdateAttackHoldStatus();
 
     if((gf + playerId * 17) % attack_interval == 0)
     {
@@ -1697,8 +1701,64 @@ void AIPlayerJH::CheckGranitMine()
     }
 }
 
+void AIPlayerJH::UpdateAttackHoldStatus()
+{
+    struct FrontierGarrisonStats
+    {
+        unsigned frontierCount = 0;
+        unsigned criticalCount = 0;
+        unsigned totalRequired = 0;
+        unsigned totalAvailable = 0;
+    } stats;
+
+    const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
+    for(const nobMilitary* milBld : militaryBuildings)
+    {
+        if(!milBld)
+            continue;
+        if(milBld->GetFrontierDistance() == FrontierDistance::Far)
+            continue;
+        if(milBld->IsNewBuilt())
+            continue;
+
+        ++stats.frontierCount;
+
+        const unsigned requiredTroops = std::max(1u, milBld->CalcRequiredNumTroops());
+        const unsigned availableTroops = milBld->GetNumTroops();
+
+        stats.totalRequired += requiredTroops;
+        stats.totalAvailable += availableTroops;
+
+        if(availableTroops <= 1 || availableTroops * 100 < requiredTroops * 30)
+            ++stats.criticalCount;
+    }
+
+    if(stats.frontierCount == 0 || stats.totalRequired == 0)
+    {
+        attackOnHold = false;
+        return;
+    }
+
+    const bool overallWeak = stats.totalAvailable * 100 < stats.totalRequired * 50;
+    const bool tooManyCritical = stats.criticalCount >= std::max(1u, stats.frontierCount / 3);
+    const bool refilledEnough =
+      stats.totalAvailable * 100 >= stats.totalRequired * 60 && stats.criticalCount == 0;
+
+    if(attackOnHold)
+    {
+        if(refilledEnough)
+            attackOnHold = false;
+    } else if(overallWeak || tooManyCritical)
+    {
+        attackOnHold = true;
+    }
+}
+
 void AIPlayerJH::TryToAttack()
 {
+    if(attackOnHold)
+        return;
+
     unsigned hq_or_harbor_without_soldiers = 0;
     std::vector<const nobBaseMilitary*> potentialTargets;
 
