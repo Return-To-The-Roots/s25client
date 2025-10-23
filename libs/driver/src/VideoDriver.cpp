@@ -51,11 +51,11 @@ bool VideoDriver::GetMouseStateR() const
 }
 
 /**
- * Funktion zum Auslesen ob momentan touch verwendet wird.
+ * Function to check if at least 1 finger is on screen.
  *
- *  @return @p true bei touch, @p false bei maus
+ *  @return @p true at least 1 finger, @p false when mouse used
  */
-bool VideoDriver::GetMouseTouch() const
+bool VideoDriver::IsTouchEvent() const
 {
     return mouse_xy.num_tfingers > 0;
 }

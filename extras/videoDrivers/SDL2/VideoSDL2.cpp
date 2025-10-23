@@ -26,7 +26,7 @@
 #    include <windows.h> // Avoid "Windows headers require the default packing option" due to SDL2
 #    include <SDL_syswm.h>
 #endif // _WIN32
-#if RTTR_OGL_GL4ES == 1
+#if RTTR_OGL_GL4ES
 #    include <gl4esinit.h>
 #endif
 
@@ -43,6 +43,14 @@ struct SDLMemoryDeleter
 {
     void operator()(T* p) const { SDL_free(p); }
 };
+
+#if RTTR_OGL_ES || RTTR_OGL_GL4ES
+constexpr SDL_GLprofile RTTR_SDL_GL_PROFILE = SDL_GL_CONTEXT_PROFILE_ES;
+#elif RTTR_OGL_COMPAT
+constexpr SDL_GLprofile RTTR_SDL_GL_PROFILE = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
+#else
+constexpr SDL_GLprofile RTTR_SDL_GL_PROFILE = SDL_GL_CONTEXT_PROFILE_CORE;
+#endif
 
 template<typename T>
 using SDL_memory = std::unique_ptr<T, SDLMemoryDeleter<T>>;
@@ -71,8 +79,8 @@ void FreeVideoInstance(IVideoDriver* driver)
 
 const char* GetDriverName()
 {
-#if RTTR_OGL_GL4ES == 1
-    return "(SDL2) OpenGL-ES(gl4es) via SDL2-Library";
+#if RTTR_OGL_GL4ES
+    return "(SDL2) OpenGL-ES gl4es via SDL2-Library";
 #else
     return "(SDL2) OpenGL via SDL2-Library";
 #endif
@@ -136,14 +144,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     // GL-Attributes
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
-    SDL_GLprofile profile;
-    if((RTTR_OGL_ES) || (RTTR_OGL_GL4ES == 1))
-        profile = SDL_GL_CONTEXT_PROFILE_ES;
-    else if((RTTR_OGL_COMPAT))
-        profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
-    else
-        profile = SDL_GL_CONTEXT_PROFILE_CORE;
-    CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile));
+    CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, RTTR_SDL_GL_PROFILE));
 
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8));
@@ -510,7 +511,7 @@ void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
 
 OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 {
-#if RTTR_OGL_GL4ES == 1
+#if RTTR_OGL_GL4ES
     return gl4es_GetProcAddress;
 #else
     return SDL_GL_GetProcAddress;

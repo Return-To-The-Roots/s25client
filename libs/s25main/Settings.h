@@ -31,6 +31,13 @@ struct PersistentWindowSettings
     bool isMinimized = false;
 };
 
+enum class MapScrollMode
+{
+    ScrollSame,
+    ScrollOpposite, // S2 Original
+    GrabAndDrag
+};
+
 /// Configuration class
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
@@ -107,7 +114,7 @@ public:
     struct
     {
         unsigned autosave_interval;
-        unsigned mouseMode; // default/original:0 inverted:1 natural:2
+        MapScrollMode mapScrollMode;
         bool enableWindowPinning;
         unsigned windowSnapDistance;
     } interface;

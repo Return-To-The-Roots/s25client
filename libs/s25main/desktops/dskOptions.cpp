@@ -68,8 +68,8 @@ enum
     ID_grpDebugData,
     ID_txtUPNP,
     ID_grpUPNP,
-    ID_txtMouseMode,
-    ID_cbMouseMode,
+    ID_txtMapScrollMode,
+    ID_cbMapScrollMode,
     ID_txtSmartCursor,
     ID_grpSmartCursor,
     ID_txtWindowPinning,
@@ -275,13 +275,14 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacingCommon;
-    groupCommon->AddText(ID_txtMouseMode, curPos, _("Mouse mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo =
-      groupCommon->AddComboBox(ID_cbMouseMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
-    combo->AddString(_("Original (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
-    combo->AddString(_("Inverted (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
-    combo->AddString(_("Natural  (Map moves with your cursor when scrolling/panning.)"));
-    combo->SetSelection(SETTINGS.interface.mouseMode);
+    groupCommon->AddText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = groupCommon->AddComboBox(ID_cbMapScrollMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
+                                     NormalFont, 100);
+    combo->AddString(_("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
+    combo->AddString(
+      _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    combo->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
+    combo->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
     curPos.y += rowHeight;
 
     groupCommon->AddText(ID_txtSmartCursor, curPos, _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -561,7 +562,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                   ->GetCtrl<ctrlButton>(1)
                   ->SetEnabled(true);
             break;
-        case ID_cbMouseMode: SETTINGS.interface.mouseMode = selection; break;
+        case ID_cbMapScrollMode: SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(selection); break;
         case ID_cbResolution: SETTINGS.video.fullscreenSize = video_modes[selection]; break;
         case ID_cbFramerate:
             if(VIDEODRIVER.HasVSync())

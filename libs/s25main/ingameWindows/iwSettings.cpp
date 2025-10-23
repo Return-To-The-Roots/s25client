@@ -22,8 +22,8 @@ enum
     ID_txtFullScreen,
     ID_grpFullscreen,
     ID_cbResolution,
-    ID_txtMouseMode,
-    ID_cbMouseMode,
+    ID_txtMapScrollMode,
+    ID_cbMapScrollMode,
     ID_cbSmartCursor,
     ID_cbStatisticScale,
 };
@@ -72,15 +72,16 @@ iwSettings::iwSettings()
     curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
     const auto cbSize = Extent(rowWidth - curPos.x, 26);
 
-    AddText(ID_txtMouseMode, DrawPoint(leftColOffset, curPos.y + 5), _("Mouse mode:"), COLOR_YELLOW, FontStyle{},
-            NormalFont);
-    ctrlComboBox* cbMouseMode =
-      AddComboBox(ID_cbMouseMode, DrawPoint(rightColOffset, curPos.y), ctrlSize, TextureColor::Grey, NormalFont, 100);
-    cbMouseMode->AddString(
-      _("Original (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
-    cbMouseMode->AddString(_("Inverted (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
-    cbMouseMode->AddString(_("Natural (Map moves with your cursor when scrolling/panning.)"));
-    cbMouseMode->SetSelection(SETTINGS.interface.mouseMode);
+    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW,
+            FontStyle{}, NormalFont);
+    ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y), ctrlSize,
+                                                TextureColor::Grey, NormalFont, 100);
+    cbMapScrollMode->AddString(
+      _("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
+    cbMapScrollMode->AddString(
+      _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    cbMapScrollMode->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
+    cbMapScrollMode->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
 
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
@@ -95,8 +96,8 @@ iwSettings::~iwSettings()
 {
     try
     {
-        auto* MouseMdCombo = GetCtrl<ctrlComboBox>(ID_cbMouseMode);
-        SETTINGS.interface.mouseMode = MouseMdCombo->GetSelection().get();
+        auto* MouseMdCombo = GetCtrl<ctrlComboBox>(ID_cbMapScrollMode);
+        SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(MouseMdCombo->GetSelection().get());
 
         auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
