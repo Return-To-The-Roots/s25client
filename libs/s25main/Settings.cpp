@@ -93,7 +93,11 @@ void Settings::LoadDefaults()
     }
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
+#ifdef __ANDROID__
+    video.shared_textures = false;
+#else
     video.shared_textures = true;
+#endif
     video.guiScale = 0; // special value indicating automatic selection
     // }
 
@@ -141,7 +145,11 @@ void Settings::LoadDefaults()
     // interface
     // {
     interface.autosave_interval = 0;
+#ifdef __ANDROID__
+    interface.mouseMode = 2;
+#else
     interface.mouseMode = 0;
+#endif
     interface.enableWindowPinning = false;
     interface.windowSnapDistance = 8;
     // }
@@ -307,7 +315,11 @@ void Settings::Load()
         // interface
         // {
         interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
+#ifdef __ANDROID__
+        interface.mouseMode = iniInterface->getValue("mouse_mode", 2);
+#else
         interface.mouseMode = iniInterface->getValue("mouse_mode", 0);
+#endif
         interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
         interface.windowSnapDistance = iniInterface->getValue("window_snap_distance", 8);
         // }
