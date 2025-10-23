@@ -699,7 +699,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
                      VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
         return false;
 
     if(!VIDEODRIVER.IsTouch())
@@ -716,7 +716,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
     } else if(mc.num_tfingers < 2)
         touchDuration = VIDEODRIVER.GetTickCount();
-    else if(isScrolling) // Bei 2 Fingern soll gezoomt werden kein klick oder bewegen der Karte
+    else if(isScrolling) // 2 fingers down -> zoom mode. Do not click or scroll map
         StopScrolling();
 
     return true;
@@ -729,9 +729,10 @@ bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
         StopScrolling();
         return true;
     }
-    // num_tfingers wird erst reduziert nachdem diese Funktion läuft :/
-    // Herausfinden ob kurz genug unten um context click auszuführen
-    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < 250)
+
+    // num_tfingers is reduced after this function to check if it's still a touch event
+    // Was touch duration short enough to trigger conext click?
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < TOUCH_MAX_CLICK_INTERVAL)
         return ContextClick(mc);
 
     return false;
@@ -747,24 +748,23 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
             return false;
     }
 
-    // Natural scrolling
-    if(SETTINGS.interface.mouseMode == 2)
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
     {
-        const Position mapPos = gwv.ViewPosToMap(mc.GetPos());
+        const Position mapPos = gwv.ViewPosToMap(mc.pos);
         gwv.MoveBy(-(mapPos - startScrollPt));
         startScrollPt = mapPos;
     } else
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-        if(SETTINGS.interface.mouseMode == 1)
+        if(SETTINGS.interface.mapScrollMode == MapScrollMode::ScrollSame)
             acceleration = -acceleration;
 
-        gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
+        gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
         VIDEODRIVER.SetMousePos(startScrollPt);
 
         if(!SETTINGS.global.smartCursor)
-            startScrollPt = mc.GetPos();
+            startScrollPt = mc.pos;
     }
 
     return true;
@@ -772,8 +772,8 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    if(SETTINGS.interface.mouseMode == 2)
-        StartScrolling(gwv.ViewPosToMap(mc.GetPos()));
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+        StartScrolling(gwv.ViewPosToMap(mc.pos));
     else
         StartScrolling(mc.pos);
     return true;

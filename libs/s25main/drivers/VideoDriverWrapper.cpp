@@ -445,7 +445,7 @@ bool VideoDriverWrapper::IsTouch()
     if(!videodriver)
         return false;
 
-    return videodriver->GetMouseTouch();
+    return videodriver->IsTouchEvent();
 }
 
 void VideoDriverWrapper::SetMousePos(const Position& newPos)

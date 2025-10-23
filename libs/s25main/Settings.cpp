@@ -21,6 +21,16 @@
 #include "s25util/error.h"
 #include <boost/filesystem/operations.hpp>
 
+namespace {
+#ifdef __ANDROID__
+constexpr bool SHARED_TEXTURES_DEFAULT = false;
+constexpr MapScrollMode MAP_SCROLL_MODE_DEFAULT = MapScrollMode::GrabAndDrag;
+#else
+constexpr bool SHARED_TEXTURES_DEFAULT = true;
+constexpr MapScrollMode MAP_SCROLL_MODE_DEFAULT = MapScrollMode::ScrollOpposite;
+#endif
+} // namespace
+
 const int Settings::VERSION = 13;
 const std::array<std::string, 10> Settings::SECTION_NAMES = {
   {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "addons"}};
@@ -93,7 +103,7 @@ void Settings::LoadDefaults()
     }
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
-    video.shared_textures = true;
+    video.shared_textures = SHARED_TEXTURES_DEFAULT;
     video.guiScale = 0; // special value indicating automatic selection
     // }
 
@@ -142,7 +152,7 @@ void Settings::LoadDefaults()
     // interface
     // {
     interface.autosave_interval = 0;
-    interface.mouseMode = 0;
+    interface.mapScrollMode = MAP_SCROLL_MODE_DEFAULT;
     interface.enableWindowPinning = false;
     interface.windowSnapDistance = 8;
     // }
@@ -309,7 +319,16 @@ void Settings::Load()
         // interface
         // {
         interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
-        interface.mouseMode = iniInterface->getValue("mouse_mode", 0);
+        try
+        {
+            interface.mapScrollMode = static_cast<MapScrollMode>(iniInterface->getIntValue("map_scroll_mode"));
+        } catch(const std::runtime_error&)
+        {
+            // ScrollSame(old invertMouse) is 0 so invert value
+            interface.mapScrollMode = static_cast<MapScrollMode>(!iniInterface->getBoolValue("invert_mouse"));
+            s25util::warning(
+              "Value 'map_scroll_mode' not found! Using 'invert_mouse' instead - please recheck your settings!");
+        }
         interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
         interface.windowSnapDistance = iniInterface->getValue("window_snap_distance", 8);
         // }
@@ -475,7 +494,7 @@ void Settings::Save()
     // interface
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
-    iniInterface->setValue("mouse_mode", interface.mouseMode);
+    iniInterface->setValue("map_scroll_mode", static_cast<int>(interface.mapScrollMode));
     iniInterface->setValue("enable_window_pinning", interface.enableWindowPinning);
     iniInterface->setValue("window_snap_distance", interface.windowSnapDistance);
     // }
