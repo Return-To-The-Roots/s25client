@@ -2,15 +2,27 @@
 #define CONFIG_H
 #include "WeightParams.h"
 #include "helpers/EnumArray.h"
+#include "gameTypes/AIInfo.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 
 #include <yaml-cpp/yaml.h>
 
+struct CombatConfig
+{
+    double fulfillmentLow = 4.0;
+    double fulfillmentMedium = 8.0;
+    double fulfillmentHigh = 12.0;
+    helpers::EnumArray<unsigned, AI::Level> attackIntervals;
+
+    CombatConfig();
+};
+
 struct AIConfig
 {
     helpers::EnumArray<WantedParams, BuildingType> wantedParams;
     helpers::EnumArray<LocationParams, BuildingType> locationParams;
+    CombatConfig combat;
 };
 
 extern AIConfig AI_CONFIG;

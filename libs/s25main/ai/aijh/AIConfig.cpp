@@ -12,6 +12,54 @@
 // Define the global instance
 AIConfig AI_CONFIG;
 
+CombatConfig::CombatConfig()
+{
+    attackIntervals[AI::Level::Easy] = 2500;
+    attackIntervals[AI::Level::Medium] = 750;
+    attackIntervals[AI::Level::Hard] = 100;
+}
+
+namespace {
+void applyCombatCfg(const YAML::Node& combatNode)
+{
+    if(!combatNode)
+        return;
+
+    if(const YAML::Node fulfillmentNode = combatNode["fulfillment"])
+    {
+        try
+        {
+            if(const YAML::Node value = fulfillmentNode["low"])
+                AI_CONFIG.combat.fulfillmentLow = value.as<double>();
+            if(const YAML::Node value = fulfillmentNode["medium"])
+                AI_CONFIG.combat.fulfillmentMedium = value.as<double>();
+            if(const YAML::Node value = fulfillmentNode["high"])
+                AI_CONFIG.combat.fulfillmentHigh = value.as<double>();
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid combat fulfillment value, using defaults. Error: " << e.what()
+                      << std::endl;
+        }
+    }
+
+    if(const YAML::Node attackIntervalsNode = combatNode["attackIntervals"])
+    {
+        try
+        {
+            if(const YAML::Node value = attackIntervalsNode["easy"])
+                AI_CONFIG.combat.attackIntervals[AI::Level::Easy] = value.as<unsigned>();
+            if(const YAML::Node value = attackIntervalsNode["medium"])
+                AI_CONFIG.combat.attackIntervals[AI::Level::Medium] = value.as<unsigned>();
+            if(const YAML::Node value = attackIntervalsNode["hard"])
+                AI_CONFIG.combat.attackIntervals[AI::Level::Hard] = value.as<unsigned>();
+        } catch(const YAML::TypedBadConversion<unsigned>& e)
+        {
+            std::cerr << "Warning: Invalid combat attack interval, using defaults. Error: " << e.what() << std::endl;
+        }
+    }
+}
+} // namespace
+
 extern void applyWeightsCfg(std::string weightCfgPath)
 {
     try
@@ -20,6 +68,7 @@ extern void applyWeightsCfg(std::string weightCfgPath)
         YAML::Node rootNode = YAML::LoadFile(weightCfgPath);
         applyPosFinderCfg(rootNode["posFinder"]);
         applyBldPlannerCfg(rootNode["buildPlanner"]);
+        applyCombatCfg(rootNode["combat"]);
         std::locale::global(oldLocale);
     } catch(const YAML::Exception& e)
     {

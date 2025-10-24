@@ -229,8 +229,8 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
-      isInitGfCompleted(false), defeated(player.IsDefeated()), attackMode(CombatMode::DefenseMode),
-      bldPlanner(std::make_unique<BuildingPlanner>(*this)),
+      isInitGfCompleted(false), defeated(player.IsDefeated()),
+      attackMode(CombatMode::DefenseMode), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this)), positionFinder(std::make_unique<PositionFinder>(*this))
 {
     InitNodes();
@@ -239,18 +239,16 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     SaveResourceMapsToFile();
 #endif
 
+    attack_interval = AI_CONFIG.combat.attackIntervals[level];
     switch(level)
     {
         case AI::Level::Easy:
-            attack_interval = 2500;
             build_interval = 1000;
             break;
         case AI::Level::Medium:
-            attack_interval = 750;
             build_interval = 400;
             break;
         case AI::Level::Hard:
-            attack_interval = 100;
             build_interval = 200;
             break;
         default: throw std::invalid_argument("Invalid AI level!");
@@ -329,7 +327,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         bldPlanner->UpdateBuildingsWanted(*this);
     ExecuteAIJob();
 
-    if((gf + playerId * 29) % 200 == 0)
+    if((gf + playerId * 29) % 500 == 0)
         UpdateCombatMode();
 
     if((gf + playerId * 17) % attack_interval == 0)
@@ -1714,7 +1712,7 @@ double rollProbability()
 }
 } // namespace
 
-double AIPlayerJH::ComputeFulfillmentLevel() const
+double AIPlayerJH::ComputeFulfillmentLevel(double* outTotalWeight) const
 {
     double totalWeight = 0.0;
     unsigned frontierCount = 0;
@@ -1755,20 +1753,36 @@ double AIPlayerJH::ComputeFulfillmentLevel() const
         }
     }
 
+    if(outTotalWeight)
+        *outTotalWeight = totalWeight;
     if(frontierCount == 0)
         return 0.0;
 
     return totalWeight / static_cast<double>(frontierCount);
 }
 
+double AIPlayerJH::GetCombatFulfillmentLevel() const
+{
+    return ComputeFulfillmentLevel(nullptr);
+}
+
+double AIPlayerJH::GetCombatAttackWeight() const
+{
+    double totalWeight = 0.0;
+    ComputeFulfillmentLevel(&totalWeight);
+    return totalWeight;
+}
+
 void AIPlayerJH::UpdateCombatMode()
 {
-    constexpr double lowLevel = 1.0;    // Average force threshold that should trigger defensive stance
-    constexpr double mediumLevel = 2.0;
-    constexpr double highLevel = 3.0;  // Ready-to-strike threshold
+    const auto& combatCfg = AI_CONFIG.combat;
+    const double lowLevel = combatCfg.fulfillmentLow;       // Average force threshold that should trigger defensive stance
+    const double mediumLevel = combatCfg.fulfillmentMedium;
+    const double highLevel = combatCfg.fulfillmentHigh;     // Ready-to-strike threshold
     const double halfPi = std::acos(-1.0) * 0.5;
 
-    const double fulfillment = ComputeFulfillmentLevel();
+    double totalWeight = 0.0;
+    const double fulfillment = ComputeFulfillmentLevel(&totalWeight);
 
     if(fulfillment >= highLevel)
     {
@@ -1817,7 +1831,7 @@ bool AIPlayerJH::CanAttackInDefenseMode(const nobBaseMilitary& target, const uns
         return false;
 
     const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(&target);
-    const unsigned defenders = target.GetNumTroops();
+    const unsigned defenders = enemyMilitary->GetNumTroops();
     if(enemyMilitary)
     {
         if(attackersCount <= defenders)
@@ -1833,7 +1847,7 @@ bool AIPlayerJH::CanAttackInDefenseMode(const nobBaseMilitary& target, const uns
 
 bool AIPlayerJH::IsLonelyEnemyStronghold(const nobBaseMilitary& target) const
 {
-    const sortedMilitaryBlds nearby = gwb.LookForMilitaryBuildings(target.GetPos(), 15);
+    const sortedMilitaryBlds nearby = gwb.LookForMilitaryBuildings(target.GetPos(), 12);
     unsigned nearbyEnemy = 0;
 
     for(const nobBaseMilitary* candidate : nearby)
