@@ -13,7 +13,7 @@ nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id)
     : nobUsual(sgd, obj_id), mode(sgd.Pop<nobShipYard::Mode>())
 {}
 
-/// Serialisierungsfunktionen
+/// Serialize shipyard state
 void nobShipYard::Serialize(SerializedGameData& sgd) const
 {
     nobUsual::Serialize(sgd);
@@ -21,7 +21,7 @@ void nobShipYard::Serialize(SerializedGameData& sgd) const
     sgd.PushEnum<uint8_t>(mode);
 }
 
-/// Schaltet Modus entsprechend um
+/// Update the production mode
 void nobShipYard::SetMode(Mode newMode)
 {
     mode = newMode;

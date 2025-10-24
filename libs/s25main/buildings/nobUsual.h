@@ -17,27 +17,27 @@ class noFigure;
 class noRoadNode;
 class GameEvent;
 
-// Gewöhnliches Gebäude mit einem Arbeiter und Waren
+// Generic production building with one worker and input wares
 class nobUsual : public noBuilding
 {
 protected:
-    /// Der Typ, der hier arbeitet
+    /// Worker assigned to this building
     nofBuildingWorker* worker;
-    /// Produktivität
+    /// Current productivity value
     unsigned short productivity;
-    /// Produktion eingestellt? (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
+    /// Real and visual production suspension flags (visual flag hides latency)
     bool disableProduction, disableProductionVirtual;
-    /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
+    /// Index of the last ware type ordered (for buildings with multiple inputs)
     unsigned char lastOrderedWare;
-    /// Rohstoffe, die zur Produktion benötigt werden
+    /// Resource counts required for production
     std::array<uint8_t, 3> numWares;
-    /// Bestellte Waren
+    /// Ordered wares per ware type
     std::vector<std::list<Ware*>> orderedWares;
-    /// Bestell-Ware-Event
+    /// Event for ordering wares
     const GameEvent* orderware_ev;
-    /// Rechne-Produktivität-aus-Event
+    /// Event for recalculating productivity
     const GameEvent* productivity_ev;
-    /// Letzte Produktivitäten (Durchschnitt = Gesamt produktivität), vorne das neuste !
+    /// History of recent productivity values (used to compute averages, newest first)
     std::array<uint16_t, 6> lastProductivities;
     /// How many GFs he did not work since the last productivity calculation
     unsigned short numGfNotWorking;
@@ -54,7 +54,7 @@ protected:
     void DestroyBuilding() override;
 
 public:
-    /// Wird gerade gearbeitet oder nicht?
+    /// Is the building currently working?
     bool is_working;
 
     ~nobUsual() override;
@@ -70,53 +70,53 @@ public:
 
     /// Event-Handler
     void HandleEvent(unsigned id) override;
-    /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
+    /// Place a ware at this node (any road node can accept deliveries)
     void AddWare(std::unique_ptr<Ware> ware) override;
-    /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
+    /// Triggered when a ware is picked up from the flag in front of the building
     bool FreePlaceAtFlag() override;
-    /// Eine bestellte Ware konnte doch nicht kommen
+    /// Called when an ordered ware fails to arrive
     void WareLost(Ware& ware) override;
-    /// Wird aufgerufen, wenn ein Arbeiter für das Gebäude gefunden werden konnte
+    /// Called when a worker has been assigned to this building
     void GotWorker(Job job, noFigure& worker) override;
-    /// Wird vom Arbeiter aufgerufen, wenn er im Gebäude angekommen ist
+    /// Called by the worker upon arrival
     void WorkerArrived();
-    /// Wird vom Arbeiter aufgerufen, wenn er nicht (mehr) zur Arbeit kommen kann
+    /// Called by the worker when they can no longer reach the workplace
     void WorkerLost();
 
-    /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
+    /// Return the stored quantity for the given ware slot (incoming minus consumed)
     unsigned char GetNumWares(unsigned id) const { return numWares[id]; }
-    /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
+    /// Check whether enough wares are available for the next work cycle
     bool WaresAvailable();
-    /// Verbraucht Waren
+    /// Consume wares for production
     void ConsumeWares();
 
-    /// Berechnet Punktewertung für Ware type
+    /// Compute the priority score for requesting a ware
     unsigned CalcDistributionPoints(GoodType type);
 
-    /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+    /// Called when a new ware arrives at the building (not just when it was ordered)
     void TakeWare(Ware* ware) override;
 
-    /// Bestellte Waren
+    /// Return whether any wares are currently on order
     bool AreThereAnyOrderedWares() const;
 
-    /// Gibt Pointer auf Produktivität zurück
+    /// Accessors for productivity and worker state
     const unsigned short* GetProductivityPointer() const { return &productivity; }
     unsigned short GetProductivity() const { return productivity; }
     const nofBuildingWorker* GetWorker() const { return worker; }
 
-    /// Stoppt/Erlaubt Produktion (visuell)
+    /// Toggle production visually
     void ToggleProductionVirtual() { disableProductionVirtual = !disableProductionVirtual; }
-    /// Stoppt/Erlaubt Produktion (real)
+    /// Enable or disable production logic
     void SetProductionEnabled(bool enabled);
-    /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
+    /// Query whether production is visually disabled
     bool IsProductionDisabledVirtual() const { return disableProductionVirtual; }
-    /// Fragt ab, ob Produktion ausgeschaltet ist (real)
+    /// Query whether production is actually disabled
     bool IsProductionDisabled() const { return disableProduction; }
     /// Called when there are no more resources
     void OnOutOfResources();
-    /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
+    /// Mark the building as idle for productivity tracking
     void StartNotWorking();
-    /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
+    /// Mark the building as working again for productivity tracking
     void StopNotWorking();
 
 private:

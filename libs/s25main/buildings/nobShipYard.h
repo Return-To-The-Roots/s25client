@@ -8,20 +8,20 @@
 #include <cstdint>
 class SerializedGameData;
 
-/// Extraklasse für ein Schiffsbauer-Gebäude, da hier extra Optionen eingestellt werden müssen
+/// Specialized building class for shipyards, exposing additional configuration
 class nobShipYard : public nobUsual
 {
 public:
-    /// Modi für den Schiffsbauer
+    /// Available production modes
     enum class Mode : uint8_t
     {
-        Boats, // baut kleine Boote
-        Ships  // baut große Schiffe
+        Boats, // produces small boats
+        Ships  // produces large ships
     };
     friend constexpr auto maxEnumValue(Mode) { return Mode::Ships; }
 
 private:
-    /// Aktueller Modus vom Schiffsbauer
+    /// Currently selected shipyard mode
     Mode mode;
 
     friend class SerializedGameData;
@@ -30,13 +30,13 @@ private:
     nobShipYard(SerializedGameData& sgd, unsigned obj_id);
 
 public:
-    /// Serialisierungsfunktionen
+    /// Serialization hook
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const final { return GO_Type::NobShipyard; }
 
-    /// Gibt aktuellen Modus zurück
+    /// Retrieve the active mode
     Mode GetMode() const { return mode; }
-    /// Schaltet Modus entsprechend um
+    /// Change the current mode
     void SetMode(Mode newMode);
 };
