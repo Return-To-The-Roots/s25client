@@ -102,7 +102,8 @@
 /// 9: Drop serialization of node BQ
 /// 10: troop_limits state introduced to military buildings
 /// 11:: wineaddon added, three new building types and two new goods
-static const unsigned currentGameDataVersion = 11;
+/// 12: Store building start/complete frames
+static const unsigned currentGameDataVersion = 12;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

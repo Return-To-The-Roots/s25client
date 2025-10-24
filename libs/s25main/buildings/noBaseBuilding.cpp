@@ -9,6 +9,7 @@
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
+#include "EventManager.h"
 #include "addons/const_addons.h"
 #include "nobBaseWarehouse.h"
 #include "notifications/BuildingNote.h"
@@ -23,31 +24,31 @@
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos,
                                const unsigned char player)
     : noRoadNode(nop, pos, player), bldType_(type), nation(world->GetPlayer(player).nation), door_point_x(1000000),
-      door_point_y(DOOR_CONSTS[world->GetPlayer(player).nation][type])
+      door_point_y(DOOR_CONSTS[world->GetPlayer(player).nation][type]), buildStartingFrame(world->GetEvMgr().GetCurrentGF()),
+      buildCompleteFrame(0)
 {
     MapPoint flagPt = GetFlagPos();
-    // Evtl Flagge setzen, wenn noch keine da ist
+    // Create a flag if none exists yet
     if(world->GetNO(flagPt)->GetType() != NodalObjectType::Flag)
     {
         world->DestroyNO(flagPt, false);
         world->SetNO(flagPt, new noFlag(flagPt, player));
     }
 
-    // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
+    // Set the road connection to the building if it does not already exist (e.g., from a previous construction site)
     if(world->GetPointRoad(pos, Direction::SouthEast) == PointRoad::None)
     {
         world->SetPointRoad(pos, Direction::SouthEast, PointRoad::Normal);
 
-        // Straßenverbindung erstellen zwischen Flagge und Haus
-        // immer von Flagge ZU Gebäude (!)
+        // Create the road segment between the flag and the building, always from flag TO building
         std::vector<Direction> route(1, Direction::NorthWest);
-        // Straße zuweisen
+        // Register the road on both endpoints
         auto* rs = new RoadSegment(RoadType::Normal, world->GetSpecObj<noRoadNode>(flagPt), this, route);
-        world->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NorthWest, rs); // der Flagge
-        SetRoute(Direction::SouthEast, rs);                                        // dem Gebäude
+        world->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NorthWest, rs); // on the flag
+        SetRoute(Direction::SouthEast, rs);                                        // on the building
     } else
     {
-        // vorhandene Straße der Flagge nutzen
+        // Reuse the existing road that is already attached to the flag
         auto* flag = world->GetSpecObj<noFlag>(flagPt);
 
         RTTR_Assert(flag->GetRoute(Direction::NorthWest));
@@ -55,7 +56,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         GetRoute(Direction::SouthEast)->SetF2(this);
     }
 
-    // Werde/Bin ich (mal) ein großes Schloss? Dann müssen die Anbauten gesetzt werden
+    // If this is a large castle-type building, place the extensions
     if(GetSize() == BuildingQuality::Castle || GetSize() == BuildingQuality::Harbor)
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
@@ -77,32 +78,32 @@ void noBaseBuilding::Destroy()
     if(world->GetGameInterface())
         world->GetGameInterface()->GI_UpdateMinimap(pos);
 
-    // evtl Anbauten wieder abreißen
+    // Tear down any extensions if necessary
     DestroyBuildingExtensions();
 
-    // Baukosten zurückerstatten (nicht bei Baustellen)
+    // Refund construction costs (not for construction sites)
     const GlobalGameSettings& settings = world->GetGGS();
     if((GetGOT() != GO_Type::Buildingsite)
        && (settings.isEnabled(AddonId::REFUND_MATERIALS) || settings.isEnabled(AddonId::REFUND_ON_EMERGENCY)))
     {
-        // lebt unsere Flagge noch?
+        // Check whether the flag still exists
         noFlag* flag = GetFlag();
         if(flag)
         {
             unsigned percent_index = 0;
 
-            // wenn Rückerstattung aktiv ist, entsprechende Prozentzahl wählen
+            // Choose the refund percentage if the addon is active
             if(settings.isEnabled(AddonId::REFUND_MATERIALS))
                 percent_index = settings.getSelection(AddonId::REFUND_MATERIALS);
-            // wenn Rückerstattung bei Notprogramm aktiv ist, 50% zurückerstatten
+            // Emergency refund returns 50% when enabled and the player is in emergency mode
             else if(world->GetPlayer(player).hasEmergency() && settings.isEnabled(AddonId::REFUND_ON_EMERGENCY))
                 percent_index = 2;
 
-            // wieviel kriegt man von jeder Ware wieder?
+            // Percentages per ware
             const std::array<unsigned, 5> percents = {0, 25, 50, 75, 100};
             const unsigned percent = 10 * percents[percent_index];
 
-            // zurückgaben berechnen (abgerundet)
+            // Calculate the refunded amounts (rounded down)
             unsigned boards = (percent * BUILDING_COSTS[bldType_].boards) / 1000;
             unsigned stones = (percent * BUILDING_COSTS[bldType_].stones) / 1000;
 
@@ -112,16 +113,16 @@ void noBaseBuilding::Destroy()
             {
                 if((!which && boards > 0) || (which && stones > 0))
                 {
-                    // Ware erzeugen
+                    // Create the ware
                     auto ware = std::make_unique<Ware>(goods[which], nullptr, flag);
                     ware->WaitAtFlag(flag);
-                    // Inventur anpassen
+                    // Update the inventory
                     world->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
-                    // Abnehmer für Ware finden
+                    // Assign a client for the ware
                     ware->SetGoal(world->GetPlayer(player).FindClientForWare(*ware));
-                    // Ware soll ihren weiteren Weg berechnen
+                    // Recalculate the ware's route
                     ware->RecalcRoute();
-                    // Ware ablegen
+                    // Place the ware at the flag
                     flag->AddWare(std::move(ware));
 
                     if(!which)
@@ -146,12 +147,24 @@ void noBaseBuilding::Serialize(SerializedGameData& sgd) const
     sgd.PushEnum<uint8_t>(nation);
     sgd.PushSignedInt(door_point_x);
     sgd.PushSignedInt(door_point_y);
+    sgd.PushUnsignedInt(buildStartingFrame);
+    sgd.PushUnsignedInt(buildCompleteFrame);
 }
 
 noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id), bldType_(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()),
       door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
-{}
+{
+    if(sgd.GetGameDataVersion() >= 12)
+    {
+        buildStartingFrame = sgd.PopUnsignedInt();
+        buildCompleteFrame = sgd.PopUnsignedInt();
+    } else
+    {
+        buildStartingFrame = 0;
+        buildCompleteFrame = 0;
+    }
+}
 
 int noBaseBuilding::GetDoorPointX()
 {
@@ -206,7 +219,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
 
     if(ware->IsWaitingInWarehouse())
     {
-        // Bestellung im Lagerhaus stornieren
+        // Cancel the warehouse order
         world->GetPlayer(player).RemoveWare(*ware);
         static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
     } else
@@ -215,7 +228,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
 
 void noBaseBuilding::DestroyBuildingExtensions()
 {
-    // Nur bei großen Gebäuden gibts diese Anbauten
+    // Only large buildings have these extensions
     if(GetSize() == BuildingQuality::Castle || GetSize() == BuildingQuality::Harbor)
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
@@ -235,7 +248,7 @@ BlockingManner noBaseBuilding::GetBM() const
     return BlockingManner::Building;
 }
 
-/// Gibt ein Bild zurück für das normale Gebäude
+/// Return the standard building texture
 ITexture& noBaseBuilding::GetBuildingImage() const
 {
     return GetBuildingImage(bldType_, nation);
@@ -246,7 +259,7 @@ ITexture& noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-
     return LOADER.building_cache[nation][type].building;
 }
 
-/// Gibt ein Bild zurück für die Tür des Gebäudes
+/// Return the door texture for the building
 ITexture& noBaseBuilding::GetDoorImage() const
 {
     return LOADER.building_cache[nation][bldType_].door;

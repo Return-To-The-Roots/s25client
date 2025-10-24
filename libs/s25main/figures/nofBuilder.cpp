@@ -145,11 +145,17 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 if(world->IsHarborBuildingSiteFromSea(building_site))
                     world->RemoveHarborBuildingSiteFromSea(building_site);
 
+                const unsigned completionGF = world->GetEvMgr().GetCurrentGF();
+                const unsigned startFrame = building_site->GetBuildStartingFrame();
+                building_site->SetBuildCompleteFrame(completionGF);
+
                 // Remove buildingsite, but don't destroy!
                 world->SetNO(building_site->GetPos(), nullptr);
                 deletePtr(building_site);
 
                 noBuilding* bld = BuildingFactory::CreateBuilding(*world, building_type, pos, player, building_nation);
+                bld->SetBuildStartingFrame(startFrame);
+                bld->SetBuildCompleteFrame(completionGF);
                 world->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
 
                 // Special handling for warehouses

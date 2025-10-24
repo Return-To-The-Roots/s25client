@@ -19,18 +19,22 @@ class noFigure;
 class noBaseBuilding : public noRoadNode
 {
 protected:
-    /// Typ des Gebäudes
+    /// Type of the building
     BuildingType bldType_;
 
-    /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
+    /// Nation of the building (stored separately because foreign buildings can be conquered)
     const Nation nation;
-    /// Doorpoints - Punkte, wo die Tür ist, bis wohin die Träger gehen dürfen
+    /// Door points indicating where the door is and how far carriers may go
     int door_point_x;
     int door_point_y;
+    /// Game frame when construction began
+    unsigned buildStartingFrame;
+    /// Game frame when construction completed
+    unsigned buildCompleteFrame;
 
-    /// Ware Bescheid sagen, dass sie nicht mehr hierher kommen brauch
+    /// Notify a ware that it no longer needs to come here
     void WareNotNeeded(Ware* ware);
-    /// Zerstört Anbauten, falls es sich um ein großes Gebäude handelt (wo es diese auch gibt)
+    /// Destroy extensions if this is a large building that has them
     void DestroyBuildingExtensions();
 
 public:
@@ -42,7 +46,7 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    /// Eine bestellte Ware konnte doch nicht kommen
+    /// A requested ware could not arrive
     virtual void WareLost(Ware& ware) = 0;
 
     BuildingQuality GetSize() const;
@@ -53,7 +57,7 @@ public:
     /// Return the radius in which this building holds land
     virtual unsigned GetMilitaryRadius() const = 0;
 
-    /// Ermittelt die Flagge, die vor dem Gebäude steht
+    /// Determine the flag in front of the building
     noFlag* GetFlag() const;
     /// Same as GetFlag()->GetPos()
     MapPoint GetFlagPos() const;
@@ -64,16 +68,21 @@ public:
     int GetDoorPointX();
     int GetDoorPointY() const { return door_point_y; }
 
-    /*/// Gibt die Warenverteilungspunkte zurück (bei 0 wurde kein Weg gefunden)
+    /*/// Returns the distribution score for wares (0 if no path was found)
     virtual unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/
-    /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+    /// Called when a new ware is delivered to the building (not when it is merely ordered)
     virtual void TakeWare(Ware* ware) = 0;
-    /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde
+    /// Called when a specific worker was requested for this building
     virtual void GotWorker(Job /*job*/, noFigure& /*worker*/){};
 
-    /// Gibt ein Bild zurück für das normale Gebäude
+    unsigned GetBuildStartingFrame() const { return buildStartingFrame; }
+    unsigned GetBuildCompleteFrame() const { return buildCompleteFrame; }
+    void SetBuildStartingFrame(unsigned frame) { buildStartingFrame = frame; }
+    void SetBuildCompleteFrame(unsigned frame) { buildCompleteFrame = frame; }
+
+    /// Return the standard building texture
     ITexture& GetBuildingImage() const;
     static ITexture& GetBuildingImage(BuildingType type, Nation nation);
-    /// Gibt ein Bild zurück für die Tür des Gebäudes
+    /// Return the texture for the building door
     ITexture& GetDoorImage() const;
 };

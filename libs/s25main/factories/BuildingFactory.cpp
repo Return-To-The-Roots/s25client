@@ -4,6 +4,7 @@
 
 #include "BuildingFactory.h"
 #include "GamePlayer.h"
+#include "EventManager.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
@@ -31,6 +32,11 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const Building
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
     world.SetNO(pt, bld);
+    const unsigned curGF = world.GetEvMgr().GetCurrentGF();
+    if(bld->GetBuildStartingFrame() == 0)
+        bld->SetBuildStartingFrame(curGF);
+    if(bld->GetBuildCompleteFrame() == 0)
+        bld->SetBuildCompleteFrame(curGF);
     // Don't do this in ctor as building might not be fully initialized yet
     world.GetPlayer(player).AddBuilding(bld, type);
 
