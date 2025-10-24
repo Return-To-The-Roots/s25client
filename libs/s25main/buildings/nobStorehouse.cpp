@@ -9,13 +9,13 @@
 nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BuildingType::Storehouse, pos, player, nation)
 {
-    // Alle Waren 0, außer 100 Träger. TODO: Really?
+    // Reset all goods and keep the 100 carriers placeholder. TODO: Revisit this default?
     inventory.clear();
 
-    // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
+    // Merge the current stock into the inventory snapshot
     AddToInventory();
 
-    // Post versenden
+    // Notify the player via post message
     SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(
                               GetEvMgr().GetCurrentGF(), _("New storehouse finished"), PostCategory::Economy, *this));
 }
@@ -24,7 +24,7 @@ nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : n
 
 void nobStorehouse::Draw(DrawPoint drawPt)
 {
-    // Gebäude an sich zeichnen
+    // Draw the storehouse
     DrawBaseBuilding(drawPt);
 }
 

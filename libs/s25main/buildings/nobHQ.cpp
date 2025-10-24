@@ -300,7 +300,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 
     inventory.real = inventory.visual;
 
-    // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
+    // Merge the current stock into the inventory snapshot
     AddToInventory();
 
     // Take 1 as the reserve per rank
@@ -310,10 +310,10 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
         RefreshReserve(i);
     }
 
-    // Evtl. liegen am Anfang Waffen im HQ, sodass rekrutiert werden muss
+    // There might already be weapons in the HQ at start, so trigger recruiting if required
     TryRecruiting();
 
-    // ins Militärquadrat einfügen
+    // Register this HQ in the military influence grid
     world->GetMilitarySquares().Add(this);
     world->RecalcTerritory(*this, TerritoryChangeReason::Build);
 }
@@ -321,7 +321,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 void nobHQ::DestroyBuilding()
 {
     nobBaseWarehouse::DestroyBuilding();
-    // Wieder aus dem Militärquadrat rauswerfen
+    // Remove the HQ from the military influence grid
     world->GetMilitarySquares().Remove(this);
     // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
     world->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);

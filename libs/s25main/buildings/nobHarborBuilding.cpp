@@ -54,14 +54,14 @@ void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData&
 nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BuildingType::HarborBuilding, pos, player, nation), orderware_ev(nullptr)
 {
-    // ins Militärquadrat einfügen
+    // Register this harbor in the military influence grid
     world->GetMilitarySquares().Add(this);
     world->RecalcTerritory(*this, TerritoryChangeReason::Build);
 
-    // Alle Waren 0
+    // Reset inventory counters
     inventory.clear();
 
-    // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
+    // Merge current stocks into the inventory snapshot
     AddToInventory();
 
     // Take 1 as the reserve per rank
@@ -71,11 +71,11 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
         RefreshReserve(i);
     }
 
-    /// Die Meere herausfinden, an die dieser Hafen grenzt
+    /// Identify all seas adjacent to this harbor
     for(const auto dir : helpers::EnumRange<Direction>{})
         seaIds[dir] = world->GetSeaFromCoastalPoint(world->GetNeighbour(pos, dir));
 
-    // Post versenden
+    // Notify the player via post message
     SendPostMessage(player,
                     std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("New harbor building finished"),
                                                           PostCategory::Economy, *this));
@@ -85,16 +85,16 @@ void nobHarborBuilding::DestroyBuilding()
 {
     GetEvMgr().RemoveEvent(orderware_ev);
 
-    // Der Wirtschaftsverwaltung Bescheid sagen
+    // Inform the economic controller
     GamePlayer& owner = world->GetPlayer(player);
 
-    // Baumaterialien in der Inventur verbuchen
+    // Deduct accumulated expedition materials from inventory
     if(expedition.active)
     {
         owner.DecreaseInventoryWare(GoodType::Boards, expedition.boards);
         owner.DecreaseInventoryWare(GoodType::Stones, expedition.stones);
 
-        // Und Bauarbeiter (später) rausschicken
+        // Release the assigned builder if necessary
         if(expedition.builder)
             inventory.Add(Job::Builder);
         else
@@ -109,7 +109,7 @@ void nobHarborBuilding::DestroyBuilding()
     }
     // cancel all jobs wanted for this building
     owner.JobNotWanted(this, true);
-    // Waiting Wares löschen
+    // Clear wares queued for shipping
     for(auto& wares_for_ship : wares_for_ships)
     {
         wares_for_ship->WareLost(player);

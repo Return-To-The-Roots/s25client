@@ -7,6 +7,7 @@
 #include "AIConfig.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
+#include "BuildingRegister.h"
 #include "FindWhConditions.h"
 #include "GameCommands.h"
 #include "GamePlayer.h"
@@ -18,6 +19,7 @@
 #include "ai/AIEvents.h"
 #include "boost/filesystem/fstream.hpp"
 #include "buildings/noBuildingSite.h"
+#include "buildings/noBaseBuilding.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
@@ -47,6 +49,7 @@
 #include <algorithm>
 #include <array>
 #include <filesystem>
+#include <cstdint>
 #include <limits>
 #include <iomanip>
 #include <memory>
@@ -2928,8 +2931,39 @@ void AIPlayerJH::saveStats(unsigned int gf) const
 
         scoreFile << "GameFrame,Country,Buildings,Military,GoldCoins,Productivity,Kills" << std::endl;
 
-        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable,BoardsDemand" << std::endl;
+        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable,BoardsDemand,AverageBuildTime" << std::endl;
     }
+    const unsigned previousStatsFrame = lastStatsFrame_;
+    const BuildingRegister& buildingRegister = player.GetBuildingRegister();
+    std::uint64_t totalBuildTime = 0;
+    unsigned completedBuildings = 0;
+    const auto accumulateBuild = [&](const noBaseBuilding& building) {
+        const unsigned completionGF = building.GetBuildCompleteFrame();
+        if(completionGF == 0 || completionGF <= previousStatsFrame || completionGF > gf)
+            return;
+        const unsigned startGF = building.GetBuildStartingFrame();
+        if(startGF == 0 || completionGF < startGF)
+            return;
+        totalBuildTime += static_cast<std::uint64_t>(completionGF - startGF);
+        ++completedBuildings;
+    };
+
+    for(BuildingType type : helpers::EnumRange<BuildingType>{})
+    {
+        if(BuildingProperties::IsUsual(type))
+            for(const nobUsual* bld : buildingRegister.GetBuildings(type))
+                accumulateBuild(*bld);
+    }
+    for(const nobMilitary* bld : buildingRegister.GetMilitaryBuildings())
+        accumulateBuild(*bld);
+    for(const nobHarborBuilding* bld : buildingRegister.GetHarbors())
+        accumulateBuild(*bld);
+    for(const nobBaseWarehouse* bld : buildingRegister.GetStorehouses())
+        accumulateBuild(*bld);
+
+    const double averageBuildTime = completedBuildings != 0
+                                      ? static_cast<double>(totalBuildTime) / static_cast<double>(completedBuildings)
+                                      : 0.0;
     scoreFile << gf;
     scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Country);
     scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Buildings);
@@ -2944,7 +2978,9 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     otherFile << "," << GetAvailableResources(AISurfaceResource::Wood);
     otherFile << "," << GetAvailableResources(AISurfaceResource::Stones);
     otherFile << "," << player.GetBuildingRegister().CalcBoardsDemand();
+    otherFile << "," << averageBuildTime;
     otherFile << std::endl;
+    lastStatsFrame_ = gf;
 
     auto bldMap = GetBuildingsMap(*bldPlanner);
     auto sitesMap = GetBuildingsSiteMap(*bldPlanner);

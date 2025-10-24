@@ -28,11 +28,11 @@ class nobHarborBuilding : public nobBaseWarehouse
         ExpeditionInfo(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const;
 
-        /// Anzahl an Brettern und Steinen, die bereits angesammelt wurden
+        /// Number of planks and stones already gathered
         unsigned boards, stones;
-        /// Expedition in Vorbereitung?
+        /// Is the expedition currently being prepared?
         bool active;
-        /// Bauarbeiter schon da?
+        /// Has the builder arrived?
         bool builder;
     } expedition;
 
@@ -42,19 +42,19 @@ class nobHarborBuilding : public nobBaseWarehouse
         ExplorationExpeditionInfo(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const;
 
-        /// Expedition in Vorbereitung?
+        /// Is the exploration expedition being prepared?
         bool active;
-        /// Anzahl der Erkunder, die schon da sind
+        /// Number of scouts already present
         unsigned scouts;
     } exploration_expedition;
 
-    /// Bestell-Ware-Event
+    /// Event that orders additional wares
     const GameEvent* orderware_ev;
-    /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
+    /// Sea IDs of all adjacent waters (for the six surrounding shoreline points)
     helpers::EnumArray<uint16_t, Direction> seaIds;
-    /// Liste von Waren, die weggeschifft werden sollen
+    /// Wares queued for shipping
     std::list<std::unique_ptr<Ware>> wares_for_ships;
-    /// Liste von Menschen, die weggeschifft werden sollen
+    /// Figures queued for shipping
     struct FigureForShip
     {
         std::unique_ptr<noFigure> fig;
@@ -62,7 +62,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     };
     std::list<FigureForShip> figures_for_ships;
 
-    /// Liste von angreifenden Soldaten, die verschifft werden sollen
+    /// Attacking soldiers waiting to embark
     struct SoldierForShip
     {
         std::unique_ptr<nofAttacker> attacker;
@@ -71,27 +71,26 @@ class nobHarborBuilding : public nobBaseWarehouse
     std::list<SoldierForShip> soldiers_for_ships;
 
 private:
-    /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
+    /// Order the additional wares required for an expedition
     void OrderExpeditionWares();
-    /// Prüft, ob eine Expedition von den Waren her vollständig ist und ruft ggf. das Schiff
+    /// Check whether the expedition has all wares and call a ship if ready
     void CheckExpeditionReady();
-    /// Prüft, ob eine Expedition von den Spähern her vollständig ist und ruft ggf. das Schiff
+    /// Check whether the exploration expedition has all scouts and call a ship if ready
     void CheckExplorationExpeditionReady();
-    /// Gibt zurück, ob Expedition vollständig ist
+    /// Return whether the expedition is ready
     bool IsExpeditionReady() const;
-    /// Gibt zurück, ob Erkundungs-Expedition vollständig ist
+    /// Return whether the exploration expedition is ready
     bool IsExplorationExpeditionReady() const;
-    /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
-    /// (muss in dem Fall true zurückgeben)
+    /// Allow derived classes to consume freshly created wares immediately (return true if consumed)
     bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal) override;
-    /// Dasselbe für Menschen
+    /// Same logic for figures
     bool UseFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNode& goal) override;
-    /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
+    /// Cancel a queued figure that can no longer arrive
     void CancelFigure(noFigure* figure) override;
-    /// Bestellt ein Schiff zum Hafen, sofern dies nötig ist
+    /// Request a ship for the harbor if needed
     void OrderShip();
 
-    /// Stellt Verteidiger zur Verfügung
+    /// Provide a defender for the harbor
     std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) override;
 
     friend class SerializedGameData;
@@ -105,73 +104,71 @@ protected:
 public:
     unsigned GetMilitaryRadius() const override { return HARBOR_RADIUS; }
 
-    /// Serialisierung
+    /// Serialize harbor-specific data
     void Serialize(SerializedGameData& sgd) const override;
     GO_Type GetGOT() const final { return GO_Type::NobHarborbuilding; }
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
 
-    /// Eine bestellte Ware konnte doch nicht kommen
+    /// Called when an ordered ware fails to arrive
     void WareLost(Ware& ware) override;
-    /// Legt eine Ware im Lagerhaus ab
+    /// Store a ware inside the harbor warehouse
     void AddWare(std::unique_ptr<Ware> ware) override;
-    /// Eine Figur geht ins Lagerhaus
+    /// Add a figure to the harbor warehouse
     void AddFigure(std::unique_ptr<noFigure> figure, bool increase_visual_counts) override;
-    /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
-    /// benötigt!)
+    /// Compute the priority of a ware for the harbor (expeditions consume specific goods)
     unsigned CalcDistributionPoints(GoodType type) const;
 
-    /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
+    /// Cancel the shipment of a specific ware that was slated for transport
     std::unique_ptr<Ware> CancelWareForShip(Ware* ware);
 
-    /// Startet eine Expedition
+    /// Start gathering resources for an expedition
     void StartExpedition();
     void StopExpedition();
 
-    /// Startet eine Erkundungs-Expedition
+    /// Start gathering resources for an exploration expedition
     void StartExplorationExpedition();
     void StopExplorationExpedition();
 
-    /// Ist Expedition in Vorbereitung?
+    /// Is a regular expedition currently being prepared?
     bool IsExpeditionActive() const { return expedition.active; }
-    /// Ist Erkundungs-Expedition in Vorbereitung?
+    /// Is an exploration expedition currently being prepared?
     bool IsExplorationExpeditionActive() const { return exploration_expedition.active; }
-    /// Schiff ist angekommen
+    /// Notify that a ship arrived
     void ShipArrived(noShip& ship);
-    /// Schiff konnte nicht mehr kommen
+    /// Notify that a ship failed to arrive
     void ShipLost(noShip* ship);
 
-    /// Abfangen, wenn ein Mann nicht mehr kommen kann --> könnte ein Bauarbeiter sein und
-    /// wenn wir einen benötigen, müssen wir einen neuen bestellen
+    /// Handle figures that can no longer reach the harbor (e.g., reorder a needed builder)
     void RemoveDependentFigure(noFigure& figure) override;
 
-    /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
+    /// Return the harbor spot ID occupied by this harbor
     unsigned GetHarborPosID() const;
 
     struct ShipConnection
     {
-        /// Zielhafen
+        /// Destination harbor
         noRoadNode* dest;
-        /// Kosten für die Strecke in Weglänge eines einfachen Trägers
+        /// Travel cost in carrier-distance units
         unsigned way_costs;
     };
-    /// Gibt eine Liste mit möglichen Verbindungen zurück
+    /// Return all viable ship connections
     std::vector<ShipConnection> GetShipConnections() const;
 
-    /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
+    /// Queue a figure for transport to a target destination
     void AddFigureForShip(std::unique_ptr<noFigure> fig, MapPoint dest);
-    /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
+    /// Queue a ware for transport to a target destination
     void AddWareForShip(std::unique_ptr<Ware> ware);
 
     /// A ware changed its route and doesn't want to use the ship anymore
     void WareDontWantToTravelByShip(Ware* ware);
 
-    /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
+    /// Return how many ships are still needed for pending tasks
     unsigned GetNumNeededShips() const;
-    /// Gibt die Wichtigkeit an, dass ein Schiff kommen muss (0 -> keine Bedürftigkeit)
+    /// Rate how urgently an additional ship is required (0 = no demand)
     int GetNeedForShip(unsigned ships_coming) const;
 
-    /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
+    /// Receive goods and figures from a ship and store them
     void ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>>& figures, std::list<std::unique_ptr<Ware>>& wares);
 
     nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;
@@ -185,18 +182,18 @@ public:
             CmpBuilding(const nobMilitary* const search) : search(search) {}
             bool operator()(const SeaAttackerBuilding& other) const { return other.building == search; }
         };
-        /// Das Gebäude selbst
+        /// The military building itself
         nobMilitary* building;
-        // Dazugehöriger Hafen, wo die Angreifer dann auf das Schiff warten sollen
+        // Associated harbor where attackers should wait for the ship
         nobHarborBuilding* harbor;
-        /// Entfernung Hafen - anderer Hafen
+        /// Distance between the source harbor and the target harbor
         unsigned distance;
 
         bool operator==(const nobMilitary* const building) const { return (this->building == building); };
     };
 
-    /// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
-    /// defender_harbors sind dabei mögliche Zielhäfen
+    /// Return the attackers this harbor can provide for a sea assault
+    /// `defender_harbors` lists possible target harbors
     std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>& defender_harbors);
     /// Gibt verfügbare Angreifer zurück
     std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaIdAttack();

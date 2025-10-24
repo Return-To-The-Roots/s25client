@@ -1495,9 +1495,9 @@ void GamePlayer::CalcStatistics()
 
     // Militär aus der Inventur zählen
     statisticCurrentData[StatisticType::Military] =
-      global_inventory.people[Job::Private] + global_inventory.people[Job::PrivateFirstClass] * 2
-      + global_inventory.people[Job::Sergeant] * 3 + global_inventory.people[Job::Officer] * 4
-      + global_inventory.people[Job::General] * 5;
+      global_inventory.people[Job::Private] + global_inventory.people[Job::PrivateFirstClass]
+      + global_inventory.people[Job::Sergeant] + global_inventory.people[Job::Officer]
+      + global_inventory.people[Job::General];
 
     // Produktivität berechnen
     statisticCurrentData[StatisticType::Productivity] = buildings.CalcAverageProductivity();

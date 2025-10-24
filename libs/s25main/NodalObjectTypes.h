@@ -8,23 +8,23 @@
 
 enum class NodalObjectType : uint8_t
 {
-    Nothing,         // nichts
-    Granite,         // Granit
-    Tree,            // Baum
-    Grainfield,      // Getreidefeld
-    Environment,     // sonstige "Umweltobjekte", die keine besondere Funktion haben ( tote Bäume, Pilze, Sträucher )
-    Object,          // sonstige "feste" Objekte, die keine besondere Funktion haben (Stalagmiten, Ruinen, usw)
-    Building,        // Gebäcde
-    Flag,            // Fahne
-    Buildingsite,    // Baustelle
-    Figure,          // Siedler-Leute
-    Extension,       // Anbau von großen Gebäuden
-    Fire,            // Ein Feuer von einem brennende (zerstörten) Gebäude
-    Fighting,        // Kampf,
-    Animal,          // Tier
-    BurnedWarehouse, // abgebranntes Lagerhaus, aus dem die Menschen jetzt strömen
-    Ship,            // Schiff
-    CharburnerPile,  // Holz-/Kohle-Haufen vom Köhler
+    Nothing,         // nothing
+    Granite,         // granite
+    Tree,            // tree
+    Grainfield,      // grain field
+    Environment,     // other environmental objects without a special function (dead trees, mushrooms, bushes)
+    Object,          // other solid objects without a special function (stalagmites, ruins, etc.)
+    Building,        // building
+    Flag,            // flag
+    Buildingsite,    // construction site
+    Figure,          // settlers
+    Extension,       // extension of large buildings
+    Fire,            // a fire from a burning (destroyed) building
+    Fighting,        // combat
+    Animal,          // animal
+    BurnedWarehouse, // burned-out warehouse from which people are pouring out
+    Ship,            // ship
+    CharburnerPile,  // wood/charcoal pile from the charcoal burner
     Grapefield,
 };
 constexpr auto maxEnumValue(NodalObjectType)

@@ -38,7 +38,7 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 
     orderedWares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
-    // Tür aufmachen,bis Gebäude besetzt ist
+    // Keep the door open until the building is staffed
     OpenDoor();
 
     GamePlayer& owner = world->GetPlayer(player);
@@ -89,7 +89,7 @@ nobUsual::~nobUsual() = default;
 
 void nobUsual::DestroyBuilding()
 {
-    // Arbeiter Bescheid sagen
+    // Notify the worker
     if(worker)
     {
         worker->LostWork();
@@ -97,7 +97,7 @@ void nobUsual::DestroyBuilding()
     } else
         world->GetPlayer(player).JobNotWanted(this);
 
-    // Bestellte Waren Bescheid sagen
+    // Inform all ordered wares
     for(std::list<Ware*>& orderedWare : orderedWares)
     {
         for(Ware* ware : orderedWare)
@@ -105,11 +105,11 @@ void nobUsual::DestroyBuilding()
         orderedWare.clear();
     }
 
-    // Events löschen
+    // Cancel pending events
     GetEvMgr().RemoveEvent(orderware_ev);
     GetEvMgr().RemoveEvent(productivity_ev);
 
-    // Inventur entsprechend verringern wegen den Waren, die vernichtetet werden
+    // Reduce the inventory for the wares that get destroyed
     for(unsigned i = 0; i < BLD_WORK_DESC[bldType_].waresNeeded.size(); ++i)
     {
         const GoodType ware = BLD_WORK_DESC[bldType_].waresNeeded[i];
@@ -120,16 +120,16 @@ void nobUsual::DestroyBuilding()
 
 void nobUsual::Draw(DrawPoint drawPt)
 {
-    // Gebäude an sich zeichnen
+    // Draw the building itself
     DrawBaseBuilding(drawPt);
 
-    // Wenn Produktion gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
+    // Draw a suspended-production sign when production is halted
     if(disableProductionVirtual)
         LOADER.GetMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 
     // Rauch zeichnen
 
-    // Raucht dieses Gebäude und ist es in Betrieb? (nur arbeitende Gebäude rauchen schließlich)
+    // If the building is operating, draw smoke; idle buildings stay smoke-free
     if(is_working && BUILDING_SMOKE_CONSTS[nation][bldType_].type)
     {
         // Dann Qualm zeichnen (damit Qualm nicht synchron ist, x- und y- Koordinate als Unterscheidung
@@ -139,20 +139,20 @@ void nobUsual::Draw(DrawPoint drawPt)
           ->DrawFull(drawPt + BUILDING_SMOKE_CONSTS[nation][bldType_].offset, 0x99EEEEEE);
     }
 
-    // TODO: zusätzliche Dinge wie Mühlenräder, Schweinchen etc bei bestimmten Gebäuden zeichnen
+    // TODO: render additional props such as mill wheels or livestock for the respective buildings
 
-    // Bei Mühle, wenn sie nicht arbeitet, immer Mühlenräder (nichtdrehend) zeichnen
+    // For mills, display the wheel even when idle (but without rotation)
     if(bldType_ == BuildingType::Mill && !is_working)
     {
-        // Flügel der Mühle
+        // Mill blades
         LOADER.GetNationImage(nation, 250 + 5 * 49)->DrawFull(drawPt);
-        // Schatten der Flügel
+        // Blade shadow
         LOADER.GetNationImage(nation, 250 + 5 * 49 + 1)->DrawFull(drawPt, COLOR_SHADOW);
     }
     // Esel in den Kammer bei Eselzucht zeichnen
     else if(bldType_ == BuildingType::DonkeyBreeder)
     {
-        // Für alle Völker jeweils
+        // Define offsets for each nation
         // X-Position der Esel
         constexpr helpers::EnumArray<std::array<DrawPoint, 3>, Nation> DONKEY_OFFSETS = {
           {{{{13, -9}, {26, -9}, {39, -9}}},
@@ -165,11 +165,11 @@ void nobUsual::Draw(DrawPoint drawPt)
           {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0}};
 
         // Die drei Esel zeichnen mithilfe von Globalanimation
-        // Anzahl hängt von Produktivität der Eselzucht ab:
-        // 0-29 - kein Esel
-        // 30-60 - 1 Esel
-        // 60-90 - 2 Esel
-        // 90-100 - 3 Esel
+        // Number of donkeys depends on productivity:
+        // 0-29  -> no donkey
+        // 30-60 -> 1 donkey
+        // 60-90 -> 2 donkeys
+        // 90-100 -> 3 donkeys
         RTTR_Assert(productivity <= 100u);
         for(unsigned i = 0; i < productivity / 30u; i++)
         {
@@ -184,25 +184,25 @@ void nobUsual::Draw(DrawPoint drawPt)
         LOADER.GetPlayerImage("rom_bobs", 1776)->DrawFull(drawPt - DrawPoint(7, 19));
     }
 
-    // Bei Schweinefarm Schweinchen auf dem Hof zeichnen
+    // At pig farms, draw the pigs in the yard
     else if(bldType_ == BuildingType::PigFarm && this->HasWorker())
     {
-        // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
+        // Positions for the five pigs per nation (index 0 is the large pig)
         constexpr helpers::EnumArray<std::array<DrawPoint, 5>, Nation> PIG_POSITIONS = {{
           //  gr. S. 1.klS 2. klS usw
           {{{3, -8}, {17, 3}, {-12, 4}, {-2, 10}, {-22, 11}}},    // Afrikaner
           {{{-16, 0}, {-37, 0}, {-32, 8}, {-16, 10}, {-22, 18}}}, // Japaner
-          {{{-15, 0}, {-4, 9}, {-22, 10}, {2, 19}, {-15, 20}}},   // Römer
+          {{{-15, 0}, {-4, 9}, {-22, 10}, {2, 19}, {-15, 20}}},   // Romans
           {{{5, -5}, {25, -12}, {-7, 7}, {-23, 11}, {-10, 14}}},  // Wikinger
           {{{-16, 5}, {-37, 5}, {-32, -1}, {-16, 15}, {-27, 18}}} // Babylonier
         }};
 
-        /// Großes Schwein zeichnen
+        /// Draw the large pig
         LOADER.GetMapTexture(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][0], COLOR_SHADOW);
         LOADER.GetMapTexture(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))
           ->DrawFull(drawPt + PIG_POSITIONS[nation][0]);
 
-        // Die 4 kleinen Schweinchen, je nach Produktivität
+        // Draw the smaller pigs based on productivity
         for(unsigned i = 1; i < std::min(unsigned(productivity) / 20u + 1u, 5u); ++i)
         {
             // A random (really, dice-rolled by hand:) ) order of the four possible pig animations, with eating three
@@ -217,7 +217,7 @@ void nobUsual::Draw(DrawPoint drawPt)
               ->DrawFull(drawPt + PIG_POSITIONS[nation][i]);
         }
 
-        // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
+        // Let the pig breeder trigger the in-world sounds
         dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds(); //-V522
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
@@ -275,14 +275,14 @@ void nobUsual::HandleEvent(const unsigned id)
                 lastOrderedWare = 0;
         }
 
-        // Nach ner bestimmten Zeit dann nächste Ware holen
+        // After a short delay, request the next ware
         orderware_ev = GetEvMgr().AddEvent(this, 210);
     }
 }
 
 void nobUsual::AddWare(std::unique_ptr<Ware> ware)
 {
-    // Gucken, um was für einen Warentyp es sich handelt und dann dort hinzufügen
+    // Add the ware to the list corresponding to its type
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
     for(unsigned char i = 0; i < workDesc.waresNeeded.size(); ++i)
     {
@@ -346,7 +346,7 @@ void nobUsual::WorkerLost()
         // Open the door till we get a new worker
         OpenDoor();
     }
-    // Produktivitätsevent ggf. abmelden
+    // Cancel the productivity event if necessary
     GetEvMgr().RemoveEvent(productivity_ev);
 
     // Waren-Bestell-Event abmelden

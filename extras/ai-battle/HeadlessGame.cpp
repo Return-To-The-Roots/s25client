@@ -8,6 +8,7 @@
 #include "PlayerInfo.h"
 #include "Savegame.h"
 #include "ai/aijh/AIConfig.h"
+#include "ai/aijh/AIPlayerJH.h"
 #include "ai/aijh/StatsConfig.h"
 #include "factories/AIFactory.h"
 #include "helpers/format.hpp"
@@ -208,7 +209,7 @@ void HeadlessGame::PrintState()
     if(first_run)
         first_run = false;
     else
-        printConsole("\x1b[%dA", 8 + world_.GetNumPlayers()); // Move cursor back up
+        printConsole("\x1b[%dA", 14 + 2 * world_.GetNumPlayers()); // Move cursor back up
 
     printConsole("┌───────────────┬───────────────────────┬───────────────────────┬────────────────┐\n");
     printConsole(
@@ -235,6 +236,32 @@ void HeadlessGame::PrintState()
     }
     printConsole("└────────────────────────┴─────────────────┴─────────────┴───────────┴───────────┴───────────┘\n");
 
+    printConsole("\n");
+    printConsole("┌────────────────────────┬──────────────┬──────────────┬────────────┐\n");
+    printConsole("│ Player                 │  Army Weight │ Fulfillment  │ Mode       │\n");
+    printConsole("├────────────────────────┼──────────────┼──────────────┼────────────┤\n");
+    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
+    {
+        const GamePlayer& player = world_.GetPlayer(playerId);
+        const char* modeLabel = "N/A";
+        char weightBuffer[16] = "-";
+        char fulfillBuffer[16] = "-";
+        if(playerId < players_.size())
+        {
+            if(const auto* aiJH = dynamic_cast<AIJH::AIPlayerJH*>(players_[playerId].get()))
+            {
+                std::snprintf(weightBuffer, sizeof(weightBuffer), "%.1f", aiJH->GetCombatAttackWeight());
+                std::snprintf(fulfillBuffer, sizeof(fulfillBuffer), "%.2f", aiJH->GetCombatFulfillmentLevel());
+                modeLabel = aiJH->IsInDefenseMode() ? "Defense" : "Attack";
+            }
+        }
+
+        printConsole("│ %s%-22s%s │ %12s │ %12s │ %-10s │\n", player.IsDefeated() ? "\x1b[9m" : "",
+                     player.name.c_str(), player.IsDefeated() ? "\x1b[29m" : "", weightBuffer, fulfillBuffer,
+                     modeLabel);
+    }
+    printConsole("└────────────────────────┴──────────────┴──────────────┴────────────┘\n");
+
     lastReportGf_ = em_.GetCurrentGF();
 }
 
@@ -243,7 +270,8 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
     std::vector<PlayerInfo> ret;
     ret.reserve(ais.size());
 
-    std::size_t nextColorIdx = 0;
+    srand(std::time(0));
+    std::size_t nextColorIdx = rand() % (PLAYER_COLORS.size()-1);
 
     for(const AI::Info& ai : ais)
     {
@@ -255,13 +283,9 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
         } else
         {
             pi.ps = PlayerState::Occupied;
-            if(nextColorIdx < PLAYER_COLORS.size())
-                pi.color = PLAYER_COLORS[nextColorIdx++];
-            else
-            {
-                // Fallback: reuse colors if the number of AIs exceeds the available set
-                pi.color = PLAYER_COLORS[nextColorIdx++ % PLAYER_COLORS.size()];
-            }
+            // Fallback: reuse colors if the number of AIs exceeds the available set
+            nextColorIdx+=2;
+            pi.color = PLAYER_COLORS[nextColorIdx % PLAYER_COLORS.size()];
         }
         switch(ai.type)
         {

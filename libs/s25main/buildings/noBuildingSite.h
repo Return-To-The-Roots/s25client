@@ -17,7 +17,7 @@ class Ware;
 class noFigure;
 class noRoadNode;
 
-/// repräsentiert eine Baustelle
+/// Represents a construction site
 class noBuildingSite : public noBaseBuilding
 {
     enum class BuildingSiteState : uint8_t
@@ -28,19 +28,19 @@ class noBuildingSite : public noBaseBuilding
     friend constexpr auto maxEnumValue(BuildingSiteState) { return noBuildingSite::BuildingSiteState::Building; }
     friend class nofBuilder;
 
-    /// Typ/Status der Baustelle
+    /// Construction state
     BuildingSiteState state;
-    /// Planierer
+    /// Planner
     nofPlaner* planer;
-    /// Bauarbeiter, der an dieser Baustelle arbeitet
+    /// Builder assigned to this site
     nofBuilder* builder;
-    /// Bretter und Steine, die hier liegen
+    /// Planks and stones currently stored here
     unsigned char boards, stones;
-    /// Bretter und Steine, die schon verbaut wurden
+    /// Planks and stones already used
     unsigned char used_boards, used_stones;
-    /// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
+    /// Tracks construction progress in eight steps per ware used
     unsigned char build_progress;
-    /// Bestellte Bretter und Steine, d.h. Steine/Bretter, die noch "bestellt" wurden, aber noch nicht da sind
+    /// Ordered planks and stones that are on the way
     std::list<Ware*> ordered_boards, ordered_stones;
 
 public:
@@ -52,7 +52,7 @@ public:
     unsigned char getStones() const { return stones; }
 
     noBuildingSite(BuildingType type, MapPoint pos, unsigned char player);
-    /// Konstruktor für Hafenbaustellen vom Schiff aus
+    /// Constructor for harbor sites created from a ship
     noBuildingSite(MapPoint pos, unsigned char player);
     noBuildingSite(SerializedGameData& sgd, unsigned obj_id);
 
@@ -66,30 +66,30 @@ public:
 
     void Draw(DrawPoint drawPt) override;
 
-    /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+    /// Creates a fog-of-war memory object for the site
     std::unique_ptr<FOWObject> CreateFOWObject() const override;
 
     void AddWare(std::unique_ptr<Ware> ware) override;
     void GotWorker(Job job, noFigure& worker) override;
 
-    /// Fordert Baumaterial an
+    /// Requests building materials
     void OrderConstructionMaterial();
-    /// Wird aufgerufen, wenn der Bauarbeiter kündigt
+    /// Called when the builder resigns
     void Abrogate();
-    /// Eine bestellte Ware konnte doch nicht kommen
+    /// A requested ware could not arrive
     void WareLost(Ware& ware) override;
-    /// Gibt den Bau-Fortschritt zurück
+    /// Return the construction progress
     unsigned char GetBuildProgress(bool percent = true) const;
 
     unsigned CalcDistributionPoints(GoodType goodtype);
 
-    /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+    /// Called when a new ware is delivered to the site (not when it is merely ordered)
     void TakeWare(Ware* ware) override;
-    /// Gibt zurück, ob die Baustelle fertiggestellt ist
+    /// Return whether the construction is complete
     bool IsBuildingComplete();
 
-    /// Aufgerufen, wenn Planierung beendet wurde
+    /// Called when the leveling work finishes
     void PlaningFinished();
-    /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
+    /// Return whether the site was started from a ship
     bool IsHarborBuildingSiteFromSea() const;
 };

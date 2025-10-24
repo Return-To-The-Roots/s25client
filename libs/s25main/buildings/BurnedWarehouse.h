@@ -36,6 +36,6 @@ private:
     const unsigned char player;
     /// Aktuelle Rausgeh-Phase
     unsigned go_out_phase;
-    // Leute, die noch rauskommen müssen
+    // People that still need to leave the ruins
     PeopleArray people;
 };

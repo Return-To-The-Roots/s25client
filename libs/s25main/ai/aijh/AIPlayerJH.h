@@ -225,6 +225,9 @@ public:
     MapPoint UpgradeBldPos;
 
     unsigned GetProductivity(BuildingType type) const;
+    double GetCombatFulfillmentLevel() const;
+    double GetCombatAttackWeight() const;
+    bool IsInDefenseMode() const { return attackMode == CombatMode::DefenseMode; }
 
 private:
     enum class CombatMode
@@ -236,7 +239,7 @@ private:
     void UpdateCombatMode();
     bool CanAttackInDefenseMode(const nobBaseMilitary& target, unsigned attackersCount) const;
     bool IsLonelyEnemyStronghold(const nobBaseMilitary& target) const;
-    double ComputeFulfillmentLevel() const;
+    double ComputeFulfillmentLevel(double* outTotalWeight = nullptr) const;
 
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;
@@ -262,5 +265,6 @@ private:
 
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;
+    mutable unsigned lastStatsFrame_ = 0;
 };
 } // namespace AIJH

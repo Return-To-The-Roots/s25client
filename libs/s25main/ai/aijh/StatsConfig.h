@@ -9,9 +9,9 @@ struct StatsConfig
     std::string runId = "000";
     std::string profileId = "000";
     std::string runSetId = "000";
-    unsigned stats_period = 500;
-    unsigned save_period = 500;
-    unsigned debug_stats_period = 500;
+    unsigned stats_period = 2500;
+    unsigned save_period = 2500;
+    unsigned debug_stats_period = 2500;
 
     std::string outputPath = "/home/pavel/s2/manual/runsets/";
     std::string statsPath = "/home/pavel/s2/manual/stats/";

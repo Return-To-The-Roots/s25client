@@ -33,9 +33,9 @@ public:
     void CloseDoor();
     bool IsDoorOpen() const { return opendoor > 0; }
 
-    /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
+    /// Called when a resource is picked up from the flag in front of the building
     virtual bool FreePlaceAtFlag() = 0;
 
-    /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+    /// Creates a fog-of-war memory object for this building
     std::unique_ptr<FOWObject> CreateFOWObject() const override;
 };
