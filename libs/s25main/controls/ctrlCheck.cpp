@@ -19,7 +19,7 @@ ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Ex
 
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(!readonly && IsPointInRect(mc.GetPos(), GetDrawRect()))
+    if(!readonly && IsPointInRect(mc.pos, GetDrawRect()))
     {
         check = !check;
         GetParent()->Msg_CheckboxChange(GetID(), check);
@@ -31,7 +31,7 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 
 bool ctrlCheck::Msg_MouseMove(const MouseCoords& mc)
 {
-    if(IsMouseOver(mc.GetPos()))
+    if(IsMouseOver(mc.pos))
     {
         ShowTooltip();
         return true;

@@ -8,7 +8,7 @@
 #include "controls/ctrlBaseImage.h"
 #include "controls/ctrlBaseTooltip.h"
 
-class MouseCoords;
+struct MouseCoords;
 class ITexture;
 
 class ctrlImage : public Window, public ctrlBaseTooltip, public ctrlBaseImage

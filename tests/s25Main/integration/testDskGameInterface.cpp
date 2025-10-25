@@ -70,9 +70,10 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
     SETTINGS.interface.invertMouse = false;
 
     Position startPos(10, 15);
-    MouseCoords mouse(startPos, false, true);
+    MouseCoords mouse(startPos);
     // Regular scrolling: Right down, 2 moves, right up
     {
+        mouse.rdown = true;
         WINDOWMANAGER.Msg_RightDown(mouse);
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
         DrawPoint pos = view->GetOffset();
@@ -156,7 +157,8 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWhileRoadBuilding, GameInterfaceFixture)
     gameDesktop->GI_StartRoadBuilding(hqPos, false);
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Remove);
     Position startPos(10, 15);
-    MouseCoords mouse(startPos, false, true);
+    MouseCoords mouse(startPos);
+    mouse.rdown = true;
     // Regular scrolling
     WINDOWMANAGER.Msg_RightDown(mouse);
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
@@ -195,7 +197,8 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWithCtrl, GameInterfaceFixture)
 {
     const int acceleration = 2;
     Position startPos(10, 15);
-    MouseCoords mouse(startPos, true);
+    MouseCoords mouse(startPos);
+    mouse.ldown = true;
     uiHelper::GetVideoDriver()->modKeyState_.ctrl = true;
     WINDOWMANAGER.Msg_LeftDown(mouse);
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);

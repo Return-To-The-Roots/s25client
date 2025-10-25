@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "ctrlBaseTooltip.h"
 #include <string>
-class MouseCoords;
+struct MouseCoords;
 class glFont;
 
 class ctrlCheck : public Window, public ctrlBaseTooltip

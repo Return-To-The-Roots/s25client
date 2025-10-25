@@ -469,7 +469,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
                      VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
         return false;
 
     // Start scrolling also on Ctrl + left click
@@ -489,7 +489,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         if(selPt == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
-            ShowRoadWindow(mc.GetPos());
+            ShowRoadWindow(mc.pos);
         } else
         {
             // altes Roadwindow schließen
@@ -501,7 +501,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             {
                 MapPoint targetPt = selPt;
                 if(!BuildRoadPart(targetPt))
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
@@ -517,7 +517,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                         if(selPt == targetPt)
                             GI_BuildRoad();
                     } else if(selPt == targetPt)
-                        ShowRoadWindow(mc.GetPos());
+                        ShowRoadWindow(mc.pos);
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
@@ -529,7 +529,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     if(selPt == targetPt)
                         GI_BuildRoad();
                 } else if(selPt == targetPt)
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else
             {
                 unsigned tbr = GetIdInCurBuildRoad(selPt);
@@ -537,7 +537,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(tbr)
                     DemolishRoad(tbr);
                 else
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             }
         }
     } else
@@ -684,9 +684,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         if(actionwindow)
             actionwindow->Close();
-        VIDEODRIVER.SetMousePos(mc.GetPos());
+        VIDEODRIVER.SetMousePos(mc.pos);
 
-        ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
+        ShowActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
     }
 
     return true;
@@ -712,11 +712,11 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     if(SETTINGS.interface.invertMouse)
         acceleration = -acceleration;
 
-    gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
+    gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
     VIDEODRIVER.SetMousePos(startScrollPt);
 
     if(!SETTINGS.global.smartCursor)
-        startScrollPt = mc.GetPos();
+        startScrollPt = mc.pos;
     return true;
 }
 
