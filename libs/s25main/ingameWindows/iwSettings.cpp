@@ -72,7 +72,7 @@ iwSettings::iwSettings()
     curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
     const auto cbSize = Extent(rowWidth - curPos.x, 26);
 
-    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW, 
+    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW,
             FontStyle{}, NormalFont);
     ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y), ctrlSize,
                                                 TextureColor::Grey, NormalFont, 100);
