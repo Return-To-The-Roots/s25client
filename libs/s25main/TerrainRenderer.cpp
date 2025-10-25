@@ -52,7 +52,7 @@ constexpr float TEXTURE_COLOR_DIVISOR = 1;
 #else
 constexpr float TEXTURE_COLOR_DIVISOR = 2;
 #endif
-}
+} // namespace
 
 glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp)
 {
@@ -802,7 +802,8 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     }
 
 #if RTTR_OGL_GL4ES
-    // Gl4ES behaves weird with GL_COMBINE. All textures are too bright. The function might not be implemented in GL4ES at all.
+    // Gl4ES behaves weird with GL_COMBINE. All textures are too bright. The function might not be implemented in GL4ES
+    // at all.
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #else
     // Modulate2x

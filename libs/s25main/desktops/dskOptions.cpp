@@ -269,10 +269,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     curPos.y += rowHeight + sectionSpacingCommon;
 
     groupCommon->AddText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo =
-      groupCommon->AddComboBox(ID_cbMapScrollMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
+    combo = groupCommon->AddComboBox(ID_cbMapScrollMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
+                                     NormalFont, 100);
     combo->AddString(_("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
-    combo->AddString(_("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    combo->AddString(
+      _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
     combo->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
     combo->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
     curPos.y += rowHeight + sectionSpacingCommon;

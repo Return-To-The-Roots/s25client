@@ -324,7 +324,8 @@ void Settings::Load()
         {
             // ScrollSame(old invertMouse) is 0 so invert value
             interface.mapScrollMode = static_cast<MapScrollMode>(!iniInterface->getBoolValue("invert_mouse"));
-            s25util::warning("Value 'map_scroll_mode' not found! Using 'invert_mouse' instead - please recheck your settings!");
+            s25util::warning(
+              "Value 'map_scroll_mode' not found! Using 'invert_mouse' instead - please recheck your settings!");
         }
         interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
         interface.windowSnapDistance = iniInterface->getValue("window_snap_distance", 8);

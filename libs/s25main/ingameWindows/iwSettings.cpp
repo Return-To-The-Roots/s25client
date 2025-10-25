@@ -72,13 +72,14 @@ iwSettings::iwSettings()
     curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
     const auto cbSize = Extent(rowWidth - curPos.x, 26);
 
-    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW, FontStyle{},
-            NormalFont);
-    ctrlComboBox* cbMapScrollMode =
-      AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y), ctrlSize, TextureColor::Grey, NormalFont, 100);
+    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW, 
+            FontStyle{}, NormalFont);
+    ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y), ctrlSize,
+                                                TextureColor::Grey, NormalFont, 100);
     cbMapScrollMode->AddString(
       _("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
-    cbMapScrollMode->AddString(_("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    cbMapScrollMode->AddString(
+      _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
     cbMapScrollMode->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
     cbMapScrollMode->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
 
