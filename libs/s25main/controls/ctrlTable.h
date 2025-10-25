@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-class MouseCoords;
+struct MouseCoords;
 class glFont;
 struct KeyEvent;
 

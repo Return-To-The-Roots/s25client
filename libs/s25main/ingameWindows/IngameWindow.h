@@ -13,7 +13,7 @@
 #include <vector>
 
 class glArchivItem_Bitmap;
-class MouseCoords;
+struct MouseCoords;
 struct PersistentWindowSettings;
 template<typename T>
 struct Point;

@@ -163,7 +163,9 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         std::string curText = std::accumulate(curChars.begin(), curChars.end(), std::string{});
         edt.SetText(curText);
         // Activate
-        edt2.Msg_LeftDown(MouseCoords(edt2.GetPos(), true));
+        MouseCoords mc(edt2.GetPos());
+        mc.ldown = true;
+        edt2.Msg_LeftDown(mc);
         edt2.Msg_PaintAfter();
         edt2.Msg_KeyDown(KeyEvent{KeyType::Char, c, false, false, false});
         // Remove chars from front until in size
@@ -176,7 +178,9 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         BOOST_TEST_REQUIRE(txt2->GetText() == curText);
     }
     // Check navigating of cursor
-    edt.Msg_LeftDown(MouseCoords(edt.GetPos(), true)); // Activate
+    MouseCoords mc(edt2.GetPos());
+    mc.ldown = true;
+    edt.Msg_LeftDown(mc); // Activate
     edt.Msg_PaintAfter();
     int curCursorPos = curChars.size(); // Current cursor should be at end
     while(!curChars.empty())

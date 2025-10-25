@@ -9,7 +9,7 @@
 #include <boost/signals2.hpp>
 
 class GameWorldView;
-class MouseCoords;
+struct MouseCoords;
 
 /// Observing window (shows a part of the world in an extra window)
 class iwObservate : public IngameWindow

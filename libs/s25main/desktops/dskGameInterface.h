@@ -25,7 +25,7 @@
 class IngameWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
-class MouseCoords;
+struct MouseCoords;
 class PostBox;
 class PostMsg;
 struct BuildingNote;

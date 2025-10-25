@@ -16,7 +16,7 @@
 class Window;
 class Desktop;
 class IngameWindow;
-class MouseCoords;
+struct MouseCoords;
 struct KeyEvent;
 class ctrlBaseTooltip;
 

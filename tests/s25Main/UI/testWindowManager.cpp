@@ -22,13 +22,12 @@
 
 inline bool operator==(const MouseCoords& lhs, const MouseCoords& rhs)
 {
-    return lhs.GetPos() == rhs.GetPos() && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown
-           && lhs.dbl_click == rhs.dbl_click;
+    return lhs.pos == rhs.pos && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown && lhs.dbl_click == rhs.dbl_click;
 }
 
 inline std::ostream& operator<<(std::ostream& s, const MouseCoords& mc)
 {
-    return s << "<" << mc.GetPos() << "," << mc.ldown << "," << mc.rdown << "," << mc.dbl_click << ">";
+    return s << "<" << mc.pos << "," << mc.ldown << "," << mc.rdown << "," << mc.dbl_click << ">";
 }
 
 namespace {
@@ -60,7 +59,10 @@ BOOST_AUTO_TEST_SUITE(WindowManagerSuite)
 BOOST_AUTO_TEST_CASE(MouseCoordsOutput)
 {
     std::stringstream s;
-    s << MouseCoords(Position(2, 3), true, false, true);
+    MouseCoords mc(Position(2, 3));
+    mc.ldown = true;
+    mc.dbl_click = true;
+    s << mc;
     BOOST_TEST(s.str() == "<(2, 3),1,0,1>");
 }
 
@@ -68,10 +70,12 @@ BOOST_FIXTURE_TEST_CASE(LeftClick, WMFixture)
 {
     video->tickCount_ = 0;
     mock::sequence s;
-    MouseCoords mc1(5, 2, true);
-    MouseCoords mc1_u(mc1.GetPos());
-    MouseCoords mc2(10, 7, true);
-    MouseCoords mc2_u(mc2.GetPos());
+    MouseCoords mc1(5, 2);
+    mc1.ldown = true;
+    MouseCoords mc1_u(mc1.pos);
+    MouseCoords mc2(10, 7);
+    mc2.ldown = true;
+    MouseCoords mc2_u(mc2.pos);
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
@@ -95,10 +99,12 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
 {
     video->tickCount_ = 0;
     mock::sequence s;
-    MouseCoords mc1(5, 2, true);
-    MouseCoords mc1_u(mc1.GetPos());
-    MouseCoords mc2(6, 1, true);
-    MouseCoords mc2_u(mc2.GetPos());
+    MouseCoords mc1(5, 2);
+    mc1.ldown = true;
+    MouseCoords mc1_u(mc1.pos);
+    MouseCoords mc2(6, 1);
+    mc2.ldown = true;
+    MouseCoords mc2_u(mc2.pos);
     // Click with time > DOUBLE_CLICK_INTERVAL is no dbl click
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
@@ -109,7 +115,9 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
     // Click on same pos with time < DOUBLE_CLICK_INTERVAL is dbl click
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(MouseCoords(mc2.GetPos(), false, false, true)).in(s).returns(true);
+    MouseCoords dbl_mc2(mc2.pos);
+    dbl_mc2.dbl_click = true;
+    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(dbl_mc2).in(s).returns(true);
     // No triple click
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
@@ -418,7 +426,8 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
 {
     auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
-    const MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10), false, true);
+    MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10));
+    evRDown.rdown = true;
     WINDOWMANAGER.Msg_RightDown(evRDown);
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
@@ -514,7 +523,8 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
     {
         auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
-        const MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10), false, true);
+        MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10));
+        evRDown.rdown = true;
 
         wnd->SetPinned();
         BOOST_TEST_CONTEXT("Pinned")
