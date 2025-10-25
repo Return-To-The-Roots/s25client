@@ -212,6 +212,8 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 
 void IngameWindow::MouseLeftUp(const MouseCoords& mc)
 {
+    // Was a button pressed
+    bool btnClicked = false;
     isMoving = false;
 
     for(const auto btn : helpers::enumRange<IwButton>())
@@ -225,6 +227,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
 
         if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
         {
+            btnClicked = true;
             switch(btn)
             {
                 case IwButton::Close: Close(); break;
@@ -249,6 +252,10 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
             }
         }
     }
+
+    // On touch devices dblclick close window
+    if(VIDEODRIVER.IsTouch() && mc.dbl_click && !btnClicked && !IsPinned())
+        Close();
 }
 
 void IngameWindow::MouseMove(const MouseCoords& mc)

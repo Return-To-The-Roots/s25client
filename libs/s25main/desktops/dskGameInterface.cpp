@@ -320,7 +320,7 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
         if(selPt == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
-            ShowRoadWindow(mc.GetPos());
+            ShowRoadWindow(mc.pos);
         } else
         {
             // altes Roadwindow schließen
@@ -332,7 +332,7 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
             {
                 MapPoint targetPt = selPt;
                 if(!BuildRoadPart(targetPt))
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
@@ -348,7 +348,7 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
                         if(selPt == targetPt)
                             GI_BuildRoad();
                     } else if(selPt == targetPt)
-                        ShowRoadWindow(mc.GetPos());
+                        ShowRoadWindow(mc.pos);
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
@@ -360,7 +360,7 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
                     if(selPt == targetPt)
                         GI_BuildRoad();
                 } else if(selPt == targetPt)
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else
             {
                 unsigned tbr = GetIdInCurBuildRoad(selPt);
@@ -368,7 +368,7 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
                 if(tbr)
                     DemolishRoad(tbr);
                 else
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             }
         }
     } else
@@ -515,9 +515,9 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         if(actionwindow)
             actionwindow->Close();
-        VIDEODRIVER.SetMousePos(mc.GetPos());
+        VIDEODRIVER.SetMousePos(mc.pos);
 
-        ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
+        ShowActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
     }
 
     return true;
@@ -683,7 +683,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
                      VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
         return false;
 
     if(!VIDEODRIVER.IsTouch())
@@ -700,7 +700,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
     } else if(mc.num_tfingers < 2)
         touchDuration = VIDEODRIVER.GetTickCount();
-    else if(isScrolling) // Bei 2 Fingern soll gezoomt werden kein klick oder bewegen der Karte
+    else if(isScrolling) // 2 fingers down -> zoom mode. Do not click or scroll map
         StopScrolling();
 
     return true;
@@ -713,9 +713,10 @@ bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
         StopScrolling();
         return true;
     }
-    // num_tfingers wird erst reduziert nachdem diese Funktion läuft :/
-    // Herausfinden ob kurz genug unten um context click auszuführen
-    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < 250)
+
+    // num_tfingers is reduced after this function to check if it's still a touch event
+    // Was touch duration short enough to trigger conext click?
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < TOUCH_MAX_CLICK_INTERVAL)
         return ContextClick(mc);
 
     return false;
@@ -731,24 +732,23 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
             return false;
     }
 
-    // Natural scrolling
-    if(SETTINGS.interface.mouseMode == 2)
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
     {
-        const Position mapPos = gwv.ViewPosToMap(mc.GetPos());
+        const Position mapPos = gwv.ViewPosToMap(mc.pos);
         gwv.MoveBy(-(mapPos - startScrollPt));
         startScrollPt = mapPos;
     } else
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-        if(SETTINGS.interface.mouseMode == 1)
+        if(SETTINGS.interface.mapScrollMode == MapScrollMode::ScrollSame)
             acceleration = -acceleration;
 
-        gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
+        gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
         VIDEODRIVER.SetMousePos(startScrollPt);
 
         if(!SETTINGS.global.smartCursor)
-            startScrollPt = mc.GetPos();
+            startScrollPt = mc.pos;
     }
 
     return true;
@@ -756,8 +756,8 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    if(SETTINGS.interface.mouseMode == 2)
-        StartScrolling(gwv.ViewPosToMap(mc.GetPos()));
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+        StartScrolling(gwv.ViewPosToMap(mc.pos));
     else
         StartScrolling(mc.pos);
     return true;

@@ -67,7 +67,7 @@ void checkNotScrolling(const GameWorldView& view, Cursor cursor = Cursor::Hand)
 BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
 {
     const int acceleration = 2;
-    SETTINGS.interface.mouseMode = 0;
+    SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollOpposite;
 
     Position startPos(10, 15);
     MouseCoords mouse(startPos, false, true);
@@ -94,9 +94,8 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         checkNotScrolling(*view);
     }
 
-    // Inverted scrolling
     {
-        SETTINGS.interface.mouseMode = 1;
+        SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollSame;
         WINDOWMANAGER.Msg_RightDown(mouse);
         startPos = mouse.pos;
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
@@ -107,12 +106,11 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         BOOST_TEST_REQUIRE(view->GetOffset() == pos - acceleration * Position(4, 3));
         mouse.rdown = false;
         WINDOWMANAGER.Msg_RightUp(mouse);
-        SETTINGS.interface.mouseMode = 0;
+        SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollOpposite;
     }
 
-    // Natural scrolling
     {
-        SETTINGS.interface.mouseMode = 2;
+        SETTINGS.interface.mapScrollMode = MapScrollMode::GrabAndDrag;
         WINDOWMANAGER.Msg_RightDown(mouse);
         startPos = mouse.pos;
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
@@ -123,7 +121,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         BOOST_TEST_REQUIRE(view->GetOffset() == pos - Position(4, 3));
         mouse.rdown = false;
         WINDOWMANAGER.Msg_RightUp(mouse);
-        SETTINGS.interface.mouseMode = 0;
+        SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollOpposite;
     }
 
     // Opening a window does not cancel scrolling

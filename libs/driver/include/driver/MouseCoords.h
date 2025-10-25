@@ -24,13 +24,19 @@ public:
     {}
 
     Position pos;
-    bool ldown;            /// Linke Maustaste gedrückt
-    bool rdown;            /// Rechte Maustaste gedrückt
-    bool dbl_click;        /// Linke Maustaste - Doppelklick
-    unsigned num_tfingers; /// Anzahl Finger auf dem Display
+    bool ldown;            // Left mouse button pressed
+    bool rdown;            // Right mouse button pressed
+    bool dbl_click;        // Left mouse button - doubleclick
+    unsigned num_tfingers; // Count of fingers currently on touchscreen
 
     Position GetPos() const { return pos; }
 };
 
-/// Maximale Zeitdifferenz in ms für einen Doppeklick
-const unsigned DOUBLE_CLICK_INTERVAL = 500;
+// Max time difference in ms to trigger doubleclick
+constexpr unsigned DOUBLE_CLICK_INTERVAL = 500;
+
+// Max time difference in ms to trigger contextclick
+constexpr unsigned TOUCH_MAX_CLICK_INTERVAL = 250;
+constexpr unsigned TOUCH_DOUBLE_CLICK_INTERVAL = 175;
+// Max distance between the two clicks to trigger doubleclick
+constexpr unsigned TOUCH_MAX_DOUBLE_CLICK_DISTANCE = 30;

@@ -166,7 +166,7 @@ protected:
     /// Minimap-Instanz
     IngameMinimap minimap;
 
-    // Wie lange der Finger schon unten ist (Soll gescrollt werden oder klick)
+    // How long is finger on screen (contextclick or scrolling?)
     unsigned int touchDuration;
     bool isScrolling;
     Position startScrollPt;

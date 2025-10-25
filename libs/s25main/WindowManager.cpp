@@ -26,6 +26,9 @@
 #include "s25util/MyTime.h"
 #include <algorithm>
 
+// Calc square
+#define SQR(x) ((x) * (x))
+
 WindowManager::WindowManager()
     : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0),
       lastLeftClickTime(0), lastLeftClickPos(0, 0)
@@ -357,24 +360,23 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     // Ggf. Doppelklick untersuche
     unsigned time_now = VIDEODRIVER.GetTickCount();
 
-    // Sehr schwierig auf touch mit dem default dbl-click interval z.B. Mails zu löschen ohne das Fenster zu schließen
-    if(time_now - lastLeftClickTime < (VIDEODRIVER.IsTouch() ? DOUBLE_CLICK_INTERVAL / 3 : DOUBLE_CLICK_INTERVAL))
+    if(!VIDEODRIVER.IsTouch())
     {
-        if(mc.GetPos() == lastLeftClickPos)
+        if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
             mc.dbl_click = true;
-        else if(VIDEODRIVER.IsTouch()) // Fast unmöglich 2 mal auf den exakt selben punkt zu tippen
-        {
-            // Wenn doppeltippen -> fenster schließen
-            IngameWindow* window = FindWindowAtPos(mc.GetPos());
-            if(window && !window->IsPinned())
-                window->Close();
-        }
+
+    } else if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
+    {
+        // Calculate distance between two points
+        unsigned cDistance = SQR(mc.pos.x - lastLeftClickPos.x) + SQR(mc.pos.y - lastLeftClickPos.y);
+        if(cDistance <= SQR(TOUCH_MAX_DOUBLE_CLICK_DISTANCE))
+            mc.dbl_click = true;
     }
 
     if(!mc.dbl_click)
     {
-        // Werte wieder erneut speichern
-        lastLeftClickPos = mc.GetPos();
+        // Save values for next potential dbl click
+        lastLeftClickPos = mc.pos;
         lastLeftClickTime = time_now;
     }
 
