@@ -802,13 +802,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     }
 
 #if RTTR_OGL_GL4ES
-    // Gl4ES behaves weird with GL_COMBINE. All textures are too bright. The function might not be implemented in GL4ES
-    // at all.
+    // Gl4ES behaves weird with GL_COMBINE. All textures are too bright and some shadows are missing. The function might
+    // not be implemented in GL4ES at all.
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #else
     // Modulate2x
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
+    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, TEXTURE_COLOR_DIVISOR);
 #endif
 
     // Disable alpha blending

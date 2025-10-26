@@ -75,7 +75,8 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
     SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollOpposite;
 
     Position startPos(10, 15);
-    MouseCoords mouse(startPos, false, true);
+    MouseCoords mouse(startPos);
+    mouse.rdown = true;
 
     // Regular scrolling: Right down, 2 moves, right up
     {
