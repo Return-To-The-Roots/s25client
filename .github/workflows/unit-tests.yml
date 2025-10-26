@@ -107,6 +107,7 @@ jobs:
           #   Use default cmake
           - { compiler: gcc-14,   os: ubuntu-24.04, type: Debug }
           - { compiler: clang-18, os: ubuntu-24.04, type: Debug, externalSanitizer: true }
+          - { compiler: clang-21, os: ubuntu-latest, type: Debug, init_llvm: true}
 
     runs-on: ${{matrix.os}}
 
@@ -146,7 +147,7 @@ jobs:
         if: matrix.coverage
         with:
           submodules: true
-          fetch-depth: 0 # Faster checkout
+          fetch-depth: 0 # Full history
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -172,6 +173,10 @@ jobs:
           else
             compiler=${{matrix.compiler}}
             compiler=${compiler/gcc-/g++-}
+            if [[ "${{matrix.init_llvm}}" == "true" ]]; then
+              clang_version=${compiler#clang-*}
+              wget -qO- "https://apt.llvm.org/llvm.sh" | sudo bash -s -- "${clang_version}"
+            fi
             sudo apt update
             sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
           fi
