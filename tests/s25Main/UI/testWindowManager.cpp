@@ -22,13 +22,13 @@
 
 inline bool operator==(const MouseCoords& lhs, const MouseCoords& rhs)
 {
-    return lhs.GetPos() == rhs.GetPos() && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown
+    return lhs.pos == rhs.pos && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown
            && lhs.dbl_click == rhs.dbl_click;
 }
 
 inline std::ostream& operator<<(std::ostream& s, const MouseCoords& mc)
 {
-    return s << "<" << mc.GetPos() << "," << mc.ldown << "," << mc.rdown << "," << mc.dbl_click << ">";
+    return s << "<" << mc.pos << "," << mc.ldown << "," << mc.rdown << "," << mc.dbl_click << ">";
 }
 
 namespace {
@@ -69,9 +69,9 @@ BOOST_FIXTURE_TEST_CASE(LeftClick, WMFixture)
     video->tickCount_ = 0;
     mock::sequence s;
     MouseCoords mc1(5, 2, true);
-    MouseCoords mc1_u(mc1.GetPos());
+    MouseCoords mc1_u(mc1.pos);
     MouseCoords mc2(10, 7, true);
-    MouseCoords mc2_u(mc2.GetPos());
+    MouseCoords mc2_u(mc2.pos);
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
@@ -96,9 +96,9 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
     video->tickCount_ = 0;
     mock::sequence s;
     MouseCoords mc1(5, 2, true);
-    MouseCoords mc1_u(mc1.GetPos());
+    MouseCoords mc1_u(mc1.pos);
     MouseCoords mc2(6, 1, true);
-    MouseCoords mc2_u(mc2.GetPos());
+    MouseCoords mc2_u(mc2.pos);
     // Click with time > DOUBLE_CLICK_INTERVAL is no dbl click
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
     // Click on same pos with time < DOUBLE_CLICK_INTERVAL is dbl click
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(MouseCoords(mc2.GetPos(), false, false, true)).in(s).returns(true);
+    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(MouseCoords(mc2.pos, false, false, true)).in(s).returns(true);
     // No triple click
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
@@ -133,6 +133,64 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
     video->tickCount_ += DOUBLE_CLICK_INTERVAL - 1;
     WINDOWMANAGER.Msg_LeftDown(mc2);
     WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    mock::verify();
+}
+
+BOOST_FIXTURE_TEST_CASE(DblClickTouch, WMFixture)
+{
+    video->tickCount_ = 0;
+    video->numTfinger_ = 1;
+    mock::sequence s;
+
+    MouseCoords mc1(5, 2, true, false, false, 1);
+    MouseCoords mc1_u(mc1.pos, false, false, false, 1);
+    // Test click on distance > TOUCH_MAX_DOUBLE_CLICK_DISTANCE
+    MouseCoords mc2(mc1.pos.x + TOUCH_MAX_DOUBLE_CLICK_DISTANCE + 1, mc1.pos.y, true, false, false, 1);
+    MouseCoords mc2_u(mc2.pos, false, false, false, 1);
+    // Test click on distance < TOUCH_MAX_DOUBLE_CLICK_DISTANCE
+    MouseCoords mc3(mc2.pos.x + TOUCH_MAX_DOUBLE_CLICK_DISTANCE - 1, mc2.pos.y, true, false, false, 1);
+    MouseCoords mc3_u(mc3.pos, false, false, false, 1);
+
+    // Set last click position on mc1
+    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
+    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
+
+    // Touch position mc2 -> Too far away fom previous point -> Set last click position on mc2
+    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
+    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
+
+    // Touch position mc3 -> In range of mc -> dblclick
+    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc3).in(s).returns(true);
+    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(MouseCoords(mc3.pos, false, false, true, 1)).in(s).returns(true);
+
+    // Try to touch 3rd time -> no dblclick -> Set last click position to mc3
+    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc3).in(s).returns(true);
+    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc3_u).in(s).returns(true);
+
+    // Touch position mc3 again -> In range of mc but duration > TOUCH_DOUBLE_CLICK_INTERVAL no dblclick
+    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc3).in(s).returns(true);
+    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc3_u).in(s).returns(true);
+
+
+    WINDOWMANAGER.Msg_LeftDown(mc1);
+    video->tickCount_ += 1;
+    WINDOWMANAGER.Msg_LeftUp(mc1_u);
+
+    WINDOWMANAGER.Msg_LeftDown(mc2);
+    video->tickCount_ += 1;
+    WINDOWMANAGER.Msg_LeftUp(mc2_u);
+
+    video->tickCount_ += TOUCH_DOUBLE_CLICK_INTERVAL - 1;
+    WINDOWMANAGER.Msg_LeftDown(mc3);
+    WINDOWMANAGER.Msg_LeftUp(mc3_u);
+
+    video->tickCount_ += TOUCH_DOUBLE_CLICK_INTERVAL - 1;
+    WINDOWMANAGER.Msg_LeftDown(mc3);
+    WINDOWMANAGER.Msg_LeftUp(mc3_u);
+
+    video->tickCount_ += TOUCH_DOUBLE_CLICK_INTERVAL;
+    WINDOWMANAGER.Msg_LeftDown(mc3);
+    WINDOWMANAGER.Msg_LeftUp(mc3_u);
     mock::verify();
 }
 
