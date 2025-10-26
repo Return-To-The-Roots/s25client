@@ -6,7 +6,8 @@
 #include <boost/nowide/iostream.hpp>
 #include <iostream>
 
-MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), tickCount_(1), numTfinger_(0)
+MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack)
+    : VideoDriver(CallBack), tickCount_(1), numTfinger_(0)
 {
     modKeyState_.kt = KeyType::Invalid;
     modKeyState_.c = 0;

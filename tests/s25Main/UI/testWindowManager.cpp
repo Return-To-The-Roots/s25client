@@ -22,8 +22,7 @@
 
 inline bool operator==(const MouseCoords& lhs, const MouseCoords& rhs)
 {
-    return lhs.pos == rhs.pos && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown
-           && lhs.dbl_click == rhs.dbl_click;
+    return lhs.pos == rhs.pos && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown && lhs.dbl_click == rhs.dbl_click;
 }
 
 inline std::ostream& operator<<(std::ostream& s, const MouseCoords& mc)
@@ -170,7 +169,6 @@ BOOST_FIXTURE_TEST_CASE(DblClickTouch, WMFixture)
     // Touch position mc3 again -> In range of mc but duration > TOUCH_DOUBLE_CLICK_INTERVAL no dblclick
     MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc3).in(s).returns(true);
     MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc3_u).in(s).returns(true);
-
 
     WINDOWMANAGER.Msg_LeftDown(mc1);
     video->tickCount_ += 1;
