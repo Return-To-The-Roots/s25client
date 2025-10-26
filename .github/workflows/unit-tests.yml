@@ -177,8 +177,8 @@ jobs:
               clang_version=${compiler#clang-*}
               wget -qO- "https://apt.llvm.org/llvm.sh" | sudo bash -s -- "${clang_version}"
             fi
-            sudo apt update
-            sudo apt install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
+            sudo apt-get -o Acquire::Retries=5 update
+            sudo apt-get -o Acquire::Retries=5 -y -q --no-install-suggests --no-install-recommends install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
           fi
 
       - name: Setup CCache
