@@ -31,11 +31,14 @@
 #endif
 
 #define CHECK_SDL(call)                 \
-    do                                  \
-    {                                   \
-        if((call) == -1)                \
+    ([&]() -> bool {                    \
+        if((call) < 0)                  \
+        {                               \
             PrintError(SDL_GetError()); \
-    } while(false)
+            return false;               \
+        }                               \
+        return true;                    \
+    })()
 
 namespace {
 template<typename T>
@@ -550,7 +553,7 @@ void VideoSDL2::MoveWindowToCenter()
     SDL_Rect usableBounds;
     CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
     int top, left, bottom, right;
-    if(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right) != 0)
+    if(CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)) != 0)
         top = left = bottom = right = 0;
     usableBounds.w -= left + right;
     usableBounds.h -= top + bottom;

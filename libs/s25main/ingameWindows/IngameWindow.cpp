@@ -258,7 +258,7 @@ bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
     }
 
     // On touch devices dblclick close window
-    if(VIDEODRIVER.IsTouch() && mc.dbl_click && !btnClicked && !IsPinned())
+    if(VIDEODRIVER.IsTouch() && mc.dbl_click && !btnClicked && !IsPinned() && closeBehavior_ == CloseBehavior::Regular)
     {
         Close();
         return true;

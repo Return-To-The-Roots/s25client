@@ -324,8 +324,8 @@ void Settings::Load()
             interface.mapScrollMode = static_cast<MapScrollMode>(iniInterface->getIntValue("map_scroll_mode"));
         } catch(const std::runtime_error&)
         {
-            // ScrollSame(old invertMouse) is 0 so invert value
-            interface.mapScrollMode = static_cast<MapScrollMode>(!iniInterface->getBoolValue("invert_mouse"));
+            interface.mapScrollMode =
+              iniInterface->getBoolValue("invert_mouse") ? MapScrollMode::ScrollSame : MapScrollMode::ScrollOpposite;
             s25util::warning(
               "Value 'map_scroll_mode' not found! Using 'invert_mouse' instead - please recheck your settings!");
         }
