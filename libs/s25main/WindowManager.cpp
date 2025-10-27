@@ -5,11 +5,13 @@
 #include "WindowManager.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "Point.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Window.h"
 #include "commonDefines.h"
 #include "desktops/Desktop.h"
+#include "driver/MouseCoords.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -26,8 +28,13 @@
 #include "s25util/MyTime.h"
 #include <algorithm>
 
-// Calc square
-#define SQR(x) ((x) * (x))
+namespace {
+template<typename T>
+constexpr T square(T x)
+{
+    return x * x;
+}
+} // namespace
 
 WindowManager::WindowManager()
     : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0),
@@ -360,18 +367,18 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     // Ggf. Doppelklick untersuche
     unsigned time_now = VIDEODRIVER.GetTickCount();
 
-    if(!VIDEODRIVER.IsTouch())
+    if(VIDEODRIVER.IsTouch())
     {
-        if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
-            mc.dbl_click = true;
+        if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
+        {
+            // Calculate distance between two points
+            const PointF diff = static_cast<PointF>(mc.pos - lastLeftClickPos);
+            if(square(diff.x) + square(diff.y) <= square(TOUCH_MAX_DOUBLE_CLICK_DISTANCE))
+                mc.dbl_click = true;
+        }
 
-    } else if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
-    {
-        // Calculate distance between two points
-        unsigned cDistance = SQR(mc.pos.x - lastLeftClickPos.x) + SQR(mc.pos.y - lastLeftClickPos.y);
-        if(cDistance <= SQR(TOUCH_MAX_DOUBLE_CLICK_DISTANCE))
-            mc.dbl_click = true;
-    }
+    } else if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
+        mc.dbl_click = true;
 
     if(!mc.dbl_click)
     {

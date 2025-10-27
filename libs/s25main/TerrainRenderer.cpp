@@ -808,7 +808,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 #else
     // Modulate2x
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
+    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, TEXTURE_COLOR_DIVISOR);
 #endif
 
     // Disable alpha blending

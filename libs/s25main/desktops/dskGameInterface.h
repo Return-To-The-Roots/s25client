@@ -117,7 +117,7 @@ protected:
     /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
     void UpdatePostIcon(unsigned postmessages_count, bool showPigeon);
 
-    /// Wird beim Linksklick ausgeführt und überprüft die klick Position auf Gebäude/Straßen
+    /// Executed during left click. Checks click pos for buildings/roads
     bool ContextClick(const MouseCoords& mc);
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
