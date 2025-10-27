@@ -441,6 +441,14 @@ bool VideoDriverWrapper::IsRightDown()
     return videodriver->GetMouseStateR();
 }
 
+bool VideoDriverWrapper::IsTouch()
+{
+    if(!videodriver)
+        return false;
+
+    return videodriver->IsTouchEvent();
+}
+
 void VideoDriverWrapper::SetMousePos(const Position& newPos)
 {
     if(!videodriver || !enableMouseWarping)

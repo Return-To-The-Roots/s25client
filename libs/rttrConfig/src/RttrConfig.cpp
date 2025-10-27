@@ -130,13 +130,25 @@ bool RttrConfig::Init()
     bfs::current_path(prefixPath_);
     homePath = System::getHomePath();
     pathMappings.clear();
-    pathMappings["BIN"] = RTTR_BINDIR;
-    pathMappings["EXTRA_BIN"] = RTTR_EXTRA_BINDIR;
-    pathMappings["DATA"] = RTTR_DATADIR;
-    pathMappings["GAME"] = RTTR_GAMEDIR;
-    pathMappings["LIB"] = RTTR_LIBDIR;
-    pathMappings["DRIVER"] = RTTR_DRIVERDIR;
-    pathMappings["RTTR"] = RTTR_DATADIR "/RTTR";
-    pathMappings["USERDATA"] = RTTR_USERDATADIR;
+    pathMappings["BIN"] = getEnvOverride("BIN", RTTR_BINDIR);
+    pathMappings["EXTRA_BIN"] = getEnvOverride("EXTRA_BIN", RTTR_EXTRA_BINDIR);
+    pathMappings["DATA"] = getEnvOverride("DATA", RTTR_DATADIR);
+    pathMappings["GAME"] = getEnvOverride("GAME", RTTR_GAMEDIR);
+    pathMappings["LIB"] = getEnvOverride("LIB", RTTR_LIBDIR);
+    pathMappings["DRIVER"] = getEnvOverride("DRIVER", RTTR_DRIVERDIR);
+    pathMappings["RTTR"] = getEnvOverride("RTTR", RTTR_DATADIR "/RTTR");
+    pathMappings["USERDATA"] = getEnvOverride("USERDATA", RTTR_USERDATADIR);
     return true;
+}
+
+bfs::path RttrConfig::getEnvOverride(const std::string& id, const bfs::path& defaultPath)
+{
+    bfs::path path = System::getPathFromEnvVar("RTTR_" + id + "_DIR");
+    if(!path.empty())
+    {
+        LOG.write("Note: %1% path manually set to %2%\n", LogTarget::Stdout) % id % path;
+    } else
+        return defaultPath;
+
+    return path;
 }

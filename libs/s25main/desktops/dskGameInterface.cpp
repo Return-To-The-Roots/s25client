@@ -309,6 +309,220 @@ void dskGameInterface::Resize(const Extent& newSize)
     gwv.Resize(newSize);
 }
 
+bool dskGameInterface::ContextClick(const MouseCoords& mc)
+{
+    // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
+    if(road.mode != RoadBuildMode::Disabled)
+    {
+        // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
+        const MapPoint selPt = gwv.GetSelectedPt();
+
+        if(selPt == road.point)
+        {
+            // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
+            ShowRoadWindow(mc.pos);
+        } else
+        {
+            // altes Roadwindow schließen
+            WINDOWMANAGER.Close((unsigned)CGI_ROADWINDOW);
+
+            // Ist das ein gültiger neuer Wegpunkt?
+            if(worldViewer.IsRoadAvailable(road.mode == RoadBuildMode::Boat, selPt)
+               && worldViewer.IsPlayerTerritory(selPt))
+            {
+                MapPoint targetPt = selPt;
+                if(!BuildRoadPart(targetPt))
+                    ShowRoadWindow(mc.pos);
+            } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
+            {
+                // Wurde bereits auf das gebaute Stück geklickt?
+                unsigned idOnRoad = GetIdInCurBuildRoad(selPt);
+                if(idOnRoad)
+                    DemolishRoad(idOnRoad);
+                else
+                {
+                    MapPoint targetPt = selPt;
+                    if(BuildRoadPart(targetPt))
+                    {
+                        // Ist der Zielpunkt der gleiche geblieben?
+                        if(selPt == targetPt)
+                            GI_BuildRoad();
+                    } else if(selPt == targetPt)
+                        ShowRoadWindow(mc.pos);
+                }
+            }
+            // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
+            else if(worldViewer.GetWorld().GetNO(selPt)->GetType() == NodalObjectType::Flag && selPt != road.start)
+            {
+                MapPoint targetPt = selPt;
+                if(BuildRoadPart(targetPt))
+                {
+                    if(selPt == targetPt)
+                        GI_BuildRoad();
+                } else if(selPt == targetPt)
+                    ShowRoadWindow(mc.pos);
+            } else
+            {
+                unsigned tbr = GetIdInCurBuildRoad(selPt);
+                // Wurde bereits auf das gebaute Stück geklickt?
+                if(tbr)
+                    DemolishRoad(tbr);
+                else
+                    ShowRoadWindow(mc.pos);
+            }
+        }
+    } else
+    {
+        bool enable_military_buildings = false;
+
+        iwAction::Tabs action_tabs;
+
+        const MapPoint cSel = gwv.GetSelectedPt();
+
+        // Vielleicht steht hier auch ein Schiff?
+        if(const noShip* ship = worldViewer.GetShip(cSel))
+        {
+            WINDOWMANAGER.Show(std::make_unique<iwShip>(gwv, GAMECLIENT, ship));
+            return true;
+        }
+
+        // Evtl ists nen Haus? (unser Haus)
+        const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
+        if(selObj.GetType() == NodalObjectType::Building && worldViewer.IsOwner(cSel))
+        {
+            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+            {
+                WINDOWMANAGER.SetActiveWindow(*wnd);
+                return true;
+            }
+            BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
+            // HQ
+            if(bt == BuildingType::Headquarters)
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+            // Lagerhäuser
+            else if(bt == BuildingType::Storehouse)
+                WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
+            // Hafengebäude
+            else if(bt == BuildingType::HarborBuilding)
+                WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
+            // Militärgebäude
+            else if(BuildingProperties::IsMilitary(bt))
+                WINDOWMANAGER.Show(std::make_unique<iwMilitaryBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
+            else if(bt == BuildingType::Temple)
+                WINDOWMANAGER.Show(std::make_unique<iwTempleBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobTemple>(cSel)));
+            else
+                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
+            return true;
+        }
+        // oder vielleicht eine Baustelle?
+        else if(selObj.GetType() == NodalObjectType::Buildingsite && worldViewer.IsOwner(cSel))
+        {
+            if(!WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
+            return true;
+        }
+
+        action_tabs.watch = true;
+        // Unser Land
+        if(worldViewer.IsOwner(cSel))
+        {
+            const BuildingQuality bq = worldViewer.GetBQ(cSel);
+            // Kann hier was gebaut werden?
+            if(bq >= BuildingQuality::Mine)
+            {
+                action_tabs.build = true;
+
+                // Welches Gebäude kann gebaut werden?
+                switch(bq)
+                {
+                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::BuildTab::Mine; break;
+                    case BuildingQuality::Hut: action_tabs.build_tabs = iwAction::BuildTab::Hut; break;
+                    case BuildingQuality::House: action_tabs.build_tabs = iwAction::BuildTab::House; break;
+                    case BuildingQuality::Castle: action_tabs.build_tabs = iwAction::BuildTab::Castle; break;
+                    case BuildingQuality::Harbor: action_tabs.build_tabs = iwAction::BuildTab::Harbor; break;
+                    default: break;
+                }
+
+                if(!worldViewer.GetWorld().IsFlagAround(cSel))
+                    action_tabs.setflag = true;
+
+                // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
+                // Militärgebäude gebaut werden
+                enable_military_buildings =
+                  !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerId());
+            } else if(bq == BuildingQuality::Flag)
+                action_tabs.setflag = true;
+            else if(selObj.GetType() == NodalObjectType::Flag)
+                action_tabs.flag = true;
+
+            if(selObj.GetType() != NodalObjectType::Flag && selObj.GetType() != NodalObjectType::Building)
+            {
+                // Check if there are roads
+                for(const Direction dir : helpers::EnumRange<Direction>{})
+                {
+                    const PointRoad curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
+                    if(curRoad != PointRoad::None)
+                    {
+                        action_tabs.cutroad = true;
+                        action_tabs.upgradeRoad |= (curRoad == PointRoad::Normal);
+                    }
+                }
+            }
+        }
+        // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
+        else if(worldViewer.GetVisibility(cSel) == Visibility::Visible)
+        {
+            if(selObj.GetType() == NodalObjectType::Building)
+            {
+                const auto* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
+                BuildingType bt = building->GetBuildingType();
+
+                // Only if trade is enabled
+                if(worldViewer.GetWorld().GetGGS().isEnabled(AddonId::TRADE))
+                {
+                    // Allied warehouse? -> Show trade window
+                    if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
+                    {
+                        WINDOWMANAGER.Show(std::make_unique<iwTrade>(*static_cast<const nobBaseWarehouse*>(building),
+                                                                     worldViewer, GAMECLIENT));
+                        return true;
+                    }
+                }
+
+                // Ist es ein gewöhnliches Militärgebäude?
+                if(BuildingProperties::IsMilitary(bt))
+                {
+                    // Dann darf es nicht neu gebaut sein!
+                    if(!static_cast<const nobMilitary*>(building)->IsNewBuilt())
+                        action_tabs.attack = true;
+                }
+                // oder ein HQ oder Hafen?
+                else if(bt == BuildingType::Headquarters || bt == BuildingType::HarborBuilding)
+                    action_tabs.attack = true;
+                action_tabs.sea_attack =
+                  action_tabs.attack && worldViewer.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK);
+            }
+        }
+
+        // Bisheriges Actionfenster schließen, falls es eins gab
+        // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
+        if(actionwindow)
+            actionwindow->Close();
+        VIDEODRIVER.SetMousePos(mc.pos);
+
+        ShowActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
+    }
+
+    return true;
+}
+
 void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
@@ -469,260 +683,83 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
                      VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
         return false;
 
-    // Start scrolling also on Ctrl + left click
-    if(VIDEODRIVER.GetModKeyState().ctrl)
+    if(!VIDEODRIVER.IsTouch())
     {
-        Msg_RightDown(mc);
-        return true;
-    } else if(isScrolling)
+        // Start scrolling also on Ctrl + left click
+        if(VIDEODRIVER.GetModKeyState().ctrl)
+        {
+            Msg_RightDown(mc);
+            return true;
+        } else if(isScrolling)
+            StopScrolling();
+
+        return ContextClick(mc);
+
+    } else if(mc.num_tfingers < 2)
+        touchDuration = VIDEODRIVER.GetTickCount();
+    else if(isScrolling) // 2 fingers down -> zoom mode. Do not click or scroll map
         StopScrolling();
-
-    // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
-    if(road.mode != RoadBuildMode::Disabled)
-    {
-        // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
-        const MapPoint selPt = gwv.GetSelectedPt();
-
-        if(selPt == road.point)
-        {
-            // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
-            ShowRoadWindow(mc.GetPos());
-        } else
-        {
-            // altes Roadwindow schließen
-            WINDOWMANAGER.Close((unsigned)CGI_ROADWINDOW);
-
-            // Ist das ein gültiger neuer Wegpunkt?
-            if(worldViewer.IsRoadAvailable(road.mode == RoadBuildMode::Boat, selPt)
-               && worldViewer.IsPlayerTerritory(selPt))
-            {
-                MapPoint targetPt = selPt;
-                if(!BuildRoadPart(targetPt))
-                    ShowRoadWindow(mc.GetPos());
-            } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
-            {
-                // Wurde bereits auf das gebaute Stück geklickt?
-                unsigned idOnRoad = GetIdInCurBuildRoad(selPt);
-                if(idOnRoad)
-                    DemolishRoad(idOnRoad);
-                else
-                {
-                    MapPoint targetPt = selPt;
-                    if(BuildRoadPart(targetPt))
-                    {
-                        // Ist der Zielpunkt der gleiche geblieben?
-                        if(selPt == targetPt)
-                            GI_BuildRoad();
-                    } else if(selPt == targetPt)
-                        ShowRoadWindow(mc.GetPos());
-                }
-            }
-            // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
-            else if(worldViewer.GetWorld().GetNO(selPt)->GetType() == NodalObjectType::Flag && selPt != road.start)
-            {
-                MapPoint targetPt = selPt;
-                if(BuildRoadPart(targetPt))
-                {
-                    if(selPt == targetPt)
-                        GI_BuildRoad();
-                } else if(selPt == targetPt)
-                    ShowRoadWindow(mc.GetPos());
-            } else
-            {
-                unsigned tbr = GetIdInCurBuildRoad(selPt);
-                // Wurde bereits auf das gebaute Stück geklickt?
-                if(tbr)
-                    DemolishRoad(tbr);
-                else
-                    ShowRoadWindow(mc.GetPos());
-            }
-        }
-    } else
-    {
-        bool enable_military_buildings = false;
-
-        iwAction::Tabs action_tabs;
-
-        const MapPoint cSel = gwv.GetSelectedPt();
-
-        // Vielleicht steht hier auch ein Schiff?
-        if(const noShip* ship = worldViewer.GetShip(cSel))
-        {
-            WINDOWMANAGER.Show(std::make_unique<iwShip>(gwv, GAMECLIENT, ship));
-            return true;
-        }
-
-        // Evtl ists nen Haus? (unser Haus)
-        const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
-        if(selObj.GetType() == NodalObjectType::Building && worldViewer.IsOwner(cSel))
-        {
-            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
-            {
-                WINDOWMANAGER.SetActiveWindow(*wnd);
-                return true;
-            }
-            BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
-            // HQ
-            if(bt == BuildingType::Headquarters)
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
-            // Lagerhäuser
-            else if(bt == BuildingType::Storehouse)
-                WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
-            // Hafengebäude
-            else if(bt == BuildingType::HarborBuilding)
-                WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
-            // Militärgebäude
-            else if(BuildingProperties::IsMilitary(bt))
-                WINDOWMANAGER.Show(std::make_unique<iwMilitaryBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
-            else if(bt == BuildingType::Temple)
-                WINDOWMANAGER.Show(std::make_unique<iwTempleBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobTemple>(cSel)));
-            else
-                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
-            return true;
-        }
-        // oder vielleicht eine Baustelle?
-        else if(selObj.GetType() == NodalObjectType::Buildingsite && worldViewer.IsOwner(cSel))
-        {
-            if(!WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
-            return true;
-        }
-
-        action_tabs.watch = true;
-        // Unser Land
-        if(worldViewer.IsOwner(cSel))
-        {
-            const BuildingQuality bq = worldViewer.GetBQ(cSel);
-            // Kann hier was gebaut werden?
-            if(bq >= BuildingQuality::Mine)
-            {
-                action_tabs.build = true;
-
-                // Welches Gebäude kann gebaut werden?
-                switch(bq)
-                {
-                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::BuildTab::Mine; break;
-                    case BuildingQuality::Hut: action_tabs.build_tabs = iwAction::BuildTab::Hut; break;
-                    case BuildingQuality::House: action_tabs.build_tabs = iwAction::BuildTab::House; break;
-                    case BuildingQuality::Castle: action_tabs.build_tabs = iwAction::BuildTab::Castle; break;
-                    case BuildingQuality::Harbor: action_tabs.build_tabs = iwAction::BuildTab::Harbor; break;
-                    default: break;
-                }
-
-                if(!worldViewer.GetWorld().IsFlagAround(cSel))
-                    action_tabs.setflag = true;
-
-                // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
-                // Militärgebäude gebaut werden
-                enable_military_buildings =
-                  !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerId());
-            } else if(bq == BuildingQuality::Flag)
-                action_tabs.setflag = true;
-            else if(selObj.GetType() == NodalObjectType::Flag)
-                action_tabs.flag = true;
-
-            if(selObj.GetType() != NodalObjectType::Flag && selObj.GetType() != NodalObjectType::Building)
-            {
-                // Check if there are roads
-                for(const Direction dir : helpers::EnumRange<Direction>{})
-                {
-                    const PointRoad curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
-                    if(curRoad != PointRoad::None)
-                    {
-                        action_tabs.cutroad = true;
-                        action_tabs.upgradeRoad |= (curRoad == PointRoad::Normal);
-                    }
-                }
-            }
-        }
-        // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
-        else if(worldViewer.GetVisibility(cSel) == Visibility::Visible)
-        {
-            if(selObj.GetType() == NodalObjectType::Building)
-            {
-                const auto* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
-                BuildingType bt = building->GetBuildingType();
-
-                // Only if trade is enabled
-                if(worldViewer.GetWorld().GetGGS().isEnabled(AddonId::TRADE))
-                {
-                    // Allied warehouse? -> Show trade window
-                    if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
-                    {
-                        WINDOWMANAGER.Show(std::make_unique<iwTrade>(*static_cast<const nobBaseWarehouse*>(building),
-                                                                     worldViewer, GAMECLIENT));
-                        return true;
-                    }
-                }
-
-                // Ist es ein gewöhnliches Militärgebäude?
-                if(BuildingProperties::IsMilitary(bt))
-                {
-                    // Dann darf es nicht neu gebaut sein!
-                    if(!static_cast<const nobMilitary*>(building)->IsNewBuilt())
-                        action_tabs.attack = true;
-                }
-                // oder ein HQ oder Hafen?
-                else if(bt == BuildingType::Headquarters || bt == BuildingType::HarborBuilding)
-                    action_tabs.attack = true;
-                action_tabs.sea_attack =
-                  action_tabs.attack && worldViewer.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK);
-            }
-        }
-
-        // Bisheriges Actionfenster schließen, falls es eins gab
-        // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
-        if(actionwindow)
-            actionwindow->Close();
-        VIDEODRIVER.SetMousePos(mc.GetPos());
-
-        ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
-    }
 
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
     if(isScrolling)
     {
         StopScrolling();
         return true;
     }
+
+    // num_tfingers is reduced after this function to check if it's still a touch event
+    // Was touch duration short enough to trigger conext click?
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < TOUCH_MAX_CLICK_INTERVAL)
+        return ContextClick(mc);
+
     return false;
 }
 
 bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
-        return false;
+    {
+        if(mc.num_tfingers == 1)
+            Msg_RightDown(mc);
+        else
+            return false;
+    }
 
-    int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+    {
+        const Position mapPos = gwv.ViewPosToMap(mc.pos);
+        gwv.MoveBy(-(mapPos - startScrollPt));
+        startScrollPt = mapPos;
+    } else
+    {
+        int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-    if(SETTINGS.interface.invertMouse)
-        acceleration = -acceleration;
+        if(SETTINGS.interface.mapScrollMode == MapScrollMode::ScrollSame)
+            acceleration = -acceleration;
 
-    gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
-    VIDEODRIVER.SetMousePos(startScrollPt);
+        gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
+        VIDEODRIVER.SetMousePos(startScrollPt);
 
-    if(!SETTINGS.global.smartCursor)
-        startScrollPt = mc.GetPos();
+        if(!SETTINGS.global.smartCursor)
+            startScrollPt = mc.pos;
+    }
+
     return true;
 }
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    StartScrolling(mc.pos);
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+        StartScrolling(gwv.ViewPosToMap(mc.pos));
+    else
+        StartScrolling(mc.pos);
     return true;
 }
 

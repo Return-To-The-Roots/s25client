@@ -49,6 +49,9 @@
 #ifndef _MSC_VER
 #    include <csignal>
 #endif
+#ifdef __ANDROID__
+#    include <SDL.h> // For the sdl android entry point function (SDL_main)
+#endif
 
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;

@@ -16,6 +16,9 @@ class RttrConfig : public Singleton<RttrConfig>
 
 public:
     bool Init();
+
+    /// Checks the env var for path override and returns result path
+    static boost::filesystem::path getEnvOverride(const std::string& id, const boost::filesystem::path& defaultPath);
     /// Return the prefix path for the installation
     static boost::filesystem::path GetPrefixPath();
     /// Return the path from which RTTR was compiled

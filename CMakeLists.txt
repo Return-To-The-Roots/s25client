@@ -22,7 +22,7 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
     message(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 endif()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules" "${PROJECT_SOURCE_DIR}/external/libutil/cmake")
 
 include(EnableCCache)
 
@@ -242,6 +242,7 @@ include(RttrCoverageCfg)
 include(EnableSanitizers)
 
 option(RTTR_USE_SYSTEM_LIBS "Default to using system-wide installed libs for external dependencies that have known system versions." OFF)
+option(RTTR_BUILD_LIB "Executables will be build as shared library." OFF)
 
 ################################################################################
 # Configure files

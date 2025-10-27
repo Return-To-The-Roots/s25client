@@ -13,6 +13,7 @@
 .DS_Store
 .vscode
 .vs
+.cache
 /S2
 /build
 /external/boost*
