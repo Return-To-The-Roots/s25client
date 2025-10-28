@@ -7,6 +7,7 @@
 #include "notifications/Subscription.h"
 #include <deque>
 #include <functional>
+#include <cstdint>
 #include <unordered_map>
 
 class NotificationManager
