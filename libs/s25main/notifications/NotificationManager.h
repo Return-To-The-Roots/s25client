@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <deque>
 #include <functional>
+#include <cstdint>
 #include <unordered_map>
 
 class NotificationManager
