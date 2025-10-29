@@ -17,9 +17,20 @@ class GameWorldBase;
 
 namespace leatheraddon {
 
-bool isLeatherAddonBuildingType(BuildingType bld);
-bool isLeatherAddonGoodType(GoodType good);
-bool isLeatherAddonJobType(Job job);
+inline bool isLeatherAddonBuildingType(BuildingType bld)
+{
+    return bld == BuildingType::Skinner || bld == BuildingType::Tannery || bld == BuildingType::LeatherWorks;
+}
+
+inline bool isLeatherAddonGoodType(GoodType good)
+{
+    return good == GoodType::Skins || good == GoodType::Leather || good == GoodType::Armor;
+}
+
+inline bool isLeatherAddonJobType(Job job)
+{
+    return job == Job::Skinner || job == Job::Tanner || job == Job::LeatherWorker;
+}
 
 enum class BobTypes
 {
