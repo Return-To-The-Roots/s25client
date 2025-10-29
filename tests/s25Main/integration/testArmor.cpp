@@ -34,7 +34,9 @@ struct ArmoredSoldierFixture : public WorldWithGCExecution3P
 struct ArmorTradeFixture : public ArmoredSoldierFixture
 {
     std::array<const GamePlayer*, 3> players;
-    unsigned numHelpers, numDonkeys, numSwords, numArmoredSoldiers, numSoldiers = {};
+    unsigned numHelpers, numDonkeys = {};
+    std::array<unsigned, NUM_SOLDIER_RANKS> numArmoredSoldiers;
+    std::array<unsigned, NUM_SOLDIER_RANKS> numSoldiers;
 
     const nobBaseWarehouse* curWh;
     ArmorTradeFixture()
@@ -52,29 +54,60 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
         BOOST_TEST_REQUIRE(!players[1]->IsAlly(2));
         curWh = world.GetSpecObj<nobBaseWarehouse>(players[1]->GetHQPos());
         BOOST_TEST_REQUIRE(curWh);
+        RTTR_EXEC_TILL(200 * curWh->GetNumRealWares(GoodType::Sword), curWh->GetNumRealWares(GoodType::Sword) == 0);
         // Get start count and check that we have some
         numHelpers = curWh->GetNumRealFigures(Job::Helper);
         numDonkeys = curWh->GetNumRealFigures(Job::PackDonkey);
-        numArmoredSoldiers = curWh->GetNumRealArmoredFigures(ArmoredSoldier::Officer);
-        numSoldiers = curWh->GetNumRealFigures(Job::Officer);
-        numSwords = curWh->GetNumRealWares(GoodType::Sword);
+
+        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
+        {
+            numSoldiers[i] = curWh->GetNumRealFigures(SOLDIER_JOBS[i]);
+            numArmoredSoldiers[i] = curWh->GetNumRealArmoredFigures(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]));
+        }
 
         BOOST_TEST_REQUIRE(numHelpers > 10u);
         BOOST_TEST_REQUIRE(numDonkeys > 5u);
-        BOOST_TEST_REQUIRE(numArmoredSoldiers == 2u);
-        BOOST_TEST_REQUIRE(numSoldiers == 3u);
+        BOOST_TEST_REQUIRE(numArmoredSoldiers[0] == 2u);
+        BOOST_TEST_REQUIRE(numSoldiers[0] == 55u);
+        for(unsigned i = 1; i < NUM_SOLDIER_RANKS; i++)
+        {
+            BOOST_TEST_REQUIRE(numArmoredSoldiers[i] == 2u);
+            BOOST_TEST_REQUIRE(numSoldiers[i] == 3u);
+        }
 
         // Enable trading
         this->ggs.setSelection(AddonId::TRADE, 1);
         world.CreateTradeGraphs();
     }
 
+    void testExpectedFiguresInGlobalInventoryMatchWithHQInventory() const
+    {
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+        {
+            auto const& playerWh = world.GetSpecObj<nobBaseWarehouse>(players[i]->GetHQPos());
+            auto const& globalInventoryPlayer = world.GetPlayer(i).GetInventory();
+            for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
+            {
+                BOOST_TEST_REQUIRE(playerWh->GetNumRealArmoredFigures(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]))
+                                   == globalInventoryPlayer[jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i])]);
+                BOOST_TEST_REQUIRE(playerWh->GetNumRealFigures(SOLDIER_JOBS[i])
+                                   == globalInventoryPlayer[SOLDIER_JOBS[i]]);
+            }
+        }
+    }
+
     void testExpectedFigures() const
     {
         BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) == numHelpers);
         BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::PackDonkey) == numDonkeys);
-        BOOST_TEST_REQUIRE(curWh->GetNumRealArmoredFigures(ArmoredSoldier::Officer) == numArmoredSoldiers);
-        BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Officer) == numSoldiers);
+
+        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
+        {
+            BOOST_TEST_REQUIRE(curWh->GetNumRealArmoredFigures(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]))
+                               == numArmoredSoldiers[i]);
+            BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(SOLDIER_JOBS[i]) == numSoldiers[i]);
+        }
+        testExpectedFiguresInGlobalInventoryMatchWithHQInventory();
     }
 
     void testAfterLeaving(unsigned numTradeItems)
@@ -89,8 +122,12 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
         // Visual count should match real count
         BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::Helper) == numHelpers);
         BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::PackDonkey) == numDonkeys);
-        BOOST_TEST_REQUIRE(curWh->GetNumVisualArmoredFigures(ArmoredSoldier::Officer) == numArmoredSoldiers);
-        BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(Job::Officer) == numSoldiers);
+        for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
+        {
+            BOOST_TEST_REQUIRE(curWh->GetNumVisualArmoredFigures(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]))
+                               == numArmoredSoldiers[i]);
+            BOOST_TEST_REQUIRE(curWh->GetNumVisualFigures(SOLDIER_JOBS[i]) == numSoldiers[i]);
+        }
     }
 };
 
@@ -112,26 +149,33 @@ BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 0);
     testExpectedFigures();
 
+    const unsigned officerSoldiersTraded = 3;
+    const unsigned officerSoldiersWithArmor = 2;
+
     // For figures we don't need donkeys
+    BOOST_TEST_REQUIRE(numArmoredSoldiers[getSoldierRank(Job::Officer)] == 2u);
+    BOOST_TEST_REQUIRE(numSoldiers[getSoldierRank(Job::Officer)] == 3u);
+
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 3);
-    numSoldiers -= 3;
-    numArmoredSoldiers -= 2;
-    numHelpers -= 1;
+    numArmoredSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersWithArmor;
+    numSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersTraded;
+    numHelpers -= 1; // Trade leader
     testExpectedFigures();
-    testAfterLeaving(6);
+    testAfterLeaving(3);
 
     // Let caravan arrive (20GFs per node)
     unsigned distance = world.CalcDistance(curWh->GetPos(), players[0]->GetHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
-    // Some were recruited
-    numHelpers -= numSwords;
+
     // Some were produced (at least every 170 GFs)
     numHelpers += (20 * distance) / 170;
     curWh = world.GetSpecObj<nobBaseWarehouse>(players[0]->GetHQPos());
     BOOST_TEST_REQUIRE(curWh);
-    numSoldiers += 2 * 3;
-    numArmoredSoldiers += 2 * 2;
-    numHelpers += 2 * 1;
+    // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received
+    // them)
+    numSoldiers[getSoldierRank(Job::Officer)] += 2 * officerSoldiersTraded;
+    numArmoredSoldiers[getSoldierRank(Job::Officer)] += 2 * officerSoldiersWithArmor;
+    numHelpers += 2 * 1; // Trade leader
     // helpers can be produced in the meantime
     BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
@@ -142,10 +186,13 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFail)
 {
     initGameRNG();
 
+    const unsigned officerSoldiersTraded = 3;
+    const unsigned officerSoldiersWithArmor = 2;
+
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 3);
     // For figures we don't need donkeys
-    numSoldiers -= 3;
-    numArmoredSoldiers -= 2;
+    numArmoredSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersWithArmor;
+    numSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersTraded;
     numHelpers -= 1;
     testExpectedFigures();
     testAfterLeaving(3);
@@ -163,12 +210,10 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFail)
 
     // Let them come in again (walk same way back, assume at most 8 nodes away + same as above)
     RTTR_SKIP_GFS(40 + 20 * 8);
-    // Recruited soldiers
-    numHelpers -= numSwords;
     // Our stuff is back
-    numSoldiers += 3;
-    numArmoredSoldiers += 2;
-    numHelpers += 1 + 1;
+    numArmoredSoldiers[getSoldierRank(Job::Officer)] += officerSoldiersWithArmor;
+    numSoldiers[getSoldierRank(Job::Officer)] += officerSoldiersTraded;
+    numHelpers += 1;
     // helpers can be produced in the meantime
     BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
@@ -179,10 +224,13 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFailDie)
 {
     initGameRNG();
 
+    const unsigned officerSoldiersTraded = 3;
+    const unsigned officerSoldiersWithArmor = 2;
+
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 3);
     // Each donkey carries a ware and we need 2 leaders
-    numSoldiers -= 3;
-    numArmoredSoldiers -= 2;
+    numArmoredSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersWithArmor;
+    numSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersTraded;
     numHelpers -= 1;
     testExpectedFigures();
     testAfterLeaving(3);
@@ -196,7 +244,7 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFailDie)
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.SetOwner(pt, 2 + 1); // playerID = 2 -> Owner = +1
     // Let them all die
-    RTTR_SKIP_GFS(50);
+    RTTR_SKIP_GFS(40 + 20 * 8);
     // Don't care about helpers but check the rest: Still gone
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
     testExpectedFigures();
