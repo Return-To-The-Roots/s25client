@@ -135,12 +135,11 @@ void iwMilitaryBuilding::DrawContent()
     }
     btOffsetY += HEIGHT_OF_ROW;
 
-    glArchivItem_Bitmap* armorWareIcon = nullptr;
+    auto* armorWareIcon =
+      LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::ARMOR_WARE_ICON]);
+
     if(leatheraddon::isAddonActive(gwv.GetWorld()))
     {
-        armorWareIcon =
-          LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::ARMOR_WARE_ICON]);
-
         // Black background for armor display
         const unsigned maxArmorCt = building->GetMaxArmorCt();
         DrawPoint armorPos = GetDrawPos() + DrawPoint((GetSize().x - 22 * maxArmorCt) / 2, btOffsetY);
