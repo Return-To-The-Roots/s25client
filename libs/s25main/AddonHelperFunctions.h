@@ -14,8 +14,7 @@
 
 auto isUnusedBuilding(GamePlayer const& player)
 {
-    return 
-        [&player = player](BuildingType const& bld) {
+    return [&player = player](BuildingType const& bld) {
         if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonBuildingType(bld))
             return true;
         if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
