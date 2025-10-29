@@ -83,6 +83,7 @@ public:
         uint8_t musicVolume;
         bool effectsEnabled;
         uint8_t effectsVolume;
+        bool birdsEnabled;
         std::string playlist; /// musicplayer playlist name
     } sound;
 
