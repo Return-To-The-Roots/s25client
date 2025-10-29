@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwBuildingProductivities.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "LeatherLoader.h"
@@ -39,17 +40,7 @@ const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
 void iwBuildingProductivities::setBuildingOrder()
 {
     usedIcons.assign(allIcons.begin(), allIcons.end());
-
-    const auto isUnused = [&](BuildingType const& bld) {
-        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonBuildingType(bld))
-            return true;
-        if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
-            return true;
-        if(!leatheraddon::isAddonActive(player.GetGameWorld()) && leatheraddon::isLeatherAddonBuildingType(bld))
-            return true;
-        return false;
-    };
-    helpers::erase_if(usedIcons, isUnused);
+    helpers::erase_if(usedIcons, isUnusedBuilding(player));
 }
 
 /// Abstand vom linken, oberen Fensterrand
