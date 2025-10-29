@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwWares.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "LeatherLoader.h"
@@ -113,26 +114,8 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
                                        Job::Sergeant,      Job::Officer,
                                        Job::General};
 
-    const auto isUnusedWare = [&](GoodType const& type) {
-        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonGoodType(type))
-            return true;
-        if(!leatheraddon::isAddonActive(player.GetGameWorld()) && leatheraddon::isLeatherAddonGoodType(type))
-            return true;
-        return false;
-    };
-
-    auto isUnusedJob = [&](Job const& job) {
-        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonJobType(job))
-            return true;
-        if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && job == Job::CharBurner)
-            return true;
-        if(!leatheraddon::isAddonActive(player.GetGameWorld()) && leatheraddon::isLeatherAddonJobType(job))
-            return true;
-        return false;
-    };
-
-    helpers::erase_if(WARE_DISPLAY_ORDER, isUnusedWare);
-    helpers::erase_if(JOB_DISPLAY_ORDER, isUnusedJob);
+    helpers::erase_if(WARE_DISPLAY_ORDER, isUnusedWare(player));
+    helpers::erase_if(JOB_DISPLAY_ORDER, isUnusedJob(player));
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();

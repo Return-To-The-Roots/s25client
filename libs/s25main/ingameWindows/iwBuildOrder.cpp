@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwBuildOrder.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "LeatherLoader.h"
@@ -22,17 +23,7 @@
 void iwBuildOrder::fillBuildOrder(const BuildOrders& build_order)
 {
     pendingBuildOrder.assign(build_order.begin(), build_order.end());
-
-    auto isUnused = [&](BuildingType const& bld) {
-        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
-            return true;
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
-            return true;
-        if(!leatheraddon::isAddonActive(gwv.GetWorld()) && leatheraddon::isLeatherAddonBuildingType(bld))
-            return true;
-        return false;
-    };
-    helpers::erase_if(pendingBuildOrder, isUnused);
+    helpers::erase_if(pendingBuildOrder, isUnusedBuilding(gwv.GetPlayer()));
 }
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)

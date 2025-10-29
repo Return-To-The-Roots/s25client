@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwDistribution.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "LeatherLoader.h"
@@ -203,13 +204,7 @@ void iwDistribution::CreateGroups()
 
     auto isUnused = [&](std::tuple<std::string, unsigned> const& bts) {
         const BuildingType buildingType = std::get<1>(distributionMap[std::get<1>(bts)]);
-        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(buildingType))
-            return true;
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && buildingType == BuildingType::Charburner)
-            return true;
-        if(!leatheraddon::isAddonActive(gwv.GetWorld()) && leatheraddon::isLeatherAddonBuildingType(buildingType))
-            return true;
-        return false;
+        return isUnusedBuilding(gwv.GetPlayer())(buildingType);
     };
     for(auto& group : groups)
         helpers::erase_if(group.entries, isUnused);
