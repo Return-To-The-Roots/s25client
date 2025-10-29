@@ -116,6 +116,7 @@ void Settings::LoadDefaults()
     sound.musicVolume = 30;
     sound.effectsEnabled = true;
     sound.effectsVolume = 75;
+    sound.birdsEnabled = true;
     sound.playlist = s25::files::defaultPlaylist;
     // }
 
@@ -258,6 +259,7 @@ void Settings::Load()
         sound.musicVolume = iniSound->getIntValue("musik_volume");
         sound.effectsEnabled = iniSound->getBoolValue("effekte");
         sound.effectsVolume = iniSound->getIntValue("effekte_volume");
+        sound.birdsEnabled = iniSound->getBoolValue("bird_sounds");
         sound.playlist = iniSound->getValue("playlist");
         // }
 
@@ -444,6 +446,7 @@ void Settings::Save()
     iniSound->setValue("musik_volume", sound.musicVolume);
     iniSound->setValue("effekte", sound.effectsEnabled);
     iniSound->setValue("effekte_volume", sound.effectsVolume);
+    iniSound->setValue("bird_sounds", sound.birdsEnabled);
     iniSound->setValue("playlist", sound.playlist);
     // }
 
