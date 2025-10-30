@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -30,6 +30,13 @@ inline T checkedCast(T_Src* src)
 {
     RTTR_Assert(!src || dynamic_cast<T>(src));
     return static_cast<T>(src);
+}
+
+template<typename T, typename T_Src>
+inline T& checkedCast(T_Src& src)
+{
+    RTTR_Assert(dynamic_cast<T*>(&src));
+    return static_cast<T&>(src);
 }
 
 // Fwd decl
