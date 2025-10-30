@@ -52,14 +52,6 @@
 #include "nodeObjs/noFlag.h"
 #include <stdexcept>
 
-namespace {
-nobUsual* staticCastAndAssertCorrectType(noRoadNode* const goal)
-{
-    RTTR_Assert(dynamic_cast<nobUsual*>(goal));
-    return static_cast<nobUsual*>(goal);
-}
-} // namespace
-
 std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsigned char player,
                                                 noRoadNode& goal)
 {
@@ -128,8 +120,7 @@ std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint
         case Job::TempleServant: return std::make_unique<nofTempleServant>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Skinner: return std::make_unique<nofSkinner>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Tanner: return std::make_unique<nofTanner>(pt, player, &checkedCast<nobUsual>(goal));
-        case Job::LeatherWorker:
-            return std::make_unique<nofLeatherWorker>(pt, player, staticCastAndAssertCorrectType(goal));
+        case Job::LeatherWorker: return std::make_unique<nofLeatherWorker>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::BoatCarrier:
             throw std::logic_error("Cannot create a boat carrier job (try creating Job::Helper).");
             break;

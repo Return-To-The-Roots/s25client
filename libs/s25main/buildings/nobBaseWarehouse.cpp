@@ -281,7 +281,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode& goal, const bool allo
             return false;
     }
 
-    std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, goal);
+    std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, *goal);
     if(isSoldier(fig->GetJobType()))
     {
         auto* armoredFigure = dynamic_cast<nofArmored*>(fig.get());
