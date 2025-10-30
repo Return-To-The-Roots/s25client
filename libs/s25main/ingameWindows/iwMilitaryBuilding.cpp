@@ -82,9 +82,9 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
         AddImageButton(
           ARMOR_ENABLE_BUTTON_ID, DrawPoint(126 + btOffsetLeatherAddon.x, btOffset.y + 147), Extent(32, 32),
           TextureColor::Grey,
-          LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[building->IsArmorDisabledVirtual() ?
-                                                                    leatheraddon::BobType::DisableDeliveryArmorIcon :
-                                                                    leatheraddon::BobType::ArmorDeliverIcon]),
+          LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[building->IsArmorAllowedVirtual() ?
+                                                                    leatheraddon::BobType::ArmorDeliverIcon :
+                                                                    leatheraddon::BobType::DisableDeliveryArmorIcon]),
           _("Armor delivery"));
     }
 
@@ -321,13 +321,13 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(!GAMECLIENT.IsReplayModeOn())
             {
-                if(gcFactory.SetArmorAllowed(building->GetPos(), building->IsArmorDisabledVirtual()))
+                if(gcFactory.SetArmorAllowed(building->GetPos(), !building->IsArmorAllowedVirtual()))
                 {
                     building->ToggleArmorVirtual();
                     GetCtrl<ctrlImageButton>(ctrl_id)->SetImage(LOADER.GetImageN(
-                      "leather_bobs", leatheraddon::bobIndex[building->IsArmorDisabledVirtual() ?
-                                                               leatheraddon::BobType::DisableDeliveryArmorIcon :
-                                                               leatheraddon::BobType::ArmorDeliverIcon]));
+                      "leather_bobs", leatheraddon::bobIndex[building->IsArmorAllowedVirtual() ?
+                                                               leatheraddon::BobType::ArmorDeliverIcon :
+                                                               leatheraddon::BobType::DisableDeliveryArmorIcon]));
                 }
             }
         }

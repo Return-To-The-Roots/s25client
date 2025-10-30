@@ -41,7 +41,7 @@
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false),
-      coinsDisabledVirtual(false), numArmor(0), armorDisabled(false), armorDisabledVirtual(false), capturing(false),
+      coinsDisabledVirtual(false), numArmor(0), armorAllowed(true), armorAllowedVirtual(true), capturing(false),
       capturing_soldiers(0), gold_order_event(nullptr), armor_order_event(nullptr), upgrade_event(nullptr),
       armor_upgrade_event(nullptr), is_regulating_troops(false)
 {
@@ -74,8 +74,8 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
 
     if(world->GetGGS().isEnabled(AddonId::NO_ARMOR_DEFAULT))
     {
-        armorDisabled = true;
-        armorDisabledVirtual = true;
+        armorAllowed = false;
+        armorAllowedVirtual = false;
     }
 }
 
@@ -167,7 +167,7 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     helpers::pushContainer(sgd, troop_limits);
 
     sgd.PushUnsignedChar(numArmor);
-    sgd.PushBool(armorDisabled);
+    sgd.PushBool(armorAllowed);
     sgd.PushEvent(armor_order_event);
     sgd.PushEvent(armor_upgrade_event);
     sgd.PushObjectContainer(ordered_armor, true);
@@ -192,14 +192,14 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     if(sgd.GetGameDataVersion() >= 12)
     {
         numArmor = sgd.PopUnsignedChar();
-        armorDisabledVirtual = armorDisabled = sgd.PopBool();
+        armorAllowedVirtual = armorAllowed = sgd.PopBool();
         armor_order_event = sgd.PopEvent();
         armor_upgrade_event = sgd.PopEvent();
         sgd.PopObjectContainer(ordered_armor, GO_Type::Ware);
     } else
     {
         numArmor = 0;
-        armorDisabledVirtual = armorDisabled = false;
+        armorAllowedVirtual = armorAllowed = true;
         armor_order_event = nullptr;
         armor_upgrade_event = nullptr;
     }
@@ -259,7 +259,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
             LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::StopCoinsXSignOverride])
               ->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 
-        if(armorDisabledVirtual)
+        if(!armorAllowedVirtual)
             LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::StopArmorXSign])
               ->DrawFull(drawPt + BUILDING_ARMOR_SIGN_CONSTS[nation][bldType_]);
     }
@@ -1149,12 +1149,12 @@ void nobMilitary::Capture(const unsigned char new_owner)
     switch(world->GetGGS().getSelection(AddonId::ARMOR_CAPTURED_BLD))
     {
         case 1: // enable armor order
-            armorDisabled = false;
-            armorDisabledVirtual = false;
+            armorAllowed = true;
+            armorAllowedVirtual = true;
             break;
         case 2: // disable armor order
-            armorDisabled = true;
-            armorDisabledVirtual = true;
+            armorAllowed = false;
+            armorAllowed = false;
             break;
     }
 }
@@ -1271,14 +1271,14 @@ void nobMilitary::SetCoinsAllowed(const bool enabled)
 
 void nobMilitary::SetArmorAllowed(const bool enabled)
 {
-    if(armorDisabled == !enabled)
+    if(armorAllowed == enabled)
         return;
 
-    armorDisabled = !enabled;
+    armorAllowed = enabled;
     if(GAMECLIENT.GetPlayerId() != player || GAMECLIENT.IsReplayModeOn())
-        armorDisabledVirtual = armorDisabled;
+        armorAllowedVirtual = armorAllowed;
 
-    if(!armorDisabled)
+    if(armorAllowed)
         SearchArmor();
     else
     {
@@ -1384,7 +1384,7 @@ void nobMilitary::SearchCoins()
 bool nobMilitary::WantArmor() const
 {
     // If armor delivery stopped or stock already full, we do not want any armor
-    return (!armorDisabled && numArmor + ordered_armor.size() != GetMaxArmorCt() && !new_built);
+    return (armorAllowed && numArmor + ordered_armor.size() != GetMaxArmorCt() && !new_built);
 }
 
 void nobMilitary::SearchArmor()
