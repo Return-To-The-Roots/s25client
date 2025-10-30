@@ -243,7 +243,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
             return false;
     }
 
-    std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, goal);
+    std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, *goal);
     // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
     if(goal->GetType() != NodalObjectType::Flag)
         checkedCast<noBaseBuilding*>(goal)->GotWorker(job, *fig);
