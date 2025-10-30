@@ -99,6 +99,8 @@ enum
     ID_txtCommonPortrait,
     ID_btCommonPortrait,
     ID_cbCommonPortrait,
+    ID_txtBirdSounds,
+    ID_grpBirdSounds,
 };
 // Use these as IDs in dedicated groups
 constexpr auto ID_btOn = 1;
@@ -359,16 +361,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     constexpr Offset volOffset(400, -5);
     constexpr Extent ctrlSizeSmall(90, ctrlSize.y);
 
-    groupSound->AddText(ID_txtMusic, curPos, _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    mainGroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
-    mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
-    mainGroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
-
-    ctrlProgress* Mvolume =
-      groupSound->AddProgress(ID_pgMusicVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
-    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
-    curPos.y += rowHeight + sectionSpacing;
-
     groupSound->AddText(ID_txtEffects, curPos, _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupSound->AddOptionGroup(ID_grpEffects, GroupSelectType::Check);
     mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
@@ -377,6 +369,22 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlProgress* FXvolume =
       groupSound->AddProgress(ID_pgEffectsVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
     FXvolume->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
+    curPos.y += rowHeight + sectionSpacing;
+
+    groupSound->AddText(ID_txtBirdSounds, curPos, _("Bird sounds"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    mainGroup = groupSound->AddOptionGroup(ID_grpBirdSounds, GroupSelectType::Check);
+    mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
+    mainGroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
+    curPos.y += rowHeight + sectionSpacing;
+
+    groupSound->AddText(ID_txtMusic, curPos, _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    mainGroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
+    mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
+    mainGroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
+
+    ctrlProgress* Mvolume =
+      groupSound->AddProgress(ID_pgMusicVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
+    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
     curPos.y += rowHeight + sectionSpacing;
 
     groupSound->AddTextButton(ID_btMusicPlayer, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Music player"),
@@ -452,8 +460,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // Sound
     // {
 
-    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpMusic)->SetSelection(SETTINGS.sound.musicEnabled);
     groupSound->GetCtrl<ctrlOptionGroup>(ID_grpEffects)->SetSelection(SETTINGS.sound.effectsEnabled);
+    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpBirdSounds)->SetSelection(SETTINGS.sound.birdsEnabled);
+    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpMusic)->SetSelection(SETTINGS.sound.musicEnabled);
 
     // }
 
@@ -560,6 +569,8 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
         case ID_grpFullscreen: SETTINGS.video.fullscreen = enabled; break;
         case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
         case ID_grpOptTextures: SETTINGS.video.shared_textures = enabled; break;
+        case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;
+        case ID_grpBirdSounds: SETTINGS.sound.birdsEnabled = enabled; break;
         case ID_grpMusic:
             SETTINGS.sound.musicEnabled = enabled;
             if(enabled)
@@ -567,7 +578,6 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             else
                 MUSICPLAYER.Stop();
             break;
-        case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;
         case ID_grpDebugData:
             // Special case: Uses e.g. ID_btSubmitDebugOn directly
             SETTINGS.global.submit_debug_data = selection;
