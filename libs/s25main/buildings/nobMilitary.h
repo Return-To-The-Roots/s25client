@@ -49,7 +49,7 @@ private:
     /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
     bool coinsDisabled, coinsDisabledVirtual;
     unsigned char numArmor;
-    bool armorDisabled, armorDisabledVirtual;
+    bool armorAllowed, armorAllowedVirtual;
     /// Entfernung zur freindlichen Grenze (woraus sich dann die Besatzung ergibt) von 0-3, 0 fern, 3 nah, 2 Hafen!
     FrontierDistance frontier_distance;
     /// Größe bzw Typ des Militärgebäudes (0 = Baracke, 3 = Festung)
@@ -228,10 +228,10 @@ public:
     bool IsGoldDisabled() const { return coinsDisabled; }
     unsigned char GetNumCoins() const { return numCoins; }
 
-    void ToggleArmorVirtual() { armorDisabledVirtual = !armorDisabledVirtual; }
+    void ToggleArmorVirtual() { armorAllowedVirtual = !armorAllowedVirtual; }
     void SetArmorAllowed(bool enabled);
-    bool IsArmorDisabledVirtual() const { return armorDisabledVirtual; }
-    bool IsArmorDisabled() const { return armorDisabled; }
+    bool IsArmorAllowedVirtual() const { return armorAllowedVirtual; }
+    bool IsArmorAllowed() const { return armorAllowed; }
     unsigned char GetNumArmor() const { return numArmor; }
 
     /// is there a max rank soldier in the building?

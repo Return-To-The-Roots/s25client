@@ -627,25 +627,25 @@ BOOST_FIXTURE_TEST_CASE(ChangeArmorAccept, WorldWithGCExecution2P)
     auto* bld = dynamic_cast<nobMilitary*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(bld);
-    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled()); //-V522
+    BOOST_TEST_REQUIRE(bld->IsArmorAllowed()); //-V522
 
     // Enable (already is)
     this->SetArmorAllowed(bldPt, true);
-    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(bld->IsArmorAllowed());
 
     // Disable
     this->SetArmorAllowed(bldPt, false);
-    BOOST_TEST_REQUIRE(bld->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(!bld->IsArmorAllowed());
 
     // Reenable
     this->SetArmorAllowed(bldPt, true);
-    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(bld->IsArmorAllowed());
 
     // Production should have no effect
     this->SetProductionEnabled(bldPt, true);
-    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(bld->IsArmorAllowed());
     this->SetProductionEnabled(bldPt, false);
-    BOOST_TEST_REQUIRE(!bld->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(bld->IsArmorAllowed());
 }
 
 BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)

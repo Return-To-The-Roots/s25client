@@ -565,7 +565,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonEnable, AttackFixture<>)
 
     // ensure that armor are disabled
     milBld1->SetArmorAllowed(false);
-    BOOST_TEST_REQUIRE(milBld1->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(!milBld1->IsArmorAllowed());
 
     // Start attack -> 1
     this->Attack(milBld1Pos, 6, false);
@@ -574,7 +574,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonEnable, AttackFixture<>)
     RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
 
     // check if armor were enabled after building was captured
-    BOOST_TEST_REQUIRE(!milBld1->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(milBld1->IsArmorAllowed());
 }
 
 BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonDisable, AttackFixture<>)
@@ -589,7 +589,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonDisable, AttackFixture<>)
 
     // ensure that armor are enabled
     milBld1->SetArmorAllowed(true);
-    BOOST_TEST_REQUIRE(!milBld1->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(milBld1->IsArmorAllowed());
 
     // Start attack -> 1
     this->Attack(milBld1Pos, 6, false);
@@ -598,7 +598,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldArmorAddonDisable, AttackFixture<>)
     RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
 
     // check if armor were disabled after building was captured
-    BOOST_TEST_REQUIRE(milBld1->IsArmorDisabled());
+    BOOST_TEST_REQUIRE(!milBld1->IsArmorAllowed());
 }
 
 using AttackFixture4P = AttackFixture<4, 32, 34>;
