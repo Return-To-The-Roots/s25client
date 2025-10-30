@@ -79,13 +79,13 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
 
     if(leatheraddon::isAddonActive(gwv.GetWorld()))
     {
-        AddImageButton(ARMOR_ENABLE_BUTTON_ID, DrawPoint(126 + btOffsetLeatherAddon.x, btOffset.y + 147),
-                       Extent(32, 32), TextureColor::Grey,
-                       LOADER.GetImageN("leather_bobs",
-                                        leatheraddon::bobIndex[building->IsArmorDisabledVirtual() ?
-                                                                 leatheraddon::BobTypes::DISABLE_DELIVERY_ARMOR_ICON :
-                                                                 leatheraddon::BobTypes::ARMOR_DELIVER_ICON]),
-                       _("Armor delivery"));
+        AddImageButton(
+          ARMOR_ENABLE_BUTTON_ID, DrawPoint(126 + btOffsetLeatherAddon.x, btOffset.y + 147), Extent(32, 32),
+          TextureColor::Grey,
+          LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[building->IsArmorDisabledVirtual() ?
+                                                                    leatheraddon::BobType::DisableDeliveryArmorIcon :
+                                                                    leatheraddon::BobType::ArmorDeliverIcon]),
+          _("Armor delivery"));
     }
 
     if(addonStatusMilitaryControl == 1)
@@ -136,7 +136,7 @@ void iwMilitaryBuilding::DrawContent()
     btOffsetY += HEIGHT_OF_ROW;
 
     auto* armorWareIcon =
-      LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::ARMOR_WARE_ICON]);
+      LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::ArmorWareIcon]);
 
     if(leatheraddon::isAddonActive(gwv.GetWorld()))
     {
@@ -326,8 +326,8 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                     building->ToggleArmorVirtual();
                     GetCtrl<ctrlImageButton>(ctrl_id)->SetImage(LOADER.GetImageN(
                       "leather_bobs", leatheraddon::bobIndex[building->IsArmorDisabledVirtual() ?
-                                                               leatheraddon::BobTypes::DISABLE_DELIVERY_ARMOR_ICON :
-                                                               leatheraddon::BobTypes::ARMOR_DELIVER_ICON]));
+                                                               leatheraddon::BobType::DisableDeliveryArmorIcon :
+                                                               leatheraddon::BobType::ArmorDeliverIcon]));
                 }
             }
         }

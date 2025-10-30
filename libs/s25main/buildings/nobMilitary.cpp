@@ -256,12 +256,11 @@ void nobMilitary::Draw(DrawPoint drawPt)
     if(leatheraddon::isAddonActive(world->GetPlayer(player).GetGameWorld()))
     {
         if(coinsDisabledVirtual)
-            LOADER
-              .GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::STOP_COINS_X_SIGN_OVERRIDE])
+            LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::StopCoinsXSignOverride])
               ->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 
         if(armorDisabledVirtual)
-            LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::STOP_ARMOR_X_SIGN])
+            LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::StopArmorXSign])
               ->DrawFull(drawPt + BUILDING_ARMOR_SIGN_CONSTS[nation][bldType_]);
     }
     // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen

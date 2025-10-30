@@ -60,7 +60,7 @@ unsigned short nofSkinner::GetCarryID() const
 
 void nofSkinner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", bobIndex[BobTypes::SKINNER_CARRYING_SKINS]);
+    DrawWalking(drawPt, "leather_bobs", bobIndex[BobType::SkinnerCarryingSkins]);
 }
 
 void nofSkinner::HandleDerivedEvent(unsigned)
@@ -85,7 +85,7 @@ void nofSkinner::DrawWorking(DrawPoint drawPt)
         {
             unsigned short id = GAMECLIENT.Interpolate(45, current_ev);
             unsigned short draw_id =
-              leatheraddon::bobIndex[leatheraddon::BobTypes::SKINNER_SKINNING_ANIMAL_CARCASS_ANIMATION];
+              leatheraddon::bobIndex[leatheraddon::BobType::SkinnerSkinningAnimalCarcassAnimation];
 
             if(id < 4)
                 draw_id = draw_id + id;

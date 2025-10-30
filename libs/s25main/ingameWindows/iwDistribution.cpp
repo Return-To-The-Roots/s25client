@@ -186,7 +186,7 @@ void iwDistribution::CreateGroups()
                 case GoodType::Water: img = LOADER.GetImageN("io", 92); break;
                 case GoodType::Ham:
                     img = LOADER.GetImageN("leather_bobs",
-                                           leatheraddon::bobIndex[leatheraddon::BobTypes::DISTRIBUTION_OF_PIGS_ICON]);
+                                           leatheraddon::bobIndex[leatheraddon::BobType::DistributionOfPigsIcon]);
                     break;
                 default: break;
             }

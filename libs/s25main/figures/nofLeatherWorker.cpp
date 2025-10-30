@@ -26,7 +26,7 @@ void nofLeatherWorker::DrawWorking(DrawPoint drawPt)
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
-    LOADER.GetPlayerImage("leather_bobs", bobIndex[BobTypes::LEATHERWORKS_WORK_WINDOW_ANIMATION] + (now_id % 23))
+    LOADER.GetPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (now_id % 23))
       ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
 
     // hammer sound
@@ -56,7 +56,7 @@ unsigned short nofLeatherWorker::GetCarryID() const
 
 void nofLeatherWorker::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", bobIndex[BobTypes::LEATHERWORKER_CARRYING_ARMOR_IN_OUT]);
+    DrawWalking(drawPt, "leather_bobs", bobIndex[BobType::LeatherworkerCarryingArmorInOut]);
 }
 
 helpers::OptionalEnum<GoodType> nofLeatherWorker::ProduceWare()
