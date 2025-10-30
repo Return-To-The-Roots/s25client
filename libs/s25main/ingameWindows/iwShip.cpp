@@ -280,11 +280,11 @@ void iwShip::DrawCargo()
                   ->DrawFull(drawPt, COLOR_WHITE, owner.color);
             } else if(leatheraddon::isLeatherAddonJobType(job))
             {
-                leatheraddon::BobTypes type = leatheraddon::BobTypes::SKINNER_WALKING;
+                leatheraddon::BobType type = leatheraddon::BobType::SkinnerWalking;
                 if(job == Job::Tanner)
-                    type = leatheraddon::BobTypes::TANNER_WALKING;
+                    type = leatheraddon::BobType::TannerWalking;
                 else if(job == Job::LeatherWorker)
-                    type = leatheraddon::BobTypes::LEATHERWORKER_WALKING;
+                    type = leatheraddon::BobType::LeatherworkerWalking;
 
                 LOADER
                   .GetPlayerImage("leather_bobs",

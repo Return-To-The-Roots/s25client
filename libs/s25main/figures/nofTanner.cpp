@@ -26,7 +26,7 @@ void nofTanner::DrawWorking(DrawPoint drawPt)
 
     LOADER
       .GetPlayerImage("leather_bobs",
-                      leatheraddon::bobIndex[leatheraddon::BobTypes::TANNERY_WORK_WINDOW_ANIMATION] + (now_id) % 8)
+                      leatheraddon::bobIndex[leatheraddon::BobType::TanneryWorkWindowAnimation] + (now_id) % 8)
       ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
 
     last_id = now_id;
@@ -39,7 +39,7 @@ unsigned short nofTanner::GetCarryID() const
 
 void nofTanner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobTypes::TANNER_CARRYING_LEATHER_IN_OUT]);
+    DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::TannerCarryingLeatherInOut]);
 }
 
 helpers::OptionalEnum<GoodType> nofTanner::ProduceWare()
