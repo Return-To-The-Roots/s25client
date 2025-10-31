@@ -64,9 +64,10 @@ protected:
     const GameEvent* store_event;
 
     /// Soldaten-Reserve-Einstellung
-    std::array<unsigned, 5> reserve_soldiers_available;      /// einkassierte Soldaten zur Reserve
-    std::array<unsigned, 5> reserve_soldiers_claimed_visual; /// geforderte Soldaten zur Reserve - visuell
-    std::array<unsigned, 5> reserve_soldiers_claimed_real;   /// geforderte Soldaten zur Reserve - real
+    std::array<unsigned, 5> reserve_soldiers_available;            /// einkassierte Soldaten zur Reserve
+    std::array<unsigned, 5> reserve_soldiers_available_with_armor; /// how many soldiers of the reserve have armor
+    std::array<unsigned, 5> reserve_soldiers_claimed_visual;       /// geforderte Soldaten zur Reserve - visuell
+    std::array<unsigned, 5> reserve_soldiers_claimed_real;         /// geforderte Soldaten zur Reserve - real
 
     /// Inventory of the building, real is the usable amount, visual is the total amount currently in the wh
     VirtualInventory inventory;
@@ -119,6 +120,9 @@ protected:
     /// Recruts a worker of the given job if possible
     bool TryRecruitJob(Job job);
 
+    void RemoveArmoredFigurFromVisualInventory(noFigure* figure);
+    void AddArmoredFigurToVisualInventory(noFigure* figure);
+
     nobBaseWarehouse(BuildingType type, MapPoint pos, unsigned char player, Nation nation);
     nobBaseWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
@@ -143,8 +147,10 @@ public:
     /// Gibt Anzahl der Waren bzw. Figuren zurück
     unsigned GetNumRealWares(GoodType type) const { return inventory.real[type]; }
     unsigned GetNumRealFigures(Job job) const { return inventory.real[job]; }
+    unsigned GetNumRealArmoredFigures(ArmoredSoldier job) const { return inventory.real[job]; }
     unsigned GetNumVisualWares(GoodType type) const { return inventory.visual[type]; }
     unsigned GetNumVisualFigures(Job job) const { return inventory.visual[job]; }
+    unsigned GetNumVisualArmoredFigures(ArmoredSoldier job) const { return inventory.visual[job]; }
 
     /// Gibt Ein/Auslagerungseinstellungen zurück
     InventorySetting GetInventorySettingVisual(Job job) const;
@@ -267,6 +273,10 @@ public:
 
     /// Gibt Zeiger auf dir Reserve zurück für das GUI
     const unsigned* GetReserveAvailablePointer(unsigned rank) const { return &reserve_soldiers_available[rank]; }
+    const unsigned* GetReserveArmoredAvailablePointer(unsigned rank) const
+    {
+        return &reserve_soldiers_available_with_armor[rank];
+    }
     const unsigned* GetReserveClaimedVisualPointer(unsigned rank) const
     {
         return &reserve_soldiers_claimed_visual[rank];

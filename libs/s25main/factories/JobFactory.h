@@ -18,5 +18,5 @@ public:
     JobFactory() = delete;
 
     // Erstellt Job anhand der job-id
-    static std::unique_ptr<noFigure> CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode* goal);
+    static std::unique_ptr<noFigure> CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode& goal);
 };
