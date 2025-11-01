@@ -445,7 +445,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
         {
             // Does an enemy harbor exist at current harbor spot? -> Can't attack through this harbor spot
             const auto* hb = GetSpecObj<nobHarborBuilding>(harborPt);
-            if(hb && GetPlayer(player_attacker).IsAttackable(hb->GetPlayer()))
+            if(hb && GetPlayer(player_attacker).CanAttack(hb->GetPlayer()))
                 continue;
         }
 
@@ -506,7 +506,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
         {
             // Does an enemy harbor exist at current harbor spot? -> Can't attack through this harbor spot
             const auto* hb = GetSpecObj<nobHarborBuilding>(harborPt);
-            if(hb && GetPlayer(player_attacker).IsAttackable(hb->GetPlayer()))
+            if(hb && GetPlayer(player_attacker).CanAttack(hb->GetPlayer()))
                 continue;
         }
 
@@ -620,7 +620,7 @@ GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, cons
         return attackers;
     // Do we have an attackble military building?
     const auto* milBld = GetSpecObj<nobBaseMilitary>(pt);
-    if(!milBld || !milBld->IsAttackable(player_attacker))
+    if(!milBld || !milBld->CanBeAttackedBy(player_attacker))
         return attackers;
     std::vector<bool> use_seas(GetNumSeas());
 
