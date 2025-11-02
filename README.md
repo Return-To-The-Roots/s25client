@@ -97,7 +97,7 @@ make
 Note: by using the `-G` option of `cmake` you can specify a generator, e.g. `cmake -G Xcode -DCMAKE_BUILD_TYPE=Release ..` will generate an Xcode project.
 Please check `cmake --help` for more options.
 
-### Especially macOS
+### macOS
 
 ```bash
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
