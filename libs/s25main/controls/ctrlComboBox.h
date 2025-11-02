@@ -6,7 +6,7 @@
 
 #include "Window.h"
 #include "ctrlList.h"
-class MouseCoords;
+struct MouseCoords;
 class glFont;
 
 class ctrlComboBox final : public Window

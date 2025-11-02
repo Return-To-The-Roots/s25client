@@ -219,7 +219,7 @@ void ctrlEdit::Resize(const Extent& newSize)
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
-    SetFocus(IsPointInRect(mc.GetPos(), GetDrawRect()));
+    SetFocus(IsPointInRect(mc.pos, GetDrawRect()));
     return false; // "Unhandled" so other edits can handle this too and set their focus accordingly
 }
 

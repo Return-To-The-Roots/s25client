@@ -24,8 +24,6 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
 
-include(EnableCCache)
-
 set(checkSubmodules FALSE)
 # Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
 # Those can be manually set to override the default values
@@ -73,6 +71,7 @@ endif()
 
 # Just include required
 include(EnsureOutOfSourceBuild)
+include(EnableCCache)
 
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@executable_path" "@executable_path/../Frameworks")

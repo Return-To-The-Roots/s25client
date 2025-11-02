@@ -21,7 +21,7 @@ bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
 {
     if(GetImage())
     {
-        if(IsMouseOver(mc.GetPos()))
+        if(IsMouseOver(mc.pos))
             ShowTooltip();
         else
             HideTooltip();

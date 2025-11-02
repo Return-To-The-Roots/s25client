@@ -7,7 +7,7 @@
 #include "ctrlButton.h"
 #include "ctrlGroup.h"
 #include "ogl/glArchivItem_Bitmap.h"
-class MouseCoords;
+struct MouseCoords;
 
 ctrlTab::ctrlTab(Window* parent, unsigned id, const DrawPoint& pos, unsigned short width)
     : Window(parent, id, pos, Extent(width, 45)), tab_count(0), tab_selection(0)

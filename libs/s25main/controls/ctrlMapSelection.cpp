@@ -121,7 +121,7 @@ bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
 {
     if(!preview && IsMouseOver(mc))
     {
-        const auto pickPos = invertScale(mc.GetPos() - getMapPosition());
+        const auto pickPos = invertScale(mc.pos - getMapPosition());
 
         const auto pixelColor = mapImages.missionMapMask
                                   ->getPixel(helpers::clamp(pickPos.x, 0u, mapImages.map->GetSize().x - 1),

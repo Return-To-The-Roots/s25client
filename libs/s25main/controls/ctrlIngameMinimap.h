@@ -8,7 +8,7 @@
 
 class GameWorldView;
 class IngameMinimap;
-class MouseCoords;
+struct MouseCoords;
 class Window;
 
 /// Minimap-Control für Ingame

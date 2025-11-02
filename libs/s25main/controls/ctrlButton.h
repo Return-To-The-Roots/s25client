@@ -10,7 +10,7 @@
 
 #include <string>
 
-class MouseCoords;
+struct MouseCoords;
 
 /// Buttonklasse
 class ctrlButton : public Window, public ctrlBaseTooltip

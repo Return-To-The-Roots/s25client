@@ -47,7 +47,7 @@ class ctrlVarText;
 class glArchivItem_Bitmap;
 class glFont;
 class ITexture;
-class MouseCoords;
+struct MouseCoords;
 enum class GroupSelectType : unsigned;
 struct KeyEvent;
 struct ScreenResizeEvent;
