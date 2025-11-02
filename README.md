@@ -103,18 +103,16 @@ Please check `cmake --help` for more options.
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
 mkdir -p build && cd build
-cmake .. \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_OSX_ARCHITECTURES=arm64 \
-  -DCMAKE_PREFIX_PATH="/opt/homebrew" \
-  -DENABLE_TESTS=OFF \
-  -DCMAKE_CXX_FLAGS="-std=c++17 \
-  -Wno-error=missing-noreturn \
-  -Wno-error=deprecated-copy \
-  -Wno-error=unused-parameter \
-  -Wno-error=undef \
-  -Wno-error=cast-qual" ..
-make -j$(sysctl -n hw.ncpu)
+	cmake .. \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_PREFIX_PATH="/opt/homebrew" \
+		-DCMAKE_CXX_FLAGS=" \
+		-Wno-error=missing-noreturn \
+		-Wno-error=deprecated-copy \
+		-Wno-error=unused-parameter \
+		-Wno-error=undef \
+		-Wno-error=cast-qual" ..
+	make -j$(sysctl -n hw.ncpu)
 ```
 
 ### On Windows
