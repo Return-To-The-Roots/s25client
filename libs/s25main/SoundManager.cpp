@@ -96,7 +96,7 @@ void SoundManager::playAnimalSound(unsigned soundLstId)
 
 void SoundManager::playBirdSounds(const unsigned treeCount)
 {
-    if(!SETTINGS.sound.effectsEnabled)
+    if(!SETTINGS.sound.effectsEnabled || !SETTINGS.sound.birdsEnabled)
         return;
 
     using namespace std::chrono;

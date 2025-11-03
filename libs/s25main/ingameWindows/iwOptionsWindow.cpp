@@ -41,12 +41,13 @@ enum
     ID_btMusicPlayer,
     ID_btAdvanced,
     ID_btSurrender,
-    ID_btEndGame
+    ID_btEndGame,
+    ID_cpBirdSounds
 };
 }
 
 iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
-    : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"),
+    : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 545), _("Game menu"),
                    LOADER.GetImageN("resource", 41)),
       soundManager(soundManager)
 {
@@ -84,22 +85,25 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
 
     // Musik an/aus
-    AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TextureColor::Green2,
+    AddImageButton(ID_btMusic, DrawPoint(35, 371), Extent(35, 35), TextureColor::Green2,
                    LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
 
     // Geräuschlautstärke
     AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
 
+    // Vogelgeräusche an/aus
+    AddCheckBox(ID_cpBirdSounds, DrawPoint(100, 342), Extent(160, 22), TextureColor::Green2, _("Bird sounds"), NormalFont, false);
+
     // Musiklautstärke
-    AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
+    AddProgress(ID_pgMusicVol, DrawPoint(100, 377), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
 
-    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 380), Extent(160, 22), TextureColor::Green2, _("Music player"),
+    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 413), Extent(160, 22), TextureColor::Green2, _("Music player"),
                   NormalFont);
-    AddTextButton(ID_btAdvanced, DrawPoint(67, 412), Extent(168, 24), TextureColor::Green2, _("Advanced"), NormalFont);
-    AddTextButton(ID_btSurrender, DrawPoint(67, 443), Extent(168, 24), TextureColor::Red1, _("Surrender"), NormalFont);
-    AddTextButton(ID_btEndGame, DrawPoint(67, 474), Extent(168, 24), TextureColor::Red1, _("End game"), NormalFont);
+    AddTextButton(ID_btAdvanced, DrawPoint(67, 442), Extent(168, 24), TextureColor::Green2, _("Advanced"), NormalFont);
+    AddTextButton(ID_btSurrender, DrawPoint(67, 473), Extent(168, 24), TextureColor::Red1, _("Surrender"), NormalFont);
+    AddTextButton(ID_btEndGame, DrawPoint(67, 504), Extent(168, 24), TextureColor::Red1, _("End game"), NormalFont);
 }
 
 void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
@@ -158,5 +162,17 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
             SETTINGS.sound.musicVolume = static_cast<uint8_t>((position * 255) / 100);
             AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musicVolume);
             break;
+    }
+}
+
+void iwOptionsWindow::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
+{
+    switch(ctrl_id)
+    {
+        case ID_cpBirdSounds:
+        {
+            SETTINGS.sound.birdsEnabled = checked;
+            break;
+        }
     }
 }
