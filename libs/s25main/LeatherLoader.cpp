@@ -14,9 +14,9 @@
 
 namespace leatheraddon {
 
-helpers::EnumArray<unsigned, BobType> bobIndex = {0,   0,   21,  69,  117, 125, 173, 221, 244, 292, 340, 388,
-                                                  436, 484, 532, 580, 628, 629, 630, 630, 631, 631, 632, 633,
-                                                  634, 635, 636, 637, 638, 639, 640, 641, 642, 643};
+helpers::EnumArray<unsigned, BobType> bobIndex = {0,   21,  69,  117, 125, 173, 221, 244, 292, 340, 388,
+                                                  436, 484, 532, 580, 628, 629, 630, 630, 631, 631, 632,
+                                                  633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643};
 
 ITexture* GetWareTex(const GoodType good)
 {
@@ -70,13 +70,14 @@ bool isAddonActive(const GameWorldBase& gwb)
 
 BobType wareToCarrierBobIndex(const GoodType good, const bool fat)
 {
-    switch(good)
-    {
-        default: return BobType::Invalid;
-        case GoodType::Skins: return fat ? BobType::FatCarrierCarryingSkins : BobType::ThinCarrierCarryingSkins;
-        case GoodType::Leather: return fat ? BobType::FatCarrierCarryingLeather : BobType::ThinCarrierCarryingLeather;
-        case GoodType::Armor: return fat ? BobType::FatCarrierCarryingArmor : BobType::ThinCarrierCarryingArmor;
-    }
+    if(good == GoodType::Skins)
+        return fat ? BobType::FatCarrierCarryingSkins : BobType::ThinCarrierCarryingSkins;
+    else if(good == GoodType::Leather)
+        return fat ? BobType::FatCarrierCarryingLeather : BobType::ThinCarrierCarryingLeather;
+    else if(good == GoodType::Armor)
+        return fat ? BobType::FatCarrierCarryingArmor : BobType::ThinCarrierCarryingArmor;
+    else
+        throw std::runtime_error("Unsupported good type");
 }
 
 } // namespace leatheraddon
