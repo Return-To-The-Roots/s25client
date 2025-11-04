@@ -51,7 +51,7 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
                    LOADER.GetImageN("resource", 41)),
       soundManager(soundManager)
 {
-    // Der Soldat oben
+    // The soldier on top
     AddImage(ID_imgSoldier, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     AddText(ID_txtRttr, DrawPoint(150, 60), "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
@@ -70,37 +70,36 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     AddImageButton(ID_btReadme, DrawPoint(35, 160), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 79));
     AddText(ID_txtReadme, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
-    // "Spiel laden!"
+    // "Load game!"
     // TODO: Implement
     // AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 48));
     // AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
 
-    // "Spiel speichern!"
+    // "Save game!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
     AddImageButton(ID_btSave, DrawPoint(35, 230), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 47));
     AddText(ID_txtSave, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
-    // Geräusche an/aus
+    // Sound on/off
     AddImageButton(ID_btSoundEffects, DrawPoint(35, 300), Extent(35, 35), TextureColor::Green2,
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
 
-    // Musik an/aus
-    AddImageButton(ID_btMusic, DrawPoint(35, 371), Extent(35, 35), TextureColor::Green2,
-                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
-
-    // Geräuschlautstärke
+    // Sound volume
     AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
 
-    // Vogelgeräusche an/aus
+    // Bird sounds on/off
     AddCheckBox(ID_cpBirdSounds, DrawPoint(100, 342), Extent(160, 22), TextureColor::Green2, _("Bird sounds"), NormalFont, false);
 
-    // Musiklautstärke
+    // Music on/off
+    AddImageButton(ID_btMusic, DrawPoint(35, 371), Extent(35, 35), TextureColor::Green2,
+                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
+
+    // Music volume
     AddProgress(ID_pgMusicVol, DrawPoint(100, 377), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
 
-    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 413), Extent(160, 22), TextureColor::Green2, _("Music player"),
-                  NormalFont);
+    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 413), Extent(160, 22), TextureColor::Green2, _("Music player"), NormalFont);
     AddTextButton(ID_btAdvanced, DrawPoint(67, 442), Extent(168, 24), TextureColor::Green2, _("Advanced"), NormalFont);
     AddTextButton(ID_btSurrender, DrawPoint(67, 473), Extent(168, 24), TextureColor::Red1, _("Surrender"), NormalFont);
     AddTextButton(ID_btEndGame, DrawPoint(67, 504), Extent(168, 24), TextureColor::Red1, _("End game"), NormalFont);
