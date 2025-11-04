@@ -23,7 +23,7 @@
 void iwBuildOrder::fillBuildOrder(const BuildOrders& build_order)
 {
     pendingBuildOrder.assign(build_order.begin(), build_order.end());
-    helpers::erase_if(pendingBuildOrder, isUnusedBuilding(gwv.GetPlayer()));
+    helpers::erase_if(pendingBuildOrder, makeIsUnusedBuilding(gwv.GetWorld().GetGGS()));
 }
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)

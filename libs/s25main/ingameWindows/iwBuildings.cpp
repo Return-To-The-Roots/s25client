@@ -51,7 +51,7 @@ void iwBuildings::setBuildingOrder()
       BuildingType::Skinner,        BuildingType::Tannery,    BuildingType::LeatherWorks, // entry 37
     };
 
-    helpers::erase_if(bts, isUnusedBuilding(gwv.GetViewer().GetPlayer()));
+    helpers::erase_if(bts, makeIsUnusedBuilding(gwv.GetWorld().GetGGS()));
 }
 
 // Abstand des ersten Icons vom linken oberen Fensterrand

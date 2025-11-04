@@ -40,7 +40,7 @@ const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
 void iwBuildingProductivities::setBuildingOrder()
 {
     usedIcons.assign(allIcons.begin(), allIcons.end());
-    helpers::erase_if(usedIcons, isUnusedBuilding(player));
+    helpers::erase_if(usedIcons, makeIsUnusedBuilding(player.GetGameWorld().GetGGS()));
 }
 
 /// Abstand vom linken, oberen Fensterrand
