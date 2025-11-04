@@ -933,7 +933,6 @@ void Loader::fillCaches()
                     } else if(leatheraddon::isLeatherAddonGoodType(ware))
                     {
                         const auto carrierEnum = leatheraddon::wareToCarrierBobIndex(ware, fat);
-                        RTTR_Assert(carrierEnum != leatheraddon::BobType::Invalid);
                         const unsigned bodyIdx = static_cast<unsigned>(imgDir) * 8 + ani_step;
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
                           leather_bob_carrier.get(leatheraddon::bobIndex[carrierEnum] + bodyIdx)));

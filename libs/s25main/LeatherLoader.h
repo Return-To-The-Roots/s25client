@@ -34,7 +34,6 @@ inline bool isLeatherAddonJobType(Job job)
 
 enum class BobType
 {
-    Invalid,
     SkinnerSkinningAnimalCarcassAnimation,
     SkinnerWalking,
     SkinnerCarryingSkins,
