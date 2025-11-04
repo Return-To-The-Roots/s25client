@@ -233,11 +233,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("IPv6"), NormalFont);
     ipv6->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("IPv4"), NormalFont);
     ipv6->SetSelection(SETTINGS.server.ipv6);
-    // ipv6-feld ggf (de-)aktivieren
+    // Enable/disable the IPv6 field if necessary
     ipv6->GetCtrl<ctrlButton>(1)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
     curPos.y += rowHeight + sectionSpacingCommon;
 
-    // Proxyserver
+    // Proxy server
     groupCommon->AddText(ID_txtProxy, curPos, _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* proxy = groupCommon->AddEdit(ID_edtProxy, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont);
     proxy->SetText(SETTINGS.proxy.hostname);
@@ -254,7 +254,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->SetSelection(SETTINGS.global.use_upnp);
     curPos.y += rowHeight;
 
-    // Proxytyp
+    // Proxy type
     groupCommon->AddText(ID_txtProxyType, curPos, _("Proxytyp:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo =
       groupCommon->AddComboBox(ID_cbProxyType, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
@@ -404,7 +404,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
             combo->SetSelection(combo->GetNumItems() - 1);
     }
 
-    // "Allgemein" auswählen
+    // Select "General"
     mainGroup = GetCtrl<ctrlOptionGroup>(ID_grpOptions);
     mainGroup->SetSelection(ID_btCommon, true);
 
@@ -413,7 +413,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     loadVideoModes();
 
-    // Und zu der Combobox hinzufügen
+    // and add to the combo box
     ctrlComboBox& cbVideoModes = *groupGraphics->GetCtrl<ctrlComboBox>(ID_cbResolution);
     for(const auto& videoMode : video_modes)
     {
@@ -428,15 +428,15 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
         cbVideoModes.AddString(str.str());
 
-        // Ist das die aktuelle Auflösung? Dann selektieren
+        // Select, if this is the current resolution
         if(videoMode == SETTINGS.video.fullscreenSize) //-V807
             cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
     }
 
-    // "Vollbild" setzen
+    // Set "Fullscreen"
     groupGraphics->GetCtrl<ctrlOptionGroup>(ID_grpFullscreen)->SetSelection(SETTINGS.video.fullscreen); //-V807
 
-    // "Limit Framerate" füllen
+    // Fill "Limit Framerate"
     auto* cbFrameRate = groupGraphics->GetCtrl<ctrlComboBox>(ID_cbFramerate);
     if(VIDEODRIVER.HasVSync())
         cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
@@ -520,7 +520,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                 case 2: SETTINGS.proxy.type = ProxyType::Socks5; break;
             }
 
-            // ipv6 gleich sichtbar deaktivieren
+            // Disable IPv6 visually
             if(SETTINGS.proxy.type == ProxyType::Socks4 && SETTINGS.server.ipv6)
             {
                 GetCtrl<ctrlGroup>(ID_grpCommon)->GetCtrl<ctrlOptionGroup>(ID_grpIpv6)->SetSelection(0);
@@ -625,7 +625,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
         {
             auto* groupCommon = GetCtrl<ctrlGroup>(ID_grpCommon);
 
-            // Name abspeichern
+            // Save the name
             SETTINGS.lobby.name = groupCommon->GetCtrl<ctrlEdit>(ID_edtName)->GetText();
             if(!validatePort(groupCommon->GetCtrl<ctrlEdit>(ID_edtPort)->GetText(), SETTINGS.server.localPort))
                 return;

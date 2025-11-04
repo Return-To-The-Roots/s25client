@@ -174,7 +174,7 @@ void Settings::LoadIngameDefaults()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Routine zum Laden der Konfiguration
+// Routine for loading the configuration
 void Settings::Load()
 {
     libsiedler2::Archiv settings;
@@ -201,13 +201,13 @@ void Settings::Load()
         const libsiedler2::ArchivItem_Ini* iniAddons =
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
-        // ist eine der Kategorien nicht vorhanden?
+        // Is one of the categories missing?
         if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy
            || !iniInterface || !iniAddons)
         {
             throw std::runtime_error("Missing section");
         }
-        // stimmt die Settingsversion?
+        // Is the settings version correct?
         if(iniGlobal->getValue("version", 0) != VERSION)
             throw std::runtime_error("Wrong version");
 
@@ -295,14 +295,14 @@ void Settings::Load()
         proxy.type = ProxyType(iniProxy->getIntValue("typ"));
         // }
 
-        // leere proxyadresse deaktiviert proxy komplett
-        // deaktivierter proxy entfernt proxyadresse
+        // Empty proxy address completely disables proxy.
+        // Disabled proxy removes proxy address.
         if(proxy.hostname.empty() || (proxy.type != ProxyType::Socks4 && proxy.type != ProxyType::Socks5))
         {
             proxy.type = ProxyType::None;
             proxy.hostname.clear();
         }
-        // aktivierter Socks v4 deaktiviert ipv6
+        // Enabled Socks v4 disables IPv6
         else if(proxy.type == ProxyType::Socks4 && server.ipv6)
             server.ipv6 = false;
 
@@ -382,7 +382,7 @@ void Settings::LoadIngame()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Routine zum Speichern der Konfiguration
+// Routine for saving the configuration
 void Settings::Save()
 {
     libsiedler2::Archiv settings;
@@ -401,7 +401,7 @@ void Settings::Save()
     libsiedler2::ArchivItem_Ini* iniInterface = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
     libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
-    // ist eine der Kategorien nicht vorhanden?
+    // Is one of the categories missing?
     RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy
                 && iniInterface && iniAddons);
 
