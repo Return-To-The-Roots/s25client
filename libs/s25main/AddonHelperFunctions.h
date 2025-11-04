@@ -4,8 +4,13 @@
 
 #pragma once
 
-#include "GamePlayer.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/JobTypes.h"
+#include <functional>
 
-auto isUnusedBuilding(GamePlayer const& player) -> std::function<bool(BuildingType const& type)>;
-auto isUnusedWare(GamePlayer const& player) -> std::function<bool(GoodType const& type)>;
-auto isUnusedJob(GamePlayer const& player) -> std::function<bool(Job const& job)>;
+class GlobalGameSettings;
+
+std::function<bool(const BuildingType type)> makeIsUnusedBuilding(const GlobalGameSettings& ggs);
+std::function<bool(const GoodType type)> makeIsUnusedWare(const GlobalGameSettings& ggs);
+std::function<bool(const Job job)> makeIsUnusedJob(const GlobalGameSettings& ggs);

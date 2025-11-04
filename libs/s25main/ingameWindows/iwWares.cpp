@@ -114,8 +114,8 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
                                        Job::Sergeant,      Job::Officer,
                                        Job::General};
 
-    helpers::erase_if(WARE_DISPLAY_ORDER, isUnusedWare(player));
-    helpers::erase_if(JOB_DISPLAY_ORDER, isUnusedJob(player));
+    helpers::erase_if(WARE_DISPLAY_ORDER, makeIsUnusedWare(player.GetGameWorld().GetGGS()));
+    helpers::erase_if(JOB_DISPLAY_ORDER, makeIsUnusedJob(player.GetGameWorld().GetGGS()));
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();

@@ -204,7 +204,7 @@ void iwDistribution::CreateGroups()
 
     auto isUnused = [&](std::tuple<std::string, unsigned> const& bts) {
         const BuildingType buildingType = std::get<1>(distributionMap[std::get<1>(bts)]);
-        return isUnusedBuilding(gwv.GetPlayer())(buildingType);
+        return makeIsUnusedBuilding(gwv.GetWorld().GetGGS())(buildingType);
     };
     for(auto& group : groups)
         helpers::erase_if(group.entries, isUnused);
