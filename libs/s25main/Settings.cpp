@@ -259,7 +259,7 @@ void Settings::Load()
         sound.musicVolume = iniSound->getIntValue("musik_volume");
         sound.effectsEnabled = iniSound->getBoolValue("effekte");
         sound.effectsVolume = iniSound->getIntValue("effekte_volume");
-        sound.birdsEnabled = iniSound->getBoolValue("bird_sounds");
+        sound.birdsEnabled = iniSound->getValue("bird_sounds", true);
         sound.playlist = iniSound->getValue("playlist");
         // }
 

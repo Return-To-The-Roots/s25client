@@ -20,6 +20,7 @@
 #include "iwTextfile.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
+#include "controls/ctrlCheck.h"
 
 namespace {
 enum
@@ -89,7 +90,8 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
 
     // Bird sounds on/off
-    AddCheckBox(ID_cpBirdSounds, DrawPoint(100, 342), Extent(160, 22), TextureColor::Green2, _("Bird sounds"), NormalFont, false);
+    AddCheckBox(ID_cpBirdSounds, DrawPoint(100, 342), Extent(160, 22), TextureColor::Green2, _("Bird sounds"), NormalFont, false)
+      ->setChecked(SETTINGS.sound.birdsEnabled);
 
     // Music on/off
     AddImageButton(ID_btMusic, DrawPoint(35, 371), Extent(35, 35), TextureColor::Green2,
