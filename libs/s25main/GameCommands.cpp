@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GameCommands.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "LeatherLoader.h"
 #include "WineLoader.h"
@@ -148,7 +149,8 @@ ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
             i = helpers::popEnum<BuildingType>(ser);
     } else
     {
-        auto countOfNotAvailableBuildingsInSaveGame = ser.getDataVersion() < 1 ? 6 : 3;
+        auto countOfNotAvailableBuildingsInSaveGame =
+          ser.getDataVersion() < 1 ? wineAndLeatherAddonBuildings : leatherAddonBuildings;
         std::vector<BuildingType> buildOrder(data.size() - countOfNotAvailableBuildingsInSaveGame);
 
         if(ser.getDataVersion() < 1)
@@ -192,10 +194,10 @@ ChangeTransport::ChangeTransport(Deserializer& ser) : GameCommand(GCType::Change
 
         helpers::popContainer(ser, tmpData, true);
         std::copy(tmpData.begin(), tmpData.end(), data.begin());
-        // all transport prios greater equal 7 are increased by one because the new leatherwork
-        // uses prio 7
+        // all transport prios greater equal transportPrioOfLeatherworks are increased by one because the new
+        // leatherwork uses prio transportPrioOfLeatherworks
         std::transform(data.begin(), data.end() - leatherAddonAdditionalTransportOrders, data.begin(),
-                       [](uint8_t& prio) { return prio < 7 ? prio : prio + 1; });
+                       [](uint8_t& prio) { return prio < transportPrioOfLeatherworks ? prio : prio + 1; });
         data[std::tuple_size<TransportOrders>::value - leatherAddonAdditionalTransportOrders] =
           STD_TRANSPORT_PRIO[GoodType::Leather];
     }
