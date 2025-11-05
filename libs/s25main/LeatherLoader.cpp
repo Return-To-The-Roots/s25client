@@ -70,14 +70,13 @@ bool isAddonActive(const GameWorldBase& gwb)
 
 BobType wareToCarrierBobIndex(const GoodType good, const bool fat)
 {
-    if(good == GoodType::Skins)
-        return fat ? BobType::FatCarrierCarryingSkins : BobType::ThinCarrierCarryingSkins;
-    else if(good == GoodType::Leather)
-        return fat ? BobType::FatCarrierCarryingLeather : BobType::ThinCarrierCarryingLeather;
-    else if(good == GoodType::Armor)
-        return fat ? BobType::FatCarrierCarryingArmor : BobType::ThinCarrierCarryingArmor;
-    else
-        throw std::runtime_error("Unsupported good type");
+    switch(good)
+    {
+        case GoodType::Skins: return fat ? BobType::FatCarrierCarryingSkins : BobType::ThinCarrierCarryingSkins;
+        case GoodType::Leather: return fat ? BobType::FatCarrierCarryingLeather : BobType::ThinCarrierCarryingLeather;
+        case GoodType::Armor: return fat ? BobType::FatCarrierCarryingArmor : BobType::ThinCarrierCarryingArmor;
+        default: throw std::logic_error("Unsupported good type");
+    }
 }
 
 } // namespace leatheraddon
