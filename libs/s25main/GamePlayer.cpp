@@ -302,7 +302,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     if(sgd.GetGameDataVersion() < 12)
     {
         auto countOfNotAvailableBuildingsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? wineAndLeatherAddonBuildings : leatherAddonBuildings;
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonBuildings : numLeatherAddonBuildings;
         std::vector<BuildingType> build_order_raw(build_order.size() - countOfNotAvailableBuildingsInSaveGame);
         helpers::popContainer(sgd, build_order_raw, true);
 
@@ -317,7 +317,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
 
         auto countOfNotAvailableGoodsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? wineAndLeatherAddonGoods : leatherAddonGoods;
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
         std::vector<uint8_t> transportPrio_raw(transportPrio.size() - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, transportPrio_raw, true);
         std::copy(transportPrio_raw.begin(), transportPrio_raw.end(), transportPrio.begin());
@@ -340,14 +340,14 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     if(sgd.GetGameDataVersion() < 12)
     {
         auto countOfNotAvailableGoodsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? wineAndLeatherAddonGoods : leatherAddonGoods;
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
         std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size()
                                                             - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, global_inventory_good_raw, true);
         std::copy(global_inventory_good_raw.begin(), global_inventory_good_raw.end(), global_inventory.goods.begin());
 
         auto countOfNotAvailableJobsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? wineAndLeatherAddonJobs : leatherAddonJobs;
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonJobs : numLeatherAddonJobs;
         std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size()
                                                               - countOfNotAvailableJobsInSaveGame);
         helpers::popContainer(sgd, global_inventory_people_raw, true);

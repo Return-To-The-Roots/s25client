@@ -150,7 +150,7 @@ ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
     } else
     {
         auto countOfNotAvailableBuildingsInSaveGame =
-          ser.getDataVersion() < 1 ? wineAndLeatherAddonBuildings : leatherAddonBuildings;
+          ser.getDataVersion() < 1 ? numWineAndLeatherAddonBuildings : numLeatherAddonBuildings;
         std::vector<BuildingType> buildOrder(data.size() - countOfNotAvailableBuildingsInSaveGame);
 
         if(ser.getDataVersion() < 1)

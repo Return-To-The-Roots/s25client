@@ -16,16 +16,16 @@ std::function<bool(const GoodType type)> makeIsUnusedWare(const GlobalGameSettin
 std::function<bool(const Job job)> makeIsUnusedJob(const GlobalGameSettings& ggs);
 
 // Only used for deserialization, can be removed when breaking compatibility (GetGameDataVersion)
-constexpr int leatherAddonBuildings = 3;
-constexpr int wineAddonBuildings = 3;
-constexpr int wineAndLeatherAddonBuildings = wineAddonBuildings + leatherAddonBuildings;
+constexpr auto numLeatherAddonBuildings = 3u;
+constexpr auto numWineAddonBuildings = 3u;
+constexpr auto numWineAndLeatherAddonBuildings = numWineAddonBuildings + numLeatherAddonBuildings;
 
-constexpr int leatherAddonGoods = 3;
-constexpr int wineAddonGoods = 2;
-constexpr int wineAndLeatherAddonGoods = wineAddonGoods + leatherAddonGoods;
+constexpr auto numLeatherAddonGoods = 3u;
+constexpr auto numWineAddonGoods = 2u;
+constexpr auto numWineAndLeatherAddonGoods = numWineAddonGoods + numLeatherAddonGoods;
 
-constexpr int leatherAddonJobs = 3;
-constexpr int wineAddonJobs = 3;
-constexpr int wineAndLeatherAddonJobs = wineAddonJobs + leatherAddonJobs;
+constexpr auto numLeatherAddonJobs = 3u;
+constexpr auto numWineAddonJobs = 3u;
+constexpr auto numWineAndLeatherAddonJobs = numWineAddonJobs + numLeatherAddonJobs;
 
 constexpr uint8_t transportPrioOfLeatherworks = 7;
