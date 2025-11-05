@@ -151,12 +151,15 @@ BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
 
     const unsigned officerSoldiersTraded = 3;
     const unsigned officerSoldiersWithArmor = 2;
+    const unsigned initialNumSoldiers = numSoldiers[getSoldierRank(Job::Officer)];
+    const unsigned initialNumArmoredSoldiers = numArmoredSoldiers[getSoldierRank(Job::Officer)];
+    const unsigned initialNumHelpers = numHelpers;
 
     // For figures we don't need donkeys
-    BOOST_TEST_REQUIRE(numArmoredSoldiers[getSoldierRank(Job::Officer)] == 2u);
-    BOOST_TEST_REQUIRE(numSoldiers[getSoldierRank(Job::Officer)] == 3u);
+    BOOST_TEST_REQUIRE(numArmoredSoldiers[getSoldierRank(Job::Officer)] == officerSoldiersWithArmor);
+    BOOST_TEST_REQUIRE(numSoldiers[getSoldierRank(Job::Officer)] == officerSoldiersTraded);
 
-    this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 3);
+    this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, officerSoldiersTraded);
     numArmoredSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersWithArmor;
     numSoldiers[getSoldierRank(Job::Officer)] -= officerSoldiersTraded;
     numHelpers -= 1; // Trade leader
@@ -167,15 +170,12 @@ BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
     unsigned distance = world.CalcDistance(curWh->GetPos(), players[0]->GetHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
 
-    // Some were produced (at least every 170 GFs)
-    numHelpers += (20 * distance) / 170;
     curWh = world.GetSpecObj<nobBaseWarehouse>(players[0]->GetHQPos());
     BOOST_TEST_REQUIRE(curWh);
-    // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received
-    // them)
-    numSoldiers[getSoldierRank(Job::Officer)] += 2 * officerSoldiersTraded;
-    numArmoredSoldiers[getSoldierRank(Job::Officer)] += 2 * officerSoldiersWithArmor;
-    numHelpers += 2 * 1; // Trade leader
+    numSoldiers[getSoldierRank(Job::Officer)] = initialNumSoldiers + officerSoldiersTraded;
+    numArmoredSoldiers[getSoldierRank(Job::Officer)] = initialNumArmoredSoldiers + officerSoldiersWithArmor;
+    numHelpers = initialNumHelpers + 1    // Trade leader
+                 + (20 * distance) / 170; // Some were produced(at least every 170 GFs)
     // helpers can be produced in the meantime
     BOOST_TEST_REQUIRE(curWh->GetNumRealFigures(Job::Helper) >= numHelpers);
     numHelpers = curWh->GetNumRealFigures(Job::Helper);
