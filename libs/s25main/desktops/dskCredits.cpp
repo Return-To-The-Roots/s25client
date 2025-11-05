@@ -358,7 +358,7 @@ void dskCredits::DrawCredit()
 template<typename T>
 T randEnum()
 {
-    return T(rand() % (helpers::NumEnumValues_v<T>));
+    return T(rand() % helpers::NumEnumValues_v<T>);
 }
 
 void dskCredits::DrawBobs()
