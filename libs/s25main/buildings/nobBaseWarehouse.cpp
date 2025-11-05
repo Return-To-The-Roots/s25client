@@ -285,8 +285,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
     std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, *goal);
     if(isSoldier(fig->GetJobType()))
     {
-        auto* armoredFigure = dynamic_cast<nofArmored*>(fig.get());
-        RTTR_Assert(armoredFigure != nullptr);
+        auto* armoredFigure = checkedCast<nofArmored*>(fig.get());
         if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(job)] > 0)
         {
             inventory.real.Remove(jobEnumToAmoredSoldierEnum(job));
@@ -295,7 +294,6 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
     }
 
     // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
-
     if(goal->GetType() != NodalObjectType::Flag)
         checkedCast<noBaseBuilding*>(goal)->GotWorker(job, *fig);
 
@@ -878,9 +876,7 @@ void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool in
             }
         } else if(isSoldier(figure->GetJobType()))
         {
-            auto* armoredFigure = dynamic_cast<nofArmored*>(figure.get());
-            RTTR_Assert(armoredFigure != nullptr);
-
+            auto* armoredFigure = checkedCast<nofArmored*>(figure.get());
             if(increase_visual_counts)
             {
                 inventory.Add(figure->GetJobType());
@@ -914,8 +910,7 @@ void nobBaseWarehouse::RemoveArmoredFigurFromVisualInventory(noFigure* figure)
 {
     if(isSoldier(figure->GetJobType()))
     {
-        auto* armoredFigure = dynamic_cast<nofArmored*>(figure);
-        RTTR_Assert(armoredFigure != nullptr);
+        auto* armoredFigure = checkedCast<nofArmored*>(figure);
         if(armoredFigure && armoredFigure->HasArmor())
         {
             RTTR_Assert(inventory.visual.armoredSoldiers[figureToAmoredSoldierEnum(armoredFigure)] > 0);
@@ -928,8 +923,7 @@ void nobBaseWarehouse::AddArmoredFigurToVisualInventory(noFigure* figure)
 {
     if(isSoldier(figure->GetJobType()))
     {
-        auto* armoredFigure = dynamic_cast<nofArmored*>(figure);
-        RTTR_Assert(armoredFigure != nullptr);
+        auto* armoredFigure = checkedCast<nofArmored*>(figure);
         if(armoredFigure && armoredFigure->HasArmor())
         {
             inventory.visual.Add(figureToAmoredSoldierEnum(armoredFigure));
