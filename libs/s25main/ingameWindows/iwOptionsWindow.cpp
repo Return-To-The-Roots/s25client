@@ -9,6 +9,7 @@
 #include "Settings.h"
 #include "SoundManager.h"
 #include "WindowManager.h"
+#include "controls/ctrlCheck.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlProgress.h"
 #include "drivers/AudioDriverWrapper.h"
@@ -20,7 +21,6 @@
 #include "iwTextfile.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
-#include "controls/ctrlCheck.h"
 
 namespace {
 enum
@@ -71,12 +71,10 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     AddImageButton(ID_btReadme, DrawPoint(35, 160), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 79));
     AddText(ID_txtReadme, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
-    // "Load game!"
     // TODO: Implement
     // AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 48));
     // AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
 
-    // "Save game!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
     AddImageButton(ID_btSave, DrawPoint(35, 230), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 47));
     AddText(ID_txtSave, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
