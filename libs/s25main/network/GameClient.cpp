@@ -1561,16 +1561,17 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
 
     if(!mapinfo.savegame && replayinfo->replay.GetMinorVersion() < 2)
     {
+        auto newDistributions = default_settings.distribution;
+        unsigned idx = 0;
+        for(const DistributionMapping& mapping : distributionMap)
+        {
+            if(leatheraddon::isLeatherAddonBuildingType(std::get<1>(mapping)))
+                newDistributions[idx] = 0;
+            idx++;
+        }
+
         for(unsigned i = 0; i < game->world_.GetNumPlayers(); i++)
         {
-            auto newDistributions = default_settings.distribution;
-            unsigned idx = 0;
-            for(const DistributionMapping& mapping : distributionMap)
-            {
-                if(leatheraddon::isLeatherAddonBuildingType(std::get<1>(mapping)))
-                    newDistributions[idx] = 0;
-                idx++;
-            }
             game->world_.GetPlayer(i).ChangeDistribution(newDistributions);
         }
     }
