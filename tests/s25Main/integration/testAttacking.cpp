@@ -479,30 +479,30 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
     this->Attack(milBld1Pos, 1, true);
     RTTR_EXEC_TILL(30, milBld0->GetNumTroops() == 2);
 
-    auto armoredSoldiers = [](nobMilitary* bld) {
+    auto countArmoredSoldiers = [](nobMilitary* bld) {
         const auto troops = bld->GetTroops();
         return std::count_if(std::begin(troops), std::end(troops),
                              [](const auto& soldier) { return soldier.HasArmor(); });
     };
 
-    auto notArmoredSoldiers = [](nobMilitary* bld) {
+    auto countNotArmoredSoldiers = [](nobMilitary* bld) {
         const auto troops = bld->GetTroops();
         return std::count_if(std::begin(troops), std::end(troops),
                              [](const auto& soldier) { return !soldier.HasArmor(); });
     };
 
-    BOOST_TEST_REQUIRE(armoredSoldiers(milBld0) == 1u);
-    BOOST_TEST_REQUIRE(notArmoredSoldiers(milBld0) == 1u);
+    BOOST_TEST_REQUIRE(countArmoredSoldiers(milBld0) == 1u);
+    BOOST_TEST_REQUIRE(countNotArmoredSoldiers(milBld0) == 1u);
 
     // Start attack ->1 (weak one first)
     this->Attack(milBld1Pos, 1, false);
     RTTR_EXEC_TILL(30, milBld0->GetNumTroops() == 1);
-    BOOST_TEST_REQUIRE(armoredSoldiers(milBld0) == 1u);
-    BOOST_TEST_REQUIRE(notArmoredSoldiers(milBld0) == 0u);
+    BOOST_TEST_REQUIRE(countArmoredSoldiers(milBld0) == 1u);
+    BOOST_TEST_REQUIRE(countNotArmoredSoldiers(milBld0) == 0u);
 
     const Inventory& attackedPlInventory = world.GetPlayer(1).GetInventory();
-    const unsigned oldWeakSoldierCt = attackedPlInventory.people[Job::Private];
-    const unsigned oldWeakSoldierWithArmorCt =
+    const unsigned numOldWeakSoldiers = attackedPlInventory.people[Job::Private];
+    const unsigned numOldWeakSoldiersWithArmor =
       attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)];
 
     // Run till attackers reach flag of bld. The bld will send a defender.
@@ -510,17 +510,17 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
     const unsigned distance = world.CalcDistance(milBld0Pos, milBld1Pos);
     RTTR_EXEC_TILL(distance * 20 + 60, milBld1->GetDefender() != nullptr);
 
-    const auto figures = world.GetFigures(milBld1->GetFlagPos());
-    BOOST_TEST_REQUIRE(figures.size() == 1u);
-    const auto& attacker = dynamic_cast<const nofAttacker&>(*figures.begin());
+    const auto soldiers = world.GetFigures(milBld1->GetFlagPos());
+    BOOST_TEST_REQUIRE(soldiers.size() == 1u);
+    const auto& attacker = dynamic_cast<const nofAttacker&>(*soldiers.begin());
     BOOST_TEST_REQUIRE(static_cast<const nofAttacker&>(attacker).GetPlayer() == curPlayer);
 
     // Lets fight until defender has no armor anymore
     // He should not lose a hitpoint but the armor
     RTTR_EXEC_TILL(1000, milBld1->GetDefender()->HasArmor() == false);
     BOOST_TEST_REQUIRE(attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)]
-                       == oldWeakSoldierWithArmorCt - 1);
-    BOOST_TEST_REQUIRE(attackedPlInventory.people[Job::Private] == oldWeakSoldierCt);
+                       == numOldWeakSoldiersWithArmor - 1);
+    BOOST_TEST_REQUIRE(attackedPlInventory.people[Job::Private] == numOldWeakSoldiers);
     BOOST_TEST_REQUIRE(milBld1->GetDefender()->GetHitpoints() == HITPOINTS[milBld1->GetDefender()->GetRank()]);
 }
 
