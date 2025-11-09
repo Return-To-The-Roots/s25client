@@ -57,7 +57,7 @@ iwLobbyConnect::iwLobbyConnect()
 
     AddText(ID_txtUser, curLblPos, _("Username:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* user =
-      AddEdit(ID_edtUser, DrawPoint(ctrlStartPos, curLblPos.y), edtSize, TextureColor::Green2, NormalFont);
+      AddEdit(ID_edtUser, DrawPoint(ctrlStartPos, curLblPos.y), edtSize, TextureColor::Green2, NormalFont, 30);
     user->SetFocus();
     user->SetText(SETTINGS.lobby.name); //-V807
     curLblPos.y += 30;
