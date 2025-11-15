@@ -21,6 +21,7 @@
 #include "gameTypes/RoadBuildState.h"
 #include "liblobby/LobbyInterface.h"
 #include <array>
+#include <optional>
 
 class IngameWindow;
 class glArchivItem_Bitmap;
@@ -165,7 +166,7 @@ protected:
 
     bool isScrolling;
     Position startScrollPt;
-    size_t zoomLvl_;
+    std::optional<size_t> zoomLvl_;
     Subscription evBld;
 
     Cheats cheats_;

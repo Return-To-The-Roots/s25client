@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -878,20 +878,36 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         case 26: // ctrl+z
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
+            zoomLvl_ = ZOOM_DEFAULT_INDEX;
             return true;
         case 'z': // zoom
-            if(++zoomLvl_ >= ZOOM_FACTORS.size())
+            if(ke.ctrl)
+                zoomLvl_ = ZOOM_DEFAULT_INDEX;
+            else if(zoomLvl_ == ZOOM_FACTORS.size() - 1)
                 zoomLvl_ = 0;
-
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl_]);
+            else if(zoomLvl_.has_value())
+                (*zoomLvl_)++;
+            else
+            {
+                // Get first level bigger than current zoom
+                auto it = std::upper_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), gwv.GetCurrentTargetZoomFactor());
+                zoomLvl_ =
+                  (it == ZOOM_FACTORS.end()) ? ZOOM_FACTORS.size() - 1 : std::distance(ZOOM_FACTORS.begin(), it);
+            }
+            gwv.SetZoomFactor(ZOOM_FACTORS[*zoomLvl_]);
             return true;
         case 'Z': // shift-z, reverse zoom
-            if(zoomLvl_ == 0)
+            if(zoomLvl_ == 0u)
                 zoomLvl_ = ZOOM_FACTORS.size() - 1;
+            else if(zoomLvl_.has_value())
+                (*zoomLvl_)--;
             else
-                zoomLvl_--;
-
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl_]);
+            {
+                // Get last level bigger or equal than current zoom
+                auto it = std::lower_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), gwv.GetCurrentTargetZoomFactor());
+                zoomLvl_ = (it == ZOOM_FACTORS.begin()) ? 0 : std::distance(ZOOM_FACTORS.begin(), it) - 1;
+            }
+            gwv.SetZoomFactor(ZOOM_FACTORS[*zoomLvl_]);
             return true;
     }
 
@@ -909,24 +925,10 @@ bool dskGameInterface::Msg_WheelDown(const MouseCoords&)
     return true;
 }
 
-void dskGameInterface::WheelZoom(float step)
+void dskGameInterface::WheelZoom(const float step)
 {
-    float new_zoom = gwv.GetCurrentTargetZoomFactor() * (1 + step);
-    gwv.SetZoomFactor(new_zoom);
-
-    // also keep track in terms of fixed defined zoom levels
-    zoomLvl_ = ZOOM_DEFAULT_INDEX;
-    for(size_t i = ZOOM_DEFAULT_INDEX; i < ZOOM_FACTORS.size(); ++i)
-    {
-        if(ZOOM_FACTORS[i] < new_zoom)
-            zoomLvl_ = i;
-    }
-
-    for(size_t i = ZOOM_DEFAULT_INDEX; i-- > 0;)
-    {
-        if(ZOOM_FACTORS[i] > new_zoom)
-            zoomLvl_ = i;
-    }
+    gwv.SetZoomFactor(gwv.GetCurrentTargetZoomFactor() * (1 + step));
+    zoomLvl_ = std::nullopt;
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)
