@@ -890,6 +890,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             else
             {
                 // Get first level bigger than current zoom
+                // NOLINTNEXTLINE(readability-qualified-auto)
                 auto it = std::upper_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), gwv.GetCurrentTargetZoomFactor());
                 zoomLvl_ =
                   (it == ZOOM_FACTORS.end()) ? ZOOM_FACTORS.size() - 1 : std::distance(ZOOM_FACTORS.begin(), it);
@@ -904,6 +905,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             else
             {
                 // Get last level bigger or equal than current zoom
+                // NOLINTNEXTLINE(readability-qualified-auto)
                 auto it = std::lower_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), gwv.GetCurrentTargetZoomFactor());
                 zoomLvl_ = (it == ZOOM_FACTORS.begin()) ? 0 : std::distance(ZOOM_FACTORS.begin(), it) - 1;
             }
