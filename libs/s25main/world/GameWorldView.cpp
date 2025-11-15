@@ -96,6 +96,8 @@ void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = t
         targetZoomFactor_ = ZOOM_FACTORS.back();
     else
         targetZoomFactor_ = zoomFactor;
+    if(targetZoomFactor_ > 1 - ZOOM_WHEEL_INCREMENT && targetZoomFactor_ < 1 + ZOOM_WHEEL_INCREMENT)
+        targetZoomFactor_ = 1.f; // Snap to 100%
     if(!smoothTransition)
     {
         zoomFactor_ = targetZoomFactor_;
