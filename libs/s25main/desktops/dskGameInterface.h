@@ -165,7 +165,7 @@ protected:
 
     bool isScrolling;
     Position startScrollPt;
-    size_t zoomLvl;
+    size_t zoomLvl_;
     Subscription evBld;
 
     Cheats cheats_;

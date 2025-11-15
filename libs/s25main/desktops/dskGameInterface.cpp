@@ -104,8 +104,8 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
     : Desktop(nullptr), game_(std::move(game)), nwfInfo_(std::move(nwfInfo)),
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
-      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
-      cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
+      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false),
+      zoomLvl_(ZOOM_DEFAULT_INDEX), cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
 {
     road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
@@ -880,18 +880,18 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             return true;
         case 'z': // zoom
-            if(++zoomLvl >= ZOOM_FACTORS.size())
-                zoomLvl = 0;
+            if(++zoomLvl_ >= ZOOM_FACTORS.size())
+                zoomLvl_ = 0;
 
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl_]);
             return true;
         case 'Z': // shift-z, reverse zoom
-            if(zoomLvl == 0)
-                zoomLvl = ZOOM_FACTORS.size() - 1;
+            if(zoomLvl_ == 0)
+                zoomLvl_ = ZOOM_FACTORS.size() - 1;
             else
-                zoomLvl--;
+                zoomLvl_--;
 
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl_]);
             return true;
     }
 
@@ -915,17 +915,17 @@ void dskGameInterface::WheelZoom(float step)
     gwv.SetZoomFactor(new_zoom);
 
     // also keep track in terms of fixed defined zoom levels
-    zoomLvl = ZOOM_DEFAULT_INDEX;
+    zoomLvl_ = ZOOM_DEFAULT_INDEX;
     for(size_t i = ZOOM_DEFAULT_INDEX; i < ZOOM_FACTORS.size(); ++i)
     {
         if(ZOOM_FACTORS[i] < new_zoom)
-            zoomLvl = i;
+            zoomLvl_ = i;
     }
 
     for(size_t i = ZOOM_DEFAULT_INDEX; i-- > 0;)
     {
         if(ZOOM_FACTORS[i] > new_zoom)
-            zoomLvl = i;
+            zoomLvl_ = i;
     }
 }
 
