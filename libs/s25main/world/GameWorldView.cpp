@@ -88,14 +88,9 @@ void GameWorldView::SetNextZoomFactor()
     CalcFxLx();
 }
 
-void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
+float GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
 {
-    if(zoomFactor < ZOOM_FACTORS.front())
-        targetZoomFactor_ = ZOOM_FACTORS.front();
-    else if(zoomFactor > ZOOM_FACTORS.back())
-        targetZoomFactor_ = ZOOM_FACTORS.back();
-    else
-        targetZoomFactor_ = zoomFactor;
+    targetZoomFactor_ = std::clamp(zoomFactor, ZOOM_FACTORS.front(), ZOOM_FACTORS.back());
     if(targetZoomFactor_ > 1 - ZOOM_WHEEL_INCREMENT && targetZoomFactor_ < 1 + ZOOM_WHEEL_INCREMENT)
         targetZoomFactor_ = 1.f; // Snap to 100%
     if(!smoothTransition)
@@ -104,6 +99,7 @@ void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = t
         updateEffectiveZoomFactor();
         CalcFxLx();
     }
+    return targetZoomFactor_;
 }
 
 float GameWorldView::GetCurrentTargetZoomFactor() const
