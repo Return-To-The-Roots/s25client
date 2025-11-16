@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,9 +11,16 @@
 #include <limits>
 
 using namespace std::chrono_literals;
-/// Geschwindigkeitsabstufungen - Längen der GFs in ms
+/// Length of GameFrames for each speed level
 constexpr helpers::EnumArray<std::chrono::duration<unsigned, std::milli>, GameSpeed> SUPPRESS_UNUSED
   SPEED_GF_LENGTHS = {{80ms, 60ms, 50ms, 40ms, 30ms}};
+constexpr auto MAX_SPEED = 10ms;
+constexpr auto MIN_SPEED = SPEED_GF_LENGTHS[GameSpeed::VerySlow];
+/// Max/Max speed for debug mode (includes replays)
+constexpr auto MIN_SPEED_DEBUG = 1s;
+constexpr auto MAX_SPEED_DEBUG = 1ms;
+/// Difference in which to change speed levels in-game.
+constexpr auto SPEED_STEP = 10ms;
 
 /// Normal speed as reference speed for ingame time computations
 constexpr GameSpeed referenceSpeed = GameSpeed::Normal;

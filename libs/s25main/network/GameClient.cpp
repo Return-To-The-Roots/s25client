@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -1164,27 +1164,32 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 
 void GameClient::IncreaseSpeed()
 {
+    static_assert(MIN_SPEED >= SPEED_GF_LENGTHS[GameSpeed::VeryFast], "Not all speeds reachable");
     const bool debugMode =
 #ifndef NDEBUG
       true;
 #else
       false;
 #endif
-    if(framesinfo.gfLengthReq > FramesInfo::milliseconds32_t(10))
-        framesinfo.gfLengthReq -= FramesInfo::milliseconds32_t(10);
-    else if((replayMode || debugMode) && framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(10))
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(1);
-    else
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(70);
+    const auto oldSpeed = framesinfo.gfLengthReq;
+    // Go from debug speed directly back to min speed, else in fixed steps
+    static_assert(MIN_SPEED_DEBUG > MIN_SPEED);
+    if(framesinfo.gfLengthReq == MIN_SPEED_DEBUG)
+        framesinfo.gfLengthReq = MIN_SPEED;
+    else if(framesinfo.gfLengthReq >= MAX_SPEED + SPEED_STEP)
+        framesinfo.gfLengthReq -= SPEED_STEP;
+    else if((replayMode || debugMode))
+        framesinfo.gfLengthReq = MAX_SPEED_DEBUG;
 
     if(replayMode)
         framesinfo.gf_length = framesinfo.gfLengthReq;
-    else
-        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
+    else if(framesinfo.gfLengthReq != oldSpeed)
+        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
 }
 
 void GameClient::DecreaseSpeed()
 {
+    static_assert(MAX_SPEED <= SPEED_GF_LENGTHS[GameSpeed::VerySlow], "Not all speeds reachable");
     const bool debugMode =
 #ifndef NDEBUG
       true;
@@ -1192,19 +1197,21 @@ void GameClient::DecreaseSpeed()
       false;
 #endif
 
-    FramesInfo::milliseconds32_t maxSpeed(replayMode ? 1000 : 70);
+    const auto oldSpeed = framesinfo.gfLengthReq;
 
-    if(framesinfo.gfLengthReq == maxSpeed)
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(replayMode || debugMode ? 1 : 10);
-    else if(framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(1))
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(10);
+    // Go from debug speed directly back to max speed, else in fixed steps
+    static_assert(MAX_SPEED_DEBUG < MAX_SPEED);
+    if(framesinfo.gfLengthReq == MAX_SPEED_DEBUG)
+        framesinfo.gfLengthReq = MAX_SPEED;
+    else if(framesinfo.gfLengthReq + SPEED_STEP <= MIN_SPEED)
+        framesinfo.gfLengthReq += SPEED_STEP;
     else
-        framesinfo.gfLengthReq += FramesInfo::milliseconds32_t(10);
+        framesinfo.gfLengthReq = (replayMode || debugMode) ? MIN_SPEED_DEBUG : MIN_SPEED;
 
     if(replayMode)
         framesinfo.gf_length = framesinfo.gfLengthReq;
-    else
-        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
+    else if(framesinfo.gfLengthReq != oldSpeed)
+        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
