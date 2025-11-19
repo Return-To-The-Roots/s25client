@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     const auto* wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
 
     // double windows stack
     executeLua("rttr:MissionStatement(1, 'Title2', 'Text')");
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
     BOOST_TEST_REQUIRE(wnd->GetCtrls<ctrlImage>().empty());
     WINDOWMANAGER.CloseNow(const_cast<iwMissionStatement*>(wnd));
     // Non-default image
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
     BOOST_TEST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     WINDOWMANAGER.CloseNow(const_cast<iwMissionStatement*>(wnd));
     // Invalid image
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
     BOOST_TEST_REQUIRE(wnd->GetCtrls<ctrlImage>().empty());
     WINDOWMANAGER.CloseNow(const_cast<iwMissionStatement*>(wnd));
 }
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     const auto* wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
     BOOST_TEST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     BOOST_TEST_REQUIRE(wnd->GetCtrls<ctrlImage>().front()->GetImage()
                        == LOADER.GetImageN("io", rttr::enum_cast(MsgboxIcon::ExclamationGreen)));
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
     BOOST_TEST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     BOOST_TEST_REQUIRE(wnd->GetCtrls<ctrlImage>().front()->GetImage()
                        == LOADER.GetImageN("io", rttr::enum_cast(MsgboxIcon::ExclamationRed)));
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
     BOOST_TEST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     BOOST_TEST_REQUIRE(wnd->GetCtrls<ctrlImage>().front()->GetImage() == LOADER.GetImageN("io", 100));
     WINDOWMANAGER.CloseNow(const_cast<iwMsgbox*>(wnd));
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
     BOOST_TEST_REQUIRE(wnd->IsActive());
-    BOOST_TEST_REQUIRE(wnd->GetTitle() == "Title");
+    BOOST_TEST_REQUIRE(wnd->GetTitle() == _("Title"));
     BOOST_TEST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     const ctrlImage* img = wnd->GetCtrls<ctrlImage>().front();
     const ITexture* actImg = img->GetImage();
