@@ -344,12 +344,22 @@ bool VideoSDL2::MessageLoop()
                         break;
                 }
 
-                if(ke.kt == KeyType::Invalid)
-                    break;
-
                 setSpecialKeys(ke, SDL_Keymod(ev.key.keysym.mod));
 
-                CallBack->Msg_KeyDown(ke);
+                if(ke.kt != KeyType::Invalid)
+                    CallBack->Msg_KeyDown(ke);
+                else if(ke.alt || ke.ctrl)
+                {
+                    // Handle shortcuts (CTRL+x, ALT+y)
+                    // but not possible combinations (ALT+0054)
+                    const SDL_Keycode keycode = ev.key.keysym.sym;
+                    if(keycode >= 'a' && keycode <= 'z')
+                    {
+                        ke.kt = KeyType::Char;
+                        ke.c = static_cast<char32_t>(keycode);
+                        CallBack->Msg_KeyDown(ke);
+                    }
+                }
             }
             break;
             case SDL_TEXTINPUT:
