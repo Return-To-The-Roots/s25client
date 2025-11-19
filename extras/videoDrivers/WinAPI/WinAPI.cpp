@@ -18,6 +18,15 @@
 #include <limits>
 #include <winuser.h>
 
+namespace {
+void setSpecialKeys(KeyEvent& ke, LPARAM lParam)
+{
+    ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+    ke.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+    ke.alt = (lParam & KF_ALTDOWN) != 0;
+}
+} // namespace
+
 /**
  *  Zeiger auf die aktuelle Instanz.
  */
@@ -520,16 +529,16 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
         return;
 
     KeyEvent ke(c);
-    ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
-    ke.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    ke.alt = (lParam & KF_ALTDOWN) != 0;
+    setSpecialKeys(ke, lParam);
 
     if(c == 'V' || c == 'v' || c == 0x16)
+    {
         if(!disablepaste && ke.ctrl != 0)
         {
             OnWMPaste();
             return;
         }
+    }
 
     CallBack->Msg_KeyDown(ke);
 }
@@ -542,9 +551,7 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
 void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
 {
     KeyEvent ke;
-    ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
-    ke.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    ke.alt = (lParam & KF_ALTDOWN) != 0;
+    setSpecialKeys(ke, lParam);
 
     switch(c)
     {
