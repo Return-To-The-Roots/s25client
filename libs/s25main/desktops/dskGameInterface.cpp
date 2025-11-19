@@ -97,7 +97,23 @@ enum
     ID_btPost,
     ID_txtNumMsg
 };
+
+float getNextZoomLevel(const float currentZoom)
+{
+    // Get first level bigger than current zoom
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto it = std::upper_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), currentZoom);
+    return (it == ZOOM_FACTORS.end()) ? ZOOM_FACTORS.front() : *it;
 }
+
+float getPreviousZoomLevel(const float currentZoom)
+{
+    // Get last level bigger or equal than current zoom
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto it = std::lower_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), currentZoom);
+    return (it == ZOOM_FACTORS.begin()) ? ZOOM_FACTORS.back() : *(--it);
+}
+} // namespace
 
 dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<const NWFInfo> nwfInfo,
                                    unsigned playerIdx, bool initOGL)
@@ -105,7 +121,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
       actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false),
-      zoomLvl_(ZOOM_DEFAULT_INDEX), cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
+      cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
 {
     road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
@@ -878,38 +894,15 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         case 26: // ctrl+z
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
-            zoomLvl_ = ZOOM_DEFAULT_INDEX;
             return true;
         case 'z': // zoom
             if(ke.ctrl)
-                zoomLvl_ = ZOOM_DEFAULT_INDEX;
-            else if(zoomLvl_ == ZOOM_FACTORS.size() - 1)
-                zoomLvl_ = 0;
-            else if(zoomLvl_.has_value())
-                (*zoomLvl_)++;
+                gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             else
-            {
-                // Get first level bigger than current zoom
-                // NOLINTNEXTLINE(readability-qualified-auto)
-                auto it = std::upper_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), gwv.GetCurrentTargetZoomFactor());
-                zoomLvl_ =
-                  (it == ZOOM_FACTORS.end()) ? ZOOM_FACTORS.size() - 1 : std::distance(ZOOM_FACTORS.begin(), it);
-            }
-            gwv.SetZoomFactor(ZOOM_FACTORS[*zoomLvl_]);
+                gwv.SetZoomFactor(getNextZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
         case 'Z': // shift-z, reverse zoom
-            if(zoomLvl_ == 0u)
-                zoomLvl_ = ZOOM_FACTORS.size() - 1;
-            else if(zoomLvl_.has_value())
-                (*zoomLvl_)--;
-            else
-            {
-                // Get last level bigger or equal than current zoom
-                // NOLINTNEXTLINE(readability-qualified-auto)
-                auto it = std::lower_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), gwv.GetCurrentTargetZoomFactor());
-                zoomLvl_ = (it == ZOOM_FACTORS.begin()) ? 0 : std::distance(ZOOM_FACTORS.begin(), it) - 1;
-            }
-            gwv.SetZoomFactor(ZOOM_FACTORS[*zoomLvl_]);
+            gwv.SetZoomFactor(getPreviousZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
     }
 
@@ -929,8 +922,12 @@ bool dskGameInterface::Msg_WheelDown(const MouseCoords&)
 
 void dskGameInterface::WheelZoom(const float step)
 {
-    gwv.SetZoomFactor(gwv.GetCurrentTargetZoomFactor() * (1 + step));
-    zoomLvl_ = std::nullopt;
+    auto targetZoomFactor = gwv.GetCurrentTargetZoomFactor() * (1 + step);
+    targetZoomFactor = std::clamp(targetZoomFactor, ZOOM_FACTORS.front(), ZOOM_FACTORS.back());
+    if(targetZoomFactor > 1 - ZOOM_WHEEL_INCREMENT && targetZoomFactor < 1 + ZOOM_WHEEL_INCREMENT)
+        targetZoomFactor = 1.f; // Snap to 100%
+
+    gwv.SetZoomFactor(targetZoomFactor);
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)

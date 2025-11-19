@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -21,7 +21,6 @@
 #include "gameTypes/RoadBuildState.h"
 #include "liblobby/LobbyInterface.h"
 #include <array>
-#include <optional>
 
 class IngameWindow;
 class glArchivItem_Bitmap;
@@ -166,7 +165,6 @@ protected:
 
     bool isScrolling;
     Position startScrollPt;
-    std::optional<size_t> zoomLvl_;
     Subscription evBld;
 
     Cheats cheats_;

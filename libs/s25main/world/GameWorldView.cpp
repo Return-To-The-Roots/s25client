@@ -90,9 +90,7 @@ void GameWorldView::SetNextZoomFactor()
 
 float GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
 {
-    targetZoomFactor_ = std::clamp(zoomFactor, ZOOM_FACTORS.front(), ZOOM_FACTORS.back());
-    if(targetZoomFactor_ > 1 - ZOOM_WHEEL_INCREMENT && targetZoomFactor_ < 1 + ZOOM_WHEEL_INCREMENT)
-        targetZoomFactor_ = 1.f; // Snap to 100%
+    targetZoomFactor_ = zoomFactor;
     if(!smoothTransition)
     {
         zoomFactor_ = targetZoomFactor_;
