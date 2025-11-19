@@ -533,7 +533,7 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
 
     if(c == 'V' || c == 'v' || c == 0x16)
     {
-        if(!disablepaste && ke.ctrl != 0)
+        if(!disablepaste && ke.ctrl)
         {
             OnWMPaste();
             return;
