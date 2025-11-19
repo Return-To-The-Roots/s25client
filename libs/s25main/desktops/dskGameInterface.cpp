@@ -432,8 +432,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw speed indicator icon
-    const int speedStep =
-      static_cast<int>(SPEED_GF_LENGTHS[referenceSpeed] / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
+    const int speedStep = static_cast<int>(REFERENCE_SPEED / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
 
     if(speedStep != 0)
     {

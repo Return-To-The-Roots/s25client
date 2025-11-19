@@ -241,8 +241,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
-        for(const unsigned duration : TOURNAMENT_MODES_DURATION)
-            combo->AddString(helpers::format(_("Tournament: %u minutes"), duration));
+        for(const auto duration : TOURNAMENT_MODES_DURATION)
+            combo->AddString(helpers::format(_("Tournament: %u minutes"), duration / 1min));
     }
 
     AddText(ID_txtSpeed, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);

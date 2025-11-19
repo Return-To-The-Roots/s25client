@@ -23,7 +23,20 @@ constexpr auto MAX_SPEED_DEBUG = 1ms;
 constexpr auto SPEED_STEP = 10ms;
 
 /// Normal speed as reference speed for ingame time computations
-constexpr GameSpeed referenceSpeed = GameSpeed::Normal;
+constexpr auto REFERENCE_SPEED = SPEED_GF_LENGTHS[GameSpeed::Normal];
+
+/// Get normalized number of game frames for the given duration
+template<class Rep, class Period>
+constexpr auto duration_to_gfs(const std::chrono::duration<Rep, Period> d)
+{
+    return d / REFERENCE_SPEED;
+}
+
+/// Get normalized duration for the given number of game frames
+constexpr auto gfs_to_duration(const unsigned gfs)
+{
+    return gfs * REFERENCE_SPEED;
+}
 
 /// Reichweite der Bergarbeiter
 constexpr unsigned MINER_RADIUS = 2;
@@ -34,5 +47,5 @@ constexpr unsigned char INVALID_DIR = 0xFF;
 constexpr unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
 /// tournament modes
-constexpr auto SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = helpers::make_array(30, 60, 90, 120, 240);
+constexpr std::array SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION{30min, 60min, 90min, 120min, 240min};
 static_assert(TOURNAMENT_MODES_DURATION.size() == NUM_TOURNAMENT_MODES);

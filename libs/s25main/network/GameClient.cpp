@@ -1803,16 +1803,14 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
     using minutes = std::chrono::duration<uint32_t, std::chrono::minutes::period>;
     using std::chrono::duration_cast;
 
-    // In Sekunden umrechnen
-    seconds numSeconds = duration_cast<seconds>(gf * SPEED_GF_LENGTHS[referenceSpeed]);
+    seconds numSeconds = duration_cast<seconds>(gfs_to_duration(gf));
 
-    // Angaben rausfiltern
     hours numHours = duration_cast<hours>(numSeconds);
     numSeconds -= numHours;
     minutes numMinutes = duration_cast<minutes>(numSeconds);
     numSeconds -= numMinutes;
 
-    // ganze Stunden mit dabei? Dann entsprechend anderes format, ansonsten ignorieren wir die einfach
+    // Use hour format only if we have hours
     if(numHours.count())
         return helpers::format("%u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
     else
@@ -1844,7 +1842,7 @@ unsigned GameClient::GetTournamentModeDuration() const
             < rttr::enum_cast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
     {
         const auto turnamentMode = rttr::enum_cast(game->ggs_.objective) - rttr::enum_cast(GameObjective::Tournament1);
-        return minutes(TOURNAMENT_MODES_DURATION[turnamentMode]) / SPEED_GF_LENGTHS[referenceSpeed];
+        return duration_to_gfs(TOURNAMENT_MODES_DURATION[turnamentMode]);
     } else
         return 0;
 }
