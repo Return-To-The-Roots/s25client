@@ -23,7 +23,7 @@ void setSpecialKeys(KeyEvent& ke, LPARAM lParam)
 {
     ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
     ke.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    ke.alt = (lParam & KF_ALTDOWN) != 0;
+    ke.alt = (HIWORD(lParam) & KF_ALTDOWN) != 0;
 }
 } // namespace
 
