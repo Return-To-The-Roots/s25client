@@ -45,7 +45,11 @@ enum class KeyType
 /// TastatureventStruktur
 struct KeyEvent
 {
-    KeyType kt;
-    unsigned c;
-    bool ctrl, shift, alt;
+    constexpr KeyEvent() = default;
+    constexpr explicit KeyEvent(char32_t c) : kt(KeyType::Char), c(c) {}
+    constexpr explicit KeyEvent(KeyType kt) : kt(kt) {}
+
+    KeyType kt = KeyType::Invalid;
+    char32_t c = 0;
+    bool ctrl = false, shift = false, alt = false;
 };

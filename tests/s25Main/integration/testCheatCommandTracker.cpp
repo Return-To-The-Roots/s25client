@@ -17,13 +17,10 @@ struct CheatCommandTrackerFixture : WorldFixture<CreateEmptyWorld, T_numPlayers>
     Cheats cheats_{this->world};
     CheatCommandTracker tracker_{cheats_};
 
-    KeyEvent makeKeyEvent(unsigned c) { return {KeyType::Char, c, false, false, false}; }
-    KeyEvent makeKeyEvent(KeyType kt) { return {kt, 0, false, false, false}; }
-
     void trackString(const std::string& str)
     {
-        for(char c : str)
-            tracker_.onKeyEvent(makeKeyEvent(c));
+        for(char32_t c : str)
+            tracker_.onKeyEvent(KeyEvent(c));
     }
 };
 using CheatCommandTrackerFixture1P = CheatCommandTrackerFixture<1>;
@@ -55,7 +52,7 @@ BOOST_FIXTURE_TEST_CASE(CheatModeIsNotTurnedOn_IfTheCheatStringIsWrong, CheatCom
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 
     trackString("win");
-    tracker_.onKeyEvent(makeKeyEvent(KeyType::F10)); // interrupted by another key type
+    tracker_.onKeyEvent(KeyEvent(KeyType::F10)); // interrupted by another key type
     trackString("ter");
     BOOST_TEST_REQUIRE(cheats_.isCheatModeOn() == false);
 
@@ -78,7 +75,7 @@ BOOST_FIXTURE_TEST_CASE(CheatModeIsTurnedOn_WhenTheFirstCharacterIsRepeated, Che
 BOOST_FIXTURE_TEST_CASE(CheatModeIsTurnedOn_EvenWhenWrongInputsWereProvidedBefore, CheatCommandTrackerFixture1P)
 {
     trackString("www");
-    auto ke = makeKeyEvent('1');
+    KeyEvent ke('1');
     ke.alt = true;
     tracker_.onKeyEvent(ke);
     trackString("interwitter");

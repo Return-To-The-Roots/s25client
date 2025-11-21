@@ -167,7 +167,7 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         mc.ldown = true;
         edt2.Msg_LeftDown(mc);
         edt2.Msg_PaintAfter();
-        edt2.Msg_KeyDown(KeyEvent{KeyType::Char, c, false, false, false});
+        edt2.Msg_KeyDown(KeyEvent(c));
         // Remove chars from front until in size
         auto itFirst = curChars.begin();
         while(font->getWidth(curText) > allowedWidth)
@@ -188,12 +188,12 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         int moveOffset = rttr::test::randomValue<int>(-curCursorPos - 1,
                                                       curChars.size() - curCursorPos + 1); //+-1 to check for "overrun"
         for(; moveOffset < 0; ++moveOffset, --curCursorPos)
-            edt.Msg_KeyDown(KeyEvent{KeyType::Left, 0, false, false, false});
+            edt.Msg_KeyDown(KeyEvent(KeyType::Left));
         for(; moveOffset > 0; --moveOffset, ++curCursorPos)
-            edt.Msg_KeyDown(KeyEvent{KeyType::Right, 0, false, false, false});
+            edt.Msg_KeyDown(KeyEvent(KeyType::Right));
         curCursorPos = helpers::clamp(curCursorPos, 0, static_cast<int>(curChars.size()));
         // Erase one char (currently only good way to check where the cursor is
-        edt.Msg_KeyDown(KeyEvent{KeyType::Backspace, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent(KeyType::Backspace));
         if(curCursorPos > 0)
         {
             curChars.erase(curChars.begin() + --curCursorPos);
@@ -219,18 +219,18 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     do
     {
         BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
-        edt.Msg_KeyDown(KeyEvent{KeyType::Left, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent(KeyType::Left));
         --curCursorPos;
     } while(curCursorPos > 5);
     while(curCursorPos-- >= 0)
     {
         BOOST_TEST_REQUIRE(txt->GetText() == curText); // Trailing chars are removed by font rendering
-        edt.Msg_KeyDown(KeyEvent{KeyType::Left, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent(KeyType::Left));
     }
     // Moving fully right shows txt again
     curCursorPos = 0;
     while(static_cast<unsigned>(curCursorPos++) < curChars.size())
-        edt.Msg_KeyDown(KeyEvent{KeyType::Right, 0, false, false, false});
+        edt.Msg_KeyDown(KeyEvent(KeyType::Right));
     BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
 }
 
