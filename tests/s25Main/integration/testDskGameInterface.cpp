@@ -234,9 +234,11 @@ BOOST_FIXTURE_TEST_CASE(IwActionClose, GameInterfaceFixture)
 
 BOOST_FIXTURE_TEST_CASE(Zooming, GameInterfaceFixture)
 {
-    const KeyEvent zoomInEv{KeyType::Char, 'z'};
-    const KeyEvent zoomOutEv{KeyType::Char, 'Z'};
-    const KeyEvent zoomDefaultEv{KeyType::Char, 'z', true, false, false}; // Ctrl+z
+    const KeyEvent zoomInEv('z');
+    const KeyEvent zoomOutEv('Z');
+    KeyEvent zoomDefaultEv('z');
+    zoomDefaultEv.ctrl = true;
+
     BOOST_TEST(view->GetCurrentTargetZoomFactor() == ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
     for(size_t i = ZOOM_DEFAULT_INDEX + 1; i < ZOOM_FACTORS.size(); i++)
     {
