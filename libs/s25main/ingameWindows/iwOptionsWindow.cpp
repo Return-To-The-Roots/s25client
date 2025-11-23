@@ -48,13 +48,17 @@ enum
     ID_cpBirdSounds
 };
 
+using Offset = DrawPoint;
 constexpr auto windowSize = Extent(300, 545);
+constexpr auto imageButtonSize = Extent(35, 35);
+constexpr auto optionSizeSmall = Extent(160, 22);
+constexpr auto optionSizeBig = Extent(168, 24);
+constexpr auto optionOffset = Offset(65, 6);
+constexpr auto textOffset = Offset(50, 24);
 constexpr auto centerPosition = windowSize.x / 2;
-constexpr auto rowHeight = 40;
-constexpr auto rowHeightSmall = 31;
 constexpr auto textSpacing = 17;
-constexpr auto textPadding = 35;
-constexpr auto headerStartPosition = DrawPoint(centerPosition, 10);
+constexpr auto generalSpacing = 5;
+constexpr auto leftMargin = 35;
 } // namespace
 
 iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
@@ -62,14 +66,7 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
                    LOADER.GetImageN("resource", 41)),
       soundManager(soundManager)
 {
-    using Offset = DrawPoint;
-    constexpr Extent buttonImageSize(35, 35);
-    constexpr Extent optionSizeSmall(160, 22);
-    constexpr Extent optionSizeBig(168, 24);
-    constexpr Offset textOffset(50, 24);
-    constexpr Offset optionOffset(65, 6);
-
-    DrawPoint curPos = headerStartPosition;
+    DrawPoint curPos = DrawPoint(centerPosition, 10);
 
     // The soldier on top
     constexpr Offset soldierOffset(0, 26);
@@ -87,59 +84,59 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
                      "2005 - %s Settlers Freaks",
                      COLOR_YELLOW, FontStyle::CENTER, NormalFont)
       % rttr::version::GetYear();
-    curPos.y += rowHeightSmall;
-    curPos.x = textPadding;
+    curPos.y += textSpacing * 2;
+    curPos.x = leftMargin;
 
-    AddImageButton(ID_btKeyboardLayout, curPos, buttonImageSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
+    AddImageButton(ID_btKeyboardLayout, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
     AddText(ID_txtKeyboardLayout, curPos + textOffset, _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
             NormalFont);
-    curPos.y += rowHeight;
+    curPos.y += imageButtonSize.y + generalSpacing;
 
-    AddImageButton(ID_btReadme, curPos, buttonImageSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
+    AddImageButton(ID_btReadme, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
     AddText(ID_txtReadme, curPos + textOffset, _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
-    curPos.y += rowHeight;
+    curPos.y += imageButtonSize.y + generalSpacing;
 
     // TODO: Implement
-    // AddImageButton(ID_btLoad, curPos, buttonImageSize, TextureColor::Green2, LOADER.GetImageN("io", 48));
+    // AddImageButton(ID_btLoad, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 48));
     // AddText(ID_txtLoad, curPos + textOffset, _("Load game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
-    // curPos.y += rowHeight;
+    // curPos.y += imageButtonSize.y + generalSpacing;
 
-    curPos.y += rowHeight / 2; // TODO: Delete this row, if the Load button is implemented
-    AddImageButton(ID_btSave, curPos, buttonImageSize, TextureColor::Green2, LOADER.GetImageN("io", 47));
+    curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
+    AddImageButton(ID_btSave, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 47));
     AddText(ID_txtSave, curPos + textOffset, _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
-    curPos.y += rowHeight / 2; // TODO: Delete this row, if the Load button is implemented
-    curPos.y += rowHeight;
+    curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
+    curPos.y += imageButtonSize.y + generalSpacing;
 
     // Sound on/off + volume
-    AddImageButton(ID_btSoundEffects, curPos, buttonImageSize, TextureColor::Green2,
+    AddImageButton(ID_btSoundEffects, curPos, imageButtonSize, TextureColor::Green2,
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
     AddProgress(ID_pgEffectVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
-    curPos.y += rowHeight;
+    curPos.y += imageButtonSize.y;
 
     AddCheckBox(ID_cpBirdSounds, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, _("Bird sounds"),
                 NormalFont, false)
       ->setChecked(SETTINGS.sound.birdsEnabled);
-    curPos.y += rowHeight;
+    curPos.y += optionSizeSmall.y * 2;
 
     // Music on/off + volume
-    AddImageButton(ID_btMusic, curPos, buttonImageSize, TextureColor::Green2,
+    AddImageButton(ID_btMusic, curPos, imageButtonSize, TextureColor::Green2,
                    LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
     AddProgress(ID_pgMusicVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
-    curPos.y += rowHeight;
+    curPos.y += imageButtonSize.y;
 
     AddTextButton(ID_btMusicPlayer, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, _("Music player"),
                   NormalFont);
-    curPos.y += rowHeight;
+    curPos.y += optionSizeSmall.y * 2;
 
     // Buttons at the bottom
     curPos.x = centerPosition;
     constexpr Offset btOffset(-(optionSizeBig.x / 2), 0);
     AddTextButton(ID_btAdvanced, curPos + btOffset, optionSizeBig, TextureColor::Green2, _("Advanced"), NormalFont);
-    curPos.y += rowHeightSmall;
+    curPos.y += optionSizeBig.y + generalSpacing;
     AddTextButton(ID_btSurrender, curPos + btOffset, optionSizeBig, TextureColor::Red1, _("Surrender"), NormalFont);
-    curPos.y += rowHeightSmall;
+    curPos.y += optionSizeBig.y + generalSpacing;
     AddTextButton(ID_btEndGame, curPos + btOffset, optionSizeBig, TextureColor::Red1, _("End game"), NormalFont);
 }
 
@@ -204,12 +201,6 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
 
 void iwOptionsWindow::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
-    switch(ctrl_id)
-    {
-        case ID_cpBirdSounds:
-        {
-            SETTINGS.sound.birdsEnabled = checked;
-            break;
-        }
-    }
+    RTTR_Assert(ctrl_id == ID_cpBirdSounds);
+    SETTINGS.sound.birdsEnabled = checked;
 }
