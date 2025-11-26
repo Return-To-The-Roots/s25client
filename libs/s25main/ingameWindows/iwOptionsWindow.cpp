@@ -112,7 +112,7 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
     AddProgress(ID_pgEffectVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
-    curPos.y += imageButtonSize.y;
+    curPos.y += optionSizeBig.y + generalSpacing;
 
     AddCheckBox(ID_cpBirdSounds, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, _("Bird sounds"),
                 NormalFont, false)
@@ -124,20 +124,19 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
                    LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
     AddProgress(ID_pgMusicVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
-    curPos.y += imageButtonSize.y;
+    curPos.y += optionSizeBig.y + generalSpacing;
 
     AddTextButton(ID_btMusicPlayer, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, _("Music player"),
                   NormalFont);
     curPos.y += optionSizeSmall.y * 2;
 
     // Buttons at the bottom
-    curPos.x = centerPosition;
-    constexpr Offset btOffset(-(optionSizeBig.x / 2), 0);
-    AddTextButton(ID_btAdvanced, curPos + btOffset, optionSizeBig, TextureColor::Green2, _("Advanced"), NormalFont);
+    curPos.x = centerPosition - optionSizeBig.x / 2;
+    AddTextButton(ID_btAdvanced, curPos, optionSizeBig, TextureColor::Green2, _("Advanced"), NormalFont);
     curPos.y += optionSizeBig.y + generalSpacing;
-    AddTextButton(ID_btSurrender, curPos + btOffset, optionSizeBig, TextureColor::Red1, _("Surrender"), NormalFont);
+    AddTextButton(ID_btSurrender, curPos, optionSizeBig, TextureColor::Red1, _("Surrender"), NormalFont);
     curPos.y += optionSizeBig.y + generalSpacing;
-    AddTextButton(ID_btEndGame, curPos + btOffset, optionSizeBig, TextureColor::Red1, _("End game"), NormalFont);
+    AddTextButton(ID_btEndGame, curPos, optionSizeBig, TextureColor::Red1, _("End game"), NormalFont);
 }
 
 void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
