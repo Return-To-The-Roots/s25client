@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -25,7 +25,7 @@
 class IngameWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
-class MouseCoords;
+struct MouseCoords;
 class PostBox;
 class PostMsg;
 struct BuildingNote;
@@ -165,7 +165,6 @@ protected:
 
     bool isScrolling;
     Position startScrollPt;
-    size_t zoomLvl;
     Subscription evBld;
 
     Cheats cheats_;

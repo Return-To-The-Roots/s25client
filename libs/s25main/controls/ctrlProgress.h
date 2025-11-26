@@ -6,7 +6,7 @@
 
 #include "Window.h"
 #include "controls/ctrlBaseTooltip.h"
-class MouseCoords;
+struct MouseCoords;
 
 class ctrlProgress : public Window, public ctrlBaseTooltip
 {

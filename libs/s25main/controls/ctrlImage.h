@@ -8,7 +8,7 @@
 #include "controls/ctrlBaseImage.h"
 #include "controls/ctrlBaseTooltip.h"
 
-class MouseCoords;
+struct MouseCoords;
 class ITexture;
 
 class ctrlImage : public Window, public ctrlBaseTooltip, public ctrlBaseImage
@@ -18,7 +18,7 @@ public:
     ~ctrlImage() override;
 
     bool Msg_MouseMove(const MouseCoords& mc) override;
-    Rect GetBoundaryRect() const;
+    Rect GetBoundaryRect() const override;
 
 protected:
     void Draw_() override;

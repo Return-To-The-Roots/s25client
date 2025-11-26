@@ -251,7 +251,7 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
         if(SETTINGS.interface.invertMouse)
             acceleration = -acceleration;
 
-        view->MoveBy((mc.GetPos() - scrollOrigin) * acceleration);
+        view->MoveBy((mc.pos - scrollOrigin) * acceleration);
         VIDEODRIVER.SetMousePos(scrollOrigin);
     }
 
@@ -260,13 +260,13 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 
 bool iwObservate::Msg_RightDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(), Rect(view->GetPos(), view->GetSize()))
-       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(1)->GetDrawRect())
-       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(2)->GetDrawRect())
-       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(3)->GetDrawRect())
-       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(4)->GetDrawRect()))
+    if(IsPointInRect(mc.pos, Rect(view->GetPos(), view->GetSize()))
+       && !IsPointInRect(mc.pos, GetCtrl<ctrlImageButton>(1)->GetDrawRect())
+       && !IsPointInRect(mc.pos, GetCtrl<ctrlImageButton>(2)->GetDrawRect())
+       && !IsPointInRect(mc.pos, GetCtrl<ctrlImageButton>(3)->GetDrawRect())
+       && !IsPointInRect(mc.pos, GetCtrl<ctrlImageButton>(4)->GetDrawRect()))
     {
-        scrollOrigin = mc.GetPos();
+        scrollOrigin = mc.pos;
 
         isScrolling = true;
         followMovableId = 0;

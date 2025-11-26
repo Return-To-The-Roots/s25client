@@ -84,7 +84,7 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
 {
     auto* txtVersion = GetCtrl<Window>(dskMenuBase::ID_txtVersion);
-    if(mc.dbl_click && IsPointInRect(mc.GetPos(), txtVersion->GetBoundaryRect()))
+    if(mc.dbl_click && IsPointInRect(mc.pos, txtVersion->GetBoundaryRect()))
     {
         WINDOWMANAGER.Switch(std::make_unique<dskTest>());
         return true;

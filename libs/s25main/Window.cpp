@@ -115,7 +115,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     for(Window* wnd : childIdToWnd_ | boost::adaptors::map_values | boost::adaptors::reversed)
     {
-        if(!lockedAreas_.empty() && IsInLockedRegion(mc.GetPos(), wnd))
+        if(!lockedAreas_.empty() && IsInLockedRegion(mc.pos, wnd))
             continue;
 
         if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
@@ -572,5 +572,5 @@ bool Window::IsMouseOver() const
 
 bool Window::IsMouseOver(const MouseCoords& mousePos) const
 {
-    return IsPointInRect(mousePos.GetPos(), GetBoundaryRect());
+    return IsPointInRect(mousePos.pos, GetBoundaryRect());
 }

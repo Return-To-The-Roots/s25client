@@ -251,8 +251,7 @@ KeyEvent VideoDriverWrapper::GetModKeyState() const
 {
     if(videodriver)
         return videodriver->GetModKeyState();
-    const KeyEvent ke = {KeyType::Invalid, 0, false, false, false};
-    return ke;
+    return KeyEvent();
 }
 
 void VideoDriverWrapper::SwapBuffers()

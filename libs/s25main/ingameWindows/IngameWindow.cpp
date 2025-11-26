@@ -193,18 +193,18 @@ void IngameWindow::SetPinned(bool pinned)
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
     // Check if the mouse is on the title bar
-    if(IsPointInRect(mc.GetPos(), GetButtonBounds(IwButton::Title)))
+    if(IsPointInRect(mc.pos, GetButtonBounds(IwButton::Title)))
     {
         // start moving
         isMoving = true;
         snapOffset_ = SnapOffset::all(0);
-        lastMousePos = mc.GetPos();
+        lastMousePos = mc.pos;
     } else
     {
         // Check the buttons
         for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
+            if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
                 buttonStates_[btn] = ButtonState::Pressed;
         }
     }
@@ -223,7 +223,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
                && (btn == IwButton::Title || btn == IwButton::PinOrMinimize)))
             continue;
 
-        if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
+        if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
         {
             switch(btn)
             {
@@ -256,7 +256,7 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     if(isMoving)
     {
         // Calculate new window boundary rectangle without snapping
-        DrawPoint delta = mc.GetPos() - lastMousePos;
+        DrawPoint delta = mc.pos - lastMousePos;
         Rect wndRect = GetBoundaryRect();
         RTTR_Assert(wndRect.getOrigin() == GetPos()); // The rest of the code assumes this to be true
         wndRect.move(delta - snapOffset_);
@@ -271,19 +271,19 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
           elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - wndRect.getSize()));
         // …and use it to fix the mouse position if moved too far
         if(newPosBounded != newPos)
-            VIDEODRIVER.SetMousePos(newPosBounded - wndRect.getOrigin() + mc.GetPos());
+            VIDEODRIVER.SetMousePos(newPosBounded - wndRect.getOrigin() + mc.pos);
 
         // Set new position and re-calculate snap offset (window position may have been out of bounds)
         SetPos(newPos + snapOffset_);
         snapOffset_ = GetPos() - newPosBounded;
 
-        lastMousePos = mc.GetPos();
+        lastMousePos = mc.pos;
     } else
     {
         // Check the buttons
         for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
+            if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
                 buttonStates_[btn] = mc.ldown ? ButtonState::Pressed : ButtonState::Hover;
             else
                 buttonStates_[btn] = ButtonState::Up;

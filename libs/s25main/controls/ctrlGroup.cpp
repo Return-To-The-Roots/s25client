@@ -4,7 +4,7 @@
 
 #include "ctrlGroup.h"
 
-class MouseCoords;
+struct MouseCoords;
 struct KeyEvent;
 
 ctrlGroup::ctrlGroup(Window* parent, unsigned id) : Window(parent, id, DrawPoint(0, 0)) {}

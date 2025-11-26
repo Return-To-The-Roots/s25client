@@ -308,7 +308,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
         return;
     }
 
-    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
+    IngameWindow* foundWindow = FindWindowAtPos(mc.pos);
 
     // Haben wir ein Fenster gefunden gehabt?
     if(foundWindow)
@@ -356,13 +356,13 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
 
     // Ggf. Doppelklick untersuche
     unsigned time_now = VIDEODRIVER.GetTickCount();
-    if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.GetPos() == lastLeftClickPos)
+    if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
     {
         mc.dbl_click = true;
     } else
     {
         // Werte wieder erneut speichern
-        lastLeftClickPos = mc.GetPos();
+        lastLeftClickPos = mc.pos;
         lastLeftClickTime = time_now;
     }
 
@@ -410,7 +410,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     // Right-click closes (most) windows, so check that
     if(!windows.empty())
     {
-        IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
+        IngameWindow* foundWindow = FindWindowAtPos(mc.pos);
         if(windows.back()->IsModal())
         {
             // We have a modal window -> Activate it
@@ -503,7 +503,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
         return;
     }
 
-    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
+    IngameWindow* foundWindow = FindWindowAtPos(mc.pos);
 
     if(foundWindow)
     {
@@ -550,7 +550,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         activeWnd.RelayMouseMessage(&Window::Msg_WheelDown, mc);
         return;
     }
-    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
+    IngameWindow* foundWindow = FindWindowAtPos(mc.pos);
 
     if(foundWindow)
     {

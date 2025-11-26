@@ -7,7 +7,7 @@
 #include "ctrlButton.h"
 #include "ctrlGroup.h"
 #include <boost/optional.hpp>
-class MouseCoords;
+struct MouseCoords;
 class Window;
 
 /// Verwaltet eine Gruppe von Buttons, die als Optionsbuttons benötigt werden

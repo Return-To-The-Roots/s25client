@@ -11,7 +11,7 @@
 
 class AddonGui;
 class GlobalGameSettings;
-class MouseCoords;
+struct MouseCoords;
 
 enum class AddonChangeAllowed
 {

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -97,14 +97,30 @@ enum
     ID_btPost,
     ID_txtNumMsg
 };
+
+float getNextZoomLevel(const float currentZoom)
+{
+    // Get first level bigger than current zoom
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto it = std::upper_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), currentZoom);
+    return (it == ZOOM_FACTORS.end()) ? ZOOM_FACTORS.front() : *it;
 }
+
+float getPreviousZoomLevel(const float currentZoom)
+{
+    // Get last level bigger or equal than current zoom
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto it = std::lower_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), currentZoom);
+    return (it == ZOOM_FACTORS.begin()) ? ZOOM_FACTORS.back() : *(--it);
+}
+} // namespace
 
 dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<const NWFInfo> nwfInfo,
                                    unsigned playerIdx, bool initOGL)
     : Desktop(nullptr), game_(std::move(game)), nwfInfo_(std::move(nwfInfo)),
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
-      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
+      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false),
       cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
 {
     road.mode = RoadBuildMode::Disabled;
@@ -432,8 +448,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw speed indicator icon
-    const int speedStep =
-      static_cast<int>(SPEED_GF_LENGTHS[referenceSpeed] / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
+    const int speedStep = static_cast<int>(REFERENCE_SPEED / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
 
     if(speedStep != 0)
     {
@@ -469,7 +484,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
                      VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
         return false;
 
     // Start scrolling also on Ctrl + left click
@@ -489,7 +504,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         if(selPt == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
-            ShowRoadWindow(mc.GetPos());
+            ShowRoadWindow(mc.pos);
         } else
         {
             // altes Roadwindow schließen
@@ -501,7 +516,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             {
                 MapPoint targetPt = selPt;
                 if(!BuildRoadPart(targetPt))
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
@@ -517,7 +532,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                         if(selPt == targetPt)
                             GI_BuildRoad();
                     } else if(selPt == targetPt)
-                        ShowRoadWindow(mc.GetPos());
+                        ShowRoadWindow(mc.pos);
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
@@ -529,7 +544,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     if(selPt == targetPt)
                         GI_BuildRoad();
                 } else if(selPt == targetPt)
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else
             {
                 unsigned tbr = GetIdInCurBuildRoad(selPt);
@@ -537,7 +552,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(tbr)
                     DemolishRoad(tbr);
                 else
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             }
         }
     } else
@@ -684,9 +699,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         if(actionwindow)
             actionwindow->Close();
-        VIDEODRIVER.SetMousePos(mc.GetPos());
+        VIDEODRIVER.SetMousePos(mc.pos);
 
-        ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
+        ShowActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
     }
 
     return true;
@@ -712,11 +727,11 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     if(SETTINGS.interface.invertMouse)
         acceleration = -acceleration;
 
-    gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
+    gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
     VIDEODRIVER.SetMousePos(startScrollPt);
 
     if(!SETTINGS.global.smartCursor)
-        startScrollPt = mc.GetPos();
+        startScrollPt = mc.pos;
     return true;
 }
 
@@ -881,18 +896,13 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             return true;
         case 'z': // zoom
-            if(++zoomLvl >= ZOOM_FACTORS.size())
-                zoomLvl = 0;
-
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+            if(ke.ctrl)
+                gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
+            else
+                gwv.SetZoomFactor(getNextZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
         case 'Z': // shift-z, reverse zoom
-            if(zoomLvl == 0)
-                zoomLvl = ZOOM_FACTORS.size() - 1;
-            else
-                zoomLvl--;
-
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+            gwv.SetZoomFactor(getPreviousZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
     }
 
@@ -910,24 +920,14 @@ bool dskGameInterface::Msg_WheelDown(const MouseCoords&)
     return true;
 }
 
-void dskGameInterface::WheelZoom(float step)
+void dskGameInterface::WheelZoom(const float step)
 {
-    float new_zoom = gwv.GetCurrentTargetZoomFactor() * (1 + step);
-    gwv.SetZoomFactor(new_zoom);
+    auto targetZoomFactor = gwv.GetCurrentTargetZoomFactor() * (1 + step);
+    targetZoomFactor = std::clamp(targetZoomFactor, ZOOM_FACTORS.front(), ZOOM_FACTORS.back());
+    if(targetZoomFactor > 1 - ZOOM_WHEEL_INCREMENT && targetZoomFactor < 1 + ZOOM_WHEEL_INCREMENT)
+        targetZoomFactor = 1.f; // Snap to 100%
 
-    // also keep track in terms of fixed defined zoom levels
-    zoomLvl = ZOOM_DEFAULT_INDEX;
-    for(size_t i = ZOOM_DEFAULT_INDEX; i < ZOOM_FACTORS.size(); ++i)
-    {
-        if(ZOOM_FACTORS[i] < new_zoom)
-            zoomLvl = i;
-    }
-
-    for(size_t i = ZOOM_DEFAULT_INDEX; i-- > 0;)
-    {
-        if(ZOOM_FACTORS[i] > new_zoom)
-            zoomLvl = i;
-    }
+    gwv.SetZoomFactor(targetZoomFactor);
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)
