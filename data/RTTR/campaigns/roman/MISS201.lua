@@ -195,11 +195,13 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- blue
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_AFRICANS)   -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Shaka')          -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(9)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 end
 
