@@ -35,11 +35,13 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)
     rttr:GetPlayer(0):SetColor(0)
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)
     rttr:GetPlayer(1):SetNation(NAT_AFRICANS)
     rttr:GetPlayer(1):SetColor(1)
     rttr:GetPlayer(1):SetName('Todo')
+    rttr:GetPlayer(1):SetPortrait(10)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 end
 

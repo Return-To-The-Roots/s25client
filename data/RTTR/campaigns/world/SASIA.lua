@@ -35,17 +35,20 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)
     rttr:GetPlayer(0):SetColor(0)
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)
     rttr:GetPlayer(1):SetNation(NAT_JAPANESE)
     rttr:GetPlayer(1):SetColor(1)
     rttr:GetPlayer(1):SetName('Tsunami')
+    rttr:GetPlayer(1):SetPortrait(7)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)
     rttr:GetPlayer(2):SetNation(NAT_JAPANESE)
     rttr:GetPlayer(2):SetColor(2)
     rttr:GetPlayer(2):SetName('Yamauchi')
+    rttr:GetPlayer(2):SetPortrait(6)
     rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
