@@ -438,7 +438,7 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
         bool allowNationChange = allowPlayerChange;
         bool allowColorChange = allowPlayerChange;
         bool allowTeamChange = allowPlayerChange;
-        bool allowPortaitChange = allowPlayerChange;
+        bool allowPortraitChange = allowPlayerChange;
         if(lua)
         {
             if(localPlayerId_ == row)
@@ -446,13 +446,13 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
                 allowNationChange &= lua->IsChangeAllowed("ownNation", true);
                 allowColorChange &= lua->IsChangeAllowed("ownColor", true);
                 allowTeamChange &= lua->IsChangeAllowed("ownTeam", true);
-                allowPortaitChange &= lua->IsChangeAllowed("ownPortrait", true);
+                allowPortraitChange &= lua->IsChangeAllowed("ownPortrait", true);
             } else
             {
                 allowNationChange &= lua->IsChangeAllowed("aiNation", true);
                 allowColorChange &= lua->IsChangeAllowed("aiColor", true);
                 allowTeamChange &= lua->IsChangeAllowed("aiTeam", true);
-                allowPortaitChange &= lua->IsChangeAllowed("aiPortrait", true);
+                allowPortraitChange &= lua->IsChangeAllowed("aiPortrait", true);
             }
         }
 
@@ -464,7 +464,7 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
                                     NormalFont, COLOR_YELLOW);
 
         const auto& portrait = Portraits[player.portraitIndex];
-        if(allowPortaitChange)
+        if(allowPortraitChange)
             group->AddImageButton(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
                                   LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), _(portrait.name));
         else
