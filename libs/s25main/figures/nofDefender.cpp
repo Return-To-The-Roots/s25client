@@ -14,15 +14,20 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noFighting.h"
 #include "gameData/BuildingProperties.h"
+#include "gameData/MilitaryConsts.h"
 
 nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
                          const unsigned char rank, nofAttacker& attacker)
     : nofActiveSoldier(pos, player, home, rank, SoldierState::DefendingWalkingTo), attacker(&attacker)
-{}
+{
+    ApplyDefenderBonusHitpoints();
+}
 
 nofDefender::nofDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
     : nofActiveSoldier(other, SoldierState::DefendingWalkingTo), attacker(&attacker)
-{}
+{
+    ApplyDefenderBonusHitpoints();
+}
 
 void nofDefender::Serialize(SerializedGameData& sgd) const
 {
@@ -38,6 +43,7 @@ nofDefender::nofDefender(SerializedGameData& sgd, const unsigned obj_id) : nofAc
         attacker = sgd.PopObject<nofAttacker>(GO_Type::NofAttacker);
     else
         attacker = nullptr;
+    ApplyDefenderBonusHitpoints();
 }
 
 void nofDefender::Walked()
@@ -173,4 +179,13 @@ void nofDefender::AttackerArrested()
         state = SoldierState::DefendingWalkingFrom;
         StartWalking(Direction::NorthWest);
     }
+}
+
+void nofDefender::ApplyDefenderBonusHitpoints()
+{
+    const unsigned maxRankHp = HITPOINTS[GetRank()];
+    if(hitpoints == maxRankHp)
+        ++hitpoints;
+    else if(hitpoints > maxRankHp + 1u)
+        hitpoints = static_cast<unsigned char>(maxRankHp + 1u);
 }

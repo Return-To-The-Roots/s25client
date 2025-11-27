@@ -25,12 +25,12 @@ nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noBuildin
     : noFigure(Job::Builder, pos, player, building_site), state(BuilderState::FigureWork), building_site(building_site),
       building_steps_available(0)
 {
-    // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei Häfen)?
+    // Were we placed directly at our construction site already (for harbors)?
     if(building_site)
     {
         if(pos == building_site->GetPos())
         {
-            // Dann gleich mit dem Bauprozess beginnen
+            // Then start the building process right away
             fs = FigureState::Job;
             GoalReached();
         }
@@ -58,13 +58,13 @@ nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id)
 void nofBuilder::GoalReached()
 {
     goal_ = nullptr;
-    // an der Baustelle normal anfangen zu arbeiten
+    // Start working normally at the construction site
     state = BuilderState::WaitingFreewalk;
 
-    // Sind jetzt an der Baustelle
+    // We are now at the construction site
     offsetSite = Point<short>(0, 0);
 
-    // Anfangen um die Baustelle herumzulaufen
+    // Start walking around the construction site
     StartFreewalk();
 }
 
@@ -88,7 +88,7 @@ void nofBuilder::LostWork()
         GoHome();
     else
     {
-        // Event abmelden
+        // Unregister event
         GetEvMgr().RemoveEvent(current_ev);
 
         StartWandering();
@@ -104,42 +104,42 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
     {
         case BuilderState::WaitingFreewalk:
         {
-            // Platz einnehmen
+            // Take up the spot
             offsetSite = nextOffsetSite;
 
-            // Ware aufnehmen, falls es eine gibt
+            // Pick up material if available
             if(ChooseWare())
                 state = BuilderState::BuildFreewalk;
 
-            // Weiter drumrumlaufen
+            // Keep walking around it
             StartFreewalk();
         }
         break;
         case BuilderState::BuildFreewalk:
         {
-            // Platz einnehmen
+            // Take up the spot
             offsetSite = nextOffsetSite;
 
-            // Gibts noch was zu bauen?
+            // Is there still something to build?
             if(building_steps_available)
             {
-                // dann mal schön bauen
+                // Then keep building
                 current_ev = GetEvMgr().AddEvent(this, 40, 1);
                 state = BuilderState::Build;
             } else if(building_site->IsBuildingComplete())
             {
-                // fertig mit Bauen!
+                // Done building!
                 current_ev = nullptr;
 
-                // Baustelle abreißen und Gebäude hinsetzen
+                // Demolish the construction site and place the building
 
-                // Gebäudetyp merken und das Volk des Gebäudes
+                // Remember the building type and its nation
                 BuildingType building_type = building_site->GetBuildingType();
                 Nation building_nation = building_site->GetNation();
 
                 state = BuilderState::FigureWork;
 
-                // Baustelle abmelden
+                // Unregister the construction site
                 GamePlayer& owner = world->GetPlayer(player);
                 owner.RemoveBuildingSite(building_site);
                 if(world->IsHarborBuildingSiteFromSea(building_site))
@@ -162,19 +162,19 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 if(BuildingProperties::IsWareHouse(building_type))
                 {
                     auto* wh = static_cast<nobBaseWarehouse*>(bld);
-                    // Mich dort gleich einquartieren und nicht erst zurücklaufen
+                    // Move in there immediately instead of walking back first
                     wh->AddFigure(world->RemoveFigure(pos, *this));
 
-                    // Evtl Träger aus dem HQ wieder verwenden
+                    // Possibly reuse carriers from the HQ
                     owner.FindCarrierForAllRoads();
                     owner.FindWarehouseForAllJobs(Job::Helper);
 
-                    // Evtl gabs verlorene Waren, die jetzt in das WH wieder reinkönnen
+                    // Possibly there were lost wares that can now go back into the warehouse
                     owner.FindClientForLostWares();
                     return;
                 }
 
-                // Nach Hause laufen bzw. auch rumirren
+                // Walk home or keep wandering
                 rs_pos = 0;
                 rs_dir = true;
                 cur_rs = world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
@@ -183,26 +183,26 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 StartWalking(Direction::SouthEast);
             } else
             {
-                // Brauchen neues Material
+                // Need new material
 
-                // Ware aufnehmen, falls es eine gibt
+                // Pick up material if available
                 if(!ChooseWare())
                     state = BuilderState::WaitingFreewalk;
 
-                // Weiter drumrumlaufen
+                // Keep walking around it
                 StartFreewalk();
             }
         }
         break;
         case BuilderState::Build:
         {
-            // Sounds abmelden
+            // Stop sounds
             world->GetSoundMgr().stopSounds(*this);
 
-            // ein Bauschritt weniger, Haus um eins höher
+            // One building step less, house one level higher
             --building_steps_available;
             ++building_site->build_progress;
-            // Fertig mit dem Bauschritt, dann an nächste Position gehen
+            // Finished with the building step, then move to the next position
             state = BuilderState::BuildFreewalk;
             StartFreewalk();
         }
@@ -211,9 +211,9 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
     }
 }
 
-// Länge, die der Bauarbeiter in einem Free-Walk zurücklegt (in Pixeln)
-const std::array<short, 2> FREEWALK_LENGTH = {22, 11};          // waagerecht
-const std::array<short, 2> FREEWALK_LENGTH_SLANTWISE = {14, 7}; // schräg
+// Distance the builder covers during a free walk (in pixels)
+const std::array<short, 2> FREEWALK_LENGTH = {22, 11};          // horizontal
+const std::array<short, 2> FREEWALK_LENGTH_SLANTWISE = {14, 7}; // diagonal
 
 void nofBuilder::StartFreewalk()
 {
@@ -221,39 +221,39 @@ void nofBuilder::StartFreewalk()
 
     unsigned char waiting_walk = ((state == BuilderState::WaitingFreewalk) ? 0 : 1);
 
-    // Wohin kann der Bauarbeiter noch laufen?
+    // Where else can the builder walk?
 
-    // Nach links
+    // To the left
     if(offsetSite.x - FREEWALK_LENGTH[waiting_walk] >= LEFT_MAX)
         possible_directions.push_back(Direction::West);
-    // Nach rechts
+    // To the right
     if(offsetSite.x + FREEWALK_LENGTH[waiting_walk] <= RIGHT_MAX)
         possible_directions.push_back(Direction::East);
-    // Nach links/oben
+    // To the upper left
     if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX
        && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
         possible_directions.push_back(Direction::NorthWest);
-    // Nach links/unten
+    // To the lower left
     if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX
        && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
         possible_directions.push_back(Direction::SouthWest);
-    // Nach rechts/oben
+    // To the upper right
     if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX
        && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
         possible_directions.push_back(Direction::NorthEast);
-    // Nach rechts/unten
+    // To the lower right
     if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX
        && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
         possible_directions.push_back(Direction::SouthEast);
 
     RTTR_Assert(!possible_directions.empty());
-    // Zufällige Richtung von diesen auswählen
+    // Pick a random direction from these
     FaceDir(RANDOM_ELEMENT(possible_directions));
 
-    // Und dort auch hinlaufen
+    // And walk there
     current_ev = GetEvMgr().AddEvent(this, (state == BuilderState::WaitingFreewalk) ? 24 : 17, 1);
 
-    // Zukünftigen Platz berechnen
+    // Calculate the future spot
     nextOffsetSite = offsetSite;
 
     switch(GetCurMoveDir())
@@ -291,7 +291,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
         case BuilderState::BuildFreewalk:
         case BuilderState::WaitingFreewalk:
         {
-            // Interpolieren und Door-Point von Baustelle draufaddieren
+            // Interpolate and add the construction site's door point
             drawPt.x += GAMECLIENT.Interpolate(offsetSite.x, nextOffsetSite.x, current_ev);
             drawPt.y += GAMECLIENT.Interpolate(offsetSite.y, nextOffsetSite.y, current_ev);
             drawPt += building_site->GetDoorPoint();
@@ -308,8 +308,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
             unsigned texture;
             unsigned soundId = 0;
 
-            // Je nachdem, wie weit der Bauarbeiter links bzw rechts oder in der Mitte steht, so wird auch die Animation
-            // angezeigt
+            // Depending on how far left/right or centered the builder stands, the animation is chosen accordingly
             if(std::abs(offsetSite.x) > 5)
             {
                 // With hammer
@@ -324,13 +323,13 @@ void nofBuilder::Draw(DrawPoint drawPt)
                     soundId = 78;
                 } else
                 {
-                    // er kniet
+                    // He kneels
                     texture = 283 + index % 4;
                     soundId = 72;
                 }
             } else
             {
-                // in der Mitte mit "Händen"
+                // In the middle with "hands"
                 texture = 287 + (index / 2) % 4;
             }
             drawPt += building_site->GetDoorPoint() + DrawPoint(offsetSite);
@@ -345,30 +344,30 @@ void nofBuilder::Draw(DrawPoint drawPt)
 
 bool nofBuilder::ChooseWare()
 {
-    // Brauch ich ein Brett(Rohbau und wenn kein Stein benötigt wird) oder Stein?
+    // Do I need a board (shell stage or when no stone is required) or stone?
     const BuildingCost costs = BUILDING_COSTS[building_site->GetBuildingType()];
     if(building_site->GetBuildProgress(false) < costs.boards * 8 || !costs.stones)
     {
-        // Brett
+        // Board
         if(building_site->boards)
         {
-            // ein Brett weniger liegt da
+            // One fewer board is lying there
             --building_site->boards;
             ++building_site->used_boards;
-            // wir können 8 Bauschritt ausführen
+            // We can execute 8 construction steps
             building_steps_available = 8;
 
             return true;
         }
     } else
     {
-        // Stein
+        // Stone
         if(building_site->stones)
         {
-            // ein Stein weniger liegt da
+            // One fewer stone is lying there
             --building_site->stones;
             ++building_site->used_stones;
-            // wir können 8 Bauschritt ausführen
+            // We can execute 8 construction steps
             building_steps_available = 8;
 
             return true;

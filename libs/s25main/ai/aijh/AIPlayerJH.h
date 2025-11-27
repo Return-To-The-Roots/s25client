@@ -258,6 +258,8 @@ private:
     /// resigned yes/no
     bool defeated;
     CombatMode attackMode;
+    double combatFulfillmentLevel_ = 0.0;
+    double combatAttackWeight_ = 0.0;
     AIEventManager eventManager;
     std::unique_ptr<BuildingPlanner> bldPlanner;
     std::unique_ptr<AIConstruction> construction;

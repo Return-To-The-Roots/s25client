@@ -11,23 +11,23 @@ class nofPassiveSoldier;
 class SerializedGameData;
 class nobBaseMilitary;
 
-/// Aggressiv-verteidigender Soldat (jemand, der den Angreifer auf offenem Feld entgegenläuft)
+/// Aggressive defending soldier (runs out onto the field to meet the attacker)
 class nofAggressiveDefender : public nofActiveSoldier
 {
-    /// Soldaten, der er entgegenrennen soll
+    /// Attacker the defender is supposed to intercept
     nofAttacker* attacker;
-    /// Militärgebäude, das angegriffen wird
+    /// Targeted military building
     nobBaseMilitary* attacked_goal;
 
-    /// wenn man gelaufen ist
+    /// Handle movement ticks
     void Walked() override;
-    /// Geht nach Haus für MAggressiveDefending-Mission
+    /// Return home for the aggressive defending mission
     void ReturnHomeMissionAggressiveDefending();
-    /// Läuft wieter
+    /// Continue moving
     void MissAggressiveDefendingWalk();
-    /// Sucht sich für MissionAggressiveAttacking ein neues Ziel, wenns keins findet, gehts nach Hause
+    /// Look for a new attacker target; go home if none is found
     void MissionAggressiveDefendingLookForNewAggressor();
-    /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
+    /// Notify all mission targets that we cannot show up
     void InformTargetsAboutCancelling() override;
 
     void CancelAtAttacker();
@@ -50,9 +50,9 @@ public:
 
     GO_Type GetGOT() const final { return GO_Type::NofAggressivedefender; }
 
-    /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
+    /// Home military building destroyed while on a mission
     void HomeDestroyed() override;
-    /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
+    /// Home building destroyed while still waiting in its exit queue
     void HomeDestroyedAtBegin() override;
 
     void CancelAtAttackedBld();
@@ -62,15 +62,13 @@ public:
     /// Wenn ein Kampf verloren wurde (Tod)
     void LostFighting() override;
 
-    /// Gebäude, das vom aggressiv-verteidigenden Soldaten verteidigt werden sollte, wurde zerstört
+    /// Building the aggressive defender was protecting got destroyed
     void AttackedGoalDestroyed();
-    /// Soldat, der angehalten ist, um auf seinen Angreifer-Kollegen zu warten, soll jetzt weiterlaufen, da er um
-    /// das Angriffsgebäude schon wartet
+    /// Tell the defender who waited for the attacker to keep moving because the attacker already waits at the building
     void MissAggressiveDefendingContinueWalking();
-    /// Wenn der jeweils andere Soldat, mit dem man kämpfen wollte, nicht mehr kommen kann
+    /// Counterpart soldier we wanted to fight cannot arrive anymore
     void AttackerLost();
-    /// Ich befinde mich noch im Lagerhaus in der Warteschlange und muss mein HQ etc. verteidigen
-    /// Mission muss also abgebrochen werden
+    /// Still waiting inside the warehouse but must defend HQ etc., so the mission is aborted
     void NeedForHomeDefence();
 
     // Debugging

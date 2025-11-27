@@ -1766,14 +1766,12 @@ double AIPlayerJH::ComputeFulfillmentLevel(double* outTotalWeight) const
 
 double AIPlayerJH::GetCombatFulfillmentLevel() const
 {
-    return ComputeFulfillmentLevel(nullptr);
+    return combatFulfillmentLevel_;
 }
 
 double AIPlayerJH::GetCombatAttackWeight() const
 {
-    double totalWeight = 0.0;
-    ComputeFulfillmentLevel(&totalWeight);
-    return totalWeight;
+    return combatAttackWeight_;
 }
 
 void AIPlayerJH::UpdateCombatMode()
@@ -1786,6 +1784,8 @@ void AIPlayerJH::UpdateCombatMode()
 
     double totalWeight = 0.0;
     const double fulfillment = ComputeFulfillmentLevel(&totalWeight);
+    combatFulfillmentLevel_ = fulfillment;
+    combatAttackWeight_ = totalWeight;
 
     if(fulfillment >= highLevel)
     {
@@ -2931,10 +2931,14 @@ void AIPlayerJH::saveStats(unsigned int gf) const
 
         scoreFile << "GameFrame,Country,Buildings,Military,GoldCoins,Productivity,Kills" << std::endl;
 
-        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable,BoardsDemand,AverageBuildTime" << std::endl;
+        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable,BoardsDemand,AverageBuildTime";
+        for(const Job job : SOLDIER_JOBS)
+            otherFile << "," << JOB_NAMES_1.at(job);
+        otherFile << std::endl;
     }
     const unsigned previousStatsFrame = lastStatsFrame_;
     const BuildingRegister& buildingRegister = player.GetBuildingRegister();
+    const Inventory& playerInventory = player.GetInventory();
     std::uint64_t totalBuildTime = 0;
     unsigned completedBuildings = 0;
     const auto accumulateBuild = [&](const noBaseBuilding& building) {
@@ -2977,8 +2981,10 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     otherFile << "," << bldPlanner->GetNumMilitaryBlds();
     otherFile << "," << GetAvailableResources(AISurfaceResource::Wood);
     otherFile << "," << GetAvailableResources(AISurfaceResource::Stones);
-    otherFile << "," << player.GetBuildingRegister().CalcBoardsDemand();
+    otherFile << "," << buildingRegister.CalcBoardsDemand();
     otherFile << "," << averageBuildTime;
+    for(const Job job : SOLDIER_JOBS)
+        otherFile << "," << playerInventory[job];
     otherFile << std::endl;
     lastStatsFrame_ = gf;
 
@@ -3096,13 +3102,14 @@ void AIPlayerJH::saveStats(unsigned int gf) const
 
     outfile << " Other: " << std::endl;
     outfile << "Mil. Builngs: " << bldPlanner->GetNumMilitaryBlds() << std::endl;
-    ;
     outfile << "Wood available: " << GetAvailableResources(AISurfaceResource::Wood) << std::endl;
-    ;
     outfile << "Stone available: " << GetAvailableResources(AISurfaceResource::Stones) << std::endl;
-    ;
-    outfile << "Boards demand: " << player.GetBuildingRegister().CalcBoardsDemand() << std::endl;
-    ;
+    outfile << "Boards demand: " << buildingRegister.CalcBoardsDemand() << std::endl;
+    outfile << "Avg build time: " << averageBuildTime << std::endl;
+    outfile << "Soldiers by rank:";
+    for(const Job job : SOLDIER_JOBS)
+        outfile << " " << JOB_NAMES_1.at(job) << ": " << playerInventory[job];
+    outfile << std::endl;
     outfile.close();
 
     if(STATS_CONFIG.screensPath.empty())

@@ -16,6 +16,8 @@ class nofDefender : public nofActiveSoldier
 {
     /// Attacker at the flag
     nofAttacker* attacker;
+    /// Apply the temporary defender bonus hitpoint if applicable
+    void ApplyDefenderBonusHitpoints();
 
     /// Walked to the next map point
     void Walked() override;

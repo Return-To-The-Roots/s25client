@@ -22,6 +22,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include <rttr/test/testHelpers.hpp>
 #include <boost/test/unit_test.hpp>
@@ -497,6 +498,35 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
 
     // check if coins were disabled after building was captured
     BOOST_TEST_REQUIRE(milBld1->IsGoldDisabled());
+}
+
+BOOST_FIXTURE_TEST_CASE(DefenderBonusHitpoints, AttackFixture<>)
+{
+    initGameRNG();
+
+    AddSoldiersWithRank(milBld0Pos, 1, 0);
+    AddSoldiersWithRank(milBld1Pos, 1, 4);
+
+    this->Attack(milBld1Pos, 1, false);
+    BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().size() == 1u);
+    auto& attacker = dynamic_cast<nofAttacker&>(milBld0->GetLeavingFigures().front());
+    while(attacker.GetHitpoints() > 1u)
+        attacker.TakeHit();
+    RTTR_EXEC_TILL(70, milBld0->GetLeavingFigures().empty()); //-V807
+    moveObjTo(world, attacker, milBld1->GetFlagPos());
+
+    RTTR_EXEC_TILL(200, milBld1->GetDefender() != nullptr);
+    const nofDefender* defender = milBld1->GetDefender();
+    BOOST_TEST_REQUIRE(defender);
+    const unsigned defenderRank = defender->GetRank();
+    const unsigned expectedBonusHp = static_cast<unsigned>(HITPOINTS[defenderRank]) + 1u;
+    BOOST_TEST(defender->GetHitpoints() == expectedBonusHp);
+
+    RTTR_EXEC_TILL(400, milBld1->GetDefender() == nullptr);
+    BOOST_TEST_REQUIRE(milBld1->GetNumTroops() == 1u);
+    const auto& garrison = milBld1->GetTroops().front();
+    BOOST_TEST(garrison.GetRank() == defenderRank);
+    BOOST_TEST(garrison.GetHitpoints() == HITPOINTS[garrison.GetRank()]);
 }
 
 using AttackFixture4P = AttackFixture<4, 32, 34>;

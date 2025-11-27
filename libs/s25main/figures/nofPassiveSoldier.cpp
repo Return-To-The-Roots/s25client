@@ -15,6 +15,8 @@
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(nullptr)
 {
+    if(hitpoints > HITPOINTS[GetRank()])
+        hitpoints = HITPOINTS[GetRank()];
     // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
     Heal();
     // Laufevent nullen, laufen ja nicht mehr
@@ -113,7 +115,7 @@ void nofPassiveSoldier::LeaveBuilding()
 
 void nofPassiveSoldier::Upgrade()
 {
-    // We must not be in the buildings list while upgrading. This would destroy the ordered list
+    // Während des Aufrüstens dürfen wir nicht in der Gebäudeliste stehen, da sonst die sortierte Reihenfolge zerstört würde
     RTTR_Assert(!building || !static_cast<nobMilitary*>(building)->IsInTroops(*this));
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
