@@ -242,7 +242,8 @@ Add an AI or change its difficulty.
 Change the player's name.
 
 **SetPortrait(portraitIndex)**  
-Change the player's portrait.
+Change the player's portrait.  
+-- Added in LUA version 1.6
 
 [Back](#Lua-objects-and-their-methods)  
 
