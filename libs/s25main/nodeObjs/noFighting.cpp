@@ -10,7 +10,11 @@
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
+#include "CombatLossTracker.h"
 #include "figures/nofActiveSoldier.h"
+#include "figures/nofAggressiveDefender.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofDefender.h"
 #include "network/GameClient.h"
 #include "noSkeleton.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -26,6 +30,8 @@ noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) :
 
     soldiers[0] = world->RemoveFigure(pos, soldier1);
     soldiers[1] = world->RemoveFigure(pos, soldier2);
+    CombatLossTracker::ReportParticipant(*soldiers[0]);
+    CombatLossTracker::ReportParticipant(*soldiers[1]);
     turn = 2;
     defending_animation = 0;
     player_won = 0xFF;
@@ -210,6 +216,7 @@ void noFighting::HandleEvent(const unsigned id)
                         // Besitzer merken für die Sichtbarkeiten am Ende dann
                         player_won = soldiers[turn]->GetPlayer();
                         // Soldat Bescheid sagen, dass er stirbt
+                        CombatLossTracker::ReportLoss(*soldiers[1 - turn]);
                         soldiers[1 - turn]->LostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
                         const MapPoint pos = soldiers[turn]->GetPos();

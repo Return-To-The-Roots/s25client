@@ -9,6 +9,7 @@
 #include "BuildingPlanner.h"
 #include "BuildingRegister.h"
 #include "FindWhConditions.h"
+#include "CombatLossTracker.h"
 #include "GameCommands.h"
 #include "GamePlayer.h"
 #include "IngameMinimap.h"
@@ -25,6 +26,7 @@
 #include "buildings/nobUsual.h"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/containerUtils.h"
+#include "s25util/colors.h"
 #include "network/GameMessages.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
@@ -45,10 +47,12 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/ToolConsts.h"
 #include "gameData/MilitaryConsts.h"
+#include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
 #include <algorithm>
 #include <array>
 #include <filesystem>
+#include <fstream>
 #include <cstdint>
 #include <limits>
 #include <iomanip>
@@ -58,6 +62,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <boost/filesystem/path.hpp>
+#include <sstream>
 
 namespace fs = std::filesystem;
 
@@ -1958,7 +1963,8 @@ void AIPlayerJH::TryToAttack()
         if(inDefenseMode && !CanAttackInDefenseMode(*target, attackersCount))
             continue;
 
-        aii.Attack(dest, attackersCount, true);
+        if(aii.Attack(dest, attackersCount, true))
+            TrackCombatStart(*target);
         return;
     }
 }
@@ -2046,8 +2052,11 @@ void AIPlayerJH::TrySeaAttack()
               gwb.GetSoldiersForSeaAttack(playerId, targetMilBld->GetPos());
             if(!attackers.empty()) // try to attack it!
             {
-                aii.SeaAttack(targetMilBld->GetPos(), 1, true);
-                return;
+                if(aii.SeaAttack(targetMilBld->GetPos(), 1, true))
+                {
+                    TrackCombatStart(*targetMilBld);
+                    return;
+                }
             }
         }
     }
@@ -2099,8 +2108,11 @@ void AIPlayerJH::TrySeaAttack()
               gwb.GetSoldiersForSeaAttack(playerId, targetMilBld->GetPos());
             if(!attackers.empty()) // try to attack it!
             {
-                aii.SeaAttack(targetMilBld->GetPos(), 1, true);
-                return;
+                if(aii.SeaAttack(targetMilBld->GetPos(), 1, true))
+                {
+                    TrackCombatStart(*targetMilBld);
+                    return;
+                }
             }
         }
     }
@@ -2117,10 +2129,164 @@ void AIPlayerJH::TrySeaAttack()
               gwb.GetSoldiersForSeaAttack(playerId, ship->GetPos()); // now get a final list of attackers and attack it
             if(!attackers.empty())
             {
-                aii.SeaAttack(ship->GetPos(), attackers.size(), true);
-                return;
+                if(aii.SeaAttack(ship->GetPos(), attackers.size(), true))
+                {
+                    TrackCombatStart(*ship);
+                    return;
+                }
             }
         }
+    }
+}
+
+namespace {
+
+std::string FormatRankCounts(const std::array<unsigned, NUM_SOLDIER_RANKS>& counts)
+{
+    static constexpr std::array<char, NUM_SOLDIER_RANKS> rankLabels = {'P', 'F', 'S', 'O', 'G'};
+    std::string result;
+    for(int idx = static_cast<int>(NUM_SOLDIER_RANKS) - 1; idx >= 0; --idx)
+    {
+        const unsigned count = counts[idx];
+        if(count == 0)
+            continue;
+        if(!result.empty())
+            result += ",";
+        result.push_back(rankLabels[idx]);
+        result.push_back('-');
+        result += std::to_string(count);
+    }
+    if(result.empty())
+        result = "none";
+    return result;
+}
+} // namespace
+
+void AIPlayerJH::TrackCombatStart(const nobBaseMilitary& target)
+{
+    const unsigned objId = target.GetObjId();
+    const auto it = std::find_if(activeCombats_.begin(), activeCombats_.end(),
+                                 [objId](const ActiveCombat& combat) { return combat.targetObjId == objId; });
+    if(it != activeCombats_.end())
+        return;
+
+    CombatLossTracker::RegisterCombat(objId);
+    activeCombats_.push_back({target.GetPos(), objId, target.GetPlayer(), target.GetBuildingType()});
+}
+
+std::string AIPlayerJH::GetCombatsLogPath() const
+{
+    fs::path filePath = fs::path(STATS_CONFIG.statsPath) / "combats.txt";
+    return filePath.string();
+}
+
+std::string AIPlayerJH::FormatPlayerLabel(unsigned playerIdx) const
+{
+    const GamePlayer& pl = gwb.GetPlayer(playerIdx);
+    const unsigned color = pl.color;
+    const int colorIdx = BasePlayerInfo::GetColorIdx(color);
+    static constexpr std::array<const char*, PLAYER_COLORS.size()> colorNames =
+      {"Blue", "Yellow", "Red", "Magenta", "Black", "Green", "Orange", "Cyan", "White", "Brown", "Purple"};
+    const std::string colorName = (colorIdx >= 0 && static_cast<size_t>(colorIdx) < colorNames.size()) ?
+      colorNames[colorIdx] :
+      "Unknown";
+    const std::string nationName = _(NationNames[pl.nation]);
+    std::ostringstream ss;
+    ss << "Player " << (playerIdx + 1) << " - " << colorName << " " << nationName;
+    return ss.str();
+}
+
+void AIPlayerJH::LogPlayerMetadata(std::ofstream& combatsFile) const
+{
+    bool first = true;
+    for(unsigned playerIdx = 0; playerIdx < gwb.GetNumPlayers(); ++playerIdx)
+    {
+        const GamePlayer& player = gwb.GetPlayer(playerIdx);
+        if(player.ps != PlayerState::Occupied)
+            continue;
+        if(!first)
+            combatsFile << ", ";
+        combatsFile << FormatPlayerLabel(playerIdx);
+        first = false;
+    }
+    combatsFile << std::endl;
+}
+
+bool AIPlayerJH::HasOwnAggressors(const nobBaseMilitary& building) const
+{
+    for(const nofAttacker* attacker : building.GetAggressors())
+    {
+        if(attacker && attacker->GetPlayer() == playerId)
+            return true;
+    }
+    return false;
+}
+
+AIPlayerJH::CombatLogState AIPlayerJH::EvaluateCombatState(const ActiveCombat& combat) const
+{
+    const noBase* nodeObj = gwb.GetNO(combat.pos);
+    const auto* building = dynamic_cast<const nobBaseMilitary*>(nodeObj);
+    if(!building)
+        return CombatLogState::Success;
+
+    if(building->GetObjId() != combat.targetObjId)
+        return CombatLogState::Success;
+
+    if(HasOwnAggressors(*building))
+        return CombatLogState::Pending;
+
+    const unsigned char owner = building->GetPlayer();
+    if(owner == playerId)
+        return CombatLogState::Success;
+    if(owner != combat.defenderPlayer)
+        return CombatLogState::Success;
+    return CombatLogState::Failure;
+}
+
+void AIPlayerJH::LogFinishedCombats(const unsigned gf) const
+{
+    if(activeCombats_.empty())
+        return;
+
+    std::vector<std::pair<ActiveCombat, bool>> finishedCombats;
+    finishedCombats.reserve(activeCombats_.size());
+    auto it = activeCombats_.begin();
+    while(it != activeCombats_.end())
+    {
+        const CombatLogState state = EvaluateCombatState(*it);
+        if(state == CombatLogState::Pending)
+        {
+            ++it;
+            continue;
+        }
+
+        finishedCombats.emplace_back(*it, state == CombatLogState::Success);
+        it = activeCombats_.erase(it);
+    }
+
+    if(finishedCombats.empty())
+        return;
+
+    std::ofstream combatsFile(GetCombatsLogPath(), std::ios::app);
+    if(!combatsFile)
+    {
+        std::cerr << "Unable to open combats log file for appending!" << std::endl;
+        return;
+    }
+
+    for(const auto& entry : finishedCombats)
+    {
+        const ActiveCombat& combat = entry.first;
+        const bool success = entry.second;
+        const CombatStats stats = CombatLossTracker::TakeStats(combat.targetObjId);
+        combatsFile << "#" << gf << " Player #" << static_cast<unsigned>(playerId + 1)
+                    << " attacks Player #" << static_cast<unsigned>(combat.defenderPlayer + 1) << " "
+                    << BUILDING_NAMES_1.at(combat.buildingType) << ". Attack #"
+                    << (success ? "succed" : "failed") << " Forces: Attacker "
+                    << FormatRankCounts(stats.attackerForces) << " . Defender "
+                    << FormatRankCounts(stats.defenderForces) << " Losses: Attacker "
+                    << FormatRankCounts(stats.attackerLosses) << " . Defender "
+                    << FormatRankCounts(stats.defenderLosses) << std::endl;
     }
 }
 
@@ -2884,6 +3050,19 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     {
         return;
     }
+
+    if(gf == 0)
+    {
+        std::ofstream combatsFile(GetCombatsLogPath(), std::ios::trunc);
+        if(!combatsFile)
+            std::cerr << "Unable to open combats log file for writing!" << std::endl;
+        else
+        {
+            LogPlayerMetadata(combatsFile);
+        }
+    }
+    LogFinishedCombats(gf);
+
     std::ofstream buildingCountFile = createCsvFile("buildings_count");
     std::ofstream buildingSitesFile = createCsvFile("buildings_sites");
     std::ofstream productivityFile = createCsvFile("productivity");

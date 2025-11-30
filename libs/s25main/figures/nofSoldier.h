@@ -42,6 +42,7 @@ public:
     unsigned char GetRank() const;
     unsigned char GetHitpoints() const;
     bool HasNoHome() const { return building == nullptr; }
+    nobBaseMilitary* GetHome() const { return building; }
 };
 
 /// Comparator to sort soldiers by rank (and ID for ties), weak ones first

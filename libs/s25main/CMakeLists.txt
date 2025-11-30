@@ -43,6 +43,7 @@ source_group(other FILES ${SOURCES_OTHER})
 set(s25Main_SRCS
     ${SOURCES_OTHER}
     ${SOURCES_SUBDIRS}
+        CombatLossTracker.cpp
         ai/aijh/BuildingCalculator.cpp
         ai/aijh/AIConfig.cpp
         ai/aijh/AIConfig.h

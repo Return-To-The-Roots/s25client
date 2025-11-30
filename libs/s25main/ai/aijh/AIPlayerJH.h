@@ -230,6 +230,21 @@ public:
     bool IsInDefenseMode() const { return attackMode == CombatMode::DefenseMode; }
 
 private:
+    struct ActiveCombat
+    {
+        MapPoint pos;
+        unsigned targetObjId;
+        unsigned char defenderPlayer;
+        BuildingType buildingType;
+    };
+
+    enum class CombatLogState
+    {
+        Pending,
+        Success,
+        Failure
+    };
+
     enum class CombatMode
     {
         AttackMode,
@@ -240,6 +255,13 @@ private:
     bool CanAttackInDefenseMode(const nobBaseMilitary& target, unsigned attackersCount) const;
     bool IsLonelyEnemyStronghold(const nobBaseMilitary& target) const;
     double ComputeFulfillmentLevel(double* outTotalWeight = nullptr) const;
+    void TrackCombatStart(const nobBaseMilitary& target);
+    void LogFinishedCombats(unsigned gf) const;
+    std::string GetCombatsLogPath() const;
+    std::string FormatPlayerLabel(unsigned playerIdx) const;
+    void LogPlayerMetadata(std::ofstream& combatsFile) const;
+    CombatLogState EvaluateCombatState(const ActiveCombat& combat) const;
+    bool HasOwnAggressors(const nobBaseMilitary& building) const;
 
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;
@@ -260,6 +282,7 @@ private:
     CombatMode attackMode;
     double combatFulfillmentLevel_ = 0.0;
     double combatAttackWeight_ = 0.0;
+    mutable std::vector<ActiveCombat> activeCombats_;
     AIEventManager eventManager;
     std::unique_ptr<BuildingPlanner> bldPlanner;
     std::unique_ptr<AIConstruction> construction;
