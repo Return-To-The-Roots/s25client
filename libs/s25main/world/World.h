@@ -61,6 +61,7 @@ class World : public MapBase
     WorldDescription description_;
 
     std::unique_ptr<noBase> noNodeObj;
+    unsigned lastResourceIncreaseGF_ = 0;
     void Resize(const MapExtent& newSize) override final;
     noBase& AddFigureImpl(MapPoint pt, std::unique_ptr<noBase> fig);
     /// Implementation of RemoveFigure. Returned pointer must be wrapped in an owning pointer
@@ -120,6 +121,7 @@ public:
     /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type GetGOT(MapPoint pt) const;
     void ReduceResource(MapPoint pt);
+    void IncreaseGlobalResource(unsigned currentGF);
     void SetResource(const MapPoint pt, Resource newResource) { GetNodeInt(pt).resources = newResource; }
     void SetOwner(const MapPoint pt, unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
     void SetReserved(MapPoint pt, bool reserved);

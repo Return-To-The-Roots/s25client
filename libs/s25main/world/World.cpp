@@ -15,6 +15,7 @@
 #include "helpers/pointerContainerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainDesc.h"
+#include "random/Random.h"
 #include <memory>
 #include <set>
 #include <stdexcept>
@@ -74,6 +75,7 @@ void World::Unload()
     description_ = WorldDescription();
     noNodeObj.reset();
     Resize(MapExtent::all(0));
+    lastResourceIncreaseGF_ = 0;
 }
 
 void World::Resize(const MapExtent& newSize)
@@ -163,6 +165,25 @@ void World::ReduceResource(const MapPoint pt)
     const uint8_t curAmount = GetNodeInt(pt).resources.getAmount();
     RTTR_Assert(curAmount > 0);
     GetNodeInt(pt).resources.setAmount(curAmount - 1u);
+}
+
+void World::IncreaseGlobalResource(const unsigned currentGF)
+{
+    constexpr unsigned replenishIntervalGF = 1000;
+    if(currentGF % replenishIntervalGF != 0u || currentGF == lastResourceIncreaseGF_)
+        return;
+    lastResourceIncreaseGF_ = currentGF;
+
+    for(MapNode& node : nodes)
+    {
+        Resource& resource = node.resources;
+        if(resource.getType() != ResourceType::Fish)
+            continue;
+        if(resource.getAmount() >= 0x0Fu)
+            continue;
+        if(RANDOM.Rand(RANDOM_CONTEXT2(0), 100) < 10)
+            resource.setAmount(resource.getAmount() + 1u);
+    }
 }
 
 void World::SetReserved(const MapPoint pt, const bool reserved)

@@ -75,6 +75,9 @@ void Game::RunGF()
     unsigned numPlayersAlive = getNumAlivePlayers(world_);
     //  EventManager Bescheid sagen
     em_->ExecuteNextGF();
+    const unsigned currentGF = em_->GetCurrentGF();
+    if(currentGF % 1000u == 0u)
+        world_.IncreaseGlobalResource(currentGF);
     // Notfallprogramm durchlaufen lassen
     for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
     {
@@ -88,10 +91,10 @@ void Game::RunGF()
     }
 
     if(world_.HasLua())
-        world_.GetLua().EventGameFrame(em_->GetCurrentGF());
+        world_.GetLua().EventGameFrame(currentGF);
     // Update statistic every 30 seconds
     constexpr unsigned GFsIn30s = std::chrono::duration<unsigned>(30) / SPEED_GF_LENGTHS[referenceSpeed];
-    if(em_->GetCurrentGF() % GFsIn30s == 0)
+    if(currentGF % GFsIn30s == 0)
         StatisticStep();
     // If some players got defeated check objective
     if(getNumAlivePlayers(world_) < numPlayersAlive)

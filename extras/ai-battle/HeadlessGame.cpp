@@ -109,15 +109,18 @@ void HeadlessGame::Run(unsigned maxGF)
 
         game_.RunGF();
 
+        const unsigned currentGF = em_.GetCurrentGF();
+        if(currentGF % 1000u == 0u)
+            world_.IncreaseGlobalResource(currentGF);
+
         if(replay_.IsRecording())
-            replay_.UpdateLastGF(em_.GetCurrentGF());
+            replay_.UpdateLastGF(currentGF);
 
         if(std::chrono::steady_clock::now() > nextReport)
         {
             nextReport += std::chrono::seconds(1);
             PrintState();
         }
-        auto currentGF = em_.GetCurrentGF();
         if(STATS_CONFIG.save_period>0 && (currentGF == 1 || currentGF % STATS_CONFIG.save_period == 0))
         {
             boost::format fmt("%s/ai_run_%s.sav");
