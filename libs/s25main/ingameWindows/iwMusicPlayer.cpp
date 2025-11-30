@@ -171,9 +171,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned s
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), this,
                                                       MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     }
-    const bool isReadOnly = isReadonlyPlaylist(playlistName);
-    for(const auto id : {ID_btRemovePlaylist, ID_btSave})
-        GetCtrl<ctrlButton>(id)->SetEnabled(!isReadOnly);
+    UpdateSaveChangeButtonsState();
 }
 
 void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
@@ -234,6 +232,14 @@ void iwMusicPlayer::UpdateFromPlaylist(const Playlist& playlist)
 
     SetRepeats(playlist.getNumRepeats());
     SetRandomPlayback(playlist.isRandomized());
+}
+
+void iwMusicPlayer::UpdateSaveChangeButtonsState()
+{
+    const auto playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelectedText();
+    const bool isReadOnly = !playlistName || isReadonlyPlaylist(*playlistName);
+    for(const auto id : {ID_btRemovePlaylist, ID_btSave})
+        GetCtrl<ctrlButton>(id)->SetEnabled(!isReadOnly);
 }
 
 Playlist iwMusicPlayer::MakePlaylist()
@@ -441,4 +447,5 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
             cbPlaylist->SetSelection(i);
         ++i;
     }
+    UpdateSaveChangeButtonsState();
 }
