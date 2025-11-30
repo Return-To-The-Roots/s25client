@@ -431,13 +431,14 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 
     std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(s25::folders::playlists), "pll");
     playlists.insert(playlists.begin(), RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist));
+    const auto currentPath = RTTRCONFIG.ExpandPath(highlight_entry);
 
     unsigned i = 0;
     for(const auto& playlistPath : playlists)
     {
         // Reduce to pure filename
         cbPlaylist->AddString(playlistPath.stem().string());
-        if(playlistPath == highlight_entry)
+        if(playlistPath == currentPath)
             cbPlaylist->SetSelection(i);
         ++i;
     }
