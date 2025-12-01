@@ -49,7 +49,7 @@ enum
 };
 
 using Offset = DrawPoint;
-constexpr auto windowSize = Extent(300, 545);
+constexpr auto windowSize = Extent(300, 525);
 constexpr auto imageButtonSize = Extent(35, 35);
 constexpr auto optionSizeSmall = Extent(160, 22);
 constexpr auto optionSizeBig = Extent(168, 24);
@@ -112,23 +112,25 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
     AddProgress(ID_pgEffectVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
-    curPos.y += optionSizeBig.y + generalSpacing;
+    curPos.y += imageButtonSize.y;
+    curPos.x += optionOffset.x;
 
-    AddCheckBox(ID_cpBirdSounds, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, _("Bird sounds"),
-                NormalFont, false)
+    AddCheckBox(ID_cpBirdSounds, curPos, optionSizeSmall, TextureColor::Green2, _("Bird sounds"), NormalFont, false)
       ->setChecked(SETTINGS.sound.birdsEnabled);
-    curPos.y += optionSizeSmall.y * 2;
+    curPos.y += optionSizeSmall.y + generalSpacing * 3;
+    curPos.x = leftMargin;
 
     // Music on/off + volume
     AddImageButton(ID_btMusic, curPos, imageButtonSize, TextureColor::Green2,
                    LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
     AddProgress(ID_pgMusicVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
-    curPos.y += optionSizeBig.y + generalSpacing;
+    curPos.y += imageButtonSize.y;
+    curPos.x += optionOffset.x;
 
-    AddTextButton(ID_btMusicPlayer, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, _("Music player"),
-                  NormalFont);
-    curPos.y += optionSizeSmall.y * 2;
+    AddTextButton(ID_btMusicPlayer, curPos, optionSizeSmall, TextureColor::Green2, _("Music player"), NormalFont);
+    curPos.y += optionSizeSmall.y + generalSpacing * 3;
+    curPos.x = leftMargin;
 
     // Buttons at the bottom
     curPos.x = centerPosition - optionSizeBig.x / 2;
