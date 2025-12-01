@@ -14,17 +14,17 @@ constexpr helpers::EnumArray<GoodType, Tool> TOOL_TO_GOOD = {
 
 constexpr helpers::EnumArray<signed, Tool> SUPPRESS_UNUSED TOOL_PRIORITY {
     {
-        7, //Tongs
-        9, //Hammer
-        2, //Axe
-        5, //Saw
-        5, //PickAxe
+        2, //Tongs
+        3, //Hammer
+        4, //Axe
+        3, //Saw
+        8, //PickAxe
         1, //Shovel
         5, //Crucible
-        1, //RodAndLine
-        3, //Scythe
-        7, //Cleaver
-        7, //Rollingpin
+        3, //RodAndLine
+        8, //Scythe
+        2, //Cleaver
+        4, //Rollingpin
         1, //Bow
     }
 };
