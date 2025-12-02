@@ -35,6 +35,7 @@ int main(int argc, char** argv)
     boost::optional<std::string> runId;
     boost::optional<std::string> profileId;
     boost::optional<std::string> runSetId;
+    boost::optional<std::string> start_save_path;
     boost::optional<unsigned int> statsPeriod;
     boost::optional<unsigned int> savePeriod;
     boost::optional<unsigned int> debugStatsPeriod;
@@ -53,6 +54,7 @@ int main(int argc, char** argv)
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
         ("weights_file", po::value<std::string>()->required(), "AI weights file")
         ("start_wares", po::value<std::string>()->default_value("alot"),"Start wares")
+        ("start_from_save", po::value(&start_save_path),"Path to savegame to load (optional)")
         ("replay", po::value(&replay_path),"Filename to write stats_interval to (optional)")
         ("random_init", po::value(&random_init),"Seed value for the random number generator (optional)")
         ("version", "Show version information and exit")
@@ -117,6 +119,9 @@ int main(int argc, char** argv)
         RANDOM.Init(random_init);
 
         const bfs::path mapPath = RTTRCONFIG.ExpandPath(options["map"].as<std::string>());
+        boost::optional<bfs::path> startSavePath;
+        if(start_save_path)
+            startSavePath = RTTRCONFIG.ExpandPath(*start_save_path);
         const std::vector<AI::Info> ais = ParseAIOptions(options["ai"].as<std::vector<std::string>>());
 
         const auto weightsFile = options["weights_file"].as<std::string>();
@@ -157,7 +162,7 @@ int main(int argc, char** argv)
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         // ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
-        HeadlessGame game(ggs, mapPath, ais);
+        HeadlessGame game(ggs, mapPath, ais, startSavePath);
         if(replay_path)
             game.RecordReplay(*replay_path, random_init);
 

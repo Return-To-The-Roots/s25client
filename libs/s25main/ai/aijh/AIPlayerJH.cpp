@@ -64,6 +64,8 @@
 
 namespace {
 
+constexpr unsigned kRecentlyLostBuildingLifetime = 600; // Frames to keep a lost building as a retake target
+
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
 {
     std::unique_ptr<AIEvent::Base> ev;
@@ -235,6 +237,9 @@ AIPlayerJH::~AIPlayerJH() = default;
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
 void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 {
+    currentGF_ = gf;
+    PruneRecentlyLostBuildings();
+
     if(defeated)
         return;
 
@@ -1157,6 +1162,8 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
 
 void AIPlayerJH::HandleNewMilitaryBuildingOccupied(const MapPoint pt)
 {
+    ForgetLostMilitaryBuilding(pt);
+
     // kill bad flags we find
     RemoveAllUnusedRoads(pt);
     bldPlanner->UpdateBuildingsWanted(*this);
@@ -1295,6 +1302,8 @@ void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction)
 
 void AIPlayerJH::HandleMilitaryBuilingLost(const MapPoint pt)
 {
+    RememberLostMilitaryBuilding(pt);
+
     // For now, this is the same as losing land.
     HandleLostLand(pt);
 }
@@ -1521,6 +1530,46 @@ void AIPlayerJH::HandleLostLand(const MapPoint pt)
         return;
     }
     RemoveAllUnusedRoads(pt);
+}
+
+void AIPlayerJH::RememberLostMilitaryBuilding(const MapPoint pt)
+{
+    PruneRecentlyLostBuildings();
+
+    const auto it =
+      std::find_if(recentlyLostBuildings_.begin(), recentlyLostBuildings_.end(),
+                   [pt](const RecentlyLostBuilding& entry) { return entry.pos == pt; });
+    if(it != recentlyLostBuildings_.end())
+    {
+        it->gf = currentGF_;
+    } else
+    {
+        recentlyLostBuildings_.push_back({pt, currentGF_});
+    }
+}
+
+void AIPlayerJH::ForgetLostMilitaryBuilding(const MapPoint pt)
+{
+    recentlyLostBuildings_.erase(std::remove_if(recentlyLostBuildings_.begin(), recentlyLostBuildings_.end(),
+                                                [pt](const RecentlyLostBuilding& entry) { return entry.pos == pt; }),
+                                 recentlyLostBuildings_.end());
+}
+
+void AIPlayerJH::PruneRecentlyLostBuildings()
+{
+    recentlyLostBuildings_.erase(
+      std::remove_if(recentlyLostBuildings_.begin(), recentlyLostBuildings_.end(),
+                     [this](const RecentlyLostBuilding& entry) {
+                         return currentGF_ > entry.gf
+                                && (currentGF_ - entry.gf) > kRecentlyLostBuildingLifetime;
+                     }),
+      recentlyLostBuildings_.end());
+}
+
+bool AIPlayerJH::IsRecentlyLostMilitaryBuilding(const MapPoint pt) const
+{
+    return std::any_of(recentlyLostBuildings_.begin(), recentlyLostBuildings_.end(),
+                       [pt](const RecentlyLostBuilding& entry) { return entry.pos == pt; });
 }
 
 void AIPlayerJH::MilUpgradeOptim()
@@ -1783,19 +1832,23 @@ bool AIPlayerJH::CanAttackInDefenseMode(const nobBaseMilitary& target, const uns
     if(attackersCount == 0)
         return false;
 
-    if(!IsLonelyEnemyStronghold(target))
+    const double lowLevel = AI_CONFIG.combat.fulfillmentLow;
+    const bool wantsRetake =
+      combatFulfillmentLevel_ <= lowLevel && IsRecentlyLostMilitaryBuilding(target.GetPos());
+
+    if(!wantsRetake && !IsLonelyEnemyStronghold(target))
         return false;
 
     const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(&target);
-    const unsigned defenders = enemyMilitary->GetNumTroops();
     if(enemyMilitary)
     {
+        const unsigned defenders = enemyMilitary->GetNumTroops();
         if(attackersCount <= defenders)
             return false;
-    } else
+    } else if(target.DefendersAvailable())
     {
-        if(target.DefendersAvailable() && attackersCount <= defenders)
-            return false;
+        // Warehouses and HQs do not expose troop counts; just avoid attacking staffed buildings.
+        return false;
     }
 
     return true;

@@ -5,6 +5,7 @@
 #include "HeadlessGame.h"
 #include "EventManager.h"
 #include "GlobalGameSettings.h"
+#include "ILocalGameState.h"
 #include "PlayerInfo.h"
 #include "Savegame.h"
 #include "ai/aijh/AIConfig.h"
@@ -28,6 +29,7 @@
 #include <exception>
 #include <iomanip>
 #include <sstream>
+#include <utility>
 #ifdef WIN32
 #    include "Windows.h"
 #endif
@@ -39,6 +41,62 @@ std::string HumanReadableNumber(unsigned num);
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
 using bfs::canonical;
+
+namespace {
+class HeadlessLocalGameState : public ILocalGameState
+{
+public:
+    unsigned GetPlayerId() const override { return 0u; }
+    bool IsHost() const override { return true; }
+
+    std::string FormatGFTime(unsigned gf) const override
+    {
+        using seconds = std::chrono::duration<uint32_t, std::chrono::seconds::period>;
+        using hours = std::chrono::duration<uint32_t, std::chrono::hours::period>;
+        using minutes = std::chrono::duration<uint32_t, std::chrono::minutes::period>;
+        using std::chrono::duration_cast;
+
+        seconds numSeconds = duration_cast<seconds>(gf * SPEED_GF_LENGTHS[referenceSpeed]);
+        hours numHours = duration_cast<hours>(numSeconds);
+        numSeconds -= numHours;
+        minutes numMinutes = duration_cast<minutes>(numSeconds);
+        numSeconds -= numMinutes;
+
+        if(numHours.count())
+            return helpers::format("%u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
+        else
+            return helpers::format("%02u:%02u", numMinutes.count(), numSeconds.count());
+    }
+
+    void SystemChat(const std::string& text) override { bnw::cout << text << '\n'; }
+};
+
+Game CreateHeadlessGame(const GlobalGameSettings& ggs, const std::vector<AI::Info>& ais,
+                        const boost::optional<bfs::path>& startSavePath, std::unique_ptr<Savegame>& startSave)
+{
+    if(startSavePath)
+    {
+        auto save = std::make_unique<Savegame>();
+        if(!save->Load(*startSavePath, SaveGameDataToLoad::All))
+        {
+            const std::string lastError = save->GetLastErrorMsg();
+            throw std::runtime_error("Could not load savegame " + startSavePath->string()
+                                     + (lastError.empty() ? "" : ": " + lastError));
+        }
+        std::vector<PlayerInfo> players;
+        const unsigned numPlayers = save->GetNumPlayers();
+        players.reserve(numPlayers);
+        for(unsigned i = 0; i < numPlayers; ++i)
+            players.emplace_back(save->GetPlayer(i));
+        GlobalGameSettings saveSettings = save->ggs;
+        const unsigned startGF = save->start_gf;
+        startSave = std::move(save);
+        return Game(std::move(saveSettings), startGF, players);
+    }
+
+    return Game(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais));
+}
+} // namespace
 
 #ifdef WIN32
 HANDLE setupStdOut();
@@ -52,13 +110,22 @@ void printConsole(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 void printConsole(const char* fmt, ...);
 #endif
 
-HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais)
-    : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais)), world_(game_.world_),
-      em_(*static_cast<EventManager*>(game_.em_.get()))
+HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais,
+                           const boost::optional<bfs::path>& startSavePath)
+    : map_(map), startSave_(nullptr), game_(CreateHeadlessGame(ggs, ais, startSavePath, startSave_)),
+      world_(game_.world_), em_(*static_cast<EventManager*>(game_.em_.get()))
 {
-    MapLoader loader(world_);
-    if(!loader.Load(map))
-        throw std::runtime_error("Could not load " + map.string());
+    if(startSave_)
+    {
+        HeadlessLocalGameState localGameState;
+        startSave_->sgd.ReadSnapshot(game_, localGameState);
+        startSave_.reset();
+    } else
+    {
+        MapLoader loader(world_);
+        if(!loader.Load(map))
+            throw std::runtime_error("Could not load " + map.string());
+    }
 
     players_.clear();
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)

@@ -26,6 +26,7 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
         color = ser.PopUnsignedInt();
         team = helpers::popEnum<Team>(ser);
     }
+    aiInfo = AI::Info(AI::Type::Default, AI::Level::Hard);
 }
 
 void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const

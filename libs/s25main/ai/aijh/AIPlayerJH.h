@@ -14,6 +14,7 @@
 #include <list>
 #include <memory>
 #include <queue>
+#include <vector>
 
 class noFlag;
 class noShip;
@@ -238,6 +239,12 @@ private:
         BuildingType buildingType;
     };
 
+    struct RecentlyLostBuilding
+    {
+        MapPoint pos;
+        unsigned gf;
+    };
+
     enum class CombatLogState
     {
         Pending,
@@ -262,6 +269,10 @@ private:
     void LogPlayerMetadata(std::ofstream& combatsFile) const;
     CombatLogState EvaluateCombatState(const ActiveCombat& combat) const;
     bool HasOwnAggressors(const nobBaseMilitary& building) const;
+    void RememberLostMilitaryBuilding(MapPoint pt);
+    void ForgetLostMilitaryBuilding(MapPoint pt);
+    void PruneRecentlyLostBuildings();
+    bool IsRecentlyLostMilitaryBuilding(MapPoint pt) const;
 
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;
@@ -291,5 +302,7 @@ private:
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;
     mutable unsigned lastStatsFrame_ = 0;
+    unsigned currentGF_ = 0;
+    std::vector<RecentlyLostBuilding> recentlyLostBuildings_;
 };
 } // namespace AIJH

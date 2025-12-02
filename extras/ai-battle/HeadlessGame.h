@@ -11,6 +11,7 @@
 #include "gameTypes/AIInfo.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/optional.hpp>
 #include <bits/random.h>
 #include <chrono>
 #include <limits>
@@ -22,12 +23,14 @@ class GlobalGameSettings;
 class EventManager;
 class GameWorldViewer;
 class IngameMinimap;
+class Savegame;
 
 /// Run an ai-only game without user-interface.
 class HeadlessGame
 {
 public:
-    HeadlessGame(const GlobalGameSettings& ggs, const boost::filesystem::path& map, const std::vector<AI::Info>& ais);
+    HeadlessGame(const GlobalGameSettings& ggs, const boost::filesystem::path& map, const std::vector<AI::Info>& ais,
+                 const boost::optional<boost::filesystem::path>& startSave = boost::none);
     ~HeadlessGame();
 
     void Run(unsigned maxGF = std::numeric_limits<unsigned>::max());
@@ -41,6 +44,7 @@ private:
     void SaveMinimap(unsigned currentGF);
 
     boost::filesystem::path map_;
+    std::unique_ptr<Savegame> startSave_;
     Game game_;
     GameWorld& world_;
     EventManager& em_;
