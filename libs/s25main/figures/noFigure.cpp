@@ -6,11 +6,13 @@
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "figures/nofArmored.h"
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "nofCarrier.h"
@@ -46,7 +48,8 @@ const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::GotToGoal), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0),
-      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
+      armor(false)
 {
     // Haben wir ein Ziel?
     // Gehen wir in ein Lagerhaus? Dann dürfen wir da nicht unsere Arbeit ausführen, sondern
@@ -60,7 +63,8 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::Job), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0),
-      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
+      armor(false)
 {}
 
 void noFigure::Destroy()
@@ -83,6 +87,7 @@ void noFigure::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedShort(rs_pos);
     sgd.PushBool(rs_dir);
     sgd.PushBool(on_ship);
+    sgd.PushBool(armor);
 
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         sgd.PushObject(goal_);
@@ -102,7 +107,7 @@ void noFigure::Serialize(SerializedGameData& sgd) const
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), fs(sgd.Pop<FigureState>()), job_(sgd.Pop<Job>()), player(sgd.PopUnsignedChar()),
       cur_rs(sgd.PopObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
-      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF)
+      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF), armor(sgd.GetGameDataVersion() >= 12 ? sgd.PopBool() : false)
 {
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         goal_ = sgd.PopObject<noRoadNode>();
@@ -815,6 +820,15 @@ void noFigure::DrawWalking(DrawPoint drawPt)
         case Job::TempleServant:
             DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
             break;
+        case Job::Skinner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::SkinnerWalking]);
+            break;
+        case Job::Tanner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::TannerWalking]);
+            break;
+        case Job::LeatherWorker:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::LeatherworkerWalking]);
+            break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }
 }
@@ -841,7 +855,12 @@ void noFigure::RemoveFromInventory()
         world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
         world->GetPlayer(player).DecreaseInventoryWare(GoodType::Boat, 1);
     } else
+    {
         world->GetPlayer(player).DecreaseInventoryJob(job_, 1);
+        auto* armoredFigure = checkedCast<nofArmored*>(this);
+        if(armoredFigure && armoredFigure->HasArmor())
+            world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(armoredFigure), 1);
+    }
 }
 
 void noFigure::DieFailedTrade()

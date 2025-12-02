@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwDistribution.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "WineLoader.h"
@@ -24,6 +26,7 @@
 
 /// Dertermines width of the progress bars: distance to the window borders
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
+const unsigned TAB_ICON_SIZE = 36;
 
 iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : TransmitSettingsIgwAdapter(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312),
@@ -32,8 +35,10 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
 {
     CreateGroups();
 
+    Resize(Extent(groups.size() * TAB_ICON_SIZE + TAB_ICON_SIZE / 2 + 20, 312));
+
     // Tab Control
-    ctrlTab* tab = AddTabCtrl(0, DrawPoint(10, 20), 270);
+    ctrlTab* tab = AddTabCtrl(0, DrawPoint(10, 20), groups.size() * TAB_ICON_SIZE + TAB_ICON_SIZE / 2);
     DrawPoint txtPos(GetSize().x / 2, 60);
     DrawPoint progPos(PROGRESS_BORDER_DISTANCE - tab->GetPos().x, txtPos.y);
     const Extent progSize(GetSize().x - 2 * PROGRESS_BORDER_DISTANCE, 20);
@@ -75,7 +80,10 @@ void iwDistribution::TransmitSettings()
     if(settings_changed)
     {
         // Read values from the progress ctrls to the struct
-        Distributions newDistribution{0};
+        Distributions newDistribution;
+        // Set default values for all distributions because groups with only one entry are not shown and will not be set
+        std::transform(distributionMap.begin(), distributionMap.end(), newDistribution.begin(),
+                       [](DistributionMapping const& mapping) { return std::get<2>(mapping); });
 
         for(unsigned i = 0; i < groups.size(); ++i)
         {
@@ -176,10 +184,15 @@ void iwDistribution::CreateGroups()
                 case GoodType::Wood: img = LOADER.GetImageN("io", 89); break;
                 case GoodType::Boards: img = LOADER.GetImageN("io", 82); break;
                 case GoodType::Water: img = LOADER.GetImageN("io", 92); break;
+                case GoodType::Ham:
+                    img = LOADER.GetImageN("leather_bobs",
+                                           leatheraddon::bobIndex[leatheraddon::BobType::DistributionOfPigsIcon]);
+                    break;
                 default: break;
             }
             if(!img)
                 throw std::runtime_error("Unexpected good in distribution");
+
             groups.push_back(DistributionGroup(_(name), img));
         }
         // HQ = Construction
@@ -191,12 +204,10 @@ void iwDistribution::CreateGroups()
 
     auto isUnused = [&](std::tuple<std::string, unsigned> const& bts) {
         const BuildingType buildingType = std::get<1>(distributionMap[std::get<1>(bts)]);
-        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(buildingType))
-            return true;
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && buildingType == BuildingType::Charburner)
-            return true;
-        return false;
+        return makeIsUnusedBuilding(gwv.GetWorld().GetGGS())(buildingType);
     };
     for(auto& group : groups)
         helpers::erase_if(group.entries, isUnused);
+
+    helpers::erase_if(groups, [](DistributionGroup& group) { return group.entries.size() == 1; });
 }
