@@ -15,14 +15,17 @@
 #include "helpers/random.h"
 #include "network/PlayerGameCommands.h"
 #include "world/GameWorld.h"
+#include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/GameConsts.h"
+#include "IngameMinimap.h"
 #include "s25util/colors.h"
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
+#include <exception>
 #include <iomanip>
 #include <sstream>
 #ifdef WIN32
@@ -115,6 +118,8 @@ void HeadlessGame::Run(unsigned maxGF)
 
         if(replay_.IsRecording())
             replay_.UpdateLastGF(currentGF);
+
+        SaveMinimap(currentGF);
 
         if(std::chrono::steady_clock::now() > nextReport)
         {
@@ -266,6 +271,33 @@ void HeadlessGame::PrintState()
     printConsole("└────────────────────────┴──────────────┴──────────────┴────────────┘\n");
 
     lastReportGf_ = em_.GetCurrentGF();
+}
+
+void HeadlessGame::SaveMinimap(unsigned currentGF)
+{
+    if(STATS_CONFIG.stats_period == 0)
+        return;
+    if(currentGF == 0 || currentGF % STATS_CONFIG.stats_period != 0)
+        return;
+    if(lastMinimapSaveGF_ == currentGF)
+        return;
+    if(STATS_CONFIG.screensPath.empty())
+        return;
+
+    lastMinimapSaveGF_ = currentGF;
+
+    try
+    {
+        minimapViewer_ = std::make_unique<GameWorldViewer>(0, world_);
+        minimap_ = std::make_unique<IngameMinimap>(*minimapViewer_);
+
+        const bfs::path filePath =
+          bfs::path(STATS_CONFIG.screensPath) / ("ai_map_" + toPaddedString(currentGF, 8) + ".bmp");
+        minimap_->SaveToFile(filePath);
+    } catch(const std::exception& e)
+    {
+        bnw::cerr << "Failed to save minimap: " << e.what() << std::endl;
+    }
 }
 
 std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)

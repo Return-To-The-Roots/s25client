@@ -14,11 +14,14 @@
 #include <bits/random.h>
 #include <chrono>
 #include <limits>
+#include <memory>
 #include <vector>
 
 class GameWorld;
 class GlobalGameSettings;
 class EventManager;
+class GameWorldViewer;
+class IngameMinimap;
 
 /// Run an ai-only game without user-interface.
 class HeadlessGame
@@ -35,6 +38,7 @@ public:
 
 private:
     void PrintState();
+    void SaveMinimap(unsigned currentGF);
 
     boost::filesystem::path map_;
     Game game_;
@@ -47,6 +51,9 @@ private:
 
     unsigned lastReportGf_ = 0;
     std::chrono::steady_clock::time_point gameStartTime_;
+    unsigned lastMinimapSaveGF_ = 0;
+    std::unique_ptr<GameWorldViewer> minimapViewer_;
+    std::unique_ptr<IngameMinimap> minimap_;
 
     std::string toPaddedString(unsigned int value, int width);
 };
