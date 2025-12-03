@@ -4,7 +4,9 @@
 
 #include "world/GameWorldView.h"
 #include "CatapultStone.h"
+#include "Cheats.h"
 #include "FOWObjects.h"
+#include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -366,7 +368,10 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
                     auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
                     attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
                 }
-                continue;
+                // Do not draw enemy productivity overlay unless the object is visible AND the related cheat is on
+                if(!(gwv.GetVisibility(pt) == Visibility::Visible
+                     && GetWorld().GetGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay()))
+                    continue;
             }
 
             // Draw object name
