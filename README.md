@@ -100,6 +100,7 @@ Please check `cmake --help` for more options.
 ### macOS
 
 ```bash
+brew install dylibbundler
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
 git submodule update --init --recursive 
