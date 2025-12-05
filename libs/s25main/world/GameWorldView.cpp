@@ -88,20 +88,16 @@ void GameWorldView::SetNextZoomFactor()
     CalcFxLx();
 }
 
-void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
+float GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
 {
-    if(zoomFactor < ZOOM_FACTORS.front())
-        targetZoomFactor_ = ZOOM_FACTORS.front();
-    else if(zoomFactor > ZOOM_FACTORS.back())
-        targetZoomFactor_ = ZOOM_FACTORS.back();
-    else
-        targetZoomFactor_ = zoomFactor;
+    targetZoomFactor_ = zoomFactor;
     if(!smoothTransition)
     {
         zoomFactor_ = targetZoomFactor_;
         updateEffectiveZoomFactor();
         CalcFxLx();
     }
+    return targetZoomFactor_;
 }
 
 float GameWorldView::GetCurrentTargetZoomFactor() const

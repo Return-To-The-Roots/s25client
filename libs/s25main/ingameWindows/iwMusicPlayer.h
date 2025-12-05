@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,10 +9,10 @@
 
 class Playlist;
 
-/// Fenster zum Einstellen des Musik-Players
+/// Window for changing music player options and playlists
 class iwMusicPlayer final : public IngameWindow
 {
-    /// Kleines Fenster zur Eingabe von Text
+    /// Small window for text input
     class InputWindow final : public IngameWindow
     {
         const unsigned win_id;
@@ -25,8 +25,7 @@ class iwMusicPlayer final : public IngameWindow
         void Msg_EditEnter(unsigned ctrl_id) override;
     };
 
-    /// Merken, ob Veränderungen an den Musikeinstellungen durchgeführt wurden und ob deswegen
-    /// beim Schließen des Fensters das ganze neu gestartet werden muss
+    /// Set to true if anything changed to (re)start music on close
     bool changed;
 
 public:
@@ -42,11 +41,13 @@ private:
     bool GetRandomPlayback() const;
     void SetRandomPlayback(bool random_playback);
 
-    /// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
+    /// Fill combobox with all playlists and selects given entry if present
     void UpdatePlaylistCombo(const std::string& highlight_entry);
 
     bool SaveCurrentPlaylist();
     void UpdateFromPlaylist(const Playlist&);
+    // Enable/Disable buttons for changing playlist contents
+    void UpdateSaveChangeButtonsState();
     Playlist MakePlaylist();
 
     void Msg_ListChooseItem(unsigned ctrl_id, unsigned selection) override;

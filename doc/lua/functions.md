@@ -24,7 +24,7 @@ Reference: [libs/libGamedata/lua/LuaInterfaceBase.cpp](../../libs/libGamedata/lu
 **rttr:GetFeatureLevel()**  
 Get the current feature level of the LUA interface.
 Increases here indicate new features.
-The current version is **4**.
+The current version is **6**.
 
 **rttr:Log(message)**  
 Log the message to console.
@@ -242,7 +242,8 @@ Add an AI or change its difficulty.
 Change the player's name.
 
 **SetPortrait(portraitIndex)**  
-Change the player's portrait.
+Change the player's portrait.  
+-- Added in LUA version 1.6
 
 [Back](#Lua-objects-and-their-methods)  
 
@@ -383,7 +384,8 @@ rttr:GetWorld():AddAnimal(41, 44, SPEC_DUCK)
 [Back](#Lua-objects-and-their-methods)  
 
 **SetComputerBarrier(radius, x, y)**
-Defines an area with a specified (inclusive) radius around map point {x, y} in which the AI cannot build military buildings.
+Defines an area with a specified (inclusive) radius around map point {x, y} in which the AI cannot build military buildings.  
+-- Added in LUA version 1.5
 
 ## Serializer
 

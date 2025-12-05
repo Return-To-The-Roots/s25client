@@ -21,10 +21,13 @@ void CheatCommandTracker::onKeyEvent(const KeyEvent& ke)
     if(!cheats_.areCheatsAllowed())
         return;
 
-    if(checkSpecialKeyEvent(ke))
-        lastChars_.clear();
-    else
+    if(ke.kt == KeyType::Char)
         onCharKeyEvent(ke);
+    else
+    {
+        onSpecialKeyEvent(ke);
+        lastChars_.clear();
+    }
 }
 
 void CheatCommandTracker::onChatCommand(const std::string& cmd)
@@ -38,25 +41,26 @@ void CheatCommandTracker::onChatCommand(const std::string& cmd)
         cheats_.toggleAllBuildingsEnabled();
 }
 
-bool CheatCommandTracker::checkSpecialKeyEvent(const KeyEvent& ke)
+void CheatCommandTracker::onSpecialKeyEvent(const KeyEvent& ke)
 {
-    if(ke.kt == KeyType::Char)
-        return false;
-
     switch(ke.kt)
     {
         case KeyType::F7: cheats_.toggleAllVisible(); break;
         case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }
-
-    return true;
 }
 
 void CheatCommandTracker::onCharKeyEvent(const KeyEvent& ke)
 {
-    lastChars_.push_back(ke.c);
+    // Handle only ASCII chars
+    if(ke.c > 0x7F)
+        lastChars_.clear();
+    else
+    {
+        lastChars_.push_back(static_cast<char>(ke.c));
 
-    if(lastChars_ == enableCheatsStr)
-        cheats_.toggleCheatMode();
+        if(lastChars_ == enableCheatsStr)
+            cheats_.toggleCheatMode();
+    }
 }

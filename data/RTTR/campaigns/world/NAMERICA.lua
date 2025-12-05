@@ -35,17 +35,20 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)
     rttr:GetPlayer(0):SetColor(0)
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)
     rttr:GetPlayer(1):SetNation(NAT_VIKINGS)
     rttr:GetPlayer(1):SetColor(1)
     rttr:GetPlayer(1):SetName('Knut')
+    rttr:GetPlayer(1):SetPortrait(4)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)
     rttr:GetPlayer(2):SetNation(NAT_VIKINGS)
     rttr:GetPlayer(2):SetColor(2)
     rttr:GetPlayer(2):SetName('Olof')
+    rttr:GetPlayer(2):SetPortrait(5)
     rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
@@ -55,8 +58,10 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end

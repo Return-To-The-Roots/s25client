@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,6 +9,7 @@
 #include "Settings.h"
 #include "SoundManager.h"
 #include "WindowManager.h"
+#include "controls/ctrlCheck.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlProgress.h"
 #include "drivers/AudioDriverWrapper.h"
@@ -32,6 +33,8 @@ enum
     ID_txtKeyboardLayout,
     ID_btReadme,
     ID_txtReadme,
+    ID_btLoad,
+    ID_txtLoad,
     ID_btSave,
     ID_txtSave,
     ID_btSoundEffects,
@@ -41,65 +44,101 @@ enum
     ID_btMusicPlayer,
     ID_btAdvanced,
     ID_btSurrender,
-    ID_btEndGame
+    ID_btEndGame,
+    ID_cpBirdSounds
 };
-}
+
+using Offset = DrawPoint;
+constexpr auto windowSize = Extent(300, 525);
+constexpr auto imageButtonSize = Extent(35, 35);
+constexpr auto optionSizeSmall = Extent(160, 22);
+constexpr auto optionSizeBig = Extent(168, 24);
+constexpr auto optionOffset = Offset(65, 6);
+constexpr auto textOffset = Offset(50, 24);
+constexpr auto centerPosition = windowSize.x / 2;
+constexpr auto textSpacing = 17;
+constexpr auto generalSpacing = 5;
+constexpr auto leftMargin = 35;
+} // namespace
 
 iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
-    : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"),
+    : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, windowSize, _("Game menu"),
                    LOADER.GetImageN("resource", 41)),
       soundManager(soundManager)
 {
-    // Der Soldat oben
-    AddImage(ID_imgSoldier, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
+    DrawPoint curPos = DrawPoint(centerPosition, 10);
 
-    AddText(ID_txtRttr, DrawPoint(150, 60), "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddText(ID_txtVersion, DrawPoint(150, 77), rttr::version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER,
-            NormalFont);
-    AddFormattedText(ID_txtCopyright, DrawPoint(150, 94),
+    // The soldier on top
+    constexpr Offset soldierOffset(0, 26);
+    AddImage(ID_imgSoldier, curPos + soldierOffset, LOADER.GetImageN("io", 30));
+    curPos.y += textSpacing + soldierOffset.y;
+
+    AddText(ID_txtRttr, curPos, "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    curPos.y += textSpacing;
+
+    AddText(ID_txtVersion, curPos, rttr::version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    curPos.y += textSpacing;
+
+    AddFormattedText(ID_txtCopyright, curPos,
                      "\xC2\xA9"
                      "2005 - %s Settlers Freaks",
                      COLOR_YELLOW, FontStyle::CENTER, NormalFont)
       % rttr::version::GetYear();
+    curPos.y += textSpacing * 2;
+    curPos.x = leftMargin;
 
-    AddImageButton(ID_btKeyboardLayout, DrawPoint(35, 120), Extent(35, 35), TextureColor::Green2,
-                   LOADER.GetImageN("io", 79));
-    AddText(ID_txtKeyboardLayout, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
+    AddImageButton(ID_btKeyboardLayout, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
+    AddText(ID_txtKeyboardLayout, curPos + textOffset, _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
             NormalFont);
-    AddImageButton(ID_btReadme, DrawPoint(35, 160), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 79));
-    AddText(ID_txtReadme, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    curPos.y += imageButtonSize.y + generalSpacing;
 
-    // "Spiel laden!"
+    AddImageButton(ID_btReadme, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
+    AddText(ID_txtReadme, curPos + textOffset, _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    curPos.y += imageButtonSize.y + generalSpacing;
+
     // TODO: Implement
-    // AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 48));
-    // AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
+    // AddImageButton(ID_btLoad, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 48));
+    // AddText(ID_txtLoad, curPos + textOffset, _("Load game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    // curPos.y += imageButtonSize.y + generalSpacing;
 
-    // "Spiel speichern!"
-    // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
-    AddImageButton(ID_btSave, DrawPoint(35, 230), Extent(35, 35), TextureColor::Green2, LOADER.GetImageN("io", 47));
-    AddText(ID_txtSave, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
+    AddImageButton(ID_btSave, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 47));
+    AddText(ID_txtSave, curPos + textOffset, _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
+    curPos.y += imageButtonSize.y + generalSpacing;
 
-    // Geräusche an/aus
-    AddImageButton(ID_btSoundEffects, DrawPoint(35, 300), Extent(35, 35), TextureColor::Green2,
+    // Sound on/off + volume
+    AddImageButton(ID_btSoundEffects, curPos, imageButtonSize, TextureColor::Green2,
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
-
-    // Musik an/aus
-    AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TextureColor::Green2,
-                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
-
-    // Geräuschlautstärke
-    AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
+    AddProgress(ID_pgEffectVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
+    curPos.y += imageButtonSize.y;
+    curPos.x += optionOffset.x;
 
-    // Musiklautstärke
-    AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TextureColor::Green2, 139, 138, 100)
+    AddCheckBox(ID_cpBirdSounds, curPos, optionSizeSmall, TextureColor::Green2, _("Bird sounds"), NormalFont, false)
+      ->setChecked(SETTINGS.sound.birdsEnabled);
+    curPos.y += optionSizeSmall.y + generalSpacing * 3;
+    curPos.x = leftMargin;
+
+    // Music on/off + volume
+    AddImageButton(ID_btMusic, curPos, imageButtonSize, TextureColor::Green2,
+                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
+    AddProgress(ID_pgMusicVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
       ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
+    curPos.y += imageButtonSize.y;
+    curPos.x += optionOffset.x;
 
-    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 380), Extent(160, 22), TextureColor::Green2, _("Music player"),
-                  NormalFont);
-    AddTextButton(ID_btAdvanced, DrawPoint(67, 412), Extent(168, 24), TextureColor::Green2, _("Advanced"), NormalFont);
-    AddTextButton(ID_btSurrender, DrawPoint(67, 443), Extent(168, 24), TextureColor::Red1, _("Surrender"), NormalFont);
-    AddTextButton(ID_btEndGame, DrawPoint(67, 474), Extent(168, 24), TextureColor::Red1, _("End game"), NormalFont);
+    AddTextButton(ID_btMusicPlayer, curPos, optionSizeSmall, TextureColor::Green2, _("Music player"), NormalFont);
+    curPos.y += optionSizeSmall.y + generalSpacing * 3;
+    curPos.x = leftMargin;
+
+    // Buttons at the bottom
+    curPos.x = centerPosition - optionSizeBig.x / 2;
+    AddTextButton(ID_btAdvanced, curPos, optionSizeBig, TextureColor::Green2, _("Advanced"), NormalFont);
+    curPos.y += optionSizeBig.y + generalSpacing;
+    AddTextButton(ID_btSurrender, curPos, optionSizeBig, TextureColor::Red1, _("Surrender"), NormalFont);
+    curPos.y += optionSizeBig.y + generalSpacing;
+    AddTextButton(ID_btEndGame, curPos, optionSizeBig, TextureColor::Red1, _("End game"), NormalFont);
 }
 
 void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
@@ -159,4 +198,10 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
             AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musicVolume);
             break;
     }
+}
+
+void iwOptionsWindow::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
+{
+    RTTR_Assert(ctrl_id == ID_cpBirdSounds);
+    SETTINGS.sound.birdsEnabled = checked;
 }

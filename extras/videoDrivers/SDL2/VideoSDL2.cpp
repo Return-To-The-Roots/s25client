@@ -42,6 +42,17 @@ struct SDLMemoryDeleter
 
 template<typename T>
 using SDL_memory = std::unique_ptr<T, SDLMemoryDeleter<T>>;
+
+void setSpecialKeys(KeyEvent& ke, const SDL_Keymod mod)
+{
+    ke.ctrl = (mod & KMOD_CTRL);
+    ke.shift = (mod & KMOD_SHIFT);
+    ke.alt = (mod & KMOD_ALT);
+}
+void setSpecialKeys(KeyEvent& ke)
+{
+    setSpecialKeys(ke, SDL_GetModState());
+}
 } // namespace
 
 IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
@@ -251,12 +262,8 @@ void VideoSDL2::HandlePaste()
     if(!text || *text == '\0') // empty string indicates error
         PrintError(text ? SDL_GetError() : "Paste failed.");
 
-    KeyEvent ke = {KeyType::Char, 0, false, false, false};
     for(const char32_t c : s25util::utf8to32(text.get()))
-    {
-        ke.c = static_cast<unsigned>(c);
-        CallBack->Msg_KeyDown(ke);
-    }
+        CallBack->Msg_KeyDown(KeyEvent(c));
 }
 
 void VideoSDL2::DestroyScreen()
@@ -301,7 +308,7 @@ bool VideoSDL2::MessageLoop()
 
             case SDL_KEYDOWN:
             {
-                KeyEvent ke = {KeyType::Invalid, 0, false, false, false};
+                KeyEvent ke;
 
                 switch(ev.key.keysym.sym)
                 {
@@ -337,29 +344,32 @@ bool VideoSDL2::MessageLoop()
                         break;
                 }
 
-                if(ke.kt == KeyType::Invalid)
-                    break;
+                setSpecialKeys(ke, SDL_Keymod(ev.key.keysym.mod));
 
-                /// Strg, Alt, usw gedrückt?
-                if(ev.key.keysym.mod & KMOD_CTRL)
-                    ke.ctrl = true;
-                if(ev.key.keysym.mod & KMOD_SHIFT)
-                    ke.shift = true;
-                if(ev.key.keysym.mod & KMOD_ALT)
-                    ke.alt = true;
-
-                CallBack->Msg_KeyDown(ke);
+                if(ke.kt != KeyType::Invalid)
+                    CallBack->Msg_KeyDown(ke);
+                else if(ke.alt || ke.ctrl)
+                {
+                    // Handle shortcuts (CTRL+x, ALT+y)
+                    // but not possible combinations (ALT+0054)
+                    const SDL_Keycode keycode = ev.key.keysym.sym;
+                    if(keycode >= 'a' && keycode <= 'z')
+                    {
+                        ke.kt = KeyType::Char;
+                        ke.c = static_cast<char32_t>(keycode);
+                        CallBack->Msg_KeyDown(ke);
+                    }
+                }
             }
             break;
             case SDL_TEXTINPUT:
             {
                 const std::u32string text = s25util::utf8to32(ev.text.text);
-                SDL_Keymod mod = SDL_GetModState();
-                KeyEvent ke = {KeyType::Char, 0, (mod & KMOD_CTRL) != 0, (mod & KMOD_SHIFT) != 0,
-                               (mod & KMOD_ALT) != 0};
+                KeyEvent ke(0);
+                setSpecialKeys(ke);
                 for(char32_t c : text)
                 {
-                    ke.c = static_cast<unsigned>(c);
+                    ke.c = c;
                     CallBack->Msg_KeyDown(ke);
                 }
                 break;
@@ -458,9 +468,8 @@ void VideoSDL2::SetMousePos(Position pos)
 
 KeyEvent VideoSDL2::GetModKeyState() const
 {
-    const SDL_Keymod modifiers = SDL_GetModState();
-    const KeyEvent ke = {KeyType::Invalid, 0, ((modifiers & KMOD_CTRL) != 0), ((modifiers & KMOD_SHIFT) != 0),
-                         ((modifiers & KMOD_ALT) != 0)};
+    KeyEvent ke;
+    setSpecialKeys(ke);
     return ke;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -99,6 +99,8 @@ enum
     ID_txtCommonPortrait,
     ID_btCommonPortrait,
     ID_cbCommonPortrait,
+    ID_txtBirdSounds,
+    ID_grpBirdSounds,
 };
 // Use these as IDs in dedicated groups
 constexpr auto ID_btOn = 1;
@@ -231,11 +233,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("IPv6"), NormalFont);
     ipv6->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("IPv4"), NormalFont);
     ipv6->SetSelection(SETTINGS.server.ipv6);
-    // ipv6-feld ggf (de-)aktivieren
+    // Enable/disable the IPv6 field if necessary
     ipv6->GetCtrl<ctrlButton>(1)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
     curPos.y += rowHeight + sectionSpacingCommon;
 
-    // Proxyserver
+    // Proxy server
     groupCommon->AddText(ID_txtProxy, curPos, _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* proxy = groupCommon->AddEdit(ID_edtProxy, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont);
     proxy->SetText(SETTINGS.proxy.hostname);
@@ -252,7 +254,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->SetSelection(SETTINGS.global.use_upnp);
     curPos.y += rowHeight;
 
-    // Proxytyp
+    // Proxy type
     groupCommon->AddText(ID_txtProxyType, curPos, _("Proxytyp:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo =
       groupCommon->AddComboBox(ID_cbProxyType, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
@@ -359,16 +361,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     constexpr Offset volOffset(400, -5);
     constexpr Extent ctrlSizeSmall(90, ctrlSize.y);
 
-    groupSound->AddText(ID_txtMusic, curPos, _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    mainGroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
-    mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
-    mainGroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
-
-    ctrlProgress* Mvolume =
-      groupSound->AddProgress(ID_pgMusicVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
-    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
-    curPos.y += rowHeight + sectionSpacing;
-
     groupSound->AddText(ID_txtEffects, curPos, _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupSound->AddOptionGroup(ID_grpEffects, GroupSelectType::Check);
     mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
@@ -377,6 +369,22 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlProgress* FXvolume =
       groupSound->AddProgress(ID_pgEffectsVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
     FXvolume->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
+    curPos.y += rowHeight + sectionSpacing;
+
+    groupSound->AddText(ID_txtBirdSounds, curPos, _("Bird sounds"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    mainGroup = groupSound->AddOptionGroup(ID_grpBirdSounds, GroupSelectType::Check);
+    mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
+    mainGroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
+    curPos.y += rowHeight + sectionSpacing;
+
+    groupSound->AddText(ID_txtMusic, curPos, _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    mainGroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
+    mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
+    mainGroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
+
+    ctrlProgress* Mvolume =
+      groupSound->AddProgress(ID_pgMusicVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
+    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
     curPos.y += rowHeight + sectionSpacing;
 
     groupSound->AddTextButton(ID_btMusicPlayer, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Music player"),
@@ -396,7 +404,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
             combo->SetSelection(combo->GetNumItems() - 1);
     }
 
-    // "Allgemein" auswählen
+    // Select "General"
     mainGroup = GetCtrl<ctrlOptionGroup>(ID_grpOptions);
     mainGroup->SetSelection(ID_btCommon, true);
 
@@ -405,7 +413,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     loadVideoModes();
 
-    // Und zu der Combobox hinzufügen
+    // and add to the combo box
     ctrlComboBox& cbVideoModes = *groupGraphics->GetCtrl<ctrlComboBox>(ID_cbResolution);
     for(const auto& videoMode : video_modes)
     {
@@ -420,15 +428,15 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
         cbVideoModes.AddString(str.str());
 
-        // Ist das die aktuelle Auflösung? Dann selektieren
+        // Select, if this is the current resolution
         if(videoMode == SETTINGS.video.fullscreenSize) //-V807
             cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
     }
 
-    // "Vollbild" setzen
+    // Set "Fullscreen"
     groupGraphics->GetCtrl<ctrlOptionGroup>(ID_grpFullscreen)->SetSelection(SETTINGS.video.fullscreen); //-V807
 
-    // "Limit Framerate" füllen
+    // Fill "Limit Framerate"
     auto* cbFrameRate = groupGraphics->GetCtrl<ctrlComboBox>(ID_cbFramerate);
     if(VIDEODRIVER.HasVSync())
         cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
@@ -452,8 +460,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // Sound
     // {
 
-    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpMusic)->SetSelection(SETTINGS.sound.musicEnabled);
     groupSound->GetCtrl<ctrlOptionGroup>(ID_grpEffects)->SetSelection(SETTINGS.sound.effectsEnabled);
+    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpBirdSounds)->SetSelection(SETTINGS.sound.birdsEnabled);
+    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpMusic)->SetSelection(SETTINGS.sound.musicEnabled);
 
     // }
 
@@ -511,7 +520,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                 case 2: SETTINGS.proxy.type = ProxyType::Socks5; break;
             }
 
-            // ipv6 gleich sichtbar deaktivieren
+            // Disable IPv6 visually
             if(SETTINGS.proxy.type == ProxyType::Socks4 && SETTINGS.server.ipv6)
             {
                 GetCtrl<ctrlGroup>(ID_grpCommon)->GetCtrl<ctrlOptionGroup>(ID_grpIpv6)->SetSelection(0);
@@ -560,6 +569,8 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
         case ID_grpFullscreen: SETTINGS.video.fullscreen = enabled; break;
         case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
         case ID_grpOptTextures: SETTINGS.video.shared_textures = enabled; break;
+        case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;
+        case ID_grpBirdSounds: SETTINGS.sound.birdsEnabled = enabled; break;
         case ID_grpMusic:
             SETTINGS.sound.musicEnabled = enabled;
             if(enabled)
@@ -567,7 +578,6 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             else
                 MUSICPLAYER.Stop();
             break;
-        case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;
         case ID_grpDebugData:
             // Special case: Uses e.g. ID_btSubmitDebugOn directly
             SETTINGS.global.submit_debug_data = selection;
@@ -615,7 +625,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
         {
             auto* groupCommon = GetCtrl<ctrlGroup>(ID_grpCommon);
 
-            // Name abspeichern
+            // Save the name
             SETTINGS.lobby.name = groupCommon->GetCtrl<ctrlEdit>(ID_edtName)->GetText();
             if(!validatePort(groupCommon->GetCtrl<ctrlEdit>(ID_edtPort)->GetText(), SETTINGS.server.localPort))
                 return;

@@ -54,6 +54,6 @@ jobs:
           sudo apt-get update && sudo apt-get install -y \
             clang-18 clang-tidy-18 \
             libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev gettext \
-            libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev libboost-locale-dev libboost-iostreams-dev
+            libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev libboost-locale-dev libboost-nowide-dev libboost-iostreams-dev
       - name: Run Clang-Tidy
         run: tools/ci/runClangTidy.sh

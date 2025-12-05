@@ -271,6 +271,18 @@ ctrlDeepening* Window::AddColorDeepening(unsigned id, const DrawPoint& pos, cons
     return AddCtrl(new ctrlColorDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, fillColor));
 }
 
+ctrlDeepening* Window::AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                         ITexture* image)
+{
+    return AddCtrl(new ctrlImageDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, image));
+}
+
+ctrlDeepening* Window::AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                         glArchivItem_Bitmap* image)
+{
+    return AddImageDeepening(id, pos, size, tc, static_cast<ITexture*>(image));
+}
+
 ctrlEdit* Window::AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                           unsigned short maxlength, bool password, bool disabled, bool notify)
 {

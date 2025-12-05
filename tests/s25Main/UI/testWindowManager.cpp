@@ -366,7 +366,7 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
         MOCK_EXPECT(curWnd->DrawContent); // Ignore all draw calls
     }
     // Way outside any window, should still be handled
-    KeyEvent ke{KeyType::Char, 'a', false, false, false};
+    const KeyEvent ke('a');
     for(TestIngameWnd* curWnd : expectedOrder)
     {
         REQUIRE_WINDOW_ACTIVE(curWnd);
@@ -381,7 +381,7 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
 {
     auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
-    KeyEvent evEsc{KeyType::Escape, 0, false, false, false};
+    const KeyEvent evEsc(KeyType::Escape);
     WINDOWMANAGER.Msg_KeyDown(evEsc);
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
@@ -479,8 +479,9 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
 
 BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
 {
-    constexpr KeyEvent evEsc{KeyType::Escape, 0, false, false, false};
-    constexpr KeyEvent evAltW{KeyType::Char, 'w', false, false, true};
+    constexpr KeyEvent evEsc(KeyType::Escape);
+    KeyEvent evAltW('w');
+    evAltW.alt = true;
 
     BOOST_TEST_CONTEXT("Pinned windows ignore escape key")
     {
@@ -610,8 +611,7 @@ BOOST_FIXTURE_TEST_CASE(TestTransmitSettingsAdapter, uiHelper::Fixture)
         wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
         MOCK_EXPECT(wnd->TransmitSettings).once();
-        KeyEvent ev{KeyType::Escape, 0, false, false, false};
-        WINDOWMANAGER.Msg_KeyDown(ev);
+        WINDOWMANAGER.Msg_KeyDown(KeyEvent(KeyType::Escape));
         WINDOWMANAGER.Draw();
         BOOST_TEST(MockSettingsWnd::activeWnds == 0);
         BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);
@@ -621,8 +621,9 @@ BOOST_FIXTURE_TEST_CASE(TestTransmitSettingsAdapter, uiHelper::Fixture)
         wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
         MOCK_EXPECT(wnd->TransmitSettings).once();
-        KeyEvent ev{KeyType::Escape, 'w', false, false, true};
-        WINDOWMANAGER.Msg_KeyDown(ev);
+        KeyEvent ke('w');
+        ke.alt = true;
+        WINDOWMANAGER.Msg_KeyDown(ke);
         WINDOWMANAGER.Draw();
         BOOST_TEST(MockSettingsWnd::activeWnds == 0);
         BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);

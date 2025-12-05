@@ -21,7 +21,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 4
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -122,17 +122,20 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:read, 2:yellow, 
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_JAPANESE)   -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Hakirawashi')    -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(8)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_JAPANESE)   -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Tsunami')        -- Enemy Name
+    rttr:GetPlayer(2):SetPortrait(7)
     rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
@@ -142,9 +145,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

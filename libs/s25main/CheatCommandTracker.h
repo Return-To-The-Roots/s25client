@@ -19,7 +19,7 @@ public:
     void onChatCommand(const std::string& cmd);
 
 private:
-    bool checkSpecialKeyEvent(const KeyEvent& ke);
+    void onSpecialKeyEvent(const KeyEvent& ke);
     void onCharKeyEvent(const KeyEvent& ke);
 
     Cheats& cheats_;

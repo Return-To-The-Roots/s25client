@@ -241,8 +241,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
-        for(const unsigned duration : TOURNAMENT_MODES_DURATION)
-            combo->AddString(helpers::format(_("Tournament: %u minutes"), duration));
+        for(const auto duration : TOURNAMENT_MODES_DURATION)
+            combo->AddString(helpers::format(_("Tournament: %u minutes"), duration / 1min));
     }
 
     AddText(ID_txtSpeed, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -438,6 +438,7 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
         bool allowNationChange = allowPlayerChange;
         bool allowColorChange = allowPlayerChange;
         bool allowTeamChange = allowPlayerChange;
+        bool allowPortraitChange = allowPlayerChange;
         if(lua)
         {
             if(localPlayerId_ == row)
@@ -445,11 +446,13 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
                 allowNationChange &= lua->IsChangeAllowed("ownNation", true);
                 allowColorChange &= lua->IsChangeAllowed("ownColor", true);
                 allowTeamChange &= lua->IsChangeAllowed("ownTeam", true);
+                allowPortraitChange &= lua->IsChangeAllowed("ownPortrait", true);
             } else
             {
                 allowNationChange &= lua->IsChangeAllowed("aiNation", true);
                 allowColorChange &= lua->IsChangeAllowed("aiColor", true);
                 allowTeamChange &= lua->IsChangeAllowed("aiTeam", true);
+                allowPortraitChange &= lua->IsChangeAllowed("aiPortrait", true);
             }
         }
 
@@ -461,8 +464,12 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
                                     NormalFont, COLOR_YELLOW);
 
         const auto& portrait = Portraits[player.portraitIndex];
-        group->AddImageButton(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
-                              LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), _(portrait.name));
+        if(allowPortraitChange)
+            group->AddImageButton(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
+                                  LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), _(portrait.name));
+        else
+            group->AddImageDeepening(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
+                                     LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex));
 
         if(allowColorChange)
             group->AddColorButton(ID_btColor, DrawPoint(354, cy), Extent(30, 22), tc, 0);
@@ -965,9 +972,11 @@ void dskGameLobby::ChangePortrait(const unsigned player, const unsigned portrait
 {
     RTTR_Assert(portraitIndex < Portraits.size());
     const auto& portrait = Portraits[portraitIndex];
-    auto* ctrl = GetCtrl<ctrlGroup>(ID_grpPlayerStart + player)->GetCtrl<ctrlImageButton>(ID_btPortrait);
+    auto* ctrl = GetCtrl<ctrlGroup>(ID_grpPlayerStart + player)->GetCtrl<ctrlBaseImage>(ID_btPortrait);
     ctrl->SetImage(LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex));
-    ctrl->SetTooltip(_(portrait.name));
+    auto* ctrlButton = GetCtrl<ctrlGroup>(ID_grpPlayerStart + player)->GetCtrl<ctrlImageButton>(ID_btPortrait);
+    if(ctrlButton)
+        ctrlButton->SetTooltip(_(portrait.name));
 }
 
 void dskGameLobby::ChangePing(unsigned playerId)

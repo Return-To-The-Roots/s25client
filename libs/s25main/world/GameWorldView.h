@@ -78,7 +78,9 @@ public:
     Position GetPos() const { return origin_; }
     Extent GetSize() const { return size_; }
 
-    void SetZoomFactor(float zoomFactor, bool smoothTransition = true);
+    /// Set target zoom factor and start zooming if smoothTransition is true
+    /// Returns actual zoom factor used, potentially clamped
+    float SetZoomFactor(float zoomFactor, bool smoothTransition = true);
     float GetCurrentTargetZoomFactor() const;
     void SetNextZoomFactor();
 

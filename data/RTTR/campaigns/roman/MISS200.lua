@@ -21,7 +21,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 4
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -251,6 +251,7 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:red, 2:yellow, 
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):Close()
     rttr:GetPlayer(2):Close()
@@ -266,9 +267,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
+        ["ownPortrait"] = false,
         ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

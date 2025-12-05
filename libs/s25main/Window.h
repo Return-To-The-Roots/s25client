@@ -158,6 +158,11 @@ public:
                                     FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
     ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      unsigned fillColor);
+    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                     ITexture* image);
+    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                     glArchivItem_Bitmap* image);
+
     ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     ctrlGroup* AddGroup(unsigned id);
