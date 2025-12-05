@@ -102,6 +102,7 @@ Please check `cmake --help` for more options.
 ```bash
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
+git submodule update --init --recursive 
 mkdir -p build && cd build
 	cmake .. \
 		-DCMAKE_BUILD_TYPE=Release \
