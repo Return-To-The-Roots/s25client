@@ -23,7 +23,8 @@ MapPoint PositionFinder::FindBestPosition(BuildingType bt)
     {
         arounds.push_back(mil->GetPos());
     }
-    arounds.push_back(aii.GetHeadquarter()->GetPos());
+    if(const auto* headquarters = aii.GetHeadquarter())
+        arounds.push_back(headquarters->GetPos());
 
     for(const MapPoint around : arounds)
     {

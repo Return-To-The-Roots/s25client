@@ -150,7 +150,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
     // buildingsWanted[BuildingType::Forester] = calculator.CalcForesters();
 
     // fishery & hunter
-    buildingsWanted[BuildingType::Fishery] = std::min(maxFishers(aijh), numMilitaryBlds + 1u);
+    buildingsWanted[BuildingType::Fishery] = std::min(maxFishers(aijh) + 1, numMilitaryBlds + 1u);
     buildingsWanted[BuildingType::Hunter] = std::min(maxHunters(aijh), 4u);
 
     // Iterate through all building types and calculate wanted amounts

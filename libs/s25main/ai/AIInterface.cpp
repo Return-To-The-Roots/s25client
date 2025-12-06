@@ -258,7 +258,10 @@ bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& tar
 
 const nobHQ* AIInterface::GetHeadquarter() const
 {
-    return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
+    const MapPoint hqPos = player_.GetHQPos();
+    if(!hqPos.isValid())
+        return nullptr;
+    return gwb.GetSpecObj<nobHQ>(hqPos);
 }
 
 bool AIInterface::isBuildingNearby(BuildingType bldType, const MapPoint pt, unsigned maxDistance) const
