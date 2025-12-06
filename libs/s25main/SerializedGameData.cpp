@@ -103,7 +103,9 @@
 /// 10: troop_limits state introduced to military buildings
 /// 11:: wineaddon added, three new building types and two new goods
 /// 12: Store building start/complete frames
-static const unsigned currentGameDataVersion = 12;
+/// 13: Persist capture gameframe for military buildings
+/// 14: Persist original owner for military buildings
+static const unsigned currentGameDataVersion = 14;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

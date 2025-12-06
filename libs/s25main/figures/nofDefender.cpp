@@ -4,6 +4,7 @@
 
 #include "nofDefender.h"
 
+#include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
@@ -181,11 +182,27 @@ void nofDefender::AttackerArrested()
     }
 }
 
+namespace {
+constexpr unsigned DEFENDER_BONUS_CAPTURE_DELAY_GFS = 5000;
+}
+
 void nofDefender::ApplyDefenderBonusHitpoints()
 {
     const unsigned maxRankHp = HITPOINTS[GetRank()];
-    if(hitpoints == maxRankHp)
-        ++hitpoints;
-    else if(hitpoints > maxRankHp + 1u)
-        hitpoints = static_cast<unsigned char>(maxRankHp + 1u);
+    unsigned bonusHp = 0;
+    if(building && world)
+    {
+        const unsigned deltaGF = world->GetEvMgr().GetCurrentGF() - building->GetCapturedGF();
+        if(deltaGF > DEFENDER_BONUS_CAPTURE_DELAY_GFS)
+            ++bonusHp;
+        if(building->GetOriginOwner() == GetPlayer())
+            ++bonusHp;
+    }
+
+    const unsigned maxAllowedHp = maxRankHp + bonusHp;
+
+    if(bonusHp && hitpoints == maxRankHp)
+        hitpoints = static_cast<unsigned char>(maxAllowedHp);
+    else if(hitpoints > maxAllowedHp)
+        hitpoints = static_cast<unsigned char>(maxAllowedHp);
 }

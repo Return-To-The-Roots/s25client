@@ -937,6 +937,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     world->GetPlayer(old_player).RemoveBuilding(this, bldType_);
     // Change ownership to the new player
     player = new_owner;
+    SetCapturedGF(GetEvMgr().GetCurrentGF());
     // Update the economic records for both players
     world->GetPlayer(new_owner).AddBuilding(this, bldType_);
 

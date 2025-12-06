@@ -37,6 +37,10 @@ protected:
     std::list<nofAggressiveDefender*> aggressive_defenders;
     /// The defender currently protecting the building
     nofDefender* defender_;
+    /// Game frame of the latest capture by the current owner; 0 if never captured
+    unsigned captured_gf_;
+    /// Player who originally owned/built the building
+    unsigned char origin_owner_;
 
 public:
     nobBaseMilitary(BuildingType type, MapPoint pos, unsigned char player, Nation nation);
@@ -109,6 +113,9 @@ public:
 
     /// Return the list of all current aggressors, that is enemy soldiers currently attacking this military building.
     const std::list<nofAttacker*>& GetAggressors() const { return aggressors; }
+    unsigned GetCapturedGF() const { return captured_gf_; }
+    unsigned char GetOriginOwner() const { return origin_owner_; }
+    void SetCapturedGF(unsigned gf) { captured_gf_ = gf; }
 
     /// Return true if the military building is under attack.
     bool IsUnderAttack() const { return !aggressors.empty(); };

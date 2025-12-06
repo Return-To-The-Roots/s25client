@@ -14,7 +14,10 @@ This memo documents the combat lifecycles discovered while tracing `nofPassiveSo
 ### Active Soldier State Machine
 - `nofActiveSoldier` (`libs/s25main/figures/nofActiveSoldier.cpp:200-420`) handles roaming attackers, defenders, and aggressive defenders. `TryFightingNearbyEnemy` scans a radius of two tiles for other actives ready to fight, negotiates a fight spot via `GetFightSpotNear`, and transitions both soldiers to `MeetEnemy`/`WaitingForFight`.
 - Movement logic (`MeetingEnemy`) walks toward the shared `fightSpot_`. If either cannot reach it, `AbortFreeFight` resets both soldiers so they can resume mission logic. Damage application happens through `TakeHit()` (lines 343-347), which simply decrements the stored `hitpoints`; there is no regeneration outside of buildings.
-F
+
+### Defender Hitpoint Bonus
+- When a passive is promoted into an active defender, `nofDefender::ApplyDefenderBonusHitpoints` (`libs/s25main/figures/nofDefender.cpp:17-77, 132-161`) now grants up to two temporary HP based on ownership history. Defenders get +1 HP if the building has been held for more than 5 000 gameframes since the last capture, and an additional +1 HP if the defender’s player matches `nobBaseMilitary::GetOriginOwner()`. The bonus only applies to soldiers that left the building at full rank HP, is clamped, and disappears once they re-enter the garrison and become passive again via `std::make_unique<nofPassiveSoldier>(*soldier)`.
+
 ### Duel Resolution (`noFighting`)
 - When two actives meet successfully, the engine instantiates `noFighting` (`libs/s25main/nodeObjs/noFighting.cpp:22-305`). The constructor removes both soldiers from the map, pauses other traffic at that node, and keeps the area visible for both owners.
 - `StartAttack` (lines 275-305) drives the turn system. Every 15 ticks it rolls per-soldier random values weighted by rank and the `ADJUST_MILITARY_STRENGTH` addon. Higher rolls mean the attacker lands a hit (`defending_animation == 3`); otherwise, the defender plays one of three block animations.

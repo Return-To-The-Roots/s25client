@@ -23,7 +23,8 @@
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player,
                                  const Nation nation)
-    : noBuilding(type, pos, player, nation), leaving_event(nullptr), go_out(false), defender_(nullptr)
+    : noBuilding(type, pos, player, nation), leaving_event(nullptr), go_out(false), defender_(nullptr),
+      captured_gf_(GetEvMgr().GetCurrentGF()), origin_owner_(player)
 {}
 
 nobBaseMilitary::~nobBaseMilitary() = default;
@@ -100,6 +101,8 @@ void nobBaseMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(aggressors, true);
     sgd.PushObjectContainer(aggressive_defenders, true);
     sgd.PushObject(defender_, true);
+    sgd.PushUnsignedChar(origin_owner_);
+    sgd.PushUnsignedInt(captured_gf_);
 }
 
 nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id) : noBuilding(sgd, obj_id)
@@ -112,6 +115,15 @@ nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id)
     sgd.PopObjectContainer(aggressors, GO_Type::NofAttacker);
     sgd.PopObjectContainer(aggressive_defenders, GO_Type::NofAggressivedefender);
     defender_ = sgd.PopObject<nofDefender>(GO_Type::NofDefender);
+    if(sgd.GetGameDataVersion() >= 14)
+    {
+        origin_owner_ = sgd.PopUnsignedChar();
+        captured_gf_ = sgd.PopUnsignedInt();
+    } else
+    {
+        captured_gf_ = (sgd.GetGameDataVersion() >= 13) ? sgd.PopUnsignedInt() : 0;
+        origin_owner_ = player;
+    }
 }
 
 void nobBaseMilitary::AddLeavingEvent()

@@ -32,6 +32,7 @@
 
 ## Combat, Capture, and Destruction
 - `ProvideDefender` supplies defenders on demand, falling back to cancelling missions if the garrison is empty.
+- `nobBaseMilitary` records both the capture gameframe (`captured_gf_`) and the building’s original owner (`origin_owner_`). On construction the owner is set to the founding player; subsequent captures rewrite only `captured_gf_`, letting the engine distinguish a structure’s “age” under the current owner while still knowing who established it. The pair is serialized with the base state so multiplayer replays and savegames retain that provenance.
 - `Capture` transfers ownership: inventory coins are reassigned, missions cancelled, flags captured, territory recalculated, allies notified, and add-on coin policies applied.
 - `NeedOccupyingTroops` and `FarAwayCapturerReachedGoal` control how attackers step into a building during capture, including far-away capturers when nearby soldiers are scarce.
 - `CapturingSoldierArrived` finalises capture once enough attackers enter. `UnlinkAggressor` and `IsAggressor/IsFarAwayCapturer` management ensure aggressor lists stay clean.
@@ -46,4 +47,3 @@
 - `IsDemolitionAllowed` enforces add-on rules that block demolition if the building is under attack or near the frontier.
 - `IsUseless` and `IsAttackable` determine higher-level AI or UI behaviours based on frontier status, capture state, and ownership.
 - Helper queries like `GetTotalSoldiersByRank`, `HasUpgradeableSoldier`, `HasMaxRankSoldier`, and `GetSoldiersStrength` expose garrison state to other systems.
-
