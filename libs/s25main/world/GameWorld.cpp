@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "world/GameWorld.h"
+#include "CombatLossTracker.h"
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
@@ -393,6 +394,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
 
     std::vector<MapPoint> ptsWithChangedOwners;
     std::vector<int> sizeChanges(GetNumPlayers());
+    const unsigned capturingObjId = (reason == TerritoryChangeReason::Captured) ? building.GetObjId() : 0;
 
     // Copy owners from territory region to map and do the bookkeeping
     RTTR_FOREACH_PT(Position, region.size)
@@ -419,7 +421,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
     for(const MapPoint& curMapPt : ptsToHandle)
     {
         // Do not destroy the triggering building or its flag
-        DestroyPlayerRests(curMapPt, GetNode(curMapPt).owner, &building);
+        DestroyPlayerRests(curMapPt, GetNode(curMapPt).owner, &building, capturingObjId);
 
         if(gi)
             gi->GI_UpdateMinimap(curMapPt);
@@ -660,7 +662,8 @@ void GameWorld::CreateTradeGraphs()
         tradePathCache = std::make_unique<TradePathCache>(*this);
 }
 
-void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception)
+void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception,
+                                   const unsigned capturingObjId)
 {
     noBase* no = GetNode(pt).obj;
     if(!no || no == exception)
@@ -693,7 +696,24 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
 
     // If it is a flag, destroy the building
     if(noType == NodalObjectType::Flag && (!exception || no != exception->GetFlag()))
+    {
+        if(capturingObjId)
+        {
+            const MapPoint buildingPos = GetNeighbour(pt, Direction::NorthWest);
+            const noBase* const attachedObj = GetNO(buildingPos);
+            const auto* attachedBuilding = dynamic_cast<const noBaseBuilding*>(attachedObj);
+            if(attachedBuilding && attachedBuilding != exception)
+                CombatLossTracker::ReportDestroyedBuilding(capturingObjId, attachedBuilding->GetBuildingType());
+        }
         static_cast<noFlag*>(no)->DestroyAttachedBuilding();
+    }
+
+    if(capturingObjId
+       && (noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite || noType == NodalObjectType::Flag))
+    {
+        if(const auto* baseBuilding = dynamic_cast<const noBaseBuilding*>(no))
+            CombatLossTracker::ReportDestroyedBuilding(capturingObjId, baseBuilding->GetBuildingType());
+    }
 
     DestroyNO(pt, false);
 }

@@ -32,7 +32,8 @@ enum class TerritoryChangeReason
 class GameWorld : public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
-    void DestroyPlayerRests(MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception);
+    void DestroyPlayerRests(MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception,
+                            unsigned capturingObjId);
 
     /// Return if there are deco-objects that can be removed when building roads
     bool HasRemovableObjForRoad(MapPoint pt) const;

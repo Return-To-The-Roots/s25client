@@ -121,6 +121,30 @@ std::string FormatRankCounts(const std::array<unsigned, NUM_SOLDIER_RANKS>& coun
         result = "none";
     return result;
 }
+
+std::string FormatDestroyedBuildings(const std::map<BuildingType, unsigned>& destroyed)
+{
+    if(destroyed.empty())
+        return "none";
+
+    std::string result;
+    bool first = true;
+    for(const auto& entry : destroyed)
+    {
+        if(entry.second == 0)
+            continue;
+        if(!first)
+            result += ",";
+        first = false;
+        result += BUILDING_NAMES_1.at(entry.first);
+        result += ": ";
+        result += std::to_string(entry.second);
+    }
+
+    if(result.empty())
+        result = "none";
+    return result;
+}
 } // namespace
 
 namespace AIJH {
@@ -246,7 +270,10 @@ void AIPlayerJH::LogFinishedCombats(const unsigned gf) const
                     << ". Attack #" << (success ? "succed" : "failed") << " Forces: Attacker "
                     << FormatRankCounts(stats.attackerForces) << " . Defender " << FormatRankCounts(stats.defenderForces)
                     << " Losses: Attacker " << FormatRankCounts(stats.attackerLosses) << " . Defender "
-                    << FormatRankCounts(stats.defenderLosses) << std::endl;
+                    << FormatRankCounts(stats.defenderLosses);
+        if(success)
+            combatsFile << " Destroyed: " << FormatDestroyedBuildings(stats.destroyedBuildings);
+        combatsFile << std::endl;
     }
 }
 
