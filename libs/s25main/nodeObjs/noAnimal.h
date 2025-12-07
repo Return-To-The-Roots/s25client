@@ -74,8 +74,8 @@ public:
     /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
     void StartLiving();
 
-    bool CanSkinned() const;
-    bool IsSkinned() const;
+    bool CanBeSkinned() const;
+    bool IsGettingSkinned() const;
     void BeginSkinning(nofSkinner* skinner);
     void StopSkinning();
     void Skinned();
