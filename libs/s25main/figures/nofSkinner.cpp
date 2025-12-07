@@ -165,7 +165,7 @@ void nofSkinner::TryStartSkinning()
     else
     {
         const int ANIMAL_RADIUS = 19;
-        const auto pointToAnimal = [world = this->world](const MapPoint pt, unsigned)->noAnimal*{
+        const auto pointToAnimal = [world = this->world](const MapPoint pt, unsigned) -> noAnimal* {
             for(auto& figure : world->GetFigures(pt))
             {
                 if(figure.GetType() != NodalObjectType::Animal)
