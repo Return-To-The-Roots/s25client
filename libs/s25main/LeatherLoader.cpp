@@ -14,9 +14,9 @@
 
 namespace leatheraddon {
 
-helpers::EnumArray<unsigned, BobType> bobIndex = {0,   21,  69,  117, 125, 173, 221, 244, 292, 340, 388,
-                                                  436, 484, 532, 580, 628, 629, 630, 630, 631, 631, 632,
-                                                  633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643};
+helpers::EnumArray<unsigned, BobType> bobIndex = {0,   21,  69,  117, 125, 173, 221, 244, 292, 340, 388, 436,
+                                                  484, 532, 580, 628, 629, 630, 630, 631, 631, 632, 633, 634,
+                                                  635, 636, 637, 637, 638, 639, 640, 641, 642, 643};
 
 ITexture* GetWareTex(const GoodType good)
 {
