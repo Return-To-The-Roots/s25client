@@ -378,7 +378,7 @@ void nofHunter::HandleStateEviscerating()
     }
 
     animal->Eviscerated();
-    if(!animal->IsSkinned())
+    if(!animal->IsGettingSkinned())
     {
         // Tier verschwinden lassen
         auto ownedAnimal = world->RemoveFigure(pos, *animal);
