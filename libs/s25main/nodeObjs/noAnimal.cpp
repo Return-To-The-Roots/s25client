@@ -309,19 +309,18 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
     return boost::none;
 }
 
-bool noAnimal::CanSkinned() const
+bool noAnimal::CanBeSkinned() const
 {
     return (species != Species::Duck && state == State::Dead && !skinner);
 }
 
-bool noAnimal::IsSkinned() const
+bool noAnimal::IsGettingSkinned() const
 {
     return skinner != nullptr;
 }
 
 void noAnimal::Skinned()
 {
-    // Event abmelden
     if(!hunter)
         GetEvMgr().RemoveEvent(current_ev);
     // Reset skinner
@@ -416,7 +415,7 @@ void noAnimal::Die()
 void noAnimal::Eviscerated()
 {
     // Event abmelden
-    if(!IsSkinned())
+    if(!IsGettingSkinned())
         GetEvMgr().RemoveEvent(current_ev);
     // Reset hunter
     hunter = nullptr;
