@@ -152,35 +152,36 @@ void nofSkinner::HandleStateWalkingHome()
 
 void nofSkinner::TryStartSkinning()
 {
+    if(workplace->IsProductionDisabled())
+    {
+        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+        workplace->StartNotWorking();
+        return;
+    }
+
     // pigs have higher priority then going skinning dead animals
     if(AreWaresAvailable())
         HandleStateWaiting1();
     else
     {
-        const int SQUARE_SIZE = 19;
-        std::vector<noAnimal*> available_animals;
-        Position curPos;
-        for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
-        {
-            for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
+        const int ANIMAL_RADIUS = 19;
+        const auto pointToAnimal = [world = this->world](const MapPoint pt, unsigned)->noAnimal*{
+            for(auto& figure : world->GetFigures(pt))
             {
-                MapPoint curMapPos = world->MakeMapPoint(curPos);
-                for(auto& figure : world->GetFigures(curMapPos))
-                {
-                    if(figure.GetType() != NodalObjectType::Animal)
-                        continue;
-
-                    auto& animal = static_cast<noAnimal&>(figure);
-                    if(!animal.CanSkinned())
-                        continue;
-
-                    if(pos == animal.GetPos() || world->FindHumanPath(pos, animal.GetPos(), MAX_SKINNING_DISTANCE))
-                    {
-                        available_animals.push_back(&animal);
-                    }
-                }
+                if(figure.GetType() != NodalObjectType::Animal)
+                    continue;
+                return checkedCast<noAnimal*>(&figure);
             }
-        }
+            return nullptr;
+        };
+
+        const auto canAnimalBeSkinned = [pos = this->pos](const noAnimal* const animal) {
+            return animal && animal->CanBeSkinned()
+                   && (pos == animal->GetPos() || world->FindHumanPath(pos, animal->GetPos(), MAX_SKINNING_DISTANCE));
+        };
+
+        const auto available_animals =
+          world->GetPointsInRadius(pos, ANIMAL_RADIUS, pointToAnimal, canAnimalBeSkinned, true);
 
         if(!available_animals.empty())
         {
