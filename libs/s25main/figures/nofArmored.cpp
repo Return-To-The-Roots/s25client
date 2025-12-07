@@ -45,7 +45,7 @@ void nofArmored::DrawArmor(DrawPoint drawPt)
         SmallFont->Draw(drawPt + DrawPoint(10, -20), "1", FontStyle::CENTER, COLOR_RED);
     }
 
-    LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::DonkeyBoatCarryingArmorWare])
+    LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::ArmorIconAboveArmoredSoldier])
       ->DrawFull(drawPt + DrawPoint(0, -22));
 }
 
