@@ -46,7 +46,7 @@ helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 }
 unsigned BuildCalculator::Calc(BuildingType type)
 {
-    WantedParams wantedParams = AI_CONFIG.wantedParams[type];
+    const WantedParams wantedParams = aijh.GetConfig().wantedParams[type];
     if(!wantedParams.enabled)
     {
         return 0u;

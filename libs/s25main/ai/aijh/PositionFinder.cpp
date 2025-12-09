@@ -1,6 +1,7 @@
 
 #include "PositionFinder.h"
 
+#include "AIPlayerJH.h"
 #include "AIConfig.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
@@ -119,7 +120,7 @@ bool PositionFinder::CheckProximity(BuildingType type, const MapPoint& pt){
         return false;
     }
     AIConstruction& construction = aijh.GetConstruction();
-    auto locationParam = AI_CONFIG.locationParams[type];
+    const auto locationParam = aijh.GetConfig().locationParams[type];
     unsigned buildingCount = aijh.GetBldPlanner().GetNumBuildings(type);
     for(const auto otherType : helpers::enumRange<BuildingType>())
     {

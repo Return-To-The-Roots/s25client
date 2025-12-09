@@ -6,6 +6,7 @@
 #include "addons/Addon.h"
 #include "ai/aijh/AIConfig.h"
 #include "ai/aijh/StatsConfig.h"
+#include "gameData/MaxPlayers.h"
 #include "files.h"
 #include "random/Random.h"
 
@@ -20,6 +21,7 @@
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 #include <filesystem>
+#include <stdexcept>
 
 namespace bnw = boost::nowide;
 namespace bfs = boost::filesystem;
@@ -53,6 +55,8 @@ int main(int argc, char** argv)
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
         ("weights_file", po::value<std::string>()->required(), "AI weights file")
+        ("player_weights", po::value<std::vector<std::string>>()->multitoken(),
+         "Per-player weights overrides (<player>=<file>)")
         ("start_wares", po::value<std::string>()->default_value("alot"),"Start wares")
         ("start_from_save", po::value(&start_save_path),"Path to savegame to load (optional)")
         ("replay", po::value(&replay_path),"Filename to write stats_interval to (optional)")
@@ -126,6 +130,23 @@ int main(int argc, char** argv)
 
         const auto weightsFile = options["weights_file"].as<std::string>();
         applyWeightsCfg(weightsFile);
+        if(options.count("player_weights"))
+        {
+            const auto overrides = options["player_weights"].as<std::vector<std::string>>();
+            for(const std::string& entry : overrides)
+            {
+                const auto eqPos = entry.find('=');
+                if(eqPos == std::string::npos || eqPos == 0 || eqPos == entry.size() - 1)
+                {
+                    throw std::invalid_argument("Invalid player_weights entry: " + entry);
+                }
+                unsigned long parsedIdx = std::stoul(entry.substr(0, eqPos));
+                if(parsedIdx == 0 || parsedIdx > MAX_PLAYERS)
+                    throw std::out_of_range("player_weights index out of bounds: " + entry);
+                const std::string path = entry.substr(eqPos + 1);
+                ApplyPlayerWeightsCfg(static_cast<unsigned char>(parsedIdx - 1), path);
+            }
+        }
 
         GlobalGameSettings ggs;
         const auto objective = options["objective"].as<std::string>();

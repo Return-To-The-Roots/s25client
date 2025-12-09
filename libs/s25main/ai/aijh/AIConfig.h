@@ -33,8 +33,9 @@ extern WantedParams parseWeights(const YAML::Node& rootNode);
 
 extern void initDefaults();
 extern void applyWeightsCfg(std::string weightCfgPath);
-extern void applyBldPlannerCfg(YAML::Node plannerNode);
-extern void applyPosFinderCfg(YAML::Node posFinder);
+extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig);
+extern void ApplyPlayerWeightsCfg(unsigned char playerId, std::string weightCfgPath);
+extern const AIConfig& GetAIConfigForPlayer(unsigned char playerId);
 extern void initAIConfig(std::string configPath);
 
 #endif

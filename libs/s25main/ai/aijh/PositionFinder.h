@@ -4,7 +4,6 @@
 
 #ifndef POSITIONFINDER_H
 #define POSITIONFINDER_H
-#include "AIPlayerJH.h"
 #include "WeightParams.h"
 #include "ai/RatedPoint.h"
 #include "ai/aijh/AIMap.h"

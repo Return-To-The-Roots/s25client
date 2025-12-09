@@ -5,8 +5,12 @@
 #include "AIConfig.h"
 #include "StatsConfig.h"
 #include "WeightParser.h"
+#include "gameData/MaxPlayers.h"
 
+#include <array>
 #include <iostream>
+#include <memory>
+#include <utility>
 #include <yaml-cpp/yaml.h>
 
 // Define the global instance
@@ -20,7 +24,9 @@ CombatConfig::CombatConfig()
 }
 
 namespace {
-void applyCombatCfg(const YAML::Node& combatNode)
+std::array<std::unique_ptr<AIConfig>, MAX_PLAYERS> gPlayerConfigs;
+
+void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
 {
     if(!combatNode)
         return;
@@ -30,11 +36,11 @@ void applyCombatCfg(const YAML::Node& combatNode)
         try
         {
             if(const YAML::Node value = fulfillmentNode["low"])
-                AI_CONFIG.combat.fulfillmentLow = value.as<double>();
+                config.combat.fulfillmentLow = value.as<double>();
             if(const YAML::Node value = fulfillmentNode["medium"])
-                AI_CONFIG.combat.fulfillmentMedium = value.as<double>();
+                config.combat.fulfillmentMedium = value.as<double>();
             if(const YAML::Node value = fulfillmentNode["high"])
-                AI_CONFIG.combat.fulfillmentHigh = value.as<double>();
+                config.combat.fulfillmentHigh = value.as<double>();
         } catch(const YAML::TypedBadConversion<double>& e)
         {
             std::cerr << "Warning: Invalid combat fulfillment value, using defaults. Error: " << e.what()
@@ -47,37 +53,19 @@ void applyCombatCfg(const YAML::Node& combatNode)
         try
         {
             if(const YAML::Node value = attackIntervalsNode["easy"])
-                AI_CONFIG.combat.attackIntervals[AI::Level::Easy] = value.as<unsigned>();
+                config.combat.attackIntervals[AI::Level::Easy] = value.as<unsigned>();
             if(const YAML::Node value = attackIntervalsNode["medium"])
-                AI_CONFIG.combat.attackIntervals[AI::Level::Medium] = value.as<unsigned>();
+                config.combat.attackIntervals[AI::Level::Medium] = value.as<unsigned>();
             if(const YAML::Node value = attackIntervalsNode["hard"])
-                AI_CONFIG.combat.attackIntervals[AI::Level::Hard] = value.as<unsigned>();
+                config.combat.attackIntervals[AI::Level::Hard] = value.as<unsigned>();
         } catch(const YAML::TypedBadConversion<unsigned>& e)
         {
             std::cerr << "Warning: Invalid combat attack interval, using defaults. Error: " << e.what() << std::endl;
         }
     }
 }
-} // namespace
 
-extern void applyWeightsCfg(std::string weightCfgPath)
-{
-    try
-    {
-        std::locale oldLocale = std::locale::global(std::locale("C"));
-        YAML::Node rootNode = YAML::LoadFile(weightCfgPath);
-        applyPosFinderCfg(rootNode["posFinder"]);
-        applyBldPlannerCfg(rootNode["buildPlanner"]);
-        applyCombatCfg(rootNode["combat"]);
-        std::locale::global(oldLocale);
-    } catch(const YAML::Exception& e)
-    {
-        std::cerr << "Error parsing weights YAML file: " << e.what() << std::endl;
-        exit(1);
-    }
-}
-
-extern void applyPosFinderCfg(YAML::Node posFinder)
+void applyPosFinderCfg(const YAML::Node& posFinder, AIConfig& config)
 {
     std::string bldName;
     BuildingType bldType;
@@ -87,8 +75,8 @@ extern void applyPosFinderCfg(YAML::Node posFinder)
         {
             bldName = weightsNode.first.as<std::string>();
             bldType = BUILDING_NAME_MAP.at(bldName);
-            AI_CONFIG.locationParams[bldType] =
-              Weights::parseLocationParams(weightsNode.second, AI_CONFIG.locationParams[bldType]);
+            config.locationParams[bldType] =
+              Weights::parseLocationParams(weightsNode.second, config.locationParams[bldType]);
         } catch(const YAML::TypedBadConversion<double>& e)
         {
             std::cerr << "Warning: Invalid value for 'linear', using default. Error: " << e.what() << std::endl;
@@ -96,7 +84,8 @@ extern void applyPosFinderCfg(YAML::Node posFinder)
         }
     }
 }
-extern void applyBldPlannerCfg(YAML::Node plannerNode)
+
+void applyBldPlannerCfg(const YAML::Node& plannerNode, AIConfig& config)
 {
     std::string bldName;
     BuildingType bldType;
@@ -106,14 +95,60 @@ extern void applyBldPlannerCfg(YAML::Node plannerNode)
         {
             bldName = weightsNode.first.as<std::string>();
             bldType = BUILDING_NAME_MAP.at(bldName);
-            AI_CONFIG.wantedParams[bldType] =
-              Weights::parseWantedParams(weightsNode.second, AI_CONFIG.wantedParams[bldType]);
+            config.wantedParams[bldType] =
+              Weights::parseWantedParams(weightsNode.second, config.wantedParams[bldType]);
         } catch(const YAML::TypedBadConversion<double>& e)
         {
             std::cerr << "Warning: Invalid value for 'linear', using default. Error: " << e.what() << std::endl;
             continue;
         }
     }
+}
+} // namespace
+
+extern void applyWeightsCfg(std::string weightCfgPath)
+{
+    applyWeightsCfg(std::move(weightCfgPath), AI_CONFIG);
+}
+
+extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
+{
+    try
+    {
+        std::locale oldLocale = std::locale::global(std::locale("C"));
+        YAML::Node rootNode = YAML::LoadFile(weightCfgPath);
+        applyPosFinderCfg(rootNode["posFinder"], targetConfig);
+        applyBldPlannerCfg(rootNode["buildPlanner"], targetConfig);
+        applyCombatCfg(rootNode["combat"], targetConfig);
+        std::locale::global(oldLocale);
+    } catch(const YAML::Exception& e)
+    {
+        std::cerr << "Error parsing weights YAML file: " << e.what() << std::endl;
+        exit(1);
+    }
+}
+
+extern void ApplyPlayerWeightsCfg(const unsigned char playerId, std::string weightCfgPath)
+{
+    if(playerId >= MAX_PLAYERS)
+    {
+        std::cerr << "Invalid player id for weights override: " << static_cast<unsigned>(playerId) << std::endl;
+        return;
+    }
+
+    auto cfg = std::make_unique<AIConfig>();
+    applyWeightsCfg(std::move(weightCfgPath), *cfg);
+    gPlayerConfigs[playerId] = std::move(cfg);
+}
+
+extern const AIConfig& GetAIConfigForPlayer(const unsigned char playerId)
+{
+    if(playerId < MAX_PLAYERS)
+    {
+        if(gPlayerConfigs[playerId])
+            return *gPlayerConfigs[playerId];
+    }
+    return AI_CONFIG;
 }
 
 namespace {

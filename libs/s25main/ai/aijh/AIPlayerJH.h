@@ -21,6 +21,8 @@ class noShip;
 class nobBaseMilitary;
 class nobMilitary;
 class nobBaseWarehouse;
+struct AIConfig;
+
 namespace AIEvent {
 class Base;
 }
@@ -44,6 +46,7 @@ public:
 
     AIInterface& GetInterface() { return aii; }
     const AIInterface& GetInterface() const { return aii; }
+    const AIConfig& GetConfig() const { return config_; }
     const GameWorldBase& GetWorld() const { return gwb; }
     // Required by the AIJobs:
     AIConstruction& GetConstruction() { return *construction; }
@@ -231,6 +234,7 @@ public:
     bool IsInDefenseMode() const { return attackMode == CombatMode::DefenseMode; }
 
 private:
+    const AIConfig& config_;
     struct ActiveCombat
     {
         MapPoint pos;

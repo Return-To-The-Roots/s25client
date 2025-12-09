@@ -182,7 +182,8 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 }
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-    : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
+    : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()),
+      config_(GetAIConfigForPlayer(playerId)), resourceMaps(createResourceMaps(aii, aiMap)),
       isInitGfCompleted(false), defeated(player.IsDefeated()),
       attackMode(CombatMode::DefenseMode), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this)), positionFinder(std::make_unique<PositionFinder>(*this))
@@ -193,7 +194,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     SaveResourceMapsToFile();
 #endif
 
-    attack_interval = AI_CONFIG.combat.attackIntervals[level];
+    attack_interval = config_.combat.attackIntervals[level];
     switch(level)
     {
         case AI::Level::Easy:
@@ -1778,7 +1779,7 @@ double AIPlayerJH::GetCombatAttackWeight() const
 
 void AIPlayerJH::UpdateCombatMode()
 {
-    const auto& combatCfg = AI_CONFIG.combat;
+    const auto& combatCfg = config_.combat;
     const double lowLevel = combatCfg.fulfillmentLow;       // Average force threshold that should trigger defensive stance
     const double mediumLevel = combatCfg.fulfillmentMedium;
     const double highLevel = combatCfg.fulfillmentHigh;     // Ready-to-strike threshold
@@ -1832,7 +1833,7 @@ bool AIPlayerJH::CanAttackInDefenseMode(const nobBaseMilitary& target, const uns
     if(attackersCount == 0)
         return false;
 
-    const double lowLevel = AI_CONFIG.combat.fulfillmentLow;
+    const double lowLevel = config_.combat.fulfillmentLow;
     const bool wantsRetake =
       combatFulfillmentLevel_ <= lowLevel && IsRecentlyLostMilitaryBuilding(target.GetPos());
 
