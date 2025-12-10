@@ -61,11 +61,11 @@ enum class BobType
     LeatherworkerJobIcon,
     SkinsWareOnGroundOfFlag,
     DonkeyBoatCarryingSkinsWare,
-    ArmorIconAboveArmoredSoldier,
     LeatherWareOnGroundOfFlag,
     DonkeyBoatCarryingLeatherWare,
     ArmorWareOnGroundOfFlag,
     DonkeyBoatCarryingArmorWare,
+    ArmorIconAboveArmoredSoldier,
     StopCoinsXSignOverride,
     StopArmorXSign,
 };
