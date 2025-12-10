@@ -87,6 +87,9 @@ void iwBuildOrder::TransmitSettings()
             transmitPendingBuildOrder[i++] = BuildingType::Temple;
         }
 
+        // This is not an OBB write because pendingBuildOrder does not contain the leather/wine building
+        // entries when the addon is inactive. So the pendingBuildOrder list is shorter then
+        // the transmitPendingBuildOrder list. See fillBuildOrder at the top of this file.
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
             transmitPendingBuildOrder[i++] = BuildingType::Charburner;
 
