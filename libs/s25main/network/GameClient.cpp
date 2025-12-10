@@ -1559,6 +1559,15 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
         return false;
     }
 
+    /*
+      We have to to this if we have a old replay starting from scratch not containing a savegame. If a savegame is
+      contained in the replay the compatibility code in GamePlayer deserialization function takes care of handling this.
+      If we have a replay starting from scratch in the constructor of the gameplayer the standard distributions are
+      loaded. These contain also the new leather addon buildings. When the distribution is recomputed these buildings
+      are added to the possible goals for wares. This leads to the problem that we have more buildings then before in
+      the list. So it happens for example for wood that the ware is deliverd to a different goal and then the replay
+      gets out of sync.
+    */
     if(!mapinfo.savegame && replayinfo->replay.GetMinorVersion() < 2)
     {
         auto newDistributions = default_settings.distribution;
