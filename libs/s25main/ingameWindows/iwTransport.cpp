@@ -119,6 +119,9 @@ void iwTransport::TransmitSettings()
 
         if(!leatheraddon::isAddonActive(gwv.GetWorld()))
         {
+            // This is not an OBB write because pendingOrder does not contain the leather entry
+            // when the addon is inactive. So the pendingOrder list is one entry shorter then
+            // the transmitPendingTransportOrder list. See fillTransportOrder at the top of this file.
             transmitPendingTransportOrder[i++] = STD_TRANSPORT_PRIO[GoodType::Leather];
         }
 
