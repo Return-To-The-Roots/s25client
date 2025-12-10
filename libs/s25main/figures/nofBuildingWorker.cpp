@@ -48,7 +48,9 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
         if(sgd.GetGameDataVersion() < 5)
         {
             const auto iWare = sgd.PopUnsignedChar();
-            if(iWare == rttr::enum_cast(GoodType::Nothing))
+            // GoodType::Nothing is moved because of adding new wares due addons
+            // The old GoodType::Nothing is now GoodType::Grapes
+            if(iWare == rttr::enum_cast(GoodType::Grapes))
                 ware = boost::none;
             else
                 ware = GoodType(iWare);
