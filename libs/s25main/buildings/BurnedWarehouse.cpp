@@ -71,9 +71,9 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // No way out for figures -> all die and we can remove this object
         GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
         for(const auto i : helpers::enumRange<Job>())
-            world->GetPlayer(player).DecreaseInventoryJob(i, people.people[i]);
+            world->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
         for(const auto i : helpers::enumRange<ArmoredSoldier>())
-            world->GetPlayer(player).DecreaseInventoryJob(i, people.armoredSoldiers[i]);
+            world->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
 
         return;
     }
@@ -83,14 +83,14 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // In the last phase all remaining ones leave, else only some
         unsigned count;
         if(go_out_phase + 1 >= GO_OUT_PHASES)
-            count = people.people[job];
+            count = people[job];
         else
-            count = people.people[job] / (GO_OUT_PHASES - go_out_phase);
+            count = people[job] / (GO_OUT_PHASES - go_out_phase);
         if(count == 0)
             continue;
 
         // Remove from inventory
-        people.people[job] -= count;
+        people[job] -= count;
 
         // Distribute in all directions starting at a random one of the possible ones
         const unsigned startIdx = (possibleDirs.size() <= 1u) ? 0 : RANDOM_RAND(possibleDirs.size());
@@ -111,7 +111,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
                 if(isSoldier(job))
                 {
                     auto const armoredSoldier = figureToAmoredSoldierEnum(&figure);
-                    if(people.armoredSoldiers[armoredSoldier] > 0)
+                    if(people[armoredSoldier] > 0)
                     {
                         figure.SetArmor(true);
                         people.Remove(armoredSoldier);
