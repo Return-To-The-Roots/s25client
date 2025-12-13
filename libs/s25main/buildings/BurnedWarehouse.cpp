@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -19,7 +19,7 @@ constexpr unsigned GO_OUT_PHASES = 10;
 /// Time between those phases
 constexpr unsigned PHASE_LENGTH = 2;
 
-BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const PeopleArray& people)
+BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const PeopleArray<unsigned>& people)
     : noCoordBase(NodalObjectType::BurnedWarehouse, pos), player(player), go_out_phase(0), people(people)
 {
     // First event
