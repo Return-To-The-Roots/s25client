@@ -46,4 +46,5 @@ public:
     GO_Type GetGOT() const final { return GO_Type::NofSkinner; }
 
     void WorkAborted() override;
+    void AnimalLost();
 };
