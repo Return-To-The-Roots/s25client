@@ -17,7 +17,7 @@ class BurnedWarehouse : public noCoordBase
 public:
     using PeopleArray = PeopleArray<unsigned>;
 
-    BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& peopleArray);
+    BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& people);
     BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
     ~BurnedWarehouse() override;
