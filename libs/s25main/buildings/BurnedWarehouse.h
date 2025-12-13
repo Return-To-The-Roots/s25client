@@ -15,7 +15,7 @@ class SerializedGameData;
 class BurnedWarehouse : public noCoordBase
 {
 public:
-    using PeopleArray = Inventory;
+    using PeopleArray = PeopleArray<unsigned>;
 
     BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& peopleArray);
     BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);
