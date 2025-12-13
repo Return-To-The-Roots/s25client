@@ -4,6 +4,7 @@
 
 #include "noAnimal.h"
 #include "EventManager.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
@@ -159,22 +160,20 @@ void noAnimal::HandleEvent(const unsigned id)
         // Sterbe-Event
         case 2:
         {
-            // we stay in dead state until skinner has done his work, otherwise he has no chance to reach the animal in
-            // time
-            if(skinner)
-                current_ev = GetEvMgr().AddEvent(this, 30, 2);
-            else
-            {
-                // nun verschwinden
-                current_ev = GetEvMgr().AddEvent(this, 30, 3);
-                state = State::Disappearing;
-            }
+            // nun verschwinden
+            current_ev = GetEvMgr().AddEvent(this, 30, 3);
+            state = State::Disappearing;
 
             // Jäger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
             if(hunter)
             {
                 hunter->AnimalLost();
                 hunter = nullptr;
+            }
+            if(skinner)
+            {
+                skinner->AnimalLost();
+                skinner = nullptr;
             }
         }
         break;
@@ -322,6 +321,7 @@ bool noAnimal::IsGettingSkinned() const
 void noAnimal::Skinned()
 {
     if(!hunter)
+        // Remove decay event for animal because skinner has taken it
         GetEvMgr().RemoveEvent(current_ev);
     // Reset skinner
     skinner = nullptr;
@@ -402,7 +402,8 @@ void noAnimal::Die()
     if(ANIMALCONSTS[species].dead_id)
     {
         // Verwesungsevent
-        current_ev = GetEvMgr().AddEvent(this, 300, 2);
+        unsigned gf_length = leatheraddon::isAddonActive(*world) ? 600 : 300;
+        current_ev = GetEvMgr().AddEvent(this, gf_length, 2);
         state = State::Dead;
     } else
     {

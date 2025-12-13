@@ -53,6 +53,22 @@ void nofSkinner::WorkAborted()
     }
 }
 
+void nofSkinner::AnimalLost()
+{
+    animal = nullptr;
+
+    switch(state)
+    {
+        default: return;
+        case State::SkinnerWalkingToCarcass: StartWalkingHome(); break;
+        case State::SkinnerSkinningCarcass:
+            // Remove Working-Event
+            GetEvMgr().RemoveEvent(current_ev);
+            StartWalkingHome();
+            break;
+    }
+}
+
 unsigned short nofSkinner::GetCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
