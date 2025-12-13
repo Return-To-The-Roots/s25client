@@ -268,6 +268,7 @@ private:
     double ComputeFulfillmentLevel(double* outTotalWeight = nullptr) const;
     void TrackCombatStart(const nobBaseMilitary& target);
     void LogFinishedCombats(unsigned gf) const;
+    void InitializeCombatsLogFile() const;
     std::string GetCombatsLogPath() const;
     std::string FormatPlayerLabel(unsigned playerIdx) const;
     void LogPlayerMetadata(std::ofstream& combatsFile) const;
@@ -306,6 +307,7 @@ private:
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;
     mutable unsigned lastStatsFrame_ = 0;
+    mutable bool combatsLogInitialized_ = false;
     unsigned currentGF_ = 0;
     std::vector<RecentlyLostBuilding> recentlyLostBuildings_;
 };

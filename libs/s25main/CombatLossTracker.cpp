@@ -19,6 +19,7 @@ void AddLoss(const unsigned targetObjId, const unsigned char rank, const bool at
     auto it = gCombatStats.find(targetObjId);
     if(it == gCombatStats.end())
         return;
+    it->second.hadEngagement = true;
     auto& arr = attacker ? it->second.attackerLosses : it->second.defenderLosses;
     const std::size_t idx = std::min<std::size_t>(rank, arr.size() - 1);
     arr[idx]++;
@@ -101,6 +102,7 @@ void ReportParticipant(const nofActiveSoldier& soldier)
     if(it == gCombatStats.end())
         return;
 
+    it->second.hadEngagement = true;
     auto& arr = isAttacker ? it->second.attackerForces : it->second.defenderForces;
     const std::size_t idx = std::min<std::size_t>(soldier.GetRank(), arr.size() - 1);
     arr[idx]++;

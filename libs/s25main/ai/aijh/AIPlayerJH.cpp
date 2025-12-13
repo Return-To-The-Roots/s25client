@@ -241,6 +241,10 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     currentGF_ = gf;
     PruneRecentlyLostBuildings();
 
+    if(gf == 0)
+        InitializeCombatsLogFile();
+    LogFinishedCombats(gf);
+
     if(defeated)
         return;
 

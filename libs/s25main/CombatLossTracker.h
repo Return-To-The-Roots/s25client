@@ -18,6 +18,7 @@ struct CombatStats
     std::array<unsigned, NUM_SOLDIER_RANKS> attackerForces{};
     std::array<unsigned, NUM_SOLDIER_RANKS> defenderForces{};
     std::map<BuildingType, unsigned> destroyedBuildings;
+    bool hadEngagement = false;
 };
 
 namespace CombatLossTracker {

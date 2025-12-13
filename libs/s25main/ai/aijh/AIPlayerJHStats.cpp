@@ -145,6 +145,22 @@ std::string FormatDestroyedBuildings(const std::map<BuildingType, unsigned>& des
         result = "none";
     return result;
 }
+
+bool HasCombatData(const CombatStats& stats)
+{
+    if(stats.hadEngagement)
+        return true;
+
+    const auto hasValues = [](const std::array<unsigned, NUM_SOLDIER_RANKS>& arr) {
+        return std::any_of(arr.begin(), arr.end(), [](unsigned value) { return value != 0; });
+    };
+
+    if(hasValues(stats.attackerForces) || hasValues(stats.defenderForces) || hasValues(stats.attackerLosses)
+       || hasValues(stats.defenderLosses))
+        return true;
+
+    return false;
+}
 } // namespace
 
 namespace AIJH {
@@ -196,6 +212,22 @@ void AIPlayerJH::LogPlayerMetadata(std::ofstream& combatsFile) const
         first = false;
     }
     combatsFile << std::endl;
+}
+
+void AIPlayerJH::InitializeCombatsLogFile() const
+{
+    if(combatsLogInitialized_)
+        return;
+
+    std::ofstream combatsFile(GetCombatsLogPath(), std::ios::trunc);
+    if(!combatsFile)
+    {
+        std::cerr << "Unable to open combats log file for writing!" << std::endl;
+        return;
+    }
+
+    LogPlayerMetadata(combatsFile);
+    combatsLogInitialized_ = true;
 }
 
 bool AIPlayerJH::HasOwnAggressors(const nobBaseMilitary& building) const
@@ -253,6 +285,7 @@ void AIPlayerJH::LogFinishedCombats(const unsigned gf) const
     if(finishedCombats.empty())
         return;
 
+    InitializeCombatsLogFile();
     std::ofstream combatsFile(GetCombatsLogPath(), std::ios::app);
     if(!combatsFile)
     {
@@ -265,6 +298,8 @@ void AIPlayerJH::LogFinishedCombats(const unsigned gf) const
         const ActiveCombat& combat = entry.first;
         const bool success = entry.second;
         const CombatStats stats = CombatLossTracker::TakeStats(combat.targetObjId);
+        if(!success && !HasCombatData(stats))
+            continue;
         combatsFile << "#" << gf << " Player #" << static_cast<unsigned>(playerId + 1) << " attacks Player #"
                     << static_cast<unsigned>(combat.defenderPlayer + 1) << " " << BUILDING_NAMES_1.at(combat.buildingType)
                     << ". Attack #" << (success ? "succed" : "failed") << " Forces: Attacker "
@@ -283,18 +318,6 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     {
         return;
     }
-
-    if(gf == 0)
-    {
-        std::ofstream combatsFile(GetCombatsLogPath(), std::ios::trunc);
-        if(!combatsFile)
-            std::cerr << "Unable to open combats log file for writing!" << std::endl;
-        else
-        {
-            LogPlayerMetadata(combatsFile);
-        }
-    }
-    LogFinishedCombats(gf);
 
     std::ofstream buildingCountFile = createCsvFile("buildings_count");
     std::ofstream buildingSitesFile = createCsvFile("buildings_sites");
