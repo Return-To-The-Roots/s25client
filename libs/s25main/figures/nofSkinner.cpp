@@ -118,6 +118,7 @@ void nofSkinner::DrawWorking(DrawPoint drawPt)
 
 void nofSkinner::HandleStateSkinningCarcass()
 {
+    // see comment at noAnimal::HandleEvent for explanation of ownership of animal
     animal->Skinned();
     if(!animal->IsHunted())
     {
