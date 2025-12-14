@@ -377,6 +377,7 @@ void nofHunter::HandleStateEviscerating()
         was_sounding = false;
     }
 
+    // see comment at noAnimal::HandleEvent for explanation of ownership of animal
     animal->Eviscerated();
     if(!animal->IsGettingSkinned())
     {
