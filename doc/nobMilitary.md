@@ -43,9 +43,9 @@
 - Every `nobMilitary` caches the probability that nearby enemies could capture it. The value is derived from
   `GetGarrisonStrengthWithBonus()`, which includes temporary defender hitpoint bonuses, versus the total attacking
   strength enemies could send (`GetSoldiersStrengthForAttack`).
-- `AIPlayerJH` refreshes the risk roughly every 1 000 gameframes for frontline buildings not already under attack. The
-  snapshot is stored inside the building, exposed via `GetCaptureRiskEstimate()`, and serialized into combat logs so
-  analysts can correlate attack outcomes with prior risk.
+- `AIPlayerJH` refreshes the risk on the same 500-gameframe cadence it uses for `UpdateCombatMode()`, updating frontline
+  buildings just before reconsidering combat posture. The snapshot is stored inside the building, exposed via
+  `GetCaptureRiskEstimate()`, and serialized into combat logs so analysts can correlate attack outcomes with prior risk.
 
 ## Event Handling
 - Event IDs drive exit sequencing (0), coin rechecks (1), and soldier promotion (2). The exit loop drains `leave_house`, schedules follow-up exits, and invokes troop regulation when movement settles.

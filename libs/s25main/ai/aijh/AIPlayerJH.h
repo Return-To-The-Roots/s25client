@@ -267,6 +267,7 @@ private:
     bool CanAttackInDefenseMode(const nobBaseMilitary& target, unsigned attackersCount) const;
     bool IsLonelyEnemyStronghold(const nobBaseMilitary& target) const;
     double ComputeFulfillmentLevel(double* outTotalWeight = nullptr) const;
+    double ComputeEnemyFrontlineWeight() const;
     void TrackCombatStart(const nobBaseMilitary& target);
     void LogFinishedCombats(unsigned gf) const;
     void InitializeCombatsLogFile() const;

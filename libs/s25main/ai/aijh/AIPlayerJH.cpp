@@ -290,15 +290,16 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     ExecuteAIJob();
 
     if((gf + playerId * 29) % 500 == 0)
+    {
+        EvaluateCaptureRisks();
         UpdateCombatMode();
+    }
 
     if((gf + playerId * 17) % attack_interval == 0)
     {
         // CheckExistingMilitaryBuildings();
         TryToAttack();
     }
-    if(gf % 1000 == 0)
-        EvaluateCaptureRisks();
     if(((gf + playerId * 17) % 73 == 0) && (level != AI::Level::Easy))
     {
         // MilUpgradeOptim();
@@ -1773,6 +1774,57 @@ double AIPlayerJH::ComputeFulfillmentLevel(double* outTotalWeight) const
     return totalWeight / static_cast<double>(frontierCount);
 }
 
+double AIPlayerJH::ComputeEnemyFrontlineWeight() const
+{
+    double totalWeight = 0.0;
+    const unsigned numPlayers = aii.GetNumPlayers();
+
+    for(unsigned enemyId = 0; enemyId < numPlayers; ++enemyId)
+    {
+        if(enemyId == playerId)
+            continue;
+        if(!aii.IsPlayerAttackable(enemyId))
+            continue;
+
+        const GamePlayer& enemyPlayer = gwb.GetPlayer(enemyId);
+        const std::list<nobMilitary*>& enemyBuildings = enemyPlayer.GetBuildingRegister().GetMilitaryBuildings();
+        for(const nobMilitary* building : enemyBuildings)
+        {
+            if(!building)
+                continue;
+            if(building->GetFrontierDistance() != FrontierDistance::Near)
+                continue;
+            if(building->IsNewBuilt())
+                continue;
+
+            const noFlag* flag = building->GetFlag();
+            if(!flag)
+                continue;
+
+            const std::vector<nofPassiveSoldier*> attackers = building->GetSoldiersForAttack(flag->GetPos());
+            if(attackers.empty())
+                continue;
+
+            bool skippedHighest = false;
+            for(nofPassiveSoldier* soldier : attackers)
+            {
+                if(!soldier)
+                    continue;
+                if(!skippedHighest)
+                {
+                    skippedHighest = true;
+                    continue;
+                }
+
+                const size_t rankIdx = std::min<size_t>(soldier->GetRank(), kSoldierAttackWeights.size() - 1);
+                totalWeight += kSoldierAttackWeights[rankIdx];
+            }
+        }
+    }
+
+    return totalWeight;
+}
+
 double AIPlayerJH::GetCombatFulfillmentLevel() const
 {
     return combatFulfillmentLevel_;
@@ -1795,6 +1847,13 @@ void AIPlayerJH::UpdateCombatMode()
     const double fulfillment = ComputeFulfillmentLevel(&totalWeight);
     combatFulfillmentLevel_ = fulfillment;
     combatAttackWeight_ = totalWeight;
+    const double enemyWeight = ComputeEnemyFrontlineWeight();
+
+    if(totalWeight > enemyWeight * 3.0)
+    {
+        attackMode = CombatMode::AttackMode;
+        return;
+    }
 
     if(fulfillment >= highLevel)
     {
