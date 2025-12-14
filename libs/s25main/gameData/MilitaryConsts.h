@@ -10,10 +10,11 @@
 #include "gameData/NationConsts.h"
 #include <array>
 
-/// Größe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
+/// Size of the military squares (in nodes) that the world is divided into for
+/// garrison calculations
 constexpr uint16_t MILITARY_SQUARE_SIZE = 20;
 
-/// Maximale Entfernungen für "nahe Militärgebäudedistanz" und "mittlere Militärgebäudedistanz"
+/// Maximum distances used for the "near" and "middle" military building ranges
 constexpr unsigned MAX_MILITARY_DISTANCE_NEAR = 18;
 constexpr unsigned MAX_MILITARY_DISTANCE_MIDDLE = 26;
 
@@ -22,29 +23,30 @@ constexpr unsigned MAX_MILITARY_RANK = NUM_SOLDIER_RANKS - 1u;
 /// Number of military buildings
 constexpr unsigned NUM_MILITARY_BLDS = 4;
 
-/// Basisangriffsreichweite (Angriff mit allen Soldaten möglich)
+/// Base attacking distance (allows bringing all available soldiers)
 constexpr unsigned BASE_ATTACKING_DISTANCE = 21;
 
-/// Erweiterte Reichweite, für die jeweils ein Soldat von der Angriffsarmee abgezogen wird
+/// Extended distance beyond the base range; each additional step removes one
+/// soldier from the attacking army
 constexpr unsigned EXTENDED_ATTACKING_DISTANCE = 1;
 
-/// Maximale Länge für den Laufweg beim Angriff
+/// Maximum marching distance for attackers on the way to a target
 constexpr unsigned MAX_ATTACKING_RUN_DISTANCE = 40;
 
-/// Distanz zwischen zwei Gegnern, sodass diese aufeinander zugehen
+/// Distance between two opponents that triggers them to walk toward each other
 constexpr unsigned MEET_FOR_FIGHT_DISTANCE = 5;
 
-/// Besatzung in den einzelnen Militärgebäuden und nach Nation
+/// Garrison sizes per military building type and nation
 constexpr helpers::EnumArray<std::array<int, NUM_MILITARY_BLDS>, Nation> NUM_TROOPS = {
   {{2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}}};
 
-/// Gold in den einzelnen Militärgebäuden und nach Nation
+/// Amount of gold stored per military building type and nation
 constexpr helpers::EnumArray<std::array<int, NUM_MILITARY_BLDS>, Nation> NUM_GOLDS = {
   {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
 
-/// Radien der Militärgebäude
+/// Territory radius contributed by each military building type
 constexpr std::array<unsigned, NUM_MILITARY_BLDS> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
-// Radius für einzelne Hafen(baustellen)
+// Territory radius for individual harbor (construction) sites
 constexpr unsigned HARBOR_RADIUS = 8;
 constexpr unsigned HQ_RADIUS = 9;
 
@@ -68,50 +70,51 @@ constexpr helpers::EnumArray<std::array<DrawPoint, NUM_MILITARY_BLDS>, Nation> B
    {{{24, -19}, {24, -19}, {17, -52}, {-37, -32}}},
    {{{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}}};
 
-/// maximale Hitpoints der Soldaten von jedem Volk
+/// Maximum hitpoints per soldier rank
 constexpr std::array<uint8_t, NUM_SOLDIER_RANKS> HITPOINTS = {3, 4, 5, 6, 7};
 
 /// Max distance for an attacker to reach a building and join in capturing
 constexpr unsigned MAX_FAR_AWAY_CAPTURING_DISTANCE = 15;
 
-/// Sichtweite der Militärgebäude (relativ); wird auf die normale Grenzweite draufaddiert
+/// Additional vision range granted by military buildings (added to border range)
 constexpr unsigned VISUALRANGE_MILITARY = 3;
-/// Sichtweite von Spähtürmen (absolut)
+/// Absolute vision radius of lookout towers
 constexpr unsigned VISUALRANGE_LOOKOUTTOWER = 20;
-/// Sichtweite von Spähern
+/// Vision radius of scouts
 constexpr unsigned VISUALRANGE_SCOUT = 3;
-/// Sichtweite von Soldaten
+/// Vision radius of soldiers
 constexpr unsigned VISUALRANGE_SOLDIER = 2;
-/// Sichtweite von Schiffen
+/// Vision radius of ships
 constexpr unsigned VISUALRANGE_SHIP = 2;
-/// Sichtweite von Erkundungs-Schiffen
+/// Vision radius of exploration ships
 constexpr unsigned VISUALRANGE_EXPLORATION_SHIP = 12;
 
-/// Beförderungszeit von Soldaten ( =UPGRADE_TIME + rand(UPGRADE_TIME_RANDOM) )
+/// Promotion wait time for soldiers ( =UPGRADE_TIME + rand(UPGRADE_TIME_RANDOM) )
 constexpr unsigned UPGRADE_TIME = 100;
 constexpr unsigned UPGRADE_TIME_RANDOM = 300;
-/// Genesungszeit von Soldaten in Häusern, Zeit, die gebraucht wird um sich um einen Hitpoint zu erholen
+/// Recovery time for soldiers resting in buildings per hitpoint regained
 // ( =CONVALESCE_TIME + rand(CONVALESCE_TIME_RANDOM) )
 constexpr unsigned CONVALESCE_TIME = 500;
 constexpr unsigned CONVALESCE_TIME_RANDOM = 500;
 
-/// Maximale Entfernung des Militärgebäudes von dem Hafen bei Seeangriffen
+/// Maximum distance between a harbor and the military building that may be
+/// attacked from the sea
 constexpr unsigned SEAATTACK_DISTANCE = 15;
 
-/// Kampfanimationskonstanten für einen Soldatenrang (Gespeichert werden jeweils die IDs in der ROM_BOBS.LST!)
+/// Combat animation frame IDs per soldier rank (stored in ROM_BOBS.LST)
 struct FightAnimation
 {
-    // Angreifen (8 Frames)
+    // Attack animation (8 frames)
     std::array<uint16_t, 8> attacking;
-    // 3xVerteidigen mit jeweils 8 Frames
+    // Three different defend animations with 8 frames each
     uint16_t defending[3][8];
 };
 
-/// Diese gibts für alle beiden Richtung, für alle 5 Ränge und jeweils nochmal für alle 4 Völker
+/// Available for both facing directions, every rank, and every nation
 extern const helpers::EnumArray<helpers::MultiArray<FightAnimation, NUM_SOLDIER_RANKS, 2>, Nation> FIGHT_ANIMATIONS;
 
-/// IDs für die getroffenen (aufleuchtenden) Soldaten für jedes Volk
+/// Highlight sprite IDs for hit soldiers per nation
 extern const helpers::EnumArray<std::array<uint16_t, NUM_SOLDIER_RANKS>, Nation> HIT_SOLDIERS;
 
-/// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
+/// Frame index at which victims flash when struck by attackers (per rank)
 constexpr std::array<uint16_t, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};

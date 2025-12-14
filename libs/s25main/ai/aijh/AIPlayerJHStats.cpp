@@ -173,7 +173,10 @@ void AIPlayerJH::TrackCombatStart(const nobBaseMilitary& target)
     if(it != activeCombats_.end())
         return;
 
-    CombatLossTracker::RegisterCombat(objId);
+    double captureRisk = 0.0;
+    if(const auto* mil = dynamic_cast<const nobMilitary*>(&target))
+        captureRisk = mil->GetCaptureRiskEstimate();
+    CombatLossTracker::RegisterCombat(objId, captureRisk);
     activeCombats_.push_back({target.GetPos(), objId, target.GetPlayer(), target.GetBuildingType()});
 }
 
@@ -298,14 +301,16 @@ void AIPlayerJH::LogFinishedCombats(const unsigned gf) const
         const ActiveCombat& combat = entry.first;
         const bool success = entry.second;
         const CombatStats stats = CombatLossTracker::TakeStats(combat.targetObjId);
-        if(!success && !HasCombatData(stats))
-            continue;
+        // if(!success && !HasCombatData(stats))
+        //     continue;
+        std::ostringstream riskStream;
+        riskStream << std::fixed << std::setprecision(2) << stats.captureRisk;
         combatsFile << "#" << gf << " Player #" << static_cast<unsigned>(playerId + 1) << " attacks Player #"
                     << static_cast<unsigned>(combat.defenderPlayer + 1) << " " << BUILDING_NAMES_1.at(combat.buildingType)
                     << ". Attack #" << (success ? "succed" : "failed") << " Forces: Attacker "
                     << FormatRankCounts(stats.attackerForces) << " . Defender " << FormatRankCounts(stats.defenderForces)
                     << " Losses: Attacker " << FormatRankCounts(stats.attackerLosses) << " . Defender "
-                    << FormatRankCounts(stats.defenderLosses);
+                    << FormatRankCounts(stats.defenderLosses) << " CaptureRisk=" << riskStream.str();
         if(success)
             combatsFile << " Destroyed: " << FormatDestroyedBuildings(stats.destroyedBuildings);
         combatsFile << std::endl;

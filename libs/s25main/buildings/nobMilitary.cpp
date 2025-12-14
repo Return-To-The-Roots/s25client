@@ -39,6 +39,10 @@
 #include <limits>
 #include <stdexcept>
 
+namespace {
+constexpr unsigned DEFENDER_BONUS_CAPTURE_DELAY_GFS = 5000;
+}
+
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false),
       coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(nullptr),
@@ -883,6 +887,42 @@ unsigned nobMilitary::GetSoldiersStrength() const
     unsigned strength = 0;
     for(const auto& troop : troops)
         strength += HITPOINTS[troop->GetRank()];
+
+    return strength;
+}
+
+unsigned nobMilitary::CalcDefenderBonusHp() const
+{
+    if(!world)
+        return 0;
+
+    unsigned bonusHp = 0;
+    const unsigned currentGF = world->GetEvMgr().GetCurrentGF();
+    if(currentGF > GetCapturedGF() + DEFENDER_BONUS_CAPTURE_DELAY_GFS)
+        ++bonusHp;
+    if(GetOriginOwner() == GetPlayer())
+        ++bonusHp;
+
+    return bonusHp;
+}
+
+unsigned nobMilitary::GetGarrisonStrengthWithBonus() const
+{
+    const unsigned bonusHp = CalcDefenderBonusHp();
+    unsigned strength = 0;
+    for(const auto& soldier : troops)
+    {
+        const unsigned rankHp = HITPOINTS[soldier->GetRank()];
+        unsigned effectiveHp = soldier->GetHitpoints();
+        const unsigned maxAllowed = rankHp + bonusHp;
+
+        if(bonusHp && effectiveHp == rankHp)
+            effectiveHp = maxAllowed;
+        else if(effectiveHp > maxAllowed)
+            effectiveHp = maxAllowed;
+
+        strength += effectiveHp;
+    }
 
     return strength;
 }

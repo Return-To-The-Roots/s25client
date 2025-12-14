@@ -297,6 +297,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         // CheckExistingMilitaryBuildings();
         TryToAttack();
     }
+    if(gf % 1000 == 0)
+        EvaluateCaptureRisks();
     if(((gf + playerId * 17) % 73 == 0) && (level != AI::Level::Easy))
     {
         // MilUpgradeOptim();
@@ -1973,6 +1975,66 @@ void AIPlayerJH::TryToAttack()
             TrackCombatStart(*target);
         return;
     }
+}
+
+double AIPlayerJH::GetCaptureRiskEstimate(const nobBaseMilitary& building) const
+{
+    const auto* mil = dynamic_cast<const nobMilitary*>(&building);
+    if(!mil)
+        return 0.0;
+    return mil->GetCaptureRiskEstimate();
+}
+
+void AIPlayerJH::EvaluateCaptureRisks()
+{
+    for(nobMilitary* building : aii.GetMilitaryBuildings())
+    {
+        if(!building)
+            continue;
+
+        if(building->IsUnderAttack())
+            continue;
+
+        const double risk = ComputeCaptureRisk(*building);
+        building->SetCaptureRiskEstimate(risk);
+    }
+}
+
+double AIPlayerJH::ComputeCaptureRisk(const nobMilitary& building) const
+{
+    const unsigned defenderStrength = building.GetGarrisonStrengthWithBonus();
+    unsigned enemyStrength = 0;
+
+    sortedMilitaryBlds nearby = gwb.LookForMilitaryBuildings(building.GetPos(), 2);
+    for(const nobBaseMilitary* candidate : nearby)
+    {
+        if(candidate->GetPlayer() == playerId)
+            continue;
+        if(!aii.IsPlayerAttackable(candidate->GetPlayer()))
+            continue;
+
+        const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(candidate);
+        if(!enemyMilitary)
+            continue;
+
+        unsigned availableAttackers = 0;
+        const unsigned contribution = enemyMilitary->GetSoldiersStrengthForAttack(building.GetPos(), availableAttackers);
+        if(contribution == 0)
+            continue;
+
+        enemyStrength += contribution;
+    }
+
+    if(enemyStrength == 0)
+        return 0.0;
+    if(defenderStrength == 0)
+        return 1.0;
+
+    const double total = static_cast<double>(defenderStrength) + static_cast<double>(enemyStrength);
+    if(total <= 0.0)
+        return 0.0;
+
+    return std::clamp(static_cast<double>(enemyStrength) / total, 0.0, 1.0);
 }
 
 void AIPlayerJH::TrySeaAttack()

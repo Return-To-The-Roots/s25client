@@ -232,6 +232,7 @@ public:
     double GetCombatFulfillmentLevel() const;
     double GetCombatAttackWeight() const;
     bool IsInDefenseMode() const { return attackMode == CombatMode::DefenseMode; }
+    double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;
 
 private:
     const AIConfig& config_;
@@ -278,6 +279,8 @@ private:
     void ForgetLostMilitaryBuilding(MapPoint pt);
     void PruneRecentlyLostBuildings();
     bool IsRecentlyLostMilitaryBuilding(MapPoint pt) const;
+    void EvaluateCaptureRisks();
+    double ComputeCaptureRisk(const nobMilitary& building) const;
 
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;

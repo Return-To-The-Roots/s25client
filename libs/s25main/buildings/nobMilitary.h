@@ -7,6 +7,7 @@
 #include "figures/nofSoldier.h"
 #include "nobBaseMilitary.h"
 #include <boost/container/flat_set.hpp>
+#include <algorithm>
 #include <list>
 #include <vector>
 
@@ -47,6 +48,8 @@ private:
     unsigned char numCoins;
     /// Indicates whether gold coin delivery is disabled (visual flag masks network latency)
     bool coinsDisabled, coinsDisabledVirtual;
+    /// Cached chance that the building will be captured soon
+    double captureRisk_ = 0.0;
     /// Distance to the enemy border (drives garrison size); values: 0 far, 3 near, 2 harbor
     FrontierDistance frontier_distance;
     /// Size/type of the military building (0 = barracks, 3 = fortress)
@@ -90,6 +93,7 @@ private:
     std::array<unsigned, NUM_SOLDIER_RANKS> GetTotalSoldiersByRank() const;
     /// Looks for the next far-away-capturer waiting around and calls it to the flag
     void CallNextFarAwayCapturer(nofAttacker& attacker);
+    unsigned CalcDefenderBonusHp() const;
 
     friend class SerializedGameData;
     friend class BuildingFactory;
@@ -182,6 +186,12 @@ public:
     unsigned GetSoldiersStrengthForAttack(MapPoint dest, unsigned& soldiers_count) const;
     /// Return this building's overall military strength
     unsigned GetSoldiersStrength() const;
+    /// Return the total strength of stationed soldiers including potential defender bonuses
+    unsigned GetGarrisonStrengthWithBonus() const;
+    /// Return the last-estimated capture risk
+    double GetCaptureRiskEstimate() const { return captureRisk_; }
+    /// Update the stored capture risk probability
+    void SetCaptureRiskEstimate(double value) { captureRisk_ = std::clamp(value, 0.0, 1.0); }
 
     /// Handle the building being captured by an enemy (player becomes the new owner)
     void Capture(unsigned char new_owner);

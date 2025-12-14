@@ -9,6 +9,7 @@
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
+#include <algorithm>
 #include <unordered_map>
 
 namespace {
@@ -42,9 +43,11 @@ const nobBaseMilitary* GetTargetBuilding(const nofDefender& defender)
 
 namespace CombatLossTracker {
 
-void RegisterCombat(const unsigned targetObjId)
+void RegisterCombat(const unsigned targetObjId, const double captureRisk)
 {
-    gCombatStats.try_emplace(targetObjId, CombatStats{});
+    CombatStats& stats = gCombatStats[targetObjId];
+    stats = CombatStats{};
+    stats.captureRisk = std::clamp(captureRisk, 0.0, 1.0);
 }
 
 CombatStats TakeStats(const unsigned targetObjId)

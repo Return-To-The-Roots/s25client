@@ -19,11 +19,12 @@ struct CombatStats
     std::array<unsigned, NUM_SOLDIER_RANKS> defenderForces{};
     std::map<BuildingType, unsigned> destroyedBuildings;
     bool hadEngagement = false;
+    double captureRisk = 0.0;
 };
 
 namespace CombatLossTracker {
 
-void RegisterCombat(unsigned targetObjId);
+void RegisterCombat(unsigned targetObjId, double captureRisk);
 CombatStats TakeStats(unsigned targetObjId);
 void ReportLoss(const nofActiveSoldier& soldier);
 void ReportParticipant(const nofActiveSoldier& soldier);
