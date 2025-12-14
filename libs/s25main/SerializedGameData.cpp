@@ -105,7 +105,8 @@
 /// 12: Store building start/complete frames
 /// 13: Persist capture gameframe for military buildings
 /// 14: Persist original owner for military buildings
-static const unsigned currentGameDataVersion = 14;
+/// 15: Persist total troop limit for military buildings
+static const unsigned currentGameDataVersion = 15;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

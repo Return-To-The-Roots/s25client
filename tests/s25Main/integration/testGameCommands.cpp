@@ -521,6 +521,19 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         BOOST_TEST_REQUIRE(itTroops->GetRank() == 0u);
     for(unsigned i = 1; i < 3; i++, ++itTroops)
         BOOST_TEST_REQUIRE(itTroops->GetRank() == i);
+
+    const unsigned maxTroops = bld->GetMaxTroopsCt();
+    this->SetTotalTroopLimit(milPt, 2);
+    BOOST_TEST_REQUIRE(bld->GetTotalTroopLimit() == 2u);
+    BOOST_TEST_REQUIRE(bld->GetNumTroops() == 2u);
+
+    // Setting above the building capacity clamps the limit
+    this->SetTotalTroopLimit(milPt, maxTroops + 5);
+    BOOST_TEST_REQUIRE(bld->GetTotalTroopLimit() == maxTroops);
+
+    // Wait for reinforcements after raising the limit
+    RTTR_SKIP_GFS(numGFtillAllArrive);
+    BOOST_TEST_REQUIRE(bld->GetNumTroops() == maxTroops);
 }
 
 namespace {

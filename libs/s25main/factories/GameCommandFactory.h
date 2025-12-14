@@ -41,6 +41,7 @@ public:
     bool DestroyBuilding(MapPoint pt);
     /// Set garrison size of a military building
     bool SetTroopLimit(MapPoint pt, unsigned char rank, unsigned limit);
+    bool SetTotalTroopLimit(MapPoint pt, unsigned limit);
     bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);

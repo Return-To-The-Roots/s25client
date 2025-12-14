@@ -27,16 +27,27 @@
 #include "gameData/const_gui_ids.h"
 #include <set>
 
+namespace
+{
+constexpr unsigned CTRL_TOTAL_LIMIT_DECREASE = 100;
+constexpr unsigned CTRL_TOTAL_LIMIT_INCREASE = 101;
+}
+
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
     : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, Extent(226, 194),
                    _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
+    const unsigned mcSelection = gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL);
     unsigned btOffset = 0;
-    if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 2)
-    {
+    if(mcSelection == 2)
         btOffset = 154;
-        Resize(Extent(226, 348));
+    else if(mcSelection == 3)
+        btOffset = 60;
+    if(btOffset != 0)
+    {
+        const Extent baseSize = GetSize();
+        Resize(Extent(baseSize.x, baseSize.y + btOffset));
     }
 
     // Schwert
@@ -66,12 +77,12 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImageButton(9, DrawPoint(179, btOffset + 115), Extent(30, 32), TextureColor::Grey,
                    LOADER.GetImageN("io_new", 11), _("Go to next military building"));
 
-    if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 1)
+    if(mcSelection == 1)
     {
         // Minimal troop controls
         AddImageButton(10, DrawPoint(126, btOffset + 147), Extent(32, 32), TextureColor::Grey,
                        LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
-    } else if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 2)
+    } else if(mcSelection == 2)
     {
         // Full troop controls
         AddImageButton(10, DrawPoint(126, btOffset + 147), Extent(32, 32), TextureColor::Grey,
@@ -91,6 +102,15 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
             AddImageButton(14 + (4 * i), DrawPoint(133, 136 + Y_SPACING * i), Extent(24, 24), TextureColor::Green2,
                            LOADER.GetImageN("io", 138), _("More"));
         }
+    } else if(mcSelection == 3)
+    {
+        AddImageButton(10, DrawPoint(126, btOffset + 147), Extent(32, 32), TextureColor::Grey,
+                       LOADER.GetImageN("io_new", 12), _("Send soldiers home"));
+
+        AddImageButton(CTRL_TOTAL_LIMIT_DECREASE, DrawPoint(69, 136), Extent(24, 24), TextureColor::Red1,
+                       LOADER.GetImageN("io", 139), _("Fewer"));
+        AddImageButton(CTRL_TOTAL_LIMIT_INCREASE, DrawPoint(133, 136), Extent(24, 24), TextureColor::Green2,
+                       LOADER.GetImageN("io", 138), _("More"));
     }
 }
 
@@ -100,6 +120,8 @@ void iwMilitaryBuilding::Draw_()
 
     if(IsMinimized())
         return;
+
+    const unsigned mcSelection = gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL);
 
     // Schwarzer Untergrund für Goldanzeige
     const unsigned maxCoinCt = building->GetMaxCoinCt();
@@ -168,17 +190,23 @@ void iwMilitaryBuilding::Draw_()
         }
     }
 
-    if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 2)
+    if(mcSelection == 2)
     {
         const unsigned Y_SPACING = 30;
         for(unsigned i = 0; i < NUM_SOLDIER_RANKS; ++i)
             NormalFont->Draw(GetDrawPos() + DrawPoint(101, 136 + Y_SPACING * i),
                              std::to_string(building->GetTroopLimit(i)), FontStyle::LEFT, COLOR_YELLOW);
+    } else if(mcSelection == 3)
+    {
+        NormalFont->Draw(GetDrawPos() + DrawPoint(40, 114), _("Limited military control"), FontStyle::LEFT, COLOR_WHITE);
+        NormalFont->Draw(GetDrawPos() + DrawPoint(101, 136),
+                         std::to_string(building->GetTotalTroopLimit()), FontStyle::LEFT, COLOR_YELLOW);
     }
 }
 
 void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
 {
+    const unsigned mcSelection = gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL);
     switch(ctrl_id)
     {
         case 4: // Hilfe
@@ -248,7 +276,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 10:
         {
-            if(gwv.GetWorld().GetGGS().getSelection(AddonId::MILITARY_CONTROL) == 1)
+            if(mcSelection == 1)
             {
                 // Send the highest rank soldiers in this building home and get new soldiers
                 if(building->GetNumTroops() > 1)
@@ -264,6 +292,20 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
                     gcFactory.SetTroopLimit(building->GetPos(), rank, 0);
             }
+        }
+        break;
+        case CTRL_TOTAL_LIMIT_DECREASE:
+        {
+            const unsigned current = building->GetTotalTroopLimit();
+            if(current > 1)
+                gcFactory.SetTotalTroopLimit(building->GetPos(), current - 1);
+        }
+        break;
+        case CTRL_TOTAL_LIMIT_INCREASE:
+        {
+            const unsigned current = building->GetTotalTroopLimit();
+            if(current < building->GetMaxTroopsCt())
+                gcFactory.SetTotalTroopLimit(building->GetPos(), current + 1);
         }
         break;
         default:

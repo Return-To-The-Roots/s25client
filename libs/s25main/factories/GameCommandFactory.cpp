@@ -56,6 +56,11 @@ bool GameCommandFactory::SetTroopLimit(const MapPoint pt, unsigned char rank, un
     return AddGC(new gc::SetTroopLimit(pt, rank, limit));
 }
 
+bool GameCommandFactory::SetTotalTroopLimit(const MapPoint pt, unsigned limit)
+{
+    return AddGC(new gc::SetTotalTroopLimit(pt, limit));
+}
+
 bool GameCommandFactory::ChangeTransport(const TransportOrders& data)
 {
     return AddGC(new gc::ChangeTransport(data));

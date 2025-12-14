@@ -180,6 +180,13 @@ void SetTroopLimit::Execute(GameWorld& world, uint8_t playerId)
         bld->SetTroopLimit(rank, count);
 }
 
+void SetTotalTroopLimit::Execute(GameWorld& world, uint8_t playerId)
+{
+    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
+    if(bld && bld->GetPlayer() == playerId)
+        bld->SetTotalTroopLimit(count);
+}
+
 void SetProductionEnabled::Execute(GameWorld& world, uint8_t playerId)
 {
     auto* const bld = world.GetSpecObj<nobUsual>(pt_);

@@ -60,6 +60,7 @@ enum class GCType : uint8_t
     DestroyAll,
     UpgradeRoad,
     SetTroopLimit,
+    SetTotalTroopLimit,
     NotifyAlliesOfLocation,
     SetTempleProductionMode,
 };

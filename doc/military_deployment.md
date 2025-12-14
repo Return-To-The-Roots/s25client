@@ -68,8 +68,9 @@ list) and immediately re-runs `RegulateTroops`, which can re-order replacements.
     `CalcRequiredNumTroops`.
   - Allies also receive updates via `NewEnemyMilitaryBuilding`.
 - **Add-ons**:
-  - Military Control allows lowering `troop_limits` per rank through the UI. `SetTroopLimit` stores the limit and calls
-    `RegulateTroops` immediately.
+  - Military Control allows lowering `troop_limits` per rank through the UI or capping the entire garrison size. The
+    per-rank controls call `SetTroopLimit` while the total cap issues `SetTotalTroopLimit`; both store the new limit and
+    call `RegulateTroops` immediately.
   - Defender Behaviour (mode 2) scales requested reinforcements during sieges.
   - No Coins Default disables automatic coin supply for new buildings; coins matter because promotions can alter rank
     distribution and thus regulation outcomes.
@@ -101,6 +102,8 @@ when travel paths exist, and gracefully cancel or re-order troops when circumsta
       Clicking a button sends `SetTroopLimit(building->GetPos(), rank, new_limit)` through the command factory, which
       executes `nobMilitary::SetTroopLimit` on the server. Additional button 10 sends every soldier home except one by
       clamping rank 0 to one slot and the rest to zero.
-  - These UI callbacks eventually invoke `gc::SetTroopLimit::Execute`, which calls `nobMilitary::SetTroopLimit`. That
-    setter stores the new limit and triggers `RegulateTroops`, ensuring the gameplay state immediately reflects the UI
-    change.
+    - Mode 3 replaces the per-rank controls with a single pair of +/- buttons for the total garrison cap. Each click
+      calls `SetTotalTroopLimit(building->GetPos(), new_limit)` to adjust the aggregate target.
+    - These UI callbacks eventually invoke `gc::SetTroopLimit::Execute` or `gc::SetTotalTroopLimit::Execute`, which call
+      the corresponding setters and trigger `RegulateTroops`, ensuring the gameplay state immediately reflects the UI
+      change.

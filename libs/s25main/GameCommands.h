@@ -239,6 +239,29 @@ public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
+class SetTotalTroopLimit : public Coords
+{
+    GC_FRIEND_DECL;
+    const uint32_t count;
+
+protected:
+    SetTotalTroopLimit(const MapPoint pt, const uint32_t count)
+        : Coords(GCType::SetTotalTroopLimit, pt), count(count)
+    {}
+    SetTotalTroopLimit(Serializer& ser)
+        : Coords(GCType::SetTotalTroopLimit, ser), count(ser.PopUnsignedInt())
+    {}
+
+public:
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
+        ser.PushUnsignedInt(count);
+    }
+
+    void Execute(GameWorld& world, uint8_t playerId) override;
+};
+
 /// Transportreihenfolge ändern
 class ChangeTransport : public GameCommand
 {

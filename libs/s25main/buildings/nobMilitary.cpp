@@ -35,13 +35,14 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "s25util/Log.h"
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false),
       coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(nullptr),
-      upgrade_event(nullptr), is_regulating_troops(false)
+      upgrade_event(nullptr), is_regulating_troops(false), total_troop_limit(0)
 {
     // Register this building as military and insert it into a military grid square
     world->GetMilitarySquares().Add(this);
@@ -59,6 +60,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
             break;
     }
     troop_limits.fill(GetMaxTroopsCt());
+    total_troop_limit = GetMaxTroopsCt();
 
     // Keep the door open until the building is occupied
     OpenDoor();
@@ -154,13 +156,15 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(troops, true);
     sgd.PushObjectContainer(far_away_capturers, true);
     helpers::pushContainer(sgd, troop_limits);
+    sgd.PushUnsignedInt(total_troop_limit);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
       coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.Pop<FrontierDistance>()),
       size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()),
-      goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
+      goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false),
+      total_troop_limit(0)
 {
     sgd.PopObjectContainer(ordered_troops, GO_Type::NofPassivesoldier);
     sgd.PopObjectContainer(ordered_coins, GO_Type::Ware);
@@ -171,6 +175,11 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
         troop_limits.fill(GetMaxTroopsCt());
     else
         helpers::popContainer(sgd, troop_limits);
+
+    if(sgd.GetGameDataVersion() < 15)
+        total_troop_limit = GetMaxTroopsCt();
+    else
+        total_troop_limit = sgd.PopUnsignedInt();
 
     // Insert into the military grid square
     world->GetMilitarySquares().Add(this);
@@ -552,8 +561,10 @@ void nobMilitary::RegulateTroops()
 
 unsigned nobMilitary::CalcRequiredNumTroops() const
 {
-    return CalcRequiredNumTroops(frontier_distance,
-                                 world->GetPlayer(player).GetMilitarySetting(4 + rttr::enum_cast(frontier_distance)));
+    unsigned desired =
+      CalcRequiredNumTroops(frontier_distance,
+                            world->GetPlayer(player).GetMilitarySetting(4 + rttr::enum_cast(frontier_distance)));
+    return std::min(desired, total_troop_limit);
 }
 
 unsigned nobMilitary::CalcRequiredNumTroops(FrontierDistance assumedFrontierDistance, unsigned settingValue) const
@@ -565,6 +576,15 @@ unsigned nobMilitary::CalcRequiredNumTroops(FrontierDistance assumedFrontierDist
 void nobMilitary::SetTroopLimit(const unsigned rank, const unsigned limit)
 {
     troop_limits[rank] = limit;
+    RegulateTroops();
+}
+
+void nobMilitary::SetTotalTroopLimit(const unsigned limit)
+{
+    const unsigned clamped_limit = std::max(1u, std::min(limit, GetMaxTroopsCt()));
+    if(total_troop_limit == clamped_limit)
+        return;
+    total_troop_limit = clamped_limit;
     RegulateTroops();
 }
 
@@ -914,6 +934,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     // Reset desired troop setting
     troop_limits.fill(GetMaxTroopsCt());
+    total_troop_limit = GetMaxTroopsCt();
 
     // Notify soldiers that are currently on missions
     for(auto* it : troops_on_mission)

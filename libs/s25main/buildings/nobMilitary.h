@@ -71,6 +71,7 @@ private:
     /// Stationed soldiers
     OwnedSortedTroops troops;
     std::array<uint8_t, NUM_SOLDIER_RANKS> troop_limits;
+    unsigned total_troop_limit;
 
     /// Cancel all pending orders (soldiers and coins)
     void CancelOrders();
@@ -143,6 +144,8 @@ public:
     /// Get/Set the maximum number of soldiers of rank `rank` allowed in this building
     unsigned GetTroopLimit(const unsigned rank) const { return troop_limits[rank]; }
     void SetTroopLimit(unsigned rank, unsigned limit);
+    unsigned GetTotalTroopLimit() const { return total_troop_limit; }
+    void SetTotalTroopLimit(unsigned limit);
 
     /// Called when a new ware (gold coin) is delivered to the building
     void TakeWare(Ware* ware) override;

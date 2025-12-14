@@ -15,11 +15,13 @@ public:
                       "Minimal: Adds the 'send home' button which will send all soldiers of the highest available rank "
                       "to a warehouse.\n"
                       "Full: Allows players to control in each military building how many soldiers of each rank should "
-                      "be stationed there."),
+                      "be stationed there.\n"
+                      "Total limit: Adds plus/minus controls to cap the overall garrison size."),
                     {
                       _("None"),
                       _("Minimal Control"),
                       _("Full Control"),
+                      _("Total Limit"),
                     })
     {}
 };
