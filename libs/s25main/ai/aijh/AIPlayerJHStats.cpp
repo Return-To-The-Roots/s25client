@@ -146,21 +146,21 @@ std::string FormatDestroyedBuildings(const std::map<BuildingType, unsigned>& des
     return result;
 }
 
-bool HasCombatData(const CombatStats& stats)
-{
-    if(stats.hadEngagement)
-        return true;
-
-    const auto hasValues = [](const std::array<unsigned, NUM_SOLDIER_RANKS>& arr) {
-        return std::any_of(arr.begin(), arr.end(), [](unsigned value) { return value != 0; });
-    };
-
-    if(hasValues(stats.attackerForces) || hasValues(stats.defenderForces) || hasValues(stats.attackerLosses)
-       || hasValues(stats.defenderLosses))
-        return true;
-
-    return false;
-}
+// bool HasCombatData(const CombatStats& stats)
+// {
+//     if(stats.hadEngagement)
+//         return true;
+//
+//     const auto hasValues = [](const std::array<unsigned, NUM_SOLDIER_RANKS>& arr) {
+//         return std::any_of(arr.begin(), arr.end(), [](unsigned value) { return value != 0; });
+//     };
+//
+//     if(hasValues(stats.attackerForces) || hasValues(stats.defenderForces) || hasValues(stats.attackerLosses)
+//        || hasValues(stats.defenderLosses))
+//         return true;
+//
+//     return false;
+// }
 } // namespace
 
 namespace AIJH {

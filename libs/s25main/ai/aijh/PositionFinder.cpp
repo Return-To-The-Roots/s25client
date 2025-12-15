@@ -102,6 +102,36 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
             }
             break;
         }
+        case BuildingType::Quarry:
+        {
+            auto results = FindBestPositions(around, AIResource::Stones, BUILDING_SIZE[type], searchRadius, 40);
+            for(const auto& point : results)
+            {
+                if(!point.pt.isValid() || !ValidStoneinRange(point.pt))
+                {
+                    break;
+                }
+                return point;
+            }
+            break;
+        }
+        case BuildingType::Fishery:
+        {
+            auto results = FindBestPositions(around, AIResource::Fish, BUILDING_SIZE[type], searchRadius, 20);
+            for(const auto& point : results)
+            {
+                if(construction.OtherUsualBuildingInRadius(point.pt, 3, BuildingType::Fishery))
+                {
+                    break;
+                }
+                if(!point.pt.isValid() || !ValidResourceInRange(point.pt))
+                {
+                    break;
+                }
+                return point;
+            }
+            break;
+        }
         default:
         {
             // For all other building types, just return a simple position if the minRadius check passed
@@ -145,4 +175,48 @@ RatedPointSet PositionFinder::FindBestPositions(const MapPoint& pt, const AIReso
     resMap.updateAround(pt, radius);
     return resMap.findBestPositions(pt, size, radius, minimum, 5);
 }
+
+bool PositionFinder::ValidFishInRange(const MapPoint pt)
+{
+    unsigned max_radius = 5;
+    return aijh.gwb.CheckPointsInRadius(
+      pt, max_radius,
+      [this, pt](const MapPoint curPt, unsigned) {
+          if(aijh.gwb.GetNode(curPt).resources.has(ResourceType::Fish)) // fish on current spot?
+          {
+              // try to find a path to a neighboring node on the coast
+              for(const MapPoint nb : aijh.gwb.GetNeighbours(curPt))
+              {
+                  if(aijh.gwb.FindHumanPath(pt, nb, 10))
+                      return true;
+              }
+          }
+          return false;
+      },
+      false);
+}
+
+bool PositionFinder::ValidStoneinRange(const MapPoint pt)
+{
+    unsigned max_radius = 8;
+    for(MapCoord tx = aijh.gwb.GetXA(pt, Direction::West), r = 1; r <= max_radius;
+        tx = aijh.gwb.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
+    {
+        MapPoint t2(tx, pt.y);
+        for(unsigned i = 2; i < 8; ++i)
+        {
+            for(MapCoord r2 = 0; r2 < r; t2 = aijh.gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
+            {
+                // point has tree & path is available?
+                if(aijh.gwb.GetNO(t2)->GetType() == NodalObjectType::Granite)
+                {
+                    if(aijh.gwb.FindHumanPath(pt, t2, 20))
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 } // namespace AIJH

@@ -20,6 +20,9 @@ public:
     RatedPoint FindPositionAround(BuildingType type, const MapPoint& around, int searchRadius);
     RatedPointSet FindBestPositions(const MapPoint& pt, AIResource res, BuildingQuality size, unsigned radius,
                                           int minimum);
+    bool ValidFishInRange(MapPoint pt);
+    bool ValidStoneinRange(MapPoint pt);
+
     bool CheckProximity(BuildingType type, const MapPoint& pt);
 private:
     AIPlayerJH& aijh;

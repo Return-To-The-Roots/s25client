@@ -354,18 +354,19 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
 
     // pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of
     // the building type)
-    std::array<BuildingType, 19> bldToTest = {
+    std::array<BuildingType, 17> bldToTest = {
       {BuildingType::HarborBuilding, BuildingType::Shipyard, // BuildingType::Sawmill, //BuildingType::Forester,
-       /*BuildingType::Farm,*/
-       BuildingType::Fishery, /*BuildingType::Woodcutter,*/ BuildingType::Quarry, BuildingType::GoldMine,
+       /*BuildingType::Farm,
+       BuildingType::Fishery, BuildingType::Woodcutter, BuildingType::Quarry,*/ BuildingType::GoldMine,
        BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine, BuildingType::Hunter,
        BuildingType::Charburner, BuildingType::Ironsmelter, BuildingType::Mint, BuildingType::Armory,
        BuildingType::Metalworks, BuildingType::Brewery, BuildingType::Mill, BuildingType::PigFarm,
        BuildingType::Slaughterhouse, BuildingType::Bakery}};
 
-    std::array<BuildingType, 5> globalBldToTest = {
+    std::array<BuildingType, 7> globalBldToTest = {
         {
-            BuildingType::Sawmill,BuildingType::Farm, BuildingType::Woodcutter, BuildingType::Forester, BuildingType::DonkeyBreeder
+            BuildingType::Sawmill,BuildingType::Farm, BuildingType::Woodcutter, BuildingType::Forester,
+            BuildingType::DonkeyBreeder, BuildingType::Fishery, BuildingType::Quarry
         }
     };
 

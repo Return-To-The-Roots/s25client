@@ -181,7 +181,7 @@ void World::IncreaseGlobalResource(const unsigned currentGF)
             continue;
         if(resource.getAmount() >= 0x0Fu)
             continue;
-        if(RANDOM.Rand(RANDOM_CONTEXT2(0), 100) < 10)
+        if(RANDOM.Rand(RANDOM_CONTEXT2(0), 100) < 3)
             resource.setAmount(resource.getAmount() + 1u);
     }
 }
