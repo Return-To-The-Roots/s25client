@@ -14,6 +14,17 @@ ProximityParams Weights::parseProximityParams(const YAML::Node& node, const Prox
     return params;
 }
 
+RatingParams Weights::parseRatingParams(const YAML::Node& node, const RatingParams& defaults)
+{
+    RatingParams params = defaults;
+    params.enabled = true;
+    if(node["radius"])
+        params.radius = node["radius"].as<unsigned>();
+    if(node["multiplier"])
+        params.multiplier = node["multiplier"].as<int>();
+    return params;
+}
+
 LocationParams Weights::parseLocationParams(const YAML::Node& node, const LocationParams& defaults)
 {
     LocationParams params = defaults;
@@ -31,6 +42,21 @@ LocationParams Weights::parseLocationParams(const YAML::Node& node, const Locati
             }
 
             params.proximity[bldType] = parseProximityParams(weightEntry.second, params.proximity[bldType]);
+        }
+    if(node["rating"])
+        for(const auto& weightEntry : node["rating"])
+        {
+            std::string buildingStr = weightEntry.first.as<std::string>();
+            BuildingType bldType;
+            try
+            {
+                bldType = BUILDING_NAME_MAP.at(buildingStr);
+            } catch(...)
+            {
+                continue;
+            }
+
+            params.rating[bldType] = parseRatingParams(weightEntry.second, params.rating[bldType]);
         }
     return params;
 }

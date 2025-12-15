@@ -9,6 +9,7 @@
 
 namespace Weights {
     ProximityParams parseProximityParams(const YAML::Node& node, const ProximityParams& defaults);
+    RatingParams parseRatingParams(const YAML::Node& node, const RatingParams& defaults);
     LocationParams parseLocationParams(const YAML::Node& node, const LocationParams& defaults);
     BuildParams parseBuildParams(const YAML::Node& node, const BuildParams& defaults);
     WantedParams parseWantedParams(const YAML::Node& node, WantedParams params);

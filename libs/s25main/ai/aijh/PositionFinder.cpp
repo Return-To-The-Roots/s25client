@@ -6,7 +6,6 @@
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "WeightParams.h"
-#include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/BuildingConsts.h"
@@ -45,6 +44,26 @@ MapPoint PositionFinder::FindBestPosition(BuildingType bt)
 RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint& around, int searchRadius)
 {
     AIConstruction& construction = aijh.GetConstruction();
+    const auto computeRatingBonus = [this, &construction](const BuildingType building_type,
+                                                          const BuildingType target_type,
+                                                          const unsigned default_radius,
+                                                          const int default_multiplier,
+                                                          const MapPoint& candidate) {
+        unsigned radius = default_radius;
+        int multiplier = default_multiplier;
+        const auto& rating_params = aijh.GetConfig().locationParams[building_type].rating[target_type];
+        if(rating_params.enabled)
+        {
+            radius = rating_params.radius;
+            multiplier = rating_params.multiplier;
+        }
+
+        if(radius == 0 || multiplier == 0)
+            return 0;
+
+        const int neighbors = construction.CountUsualBuildingInRadius(candidate, radius, target_type);
+        return neighbors * multiplier;
+    };
 
     // First check the general minRadius condition for all building types
     // auto locationParam = AI_CONFIG.locationParams[type];
@@ -72,8 +91,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
                 if(point.pt.isValid()
                    && !construction.OtherUsualBuildingInRadius(point.pt, 3, BuildingType::Woodcutter))
                 {
-                    int foresters = construction.CountUsualBuildingInRadius(point.pt, 7, BuildingType::Forester);
-                    return {point.pt, point.rating + 300 * foresters};
+                    int rating_bonus = computeRatingBonus(type, BuildingType::Forester, 7, 300, point.pt);
+                    return {point.pt, point.rating + rating_bonus};
                 }
             }
             break;
@@ -85,8 +104,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
             for(auto& point : results)
             {
                 if(!CheckProximity(type, point.pt)) continue;
-                int woodcutters = construction.CountUsualBuildingInRadius(point.pt, 6, BuildingType::Woodcutter);
-                return {point.pt, point.rating + woodcutters * 50};
+                int rating_bonus = computeRatingBonus(type, BuildingType::Woodcutter, 6, 50, point.pt);
+                return {point.pt, point.rating + rating_bonus};
             }
             break;
         }
@@ -124,7 +143,7 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
                 {
                     break;
                 }
-                if(!point.pt.isValid() || !ValidResourceInRange(point.pt))
+                if(!point.pt.isValid() || !ValidFishInRange(point.pt))
                 {
                     break;
                 }

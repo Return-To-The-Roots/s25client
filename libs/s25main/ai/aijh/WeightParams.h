@@ -30,6 +30,8 @@ struct BuildParams
 struct RatingParams
 {
     bool enabled = false;
+    unsigned radius = 0;
+    int multiplier = 0;
 };
 
 struct ProximityParams
@@ -42,7 +44,7 @@ struct LocationParams
 {
     bool enabled = false;
     helpers::EnumArray<ProximityParams, BuildingType> proximity = helpers::EnumArray<ProximityParams, BuildingType>{};
-    RatingParams ratingParams = {false};
+    helpers::EnumArray<RatingParams, BuildingType> rating = helpers::EnumArray<RatingParams, BuildingType>{};
 };
 
 struct WantedParams

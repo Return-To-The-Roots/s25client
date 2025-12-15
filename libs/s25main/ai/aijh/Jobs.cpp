@@ -37,7 +37,7 @@ void BuildJob::ExecuteJob()
 
         case JobState::ExecutingRoad2: TryToBuildSecondaryRoad(); break;
         case JobState::ExecutingRoad2_2:
-            // evtl noch prüfen ob auch dieser Straßenbau erfolgreich war?
+            // maybe check whether this road construction succeeded as well?
             aijh.RecalcGround(target, route);
             state = JobState::Finished;
             break;
