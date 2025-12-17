@@ -3,8 +3,9 @@
 #include <vector>
 #include <string>
 #include <algorithm> // For std::transform
+#include <exception>
 
-#include "DataExtractor.h"
+#include "dataextractor/DataExtractor.h"
 #include "RttrConfig.h"
 #include "SnapshotLoader.h"
 
@@ -13,6 +14,41 @@
 #include <boost/filesystem/operations.hpp>
 
 namespace fs = boost::filesystem;
+
+namespace {
+bool FlushSnapshot(DataExtractor& extractor, DataExtractor::OutputFormat format, bool write_header)
+{
+    const SnapshotData* current_snapshot = extractor.GetCurrentSnapshot();
+    if(!current_snapshot)
+    {
+        std::cerr << "No snapshot data available after processing player." << std::endl;
+        return false;
+    }
+
+    try
+    {
+        if(format == DataExtractor::OutputFormat::CSV)
+        {
+            extractor.SerializeCsv(*current_snapshot, std::cout, write_header);
+            std::cerr << "Successfully wrote 1 snapshot as CSV to stdout." << std::endl;
+        }
+        else if(format == DataExtractor::OutputFormat::JSON)
+        {
+            extractor.SerializeJson(*current_snapshot, std::cout);
+            std::cerr << "Successfully wrote 1 snapshot as JSON object to stdout." << std::endl;
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error writing data to stdout: " << e.what() << std::endl;
+        extractor.ClearSnapshot();
+        return false;
+    }
+
+    extractor.ClearSnapshot();
+    return true;
+}
+} // namespace
 
 int main(int argc, char* argv[]) {
     RTTRCONFIG.Init();
@@ -52,19 +88,22 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    DataExtractor miner{};
+    DataExtractor extractor{};
 
-    auto snapshot = Snapshot::GetActivePlayer(snapshot_file_path);
-    if (!snapshot) {
-        std::cerr << "Skipping file due to load failure or missing player: " << snapshot_file_path << "\n";
-        return 1; // Exit if the single specified file cannot be processed
+    auto snapshots = Snapshot::GetActivePlayer(snapshot_file_path);
+    if (snapshots.empty()) {
+        std::cerr << "Skipping file due to load failure or missing players: " << snapshot_file_path << "\n";
+        return 1; // Exit if no players could be processed
     }
-    miner.ProcessSnapshot(*snapshot->player, snapshot->gameframe);
 
-    // Output results to stdout in the chosen format
-    miner.flush(outputFormat);
+    bool write_header = true;
+    for (const auto& snapshot : snapshots) {
+        extractor.ProcessSnapshot(*snapshot.player, snapshot.gameframe);
+        const bool flushed = FlushSnapshot(extractor, outputFormat, write_header);
+        if(flushed && write_header)
+            write_header = false;
+    }
 
-    // The flush method now prints its own status message to cerr.
-    // std::cout << "Snapshot " << snapshot_file_path.filename() << " processed and data output to stdout.\n";
+    // The FlushSnapshot helper prints status messages to cerr.
     return 0;
 }

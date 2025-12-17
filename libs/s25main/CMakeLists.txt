@@ -15,6 +15,7 @@ endmacro()
 AddDirectory(addons)
 AddDirectory(ai)
 AddDirectory(ai/aijh)
+AddDirectory(dataextractor)
 AddDirectory(animation)
 AddDirectory(buildings)
 AddDirectory(controls)
@@ -61,6 +62,7 @@ target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(s25Main PUBLIC cxx_std_17)
 find_package(yaml-cpp REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 target_link_libraries(s25Main PUBLIC
     siedler2
@@ -74,6 +76,7 @@ target_link_libraries(s25Main PUBLIC
     glad
     driver
     yaml-cpp
+    nlohmann_json::nlohmann_json
     Boost::filesystem Boost::disable_autolinking
     PRIVATE BZip2::BZip2 Boost::iostreams Boost::locale Boost::nowide samplerate_cpp yaml-cpp
 )

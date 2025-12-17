@@ -5,6 +5,7 @@
 #include "AIPlayerJH.h"
 
 #include "BasePlayerInfo.h"
+#include "dataextractor/DataExtractor.h"
 #include "BuildingPlanner.h"
 #include "BuildingRegister.h"
 #include "CombatLossTracker.h"
@@ -47,6 +48,62 @@
 namespace fs = std::filesystem;
 
 namespace {
+
+bool statsCsvHeadersInitialized = false;
+bool statsSnapshotHeaderWritten = false;
+
+std::ofstream createCsvFile(std::string name);
+
+void InitializeStatsCsvFiles()
+{
+    if(statsCsvHeadersInitialized)
+        return;
+
+    std::ofstream buildingCountFile = createCsvFile("buildings_count");
+    std::ofstream buildingSitesFile = createCsvFile("buildings_sites");
+    std::ofstream productivityFile = createCsvFile("productivity");
+    std::ofstream otherFile = createCsvFile("other");
+
+    if(buildingCountFile)
+    {
+        buildingCountFile << "GameFrame";
+        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        {
+            buildingCountFile << "," << BUILDING_NAMES_1.at(type) << "Count";
+        }
+        buildingCountFile << std::endl;
+    }
+
+    if(buildingSitesFile)
+    {
+        buildingSitesFile << "GameFrame";
+        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        {
+            buildingSitesFile << "," << BUILDING_NAMES_1.at(type) << "Sites";
+        }
+        buildingSitesFile << std::endl;
+    }
+
+    if(productivityFile)
+    {
+        productivityFile << "GameFrame";
+        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        {
+            productivityFile << "," << BUILDING_NAMES_1.at(type) << "Prod";
+        }
+        productivityFile << std::endl;
+    }
+
+    if(otherFile)
+    {
+        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable,BoardsDemand,AverageBuildTime";
+        for(const Job job : SOLDIER_JOBS)
+            otherFile << "," << JOB_NAMES_1.at(job);
+        otherFile << std::endl;
+    }
+
+    statsCsvHeadersInitialized = true;
+}
 
 std::map<BuildingType, int> GetBuildingsMap(AIJH::BuildingPlanner bldPlanner)
 {
@@ -324,57 +381,27 @@ void AIPlayerJH::saveStats(unsigned int gf) const
         return;
     }
 
+    InitializeStatsCsvFiles();
+
     std::ofstream buildingCountFile = createCsvFile("buildings_count");
     std::ofstream buildingSitesFile = createCsvFile("buildings_sites");
     std::ofstream productivityFile = createCsvFile("productivity");
-    std::ofstream goodsFile = createCsvFile("goods");
-    std::ofstream jobsFile = createCsvFile("jobs");
-    std::ofstream scoreFile = createCsvFile("score");
+    std::ofstream statsFile = createCsvFile("stats");
     std::ofstream otherFile = createCsvFile("other");
 
-    if(gf == 0)
+    if(statsFile)
     {
-        buildingCountFile << "GameFrame";
-        for(BuildingType type : helpers::EnumRange<BuildingType>{})
+        DataExtractor extractor;
+        extractor.ProcessSnapshot(player, gf);
+        if(const SnapshotData* snapshot = extractor.GetCurrentSnapshot())
         {
-            buildingCountFile << "," << BUILDING_NAMES_1.at(type) << "Count";
+            const bool writeHeader = !statsSnapshotHeaderWritten;
+            extractor.SerializeCsv(*snapshot, statsFile, writeHeader);
+            if(writeHeader)
+                statsSnapshotHeaderWritten = true;
+            extractor.ClearSnapshot();
         }
-        buildingCountFile << std::endl;
-
-        buildingSitesFile << "GameFrame";
-        for(BuildingType type : helpers::EnumRange<BuildingType>{})
-        {
-            buildingSitesFile << "," << BUILDING_NAMES_1.at(type) << "Sites";
-        }
-        buildingSitesFile << std::endl;
-
-        productivityFile << "GameFrame";
-        for(BuildingType type : helpers::EnumRange<BuildingType>{})
-        {
-            productivityFile << "," << BUILDING_NAMES_1.at(type) << "Prod";
-        }
-        productivityFile << std::endl;
-
-        goodsFile << "GameFrame";
-        for(GoodType type : helpers::EnumRange<GoodType>{})
-        {
-            goodsFile << "," << GOOD_NAMES_1.at(type);
-        }
-        goodsFile << std::endl;
-
-        jobsFile << "GameFrame";
-        for(Job job : helpers::EnumRange<Job>{})
-        {
-            jobsFile << "," << JOB_NAMES_1.at(job);
-        }
-        goodsFile << std::endl;
-
-        scoreFile << "GameFrame,Country,Buildings,Military,GoldCoins,Productivity,Kills" << std::endl;
-
-        otherFile << "GameFrame,MilBld,WoodAvailable,StoneAvailable,BoardsDemand,AverageBuildTime";
-        for(const Job job : SOLDIER_JOBS)
-            otherFile << "," << JOB_NAMES_1.at(job);
-        otherFile << std::endl;
+        statsFile.close();
     }
     const unsigned previousStatsFrame = lastStatsFrame_;
     const BuildingRegister& buildingRegister = player.GetBuildingRegister();
@@ -408,15 +435,6 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     const double averageBuildTime = completedBuildings != 0
                                       ? static_cast<double>(totalBuildTime) / static_cast<double>(completedBuildings)
                                       : 0.0;
-    scoreFile << gf;
-    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Country);
-    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Buildings);
-    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Military);
-    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Gold);
-    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Productivity);
-    scoreFile << "," << player.GetStatisticCurrentValue(StatisticType::Vanquished);
-    scoreFile << std::endl;
-
     otherFile << gf;
     otherFile << "," << bldPlanner->GetNumMilitaryBlds();
     otherFile << "," << GetAvailableResources(AISurfaceResource::Wood);
@@ -457,22 +475,6 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     }
     productivityFile << std::endl;
     productivityFile.close();
-
-    goodsFile << gf;
-    for(GoodType type : helpers::EnumRange<GoodType>{})
-    {
-        goodsFile << "," << AmountInStorage(type);
-    }
-    goodsFile << std::endl;
-    goodsFile.close();
-
-    jobsFile << gf;
-    for(Job job : helpers::EnumRange<Job>{})
-    {
-        jobsFile << "," << AmountInStorage(job);
-    }
-    jobsFile << std::endl;
-    jobsFile.close();
 
     if(gf % 2500 != 0)
     {

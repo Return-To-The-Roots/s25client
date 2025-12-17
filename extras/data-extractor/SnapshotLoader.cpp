@@ -9,8 +9,9 @@
 #include <vector>
 
 namespace Snapshot {
-std::unique_ptr<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& save_path)
+std::vector<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& save_path)
 {
+    std::vector<PlayerSnapshot> snapshots;
     try
     {
         std::cerr << "Processing: " << save_path.filename().string() << std::endl;
@@ -30,7 +31,7 @@ std::unique_ptr<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& s
             players.emplace_back(savegame.GetPlayer(i));
         }
 
-        auto game = std::make_unique<Game>(GlobalGameSettings(), 0, players);
+        auto game = std::make_shared<Game>(GlobalGameSettings(), 0, players);
         savegame.sgd.ReadSnapshot(*game, GameClient::inst());
 
         unsigned gameframe = savegame.start_gf;
@@ -40,22 +41,17 @@ std::unique_ptr<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& s
             auto* player = &game->world_.GetPlayer(i);
             if(player->isUsed())
             {
-                auto snapshot = std::make_unique<PlayerSnapshot>();
-                snapshot->game = std::move(game);  // Transfer ownership
-                snapshot->player = player;
-                snapshot->gameframe = gameframe;
-
-                return snapshot;
+                snapshots.push_back(PlayerSnapshot{game, player, gameframe});
             }
         }
 
-        std::cerr << "Active player not found in: " << save_path << std::endl;
-        return nullptr;
+        if(snapshots.empty())
+            std::cerr << "No active players found in: " << save_path << std::endl;
 
     } catch(const std::exception& e)
     {
         std::cerr << "Error processing " << save_path << ": " << e.what() << std::endl;
-        return nullptr;
     }
+    return snapshots;
 }
 } // namespace Snapshot

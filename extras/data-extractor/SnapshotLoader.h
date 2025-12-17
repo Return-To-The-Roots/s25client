@@ -5,16 +5,17 @@
 #include "GamePlayer.h"
 #include "Game.h"
 #include <memory>
+#include <vector>
 
 namespace Snapshot {
 
 struct PlayerSnapshot
 {
-    std::unique_ptr<Game> game;   // Owns the Game
+    std::shared_ptr<Game> game;   // Shared ownership among snapshots
     GamePlayer* player;
     unsigned gameframe;
 };
 
-std::unique_ptr<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& save_path);
+std::vector<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& save_path);
 }
 #endif // SNAPSHOT_LOADER_H
