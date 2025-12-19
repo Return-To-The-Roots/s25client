@@ -578,7 +578,9 @@ void GameWorld::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeRea
         const auto newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(triggerBld.GetPos()));
         // An HQ can be placed independently of the current owner.
         // So ensure the HQ position is always considered to belong to the HQ owner
-        const auto ownerOfTriggerBld = isHq ? newOwnerOfTriggerBld : GetNode(triggerBld.GetPos()).owner;
+        // if the TerritoryChangeReason is Build
+        const auto ownerOfTriggerBld =
+          isHq && reason == TerritoryChangeReason::Build ? newOwnerOfTriggerBld : GetNode(triggerBld.GetPos()).owner;
 
         RTTR_FOREACH_PT(Position, region.size)
         {
