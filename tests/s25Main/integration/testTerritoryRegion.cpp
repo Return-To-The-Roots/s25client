@@ -338,4 +338,30 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 2); }
 }
 
+// HQ radius = 9
+BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForDestroyedHQ, WorldFixtureEmpty2P)
+{
+    const MapPoint hq0Pos = world.GetPlayer(0).GetHQPos();
+    const MapPoint hq1Pos = world.GetPlayer(1).GetHQPos();
+    auto distance = hq1Pos.x - hq0Pos.x;
+
+    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 1); }
+    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 2); }
+
+    this->ggs.setSelection(AddonId::NO_ALLIED_PUSH, true);
+
+    // Remove HQ 1 and its fire
+    world.DestroyNO(hq1Pos);
+    world.DestroyNO(hq1Pos);
+
+    auto hq0Region = world.GetPointsInRadiusWithCenter(hq0Pos, 9);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        auto owner = std::find(std::begin(hq0Region), std::end(hq0Region), pt) != std::end(hq0Region) ? 1 : 0;
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == owner); }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
