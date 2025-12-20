@@ -22,6 +22,7 @@ class GameInterface;
 class GamePlayer;
 class GlobalGameSettings;
 class nobHarborBuilding;
+class nobMilitary;
 class noBuildingSite;
 class noFlag;
 class nofPassiveSoldier;
@@ -208,6 +209,7 @@ public:
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
     unsigned GetNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, unsigned short seaid,
                                              bool returnCount = true) const;
+    double ComputeCaptureRisk(const nobMilitary& building) const;
 
     /// Recalculates the BQ for the given point
     void RecalcBQ(MapPoint pt);

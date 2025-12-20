@@ -25,6 +25,7 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
+#include <algorithm>
 #include <utility>
 
 GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)
@@ -608,6 +609,43 @@ unsigned GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char play
         }
     }
     return attackercount;
+}
+
+double GameWorldBase::ComputeCaptureRisk(const nobMilitary& building) const
+{
+    const unsigned defenderStrength = building.GetGarrisonStrengthWithBonus();
+    unsigned enemyStrength = 0;
+
+    sortedMilitaryBlds nearby = LookForMilitaryBuildings(building.GetPos(), 2);
+    for(const nobBaseMilitary* candidate : nearby)
+    {
+        if(candidate->GetPlayer() == building.GetPlayer())
+            continue;
+        if(!GetPlayer(candidate->GetPlayer()).IsAttackable(building.GetPlayer()))
+            continue;
+
+        const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(candidate);
+        if(!enemyMilitary)
+            continue;
+
+        unsigned availableAttackers = 0;
+        const unsigned contribution = enemyMilitary->GetSoldiersStrengthForAttack(building.GetPos(), availableAttackers);
+        if(contribution == 0)
+            continue;
+
+        enemyStrength += contribution;
+    }
+
+    if(enemyStrength == 0)
+        return 0.0;
+    if(defenderStrength == 0)
+        return 1.0;
+
+    const double total = static_cast<double>(defenderStrength) + static_cast<double>(enemyStrength);
+    if(total <= 0.0)
+        return 0.0;
+
+    return std::clamp(static_cast<double>(enemyStrength) / total, 0.0, 1.0);
 }
 
 /// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen

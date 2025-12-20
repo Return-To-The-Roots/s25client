@@ -42,6 +42,7 @@
 #include <functional>
 #include <set>
 #include <stdexcept>
+#include <unordered_set>
 
 inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorld& world)
 {
@@ -50,6 +51,10 @@ inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& play
     for(unsigned i = 0; i < playerInfos.size(); ++i)
         players.push_back(GamePlayer(i, playerInfos[i], world));
     return players;
+}
+
+namespace {
+constexpr int TERRITORY_EXTRA_RADIUS = 2;
 }
 
 GameWorld::GameWorld(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em)
@@ -381,8 +386,6 @@ void GameWorld::RecalcBorderStones(Position startPt, Extent areaSize)
 
 void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason)
 {
-    // Additional radius to eliminate border stones or odd remaining territory parts
-    static const int ADD_RADIUS = 2;
     // Get the military radius this building affects. Bld is either a military building or a harbor building site
     RTTR_Assert(
       (building.GetBuildingType() == BuildingType::HarborBuilding && dynamic_cast<const noBuildingSite*>(&building))
@@ -390,7 +393,8 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
     const unsigned militaryRadius = building.GetMilitaryRadius();
     RTTR_Assert(militaryRadius > 0u);
 
-    const TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius + ADD_RADIUS, reason);
+    const TerritoryRegion region =
+      CreateTerritoryRegion(building, militaryRadius + TERRITORY_EXTRA_RADIUS, reason);
 
     std::vector<MapPoint> ptsWithChangedOwners;
     std::vector<int> sizeChanges(GetNumPlayers());
@@ -534,8 +538,87 @@ bool GameWorld::DoesDestructionChangeTerritory(const noBaseBuilding& building) c
     return false;
 }
 
+unsigned GameWorld::CountBuildingsLostOnCapture(const nobMilitary& building) const
+{
+    const unsigned militaryRadius = building.GetMilitaryRadius();
+    if(militaryRadius == 0u)
+        return 0;
+
+    const unsigned char oldOwner = building.GetPlayer();
+    unsigned char simulatedNewOwner = 0;
+    const int oldOwnerIdx = (oldOwner > 0) ? static_cast<int>(oldOwner) - 1 : -1;
+    for(unsigned i = 0; i < GetNumPlayers(); ++i)
+    {
+        if(static_cast<int>(i) == oldOwnerIdx)
+            continue;
+        if(oldOwnerIdx >= 0 && GetPlayer(i).IsAttackable(static_cast<unsigned char>(oldOwnerIdx)))
+        {
+            simulatedNewOwner = static_cast<unsigned char>(i + 1);
+            break;
+        }
+    }
+
+    const TerritoryRegion region =
+      CreateTerritoryRegion(building, militaryRadius + TERRITORY_EXTRA_RADIUS, TerritoryChangeReason::Captured,
+                            &simulatedNewOwner);
+
+    std::vector<MapPoint> ptsWithChangedOwners;
+    RTTR_FOREACH_PT(Position, region.size)
+    {
+        const MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
+        if(GetNode(curMapPt).owner == region.GetOwner(pt))
+            continue;
+        ptsWithChangedOwners.push_back(curMapPt);
+    }
+
+    if(ptsWithChangedOwners.empty())
+        return 0;
+
+    const std::vector<MapPoint> ptsToHandle = GetAllNeighboursUnion(ptsWithChangedOwners);
+    std::unordered_set<const noBaseBuilding*> destroyedCandidates;
+    const auto* exceptionFlag = building.GetFlag();
+
+    for(const MapPoint& curMapPt : ptsToHandle)
+    {
+        const MapNode& node = GetNode(curMapPt);
+        const noBase* obj = node.obj;
+        if(!obj || obj == &building || obj == exceptionFlag)
+            continue;
+
+        const NodalObjectType noType = obj->GetType();
+        if(noType != NodalObjectType::Flag && noType != NodalObjectType::Building
+           && noType != NodalObjectType::Buildingsite)
+            continue;
+
+        const uint8_t newOwner = region.SafeGetOwner(region.GetPosFromMapPos(curMapPt));
+        const auto* roadNode = static_cast<const noRoadNode*>(obj);
+        if(newOwner != 0 && roadNode->GetPlayer() + 1 == newOwner && !IsBorderNode(curMapPt, newOwner))
+            continue;
+
+        const noBase* noCheckMil =
+          (noType == NodalObjectType::Flag) ? GetNO(GetNeighbour(curMapPt, Direction::NorthWest)) : obj;
+        if(!noCheckMil || noCheckMil == &building || noCheckMil == exceptionFlag)
+            continue;
+
+        const GO_Type goType = noCheckMil->GetGOT();
+        if(goType == GO_Type::NobHq || goType == GO_Type::NobHarborbuilding)
+            continue;
+        if(goType == GO_Type::NobMilitary && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
+            continue;
+        if(noCheckMil->GetType() == NodalObjectType::Buildingsite
+           && static_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea())
+            continue;
+
+        if(const auto* baseBuilding = dynamic_cast<const noBaseBuilding*>(noCheckMil))
+            destroyedCandidates.insert(baseBuilding);
+    }
+
+    return static_cast<unsigned>(destroyedCandidates.size());
+}
+
 TerritoryRegion GameWorld::CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius,
-                                                 TerritoryChangeReason reason) const
+                                                 TerritoryChangeReason reason,
+                                                 const unsigned char* triggerOwnerOverride) const
 {
     const MapPoint bldPos = building.GetPos();
 
@@ -556,7 +639,11 @@ TerritoryRegion GameWorld::CreateTerritoryRegion(const noBaseBuilding& building,
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(bldPos, 3);
     for(const nobBaseMilitary* milBld : buildings)
     {
-        if(!(reason == TerritoryChangeReason::Destroyed && milBld == &building))
+        if(reason == TerritoryChangeReason::Destroyed && milBld == &building)
+            continue;
+        if(triggerOwnerOverride && milBld == &building)
+            region.CalcTerritoryOfBuildingForPlayer(*milBld, *triggerOwnerOverride);
+        else
             region.CalcTerritoryOfBuilding(*milBld);
     }
 
@@ -732,6 +819,24 @@ void GameWorld::RoadNodeAvailable(const MapPoint pt)
         {
             if(object.GetType() == NodalObjectType::Figure)
                 static_cast<noFigure&>(object).NodeFreed(pt);
+        }
+    }
+}
+
+void GameWorld::UpdateMilitaryRiskEstimates()
+{
+    for(unsigned i = 0; i < GetNumPlayers(); ++i)
+    {
+        const auto& buildings = GetPlayer(i).GetBuildingRegister().GetMilitaryBuildings();
+        for(nobMilitary* building : buildings)
+        {
+            if(!building || building->IsUnderAttack())
+                continue;
+
+            const double risk = ComputeCaptureRisk(*building);
+            building->SetCaptureRiskEstimate(risk);
+            const double importance = static_cast<double>(building->EstimateCaptureLossCount());
+            building->SetImportanceEstimate(importance);
         }
     }
 }

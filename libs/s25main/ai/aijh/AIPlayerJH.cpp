@@ -2057,44 +2057,14 @@ void AIPlayerJH::EvaluateCaptureRisks()
 
         const double risk = ComputeCaptureRisk(*building);
         building->SetCaptureRiskEstimate(risk);
+        const double importance = static_cast<double>(building->EstimateCaptureLossCount());
+        building->SetImportanceEstimate(importance);
     }
 }
 
 double AIPlayerJH::ComputeCaptureRisk(const nobMilitary& building) const
 {
-    const unsigned defenderStrength = building.GetGarrisonStrengthWithBonus();
-    unsigned enemyStrength = 0;
-
-    sortedMilitaryBlds nearby = gwb.LookForMilitaryBuildings(building.GetPos(), 2);
-    for(const nobBaseMilitary* candidate : nearby)
-    {
-        if(candidate->GetPlayer() == playerId)
-            continue;
-        if(!aii.IsPlayerAttackable(candidate->GetPlayer()))
-            continue;
-
-        const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(candidate);
-        if(!enemyMilitary)
-            continue;
-
-        unsigned availableAttackers = 0;
-        const unsigned contribution = enemyMilitary->GetSoldiersStrengthForAttack(building.GetPos(), availableAttackers);
-        if(contribution == 0)
-            continue;
-
-        enemyStrength += contribution;
-    }
-
-    if(enemyStrength == 0)
-        return 0.0;
-    if(defenderStrength == 0)
-        return 1.0;
-
-    const double total = static_cast<double>(defenderStrength) + static_cast<double>(enemyStrength);
-    if(total <= 0.0)
-        return 0.0;
-
-    return std::clamp(static_cast<double>(enemyStrength) / total, 0.0, 1.0);
+    return gwb.ComputeCaptureRisk(building);
 }
 
 void AIPlayerJH::TrySeaAttack()

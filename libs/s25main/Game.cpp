@@ -44,6 +44,7 @@ void Game::Start(bool startFromSave)
     }
     if(world_.HasLua())
         world_.GetLua().EventStart(!startFromSave);
+    world_.UpdateMilitaryRiskEstimates();
 }
 
 void Game::AddAIPlayer(std::unique_ptr<AIPlayer> newAI)
@@ -68,6 +69,7 @@ unsigned getNumAlivePlayers(const GameWorldBase& world)
     }
     return numPlayersAlive;
 }
+constexpr unsigned kRiskUpdateInterval = 500;
 } // namespace
 
 void Game::RunGF()
@@ -99,6 +101,8 @@ void Game::RunGF()
     // If some players got defeated check objective
     if(getNumAlivePlayers(world_) < numPlayersAlive)
         CheckObjective();
+    if(currentGF % kRiskUpdateInterval == 0)
+        world_.UpdateMilitaryRiskEstimates();
 }
 
 void Game::StatisticStep()

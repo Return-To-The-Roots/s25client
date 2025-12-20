@@ -134,6 +134,11 @@ bool TerritoryRegion::AdjustCoords(Position& pt) const
 
 void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 {
+    CalcTerritoryOfBuildingForPlayer(building, building.GetPlayer());
+}
+
+void TerritoryRegion::CalcTerritoryOfBuildingForPlayer(const noBaseBuilding& building, unsigned char owner)
+{
     unsigned radius = building.GetMilitaryRadius();
     // Does not hold territory? -> Out
     if(radius == 0u)
@@ -142,18 +147,21 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     if(building.GetGOT() == GO_Type::NobMilitary && static_cast<const nobMilitary&>(building).IsNewBuilt())
         return;
 
-    const std::vector<MapPoint>* allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
-    if(allowedArea->empty())
-        allowedArea = nullptr;
+    const std::vector<MapPoint>* allowedArea = nullptr;
+    if(owner > 0)
+    {
+        allowedArea = &world.GetPlayer(owner - 1).GetRestrictedArea();
+        if(allowedArea->empty())
+            allowedArea = nullptr;
+    }
 
     // Punkt, auf dem das Militärgebäude steht
     MapPoint bldPos = building.GetPos();
-    AdjustNode(bldPos, building.GetPlayer(), 0,
-               nullptr); // no need to check barriers here. this point is on our territory.
+    AdjustNode(bldPos, owner, 0, nullptr); // no need to check barriers here. this point is on our territory.
 
     const auto pts = world.GetPointsInRadius(bldPos, radius, ReturnMapPointWithRadius{});
     for(const auto& ptWithRadius : pts)
-        AdjustNode(ptWithRadius.first, building.GetPlayer(), ptWithRadius.second, allowedArea);
+        AdjustNode(ptWithRadius.first, owner, ptWithRadius.second, allowedArea);
 }
 
 uint8_t TerritoryRegion::SafeGetOwner(const Position& pt) const

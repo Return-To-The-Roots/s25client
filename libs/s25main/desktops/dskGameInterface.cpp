@@ -829,20 +829,20 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         }
 
-        case 'b': // Zur lezten Position zurückspringen
+        case 'b': // Jump back to last position
             gwv.MoveToLastPosition();
             return true;
         case 'v':
             if(game_->world_.IsSinglePlayer())
                 GAMECLIENT.IncreaseSpeed();
             return true;
-        case 'c': // Gebäudenamen anzeigen
+        case 'c': // Show building names
             gwv.ToggleShowNames();
             return true;
-        case 'd': // Replay: FoW an/ausschalten
+        case 'd': // Replay: toggle FoW
             ToggleFoW();
             return true;
-        case 'h': // Zum HQ springen
+        case 'h': // Jump to HQ
         {
             const GamePlayer& player = worldViewer.GetPlayer();
             // Prüfen, ob dieses überhaupt noch existiert
@@ -853,14 +853,14 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'i': // Show inventory
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwInventory>(worldViewer.GetPlayer()));
             return true;
-        case 'j': // GFs überspringen
+        case 'j': // Skip gameframes
             if(game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
                 WINDOWMANAGER.ToggleWindow(std::make_unique<iwSkipGFs>(gwv));
             return true;
-        case 'l': // Minimap anzeigen
+        case 'l': // Show minimap
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv));
             return true;
-        case 'm': // Hauptauswahl
+        case 'm': // Main menu
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
             return true;
         case 'n': // Show Post window
@@ -870,11 +870,11 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'p': // Pause
             GAMECLIENT.TogglePause();
             return true;
-        case 'q': // Spiel verlassen
+        case 'q': // Quit game
             if(ke.alt)
                 WINDOWMANAGER.ToggleWindow(std::make_unique<iwEndgame>());
             return true;
-        case 's': // Produktivität anzeigen
+        case 's': // Show productivity
             gwv.ToggleShowProductivity();
             return true;
         case 26: // ctrl+z

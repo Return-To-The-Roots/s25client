@@ -28,6 +28,8 @@ public:
 
     /// Adds the territory of the building
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
+    /// Adds the territory for the building but forcing a specific owner (0 = neutral)
+    void CalcTerritoryOfBuildingForPlayer(const noBaseBuilding& building, unsigned char owner);
 
     unsigned GetIdx(const Position& pt) const;
     Position GetPosFromMapPos(const MapPoint& pt) const;

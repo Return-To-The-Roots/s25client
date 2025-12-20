@@ -927,6 +927,13 @@ unsigned nobMilitary::GetGarrisonStrengthWithBonus() const
     return strength;
 }
 
+unsigned nobMilitary::EstimateCaptureLossCount() const
+{
+    if(!world)
+        return 0;
+    return world->CountBuildingsLostOnCapture(*this);
+}
+
 bool nobMilitary::HasUpgradeableSoldier() const
 {
     const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();
@@ -967,6 +974,10 @@ std::unique_ptr<nofDefender> nobMilitary::ProvideDefender(nofAttacker& attacker)
 void nobMilitary::Capture(const unsigned char new_owner)
 {
     RTTR_Assert(IsBeingCaptured());
+
+    captureRisk_ = 0.0;
+    captureRiskCached_ = false;
+    importance_ = 0.0;
 
     // Transfer the stored gold coins from the old player to the new owner
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);

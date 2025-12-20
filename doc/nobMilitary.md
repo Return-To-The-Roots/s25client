@@ -39,6 +39,19 @@
 - `DestroyBuilding` removes the building from military grids, sends troops out, cleans pending events, refunds coins, recalc territory, and posts notifications.
 - `HitOfCatapultStone` simulates catapult damage by removing one garrisoned soldier and re-triggering regulation.
 
+## Losing Territory and Collateral Cleanup
+- `nobMilitary::DestroyBuilding()` (`libs/s25main/buildings/nobMilitary.cpp`) removes the structure from the military grid, cancels troop/coin events, ejects garrisoned soldiers as wanderers, notifies pending capturers/defenders, refunds coins, and then calls `nobBaseMilitary::DestroyBuilding()` so mission soldiers/aggressors are told their home vanished. If the building was occupied (`!new_built`), the base call is followed by `GameWorld::RecalcTerritory(..., TerritoryChangeReason::Destroyed)` to shrink the owner’s land.
+- `nobMilitary::Capture()` performs a similar cleanup for the losing owner (cancel missions, notify aggressors, transfer coins) but then swaps the building’s player, captures its flag, and recalculates territory with reason `Captured`. Visibility is reduced for the loser, nearby allied/enemy garrisons recompute frontier flags, and both players receive `BuildingNote::Captured/Lost` notifications.
+- `GameWorld::RecalcTerritory()` (`libs/s25main/world/GameWorld.cpp`) builds a `TerritoryRegion` around the trigger, copies new ownership back to the map, and gathers the affected nodes plus their neighbors. Each node runs through `DestroyPlayerRests`, which tears down enemy flags/buildings/building sites now standing on foreign ground (HQs, harbors, and already-occupied military buildings are exempt). Flags that fall will destroy their attached buildings, and captures feed `CombatLossTracker` so the attacker gets credit for collateral.
+- After structural cleanup, RecalcTerritory also destroys orphaned road segments that cross non-owned or border tiles, adjusts minimap/BQ/border stones, updates visibility, and fires scripting + player notifications about the new frontier.
+- AI player `AIPlayerJH` listens to `BuildingNote::Lost` events: `HandleMilitaryBuilingLost()` records the coordinates as “recently lost” (used later by attack heuristics) and reuses `HandleLostLand()` to prune roads from the lost area once at least one storehouse remains (`libs/s25main/ai/aijh/AIPlayerJH.cpp:1312-1541`).
+
+## Risk & Importance Snapshots
+- Every 500 gameframes `GameWorld::UpdateMilitaryRiskEstimates()` (`libs/s25main/Game.cpp`, `libs/s25main/world/GameWorld.cpp`) scans all occupied `nobMilitary` instances. Buildings currently under attack keep their last snapshot so the UI does not oscillate mid-fight.
+- The routine calls `GameWorldBase::ComputeCaptureRisk()` to evaluate the same attacker/defender strength ratio the AI uses (`libs/s25main/world/GameWorldBase.cpp`). The result is clamped to `[0,1]` and stored through `nobMilitary::SetCaptureRiskEstimate`.
+- Importance is stored as the number of dependent buildings that `DestroyPlayerRests` would remove if the garrison were captured (`nobMilitary::EstimateCaptureLossCount`). Those counts are cached on the building so `GameWorldView::DrawProductivity` (`libs/s25main/world/GameWorldView.cpp`) simply prints `[capt:0.32,imp:4.00]` under the soldier count.
+- AIPlayerJH’s internal `EvaluateCaptureRisks` now just delegates to the world helper, so AI stats, combat logs, and the HUD all read the same refresh cycle without triggering extra calculations inside the render loop.
+
 ## Capture-Risk Estimation
 - Every `nobMilitary` caches the probability that nearby enemies could capture it. The value is derived from
   `GetGarrisonStrengthWithBonus()`, which includes temporary defender hitpoint bonuses, versus the total attacking

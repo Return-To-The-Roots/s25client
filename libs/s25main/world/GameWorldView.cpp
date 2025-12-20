@@ -33,6 +33,8 @@
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
@@ -426,8 +428,9 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         SmallFont->Draw(curPos, text, FontStyle::CENTER | FontStyle::VCENTER, color);
     } else if(got == GO_Type::NobMilitary)
     {
+        const auto& military = static_cast<const nobMilitary&>(no);
         // Display amount of soldiers
-        unsigned soldiers_count = static_cast<const nobMilitary&>(no).GetNumTroops();
+        unsigned soldiers_count = military.GetNumTroops();
         std::string sSoldiers;
         if(soldiers_count == 1)
             sSoldiers = _("(1 soldier)");
@@ -436,6 +439,12 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
 
         SmallFont->Draw(curPos, sSoldiers, FontStyle::CENTER | FontStyle::VCENTER,
                         (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
+        std::ostringstream stream;
+        stream.setf(std::ios::fixed);
+        stream << "[capt:" << std::setprecision(2) << military.GetCaptureRiskEstimate() << ",imp:"
+               << std::setprecision(2) << military.GetImportanceEstimate() << ']';
+        const DrawPoint infoPos(curPos.x, curPos.y + SmallFont->getHeight());
+        SmallFont->Draw(infoPos, stream.str(), FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
     }
 }
 

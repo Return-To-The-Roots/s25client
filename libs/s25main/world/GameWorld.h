@@ -13,6 +13,7 @@
 class GameInterface;
 class MilitarySquares;
 class noBaseBuilding;
+class nobMilitary;
 class noBuildingSite;
 class noRoadNode;
 class nofActiveSoldier;
@@ -53,7 +54,8 @@ class GameWorld : public GameWorldBase
 
     /// Creates a region with territories marked around a building with the given radius
     TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius,
-                                          TerritoryChangeReason reason) const;
+                                          TerritoryChangeReason reason,
+                                          const unsigned char* triggerOwnerOverride = nullptr) const;
     /// Cleans the region (removes edges of terrain and applies the allied border push addon
     void CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeReason reason,
                               const noBaseBuilding& triggerBld) const;
@@ -115,6 +117,10 @@ public:
     /// Berechnet das Land in einem bestimmten Bereich um ein aktuelles Militärgebäude rum neu und gibt zurück ob sich
     /// etwas verändern würde (auf für ki wichtigem untergrund) wenn das Gebäude zerstört werden würde
     bool DoesDestructionChangeTerritory(const noBaseBuilding& building) const;
+    /// Estimate how many buildings would be destroyed if the given military building were captured
+    unsigned CountBuildingsLostOnCapture(const nobMilitary& building) const;
+    /// Refresh capture risk and importance for all military buildings
+    void UpdateMilitaryRiskEstimates();
 
     /// Greift ein Militärgebäude auf x,y an (entsendet dafür die Soldaten etc.)
     void Attack(unsigned char player_attacker, MapPoint pt, unsigned short soldiers_count, bool strong_soldiers);

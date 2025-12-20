@@ -50,6 +50,9 @@ private:
     bool coinsDisabled, coinsDisabledVirtual;
     /// Cached chance that the building will be captured soon
     double captureRisk_ = 0.0;
+    bool captureRiskCached_ = false;
+    /// Estimated collateral impact if this building falls (number of dependent buildings)
+    double importance_ = 0.0;
     /// Distance to the enemy border (drives garrison size); values: 0 far, 3 near, 2 harbor
     FrontierDistance frontier_distance;
     /// Size/type of the military building (0 = barracks, 3 = fortress)
@@ -190,8 +193,19 @@ public:
     unsigned GetGarrisonStrengthWithBonus() const;
     /// Return the last-estimated capture risk
     double GetCaptureRiskEstimate() const { return captureRisk_; }
+    bool HasCaptureRiskEstimate() const { return captureRiskCached_; }
     /// Update the stored capture risk probability
-    void SetCaptureRiskEstimate(double value) { captureRisk_ = std::clamp(value, 0.0, 1.0); }
+    void SetCaptureRiskEstimate(double value)
+    {
+        captureRisk_ = std::clamp(value, 0.0, 1.0);
+        captureRiskCached_ = true;
+    }
+    /// Return the last-estimated importance score
+    double GetImportanceEstimate() const { return importance_; }
+    /// Update the stored importance score
+    void SetImportanceEstimate(double value) { importance_ = std::max(0.0, value); }
+    /// Estimate how many player buildings would be lost if this building were captured
+    unsigned EstimateCaptureLossCount() const;
 
     /// Handle the building being captured by an enemy (player becomes the new owner)
     void Capture(unsigned char new_owner);
