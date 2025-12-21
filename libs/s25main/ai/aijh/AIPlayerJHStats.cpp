@@ -392,7 +392,7 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     if(statsFile)
     {
         DataExtractor extractor;
-        extractor.ProcessSnapshot(player, gf);
+        extractor.ProcessSnapshot(player, gf, this);
         if(const SnapshotData* snapshot = extractor.GetCurrentSnapshot())
         {
             const bool writeHeader = !statsSnapshotHeaderWritten;
@@ -516,7 +516,8 @@ void AIPlayerJH::saveStats(unsigned int gf) const
     outfile << " Goods: " << std::endl;
     for(GoodType type : helpers::EnumRange<GoodType>{})
     {
-        outfile << GOOD_NAMES_1.at(type) << ":" << AmountInStorage(type) << std::endl;
+        outfile << GOOD_NAMES_1.at(type) << " Stocks:" << AmountInStorage(type) << ",Produced:"
+                << goodsProduced[type] << std::endl;
     }
     outfile << std::endl;
 

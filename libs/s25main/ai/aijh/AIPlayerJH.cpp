@@ -32,6 +32,7 @@
 #include "notifications/NodeNote.h"
 #include "notifications/ResourceNote.h"
 #include "notifications/RoadNote.h"
+#include "notifications/ProductionNote.h"
 #include "notifications/ShipNote.h"
 #include "pathfinding/PathConditionRoad.h"
 #include "nodeObjs/noAnimal.h"
@@ -229,6 +230,10 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     subShip = notifications.subscribe<ShipNote>([this, playerId](const ShipNote& note) {
         if(note.player == playerId)
             HandleShipNote(eventManager, note);
+    });
+    subProduction = notifications.subscribe<ProductionNote>([this, playerId](const ProductionNote& note) noexcept {
+        if(note.player == playerId)
+            ++goodsProduced[note.good];
     });
     subBQ = recordBQsToUpdate(this->gwb, this->nodesWithOutdatedBQ);
 }

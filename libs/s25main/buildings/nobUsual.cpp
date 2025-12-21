@@ -15,6 +15,7 @@
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
+#include "notifications/ProductionNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/PostMsgWithBuilding.h"
@@ -31,7 +32,7 @@ constexpr unsigned isWorkingMarker = 0xFFFFFFFF;
 
 nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation)
     : noBuilding(type, pos, player, nation), worker(nullptr), disableProduction(false), disableProductionVirtual(false),
-      lastOrderedWare(0), orderware_ev(nullptr), productivity_ev(nullptr), numGfNotWorking(0),
+      lastOrderedWare(0), orderware_ev(nullptr), productivity_ev(nullptr), numGfNotWorking(0), totalProducedGoods(0),
       sinceNotWorking(isWorkingMarker), outOfRessourcesMsgSent(false), is_working(false)
 {
     std::fill(numWares.begin(), numWares.end(), 0);
@@ -52,7 +53,8 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
     : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>()), productivity(sgd.PopUnsignedShort()),
       disableProduction(sgd.PopBool()), disableProductionVirtual(disableProduction),
       lastOrderedWare(sgd.PopUnsignedChar()), orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()),
-      numGfNotWorking(sgd.PopUnsignedShort()), sinceNotWorking(sgd.PopUnsignedInt()),
+      numGfNotWorking(sgd.PopUnsignedShort()),
+      totalProducedGoods(sgd.GetGameDataVersion() >= 16 ? sgd.PopUnsignedInt() : 0), sinceNotWorking(sgd.PopUnsignedInt()),
       outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
 {
     helpers::popContainer(sgd, numWares);
@@ -75,6 +77,7 @@ void nobUsual::Serialize(SerializedGameData& sgd) const
     sgd.PushEvent(orderware_ev);
     sgd.PushEvent(productivity_ev);
     sgd.PushUnsignedShort(numGfNotWorking);
+    sgd.PushUnsignedInt(totalProducedGoods);
     sgd.PushUnsignedInt(sinceNotWorking);
     sgd.PushBool(outOfRessourcesMsgSent);
     sgd.PushBool(is_working);
@@ -565,6 +568,13 @@ void nobUsual::StopNotWorking()
         numGfNotWorking += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - sinceNotWorking);
         sinceNotWorking = isWorkingMarker;
     }
+}
+
+void nobUsual::RegisterProducedGood(const GoodType good)
+{
+    ++totalProducedGoods;
+    world->GetNotifications().publish(
+      ProductionNote(player, GetPos(), GetBuildingType(), good));
 }
 
 unsigned short nobUsual::CalcCurrentProductivity()

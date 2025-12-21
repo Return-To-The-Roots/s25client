@@ -41,6 +41,8 @@ protected:
     std::array<uint16_t, 6> lastProductivities;
     /// How many GFs he did not work since the last productivity calculation
     unsigned short numGfNotWorking;
+    /// Total number of goods produced by this building
+    unsigned totalProducedGoods;
     /// Since which GF he did not work (0xFFFFFFFF = currently working)
     unsigned sinceNotWorking;
     /// Did we notify the player that we are out of resources?
@@ -103,6 +105,8 @@ public:
     const unsigned short* GetProductivityPointer() const { return &productivity; }
     unsigned short GetProductivity() const { return productivity; }
     const nofBuildingWorker* GetWorker() const { return worker; }
+    unsigned GetTotalProducedGoods() const { return totalProducedGoods; }
+    void RegisterProducedGood(GoodType good);
 
     /// Toggle production visually
     void ToggleProductionVirtual() { disableProductionVirtual = !disableProductionVirtual; }

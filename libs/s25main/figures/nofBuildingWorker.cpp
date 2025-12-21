@@ -162,6 +162,7 @@ void nofBuildingWorker::WorkingReady()
             flag->AddWare(std::move(real_ware));
             // Warenstatistik erhöhen
             world->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
+            workplace->RegisterProducedGood(ware_type);
             // Tragen nun keine Ware mehr
             ware = boost::none;
         }

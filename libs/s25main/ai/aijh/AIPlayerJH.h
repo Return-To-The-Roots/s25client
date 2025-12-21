@@ -9,7 +9,9 @@
 #include "ai/AIPlayer.h"
 #include "ai/aijh/AIMap.h"
 #include "ai/aijh/AIResourceMap.h"
+#include "helpers/EnumArray.h"
 #include "helpers/OptionalEnum.h"
+#include "gameTypes/GoodTypes.h"
 #include "gameTypes/MapCoordinates.h"
 #include <list>
 #include <memory>
@@ -228,6 +230,8 @@ public:
 
     MapPoint UpgradeBldPos;
 
+    const helpers::EnumArray<unsigned, GoodType>& GetProducedGoods() const { return goodsProduced; }
+
     unsigned GetProductivity(BuildingType type) const;
     double GetCombatFulfillmentLevel() const;
     double GetCombatAttackWeight() const;
@@ -293,6 +297,7 @@ private:
     AIMap aiMap;
     /// Resource maps, containing a rating for every map point concerning a resource
     helpers::EnumArray<AIResourceMap, AIResource> resourceMaps;
+    helpers::EnumArray<unsigned, GoodType> goodsProduced{};
 
     unsigned attack_interval;
     unsigned build_interval;
@@ -308,7 +313,7 @@ private:
     std::unique_ptr<AIConstruction> construction;
     std::unique_ptr<PositionFinder> positionFinder;
 
-    Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
+    Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subProduction, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;
     mutable unsigned lastStatsFrame_ = 0;
     mutable bool combatsLogInitialized_ = false;

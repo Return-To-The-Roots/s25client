@@ -106,7 +106,8 @@
 /// 13: Persist capture gameframe for military buildings
 /// 14: Persist original owner for military buildings
 /// 15: Persist total troop limit for military buildings
-static const unsigned currentGameDataVersion = 15;
+/// 16: Track total produced goods per nobUsual
+static const unsigned currentGameDataVersion = 16;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

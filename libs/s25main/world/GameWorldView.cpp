@@ -405,6 +405,8 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         const auto& n = static_cast<const nobUsual&>(no);
         std::string text;
         unsigned color = COLOR_0_PERCENT;
+        const bool isNobUsual = (got == GO_Type::NobUsual);
+        bool drawProducedCount = false;
 
         if(!n.HasWorker())
             text = _("(House unoccupied)");
@@ -424,8 +426,16 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
                 color = COLOR_30_PERCENT;
             else if(p >= 20)
                 color = COLOR_20_PERCENT;
+            drawProducedCount = isNobUsual;
         }
         SmallFont->Draw(curPos, text, FontStyle::CENTER | FontStyle::VCENTER, color);
+        if(drawProducedCount)
+        {
+            DrawPoint producedPos = curPos;
+            producedPos.y += SmallFont->getHeight();
+            SmallFont->Draw(producedPos, "[prd:" + helpers::toString(n.GetTotalProducedGoods()) + "]",
+                            FontStyle::CENTER | FontStyle::VCENTER, COLOR_WHITE);
+        }
     } else if(got == GO_Type::NobMilitary)
     {
         const auto& military = static_cast<const nobMilitary&>(no);

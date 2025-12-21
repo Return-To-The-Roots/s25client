@@ -8,6 +8,11 @@
 #include <cstdint>
 #include <optional> // Required for std::optional
 
+#include "helpers/EnumArray.h"
+#include "gameTypes/GoodTypes.h"
+
+class AIPlayer;
+
 class GamePlayer;
 
 // Define the snapshot data type
@@ -23,7 +28,7 @@ public:
 
     DataExtractor() = default;
 
-    void ProcessSnapshot(const GamePlayer& player, uint32_t gameframe);
+    void ProcessSnapshot(const GamePlayer& player, uint32_t gameframe, const AIPlayer* aiPlayer = nullptr);
 
     const SnapshotData* GetCurrentSnapshot() const;
     bool HasSnapshot() const { return currentSnapshot_.has_value(); }

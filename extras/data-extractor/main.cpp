@@ -6,6 +6,7 @@
 #include <exception>
 
 #include "dataextractor/DataExtractor.h"
+#include "ai/aijh/AIPlayerJH.h"
 #include "RttrConfig.h"
 #include "SnapshotLoader.h"
 
@@ -98,7 +99,8 @@ int main(int argc, char* argv[]) {
 
     bool write_header = true;
     for (const auto& snapshot : snapshots) {
-        extractor.ProcessSnapshot(*snapshot.player, snapshot.gameframe);
+        const AIPlayer* ai = snapshot.game->GetAIPlayer(snapshot.player->GetPlayerId());
+        extractor.ProcessSnapshot(*snapshot.player, snapshot.gameframe, ai);
         const bool flushed = FlushSnapshot(extractor, outputFormat, write_header);
         if(flushed && write_header)
             write_header = false;
