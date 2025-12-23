@@ -106,11 +106,12 @@ jobs:
           #   Use (compiler) default C++ 17 standard
           #   Use default cmake
           - { compiler: gcc-14,   os: ubuntu-24.04, type: Debug }
+          - { compiler: gcc-15,   container: 'ubuntu:25.04', os: ubuntu-latest, type: Debug }
           - { compiler: clang-18, os: ubuntu-24.04, type: Debug, externalSanitizer: true }
           - { compiler: clang-21, os: ubuntu-latest, type: Debug, init_llvm: true}
 
     runs-on: ${{matrix.os}}
-
+    container: ${{matrix.container}}
     steps:
       - name: Setup env and configure flags
         run: |
@@ -137,6 +138,10 @@ jobs:
           echo "CC=$CC" >> $GITHUB_ENV
           echo "CXX=$CXX" >> $GITHUB_ENV
           echo "GCOV=$GCOV" >> $GITHUB_ENV
+          if [ -n "${{matrix.container}}" ] && [ -f "/etc/debian_version" ]; then
+            apt-get -o Acquire::Retries=5 update
+            apt-get -o Acquire::Retries=5 -y -q --no-install-suggests --no-install-recommends install sudo software-properties-common curl git
+          fi
 
       # Coverage collection requires access to history to find merge-base
       - uses: actions/checkout@v4
