@@ -25,6 +25,7 @@
 #include "gameData/JobConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ToolConsts.h"
+#include "gameTypes/VisualSettings.h"
 
 #include "s25util/colors.h"
 
@@ -512,6 +513,31 @@ void AIPlayerJH::saveStats(unsigned int gf) const
         ;
     }
     outfile << std::endl;
+
+    VisualSettings visual_settings{};
+    player.FillVisualSettings(visual_settings);
+    outfile << " Goods Distribution: " << std::endl;
+    GoodType current_good = GoodType::Nothing;
+    for(std::size_t idx = 0; idx < distributionMap.size(); ++idx)
+    {
+        const auto& mapping = distributionMap[idx];
+        const GoodType good = std::get<0>(mapping);
+        const BuildingType building = std::get<1>(mapping);
+        const unsigned priority = visual_settings.distribution[idx];
+        if(good != current_good)
+        {
+            if(idx != 0)
+                outfile << std::endl;
+            outfile << GOOD_NAMES_1.at(good) << ": ";
+            current_good = good;
+        }
+        else
+        {
+            outfile << ",";
+        }
+        outfile << BUILDING_NAMES_1.at(building) << " " << priority;
+    }
+    outfile << std::endl << std::endl;
 
     outfile << " Goods: " << std::endl;
     for(GoodType type : helpers::EnumRange<GoodType>{})

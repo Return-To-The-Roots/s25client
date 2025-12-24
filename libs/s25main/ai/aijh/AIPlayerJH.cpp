@@ -2887,9 +2887,36 @@ void AIPlayerJH::AdjustSettings()
             }
             return 0;
         };
+        bool has_tool_shortage = false;
         for(const auto tool : helpers::enumRange<Tool>())
         {
             toolsettings[tool] = calcToolPriority(tool);
+            has_tool_shortage = has_tool_shortage || toolsettings[tool] > 0;
+        }
+
+        if(!has_tool_shortage)
+        {
+            bool all_meet_basis = true;
+            for(const auto tool : helpers::enumRange<Tool>())
+            {
+                const GoodType good = TOOL_TO_GOOD[tool];
+                if(inventory[good] < static_cast<unsigned>(TOOL_BASIS[tool]))
+                {
+                    toolsettings[tool] = TOOL_PRIORITY[tool];
+                    all_meet_basis = false;
+                }
+                else
+                {
+                    toolsettings[tool] = 0;
+                }
+            }
+            if(all_meet_basis)
+            {
+                for(const auto tool : helpers::enumRange<Tool>())
+                {
+                    toolsettings[tool] = TOOL_PRIORITY[tool];
+                }
+            }
         }
 
         for(const auto tool : helpers::enumRange<Tool>())
