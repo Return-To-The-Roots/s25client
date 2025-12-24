@@ -46,6 +46,7 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/ToolConsts.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameTypes/VisualSettings.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
 #include <algorithm>
@@ -132,6 +133,23 @@ void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 {
     if(note.type == ShipNote::Constructed)
         eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::EventType::ShipBuilt, note.pos));
+}
+
+std::size_t GetDistributionIndex(GoodType good, BuildingType building)
+{
+    for(std::size_t idx = 0; idx < distributionMap.size(); ++idx)
+    {
+        if(std::get<0>(distributionMap[idx]) == good && std::get<1>(distributionMap[idx]) == building)
+            return idx;
+    }
+    RTTR_Assert(false);
+    return 0;
+}
+
+std::size_t GetIronMetalworksDistributionIndex()
+{
+    static const std::size_t idx = GetDistributionIndex(GoodType::Iron, BuildingType::Metalworks);
+    return idx;
 }
 } // namespace
 
@@ -2588,6 +2606,7 @@ void AIPlayerJH::InitDistribution()
     goodSettings[23] = 10; // water pigfarm
     goodSettings[24] = 10; // water donkeybreeder
     goodSettings[25] = 2;  // water vineyard
+    metalworksIronDistributionBase_ = goodSettings[GetIronMetalworksDistributionIndex()];
     aii.ChangeDistribution(goodSettings);
 }
 
@@ -2883,6 +2902,8 @@ void AIPlayerJH::AdjustSettings()
         }
     }
 
+    AdjustDistribution();
+
     // Set military settings to some currently required values
     MilitarySettings milSettings;
     milSettings[0] = 10;
@@ -2906,6 +2927,42 @@ void AIPlayerJH::AdjustSettings()
        || player.GetMilitarySetting(4) != milSettings[4]
        || player.GetMilitarySetting(1) != milSettings[1]) // only send the command if we want to change something
         aii.ChangeMilitary(milSettings);
+}
+
+void AIPlayerJH::AdjustDistribution()
+{
+    // Reduce metalworks iron distribution when all tool stocks meet or exceed TOOL_PRIORITY.
+    // The reduction is proportional to the lowest surplus so excess tools slow down iron usage.
+    if(bldPlanner->GetNumBuildings(BuildingType::Metalworks) == 0u || metalworksIronDistributionBase_ == 0u)
+        return;
+
+    const Inventory& inventory = aii.GetInventory();
+    int min_surplus = std::numeric_limits<int>::max();
+    for(const auto tool : helpers::enumRange<Tool>())
+    {
+        const GoodType good = TOOL_TO_GOOD[tool];
+        const int surplus = static_cast<int>(inventory[good]) - TOOL_BASIS[tool];
+        min_surplus = std::min(min_surplus, surplus);
+    }
+
+    const std::size_t idx = GetIronMetalworksDistributionIndex();
+    VisualSettings visualSettings{};
+    player.FillVisualSettings(visualSettings);
+    const uint8_t currentPriority = visualSettings.distribution[idx];
+
+    uint8_t newPriority = metalworksIronDistributionBase_;
+    if(min_surplus >= 0)
+    {
+        const int decrease = 1 + min_surplus;
+        newPriority = static_cast<uint8_t>(
+          std::max(0, static_cast<int>(metalworksIronDistributionBase_) - decrease));
+    }
+
+    if(newPriority == currentPriority)
+        return;
+
+    visualSettings.distribution[idx] = newPriority;
+    aii.ChangeDistribution(visualSettings.distribution);
 }
 
 unsigned AIPlayerJH::CalcMilSettings()

@@ -286,6 +286,8 @@ private:
     bool IsRecentlyLostMilitaryBuilding(MapPoint pt) const;
     void EvaluateCaptureRisks();
     double ComputeCaptureRisk(const nobMilitary& building) const;
+    /// Adjust the iron distribution for metalworks according to tool stock
+    void AdjustDistribution();
 
     /// The current job the AI is working on
     std::unique_ptr<AIJob> currentJob;
@@ -299,6 +301,7 @@ private:
     helpers::EnumArray<AIResourceMap, AIResource> resourceMaps;
     helpers::EnumArray<unsigned, GoodType> goodsProduced{};
 
+    uint8_t metalworksIronDistributionBase_ = 0;
     unsigned attack_interval;
     unsigned build_interval;
     int isInitGfCompleted;

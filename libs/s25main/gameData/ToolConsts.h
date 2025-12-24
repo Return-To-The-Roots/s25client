@@ -28,3 +28,20 @@ constexpr helpers::EnumArray<signed, Tool> SUPPRESS_UNUSED TOOL_PRIORITY {
         1, //Bow
     }
 };
+
+constexpr helpers::EnumArray<signed, Tool> SUPPRESS_UNUSED TOOL_BASIS {
+    {
+        1, //Tongs
+        2, //Hammer
+        3, //Axe
+        2, //Saw
+        5, //PickAxe
+        1, //Shovel
+        3, //Crucible
+        3, //RodAndLine
+        5, //Scythe
+        1, //Cleaver
+        2, //Rollingpin
+        1, //Bow
+    }
+};
