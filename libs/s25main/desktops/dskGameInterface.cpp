@@ -748,9 +748,6 @@ bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
     return false;
 }
 
-/**
- *  Druck von Spezialtasten auswerten.
- */
 bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 {
     cheatCommandTracker_.onKeyEvent(ke);
@@ -758,31 +755,31 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.kt)
     {
         default: break;
-        case KeyType::Return: // Chatfenster öffnen
+        case KeyType::Return: // Open chat
             WINDOWMANAGER.Show(std::make_unique<iwChat>(this));
             return true;
 
-        case KeyType::Space: // Bauqualitäten anzeigen
+        case KeyType::Space: // Show / hide construction aid
             gwv.ToggleShowBQ();
             return true;
 
-        case KeyType::Left: // Nach Links Scrollen
+        case KeyType::Left: // Scroll left
             gwv.MoveBy({-30, 0});
             return true;
-        case KeyType::Right: // Nach Rechts Scrollen
+        case KeyType::Right: // Scroll right
             gwv.MoveBy({30, 0});
             return true;
-        case KeyType::Up: // Nach Oben Scrollen
+        case KeyType::Up: // Scroll up
             gwv.MoveBy({0, -30});
             return true;
-        case KeyType::Down: // Nach Unten Scrollen
+        case KeyType::Down: // Scroll down
             gwv.MoveBy({0, 30});
             return true;
 
-        case KeyType::F2: // Spiel speichern
+        case KeyType::F2: // Open save game window
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
             return true;
-        case KeyType::F3: // Map debug window/ Multiplayer coordinates
+        case KeyType::F3: // Map debug window
         {
             const bool replayMode = GAMECLIENT.IsReplayModeOn();
             if(replayMode)
@@ -790,16 +787,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || replayMode));
             return true;
         }
-        case KeyType::F8: // Tastaturbelegung
+        case KeyType::F8:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
-        case KeyType::F9: // Readme
+        case KeyType::F9:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
         case KeyType::F11: // Music player (midi files)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
-        case KeyType::F12: // Optionsfenster
+        case KeyType::F12: // Ingame options
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>(gwv.GetSoundMgr()));
             return true;
     }
@@ -815,9 +812,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 GAMECLIENT.DecreaseSpeed();
             return true;
 
+        // Switch to specific player
         case '1':
         case '2':
-        case '3': // Spieler umschalten
+        case '3':
         case '4':
         case '5':
         case '6':
@@ -832,7 +830,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
             } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
             {
-                // On mutiplayer this currently asyncs, but as this is a debug feature anyway just disable it there.
+                // On multi player this currently asyncs, but as this is a debug feature anyway just disable it.
                 // If this should be enabled again, look into the handling/clearing of accumulated GCs
                 if(game_->world_.IsSinglePlayer())
                 {
@@ -844,23 +842,21 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         }
 
-        case 'b': // Zur lezten Position zurückspringen
-            gwv.MoveToLastPosition();
-            return true;
+        case 'b': gwv.MoveToLastPosition(); return true;
         case 'v':
             if(game_->world_.IsSinglePlayer())
-                GAMECLIENT.IncreaseSpeed();
+                GAMECLIENT.IncreaseSpeed(true);
             return true;
-        case 'c': // Gebäudenamen anzeigen
+        case 'c': // Show/hide building names
             gwv.ToggleShowNames();
             return true;
-        case 'd': // Replay: FoW an/ausschalten
+        case 'd': // Enable/Disable fog of war (in replay mode)
             ToggleFoW();
             return true;
-        case 'h': // Zum HQ springen
+        case 'h': // Go to HQ
         {
             const GamePlayer& player = worldViewer.GetPlayer();
-            // Prüfen, ob dieses überhaupt noch existiert
+            // HQ might not exist anymore
             if(player.GetHQPos().isValid())
                 gwv.MoveToMapPt(player.GetHQPos());
         }
@@ -868,40 +864,40 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'i': // Show inventory
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwInventory>(worldViewer.GetPlayer()));
             return true;
-        case 'j': // GFs überspringen
+        case 'j': // Skip GFs (fast forward)
             if(game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
                 WINDOWMANAGER.ToggleWindow(std::make_unique<iwSkipGFs>(gwv));
             return true;
-        case 'l': // Minimap anzeigen
+        case 'l': // Show minimap
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv));
             return true;
-        case 'm': // Hauptauswahl
+        case 'm': // Show main menu
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
             return true;
-        case 'n': // Show Post window
+        case 'n': // Show post window
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
             GAMECLIENT.TogglePause();
             return true;
-        case 'q': // Spiel verlassen
+        case 'q': // Quit game (dialog)
             if(ke.alt)
                 WINDOWMANAGER.ToggleWindow(std::make_unique<iwEndgame>());
             return true;
-        case 's': // Produktivität anzeigen
+        case 's': // Show/hide productivity overlay
             gwv.ToggleShowProductivity();
             return true;
         case 26: // ctrl+z
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             return true;
-        case 'z': // zoom
-            if(ke.ctrl)
+        case 'z':       // zoom in
+            if(ke.ctrl) // Reset zoom
                 gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             else
                 gwv.SetZoomFactor(getNextZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
-        case 'Z': // shift-z, reverse zoom
+        case 'Z': // shift-z, zoom out
             gwv.SetZoomFactor(getPreviousZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
     }
