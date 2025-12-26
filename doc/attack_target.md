@@ -1,6 +1,8 @@
 # AI Attack Target Selection
 
-Reference: `libs/s25main/ai/aijh/AIPlayerJH.cpp`.
+Most of the orchestration still lives in `AIPlayerJH.cpp`, but the target
+selection logic has been extracted into `ai/aijh/TargetSelector.cpp` so it
+can evolve independently of the combat-resolution code.
 
 ## Trigger Flow
 
@@ -12,32 +14,43 @@ Reference: `libs/s25main/ai/aijh/AIPlayerJH.cpp`.
 
 ## Discovering Candidate Targets
 
-1. Iterate over the AI’s own military buildings via
-   `aii.GetMilitaryBuildings()`.
-   - Buildings flagged as `FrontierDistance::Far` (pure inland posts) are
-     skipped.
-   - When the AI owns more than 40 buildings it randomly skips entries so
-     that roughly `limit=40` candidates are inspected per pass.
-2. For each usable building, `gwb.LookForMilitaryBuildings(src, 2)` scans
-   enemy posts within the base attacking radius.
-3. A target is considered only if all of these are true:
-   - It is visible to the AI player (`aii.IsVisible(dest)`).
-   - It belongs to an attackable enemy (`aii.IsPlayerAttackable`).
-   - Distance from the source building is strictly less than
-     `BASE_ATTACKING_DISTANCE` (21 nodes; see
-     `libs/s25main/gameData/MilitaryConsts.h`).
-   - For enemy `nobMilitary` buildings, `IsNewBuilt()` must be false so
-     freshly placed huts get a short grace period.
-4. Headquarters or harbor buildings **without defenders** are inserted at
-   the front of the `potentialTargets` list so the AI tries to steal them
-   first; all other candidates are pushed to the back.
-5. After scanning all sources, the non-prioritized portion of
-   `potentialTargets` is shuffled with a PRNG so that no single enemy
-   building is always preferred when several options exist.
+1. `AIPlayerJH::SelectAttackTarget(TargetSelectionMode::Random)` (in
+   `TargetSelector.cpp`) iterates the AI’s military buildings while applying
+   the same heuristics as before: skip inland posts, cap the scan to roughly
+   40 per tick, and look for nearby enemy buildings via
+   `gwb.LookForMilitaryBuildings(src, 2)`.
+2. Candidates remain subject to the visibility, attackable-enemy, distance
+   (`BASE_ATTACKING_DISTANCE`), and “not newly built” checks.
+3. HQs or harbors without soldiers are still inserted at the front, while
+   every other target lands at the back.
+4. Only the non-prioritized suffix is shuffled, so opportunistic steals keep
+   their precedence even though the rest of the list is randomized.
+5. `SelectAttackTargetRandom()` evaluates the ordered candidates immediately
+   and returns the first viable target.
+6. `SelectAttackTargetPrudent()` uses the same discovery helper but applies
+   additional heuristics (see below) before settling on a candidate.
+7. The active selection mode is configured via `combat.targetSelection`
+   in the AI weights config (defaults to `Random`).
+   A sample `combat` block:
+
+   ```yaml
+   combat:
+     fulfillment:
+       low: 4.0
+       medium: 8.0
+       high: 12.0
+     attackIntervals:
+       easy: 2500
+       medium: 750
+       hard: 100
+     targetSelection: Prudent   # or "Random" (default)
+   ```
+8. `TryToAttack()` now simply asks for a target via the configured mode and
+   issues `aii.Attack`/`TrackCombatStart` when a plan is available.
 
 ## Evaluating Candidates
 
-For each target in the ordered list:
+While evaluating potential targets `SelectAttackTargetRandom()` performs:
 
 1. Gather possible attackers using `gwb.LookForMilitaryBuildings(dest, 2)`.
    - Only the AI’s own `nobMilitary` buildings contribute.
@@ -57,11 +70,23 @@ For each target in the ordered list:
      `IsLonelyEnemyStronghold`).
    - The attacking force must outnumber the defenders (or, for warehouses
      and HQs, only attack if they have zero defenders).
-5. If all checks pass the AI issues `aii.Attack(dest, attackersCount, true)`
-   to launch the mission and records the combat start via
-   `TrackCombatStart` for later bookkeeping.
-6. The loop stops after ordering the first valid attack; any remaining
+5. If all checks pass the method returns the target to `TryToAttack()`,
+   which then re-counts nearby attackers before calling
+   `aii.Attack(dest, attackersCount, true)` and `TrackCombatStart`.
+6. The helper stops after finding the first valid attack; any remaining
    potential targets are reconsidered during the next interval.
+
+When running with `TargetSelectionMode::Prudent` the selector:
+
+1. Starts from the same candidate list but skips buildings already under
+   attack.
+2. Requires the AI to outnumber the defenders by at least two soldiers before
+   keeping a target.
+3. Keep only the entries with the lowest defender count.
+4. If multiple choices remain, estimate each target’s counterattack risk by
+   summing the enemy soldiers (beyond the single mandatory defender) located
+   within `BASE_ATTACKING_DISTANCE` and keep the lowest totals.
+5. If ties still remain, shuffle the survivors and pick one at random.
 
 ## Key Takeaways
 

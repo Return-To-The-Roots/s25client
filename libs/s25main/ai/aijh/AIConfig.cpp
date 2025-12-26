@@ -8,9 +8,12 @@
 #include "gameData/MaxPlayers.h"
 
 #include <array>
+#include <cctype>
 #include <iostream>
 #include <memory>
 #include <utility>
+#include <algorithm>
+#include <optional>
 #include <yaml-cpp/yaml.h>
 
 // Define the global instance
@@ -30,6 +33,21 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
 {
     if(!combatNode)
         return;
+
+    auto parseTargetSelection = [](const std::string& raw)
+      -> std::optional<TargetSelectionAlgorithm> {
+        std::string normalized;
+        normalized.resize(raw.size());
+        std::transform(raw.begin(), raw.end(), normalized.begin(), [](unsigned char c) {
+            return static_cast<char>(std::tolower(c));
+        });
+
+        if(normalized == "random")
+            return TargetSelectionAlgorithm::Random;
+        if(normalized == "prudent")
+            return TargetSelectionAlgorithm::Prudent;
+        return std::nullopt;
+    };
 
     if(const YAML::Node fulfillmentNode = combatNode["fulfillment"])
     {
@@ -61,6 +79,22 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
         } catch(const YAML::TypedBadConversion<unsigned>& e)
         {
             std::cerr << "Warning: Invalid combat attack interval, using defaults. Error: " << e.what() << std::endl;
+        }
+    }
+
+    if(const YAML::Node targetSelectionNode = combatNode["targetSelection"])
+    {
+        try
+        {
+            const std::string selectionValue = targetSelectionNode.as<std::string>();
+            if(const auto parsed = parseTargetSelection(selectionValue))
+                config.combat.targetSelection = *parsed;
+            else
+                std::cerr << "Warning: Unknown target selection algorithm '" << selectionValue
+                          << "', defaulting to Random." << std::endl;
+        } catch(const YAML::TypedBadConversion<std::string>& e)
+        {
+            std::cerr << "Warning: Invalid target selection value, using default. Error: " << e.what() << std::endl;
         }
     }
 }

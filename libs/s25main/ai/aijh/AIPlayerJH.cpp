@@ -198,6 +198,12 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
 #endif
 
     attack_interval = config_.combat.attackIntervals[level];
+    switch(config_.combat.targetSelection)
+    {
+        case TargetSelectionAlgorithm::Prudent: targetSelectionMode_ = TargetSelectionMode::Prudent; break;
+        case TargetSelectionAlgorithm::Random:
+        default: targetSelectionMode_ = TargetSelectionMode::Random; break;
+    }
     switch(level)
     {
         case AI::Level::Easy:
@@ -1952,96 +1958,36 @@ bool AIPlayerJH::IsLonelyEnemyStronghold(const nobBaseMilitary& target) const
 
 void AIPlayerJH::TryToAttack()
 {
-    const bool inDefenseMode = (attackMode == CombatMode::DefenseMode);
-    unsigned hq_or_harbor_without_soldiers = 0;
-    std::vector<const nobBaseMilitary*> potentialTargets;
-
-    // use own military buildings (except inland buildings) to search for enemy military buildings
-    const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
-    const unsigned numMilBlds = militaryBuildings.size();
-    // when the ai has many buildings the ai will not check the complete list every time
-    constexpr unsigned limit = 40;
-    for(const nobMilitary* milBld : militaryBuildings)
-    {
-        // We skip the current building with a probability of limit/numMilBlds
-        // -> For twice the number of blds as the limit we will most likely skip every 2nd building
-        // This way we check roughly (at most) limit buildings but avoid any preference for one building over an other
-        if(rand() % numMilBlds > limit)
-            continue;
-
-        if(milBld->GetFrontierDistance() == FrontierDistance::Far) // inland building? -> skip it
-            continue;
-
-        // get nearby enemy buildings and store in set of potential attacking targets
-        MapPoint src = milBld->GetPos();
-
-        sortedMilitaryBlds buildings = gwb.LookForMilitaryBuildings(src, 2);
-        for(const nobBaseMilitary* target : buildings)
-        {
-            if(helpers::contains(potentialTargets, target))
-                continue;
-            if(target->GetGOT() == GO_Type::NobMilitary && static_cast<const nobMilitary*>(target)->IsNewBuilt())
-                continue;
-            MapPoint dest = target->GetPos();
-            if(gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE && aii.IsPlayerAttackable(target->GetPlayer())
-               && aii.IsVisible(dest))
-            {
-                if(target->GetGOT() != GO_Type::NobMilitary && !target->DefendersAvailable())
-                {
-                    // headquarter or harbor without any troops :)
-                    hq_or_harbor_without_soldiers++;
-                    potentialTargets.insert(potentialTargets.begin(), target);
-                } else
-                    potentialTargets.push_back(target);
-            }
-        }
-    }
-
-    // shuffle everything but headquarters and harbors without any troops in them
-    std::shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end(),
-                 std::mt19937(std::random_device()()));
-
-    // check for each potential attacking target the number of available attacking soldiers
-    for(const nobBaseMilitary* target : potentialTargets)
-    {
-        const MapPoint dest = target->GetPos();
-
-        unsigned attackersCount = 0;
-        unsigned attackersStrength = 0;
-
-        // ask each of nearby own military buildings for soldiers to contribute to the potential attack
-        sortedMilitaryBlds myBuildings = gwb.LookForMilitaryBuildings(dest, 2);
-        for(const nobBaseMilitary* otherMilBld : myBuildings)
-        {
-            if(otherMilBld->GetPlayer() == playerId)
-            {
-                const auto* myMil = dynamic_cast<const nobMilitary*>(otherMilBld);
-                if(!myMil || myMil->IsUnderAttack())
-                    continue;
-
-                unsigned newAttackers;
-                attackersStrength += myMil->GetSoldiersStrengthForAttack(dest, newAttackers);
-                attackersCount += newAttackers;
-            }
-        }
-
-        if(attackersCount == 0)
-            continue;
-
-        if((level == AI::Level::Hard) && (target->GetGOT() == GO_Type::NobMilitary))
-        {
-            const auto* enemyTarget = static_cast<const nobMilitary*>(target);
-            if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 2 || enemyTarget->GetNumTroops() == 0)
-                continue;
-        }
-
-        if(inDefenseMode && !CanAttackInDefenseMode(*target, attackersCount))
-            continue;
-
-        if(aii.Attack(dest, attackersCount, true))
-            TrackCombatStart(*target);
+    const nobBaseMilitary* target = SelectAttackTarget(targetSelectionMode_);
+    if(!target)
         return;
+
+    const unsigned attackersCount = CalcPotentialAttackers(*target);
+    if(attackersCount == 0)
+        return;
+
+    if(aii.Attack(target->GetPos(), attackersCount, true))
+        TrackCombatStart(*target);
+}
+
+unsigned AIPlayerJH::CalcPotentialAttackers(const nobBaseMilitary& target) const
+{
+    unsigned attackersCount = 0;
+    sortedMilitaryBlds myBuildings = gwb.LookForMilitaryBuildings(target.GetPos(), 2);
+    for(const nobBaseMilitary* otherMilBld : myBuildings)
+    {
+        if(otherMilBld->GetPlayer() == playerId)
+        {
+            const auto* myMil = dynamic_cast<const nobMilitary*>(otherMilBld);
+            if(!myMil || myMil->IsUnderAttack())
+                continue;
+
+            unsigned newAttackers = 0;
+            myMil->GetSoldiersStrengthForAttack(target.GetPos(), newAttackers);
+            attackersCount += newAttackers;
+        }
     }
+    return attackersCount;
 }
 
 double AIPlayerJH::GetCaptureRiskEstimate(const nobBaseMilitary& building) const

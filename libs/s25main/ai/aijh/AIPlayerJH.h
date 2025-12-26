@@ -43,6 +43,11 @@ Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& b
 class AIPlayerJH final : public AIPlayer
 {
 public:
+    enum class TargetSelectionMode
+    {
+        Random,
+        Prudent
+    };
     AIPlayerJH(unsigned char playerId, const GameWorldBase& gwb, AI::Level level);
     ~AIPlayerJH() override;
 
@@ -187,6 +192,9 @@ public:
     void CheckGranitMine();
     /// Tries to attack the enemy
     void TryToAttack();
+    const nobBaseMilitary* SelectAttackTarget(TargetSelectionMode mode) const;
+    const nobBaseMilitary* SelectAttackTargetRandom() const;
+    const nobBaseMilitary* SelectAttackTargetPrudent() const;
     /// sea attack
     void TrySeaAttack();
     /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when
@@ -284,6 +292,9 @@ private:
     void ForgetLostMilitaryBuilding(MapPoint pt);
     void PruneRecentlyLostBuildings();
     bool IsRecentlyLostMilitaryBuilding(MapPoint pt) const;
+    std::vector<const nobBaseMilitary*>
+      GetPotentialTargets(unsigned& hq_or_harbor_without_soldiers) const;
+    unsigned CalcPotentialAttackers(const nobBaseMilitary& target) const;
     void EvaluateCaptureRisks();
     double ComputeCaptureRisk(const nobMilitary& building) const;
     /// Adjust the iron distribution for metalworks according to tool stock
@@ -308,6 +319,7 @@ private:
     /// resigned yes/no
     bool defeated;
     CombatMode attackMode;
+    TargetSelectionMode targetSelectionMode_ = TargetSelectionMode::Random;
     double combatFulfillmentLevel_ = 0.0;
     double combatAttackWeight_ = 0.0;
     mutable std::vector<ActiveCombat> activeCombats_;
