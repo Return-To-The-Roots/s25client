@@ -135,22 +135,6 @@ void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
         eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::EventType::ShipBuilt, note.pos));
 }
 
-std::size_t GetDistributionIndex(GoodType good, BuildingType building)
-{
-    for(std::size_t idx = 0; idx < distributionMap.size(); ++idx)
-    {
-        if(std::get<0>(distributionMap[idx]) == good && std::get<1>(distributionMap[idx]) == building)
-            return idx;
-    }
-    RTTR_Assert(false);
-    return 0;
-}
-
-std::size_t GetIronMetalworksDistributionIndex()
-{
-    static const std::size_t idx = GetDistributionIndex(GoodType::Iron, BuildingType::Metalworks);
-    return idx;
-}
 } // namespace
 
 namespace AIJH {
@@ -2606,7 +2590,17 @@ void AIPlayerJH::InitDistribution()
     goodSettings[23] = 10; // water pigfarm
     goodSettings[24] = 10; // water donkeybreeder
     goodSettings[25] = 2;  // water vineyard
-    metalworksIronDistributionBase_ = goodSettings[GetIronMetalworksDistributionIndex()];
+    const auto ironMetalworksIdx = [] {
+        for(std::size_t idx = 0; idx < distributionMap.size(); ++idx)
+        {
+            if(std::get<0>(distributionMap[idx]) == GoodType::Iron
+               && std::get<1>(distributionMap[idx]) == BuildingType::Metalworks)
+                return idx;
+        }
+        RTTR_Assert(false);
+        return std::size_t{};
+    }();
+    metalworksIronDistributionBase_ = goodSettings[ironMetalworksIdx];
     aii.ChangeDistribution(goodSettings);
 }
 
@@ -2852,194 +2846,5 @@ unsigned AIPlayerJH::GetProductivity(BuildingType type) const
     return player.GetBuildingRegister().CalcAverageProductivity(type);
 }
 
-void AIPlayerJH::AdjustSettings()
-{
-    const Inventory& inventory = aii.GetInventory();
-    // update tool creation settings
-    if(bldPlanner->GetNumBuildings(BuildingType::Metalworks) > 0u)
-    {
-        ToolSettings toolsettings{};
-        const auto calcToolPriority = [&](const Tool tool) {
-            const GoodType good = TOOL_TO_GOOD[tool];
-            unsigned numToolsAvailable = inventory[good];
-            // Find missing jobs for buildings
-            for(const auto job : helpers::enumRange<Job>())
-            {
-                if(JOB_CONSTS[job].tool != good)
-                    continue;
-                unsigned numBuildingsRequiringWorker = 0;
-                for(const auto bld : helpers::enumRange<BuildingType>())
-                {
-                    if(BLD_WORK_DESC[bld].job == job)
-                        numBuildingsRequiringWorker += bldPlanner->GetNumBuildings(bld);
-                }
-                const signed requiredTools = (signed)(numBuildingsRequiringWorker)-inventory[job];
-                if(requiredTools > 0)
-                {
-                    // When we are missing tools produce some.
-                    // Slightly higher priority if we don't have any tool at all.
-                    if(requiredTools > (signed)numToolsAvailable)
-                    {
-                        return TOOL_PRIORITY[tool];
-                    }
-                    numToolsAvailable -= requiredTools;
-                }
-            }
-            return 0;
-        };
-        bool has_tool_shortage = false;
-        for(const auto tool : helpers::enumRange<Tool>())
-        {
-            toolsettings[tool] = calcToolPriority(tool);
-            has_tool_shortage = has_tool_shortage || toolsettings[tool] > 0;
-        }
-
-        if(!has_tool_shortage)
-        {
-            bool all_meet_basis = true;
-            for(const auto tool : helpers::enumRange<Tool>())
-            {
-                const GoodType good = TOOL_TO_GOOD[tool];
-                if(inventory[good] < static_cast<unsigned>(TOOL_BASIS[tool]))
-                {
-                    toolsettings[tool] = TOOL_PRIORITY[tool];
-                    all_meet_basis = false;
-                }
-                else
-                {
-                    toolsettings[tool] = 0;
-                }
-            }
-            if(all_meet_basis)
-            {
-                for(const auto tool : helpers::enumRange<Tool>())
-                {
-                    toolsettings[tool] = TOOL_PRIORITY[tool];
-                }
-            }
-        }
-
-        for(const auto tool : helpers::enumRange<Tool>())
-        {
-            if(toolsettings[tool] != player.GetToolPriority(tool))
-            {
-                aii.ChangeTools(toolsettings);
-                break;
-            }
-        }
-    }
-
-    AdjustDistribution();
-
-    // Set military settings to some currently required values
-    MilitarySettings milSettings;
-    milSettings[0] = 10;
-    milSettings[1] = HasFrontierBuildings() ?
-                       5 :
-                       0; // if we have a front send strong soldiers first else weak first to make upgrading easier
-    milSettings[2] = 4;
-    milSettings[3] = 5;
-    // interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
-    milSettings[4] = UpdateUpgradeBuilding() >= 0
-                         && (inventory[GoodType::Coins] > 0
-                             || (inventory[GoodType::Gold] > 0 && inventory[GoodType::Coal] > 0
-                                 && !aii.GetBuildings(BuildingType::Mint).empty())) ?
-                       8 :
-                       0;
-    milSettings[6] =
-      ggs.isEnabled(AddonId::SEA_ATTACK) ? 8 : 0; // harbor flag: no sea attacks?->no soldiers else 50% to 100%
-    milSettings[5] = CalcMilSettings(); // inland 1bar min 50% max 100% depending on how many soldiers are available
-    milSettings[7] = 8;                 // front: 100%
-    if(player.GetMilitarySetting(5) != milSettings[5] || player.GetMilitarySetting(6) != milSettings[6]
-       || player.GetMilitarySetting(4) != milSettings[4]
-       || player.GetMilitarySetting(1) != milSettings[1]) // only send the command if we want to change something
-        aii.ChangeMilitary(milSettings);
-}
-
-void AIPlayerJH::AdjustDistribution()
-{
-    // Reduce metalworks iron distribution when all tool stocks meet or exceed TOOL_PRIORITY.
-    // The reduction is proportional to the lowest surplus so excess tools slow down iron usage.
-    if(bldPlanner->GetNumBuildings(BuildingType::Metalworks) == 0u || metalworksIronDistributionBase_ == 0u)
-        return;
-
-    const Inventory& inventory = aii.GetInventory();
-    int min_surplus = std::numeric_limits<int>::max();
-    for(const auto tool : helpers::enumRange<Tool>())
-    {
-        const GoodType good = TOOL_TO_GOOD[tool];
-        const int surplus = static_cast<int>(inventory[good]) - TOOL_BASIS[tool];
-        min_surplus = std::min(min_surplus, surplus);
-    }
-
-    const std::size_t idx = GetIronMetalworksDistributionIndex();
-    VisualSettings visualSettings{};
-    player.FillVisualSettings(visualSettings);
-    const uint8_t currentPriority = visualSettings.distribution[idx];
-
-    uint8_t newPriority = metalworksIronDistributionBase_;
-    if(min_surplus >= 0)
-    {
-        const int decrease = 1 + min_surplus;
-        newPriority = static_cast<uint8_t>(
-          std::max(0, static_cast<int>(metalworksIronDistributionBase_) - decrease));
-    }
-
-    if(newPriority == currentPriority)
-        return;
-
-    visualSettings.distribution[idx] = newPriority;
-    aii.ChangeDistribution(visualSettings.distribution);
-}
-
-unsigned AIPlayerJH::CalcMilSettings()
-{
-    std::array<unsigned, 5> InlandTroops = {
-      0, 0, 0, 0, 0}; // how many troops are required to fill inland buildings at settings 4,5,6,7,8
-    /// first sum up all soldiers we have
-    unsigned numSoldiers = 0;
-    for(auto i : SOLDIER_JOBS)
-        numSoldiers += aii.GetInventory().people[i];
-
-    // now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
-    const unsigned numShouldStayConnected = GetNumPlannedConnectedInlandMilitaryBlds();
-    int count = 0;
-    unsigned soldierInUseFixed = 0;
-    const int uun = UpdateUpgradeBuilding();
-    const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
-    for(const nobMilitary* milBld : militaryBuildings)
-    {
-        if(milBld->GetFrontierDistance() == FrontierDistance::Near
-           || milBld->GetFrontierDistance() == FrontierDistance::Harbor
-           || (milBld->GetFrontierDistance() == FrontierDistance::Far
-               && (militaryBuildings.size() < (unsigned)count + numShouldStayConnected
-                   || count == uun))) // front or connected interior
-        {
-            soldierInUseFixed += milBld->CalcRequiredNumTroops(FrontierDistance::Mid, 8);
-        } else if(milBld->GetFrontierDistance() == FrontierDistance::Mid) // 1 bar (inland)
-        {
-            for(int i = 0; i < 5; i++)
-                InlandTroops[i] += milBld->CalcRequiredNumTroops(FrontierDistance::Mid, 4 + i);
-        } else // setting should be 0 so add 1 soldier
-            soldierInUseFixed++;
-
-        count++;
-    }
-
-    // now the current need total and for inland and harbor is ready for use
-    unsigned returnValue = 8;
-    while(returnValue > 4)
-    {
-        // have more than enough soldiers for this setting or just enough and this is the current setting? -> return it
-        // else try the next lower setting down to 4 (50%)
-        if(soldierInUseFixed + InlandTroops[returnValue - 4] < numSoldiers * 10 / 11
-           || (player.GetMilitarySetting(5) >= returnValue
-               && soldierInUseFixed + InlandTroops[returnValue - 4] < numSoldiers))
-            break;
-        returnValue--;
-    }
-    // LOG.write(("player %i inland milsetting %i \n",playerId,returnvalue);
-    return returnValue;
-}
 
 } // namespace AIJH

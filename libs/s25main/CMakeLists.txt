@@ -45,6 +45,7 @@ set(s25Main_SRCS
     ${SOURCES_OTHER}
     ${SOURCES_SUBDIRS}
         CombatLossTracker.cpp
+        ai/aijh/AIAdjuster.cpp
         ai/aijh/BuildingCalculator.cpp
         ai/aijh/AIConfig.cpp
         ai/aijh/AIConfig.h
