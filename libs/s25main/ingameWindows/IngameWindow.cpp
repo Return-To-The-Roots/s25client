@@ -192,21 +192,19 @@ void IngameWindow::SetPinned(bool pinned)
 
 bool IngameWindow::Msg_LeftDown(const MouseCoords& mc)
 {
-    // Check if the mouse is on the title bar
-    if(IsPointInRect(mc.pos, GetButtonBounds(IwButton::Title)))
+    for(const auto btn : helpers::enumRange<IwButton>())
     {
-        // start moving
-        isMoving = true;
-        snapOffset_ = SnapOffset::all(0);
-        lastMousePos = mc.pos;
-        return true;
-    } else
-    {
-        // Check the buttons
-        for(const auto btn : helpers::enumRange<IwButton>())
+        if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
         {
-            if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
-                buttonStates_[btn] = ButtonState::Pressed;
+            buttonStates_[btn] = ButtonState::Pressed;
+            if(btn == IwButton::Title)
+            {
+                // start moving
+                isMoving = true;
+                snapOffset_ = SnapOffset::all(0);
+                lastMousePos = mc.pos;
+                return true;
+            }
         }
     }
     return false;
@@ -218,7 +216,10 @@ bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
 
     for(const auto btn : helpers::enumRange<IwButton>())
     {
+        const auto clicked = buttonStates_[btn] == ButtonState::Pressed;
         buttonStates_[btn] = ButtonState::Up;
+        if(!clicked)
+            continue;
 
         if((btn == IwButton::Close && closeBehavior_ == CloseBehavior::Custom) // no close button
            || (isModal_ // modal windows cannot be pinned or minimized
