@@ -51,7 +51,7 @@ static MouseCoords makeLeftDown(const Position pos)
 static MouseCoords makeLeftDblClick(const Position pos)
 {
     MouseCoords mc(pos);
-    mc.ldown = mc.dbl_click = true;
+    mc.dbl_click = true;
     return mc;
 }
 
@@ -292,11 +292,32 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
             const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(4, 4));
+            const MouseCoords evLDownInsideWindow = makeLeftDown(wnd.GetPos() + wnd.GetSize() / 2);
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftUp(evLDown);
+
+            // Only react when clicking the button not when moving the mouse to the button
+            // while holding left mouse button
+            wnd.Msg_LeftDown(evLDownInsideWindow);
+            wnd.Msg_MouseMove(evLDown);
+            wnd.Msg_LeftUp(evLUp);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            // Similar when moving out of the button
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_MouseMove(evLDownInsideWindow);
+            wnd.Msg_MouseMove(evLDown);
+            wnd.Msg_LeftUp(evLUp);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -308,12 +329,14 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Double-click on the window title has no effect")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDblDown = makeLeftDblClick(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftUp(evLDblDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -327,11 +350,13 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
             const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4));
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftUp(evLDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -350,11 +375,13 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
             const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(4, 4));
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftUp(evLDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -366,12 +393,14 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Double-click on the window title minimizes")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDblDown = makeLeftDblClick(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftUp(evLDblDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -386,11 +415,13 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
             const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4));
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftUp(evLDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(wnd.IsPinned());
