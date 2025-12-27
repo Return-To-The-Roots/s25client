@@ -830,7 +830,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
             } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
             {
-                // On multi player this currently asyncs, but as this is a debug feature anyway just disable it.
+                // On multiplayer this currently asyncs, but as this is a debug feature anyway just disable it.
                 // If this should be enabled again, look into the handling/clearing of accumulated GCs
                 if(game_->world_.IsSinglePlayer())
                 {
@@ -874,7 +874,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'm': // Show main menu
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
             return true;
-        case 'n': // Show post window
+        case 'n': // Show message window
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
@@ -891,10 +891,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 26: // ctrl+z
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             return true;
-        case 'z':       // zoom in
+        case 'z':
             if(ke.ctrl) // Reset zoom
                 gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
-            else
+            else // zoom in
                 gwv.SetZoomFactor(getNextZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
         case 'Z': // shift-z, zoom out
