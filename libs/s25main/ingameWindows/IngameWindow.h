@@ -96,11 +96,11 @@ public:
     /// Modal windows cannot be minimized, are always active and stay on top of non-modal ones
     bool IsModal() const { return isModal_; }
 
-    void MouseLeftDown(const MouseCoords& mc);
-    void MouseLeftUp(const MouseCoords& mc);
-    void MouseMove(const MouseCoords& mc);
-
     GUI_ID GetGUIID() const { return static_cast<GUI_ID>(Window::GetID()); }
+
+    bool Msg_LeftDown(const MouseCoords&) override;
+    bool Msg_LeftUp(const MouseCoords&) override;
+    bool Msg_MouseMove(const MouseCoords&) override;
 
 protected:
     void Draw_() final;

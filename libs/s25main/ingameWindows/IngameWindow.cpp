@@ -190,7 +190,7 @@ void IngameWindow::SetPinned(bool pinned)
         windowSettings_->isPinned = isPinned_;
 }
 
-void IngameWindow::MouseLeftDown(const MouseCoords& mc)
+bool IngameWindow::Msg_LeftDown(const MouseCoords& mc)
 {
     // Check if the mouse is on the title bar
     if(IsPointInRect(mc.pos, GetButtonBounds(IwButton::Title)))
@@ -199,6 +199,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
         isMoving = true;
         snapOffset_ = SnapOffset::all(0);
         lastMousePos = mc.pos;
+        return true;
     } else
     {
         // Check the buttons
@@ -208,9 +209,10 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
                 buttonStates_[btn] = ButtonState::Pressed;
         }
     }
+    return false;
 }
 
-void IngameWindow::MouseLeftUp(const MouseCoords& mc)
+bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
 {
     isMoving = false;
 
@@ -227,12 +229,13 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
         {
             switch(btn)
             {
-                case IwButton::Close: Close(); break;
+                case IwButton::Close: Close(); return true;
                 case IwButton::Title:
                     if(SETTINGS.interface.enableWindowPinning && mc.dbl_click)
                     {
                         SetMinimized(!IsMinimized());
                         LOADER.GetSoundN("sound", 113)->Play(255, false);
+                        return true;
                     }
                     break;
                 case IwButton::PinOrMinimize:
@@ -245,13 +248,14 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
                         SetMinimized(!IsMinimized());
                         LOADER.GetSoundN("sound", 113)->Play(255, false);
                     }
-                    break;
+                    return true;
             }
         }
     }
+    return false;
 }
 
-void IngameWindow::MouseMove(const MouseCoords& mc)
+bool IngameWindow::Msg_MouseMove(const MouseCoords& mc)
 {
     if(isMoving)
     {
@@ -278,16 +282,20 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
         snapOffset_ = GetPos() - newPosBounded;
 
         lastMousePos = mc.pos;
+        return true;
     } else
     {
         // Check the buttons
         for(const auto btn : helpers::enumRange<IwButton>())
         {
             if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
-                buttonStates_[btn] = mc.ldown ? ButtonState::Pressed : ButtonState::Hover;
-            else
+            {
+                if(!mc.ldown)
+                    buttonStates_[btn] = ButtonState::Hover;
+            } else
                 buttonStates_[btn] = ButtonState::Up;
         }
+        return false;
     }
 }
 
