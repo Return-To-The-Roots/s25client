@@ -36,6 +36,8 @@
 #include <sstream>
 
 namespace {
+using Offset = DrawPoint;
+
 enum
 {
     ID_btBack = dskMenuBase::ID_FIRST_FREE,
@@ -71,6 +73,8 @@ enum
     ID_grpInvertScroll,
     ID_txtSmartCursor,
     ID_grpSmartCursor,
+    ID_txtWindowPinning,
+    ID_grpWindowPinning,
     ID_txtGFInfo,
     ID_grpGFInfo,
     ID_txtResolution,
@@ -112,8 +116,13 @@ constexpr auto ID_btSubmitDebugAsk = 2;
 constexpr auto rowHeight = 30;
 constexpr auto sectionSpacing = 20;
 constexpr auto sectionSpacingCommon = 10;
-constexpr auto tabButtonsStartPosition = DrawPoint(80, 510);
-constexpr auto optionRowsStartPosition = DrawPoint(80, 80);
+constexpr auto optionRowsStartPosition = DrawPoint(80, 75);
+constexpr auto tabButtonsStartPosition = optionRowsStartPosition + Offset(0, static_cast<int>(rowHeight * 15.5));
+
+constexpr Offset ctrlOffset(200, -5);                       // Offset of control to its description text
+constexpr Offset ctrlOffset2 = ctrlOffset + Offset(200, 0); // Offset of 2nd control to its description text
+constexpr Extent ctrlSize(190, 22);
+constexpr Extent ctrlSizeLarge = ctrlSize + Extent(ctrlOffset2 - ctrlOffset);
 } // namespace
 
 static VideoMode getAspectRatio(const VideoMode& vm)
@@ -149,7 +158,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
                              _("Graphics"), NormalFont);
     mainGroup->AddTextButton(ID_btSound, DrawPoint(curPos.x + 440, curPos.y), Extent(200, 22), TextureColor::Green2,
                              _("Sound/Music"), NormalFont);
-    curPos.y += rowHeight + sectionSpacingCommon;
+    curPos.y += rowHeight;
 
     AddTextButton(ID_btBack, DrawPoint(curPos.x + 220, curPos.y), Extent(200, 22), TextureColor::Red1, _("Back"),
                   NormalFont);
@@ -165,11 +174,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // {
 
     curPos = optionRowsStartPosition;
-    using Offset = DrawPoint;
-    constexpr Offset ctrlOffset(200, -5);                       // Offset of control to its description text
-    constexpr Offset ctrlOffset2 = ctrlOffset + Offset(200, 0); // Offset of 2nd control to its description text
-    constexpr Extent ctrlSize(190, 22);
-    constexpr Extent ctrlSizeLarge = ctrlSize + Extent(ctrlOffset2 - ctrlOffset);
 
     groupCommon->AddText(ID_txtName, curPos, _("Name in Game:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* name =
@@ -177,22 +181,20 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     name->SetText(SETTINGS.lobby.name);
 
     const auto& currentPortrait = Portraits[SETTINGS.lobby.portraitIndex];
-    groupCommon->AddImageButton(ID_btCommonPortrait, DrawPoint(500, curPos.y - 5), Extent(40, 54), TextureColor::Grey,
+    groupCommon->AddImageButton(ID_btCommonPortrait, DrawPoint(500, curPos.y + ctrlOffset.y), Extent(40, rowHeight * 2),
+                                TextureColor::Grey,
                                 LOADER.GetImageN(currentPortrait.resourceId, currentPortrait.resourceIndex));
     curPos.y += rowHeight;
 
-    groupCommon->AddText(ID_txtCommonPortrait, DrawPoint(80, curPos.y), _("Portrait:"), COLOR_YELLOW, FontStyle{},
-                         NormalFont);
-    combo = groupCommon->AddComboBox(ID_cbCommonPortrait, DrawPoint(280, curPos.y - 5), Extent(190, 20),
-                                     TextureColor::Grey, NormalFont, 100);
+    groupCommon->AddText(ID_txtCommonPortrait, curPos, _("Portrait:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo =
+      groupCommon->AddComboBox(ID_cbCommonPortrait, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
 
     for(unsigned i = 0; i < Portraits.size(); ++i)
     {
         combo->AddString(_(Portraits[i].name));
         if(SETTINGS.lobby.portraitIndex == i)
-        {
             combo->SetSelection(i);
-        }
     }
     curPos.y += rowHeight;
 
@@ -217,8 +219,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     groupCommon->AddTextButton(ID_btKeyboardLayout, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                _("Keyboard layout"), NormalFont);
-    curPos.y += rowHeight + sectionSpacingCommon;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacingCommon;
     groupCommon->AddText(ID_txtPort, curPos, _("Local Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* edtPort =
       groupCommon->AddEdit(ID_edtPort, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
@@ -235,8 +238,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->SetSelection(SETTINGS.server.ipv6);
     // Enable/disable the IPv6 field if necessary
     ipv6->GetCtrl<ctrlButton>(1)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
-    curPos.y += rowHeight + sectionSpacingCommon;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacingCommon;
     // Proxy server
     groupCommon->AddText(ID_txtProxy, curPos, _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* proxy = groupCommon->AddEdit(ID_edtProxy, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont);
@@ -269,8 +273,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         case ProxyType::Socks4: combo->SetSelection(1); break;
         case ProxyType::Socks5: combo->SetSelection(2); break;
     }
-    curPos.y += rowHeight + sectionSpacingCommon;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacingCommon;
     groupCommon->AddText(ID_txtInvertScroll, curPos, _("Invert Mouse Pan:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* invertScroll = groupCommon->AddOptionGroup(ID_grpInvertScroll, GroupSelectType::Check);
     invertScroll->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
@@ -288,8 +293,18 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
       ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont,
       _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
     smartCursor->SetSelection(SETTINGS.global.smartCursor);
-    curPos.y += rowHeight + sectionSpacingCommon;
+    curPos.y += rowHeight;
 
+    groupCommon->AddText(ID_txtWindowPinning, curPos, _("Window pinning"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlOptionGroup* windowPinning = groupCommon->AddOptionGroup(ID_grpWindowPinning, GroupSelectType::Check);
+    windowPinning->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont,
+                                 _("Replace minimize button on windows by pin button avoiding closing the window with "
+                                   "ESC.\nMinimize by double-clicking the title bar."));
+    windowPinning->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
+    windowPinning->SetSelection(SETTINGS.interface.enableWindowPinning);
+    curPos.y += rowHeight;
+
+    curPos.y += sectionSpacingCommon;
     groupCommon->AddText(ID_txtDebugData, curPos, _("Submit debug data:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupCommon->AddOptionGroup(ID_grpDebugData, GroupSelectType::Check);
     mainGroup->AddTextButton(ID_btSubmitDebugOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"),
@@ -312,24 +327,28 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupGraphics->AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
                            NormalFont);
     groupGraphics->AddComboBox(ID_cbResolution, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 150);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtFullscreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupGraphics->AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
     mainGroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
     mainGroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtFramerate, curPos, _("Limit Framerate:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     groupGraphics->AddComboBox(ID_cbFramerate, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 150);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtVBO, curPos, _("Vertex Buffer Objects:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupGraphics->AddOptionGroup(ID_grpVBO, GroupSelectType::Check);
     mainGroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
     mainGroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtVideoDriver, curPos, _("Graphics Driver"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupGraphics->AddComboBox(ID_cbVideoDriver, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                        NormalFont, 100);
@@ -342,15 +361,17 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(video_driver.GetName() == SETTINGS.driver.video)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtOptTextures, curPos, _("Optimized Textures:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupGraphics->AddOptionGroup(ID_grpOptTextures, GroupSelectType::Check);
 
     mainGroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
     mainGroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtGuiScale, curPos, _("GUI Scale:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     groupGraphics->AddComboBox(ID_cbGuiScale, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
     updateGuiScale();
@@ -369,14 +390,16 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlProgress* FXvolume =
       groupSound->AddProgress(ID_pgEffectsVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
     FXvolume->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupSound->AddText(ID_txtBirdSounds, curPos, _("Bird sounds"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupSound->AddOptionGroup(ID_grpBirdSounds, GroupSelectType::Check);
     mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
     mainGroup->AddTextButton(ID_btOff, curPos + bt2Offset, ctrlSizeSmall, TextureColor::Grey, _("Off"), NormalFont);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupSound->AddText(ID_txtMusic, curPos, _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
     mainGroup = groupSound->AddOptionGroup(ID_grpMusic, GroupSelectType::Check);
     mainGroup->AddTextButton(ID_btOn, curPos + bt1Offset, ctrlSizeSmall, TextureColor::Grey, _("On"), NormalFont);
@@ -385,12 +408,14 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlProgress* Mvolume =
       groupSound->AddProgress(ID_pgMusicVol, curPos + volOffset, ctrlSize, TextureColor::Grey, 139, 138, 100);
     Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupSound->AddTextButton(ID_btMusicPlayer, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Music player"),
                               NormalFont);
-    curPos.y += rowHeight + sectionSpacing;
+    curPos.y += rowHeight;
 
+    curPos.y += sectionSpacing;
     groupSound->AddText(ID_txtAudioDriver, curPos, _("Sounddriver"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupSound->AddComboBox(ID_cbAudioDriver, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                     NormalFont, 100);
@@ -588,6 +613,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             SETTINGS.global.smartCursor = enabled;
             VIDEODRIVER.SetMouseWarping(enabled);
             break;
+        case ID_grpWindowPinning: SETTINGS.interface.enableWindowPinning = enabled; break;
         case ID_grpGFInfo: SETTINGS.global.showGFInfo = enabled; break;
     }
 }
