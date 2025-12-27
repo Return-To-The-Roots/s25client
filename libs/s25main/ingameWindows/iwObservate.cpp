@@ -253,9 +253,9 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 
         view->MoveBy((mc.pos - scrollOrigin) * acceleration);
         VIDEODRIVER.SetMousePos(scrollOrigin);
-    }
-
-    return (false);
+        return true;
+    } else
+        return IngameWindow::Msg_MouseMove(mc);
 }
 
 bool iwObservate::Msg_RightDown(const MouseCoords& mc)
