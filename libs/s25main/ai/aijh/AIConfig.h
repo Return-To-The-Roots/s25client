@@ -11,7 +11,8 @@
 enum class TargetSelectionAlgorithm
 {
     Random,
-    Prudent
+    Prudent,
+    Biting
 };
 
 struct CombatConfig

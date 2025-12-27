@@ -201,6 +201,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     switch(config_.combat.targetSelection)
     {
         case TargetSelectionAlgorithm::Prudent: targetSelectionMode_ = TargetSelectionMode::Prudent; break;
+        case TargetSelectionAlgorithm::Biting: targetSelectionMode_ = TargetSelectionMode::Biting; break;
         case TargetSelectionAlgorithm::Random:
         default: targetSelectionMode_ = TargetSelectionMode::Random; break;
     }

@@ -8,6 +8,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameTypes/BuildingType.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -41,6 +42,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTarget(TargetSelectionMode mode) 
     {
         case TargetSelectionMode::Random: return SelectAttackTargetRandom();
         case TargetSelectionMode::Prudent: return SelectAttackTargetPrudent();
+        case TargetSelectionMode::Biting: return SelectAttackTargetBiting();
     }
     return nullptr;
 }
@@ -214,6 +216,64 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetPrudent() const
 
     std::shuffle(counterFiltered.begin(), counterFiltered.end(), std::mt19937(std::random_device()()));
     return counterFiltered.front();
+}
+
+const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
+{
+    unsigned unused_special_targets = 0;
+    std::vector<const nobBaseMilitary*> potentialTargets = GetPotentialTargets(unused_special_targets);
+    if(potentialTargets.empty())
+        return nullptr;
+
+    const bool inDefenseMode = (attackMode == CombatMode::DefenseMode);
+    const nobBaseMilitary* bestTarget = nullptr;
+    unsigned bestLossCount = 0;
+
+    for(const nobBaseMilitary* target : potentialTargets)
+    {
+        const unsigned potentialAttackers = CalcPotentialAttackers(*target);
+        if(potentialAttackers == 0)
+            continue;
+
+        unsigned attackersStrength = 0;
+        sortedMilitaryBlds myBuildings = gwb.LookForMilitaryBuildings(target->GetPos(), 2);
+        for(const nobBaseMilitary* otherMilBld : myBuildings)
+        {
+            if(otherMilBld->GetPlayer() != playerId)
+                continue;
+            const auto* myMil = dynamic_cast<const nobMilitary*>(otherMilBld);
+            if(!myMil || myMil->IsUnderAttack())
+                continue;
+
+            unsigned newAttackers = 0;
+            attackersStrength += myMil->GetSoldiersStrengthForAttack(target->GetPos(), newAttackers);
+        }
+
+        if(level == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
+        {
+            const auto* enemyTarget = static_cast<const nobMilitary*>(target);
+            if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 2 || enemyTarget->GetNumTroops() == 0)
+                continue;
+        }
+
+        if(inDefenseMode && !CanAttackInDefenseMode(*target, potentialAttackers))
+            continue;
+
+        if(target->GetBuildingType() == BuildingType::Headquarters)
+            return target;
+
+        unsigned lossCount = 0;
+        if(const auto* enemyTarget = dynamic_cast<const nobMilitary*>(target))
+            lossCount = enemyTarget->EstimateCaptureLossCount();
+
+        if(!bestTarget || lossCount > bestLossCount)
+        {
+            bestTarget = target;
+            bestLossCount = lossCount;
+        }
+    }
+
+    return bestTarget;
 }
 
 } // namespace AIJH

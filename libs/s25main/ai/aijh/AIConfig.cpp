@@ -46,6 +46,8 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
             return TargetSelectionAlgorithm::Random;
         if(normalized == "prudent")
             return TargetSelectionAlgorithm::Prudent;
+        if(normalized == "biting")
+            return TargetSelectionAlgorithm::Biting;
         return std::nullopt;
     };
 

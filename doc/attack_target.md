@@ -43,7 +43,7 @@ can evolve independently of the combat-resolution code.
        easy: 2500
        medium: 750
        hard: 100
-     targetSelection: Prudent   # or "Random" (default)
+     targetSelection: Prudent   # Random | Prudent | Biting
    ```
 8. `TryToAttack()` now simply asks for a target via the configured mode and
    issues `aii.Attack`/`TrackCombatStart` when a plan is available.
@@ -87,6 +87,21 @@ When running with `TargetSelectionMode::Prudent` the selector:
    summing the enemy soldiers (beyond the single mandatory defender) located
    within `BASE_ATTACKING_DISTANCE` and keep the lowest totals.
 5. If ties still remain, shuffle the survivors and pick one at random.
+
+When running with `TargetSelectionMode::Biting` the selector:
+
+1. Uses the same candidate discovery pass, ensuring each target still has at
+   least one available attacker and, on Hard difficulty, enough aggregate
+   strength to overpower enemy garrisons.
+2. Keeps the Random-mode defense-mode restriction, so retaking lost or
+   isolated forts still applies before evaluating priorities.
+3. Immediately returns any valid Headquarters target, treating it as maximum
+   priority regardless of collateral score.
+4. Otherwise queries `nobMilitary::EstimateCaptureLossCount()` (see
+   `libs/s25main/buildings/nobMilitary.cpp:930`) and chooses the building whose
+   capture would destroy the most dependent enemy structures. Ties fall back to
+   the first candidate that satisfied the constraints, so a target is always
+   returned when at least one viable option exists.
 
 ## Key Takeaways
 
