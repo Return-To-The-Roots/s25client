@@ -144,11 +144,8 @@ bool RttrConfig::Init()
 bfs::path RttrConfig::getEnvOverride(const std::string& id, const bfs::path& defaultPath)
 {
     bfs::path path = System::getPathFromEnvVar("RTTR_" + id + "_DIR");
-    if(!path.empty())
-    {
-        LOG.write("Note: %1% path manually set to %2%\n", LogTarget::Stdout) % id % path;
-    } else
+    if(path.empty())
         return defaultPath;
-
+    LOG.write("Note: %1% path manually set to %2%\n", LogTarget::Stdout) % id % path;
     return path;
 }

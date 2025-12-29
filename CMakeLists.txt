@@ -241,6 +241,9 @@ include(RttrCoverageCfg)
 include(EnableSanitizers)
 
 option(RTTR_USE_SYSTEM_LIBS "Default to using system-wide installed libs for external dependencies that have known system versions." OFF)
+
+# Eg. Only libraries are able to run on android. The java native interface(jni) will call the SDL_main() function which calls main() in libs25client.so
+# https://developer.android.com/studio/projects/add-native-code
 option(RTTR_BUILD_LIB "Executables will be build as shared library." OFF)
 
 ################################################################################

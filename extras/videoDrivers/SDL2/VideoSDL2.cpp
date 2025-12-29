@@ -15,6 +15,7 @@
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <SDL_hints.h>
+#include <SDL_video.h>
 #include <algorithm>
 #include <memory>
 
@@ -46,14 +47,6 @@ struct SDLMemoryDeleter
 {
     void operator()(T* p) const { SDL_free(p); }
 };
-
-#if RTTR_OGL_ES || RTTR_OGL_GL4ES
-constexpr SDL_GLprofile RTTR_SDL_GL_PROFILE = SDL_GL_CONTEXT_PROFILE_ES;
-#elif RTTR_OGL_COMPAT
-constexpr SDL_GLprofile RTTR_SDL_GL_PROFILE = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
-#else
-constexpr SDL_GLprofile RTTR_SDL_GL_PROFILE = SDL_GL_CONTEXT_PROFILE_CORE;
-#endif
 
 template<typename T>
 using SDL_memory = std::unique_ptr<T, SDLMemoryDeleter<T>>;
@@ -147,7 +140,15 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     // GL-Attributes
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
-    CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, RTTR_SDL_GL_PROFILE));
+    SDL_GLprofile profile;
+    if(RTTR_OGL_ES || RTTR_OGL_GL4ES)
+        profile = SDL_GL_CONTEXT_PROFILE_ES;
+    else if(RTTR_OGL_COMPAT)
+        profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
+    else
+        profile = SDL_GL_CONTEXT_PROFILE_CORE;
+
+    CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile));
 
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8));
