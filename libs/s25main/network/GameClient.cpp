@@ -1162,7 +1162,7 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
     return true;
 }
 
-void GameClient::IncreaseSpeed()
+void GameClient::IncreaseSpeed(const bool wraparound)
 {
     static_assert(MIN_SPEED >= SPEED_GF_LENGTHS[GameSpeed::VeryFast], "Not all speeds reachable");
     const bool debugMode =
@@ -1172,14 +1172,17 @@ void GameClient::IncreaseSpeed()
       false;
 #endif
     const auto oldSpeed = framesinfo.gfLengthReq;
+    // Note: Higher speed = lower gf_length value
     // Go from debug speed directly back to min speed, else in fixed steps
     static_assert(MIN_SPEED_DEBUG > MIN_SPEED);
     if(framesinfo.gfLengthReq == MIN_SPEED_DEBUG)
-        framesinfo.gfLengthReq = MIN_SPEED;
+        framesinfo.gfLengthReq = MIN_SPEED; // NOLINT(bugprone-branch-clone)
     else if(framesinfo.gfLengthReq >= MAX_SPEED + SPEED_STEP)
         framesinfo.gfLengthReq -= SPEED_STEP;
-    else if((replayMode || debugMode))
+    else if((replayMode || debugMode) && framesinfo.gfLengthReq > MAX_SPEED_DEBUG) // 1 more step in debug/replay mode
         framesinfo.gfLengthReq = MAX_SPEED_DEBUG;
+    else if(wraparound) // Highest speed, wrap around to slowest if requested
+        framesinfo.gfLengthReq = MIN_SPEED;
 
     if(replayMode)
         framesinfo.gf_length = framesinfo.gfLengthReq;

@@ -128,7 +128,7 @@ public:
     /// And a 2nd time when the GUI is ready which actually starty the game
     void OnGameStart();
 
-    void IncreaseSpeed();
+    void IncreaseSpeed(bool wraparound = false);
     void DecreaseSpeed();
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
