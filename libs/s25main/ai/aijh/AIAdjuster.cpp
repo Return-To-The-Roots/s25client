@@ -158,7 +158,7 @@ void AIPlayerJH::AdjustDistribution()
     uint8_t newPriority = metalworksIronDistributionBase_;
     if(min_surplus >= 0)
     {
-        const int decrease = 1 + min_surplus;
+        const int decrease = 2 + min_surplus * 2;
         newPriority = static_cast<uint8_t>(
           std::max(0, static_cast<int>(metalworksIronDistributionBase_) - decrease));
     }

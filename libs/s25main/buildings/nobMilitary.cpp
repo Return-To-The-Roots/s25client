@@ -896,14 +896,7 @@ unsigned nobMilitary::CalcDefenderBonusHp() const
     if(!world)
         return 0;
 
-    unsigned bonusHp = 0;
-    const unsigned currentGF = world->GetEvMgr().GetCurrentGF();
-    if(currentGF > GetCapturedGF() + DEFENDER_BONUS_CAPTURE_DELAY_GFS)
-        ++bonusHp;
-    if(GetOriginOwner() == GetPlayer())
-        ++bonusHp;
-
-    return bonusHp;
+    return GetOriginOwner() == GetPlayer() ? 1U : 0U;
 }
 
 unsigned nobMilitary::GetGarrisonStrengthWithBonus() const

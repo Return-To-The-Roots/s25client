@@ -17,9 +17,9 @@ nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(sol
 {
     if(hitpoints > HITPOINTS[GetRank()])
         hitpoints = HITPOINTS[GetRank()];
-    // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
+    // Soldier returned home from a mission --> heal if necessary!
     Heal();
-    // Laufevent nullen, laufen ja nicht mehr
+    // Reset walk event; they no longer walk
     current_ev = nullptr;
 }
 
@@ -49,7 +49,7 @@ nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj
 
 void nofPassiveSoldier::Draw(DrawPoint drawPt)
 {
-    // Soldat normal laufend zeichnen
+    // Draw soldier walking normally
     DrawWalkingBobJobs(drawPt, job_);
 }
 
@@ -57,23 +57,22 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
 {
     switch(id)
     {
-        // "Heilungs-Event"
+        // "Healing event"
         case 1:
         {
             healing_event = nullptr;
 
-            // Sind wir noch im Haus?
+            // Are we still inside the house?
             if(fs == FigureState::Job)
             {
-                // Dann uns heilen, wenn wir nicht schon gesund sind
+                // Then heal if we are not already healthy
                 if(hitpoints < HITPOINTS[GetRank()])
                 {
                     ++hitpoints;
 
-                    // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
+                    // Still not healthy? Then schedule a new event!
                     if(hitpoints < HITPOINTS[GetRank()])
-                        healing_event =
-                          GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
+                        healing_event = GetEvMgr().AddEvent(this, GetHealingInterval(), 1);
                 }
             }
         }
@@ -83,18 +82,38 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
 
 void nofPassiveSoldier::Heal()
 {
-    // Schon ein Event angemeldet?
-    // Dann muss dieses entfernt werden, wahrscheinlich war er zuvor draußen gewesen
+    // Already registered an event?
+    // Then remove it; he was probably outside before
     if(healing_event)
     {
         GetEvMgr().RemoveEvent(healing_event);
         healing_event = nullptr;
     }
 
-    // Ist er verletzt?
-    // Dann muss er geheilt werden
+    // Is he injured?
+    // Then he needs to be healed
     if(hitpoints < HITPOINTS[GetRank()])
-        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
+        healing_event = GetEvMgr().AddEvent(this, GetHealingInterval(), 1);
+}
+
+unsigned nofPassiveSoldier::GetHealingInterval() const
+{
+    unsigned interval = CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM);
+    const nobBaseMilitary* current_building = building;
+    if(current_building)
+    {
+        if(current_building->GetOriginOwner() == GetPlayer())
+        {
+            interval /= 2;
+            if(interval == 0)
+                interval = 1;
+        } else
+        {
+            interval *= 2;
+        }
+    }
+
+    return interval;
 }
 
 void nofPassiveSoldier::GoalReached()
@@ -104,7 +123,7 @@ void nofPassiveSoldier::GoalReached()
 
 void nofPassiveSoldier::LeaveBuilding()
 {
-    // Nach Hause in ein Lagerhaus gehen
+    // Go home to a warehouse
     rs_dir = true;
     rs_pos = 1;
     cur_rs = building->GetRoute(Direction::SouthEast);
@@ -115,16 +134,16 @@ void nofPassiveSoldier::LeaveBuilding()
 
 void nofPassiveSoldier::Upgrade()
 {
-    // Während des Aufrüstens dürfen wir nicht in der Gebäudeliste stehen, da sonst die sortierte Reihenfolge zerstört würde
+    // During upgrading we must not stay in the building list because it would break the sorted order
     RTTR_Assert(!building || !static_cast<nobMilitary*>(building)->IsInTroops(*this));
-    // Einen Rang höher
+    // One rank higher
     job_ = Job(unsigned(job_) + 1);
 
-    // wieder heilen bzw. Hitpoints anpasen
+    // Heal again and adjust hitpoints
     GamePlayer& owner = world->GetPlayer(player);
     hitpoints = HITPOINTS[GetRank()];
 
-    // Inventur entsprechend erhöhen und verringern
+    // Adjust inventory up and down accordingly
     owner.IncreaseInventoryJob(job_, 1);
     owner.DecreaseInventoryJob(Job(unsigned(job_) - 1), 1);
 }

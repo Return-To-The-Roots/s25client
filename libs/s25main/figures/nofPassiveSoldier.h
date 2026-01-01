@@ -10,24 +10,25 @@ class SerializedGameData;
 class nobBaseMilitary;
 class nobMilitary;
 
-/// Soldaten, die nur in Militärgebäude warten bzw. vom HQ dareinkommen und noch keine spezielle Funktion
-/// übernehmen
+/// Soldiers who wait inside military buildings or arrive from the HQ and do not yet take on a special role
 class nofPassiveSoldier : public nofSoldier
 {
 private:
-    /// "Heilungs-Event"
+    /// "Healing event"
     const GameEvent* healing_event;
 
-    /// Eventhandling
+    /// Event handling
     void HandleDerivedEvent(unsigned id) override;
 
-    // informieren, wenn ...
-    void GoalReached() override; // das Ziel erreicht wurde
+    // Notify when ...
+    void GoalReached() override; // the goal has been reached
 
-    /// wenn man gelaufen ist
+    /// When the soldier has walked
     [[noreturn]] void Walked() override;
-    /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
+    /// Checks the soldier's health and schedules a healing event if required
     void Heal();
+    /// Determine the healing interval based on the building's original owner
+    unsigned GetHealingInterval() const;
 
 public:
     nofPassiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobMilitary* home, unsigned char rank);
@@ -41,16 +42,16 @@ public:
 
     GO_Type GetGOT() const final { return GO_Type::NofPassivesoldier; }
 
-    // Zeichnet den Soldaten
+    // Draws the soldier
     void Draw(DrawPoint drawPt) override;
 
-    /// Sagt einem in einem Militärgebäude sitzenden Soldaten, dass er raus nach Hause gehen soll
+    /// Tells a soldier sitting in a military building to leave and go home
     void LeaveBuilding();
 
-    /// Befördert einen Soldaten
+    /// Promotes a soldier
     void Upgrade();
 
-    /// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
+    /// Soldier is on the way to the military building and is no longer needed
     void NotNeeded();
     /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
     void LeftBuilding() { building = nullptr; }

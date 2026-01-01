@@ -20,7 +20,7 @@ std::vector<PlayerSnapshot> GetActivePlayer(const boost::filesystem::path& save_
         if(!savegame.Load(save_path, SaveGameDataToLoad::All))
         {
             std::cerr << "Failed to load savegame: " << save_path << std::endl;
-            return nullptr;
+            return {};
         }
 
         const unsigned numPlayers = savegame.GetNumPlayers();
