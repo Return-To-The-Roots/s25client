@@ -202,6 +202,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     {
         case TargetSelectionAlgorithm::Prudent: targetSelectionMode_ = TargetSelectionMode::Prudent; break;
         case TargetSelectionAlgorithm::Biting: targetSelectionMode_ = TargetSelectionMode::Biting; break;
+        case TargetSelectionAlgorithm::Attrition: targetSelectionMode_ = TargetSelectionMode::Attrition; break;
         case TargetSelectionAlgorithm::Random:
         default: targetSelectionMode_ = TargetSelectionMode::Random; break;
     }

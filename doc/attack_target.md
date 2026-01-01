@@ -43,7 +43,7 @@ can evolve independently of the combat-resolution code.
        easy: 2500
        medium: 750
        hard: 100
-     targetSelection: Prudent   # Random | Prudent | Biting
+    targetSelection: Prudent   # Random | Prudent | Biting | Attrition
    ```
 8. `TryToAttack()` now simply asks for a target via the configured mode and
    issues `aii.Attack`/`TrackCombatStart` when a plan is available.
@@ -102,6 +102,21 @@ When running with `TargetSelectionMode::Biting` the selector:
    capture would destroy the most dependent enemy structures. Ties fall back to
    the first candidate that satisfied the constraints, so a target is always
    returned when at least one viable option exists.
+
+When running with `TargetSelectionMode::Attrition` the selector:
+
+1. Pulls the latest `StatisticType::Military` values for the AI and every
+   attackable opponent. If its own forces are at least 25% stronger than the
+   strongest enemy it simply defers to the Biting heuristic.
+2. Otherwise it enumerates the same candidate list but first filters for
+   `nobMilitary` buildings that were originally owned by the AI
+   (`GetOriginOwner`). The AI prefers retaking these forts.
+3. Within each pool it prioritizes targets captured within the last
+   2000 gameframes (`GetCapturedGF`) when reclaiming former structures, then
+   minimizes the number of defenders.
+4. If there are no recapture targets it repeats the process across the full
+   candidate list but uses a tighter 1000-gameframe window before again
+   selecting the option with the smallest defender count.
 
 ## Key Takeaways
 

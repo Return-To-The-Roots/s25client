@@ -47,7 +47,8 @@ public:
     {
         Random,
         Prudent,
-        Biting
+        Biting,
+        Attrition
     };
     AIPlayerJH(unsigned char playerId, const GameWorldBase& gwb, AI::Level level);
     ~AIPlayerJH() override;
@@ -197,6 +198,7 @@ public:
     const nobBaseMilitary* SelectAttackTargetRandom() const;
     const nobBaseMilitary* SelectAttackTargetPrudent() const;
     const nobBaseMilitary* SelectAttackTargetBiting() const;
+    const nobBaseMilitary* SelectAttackTargetAttrition() const;
     /// sea attack
     void TrySeaAttack();
     /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when

@@ -48,6 +48,8 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
             return TargetSelectionAlgorithm::Prudent;
         if(normalized == "biting")
             return TargetSelectionAlgorithm::Biting;
+        if(normalized == "attrition")
+            return TargetSelectionAlgorithm::Attrition;
         return std::nullopt;
     };
 

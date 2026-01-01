@@ -199,6 +199,9 @@ void HeadlessGame::Run(unsigned maxGF)
             fmt % STATS_CONFIG.savesPath % toPaddedString(currentGF, 8);
             SaveGame(fmt.str());
         }
+
+        if(currentGF % 20000u == 0u && GetActivePlayerCount() <= 1u)
+            break;
     }
     PrintState();
 }
@@ -207,6 +210,22 @@ std::string HeadlessGame::toPaddedString(unsigned int value, int width) {
     std::ostringstream oss;
     oss << std::setw(width) << std::setfill('0') << value;
     return oss.str();
+}
+
+unsigned HeadlessGame::GetActivePlayerCount() const
+{
+    unsigned active_players = 0u;
+    const unsigned num_players = world_.GetNumPlayers();
+    for(unsigned player_id = 0; player_id < num_players; ++player_id)
+    {
+        if(!world_.GetPlayer(player_id).IsDefeated())
+        {
+            ++active_players;
+            if(active_players > 1u)
+                break;
+        }
+    }
+    return active_players;
 }
 
 void HeadlessGame::Close()

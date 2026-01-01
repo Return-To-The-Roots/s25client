@@ -60,6 +60,7 @@ private:
     std::unique_ptr<IngameMinimap> minimap_;
 
     std::string toPaddedString(unsigned int value, int width);
+    unsigned GetActivePlayerCount() const;
 };
 namespace ai_random {
 template<typename T>
