@@ -50,6 +50,16 @@ bool VideoDriver::GetMouseStateR() const
     return mouse_xy.rdown;
 }
 
+/**
+ * Function to check if at least 1 finger is on screen.
+ *
+ *  @return @p true at least 1 finger, @p false when mouse used
+ */
+bool VideoDriver::IsTouchEvent() const
+{
+    return mouse_xy.num_tfingers > 0;
+}
+
 VideoMode VideoDriver::FindClosestVideoMode(const VideoMode& mode) const
 {
     std::vector<VideoMode> avModes;

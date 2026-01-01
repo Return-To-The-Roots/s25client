@@ -8,9 +8,14 @@
 // The OpenGL(ES) major and minor version to be used
 #define RTTR_OGL_MAJOR @RTTR_OGL_MAJOR@
 #define RTTR_OGL_MINOR @RTTR_OGL_MINOR@
-// True(thy) if OpenGL ES should be used
-#define RTTR_OGL_ES @RTTR_OGL_ES@
-// True(thy) if OpenGL compatibility profile should be used
-#define RTTR_OGL_COMPAT @RTTR_OGL_COMPAT@
+
+// 1 if OpenGL ES should be used
+#cmakedefine01 RTTR_OGL_ES
+
+// 1 if OpenGL compatibility profile should be used
+#cmakedefine01 RTTR_OGL_COMPAT
+
+// 1 if gl4es should be used
+#cmakedefine01 RTTR_OGL_GL4ES
 
 #endif
