@@ -8,6 +8,8 @@
 #include <array>
 #include <cstdint>
 
+class nofArmored;
+
 enum class Job : uint8_t
 {
     Helper,            // 0
@@ -45,11 +47,14 @@ enum class Job : uint8_t
     Winegrower,        // 32
     Vintner,           // 33
     TempleServant,     // 34
+    Skinner,           // 35
+    Tanner,            // 36
+    LeatherWorker,     // 37
 };
 
 constexpr auto maxEnumValue(Job)
 {
-    return Job::TempleServant;
+    return Job::LeatherWorker;
 }
 
 constexpr unsigned NUM_SOLDIER_RANKS = 5;
@@ -60,3 +65,25 @@ constexpr unsigned getSoldierRank(Job soldierJob)
 {
     return static_cast<uint8_t>(soldierJob) - static_cast<uint8_t>(Job::Private);
 }
+
+enum class ArmoredSoldier : uint8_t
+{
+    Private,
+    PrivateFirstClass,
+    Sergeant,
+    Officer,
+    General,
+};
+
+constexpr auto maxEnumValue(ArmoredSoldier)
+{
+    return ArmoredSoldier::General;
+}
+
+constexpr bool isSoldier(const Job job)
+{
+    return job >= Job::Private && job <= Job::General;
+}
+
+ArmoredSoldier jobEnumToAmoredSoldierEnum(Job job);
+ArmoredSoldier figureToAmoredSoldierEnum(const nofArmored* figure);
