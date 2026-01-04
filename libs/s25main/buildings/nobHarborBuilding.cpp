@@ -675,25 +675,25 @@ void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
     }
     // When ware should be transported to any other goal we returned above, so now we need to take it
 
-    // Brauchen wir die Ware?
+    // Do we need the ware for an expedition?
     if(expedition.active)
     {
         if((ware->type == GoodType::Boards && expedition.boards < BUILDING_COSTS[BuildingType::HarborBuilding].boards)
            || (ware->type == GoodType::Stones
                && expedition.stones < BUILDING_COSTS[BuildingType::HarborBuilding].stones))
         {
+            // Don't wait for it any longer if it had a goal, i.e. us.
+            // Without a goal it was a "lost" ware.
+            if(ware->GetGoal())
+                RemoveDependentWare(*ware);
+            // Add to expedition
+            world->GetPlayer(player).RemoveWare(*ware);
             if(ware->type == GoodType::Boards)
                 ++expedition.boards;
             else
                 ++expedition.stones;
 
-            // Ware nicht mehr abhängig
-            if(ware->GetGoal())
-                RemoveDependentWare(*ware);
-            // Dann zweigen wir die einfach mal für die Expedition ab
-            world->GetPlayer(player).RemoveWare(*ware);
-
-            // Ggf. ist jetzt alles benötigte da
+            // Could be ready now
             CheckExpeditionReady();
             return;
         }
