@@ -63,15 +63,14 @@ void nofWarehouseWorker::GoalReached()
     auto* flag = world->GetSpecObj<noFlag>(pos);
     if(!shouldBringWareIn)
     {
-        // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
-        // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
-        // ( dann ist goal = location )
-        if(world->GetSpecObj<noFlag>(pos)->HasSpaceForWare() && carried_ware->GetGoal() != carried_ware->GetLocation()
-           && carried_ware->GetGoal() != wh)
+        // Put ware down at flag if enough space.
+        // Might need to take it back in if goal was destroyed or changed to the warehouse
+        if(flag->HasSpaceForWare() && carried_ware->GetGoal() && carried_ware->GetGoal() != wh)
         {
-            carried_ware->WaitAtFlag(world->GetSpecObj<noFlag>(pos));
+            // TODO: Remove assert. Was added to verify prior condition
+            RTTR_Assert(carried_ware->GetGoal() != carried_ware->GetLocation());
 
-            // Ware soll ihren weiteren Weg berechnen
+            carried_ware->WaitAtFlag(flag);
             carried_ware->RecalcRoute();
             flag->AddWare(std::move(carried_ware));
         } else
@@ -105,9 +104,14 @@ void nofWarehouseWorker::Walked()
             if(world->GetNO(pos)->GetType() == NodalObjectType::Building)
             {
                 auto* wh = world->GetSpecObj<nobBaseWarehouse>(pos);
-                if(carried_ware->GetGoal() == carried_ware->GetLocation() || carried_ware->GetGoal() == wh)
+                // Store the ware if its goal is this warehouse or it has no goal (anymore)
+                // Else it wants to go somewhere else, so add to waiting wares
+                if(!carried_ware->GetGoal() || carried_ware->GetGoal() == wh)
+                {
+                    // TODO: Remove assert. Was added to verify prior condition
+                    RTTR_Assert(!carried_ware->GetGoal() || carried_ware->GetGoal() == carried_ware->GetLocation());
                     wh->AddWare(std::move(carried_ware));
-                else
+                } else
                     wh->AddWaitingWare(std::move(carried_ware));
             } else
                 LooseWare(); // Warehouse is missing --> destroy ware
