@@ -653,11 +653,10 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     // 3. Ware reaches harbor and needs to be carried into a storehouse
     // 4. Harbor itself does not accept the ware so another storehouse must be found
     GamePlayer& player = world.GetPlayer(curPlayer);
-    auto& harbors = player.GetBuildingRegister().GetHarbors();
+    const auto& harbors = player.GetBuildingRegister().GetHarbors();
     BOOST_TEST_REQUIRE(harbors.size() >= 2u);
     nobHarborBuilding& harbor1 = *harbors.front();
     nobHarborBuilding& harbor2 = **(++harbors.begin());
-    auto& hq = *player.GetFirstWH();
     auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
       world, BuildingType::Storehouse, harbor2.GetPos() + MapPoint(2, 0), curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(wh);
