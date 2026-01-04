@@ -628,7 +628,6 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
     }
 }
 
-/// Legt eine Ware im Lagerhaus ab
 void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
 {
     if(ware->GetGoal() && ware->GetGoal() != this)
@@ -655,6 +654,7 @@ void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
             // Regular handling below
         }
     }
+    // When ware should be transported to any other goal we returned above, so now we need to take it
 
     // Brauchen wir die Ware?
     if(expedition.active)
