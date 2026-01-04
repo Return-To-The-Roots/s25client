@@ -4,6 +4,7 @@
 
 #include "GamePlayer.h"
 #include "PointOutput.h"
+#include "Ware.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobShipYard.h"
@@ -631,6 +632,91 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     BOOST_TEST_REQUIRE(ship.IsMoving());
     BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == 1u);
     BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == 1u);
+}
+
+struct MockWare : Ware
+{
+    static bool destroyed;
+    MockWare(GoodType type, noBaseBuilding* goal, noRoadNode* location) : Ware(type, goal, location)
+    {
+        destroyed = false;
+    }
+    ~MockWare() { destroyed = true; }
+};
+bool MockWare::destroyed = false;
+
+BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyFixture<1>)
+{
+    // Recreate issue sensitive to timing:
+    // 1. Ware almost at harbor flag and should be shipped -> will be carried into building
+    // 2. Goal becomes unreachable (e.g. road removed)
+    // 3. Ware reaches harbor and needs to be carried into a storehouse
+    // 4. Harbor itself does not accept the ware so another storehouse must be found
+    GamePlayer& player = world.GetPlayer(curPlayer);
+    auto& harbors = player.GetBuildingRegister().GetHarbors();
+    BOOST_TEST_REQUIRE(harbors.size() >= 2u);
+    nobHarborBuilding& harbor1 = *harbors.front();
+    nobHarborBuilding& harbor2 = **(++harbors.begin());
+    auto& hq = *player.GetFirstWH();
+    auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
+      world, BuildingType::Storehouse, harbor2.GetPos() + MapPoint(2, 0), curPlayer, Nation::Romans));
+    BOOST_TEST_REQUIRE(wh);
+    BuildRoadForBlds(harbor2.GetPos(), wh->GetPos());
+    constexpr auto goodType = GoodType::Wood;
+
+    // Sanity check: Move from harbor1 to wh (over harbor2)
+    auto ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
+    auto* warePtr = ware.get();
+    ware->Carry(&harbor1);
+    auto numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
+    auto numRealWaresBefore = harbor1.GetNumRealWares(goodType);
+    harbor1.AddWare(std::move(ware));
+    BOOST_TEST(harbor1.GetNumVisualWares(goodType) == numVisWaresBefore + 1u);
+    // Wares that will be moved out are only in visual count
+    BOOST_TEST(harbor1.GetNumRealWares(goodType) == numRealWaresBefore);
+    BOOST_TEST_REQUIRE(!MockWare::destroyed);
+    BOOST_TEST(warePtr->GetGoal() == wh);
+    BOOST_TEST(warePtr->GetNextDir() == RoadPathDirection::Ship);
+
+    // Add ware with unreachable goal -> Added to harbor
+    // First fully disconnect 2nd harbor -> Only reachable via ship
+    for(const auto d : helpers::enumRange<Direction>())
+    {
+        if(d != Direction::NorthWest)
+            DestroyRoad(harbor2.GetFlagPos(), d);
+    }
+    ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
+    ware->Carry(&harbor1);
+    numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
+    numRealWaresBefore = harbor1.GetNumRealWares(goodType);
+    harbor1.AddWare(std::move(ware));
+    BOOST_TEST(harbor1.GetNumVisualWares(goodType) == numVisWaresBefore + 1u);
+    BOOST_TEST(harbor1.GetNumRealWares(goodType) == numRealWaresBefore + 1u);
+    BOOST_TEST(MockWare::destroyed);
+
+    // Same but disallow harbor as goal -> Find another storehouse
+    SetInventorySetting(harbor1.GetPos(), goodType, EInventorySetting::Stop);
+    ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
+    ware->Carry(&harbor1);
+    warePtr = ware.get();
+    numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
+    numRealWaresBefore = harbor1.GetNumRealWares(goodType);
+    harbor1.AddWare(std::move(ware));
+    BOOST_TEST(harbor1.GetNumVisualWares(goodType) == numVisWaresBefore + 1u);
+    BOOST_TEST(harbor1.GetNumRealWares(goodType) == numRealWaresBefore);
+    BOOST_TEST_REQUIRE(!MockWare::destroyed);
+    BOOST_TEST(warePtr->GetGoal() == &harbor2);
+
+    // If no other storehouse is available take it anyway
+    SetInventorySetting(harbor2.GetPos(), goodType, EInventorySetting::Stop);
+    ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
+    ware->Carry(&harbor1);
+    numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
+    numRealWaresBefore = harbor1.GetNumRealWares(goodType);
+    harbor1.AddWare(std::move(ware));
+    BOOST_TEST(harbor1.GetNumVisualWares(goodType) == numVisWaresBefore + 1u);
+    BOOST_TEST(harbor1.GetNumRealWares(goodType) == numRealWaresBefore + 1u);
+    BOOST_TEST(MockWare::destroyed);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
