@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,6 +8,7 @@
 #include "ILobbyClient.hpp"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
+#include "RTTR_Assert.h"
 #include "WindowManager.h"
 #include "animation/BlinkButtonAnim.h"
 #include "controls/ctrlBaseColor.h"
@@ -43,6 +44,7 @@
 #include "libsiedler2/prototypen.h"
 #include "s25util/Log.h"
 #include "s25util/MyTime.h"
+#include <array>
 #include <memory>
 #include <mygettext/mygettext.h>
 #include <set>
@@ -105,6 +107,21 @@ template<typename T>
 constexpr T nextEnumValue(T value)
 {
     return T((rttr::enum_cast(value) + 1) % helpers::NumEnumValues_v<T>);
+}
+
+std::array NATION_ORDER = {
+  Nation::Romans, Nation::Vikings, Nation::Japanese, Nation::Africans, Nation::Babylonians,
+};
+static_assert(NATION_ORDER.size() == helpers::NumEnumValues_v<Nation>);
+
+Nation nextNation(const Nation value)
+{
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto it = helpers::find(NATION_ORDER, value);
+    RTTR_Assert(it != NATION_ORDER.end());
+    if(++it == NATION_ORDER.end())
+        it = NATION_ORDER.begin();
+    return *it;
 }
 } // namespace
 
@@ -457,11 +474,11 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
         }
 
         if(allowNationChange)
-            group->AddTextButton(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc, _(NationNames[Nation::Romans]),
+            group->AddTextButton(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc, _(NationNames[NATION_ORDER[0]]),
                                  NormalFont);
         else
-            group->AddTextDeepening(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc, _(NationNames[Nation::Romans]),
-                                    NormalFont, COLOR_YELLOW);
+            group->AddTextDeepening(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc,
+                                    _(NationNames[NATION_ORDER[0]]), NormalFont, COLOR_YELLOW);
 
         const auto& portrait = Portraits[player.portraitIndex];
         if(allowPortraitChange)
@@ -554,7 +571,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
             if(playerId == localPlayerId_ || gameLobby_->isHost())
             {
                 JoinPlayerInfo& player = gameLobby_->getPlayer(playerId);
-                player.nation = nextEnumValue(player.nation);
+                player.nation = nextNation(player.nation);
                 if(gameLobby_->isHost())
                     lobbyController->SetNation(playerId, player.nation);
                 else
