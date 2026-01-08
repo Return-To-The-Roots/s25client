@@ -22,7 +22,8 @@ enum
     ID_txtFullScreen,
     ID_grpFullscreen,
     ID_cbResolution,
-    ID_cbInvertMouse,
+    ID_txtMapScrollMode,
+    ID_cbMapScrollMode,
     ID_cbSmartCursor,
     ID_cbStatisticScale,
 };
@@ -70,8 +71,18 @@ iwSettings::iwSettings()
 
     curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
     const auto cbSize = Extent(rowWidth - curPos.x, 26);
-    AddCheckBox(ID_cbInvertMouse, curPos, cbSize, TextureColor::Grey, _("Invert Mouse Pan"), NormalFont, false)
-      ->setChecked(SETTINGS.interface.invertMouse);
+
+    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW,
+            FontStyle{}, NormalFont);
+    ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y), ctrlSize,
+                                                TextureColor::Grey, NormalFont, 100);
+    cbMapScrollMode->AddString(
+      _("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
+    cbMapScrollMode->AddString(
+      _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    cbMapScrollMode->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
+    cbMapScrollMode->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
+
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
       ->setChecked(SETTINGS.global.smartCursor)
@@ -85,6 +96,9 @@ iwSettings::~iwSettings()
 {
     try
     {
+        auto* MouseMdCombo = GetCtrl<ctrlComboBox>(ID_cbMapScrollMode);
+        SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(MouseMdCombo->GetSelection().get());
+
         auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
@@ -118,7 +132,6 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     switch(ctrl_id)
     {
-        case ID_cbInvertMouse: SETTINGS.interface.invertMouse = checked; break;
         case ID_cbSmartCursor:
             SETTINGS.global.smartCursor = checked;
             VIDEODRIVER.SetMouseWarping(checked);

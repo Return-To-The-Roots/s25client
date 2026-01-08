@@ -14,6 +14,8 @@
 #include <s25util/utf8.h>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
+#include <SDL_hints.h>
+#include <SDL_video.h>
 #include <algorithm>
 #include <memory>
 
@@ -25,13 +27,19 @@
 #    include <windows.h> // Avoid "Windows headers require the default packing option" due to SDL2
 #    include <SDL_syswm.h>
 #endif // _WIN32
+#if RTTR_OGL_GL4ES
+#    include <gl4esinit.h>
+#endif
 
 #define CHECK_SDL(call)                 \
-    do                                  \
-    {                                   \
-        if((call) == -1)                \
+    ([&]() -> bool {                    \
+        if((call) < 0)                  \
+        {                               \
             PrintError(SDL_GetError()); \
-    } while(false)
+            return false;               \
+        }                               \
+        return true;                    \
+    })()
 
 namespace {
 template<typename T>
@@ -67,7 +75,11 @@ void FreeVideoInstance(IVideoDriver* driver)
 
 const char* GetDriverName()
 {
+#if RTTR_OGL_GL4ES
+    return "(SDL2) OpenGL-ES gl4es via SDL2-Library";
+#else
     return "(SDL2) OpenGL via SDL2-Library";
+#endif
 }
 
 VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(nullptr), context(nullptr) {}
@@ -86,6 +98,8 @@ bool VideoSDL2::Initialize()
 {
     initialized = false;
     rttr::ScopedLeakDisabler _;
+    // Do not emulate mouse events using touch
+    SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         PrintError(SDL_GetError());
@@ -127,12 +141,13 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
     SDL_GLprofile profile;
-    if((RTTR_OGL_ES))
+    if(RTTR_OGL_ES || RTTR_OGL_GL4ES)
         profile = SDL_GL_CONTEXT_PROFILE_ES;
-    else if((RTTR_OGL_COMPAT))
+    else if(RTTR_OGL_COMPAT)
         profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
     else
         profile = SDL_GL_CONTEXT_PROFILE_CORE;
+
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile));
 
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8));
@@ -424,6 +439,50 @@ bool VideoSDL2::MessageLoop()
                 }
             }
             break;
+            case SDL_FINGERDOWN:
+            {
+                VideoMode wnSize = GetWindowSize();
+                mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
+                mouse_xy.ldown = true;
+                mouse_xy.num_tfingers++;
+                CallBack->Msg_LeftDown(mouse_xy);
+                break;
+            }
+            case SDL_FINGERUP:
+            {
+                VideoMode wnSize = GetWindowSize();
+                mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
+                mouse_xy.ldown = false;
+                CallBack->Msg_LeftUp(mouse_xy);
+                mouse_xy.num_tfingers--; // Dirty way to count leftUp as touch event without extra isTouch bool
+                break;
+            }
+            case SDL_FINGERMOTION:
+            {
+                VideoMode wnSize = GetWindowSize();
+                const auto newPos = getGuiScale().screenToView(Position(
+                  static_cast<int>(ev.tfinger.x * wnSize.width), static_cast<int>(ev.tfinger.y * wnSize.height)));
+
+                if(newPos != mouse_xy.pos)
+                {
+                    mouse_xy.pos = newPos;
+                    CallBack->Msg_MouseMove(mouse_xy);
+                }
+                break;
+            }
+            case SDL_MULTIGESTURE:
+            {
+                if(std::fabs(ev.mgesture.dDist) > 0.001)
+                {
+                    if(ev.mgesture.dDist > 0)
+                        CallBack->Msg_WheelUp(mouse_xy);
+                    else
+                        CallBack->Msg_WheelDown(mouse_xy);
+                }
+                break;
+            }
         }
     }
 
@@ -456,7 +515,11 @@ void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
 
 OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 {
+#if RTTR_OGL_GL4ES
+    return gl4es_GetProcAddress;
+#else
     return SDL_GL_GetProcAddress;
+#endif
 }
 
 void VideoSDL2::SetMousePos(Position pos)
@@ -491,7 +554,8 @@ void VideoSDL2::MoveWindowToCenter()
     SDL_Rect usableBounds;
     CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
     int top, left, bottom, right;
-    CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right));
+    if(CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)) != 0)
+        top = left = bottom = right = 0;
     usableBounds.w -= left + right;
     usableBounds.h -= top + bottom;
     if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)

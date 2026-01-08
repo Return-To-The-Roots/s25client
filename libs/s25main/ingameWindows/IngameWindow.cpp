@@ -253,6 +253,10 @@ bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
             }
         }
     }
+
+    // On touch devices dblclick closes window
+    if(VIDEODRIVER.IsTouch() && mc.dbl_click && closeBehavior_ != CloseBehavior::Custom)
+        Close();
     return false;
 }
 
