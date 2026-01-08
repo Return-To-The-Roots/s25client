@@ -112,6 +112,7 @@ void Ware::RecalcRoute()
             static_cast<nobHarborBuilding*>(goal)->WareDontWantToTravelByShip(this);
         } else
         {
+            // TODO(Replay) This should calculate the next dir even when carried
             FindRouteToWarehouse();
         }
     } else

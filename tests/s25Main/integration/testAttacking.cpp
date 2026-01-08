@@ -99,17 +99,6 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
             world.MakeVisibleAroundPoint(pt, 1, i);
     }
 
-    /// Constructs a road connecting 2 buildings and checks for success
-    void BuildRoadForBlds(const MapPoint bldPosFrom, const MapPoint bldPosTo)
-    {
-        const MapPoint start = world.GetNeighbour(bldPosFrom, Direction::SouthEast);
-        const MapPoint end = world.GetNeighbour(bldPosTo, Direction::SouthEast);
-        std::vector<Direction> road = FindPathForRoad(world, start, end, false);
-        BOOST_TEST_REQUIRE(!road.empty());
-        this->BuildRoad(start, false, road);
-        BOOST_TEST_REQUIRE(world.GetPointRoad(start, road.front()) == PointRoad::Normal);
-    }
-
     void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank)
     {
         BOOST_TEST_REQUIRE(rank <= world.GetGGS().GetMaxMilitaryRank());

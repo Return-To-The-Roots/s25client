@@ -162,17 +162,6 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         return pts.at(0);
     }
 
-    /// Constructs a road connecting 2 buildings and checks for success
-    void BuildRoadForBlds(const MapPoint bldPosFrom, const MapPoint bldPosTo)
-    {
-        const MapPoint start = world.GetNeighbour(bldPosFrom, Direction::SouthEast);
-        const MapPoint end = world.GetNeighbour(bldPosTo, Direction::SouthEast);
-        std::vector<Direction> road = FindPathForRoad(world, start, end, false);
-        BOOST_TEST_REQUIRE(!road.empty());
-        this->BuildRoad(start, false, road);
-        BOOST_TEST_REQUIRE(world.GetPointRoad(start, road.front()) == PointRoad::Normal);
-    }
-
     void SetCurPlayer(unsigned playerIdx)
     {
         curPlayer = playerIdx;

@@ -18,6 +18,7 @@ add_library(testWorldFixtures STATIC
     worldFixtures/CreateEmptyWorld.h
     worldFixtures/CreateSeaWorld.cpp
     worldFixtures/CreateSeaWorld.h
+    worldFixtures/GCExecutor.cpp
     worldFixtures/GCExecutor.h
     worldFixtures/initGameRNG.cpp
     worldFixtures/initGameRNG.hpp

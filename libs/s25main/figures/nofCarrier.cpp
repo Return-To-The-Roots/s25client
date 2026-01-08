@@ -375,60 +375,56 @@ void nofCarrier::Walked()
         break;
         case CarrierState::CarryWare:
         {
-            // Sind wir schon da?
+            // Reached target flag?
             if(rs_pos == cur_rs->GetLength())
             {
-                // Flagge, an der wir gerade stehen
+                // Flag just reached
                 auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 bool calculated = false;
 
-                // Will die Waren jetzt gleich zur Baustelle neben der Flagge?
+                // Check if the ware should go into the building connected to the flag
                 if(WantInBuilding(&calculated))
                 {
-                    // Erst noch zur Baustelle bzw Gebäude laufen
+                    // Walk to building or building site
                     state = CarrierState::CarryWareToBuilding;
                     StartWalking(Direction::NorthWest);
                     cur_rs = this_flag->GetRoute(Direction::NorthWest);
-                    // location wird immer auf nächste Flagge gesetzt --> in dem Fall aktualisieren
+                    // Set location to next road node, i.e. building
                     carried_ware->Carry((cur_rs->GetF1() == this_flag) ? cur_rs->GetF2() : cur_rs->GetF1());
                 } else
                 {
-                    // Ist an der Flagge noch genügend Platz (wenn wir wieder eine Ware mitnehmen, kann sie auch voll
-                    // sein)
+                    // Put ware at flag if there is space.
+                    // If not try swapping it with another ware at that flag
                     if(this_flag->HasSpaceForWare())
                     {
                         carried_ware->WaitAtFlag(this_flag);
 
-                        // Ware soll ihren weiteren Weg berechnen
+                        // Calc next route if not done in the WantInBuilding call
                         if(!calculated)
                             carried_ware->RecalcRoute();
 
-                        // Ware ablegen
+                        // Put down ware
                         this_flag->AddWare(std::move(carried_ware));
                         RTTR_Assert(carried_ware == nullptr);
-                        // Gibts an den Flaggen etwas, was ich tragen muss, ansonsten wieder in die Mitte gehen und
-                        // warten
+                        // Check if we can pick up another ware at this flag, else go back to middle of road
                         LookForWares();
                     } else if(workplace->AreWareJobs(!rs_dir, ct, true))
                     {
-                        // die Flagge ist voll, aber wir können eine Ware mitnehmen, daher erst Ware nehmen und dann
-                        // erst ablegen
+                        // We can swap the ware with another one at this flag
 
-                        // Ware "merken"
+                        // Temporary store carried ware, so we can fetch another one before putting down the old one
+                        // which triggers a search for an available carrier which must not be us
                         auto tmp_ware = std::move(carried_ware);
-                        // neue Ware aufnehmen
                         FetchWare(true);
 
-                        // alte Ware ablegen
                         tmp_ware->WaitAtFlag(this_flag);
-
                         if(!calculated)
                             tmp_ware->RecalcRoute();
                         this_flag->AddWare(std::move(tmp_ware));
                     } else
                     {
-                        // wenn kein Platz mehr ist --> wieder umdrehen und zurückgehen
+                        // No space at flag, go back and try again later
                         state = CarrierState::GoBackFromFlag;
                         rs_dir = !rs_dir;
                         rs_pos = cur_rs->GetLength() - rs_pos;
@@ -437,16 +433,16 @@ void nofCarrier::Walked()
                 }
             } else if(rs_pos == cur_rs->GetLength() - 1)
             {
-                // Wenn wir fast da sind, gucken, ob an der Flagge noch ein freier Platz ist
+                // If we are one step before the flag, check if we have to wait for space
                 auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
-
+                // If there is space at the flag, or we can carry it directly to the building or swap it with another
+                // ware continue to the flag
                 if(this_flag->HasSpaceForWare() || WantInBuilding(nullptr) || cur_rs->AreWareJobs(!rs_dir, ct, true))
                 {
-                    // Es ist Platz, dann zur Flagge laufen
                     StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
                 } else
                 {
-                    // Wenn kein Platz ist, stehenbleiben und warten!
+                    // No space at flag, wait here
                     state = CarrierState::WaitForWareSpace;
                     FaceDir(cur_rs->GetDir(rs_dir, rs_pos));
                 }

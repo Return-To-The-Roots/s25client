@@ -83,6 +83,7 @@ public:
     bool IsWaitingAtFlag() const { return (state == State::WaitAtFlag); }
     bool IsWaitingInWarehouse() const { return (state == State::WaitInWarehouse); }
     bool IsWaitingForShip() const { return (state == State::WaitForShip); }
+    bool IsCarried() const { return (state == State::Carried); }
     /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
     void RemoveWareJobForDir(RoadPathDirection last_next_dir);
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
