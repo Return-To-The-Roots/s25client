@@ -11,21 +11,22 @@
 #include "gameData/MilitaryConsts.h"
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
-                       nobBaseMilitary* const home, const unsigned char rank)
-    : noFigure(SOLDIER_JOBS[rank], pos, player, goal), building(home), hitpoints(HITPOINTS[rank])
+                       nobBaseMilitary* const home, const unsigned char rank, bool armor)
+    : nofArmored(SOLDIER_JOBS[rank], pos, player, goal, armor), building(home), hitpoints(HITPOINTS[rank])
 {
     RTTR_Assert(IsSoldier());
 }
 
-nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank)
-    : noFigure(SOLDIER_JOBS[rank], pos, player), building(&home), hitpoints(HITPOINTS[rank])
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank,
+                       bool armor)
+    : nofArmored(SOLDIER_JOBS[rank], pos, player, armor), building(&home), hitpoints(HITPOINTS[rank])
 {
     RTTR_Assert(IsSoldier());
 }
 
 void nofSoldier::Serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    nofArmored::Serialize(sgd);
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
         sgd.PushObject(building);
@@ -33,7 +34,7 @@ void nofSoldier::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(hitpoints);
 }
 
-nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
+nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : nofArmored(sgd, obj_id)
 {
     RTTR_Assert(IsSoldier());
 

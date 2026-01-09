@@ -4,11 +4,13 @@
 
 #include "noAnimal.h"
 #include "EventManager.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "figures/nofHunter.h"
+#include "figures/nofSkinner.h"
 #include "helpers/random.h"
 #include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
@@ -29,7 +31,7 @@ auto& getAnimalRng()
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
     : noMovable(NodalObjectType::Animal, pos), species(species), state(State::Walking), pause_way(5 + RANDOM_RAND(15)),
-      hunter(nullptr), sound_moment(0)
+      hunter(nullptr), skinner(nullptr), sound_moment(0)
 {}
 
 void noAnimal::Serialize(SerializedGameData& sgd) const
@@ -40,12 +42,16 @@ void noAnimal::Serialize(SerializedGameData& sgd) const
     sgd.PushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(pause_way);
     sgd.PushObject(hunter, true);
+    sgd.PushObject(skinner, true);
 }
 
 noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), species(sgd.Pop<Species>()), state(sgd.Pop<State>()), pause_way(sgd.PopUnsignedShort()),
-      hunter(sgd.PopObject<nofHunter>(GO_Type::NofHunter)), sound_moment(0)
-{}
+      hunter(sgd.PopObject<nofHunter>(GO_Type::NofHunter)), skinner(nullptr), sound_moment(0)
+{
+    if(sgd.GetGameDataVersion() >= 12)
+        skinner = sgd.PopObject<nofSkinner>(GO_Type::NofSkinner);
+}
 
 void noAnimal::StartLiving()
 {
@@ -125,6 +131,18 @@ void noAnimal::Draw(DrawPoint drawPt)
     }
 }
 
+/*
+    An animal can be hunted by the hunter and skinned by the skinner at the same time.
+    We have the following cases:
+    - Both do not reach the dead animal in time. It disappears and the noAnimal
+      class is responsible for removing and deleting itself afterwards.
+    - Both reach the dead animal in time. However finishes last is responsible for removing
+      and deleting the dead animal (see nofSkinner::HandleStateSkinningCarcass and
+      nofHunter::HandleStateEviscerating). No disappearing of the animal.
+    - Either doesn't arrive soon enough. If the hunter was first the skin remains there
+      and if the skinner was first the meat remains there. The animal disappears and the noAnimal
+      class is responsible for removing and deleting itself afterwards.
+*/
 void noAnimal::HandleEvent(const unsigned id)
 {
     current_ev = nullptr;
@@ -163,6 +181,11 @@ void noAnimal::HandleEvent(const unsigned id)
             {
                 hunter->AnimalLost();
                 hunter = nullptr;
+            }
+            if(skinner)
+            {
+                skinner->AnimalLost();
+                skinner = nullptr;
             }
         }
         break;
@@ -297,10 +320,44 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
     return boost::none;
 }
 
+bool noAnimal::CanBeSkinned() const
+{
+    return (species != Species::Duck && state == State::Dead && !skinner);
+}
+
+bool noAnimal::IsGettingSkinned() const
+{
+    return skinner != nullptr;
+}
+
+void noAnimal::Skinned()
+{
+    if(!hunter)
+        // Remove decay event for animal because skinner has taken it
+        GetEvMgr().RemoveEvent(current_ev);
+    // Reset skinner
+    skinner = nullptr;
+}
+
+void noAnimal::BeginSkinning(nofSkinner* skinner)
+{
+    this->skinner = skinner;
+}
+
+void noAnimal::StopSkinning()
+{
+    skinner = nullptr;
+}
+
 bool noAnimal::CanHunted() const
 {
     // Enten sowie Tiere, die bereits gejagt werden, oder schon tot daliegen, können nicht gejagt werden
     return (species != Species::Duck && state != State::Dead && state != State::Disappearing && !hunter);
+}
+
+bool noAnimal::IsHunted() const
+{
+    return hunter != nullptr;
 }
 
 void noAnimal::BeginHunting(nofHunter* hunter)
@@ -357,7 +414,8 @@ void noAnimal::Die()
     if(ANIMALCONSTS[species].dead_id)
     {
         // Verwesungsevent
-        current_ev = GetEvMgr().AddEvent(this, 300, 2);
+        unsigned gf_length = leatheraddon::isAddonActive(*world) ? 600 : 300;
+        current_ev = GetEvMgr().AddEvent(this, gf_length, 2);
         state = State::Dead;
     } else
     {
@@ -370,7 +428,8 @@ void noAnimal::Die()
 void noAnimal::Eviscerated()
 {
     // Event abmelden
-    GetEvMgr().RemoveEvent(current_ev);
+    if(!IsGettingSkinned())
+        GetEvMgr().RemoveEvent(current_ev);
     // Reset hunter
     hunter = nullptr;
 }
