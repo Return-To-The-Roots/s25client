@@ -47,6 +47,15 @@ void Cheats::toggleAllBuildingsEnabled()
         areAllBuildingsEnabled_ = !areAllBuildingsEnabled_;
 }
 
+void Cheats::toggleShowEnemyProductivityOverlay()
+{
+    // In S2, if you enabled cheats you would automatically see the enemy productivity overlay - most importantly what
+    // buildings the enemy intends to build.
+    // In RTTR, the user must explicitly enable this feature after enabling cheats.
+    if(isCheatModeOn())
+        shouldShowEnemyProductivityOverlay_ = !shouldShowEnemyProductivityOverlay_;
+}
+
 void Cheats::toggleHumanAIPlayer()
 {
     if(isCheatModeOn() && !GAMECLIENT.IsReplayModeOn())
@@ -68,6 +77,8 @@ void Cheats::turnAllCheatsOff()
         toggleAllVisible();
     if(areAllBuildingsEnabled_)
         toggleAllBuildingsEnabled();
+    if(shouldShowEnemyProductivityOverlay_)
+        toggleShowEnemyProductivityOverlay();
     if(isHumanAIPlayer_)
         toggleHumanAIPlayer();
 }
