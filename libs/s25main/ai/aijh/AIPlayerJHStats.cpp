@@ -382,28 +382,39 @@ void AIPlayerJH::saveStats(unsigned int gf) const
         return;
     }
 
+    std::ofstream statsFile = createCsvFile("stats");
+    if(!statsFile)
+    {
+        return;
+    }
+
+    DataExtractor extractor;
+    extractor.ProcessSnapshot(player, gf, this);
+    if(const SnapshotData* snapshot = extractor.GetCurrentSnapshot())
+    {
+        const bool writeHeader = !statsSnapshotHeaderWritten;
+        extractor.SerializeCsv(*snapshot, statsFile, writeHeader);
+        if(writeHeader)
+            statsSnapshotHeaderWritten = true;
+        extractor.ClearSnapshot();
+    }
+    statsFile.close();
+}
+
+void AIPlayerJH::saveDebugStats(unsigned int gf) const
+{
+    if(player.ps == PlayerState::Locked)
+    {
+        return;
+    }
+
     InitializeStatsCsvFiles();
 
     std::ofstream buildingCountFile = createCsvFile("buildings_count");
     std::ofstream buildingSitesFile = createCsvFile("buildings_sites");
     std::ofstream productivityFile = createCsvFile("productivity");
-    std::ofstream statsFile = createCsvFile("stats");
     std::ofstream otherFile = createCsvFile("other");
 
-    if(statsFile)
-    {
-        DataExtractor extractor;
-        extractor.ProcessSnapshot(player, gf, this);
-        if(const SnapshotData* snapshot = extractor.GetCurrentSnapshot())
-        {
-            const bool writeHeader = !statsSnapshotHeaderWritten;
-            extractor.SerializeCsv(*snapshot, statsFile, writeHeader);
-            if(writeHeader)
-                statsSnapshotHeaderWritten = true;
-            extractor.ClearSnapshot();
-        }
-        statsFile.close();
-    }
     const unsigned previousStatsFrame = lastStatsFrame_;
     const BuildingRegister& buildingRegister = player.GetBuildingRegister();
     const Inventory& playerInventory = player.GetInventory();

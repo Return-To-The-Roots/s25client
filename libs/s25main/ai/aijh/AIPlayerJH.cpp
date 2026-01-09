@@ -263,9 +263,13 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(defeated)
         return;
 
-    if(STATS_CONFIG.stats_period > 0 && gf % STATS_CONFIG.stats_period == 0)
+    if(IsStatsPeriodHit(gf, STATS_CONFIG.stats_period))
     {
         saveStats(gf);
+    }
+    if(IsStatsPeriodHit(gf, STATS_CONFIG.debug_stats_period))
+    {
+        saveDebugStats(gf);
     }
     if(TestDefeat())
         return;

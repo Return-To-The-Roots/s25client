@@ -12,6 +12,7 @@ struct StatsConfig
     unsigned stats_period = 2500;
     unsigned save_period = 2500;
     unsigned debug_stats_period = 2500;
+    unsigned minimap_period = 2500;
 
     std::string outputPath = "/home/pavel/s2/manual/runsets/";
     std::string statsPath = "/home/pavel/s2/manual/stats/";
@@ -22,4 +23,9 @@ struct StatsConfig
 };
 
 extern StatsConfig STATS_CONFIG;
+
+inline bool IsStatsPeriodHit(unsigned currentGF, unsigned period)
+{
+    return period > 0 && (currentGF % period) == 0u;
+}
 #endif

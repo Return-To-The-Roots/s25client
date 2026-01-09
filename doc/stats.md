@@ -24,32 +24,38 @@ per-frame CSV dumps, and less frequent human-readable snapshots.
 
 ## Periodic CSV snapshots
 
-`saveStats` is invoked per game frame for the local AI player (unless the
-player is locked). It opens/creates several CSV files inside
-`STATS_CONFIG.statsPath`, appending rows keyed by the current game frame.
+`saveStats` now focuses solely on `stats.csv`. Every time
+`IsStatsPeriodHit(gf, STATS_CONFIG.stats_period)` evaluates true (and the player
+is not locked), it uses `DataExtractor` to capture a snapshot for the local AI
+and append it to the CSV. Header rows are emitted only once when
+`statsSnapshotHeaderWritten` is still false.
 
-- On the first frame (`gf == 0`) the CSVs receive column headers derived from
-  the English resource name arrays (`BUILDING_NAMES_1`, `JOB_NAMES_1`).
-- Building counts: `GetBuildingsMap/Site/WantedMap` query the `BuildingPlanner`
-  to capture constructed buildings, sites, and desired extras.
+## Debug CSVs & derived metrics
+
+`saveDebugStats` drives the remaining CSVs and textual dumps whenever
+`IsStatsPeriodHit(gf, STATS_CONFIG.debug_stats_period)` succeeds.
+
+- On the first invocation it calls `InitializeStatsCsvFiles`, which emits
+  headers for `buildings_count.csv`, `buildings_sites.csv`, `productivity.csv`,
+  and `other.csv` using the English name arrays
+  (`BUILDING_NAMES_1`, `JOB_NAMES_1`).
+- Building counts: `GetBuildingsMap/Site/WantedMap` query `BuildingPlanner` to
+  capture constructed buildings, sites, and desired extras.
 - Productivity: `GetProductivity` values per building type are appended to
   `productivity.csv`.
-- Player snapshots: `stats.csv` is generated via `DataExtractor`, so each row
-  mirrors the tool-facing snapshot format (`GameFrame`, `PlayerId`, statistics
-  counters, buildings/sites/prod, goods, etc.).
 - "Other" metrics (in `other.csv`): number of military buildings, available
   wood/stone from AI surface scans, current boards demand, average build time,
   and the soldier pool per `SOLDIER_JOBS` (sourced from inventory/job counts).
 
 Average build time is derived by scanning all completed buildings since the
-previous stats frame and measuring `GetBuildStartingFrame` to
+previous debug stats frame and measuring `GetBuildStartingFrame` to
 `GetBuildCompleteFrame`. `lastStatsFrame_` stores the checkpoint to avoid
 double-counting.
 
-## Extended dumps every 2500 frames
+## Extended dumps every 2,500 frames
 
-Every 2,500 frames the AI emits a verbose text report (`ai_test_%010d.txt`)
-containing:
+Every time `saveDebugStats` fires on a game frame divisible by 2,500 the AI also
+emits a verbose text report (`ai_test_%010d.txt`) containing:
 
 - Timestamp, player name, and summarized scoreboard values.
 - Resource availability, tool priorities, per-good counts, and building table
@@ -57,8 +63,11 @@ containing:
 - Job inventory and additional metrics (military building count, boards demand,
   average build time, soldier ranks).
 
-These dumps supplement the CSV series with an immediately readable snapshot
-for manual analysis.
+These dumps supplement the CSV series with an immediately readable snapshot for
+manual analysis. Headless runs may additionally write minimap bitmaps to
+`STATS_CONFIG.screensPath` whenever `IsStatsPeriodHit(gf,
+STATS_CONFIG.minimap_period)` evaluates true, keeping visual state captures in
+sync with debug metrics.
 
 Together these systems provide a holistic view of how AI players expand,
 balance their economy, and perform in combat without attaching a debugger.

@@ -186,7 +186,8 @@ void HeadlessGame::Run(unsigned maxGF)
         if(replay_.IsRecording())
             replay_.UpdateLastGF(currentGF);
 
-        SaveMinimap(currentGF);
+        if(IsStatsPeriodHit(currentGF, STATS_CONFIG.minimap_period))
+            SaveMinimap(currentGF);
 
         if(std::chrono::steady_clock::now() > nextReport)
         {
@@ -361,9 +362,9 @@ void HeadlessGame::PrintState()
 
 void HeadlessGame::SaveMinimap(unsigned currentGF)
 {
-    if(STATS_CONFIG.stats_period == 0)
+    if(STATS_CONFIG.minimap_period == 0)
         return;
-    if(currentGF == 0 || currentGF % STATS_CONFIG.stats_period != 0)
+    if(currentGF == 0 || currentGF % STATS_CONFIG.minimap_period != 0)
         return;
     if(lastMinimapSaveGF_ == currentGF)
         return;

@@ -73,6 +73,7 @@ public:
     /// bar setting
     unsigned CalcMilSettings();
     void saveStats(unsigned gf) const;
+    void saveDebugStats(unsigned gf) const;
     /// military & tool production settings
     void AdjustSettings();
     /// return number of seaIds with at least 2 harbor spots
