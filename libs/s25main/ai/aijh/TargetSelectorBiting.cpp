@@ -45,7 +45,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
         if(level == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
         {
             const auto* enemyTarget = static_cast<const nobMilitary*>(target);
-            if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 2 || enemyTarget->GetNumTroops() == 0)
+            if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 1 || enemyTarget->GetNumTroops() == 0)
                 continue;
         }
 

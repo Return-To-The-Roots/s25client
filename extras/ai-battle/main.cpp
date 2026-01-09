@@ -182,7 +182,8 @@ int main(int argc, char** argv)
         STATS_CONFIG.save_period = savePeriod.get_value_or(0);
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
-        // ggs.setSelection(AddonId::CHANGE_GOLD_DEPOSITS, 4);
+        ggs.setSelection(AddonId::DEMOLITION_PROHIBITION, 2);
+        ggs.setSelection(AddonId::MILITARY_HITPOINTS, 2);
         HeadlessGame game(ggs, mapPath, ais, startSavePath);
         if(replay_path)
             game.RecordReplay(*replay_path, random_init);
