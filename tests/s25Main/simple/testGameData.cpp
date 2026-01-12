@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(ProductionBuildingsAreNobUsual)
         if(!BuildingProperties::IsValid(bld))
             continue;
         // Only nobUsuals can produce wares (though not all do)
-        if(BLD_WORK_DESC[bld].producedWare)
+        if(!holds_alternative<boost::none_t>(BLD_WORK_DESC[bld].producedWare))
         {
             BOOST_TEST_INFO("bld: " << bld);
             BOOST_TEST(BuildingProperties::IsUsual(bld));
