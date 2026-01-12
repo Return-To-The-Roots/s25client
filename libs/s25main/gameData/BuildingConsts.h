@@ -70,9 +70,8 @@ const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_W
   {Job::Helper, GoodType::Water},
   {Job::Shipwright, GoodType::Boat, WaresNeeded(GoodType::Boards)},
   {Job::Farmer, GoodType::Grain},
-  {Job::DonkeyBreeder, GoodType::Nothing,
-   WaresNeeded(GoodType::Grain, GoodType::Water)}, // Produces a job. TODO: Better way
-  {},                                              // Harbour
+  {Job::DonkeyBreeder, Job::PackDonkey, WaresNeeded(GoodType::Grain, GoodType::Water)},
+  {}, // Harbour
 }};
 
 /// Smoke consts for all buildings and nations
