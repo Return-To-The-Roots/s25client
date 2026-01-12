@@ -75,7 +75,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         unsigned io_dat_id =
           (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
         AddImageButton(11, DrawPoint(130, extent.y - 47), Extent(43, 32), TextureColor::Grey,
-                       LOADER.GetImageN("io", io_dat_id));
+                       LOADER.GetImageN("io", io_dat_id), _("Ships/Boats"));
     }
 
     // "Gehe Zum Ort"
