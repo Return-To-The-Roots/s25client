@@ -48,6 +48,8 @@ private:
     unsigned char numCoins;
     /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
     bool coinsDisabled, coinsDisabledVirtual;
+    unsigned char numArmor;
+    bool armorAllowed, armorAllowedVirtual;
     /// Entfernung zur freindlichen Grenze (woraus sich dann die Besatzung ergibt) von 0-3, 0 fern, 3 nah, 2 Hafen!
     FrontierDistance frontier_distance;
     /// Größe bzw Typ des Militärgebäudes (0 = Baracke, 3 = Festung)
@@ -56,6 +58,7 @@ private:
     SortedTroops ordered_troops;
     /// Bestellter Goldmünzen
     std::list<Ware*> ordered_coins;
+    std::list<Ware*> ordered_armor;
     /// Gibt an, ob gerade die Eroberer in das Gebäude gehen (und es so nicht angegegriffen werden sollte)
     bool capturing;
     /// Anzahl der Soldaten, die das Militärgebäude gerade noch einnehmen
@@ -64,9 +67,11 @@ private:
     /// but who are still quite far away (didn't stand around the building)
     std::list<nofAttacker*> far_away_capturers;
     /// Gold-Bestell-Event
-    const GameEvent* goldorder_event;
+    const GameEvent* gold_order_event;
+    const GameEvent* armor_order_event;
     /// Beförderung-Event
     const GameEvent* upgrade_event;
+    const GameEvent* armor_upgrade_event;
     /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
     bool is_regulating_troops;
     /// Soldatenbesatzung
@@ -81,9 +86,11 @@ private:
     std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) override;
     /// Will/kann das Gebäude noch Münzen bekommen?
     bool WantCoins() const;
+    bool WantArmor() const;
     /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
     /// Beförderungsevent an
     void PrepareUpgrading();
+    void PrepareArmorUpgrading();
     /// Gets the total amount of soldiers (ordered, stationed, on mission)
     size_t GetTotalSoldiers() const;
     std::array<unsigned, NUM_SOLDIER_RANKS> GetTotalSoldiersByRank() const;
@@ -115,6 +122,7 @@ public:
     /// Liefert Militärradius des Gebäudes
     unsigned GetMilitaryRadius() const override;
     unsigned GetMaxCoinCt() const;
+    unsigned GetMaxArmorCt() const;
     unsigned GetMaxTroopsCt() const;
 
     /// Sucht feindliche Miitärgebäude im Umkreis und setzt die frontier_distance entsprechend (sowohl selber als
@@ -155,6 +163,7 @@ public:
 
     /// Berechnet, wie dringend eine Goldmünze gebraucht wird, in Punkten, je höher desto dringender
     unsigned CalcCoinsPoints() const;
+    unsigned CalcArmorPoints() const;
 
     /// Wird aufgerufen, wenn ein Soldat kommt
     void GotWorker(Job job, noFigure& worker) override;
@@ -218,11 +227,19 @@ public:
     /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)
     bool IsGoldDisabled() const { return coinsDisabled; }
     unsigned char GetNumCoins() const { return numCoins; }
+
+    void ToggleArmorVirtual() { armorAllowedVirtual = !armorAllowedVirtual; }
+    void SetArmorAllowed(bool enabled);
+    bool IsArmorAllowedVirtual() const { return armorAllowedVirtual; }
+    bool IsArmorAllowed() const { return armorAllowed; }
+    unsigned char GetNumArmor() const { return numArmor; }
+
     /// is there a max rank soldier in the building?
     bool HasMaxRankSoldier() const;
 
     /// Sucht sämtliche Lagerhäuser nach Goldmünzen ab und bestellt ggf. eine, falls eine gebraucht wird
     void SearchCoins();
+    void SearchArmor();
 
     /// Gebäude wird von einem Katapultstein getroffen
     void HitOfCatapultStone();

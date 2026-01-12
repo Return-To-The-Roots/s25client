@@ -32,6 +32,13 @@ inline T checkedCast(T_Src* src)
     return static_cast<T>(src);
 }
 
+template<typename T, typename T_Src>
+inline T& checkedCast(T_Src& src)
+{
+    RTTR_Assert(dynamic_cast<T*>(&src));
+    return static_cast<T&>(src);
+}
+
 // Fwd decl
 namespace boost {
 namespace filesystem {

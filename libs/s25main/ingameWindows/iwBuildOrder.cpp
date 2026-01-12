@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwBuildOrder.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "WineLoader.h"
@@ -18,19 +20,10 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 
-void iwBuildOrder::fillBuildOrder()
+void iwBuildOrder::fillBuildOrder(const BuildOrders& build_order)
 {
-    pendingBuildOrder.assign(GAMECLIENT.visual_settings.build_order.begin(),
-                             GAMECLIENT.visual_settings.build_order.end());
-
-    auto isUnused = [&](BuildingType const& bld) {
-        if(!wineaddon::isAddonActive(gwv.GetWorld()) && wineaddon::isWineAddonBuildingType(bld))
-            return true;
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
-            return true;
-        return false;
-    };
-    helpers::erase_if(pendingBuildOrder, isUnused);
+    pendingBuildOrder.assign(build_order.begin(), build_order.end());
+    helpers::erase_if(pendingBuildOrder, makeIsUnusedBuilding(gwv.GetWorld().GetGGS()));
 }
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
@@ -40,7 +33,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 {
     ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
 
-    fillBuildOrder();
+    fillBuildOrder(GAMECLIENT.visual_settings.build_order);
 
     for(const auto buildOrder : pendingBuildOrder)
         list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
@@ -94,8 +87,18 @@ void iwBuildOrder::TransmitSettings()
             transmitPendingBuildOrder[i++] = BuildingType::Temple;
         }
 
+        // This is not an OBB write because pendingBuildOrder does not contain the leather/wine building
+        // entries when the addon is inactive. So the pendingBuildOrder list is shorter then
+        // the transmitPendingBuildOrder list. See fillBuildOrder at the top of this file.
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
             transmitPendingBuildOrder[i++] = BuildingType::Charburner;
+
+        if(!leatheraddon::isAddonActive(gwv.GetWorld()))
+        {
+            transmitPendingBuildOrder[i++] = BuildingType::Skinner;
+            transmitPendingBuildOrder[i++] = BuildingType::Tannery;
+            transmitPendingBuildOrder[i++] = BuildingType::LeatherWorks;
+        }
 
         if(GAMECLIENT.ChangeBuildOrder(useCustomBuildOrder, transmitPendingBuildOrder))
         {
@@ -195,7 +198,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         case 10: // Standardwerte
         {
             // Baureihenfolge vom Spieler kopieren
-            fillBuildOrder();
+            fillBuildOrder(GAMECLIENT.default_settings.build_order);
 
             auto* list = GetCtrl<ctrlList>(0);
             list->DeleteAllItems();
@@ -218,7 +221,7 @@ void iwBuildOrder::UpdateSettings()
     if(GAMECLIENT.IsReplayModeOn())
     {
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-        fillBuildOrder();
+        fillBuildOrder(GAMECLIENT.visual_settings.build_order);
         useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     }
     GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
