@@ -328,7 +328,7 @@ E. Summary: Updates and changelog
   * 0.5 - Fifth version - 27.01.2008 *
   ------------------------------------------------------------------------------
   - Fixed a lot of bugs
-  - Donkeyraods, Donkey breeder
+  - Donkeyroads, Donkey breeder
   - Boatroads with boats and shipyard (shipyard only builds boats)
   - Mountain road
   - Catapults
