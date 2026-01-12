@@ -59,8 +59,10 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 
 void nofWarehouseWorker::GoalReached()
 {
-    const nobBaseWarehouse* wh = world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest));
-    auto* flag = world->GetSpecObj<noFlag>(pos);
+    nobBaseWarehouse* wh = world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest));
+    RTTR_Assert(wh); // When worker is still working, the warehouse (and its flag) exists
+    auto* flag = wh->GetFlag();
+    RTTR_Assert(flag);
     if(!shouldBringWareIn)
     {
         // Put ware down at flag if enough space.
@@ -76,14 +78,14 @@ void nofWarehouseWorker::GoalReached()
         } else
         {
             // Bring back in
-            carried_ware->Carry(world->GetSpecObj<noRoadNode>(world->GetNeighbour(pos, Direction::NorthWest)));
+            carried_ware->Carry(wh);
         }
     } else
     {
         // Take ware if any
         carried_ware = flag->SelectWare(Direction::NorthWest, false, this);
         if(carried_ware)
-            carried_ware->Carry(world->GetSpecObj<noRoadNode>(world->GetNeighbour(pos, Direction::NorthWest)));
+            carried_ware->Carry(wh);
     }
 
     // Start walking back
