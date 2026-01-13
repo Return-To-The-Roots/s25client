@@ -59,7 +59,7 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 
 void nofWarehouseWorker::GoalReached()
 {
-    nobBaseWarehouse* wh = world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest));
+    auto* wh = world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest));
     RTTR_Assert(wh); // When worker is still working, the warehouse (and its flag) exists
     auto* flag = wh->GetFlag();
     RTTR_Assert(flag);
