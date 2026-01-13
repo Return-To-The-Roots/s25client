@@ -536,7 +536,7 @@ void nobUsual::OnOutOfResources()
     else if(GetBuildingType() == BuildingType::Quarry)
         error = _("No more stones in range");
     else if(GetBuildingType() == BuildingType::Fishery)
-        error = _("No more fishes in range");
+        error = _("No more fish in range");
     else
         return;
 
