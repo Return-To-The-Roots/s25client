@@ -16,9 +16,8 @@ public:
 private:
     GameWorldView& gwv;
 
-    /// Teilt dem GameClient den Wert mit
-    void SkipGFs();
+    void SkipGFs(unsigned edtCtrlId);
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrlId) override;
+    void Msg_EditEnter(unsigned ctrlId) override;
 };

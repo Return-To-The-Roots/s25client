@@ -1381,7 +1381,7 @@ void GameClient::ExecuteGameFrame()
     // Check remaining time until next GF
     if(framesinfo.frameTime >= framesinfo.gf_length)
     {
-        // This can happen, if we don't call this method in intervalls less than gf_length or gf_length has changed
+        // This can happen, if we don't call this method in intervals less than gf_length or gf_length has changed
         // TODO: Run multiple GFs per call.
         // For now just make sure it is less than gf_length by skipping some simulation time,
         // until we are only a bit less than 1 GF behind
