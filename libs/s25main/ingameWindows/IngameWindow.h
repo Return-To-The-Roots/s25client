@@ -55,14 +55,14 @@ public:
                  glArchivItem_Bitmap* background, bool modal = false,
                  CloseBehavior closeBehavior = CloseBehavior::Regular, Window* parent = nullptr);
 
-    /// setzt den Hintergrund.
+    /// Set background image
     void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
-    /// liefert den Hintergrund.
+    /// Get background image
     glArchivItem_Bitmap* GetBackground() const { return background; }
 
-    /// setzt den Fenstertitel.
+    /// Set window title
     void SetTitle(const std::string& title) { this->title_ = title; }
-    /// liefert den Fenstertitel.
+    /// Get window title
     const std::string& GetTitle() const { return title_; }
 
     void Resize(const Extent& newSize) override;
@@ -78,14 +78,14 @@ public:
     /// Set the position for the window after adjusting newPos so the window is in the visible area
     void SetPos(DrawPoint newPos, bool saveRestorePos = true);
 
-    /// merkt das Fenster zum Schließen vor.
+    /// Queue the window for closing, will be done in next draw cycle
     virtual void Close();
-    /// soll das Fenster geschlossen werden.
+    /// Return if the window will be closes
     bool ShouldBeClosed() const { return closeme; }
 
-    /// minimiert das Fenster.
+    /// Minimize window (only title bar and bottom border remains)
     void SetMinimized(bool minimized = true);
-    /// ist das Fenster minimiert?
+    /// Return whether the window is minimized
     bool IsMinimized() const { return isMinimized_; }
 
     void SetPinned(bool pinned = true);
@@ -109,12 +109,12 @@ protected:
     /// Called when not minimized after the frame and background have been drawn
     virtual void DrawContent() {}
 
-    /// Verschiebt Fenster in die Bildschirmmitte
+    /// Move window to center of screen
     void MoveToCenter();
-    /// Verschiebt Fenster neben die Maus
+    /// Move window next to current cursor position
     void MoveNextToMouse();
 
-    /// Weiterleitung von Nachrichten erlaubt oder nicht?
+    /// Return if events (mouse move...) should be passed to controls of the window
     bool IsMessageRelayAllowed() const override;
 
     void SaveOpenStatus(bool isOpen) const;
