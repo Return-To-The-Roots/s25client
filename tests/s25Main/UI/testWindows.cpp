@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,16 +10,24 @@
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
+#include "controls/ctrlTextButton.h"
 #include "desktops/Desktop.h"
 #include "ingameWindows/iwAddons.h"
+#include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwVictory.h"
 #include "uiHelper/uiHelpers.hpp"
+#include "worldFixtures/CreateEmptyWorld.h"
+#include "worldFixtures/WorldFixture.h"
+#include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
 #include <mygettext/mygettext.h>
 
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807
+
+using SmallWorldFixture = WorldFixture<CreateEmptyWorld, 1, 10, 10>;
 
 BOOST_FIXTURE_TEST_SUITE(Windows, uiHelper::Fixture)
 
@@ -76,6 +84,19 @@ BOOST_AUTO_TEST_CASE(AddonWindow)
         for(const auto* cb : readonlyGroup->GetCtrls<ctrlComboBox>())
             BOOST_TEST_REQUIRE(cb->isReadOnly());
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(JumpWindow, SmallWorldFixture)
+{
+    // Test if it is constructible only, accesses GameClient for buttons
+    GameWorldViewer gwv(0, world);
+    GameWorldView view(gwv, Position(0, 0), Extent(100, 100));
+    iwSkipGFs wnd(view);
+    // At least 4 buttons for "jump by x" and at least 1 extra for "jump to"
+    const auto bts = wnd.GetCtrls<ctrlTextButton>();
+    BOOST_TEST(bts.size() > 4);
+    const auto numIncBts = helpers::count_if(bts, [](const ctrlTextButton* bt) { return bt->GetText().at(0) == '+'; });
+    BOOST_TEST(numIncBts >= 4);
 }
 
 namespace {

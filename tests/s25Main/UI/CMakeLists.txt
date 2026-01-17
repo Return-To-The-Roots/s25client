@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,6 +7,6 @@
 add_subdirectory(uiHelper)
 
 add_testcase(NAME UI
-    LIBS s25Main testUIHelper rttr::vld
+    LIBS s25Main testUIHelper rttr::vld testWorldFixtures
     COST 45
 )
