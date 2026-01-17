@@ -62,10 +62,10 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     curPos.y += edtSize.y + 5;
     const auto availWidth = GetIwSize().x - spacing * 2;
     btSize.x = (availWidth - spacing * (jumpPresets.size() - 1)) / jumpPresets.size();
-    for(auto i : helpers::range(jumpPresets.size()))
+    for(auto i : jumpPresets)
     {
-        AddTextButton(ID_btJumpPresetStart + i, curPos, btSize, TextureColor::Green1,
-                      "+" + std::to_string(jumpPresets[i]), NormalFont);
+        AddTextButton(ID_btJumpPresetStart + i, curPos, btSize, TextureColor::Green1, "+" + std::to_string(i),
+                      NormalFont);
         curPos.x += btSize.x + spacing;
     }
 }
@@ -84,7 +84,7 @@ void iwSkipGFs::Msg_ButtonClick(const unsigned ctrlId)
         SkipGFs((ctrlId == ID_btByGf) ? ID_edtByGf : ID_edtToGf);
     else
     {
-        const unsigned targetGF = GAMECLIENT.GetGFNumber() + jumpPresets[ctrlId - ID_btJumpPresetStart];
+        const unsigned targetGF = GAMECLIENT.GetGFNumber() + ctrlId - ID_btJumpPresetStart;
         GAMECLIENT.SkipGF(targetGF, gwv);
     }
 }
