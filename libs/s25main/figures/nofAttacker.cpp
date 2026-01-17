@@ -605,18 +605,23 @@ bool nofAttacker::AttackDefenderAtFlag()
 {
     // Walk to flag if possible
     const auto dir = world->FindHumanPath(pos, attacked_goal->GetFlagPos(), 3, true);
-    if(!dir)
-        return false;
-
-    const bool waiting_around_building = (state == SoldierState::AttackingWaitingAroundBuilding);
-    state = SoldierState::AttackingAttackingFlag;
-
-    if(waiting_around_building)
+    if(dir)
     {
-        StartWalking(*dir);
-        attacked_goal->SendSuccessor(pos, radius);
+        const bool waiting_around_building = (state == SoldierState::AttackingWaitingAroundBuilding);
+        state = SoldierState::AttackingAttackingFlag;
+
+        if(waiting_around_building)
+        {
+            StartWalking(*dir);
+            attacked_goal->SendSuccessor(pos, radius);
+        }
+        return true;
+    } else
+    {
+        state = nofActiveSoldier::SoldierState::AttackingWalkingToGoal;
+        MissAttackingWalk();
+        return false;
     }
-    return true;
 }
 
 void nofAttacker::AttackFlag()
