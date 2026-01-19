@@ -173,13 +173,16 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
     const bool capturing =
       BuildingProperties::IsMilitary(bldType_) && static_cast<nobMilitary*>(this)->IsBeingCaptured();
 
-    // Also check if we can reach this.
-    // If not, still consider the other points as the flag could become reachable by then.
-    if(!capturing && world->IsValidPointForFighting(flagPos, soldier, false)
-       && (soldierPos == flagPos || world->FindHumanPath(soldierPos, flagPos) != boost::none))
+    if(!capturing && world->IsValidPointForFighting(flagPos, soldier, false))
     {
-        ret_radius = 0;
-        return flagPos;
+        // Also check if we can reach this.
+        // If not, still consider the other points as the flag could become reachable by then.
+        // TODO(Replay) Limit distance by MAX_ATTACKING_RUN_DISTANCE
+        if(soldierPos == flagPos || world->FindHumanPath(soldierPos, flagPos) != boost::none)
+        {
+            ret_radius = 0;
+            return flagPos;
+        }
     }
 
     // Check all points around the flag and take shortest
@@ -204,6 +207,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
 
         unsigned length = 0;
         // Is there a path at all?
+        // TODO(Replay) Limit distance by MAX_ATTACKING_RUN_DISTANCE instead of 100
         if(world->FindHumanPath(soldierPos, node.first, 100, false, &length))
         {
             // Take if shorter
