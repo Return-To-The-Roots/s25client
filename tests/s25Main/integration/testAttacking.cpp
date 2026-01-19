@@ -19,6 +19,7 @@
 #include "pathfinding/FindPathForRoad.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/GameTypesOutput.h"
@@ -27,9 +28,19 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
+using SoldierState = nofActiveSoldier::SoldierState;
+
+// LCOV_EXCL_START
+static std::ostream& operator<<(std::ostream& out, const SoldierState s)
+{
+    return out << static_cast<unsigned>(rttr::enum_cast(s));
+}
+// LCOV_EXCL_STOP
+
 BOOST_AUTO_TEST_SUITE(AttackSuite)
 
 namespace {
+
 struct AttackDefaults
 {
     static constexpr unsigned width = 20;
@@ -768,6 +779,113 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     RTTR_EXEC_TILL(40, !milBld1->IsDoorOpen());
 }
 
+BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<2>)
+{
+    // Setup:
+    //   - Fight at building flag which is only reachable via road over water
+    //   - 2nd attacker waits on other side of water, 3rd on same side
+    //   - Road gets removed -> 2nd attacker cannot reach flag anymore
+    //   - After fight ended 2nd attacker should go home and 3rd should be chosen to fight
+    // Using 3 attackers to verify the 2nd one is skipped but remaining ones are considered
+    auto* attackerBld = milBld1;
+    auto* defenderBld = milBld0;
+    auto plAttacker = 1;
+    auto plDefender = 0;
+    // Attack from right to left
+    if(milBld0Pos.x < milBld1Pos.x)
+    {
+        using std::swap;
+        swap(attackerBld, defenderBld);
+        swap(plAttacker, plDefender);
+    }
+    const auto attackerBldPos = attackerBld->GetPos();
+    const auto defenderBldPos = defenderBld->GetPos();
+    AddSoldiers(defenderBldPos, 0, 1);
+    AddSoldiersWithRank(attackerBldPos, 6, 0);
+    // Make defender building flag unreachable
+    const auto terrain = this->world.GetDescription().terrain.find(
+      [](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable) && t.GetBQ() != TerrainBQ::Danger; });
+    const auto flagPos = defenderBld->GetFlagPos();
+    // At right there is 1 node of water, so not passable but soldiers can stand on other side
+    /* "B"=Attacked building, "F"=Flag, "L"=Land terrain, Rest is water
+
+      /\  /\  /\LL/
+     /__\/__\/LL\/
+        B
+     \  /\  /\LL/\
+      \/LL\/__\/LL\
+           F       F
+      /\  /\  /\LL/
+     /__\/__\/LL\/
+     --> 1 triangle right of left flag is not walkable and hence F<->F not passable without road
+    */
+    for(const auto dx : helpers::range(-2, 1))
+    {
+        for(const auto dy : helpers::range(-2, 3))
+        {
+            MapPoint pt = world.MakeMapPoint(flagPos + Position(dx, dy));
+            auto& node = world.GetNodeWriteable(pt);
+            node.t1 = node.t2 = terrain;
+        }
+    }
+    {
+        // RSU triangle of node right of B so flag is not reachable from above
+        MapPoint pt = world.GetNeighbour(defenderBldPos, Direction::East);
+        auto& node = world.GetNodeWriteable(pt);
+        node.t1 = terrain;
+    }
+    {
+        // RSU triangle of building so it is reachable from flag
+        auto& node = world.GetNodeWriteable(defenderBldPos);
+        node.t1 = GetLandTerrain(world.GetDescription()); // RSU triangle of node right of B
+    }
+    GameWorldViewer gwv(plAttacker, world);
+    BOOST_TEST_REQUIRE(gwv.GetNumSoldiersForAttack(defenderBldPos) == 0u);
+    // Road over water makes it reachable
+    curPlayer = plDefender;
+    const MapPoint roadFlagPos = world.MakeMapPoint(flagPos + Position(2, 0));
+    this->BuildRoad(flagPos, false, std::vector<Direction>(2, Direction::East));
+    auto* flag = world.GetSpecObj<noFlag>(roadFlagPos);
+    BOOST_TEST_REQUIRE(flag);
+
+    BOOST_TEST_REQUIRE(gwv.GetNumSoldiersForAttack(defenderBldPos) >= 3u);
+
+    curPlayer = plAttacker;
+    this->Attack(defenderBldPos, 3, true);
+    BOOST_TEST_REQUIRE(attackerBld->GetLeavingFigures().size() == 3);
+    auto& attacker1 = dynamic_cast<nofAttacker&>(attackerBld->GetLeavingFigures().front());
+    auto& attacker2 = dynamic_cast<nofAttacker&>(*++attackerBld->GetLeavingFigures().begin());
+    auto& attacker3 = dynamic_cast<nofAttacker&>(*++(++attackerBld->GetLeavingFigures().begin()));
+    // Let all exit and move almost to goal
+    RTTR_EXEC_TILL(200, attackerBld->GetLeavingFigures().empty());
+    moveObjTo(world, attacker1, world.GetNeighbour(flagPos, Direction::East));
+    moveObjTo(world, attacker2, world.GetNeighbour(roadFlagPos, Direction::East));
+    moveObjTo(world, attacker3, world.GetNeighbour(flagPos, Direction::West));
+    RTTR_EXEC_TILL(200, !defenderBld->GetLeavingFigures().empty());
+    auto& defender = dynamic_cast<nofDefender&>(defenderBld->GetLeavingFigures().front());
+    RTTR_EXEC_TILL(200, defender.IsFightingAtFlag());
+    RTTR_EXEC_TILL(10, attacker2.IsAttackerReady() && attacker3.IsAttackerReady());
+    BOOST_TEST_REQUIRE(attacker1.GetState() == SoldierState::AttackingFightingVsDefender);
+
+    // Setup done, now remove the road and verify the goal is no longer attackable
+    curPlayer = plDefender;
+    DestroyRoad(flagPos, Direction::East);
+    BOOST_TEST_REQUIRE(gwv.GetNumSoldiersForAttack(defenderBldPos) == 0u);
+    // Fight ended
+    RTTR_EXEC_TILL(200, !defender.IsFightingAtFlag());
+    // Attacker2 should go home
+    BOOST_TEST(attacker2.GetState() == SoldierState::WalkingHome);
+    BOOST_TEST(!attacker2.GetAttackedGoal());
+    BOOST_TEST(!helpers::contains(defenderBld->GetAggressors(), &attacker2));
+    BOOST_TEST(attacker2.IsMoving()); // Not stuck
+    // Attacker3 should go and fight now
+    BOOST_TEST(!attacker3.IsAttackerReady());
+    BOOST_TEST(attacker3.GetAttackedGoal());
+    BOOST_TEST(attacker3.IsMoving()); // Not stuck
+    RTTR_EXEC_TILL(100, defender.IsFightingAtFlag());
+    BOOST_TEST(attacker3.GetState() == SoldierState::AttackingFightingVsDefender);
+}
+
 using DestroyRoadsOnConquerFixture = AttackFixture<2, 24>;
 BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
 {
@@ -849,8 +967,8 @@ struct FreeFightFixture : AttackFixture<2>
         moveObjTo(world, defender, fightSpot + MapPoint(1, 0));
         rescheduleWalkEvent(em, attacker, 1);
         RTTR_SKIP_GFS(1);
-        BOOST_TEST_REQUIRE((defender.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
-        BOOST_TEST_REQUIRE((attacker.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
+        BOOST_TEST_REQUIRE(defender.GetState() == SoldierState::MeetEnemy);
+        BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::MeetEnemy);
     }
 
     /// Add blocking terrain around building of defender starting left of the specified position
@@ -889,8 +1007,8 @@ BOOST_FIXTURE_TEST_CASE(Attacker_Returns_When_AgressiveDefender_Aborts, FreeFigh
     moveObjTo(world, attacker, fightSpot);
     rescheduleWalkEvent(em, attacker, 1);
     RTTR_SKIP_GFS(1);
-    BOOST_TEST_REQUIRE((defender.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
-    BOOST_TEST_REQUIRE((attacker.GetState() == nofActiveSoldier::SoldierState::WaitingForFight));
+    BOOST_TEST_REQUIRE(defender.GetState() == SoldierState::MeetEnemy);
+    BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::WaitingForFight);
     // The next part of the test assumes they use this fight spot.
     // This doesn't need to stay true which only needs adjustments to the test.
     BOOST_TEST_REQUIRE(attacker.GetPos() == fightSpot);
@@ -903,8 +1021,8 @@ BOOST_FIXTURE_TEST_CASE(Attacker_Returns_When_AgressiveDefender_Aborts, FreeFigh
     RTTR_SKIP_GFS(1);
     BOOST_TEST(defender.IsMoving());
     BOOST_TEST(attacker.IsMoving());
-    BOOST_TEST((defender.GetState() != nofActiveSoldier::SoldierState::MeetEnemy));
-    BOOST_TEST((attacker.GetState() != nofActiveSoldier::SoldierState::WaitingForFight));
+    BOOST_TEST(defender.GetState() != SoldierState::MeetEnemy);
+    BOOST_TEST(attacker.GetState() != SoldierState::WaitingForFight);
 
     BOOST_TEST_REQUIRE(attackedBld.GetNumTroops() == 5u); // Sanity check
     RTTR_EXEC_TILL(100, attackedBld.GetNumTroops() == 6u);
@@ -925,8 +1043,8 @@ BOOST_FIXTURE_TEST_CASE(AgressiveDefender_Returns_When_Attacker_Aborts, FreeFigh
     moveObjTo(world, defender, fightSpot);
     rescheduleWalkEvent(em, defender, 1);
     RTTR_SKIP_GFS(1);
-    BOOST_TEST_REQUIRE((defender.GetState() == nofActiveSoldier::SoldierState::WaitingForFight));
-    BOOST_TEST_REQUIRE((attacker.GetState() == nofActiveSoldier::SoldierState::MeetEnemy));
+    BOOST_TEST_REQUIRE(defender.GetState() == SoldierState::WaitingForFight);
+    BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::MeetEnemy);
     // The next part of the test assumes they use this fight spot.
     // This doesn't need to stay true which only needs adjustments to the test.
     BOOST_TEST_REQUIRE(defender.GetPos() == fightSpot);
@@ -939,8 +1057,8 @@ BOOST_FIXTURE_TEST_CASE(AgressiveDefender_Returns_When_Attacker_Aborts, FreeFigh
     RTTR_SKIP_GFS(1);
     BOOST_TEST(defender.IsMoving());
     BOOST_TEST(attacker.IsMoving());
-    BOOST_TEST((defender.GetState() != nofActiveSoldier::SoldierState::WaitingForFight));
-    BOOST_TEST((attacker.GetState() != nofActiveSoldier::SoldierState::MeetEnemy));
+    BOOST_TEST(defender.GetState() != SoldierState::WaitingForFight);
+    BOOST_TEST(attacker.GetState() != SoldierState::MeetEnemy);
 
     BOOST_TEST_REQUIRE(attackedBld.GetNumTroops() == 5u); // Sanity check
     RTTR_EXEC_TILL(100, attackedBld.GetNumTroops() == 6u);
