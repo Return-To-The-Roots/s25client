@@ -188,8 +188,9 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
     // Check all points around the flag and take shortest
     unsigned min_length = std::numeric_limits<unsigned>::max();
     MapPoint minPt = MapPoint::Invalid();
-    ret_radius = 100;
-    for(const auto& node : world->GetPointsInRadius(flagPos, 3, ReturnMapPointWithRadius{}))
+    constexpr auto MAX_RADIUS = 3;
+    ret_radius = MAX_RADIUS;
+    for(const auto& node : world->GetPointsInRadius(flagPos, MAX_RADIUS, ReturnMapPointWithRadius{}))
     {
         // We found a point with a better radius
         if(node.second > ret_radius)
