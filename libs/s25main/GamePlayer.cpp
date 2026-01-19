@@ -4,6 +4,7 @@
 
 #include "GamePlayer.h"
 #include "Cheats.h"
+#include "ai/aijh/AIConfig.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GameInterface.h"
@@ -51,6 +52,7 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     : GamePlayerInfo(playerId, playerInfo), world(world), hqPos(MapPoint::Invalid()), emergency(false)
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);
+    ApplyConfigBuildingDisables();
 
     LoadStandardDistribution();
     useCustomBuildOrder_ = false;
@@ -153,6 +155,14 @@ void GamePlayer::LoadStandardDistribution()
     }
 }
 
+void GamePlayer::ApplyConfigBuildingDisables()
+{
+    const auto playerId = static_cast<unsigned char>(GetPlayerId());
+    const AIConfig& config = GetAIConfigForPlayer(playerId);
+    for(const BuildingType type : config.disableBuilding)
+        building_enabled[type] = false;
+}
+
 GamePlayer::~GamePlayer() = default;
 
 void GamePlayer::Serialize(SerializedGameData& sgd) const
@@ -231,6 +241,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
 void GamePlayer::Deserialize(SerializedGameData& sgd)
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);
+    ApplyConfigBuildingDisables();
 
     // Ehemaligen PS auslesen
     auto origin_ps = sgd.Pop<PlayerState>();
@@ -2273,7 +2284,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
 
 bool GamePlayer::IsBuildingEnabled(BuildingType type) const
 {
-    return building_enabled[type] || (isHuman() && world.GetGameInterface()->GI_GetCheats().areAllBuildingsEnabled());
+    return building_enabled[type]; // || (isHuman() && world.GetGameInterface()->GI_GetCheats().areAllBuildingsEnabled());
 }
 
 void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const

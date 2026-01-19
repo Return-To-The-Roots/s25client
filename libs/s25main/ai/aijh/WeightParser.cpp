@@ -19,9 +19,9 @@ RatingParams Weights::parseRatingParams(const YAML::Node& node, const RatingPara
     RatingParams params = defaults;
     params.enabled = true;
     if(node["radius"])
-        params.radius = node["radius"].as<unsigned>();
+        params.radius = static_cast<unsigned>(node["radius"].as<double>());
     if(node["multiplier"])
-        params.multiplier = node["multiplier"].as<int>();
+        params.multiplier = static_cast<int>(node["multiplier"].as<double>());
     return params;
 }
 
@@ -85,11 +85,11 @@ BuildParams Weights::parseBuildParams(const YAML::Node& node, const BuildParams&
     }
     if(node["min"])
     {
-        params.min = node["min"].as<unsigned>();
+        params.min = static_cast<unsigned>(node["min"].as<double>());
     }
     if(node["max"])
     {
-        params.max = node["max"].as<unsigned>();
+        params.max = static_cast<unsigned>(node["max"].as<double>());
     }
     return params;
 }
@@ -163,10 +163,10 @@ WantedParams Weights::parseWantedParams(const YAML::Node& node, WantedParams par
         params.workersAdvance = parseBuildParams(node["workersAdvance"], {});
 
     if(node["max"])
-        params.max = node["max"].as<unsigned>();
+        params.max = static_cast<unsigned>(node["max"].as<double>());
 
     if(node["minProductivity"])
-        params.minProductivity = node["minProductivity"].as<unsigned>();
+        params.minProductivity = static_cast<unsigned>(node["minProductivity"].as<double>());
 
     if(node["productivity"])
         params.productivity = parseBuildParams(node["productivity"], {});

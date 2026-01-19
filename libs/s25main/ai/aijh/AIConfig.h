@@ -6,6 +6,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 
+#include <vector>
 #include <yaml-cpp/yaml.h>
 
 enum class TargetSelectionAlgorithm
@@ -32,6 +33,7 @@ struct AIConfig
     helpers::EnumArray<WantedParams, BuildingType> wantedParams;
     helpers::EnumArray<LocationParams, BuildingType> locationParams;
     CombatConfig combat;
+    std::vector<BuildingType> disableBuilding;
 };
 
 extern AIConfig AI_CONFIG;

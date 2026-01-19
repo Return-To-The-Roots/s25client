@@ -419,6 +419,7 @@ private:
     void LoadStandardToolSettings();
     void LoadStandardMilitarySettings();
     void LoadStandardDistribution();
+    void ApplyConfigBuildingDisables();
     /// Bündnis (real, d.h. spielentscheidend) abschließen
     void MakePact(PactType pt, unsigned char other_player, unsigned duration);
     /// Called after a pact was changed(added/removed) in both players

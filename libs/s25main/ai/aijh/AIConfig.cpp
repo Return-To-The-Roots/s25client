@@ -142,6 +142,38 @@ void applyBldPlannerCfg(const YAML::Node& plannerNode, AIConfig& config)
         }
     }
 }
+
+void applyDisableBuildingCfg(const YAML::Node& disableNode, AIConfig& config)
+{
+    config.disableBuilding.clear();
+
+    if(!disableNode)
+        return;
+
+    if(!disableNode.IsSequence())
+    {
+        std::cerr << "Warning: disableBuilding must be a sequence of building names." << std::endl;
+        return;
+    }
+
+    for(const auto& node : disableNode)
+    {
+        try
+        {
+            const std::string bldName = node.as<std::string>();
+            const auto iter = BUILDING_NAME_MAP.find(bldName);
+            if(iter == BUILDING_NAME_MAP.end())
+            {
+                std::cerr << "Warning: Unknown building '" << bldName << "' in disableBuilding list." << std::endl;
+                continue;
+            }
+            config.disableBuilding.push_back(iter->second);
+        } catch(const YAML::TypedBadConversion<std::string>& e)
+        {
+            std::cerr << "Warning: Invalid disableBuilding entry, skipping. Error: " << e.what() << std::endl;
+        }
+    }
+}
 } // namespace
 
 extern void applyWeightsCfg(std::string weightCfgPath)
@@ -158,6 +190,7 @@ extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
         applyPosFinderCfg(rootNode["posFinder"], targetConfig);
         applyBldPlannerCfg(rootNode["buildPlanner"], targetConfig);
         applyCombatCfg(rootNode["combat"], targetConfig);
+        applyDisableBuildingCfg(rootNode["disableBuilding"], targetConfig);
         std::locale::global(oldLocale);
     } catch(const YAML::Exception& e)
     {
