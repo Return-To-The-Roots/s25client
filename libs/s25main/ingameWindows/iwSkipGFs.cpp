@@ -64,7 +64,7 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     btSize.x = (availWidth - spacing * (jumpPresets.size() - 1)) / jumpPresets.size();
     for(auto i : jumpPresets)
     {
-        AddTextButton(ID_btJumpPresetStart + i, curPos, btSize, TextureColor::Green1, "+" + std::to_string(i),
+        AddTextButton(ID_btJumpPresetStart + i, curPos, btSize, TextureColor::Green2, "+" + std::to_string(i),
                       NormalFont);
         curPos.x += btSize.x + spacing;
     }
