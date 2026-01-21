@@ -14,10 +14,17 @@ struct MouseCoords
     MouseCoords(int x, int y) : pos(x, y) {}
 
     Position pos = Position(0, 0);
-    bool ldown = false;     /// left button down
-    bool rdown = false;     /// right button down
-    bool dbl_click = false; /// double-click (left button)
+    bool ldown = false;        /// left button down
+    bool rdown = false;        /// right button down
+    bool dbl_click = false;    /// double-click (left button)
+    unsigned num_tfingers = 0; /// Count of fingers currently on touchscreen
 };
 
 /// Maximum interval between two clicks to be considered a double-click (in milliseconds)
 constexpr unsigned DOUBLE_CLICK_INTERVAL = 500;
+
+// Max time difference in ms to trigger contextclick
+constexpr unsigned TOUCH_MAX_CLICK_INTERVAL = 250;
+constexpr unsigned TOUCH_DOUBLE_CLICK_INTERVAL = 175;
+// Max distance between the two clicks to trigger doubleclick
+constexpr unsigned TOUCH_MAX_DOUBLE_CLICK_DISTANCE = 30;

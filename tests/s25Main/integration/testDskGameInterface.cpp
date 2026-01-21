@@ -72,13 +72,14 @@ void checkNotScrolling(const GameWorldView& view, Cursor cursor = Cursor::Hand)
 BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
 {
     const int acceleration = 2;
-    SETTINGS.interface.invertMouse = false;
+    SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollOpposite;
 
     Position startPos(10, 15);
     MouseCoords mouse(startPos);
+    mouse.rdown = true;
+
     // Regular scrolling: Right down, 2 moves, right up
     {
-        mouse.rdown = true;
         WINDOWMANAGER.Msg_RightDown(mouse);
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
         DrawPoint pos = view->GetOffset();
@@ -99,9 +100,8 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         checkNotScrolling(*view);
     }
 
-    // Inverted scrolling
     {
-        SETTINGS.interface.invertMouse = true;
+        SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollSame;
         WINDOWMANAGER.Msg_RightDown(mouse);
         startPos = mouse.pos;
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
@@ -112,7 +112,22 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         BOOST_TEST_REQUIRE(view->GetOffset() == pos - acceleration * Position(4, 3));
         mouse.rdown = false;
         WINDOWMANAGER.Msg_RightUp(mouse);
-        SETTINGS.interface.invertMouse = false;
+        SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollOpposite;
+    }
+
+    {
+        SETTINGS.interface.mapScrollMode = MapScrollMode::GrabAndDrag;
+        WINDOWMANAGER.Msg_RightDown(mouse);
+        startPos = mouse.pos;
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        const DrawPoint pos = view->GetOffset();
+        mouse.pos = startPos + Position(4, 3);
+        WINDOWMANAGER.Msg_MouseMove(mouse);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetCursor() == Cursor::Scroll);
+        BOOST_TEST_REQUIRE(view->GetOffset() == pos - Position(4, 3));
+        mouse.rdown = false;
+        WINDOWMANAGER.Msg_RightUp(mouse);
+        SETTINGS.interface.mapScrollMode = MapScrollMode::ScrollOpposite;
     }
 
     // Opening a window does not cancel scrolling

@@ -5,11 +5,13 @@
 #include "WindowManager.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "Point.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Window.h"
 #include "commonDefines.h"
 #include "desktops/Desktop.h"
+#include "driver/MouseCoords.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -25,6 +27,15 @@
 #include "s25util/Log.h"
 #include "s25util/MyTime.h"
 #include <algorithm>
+#include <type_traits>
+
+namespace {
+template<typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
+constexpr std::make_unsigned_t<T> square(T x)
+{
+    return x * x;
+}
+} // namespace
 
 WindowManager::WindowManager()
     : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0),
@@ -172,7 +183,8 @@ IngameWindow& WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     SetActiveWindow(result);
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
-    disable_mouse = mouse;
+    if(!VIDEODRIVER.IsTouch())
+        disable_mouse = mouse;
     return result;
 }
 
@@ -269,13 +281,24 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     if(!curDesktop)
         return;
 
-    // Check for double-click
-    const auto time_now = VIDEODRIVER.GetTickCount();
-    if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
-        mc.dbl_click = true;
-    else
+    unsigned time_now = VIDEODRIVER.GetTickCount();
+
+    if(VIDEODRIVER.IsTouch())
     {
-        // Just single click, store values for next possible double click
+        if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
+        {
+            // Calculate distance between two points
+            const Point<int> diff = mc.pos - lastLeftClickPos;
+            if(square(diff.x) + square(diff.y) <= square(TOUCH_MAX_DOUBLE_CLICK_DISTANCE))
+                mc.dbl_click = true;
+        }
+
+    } else if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
+        mc.dbl_click = true;
+
+    if(!mc.dbl_click)
+    {
+        // Save values for next potential dbl click
         lastLeftClickPos = mc.pos;
         lastLeftClickTime = time_now;
     }

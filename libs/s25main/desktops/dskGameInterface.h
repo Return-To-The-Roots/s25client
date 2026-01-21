@@ -117,6 +117,9 @@ protected:
     /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
     void UpdatePostIcon(unsigned postmessages_count, bool showPigeon);
 
+    /// Executed during left click. Checks click pos for buildings/roads
+    bool ContextClick(const MouseCoords& mc);
+
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_PaintBefore() override;
     void Msg_PaintAfter() override;
@@ -163,6 +166,8 @@ protected:
     /// Minimap-Instanz
     IngameMinimap minimap;
 
+    // How long is finger on screen (contextclick or scrolling?)
+    unsigned int touchDuration;
     bool isScrolling;
     Position startScrollPt;
     Subscription evBld;

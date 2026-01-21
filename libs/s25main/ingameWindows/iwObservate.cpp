@@ -248,7 +248,7 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-        if(SETTINGS.interface.invertMouse)
+        if(SETTINGS.interface.mapScrollMode == MapScrollMode::ScrollSame)
             acceleration = -acceleration;
 
         view->MoveBy((mc.pos - scrollOrigin) * acceleration);

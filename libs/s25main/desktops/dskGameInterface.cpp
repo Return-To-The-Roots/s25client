@@ -479,23 +479,9 @@ void dskGameInterface::Msg_PaintAfter()
     }
 }
 
-bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+bool dskGameInterface::ContextClick(const MouseCoords& mc)
 {
-    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
-    Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
-        return false;
-
-    // Start scrolling also on Ctrl + left click
-    if(VIDEODRIVER.GetModKeyState().ctrl)
-    {
-        Msg_RightDown(mc);
-        return true;
-    } else if(isScrolling)
-        StopScrolling();
-
-    // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
+    // Handle road building mode if active
     if(road.mode != RoadBuildMode::Disabled)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
@@ -555,7 +541,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     ShowRoadWindow(mc.pos);
             }
         }
-    } else
+    } else // Not in road building mode
     {
         bool enable_military_buildings = false;
 
@@ -707,37 +693,88 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
+bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+{
+    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    Extent btSize = Extent(37, 32) * 4u;
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
+        return false;
+
+    if(!VIDEODRIVER.IsTouch())
+    {
+        // Start scrolling also on Ctrl + left click
+        if(VIDEODRIVER.GetModKeyState().ctrl)
+        {
+            Msg_RightDown(mc);
+            return true;
+        } else if(isScrolling)
+            StopScrolling();
+
+        return ContextClick(mc);
+
+    } else if(mc.num_tfingers < 2)
+        touchDuration = VIDEODRIVER.GetTickCount();
+    else if(isScrolling) // 2 fingers down -> zoom mode. Do not click or scroll map
+        StopScrolling();
+
+    return true;
+}
+
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
     if(isScrolling)
     {
         StopScrolling();
         return true;
     }
+
+    // num_tfingers is reduced after this function to check if it's still a touch event
+    // Was touch duration short enough to trigger conext click?
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < TOUCH_MAX_CLICK_INTERVAL)
+        return ContextClick(mc);
+
     return false;
 }
 
 bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
-        return false;
+    {
+        if(mc.num_tfingers == 1)
+            Msg_RightDown(mc);
+        else
+            return false;
+    }
 
-    int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+    {
+        const Position mapPos = gwv.ViewPosToMap(mc.pos);
+        gwv.MoveBy(-(mapPos - startScrollPt));
+        startScrollPt = mapPos;
+    } else
+    {
+        int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-    if(SETTINGS.interface.invertMouse)
-        acceleration = -acceleration;
+        if(SETTINGS.interface.mapScrollMode == MapScrollMode::ScrollSame)
+            acceleration = -acceleration;
 
-    gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
-    VIDEODRIVER.SetMousePos(startScrollPt);
+        gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
+        VIDEODRIVER.SetMousePos(startScrollPt);
 
-    if(!SETTINGS.global.smartCursor)
-        startScrollPt = mc.pos;
+        if(!SETTINGS.global.smartCursor)
+            startScrollPt = mc.pos;
+    }
+
     return true;
 }
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    StartScrolling(mc.pos);
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+        StartScrolling(gwv.ViewPosToMap(mc.pos));
+    else
+        StartScrolling(mc.pos);
     return true;
 }
 

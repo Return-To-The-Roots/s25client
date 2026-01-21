@@ -24,6 +24,7 @@
 #include <boost/pointer_cast.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
+#include <openglCfg.hpp>
 #include <set>
 
 /* Terrain rendering works like that:
@@ -43,6 +44,15 @@
  * Drawing then binds a texture and draws all adjacent vertices with the same texture in one call by
  * providing an index and a count into the above arrays.
  */
+
+namespace {
+// gl4es has some problems with GL_MODULATE so we need to change the colors without using a gl function
+#if RTTR_OGL_GL4ES
+constexpr float TEXTURE_COLOR_DIVISOR = 1;
+#else
+constexpr float TEXTURE_COLOR_DIVISOR = 2;
+#endif
+} // namespace
 
 glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp)
 {
@@ -221,11 +231,11 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             break;
         case Visibility::FogOfWar:
             // Fog of War -> abgedunkelt
-            GetVertex(pt).color = clr / 4.f;
+            GetVertex(pt).color = clr / (TEXTURE_COLOR_DIVISOR * 2);
             break;
         case Visibility::Visible:
             // Normal sichtbar
-            GetVertex(pt).color = clr / 2.f;
+            GetVertex(pt).color = clr / TEXTURE_COLOR_DIVISOR;
             break;
     }
 }
@@ -791,9 +801,15 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
         glColorPointer(3, GL_FLOAT, 0, &gl_colors.front());
     }
 
+#if RTTR_OGL_GL4ES
+    // Gl4ES behaves weird with GL_COMBINE. All textures are too bright and some shadows are missing. The function might
+    // not be implemented in GL4ES at all.
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#else
     // Modulate2x
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
+    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, TEXTURE_COLOR_DIVISOR);
+#endif
 
     // Disable alpha blending
     glDisable(GL_BLEND);

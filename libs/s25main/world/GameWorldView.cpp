@@ -105,6 +105,19 @@ float GameWorldView::GetCurrentTargetZoomFactor() const
     return targetZoomFactor_;
 }
 
+Position GameWorldView::ViewPosToMap(Position pos) const
+{
+    pos -= origin_;
+    if(effectiveZoomFactor_ != 1.f)
+    {
+        PointF diff(size_.x - size_.x / effectiveZoomFactor_, size_.y - size_.y / effectiveZoomFactor_);
+        diff /= 2.f;
+        pos = Position(PointF(pos) / effectiveZoomFactor_ + diff);
+    }
+
+    return pos;
+}
+
 struct ObjectBetweenLines
 {
     noBase& obj;
