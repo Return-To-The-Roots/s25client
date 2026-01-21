@@ -21,5 +21,5 @@ public:
     BuildingFactory() = delete;
 
     static noBuilding* CreateBuilding(GameWorldBase& world, BuildingType type, MapPoint pt, unsigned char player,
-                                      Nation nation, bool isTent = false);
+                                      Nation nation);
 };

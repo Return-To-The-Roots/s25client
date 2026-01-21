@@ -6,6 +6,7 @@
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "RttrForeachPt.h"
+#include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
@@ -79,8 +80,9 @@ void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
     // In the original game, new HQs created in the Roman campaign had no resources.
     constexpr auto checkExists = false;
     world_.DestroyNO(mp, checkExists); // if CanPlaceCheatBuilding is true then this must be safe to destroy
-    BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation,
-                                    player.IsHQTent());
+    auto* hq =
+      BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation);
+    static_cast<nobHQ*>(hq)->SetIsTent(player.IsHQTent());
 }
 
 void Cheats::setGameSpeed(uint8_t speedIndex) // NOLINT(readability-make-member-function-const)

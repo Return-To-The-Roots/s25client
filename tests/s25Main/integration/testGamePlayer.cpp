@@ -4,6 +4,7 @@
 
 #include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobHQ.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
@@ -127,7 +128,9 @@ BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsFalse_IfPrimaryHQIsNotTent, WorldFixture
     // place another HQ that is a tent
     MapPoint newHqPos = p1.GetHQPos();
     newHqPos.x += 3;
-    BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians, true);
+    static_cast<nobHQ*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians))
+      ->SetIsTent(true);
 
     BOOST_TEST_REQUIRE(p1.IsHQTent() == false);
 }
@@ -140,7 +143,9 @@ BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsTrue_IfPrimaryHQIsTent, WorldFixtureEmpt
     // place another HQ that is not a tent
     MapPoint newHqPos = p1.GetHQPos();
     newHqPos.x += 3;
-    BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians, false);
+    static_cast<nobHQ*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians))
+      ->SetIsTent(false);
 
     BOOST_TEST_REQUIRE(p1.IsHQTent() == true);
 }

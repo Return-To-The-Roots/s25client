@@ -14,12 +14,12 @@
 #include "world/GameWorldBase.h"
 
 noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const BuildingType type, const MapPoint pt,
-                                            const unsigned char player, const Nation nation, bool isTent)
+                                            const unsigned char player, const Nation nation)
 {
     noBuilding* bld;
     switch(type)
     {
-        case BuildingType::Headquarters: bld = new nobHQ(pt, player, nation, isTent); break;
+        case BuildingType::Headquarters: bld = new nobHQ(pt, player, nation); break;
         case BuildingType::Storehouse: bld = new nobStorehouse(pt, player, nation); break;
         case BuildingType::HarborBuilding: bld = new nobHarborBuilding(pt, player, nation); break;
         case BuildingType::Barracks:
