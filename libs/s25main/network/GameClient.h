@@ -130,6 +130,9 @@ public:
 
     void IncreaseSpeed(bool wraparound = false);
     void DecreaseSpeed();
+    void SetNewSpeed(FramesInfo::milliseconds32_t gfLength);
+    // Used by tests (stinks, but what to do?)
+    FramesInfo::milliseconds32_t GetGFLengthReq() { return framesinfo.gfLengthReq; }
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const boost::filesystem::path& path);
