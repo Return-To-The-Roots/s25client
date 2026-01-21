@@ -358,6 +358,10 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
 
 void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer)
 {
+    const bool showEnemyProductivity =
+      GetWorld().GetGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay();
+    auto* attackAidImage =
+      (GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2) ? LOADER.GetImageN("map_new", 20000) : nullptr;
     for(int x = firstPt.x; x <= lastPt.x; ++x)
     {
         for(int y = firstPt.y; y <= lastPt.y; ++y)
@@ -376,14 +380,12 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             // Is object not belonging to local player?
             if(no->GetPlayer() != gwv.GetPlayerId())
             {
-                if(GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2 && gwv.GetNumSoldiersForAttack(pt) > 0)
-                {
-                    auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
+                if(gwv.GetVisibility(pt) != Visibility::Visible)
+                    continue;
+                if(attackAidImage && gwv.GetNumSoldiersForAttack(pt) > 0)
                     attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
-                }
-                // Do not draw enemy productivity overlay unless the object is visible AND the related cheat is on
-                if(!(gwv.GetVisibility(pt) == Visibility::Visible
-                     && GetWorld().GetGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay()))
+                // Do not draw enemy productivity overlay unless the related cheat is on
+                if(!showEnemyProductivity)
                     continue;
             }
 
