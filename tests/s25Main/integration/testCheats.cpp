@@ -119,26 +119,29 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_AndShowEnemyProductivityOve
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
     BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == false);
 
+    // Can't change anything if cheat mode is off
+    BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == false);
     cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
     cheats.toggleShowEnemyProductivityOverlay();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
     BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == false);
 
     cheats.toggleCheatMode();
     cheats.toggleAllBuildingsEnabled();
-    cheats.toggleShowEnemyProductivityOverlay();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
+    cheats.toggleShowEnemyProductivityOverlay();
     BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == true);
 
     cheats.toggleAllBuildingsEnabled();
-    cheats.toggleShowEnemyProductivityOverlay();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    cheats.toggleShowEnemyProductivityOverlay();
     BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == false);
 
-    cheats.toggleAllBuildingsEnabled();
     cheats.toggleShowEnemyProductivityOverlay();
-    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
     BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == true);
+    cheats.toggleAllBuildingsEnabled();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
