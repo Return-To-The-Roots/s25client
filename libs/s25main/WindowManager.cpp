@@ -183,7 +183,8 @@ IngameWindow& WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     SetActiveWindow(result);
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
-    disable_mouse = mouse;
+    if(!VIDEODRIVER.IsTouch())
+        disable_mouse = mouse;
     return result;
 }
 
