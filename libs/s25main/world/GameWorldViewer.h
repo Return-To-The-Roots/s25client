@@ -54,7 +54,10 @@ public:
     /// Recalculates the visual BQ when a road part is build at that point
     void RecalcBQForRoad(const MapPoint& pt);
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
-    Visibility GetVisibility(MapPoint pt) const;
+    /// If checkAllVisible is false then `IsAllVisible` is assumed to return false, else it is called to check
+    Visibility GetVisibility(MapPoint pt, bool checkAllVisible = true) const;
+    /// Check if the whole map should be visible
+    bool IsAllVisible() const;
     /// Returns true, if we own this point (but may not be our territory if this is a border point)
     bool IsOwner(const MapPoint& pt) const;
     /// Return true if the point belongs to any player

@@ -362,6 +362,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
       GetWorld().GetGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay();
     auto* attackAidImage =
       (GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2) ? LOADER.GetImageN("map_new", 20000) : nullptr;
+    const bool isAllVisible = gwv.IsAllVisible();
     for(int x = firstPt.x; x <= lastPt.x; ++x)
     {
         for(int y = firstPt.y; y <= lastPt.y; ++y)
@@ -380,7 +381,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             // Is object not belonging to local player?
             if(no->GetPlayer() != gwv.GetPlayerId())
             {
-                if(gwv.GetVisibility(pt) != Visibility::Visible)
+                if(!isAllVisible && gwv.GetVisibility(pt, false) != Visibility::Visible)
                     continue;
                 if(attackAidImage && gwv.GetNumSoldiersForAttack(pt) > 0)
                     attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
