@@ -49,12 +49,16 @@ BOOST_FIXTURE_TEST_CASE(TurningCheatModeOffDisablesAllCheats, CheatsFixture)
 {
     cheats.toggleCheatMode();
     cheats.toggleAllVisible();
-    BOOST_TEST_REQUIRE(cheats.isAllVisible() == true);
     cheats.toggleAllBuildingsEnabled();
+    cheats.toggleShowEnemyProductivityOverlay();
+    BOOST_TEST_REQUIRE(cheats.isAllVisible() == true);
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
+    BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == true);
+
     cheats.toggleCheatMode();
     BOOST_TEST_REQUIRE(cheats.isAllVisible() == false);
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == false);
     // testing toggleHumanAIPlayer would require GameClient::state==Loaded, which is guaranteed in code (because Cheats
     // only exist after the game is loaded) but is not the case in tests - skipping
 }
@@ -110,16 +114,32 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn, CheatsFixture)
     BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == true);
 }
 
-BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_IfCheatModeIsOn, CheatsFixture)
+BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_AndShowEnemyProductivityOverlay_IfCheatModeIsOn, CheatsFixture)
 {
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == false);
+
+    // Can't change anything if cheat mode is off
+    BOOST_TEST_REQUIRE(cheats.isCheatModeOn() == false);
     cheats.toggleAllBuildingsEnabled();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    cheats.toggleShowEnemyProductivityOverlay();
+    BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == false);
+
     cheats.toggleCheatMode();
     cheats.toggleAllBuildingsEnabled();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
+    cheats.toggleShowEnemyProductivityOverlay();
+    BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == true);
+
     cheats.toggleAllBuildingsEnabled();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == false);
+    cheats.toggleShowEnemyProductivityOverlay();
+    BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == false);
+
+    cheats.toggleShowEnemyProductivityOverlay();
+    BOOST_TEST_REQUIRE(cheats.shouldShowEnemyProductivityOverlay() == true);
     cheats.toggleAllBuildingsEnabled();
     BOOST_TEST_REQUIRE(cheats.areAllBuildingsEnabled() == true);
 }
