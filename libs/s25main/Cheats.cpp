@@ -83,7 +83,7 @@ void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
                                     player.IsHQTent());
 }
 
-void Cheats::setGameSpeed(uint8_t speedIndex)
+void Cheats::setGameSpeed(uint8_t speedIndex) // NOLINT(readability-make-member-function-const)
 {
     if(!isCheatModeOn())
         return;
@@ -102,7 +102,7 @@ void Cheats::toggleHumanAIPlayer()
     }
 }
 
-void Cheats::armageddon()
+void Cheats::armageddon() // NOLINT(readability-make-member-function-const)
 {
     if(isCheatModeOn())
         GAMECLIENT.CheatArmageddon();
