@@ -62,12 +62,6 @@ public:
      */
     void placeCheatBuilding(const MapPoint& mp, const GamePlayer& player);
 
-    /** The classic ALT+1 through ALT+6 cheat which changes the game speed.
-     *
-     * @param speedIndex - 0 is normal, 1 is faster, 2 is even faster, etc.
-     */
-    void setGameSpeed(uint8_t speedIndex);
-
     // RTTR cheats
 
     /** Shares control of the (human) user's country with the AI. Both the user and the AI retain full control of the
