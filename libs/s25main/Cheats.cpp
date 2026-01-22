@@ -1,4 +1,4 @@
-// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024-2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,10 +8,11 @@
 #include "RttrForeachPt.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
+#include "factories/GameCommandFactory.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 
-Cheats::Cheats(GameWorldBase& world) : world_(world) {}
+Cheats::Cheats(GameWorldBase& world, GameCommandFactory& gcFactory) : world_(world), gcFactory_(gcFactory) {}
 
 bool Cheats::areCheatsAllowed() const
 {
@@ -93,10 +94,10 @@ void Cheats::toggleHumanAIPlayer()
     }
 }
 
-void Cheats::armageddon() // NOLINT(readability-make-member-function-const)
+void Cheats::armageddon()
 {
     if(isCheatModeOn())
-        GAMECLIENT.CheatArmageddon();
+        gcFactory_.CheatArmageddon();
 }
 
 Cheats::ResourceRevealMode Cheats::getResourceRevealMode() const
@@ -150,5 +151,8 @@ void Cheats::turnAllCheatsOff()
     if(shouldShowEnemyProductivityOverlay_)
         toggleShowEnemyProductivityOverlay();
     if(isHumanAIPlayer_)
+    {
         toggleHumanAIPlayer();
+        isHumanAIPlayer_ = false;
+    }
 }

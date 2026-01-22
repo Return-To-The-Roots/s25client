@@ -1,4 +1,4 @@
-// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024-2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,6 +7,7 @@
 #include "GamePlayer.h"
 #include "buildings/nobHQ.h"
 #include "desktops/dskGameInterface.h"
+#include "factories/GameCommandFactory.h"
 #include "network/GameClient.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
@@ -19,12 +20,17 @@ BOOST_AUTO_TEST_SUITE(CheatsTests)
 
 namespace {
 
+MOCK_BASE_CLASS(MockGCFactory, GameCommandFactory)
+{
+    MOCK_METHOD(AddGC, 1, bool(gc::GameCommandPtr gc)); // LCOV_EXCL_LINE
+};
+
 constexpr auto numPlayers = 3;
 constexpr auto worldWidth = 64;
 constexpr auto worldHeight = 64;
 struct CheatsFixture : WorldFixture<CreateEmptyWorld, numPlayers, worldWidth, worldHeight>
 {
-    CheatsFixture() : cheats(world), viewer(0, world)
+    CheatsFixture() : cheats(world, gcFactory), viewer(0, world)
     {
         p2.ps = PlayerState::AI;
         p3.ps = PlayerState::AI;
@@ -65,6 +71,7 @@ struct CheatsFixture : WorldFixture<CreateEmptyWorld, numPlayers, worldWidth, wo
         return ret;
     }
 
+    MockGCFactory gcFactory;
     Cheats cheats;
 
 private:

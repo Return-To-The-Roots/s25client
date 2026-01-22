@@ -11,11 +11,12 @@
 
 class GamePlayer;
 class GameWorldBase;
+class GameCommandFactory;
 
 class Cheats
 {
 public:
-    Cheats(GameWorldBase& world);
+    Cheats(GameWorldBase& world, GameCommandFactory& gcFactory);
 
     bool areCheatsAllowed() const;
 
@@ -105,5 +106,6 @@ private:
     bool shouldShowEnemyProductivityOverlay_ = false;
     bool isHumanAIPlayer_ = false;
     GameWorldBase& world_;
+    GameCommandFactory& gcFactory_;
     ResourceRevealMode resourceRevealMode_ = ResourceRevealMode::Nothing;
 };
