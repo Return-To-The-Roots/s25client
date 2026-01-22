@@ -78,8 +78,7 @@ void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
 
     // The new HQ will have default resources.
     // In the original game, new HQs created in the Roman campaign had no resources.
-    constexpr auto checkExists = false;
-    world_.DestroyNO(mp, checkExists); // if CanPlaceCheatBuilding is true then this must be safe to destroy
+    world_.DestroyNO(mp, false); // if CanPlaceCheatBuilding is true then this must be safe to destroy
     auto* hq =
       BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation);
     static_cast<nobHQ*>(hq)->SetIsTent(player.IsHQTent());
