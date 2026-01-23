@@ -61,6 +61,13 @@ std::string replaceLF(std::string s)
 }
 } // namespace
 
+// GCC until 10 has issues comparing std::optional in BOOST_TEST
+#if defined(__GNUC__) && __GNUC__ < 10
+#    define BOOST_TEST_OPTIONAL BOOST_CHECK
+#else
+#    define BOOST_TEST_OPTIONAL BOOST_TEST
+#endif
+
 BOOST_AUTO_TEST_CASE(AllFilesHaveValidFormat)
 {
     const auto goldMapping = getGoldMapping();
@@ -85,10 +92,10 @@ BOOST_AUTO_TEST_CASE(AllFilesHaveValidFormat)
                 // Orig text replacements must match with gold version
                 // Might not exist if orig text is not "translated" (already in English)
                 if(itGoldEntry != goldMapping.end())
-                    BOOST_TEST(origProps.numParameters == itGoldEntry->second.numParameters);
+                    BOOST_TEST_OPTIONAL(origProps.numParameters == itGoldEntry->second.numParameters);
                 if(origProps.numParameters.has_value() == transProps.numParameters.has_value())
                 {
-                    BOOST_TEST(origProps.numParameters == transProps.numParameters);
+                    BOOST_TEST_OPTIONAL(origProps.numParameters == transProps.numParameters);
                 } else if(origProps.numParameters > 0)
                     BOOST_TEST_ERROR("Invalid format string in translation"); // LCOV_EXCL_LINE
             }
