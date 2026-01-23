@@ -33,21 +33,22 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
         return result;
     };
     BOOST_TEST(!runServer());
-    BOOST_TEST_REQUIRE(server.listen(1337));
+    const auto port = server.tryListen();
+    BOOST_TEST_REQUIRE(port > 0);
     BOOST_TEST(runServer());
 
     Socket sock;
-    BOOST_TEST_REQUIRE(sock.Connect("localhost", 1337, false));
+    BOOST_TEST_REQUIRE(sock.Connect("localhost", port, false));
     BOOST_TEST(server.run(true));
     BOOST_TEST_REQUIRE(server.connections.size() == 1u);
     BOOST_TEST(server.stop());
     BOOST_TEST_REQUIRE(server.connections.empty());
 
-    BOOST_TEST_REQUIRE(server.listen(1337));
+    BOOST_TEST_REQUIRE(server.listen(port));
     Socket sock2;
-    BOOST_TEST_REQUIRE(sock.Connect("localhost", 1337, false));
+    BOOST_TEST_REQUIRE(sock.Connect("localhost", port, false));
     BOOST_TEST(server.run(true));
-    BOOST_TEST_REQUIRE(sock2.Connect("localhost", 1337, false));
+    BOOST_TEST_REQUIRE(sock2.Connect("localhost", port, false));
     BOOST_TEST(server.run(true));
     BOOST_TEST_REQUIRE(server.connections.size() == 2u);
     BOOST_TEST(runServer());
@@ -58,7 +59,10 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
         for(int i = 0; i < 5; i++)
         {
             if(server.connections.size() == 2u)
+            {
+                sock.Sleep(50);          // LCOV_EXCL_LINE
                 BOOST_TEST(runServer()); // LCOV_EXCL_LINE
+            }
         }
     }
     BOOST_TEST(server.connections.size() == 1u);
