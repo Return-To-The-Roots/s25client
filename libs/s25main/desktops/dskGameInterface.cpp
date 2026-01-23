@@ -925,6 +925,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 's': // Show/hide productivity overlay
             gwv.ToggleShowProductivity();
             return true;
+        case ' ': // Show/hide construction aid
+            // workaround for Wayland which does not capture SDLK_SPACE when SDL_StartTextInput() was called
+            gwv.ToggleShowBQ();
+            return true;
         case 26: // ctrl+z
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             return true;
