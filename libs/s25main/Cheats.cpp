@@ -1,13 +1,18 @@
-// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024-2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Cheats.h"
 #include "GameInterface.h"
+#include "GamePlayer.h"
+#include "RttrForeachPt.h"
+#include "buildings/nobHQ.h"
+#include "factories/BuildingFactory.h"
+#include "factories/GameCommandFactory.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 
-Cheats::Cheats(GameWorldBase& world) : world_(world) {}
+Cheats::Cheats(GameWorldBase& world, GameCommandFactory& gcFactory) : world_(world), gcFactory_(gcFactory) {}
 
 bool Cheats::areCheatsAllowed() const
 {
@@ -56,6 +61,30 @@ void Cheats::toggleShowEnemyProductivityOverlay()
         shouldShowEnemyProductivityOverlay_ = !shouldShowEnemyProductivityOverlay_;
 }
 
+bool Cheats::canPlaceCheatBuilding(const MapPoint& mp) const
+{
+    if(!isCheatModeOn())
+        return false;
+
+    // It seems that in the original game you can only build headquarters in unoccupied territory at least 2 nodes
+    // away from any border markers and that it doesn't need more bq than a hut.
+    const MapNode& node = world_.GetNode(mp);
+    return !node.owner && !world_.IsAnyNeighborOwned(mp) && node.bq >= BuildingQuality::Hut;
+}
+
+void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
+{
+    if(!canPlaceCheatBuilding(mp))
+        return;
+
+    // The new HQ will have default resources.
+    // In the original game, new HQs created in the Roman campaign had no resources.
+    world_.DestroyNO(mp, false); // if CanPlaceCheatBuilding is true then this must be safe to destroy
+    auto* hq =
+      BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation);
+    static_cast<nobHQ*>(hq)->SetIsTent(player.IsHQTent());
+}
+
 void Cheats::toggleHumanAIPlayer()
 {
     if(isCheatModeOn() && !GAMECLIENT.IsReplayModeOn())
@@ -65,10 +94,52 @@ void Cheats::toggleHumanAIPlayer()
     }
 }
 
-void Cheats::armageddon() const
+void Cheats::armageddon()
 {
     if(isCheatModeOn())
-        GAMECLIENT.CheatArmageddon();
+        gcFactory_.CheatArmageddon();
+}
+
+Cheats::ResourceRevealMode Cheats::getResourceRevealMode() const
+{
+    return isCheatModeOn() ? resourceRevealMode_ : ResourceRevealMode::Nothing;
+}
+
+void Cheats::toggleResourceRevealMode()
+{
+    switch(resourceRevealMode_)
+    {
+        case ResourceRevealMode::Nothing: resourceRevealMode_ = ResourceRevealMode::Ores; break;
+        case ResourceRevealMode::Ores: resourceRevealMode_ = ResourceRevealMode::Fish; break;
+        case ResourceRevealMode::Fish: resourceRevealMode_ = ResourceRevealMode::Water; break;
+        default: resourceRevealMode_ = ResourceRevealMode::Nothing; break;
+    }
+}
+
+void Cheats::destroyBuildings(const PlayerIDSet& playerIds)
+{
+    if(!isCheatModeOn())
+        return;
+
+    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
+    {
+        if(world_.GetNO(pt)->GetType() == NodalObjectType::Building && playerIds.count(world_.GetNode(pt).owner - 1))
+            world_.DestroyNO(pt);
+    }
+}
+
+void Cheats::destroyAllAIBuildings()
+{
+    if(!isCheatModeOn())
+        return;
+
+    PlayerIDSet ais;
+    for(auto i = 0u; i < world_.GetNumPlayers(); ++i)
+    {
+        if(!world_.GetPlayer(i).isHuman())
+            ais.insert(i);
+    }
+    destroyBuildings(ais);
 }
 
 void Cheats::turnAllCheatsOff()
@@ -80,5 +151,8 @@ void Cheats::turnAllCheatsOff()
     if(shouldShowEnemyProductivityOverlay_)
         toggleShowEnemyProductivityOverlay();
     if(isHumanAIPlayer_)
+    {
         toggleHumanAIPlayer();
+        isHumanAIPlayer_ = false;
+    }
 }

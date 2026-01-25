@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwAction.h"
+#include "Cheats.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -38,7 +39,8 @@ enum TabID
     TAB_FLAG,
     TAB_CUTROAD,
     TAB_ATTACK,
-    TAB_SEAATTACK
+    TAB_SEAATTACK,
+    TAB_CHEAT
 };
 
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt,
@@ -69,6 +71,8 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         TAB_ATTACK  3 = Option group: Better/Weaker
         TAB_ATTACK  4 = Angriff
         TAB_ATTACK  10-14 = Direktauswahl Anzahl
+
+        TAB_CHEAT   1 = Place cheat building
     */
 
     const GamePlayer& player = gwv.GetViewer().GetPlayer();
@@ -291,6 +295,15 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     // Beobachten-main_tab
     if(tabs.watch)
     {
+        if(gi.GI_GetCheats().canPlaceCheatBuilding(selectedPt))
+        {
+            constexpr auto buildImgId = 18;
+            auto* buildImg = LOADER.GetImageN("io", buildImgId);
+            ctrlGroup* group = main_tab->AddTab(buildImg, _("Build headquarters"), TAB_CHEAT);
+            group->AddImageButton(1, DrawPoint{0, 45}, Extent{180, 36}, TextureColor::Grey, buildImg,
+                                  _("Build headquarters"));
+        }
+
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 36), _("Display options"), TAB_WATCH);
         const Extent btSize(45, 36);
         DrawPoint curPos(0, 45);
@@ -438,6 +451,12 @@ void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned
             Msg_ButtonClick_TabWatch(ctrl_id);
         }
         break;
+
+        case TAB_CHEAT:
+        {
+            Msg_ButtonClick_TabCheat(ctrl_id);
+        }
+        break;
     }
 }
 
@@ -453,6 +472,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
                 case TAB_FLAG:
                 case TAB_CUTROAD:
                 case TAB_SETFLAG:
+                case TAB_CHEAT:
                 case TAB_WATCH: height = 138; break;
                 case TAB_BUILD:
                 {
@@ -730,6 +750,17 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
         case 4:
             if(GAMECLIENT.NotifyAlliesOfLocation(selectedPt))
                 Close();
+            break;
+    }
+}
+
+void iwAction::Msg_ButtonClick_TabCheat(const unsigned ctrl_id)
+{
+    switch(ctrl_id)
+    {
+        case 1:
+            gi.GI_GetCheats().placeCheatBuilding(selectedPt, gwv.GetViewer().GetPlayer());
+            Close();
             break;
     }
 }

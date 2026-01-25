@@ -45,9 +45,26 @@ void CheatCommandTracker::onChatCommand(const std::string& cmd)
 
 void CheatCommandTracker::onSpecialKeyEvent(const KeyEvent& ke)
 {
+    if(ke.ctrl && ke.shift)
+    {
+        if(ke.kt >= KeyType::F1 && ke.kt <= KeyType::F8)
+            cheats_.destroyBuildings({static_cast<unsigned>(ke.kt) - static_cast<unsigned>(KeyType::F1)});
+        else if(ke.kt == KeyType::F9)
+            cheats_.destroyAllAIBuildings();
+
+        return;
+    }
+
     switch(ke.kt)
     {
-        case KeyType::F7: cheats_.toggleAllVisible(); break;
+        case KeyType::F7:
+        {
+            if(ke.alt)
+                cheats_.toggleResourceRevealMode();
+            else
+                cheats_.toggleAllVisible();
+        }
+        break;
         case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }

@@ -60,9 +60,21 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            MapPoint pos2 = world->GetNeighbour(pos, i);
-            world->DestroyNO(pos2, false);
-            world->SetNO(pos2, new noExtension(this));
+            const MapPoint neighbor = world->GetNeighbour(pos, i);
+
+            if(type == BuildingType::Headquarters)
+            {
+                const NodalObjectType neighborNoType = world->GetNO(neighbor)->GetType();
+                // Don't replace nearby static objects or trees. Needed for "build headquarters" cheat to work like in
+                // the original. This situation shouldn't happen any other way (can't normally build big buildings right
+                // next to static objects or trees). Trees which be remain because of this will be replaced by
+                // extensions instead of stumps if they are cut while still right next to the HQ.
+                if(neighborNoType == NodalObjectType::Object || neighborNoType == NodalObjectType::Tree)
+                    continue;
+            }
+
+            world->DestroyNO(neighbor, false);
+            world->SetNO(neighbor, new noExtension(this));
         }
     }
 }
@@ -220,7 +232,9 @@ void noBaseBuilding::DestroyBuildingExtensions()
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            world->DestroyNO(world->GetNeighbour(pos, i));
+            const MapPoint neighbor = world->GetNeighbour(pos, i);
+            if(world->GetNO(neighbor)->GetType() == NodalObjectType::Extension)
+                world->DestroyNO(neighbor);
         }
     }
 }
