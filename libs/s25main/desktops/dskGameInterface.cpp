@@ -796,10 +796,6 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(std::make_unique<iwChat>(this));
             return true;
 
-        case KeyType::Space: // Show / hide construction aid
-            gwv.ToggleShowBQ();
-            return true;
-
         case KeyType::Left: // Scroll left
             gwv.MoveBy({-30, 0});
             return true;
