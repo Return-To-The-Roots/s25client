@@ -82,6 +82,7 @@ public:
     bool IsInvalidShipyardPosition(MapPoint pt);
 
     int GetResMapValue(MapPoint pt, AIResource res) const;
+    AIResourceMap& GetResMap(AIResource res);
     const AIResourceMap& GetResMap(AIResource res) const;
 
     Node& GetAINode(const MapPoint pt) { return aiMap[pt]; }

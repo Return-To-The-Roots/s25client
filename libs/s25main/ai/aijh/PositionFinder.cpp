@@ -44,6 +44,13 @@ MapPoint PositionFinder::FindBestPosition(BuildingType bt)
 RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint& around, int searchRadius)
 {
     AIConstruction& construction = aijh.GetConstruction();
+    const auto& location_params = aijh.GetConfig().locationParams[type];
+    if(!location_params.buildOnBorder)
+        aijh.GetResMap(AIResource::Borderland).updateAround(around, searchRadius);
+    const auto is_border_blocked = [this, &location_params](const MapPoint& pt) {
+        return !location_params.buildOnBorder && pt.isValid()
+               && aijh.GetResMap(AIResource::Borderland).getResourcesAt(pt) > 1;
+    };
     const auto computeRatingBonus = [this, &construction](const BuildingType building_type,
                                                           const BuildingType target_type,
                                                           const unsigned default_radius,
@@ -88,6 +95,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
 
             for(auto& point : results)
             {
+                if(is_border_blocked(point.pt))
+                    continue;
                 if(point.pt.isValid()
                    && !construction.OtherUsualBuildingInRadius(point.pt, 3, BuildingType::Woodcutter))
                 {
@@ -103,6 +112,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
 
             for(auto& point : results)
             {
+                if(is_border_blocked(point.pt))
+                    continue;
                 if(!CheckProximity(type, point.pt)) continue;
                 int rating_bonus = computeRatingBonus(type, BuildingType::Woodcutter, 6, 50, point.pt);
                 return {point.pt, point.rating + rating_bonus};
@@ -114,6 +125,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
             auto results = FindBestPositions(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
             for(const auto& point : results)
             {
+                if(is_border_blocked(point.pt))
+                    continue;
                 if(!construction.OtherUsualBuildingInRadius(point.pt, 8, BuildingType::Forester))
                 {
                     return point;
@@ -126,6 +139,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
             auto results = FindBestPositions(around, AIResource::Stones, BUILDING_SIZE[type], searchRadius, 40);
             for(const auto& point : results)
             {
+                if(is_border_blocked(point.pt))
+                    continue;
                 if(!point.pt.isValid() || !ValidStoneinRange(point.pt))
                 {
                     break;
@@ -139,6 +154,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
             auto results = FindBestPositions(around, AIResource::Fish, BUILDING_SIZE[type], searchRadius, 20);
             for(const auto& point : results)
             {
+                if(is_border_blocked(point.pt))
+                    continue;
                 if(construction.OtherUsualBuildingInRadius(point.pt, 3, BuildingType::Fishery))
                 {
                     break;
@@ -155,6 +172,8 @@ RatedPoint PositionFinder::FindPositionAround(BuildingType type, const MapPoint&
         {
             // For all other building types, just return a simple position if the minRadius check passed
             MapPoint point = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 6);
+            if(is_border_blocked(point))
+                return {MapPoint::Invalid(), 0};
             if(CheckProximity(type, point))
                 return {point, 1};
             break;

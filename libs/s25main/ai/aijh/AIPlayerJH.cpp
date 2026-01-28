@@ -2239,6 +2239,11 @@ int AIPlayerJH::GetResMapValue(const MapPoint pt, AIResource res) const
     return GetResMap(res)[pt];
 }
 
+AIResourceMap& AIPlayerJH::GetResMap(AIResource res)
+{
+    return resourceMaps[res];
+}
+
 const AIResourceMap& AIPlayerJH::GetResMap(AIResource res) const
 {
     return resourceMaps[res];

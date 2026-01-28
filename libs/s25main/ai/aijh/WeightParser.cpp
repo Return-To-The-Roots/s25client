@@ -28,6 +28,8 @@ RatingParams Weights::parseRatingParams(const YAML::Node& node, const RatingPara
 LocationParams Weights::parseLocationParams(const YAML::Node& node, const LocationParams& defaults)
 {
     LocationParams params = defaults;
+    if(node["buildOnBorder"])
+        params.buildOnBorder = node["buildOnBorder"].as<bool>();
     if(node["proximity"])
         for(const auto& weightEntry : node["proximity"])
         {

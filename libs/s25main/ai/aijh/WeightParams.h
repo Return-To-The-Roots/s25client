@@ -43,6 +43,7 @@ struct ProximityParams
 struct LocationParams
 {
     bool enabled = false;
+    bool buildOnBorder = true;
     helpers::EnumArray<ProximityParams, BuildingType> proximity = helpers::EnumArray<ProximityParams, BuildingType>{};
     helpers::EnumArray<RatingParams, BuildingType> rating = helpers::EnumArray<RatingParams, BuildingType>{};
 };

@@ -194,15 +194,19 @@ void HeadlessGame::Run(unsigned maxGF)
             nextReport += std::chrono::seconds(1);
             PrintState();
         }
-        if(STATS_CONFIG.save_period>0 && (currentGF == 1 || currentGF % STATS_CONFIG.save_period == 0))
-        {
+        const auto saveGameForFrame = [&](unsigned gf) {
             boost::format fmt("%s/ai_run_%s.sav");
-            fmt % STATS_CONFIG.savesPath % toPaddedString(currentGF, 8);
+            fmt % STATS_CONFIG.savesPath % toPaddedString(gf, 8);
             SaveGame(fmt.str());
+        };
+        if(currentGF % 10000u == 0 && GetActivePlayerCount() <= 1u)
+        {
+            if(STATS_CONFIG.save_period > 0) saveGameForFrame(currentGF);
+            break;
         }
 
-        if(currentGF % 20000u == 0u && GetActivePlayerCount() <= 1u)
-            break;
+        if(STATS_CONFIG.save_period > 0 && (currentGF == 1 || currentGF % STATS_CONFIG.save_period == 0))
+            saveGameForFrame(currentGF);
     }
     PrintState();
 }
