@@ -611,7 +611,7 @@ void GameWorldView::DrawResource(const MapPoint& pt, DrawPoint curPos, const Che
 
     if(auto* bm = LOADER.GetWareTex(gt))
     {
-        for(auto i : helpers::range(amount))
+        for([[maybe_unused]] const auto i : helpers::range(amount))
         {
             bm->DrawFull(curPos);
             curPos.y -= 4;
