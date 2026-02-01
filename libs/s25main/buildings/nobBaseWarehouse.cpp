@@ -233,9 +233,8 @@ void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
     TryStopRecruiting();
 }
 
-bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const bool allow_recruiting)
+bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode& goal, const bool allow_recruiting)
 {
-    RTTR_Assert(goal);
     // Maybe we have to recruit one
     if(!inventory[job])
     {
@@ -243,13 +242,13 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
             return false;
     }
 
-    std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, *goal);
+    std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, goal);
     // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
-    if(goal->GetType() != NodalObjectType::Flag)
-        checkedCast<noBaseBuilding*>(goal)->GotWorker(job, *fig);
+    if(goal.GetType() != NodalObjectType::Flag)
+        checkedCast<noBaseBuilding>(goal).GotWorker(job, *fig);
 
     // Wenn Figur nicht sofort von abgeleiteter Klasse verwenet wird, fügen wir die zur Leave-Liste hinzu
-    if(!UseFigureAtOnce(fig, *goal))
+    if(!UseFigureAtOnce(fig, goal))
         AddLeavingFigure(std::move(fig));
 
     inventory.real.Remove(job);
@@ -351,7 +350,7 @@ void nobBaseWarehouse::HandleCollectEvent()
             if(wh)
             {
                 // Dann bestellen
-                if(wh->OrderJob(i, this, false))
+                if(wh->OrderJob(i, *this, false))
                     break;
             }
         }

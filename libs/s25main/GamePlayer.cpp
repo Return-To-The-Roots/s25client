@@ -731,8 +731,7 @@ void GamePlayer::FindMaterialForBuildingSites()
 
 void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
 {
-    // Und gleich suchen
-    if(!FindWarehouseForJob(job, workplace))
+    if(!FindWarehouseForJob(job, *workplace))
     {
         JobNeeded jn = {job, workplace};
         jobs_wanted.push_back(jn);
@@ -803,9 +802,9 @@ void GamePlayer::ToolOrderProcessed(Tool tool)
     }
 }
 
-bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode* goal) const
+bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode& goal) const
 {
-    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasFigure(job, true), false, false);
+    nobBaseWarehouse* wh = FindWarehouse(goal, FW::HasFigure(job, true), false, false);
 
     if(wh)
     {
@@ -821,7 +820,7 @@ void GamePlayer::FindWarehouseForAllJobs()
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
-        if(FindWarehouseForJob(it->job, it->workplace))
+        if(FindWarehouseForJob(it->job, *it->workplace))
             it = jobs_wanted.erase(it);
         else
             ++it;
@@ -834,7 +833,7 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     {
         if(it->job == job)
         {
-            if(FindWarehouseForJob(it->job, it->workplace))
+            if(FindWarehouseForJob(it->job, *it->workplace))
                 it = jobs_wanted.erase(it);
             else
                 ++it;
@@ -1309,9 +1308,8 @@ void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
     /// Find wh with given job type (e.g. geologist, scout, ...)
     nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job, true), false, false);
 
-    /// Wenns eins gibt, dann rufen
     if(wh)
-        wh->OrderJob(job, flag, true);
+        wh->OrderJob(job, *flag, true);
 }
 
 bool GamePlayer::IsFlagWorker(const nofFlagWorker* flagworker)

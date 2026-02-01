@@ -180,7 +180,7 @@ public:
     /// Bestellt einen Träger
     void OrderCarrier(noRoadNode& goal, RoadSegment& workplace);
     /// Bestellt irgendeinen Beruf (ggf. stellt er ihn noch mit einem Werkzeug her)
-    bool OrderJob(Job job, noRoadNode* goal, bool allow_recruiting);
+    bool OrderJob(Job job, noRoadNode& goal, bool allow_recruiting);
     /// Bestellt einen Esel
     nofCarrier* OrderDonkey(RoadSegment* road, noRoadNode* goal_flag);
     /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurück

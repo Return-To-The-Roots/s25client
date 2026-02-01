@@ -143,22 +143,22 @@ BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
     while(hq->GetNumRealFigures(Job::Builder) > 0u)
     {
         const auto numBuilders = hq->GetNumRealFigures(Job::Builder);
-        BOOST_TEST(hq->OrderJob(Job::Builder, wh, false));
+        BOOST_TEST(hq->OrderJob(Job::Builder, *wh, false));
         BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) == numBuilders - 1u);
     }
     // Ordering another one fails
-    BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, wh, false));
+    BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, *wh, false));
     BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) == 0u);
     // Recruit all possible builders
     while(hq->GetNumRealWares(GoodType::Hammer) > 0u)
     {
         const auto numHammers = hq->GetNumRealWares(GoodType::Hammer);
-        BOOST_TEST(hq->OrderJob(Job::Builder, wh, true));
+        BOOST_TEST(hq->OrderJob(Job::Builder, *wh, true));
         BOOST_TEST_REQUIRE(hq->GetNumRealWares(GoodType::Hammer) == numHammers - 1u);
         BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) == 0u);
     }
     // Ordering another one fails
-    BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, wh, true));
+    BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, *wh, true));
     BOOST_TEST(hq->GetNumRealFigures(Job::Builder) == 0u);
     BOOST_TEST(hq->GetNumRealWares(GoodType::Hammer) == 0u);
 }
