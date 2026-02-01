@@ -796,10 +796,6 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(std::make_unique<iwChat>(this));
             return true;
 
-        case KeyType::Space: // Show / hide construction aid
-            gwv.ToggleShowBQ();
-            return true;
-
         case KeyType::Left: // Scroll left
             gwv.MoveBy({-30, 0});
             return true;
@@ -924,6 +920,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         case 's': // Show/hide productivity overlay
             gwv.ToggleShowProductivity();
+            return true;
+        case ' ': // Show/hide construction aid
+            // workaround for Wayland which does not capture SDLK_SPACE when SDL_StartTextInput() was called
+            gwv.ToggleShowBQ();
             return true;
         case 26: // ctrl+z
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
