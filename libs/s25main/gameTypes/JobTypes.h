@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -52,10 +52,15 @@ constexpr auto maxEnumValue(Job)
     return Job::TempleServant;
 }
 
-constexpr unsigned NUM_SOLDIER_RANKS = 5;
 /// Job types of soldiers, weak ones first
-static const std::array<Job, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED SOLDIER_JOBS = {
-  {Job::Private, Job::PrivateFirstClass, Job::Sergeant, Job::Officer, Job::General}};
+constexpr std::array SUPPRESS_UNUSED SOLDIER_JOBS = {Job::Private, Job::PrivateFirstClass, Job::Sergeant, Job::Officer,
+                                                     Job::General};
+constexpr bool isSoldierJob(const Job job)
+{
+    return job >= Job::Private && job <= Job::General;
+}
+
+constexpr unsigned NUM_SOLDIER_RANKS = SOLDIER_JOBS.size();
 constexpr unsigned getSoldierRank(Job soldierJob)
 {
     return static_cast<uint8_t>(soldierJob) - static_cast<uint8_t>(Job::Private);
