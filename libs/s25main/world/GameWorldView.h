@@ -136,9 +136,10 @@ private:
     void DrawResource(const MapPoint& pt, DrawPoint curPos, Cheats::ResourceRevealMode resRevealMode);
     void DrawObject(const MapPoint& pt, const DrawPoint& curPos) const;
     void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
-    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines) const;
+    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
+                     std::vector<ObjectBetweenLines>& objsBetweenRows) const;
     void DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
-                                    std::vector<ObjectBetweenLines>& between_lines);
+                                    std::vector<ObjectBetweenLines>& objsBetweenRows);
 
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
