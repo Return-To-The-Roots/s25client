@@ -155,6 +155,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         glMatrixMode(GL_MODELVIEW);
     }
 
+    glPushMatrix();
     glTranslatef(static_cast<GLfloat>(origin_.x) / effectiveZoomFactor_,
                  static_cast<GLfloat>(origin_.y) / effectiveZoomFactor_, 0.0f);
 
@@ -235,8 +236,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
     }
-    glTranslatef(-static_cast<GLfloat>(origin_.x) / effectiveZoomFactor_,
-                 -static_cast<GLfloat>(origin_.y) / effectiveZoomFactor_, 0.0f);
+    glPopMatrix();
 
     glScissor(0, 0, windowSize.width, windowSize.height);
 }
