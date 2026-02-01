@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,12 +9,14 @@
 #include "figures/nofScout_Free.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
+#include "worldFixtures/WorldWithGCExecution.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/ShieldConsts.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <array>
+#include <gameData/SettingTypeConv.h>
 
 namespace {
 struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::test::LogAccessor
@@ -180,4 +182,79 @@ BOOST_FIXTURE_TEST_CASE(DestroyBuilding, EmptyWorldFixture1P)
     wh->AddDependentFigure(scout);
 
     world.DestroyBuilding(whPos, 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
+{
+    GamePlayer& player = world.GetPlayer(0);
+
+    MapPoint wh1Pos = player.GetHQPos() + MapPoint(2, 0);
+    MapPoint wh2Pos = wh1Pos + MapPoint(2, 0);
+
+    auto* wh1 = static_cast<nobBaseWarehouse*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, wh1Pos, 0, Nation::Romans));
+    auto* wh2 = static_cast<nobBaseWarehouse*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, wh2Pos, 0, Nation::Romans));
+
+    world.BuildRoad(0, false, wh1->GetFlagPos(), {2, Direction::East});
+    MilitarySettings milSettings = MILITARY_SETTINGS_SCALE;
+    milSettings[0] = 0; // No recruitment
+    this->ChangeMilitary(milSettings);
+
+    Inventory inv;
+    for(const auto job : helpers::enumRange<Job>())
+    {
+        if(job == Job::BoatCarrier)
+            continue;
+        inv.Add(job);
+    }
+    for(const auto good : helpers::enumRange<GoodType>())
+    {
+        if(ConvertShields(good) != good)
+            continue;
+        inv.Add(good);
+    }
+    wh1->AddGoods(inv, true);
+
+    for(const auto job : helpers::enumRange<Job>())
+    {
+        if(job == Job::BoatCarrier)
+            continue;
+        SetInventorySetting(wh2Pos, job, EInventorySetting::Collect);
+    }
+    for(const auto good : helpers::enumRange<GoodType>())
+    {
+        if(ConvertShields(good) != good)
+            continue;
+        SetInventorySetting(wh2Pos, good, EInventorySetting::Collect);
+    }
+
+    RTTR_EXEC_TILL(500, wh2->GetNumVisualFigures(Job::Helper) > 2);
+    SetInventorySetting(wh2Pos, Job::Helper, EInventorySetting::Stop);
+
+    RTTR_EXEC_TILL(5000, wh2->GetNumVisualWares(maxEnumValue(GoodType{})) > 0);
+    RTTR_EXEC_TILL(5000, wh2->GetNumVisualFigures(maxEnumValue(Job{})) > 0);
+    for(const auto job : helpers::enumRange<Job>())
+    {
+        if(job == Job::BoatCarrier)
+            continue;
+        BOOST_TEST_INFO_SCOPE("Job: " << rttr::enum_cast(job));
+        if(job == Job::Helper) // Helpers get recruited continuously
+        {
+            BOOST_TEST(wh2->GetNumVisualFigures(job) > 10u);
+            BOOST_TEST(wh2->GetNumRealFigures(job) > 10u);
+        } else
+        {
+            BOOST_TEST(wh2->GetNumVisualFigures(job) == 1u);
+            BOOST_TEST(wh2->GetNumRealFigures(job) == 1u);
+        }
+    }
+    for(const auto good : helpers::enumRange<GoodType>())
+    {
+        if(ConvertShields(good) != good)
+            continue;
+        BOOST_TEST_INFO_SCOPE("Good: " << rttr::enum_cast(good));
+        BOOST_TEST(wh2->GetNumVisualWares(good) == 1u);
+        BOOST_TEST(wh2->GetNumRealWares(good) == 1u);
+    }
 }

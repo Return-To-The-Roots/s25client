@@ -490,7 +490,7 @@ void nobBaseWarehouse::HandleRecrutingEvent()
     // Evtl. versuchen nächsten zu rekrutieren
     TryRecruiting();
 
-    // If there were no soliders before
+    // If there were no soldiers before
     if(inventory[Job::Private] == real_recruits)
     {
         // Check reserve
