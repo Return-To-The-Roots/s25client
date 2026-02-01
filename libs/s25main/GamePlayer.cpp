@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -434,7 +434,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
 
     // Order a worker if needed
     const auto& description = BLD_WORK_DESC[bldType];
-    if(description.job && description.job != Job::Private)
+    if(description.job && !isSoldierJob(*description.job))
     {
         AddJobWanted(*description.job, bld);
     }

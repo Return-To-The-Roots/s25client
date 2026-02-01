@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -123,16 +123,7 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
 
 bool noFigure::IsSoldier() const
 {
-    switch(job_)
-    {
-        case Job::Private:
-        case Job::PrivateFirstClass:
-        case Job::Sergeant:
-        case Job::Officer:
-        case Job::General: return true;
-        default: break;
-    }
-    return false;
+    return isSoldierJob(job_);
 }
 
 void noFigure::ActAtFirst()

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -763,7 +763,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
     if(job == Job::Helper)
         TryRecruiting();
 
-    if(job >= Job::Private && job <= Job::General)
+    if(isSoldierJob(job))
     {
         // Reserve prüfen
         RefreshReserve(getSoldierRank(job));
