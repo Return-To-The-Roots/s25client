@@ -74,10 +74,11 @@ public:
 
     enum class ResourceRevealMode
     {
+        // Order is important as each mode includes the previous ones
         Nothing,
         Ores,
-        Fish,
-        Water
+        Fish, /// Ores + Fish
+        Water /// Ores + Fish + Water
     };
     /** Tells clients which resources to reveal:
      * Nothing - reveal nothing
