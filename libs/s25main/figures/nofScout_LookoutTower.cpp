@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,10 +13,6 @@ class nobBaseWarehouse;
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(Job::Scout, pos, player, workplace)
-{}
-
-nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
-    : nofBuildingWorker(Job::Scout, pos, player, goalWh)
 {}
 
 nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id)

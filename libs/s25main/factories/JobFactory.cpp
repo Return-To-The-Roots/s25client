@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -95,34 +95,23 @@ std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint
             RTTR_Assert(dynamic_cast<nobUsual*>(goal));
             return std::make_unique<nofBaker>(pt, player, static_cast<nobUsual*>(goal));
         case Job::Helper:
-            // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
-            if(!goal)
-                return std::make_unique<nofWellguy>(pt, player, static_cast<nobUsual*>(nullptr));
-            else if(goal->GetGOT() == GO_Type::NobStorehouse || goal->GetGOT() == GO_Type::NobHarborbuilding
-                    || goal->GetGOT() == GO_Type::NobHq)
-                return std::make_unique<nofWellguy>(pt, player, static_cast<nobBaseWarehouse*>(goal));
-            else if(goal->GetGOT() == GO_Type::NobUsual)
+            if(goal && goal->GetGOT() == GO_Type::NobUsual)
             {
+                RTTR_Assert(dynamic_cast<nobUsual*>(goal));
                 auto* goalBld = static_cast<nobUsual*>(goal);
                 if(goalBld->GetBuildingType() == BuildingType::Well)
                     return std::make_unique<nofWellguy>(pt, player, goalBld);
                 else if(goalBld->GetBuildingType() == BuildingType::Catapult)
                     return std::make_unique<nofCatapultMan>(pt, player, goalBld);
             }
-            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job "
-                                     + helpers::toString(job_id));
+            throw std::runtime_error("Invalid goal type: " + (goal ? helpers::toString(goal->GetGOT()) : "NULL")
+                                     + " for job " + helpers::toString(job_id));
         case Job::Geologist:
             RTTR_Assert(dynamic_cast<noFlag*>(goal));
             return std::make_unique<nofGeologist>(pt, player, static_cast<noFlag*>(goal));
         case Job::Scout:
-            // Im Spähturm arbeitet ein anderer Späher-Typ
-            // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
-            if(!goal)
-                return std::make_unique<nofScout_LookoutTower>(pt, player, static_cast<nobUsual*>(nullptr));
-            else if(goal->GetGOT() == GO_Type::NobHarborbuilding || goal->GetGOT() == GO_Type::NobStorehouse
-                    || goal->GetGOT() == GO_Type::NobHq)
-                return std::make_unique<nofPassiveWorker>(Job::Scout, pt, player, goal);
-            else if(goal->GetGOT() == GO_Type::NobUsual) // Spähturm / Lagerhaus?
+            // Different scout for lookout towers and free scouts
+            if(goal->GetGOT() == GO_Type::NobUsual)
             {
                 RTTR_Assert(dynamic_cast<nobUsual*>(goal));
                 return std::make_unique<nofScout_LookoutTower>(pt, player, static_cast<nobUsual*>(goal));
