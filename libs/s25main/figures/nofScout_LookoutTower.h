@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -28,7 +28,6 @@ protected:
 
 public:
     nofScout_LookoutTower(MapPoint pos, unsigned char player, nobUsual* workplace);
-    nofScout_LookoutTower(MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofScout_LookoutTower(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const final { return GO_Type::NofScoutLookouttower; }
