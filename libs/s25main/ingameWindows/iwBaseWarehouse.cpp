@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -80,11 +80,10 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
 
     UpdateOverlays();
 
-    // Lagerhaus oder Hafengebäude?
-    if(wh->GetGOT() == GO_Type::NobStorehouse || wh->GetGOT() == GO_Type::NobHarborbuilding)
+    // Add demolish button if not HQ
+    if(wh->GetGOT() != GO_Type::NobHq)
     {
-        // Abbrennbutton hinzufügen
-        // "Blättern" in Bretter stauchen und verschieben
+        // Make paginate button smaller and move to make space for demolish button
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetWidth(32);
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, GetFullSize().y - 47));
 

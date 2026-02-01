@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -44,6 +44,12 @@ struct InventorySettings : GoodsAndPeopleArray<InventorySetting>
 /// Change events: 1=InventorySettings
 class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 {
+public:
+    static constexpr bool isStorehouseGOT(const GO_Type got)
+    {
+        return got == GO_Type::NobStorehouse || got == GO_Type::NobHarborbuilding || got == GO_Type::NobHq;
+    }
+
 protected:
     // Liste von Waren, die noch rausgebracht werden müssen, was im Moment aber nicht möglich ist,
     // weil die Flagge voll ist vor dem Lagerhaus
