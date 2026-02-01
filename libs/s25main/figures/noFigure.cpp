@@ -48,12 +48,8 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
       rs_pos(0), rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0),
       wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {
-    // Haben wir ein Ziel?
-    // Gehen wir in ein Lagerhaus? Dann dürfen wir da nicht unsere Arbeit ausführen, sondern
-    // gehen quasi nach Hause von Anfang an aus
-    if(goal
-       && (goal->GetGOT() == GO_Type::NobHarborbuilding || goal->GetGOT() == GO_Type::NobStorehouse
-           || goal->GetGOT() == GO_Type::NobHq))
+    // If the goal is a storehouse we won't work there but go to the new home
+    if(goal && nobBaseWarehouse::isStorehouseGOT(goal->GetGOT()))
         fs = FigureState::GoHome;
 }
 
@@ -418,10 +414,7 @@ void noFigure::GoHome(noRoadNode* goal)
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
         if(cur_rs == nullptr)
         {
-            RTTR_Assert(world->GetNO(pos)->GetGOT() == GO_Type::NobHq || //-V807
-                        world->GetNO(pos)->GetGOT() == GO_Type::NobStorehouse
-                        || world->GetNO(pos)->GetGOT() == GO_Type::NobHarborbuilding);
-
+            RTTR_Assert(nobBaseWarehouse::isStorehouseGOT(world->GetNO(pos)->GetGOT()));
             goal_ = nullptr;
             world->GetSpecObj<nobBaseWarehouse>(pos)->CancelFigure(this);
             return;

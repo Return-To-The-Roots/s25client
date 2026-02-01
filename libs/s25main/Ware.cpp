@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -164,9 +164,8 @@ void Ware::GoalDestroyed()
         RTTR_Assert(location);
         RTTR_Assert(location->GetPlayer() < MAX_PLAYERS);
 
-        // Wird sie gerade aus einem Lagerhaus rausgetragen?
-        if(location->GetGOT() == GO_Type::NobStorehouse || location->GetGOT() == GO_Type::NobHarborbuilding
-           || location->GetGOT() == GO_Type::NobHq)
+        // Currently carried out of a warehouse?
+        if(nobBaseWarehouse::isStorehouseGOT(location->GetGOT()))
         {
             if(location != goal)
             {
@@ -199,11 +198,10 @@ void Ware::GoalDestroyed()
             if(goal != location)
             {
                 // find a warehouse for us (if we are entering a warehouse already set this as new goal (should only
-                // happen if its a harbor for shipping as the building wasnt our goal))
-                if(location->GetGOT() == GO_Type::NobStorehouse || location->GetGOT() == GO_Type::NobHarborbuilding
-                   || location->GetGOT()
-                        == GO_Type::NobHq) // currently carried into a warehouse? -> add ware (pathfinding
-                                           // will not return this wh because of path lengths 0)
+                // happen if its a harbor for shipping as the building wasn't our goal))
+                if(nobBaseWarehouse::isStorehouseGOT(
+                     location->GetGOT())) // currently carried into a warehouse? -> add ware (pathfinding
+                                          // will not return this wh because of path lengths 0)
                 {
                     if(location->GetGOT() != GO_Type::NobHarborbuilding)
                         LOG.write("WARNING: Ware::GoalDestroyed() -- ware is currently being carried into warehouse or "
