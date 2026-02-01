@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -427,7 +427,7 @@ private:
     /// Called after a pact was changed(added/removed) in both players
     void PactChanged(PactType pt);
     // Sucht Weg für Job zu entsprechenden noRoadNode
-    bool FindWarehouseForJob(Job job, noRoadNode* goal) const;
+    bool FindWarehouseForJob(Job job, noRoadNode& goal) const;
     /// Prüft, ob der Spieler besiegt wurde
     void TestDefeat();
     nobHQ* GetHQ() const;
