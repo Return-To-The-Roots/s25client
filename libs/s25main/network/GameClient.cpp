@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -56,6 +56,12 @@
 #include <memory>
 
 namespace {
+constexpr bool DEBUG_MODE =
+#ifndef NDEBUG
+  true;
+#else
+  false;
+#endif
 void copyFileIfPathDifferent(const boost::filesystem::path& src_path, const boost::filesystem::path& dst_path)
 {
     if(src_path != dst_path)
@@ -1166,53 +1172,35 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 
 void GameClient::IncreaseSpeed(const bool wraparound)
 {
-    static_assert(MIN_SPEED >= SPEED_GF_LENGTHS[GameSpeed::VeryFast], "Not all speeds reachable");
-    const bool debugMode =
-#ifndef NDEBUG
-      true;
-#else
-      false;
-#endif
-    const auto oldSpeed = framesinfo.gfLengthReq;
+    const auto curSpeed = framesinfo.gfLengthReq;
     // Note: Higher speed = lower gf_length value
     // Go from debug speed directly back to min speed, else in fixed steps
     static_assert(MIN_SPEED_DEBUG > MIN_SPEED);
-    if(framesinfo.gfLengthReq == MIN_SPEED_DEBUG)
-        framesinfo.gfLengthReq = MIN_SPEED; // NOLINT(bugprone-branch-clone)
-    else if(framesinfo.gfLengthReq >= MAX_SPEED + SPEED_STEP)
-        framesinfo.gfLengthReq -= SPEED_STEP;
-    else if((replayMode || debugMode) && framesinfo.gfLengthReq > MAX_SPEED_DEBUG) // 1 more step in debug/replay mode
-        framesinfo.gfLengthReq = MAX_SPEED_DEBUG;
-    else if(wraparound) // Highest speed, wrap around to slowest if requested
-        framesinfo.gfLengthReq = MIN_SPEED;
-
-    if(replayMode)
-        framesinfo.gf_length = framesinfo.gfLengthReq;
-    else if(framesinfo.gfLengthReq != oldSpeed)
-        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
+    if(framesinfo.gfLengthReq > MIN_SPEED)
+        SetNewSpeed(MIN_SPEED); // NOLINT(bugprone-branch-clone)
+    else
+        SetNewSpeed((framesinfo.gfLengthReq - 1ms) / SPEED_STEP * SPEED_STEP);
+    // If unchanged we capped at max speed, so wrap around if requested
+    if(wraparound && framesinfo.gfLengthReq == curSpeed)
+        SetNewSpeed(MIN_SPEED);
 }
 
 void GameClient::DecreaseSpeed()
 {
-    static_assert(MAX_SPEED <= SPEED_GF_LENGTHS[GameSpeed::VerySlow], "Not all speeds reachable");
-    const bool debugMode =
-#ifndef NDEBUG
-      true;
-#else
-      false;
-#endif
-
-    const auto oldSpeed = framesinfo.gfLengthReq;
-
-    // Go from debug speed directly back to max speed, else in fixed steps
-    static_assert(MAX_SPEED_DEBUG < MAX_SPEED);
-    if(framesinfo.gfLengthReq == MAX_SPEED_DEBUG)
-        framesinfo.gfLengthReq = MAX_SPEED;
-    else if(framesinfo.gfLengthReq + SPEED_STEP <= MIN_SPEED)
-        framesinfo.gfLengthReq += SPEED_STEP;
+    if((DEBUG_MODE || replayMode) && framesinfo.gfLengthReq >= MIN_SPEED)
+        SetNewSpeed(MIN_SPEED_DEBUG);
     else
-        framesinfo.gfLengthReq = (replayMode || debugMode) ? MIN_SPEED_DEBUG : MIN_SPEED;
+        SetNewSpeed(framesinfo.gfLengthReq / SPEED_STEP * SPEED_STEP + SPEED_STEP);
+}
 
+void GameClient::SetNewSpeed(FramesInfo::milliseconds32_t gfLength)
+{
+    static_assert(MIN_SPEED >= SPEED_GF_LENGTHS[GameSpeed::VeryFast], "Not all speeds reachable");
+    static_assert(MAX_SPEED <= SPEED_GF_LENGTHS[GameSpeed::VerySlow], "Not all speeds reachable");
+    const auto minSpeed = (replayMode || DEBUG_MODE) ? MIN_SPEED_DEBUG : MIN_SPEED;
+    const auto maxSpeed = (replayMode || DEBUG_MODE) ? MAX_SPEED_DEBUG : MAX_SPEED;
+    const auto oldSpeed = framesinfo.gfLengthReq;
+    framesinfo.gfLengthReq = helpers::clamp<decltype(gfLength)>(gfLength, maxSpeed, minSpeed);
     if(replayMode)
         framesinfo.gf_length = framesinfo.gfLengthReq;
     else if(framesinfo.gfLengthReq != oldSpeed)
