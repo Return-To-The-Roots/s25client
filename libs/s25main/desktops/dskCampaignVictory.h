@@ -6,7 +6,7 @@
 
 #include "Desktop.h"
 
-class MouseCoords;
+struct MouseCoords;
 
 class dskCampaignVictory : public Desktop
 {
