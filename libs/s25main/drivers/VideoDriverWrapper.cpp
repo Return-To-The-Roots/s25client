@@ -251,8 +251,7 @@ KeyEvent VideoDriverWrapper::GetModKeyState() const
 {
     if(videodriver)
         return videodriver->GetModKeyState();
-    const KeyEvent ke = {KeyType::Invalid, 0, false, false, false};
-    return ke;
+    return KeyEvent();
 }
 
 void VideoDriverWrapper::SwapBuffers()
@@ -439,6 +438,14 @@ bool VideoDriverWrapper::IsRightDown()
         return false;
 
     return videodriver->GetMouseStateR();
+}
+
+bool VideoDriverWrapper::IsTouch()
+{
+    if(!videodriver)
+        return false;
+
+    return videodriver->IsTouchEvent();
 }
 
 void VideoDriverWrapper::SetMousePos(const Position& newPos)

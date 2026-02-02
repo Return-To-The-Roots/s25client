@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Interpolate, T, TimeTypes)
     {
         const auto startVal = randomValue<int>(-1000, 1000);
         const auto endVal = randomValue<int>(startVal + 10, startVal + 1000);
-        if(std::is_signed<RepT>::value)
+        if(std::is_signed_v<RepT>)
         {
             // Elapsed time less than zero
             BOOST_TEST(helpers::interpolate(startVal, endVal, T(randomValue<int>(-10000, -1)), T(randomValue<int>(1)))
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Interpolate, T, TimeTypes)
     {
         const auto startVal = randomValue<unsigned>(0u, 500000u);
         const auto endVal = randomValue<unsigned>(startVal + 10u);
-        if(std::is_signed<RepT>::value)
+        if(std::is_signed_v<RepT>)
         {
             // Elapsed time less than zero
             BOOST_TEST(helpers::interpolate(startVal, endVal, T(randomValue<int>(-10000, -1)), T(randomValue<int>(1)))

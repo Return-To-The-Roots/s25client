@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -20,8 +20,7 @@
 namespace bfs = boost::filesystem;
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const boost::filesystem::path& basePath)
-    : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0),
-      errorInIncludeFile_(false)
+    : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0)
 {
     Register(lua);
 
@@ -39,17 +38,7 @@ bool GameDataLoader::Load()
 {
     curFile_ = basePath_ / "default.lua";
     curIncludeDepth_ = 0;
-    errorInIncludeFile_ = false;
-    try
-    {
-        if(!loadScript(curFile_))
-            return false;
-    } catch(std::exception& e)
-    {
-        LOG.write("Failed to load game data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
-        return false;
-    }
-    return !errorInIncludeFile_;
+    return loadScript(curFile_);
 }
 
 void GameDataLoader::Register(kaguya::State& state)
@@ -72,7 +61,7 @@ void GameDataLoader::Include(const std::string& filepath)
     {
         constexpr int maxIncludeDepth = 10;
         // Protect against cycles and stack overflows
-        if(++curIncludeDepth_ >= maxIncludeDepth)
+        if(curIncludeDepth_ >= maxIncludeDepth)
             throw LuaIncludeError(helpers::format("Maximum include depth of %1% is reached!", maxIncludeDepth));
         const auto isAllowedChar = [](const char c) {
             return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '/'
@@ -94,10 +83,13 @@ void GameDataLoader::Include(const std::string& filepath)
             throw LuaIncludeError("File is outside the lua data directory!");
         const auto oldCurFile = curFile_;
         curFile_ = absFilePath;
-        errorInIncludeFile_ |= !loadScript(absFilePath);
+        ++curIncludeDepth_;
+        const bool fileLoaded = loadScript(absFilePath);
         curFile_ = oldCurFile;
         RTTR_Assert(curIncludeDepth_ > 0);
         --curIncludeDepth_;
+        if(!fileLoaded)
+            throw std::runtime_error(helpers::format("Include file '%1%' cannot be included", filepath));
     } catch(const LuaIncludeError& e)
     {
         throw std::runtime_error(helpers::format("Include file '%1%' cannot be included: %2%", filepath, e.what()));

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -47,7 +47,7 @@ class ctrlVarText;
 class glArchivItem_Bitmap;
 class glFont;
 class ITexture;
-class MouseCoords;
+struct MouseCoords;
 enum class GroupSelectType : unsigned;
 struct KeyEvent;
 struct ScreenResizeEvent;
@@ -98,8 +98,12 @@ public:
     void LockRegion(Window* window, const Rect& rect);
     /// Gibt eine gesperrte Region wieder frei.
     void FreeRegion(Window* window);
-    /// Check if the gicen point is in a region locked by any window other than exception
+    /// Check if the given point is in a region locked by any window other than exception
     bool IsInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
+    /// Check if the mouse is hovering over this control, i.e. inside its boundary.
+    bool IsMouseOver() const;
+    /// Check if the given mouse position inside the boundary of this control.
+    bool IsMouseOver(const MouseCoords& mousePos) const;
 
     /// Set the position for the window
     void SetPos(const DrawPoint& newPos);
@@ -154,6 +158,11 @@ public:
                                     FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
     ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      unsigned fillColor);
+    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                     ITexture* image);
+    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                     glArchivItem_Bitmap* image);
+
     ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     ctrlGroup* AddGroup(unsigned id);

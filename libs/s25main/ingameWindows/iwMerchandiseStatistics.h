@@ -38,8 +38,8 @@ private:
     // Maximalwert der y-Achse
     ctrlText* maxValue;
 
+    void DrawContent() override;
     // Durchgereichte Methoden vom Window
-    void Draw_() override;
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };

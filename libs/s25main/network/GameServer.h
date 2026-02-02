@@ -90,6 +90,7 @@ private:
     bool OnGameMessage(const GameMessage_GGSChange& msg) override;
     bool OnGameMessage(const GameMessage_Player_State& msg) override;
     bool OnGameMessage(const GameMessage_Player_Name& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Portrait& msg) override;
     bool OnGameMessage(const GameMessage_Player_Nation& msg) override;
     bool OnGameMessage(const GameMessage_Player_Team& msg) override;
     bool OnGameMessage(const GameMessage_Player_Color& msg) override;

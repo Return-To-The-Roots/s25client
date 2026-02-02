@@ -117,7 +117,7 @@ void ctrlChat::Draw_()
     for(unsigned i = 0; i < show_lines; ++i)
     {
         DrawPoint curTextPos = textPos;
-        if(PrimaryChatLine* line = get_if<PrimaryChatLine>(&chat_lines[i + pos]))
+        if(auto* line = get_if<PrimaryChatLine>(&chat_lines[i + pos]))
         {
             // Zeit, Spieler und danach Textnachricht
             if(!line->time_string.empty())
@@ -154,8 +154,8 @@ void ctrlChat::WrapLine(unsigned short i)
 
     // Breite von Zeitstring und Spielername berechnen (falls vorhanden)
     unsigned short prefix_width =
-      (line.time_string.length() ? font->getWidth(line.time_string) : 0)
-      + (line.player.length() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0);
+      (!line.time_string.empty() ? font->getWidth(line.time_string) : 0)
+      + (!line.player.empty() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0);
 
     // Reicht die Breite des Textfeldes noch nichtmal dafür aus?
     if(prefix_width > GetSize().x - 2 - SCROLLBAR_WIDTH)
@@ -235,7 +235,7 @@ bool ctrlChat::Msg_LeftUp(const MouseCoords& mc)
 
 bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
+    if(IsPointInRect(mc.pos, Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {
         auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-3);
@@ -246,7 +246,7 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 
 bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
+    if(IsPointInRect(mc.pos, Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {
         auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+3);

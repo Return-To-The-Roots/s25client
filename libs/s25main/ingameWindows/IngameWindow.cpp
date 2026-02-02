@@ -190,49 +190,53 @@ void IngameWindow::SetPinned(bool pinned)
         windowSettings_->isPinned = isPinned_;
 }
 
-void IngameWindow::MouseLeftDown(const MouseCoords& mc)
+bool IngameWindow::Msg_LeftDown(const MouseCoords& mc)
 {
-    // Check if the mouse is on the title bar
-    if(IsPointInRect(mc.GetPos(), GetButtonBounds(IwButton::Title)))
+    for(const auto btn : helpers::enumRange<IwButton>())
     {
-        // start moving
-        isMoving = true;
-        snapOffset_ = SnapOffset::all(0);
-        lastMousePos = mc.GetPos();
-    } else
-    {
-        // Check the buttons
-        for(const auto btn : helpers::enumRange<IwButton>())
+        if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
         {
-            if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
-                buttonStates_[btn] = ButtonState::Pressed;
+            buttonStates_[btn] = ButtonState::Pressed;
+            if(btn == IwButton::Title)
+            {
+                // start moving
+                isMoving = true;
+                snapOffset_ = SnapOffset::all(0);
+                lastMousePos = mc.pos;
+                return true;
+            }
         }
     }
+    return false;
 }
 
-void IngameWindow::MouseLeftUp(const MouseCoords& mc)
+bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
 {
     isMoving = false;
 
     for(const auto btn : helpers::enumRange<IwButton>())
     {
+        const auto clicked = buttonStates_[btn] == ButtonState::Pressed;
         buttonStates_[btn] = ButtonState::Up;
+        if(!clicked)
+            continue;
 
         if((btn == IwButton::Close && closeBehavior_ == CloseBehavior::Custom) // no close button
            || (isModal_ // modal windows cannot be pinned or minimized
                && (btn == IwButton::Title || btn == IwButton::PinOrMinimize)))
             continue;
 
-        if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
+        if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
         {
             switch(btn)
             {
-                case IwButton::Close: Close(); break;
+                case IwButton::Close: Close(); return true;
                 case IwButton::Title:
                     if(SETTINGS.interface.enableWindowPinning && mc.dbl_click)
                     {
                         SetMinimized(!IsMinimized());
                         LOADER.GetSoundN("sound", 113)->Play(255, false);
+                        return true;
                     }
                     break;
                 case IwButton::PinOrMinimize:
@@ -245,18 +249,26 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
                         SetMinimized(!IsMinimized());
                         LOADER.GetSoundN("sound", 113)->Play(255, false);
                     }
-                    break;
+                    return true;
             }
         }
     }
+
+    // On touch devices dblclick closes window
+    if(VIDEODRIVER.IsTouch() && mc.dbl_click && closeBehavior_ != CloseBehavior::Custom)
+    {
+        Close();
+        return true;
+    }
+    return false;
 }
 
-void IngameWindow::MouseMove(const MouseCoords& mc)
+bool IngameWindow::Msg_MouseMove(const MouseCoords& mc)
 {
     if(isMoving)
     {
         // Calculate new window boundary rectangle without snapping
-        DrawPoint delta = mc.GetPos() - lastMousePos;
+        DrawPoint delta = mc.pos - lastMousePos;
         Rect wndRect = GetBoundaryRect();
         RTTR_Assert(wndRect.getOrigin() == GetPos()); // The rest of the code assumes this to be true
         wndRect.move(delta - snapOffset_);
@@ -271,23 +283,27 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
           elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - wndRect.getSize()));
         // …and use it to fix the mouse position if moved too far
         if(newPosBounded != newPos)
-            VIDEODRIVER.SetMousePos(newPosBounded - wndRect.getOrigin() + mc.GetPos());
+            VIDEODRIVER.SetMousePos(newPosBounded - wndRect.getOrigin() + mc.pos);
 
         // Set new position and re-calculate snap offset (window position may have been out of bounds)
         SetPos(newPos + snapOffset_);
         snapOffset_ = GetPos() - newPosBounded;
 
-        lastMousePos = mc.GetPos();
+        lastMousePos = mc.pos;
+        return true;
     } else
     {
         // Check the buttons
         for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.GetPos(), GetButtonBounds(btn)))
-                buttonStates_[btn] = mc.ldown ? ButtonState::Pressed : ButtonState::Hover;
-            else
+            if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
+            {
+                if(!mc.ldown)
+                    buttonStates_[btn] = ButtonState::Hover;
+            } else
                 buttonStates_[btn] = ButtonState::Up;
         }
+        return false;
     }
 }
 
@@ -295,7 +311,8 @@ void IngameWindow::Draw_()
 {
     if(isModal_ && !IsActive())
         SetActive(true);
-
+    if(!isMinimized_)
+        DrawBackground();
     // Black border
     // TODO: It would be better if this was included in the windows size. But the controls are added with absolute
     // positions so adding the border to the size would move the border imgs inward into the content.
@@ -423,15 +440,19 @@ void IngameWindow::Draw_()
     // Client area
     if(!isMinimized_)
     {
-        if(background)
-            background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
-
         Window::Draw_();
+        DrawContent();
     }
 
     // The 2 rects on the bottom left and right
     bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, GetSize().y - bottomBorderSideImg->getHeight()));
     bottomBorderSideImg->DrawFull(GetPos() + GetSize() - bottomBorderSideImg->GetSize());
+}
+
+void IngameWindow::DrawBackground()
+{
+    if(background)
+        background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
 }
 
 void IngameWindow::MoveToCenter()

@@ -96,14 +96,14 @@ bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
     auto* list = GetCtrl<ctrlList>(0);
 
     // Irgendwo anders hingeklickt --> Liste ausblenden
-    if(!readonly && !IsPointInRect(mc.GetPos(), GetFullDrawRect(list)))
+    if(!readonly && !IsPointInRect(mc.pos, GetFullDrawRect(list)))
     {
         // Liste wieder ausblenden
         ShowList(false);
         return false;
     }
 
-    if(!readonly && IsPointInRect(mc.GetPos(), GetDrawRect()))
+    if(!readonly && IsPointInRect(mc.pos, GetDrawRect()))
     {
         // Liste wieder ein/ausblenden
         ShowList(!list->IsVisible());
@@ -128,7 +128,7 @@ bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
     bool ret = RelayMouseMessage(&Window::Msg_RightDown, mc);
 
     // Clicked on list -> close it
-    if(!readonly && IsPointInRect(mc.GetPos(), list->GetDrawRect()))
+    if(!readonly && IsPointInRect(mc.pos, list->GetDrawRect()))
     {
         // Liste wieder ausblenden
         ShowList(false);
@@ -143,10 +143,10 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
         return false;
 
     auto* list = GetCtrl<ctrlList>(0);
-    if(list->IsVisible() && IsPointInRect(mc.GetPos(), list->GetDrawRect()))
+    if(list->IsVisible() && IsPointInRect(mc.pos, list->GetDrawRect()))
         return RelayMouseMessage(&Window::Msg_WheelUp, mc);
 
-    if(IsPointInRect(mc.GetPos(), GetDrawRect()))
+    if(IsPointInRect(mc.pos, GetDrawRect()))
     {
         // Don't scroll too far down
         if(list->GetSelection().value_or(0u) > 0u)
@@ -164,13 +164,13 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
 
     auto* list = GetCtrl<ctrlList>(0);
 
-    if(list->IsVisible() && IsPointInRect(mc.GetPos(), list->GetDrawRect()))
+    if(list->IsVisible() && IsPointInRect(mc.pos, list->GetDrawRect()))
     {
         // Scrolled in opened list ->
         return RelayMouseMessage(&Window::Msg_WheelDown, mc);
     }
 
-    if(IsPointInRect(mc.GetPos(), GetDrawRect()))
+    if(IsPointInRect(mc.pos, GetDrawRect()))
     {
         // Will be ignored by the list if to high
         list->SetSelection(list->GetSelection() ? *list->GetSelection() + 1u : 0u);

@@ -88,7 +88,7 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
+    if(IsPointInRect(mc.pos, GetListDrawArea()))
     {
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
         if(mc.dbl_click && GetParent() && selection_)
@@ -104,7 +104,7 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
 bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
-    if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
+    if(IsPointInRect(mc.pos, GetFullDrawArea()))
     {
         auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-1);
@@ -117,7 +117,7 @@ bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
 bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
 {
     // If mouse in list
-    if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
+    if(IsPointInRect(mc.pos, GetFullDrawArea()))
     {
         auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+1);

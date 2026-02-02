@@ -19,7 +19,7 @@ const std::array<FullJobData, helpers::NumEnumValues_v<Job>> fullJobData = {{
   {{GoodType::Nothing, 385, 190, 5}, {false, 0}, gettext_noop("Helper")},
   {{GoodType::Axe, 148, 789, 5}, {false, 5}, gettext_noop("Woodchopper")},
   {{GoodType::RodAndLine, 129, 825, 5}, {false, 12}, gettext_noop("Fisher")},
-  {{GoodType::Shovel, 66, 304, 5}, {false, 8}, gettext_noop("Ranger")},
+  {{GoodType::Shovel, 66, 304, 5}, {false, 8}, gettext_noop("Tree planter")},
   {{GoodType::Saw, 479, 96, 5}, {false, 6}, gettext_noop("Carpenter")},
   {{GoodType::PickAxe, 129, 825, 5}, {false, 7}, gettext_noop("Stonemason")},
   {{GoodType::Bow, 0, 300, 5}, {false, 20}, gettext_noop("Huntsman")},

@@ -6,6 +6,7 @@ add_library(testHelpers STATIC
     rttr/test/BaseFixture.cpp
     rttr/test/BaseFixture.hpp
     rttr/test/BufferedWriter.hpp
+    rttr/test/ConfigOverride.hpp
     rttr/test/Fixture.cpp
     rttr/test/Fixture.hpp
     rttr/test/LocaleResetter.hpp

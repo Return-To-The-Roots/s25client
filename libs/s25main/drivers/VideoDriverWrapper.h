@@ -85,6 +85,7 @@ public:
 
     bool IsLeftDown();
     bool IsRightDown();
+    bool IsTouch();
     // setzt den Mausstatus
     void SetMousePos(const Position& newPos);
     void SetMouseWarping(bool enabled) { enableMouseWarping = enabled; }

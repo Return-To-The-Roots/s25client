@@ -21,7 +21,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 5
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -42,7 +42,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Najdi a obsaďt bránu! Zvaž vhodné příležitosti k vybudování přístavu.',
 
         msg99   = 'Našli jsme bránu a obsadili ji. Nezůstávejme tady déle, než je nezbytně nutné.',
-        msg99   = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
+        msgh99   = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
     },
     de =
     {
@@ -62,7 +62,17 @@ rttr:RegisterTranslations(
         msgh1   = 'Find and occupy the gateway! Consider opportunities\nto build a harbor.',
 
         msg99   = 'We have found the gateway and occupied it. Let us\nremain here no longer than is necessary.',
-        msg99   = 'You have completed this mission. The next Chapter\nawaits you...'
+        msgh99   = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+    pl =
+    {
+        Diary   = 'Dziennik',
+
+        msg1    = 'Znowu znajdujemy się w świecie, który składa się głównie z popiołów i lawy.\n\nAtmosfera niesie ze sobą zgniły i drażniący zapach siarki.\n\nWszystko to pochodzi z pobliskiego wulkanu, który wyrzuca swoje ohydne treści na powierzchnię ziemi.\n\nMoi ludzie nalegają, abyśmy jak najszybciej stąd odeszli - mogę jedynie mieć nadzieję, że bogowie poprowadzą nasze kroki.',
+        msgh1   = 'Znajdź i zajmij wrota!\nRozważ możliwości budowy portu.',
+
+        msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nNie pozostawajmy tu dłużej niż to konieczne.',
+        msgh99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
@@ -96,17 +106,20 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:read, 2:yellow, 
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_JAPANESE)   -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Yamauchi')       -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(6)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_JAPANESE)   -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Tsunami')        -- Enemy Name
+    rttr:GetPlayer(2):SetPortrait(7)
     rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
@@ -142,9 +155,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

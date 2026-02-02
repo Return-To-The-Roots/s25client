@@ -18,6 +18,15 @@
 #include <limits>
 #include <winuser.h>
 
+namespace {
+void setSpecialKeys(KeyEvent& ke, LPARAM lParam)
+{
+    ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+    ke.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+    ke.alt = (HIWORD(lParam) & KF_ALTDOWN) != 0;
+}
+} // namespace
+
 /**
  *  Zeiger auf die aktuelle Instanz.
  */
@@ -519,15 +528,17 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
     if(c == ' ')
         return;
 
-    KeyEvent ke = {KeyType::Char, c, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
-                   (lParam & KF_ALTDOWN) != 0};
+    KeyEvent ke(c);
+    setSpecialKeys(ke, lParam);
 
     if(c == 'V' || c == 'v' || c == 0x16)
-        if(!disablepaste && ke.ctrl != 0)
+    {
+        if(!disablepaste && ke.ctrl)
         {
             OnWMPaste();
             return;
         }
+    }
 
     CallBack->Msg_KeyDown(ke);
 }
@@ -539,8 +550,8 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
  */
 void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
 {
-    KeyEvent ke = {KeyType::Invalid, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
-                   (lParam & KF_ALTDOWN) != 0};
+    KeyEvent ke;
+    setSpecialKeys(ke, lParam);
 
     switch(c)
     {
@@ -710,8 +721,10 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
  */
 KeyEvent VideoWinAPI::GetModKeyState() const
 {
-    const KeyEvent ke = {KeyType::Invalid, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0,
-                         (GetKeyState(VK_SHIFT) & 0x8000) != 0, (GetKeyState(VK_MENU) & 0x8000) != 0};
+    KeyEvent ke;
+    ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+    ke.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+    ke.alt = (GetKeyState(VK_MENU) & 0x8000) != 0;
     return ke;
 }
 

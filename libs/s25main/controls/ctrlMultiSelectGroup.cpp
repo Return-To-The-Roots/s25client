@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "ctrlMultiSelectGroup.h"
-class MouseCoords;
+struct MouseCoords;
 
 ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, GroupSelectType select_type)
     : ctrlGroup(parent, id), select_type(select_type)

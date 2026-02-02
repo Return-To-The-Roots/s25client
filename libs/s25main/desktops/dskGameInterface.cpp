@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -97,15 +97,31 @@ enum
     ID_btPost,
     ID_txtNumMsg
 };
+
+float getNextZoomLevel(const float currentZoom)
+{
+    // Get first level bigger than current zoom
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto it = std::upper_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), currentZoom);
+    return (it == ZOOM_FACTORS.end()) ? ZOOM_FACTORS.front() : *it;
 }
+
+float getPreviousZoomLevel(const float currentZoom)
+{
+    // Get last level bigger or equal than current zoom
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto it = std::lower_bound(ZOOM_FACTORS.begin(), ZOOM_FACTORS.end(), currentZoom);
+    return (it == ZOOM_FACTORS.begin()) ? ZOOM_FACTORS.back() : *(--it);
+}
+} // namespace
 
 dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<const NWFInfo> nwfInfo,
                                    unsigned playerIdx, bool initOGL)
     : Desktop(nullptr), game_(std::move(game)), nwfInfo_(std::move(nwfInfo)),
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
-      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
-      isCheatModeOn(false)
+      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false),
+      cheats_(const_cast<Game&>(*game_).world_), cheatCommandTracker_(cheats_)
 {
     road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
@@ -424,7 +440,7 @@ void dskGameInterface::Msg_PaintAfter()
     DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
 
     // Draw cheating indicator icon (WINTER)
-    if(isCheatModeOn)
+    if(cheats_.isCheatModeOn())
     {
         glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
         cheatingImg->DrawFull(iconPos);
@@ -432,8 +448,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw speed indicator icon
-    const int speedStep =
-      static_cast<int>(SPEED_GF_LENGTHS[referenceSpeed] / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
+    const int speedStep = static_cast<int>(REFERENCE_SPEED / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
 
     if(speedStep != 0)
     {
@@ -464,23 +479,9 @@ void dskGameInterface::Msg_PaintAfter()
     }
 }
 
-bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+bool dskGameInterface::ContextClick(const MouseCoords& mc)
 {
-    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
-    Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
-        return false;
-
-    // Start scrolling also on Ctrl + left click
-    if(VIDEODRIVER.GetModKeyState().ctrl)
-    {
-        Msg_RightDown(mc);
-        return true;
-    } else if(isScrolling)
-        StopScrolling();
-
-    // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
+    // Handle road building mode if active
     if(road.mode != RoadBuildMode::Disabled)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
@@ -489,7 +490,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         if(selPt == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
-            ShowRoadWindow(mc.GetPos());
+            ShowRoadWindow(mc.pos);
         } else
         {
             // altes Roadwindow schließen
@@ -501,7 +502,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             {
                 MapPoint targetPt = selPt;
                 if(!BuildRoadPart(targetPt))
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
@@ -517,7 +518,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                         if(selPt == targetPt)
                             GI_BuildRoad();
                     } else if(selPt == targetPt)
-                        ShowRoadWindow(mc.GetPos());
+                        ShowRoadWindow(mc.pos);
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
@@ -529,7 +530,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     if(selPt == targetPt)
                         GI_BuildRoad();
                 } else if(selPt == targetPt)
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             } else
             {
                 unsigned tbr = GetIdInCurBuildRoad(selPt);
@@ -537,10 +538,10 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(tbr)
                     DemolishRoad(tbr);
                 else
-                    ShowRoadWindow(mc.GetPos());
+                    ShowRoadWindow(mc.pos);
             }
         }
-    } else
+    } else // Not in road building mode
     {
         bool enable_military_buildings = false;
 
@@ -684,45 +685,96 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         if(actionwindow)
             actionwindow->Close();
-        VIDEODRIVER.SetMousePos(mc.GetPos());
+        VIDEODRIVER.SetMousePos(mc.pos);
 
-        ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
+        ShowActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
     }
 
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
+bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+{
+    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    Extent btSize = Extent(37, 32) * 4u;
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
+        return false;
+
+    if(!VIDEODRIVER.IsTouch())
+    {
+        // Start scrolling also on Ctrl + left click
+        if(VIDEODRIVER.GetModKeyState().ctrl)
+        {
+            Msg_RightDown(mc);
+            return true;
+        } else if(isScrolling)
+            StopScrolling();
+
+        return ContextClick(mc);
+
+    } else if(mc.num_tfingers < 2)
+        touchDuration = VIDEODRIVER.GetTickCount();
+    else if(isScrolling) // 2 fingers down -> zoom mode. Do not click or scroll map
+        StopScrolling();
+
+    return true;
+}
+
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
     if(isScrolling)
     {
         StopScrolling();
         return true;
     }
+
+    // num_tfingers is reduced after this function to check if it's still a touch event
+    // Was touch duration short enough to trigger conext click?
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < TOUCH_MAX_CLICK_INTERVAL)
+        return ContextClick(mc);
+
     return false;
 }
 
 bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
-        return false;
+    {
+        if(mc.num_tfingers == 1)
+            Msg_RightDown(mc);
+        else
+            return false;
+    }
 
-    int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+    {
+        const Position mapPos = gwv.ViewPosToMap(mc.pos);
+        gwv.MoveBy(-(mapPos - startScrollPt));
+        startScrollPt = mapPos;
+    } else
+    {
+        int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
-    if(SETTINGS.interface.invertMouse)
-        acceleration = -acceleration;
+        if(SETTINGS.interface.mapScrollMode == MapScrollMode::ScrollSame)
+            acceleration = -acceleration;
 
-    gwv.MoveBy((mc.GetPos() - startScrollPt) * acceleration);
-    VIDEODRIVER.SetMousePos(startScrollPt);
+        gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
+        VIDEODRIVER.SetMousePos(startScrollPt);
 
-    if(!SETTINGS.global.smartCursor)
-        startScrollPt = mc.GetPos();
+        if(!SETTINGS.global.smartCursor)
+            startScrollPt = mc.pos;
+    }
+
     return true;
 }
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    StartScrolling(mc.pos);
+    if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
+        StartScrolling(gwv.ViewPosToMap(mc.pos));
+    else
+        StartScrolling(mc.pos);
     return true;
 }
 
@@ -733,39 +785,38 @@ bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
     return false;
 }
 
-/**
- *  Druck von Spezialtasten auswerten.
- */
 bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 {
+    cheatCommandTracker_.onKeyEvent(ke);
+
     switch(ke.kt)
     {
         default: break;
-        case KeyType::Return: // Chatfenster öffnen
+        case KeyType::Return: // Open chat
             WINDOWMANAGER.Show(std::make_unique<iwChat>(this));
             return true;
 
-        case KeyType::Space: // Bauqualitäten anzeigen
+        case KeyType::Space: // Show / hide construction aid
             gwv.ToggleShowBQ();
             return true;
 
-        case KeyType::Left: // Nach Links Scrollen
+        case KeyType::Left: // Scroll left
             gwv.MoveBy({-30, 0});
             return true;
-        case KeyType::Right: // Nach Rechts Scrollen
+        case KeyType::Right: // Scroll right
             gwv.MoveBy({30, 0});
             return true;
-        case KeyType::Up: // Nach Oben Scrollen
+        case KeyType::Up: // Scroll up
             gwv.MoveBy({0, -30});
             return true;
-        case KeyType::Down: // Nach Unten Scrollen
+        case KeyType::Down: // Scroll down
             gwv.MoveBy({0, 30});
             return true;
 
-        case KeyType::F2: // Spiel speichern
+        case KeyType::F2: // Open save game window
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
             return true;
-        case KeyType::F3: // Map debug window/ Multiplayer coordinates
+        case KeyType::F3: // Map debug window
         {
             const bool replayMode = GAMECLIENT.IsReplayModeOn();
             if(replayMode)
@@ -773,51 +824,18 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || replayMode));
             return true;
         }
-        case KeyType::F8: // Tastaturbelegung
+        case KeyType::F8:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
-        case KeyType::F9: // Readme
+        case KeyType::F9:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
-        case KeyType::F10:
-        {
-#ifdef NDEBUG
-            const bool allowHumanAI = isCheatModeOn;
-#else
-            const bool allowHumanAI = true;
-#endif // !NDEBUG
-            if(GAMECLIENT.GetState() == ClientState::Game && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
-                GAMECLIENT.ToggleHumanAIPlayer(AI::Info(AI::Type::Default, AI::Level::Easy));
-            return true;
-        }
         case KeyType::F11: // Music player (midi files)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
-        case KeyType::F12: // Optionsfenster
+        case KeyType::F12: // Ingame options
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>(gwv.GetSoundMgr()));
             return true;
-    }
-
-    static std::string winterCheat = "winter";
-    switch(ke.c)
-    {
-        case 'w':
-        case 'i':
-        case 'n':
-        case 't':
-        case 'e':
-        case 'r':
-            curCheatTxt += char(ke.c);
-            if(winterCheat.find(curCheatTxt) == 0)
-            {
-                if(curCheatTxt == winterCheat)
-                {
-                    isCheatModeOn = !isCheatModeOn;
-                    curCheatTxt.clear();
-                }
-            } else
-                curCheatTxt.clear();
-            break;
     }
 
     switch(ke.c)
@@ -831,9 +849,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 GAMECLIENT.DecreaseSpeed();
             return true;
 
+        // Switch to specific player
         case '1':
         case '2':
-        case '3': // Spieler umschalten
+        case '3':
         case '4':
         case '5':
         case '6':
@@ -848,7 +867,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
             } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
             {
-                // On mutiplayer this currently asyncs, but as this is a debug feature anyway just disable it there.
+                // On multiplayer this currently asyncs, but as this is a debug feature anyway just disable it.
                 // If this should be enabled again, look into the handling/clearing of accumulated GCs
                 if(game_->world_.IsSinglePlayer())
                 {
@@ -860,23 +879,21 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         }
 
-        case 'b': // Zur lezten Position zurückspringen
-            gwv.MoveToLastPosition();
-            return true;
+        case 'b': gwv.MoveToLastPosition(); return true;
         case 'v':
             if(game_->world_.IsSinglePlayer())
-                GAMECLIENT.IncreaseSpeed();
+                GAMECLIENT.IncreaseSpeed(true);
             return true;
-        case 'c': // Gebäudenamen anzeigen
+        case 'c': // Show/hide building names
             gwv.ToggleShowNames();
             return true;
-        case 'd': // Replay: FoW an/ausschalten
+        case 'd': // Enable/Disable fog of war (in replay mode)
             ToggleFoW();
             return true;
-        case 'h': // Zum HQ springen
+        case 'h': // Go to HQ
         {
             const GamePlayer& player = worldViewer.GetPlayer();
-            // Prüfen, ob dieses überhaupt noch existiert
+            // HQ might not exist anymore
             if(player.GetHQPos().isValid())
                 gwv.MoveToMapPt(player.GetHQPos());
         }
@@ -884,46 +901,45 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'i': // Show inventory
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwInventory>(worldViewer.GetPlayer()));
             return true;
-        case 'j': // GFs überspringen
+        case 'j': // Skip GFs (fast forward)
             if(game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
                 WINDOWMANAGER.ToggleWindow(std::make_unique<iwSkipGFs>(gwv));
             return true;
-        case 'l': // Minimap anzeigen
+        case 'l': // Show minimap
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv));
             return true;
-        case 'm': // Hauptauswahl
+        case 'm': // Show main menu
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
             return true;
-        case 'n': // Show Post window
+        case 'n': // Show message window
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
             GAMECLIENT.TogglePause();
             return true;
-        case 'q': // Spiel verlassen
+        case 'q': // Quit game (dialog)
             if(ke.alt)
                 WINDOWMANAGER.ToggleWindow(std::make_unique<iwEndgame>());
             return true;
-        case 's': // Produktivität anzeigen
+        case 's': // Show/hide productivity overlay
             gwv.ToggleShowProductivity();
+            return true;
+        case ' ': // Show/hide construction aid
+            // workaround for Wayland which does not capture SDLK_SPACE when SDL_StartTextInput() was called
+            gwv.ToggleShowBQ();
             return true;
         case 26: // ctrl+z
             gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             return true;
-        case 'z': // zoom
-            if(++zoomLvl >= ZOOM_FACTORS.size())
-                zoomLvl = 0;
-
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+        case 'z':
+            if(ke.ctrl) // Reset zoom
+                gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
+            else // zoom in
+                gwv.SetZoomFactor(getNextZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
-        case 'Z': // shift-z, reverse zoom
-            if(zoomLvl == 0)
-                zoomLvl = ZOOM_FACTORS.size() - 1;
-            else
-                zoomLvl--;
-
-            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+        case 'Z': // shift-z, zoom out
+            gwv.SetZoomFactor(getPreviousZoomLevel(gwv.GetCurrentTargetZoomFactor()));
             return true;
     }
 
@@ -941,24 +957,14 @@ bool dskGameInterface::Msg_WheelDown(const MouseCoords&)
     return true;
 }
 
-void dskGameInterface::WheelZoom(float step)
+void dskGameInterface::WheelZoom(const float step)
 {
-    float new_zoom = gwv.GetCurrentTargetZoomFactor() * (1 + step);
-    gwv.SetZoomFactor(new_zoom);
+    auto targetZoomFactor = gwv.GetCurrentTargetZoomFactor() * (1 + step);
+    targetZoomFactor = std::clamp(targetZoomFactor, ZOOM_FACTORS.front(), ZOOM_FACTORS.back());
+    if(targetZoomFactor > 1 - ZOOM_WHEEL_INCREMENT && targetZoomFactor < 1 + ZOOM_WHEEL_INCREMENT)
+        targetZoomFactor = 1.f; // Snap to 100%
 
-    // also keep track in terms of fixed defined zoom levels
-    zoomLvl = ZOOM_DEFAULT_INDEX;
-    for(size_t i = ZOOM_DEFAULT_INDEX; i < ZOOM_FACTORS.size(); ++i)
-    {
-        if(ZOOM_FACTORS[i] < new_zoom)
-            zoomLvl = i;
-    }
-
-    for(size_t i = ZOOM_DEFAULT_INDEX; i-- > 0;)
-    {
-        if(ZOOM_FACTORS[i] > new_zoom)
-            zoomLvl = i;
-    }
+    gwv.SetZoomFactor(targetZoomFactor);
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)
@@ -1127,9 +1133,9 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)
 {
-    if(cmd == "apocalypsis")
-        GAMECLIENT.CheatArmageddon();
-    else if(cmd == "surrender")
+    cheatCommandTracker_.onChatCommand(cmd);
+
+    if(cmd == "surrender")
         GAMECLIENT.Surrender();
     else if(cmd == "async")
         (void)RANDOM.Rand(RANDOM_CONTEXT2(0), 255);

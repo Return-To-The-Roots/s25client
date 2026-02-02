@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -47,7 +47,8 @@ fi
 
 BUILD_TYPE=Release
 
-rm -rf _CPack_Packages *.tar.bz2 *.zip CMakeFiles CMakeCache.txt
+rm -rf -- _CPack_Packages *.tar.bz2 *.zip CMakeCache.txt
+find . -type d -name "CMakeFiles" -exec rm -r {} +
 
 RTTR_VERSION=OFF
 if [ "$deploy_to" == "stable" ] ; then
@@ -65,10 +66,11 @@ cmake \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
     -DRTTR_ENABLE_WERROR=ON \
     -DRTTR_USE_STATIC_BOOST=ON \
-    -DRTTR_VERSION=$RTTR_VERSION \
+    -DRTTR_VERSION="$RTTR_VERSION" \
     -DRTTR_REVISION=OFF \
     -DRTTR_BUNDLE=ON \
     -DRTTR_EXTERNAL_BUILD_TESTING=ON \
+    -DRTTR_INCLUDE_DEVTOOLS=ON \
     $src_dir
 
 make -j4 package
@@ -91,4 +93,5 @@ if [ -z "$files" ] ; then
     exit 1
 fi
 
+# shellcheck disable=SC2086
 cp -av $files $result_dir/

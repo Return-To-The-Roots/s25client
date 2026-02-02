@@ -43,7 +43,7 @@ void NetworkPlayer::executeMsgs(MessageInterface& msgHandler)
         recvQueue.pop()->run(&msgHandler, playerId);
 }
 
-void swap(NetworkPlayer& lhs, NetworkPlayer& rhs)
+void swap(NetworkPlayer& lhs, NetworkPlayer& rhs) noexcept
 {
     using std::swap;
     swap(lhs.playerId, rhs.playerId);

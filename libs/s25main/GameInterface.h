@@ -6,7 +6,7 @@
 
 #include "gameTypes/MapCoordinates.h"
 
-class Window;
+class Cheats;
 
 /// Interface, welches vom Spiel angesprocehn werden kann, um beispielsweise GUI wichtige Nachrichten
 /// zu übermiteln
@@ -36,4 +36,7 @@ public:
     virtual void GI_CancelRoadBuilding() = 0;
     /// Executes the construction of a road
     virtual void GI_BuildRoad() = 0;
+
+    virtual Cheats& GI_GetCheats() = 0;
+    const Cheats& GI_GetCheats() const { return const_cast<GameInterface&>(*this).GI_GetCheats(); }
 };

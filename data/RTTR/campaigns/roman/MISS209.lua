@@ -21,7 +21,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 5
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -73,6 +73,19 @@ rttr:RegisterTranslations(
         msg99   = 'Last Day of the 10th Year.\nLast entry of Octavius in this Diary\n\nWe have succeeded. Tomorrow we shall return to Rome\nexactly ten years after becoming castaways on this\nisland. Ten years during which we traveled in the\nfootsteps of our forefathers. Ten years during which\nwe learned what made Rome so great. We shall offer a\ngreat feast of thanks to the gods and will see our\nfamilies and friends again.\nI can hardly wait.',
         msgh99  = 'You have succeeded!'
     },
+    pl =
+    { 
+        Diary   = 'Dziennik',
+
+        msg1    = 'Powietrze przepełnione jest aurą oczekiwania, ale także swego rodzaju niepokojem, podczas gdy przygotowujemy się do rozpoczęcia ostatniego i najbardziej niebezpiecznego rozdziału naszej długiej podróży do domu.\n\nCzy kiedykolwiek zobaczymy Rzym ponownie?\n\nMusimy zebrać całą naszą siłę, ponieważ ta wyspa wydaje się być naszą najlepszą szansą...',
+        msgh1   = 'Bądź bardzo ostrożny. Nie atakuj, dopóki nie będziesz pewien, że możesz pokonać obu wrogów.',
+
+        msg2    = 'Siedemnasty Dzień Szóstego Miesiąca Dziesiątego Roku.\n\nRzymianie faktycznie stoją przed dziesiątą bramą.\nNie są wcale przyjaźni.\n\nMoże są drugą stroną medalu, wrogim bratem Remusem.\nByć może ich brama to ta, która zabierze nas z powrotem do ukochanego Rzymu.\n\nJak mówi stara legenda:\n\n\"Dla dobra Rzymu brat walczyć będzie przeciwko bratu.\"\n\nPrzez prawie dziesięć lat nieustannie marzyliśmy o naszej ojczyźnie.\n\nNie poddamy się teraz.',
+        msgh2   = 'Zbierz wszystkie swoje siły, aby się przebić!\nZdobądź bramę!',
+
+        msg99   = 'Ostatni Dzień Dziesiątego Roku.\nOstatni wpis Oktawiusza w tym dzienniku.\n\nUdało się. Jutro wrócimy do Rzymu - równo dziesięć lat po tym, jak staliśmy się rozbitkami na wyspie.\n\nDziesięć lat, podczas których podążaliśmy śladami naszych przodków.\n\nDziesięć lat, podczas których nauczyliśmy się, co uczyniło Rzym wielkim.\n\nWyprawimy bogom wielką ucztę dziękczynną i ponownie zobaczymy nasze rodziny oraz przyjaciół.\n\nNie mogę się doczekać.',
+        msgh99  = 'Udało ci się!'
+    }
 })
 
 -- format mission texts
@@ -105,17 +118,20 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:read, 2:yellow, 
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Brutus')         -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(2)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Olof')           -- Enemy Name
+    rttr:GetPlayer(2):SetPortrait(5)
     rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
@@ -151,9 +167,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

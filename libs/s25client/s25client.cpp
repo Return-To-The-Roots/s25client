@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -48,6 +48,9 @@
 #endif
 #ifndef _MSC_VER
 #    include <csignal>
+#endif
+#ifdef __ANDROID__
+#    include <SDL.h> // For the sdl android entry point function (SDL_main)
 #endif
 
 namespace bfs = boost::filesystem;
@@ -170,7 +173,7 @@ void showCrashMessage()
 
 void handleException(void* pCtx = nullptr) noexcept
 {
-    std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
+    const auto stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
     {
         LogTarget target = (LOG.getFileWriter()) ? LogTarget::FileAndStderr : LogTarget::Stderr;
@@ -495,7 +498,7 @@ int RunProgram(po::variables_map& options)
         // Spiel beenden
         gameManager.Stop();
         libsiedler2::setAllocator(nullptr);
-    } catch(RTTR_AssertError& error)
+    } catch(const RTTR_AssertError& error)
     {
         // Write to log file, but don't throw any errors if this fails too
         try

@@ -26,10 +26,10 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    inline GO_Type GetGOT() const final { return GO_Type::Flag; }
-    inline FlagType GetFlagType() const { return flagtype; }
+    GO_Type GetGOT() const final { return GO_Type::Flag; }
+    FlagType GetFlagType() const { return flagtype; }
     /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
-    inline bool HasSpaceForWare() const { return wares.size() < wares.max_size(); }
+    bool HasSpaceForWare() const { return wares.size() < wares.max_size(); }
 
     void Draw(DrawPoint drawPt) override;
 
@@ -46,8 +46,7 @@ public:
     std::unique_ptr<Ware> SelectWare(Direction roadDir, bool swap_wares, const noFigure* carrier);
     /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
     unsigned GetNumWaresForRoad(Direction dir) const;
-    /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden
-    /// müssen.
+    /// Penalty for transporting a ware in a specific direction
     unsigned GetPunishmentPoints(Direction dir) const override;
     /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
     void DestroyAttachedBuilding();

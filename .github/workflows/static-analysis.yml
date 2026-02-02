@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,21 +12,16 @@ concurrency:
   group: ${{format('staticAna-{0}:{1}', github.repository, github.ref)}}
   cancel-in-progress: true
 
-env:
-  CC: clang-10
-  CXX: clang++-10
-  ADDITIONAL_CMAKE_FLAGS: ""
-
 jobs:
   StyleAndFormatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: git submodule update --init
       - name: Validation
         run: tools/ci/staticValidation.sh "$GITHUB_WORKSPACE"
       - name: Formatting
-        uses: DoozyX/clang-format-lint-action@v0.9
+        uses: DoozyX/clang-format-lint-action@v0.18.2
         with:
           source: "extras libs tests external/libendian external/liblobby external/libsiedler2 external/libutil external/mygettext external/s25edit external/s25update"
           clangFormatVersion: 10
@@ -37,7 +32,7 @@ jobs:
                  -prune -false -o \( -name '*.hpp' -or -name '*.h' \) \
                  -print0 | xargs -0 -n1 tools/ci/checkIncludeGuards.sh
       - name: Lint markdown files
-        uses: avto-dev/markdown-lint@v1.5.0
+        uses: avto-dev/markdown-lint@v1
         with:
           ignore: external data/RTTR/MAPS .
       - name: Check licensing
@@ -46,15 +41,19 @@ jobs:
           reuse lint
 
   Clang-Tidy:
-    runs-on: ubuntu-20.04
+    env:
+      CC: clang-18
+      CXX: clang++-18
+      ADDITIONAL_CMAKE_FLAGS: ""
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: git submodule update --init
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y \
-            clang-10 clang-tidy-10 \
+            clang-18 clang-tidy-18 \
             libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev gettext \
-            libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev libboost-locale-dev libboost-iostreams-dev
+            libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev libboost-locale-dev libboost-nowide-dev libboost-iostreams-dev
       - name: Run Clang-Tidy
         run: tools/ci/runClangTidy.sh

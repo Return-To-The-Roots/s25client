@@ -59,6 +59,17 @@ BOOST_FIXTURE_TEST_CASE(PrefixPath, rttr::test::BaseFixture)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(EnvOverride, rttr::test::BaseFixture)
+{
+    rttr::test::LogAccessor logAcc;
+    const fs::path pathOverride = fs::current_path() / "testPathOverride";
+    BOOST_TEST_REQUIRE(System::setEnvVar("RTTR_GAME_DIR", pathOverride.string()));
+    // fakePath is just used as default path. if != pathOverride -> test failed
+    BOOST_TEST(RTTRCONFIG.getEnvOverride("GAME", "fakePath") == pathOverride);
+    RTTR_REQUIRE_LOG_CONTAINS("manually set", false);
+    BOOST_TEST_REQUIRE(System::removeEnvVar("RTTR_GAME_DIR"));
+}
+
 BOOST_AUTO_TEST_CASE(YearIsValid)
 {
     const std::string year = rttr::version::GetYear();

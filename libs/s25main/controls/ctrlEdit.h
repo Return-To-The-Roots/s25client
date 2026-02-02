@@ -6,7 +6,7 @@
 
 #include "Window.h"
 
-class MouseCoords;
+struct MouseCoords;
 class glFont;
 class ctrlTextDeepening;
 struct KeyEvent;

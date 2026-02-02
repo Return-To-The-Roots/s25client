@@ -57,7 +57,7 @@ class JobWithTarget
 {
 public:
     JobWithTarget() : target(MapPoint::Invalid()) {}
-    inline MapPoint GetTarget() const { return target; }
+    MapPoint GetTarget() const { return target; }
     void SetTarget(MapPoint newTarget) { target = newTarget; }
 
 protected:
@@ -72,8 +72,8 @@ public:
     {}
 
     void ExecuteJob() override;
-    inline BuildingType GetType() const { return type; }
-    inline MapPoint GetAround() const { return around; }
+    BuildingType GetType() const { return type; }
+    MapPoint GetAround() const { return around; }
 
 private:
     BuildingType type;

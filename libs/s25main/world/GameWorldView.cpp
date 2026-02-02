@@ -4,7 +4,9 @@
 
 #include "world/GameWorldView.h"
 #include "CatapultStone.h"
+#include "Cheats.h"
 #include "FOWObjects.h"
+#include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -88,25 +90,34 @@ void GameWorldView::SetNextZoomFactor()
     CalcFxLx();
 }
 
-void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
+float GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
 {
-    if(zoomFactor < ZOOM_FACTORS.front())
-        targetZoomFactor_ = ZOOM_FACTORS.front();
-    else if(zoomFactor > ZOOM_FACTORS.back())
-        targetZoomFactor_ = ZOOM_FACTORS.back();
-    else
-        targetZoomFactor_ = zoomFactor;
+    targetZoomFactor_ = zoomFactor;
     if(!smoothTransition)
     {
         zoomFactor_ = targetZoomFactor_;
         updateEffectiveZoomFactor();
         CalcFxLx();
     }
+    return targetZoomFactor_;
 }
 
 float GameWorldView::GetCurrentTargetZoomFactor() const
 {
     return targetZoomFactor_;
+}
+
+Position GameWorldView::ViewPosToMap(Position pos) const
+{
+    pos -= origin_;
+    if(effectiveZoomFactor_ != 1.f)
+    {
+        PointF diff(size_.x - size_.x / effectiveZoomFactor_, size_.y - size_.y / effectiveZoomFactor_);
+        diff /= 2.f;
+        pos = Position(PointF(pos) / effectiveZoomFactor_ + diff);
+    }
+
+    return pos;
 }
 
 struct ObjectBetweenLines
@@ -347,6 +358,11 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
 
 void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer)
 {
+    const bool showEnemyProductivity =
+      GetWorld().GetGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay();
+    auto* attackAidImage =
+      (GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2) ? LOADER.GetImageN("map_new", 20000) : nullptr;
+    const bool isAllVisible = gwv.IsAllVisible();
     for(int x = firstPt.x; x <= lastPt.x; ++x)
     {
         for(int y = firstPt.y; y <= lastPt.y; ++y)
@@ -365,12 +381,13 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             // Is object not belonging to local player?
             if(no->GetPlayer() != gwv.GetPlayerId())
             {
-                if(GetWorld().GetGGS().getSelection(AddonId::MILITARY_AID) == 2 && gwv.GetNumSoldiersForAttack(pt) > 0)
-                {
-                    auto* attackAidImage = LOADER.GetImageN("map_new", 20000);
+                if(!isAllVisible && gwv.GetVisibility(pt, false) != Visibility::Visible)
+                    continue;
+                if(attackAidImage && gwv.GetNumSoldiersForAttack(pt) > 0)
                     attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
-                }
-                continue;
+                // Do not draw enemy productivity overlay unless the related cheat is on
+                if(!showEnemyProductivity)
+                    continue;
             }
 
             // Draw object name

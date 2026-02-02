@@ -15,13 +15,15 @@ def transformIntoStep(architecture, dockerImage, buildScript) {
     return {
         timeout(120) {
             def wspwd = pwd()
+            def ccache_dir_host = "$HOME/.ccache-$architecture"
             dir("build-$architecture") {
                 sh 'touch .git-keep'
+                sh "mkdir -p '$ccache_dir_host'"
                 withDockerRegistry( registry: [credentialsId: dockerCredentials, url: 'https://'+dockerRegistry ] ) {
                     withDockerContainer(
                         image: dockerRegistry+dockerImage,
                         args: " \
-                            -v $HOME/.ccache:/.ccache \
+                            -v $ccache_dir_host:/.ccache \
                             -v $wspwd/source:/source:ro \
                             -v $wspwd/result:/result \
                         ") {

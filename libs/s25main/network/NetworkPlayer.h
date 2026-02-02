@@ -35,4 +35,4 @@ public:
     Socket socket;
 };
 
-void swap(NetworkPlayer& lhs, NetworkPlayer& rhs);
+void swap(NetworkPlayer& lhs, NetworkPlayer& rhs) noexcept;
