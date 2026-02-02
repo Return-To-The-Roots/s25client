@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -18,6 +18,7 @@
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/EnumArray.h"
+#include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
@@ -123,8 +124,7 @@ Position GameWorldView::ViewPosToMap(Position pos) const
 struct ObjectBetweenLines
 {
     noBase& obj;
-    DrawPoint pos; // Zeichenposition
-
+    DrawPoint pos;
     ObjectBetweenLines(noBase& obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
 };
 
@@ -155,6 +155,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         glMatrixMode(GL_MODELVIEW);
     }
 
+    glPushMatrix();
     glTranslatef(static_cast<GLfloat>(origin_.x) / effectiveZoomFactor_,
                  static_cast<GLfloat>(origin_.y) / effectiveZoomFactor_, 0.0f);
 
@@ -163,17 +164,19 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     terrainRenderer.Draw(GetFirstPt(), GetLastPt(), gwv, water);
     glTranslatef(static_cast<GLfloat>(offset.x), static_cast<GLfloat>(offset.y), 0.0f);
 
-    for(int y = firstPt.y; y <= lastPt.y; ++y)
-    {
-        // Figuren speichern, die in dieser Zeile gemalt werden müssen
-        // und sich zwischen zwei Zeilen befinden, da sie dazwischen laufen
-        std::vector<ObjectBetweenLines> between_lines;
+    const auto& world = GetWorld();
+    const auto resourceRevealMode = world.GetGameInterface()->GI_GetCheats().getResourceRevealMode();
 
-        for(int x = firstPt.x; x <= lastPt.x; ++x)
+    // Save figures that are between rows (due to moving) to draw later
+    std::vector<ObjectBetweenLines> objsBetweenRows;
+    for(const int y : helpers::range(firstPt.y, lastPt.y + 1))
+    {
+        objsBetweenRows.clear();
+        for(const int x : helpers::range(firstPt.x, lastPt.x + 1))
         {
             Position curOffset;
             const MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
-            DrawPoint curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
+            const DrawPoint curPos = world.GetNodePos(curPt) - offset + curOffset;
 
             Position mouseDist = mousePos - curPos;
             mouseDist *= mouseDist;
@@ -184,19 +187,20 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
                 shortestDistToMouse = std::abs(mouseDist.x) + std::abs(mouseDist.y);
             }
 
-            Visibility visibility = gwv.GetVisibility(curPt);
+            const Visibility visibility = gwv.GetVisibility(curPt);
 
             DrawBoundaryStone(curPt, curPos, visibility);
 
             if(visibility == Visibility::Visible)
             {
                 DrawObject(curPt, curPos);
-                DrawMovingFiguresFromBelow(terrainRenderer, Position(x, y), between_lines);
-                DrawFigures(curPt, curPos, between_lines);
+                DrawMovingFiguresFromBelow(terrainRenderer, Position(x, y), objsBetweenRows);
+                DrawFigures(curPt, curPos, objsBetweenRows);
 
-                // Construction aid mode
                 if(show_bq)
                     DrawConstructionAid(curPt, curPos);
+                if(resourceRevealMode != Cheats::ResourceRevealMode::Nothing)
+                    DrawResource(curPt, curPos, resourceRevealMode);
             } else if(visibility == Visibility::FogOfWar)
             {
                 const FOWObject* fowobj = gwv.GetYoungestFOWObject(MapPoint(curPt));
@@ -208,8 +212,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
                 callback->onDraw(curPt, curPos);
         }
 
-        // Figuren zwischen den Zeilen zeichnen
-        for(auto& between_line : between_lines)
+        // Draw objects that are between rows now
+        for(auto& between_line : objsBetweenRows)
             between_line.obj.Draw(between_line.pos);
     }
 
@@ -218,8 +222,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
-    // Umherfliegende Katapultsteine zeichnen
-    for(auto* catapult_stone : GetWorld().catapult_stones)
+    // Draw catapult stones
+    for(auto* catapult_stone : world.catapult_stones)
     {
         if(gwv.GetVisibility(catapult_stone->dest_building) == Visibility::Visible
            || gwv.GetVisibility(catapult_stone->dest_map) == Visibility::Visible)
@@ -232,8 +236,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
     }
-    glTranslatef(-static_cast<GLfloat>(origin_.x) / effectiveZoomFactor_,
-                 -static_cast<GLfloat>(origin_.y) / effectiveZoomFactor_, 0.0f);
+    glPopMatrix();
 
     glScissor(0, 0, windowSize.width, windowSize.height);
 }
@@ -457,7 +460,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
 }
 
 void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
-                                std::vector<ObjectBetweenLines>& between_lines) const
+                                std::vector<ObjectBetweenLines>& objsBetweenRows) const
 {
     for(noBase& figure : GetWorld().GetFigures(pt))
     {
@@ -468,21 +471,19 @@ void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
             if(curMoveDir == Direction::NorthEast || curMoveDir == Direction::NorthWest)
                 continue;
             // Draw later
-            between_lines.push_back(ObjectBetweenLines(figure, curPos));
+            objsBetweenRows.push_back(ObjectBetweenLines(figure, curPos));
         } else if(figure.GetGOT() == GO_Type::Ship)
-            between_lines.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
+            objsBetweenRows.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
         else
-            // Ansonsten jetzt schon zeichnen
-            figure.Draw(curPos);
+            figure.Draw(curPos); // Draw normally
     }
 }
 
 void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
-                                               std::vector<ObjectBetweenLines>& between_lines)
+                                               std::vector<ObjectBetweenLines>& objsBetweenRows)
 {
     // First draw figures moving towards this point from below
-    static const std::array<Direction, 2> aboveDirs = {{Direction::NorthEast, Direction::NorthWest}};
-    for(Direction dir : aboveDirs)
+    for(Direction dir : {Direction::NorthEast, Direction::NorthWest})
     {
         // Get figures opposite the current dir and check if they are moving in this dir
         // Coordinates transform
@@ -493,7 +494,7 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
         for(noBase& figure : GetWorld().GetFigures(curPt))
         {
             if(figure.IsMoving() && static_cast<noMovable&>(figure).GetCurMoveDir() == dir)
-                between_lines.push_back(ObjectBetweenLines(figure, figPos));
+                objsBetweenRows.push_back(ObjectBetweenLines(figure, figPos));
         }
     }
 }
@@ -571,6 +572,50 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
         else
             continue;
         LOADER.boundary_stone_cache[nation].draw(curPos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
+    }
+}
+
+void GameWorldView::DrawResource(const MapPoint& pt, DrawPoint curPos, const Cheats::ResourceRevealMode resRevealMode)
+{
+    using RRM = Cheats::ResourceRevealMode;
+
+    if(resRevealMode == RRM::Nothing)
+        return;
+
+    const Resource res = gwv.GetNode(pt).resources;
+    const auto amount = res.getAmount();
+
+    if(!amount)
+        return;
+
+    GoodType gt = GoodType::Nothing;
+    RTTR_Assert(resRevealMode >= RRM::Ores);
+    switch(res.getType())
+    {
+        case ResourceType::Iron: gt = GoodType::IronOre; break;
+        case ResourceType::Gold: gt = GoodType::Gold; break;
+        case ResourceType::Coal: gt = GoodType::Coal; break;
+        case ResourceType::Granite: gt = GoodType::Stones; break;
+        case ResourceType::Water:
+            if(resRevealMode < RRM::Water)
+                return;
+            gt = GoodType::Water;
+            break;
+        case ResourceType::Fish:
+            if(resRevealMode < RRM::Fish)
+                return;
+            gt = GoodType::Fish;
+            break;
+        case ResourceType::Nothing: return;
+    }
+
+    if(auto* bm = LOADER.GetWareTex(gt))
+    {
+        for([[maybe_unused]] const auto i : helpers::range(amount))
+        {
+            bm->DrawFull(curPos);
+            curPos.y -= 4;
+        }
     }
 }
 
