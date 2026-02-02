@@ -8,7 +8,7 @@
 #include <array>
 
 class ctrlGroup;
-class MouseCoords;
+struct MouseCoords;
 class glArchivItem_Bitmap;
 
 class ctrlTab : public Window

@@ -31,5 +31,8 @@ protected:
         return true;
     }
 
+    /// Constructs a road connecting 2 buildings and checks for success
+    void BuildRoadForBlds(MapPoint bldPosFrom, MapPoint bldPosTo);
+
     virtual GameWorld& GetWorld() = 0;
 };

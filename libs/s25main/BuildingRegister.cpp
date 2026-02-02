@@ -153,7 +153,7 @@ helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcProductivities(
 
 unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
 {
-    if(!BLD_WORK_DESC[bldType].producedWare)
+    if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))
         return 0;
     unsigned productivity = 0;
     const auto& buildings = GetBuildings(bldType);
@@ -173,7 +173,7 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
     unsigned numBlds = 0;
     for(const auto bldType : helpers::enumRange<BuildingType>())
     {
-        if(!BLD_WORK_DESC[bldType].producedWare)
+        if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))
             continue;
 
         const auto& buildings = GetBuildings(bldType);

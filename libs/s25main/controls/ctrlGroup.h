@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Window.h"
-class MouseCoords;
+struct MouseCoords;
 struct KeyEvent;
 
 enum class GroupSelectType : unsigned

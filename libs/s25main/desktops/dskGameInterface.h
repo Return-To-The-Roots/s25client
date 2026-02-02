@@ -1,9 +1,11 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
+#include "CheatCommandTracker.h"
+#include "Cheats.h"
 #include "Desktop.h"
 #include "GameInterface.h"
 #include "IngameMinimap.h"
@@ -23,7 +25,7 @@
 class IngameWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
-class MouseCoords;
+struct MouseCoords;
 class PostBox;
 class PostMsg;
 struct BuildingNote;
@@ -82,6 +84,8 @@ public:
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
     void GI_BuildRoad() override;
 
+    Cheats& GI_GetCheats() override { return cheats_; }
+
     // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
     // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
     // Punkt reichen. Dann werden die Zielkoordinaten geändert, daher
@@ -112,6 +116,9 @@ protected:
 
     /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
     void UpdatePostIcon(unsigned postmessages_count, bool showPigeon);
+
+    /// Executed during left click. Checks click pos for buildings/roads
+    bool ContextClick(const MouseCoords& mc);
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_PaintBefore() override;
@@ -159,10 +166,12 @@ protected:
     /// Minimap-Instanz
     IngameMinimap minimap;
 
+    // How long is finger on screen (contextclick or scrolling?)
+    unsigned int touchDuration;
     bool isScrolling;
     Position startScrollPt;
-    size_t zoomLvl;
-    bool isCheatModeOn;
-    std::string curCheatTxt;
     Subscription evBld;
+
+    Cheats cheats_;
+    CheatCommandTracker cheatCommandTracker_;
 };

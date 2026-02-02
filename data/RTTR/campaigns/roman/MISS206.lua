@@ -20,7 +20,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 5
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -74,6 +74,20 @@ rttr:RegisterTranslations(
 
         msg99   = 'We have found the gateway and occupied it.',
         msgh99  = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+    pl =
+    { 
+        Diary   = 'Dziennik',
+
+        msg1    = 'Czwarty Dzień Jedenastego Miesiąca Szóstego Roku.\n\nWygląda na to, że nasz półwysep jest połączony z resztą kontynentu tylko przez dwie wąskie doliny.\n\nŚlady sugerują, że na południu osiedliła się barbarzyńska rasa Wikingów.',
+        msgh1   = 'Rozpocznij poszukiwania wrót.',
+
+        msg2    = 'Pojmany Wiking powiedział nam, że na półwyspie na zachód od nas żyje inne niezwykle bogate plemię.\n\nMają duże zapasy złota.\n\nDostęp do ich regionu na zachód od dużej zatoki jest silnie ufortyfikowany.\n\nDokładniejsze szczegóły nie zostały uzyskane.',
+
+        msg3    = 'Dziewiętnasty Dzień Czwartego Miesiąca Siódmego Roku.\n\nWikingowie wydają się być niezwykle silni.\n\nW jakiś sposób musimy uzyskać dostęp do ich twierdzy.\n\nInteresujące jest to, że to plemię ma również cmentarz wielorybów na małym półwyspie na północ od ich kopalni złota.\n\nZastanawiam się, czy oni także boją się duchów wielorybów?',
+
+        msg99   = 'Znaleźliśmy wrota i zajęliśmy je.',
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...' 
     }
 })
 
@@ -108,16 +122,19 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:red, 2:yellow,
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Erik')           -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(3)
     
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Olof')           -- Enemy Name
+    rttr:GetPlayer(2):SetPortrait(5)
 end
 
 function getAllowedChanges()
@@ -126,9 +143,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

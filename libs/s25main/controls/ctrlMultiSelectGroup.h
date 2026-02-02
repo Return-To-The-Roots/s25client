@@ -7,7 +7,7 @@
 #include "ctrlButton.h"
 #include "ctrlGroup.h"
 #include <set>
-class MouseCoords;
+struct MouseCoords;
 class Window;
 
 /// Verwaltet eine Gruppe von n Buttons, von denen 0 bis n gleichzeitig ausgewählt sind

@@ -16,7 +16,8 @@ iwTempleBuilding::iwTempleBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     GetCtrl<Window>(1)->SetPos(DrawPoint(117, 160));
     GetCtrl<ctrlImage>(3)->SetImage(wineaddon::GetTempleProductionModeTex(ProductionMode::Default));
     AddImageButton(8, DrawPoint(130, 176), Extent(34, 32), TextureColor::Grey,
-                   wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()));
+                   wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()),
+                   _("Output mineral"));
 }
 
 void iwTempleBuilding::Msg_ButtonClick(const unsigned ctrl_id)

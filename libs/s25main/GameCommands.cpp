@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -95,8 +95,7 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
     else
     {
         std::array<Distributions::value_type,
-                   std::tuple_size<Distributions>::value - 3>
-          tmpData; // 3 entries for wine addon
+                   std::tuple_size_v<Distributions> - 3> tmpData; // 3 entries for wine addon
         helpers::popContainer(ser, tmpData);
         size_t srcIdx = 0, tgtIdx = 0;
         for(const auto& mapping : distributionMap)

@@ -29,6 +29,7 @@ public:
     virtual void DrawFull(const Position& dstPos, unsigned color = COLOR_WHITE) override;
     /// Draw in player colors
     void drawForPlayer(const DrawPoint& dst, unsigned playerColor);
+    void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE) override;
 
 protected:
     void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);

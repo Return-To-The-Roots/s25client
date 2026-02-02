@@ -554,14 +554,14 @@ TerritoryRegion GameWorld::CreateTerritoryRegion(const noBaseBuilding& building,
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(bldPos, 3);
     for(const nobBaseMilitary* milBld : buildings)
     {
-        if(!(reason == TerritoryChangeReason::Destroyed && milBld == &building))
+        if(reason != TerritoryChangeReason::Destroyed || milBld != &building)
             region.CalcTerritoryOfBuilding(*milBld);
     }
 
     // Baustellen von Häfen mit einschließen
     for(const noBuildingSite* bldSite : harbor_building_sites_from_sea)
     {
-        if(!(reason == TerritoryChangeReason::Destroyed && bldSite == &building))
+        if(reason != TerritoryChangeReason::Destroyed || bldSite != &building)
             region.CalcTerritoryOfBuilding(*bldSite);
     }
     CleanTerritoryRegion(region, reason, building);
@@ -574,30 +574,34 @@ void GameWorld::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeRea
 {
     if(GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH))
     {
-        const unsigned char ownerOfTriggerBld = GetNode(triggerBld.GetPos()).owner;
-        const unsigned char newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(triggerBld.GetPos()));
+        const bool isHq = triggerBld.GetBuildingType() == BuildingType::Headquarters;
+        const auto newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(triggerBld.GetPos()));
+        // An HQ can be placed independently of the current owner.
+        // So ensure the HQ position is always considered to belong to the HQ owner
+        // if the TerritoryChangeReason is Build
+        const auto ownerOfTriggerBld =
+          isHq && reason == TerritoryChangeReason::Build ? newOwnerOfTriggerBld : GetNode(triggerBld.GetPos()).owner;
 
         RTTR_FOREACH_PT(Position, region.size)
         {
             const MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
-            const unsigned char oldOwner = GetNode(curMapPt).owner;
-            const unsigned char newOwner = region.GetOwner(pt);
+            const auto oldOwner = GetNode(curMapPt).owner;
+            const auto newOwner = region.GetOwner(pt);
 
             // If nothing changed, there is nothing to do (ownerChanged was already initialized)
             if(oldOwner == newOwner)
                 continue;
 
-            // rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can
-            // take territory
             const bool ownersAllied = oldOwner > 0 && newOwner > 0 && GetPlayer(oldOwner - 1).IsAlly(newOwner - 1);
-            if((ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
-                && triggerBld.GetBuildingType() != BuildingType::Headquarters)
-               ||
-               // rule 2: do not gain territory when you lose a building (captured or destroyed)
-               (ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build) ||
-               // rule 3: do not lose territory when you gain a building (newBuilt or capture)
-               ((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
-                || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured)))
+            if(
+              // rule 1: only take territory from an ally if that ally loses a building
+              // special case: headquarter can take territory
+              (ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build) && !isHq) ||
+              // rule 2: do not gain territory when you lose a building (captured or destroyed)
+              (ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build) ||
+              // rule 3: do not lose territory when you gain a building (newBuilt or capture)
+              ((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
+               || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured)))
             {
                 region.SetOwner(pt, oldOwner);
             }

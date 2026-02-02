@@ -20,7 +20,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 5
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -74,6 +74,20 @@ rttr:RegisterTranslations(
 
         msg99   = 'We have found the gateway and occupied it.',
         msgh99  = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+    pl =
+    { 
+        Diary   = 'Dziennik',
+
+        msg1    = 'Ostatni Dzień Piątego Roku.\n\nRzeźby skalne sugerują, że na południowym zachodzie znajduje się wyspa.\n\nWygląda na to, że są tam znaczne złoża złota.',
+        msgh1   = 'Znajdź i zajmij wrota!\nSprawdź możliwości budowy portu.',
+
+        msg2    = 'Wikingowie mają osadę za dużym pasmem górskim na wschodzie naszej wyspy.\n\nZe szczytów gór można zobaczyć kolejny bardzo duży fragment lądu na północnym wschodzie.\n\nNie znaleźliśmy jeszcze żadnych śladów wrót, a jeńcy wojenni twierdzą, że nic o nich nie wiedzą...\n\nSą jednak kiepskimi kłamcami.',
+
+        msg3    = 'Zdobyliśmy mały obszar ziemi za pasmem górskim od Wikingów.\n\nWzięliśmy kolejnych jeńców, którzy powiedzieli nam, gdzie znajdują się wrota.\n\nJak już podejrzewaliśmy, znajdują się one na dalekim północnym wschodzie.\n\nPoza małym obszarem na południu tej krainy, całość jest w rękach Wikingów.\n\nMusimy szybko zbudować tam port i zdobyć świeże zapasy.',
+
+        msg99   = 'Znaleźliśmy wrota i zajęliśmy je.',
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
@@ -108,16 +122,19 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:read, 2:yellow, 
+    rttr:GetPlayer(0):SetPortrait(0)
     
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Erik')           -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(3)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Olof')           -- Enemy Name
+    rttr:GetPlayer(2):SetPortrait(5)
 end
 
 function getAllowedChanges()
@@ -126,9 +143,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -19,6 +19,7 @@
 #include "gameTypes/TeamTypes.h"
 #include "s25util/Log.h"
 #include "s25util/Serializer.h"
+#include <chrono>
 #include <utility>
 
 struct JoinPlayerInfo;
@@ -332,6 +333,35 @@ public:
     bool Run(GameMessageInterface* callback) const override
     {
         LOG.writeToFile("<<< NMS_PLAYER_NAME(%s)\n") % playername;
+        return callback->OnGameMessage(*this);
+    }
+};
+
+class GameMessage_Player_Portrait : public GameMessageWithPlayer
+{
+public:
+    unsigned int playerPortraitIndex;
+
+    GameMessage_Player_Portrait() : GameMessageWithPlayer(NMS_PLAYER_PORTRAIT) {}
+    GameMessage_Player_Portrait(uint8_t player, unsigned int portraitIndex)
+        : GameMessageWithPlayer(NMS_PLAYER_PORTRAIT, player), playerPortraitIndex(portraitIndex)
+    {}
+
+    void Serialize(Serializer& ser) const override
+    {
+        GameMessageWithPlayer::Serialize(ser);
+        ser.PushUnsignedInt(playerPortraitIndex);
+    }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessageWithPlayer::Deserialize(ser);
+        playerPortraitIndex = ser.PopUnsignedInt();
+    }
+
+    bool Run(GameMessageInterface* callback) const override
+    {
+        LOG.writeToFile("<<< NMS_PLAYER_PORTRAIT(%u)\n") % playerPortraitIndex;
         return callback->OnGameMessage(*this);
     }
 };
@@ -883,29 +913,29 @@ public:
 class GameMessage_Speed : public GameMessage
 {
 public:
-    uint32_t gf_length; // new speed
+    std::chrono::milliseconds gf_length; // new speed
 
     GameMessage_Speed() : GameMessage(NMS_SERVER_SPEED) {} //-V730
-    GameMessage_Speed(const uint32_t gf_length) : GameMessage(NMS_SERVER_SPEED), gf_length(gf_length)
+    GameMessage_Speed(const std::chrono::milliseconds gf_length) : GameMessage(NMS_SERVER_SPEED), gf_length(gf_length)
     {
-        LOG.writeToFile(">>> NMS_SERVER_SPEED(%d)\n") % gf_length;
+        LOG.writeToFile(">>> NMS_SERVER_SPEED(%d)\n") % gf_length.count();
     }
 
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushUnsignedInt(gf_length);
+        ser.PushUnsignedInt(static_cast<uint32_t>(gf_length.count()));
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
-        gf_length = ser.PopUnsignedInt();
+        gf_length = decltype(gf_length)(ser.PopUnsignedInt());
     }
 
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NMS_SERVER_SPEED(%d)\n") % gf_length;
+        LOG.writeToFile("<<< NMS_SERVER_SPEED(%d)\n") % gf_length.count();
         return callback->OnGameMessage(*this);
     }
 };

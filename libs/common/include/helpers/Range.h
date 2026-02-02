@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,7 +16,7 @@ namespace helpers {
 template<typename T>
 class range
 {
-    static_assert(std::is_integral<T>::value, "Must be an integral!");
+    static_assert(std::is_integral_v<T>, "Must be an integral!");
     const T startValue_;
     const T endValue_;
 

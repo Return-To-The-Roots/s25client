@@ -83,6 +83,7 @@ public:
     bool IsWaitingAtFlag() const { return (state == State::WaitAtFlag); }
     bool IsWaitingInWarehouse() const { return (state == State::WaitInWarehouse); }
     bool IsWaitingForShip() const { return (state == State::WaitForShip); }
+    bool IsCarried() const { return (state == State::Carried); }
     /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
     void RemoveWareJobForDir(RoadPathDirection last_next_dir);
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
@@ -99,7 +100,7 @@ public:
     noRoadNode* GetLocation() { return location; }
     const noRoadNode* GetLocation() const { return location; }
     /// Ist die Ware eine LostWare (Ware, die kein Ziel mehr hat und irgendwo sinnlos rumliegt)?
-    bool IsLostWare() const { return ((goal ? false : true) && state != State::OnShip); }
+    bool IsLostWare() const { return ((goal == nullptr) && state != State::OnShip); }
     /// Informiert Ware, dass eine Schiffsreise beginnt
     void StartShipJourney();
     /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt

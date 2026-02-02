@@ -34,7 +34,7 @@ void ctrlEdit::SetText(const std::string& text)
 {
     text_ = s25util::utf8to32(text);
     if(numberOnly_)
-        helpers::erase_if(text_, [](char32_t c) { return !(c >= '0' && c <= '9'); });
+        helpers::erase_if(text_, [](char32_t c) { return c < '0' || c > '9'; });
     if(maxLength_ > 0 && text_.size() > maxLength_)
         text_.resize(maxLength_);
 
@@ -168,7 +168,7 @@ void ctrlEdit::Draw_()
 void ctrlEdit::AddChar(char32_t c)
 {
     // Number-only text fields accept numbers only ;)
-    if(numberOnly_ && !(c >= '0' && c <= '9'))
+    if(numberOnly_ && (c < '0' || c > '9'))
         return;
 
     if(maxLength_ > 0 && text_.size() >= maxLength_)
@@ -184,12 +184,12 @@ void ctrlEdit::AddChar(char32_t c)
  */
 void ctrlEdit::RemoveChar()
 {
-    if(cursorPos_ > 0 && text_.length() > 0)
+    if(cursorPos_ > 0 && !text_.empty())
     {
         text_.erase(cursorPos_ - 1, 1);
 
         // View verschieben
-        while(text_.length() > 0 && text_.length() <= viewStart_)
+        while(!text_.empty() && text_.length() <= viewStart_)
             --viewStart_;
 
         CursorLeft();
@@ -219,7 +219,7 @@ void ctrlEdit::Resize(const Extent& newSize)
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
-    SetFocus(IsPointInRect(mc.GetPos(), GetDrawRect()));
+    SetFocus(IsPointInRect(mc.pos, GetDrawRect()));
     return false; // "Unhandled" so other edits can handle this too and set their focus accordingly
 }
 

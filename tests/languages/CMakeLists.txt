@@ -1,10 +1,10 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2026 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 configure_file(languageFiles.h.cmake languageFiles.h)
 add_testcase(NAME LanguageFiles
-    LIBS mygettext s25util::common Boost::filesystem rttr::vld
+    LIBS s25Common mygettext s25util::common Boost::filesystem rttr::vld
     INCLUDES ${CMAKE_CURRENT_BINARY_DIR}
     COST 15
 )

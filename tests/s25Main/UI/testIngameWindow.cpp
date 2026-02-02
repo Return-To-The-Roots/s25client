@@ -41,6 +41,20 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(rttr::mapGenerator::IslandAmount)
 
 BOOST_FIXTURE_TEST_SUITE(IngameWindows, uiHelper::Fixture)
 
+static MouseCoords makeLeftDown(const Position pos)
+{
+    MouseCoords mc(pos);
+    mc.ldown = true;
+    return mc;
+}
+
+static MouseCoords makeLeftDblClick(const Position pos)
+{
+    MouseCoords mc(pos);
+    mc.dbl_click = true;
+    return mc;
+}
+
 BOOST_AUTO_TEST_CASE(MinimizeWindow)
 {
     iwHelp wnd("Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
@@ -277,12 +291,33 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Left title bar button closes window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(4, 4), true};
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(4, 4));
+            const MouseCoords evLDownInsideWindow = makeLeftDown(wnd.GetPos() + wnd.GetSize() / 2);
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.MouseLeftUp(evLDown);
+
+            // Only react when clicking the button not when moving the mouse to the button
+            // while holding left mouse button
+            wnd.Msg_LeftDown(evLDownInsideWindow);
+            wnd.Msg_MouseMove(evLDown);
+            wnd.Msg_LeftUp(evLUp);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+            // Similar when moving out of the button
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_MouseMove(evLDownInsideWindow);
+            wnd.Msg_MouseMove(evLDown);
+            wnd.Msg_LeftUp(evLUp);
+            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.IsMinimized());
+            BOOST_TEST(!wnd.IsPinned());
+
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -294,12 +329,14 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Double-click on the window title has no effect")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDblDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4), true, false, true};
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.MouseLeftUp(evLDblDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -312,12 +349,14 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Right title bar button minimizes window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4), true};
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4));
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.MouseLeftUp(evLDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -335,12 +374,14 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Left title bar button closes window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(4, 4), true};
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(4, 4));
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.MouseLeftUp(evLDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -352,12 +393,14 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Double-click on the window title minimizes")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDblDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4), true, false, true};
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.MouseLeftUp(evLDblDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -371,12 +414,14 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Right title bar button pins window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown{wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4), true};
+            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4));
+            const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.MouseLeftUp(evLDown);
+            wnd.Msg_LeftDown(evLDown);
+            wnd.Msg_LeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(wnd.IsPinned());
@@ -562,21 +607,21 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
 
     {
         const DrawPoint mousePosRel = DrawPoint(wnd2.GetSize().x / 2, 4);
-        const MouseCoords evLDown{wnd2.GetPos() + mousePosRel, true};
-        wnd2.MouseLeftDown(evLDown);
+        const MouseCoords evLDown = makeLeftDown(wnd2.GetPos() + mousePosRel);
+        wnd2.Msg_LeftDown(evLDown);
 
         {
-            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-80, 0), true};
+            const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-80, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd2.MouseMove(mc);
+            wnd2.Msg_MouseMove(mc);
             BOOST_TEST(wnd2.GetPos() == DrawPoint(120, 480)); // Not in snap range yet
             BOOST_TEST(VIDEODRIVER.GetMousePos() == (wnd2.GetPos() + mousePosRel));
         }
 
         {
-            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 0), true};
+            const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd2.MouseMove(mc);
+            wnd2.Msg_MouseMove(mc);
             BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 480)); // In snap range
             BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
             // Cursor position is off by snap offset
@@ -584,10 +629,10 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
         }
 
         {
-            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 30), true};
-            // Reset mouse position to ensure it's properly updated in MouseMove()
+            const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 30));
+            // Reset mouse position to ensure it's properly updated in Msg_MouseMove()
             VIDEODRIVER.SetMousePos(Position(0, 0));
-            wnd2.MouseMove(mc);
+            wnd2.Msg_MouseMove(mc);
             BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 500)); // Still in snap range
             BOOST_TEST(VIDEODRIVER.GetMousePos() == Position(mc.pos.x, wnd2.GetPos().y + mousePosRel.y));
             // Cursor position is off by snap offset
@@ -601,15 +646,15 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
           std::make_unique<IngameWindow>(0, DrawPoint(200, 0), Extent(100, 100), "Test Window 3", nullptr)));
 
         const DrawPoint mousePosRel = DrawPoint(wnd3.GetSize().x / 2, 4);
-        const MouseCoords evLDown{wnd3.GetPos() + mousePosRel, true};
-        wnd3.MouseLeftDown(evLDown);
+        const MouseCoords evLDown = makeLeftDown(wnd3.GetPos() + mousePosRel);
+        wnd3.Msg_LeftDown(evLDown);
 
         {
             wnd1.SetPos(DrawPoint(0, 0));
             wnd2.SetPos(DrawPoint(5, 0));
-            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 0), true};
+            const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd3.MouseMove(mc);
+            wnd3.Msg_MouseMove(mc);
             // In snap range of wnd1 and wnd2, but closest to wnd2
             BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd2.GetPos().x + wnd2.GetSize().x, 0));
             BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
@@ -620,9 +665,9 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
         {
             wnd1.SetPos(DrawPoint(5, 0));
             wnd2.SetPos(DrawPoint(0, 0));
-            const auto mc = MouseCoords{evLDown.pos + DrawPoint(-90, 0), true};
+            const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd3.MouseMove(mc);
+            wnd3.Msg_MouseMove(mc);
             // In snap range of wnd1 and wnd2, but closest to wnd1
             BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd1.GetPos().x + wnd1.GetSize().x, 0));
             BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);

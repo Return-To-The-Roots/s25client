@@ -4,24 +4,30 @@
 
 #include "BasePlayerInfo.h"
 #include "helpers/serializeEnums.h"
-#include "s25util/Serializer.h"
+#include "gameData/PortraitConsts.h"
 #include "s25util/colors.h"
 
 BasePlayerInfo::BasePlayerInfo()
-    : ps(PlayerState::Free), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(Team::None)
+    : ps(PlayerState::Free), portraitIndex(0), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(Team::None)
 {}
 
-BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
+BasePlayerInfo::BasePlayerInfo(Serializer& ser, int serializedVersion, bool lightData)
     : ps(helpers::popEnum<PlayerState>(ser)), aiInfo(!lightData || ps == PlayerState::AI ? ser : AI::Info())
 {
     if(lightData && !isUsed())
     {
+        portraitIndex = 0;
         nation = Nation::Romans;
         team = Team::None;
         color = PLAYER_COLORS[0];
     } else
     {
         name = ser.PopLongString();
+        portraitIndex = (serializedVersion >= 1) ? ser.PopUnsignedInt() : 0;
+        if(portraitIndex >= Portraits.size())
+        {
+            portraitIndex = 0;
+        }
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
         team = helpers::popEnum<Team>(ser);
@@ -36,6 +42,7 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     if(!lightData || ps == PlayerState::AI)
         aiInfo.serialize(ser);
     ser.PushLongString(name);
+    ser.PushUnsignedInt(portraitIndex);
     helpers::pushEnum<uint8_t>(ser, nation);
     ser.PushUnsignedInt(color);
     helpers::pushEnum<uint8_t>(ser, team);
@@ -54,4 +61,11 @@ int BasePlayerInfo::GetColorIdx(unsigned color) //-V688
             return i;
     }
     return -1;
+}
+
+int BasePlayerInfo::getCurrentVersion()
+{
+    // 0: Initial
+    // 1: Added portraitIndex
+    return 1;
 }

@@ -366,7 +366,7 @@ Rect ctrlTable::GetFullDrawArea() const
 
 bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(), GetContentDrawArea()))
+    if(IsPointInRect(mc.pos, GetContentDrawArea()))
     {
         SetSelection(GetSelectionFromMouse(mc));
         if(GetParent())
@@ -379,7 +379,7 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
 
 bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(), GetContentDrawArea()))
+    if(IsPointInRect(mc.pos, GetContentDrawArea()))
     {
         SetSelection(GetSelectionFromMouse(mc));
         if(GetParent())
@@ -404,7 +404,7 @@ boost::optional<unsigned> ctrlTable::GetSelectionFromMouse(const MouseCoords& mc
 bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
-    if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
+    if(IsPointInRect(mc.pos, GetFullDrawArea()))
     {
         auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-1);
@@ -415,7 +415,7 @@ bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
 
 bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
+    if(IsPointInRect(mc.pos, GetFullDrawArea()))
     {
         auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+1);
@@ -426,7 +426,7 @@ bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
 
 bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(), GetContentDrawArea()))
+    if(IsPointInRect(mc.pos, GetContentDrawArea()))
     {
         if(mc.dbl_click && GetParent())
         {

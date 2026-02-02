@@ -25,7 +25,7 @@
 	path = external/languages
 [submodule "contrib/kaguya"]
 	path = external/kaguya
-	url = https://github.com/satoren/kaguya.git
+	url = https://github.com/Return-To-The-Roots/kaguya.git
 [submodule "s25edit"]
 	path = external/s25edit
 	url = https://github.com/Return-To-The-Roots/s25edit.git

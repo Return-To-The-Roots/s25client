@@ -112,6 +112,7 @@ void Ware::RecalcRoute()
             static_cast<nobHarborBuilding*>(goal)->WareDontWantToTravelByShip(this);
         } else
         {
+            // TODO(Replay) This should calculate the next dir even when carried
             FindRouteToWarehouse();
         }
     } else
@@ -338,7 +339,7 @@ unsigned Ware::CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const
 Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
 {
     RTTR_Assert(location);
-    unsigned length = 0xFFFFFFFF;
+    unsigned length;
     RoadPathDirection possibledir = world->FindPathForWareOnRoads(*location, newgoal, &length);
     if(possibledir != RoadPathDirection::None) // there is a valid path to the goal? -> ordered!
     {
@@ -346,19 +347,17 @@ Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
         // because non-warehouses cannot just carry in new wares they need a helper to do this
         if(possibledir == RoadPathDirection::NorthWest && newgoal.GetFlagPos() == location->GetPos())
         {
+            // Not executed for road from flag to the warehouse as that is handled directly by the warehouse
+            RTTR_Assert(!BuildingProperties::IsWareHouse(newgoal.GetBuildingType()));
             for(const auto dir : helpers::EnumRange<Direction>{})
             {
+                // Bounce of in this direction
                 if(dir != Direction::NorthWest && location->GetRoute(dir))
-                {
-                    possibledir = toRoadPathDirection(dir);
-                    break;
-                }
+                    return {1, toRoadPathDirection(dir)};
             }
-            if(possibledir == RoadPathDirection::NorthWest) // got no other route from the flag -> impossible
-                return {0xFFFFFFFF, RoadPathDirection::None};
+            // got no other route from the flag -> impossible
+            return {0xFFFFFFFF, RoadPathDirection::None};
         }
-        // at this point there either is a road to the goal
-        // or we are at the flag of the goal and have a road to a different flag to bounce off of to get to the goal
         return {length, possibledir};
     }
     return {0xFFFFFFFF, RoadPathDirection::None};

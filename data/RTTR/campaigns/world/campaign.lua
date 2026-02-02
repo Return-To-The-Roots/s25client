@@ -16,6 +16,12 @@ rttr:RegisterTranslations(
         name = 'Welt Kampagne',
         shortDescription = 'Orginale Welt Kampagne',
         longDescription= 'Die orginale Welt Kampagne aus der Gold Edition.\n\nErobere die ganze Welt.'
+    },
+    pl =
+    {
+        name = 'Kampania podboju świata',
+        shortDescription = 'Oryginalna kampania podboju świata',
+        longDescription= 'Oryginalna kampania podboju świata ze złotej edycji.\n\nMusisz podbić całą ziemię.'
     }
 })
 
@@ -29,7 +35,7 @@ campaign = {
     maxHumanPlayers= 1,
     difficulty = "easy",
     mapFolder = "<RTTR_GAME>/DATA/MAPS2",
-    luaFolder = "<RTTR_RTTR>/CAMPAIGNS/WORLD",
+    luaFolder = "",
     maps = { "EUROPE.WLD","NAMERICA.WLD","SAMERICA.WLD","GREEN.WLD","AFRICA.WLD","NASIA.WLD","SASIA.WLD","JAPAN.WLD","AUSTRA.WLD"},
     selectionMap = {
         background = {"<RTTR_GAME>/GFX/PICS/SETUP990.LBM", 0},

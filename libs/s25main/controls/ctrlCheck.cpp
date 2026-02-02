@@ -17,17 +17,9 @@ ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 
-/**
- *  der Messagehandler.
- *
- *  @param[in] msg   Die Nachricht.
- *  @param[in] id    Die ID des Quellsteuerelements.
- *  @param[in] param Ein nachrichtenspezifischer Parameter.
- */
-
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(!readonly && IsPointInRect(mc.GetPos(), GetDrawRect()))
+    if(!readonly && IsPointInRect(mc.pos, GetDrawRect()))
     {
         check = !check;
         GetParent()->Msg_CheckboxChange(GetID(), check);
@@ -37,9 +29,19 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
     return false;
 }
 
-/**
- *  zeichnet das Fenster.
- */
+bool ctrlCheck::Msg_MouseMove(const MouseCoords& mc)
+{
+    if(IsMouseOver(mc.pos))
+    {
+        ShowTooltip();
+        return true;
+    } else
+    {
+        HideTooltip();
+        return false;
+    }
+}
+
 void ctrlCheck::Draw_()
 {
     const unsigned short boxSize = 20;

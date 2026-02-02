@@ -15,7 +15,7 @@ JoinPlayerInfo::JoinPlayerInfo(const BasePlayerInfo& baseInfo) : PlayerInfo(base
 JoinPlayerInfo::JoinPlayerInfo(const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), originName(name) {}
 
 JoinPlayerInfo::JoinPlayerInfo(Serializer& ser)
-    : PlayerInfo(ser), originName(ser.PopLongString()), isReady(ser.PopBool())
+    : PlayerInfo(ser, BasePlayerInfo::getCurrentVersion()), originName(ser.PopLongString()), isReady(ser.PopBool())
 {}
 
 void JoinPlayerInfo::Serialize(Serializer& ser) const

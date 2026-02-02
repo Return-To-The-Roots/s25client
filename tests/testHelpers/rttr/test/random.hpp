@@ -29,7 +29,8 @@ inline bool randomBool()
 }
 template<typename T>
 auto randomPoint(typename T::ElementType min = std::numeric_limits<typename T::ElementType>::min(),
-                 typename T::ElementType max = std::numeric_limits<typename T::ElementType>::max())
+                 // Avoid overflow in some calculations by limiting max
+                 typename T::ElementType max = std::numeric_limits<typename T::ElementType>::max() / 32)
 {
     return T{randomValue(min, max), randomValue(min, max)};
 }

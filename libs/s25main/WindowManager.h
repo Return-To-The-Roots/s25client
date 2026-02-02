@@ -10,13 +10,14 @@
 #include "s25util/Singleton.h"
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 class Window;
 class Desktop;
 class IngameWindow;
-class MouseCoords;
+struct MouseCoords;
 struct KeyEvent;
 class ctrlBaseTooltip;
 
@@ -44,13 +45,13 @@ public:
     /// Zeichnet Desktop und alle Fenster.
     void Draw();
     /// liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
-    bool IsDesktopActive();
+    bool IsDesktopActive() const;
 
     /// schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
     /// Sendet eine Tastaturnachricht an die Steuerelemente.
     void RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Sendet eine Mausnachricht weiter an alle Steuerelemente
-    void RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
+    void RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc, Window* window = nullptr);
 
     /// Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
     IngameWindow& DoShow(std::unique_ptr<IngameWindow> window, bool mouse = false);
@@ -102,7 +103,10 @@ public:
     void Msg_MouseMove(const MouseCoords& mc) override;
     /// Verarbeitung Keyboard-Event
     void Msg_KeyDown(const KeyEvent& ke) override;
-    // setzt den Tooltip
+    // Show a tooltip
+    // ttw: Window that the tooltip is for, used when updating current tooltip
+    // tooltip: The tooltip text, empty to hide
+    // updateCurrent: If true, only update if the current tooltip is for ttw
     void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent = false);
 
     /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
@@ -127,6 +131,12 @@ public:
 
 private:
     class Tooltip;
+
+    /// Find the active window (desktop or ingame window)
+    /// If mc is given get the window at the mouse position unless a modal window is active
+    Window* findAndActivateWindow(Position mousePos);
+    /// Get the active window (desktop or ingame window)
+    Window* getActiveWindow() const;
 
     void DrawCursor();
     void DrawToolTip();

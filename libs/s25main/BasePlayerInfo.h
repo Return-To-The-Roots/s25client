@@ -18,6 +18,7 @@ struct BasePlayerInfo
     PlayerState ps;
     AI::Info aiInfo;
     std::string name;
+    unsigned portraitIndex;
     Nation nation;
     /// Actual color (ARGB)
     unsigned color;
@@ -25,7 +26,7 @@ struct BasePlayerInfo
 
     BasePlayerInfo();
     /// Deserialize data. If lightData is true, unused data is not read (e.g. unused slot -> Skip rest)
-    BasePlayerInfo(Serializer& ser, bool lightData);
+    BasePlayerInfo(Serializer& ser, int serializedVersion, bool lightData);
     /// Serialize data. If lightData is true, unused data is not written (e.g. unused slot -> Skip rest)
     void Serialize(Serializer& ser, bool lightData) const;
 
@@ -37,4 +38,6 @@ struct BasePlayerInfo
     /// Returns index of color in PLAYER_COLORS array or -1 if not found
     int GetColorIdx() const;
     static int GetColorIdx(unsigned color);
+
+    static int getCurrentVersion();
 };

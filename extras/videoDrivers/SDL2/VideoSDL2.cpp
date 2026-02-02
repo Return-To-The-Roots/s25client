@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -14,6 +14,8 @@
 #include <s25util/utf8.h>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
+#include <SDL_hints.h>
+#include <SDL_video.h>
 #include <algorithm>
 #include <memory>
 
@@ -25,13 +27,19 @@
 #    include <windows.h> // Avoid "Windows headers require the default packing option" due to SDL2
 #    include <SDL_syswm.h>
 #endif // _WIN32
+#if RTTR_OGL_GL4ES
+#    include <gl4esinit.h>
+#endif
 
 #define CHECK_SDL(call)                 \
-    do                                  \
-    {                                   \
-        if((call) == -1)                \
+    ([&]() -> bool {                    \
+        if((call) < 0)                  \
+        {                               \
             PrintError(SDL_GetError()); \
-    } while(false)
+            return false;               \
+        }                               \
+        return true;                    \
+    })()
 
 namespace {
 template<typename T>
@@ -42,6 +50,17 @@ struct SDLMemoryDeleter
 
 template<typename T>
 using SDL_memory = std::unique_ptr<T, SDLMemoryDeleter<T>>;
+
+void setSpecialKeys(KeyEvent& ke, const SDL_Keymod mod)
+{
+    ke.ctrl = (mod & KMOD_CTRL);
+    ke.shift = (mod & KMOD_SHIFT);
+    ke.alt = (mod & KMOD_ALT);
+}
+void setSpecialKeys(KeyEvent& ke)
+{
+    setSpecialKeys(ke, SDL_GetModState());
+}
 } // namespace
 
 IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
@@ -56,7 +75,11 @@ void FreeVideoInstance(IVideoDriver* driver)
 
 const char* GetDriverName()
 {
+#if RTTR_OGL_GL4ES
+    return "(SDL2) OpenGL-ES gl4es via SDL2-Library";
+#else
     return "(SDL2) OpenGL via SDL2-Library";
+#endif
 }
 
 VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(nullptr), context(nullptr) {}
@@ -75,6 +98,8 @@ bool VideoSDL2::Initialize()
 {
     initialized = false;
     rttr::ScopedLeakDisabler _;
+    // Do not emulate mouse events using touch
+    SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         PrintError(SDL_GetError());
@@ -116,12 +141,13 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
     SDL_GLprofile profile;
-    if((RTTR_OGL_ES))
+    if(RTTR_OGL_ES || RTTR_OGL_GL4ES)
         profile = SDL_GL_CONTEXT_PROFILE_ES;
-    else if((RTTR_OGL_COMPAT))
+    else if(RTTR_OGL_COMPAT)
         profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
     else
         profile = SDL_GL_CONTEXT_PROFILE_CORE;
+
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile));
 
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8));
@@ -133,10 +159,9 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
 
     const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
     unsigned commonFlags = SDL_WINDOW_OPENGL;
-
-#if SDL_VERSION_ATLEAST(2, 0, 1)
-    commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
-#endif
+    // TODO: Fix GUI scaling with High DPI support enabled.
+    // See https://github.com/Return-To-The-Roots/s25client/issues/1621
+    // commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
                               commonFlags | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
@@ -193,9 +218,7 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
         isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
         if(!isFullscreen_)
         {
-#if SDL_VERSION_ATLEAST(2, 0, 5)
             SDL_SetWindowResizable(window, SDL_TRUE);
-#endif
             MoveWindowToCenter();
         }
     }
@@ -235,7 +258,14 @@ void VideoSDL2::PrintError(const std::string& msg) const
 void VideoSDL2::ShowErrorMessage(const std::string& title, const std::string& message)
 {
     // window==nullptr is okay too ("no parent")
+#ifdef __linux__
+    // When using window, SDL will try to use a system tool like "zenity" which isn't always installed on every distro
+    // so rttr will crash. But without a window it will use an x11 backend that should be available on x11 AND wayland
+    // for compatibility reasons
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), nullptr);
+#else
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), message.c_str(), window);
+#endif
 }
 
 void VideoSDL2::HandlePaste()
@@ -247,12 +277,8 @@ void VideoSDL2::HandlePaste()
     if(!text || *text == '\0') // empty string indicates error
         PrintError(text ? SDL_GetError() : "Paste failed.");
 
-    KeyEvent ke = {KeyType::Char, 0, false, false, false};
     for(const char32_t c : s25util::utf8to32(text.get()))
-    {
-        ke.c = static_cast<unsigned>(c);
-        CallBack->Msg_KeyDown(ke);
-    }
+        CallBack->Msg_KeyDown(KeyEvent(c));
 }
 
 void VideoSDL2::DestroyScreen()
@@ -297,7 +323,7 @@ bool VideoSDL2::MessageLoop()
 
             case SDL_KEYDOWN:
             {
-                KeyEvent ke = {KeyType::Invalid, 0, false, false, false};
+                KeyEvent ke;
 
                 switch(ev.key.keysym.sym)
                 {
@@ -333,29 +359,32 @@ bool VideoSDL2::MessageLoop()
                         break;
                 }
 
-                if(ke.kt == KeyType::Invalid)
-                    break;
+                setSpecialKeys(ke, SDL_Keymod(ev.key.keysym.mod));
 
-                /// Strg, Alt, usw gedrückt?
-                if(ev.key.keysym.mod & KMOD_CTRL)
-                    ke.ctrl = true;
-                if(ev.key.keysym.mod & KMOD_SHIFT)
-                    ke.shift = true;
-                if(ev.key.keysym.mod & KMOD_ALT)
-                    ke.alt = true;
-
-                CallBack->Msg_KeyDown(ke);
+                if(ke.kt != KeyType::Invalid)
+                    CallBack->Msg_KeyDown(ke);
+                else if(ke.alt || ke.ctrl)
+                {
+                    // Handle shortcuts (CTRL+x, ALT+y)
+                    // but not possible combinations (ALT+0054)
+                    const SDL_Keycode keycode = ev.key.keysym.sym;
+                    if(keycode >= 'a' && keycode <= 'z')
+                    {
+                        ke.kt = KeyType::Char;
+                        ke.c = static_cast<char32_t>(keycode);
+                        CallBack->Msg_KeyDown(ke);
+                    }
+                }
             }
             break;
             case SDL_TEXTINPUT:
             {
                 const std::u32string text = s25util::utf8to32(ev.text.text);
-                SDL_Keymod mod = SDL_GetModState();
-                KeyEvent ke = {KeyType::Char, 0, (mod & KMOD_CTRL) != 0, (mod & KMOD_SHIFT) != 0,
-                               (mod & KMOD_ALT) != 0};
+                KeyEvent ke(0);
+                setSpecialKeys(ke);
                 for(char32_t c : text)
                 {
-                    ke.c = static_cast<unsigned>(c);
+                    ke.c = c;
                     CallBack->Msg_KeyDown(ke);
                 }
                 break;
@@ -391,10 +420,8 @@ bool VideoSDL2::MessageLoop()
             case SDL_MOUSEWHEEL:
             {
                 int y = ev.wheel.y;
-#if SDL_VERSION_ATLEAST(2, 0, 4)
                 if(ev.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                     y = -y;
-#endif
                 if(y > 0)
                     CallBack->Msg_WheelUp(mouse_xy);
                 else if(y < 0)
@@ -402,9 +429,60 @@ bool VideoSDL2::MessageLoop()
             }
             break;
             case SDL_MOUSEMOTION:
-                mouse_xy.pos = getGuiScale().screenToView(Position(ev.motion.x, ev.motion.y));
-                CallBack->Msg_MouseMove(mouse_xy);
+            {
+                const auto newPos = getGuiScale().screenToView(Position(ev.motion.x, ev.motion.y));
+                // Avoid duplicate events especially when warping the mouse
+                if(newPos != mouse_xy.pos)
+                {
+                    mouse_xy.pos = newPos;
+                    CallBack->Msg_MouseMove(mouse_xy);
+                }
+            }
+            break;
+            case SDL_FINGERDOWN:
+            {
+                VideoMode wnSize = GetWindowSize();
+                mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
+                mouse_xy.ldown = true;
+                mouse_xy.num_tfingers++;
+                CallBack->Msg_LeftDown(mouse_xy);
                 break;
+            }
+            case SDL_FINGERUP:
+            {
+                VideoMode wnSize = GetWindowSize();
+                mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
+                                                                   static_cast<int>(ev.tfinger.y * wnSize.height)));
+                mouse_xy.ldown = false;
+                CallBack->Msg_LeftUp(mouse_xy);
+                mouse_xy.num_tfingers--; // Dirty way to count leftUp as touch event without extra isTouch bool
+                break;
+            }
+            case SDL_FINGERMOTION:
+            {
+                VideoMode wnSize = GetWindowSize();
+                const auto newPos = getGuiScale().screenToView(Position(
+                  static_cast<int>(ev.tfinger.x * wnSize.width), static_cast<int>(ev.tfinger.y * wnSize.height)));
+
+                if(newPos != mouse_xy.pos)
+                {
+                    mouse_xy.pos = newPos;
+                    CallBack->Msg_MouseMove(mouse_xy);
+                }
+                break;
+            }
+            case SDL_MULTIGESTURE:
+            {
+                if(std::fabs(ev.mgesture.dDist) > 0.001)
+                {
+                    if(ev.mgesture.dDist > 0)
+                        CallBack->Msg_WheelUp(mouse_xy);
+                    else
+                        CallBack->Msg_WheelDown(mouse_xy);
+                }
+                break;
+            }
         }
     }
 
@@ -437,7 +515,11 @@ void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
 
 OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 {
+#if RTTR_OGL_GL4ES
+    return gl4es_GetProcAddress;
+#else
     return SDL_GL_GetProcAddress;
+#endif
 }
 
 void VideoSDL2::SetMousePos(Position pos)
@@ -449,9 +531,8 @@ void VideoSDL2::SetMousePos(Position pos)
 
 KeyEvent VideoSDL2::GetModKeyState() const
 {
-    const SDL_Keymod modifiers = SDL_GetModState();
-    const KeyEvent ke = {KeyType::Invalid, 0, ((modifiers & KMOD_CTRL) != 0), ((modifiers & KMOD_SHIFT) != 0),
-                         ((modifiers & KMOD_ALT) != 0)};
+    KeyEvent ke;
+    setSpecialKeys(ke);
     return ke;
 }
 
@@ -471,18 +552,12 @@ void* VideoSDL2::GetMapPointer() const
 void VideoSDL2::MoveWindowToCenter()
 {
     SDL_Rect usableBounds;
-#if SDL_VERSION_ATLEAST(2, 0, 5)
     CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
     int top, left, bottom, right;
-    CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right));
+    if(CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)) != 0)
+        top = left = bottom = right = 0;
     usableBounds.w -= left + right;
     usableBounds.h -= top + bottom;
-#else
-    CHECK_SDL(SDL_GetDisplayBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
-    // rough estimates
-    usableBounds.w -= 10;
-    usableBounds.h -= 30;
-#endif
     if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)
     {
         SDL_SetWindowSize(window, usableBounds.w, usableBounds.h);

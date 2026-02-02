@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,6 +6,7 @@
 #include "ListDir.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "RTTR_Assert.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
@@ -86,7 +87,7 @@ iwMusicPlayer::iwMusicPlayer()
     AddText(ID_txtPlaylist, DrawPoint(20, 240), _("Playlist:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddComboBox(ID_cbPlaylist, DrawPoint(20, 260), Extent(330, 22), TextureColor::Green1, NormalFont, 200);
 
-    // Playlistbuttons
+    // Playlist buttons
     const unsigned short button_distance = 10;
     const Extent buttonSize((330 - button_distance) / 2, 22);
     ctrlButton* b1 =
@@ -94,7 +95,7 @@ iwMusicPlayer::iwMusicPlayer()
     AddTextButton(ID_btRemovePlaylist, b1->GetPos() + DrawPoint(buttonSize.x + button_distance, 0), buttonSize,
                   TextureColor::Green2, _("Remove"), NormalFont);
 
-    // Buttons für die Musikstücke
+    // Track buttons
     AddImageButton(ID_btAddTrack, DrawPoint(360, 30), Extent(30, 40), TextureColor::Grey, LOADER.GetImageN("io", 138),
                    _("Add track"));
     AddImageButton(ID_btAddTrackDir, DrawPoint(390, 30), Extent(30, 40), TextureColor::Grey,
@@ -116,7 +117,7 @@ iwMusicPlayer::iwMusicPlayer()
     AddImageButton(ID_btSave, DrawPoint(370, 270), Extent(40, 40), TextureColor::Grey, LOADER.GetImageN("io", 37),
                    _("Save playlist"));
 
-    // Mit Werten füllen
+    // Fill values for current playlist
     UpdateFromPlaylist(MUSICPLAYER.GetPlaylist());
     UpdatePlaylistCombo(SETTINGS.sound.playlist);
     auto* cbPlayList = GetCtrl<ctrlComboBox>(ID_cbPlaylist);
@@ -156,8 +157,9 @@ void iwMusicPlayer::Close()
     }
 }
 
-void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
+void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
+    RTTR_Assert(ctrl_id == ID_cbPlaylist);
     Playlist pl;
     const std::string playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(selection);
     if(pl.Load(LOG, GetFullPlaylistPath(playlistName)))
@@ -169,9 +171,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsign
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), this,
                                                       MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     }
-    const bool isReadOnly = isReadonlyPlaylist(playlistName);
-    for(const auto id : {ID_btRemovePlaylist, ID_btSave})
-        GetCtrl<ctrlButton>(id)->SetEnabled(!isReadOnly);
+    UpdateSaveChangeButtonsState();
 }
 
 void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
@@ -195,16 +195,15 @@ boost::filesystem::path iwMusicPlayer::GetFullPlaylistPath(const std::string& na
 
 bool iwMusicPlayer::SaveCurrentPlaylist()
 {
-    const auto& selection = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelection();
-    if(!selection)
+    const auto playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelectedText();
+    if(!playlistName)
         return false;
 
     const Playlist pl = MakePlaylist();
 
-    const std::string playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection);
-    const auto fullPlaylistPath = GetFullPlaylistPath(playlistName);
+    const auto fullPlaylistPath = GetFullPlaylistPath(*playlistName);
 
-    if(isReadonlyPlaylist(playlistName))
+    if(isReadonlyPlaylist(*playlistName))
         return false;
 
     return pl.SaveAs(fullPlaylistPath);
@@ -235,6 +234,14 @@ void iwMusicPlayer::UpdateFromPlaylist(const Playlist& playlist)
     SetRandomPlayback(playlist.isRandomized());
 }
 
+void iwMusicPlayer::UpdateSaveChangeButtonsState()
+{
+    const auto playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelectedText();
+    const bool isReadOnly = !playlistName || isReadonlyPlaylist(*playlistName);
+    for(const auto id : {ID_btRemovePlaylist, ID_btSave})
+        GetCtrl<ctrlButton>(id)->SetEnabled(!isReadOnly);
+}
+
 Playlist iwMusicPlayer::MakePlaylist()
 {
     const auto* lstSongs = GetCtrl<ctrlList>(ID_lstSongs);
@@ -254,13 +261,11 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
             break;
         case ID_btRemovePlaylist:
         {
-            const auto& selection = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelection();
-            if(selection)
+            const auto& playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelectedText();
+            if(playlistName)
             {
-                const std::string playlistName(GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection));
-
-                // RTTR-Playlisten dürfen nicht gelöscht werden
-                if(isReadonlyPlaylist(playlistName))
+                // RTTR-playlists must not be deleted
+                if(isReadonlyPlaylist(*playlistName))
                 {
                     WINDOWMANAGER.Show(
                       std::make_unique<iwMsgbox>(_("Error"), _("You are not allowed to delete the standard playlist!"),
@@ -269,7 +274,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 }
 
                 boost::system::error_code ec;
-                boost::filesystem::remove(GetFullPlaylistPath(playlistName), ec);
+                boost::filesystem::remove(GetFullPlaylistPath(*playlistName), ec);
                 SETTINGS.sound.playlist = RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist).string();
                 UpdatePlaylistCombo(SETTINGS.sound.playlist);
             }
@@ -355,7 +360,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
                 valid = true;
             else
             {
-                // Evtl ein Siedlerstück ("sNN")?
+                // Could be an original The settlers song ("sNN")?
                 if(msg.length() == 3 && msg[0] == 's')
                 {
                     if(s25util::fromStringClassicDef(msg.substr(1), 999u) <= 14u)
@@ -363,10 +368,8 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
                 }
             }
 
-            // Gültiges Siedlerstück?
             if(valid)
             {
-                // Hinzufügen
                 GetCtrl<ctrlList>(ID_lstSongs)->AddString(msg);
                 changed = true;
             } else
@@ -376,17 +379,15 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
         break;
         case ID_wndAddPlaylist:
         {
-            // Ungültige Namen ausschließen
+            // Playlist name must start with a letter
             const auto isLetter = [](const char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); };
             const boost::filesystem::path fullPlaylistPath = GetFullPlaylistPath(msg);
             if(!msg.empty() && isLetter(msg.front()) && Playlist().SaveAs(fullPlaylistPath))
             {
-                // Combobox updaten
                 UpdatePlaylistCombo(fullPlaylistPath.string());
                 changed = true;
             } else
             {
-                // Fehler, konnte nicht gespeichert werden
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"),
                                                               this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
             }
@@ -428,7 +429,6 @@ void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
       ->SetTooltip(random_playback ? _("Playback in this order") : _("Random playback"));
 }
 
-/// Updatet die Playlist - Combo
 void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 {
     auto* cbPlaylist = GetCtrl<ctrlComboBox>(ID_cbPlaylist);
@@ -436,14 +436,16 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 
     std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(s25::folders::playlists), "pll");
     playlists.insert(playlists.begin(), RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist));
+    const auto currentPath = RTTRCONFIG.ExpandPath(highlight_entry);
 
     unsigned i = 0;
     for(const auto& playlistPath : playlists)
     {
         // Reduce to pure filename
         cbPlaylist->AddString(playlistPath.stem().string());
-        if(playlistPath == highlight_entry)
+        if(playlistPath == currentPath)
             cbPlaylist->SetSelection(i);
         ++i;
     }
+    UpdateSaveChangeButtonsState();
 }

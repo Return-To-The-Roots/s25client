@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -20,8 +20,11 @@ template<typename T>
 struct RectBase
 {
     using position_type = Point<T>;
+    // Deactivated to bug in clang-tidy
+    // NOLINTBEGIN(modernize-type-traits)
     using extent_elem_type =
-      typename std::conditional_t<std::is_integral<T>::value, std::make_unsigned<T>, std::common_type<T>>::type;
+      typename std::conditional_t<std::is_integral_v<T>, std::make_unsigned<T>, std::common_type<T>>::type;
+    // NOLINTEND(modernize-type-traits)
     using extent_type = Point<extent_elem_type>;
     T left, top, right, bottom;
     constexpr RectBase() : RectBase(position_type::all(0), extent_type::all(0)) {}

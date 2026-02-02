@@ -79,7 +79,8 @@ public:
     // Remaining initialization after loading (BQ...)
     void InitAfterLoad();
 
-    /// Setzt GameInterface
+    GameInterface* GetGameInterface() { return gi; }
+    const GameInterface* GetGameInterface() const { return gi; }
     void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
 
     /// Get the economy mode handler if set.
