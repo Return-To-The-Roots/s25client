@@ -5,7 +5,7 @@
 #pragma once
 
 #include <ctime> // IWYU pragma: exports
-#ifdef _WIN32
+#if defined _WIN32 && !defined __MINGW32__
 
 #    ifndef HAVE_STRUCT_TIMESPEC
 struct timespec

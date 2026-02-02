@@ -6,7 +6,8 @@
 #include <boost/nowide/iostream.hpp>
 #include <iostream>
 
-MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), tickCount_(1)
+MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack)
+    : VideoDriver(CallBack), tickCount_(1), numTfinger_(0)
 {
     modKeyState_.kt = KeyType::Invalid;
     modKeyState_.c = 0;
@@ -86,4 +87,9 @@ void* MockupVideoDriver::GetMapPointer() const
 void MockupVideoDriver::ShowErrorMessage(const std::string& title, const std::string& message)
 {
     std::cerr << title << ": " << message << std::endl;
+}
+
+bool MockupVideoDriver::IsTouchEvent() const
+{
+    return numTfinger_;
 }

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Cheats.h"
 #include "DrawPoint.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
@@ -78,9 +79,14 @@ public:
     Position GetPos() const { return origin_; }
     Extent GetSize() const { return size_; }
 
-    void SetZoomFactor(float zoomFactor, bool smoothTransition = true);
+    /// Set target zoom factor and start zooming if smoothTransition is true
+    /// Returns actual zoom factor used, potentially clamped
+    float SetZoomFactor(float zoomFactor, bool smoothTransition = true);
     float GetCurrentTargetZoomFactor() const;
     void SetNextZoomFactor();
+
+    // Converts a view coordinate to map position
+    Position ViewPosToMap(Position pos) const;
 
     /// Show or hide construction aid
     void ToggleShowBQ();
@@ -127,11 +133,13 @@ public:
 private:
     void CalcFxLx();
     void DrawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis);
+    void DrawResource(const MapPoint& pt, DrawPoint curPos, Cheats::ResourceRevealMode resRevealMode);
     void DrawObject(const MapPoint& pt, const DrawPoint& curPos) const;
     void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
-    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines) const;
+    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
+                     std::vector<ObjectBetweenLines>& objsBetweenRows) const;
     void DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
-                                    std::vector<ObjectBetweenLines>& between_lines);
+                                    std::vector<ObjectBetweenLines>& objsBetweenRows);
 
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);

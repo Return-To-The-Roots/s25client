@@ -26,14 +26,14 @@ public:
     void DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color = COLOR_WHITE);
     /// Draw a rectangular part of the texture from the origin of it
     void DrawPart(const Rect& destArea, unsigned color = COLOR_WHITE);
-    /// Draw only percent% of the height of the image
+    /// Draw only percent% of the height of the image, counting from the bottom of the image
     void DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
-
-protected:
     /// Draw the texture.
     /// src_w/h default to the full bitmap size
     /// dst_w/h default the src_w/h
-    void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE);
+    void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE) override;
+
+protected:
     void FillTexture() override;
     Extent CalcTextureSize() const override;
 };

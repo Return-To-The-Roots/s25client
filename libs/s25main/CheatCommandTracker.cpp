@@ -21,10 +21,13 @@ void CheatCommandTracker::onKeyEvent(const KeyEvent& ke)
     if(!cheats_.areCheatsAllowed())
         return;
 
-    if(checkSpecialKeyEvent(ke))
-        lastChars_.clear();
-    else
+    if(ke.kt == KeyType::Char)
         onCharKeyEvent(ke);
+    else
+    {
+        onSpecialKeyEvent(ke);
+        lastChars_.clear();
+    }
 }
 
 void CheatCommandTracker::onChatCommand(const std::string& cmd)
@@ -34,27 +37,49 @@ void CheatCommandTracker::onChatCommand(const std::string& cmd)
 
     if(cmd == "apocalypsis")
         cheats_.armageddon();
+    else if(cmd == "impulse9")
+        cheats_.toggleAllBuildingsEnabled();
+    else if(cmd == "spies")
+        cheats_.toggleShowEnemyProductivityOverlay();
 }
 
-bool CheatCommandTracker::checkSpecialKeyEvent(const KeyEvent& ke)
+void CheatCommandTracker::onSpecialKeyEvent(const KeyEvent& ke)
 {
-    if(ke.kt == KeyType::Char)
-        return false;
+    if(ke.ctrl && ke.shift)
+    {
+        if(ke.kt >= KeyType::F1 && ke.kt <= KeyType::F8)
+            cheats_.destroyBuildings({static_cast<unsigned>(ke.kt) - static_cast<unsigned>(KeyType::F1)});
+        else if(ke.kt == KeyType::F9)
+            cheats_.destroyAllAIBuildings();
+
+        return;
+    }
 
     switch(ke.kt)
     {
-        case KeyType::F7: cheats_.toggleAllVisible(); break;
+        case KeyType::F7:
+        {
+            if(ke.alt)
+                cheats_.toggleResourceRevealMode();
+            else
+                cheats_.toggleAllVisible();
+        }
+        break;
         case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }
-
-    return true;
 }
 
 void CheatCommandTracker::onCharKeyEvent(const KeyEvent& ke)
 {
-    lastChars_.push_back(ke.c);
+    // Handle only ASCII chars
+    if(ke.c > 0x7F)
+        lastChars_.clear();
+    else
+    {
+        lastChars_.push_back(static_cast<char>(ke.c));
 
-    if(lastChars_ == enableCheatsStr)
-        cheats_.toggleCheatMode();
+        if(lastChars_ == enableCheatsStr)
+            cheats_.toggleCheatMode();
+    }
 }

@@ -44,11 +44,16 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddImage(1, DrawPoint(117, 114), &building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
-    const auto producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
-    if(producedWare && producedWare != GoodType::Nothing)
+    const auto& producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
+    ITexture* tex = visit(
+      composeVisitor([](GoodType gt) -> ITexture* { return gt != GoodType::Nothing ? LOADER.GetWareTex(gt) : nullptr; },
+                     [](Job job) -> ITexture* { return LOADER.GetJobTex(job); },
+                     [](boost::none_t) -> ITexture* { return nullptr; }),
+      producedWare);
+    if(tex)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapTexture(2298));
-        AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(*producedWare));
+        AddImage(3, DrawPoint(196, 39), tex);
     }
 
     // Info
@@ -70,7 +75,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         unsigned io_dat_id =
           (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
         AddImageButton(11, DrawPoint(130, extent.y - 47), Extent(43, 32), TextureColor::Grey,
-                       LOADER.GetImageN("io", io_dat_id));
+                       LOADER.GetImageN("io", io_dat_id), _("Ships/Boats"));
     }
 
     // "Gehe Zum Ort"

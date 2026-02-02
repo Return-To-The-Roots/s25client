@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,6 +11,7 @@
 #include "files.h"
 #include "helpers/strUtils.h"
 #include "languages.h"
+#include "gameData/PortraitConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
@@ -19,6 +20,16 @@
 #include "s25util/System.h"
 #include "s25util/error.h"
 #include <boost/filesystem/operations.hpp>
+
+namespace {
+#ifdef __ANDROID__
+constexpr bool SHARED_TEXTURES_DEFAULT = false;
+constexpr MapScrollMode MAP_SCROLL_MODE_DEFAULT = MapScrollMode::GrabAndDrag;
+#else
+constexpr bool SHARED_TEXTURES_DEFAULT = true;
+constexpr MapScrollMode MAP_SCROLL_MODE_DEFAULT = MapScrollMode::ScrollOpposite;
+#endif
+} // namespace
 
 const int Settings::VERSION = 13;
 const std::array<std::string, 11> Settings::SECTION_NAMES = {
@@ -92,7 +103,7 @@ void Settings::LoadDefaults()
     }
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
-    video.shared_textures = true;
+    video.shared_textures = SHARED_TEXTURES_DEFAULT;
     video.guiScale = 0; // special value indicating automatic selection
     // }
 
@@ -115,6 +126,7 @@ void Settings::LoadDefaults()
     sound.musicVolume = 30;
     sound.effectsEnabled = true;
     sound.effectsVolume = 75;
+    sound.birdsEnabled = true;
     sound.playlist = s25::files::defaultPlaylist;
     // }
 
@@ -122,6 +134,7 @@ void Settings::LoadDefaults()
     // {
 
     lobby.name = System::getUserName();
+    lobby.portraitIndex = 0;
     lobby.password.clear();
     lobby.save_password = false;
     // }
@@ -139,7 +152,7 @@ void Settings::LoadDefaults()
     // interface
     // {
     interface.autosave_interval = 0;
-    interface.invertMouse = false;
+    interface.mapScrollMode = MAP_SCROLL_MODE_DEFAULT;
     interface.enableWindowPinning = false;
     interface.windowSnapDistance = 8;
     // }
@@ -176,7 +189,7 @@ void Settings::LoadIngameDefaults()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Routine zum Laden der Konfiguration
+// Routine for loading the configuration
 void Settings::Load()
 {
     libsiedler2::Archiv settings;
@@ -205,13 +218,13 @@ void Settings::Load()
         const libsiedler2::ArchivItem_Ini* iniCampaigns =
           static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("campaigns"));
 
-        // ist eine der Kategorien nicht vorhanden?
+        // Is one of the categories missing?
         if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy
            || !iniInterface || !iniAddons || !iniCampaigns)
         {
             throw std::runtime_error("Missing section");
         }
-        // stimmt die Settingsversion?
+        // Is the settings version correct?
         if(iniGlobal->getValue("version", 0) != VERSION)
             throw std::runtime_error("Wrong version");
 
@@ -263,18 +276,25 @@ void Settings::Load()
         sound.musicVolume = iniSound->getIntValue("musik_volume");
         sound.effectsEnabled = iniSound->getBoolValue("effekte");
         sound.effectsVolume = iniSound->getIntValue("effekte_volume");
+        sound.birdsEnabled = iniSound->getValue("bird_sounds", true);
         sound.playlist = iniSound->getValue("playlist");
         // }
 
         // lobby
         // {
         lobby.name = iniLobby->getValue("name");
+        lobby.portraitIndex = iniLobby->getIntValue("portrait_index");
         lobby.password = iniLobby->getValue("password");
         lobby.save_password = iniLobby->getBoolValue("save_password");
         // }
 
         if(lobby.name.empty())
             lobby.name = System::getUserName();
+
+        if(lobby.portraitIndex >= Portraits.size())
+        {
+            lobby.portraitIndex = 0;
+        }
 
         // server
         // {
@@ -292,21 +312,30 @@ void Settings::Load()
         proxy.type = ProxyType(iniProxy->getIntValue("typ"));
         // }
 
-        // leere proxyadresse deaktiviert proxy komplett
-        // deaktivierter proxy entfernt proxyadresse
+        // Empty proxy address completely disables proxy.
+        // Disabled proxy removes proxy address.
         if(proxy.hostname.empty() || (proxy.type != ProxyType::Socks4 && proxy.type != ProxyType::Socks5))
         {
             proxy.type = ProxyType::None;
             proxy.hostname.clear();
         }
-        // aktivierter Socks v4 deaktiviert ipv6
+        // Enabled Socks v4 disables IPv6
         else if(proxy.type == ProxyType::Socks4 && server.ipv6)
             server.ipv6 = false;
 
         // interface
         // {
         interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
-        interface.invertMouse = iniInterface->getValue("invert_mouse", false);
+        try
+        {
+            interface.mapScrollMode = static_cast<MapScrollMode>(iniInterface->getIntValue("map_scroll_mode"));
+        } catch(const std::runtime_error&)
+        {
+            interface.mapScrollMode =
+              iniInterface->getBoolValue("invert_mouse") ? MapScrollMode::ScrollSame : MapScrollMode::ScrollOpposite;
+            s25util::warning(
+              "Value 'map_scroll_mode' not found! Using 'invert_mouse' instead - please recheck your settings!");
+        }
         interface.enableWindowPinning = iniInterface->getValue("enable_window_pinning", false);
         interface.windowSnapDistance = iniInterface->getValue("window_snap_distance", 8);
         // }
@@ -333,7 +362,7 @@ void Settings::Load()
 
         LoadIngame();
         // }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\", using default values. Reason: " + e.what());
@@ -378,7 +407,7 @@ void Settings::LoadIngame()
             settings.isPinned = iniWindow->getValue("is_pinned", false);
             settings.isMinimized = iniWindow->getValue("is_minimized", false);
         }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use ingame settings from \"") + settingsPathIngame.string()
                          + "\", using default values. Reason: " + e.what());
@@ -388,7 +417,7 @@ void Settings::LoadIngame()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Routine zum Speichern der Konfiguration
+// Routine for saving the configuration
 void Settings::Save()
 {
     libsiedler2::Archiv settings;
@@ -408,7 +437,7 @@ void Settings::Save()
     libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
     libsiedler2::ArchivItem_Ini* iniCampaigns = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("campaigns"));
 
-    // ist eine der Kategorien nicht vorhanden?
+    // Is one of the categories missing?
     RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy
                 && iniInterface && iniAddons && iniCampaigns);
 
@@ -453,12 +482,14 @@ void Settings::Save()
     iniSound->setValue("musik_volume", sound.musicVolume);
     iniSound->setValue("effekte", sound.effectsEnabled);
     iniSound->setValue("effekte_volume", sound.effectsVolume);
+    iniSound->setValue("bird_sounds", sound.birdsEnabled);
     iniSound->setValue("playlist", sound.playlist);
     // }
 
     // lobby
     // {
     iniLobby->setValue("name", lobby.name);
+    iniLobby->setValue("portrait_index", lobby.portraitIndex);
     iniLobby->setValue("password", lobby.password);
     iniLobby->setValue("save_password", lobby.save_password);
     // }
@@ -480,7 +511,7 @@ void Settings::Save()
     // interface
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
-    iniInterface->setValue("invert_mouse", interface.invertMouse);
+    iniInterface->setValue("map_scroll_mode", static_cast<int>(interface.mapScrollMode));
     iniInterface->setValue("enable_window_pinning", interface.enableWindowPinning);
     iniInterface->setValue("window_snap_distance", interface.windowSnapDistance);
     // }

@@ -1,4 +1,4 @@
-// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024 - 2025  Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -35,7 +35,6 @@ public:
     bool Msg_LeftUp(const MouseCoords& mc) override;
 
 protected:
-    bool IsMouseOver(const Position& mousePos) const;
     void Draw_() override;
 
     void updateEnabledMask();

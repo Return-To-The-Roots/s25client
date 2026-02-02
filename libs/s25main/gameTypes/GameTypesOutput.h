@@ -22,6 +22,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/RoadPathDirection.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameData/DescIdx.h"
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -84,9 +85,10 @@ RTTR_ENUM_OUTPUT(Level, Easy, Medium, Hard)
     }
 
 RTTR_ENUM_OUTPUT(BuildingType)
+RTTR_ENUM_OUTPUT(GO_Type)
 RTTR_ENUM_OUTPUT(Job)
 RTTR_ENUM_OUTPUT(Nation)
-RTTR_ENUM_OUTPUT(GO_Type)
+RTTR_ENUM_OUTPUT(RoadPathDirection)
 
 #undef RTTR_ENUM_OUTPUT
 

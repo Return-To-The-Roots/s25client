@@ -165,29 +165,32 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender& defender)
 
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const nofAttacker& soldier)
 {
-    const MapPoint flagPos = world->GetNeighbour(pos, Direction::SouthEast);
+    const MapPoint flagPos = GetFlagPos();
+    const MapPoint soldierPos = soldier.GetPos();
 
-    // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
-    // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing =
-      (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
+    // Only consider  the flag position for fighting if the building isn't currently being captured.
+    // Only "real" military buildings can be captured
+    const bool capturing =
+      BuildingProperties::IsMilitary(bldType_) && static_cast<nobMilitary*>(this)->IsBeingCaptured();
 
     if(!capturing && world->IsValidPointForFighting(flagPos, soldier, false))
     {
-        ret_radius = 0;
-        return flagPos;
+        // Also check if we can reach this.
+        // If not, still consider the other points as the flag could become reachable by then.
+        // TODO(Replay) Limit distance by MAX_ATTACKING_RUN_DISTANCE
+        if(soldierPos == flagPos || world->FindHumanPath(soldierPos, flagPos) != boost::none)
+        {
+            ret_radius = 0;
+            return flagPos;
+        }
     }
 
-    const MapPoint soldierPos = soldier.GetPos();
-    // Get points AROUND the flag. Never AT the flag
-    const auto nodes = world->GetPointsInRadius(flagPos, 3, ReturnMapPointWithRadius{});
-
-    // Weg zu allen möglichen Punkten berechnen und den mit den kürzesten Weg nehmen
-    // Die bisher kürzeste gefundene Länge
+    // Check all points around the flag and take shortest
     unsigned min_length = std::numeric_limits<unsigned>::max();
     MapPoint minPt = MapPoint::Invalid();
-    ret_radius = 100;
-    for(const auto& node : nodes)
+    constexpr auto MAX_RADIUS = 3;
+    ret_radius = MAX_RADIUS;
+    for(const auto& node : world->GetPointsInRadius(flagPos, MAX_RADIUS, ReturnMapPointWithRadius{}))
     {
         // We found a point with a better radius
         if(node.second > ret_radius)
@@ -196,7 +199,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
         if(!world->ValidWaitingAroundBuildingPoint(node.first, pos))
             continue;
 
-        // Derselbe Punkt? Dann können wir gleich abbrechen, finden ja sowieso keinen kürzeren Weg mehr
+        // If this is where the soldier currently is, it is already the shortest possible distance
         if(soldierPos == node.first)
         {
             ret_radius = node.second;
@@ -204,10 +207,11 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
         }
 
         unsigned length = 0;
-        // Gültiger Weg gefunden
+        // Is there a path at all?
+        // TODO(Replay) Limit distance by MAX_ATTACKING_RUN_DISTANCE instead of 100
         if(world->FindHumanPath(soldierPos, node.first, 100, false, &length))
         {
-            // Kürzer als bisher kürzester Weg? --> Dann nehmen wir diesen Punkt (vorerst)
+            // Take if shorter
             if(length < min_length)
             {
                 minPt = node.first;
@@ -252,30 +256,30 @@ bool nobBaseMilitary::CallDefender(nofAttacker& attacker)
 
 nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
 {
-    // Alle angreifenden Soldaten durchgehen
-    // Den Soldaten, der am nächsten dran steht, nehmen
     nofAttacker* best_attacker = nullptr;
-    unsigned best_radius = 0xFFFFFFFF;
-
-    for(auto* aggressor : aggressors)
+    do
     {
-        // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum oder rückt er nach)?
-        if(aggressor->IsAttackerReady())
+        // Call the closest attacker to fight the defender
+        best_attacker = nullptr;
+        unsigned best_radius = 0xFFFFFFFF;
+        for(auto* aggressor : aggressors)
         {
-            // Besser als bisher bester?
-            if(aggressor->GetRadius() < best_radius || !best_attacker)
+            // Only consider those waiting around the flag, otherwise the defender could go/stay inside
+            if(aggressor->IsAttackerReady())
             {
-                best_attacker = aggressor;
-                best_radius = best_attacker->GetRadius();
+                if(!best_attacker || aggressor->GetRadius() < best_radius)
+                {
+                    best_attacker = aggressor;
+                    best_radius = aggressor->GetRadius();
+                }
             }
         }
-    }
-
-    if(best_attacker)
-        best_attacker->AttackDefenderAtFlag();
-
-    // und ihn zurückgeben, wenns keine gibt, natürlich 0
-    return best_attacker;
+        // Return the attacker if found and he starts attacking, else try again
+        // The current one will be removed from aggressors or not be ready again
+        if(best_attacker && best_attacker->AttackDefenderAtFlag())
+            return best_attacker;
+    } while(best_attacker); // Stop if we didn't found any attacker at all
+    return nullptr;
 }
 
 void nobBaseMilitary::CheckArrestedAttackers()

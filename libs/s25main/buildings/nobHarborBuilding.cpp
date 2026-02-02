@@ -628,7 +628,6 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
     }
 }
 
-/// Legt eine Ware im Lagerhaus ab
 void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
 {
     if(ware->GetGoal() && ware->GetGoal() != this)
@@ -636,45 +635,65 @@ void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
         // This is not the goal but we have one -> Get new route
         ware->RecalcRoute();
 
-        // Will diese Ware mit dem Schiff irgendwo hin fahren?
+        // Go by ship next?
         if(ware->GetNextDir() == RoadPathDirection::Ship)
         {
-            // Dann fügen wir die mal bei uns hinzu
             AddWareForShip(std::move(ware));
             return;
-        } else if(ware->GetNextDir() != RoadPathDirection::None)
+        }
+        if(ware->GetNextDir() != RoadPathDirection::None)
         {
             // Travel on roads -> Carry out
             RTTR_Assert(ware->GetGoal() != this);
             AddWaitingWare(std::move(ware));
             return;
-        } else
+        }
+        // No next dir means the ware reached its goal, i.e. us,
+        // or there is no valid, reachable goal
+        // In both cases we take it as we initially would have.
+        if(ware->GetGoal() && ware->GetGoal() != this)
         {
-            // Pathfinding failed -> Ware would want to go here
-            RTTR_Assert(ware->GetGoal() == this);
-            // Regular handling below
+            // We have a goal but it isn't this and there is no next dir
+            // This can only happen when the ware was redirected to a warehouse while being carried,
+            // see Ware::FindRouteToWarehouse called by Ware::RecalcRoute
+
+            // TODO(Replay) When Ware::FindRouteToWarehouse recalculates the route when called from RecalcRoute
+            // and next_dir is None then goal will be NULL or us.
+            // So the condition of this branch can never be true and the branch can be replaced by:
+            // RTTR_Assert(!ware->GetGoal() || ware->GetGoal() == this)
+            RTTR_Assert(ware->IsCarried());
+            // Explicitly calculate the route which now should set it.
+            ware->RecalcRoute();
+            RTTR_Assert(ware->GetGoal());
+            RTTR_Assert(ware->GetNextDir() != RoadPathDirection::None);
+            if(ware->GetNextDir() == RoadPathDirection::Ship)
+                AddWareForShip(std::move(ware));
+            else
+                AddWaitingWare(std::move(ware));
+            return;
         }
     }
+    // When ware should be transported to any other goal we returned above, so now we need to take it
 
-    // Brauchen wir die Ware?
+    // Do we need the ware for an expedition?
     if(expedition.active)
     {
         if((ware->type == GoodType::Boards && expedition.boards < BUILDING_COSTS[BuildingType::HarborBuilding].boards)
            || (ware->type == GoodType::Stones
                && expedition.stones < BUILDING_COSTS[BuildingType::HarborBuilding].stones))
         {
+            // Don't wait for it any longer if it had a goal, i.e. us.
+            // Without a goal it was a "lost" ware.
+            if(ware->GetGoal())
+                RemoveDependentWare(*ware);
+            // Add to expedition
+            world->GetPlayer(player).RemoveWare(*ware);
             if(ware->type == GoodType::Boards)
                 ++expedition.boards;
             else
                 ++expedition.stones;
 
-            // Ware nicht mehr abhängig
-            if(ware->GetGoal())
-                RemoveDependentWare(*ware);
-            // Dann zweigen wir die einfach mal für die Expedition ab
-            world->GetPlayer(player).RemoveWare(*ware);
-
-            // Ggf. ist jetzt alles benötigte da
+            // Could be ready now
             CheckExpeditionReady();
             return;
         }
@@ -839,8 +858,8 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
     {
         ShipConnection sc;
         sc.dest = harbor_building;
-        // Als Kantengewicht nehmen wir die doppelte Entfernung (evtl muss ja das Schiff erst kommen)
-        // plus einer Kopfpauschale (Ein/Ausladen usw. dauert ja alles)
+        // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
+        // loading&unloading
         sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
         connections.push_back(sc);
     }
@@ -1255,7 +1274,7 @@ void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
 {
     // Ist überhaupt eine Expedition im Gang und ein entsprechender Warentyp
-    if(!expedition.active || !(type == GoodType::Boards || type == GoodType::Stones))
+    if(!expedition.active || (type != GoodType::Boards && type != GoodType::Stones))
         return 0;
 
     unsigned ordered_boards = 0, ordered_stones = 0;

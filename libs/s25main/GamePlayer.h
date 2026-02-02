@@ -31,6 +31,7 @@ class noShip;
 class nobBaseMilitary;
 class nobBaseWarehouse;
 class nobHarborBuilding;
+class nobHQ;
 class nobMilitary;
 class nofCarrier;
 class nofFlagWorker;
@@ -91,6 +92,9 @@ public:
     const GameWorld& GetGameWorld() const { return world; }
 
     const MapPoint& GetHQPos() const { return hqPos; }
+    bool IsHQTent() const;
+    void SetHQIsTent(bool isTent);
+
     void AddBuilding(noBuilding* bld, BuildingType bldType);
     void RemoveBuilding(noBuilding* bld, BuildingType bldType);
     void AddBuildingSite(noBuildingSite* bldSite);
@@ -285,7 +289,7 @@ public:
 
     void EnableBuilding(BuildingType type) { building_enabled[type] = true; }
     void DisableBuilding(BuildingType type) { building_enabled[type] = false; }
-    bool IsBuildingEnabled(BuildingType type) const { return building_enabled[type]; }
+    bool IsBuildingEnabled(BuildingType type) const;
     /// Set the area the player may have territory in
     /// Nothing means all is allowed. See Lua description
     std::vector<MapPoint>& GetRestrictedArea() { return restricted_area; }
@@ -426,6 +430,7 @@ private:
     bool FindWarehouseForJob(Job job, noRoadNode* goal) const;
     /// Prüft, ob der Spieler besiegt wurde
     void TestDefeat();
+    nobHQ* GetHQ() const;
 
     //////////////////////////////////////////////////////////////////////////
     /// Unsynchronized state (e.g. lua, gui...)

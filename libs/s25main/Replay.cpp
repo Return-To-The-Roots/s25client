@@ -35,7 +35,13 @@ static const uint8_t currentReplayDataVersion = 1;
 // clang-format on
 
 /// Format version of replay files
-uint16_t Replay::GetVersion() const
+uint8_t Replay::GetLatestMinorVersion() const
+{
+    // 8.1: Portraits support
+    return 1;
+}
+
+uint8_t Replay::GetLatestMajorVersion() const
 {
     // Search for "TODO(Replay)" when increasing this (breaking Replay compatibility)
     // and handle/remove the relevant code
@@ -155,11 +161,11 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
             RTTR_Assert(!mapInfo.savegame);
             file_.WriteUnsignedInt(mapInfo.mapData.uncompressedLength);
             file_.WriteUnsignedInt(mapInfo.mapData.data.size());
-            file_.WriteRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
+            file_.WriteRawData(mapInfo.mapData.data.data(), mapInfo.mapData.data.size());
             file_.WriteUnsignedInt(mapInfo.luaData.uncompressedLength);
             file_.WriteUnsignedInt(mapInfo.luaData.data.size());
             if(!mapInfo.luaData.data.empty())
-                file_.WriteRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
+                file_.WriteRawData(mapInfo.luaData.data.data(), mapInfo.luaData.data.size());
             break;
         case MapType::Savegame: mapInfo.savegame->Save(file_, GetMapName()); break;
     }
@@ -227,7 +233,7 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
         }
 
         lastGF_ = file_.ReadUnsignedInt();
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
         return false;
@@ -269,11 +275,11 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
             case MapType::OldMap:
                 mapInfo.mapData.uncompressedLength = file_.ReadUnsignedInt();
                 mapInfo.mapData.data.resize(file_.ReadUnsignedInt());
-                file_.ReadRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
+                file_.ReadRawData(mapInfo.mapData.data.data(), mapInfo.mapData.data.size());
                 mapInfo.luaData.uncompressedLength = file_.ReadUnsignedInt();
                 mapInfo.luaData.data.resize(file_.ReadUnsignedInt());
                 if(!mapInfo.luaData.data.empty())
-                    file_.ReadRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
+                    file_.ReadRawData(mapInfo.luaData.data.data(), mapInfo.luaData.data.size());
                 break;
             case MapType::Savegame:
                 mapInfo.savegame = std::make_unique<Savegame>();
@@ -284,7 +290,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
                 }
                 break;
         }
-    } catch(std::runtime_error& e)
+    } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
         return false;
@@ -333,7 +339,7 @@ std::optional<unsigned> Replay::ReadGF()
     try
     {
         return file_.ReadUnsignedInt();
-    } catch(std::runtime_error&)
+    } catch(const std::runtime_error&)
     {
         if(file_.IsEndOfFile())
             return std::nullopt;

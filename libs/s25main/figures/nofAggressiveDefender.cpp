@@ -248,6 +248,7 @@ void nofAggressiveDefender::AttackerLost()
 {
     RTTR_Assert(attacker);
     attacker = nullptr;
+    // TODO(Replay) When still in leave queue abort to avoid going out and right back
 }
 
 void nofAggressiveDefender::NeedForHomeDefence()

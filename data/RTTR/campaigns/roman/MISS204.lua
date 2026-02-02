@@ -20,7 +20,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 4
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -74,6 +74,20 @@ rttr:RegisterTranslations(
 
         msg99   = 'We have found the gateway and occupied it. We can go\nthrough it whenever we want!',
         msgh99  = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+    pl =
+    {
+        Diary   = 'Dziennik',
+
+        msg1    = 'Otacza nas tylko jałowa dzicz.\n\nKrawędzie tego świata wydają się być albo nieprzeniknionymi górami, albo strumieniami lawy.\n\nTutaj nie sposób śledzić czasu.\nNad wszystkim unosi się przyćmiona, wieczna szarówka i nie ma ani światła słonecznego, ani gwiezdnego.\n\nJakie cuda i niebezpieczeństwa kryją się tutaj?',
+        msgh1   = 'Kontynuuj poszukiwania wrót.\nJest ograniczona przestrzeń na budynki, zatem starannie rozważ, jak wykorzystać swoje zasoby.',
+
+        msg2    = 'Spotkaliśmy ludzi o znacznie dziwniejszym wyglądzie niż nasz wiking szkutnik.\n\nNazywają siebie \"Synami Nipponu\". Są niscy i szczupli, ale wyraźnie zręczni i wytrwali.\n\nNajdziwniejszą cechą jest ich kolor skóry.\n\nJest żółto-ochrowa, a ich oczy to tylko małe szparki.\n\nZachowują się przyjaźnie, chociaż ich dziwny wygląd budzi niepokój.',
+
+        msg3    = '\"Synowie Nipponu\" na południu mają krewnych na północy.\nIch relacje wydają się bardzo przyjazne.\nWojna z jedną rasą oznacza wojnę z drugą.\n\nMusimy uważnie rozważyć perspektywę wojny...',
+
+        msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\nMożemy przez nie przejść, kiedy tylko zechcemy!',
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
@@ -107,17 +121,20 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:read, 2:yellow, 
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_JAPANESE)   -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Hakirawashi')    -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(8)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_JAPANESE)   -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Tsunami')        -- Enemy Name
+    rttr:GetPlayer(2):SetPortrait(7)
     rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
@@ -127,9 +144,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

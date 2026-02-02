@@ -9,6 +9,7 @@
 #include "JobTypes.h"
 #include "Point.h"
 #include "helpers/OptionalEnum.h"
+#include "variant.h"
 #include <cassert>
 
 struct BuildingCost
@@ -44,9 +45,12 @@ struct BldWorkDescription
     /// Worker belonging to the building, if any
     helpers::OptionalEnum<Job> job = boost::none;
     /// Ware produced, if any
-    helpers::OptionalEnum<GoodType> producedWare = boost::none;
+    boost_variant2<GoodType, Job, boost::none_t> producedWare = boost::none;
+    // Required for use in aggregate initialization
+    // NOLINTBEGIN(readability-redundant-member-init)
     /// Wares the building needs, if any
     WaresNeeded waresNeeded = {};
+    // NOLINTEND(readability-redundant-member-init)
     /// How many wares of each type can be stored
     uint8_t numSpacesPerWare = 6;
     /// True if one of each waresNeeded is used per production cycle

@@ -20,7 +20,7 @@ function isMapPreviewEnabled()
     return false
 end
 
-local requiredFeature = 5
+local requiredFeature = 6
 function checkVersion()
     local featureLevel = rttr:GetFeatureLevel()
     if(featureLevel < requiredFeature) then
@@ -41,7 +41,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Vyhledej bránu. Zvaž vhodné příležitosti k vybudování přístavu.',
 
         msg99   = 'Našli jsme bránu a obsadili ji. Kdy dorazíme do cíle?',
-        msg99   = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
+        msgh99  = 'Dokončil jsi tuto misi. Další kapitola na tebe čeká ...'
     },
     de =
     {
@@ -51,7 +51,7 @@ rttr:RegisterTranslations(
         msgh1   = 'Suchen Sie nach einem Tor. Achten Sie auf eventuell\nvorhandene Möglichkeiten zum Hafenbau.',
 
         msg99   = 'Wir haben das Tor gefunden und besetzt. Wann werden\nwir unser Ziel wohl erreichen?',
-        msg99   = 'Sie haben diese Mission erfüllt. Das nächste Kapitel\nwartet auf Sie...'
+        msgh99  = 'Sie haben diese Mission erfüllt. Das nächste Kapitel\nwartet auf Sie...'
     },
     en =
     { 
@@ -61,7 +61,17 @@ rttr:RegisterTranslations(
         msgh1   = 'Search for a gateway. Consider opportunities to build\na harbor.',
 
         msg99   = 'We have found the gateway and occupied it. When will\nwe reach our destination?',
-        msg99   = 'You have completed this mission. The next Chapter\nawaits you...'
+        msgh99   = 'You have completed this mission. The next Chapter\nawaits you...'
+    },
+    pl =
+    { 
+        Diary   = 'Dziennik',
+
+        msg1    = 'Zwiadowcy powiedzieli mi o potężnym wrogu na zachodzie.\n\nMusimy spróbować zostać tutaj tak długo, jak to możliwe.\n\nW nagłym wypadku możemy zawsze uciec na wschód lub morzem...',
+        msgh1   = 'Rozpocznij poszukiwania wrót.\nRozważ możliwości budowy portu.',
+
+        msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nKiedy dotrzemy do naszego celu?',
+        msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
     }
 })
 
@@ -95,17 +105,20 @@ function onSettingsReady()
 
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:read, 2:yellow, 
+    rttr:GetPlayer(0):SetPortrait(0)
 
     rttr:GetPlayer(1):SetAI(3)                  -- hard AI
     rttr:GetPlayer(1):SetNation(NAT_AFRICANS)   -- nation
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Mnga Tscha')     -- Enemy Name
+    rttr:GetPlayer(1):SetPortrait(11)
     rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_AFRICANS)   -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Todo')           -- Enemy Name
+    rttr:GetPlayer(2):SetPortrait(10)
     rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
@@ -143,9 +156,11 @@ function getAllowedChanges()
         ["ownNation"]   = false,
         ["ownColor"]    = false,
         ["ownTeam"]     = false,
-        ["aiNation"]    = false, 
+        ["ownPortrait"] = false,
+        ["aiNation"]    = false,
         ["aiColor"]     = false,
-        ["aiTeam"]      = false
+        ["aiTeam"]      = false,
+        ["aiPortrait"]  = false
     }
 end
 

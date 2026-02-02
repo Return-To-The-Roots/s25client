@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -41,6 +41,7 @@
 #include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GameConsts.h"
+#include "gameData/PortraitConsts.h"
 #include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
@@ -55,6 +56,12 @@
 #include <memory>
 
 namespace {
+constexpr bool DEBUG_MODE =
+#ifndef NDEBUG
+  true;
+#else
+  false;
+#endif
 void copyFileIfPathDifferent(const boost::filesystem::path& src_path, const boost::filesystem::path& dst_path)
 {
     if(src_path != dst_path)
@@ -454,6 +461,20 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Name& msg)
     return true;
 }
 
+bool GameClient::OnGameMessage(const GameMessage_Player_Portrait& msg)
+{
+    if(state != ClientState::Config)
+        return true;
+    if(msg.player >= gameLobby->getNumPlayers())
+        return true;
+    if(msg.playerPortraitIndex >= Portraits.size())
+        return true;
+    gameLobby->getPlayer(msg.player).portraitIndex = msg.playerPortraitIndex;
+    if(ci)
+        ci->CI_PlayerDataChanged(msg.player);
+    return true;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// player joined
 /// @param message  Nachricht, welche ausgeführt wird
@@ -718,6 +739,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
     }
 
     mainPlayer.sendMsgAsync(new GameMessage_Player_Name(0xFF, SETTINGS.lobby.name));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Portrait(0xFF, SETTINGS.lobby.portraitIndex));
     mainPlayer.sendMsgAsync(new GameMessage_MapRequest(true));
 
     AdvanceState(ConnectState::QueryMapInfo);
@@ -750,7 +772,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
     try
     {
         StartGame(msg.random_init);
-    } catch(SerializedGameData::Error& error)
+    } catch(const SerializedGameData::Error& error)
     {
         LOG.write("Error when loading game: %s\n") % error.what();
         Stop();
@@ -1146,49 +1168,41 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
     return true;
 }
 
-void GameClient::IncreaseSpeed()
+void GameClient::IncreaseSpeed(const bool wraparound)
 {
-    const bool debugMode =
-#ifndef NDEBUG
-      true;
-#else
-      false;
-#endif
-    if(framesinfo.gfLengthReq > FramesInfo::milliseconds32_t(10))
-        framesinfo.gfLengthReq -= FramesInfo::milliseconds32_t(10);
-    else if((replayMode || debugMode) && framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(10))
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(1);
+    const auto curSpeed = framesinfo.gfLengthReq;
+    // Note: Higher speed = lower gf_length value
+    // Go from debug speed directly back to min speed, else in fixed steps
+    static_assert(MIN_SPEED_DEBUG > MIN_SPEED);
+    if(framesinfo.gfLengthReq > MIN_SPEED)
+        SetNewSpeed(MIN_SPEED); // NOLINT(bugprone-branch-clone)
     else
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(70);
-
-    if(replayMode)
-        framesinfo.gf_length = framesinfo.gfLengthReq;
-    else
-        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
+        SetNewSpeed((framesinfo.gfLengthReq - 1ms) / SPEED_STEP * SPEED_STEP);
+    // If unchanged we capped at max speed, so wrap around if requested
+    if(wraparound && framesinfo.gfLengthReq == curSpeed)
+        SetNewSpeed(MIN_SPEED);
 }
 
 void GameClient::DecreaseSpeed()
 {
-    const bool debugMode =
-#ifndef NDEBUG
-      true;
-#else
-      false;
-#endif
-
-    FramesInfo::milliseconds32_t maxSpeed(replayMode ? 1000 : 70);
-
-    if(framesinfo.gfLengthReq == maxSpeed)
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(replayMode || debugMode ? 1 : 10);
-    else if(framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(1))
-        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(10);
+    if((DEBUG_MODE || replayMode) && framesinfo.gfLengthReq >= MIN_SPEED)
+        SetNewSpeed(MIN_SPEED_DEBUG);
     else
-        framesinfo.gfLengthReq += FramesInfo::milliseconds32_t(10);
+        SetNewSpeed(framesinfo.gfLengthReq / SPEED_STEP * SPEED_STEP + SPEED_STEP);
+}
 
+void GameClient::SetNewSpeed(FramesInfo::milliseconds32_t gfLength)
+{
+    static_assert(MIN_SPEED >= SPEED_GF_LENGTHS[GameSpeed::VeryFast], "Not all speeds reachable");
+    static_assert(MAX_SPEED <= SPEED_GF_LENGTHS[GameSpeed::VerySlow], "Not all speeds reachable");
+    const auto minSpeed = (replayMode || DEBUG_MODE) ? MIN_SPEED_DEBUG : MIN_SPEED;
+    const auto maxSpeed = (replayMode || DEBUG_MODE) ? MAX_SPEED_DEBUG : MAX_SPEED;
+    const auto oldSpeed = framesinfo.gfLengthReq;
+    framesinfo.gfLengthReq = helpers::clamp<decltype(gfLength)>(gfLength, maxSpeed, minSpeed);
     if(replayMode)
         framesinfo.gf_length = framesinfo.gfLengthReq;
-    else
-        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
+    else if(framesinfo.gfLengthReq != oldSpeed)
+        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1343,7 +1357,7 @@ void GameClient::ExecuteGameFrame()
                     replayinfo->replay.UpdateLastGF(curGF);
             }
 
-        } catch(LuaExecutionError& e)
+        } catch(const LuaExecutionError& e)
         {
             SystemChat((boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
             OnError(ClientError::InvalidMap);
@@ -1355,7 +1369,7 @@ void GameClient::ExecuteGameFrame()
     // Check remaining time until next GF
     if(framesinfo.frameTime >= framesinfo.gf_length)
     {
-        // This can happen, if we don't call this method in intervalls less than gf_length or gf_length has changed
+        // This can happen, if we don't call this method in intervals less than gf_length or gf_length has changed
         // TODO: Run multiple GFs per call.
         // For now just make sure it is less than gf_length by skipping some simulation time,
         // until we are only a bit less than 1 GF behind
@@ -1537,7 +1551,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     try
     {
         StartGame(replayinfo->replay.getSeed());
-    } catch(SerializedGameData::Error& error)
+    } catch(const SerializedGameData::Error& error)
     {
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
         OnError(ClientError::InvalidMap);
@@ -1666,7 +1680,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char fromPlayerIdx
 
 bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
 {
-    mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), ChatDestination::System, "Saving game..."));
+    mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), ChatDestination::System, _("Saving game...")));
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -1692,9 +1706,9 @@ bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
         save.sgd.MakeSnapshot(*game);
         // Und alles speichern
         return save.Save(filepath, mapinfo.title);
-    } catch(std::exception& e)
+    } catch(const std::exception& e)
     {
-        SystemChat(std::string("Error during saving: ") + e.what());
+        SystemChat(std::string(_("Error during saving: ")) + e.what());
         return false;
     }
 }
@@ -1780,16 +1794,14 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
     using minutes = std::chrono::duration<uint32_t, std::chrono::minutes::period>;
     using std::chrono::duration_cast;
 
-    // In Sekunden umrechnen
-    seconds numSeconds = duration_cast<seconds>(gf * SPEED_GF_LENGTHS[referenceSpeed]);
+    seconds numSeconds = duration_cast<seconds>(gfs_to_duration(gf));
 
-    // Angaben rausfiltern
     hours numHours = duration_cast<hours>(numSeconds);
     numSeconds -= numHours;
     minutes numMinutes = duration_cast<minutes>(numSeconds);
     numSeconds -= numMinutes;
 
-    // ganze Stunden mit dabei? Dann entsprechend anderes format, ansonsten ignorieren wir die einfach
+    // Use hour format only if we have hours
     if(numHours.count())
         return helpers::format("%u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
     else
@@ -1821,7 +1833,7 @@ unsigned GameClient::GetTournamentModeDuration() const
             < rttr::enum_cast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
     {
         const auto turnamentMode = rttr::enum_cast(game->ggs_.objective) - rttr::enum_cast(GameObjective::Tournament1);
-        return minutes(TOURNAMENT_MODES_DURATION[turnamentMode]) / SPEED_GF_LENGTHS[referenceSpeed];
+        return duration_to_gfs(TOURNAMENT_MODES_DURATION[turnamentMode]);
     } else
         return 0;
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -22,7 +22,9 @@ enum
     ID_txtFullScreen,
     ID_grpFullscreen,
     ID_cbResolution,
-    ID_cbInvertMouse,
+    ID_txtMapScrollMode,
+    ID_cbMapScrollMode,
+    ID_cbSmartCursor,
     ID_cbStatisticScale,
 };
 constexpr auto ID_btOn = 1;
@@ -30,12 +32,19 @@ constexpr auto ID_btOff = 0;
 } // namespace
 
 iwSettings::iwSettings()
-    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"),
+    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 228), _("Settings"),
                    LOADER.GetImageN("resource", 41))
 {
-    AddText(ID_txtResolution, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    // Controls are in 2 columns, the left might be the label for the control on the right
+    constexpr auto leftColOffset = 15u;   // X-position of the left column
+    constexpr auto rightColOffset = 200u; // X-position of the right column
+    constexpr Extent ctrlSize(150, 22);
+    constexpr auto rowWidth = rightColOffset + ctrlSize.x;
+
+    AddText(ID_txtResolution, DrawPoint(leftColOffset, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
+            NormalFont);
     auto* cbResolution =
-      AddComboBox(ID_cbResolution, DrawPoint(200, 35), Extent(150, 22), TextureColor::Grey, NormalFont, 110);
+      AddComboBox(ID_cbResolution, DrawPoint(rightColOffset, 35), ctrlSize, TextureColor::Grey, NormalFont, 110);
 
     VIDEODRIVER.ListVideoModes(video_modes);
     for(unsigned i = 0; i < video_modes.size(); ++i)
@@ -52,19 +61,34 @@ iwSettings::iwSettings()
             --i;
         }
     }
-    AddText(ID_txtFullScreen, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(ID_txtFullScreen, DrawPoint(leftColOffset, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
-    optiongroup->AddTextButton(ID_btOn, DrawPoint(200, 70), Extent(150, 22), TextureColor::Grey, _("Fullscreen"),
-                               NormalFont);
-    optiongroup->AddTextButton(ID_btOff, DrawPoint(200, 95), Extent(150, 22), TextureColor::Grey, _("Windowed"),
-                               NormalFont);
+    DrawPoint curPos(rightColOffset, 70);
+    optiongroup->AddTextButton(ID_btOn, curPos, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
+    curPos.y += ctrlSize.y + 3;
+    optiongroup->AddTextButton(ID_btOff, curPos, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
     optiongroup->SetSelection(SETTINGS.video.fullscreen); //-V807
 
-    AddCheckBox(ID_cbInvertMouse, DrawPoint(15, 124), Extent(150, 26), TextureColor::Grey, _("Invert Mouse Pan"),
-                NormalFont, false)
-      ->setChecked(SETTINGS.interface.invertMouse);
-    AddCheckBox(ID_cbStatisticScale, DrawPoint(200, 124), Extent(150, 26), TextureColor::Grey, _("Statistics Scale"),
-                NormalFont, false)
+    curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
+    const auto cbSize = Extent(rowWidth - curPos.x, 26);
+
+    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW,
+            FontStyle{}, NormalFont);
+    ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y), ctrlSize,
+                                                TextureColor::Grey, NormalFont, 100);
+    cbMapScrollMode->AddString(
+      _("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
+    cbMapScrollMode->AddString(
+      _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
+    cbMapScrollMode->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
+    cbMapScrollMode->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
+
+    curPos.y += cbSize.y + 3;
+    AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
+      ->setChecked(SETTINGS.global.smartCursor)
+      ->SetTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
+    curPos.y += cbSize.y + 3;
+    AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
       ->setChecked(SETTINGS.ingame.scale_statistics);
 }
 
@@ -72,6 +96,9 @@ iwSettings::~iwSettings()
 {
     try
     {
+        auto* MouseMdCombo = GetCtrl<ctrlComboBox>(ID_cbMapScrollMode);
+        SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(MouseMdCombo->GetSelection().get());
+
         auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
@@ -105,7 +132,10 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     switch(ctrl_id)
     {
-        case ID_cbInvertMouse: SETTINGS.interface.invertMouse = checked; break;
+        case ID_cbSmartCursor:
+            SETTINGS.global.smartCursor = checked;
+            VIDEODRIVER.SetMouseWarping(checked);
+            break;
         case ID_cbStatisticScale: SETTINGS.ingame.scale_statistics = checked; break;
     }
 }

@@ -15,6 +15,7 @@
 #include "ctrlGroup.h"
 #include "ctrlImage.h"
 #include "ctrlImageButton.h"
+#include "ctrlImageDeepening.h"
 #include "ctrlList.h"
 #include "ctrlMapSelection.h"
 #include "ctrlMultiSelectGroup.h"

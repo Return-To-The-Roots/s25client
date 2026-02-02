@@ -1,4 +1,4 @@
-// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -119,9 +119,9 @@ void ctrlMapSelection::setPreview(bool previewOnly)
 
 bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
 {
-    if(!preview && IsMouseOver(mc.GetPos()))
+    if(!preview && IsMouseOver(mc))
     {
-        const auto pickPos = invertScale(mc.GetPos() - getMapPosition());
+        const auto pickPos = invertScale(mc.pos - getMapPosition());
 
         const auto pixelColor = mapImages.missionMapMask
                                   ->getPixel(helpers::clamp(pickPos.x, 0u, mapImages.map->GetSize().x - 1),
@@ -139,11 +139,6 @@ bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
         return true;
     }
     return false;
-}
-
-bool ctrlMapSelection::IsMouseOver(const Position& mousePos) const
-{
-    return IsPointInRect(mousePos, GetDrawRect());
 }
 
 float ctrlMapSelection::getScaleFactor()

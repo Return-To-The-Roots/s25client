@@ -113,21 +113,27 @@ BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
     return GetWorld().AdjustBQ(pt, playerId_, visualNodes[pt].bq);
 }
 
-Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
+Visibility GameWorldViewer::GetVisibility(const MapPoint pt, const bool checkAllVisible) const
+{
+    if(checkAllVisible && IsAllVisible())
+        return Visibility::Visible;
+    return GetWorld().CalcVisiblityWithAllies(pt, playerId_);
+}
+
+bool GameWorldViewer::IsAllVisible() const
 {
     const auto* const gi = GetWorld().GetGameInterface();
     if(gi && gi->GI_GetCheats().isAllVisible())
-        return Visibility::Visible;
+        return true;
 
     /// Replaymodus und FoW aus? Dann alles sichtbar
     if(GAMECLIENT.IsReplayModeOn() && GAMECLIENT.IsReplayFOWDisabled())
-        return Visibility::Visible;
+        return true;
 
     // Spieler schon tot? Dann auch alles sichtbar?
     if(GetPlayer().IsDefeated())
-        return Visibility::Visible;
-
-    return GetWorld().CalcVisiblityWithAllies(pt, playerId_);
+        return true;
+    return false;
 }
 
 bool GameWorldViewer::IsOwner(const MapPoint& pt) const

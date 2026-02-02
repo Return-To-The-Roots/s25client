@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "variant.h"
 #include <vector>
-class MouseCoords;
+struct MouseCoords;
 class glFont;
 
 /// ChatCtrl-Klasse für ein ChatCtrl.

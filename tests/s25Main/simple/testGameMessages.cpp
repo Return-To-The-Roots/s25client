@@ -1,14 +1,25 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "JoinPlayerInfo.h"
+#include "helpers/chronoIO.h"
 #include "network/GameMessages.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/PlayerState.h"
 #include "rttr/test/random.hpp"
 #include "s25util/boostTestHelpers.h"
 #include <boost/test/unit_test.hpp>
+
+// LCOV_EXCL_START
+namespace boost::test_tools::tt_detail {
+template<class T, class R>
+struct print_log_value<std::chrono::duration<T, R>>
+{
+    void operator()(std::ostream& out, const std::chrono::duration<T, R>& value) { out << helpers::withUnit(value); }
+};
+} // namespace boost::test_tools::tt_detail
+// LCOV_EXCL_STOP
 
 static bool operator==(const JoinPlayerInfo& lhs, const JoinPlayerInfo& rhs)
 {
@@ -247,7 +258,7 @@ BOOST_AUTO_TEST_CASE(Serialization)
         BOOST_TEST(msgOut->ggs.exploration == msgIn.ggs.exploration);
     }
     {
-        const GameMessage_Speed msgIn(randomValue<unsigned>());
+        const GameMessage_Speed msgIn{std::chrono::milliseconds(randomValue<unsigned>())};
         const auto msgOut = serializeDeserializeMessage(msgIn);
         BOOST_TEST(msgOut->gf_length == msgIn.gf_length);
     }

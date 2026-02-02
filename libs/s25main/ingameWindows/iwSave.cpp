@@ -39,7 +39,7 @@ enum
 };
 
 using namespace std::chrono_literals;
-const auto AUTO_SAVE_INTERVALS = helpers::make_array(1min, 5min, 10min, 15min, 30min, 60min, 90min);
+constexpr std::array AUTO_SAVE_INTERVALS{1min, 5min, 10min, 15min, 30min, 60min, 90min};
 } // namespace
 
 iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const unsigned addHeight)
@@ -153,7 +153,7 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
         // Start selection index at 1, 0 is "disabled"
         for(const auto& i : AUTO_SAVE_INTERVALS | boost::adaptors::indexed(1))
         {
-            if(SETTINGS.interface.autosave_interval == i.value() / SPEED_GF_LENGTHS[referenceSpeed])
+            if(SETTINGS.interface.autosave_interval == duration_to_gfs(i.value()))
             {
                 combo->SetSelection(static_cast<unsigned>(i.index()));
                 break;
@@ -172,7 +172,7 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned sele
     {
         // selection is the index into the array ignoring the first ("disabled") entry
         RTTR_Assert(selection >= 1 && selection <= AUTO_SAVE_INTERVALS.size());
-        SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1] / SPEED_GF_LENGTHS[referenceSpeed];
+        SETTINGS.interface.autosave_interval = duration_to_gfs(AUTO_SAVE_INTERVALS[selection - 1]);
     }
 }
 

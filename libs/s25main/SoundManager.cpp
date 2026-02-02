@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -96,7 +96,7 @@ void SoundManager::playAnimalSound(unsigned soundLstId)
 
 void SoundManager::playBirdSounds(const unsigned treeCount)
 {
-    if(!SETTINGS.sound.effectsEnabled)
+    if(!SETTINGS.sound.effectsEnabled || !SETTINGS.sound.birdsEnabled)
         return;
 
     using namespace std::chrono;

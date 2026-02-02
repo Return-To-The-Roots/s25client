@@ -32,9 +32,9 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
 
     Extent btSize = Extent::all(size.y);
     AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(btMinusRes, button_minus),
-                   (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")));
+                   (!button_minus_tooltip.empty() ? button_minus_tooltip : _("Less")));
     AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(btPlusRes, button_plus),
-                   (button_plus_tooltip.length() ? button_plus_tooltip : _("More")));
+                   (!button_plus_tooltip.empty() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar
     padding_.x -= 2;
@@ -138,7 +138,7 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
     // Test if clicked on progress bar
     DrawPoint progressOrigin = GetDrawPos() + DrawPoint(padding_) + DrawPoint(GetSize().y + 2, 4);
     Extent progressSize = GetSize() - Extent((GetSize().y + 1) * 2, 8) - padding_ * 2u;
-    if(IsPointInRect(mc.GetPos(), Rect(progressOrigin, progressSize)))
+    if(IsPointInRect(mc.pos, Rect(progressOrigin, progressSize)))
     {
         position =
           helpers::iround<uint16_t>(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
@@ -158,7 +158,7 @@ bool ctrlProgress::Msg_LeftUp(const MouseCoords& mc)
 bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.GetPos(), GetDrawRect()))
+    if(IsPointInRect(mc.pos, GetDrawRect()))
     {
         Msg_ButtonClick(1);
         return true;
@@ -169,7 +169,7 @@ bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
 bool ctrlProgress::Msg_WheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.GetPos(), GetDrawRect()))
+    if(IsPointInRect(mc.pos, GetDrawRect()))
     {
         Msg_ButtonClick(0);
         return true;
@@ -185,7 +185,7 @@ bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
     Extent offset(GetSize().y + padding_.x, 0);
     DrawPoint rectOrig = GetDrawPos() + DrawPoint(offset);
     Extent rectSize = GetSize() - offset * 2u;
-    if(IsPointInRect(mc.GetPos(), Rect(rectOrig, rectSize)))
+    if(IsPointInRect(mc.pos, Rect(rectOrig, rectSize)))
     {
         WINDOWMANAGER.SetToolTip(this, tooltip_);
         return true;

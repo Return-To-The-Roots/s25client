@@ -42,7 +42,7 @@ void GameServerPlayer::setActive()
 
 void GameServerPlayer::doPing()
 {
-    ActiveState* state = get_if<ActiveState>(&state_);
+    auto* state = get_if<ActiveState>(&state_);
     if(state && !state->isPinging
        && (!state->pingTimer.isRunning() || state->pingTimer.getElapsed() >= seconds(PING_RATE)))
     {

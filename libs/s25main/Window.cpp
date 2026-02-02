@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -115,7 +115,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     for(Window* wnd : childIdToWnd_ | boost::adaptors::map_values | boost::adaptors::reversed)
     {
-        if(!lockedAreas_.empty() && IsInLockedRegion(mc.GetPos(), wnd))
+        if(!lockedAreas_.empty() && IsInLockedRegion(mc.pos, wnd))
             continue;
 
         if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
@@ -269,6 +269,18 @@ ctrlDeepening* Window::AddColorDeepening(unsigned id, const DrawPoint& pos, cons
                                          unsigned fillColor)
 {
     return AddCtrl(new ctrlColorDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, fillColor));
+}
+
+ctrlDeepening* Window::AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                         ITexture* image)
+{
+    return AddCtrl(new ctrlImageDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, image));
+}
+
+ctrlDeepening* Window::AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                         glArchivItem_Bitmap* image)
+{
+    return AddImageDeepening(id, pos, size, tc, static_cast<ITexture*>(image));
 }
 
 ctrlEdit* Window::AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
@@ -563,4 +575,14 @@ bool Window::IsInLockedRegion(const Position& pos, const Window* exception) cons
             return true;
     }
     return false;
+}
+
+bool Window::IsMouseOver() const
+{
+    return IsMouseOver(VIDEODRIVER.GetMousePos());
+}
+
+bool Window::IsMouseOver(const MouseCoords& mousePos) const
+{
+    return IsPointInRect(mousePos.pos, GetBoundaryRect());
 }

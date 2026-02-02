@@ -1,13 +1,13 @@
-# Copyright (C) 2005 - 2024 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-cmake_minimum_required(VERSION 3.9)
-if(POLICY CMP0093)
-    cmake_policy(SET CMP0093 NEW) # Use Boost_VERSION x.y.z in CMake >= 3.15 or BoostConfig
+cmake_minimum_required(VERSION 3.16..3.31)
+if(POLICY CMP0177)
+  cmake_policy(SET CMP0177 NEW)  # Normalize install() DESTINATION paths
 endif()
-if (POLICY CMP0074)
-    cmake_policy(SET CMP0074 NEW) # find_package uses <PackageName>_ROOT variables
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 OLD)  # FindBoost is removed, keep for now
 endif()
 
 if(NOT RTTR_VERSION)
@@ -22,12 +22,7 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
     message(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 endif()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
-if(CMAKE_VERSION VERSION_LESS 3.14)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/libutil/cmake/cmake_3.14")
-endif()
-
-include(EnableCCache)
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules" "${PROJECT_SOURCE_DIR}/external/libutil/cmake")
 
 set(checkSubmodules FALSE)
 # Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
@@ -76,6 +71,7 @@ endif()
 
 # Just include required
 include(EnsureOutOfSourceBuild)
+include(EnableCCache)
 
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@executable_path" "@executable_path/../Frameworks")
@@ -245,6 +241,10 @@ include(RttrCoverageCfg)
 include(EnableSanitizers)
 
 option(RTTR_USE_SYSTEM_LIBS "Default to using system-wide installed libs for external dependencies that have known system versions." OFF)
+
+# Eg. Only libraries are able to run on android. The java native interface(jni) will call the SDL_main() function which calls main() in libs25client.so
+# https://developer.android.com/studio/projects/add-native-code
+option(RTTR_BUILD_LIB "Executables will be build as shared library." OFF)
 
 ################################################################################
 # Configure files

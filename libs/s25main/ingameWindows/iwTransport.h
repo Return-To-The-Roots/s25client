@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -23,7 +23,7 @@ private:
     const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
 
-    static constexpr auto numButtons = std::tuple_size<TransportOrders>::value;
+    static constexpr auto numButtons = std::tuple_size_v<TransportOrders>;
     std::array<ButtonData, numButtons> buttonData;
 
     TransportOrders pendingOrder;

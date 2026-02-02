@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
                 maxHumanPlayers = 1,
                 difficulty = "easy",
                 mapFolder = "<RTTR_GAME>/DATA/MAPS",
-                luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+                luaFolder = "<RTTR_GAME>/campaigns/roman",
                 maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
             }
             )";
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
             maxHumanPlayers = 1,
             difficulty = "easy",
             mapFolder = "<RTTR_GAME>/DATA/MAPS",
-            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            luaFolder = "<RTTR_GAME>/campaigns/roman",
             maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"},
             chaptersEnabled = {1, 3, 7}
         }
@@ -155,9 +155,9 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
     BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
     BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert2.lua"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 }
 
 BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToIncorrectDifficulty)
             maxHumanPlayers = 1,
             difficulty = "middle",
             mapFolder = "<RTTR_GAME>/DATA/MAPS",
-            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            luaFolder = "<RTTR_GAME>/campaigns/roman",
             maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
         }
         )";
@@ -419,7 +419,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
             maxHumanPlayers = 1,
             difficulty = "easy",
             mapFolder = "<RTTR_GAME>/DATA/MAPS",
-            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            luaFolder = "<RTTR_GAME>/campaigns/roman",
             maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
         }
         )";
@@ -448,9 +448,9 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
     BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
     BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
     BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert2.lua"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 
     // selection map
     BOOST_TEST(!desc.selectionMapData);
@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
             maxHumanPlayers = 1,
             difficulty = "easy",
             mapFolder = "<RTTR_GAME>/DATA/MAPS",
-            luaFolder = "<RTTR_GAME>/CAMPAIGNS/ROMAN",
+            luaFolder = "<RTTR_GAME>/campaigns/roman",
             maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"},
             selectionMap = {
                 background     = {"<RTTR_GAME>/GFX/PICS/SETUP990.LBM", 0},
@@ -513,9 +513,9 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
     BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
     BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
     BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/CAMPAIGNS/ROMAN/dessert2.lua"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 
     // selection map
     const auto& selectionMap = desc.selectionMapData;

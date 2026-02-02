@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -30,6 +30,13 @@ struct PersistentWindowSettings
     bool isOpen = false;
     bool isPinned = false;
     bool isMinimized = false;
+};
+
+enum class MapScrollMode
+{
+    ScrollSame,
+    ScrollOpposite, // S2 Original
+    GrabAndDrag
 };
 
 /// Configuration class
@@ -84,12 +91,14 @@ public:
         uint8_t musicVolume;
         bool effectsEnabled;
         uint8_t effectsVolume;
+        bool birdsEnabled;
         std::string playlist; /// musicplayer playlist name
     } sound;
 
     struct
     {
         std::string name;
+        unsigned portraitIndex;
         std::string password;
         bool save_password;
     } lobby;
@@ -106,7 +115,7 @@ public:
     struct
     {
         unsigned autosave_interval;
-        bool invertMouse;
+        MapScrollMode mapScrollMode;
         bool enableWindowPinning;
         unsigned windowSnapDistance;
     } interface;

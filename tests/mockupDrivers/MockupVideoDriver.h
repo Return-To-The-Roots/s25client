@@ -28,8 +28,10 @@ public:
     void ShowErrorMessage(const std::string& title, const std::string& message) override;
     using VideoDriver::FindClosestVideoMode;
     using VideoDriver::SetNewSize;
+    bool IsTouchEvent() const override;
 
     KeyEvent modKeyState_;
     unsigned long tickCount_;
+    unsigned numTfinger_;
     std::vector<VideoMode> video_modes_;
 };

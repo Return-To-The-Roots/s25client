@@ -88,6 +88,8 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
 
 void Playlist::SetStartSong(const unsigned id)
 {
+    if(order_.empty())
+        Prepare();
     const auto itEl = helpers::find(order_, id);
     if(itEl != order_.end())
         std::swap(order_.front(), *itEl);

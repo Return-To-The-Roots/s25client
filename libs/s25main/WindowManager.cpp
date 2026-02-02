@@ -5,11 +5,13 @@
 #include "WindowManager.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "Point.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Window.h"
 #include "commonDefines.h"
 #include "desktops/Desktop.h"
+#include "driver/MouseCoords.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -25,6 +27,15 @@
 #include "s25util/Log.h"
 #include "s25util/MyTime.h"
 #include <algorithm>
+#include <type_traits>
+
+namespace {
+template<typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
+constexpr std::make_unsigned_t<T> square(T x)
+{
+    return x * x;
+}
+} // namespace
 
 WindowManager::WindowManager()
     : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0),
@@ -92,29 +103,13 @@ void WindowManager::Draw()
     DrawCursor();
 }
 
-/**
- *  liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
- *
- *  @return liefert @p true bei aktivem Desktop,
- *                  @p false wenn der Desktop nicht den Fokus besitzt.
- */
-bool WindowManager::IsDesktopActive()
+bool WindowManager::IsDesktopActive() const
 {
     if(curDesktop)
         return curDesktop->IsActive();
-
     return false;
 }
 
-/**
- *  schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
- *
- *  @param[in] msg   Nachricht welche geschickt werden soll
- *  @param[in] id    ID des Steuerelements
- *  @param[in] param Parameter der Nachricht
- */
-
-/// Sendet eine Tastaturnachricht an die Fenster.
 void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
     // When there is no desktop, don't check it or any window
@@ -154,23 +149,15 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
     }
 }
 
-/// Sendet eine Mausnachricht weiter an alle Fenster
-void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
+void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc, Window* window)
 {
-    // ist der Desktop gültig?
-    if(!curDesktop)
-        return;
-    // ist der Desktop aktiv?
-    if(curDesktop->IsActive())
+    if(!window)
+        window = getActiveWindow();
+    if(window)
     {
-        // Ja, dann Nachricht an Desktop weiterleiten
-        CALL_MEMBER_FN(*curDesktop, msg)(mc);
-        curDesktop->RelayMouseMessage(msg, mc);
-    } else if(!windows.empty())
-    {
-        // Nein, dann Nachricht an letztes Fenster weiterleiten
-        CALL_MEMBER_FN(*windows.back(), msg)(mc);
-        windows.back()->RelayMouseMessage(msg, mc);
+        // If no sub-window/control handled the message, let the window itself handle it
+        if(!window->RelayMouseMessage(msg, mc))
+            CALL_MEMBER_FN(*window, msg)(mc);
     }
 }
 
@@ -196,7 +183,8 @@ IngameWindow& WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     SetActiveWindow(result);
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
-    disable_mouse = mouse;
+    if(!VIDEODRIVER.IsTouch())
+        disable_mouse = mouse;
     return result;
 }
 
@@ -248,169 +236,89 @@ IngameWindow* WindowManager::FindNonModalWindow(unsigned id) const
     return itWnd == windows.end() ? nullptr : itWnd->get();
 }
 
-/**
- *  Verarbeitung des Drückens der Linken Maustaste.
- *
- *  @param[in] mc Mauskoordinaten Struktur
- */
+Window* WindowManager::findAndActivateWindow(const Position mousePos)
+{
+    Window* activeWindow = nullptr;
+    if(!windows.empty())
+    {
+        if(windows.back()->IsModal())
+            activeWindow = windows.back().get();
+        else
+            activeWindow = FindWindowAtPos(mousePos);
+    }
+    if(!activeWindow)
+        activeWindow = curDesktop.get();
+    if(activeWindow && !activeWindow->IsActive())
+        SetActiveWindow(*activeWindow);
+    return activeWindow;
+}
+
+Window* WindowManager::getActiveWindow() const
+{
+    if(IsDesktopActive())
+        return curDesktop.get();
+    if(!windows.empty())
+        return windows.back().get();
+    return nullptr;
+}
+
 void WindowManager::Msg_LeftDown(MouseCoords mc)
 {
-    // ist unser Desktop gültig?
-    if(!curDesktop)
-        return;
-
-    // Sound abspielen
+    // play click sound
     SoundEffectItem* sound = LOADER.GetSoundN("sound", 112);
     if(sound)
         sound->Play(255, false);
 
-    // haben wir überhaupt fenster?
-    if(windows.empty())
-    {
-        // nein, dann Desktop aktivieren
-        SetActiveWindow(*curDesktop);
-
-        // ist der Maus-Klick-Fix aktiv?
-        if(!disable_mouse)
-        {
-            // nein, Msg_LeftDown aufrufen
-            curDesktop->Msg_LeftDown(mc);
-
-            // und allen unten drunter auch Bescheid sagen
-            curDesktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);
-        }
-
-        // und raus
-        return;
-    }
-
-    // ist das zuletzt aktiv gewesene Fenster Modal?
-    IngameWindow& lastActiveWnd = *windows.back();
-    if(lastActiveWnd.IsModal())
-    {
-        if(!lastActiveWnd.IsActive())
-            SetActiveWindow(lastActiveWnd);
-
-        // ja es ist modal, ist der Maus-Klick-Fix aktiv?
-        if(!disable_mouse)
-        {
-            // nein, Msg_LeftDownaufrufen
-            lastActiveWnd.Msg_LeftDown(mc);
-
-            // und allen unten drunter auch Bescheid sagen
-            lastActiveWnd.RelayMouseMessage(&Window::Msg_LeftDown, mc);
-
-            // und noch MouseLeftDown vom Fenster aufrufen
-            lastActiveWnd.MouseLeftDown(mc);
-        }
-
-        // und raus
-        return;
-    }
-
-    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
-
-    // Haben wir ein Fenster gefunden gehabt?
-    if(foundWindow)
-    {
-        SetActiveWindow(*foundWindow);
-
-        // ist der Maus-Klick-Fix aktiv?
-        if(!disable_mouse)
-        {
-            // nein, dann Msg_LeftDown aufrufen
-            foundWindow->Msg_LeftDown(mc);
-
-            // und allen unten drunter auch Bescheid sagen
-            foundWindow->RelayMouseMessage(&Window::Msg_LeftDown, mc);
-
-            // und noch MouseLeftDown vom Fenster aufrufen
-            foundWindow->MouseLeftDown(mc);
-        }
-    } else
-    {
-        SetActiveWindow(*curDesktop);
-
-        // ist der Maus-Klick-Fix aktiv?
-        if(!disable_mouse)
-        {
-            // nein, dann Msg_LeftDown aufrufen
-            curDesktop->Msg_LeftDown(mc);
-
-            // und allen unten drunter auch Bescheid sagen
-            curDesktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);
-        }
-    }
+    Window* activeWindow = findAndActivateWindow(mc.pos);
+    // Ignore mouse message, e.g. right after switching desktop, to avoid unwanted clicks
+    if(!disable_mouse && activeWindow)
+        RelayMouseMessage(&Window::Msg_LeftDown, mc, activeWindow);
 }
 
-/**
- *  Verarbeitung des Loslassens der Linken Maustaste.
- *
- *  @param[in] mc Mauskoordinaten Struktur
- */
 void WindowManager::Msg_LeftUp(MouseCoords mc)
 {
-    // ist unser Desktop gültig?
+    // Any desktop active?
     if(!curDesktop)
         return;
 
-    // Ggf. Doppelklick untersuche
     unsigned time_now = VIDEODRIVER.GetTickCount();
-    if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.GetPos() == lastLeftClickPos)
+
+    if(VIDEODRIVER.IsTouch())
     {
+        if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
+        {
+            // Calculate distance between two points
+            const Point<int> diff = mc.pos - lastLeftClickPos;
+            if(square(diff.x) + square(diff.y) <= square(TOUCH_MAX_DOUBLE_CLICK_DISTANCE))
+                mc.dbl_click = true;
+        }
+
+    } else if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
         mc.dbl_click = true;
-    } else
+
+    if(!mc.dbl_click)
     {
-        // Werte wieder erneut speichern
-        lastLeftClickPos = mc.GetPos();
+        // Save values for next potential dbl click
+        lastLeftClickPos = mc.pos;
         lastLeftClickTime = time_now;
     }
 
-    // ist der Maus-Klick-Fix aktiv?
+    // Don't relay message if mouse is disabled (e.g. right after desktop switch)
     if(!disable_mouse)
-    {
-        // ist der Desktop aktiv?
-        if(curDesktop->IsActive())
-        {
-            // ja, dann Msg_LeftUp aufrufen
-            curDesktop->Msg_LeftUp(mc);
-
-            // und die Fenster darunter auch
-            curDesktop->RelayMouseMessage(&Window::Msg_LeftUp, mc);
-        } else if(!windows.empty())
-        {
-            // ja, dann Msg_LeftUp aufrufen
-            IngameWindow& activeWnd = *windows.back();
-            activeWnd.Msg_LeftUp(mc);
-
-            // und den anderen Fenstern auch Bescheid geben
-            activeWnd.RelayMouseMessage(&Window::Msg_LeftUp, mc);
-
-            // und noch MouseLeftUp vom Fenster aufrufen
-            activeWnd.MouseLeftUp(mc);
-        }
-    }
-
-    // Maus-Klick-Fix deaktivieren
-    if(disable_mouse && !nextdesktop)
+        RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    else if(!nextdesktop)
         disable_mouse = false;
 }
 
-/**
- *  Verarbeitung des Drückens der Rechten Maustaste.
- *
- *  @param[in] mc Mauskoordinaten Struktur
- */
 void WindowManager::Msg_RightDown(const MouseCoords& mc)
 {
-    // ist unser Desktop gültig?
     if(!curDesktop)
         return;
 
-    // Right-click closes (most) windows, so check that
+    // Right-click closes (most) windows, so handle that first
     if(!windows.empty())
     {
-        IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
+        IngameWindow* foundWindow = FindWindowAtPos(mc.pos);
         if(windows.back()->IsModal())
         {
             // We have a modal window -> Activate it
@@ -426,36 +334,11 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
             {
                 if(!foundWindow->IsPinned())
                     foundWindow->Close();
-            } else
-            {
-                SetActiveWindow(*foundWindow);
-                foundWindow->Msg_RightDown(mc);
+                return;
             }
-            return;
         }
     }
-
-    // ist der Desktop aktiv?
-    if(curDesktop->IsActive())
-    {
-        // ja, dann Msg_RightDown aufrufen
-        curDesktop->Msg_RightDown(mc);
-
-        // und die Fenster darunter auch
-        curDesktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
-    } else if(!windows.empty())
-    {
-        // dann Nachricht an Fenster weiterleiten
-        windows.back()->RelayMouseMessage(&Window::Msg_RightDown, mc);
-    }
-
-    SetActiveWindow(*curDesktop);
-
-    // ja, dann Msg_RightDown aufrufen
-    curDesktop->Msg_RightDown(mc);
-
-    // und die Fenster darunter auch
-    curDesktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
+    RelayMouseMessage(&Window::Msg_RightDown, mc, findAndActivateWindow(mc.pos));
 }
 
 void WindowManager::Msg_RightUp(const MouseCoords& mc)
@@ -463,141 +346,20 @@ void WindowManager::Msg_RightUp(const MouseCoords& mc)
     RelayMouseMessage(&Window::Msg_RightUp, mc);
 }
 
-/**
- *  Verarbeitung Mausrad hoch.
- *
- *  @param[in] mc Mauskoordinaten Struktur
- */
 void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 {
-    // ist unser Desktop gültig?
-    if(!curDesktop)
-        return;
-
-    // haben wir überhaupt fenster?
-    if(windows.empty())
-    {
-        SetActiveWindow(*curDesktop);
-
-        // nein, Msg_LeftDown aufrufen
-        curDesktop->Msg_WheelUp(mc);
-
-        // und allen unten drunter auch Bescheid sagen
-        curDesktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);
-
-        // und raus
-        return;
-    }
-
-    // ist das zuletzt aktiv gewesene Fenster Modal?
-    IngameWindow& activeWnd = *windows.back();
-    if(activeWnd.IsModal())
-    {
-        // Msg_LeftDownaufrufen
-        activeWnd.Msg_WheelUp(mc);
-
-        // und allen unten drunter auch Bescheid sagen
-        activeWnd.RelayMouseMessage(&Window::Msg_WheelUp, mc);
-
-        // und raus
-        return;
-    }
-
-    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
-
-    if(foundWindow)
-    {
-        SetActiveWindow(*foundWindow);
-
-        // dann Msg_WheelUp aufrufen
-        foundWindow->Msg_WheelUp(mc);
-
-        // und allen unten drunter auch Bescheid sagen
-        foundWindow->RelayMouseMessage(&Window::Msg_WheelUp, mc);
-    } else
-    {
-        SetActiveWindow(*curDesktop);
-
-        // nein, dann Msg_WheelUpDown aufrufen
-        curDesktop->Msg_WheelUp(mc);
-
-        // und allen unten drunter auch Bescheid sagen
-        curDesktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);
-    }
+    RelayMouseMessage(&Window::Msg_WheelUp, mc, findAndActivateWindow(mc.pos));
 }
 
-/**
- *  Verarbeitung Mausrad runter
- *
- *  @param[in] mc Mauskoordinaten Struktur
- */
 void WindowManager::Msg_WheelDown(const MouseCoords& mc)
 {
-    if(!curDesktop)
-        return;
-    if(windows.empty())
-    {
-        SetActiveWindow(*curDesktop);
-        curDesktop->Msg_WheelDown(mc);
-        curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-        // und raus
-        return;
-    }
-    IngameWindow& activeWnd = *windows.back();
-    if(activeWnd.IsModal())
-    {
-        activeWnd.Msg_WheelDown(mc);
-        activeWnd.RelayMouseMessage(&Window::Msg_WheelDown, mc);
-        return;
-    }
-    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
-
-    if(foundWindow)
-    {
-        SetActiveWindow(*foundWindow);
-        foundWindow->Msg_WheelDown(mc);
-        foundWindow->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-    } else
-    {
-        SetActiveWindow(*curDesktop);
-        curDesktop->Msg_WheelDown(mc);
-        curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-    }
+    RelayMouseMessage(&Window::Msg_WheelDown, mc, findAndActivateWindow(mc.pos));
 }
 
-/**
- *  Verarbeitung des Verschiebens der Maus.
- *
- *  @param[in] mc Mauskoordinaten Struktur
- */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
     lastMousePos = mc.pos;
-
-    // ist unser Desktop gültig?
-    if(!curDesktop)
-        return;
-
-    // nein, ist unser Desktop aktiv?
-    if(curDesktop->IsActive())
-    {
-        // ja, dann Msg_MouseMove aufrufen
-        curDesktop->Msg_MouseMove(mc);
-
-        // und alles drunter auch benachrichtigen
-        curDesktop->RelayMouseMessage(&Window::Msg_MouseMove, mc);
-    } else if(!windows.empty())
-    {
-        IngameWindow& activeWnd = *windows.back();
-        // und MouseMove vom Fenster aufrufen
-        activeWnd.MouseMove(mc);
-
-        // ja, dann Msg_MouseMove aufrufen
-        activeWnd.Msg_MouseMove(mc);
-
-        // und alles drunter auch benachrichtigen
-        activeWnd.RelayMouseMessage(&Window::Msg_MouseMove, mc);
-    }
+    RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
 void WindowManager::Msg_KeyDown(const KeyEvent& ke)

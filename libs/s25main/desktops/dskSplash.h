@@ -6,7 +6,7 @@
 
 #include "Desktop.h"
 #include <memory>
-class MouseCoords;
+struct MouseCoords;
 
 /// Klasse des Splashscreen Desktops.
 class dskSplash : public Desktop

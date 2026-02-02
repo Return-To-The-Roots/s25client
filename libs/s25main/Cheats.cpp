@@ -1,13 +1,18 @@
-// Copyright (C) 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024-2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Cheats.h"
 #include "GameInterface.h"
+#include "GamePlayer.h"
+#include "RttrForeachPt.h"
+#include "buildings/nobHQ.h"
+#include "factories/BuildingFactory.h"
+#include "factories/GameCommandFactory.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 
-Cheats::Cheats(GameWorldBase& world) : world_(world) {}
+Cheats::Cheats(GameWorldBase& world, GameCommandFactory& gcFactory) : world_(world), gcFactory_(gcFactory) {}
 
 bool Cheats::areCheatsAllowed() const
 {
@@ -16,31 +21,138 @@ bool Cheats::areCheatsAllowed() const
 
 void Cheats::toggleCheatMode()
 {
+    // In S2, if you enabled cheat mode, revealed the map and disabled cheat mode, the map would remain revealed and you
+    // would be unable to unreveal the map.
+    // In RTTR, disabling cheat mode turns all cheats off and they have to be turned on again manually.
+    if(isCheatModeOn_)
+        turnAllCheatsOff();
+
     isCheatModeOn_ = !isCheatModeOn_;
 }
 
 void Cheats::toggleAllVisible()
 {
-    // In the original game if you enabled cheats, revealed the map and disabled cheats, you would be unable to unreveal
-    // the map. In RTTR, with cheats disabled, you can unreveal the map but cannot reveal it.
-    if(isCheatModeOn() || isAllVisible())
+    if(isCheatModeOn())
     {
         isAllVisible_ = !isAllVisible_;
 
-        // The minimap in the original game is not updated immediately, but in RTTR this would mess up the minimap.
+        // In S2, the minimap is not updated immediately.
+        // In RTTR, the minimap would become messed up if it wasn't updated here.
         if(GameInterface* gi = world_.GetGameInterface())
             gi->GI_UpdateMapVisibility();
     }
 }
 
-void Cheats::toggleHumanAIPlayer() const
+void Cheats::toggleAllBuildingsEnabled()
 {
-    if(isCheatModeOn() && !GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.ToggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
+    // In S2, if you enabled cheats you would automatically have all buildings enabled.
+    // In RTTR, because this may have unintended consequences when playing campaigns, the user must explicitly enable
+    // all buildings after enabling cheats.
+    if(isCheatModeOn())
+        areAllBuildingsEnabled_ = !areAllBuildingsEnabled_;
 }
 
-void Cheats::armageddon() const
+void Cheats::toggleShowEnemyProductivityOverlay()
+{
+    // In S2, if you enabled cheats you would automatically see the enemy productivity overlay - most importantly what
+    // buildings the enemy intends to build.
+    // In RTTR, the user must explicitly enable this feature after enabling cheats.
+    if(isCheatModeOn())
+        shouldShowEnemyProductivityOverlay_ = !shouldShowEnemyProductivityOverlay_;
+}
+
+bool Cheats::canPlaceCheatBuilding(const MapPoint& mp) const
+{
+    if(!isCheatModeOn())
+        return false;
+
+    // It seems that in the original game you can only build headquarters in unoccupied territory at least 2 nodes
+    // away from any border markers and that it doesn't need more bq than a hut.
+    const MapNode& node = world_.GetNode(mp);
+    return !node.owner && !world_.IsAnyNeighborOwned(mp) && node.bq >= BuildingQuality::Hut;
+}
+
+void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
+{
+    if(!canPlaceCheatBuilding(mp))
+        return;
+
+    // The new HQ will have default resources.
+    // In the original game, new HQs created in the Roman campaign had no resources.
+    world_.DestroyNO(mp, false); // if CanPlaceCheatBuilding is true then this must be safe to destroy
+    auto* hq =
+      BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation);
+    static_cast<nobHQ*>(hq)->SetIsTent(player.IsHQTent());
+}
+
+void Cheats::toggleHumanAIPlayer()
+{
+    if(isCheatModeOn() && !GAMECLIENT.IsReplayModeOn())
+    {
+        GAMECLIENT.ToggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
+        isHumanAIPlayer_ = !isHumanAIPlayer_;
+    }
+}
+
+void Cheats::armageddon()
 {
     if(isCheatModeOn())
-        GAMECLIENT.CheatArmageddon();
+        gcFactory_.CheatArmageddon();
+}
+
+Cheats::ResourceRevealMode Cheats::getResourceRevealMode() const
+{
+    return isCheatModeOn() ? resourceRevealMode_ : ResourceRevealMode::Nothing;
+}
+
+void Cheats::toggleResourceRevealMode()
+{
+    switch(resourceRevealMode_)
+    {
+        case ResourceRevealMode::Nothing: resourceRevealMode_ = ResourceRevealMode::Ores; break;
+        case ResourceRevealMode::Ores: resourceRevealMode_ = ResourceRevealMode::Fish; break;
+        case ResourceRevealMode::Fish: resourceRevealMode_ = ResourceRevealMode::Water; break;
+        default: resourceRevealMode_ = ResourceRevealMode::Nothing; break;
+    }
+}
+
+void Cheats::destroyBuildings(const PlayerIDSet& playerIds)
+{
+    if(!isCheatModeOn())
+        return;
+
+    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
+    {
+        if(world_.GetNO(pt)->GetType() == NodalObjectType::Building && playerIds.count(world_.GetNode(pt).owner - 1))
+            world_.DestroyNO(pt);
+    }
+}
+
+void Cheats::destroyAllAIBuildings()
+{
+    if(!isCheatModeOn())
+        return;
+
+    PlayerIDSet ais;
+    for(auto i = 0u; i < world_.GetNumPlayers(); ++i)
+    {
+        if(!world_.GetPlayer(i).isHuman())
+            ais.insert(i);
+    }
+    destroyBuildings(ais);
+}
+
+void Cheats::turnAllCheatsOff()
+{
+    if(isAllVisible_)
+        toggleAllVisible();
+    if(areAllBuildingsEnabled_)
+        toggleAllBuildingsEnabled();
+    if(shouldShowEnemyProductivityOverlay_)
+        toggleShowEnemyProductivityOverlay();
+    if(isHumanAIPlayer_)
+    {
+        toggleHumanAIPlayer();
+        isHumanAIPlayer_ = false;
+    }
 }

@@ -43,8 +43,8 @@ If a key does not exist, a default value is used:
 - addonsSome(false): Can only change addons in list returned by `getAllowedAddons`
 - swapping(false): Swap places
 - playerState(false): Change player slots (add/change AI, ...)
-- ownNation, ownColor, ownTeam (all true): Change values player
-- aiNation, aiColor, aiTeam (all true): Change values of AI  
+- ownNation, ownColor, ownTeam, ownPortrait (all true): Change values player
+- aiNation, aiColor, aiTeam, aiPortrait (all true): Change values of AI  
 
 ```lua
 function getAllowedChanges()

@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-class MouseCoords;
+struct MouseCoords;
 class glFont;
 
 class ctrlMultiline : public Window
