@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,22 +9,18 @@ unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
 {
     if(GetCurrentGF() >= maxGF)
         return 0;
-    if(events.empty())
+    unsigned numGFs;
+    if(events.empty() || events.begin()->first > maxGF)
     {
-        unsigned numGFs = maxGF - GetCurrentGF();
+        numGFs = maxGF - GetCurrentGF();
         currentGF = maxGF;
-        return numGFs;
-    }
-    auto itEvents = events.begin();
-    if(itEvents->first > maxGF)
+    } else
     {
-        unsigned numGFs = maxGF - GetCurrentGF();
-        currentGF = maxGF;
-        return numGFs;
+        auto itEvents = events.begin();
+        numGFs = itEvents->first - GetCurrentGF();
+        currentGF = itEvents->first;
+        ExecuteEvents(itEvents);
     }
-    unsigned numGFs = itEvents->first - GetCurrentGF();
-    currentGF = itEvents->first;
-    ExecuteEvents(itEvents);
     DestroyCurrentObjects();
     return numGFs;
 }
