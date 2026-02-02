@@ -6,7 +6,9 @@
 
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/JobTypes.h"
 #include "gameTypes/StatisticTypes.h"
+#include "gameTypes/VisualSettings.h"
 #include <boost/filesystem/directory.hpp> 
 #include <boost/filesystem/operations.hpp> 
 
@@ -64,6 +66,20 @@ void DataExtractor::ProcessSnapshot(const GamePlayer& player, uint32_t gameframe
         snapshot_data_map[goodName] = inventory.goods[type];
         if(producedGoods)
             snapshot_data_map[goodName + "Produced"] = (*producedGoods)[type];
+    }
+    for(Job job : helpers::EnumRange<Job>{})
+        snapshot_data_map["Job" + JOB_NAMES_1.at(job)] = inventory.people[job];
+    for(Tool tool : helpers::EnumRange<Tool>{})
+        snapshot_data_map["ToolPriority" + TOOL_NAMES_1.at(tool)] = player.GetToolPriority(tool);
+    VisualSettings visualSettings{};
+    player.FillVisualSettings(visualSettings);
+    std::size_t distIdx = 0;
+    for(const auto& mapping : distributionMap)
+    {
+        const GoodType good = std::get<0>(mapping);
+        const BuildingType building = std::get<1>(mapping);
+        snapshot_data_map["Distr" + GOOD_NAMES_1.at(good) + "To" + BUILDING_NAMES_1.at(building)] =
+          visualSettings.distribution[distIdx++];
     }
 
     std::cerr << "Successfully processed gameframe " << gameframe << std::endl; 

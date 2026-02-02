@@ -101,6 +101,8 @@ int main(int argc, char** argv)
     try
     {
         STATS_CONFIG.outputPath = *output_path;
+        if(!bfs::exists(*output_path))
+            bfs::create_directories(*output_path);
         std::string statsDir = *output_path + "/stats/";
         bfs::create_directory(statsDir);
         STATS_CONFIG.statsPath = statsDir;

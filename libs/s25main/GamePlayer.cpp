@@ -683,10 +683,10 @@ void GamePlayer::RecalcDistribution()
 
 void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 {
-    // Punktesystem zur Verteilung, in der Liste alle Gebäude sammeln, die die Ware wollen
+    // Point system for distribution; collect all buildings that want this ware.
     distribution[ware].client_buildings.clear();
 
-    // 1. Anteile der einzelnen Waren ausrechnen
+    // 1) Calculate the shares for each building type.
 
     /// Mapping of buildings that want the current ware to its percentage
     using BldEntry = std::pair<BuildingType, uint8_t>;
@@ -705,9 +705,9 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
         }
     }
 
-    // TODO: evtl noch die counts miteinander kürzen (ggt berechnen)
+    // TODO: Possibly reduce the counts by their GCD.
 
-    // Array für die Gebäudtypen erstellen
+    // Build the array of building types.
 
     std::vector<BuildingType>& wareGoals = distribution[ware].goals;
     wareGoals.clear();
