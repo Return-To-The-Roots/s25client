@@ -114,7 +114,7 @@ public:
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
-    nobBaseWarehouse* GetFirstWH()
+    nobBaseWarehouse* GetFirstWH() const
     {
         return buildings.GetStorehouses().empty() ? nullptr : buildings.GetStorehouses().front();
     }
