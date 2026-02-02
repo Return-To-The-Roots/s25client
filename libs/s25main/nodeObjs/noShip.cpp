@@ -104,7 +104,7 @@ void noShip::Destroy()
     RTTR_Assert(wares.empty());
     world->GetNotifications().publish(ShipNote(ShipNote::Destroyed, ownerId_, pos));
     // Schiff wieder abmelden
-    world->GetPlayer(ownerId_).RemoveShip(this);
+    world->GetPlayer(ownerId_).RemoveShip(*this);
 }
 
 void noShip::Draw(DrawPoint drawPt)
