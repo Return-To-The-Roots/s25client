@@ -753,4 +753,38 @@ BOOST_FIXTURE_TEST_CASE(SinkShipLoosesCargo, ShipAndHarborsReadyFixture<1>)
     BOOST_TEST(player.GetInventory()[Job::Woodcutter] == numWoodcutters - 1);
 }
 
+BOOST_FIXTURE_TEST_CASE(RemoveShipsOnDefeat, ShipAndHarborsReadyFixture<2>)
+{
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const noShip& ship = *player.GetShipByID(0);
+
+    const auto& harbors = player.GetBuildingRegister().GetHarbors();
+    BOOST_TEST_REQUIRE(harbors.size() >= 2u);
+    nobHarborBuilding& harbor1 = *harbors.front();
+    nobHarborBuilding& harbor2 = **(++harbors.begin());
+
+    // Transport something
+    BOOST_TEST_REQUIRE(harbor1.OrderJob(Job::Woodcutter, harbor2, false));
+    BOOST_TEST_REQUIRE(harbor1.OrderWare(GoodType::Wood, harbor2));
+
+    RTTR_EXEC_TILL(90, ship.IsLoading());
+    RTTR_EXEC_TILL(200, ship.IsMoving());
+    const auto numWood = ship.GetWares().size();
+    const auto numWoodcutters = ship.GetFigures().size();
+    BOOST_TEST(numWood == 1u);
+    BOOST_TEST(numWoodcutters == 1u);
+
+    const auto shipPos = ship.GetPos();
+    BOOST_TEST_REQUIRE(player.GetNumShips() == 1u);
+    BOOST_TEST_REQUIRE(world.GetFigures(shipPos).size() == 1u);
+    BOOST_TEST_REQUIRE(dynamic_cast<noShip*>(&world.GetFigures(shipPos).front()));
+    const auto warehouses = player.GetBuildingRegister().GetStorehouses(); // Copy for iteration
+    for(const auto* bld : warehouses)
+        world.DestroyBuilding(bld->GetPos(), curPlayer);
+    RTTR_SKIP_GFS(1); // Handle delayed destruction
+    BOOST_TEST(player.IsDefeated());
+    BOOST_TEST(player.GetNumShips() == 0u);
+    BOOST_TEST(world.GetFigures(shipPos).size() == 0u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
