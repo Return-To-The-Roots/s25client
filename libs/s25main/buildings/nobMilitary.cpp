@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -559,7 +559,7 @@ void nobMilitary::RegulateTroops()
             }
         }
         if(mightHaveRoad)
-            world->GetPlayer(player).OrderTroops(this, lack, diff);
+            world->GetPlayer(player).OrderTroops(*this, lack, diff);
     }
 
     is_regulating_troops = false;
@@ -1185,7 +1185,7 @@ void nobMilitary::SearchCoins()
         if(wh)
         {
             // Wenns eins gibt, dort eine Goldmünze bestellen
-            Ware* ware = wh->OrderWare(GoodType::Coins, this);
+            Ware* ware = wh->OrderWare(GoodType::Coins, *this);
 
             if(!ware)
             {

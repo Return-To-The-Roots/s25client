@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -95,7 +95,7 @@ public:
     void CallCarrier();
     /// a building is looking for a ware - check if this lost ware can be send to the building and then do it
     unsigned CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const;
-    void SetNewGoalForLostWare(noBaseBuilding* newgoal);
+    void SetNewGoalForLostWare(noBaseBuilding& newgoal);
     /// Gibt Ort der Ware zurück
     noRoadNode* GetLocation() { return location; }
     const noRoadNode* GetLocation() const { return location; }

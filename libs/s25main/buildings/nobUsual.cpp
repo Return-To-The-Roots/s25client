@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -265,7 +265,7 @@ void nobUsual::HandleEvent(const unsigned id)
 
             if(numWares[lastOrderedWare] + orderedWares[lastOrderedWare].size() < wareSpaces)
             {
-                Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[lastOrderedWare], this);
+                Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[lastOrderedWare], *this);
                 if(w)
                     RTTR_Assert(helpers::contains(orderedWares[lastOrderedWare], w));
             }
@@ -420,7 +420,7 @@ void nobUsual::ConsumeWares()
         // try to get ware from warehouses
         if(numWares[wareIdxToUse] < 2)
         {
-            Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[wareIdxToUse], this);
+            Ware* w = world->GetPlayer(player).OrderWare(workDesc.waresNeeded[wareIdxToUse], *this);
             if(w)
                 RTTR_Assert(helpers::contains(orderedWares[wareIdxToUse], w));
         }

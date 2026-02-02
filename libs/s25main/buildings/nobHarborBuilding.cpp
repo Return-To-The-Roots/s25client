@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -466,7 +466,7 @@ void nobHarborBuilding::OrderExpeditionWares()
         Ware* ware;
         do
         {
-            ware = world->GetPlayer(player).OrderWare(GoodType::Boards, this);
+            ware = world->GetPlayer(player).OrderWare(GoodType::Boards, *this);
             if(ware)
             {
                 RTTR_Assert(IsWareDependent(*ware));
@@ -482,7 +482,7 @@ void nobHarborBuilding::OrderExpeditionWares()
         Ware* ware;
         do
         {
-            ware = world->GetPlayer(player).OrderWare(GoodType::Stones, this);
+            ware = world->GetPlayer(player).OrderWare(GoodType::Stones, *this);
             if(ware)
             {
                 RTTR_Assert(IsWareDependent(*ware));
