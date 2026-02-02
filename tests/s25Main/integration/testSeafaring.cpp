@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -716,6 +716,41 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     BOOST_TEST(harbor1.GetNumVisualWares(goodType) == numVisWaresBefore + 1u);
     BOOST_TEST(harbor1.GetNumRealWares(goodType) == numRealWaresBefore + 1u);
     BOOST_TEST(MockWare::destroyed);
+}
+
+BOOST_FIXTURE_TEST_CASE(SinkShipLoosesCargo, ShipAndHarborsReadyFixture<1>)
+{
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    noShip& ship = *player.GetShipByID(0);
+
+    const auto& harbors = player.GetBuildingRegister().GetHarbors();
+    BOOST_TEST_REQUIRE(harbors.size() >= 2u);
+    nobHarborBuilding& harbor1 = *harbors.front();
+    nobHarborBuilding& harbor2 = **(++harbors.begin());
+
+    // Transport something
+    BOOST_TEST_REQUIRE(harbor1.OrderJob(Job::Woodcutter, harbor2, false));
+    BOOST_TEST_REQUIRE(harbor1.OrderWare(GoodType::Wood, harbor2));
+    BOOST_TEST_REQUIRE(harbor1.OrderWare(GoodType::Wood, harbor2));
+
+    RTTR_EXEC_TILL(90, ship.IsLoading());
+    RTTR_EXEC_TILL(200, ship.IsMoving());
+    BOOST_TEST(ship.GetWares().size() == 2u);
+    BOOST_TEST(ship.GetFigures().size() == 1u);
+
+    const auto shipPos = ship.GetPos();
+    BOOST_TEST_REQUIRE(player.GetNumShips() == 1u);
+    BOOST_TEST_REQUIRE(world.GetFigures(shipPos).size() == 1u);
+    BOOST_TEST_REQUIRE(dynamic_cast<noShip*>(&world.GetFigures(shipPos).front()));
+
+    const auto numWood = player.GetInventory()[GoodType::Wood];
+    const auto numWoodcutters = player.GetInventory()[Job::Woodcutter];
+    ship.Sink();
+    RTTR_SKIP_GFS(1); // Handle delayed destruction
+    BOOST_TEST(player.GetNumShips() == 0u);
+    BOOST_TEST(world.GetFigures(shipPos).size() == 0u);
+    BOOST_TEST(player.GetInventory()[GoodType::Wood] == numWood - 2);
+    BOOST_TEST(player.GetInventory()[Job::Woodcutter] == numWoodcutters - 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

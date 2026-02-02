@@ -1230,3 +1230,25 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
             break;
     }
 }
+
+void noShip::Sink()
+{
+    for(auto& figure : figures)
+    {
+        figure->Abrogate();
+        figure->SetGoalTonullptr();
+        figure->RemoveFromInventory();
+    }
+    figures.clear();
+
+    for(auto& ware : wares)
+    {
+        ware->WareLost(ownerId_);
+        ware->Destroy();
+    }
+    wares.clear();
+
+    GetEvMgr().RemoveEvent(current_ev);
+    GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
+    world->RecalcVisibilitiesAroundPoint(pos, GetVisualRange(), ownerId_, nullptr);
+}
