@@ -1426,6 +1426,10 @@ void GamePlayer::Surrender()
     if(isDefeated)
         return;
 
+    const auto shipsCopy = ships; // copy to avoid modification during iteration
+    for(auto* ship : shipsCopy)
+        ship->Sink();
+
     isDefeated = true;
 
     // GUI Bescheid sagen
