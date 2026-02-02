@@ -259,13 +259,13 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode& goal, const bool allo
     return true;
 }
 
-nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment* road, noRoadNode* const goal_flag)
+nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment& road, noRoadNode& goal_flag)
 {
     // Überhaupt ein Esel vorhanden?
     if(!inventory[Job::PackDonkey])
         return nullptr;
 
-    auto donkey = std::make_unique<nofCarrier>(CarrierType::Donkey, pos, player, road, goal_flag);
+    auto donkey = std::make_unique<nofCarrier>(CarrierType::Donkey, pos, player, &road, &goal_flag);
     nofCarrier* donkeyRef = donkey.get();
     AddLeavingFigure(std::move(donkey));
     inventory.real.Remove(Job::PackDonkey);
@@ -322,7 +322,7 @@ void nobBaseWarehouse::HandleCollectEvent()
         if(wh)
         {
             // Dann bestellen
-            Ware* ware = wh->OrderWare(i, this);
+            Ware* ware = wh->OrderWare(i, *this);
             if(ware)
             {
                 RTTR_Assert(IsWareDependent(*ware));
@@ -644,22 +644,8 @@ void nobBaseWarehouse::HandleLeaveEvent()
         leaving_event = GetEvMgr().AddEvent(this, LEAVE_INTERVAL + RANDOM_RAND(LEAVE_INTERVAL_RAND));
 }
 
-/// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
-/// (muss in dem Fall true zurückgeben)
-bool nobBaseWarehouse::UseWareAtOnce(std::unique_ptr<Ware>& /*ware*/, noBaseBuilding& /*goal*/)
+Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding& goal)
 {
-    return false;
-}
-
-/// Dasselbe für Menschen
-bool nobBaseWarehouse::UseFigureAtOnce(std::unique_ptr<noFigure>& /*fig*/, noRoadNode& /*goal*/)
-{
-    return false;
-}
-
-Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goal)
-{
-    RTTR_Assert(goal);
     // Ware überhaupt hier vorhanden (Abfrage eigentlich nicht nötig, aber erstmal zur Sicherheit)
     if(!inventory[good])
     {
@@ -668,14 +654,14 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
         return nullptr;
     }
 
-    auto ware = std::make_unique<Ware>(good, goal, this);
+    auto ware = std::make_unique<Ware>(good, &goal, this);
     inventory.Remove(good);
 
     // Copy pointer so functions below can take ownership
     Ware* wareRef = ware.get();
 
     // If we don't want to use the ware right away we add it to the waiting wares
-    if(!UseWareAtOnce(ware, *goal))
+    if(!UseWareAtOnce(ware, goal))
         AddWaitingWare(std::move(ware));
     RTTR_Assert(!ware);
 
@@ -731,7 +717,6 @@ void nobBaseWarehouse::AddWare(std::unique_ptr<Ware> ware)
     CheckUsesForNewWare(type);
 }
 
-/// Prüft verschiedene Verwendungszwecke für eine neuangekommende Ware
 void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
 {
     // Wenn es ein Werkzeug war, evtl neuen Job suchen, der jetzt erzeugt werden könnte..
@@ -755,7 +740,6 @@ void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
     CheckOuthousing(gt);
 }
 
-/// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
 void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
 {
     // Evtl ging ein Gehilfe rein --> versuchen zu rekrutieren
@@ -777,8 +761,8 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         {
             // Straße für Esel suchen
             noRoadNode* goal;
-            if(RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(this, &goal))
-                road->GotDonkey(OrderDonkey(road, goal));
+            if(RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(*this, &goal))
+                road->GotDonkey(OrderDonkey(*road, *goal));
         } else
         {
             // Evtl. Abnehmer für die Figur wieder finden
@@ -854,7 +838,6 @@ void nobBaseWarehouse::CancelWare(Ware*& ware)
     ware = nullptr;
 }
 
-/// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobBaseWarehouse::CancelFigure(noFigure* figure)
 {
     auto it = helpers::findPtr(leave_house, figure);
@@ -872,7 +855,7 @@ void nobBaseWarehouse::TakeWare(Ware* ware)
     dependent_wares.push_back(ware);
 }
 
-void nobBaseWarehouse::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max)
+void nobBaseWarehouse::OrderTroops(nobMilitary& goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max)
 {
     unsigned start, limit;
     int step;
@@ -897,9 +880,9 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_S
         // Vertreter der Ränge ggf rausschicken
         while(inventory[curRank] && max && counts[i - 1])
         {
-            auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, goal, goal, i - 1);
+            auto soldier = std::make_unique<nofPassiveSoldier>(pos, player, &goal, &goal, i - 1);
             inventory.real.Remove(curRank);
-            goal->GotWorker(curRank, *soldier);
+            goal.GotWorker(curRank, *soldier);
             AddLeavingFigure(std::move(soldier));
             --max;
             --counts[i - 1];
@@ -1042,7 +1025,7 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
     return nullptr;
 }
 
-bool nobBaseWarehouse::AreRecruitingConditionsComply()
+bool nobBaseWarehouse::CanRecruitSoldiers()
 {
     // Mindestanzahl der Gehilfen die vorhanden sein müssen anhand der 1. Militäreinstellung ausrechnen
     unsigned needed_helpers = 100 - 10 * world->GetPlayer(player).GetMilitarySetting(0);
@@ -1061,7 +1044,7 @@ void nobBaseWarehouse::TryRecruiting()
     // Wenn noch kein Event angemeldet wurde und alle Bedingungen erfüllt sind, kann ein neues angemeldet werden
     if(!recruiting_event)
     {
-        if(AreRecruitingConditionsComply())
+        if(CanRecruitSoldiers())
             recruiting_event = GetEvMgr().AddEvent(this, RECRUITE_GF + RANDOM_RAND(RECRUITE_RANDOM_GF), 2);
     }
 }
@@ -1071,7 +1054,7 @@ void nobBaseWarehouse::TryStopRecruiting()
     // Wenn ein Event angemeldet wurde und die Bedingungen nicht mehr erfüllt sind, muss es wieder vernichtet werden
     if(recruiting_event)
     {
-        if(!AreRecruitingConditionsComply())
+        if(!CanRecruitSoldiers())
         {
             GetEvMgr().RemoveEvent(recruiting_event);
             recruiting_event = nullptr;
@@ -1177,7 +1160,6 @@ InventorySetting nobBaseWarehouse::GetInventorySetting(const GoodType ware) cons
     return inventorySettings[ConvertShields(ware)];
 }
 
-/// Verändert Ein/Auslagerungseinstellungen (visuell)
 void nobBaseWarehouse::SetInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state)
 {
     state.MakeValid();
@@ -1186,7 +1168,6 @@ void nobBaseWarehouse::SetInventorySettingVisual(const boost_variant2<GoodType, 
     NotifyListeners(1);
 }
 
-/// Verändert Ein/Auslagerungseinstellungen (real)
 void nobBaseWarehouse::SetInventorySetting(const boost_variant2<GoodType, Job>& what, InventorySetting state)
 {
     state.MakeValid();
@@ -1196,8 +1177,8 @@ void nobBaseWarehouse::SetInventorySetting(const boost_variant2<GoodType, Job>& 
     InventorySetting oldState = selectedSetting;
     selectedSetting = state;
 
-    /// Bei anderen Spielern als dem lokalen, der das in Auftrag gegeben hat, müssen die visuellen ebenfalls
-    /// geändert werden oder auch bei Replays
+    // Bei anderen Spielern als dem lokalen, der das in Auftrag gegeben hat, müssen die visuellen ebenfalls
+    // geändert werden oder auch bei Replays
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerId() != player)
         SetInventorySettingVisual(what, state);
 
@@ -1223,7 +1204,6 @@ void nobBaseWarehouse::SetInventorySetting(const boost_variant2<GoodType, Job>& 
     NotifyListeners(1);
 }
 
-/// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
 void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vector<InventorySetting>& states)
 {
     bool isUnstopped = false;
@@ -1363,13 +1343,11 @@ void nobBaseWarehouse::CheckOuthousing(const boost_variant2<GoodType, Job>& what
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
 }
 
-/// For debug only
 bool nobBaseWarehouse::IsDependentFigure(const noFigure& fig) const
 {
     return helpers::contains(dependent_figures, &fig);
 }
 
-/// Available goods of a specific type that can be used for trading
 unsigned nobBaseWarehouse::GetAvailableWaresForTrading(const GoodType gt) const
 {
     // We need a helper as leader
@@ -1379,7 +1357,6 @@ unsigned nobBaseWarehouse::GetAvailableWaresForTrading(const GoodType gt) const
     return std::min(inventory[gt], inventory[Job::PackDonkey]);
 }
 
-/// Available figures of a speciefic type that can be used for trading
 unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 {
     // We need a helper as leader
@@ -1392,7 +1369,6 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
         return std::min(inventory[job], inventory[Job::Helper] - 1);
 }
 
-/// Starts a trade caravane from this warehouse
 void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& what, const unsigned count,
                                           const TradeRoute& tr, nobBaseWarehouse* goal)
 {

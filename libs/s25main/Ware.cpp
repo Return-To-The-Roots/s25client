@@ -362,14 +362,13 @@ Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
 }
 
 /// this assumes that the ware is at a flag (todo: handle carried wares) and that there is a valid path to the goal
-void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
+void Ware::SetNewGoalForLostWare(noBaseBuilding& newgoal)
 {
-    RTTR_Assert(newgoal);
-    const auto newDir = CalcPathToGoal(*newgoal).dir;
+    const auto newDir = CalcPathToGoal(newgoal).dir;
     if(newDir != RoadPathDirection::None) // there is a valid path to the goal? -> ordered!
     {
         next_dir = newDir;
-        SetGoal(newgoal);
+        SetGoal(&newgoal);
         CallCarrier();
     }
 }

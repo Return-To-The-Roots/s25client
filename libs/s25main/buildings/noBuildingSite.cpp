@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -152,7 +152,7 @@ void noBuildingSite::OrderConstructionMaterial()
     GamePlayer& owner = world->GetPlayer(player);
     for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[bldType_].boards; ++i)
     {
-        Ware* w = owner.OrderWare(GoodType::Boards, this);
+        Ware* w = owner.OrderWare(GoodType::Boards, *this);
         if(!w)
             break;
         RTTR_Assert(helpers::contains(ordered_boards, w));
@@ -160,7 +160,7 @@ void noBuildingSite::OrderConstructionMaterial()
     // Steine
     for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[bldType_].stones; ++i)
     {
-        Ware* w = owner.OrderWare(GoodType::Stones, this);
+        Ware* w = owner.OrderWare(GoodType::Stones, *this);
         if(!w)
             break;
         RTTR_Assert(helpers::contains(ordered_stones, w));

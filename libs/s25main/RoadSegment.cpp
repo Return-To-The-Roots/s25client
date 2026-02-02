@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -181,7 +181,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         else if(i == 0)
             // If road was unoccupied before then add 2nd part to the unoccupied roads
             // (1st is already included)
-            world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(second);
+            world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(*second);
     }
 }
 
@@ -320,7 +320,7 @@ void RoadSegment::TryGetDonkey()
 {
     // Nur rufen, falls es eine Eselstraße ist, noch kein Esel da ist, aber schon ein Träger da ist
     if(NeedDonkey())
-        carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
+        carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(*this);
 }
 
 /**
@@ -333,11 +333,11 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
         this->carriers_[0] = nullptr;
-        world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(this);
+        world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(*this);
     } else
     {
         // Kein Esel mehr da, versuchen, neuen zu bestellen
-        this->carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
+        this->carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(*this);
     }
 }
 /**
