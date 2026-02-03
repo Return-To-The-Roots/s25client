@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,15 +11,26 @@
 
 CampaignDescription::CampaignDescription(const boost::filesystem::path& campaignPath, const kaguya::LuaRef& table)
 {
+    const auto resolveCampaignPath = [campaignPath](const std::string& path) {
+        const boost::filesystem::path tmpPath = path;
+        // If it is only a filename or empty use path relative to campaign folder
+        if(!tmpPath.has_parent_path())
+            return campaignPath / tmpPath;
+        // Otherwise it must be a valid path inside the game files
+        lua::validatePath(path);
+        return RTTRCONFIG.ExpandPath(path);
+    };
+
     CheckedLuaTable luaData(table);
     luaData.getOrThrow(version, "version");
     luaData.getOrThrow(author, "author");
     luaData.getOrThrow(name, "name");
     luaData.getOrThrow(shortDescription, "shortDescription");
     luaData.getOrThrow(longDescription, "longDescription");
-    image = luaData.getOptional<std::string>("image");
-    if(image && image->empty())
-        image = std::nullopt;
+    const auto imageValue = luaData.getOptional<std::string>("image");
+    if(imageValue && !imageValue->empty())
+        image = resolveCampaignPath(*imageValue);
+
     luaData.getOrThrow(maxHumanPlayers, "maxHumanPlayers");
 
     if(maxHumanPlayers != 1)
@@ -30,20 +41,10 @@ CampaignDescription::CampaignDescription(const boost::filesystem::path& campaign
     if(difficulty != gettext_noop("easy") && difficulty != gettext_noop("medium") && difficulty != gettext_noop("hard"))
         throw std::invalid_argument(helpers::format(_("Invalid difficulty: %1%"), difficulty));
 
-    auto resolveFolder = [campaignPath](const std::string& folder) {
-        const boost::filesystem::path tmpPath = folder;
-        // If it is only a filename or empty use path relative to campaign folder
-        if(!tmpPath.has_parent_path())
-            return campaignPath / tmpPath;
-        // Otherwise it must be a valid path inside the game files
-        lua::validatePath(folder);
-        return RTTRCONFIG.ExpandPath(folder);
-    };
-
     const auto mapFolder = luaData.getOrDefault("mapFolder", std::string{});
-    mapFolder_ = resolveFolder(mapFolder);
+    mapFolder_ = resolveCampaignPath(mapFolder);
     // Default lua folder to map folder, i.e. LUA files are side by side with the maps
-    luaFolder_ = resolveFolder(luaData.getOrDefault("luaFolder", mapFolder));
+    luaFolder_ = resolveCampaignPath(luaData.getOrDefault("luaFolder", mapFolder));
     mapNames_ = luaData.getOrDefault("maps", std::vector<std::string>());
     selectionMapData = luaData.getOptional<SelectionMapInputData>("selectionMap");
     luaData.checkUnused();
