@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     BOOST_TEST(desc.name == "My campaign");
     BOOST_TEST(desc.shortDescription == "Very short description");
     BOOST_TEST(desc.longDescription == "This is the long description");
-    BOOST_TEST(desc.image == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");
+    BOOST_TEST(desc.image == RTTRCONFIG.ExpandPath("<RTTR_GAME>/GFX/PICS/WORLD.LBM"));
     BOOST_TEST(desc.maxHumanPlayers == 1u);
     BOOST_TEST(desc.difficulty == "easy");
 
@@ -212,7 +212,8 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
                 longDescription = "long",
                 maxHumanPlayers = 1,
                 difficulty = "easy",
-                maps = { "map.WLD" }
+                maps = { "map.WLD" },
+                image = "myimage.LBM"
             }
             function getRequiredLuaVersion() return 1 end
         )";
@@ -225,6 +226,8 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
         BOOST_TEST_REQUIRE(loader.Load());
         BOOST_TEST(desc.getMapFilePath(0) == tmp / "map.WLD");
         BOOST_TEST(desc.getLuaFilePath(0) == tmp / "map.lua");
+        // Similar for image
+        BOOST_TEST(desc.image == tmp / "myimage.LBM");
     }
 
     // Only folder name is a subdirectory to the campaign
@@ -297,6 +300,21 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
         CampaignDataLoader loader(desc, tmp);
         BOOST_TEST_REQUIRE(!loader.Load());
         RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path 'subdir/maps", false);
+    }
+    // Similar the image must only be a name if not a <RTTR template
+    {
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["mapFolder"] = ""
+            campaign["luaFolder"] = ""
+            campaign["image"] = "subdir/image.LBM"
+        )";
+    }
+    {
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(!loader.Load());
+        RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path 'subdir/image.LBM", false);
     }
 }
 
