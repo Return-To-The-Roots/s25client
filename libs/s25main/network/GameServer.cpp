@@ -1595,9 +1595,6 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
     static_assert(PLAYER_COLORS.size() >= MAX_PLAYERS, "Not enough player colors defined!");
     RTTR_Assert(playerInfos.size() <= PLAYER_COLORS.size());
 
-    JoinPlayerInfo& player = playerInfos[playerIdx];
-    RTTR_Assert(player.isUsed()); // Should only set colors for taken spots
-
     // Get colors used by other players
     std::set<unsigned> takenColors;
     for(unsigned p = 0; p < playerInfos.size(); ++p)
@@ -1616,9 +1613,9 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
     while(helpers::contains(takenColors, newColor))
         newColor = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
 
+    JoinPlayerInfo& player = playerInfos[playerIdx];
     if(player.color == newColor)
         return;
-
     player.color = newColor;
 
     SendToAll(GameMessage_Player_Color(playerIdx, player.color));
