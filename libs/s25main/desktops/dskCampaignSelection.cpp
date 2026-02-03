@@ -173,7 +173,7 @@ void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
     for(const auto& campaign : campaigns_)
     {
         if(campaign.image)
-            resourcesToLoad.insert(campaign.image->string());
+            resourcesToLoad.insert(*campaign.image);
     }
     LOADER.LoadFiles({resourcesToLoad.begin(), resourcesToLoad.end()});
     FillCampaignsTable();

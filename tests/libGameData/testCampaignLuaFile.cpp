@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     BOOST_TEST(desc.name == "My campaign");
     BOOST_TEST(desc.shortDescription == "Very short description");
     BOOST_TEST(desc.longDescription == "This is the long description");
-    BOOST_TEST(desc.image == RTTRCONFIG.ExpandPath("<RTTR_GAME>/GFX/PICS/WORLD.LBM"));
+    BOOST_TEST(desc.image == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");
     BOOST_TEST(desc.maxHumanPlayers == 1u);
     BOOST_TEST(desc.difficulty == "easy");
 
