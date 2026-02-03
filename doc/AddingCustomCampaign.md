@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 # Add a custom campaign
 
-You can have a look into the already existing original Settlers 2 campaigns in the subfolders `RTTR/campaigns/roman` and `RTTR/campaigns/continent` for an example.
+You can take a look into the already existing original Settlers 2 campaigns in the subfolders `RTTR/campaigns/roman` and `RTTR/campaigns/continent` for an example.
 We will now create an example campaign `garden`.
 
 ## Location for adding a new campaign
@@ -41,18 +41,20 @@ campaign = {
     name = _"name",
     shortDescription = _"shortDescription",
     longDescription = _"longDescription",
-    image = "<RTTR_RTTR>/campaigns/garden/garden.bmp",
+    image = "<RTTR_RTTR>/campaigns/garden/garden.bmp", -- Same as: image = "garden.bmp",
     maxHumanPlayers= 1,
     difficulty = "easy",
-    mapFolder = "<RTTR_RTTR>/campaigns/garden",
-    luaFolder = "<RTTR_RTTR>/campaigns/garden",
+    mapFolder = "<RTTR_RTTR>/campaigns/garden", -- optional
+    luaFolder = "<RTTR_RTTR>/campaigns/garden", -- optional
     maps = { "MISS01.WLD","MISS02.WLD"},
     selectionMap = {
-        background = {"<RTTR_GAME>/campaigns/garden/mapscreen/background.bmp", 0},
-        map = {"<RTTR_GAME>/campaigns/garden/mapscreen/map.bmp", 0},
-        missionMapMask = {"<RTTR_GAME>/campaigns/garden/mapscreen/map_mask.bmp", 0},
-        marker = {"<RTTR_GAME>/campaigns/garden/mapscreen/marker.bmp", 0},
-        conquered = {"<RTTR_GAME>/campaigns/garden/mapscreen/conquered.bmp", 0},
+        background = {"<RTTR_RTTR>/campaigns/garden/mapscreen/background.bmp", 0},
+        map = {"<RTTR_RTTR>/campaigns/garden/mapscreen/map.bmp", 0},
+        missionMapMask = {"<RTTR_RTTR>/campaigns/garden/mapscreen/map_mask.bmp", 0},
+        marker = {"<RTTR_RTTR>/campaigns/garden/mapscreen/marker.bmp", 0},
+        conquered = {"<RTTR_RTTR>/campaigns/garden/mapscreen/conquered.bmp", 0},
+        -- Each '<RTTR_RTTR>/campaigns/garden/' is optional: Paths are treated as relative to campaign file.
+        -- E.g.: conquered = {"mapscreen/conquered.bmp", 0},
         backgroundOffset = {0, 0},
         disabledColor = 0x70000000,
         missionSelectionInfos = {
@@ -75,7 +77,7 @@ The Lua campaign interface is versioned using a major version. Every time a feat
 
 Every map script must have 1 function:
 `getRequiredLuaVersion()`
-You need to implement this and return the version your script works with. If it does not match the current version an error will be shown and the script will not be used.
+You need to implement this and return the version your script works with. If it is higher than the current version an error will be shown and the script will not be used.
 
 ### Explanation of the campaign table fields
 
@@ -95,7 +97,7 @@ If you want a field to be translated you have to add the translation as describe
 
 Hints:
 
-- To work on case-sensitive OS (like Linux) the file name of the Lua file must have the same case as the map file name. This applies to the map names in the campaign.lua file too.
+- To work on case-sensitive OS (like Linux) the file name of the Lua file must have the same case as the map file name. This applies to the map names in the `campaign.lua` file too.
 For example: `MISS01.WLD, MISS01.lua` is correct and `MISS01.WLD, miss01.lua` will not work on Linux
 - The Lua file of a map must have the same name as the map itself but with the extension `.lua` to be found.
 - The Lua and the map file don't need to be in the same folder because the path can be specified separately.
@@ -107,7 +109,7 @@ For example: `MISS01.WLD, MISS01.lua` is correct and `MISS01.WLD, miss01.lua` wi
 
 ### Optional map selection screen {#selection-map}
 
-This parameter is optional and can be omitted in the Lua campaign file. If this parameter is specified the selection screen for the missions of a campaign is replaced by a selection map. Like the one used in the original settlers 2 world campaign.
+This parameter is optional and can be omitted in the Lua campaign file. If this parameter is specified the selection screen for the missions of a campaign is replaced by a selection map. Like the one used in the original Settlers 2 world campaign.
 
 We have the following parameters:
 
@@ -123,6 +125,11 @@ We have the following parameters:
 Hint:  
 All the images are described by the path to the image file and an index parameter. Usually the index parameter is zero.
 For special image formats containing multiple images in an archive this is the index of the image to use.
+
+### Image paths
+
+The paths to the campaign image and selection map images can be relative to the campaign folder and at most inside a single subfolder.  
+E.g. `images/garden.bmp` and `mapscreen/conquered.bmp` work, but `images/mapscreen/conquered.bmp` does not.
 
 ## Final view of the example garden campaign folder
 
