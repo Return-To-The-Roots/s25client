@@ -137,7 +137,7 @@ void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const boo
             mapSelection->setMissionsStatus(std::vector<MissionStatus>(campaign.getNumMaps(), {true, true}));
             mapSelection->setPreview(true);
         } else if(campaign.image)
-            campaignImage_ = LOADER.GetImageN(ResourceId::fromPath(*campaign.image), 0);
+            campaignImage_ = LOADER.GetImageN(ResourceId::make(*campaign.image), 0);
         else
             campaignImage_ = nullptr;
     }
@@ -173,7 +173,7 @@ void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
     for(const auto& campaign : campaigns_)
     {
         if(campaign.image)
-            resourcesToLoad.insert(*campaign.image);
+            resourcesToLoad.insert(campaign.image->string());
     }
     LOADER.LoadFiles({resourcesToLoad.begin(), resourcesToLoad.end()});
     FillCampaignsTable();

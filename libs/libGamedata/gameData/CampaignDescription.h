@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -20,7 +20,7 @@ struct CampaignDescription
     std::string name;
     std::string shortDescription;
     std::string longDescription;
-    std::optional<std::string> image;
+    std::optional<boost::filesystem::path> image;
     unsigned maxHumanPlayers = 1;
     std::string difficulty;
     std::optional<SelectionMapInputData> selectionMapData;
