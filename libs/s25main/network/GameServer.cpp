@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -177,7 +177,11 @@ bool GameServer::Start(const CreateServerInfo& csi, const MapDescription& map, c
         LOG.write("Map %1% has no players!\n") % mapinfo.filepath;
         return false;
     }
-
+    if(playerInfos.size() > MAX_PLAYERS)
+    {
+        LOG.write("Map %1% has too many players! (%1% > %2%)\n") % mapinfo.filepath % playerInfos.size() % MAX_PLAYERS;
+        return false;
+    }
     if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
 
@@ -1587,7 +1591,9 @@ void GameServer::SendAsyncLog(const bfs::path& asyncLogFilePath)
 void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 {
     RTTR_Assert(playerIdx < playerInfos.size());
-    RTTR_Assert(playerInfos.size() <= PLAYER_COLORS.size()); // Else we may not find a valid color!
+    // If either of those fails we may not find a valid color!
+    static_assert(PLAYER_COLORS.size() >= MAX_PLAYERS, "Not enough player colors defined!");
+    RTTR_Assert(playerInfos.size() <= PLAYER_COLORS.size());
 
     JoinPlayerInfo& player = playerInfos[playerIdx];
     RTTR_Assert(player.isUsed()); // Should only set colors for taken spots
