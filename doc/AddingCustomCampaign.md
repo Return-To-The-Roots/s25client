@@ -147,3 +147,6 @@ RTTR/campaigns/garden/mapscreen/map_mask.bmp
 RTTR/campaigns/garden/mapscreen/marker.bmp
 RTTR/campaigns/garden/mapscreen/conquered.bmp
 ```
+
+Note that for custom campaigns, placed in `<RTTR_USERDATA>/campaigns/` the top-level `RTTR` folder won't exist.
+Hence, `<RTTR_RTTR>/campaigns/` should not be used in the campaign description file to refer to campaign files.
