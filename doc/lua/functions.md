@@ -230,7 +230,10 @@ Change the players team.
 
 **SetColor(color or colorIdx)**  
 Sets the players color by index or directly if its alpha value is not zero.
-Duplicate color values are possible, so you have to ensure unique colors if you want them!
+When the color is currently used by an active player/AI, a new one will be chosen out of the standard player colors.  
+You can change the colors freely for slots not yet taken, so if the final distribution of colors is unique,
+they will be kept after using e.g. `SetAI`.  
+In any case, using `SetAI` will ensure a unique color.
 
 **Close()**  
 Closes a spot kicking any player or AI there.
