@@ -20,7 +20,7 @@ struct CampaignDescription
     std::string name;
     std::string shortDescription;
     std::string longDescription;
-    std::optional<boost::filesystem::path> image;
+    std::optional<std::string> image;
     unsigned maxHumanPlayers = 1;
     std::string difficulty;
     std::optional<SelectionMapInputData> selectionMapData;
