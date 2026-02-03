@@ -15,10 +15,10 @@ CampaignDescription::CampaignDescription(const boost::filesystem::path& campaign
         const boost::filesystem::path tmpPath = path;
         // If it is only a filename or empty use path relative to campaign folder
         if(!tmpPath.has_parent_path())
-            return campaignPath / tmpPath;
+            return (campaignPath / tmpPath).string();
         // Otherwise it must be a valid path inside the game files
         lua::validatePath(path);
-        return RTTRCONFIG.ExpandPath(path);
+        return path;
     };
 
     CheckedLuaTable luaData(table);
@@ -42,11 +42,23 @@ CampaignDescription::CampaignDescription(const boost::filesystem::path& campaign
         throw std::invalid_argument(helpers::format(_("Invalid difficulty: %1%"), difficulty));
 
     const auto mapFolder = luaData.getOrDefault("mapFolder", std::string{});
-    mapFolder_ = resolveCampaignPath(mapFolder);
+    mapFolder_ = RTTRCONFIG.ExpandPath(resolveCampaignPath(mapFolder));
     // Default lua folder to map folder, i.e. LUA files are side by side with the maps
-    luaFolder_ = resolveCampaignPath(luaData.getOrDefault("luaFolder", mapFolder));
+    luaFolder_ = RTTRCONFIG.ExpandPath(resolveCampaignPath(luaData.getOrDefault("luaFolder", mapFolder)));
     mapNames_ = luaData.getOrDefault("maps", std::vector<std::string>());
     selectionMapData = luaData.getOptional<SelectionMapInputData>("selectionMap");
+    if(selectionMapData)
+    {
+        const auto updatePath = [resolveCampaignPath](std::string& path) {
+            if(!path.empty())
+                path = resolveCampaignPath(path);
+        };
+        updatePath(selectionMapData->background.filePath);
+        updatePath(selectionMapData->map.filePath);
+        updatePath(selectionMapData->missionMapMask.filePath);
+        updatePath(selectionMapData->marker.filePath);
+        updatePath(selectionMapData->conquered.filePath);
+    }
     luaData.checkUnused();
 }
 
