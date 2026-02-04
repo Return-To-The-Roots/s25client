@@ -26,9 +26,10 @@ CampaignDescription::CampaignDescription(const boost::filesystem::path& campaign
                 if(!parentPath.parent_path().has_parent_path())
                 {
                     // Only alpha-numeric folder names are allowed
-                    const auto isNonAlNum = [](const char c) {
-                        return !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'));
+                    const auto isAlNum = [](const char c) {
+                        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
                     };
+                    const auto isNonAlNum = [isAlNum](const char c) { return !isAlNum(c); };
                     lua::assertTrue(!helpers::contains_if(parentPath.string(), isNonAlNum),
                                     helpers::format(_("Invalid path '%1%': Must be alpha-numeric"), path));
                     return (campaignPath / tmpPath).string();
