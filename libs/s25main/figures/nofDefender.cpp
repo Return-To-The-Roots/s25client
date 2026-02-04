@@ -182,19 +182,12 @@ void nofDefender::AttackerArrested()
     }
 }
 
-namespace {
-constexpr unsigned DEFENDER_BONUS_CAPTURE_DELAY_GFS = 5000;
-}
-
 void nofDefender::ApplyDefenderBonusHitpoints()
 {
     const unsigned maxRankHp = HITPOINTS[GetRank()];
     unsigned bonusHp = 0;
     if(building && world)
     {
-        const unsigned deltaGF = world->GetEvMgr().GetCurrentGF() - building->GetCapturedGF();
-        if(deltaGF > DEFENDER_BONUS_CAPTURE_DELAY_GFS)
-            ++bonusHp;
         if(building->GetOriginOwner() == GetPlayer())
             ++bonusHp;
     }

@@ -18,6 +18,8 @@ class nofAggressiveDefender : public nofActiveSoldier
     nofAttacker* attacker;
     /// Targeted military building
     nobBaseMilitary* attacked_goal;
+    /// Apply the temporary defender bonus hitpoint if applicable
+    void ApplyAggressiveDefenderBonusHitpoints();
 
     /// Handle movement ticks
     void Walked() override;

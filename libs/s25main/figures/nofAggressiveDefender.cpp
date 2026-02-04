@@ -4,12 +4,15 @@
 
 #include "nofAggressiveDefender.h"
 #include "GlobalGameSettings.h"
+#include "EventManager.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
+#include "buildings/nobBaseMilitary.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
+#include "gameData/MilitaryConsts.h"
 
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
                                              const unsigned char rank, nofAttacker& attacker)
@@ -18,6 +21,7 @@ nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned 
 {
     // Notify building to protect
     attacked_goal->LinkAggressiveDefender(*this);
+    ApplyAggressiveDefenderBonusHitpoints();
 }
 
 nofAggressiveDefender::nofAggressiveDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
@@ -26,6 +30,7 @@ nofAggressiveDefender::nofAggressiveDefender(const nofPassiveSoldier& other, nof
 {
     // Notify building to protect
     attacked_goal->LinkAggressiveDefender(*this);
+    ApplyAggressiveDefenderBonusHitpoints();
 }
 
 nofAggressiveDefender::~nofAggressiveDefender() = default;
@@ -60,6 +65,26 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
         attacker = nullptr;
         attacked_goal = nullptr;
     }
+    ApplyAggressiveDefenderBonusHitpoints();
+}
+
+void nofAggressiveDefender::ApplyAggressiveDefenderBonusHitpoints()
+{
+    const unsigned maxRankHp = HITPOINTS[GetRank()];
+    unsigned bonusHp = 0;
+
+    if(attacked_goal && world)
+    {
+        if(building && building->GetOriginOwner() == GetPlayer() && attacked_goal->GetOriginOwner() == GetPlayer())
+            ++bonusHp;
+    }
+
+    const unsigned maxAllowedHp = maxRankHp + bonusHp;
+
+    if(bonusHp && hitpoints == maxRankHp)
+        hitpoints = static_cast<unsigned char>(maxAllowedHp);
+    else if(hitpoints > maxAllowedHp)
+        hitpoints = static_cast<unsigned char>(maxAllowedHp);
 }
 
 void nofAggressiveDefender::Walked()
