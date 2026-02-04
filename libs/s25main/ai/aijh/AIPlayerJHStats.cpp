@@ -9,6 +9,7 @@
 #include "BuildingPlanner.h"
 #include "BuildingRegister.h"
 #include "CombatLossTracker.h"
+#include "EventManager.h"
 #include "GamePlayer.h"
 #include "Jobs.h"
 #include "StatsConfig.h"
@@ -225,6 +226,7 @@ namespace AIJH {
 
 void AIPlayerJH::TrackCombatStart(const nobBaseMilitary& target)
 {
+    const unsigned startGf = gwb.GetEvMgr().GetCurrentGF();
     const unsigned objId = target.GetObjId();
     const auto it = std::find_if(activeCombats_.begin(), activeCombats_.end(),
                                  [objId](const ActiveCombat& combat) { return combat.targetObjId == objId; });
@@ -235,7 +237,7 @@ void AIPlayerJH::TrackCombatStart(const nobBaseMilitary& target)
     if(const auto* mil = dynamic_cast<const nobMilitary*>(&target))
         captureRisk = mil->GetCaptureRiskEstimate();
     CombatLossTracker::RegisterCombat(objId, captureRisk);
-    activeCombats_.push_back({target.GetPos(), objId, target.GetPlayer(), target.GetBuildingType()});
+    activeCombats_.push_back({target.GetPos(), objId, target.GetPlayer(), target.GetBuildingType(), startGf, false});
 }
 
 std::string AIPlayerJH::GetCombatsLogPath() const
@@ -301,8 +303,11 @@ bool AIPlayerJH::HasOwnAggressors(const nobBaseMilitary& building) const
     return false;
 }
 
-AIPlayerJH::CombatLogState AIPlayerJH::EvaluateCombatState(const ActiveCombat& combat) const
+AIPlayerJH::CombatLogState AIPlayerJH::EvaluateCombatState(ActiveCombat& combat, const unsigned gf) const
 {
+    static constexpr unsigned kCombatGraceGf = 500;
+    static constexpr unsigned kCombatStaleGf = 2500;
+
     const noBase* nodeObj = gwb.GetNO(combat.pos);
     const auto* building = dynamic_cast<const nobBaseMilitary*>(nodeObj);
     if(!building)
@@ -312,7 +317,20 @@ AIPlayerJH::CombatLogState AIPlayerJH::EvaluateCombatState(const ActiveCombat& c
         return CombatLogState::Success;
 
     if(HasOwnAggressors(*building))
+    {
+        combat.sawAggressor = true;
         return CombatLogState::Pending;
+    }
+
+    if(!combat.sawAggressor)
+    {
+        const unsigned age = gf - combat.startGf;
+        if(age < kCombatGraceGf)
+            return CombatLogState::Pending;
+        if(age >= kCombatStaleGf)
+            return CombatLogState::Failure;
+        return CombatLogState::Pending;
+    }
 
     const unsigned char owner = building->GetPlayer();
     if(owner == playerId)
@@ -332,7 +350,7 @@ void AIPlayerJH::LogFinishedCombats(const unsigned gf) const
     auto it = activeCombats_.begin();
     while(it != activeCombats_.end())
     {
-        const CombatLogState state = EvaluateCombatState(*it);
+        const CombatLogState state = EvaluateCombatState(*it, gf);
         if(state == CombatLogState::Pending)
         {
             ++it;
@@ -365,10 +383,12 @@ void AIPlayerJH::LogFinishedCombats(const unsigned gf) const
         riskStream << std::fixed << std::setprecision(2) << stats.captureRisk;
         combatsFile << "#" << gf << " Player #" << static_cast<unsigned>(playerId + 1) << " attacks Player #"
                     << static_cast<unsigned>(combat.defenderPlayer + 1) << " " << BUILDING_NAMES_1.at(combat.buildingType)
-                    << ". Attack #" << (success ? "succed" : "failed") << " Forces: Attacker "
+                    << " " << combat.targetObjId << ". Attack #" << (success ? "succed" : "failed")
+                    << " Forces: Attacker "
                     << FormatRankCounts(stats.attackerForces) << " . Defender " << FormatRankCounts(stats.defenderForces)
                     << " Losses: Attacker " << FormatRankCounts(stats.attackerLosses) << " . Defender "
-                    << FormatRankCounts(stats.defenderLosses) << " CaptureRisk=" << riskStream.str();
+                    << FormatRankCounts(stats.defenderLosses) << " CaptureRisk=" << riskStream.str()
+                    << " StartGF=" << combat.startGf << " EndGF=" << gf;
         if(success)
             combatsFile << " Destroyed: " << FormatDestroyedBuildings(stats.destroyedBuildings);
         combatsFile << std::endl;

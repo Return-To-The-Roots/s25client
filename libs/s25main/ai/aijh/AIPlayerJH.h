@@ -260,6 +260,8 @@ private:
         unsigned targetObjId;
         unsigned char defenderPlayer;
         BuildingType buildingType;
+        unsigned startGf;
+        bool sawAggressor = false;
     };
 
     struct RecentlyLostBuilding
@@ -292,7 +294,7 @@ private:
     std::string GetCombatsLogPath() const;
     std::string FormatPlayerLabel(unsigned playerIdx) const;
     void LogPlayerMetadata(std::ofstream& combatsFile) const;
-    CombatLogState EvaluateCombatState(const ActiveCombat& combat) const;
+    CombatLogState EvaluateCombatState(ActiveCombat& combat, unsigned gf) const;
     bool HasOwnAggressors(const nobBaseMilitary& building) const;
     void RememberLostMilitaryBuilding(MapPoint pt);
     void ForgetLostMilitaryBuilding(MapPoint pt);
