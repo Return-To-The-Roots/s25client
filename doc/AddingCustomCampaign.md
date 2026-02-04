@@ -88,7 +88,7 @@ If you want a field to be translated you have to add the translation as describe
   3. `name`: The name of the campaign
   4. `shortDescription`: Short description of the campaign (like a headline to get a rough imagination of the campaign)
   5. `longDescription`: Extended description describing the campaign in detail. Will be shown in the campaign selection screen, when the campaign is selected.
-  6. `image`: Path to an image displayed in the campaign selection screen. You can omit this if you do no want to provide an image.
+  6. `image`: Path to an image displayed in the campaign selection screen. Can be any "archive" with an image, e.g. `.bmp`, `.lbm`. You can omit this if you do no want to provide an image.
   7. `maxHumanPlayers`: For now this is always 1 until we support multiplayer campaigns
   8. `difficulty`: Difficulty of the campaign. Should be one of the values easy, medium or hard.
   9. `mapFolder` and `luaFolder`: Path to the folder containing the campaign maps and associated Lua files. Usually your campaign folder or a subfolder of it.
