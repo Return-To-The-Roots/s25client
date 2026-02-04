@@ -12,6 +12,7 @@
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "addons/const_addons.h"
+#include "CombatEventLogger.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
@@ -1011,6 +1012,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     // Recalculate territory
     world->RecalcTerritory(*this, TerritoryChangeReason::Captured);
+    CombatEventLogger::LogCapture(GetEvMgr().GetCurrentGF(), new_owner, old_player, bldType_, GetObjId());
 
     // Update visibility for the former owner
     world->RecalcVisibilitiesAroundPoint(pos, GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, nullptr);

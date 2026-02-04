@@ -5,6 +5,7 @@
 #pragma once
 
 #include "noBase.h"
+#include "gameData/BuildingConsts.h"
 #include <array>
 #include <memory>
 
@@ -15,8 +16,19 @@ class GameEvent;
 /// Kampf an einem Punkt zwischen 2 Soldaten, der erstgenannt ist immer der, der links steht
 class noFighting : public noBase
 {
+    enum class CombatRole
+    {
+        Attacker,
+        Defender,
+        Unknown
+    };
+
     /// die kämpfenden Soldaten
     std::array<std::unique_ptr<nofActiveSoldier>, 2> soldiers;
+    std::array<CombatRole, 2> roles_{CombatRole::Unknown, CombatRole::Unknown};
+    std::array<unsigned, 2> startHitpoints_{};
+    BuildingType targetBuildingType_ = BuildingType::Headquarters;
+    unsigned targetBuildingObjId_ = 0;
     // Wer ist an der Reihe mit angreifen (2 = Beginn des Kampfes)
     unsigned char turn;
     /// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
@@ -30,6 +42,7 @@ private:
     /// Bestimmt, ob der Angreifer erfolgreich angreift oder ob der Verteidiger sich verteidigt usw
     /// bereitet also alles für eine solche Angrifsseinheit vor
     void StartAttack();
+    void InitCombatLogState();
 
 public:
     noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2);

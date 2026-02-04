@@ -11,6 +11,7 @@
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "CombatLossTracker.h"
+#include "CombatEventLogger.h"
 #include "figures/nofActiveSoldier.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
@@ -23,6 +24,28 @@
 #include "world/GameWorld.h"
 #include "gameData/MilitaryConsts.h"
 
+namespace {
+const nobBaseMilitary* ResolveTargetBuilding(const nofActiveSoldier& soldier)
+{
+    if(const auto* attacker = dynamic_cast<const nofAttacker*>(&soldier))
+        return attacker->GetAttackedGoal();
+    if(const auto* defender = dynamic_cast<const nofDefender*>(&soldier))
+    {
+        if(const auto* attacker = defender->GetAttacker())
+            return attacker->GetAttackedGoal();
+        return defender->GetHome();
+    }
+    if(const auto* aggDef = dynamic_cast<const nofAggressiveDefender*>(&soldier))
+    {
+        if(const auto* attacker = aggDef->GetAttacker())
+            return attacker->GetAttackedGoal();
+        return aggDef->GetHome();
+    }
+    return nullptr;
+}
+
+} // namespace
+
 noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) : noBase(NodalObjectType::Fighting)
 {
     RTTR_Assert(soldier1.GetPlayer() != soldier2.GetPlayer());
@@ -30,6 +53,7 @@ noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) :
 
     soldiers[0] = world->RemoveFigure(pos, soldier1);
     soldiers[1] = world->RemoveFigure(pos, soldier2);
+    InitCombatLogState();
     CombatLossTracker::ReportParticipant(*soldiers[0]);
     CombatLossTracker::ReportParticipant(*soldiers[1]);
     turn = 2;
@@ -69,6 +93,37 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
 {
     for(auto& soldier : soldiers)
         soldier.reset(sgd.PopObject<nofActiveSoldier>());
+    InitCombatLogState();
+}
+
+void noFighting::InitCombatLogState()
+{
+    const auto resolveRole = [](const nofActiveSoldier& soldier) {
+        if(dynamic_cast<const nofAttacker*>(&soldier))
+            return CombatRole::Attacker;
+        if(dynamic_cast<const nofDefender*>(&soldier) || dynamic_cast<const nofAggressiveDefender*>(&soldier))
+            return CombatRole::Defender;
+        return CombatRole::Unknown;
+    };
+
+    for(std::size_t i = 0; i < soldiers.size(); ++i)
+    {
+        roles_[i] = resolveRole(*soldiers[i]);
+        startHitpoints_[i] = soldiers[i]->GetHitpoints();
+    }
+
+    const nobBaseMilitary* target = ResolveTargetBuilding(*soldiers[0]);
+    if(!target)
+        target = ResolveTargetBuilding(*soldiers[1]);
+    if(target)
+    {
+        targetBuildingType_ = target->GetBuildingType();
+        targetBuildingObjId_ = target->GetObjId();
+    } else
+    {
+        targetBuildingType_ = BuildingType::Headquarters;
+        targetBuildingObjId_ = 0;
+    }
 }
 
 void noFighting::Destroy()
@@ -218,6 +273,32 @@ void noFighting::HandleEvent(const unsigned id)
                         // Soldat Bescheid sagen, dass er stirbt
                         CombatLossTracker::ReportLoss(*soldiers[1 - turn]);
                         soldiers[1 - turn]->LostFighting();
+                        const unsigned gf = GetEvMgr().GetCurrentGF();
+                        const unsigned winnerIdx = turn;
+                        const int attackerIdx = (roles_[0] == CombatRole::Attacker) ? 0 :
+                                                (roles_[1] == CombatRole::Attacker) ? 1 : -1;
+                        const int defenderIdx = (roles_[0] == CombatRole::Defender) ? 0 :
+                                                (roles_[1] == CombatRole::Defender) ? 1 : -1;
+                        const unsigned char attackerPlayer =
+                          (attackerIdx >= 0) ? soldiers[attackerIdx]->GetPlayer() : soldiers[0]->GetPlayer();
+                        const unsigned char defenderPlayer =
+                          (defenderIdx >= 0) ? soldiers[defenderIdx]->GetPlayer() : soldiers[1]->GetPlayer();
+                        const unsigned attackerRank =
+                          (attackerIdx >= 0) ? soldiers[attackerIdx]->GetRank() : soldiers[0]->GetRank();
+                        const unsigned attackerHp =
+                          (attackerIdx >= 0) ? startHitpoints_[attackerIdx] : startHitpoints_[0];
+                        const unsigned defenderRank =
+                          (defenderIdx >= 0) ? soldiers[defenderIdx]->GetRank() : soldiers[1]->GetRank();
+                        const unsigned defenderHp =
+                          (defenderIdx >= 0) ? startHitpoints_[defenderIdx] : startHitpoints_[1];
+                        const char* winnerRole = "Unknown";
+                        if(roles_[winnerIdx] == CombatRole::Attacker)
+                            winnerRole = "Attacker";
+                        else if(roles_[winnerIdx] == CombatRole::Defender)
+                            winnerRole = "Defender";
+                        CombatEventLogger::LogFightResult(
+                          gf, attackerPlayer, targetBuildingType_, targetBuildingObjId_, defenderPlayer, attackerRank,
+                          attackerHp, defenderRank, defenderHp, winnerRole, soldiers[winnerIdx]->GetHitpoints());
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
                         const MapPoint pos = soldiers[turn]->GetPos();
                         auto& winningSoldier = world->AddFigure(pos, std::move(soldiers[turn]));

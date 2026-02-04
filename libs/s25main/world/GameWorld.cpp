@@ -4,6 +4,7 @@
 
 #include "world/GameWorld.h"
 #include "CombatLossTracker.h"
+#include "CombatEventLogger.h"
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
@@ -790,7 +791,10 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
             const noBase* const attachedObj = GetNO(buildingPos);
             const auto* attachedBuilding = dynamic_cast<const noBaseBuilding*>(attachedObj);
             if(attachedBuilding && attachedBuilding != exception)
+            {
+                CombatEventLogger::RecordCaptureDestroyed(capturingObjId, attachedBuilding->GetBuildingType());
                 CombatLossTracker::ReportDestroyedBuilding(capturingObjId, attachedBuilding->GetBuildingType());
+            }
         }
         static_cast<noFlag*>(no)->DestroyAttachedBuilding();
     }
@@ -799,7 +803,10 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
        && (noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite || noType == NodalObjectType::Flag))
     {
         if(const auto* baseBuilding = dynamic_cast<const noBaseBuilding*>(no))
+        {
+            CombatEventLogger::RecordCaptureDestroyed(capturingObjId, baseBuilding->GetBuildingType());
             CombatLossTracker::ReportDestroyedBuilding(capturingObjId, baseBuilding->GetBuildingType());
+        }
     }
 
     DestroyNO(pt, false);
@@ -917,14 +924,22 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
 
     // Send the soldiers to attack
     unsigned curNumSoldiers = 0;
+    std::array<unsigned, NUM_SOLDIER_RANKS> actualByRank{};
 
     for(PotentialAttacker& pa : potentialAttackers)
     {
         if(curNumSoldiers >= soldiers_count)
             break;
+        const unsigned char rank = pa.soldier->GetRank();
         pa.soldier->getHome()->SendAttacker(pa.soldier, *attacked_building);
+        const std::size_t rankIdx = std::min<std::size_t>(rank, actualByRank.size() - 1);
+        actualByRank[rankIdx]++;
         curNumSoldiers++;
     }
+
+    CombatEventLogger::LogAttackOrder(GetEvMgr().GetCurrentGF(), player_attacker, attacked_building->GetPlayer(),
+                                      attacked_building->GetBuildingType(), attacked_building->GetObjId(),
+                                      strong_soldiers, soldiers_count, curNumSoldiers, actualByRank);
 
     if(curNumSoldiers > 0 && HasLua())
     {

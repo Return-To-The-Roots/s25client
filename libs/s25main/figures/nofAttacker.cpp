@@ -8,6 +8,7 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
+#include "CombatEventLogger.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
@@ -564,6 +565,9 @@ void nofAttacker::OrderAggressiveDefender()
         huntingDefender = bld->SendAggressiveDefender(*this);
         if(huntingDefender)
         {
+            CombatEventLogger::LogAggressiveDefenderOrder(
+              GetEvMgr().GetCurrentGF(), player, attacked_goal->GetBuildingType(), attacked_goal->GetObjId(),
+              attacked_goal->GetPlayer(), bld->GetBuildingType(), bld->GetObjId(), huntingDefender->GetRank());
             // Cannot be hunted again
             mayBeHunted = false;
             break;
