@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -29,20 +29,16 @@ inline bool random(unsigned total = 2u, unsigned chance = 1u)
 }
 
 template<typename ContainerT>
-inline unsigned randomIndex(const ContainerT& container)
+unsigned randomIndex(const ContainerT& container)
 {
     RTTR_Assert(!container.empty());
-    return randomValue(0u, static_cast<unsigned>(container.size()) - 1u);
+    return helpers::getRandomIndex(getRandomGenerator(), container.size());
 }
 
 template<typename ContainerT>
-inline auto randomElement(const ContainerT& container)
+auto randomElement(const ContainerT& container)
 {
-    RTTR_Assert(!container.empty());
-    auto it = container.begin();
-    if(container.size() > 1u)
-        std::advance(it, randomIndex(container));
-    return *it;
+    return helpers::getRandomElement(getRandomGenerator(), container);
 }
 
 } // namespace AI
