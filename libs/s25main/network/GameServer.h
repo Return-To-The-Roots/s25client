@@ -112,9 +112,10 @@ private:
     /// Some player data has changed. Set non-ready and cancel countdown
     void PlayerDataChanged(unsigned playerIdx);
 
-    /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
+    /// Sets the color of this player to the given color.
+    /// If ensureUnique is true and the color is already used it will be set to the next free one
     /// Sends a notification to all players if the color was changed
-    void CheckAndSetColor(unsigned playerIdx, unsigned newColor);
+    void CheckAndSetColor(unsigned playerIdx, unsigned newColor, bool ensureUnique);
 
     /// Handles advancing of GFs, actions of AI and potentially the NWF
     void ExecuteGameFrame();

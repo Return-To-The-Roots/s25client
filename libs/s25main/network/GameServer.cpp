@@ -955,24 +955,22 @@ bool GameServer::OnGameMessage(const GameMessage_Chat& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
 {
-    if(state != ServerState::Config)
+    // `Occupied` is set only when a real player went through the join protocol
+    // See `GameMessage_Map_Checksum` handling
+    if(state != ServerState::Config || msg.ps == PlayerState::Occupied)
     {
         KickPlayer(msg.senderPlayerID, KickReason::InvalidMsg, __LINE__);
         return true;
     }
-    // Can't do this. Have to have a joined player
-    if(msg.ps == PlayerState::Occupied)
-        return true;
 
     int playerID = GetTargetPlayer(msg);
     if(playerID < 0)
         return true;
     JoinPlayerInfo& player = playerInfos[playerID];
     const PlayerState oldPs = player.ps;
-    // Can't change self
     if(playerID != msg.senderPlayerID)
     {
-        // oh ein spieler, weg mit ihm!
+        // Remove the player currently occupying the target slot, if any
         if(GetNetworkPlayer(playerID))
             KickPlayer(playerID, KickReason::NoCause, __LINE__);
 
@@ -990,6 +988,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
             player.ps = msg.ps;
             player.aiInfo = msg.aiInfo;
         }
+        // Free slots on single player games always get occupied by AI
         if(player.ps == PlayerState::Free && config.servertype == ServerType::Local)
         {
             player.ps = PlayerState::AI;
@@ -1005,7 +1004,10 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
     }
     // If slot is filled, check current color
     if(player.isUsed())
-        CheckAndSetColor(playerID, player.color);
+    {
+        // Ensure a unique color only when initially filling the slot
+        CheckAndSetColor(playerID, player.color, oldPs == PlayerState::Free || oldPs == PlayerState::Locked);
+    }
     SendToAll(GameMessage_Player_State(playerID, player.ps, player.aiInfo));
 
     if(oldPs != player.ps)
@@ -1104,7 +1106,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
     if(playerID < 0)
         return true;
 
-    CheckAndSetColor(playerID, msg.color);
+    CheckAndSetColor(playerID, msg.color, false);
     PlayerDataChanged(playerID);
     return true;
 }
@@ -1228,7 +1230,7 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
             // Mark as used and assign a unique color
             // Do this before sending the player list to avoid sending useless updates
             playerInfo.ps = PlayerState::Occupied;
-            CheckAndSetColor(msg.senderPlayerID, playerInfo.color);
+            CheckAndSetColor(msg.senderPlayerID, playerInfo.color, true);
 
             // Send remaining data and mark as active
             player->sendMsgAsync(new GameMessage_Server_Name(config.gamename));
@@ -1435,24 +1437,25 @@ void GameServer::CancelCountdown()
 
 bool GameServer::ArePlayersReady() const
 {
-    // Alle Spieler da?
+    // All slots filled and human players are ready
     for(const JoinPlayerInfo& player : playerInfos)
     {
-        // noch nicht alle spieler da -> feierabend!
         if(player.ps == PlayerState::Free || (player.isHuman() && !player.isReady))
             return false;
     }
 
-    std::set<unsigned> takenColors;
-
-    // Check all players have different colors
-    for(const JoinPlayerInfo& player : playerInfos)
+    // Ensure unique colors except for scripted maps where duplicate colors can be intentional
+    if(!mapinfo.luaFilepath.empty())
     {
-        if(player.isUsed())
+        std::set<unsigned> takenColors;
+        for(const JoinPlayerInfo& player : playerInfos)
         {
-            if(helpers::contains(takenColors, player.color))
-                return false;
-            takenColors.insert(player.color);
+            if(player.isUsed())
+            {
+                if(helpers::contains(takenColors, player.color))
+                    return false;
+                takenColors.insert(player.color);
+            }
         }
     }
     return true;
@@ -1588,7 +1591,7 @@ void GameServer::SendAsyncLog(const bfs::path& asyncLogFilePath)
     }
 }
 
-void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
+void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor, bool ensureUnique)
 {
     RTTR_Assert(playerIdx < playerInfos.size());
     // If either of those fails we may not find a valid color!
@@ -1598,23 +1601,25 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
     JoinPlayerInfo& player = playerInfos[playerIdx];
     RTTR_Assert(player.isUsed()); // Should only set colors for taken spots
 
-    // Get colors used by other players
-    std::set<unsigned> takenColors;
-    for(unsigned p = 0; p < playerInfos.size(); ++p)
+    if(ensureUnique)
     {
-        // Skip self
-        if(p == playerIdx)
-            continue;
+        // Get colors used by other players
+        std::set<unsigned> takenColors;
+        for(unsigned p = 0; p < playerInfos.size(); ++p)
+        {
+            // Skip self
+            if(p == playerIdx)
+                continue;
 
-        JoinPlayerInfo& otherPlayer = playerInfos[p];
-        if(otherPlayer.isUsed())
-            takenColors.insert(otherPlayer.color);
+            JoinPlayerInfo& otherPlayer = playerInfos[p];
+            if(otherPlayer.isUsed())
+                takenColors.insert(otherPlayer.color);
+        }
+        // Look for a unique color
+        int newColorIdx = JoinPlayerInfo::GetColorIdx(newColor);
+        while(helpers::contains(takenColors, newColor))
+            newColor = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
     }
-
-    // Look for a unique color
-    int newColorIdx = JoinPlayerInfo::GetColorIdx(newColor);
-    while(helpers::contains(takenColors, newColor))
-        newColor = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
 
     if(player.color == newColor)
         return;
