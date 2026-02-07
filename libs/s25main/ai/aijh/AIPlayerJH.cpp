@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -363,10 +363,8 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     if(militaryBuildings.empty())
         return;
-    const int randomMiliBld = static_cast<int>(AI::randomIndex(militaryBuildings));
-    auto it2 = militaryBuildings.begin();
-    std::advance(it2, randomMiliBld);
-    MapPoint bldPos = (*it2)->GetPos();
+    const auto* randomMiliBld = AI::randomElement(militaryBuildings);
+    MapPoint bldPos = randomMiliBld->GetPos();
     UpdateNodesAround(bldPos, 15);
     // resource gathering buildings only around military; processing only close to warehouses
     for(unsigned i = 0; i < numResGatherBlds; i++)
@@ -377,7 +375,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
         }
     }
     AddMilitaryBuildJob(bldPos);
-    if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed() && randomMiliBld != UpdateUpgradeBuilding())
+    if(randomMiliBld->IsUseless() && randomMiliBld->IsDemolitionAllowed() && randomMiliBld != UpdateUpgradeBuilding())
     {
         aii.DestroyBuilding(bldPos);
     }
@@ -401,28 +399,24 @@ unsigned AIPlayerJH::GetNumJobs() const
     return eventManager.GetEventNum() + construction->GetBuildJobNum() + construction->GetConnectJobNum();
 }
 
-/// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there is no
-/// warehouse left null
+/// returns the warehouse closest to the upgrade building or if it cant find a way the first warehouse and if there is
+/// no warehouse left null
 nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 {
     const std::list<nobBaseWarehouse*>& storehouses = aii.GetStorehouses();
     if(storehouses.empty())
         return nullptr;
-    nobBaseWarehouse* wh = storehouses.front();
-    int uub = UpdateUpgradeBuilding();
+    const auto* upgradeBld = UpdateUpgradeBuilding();
 
-    if(uub >= 0
-       && storehouses.size() > 1) // upgradebuilding exists and more than 1 warehouse -> find warehouse closest to the
-                                  // upgradebuilding - gather stuff there and deactivate gathering in the previous one
+    if(upgradeBld) // upgrade building exists -> find warehouse closest to the upgrade building,
+                   // gather stuff there and deactivate gathering in the previous one
     {
-        auto upgradeBldIt = aii.GetMilitaryBuildings().begin();
-        std::advance(upgradeBldIt, uub);
         // which warehouse is closest to the upgrade building? -> train troops there and block max ranks
-        wh = aii.FindWarehouse(**upgradeBldIt, FW::NoCondition(), false, false);
-        if(!wh)
-            wh = storehouses.front();
+        auto* wh = aii.FindWarehouse(*upgradeBld, FW::NoCondition(), false, false);
+        if(wh)
+            return wh;
     }
-    return wh;
+    return storehouses.front();
 }
 
 void AIPlayerJH::AddMilitaryBuildJob(MapPoint pt)
@@ -1207,10 +1201,8 @@ void AIPlayerJH::HandleExpedition(const noShip* ship)
         aii.FoundColony(ship);
     else
     {
-        const unsigned offset = AI::randomValue(0u, helpers::MaxEnumValue_v<ShipDirection> - 1u);
-        for(auto dir : helpers::EnumRange<ShipDirection>{})
+        for(auto dir : helpers::enumRange(AI::randomEnum<ShipDirection>()))
         {
-            dir = ShipDirection((rttr::enum_cast(dir) + offset) % helpers::MaxEnumValue_v<ShipDirection>);
             if(aii.IsExplorationDirectionPossible(ship->GetPos(), ship->GetCurrentHarbor(), dir))
             {
                 aii.TravelToNextSpot(dir, ship);
@@ -1252,7 +1244,7 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
 
     UpdateNodesAround(pt, 3);
 
-    if(AI::random())
+    if(AI::randomChance())
         AddMilitaryBuildJob(pt);
     else // if (random % 12 == 0)
         AddBuildJob(BuildingType::Woodcutter, pt);
@@ -1392,21 +1384,19 @@ void AIPlayerJH::HandleLostLand(const MapPoint pt)
 void AIPlayerJH::MilUpgradeOptim()
 {
     // do we have a upgrade building?
-    int upb = UpdateUpgradeBuilding();
-    int count = 0;
+    const auto* upgradeBld = UpdateUpgradeBuilding();
+    unsigned count = 0;
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     for(const nobMilitary* milBld : militaryBuildings)
     {
-        if(count != upb) // not upgrade building
+        if(milBld != upgradeBld) // not upgrade building
         {
-            if(upb >= 0) // we do have an upgrade building
+            if(upgradeBld) // we do have an upgrade building
             {
                 if(!milBld->IsGoldDisabled()) // deactivate gold for all other buildings
-                {
                     aii.SetCoinsAllowed(milBld->GetPos(), false);
-                }
                 if(milBld->GetFrontierDistance() == FrontierDistance::Far
-                   && (((unsigned)count + GetNumPlannedConnectedInlandMilitaryBlds())
+                   && (count + GetNumPlannedConnectedInlandMilitaryBlds()
                        < militaryBuildings.size())) // send out troops until 1 private is left, then cancel road
                 {
                     if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
@@ -1415,7 +1405,7 @@ void AIPlayerJH::MilUpgradeOptim()
                         for(unsigned rank = 1; rank < NUM_SOLDIER_RANKS; ++rank)
                             aii.SetTroopLimit(milBld->GetPos(), rank, 0);
 
-                        // TODO: Currently the ai still manages soldiers by disconnecting roads, if in the future it
+                        // TODO: Currently the AI still manages soldiers by disconnecting roads, if in the future it
                         // uses only SetTroopLimit then this can be removed
                         for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
                             aii.SetTroopLimit(milBld->GetPos(), rank, milBld->GetMaxTroopsCt());
@@ -1534,7 +1524,7 @@ void AIPlayerJH::TryToAttack()
         // We handle the current building with a probability of limit/numMilBlds
         // -> For twice the number of blds as the limit we will most likely skip every 2nd building
         // This way we check roughly (at most) limit buildings but avoid any preference for one building over an other
-        if(!AI::random(numMilBlds, limit))
+        if(!AI::randomChance(numMilBlds, limit))
             continue;
 
         if(milBld->GetFrontierDistance() == FrontierDistance::Far) // inland building? -> skip it
@@ -1696,15 +1686,15 @@ void AIPlayerJH::TrySeaAttack()
             }
         }
     }
-    // add all military buildings around still valid harborspots (unused or used by ally)
+    // add all military buildings around still valid harbor spots (unused or used by ally)
     unsigned limit = 15;
     unsigned skip = 0;
     if(searcharoundharborspots.size() > 15)
-        skip = AI::randomValue(0u, static_cast<unsigned>(searcharoundharborspots.size() / 15u)) * 15u;
+        skip = AI::randomValue(1u, static_cast<unsigned>(searcharoundharborspots.size() / 15u)) * 15u - 1;
     for(unsigned i = skip; i < searcharoundharborspots.size() && limit > 0; i++)
     {
         limit--;
-        // now add all military buildings around the harborspot to our list of potential targets
+        // now add all military buildings around the harbor spot to our list of potential targets
         sortedMilitaryBlds buildings = gwb.LookForMilitaryBuildings(gwb.GetHarborPoint(searcharoundharborspots[i]), 2);
         for(const nobBaseMilitary* milBld : buildings)
         {
@@ -2041,15 +2031,15 @@ void AIPlayerJH::InitStoreAndMilitarylists()
     {
         SetFarmedNodes(charburner->GetPos(), true);
     }
-    // find the upgradebuilding
+    // find the upgrade building
     UpdateUpgradeBuilding();
 }
-int AIPlayerJH::UpdateUpgradeBuilding()
+
+const nobMilitary* AIPlayerJH::UpdateUpgradeBuilding()
 {
     std::vector<const nobMilitary*> backup;
     if(!aii.GetStorehouses().empty())
     {
-        unsigned count = 0;
         for(const nobMilitary* milBld : aii.GetMilitaryBuildings())
         {
             // inland building, tower or fortress
@@ -2059,14 +2049,11 @@ int AIPlayerJH::UpdateUpgradeBuilding()
             {
                 if(construction->IsConnectedToRoadSystem(milBld->GetFlag()))
                 {
-                    // LOG.write(("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",itObj->GetX(),
-                    // itObj->GetY(), playerId, count);
                     UpgradeBldPos = milBld->GetPos();
-                    return count;
+                    return milBld;
                 }
                 backup.push_back(milBld);
             }
-            count++;
         }
     }
     // no valid upgrade building yet - try to reconnect correctly flagged buildings
@@ -2075,7 +2062,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
         construction->AddConnectFlagJob(milBld->GetFlag());
     }
     UpgradeBldPos = MapPoint::Invalid();
-    return -1;
+    return nullptr;
 }
 // set default start values for the ai for distribution & military settings
 void AIPlayerJH::InitDistribution()
@@ -2440,7 +2427,7 @@ void AIPlayerJH::AdjustSettings()
     milSettings[2] = 4;
     milSettings[3] = 5;
     // interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
-    milSettings[4] = UpdateUpgradeBuilding() >= 0
+    milSettings[4] = UpdateUpgradeBuilding()
                          && (inventory[GoodType::Coins] > 0
                              || (inventory[GoodType::Gold] > 0 && inventory[GoodType::Coal] > 0
                                  && !aii.GetBuildings(BuildingType::Mint).empty())) ?
@@ -2467,17 +2454,17 @@ unsigned AIPlayerJH::CalcMilSettings()
 
     // now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
     const unsigned numShouldStayConnected = GetNumPlannedConnectedInlandMilitaryBlds();
-    int count = 0;
+    unsigned count = 0;
     unsigned soldierInUseFixed = 0;
-    const int uun = UpdateUpgradeBuilding();
+    const auto* upgradeBld = UpdateUpgradeBuilding();
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     for(const nobMilitary* milBld : militaryBuildings)
     {
         if(milBld->GetFrontierDistance() == FrontierDistance::Near
            || milBld->GetFrontierDistance() == FrontierDistance::Harbor
            || (milBld->GetFrontierDistance() == FrontierDistance::Far
-               && (militaryBuildings.size() < (unsigned)count + numShouldStayConnected
-                   || count == uun))) // front or connected interior
+               && (count + numShouldStayConnected > militaryBuildings.size()
+                   || milBld == upgradeBld))) // front or connected interior
         {
             soldierInUseFixed += milBld->CalcRequiredNumTroops(FrontierDistance::Mid, 8);
         } else if(milBld->GetFrontierDistance() == FrontierDistance::Mid) // 1 bar (inland)

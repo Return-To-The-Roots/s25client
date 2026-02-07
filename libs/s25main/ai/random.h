@@ -11,18 +11,18 @@ namespace AI {
 
 std::minstd_rand& getRandomGenerator();
 
-// Return a random value (min and max are included)
+/// Return a random value (min and max are included)
 template<typename T>
 T randomValue(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max())
 {
     return helpers::randomValue(getRandomGenerator(), min, max);
 }
 
-// Return a random bool:
-//   random()           ... will return true|false with 50% chance each
-//   random(15)         ... will return true in 1/15 of the cases
-//   random(20, 5)      ... will return true in 5 out of 20 cases, i.e. a probability of 25%. Sames as random(4, 1)
-inline bool random(unsigned total = 2u, unsigned chance = 1u)
+/// Return a true in `chance` out of `total` cases:
+///   randomChance()       ... return true|false with 50% chance each
+///   randomChance(15)     ... return true in 1/15 of the cases
+///   randomChance(20, 5)  ... return true in 5 out of 20 cases, i.e. a probability of 25%. Sames as randomChance(4, 1)
+inline bool randomChance(unsigned total = 2u, unsigned chance = 1u)
 {
     RTTR_Assert(total > 0u);
     return (chance >= total) || randomValue(1u, total) <= chance;
@@ -39,6 +39,13 @@ template<typename ContainerT>
 auto randomElement(const ContainerT& container)
 {
     return helpers::getRandomElement(getRandomGenerator(), container);
+}
+
+/// Return random enumerator
+template<typename Enum>
+auto randomEnum()
+{
+    return helpers::randomEnum<Enum>(getRandomGenerator());
 }
 
 } // namespace AI
