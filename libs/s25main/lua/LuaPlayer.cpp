@@ -51,9 +51,10 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
                                .addFunction("Surrender", &LuaPlayer::Surrender)
                                .addFunction("IsAlly", &LuaPlayer::IsAlly)
-                               .addFunction("IsAttackable", &LuaPlayer::IsAttackable)
+                               .addFunction("CanAttack", &LuaPlayer::CanAttack)
                                .addFunction("SuggestPact", &LuaPlayer::SuggestPact)
                                .addFunction("CancelPact", &LuaPlayer::CancelPact)
+                               .addFunction("MakeOneSidedAllianceTo", &LuaPlayer::MakeOneSidedAllianceTo)
                                // Old names
                                .addFunction("GetBuildingCount", &LuaPlayer::GetNumBuildings)
                                .addFunction("GetBuildingSitesCount", &LuaPlayer::GetNumBuildingSites)
@@ -286,9 +287,9 @@ bool LuaPlayer::IsAlly(unsigned char otherPlayerId)
     return player.IsAlly(otherPlayerId);
 }
 
-bool LuaPlayer::IsAttackable(unsigned char otherPlayerId)
+bool LuaPlayer::CanAttack(unsigned char otherPlayerId)
 {
-    return player.IsAttackable(otherPlayerId);
+    return player.CanAttack(otherPlayerId);
 }
 
 void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const lua::SafeEnum<PactType> pt, const unsigned duration)
@@ -303,4 +304,9 @@ void LuaPlayer::CancelPact(const lua::SafeEnum<PactType> pt, unsigned char other
     AIPlayer* ai = game.GetAIPlayer(player.GetPlayerId());
     if(ai != nullptr)
         ai->getAIInterface().CancelPact(pt, otherPlayerId);
+}
+
+void LuaPlayer::MakeOneSidedAllianceTo(unsigned char otherPlayerId)
+{
+    player.MakeOneSidedAllianceTo(otherPlayerId);
 }

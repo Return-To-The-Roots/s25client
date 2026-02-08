@@ -325,7 +325,7 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
     return false;
 }
 
-bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
+bool nobBaseMilitary::CanBeAttackedBy(unsigned playerIdx) const
 {
     // If we are in peaceful mode -> not attackable
     if(world->GetGGS().getSelection(AddonId::PEACEFULMODE))
@@ -335,7 +335,7 @@ bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
     if(world->CalcVisiblityWithAllies(pos, playerIdx) != Visibility::Visible)
         return false;
     // Else it depends on the team settings
-    return world->GetPlayer(player).IsAttackable(playerIdx);
+    return world->GetPlayer(playerIdx).CanAttack(player);
 }
 
 bool nobBaseMilitary::IsAggressor(const nofAttacker& attacker) const

@@ -862,8 +862,8 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     game.executeAICommands();
     BOOST_TEST_REQUIRE(player.IsAlly(1));
     executeLua("assert(player:IsAlly(0))");
-    BOOST_TEST_REQUIRE(!player.IsAttackable(1));
-    executeLua("assert(not player:IsAttackable(0))");
+    BOOST_TEST_REQUIRE(!player.CanAttack(1));
+    executeLua("assert(not player:CanAttack(0))");
 
     // check if callback onPactCreated was executed
     BOOST_TEST_REQUIRE(getLog() == "Pact created\n");
@@ -874,8 +874,8 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     player.CancelPact(PactType::TreatyOfAlliance, 1);
     BOOST_TEST_REQUIRE(!player.IsAlly(1));
     executeLua("assert(not player:IsAlly(0))");
-    BOOST_TEST_REQUIRE(player.IsAttackable(1));
-    executeLua("assert(player:IsAttackable(0))");
+    BOOST_TEST_REQUIRE(player.CanAttack(1));
+    executeLua("assert(player:CanAttack(0))");
 
     // check if callback onPactCanceled was executed
     BOOST_TEST_REQUIRE(getLog() == "Pact canceled\n");
@@ -885,12 +885,12 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     player.SuggestPact(1, PactType::NonAgressionPact, DURATION_INFINITE);
     game.executeAICommands();
     // non aggression was created
-    BOOST_TEST_REQUIRE(!player.IsAttackable(1));
+    BOOST_TEST_REQUIRE(!player.CanAttack(1));
     BOOST_TEST_REQUIRE(getLog() == "Pact created\n");
 
     // cancel pact by player and check state
     player.CancelPact(PactType::NonAgressionPact, 1);
-    BOOST_TEST_REQUIRE(player.IsAttackable(1));
+    BOOST_TEST_REQUIRE(player.CanAttack(1));
     BOOST_TEST_REQUIRE(getLog() == "Pact canceled\n");
 
     const PostBox& postbox = world.GetPostMgr().AddPostBox(0);
@@ -899,10 +899,27 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     game.executeAICommands();
     const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox.GetMsg(0));
     this->AcceptPact(msg->GetPactId(), PactType::TreatyOfAlliance, 1);
-    BOOST_TEST_REQUIRE(!player.IsAttackable(1));
-    executeLua("assert(not player:IsAttackable(0))");
+    BOOST_TEST_REQUIRE(!player.CanAttack(1));
+    executeLua("assert(not player:CanAttack(0))");
 
     BOOST_TEST_REQUIRE(getLog() == "Pact created\n");
+}
+
+BOOST_AUTO_TEST_CASE(LuaOneSidedAlliance)
+{
+    initWorld();
+
+    auto& p0 = world.GetPlayer(0);
+    auto& p1 = world.GetPlayer(1);
+    p0.ps = PlayerState::AI;
+    p1.ps = PlayerState::AI;
+
+    executeLua("rttr:GetPlayer(0):MakeOneSidedAllianceTo(1)");
+    game.executeAICommands();
+    BOOST_TEST_REQUIRE(p0.IsAlly(1) == true);
+    BOOST_TEST_REQUIRE(p1.IsAlly(0) == false);
+    BOOST_TEST_REQUIRE(p0.CanAttack(1) == false);
+    BOOST_TEST_REQUIRE(p1.CanAttack(0) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

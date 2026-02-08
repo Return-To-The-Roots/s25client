@@ -333,8 +333,32 @@ Return true if the player is defeated
 **IsAlly(otherPlayerIdx)**  
 Return true if the player is an ally of this player
 
-**IsAttackable(otherPlayerIdx)**  
-Return true if the player can be attacked
+**CanAttack(otherPlayerIdx)**  
+Return true if the player can attack the other player.
+
+**MakeOneSidedAllianceTo(otherPlayerIdx)**  
+Creates a one-sided alliance from the player to the other player.  
+This type of alliance is typical for classic S2 campaigns and enables situations where P1 can be allied to P2 without P2 being allied to P1.  
+
+The rules of this type of alliance are:
+- if P1 is allied to P2 `and` P1 is AI, `then`
+    - P1 cannot attack P2
+- if P1 attacks P2 `or` if P1 breaks their alliance towards P2, `then`
+    - P2 breaks their alliance towards P1 `and`
+    - all players who are allied to P2 `and` to whom P2 is allied to break their alliance towards P1
+
+In the situation described above, only P2 is capable of starting a war. P1 can never initiate against P2 as long as they are allied. The exception to this rule is that the human player can always fight against anyone and can influence diplomatic relations between AI players by choosing when and whom to fight.
+
+The alliance rules have interesting implications. In the classic Roman campaign they are used to allow the player to choose when to start fighting in most of the missions, making them significantly easier. By allying an AI to the human, they will not attack the human until the human attacks them. In some missions, it is encouraged not to attack an enemy if one of their allies is also our ally, as this would cause their allies to break alliances with us.
+
+More advanced implications can be seen in custom campaigns where the whole design of some scenarios is based on the human player attacking the right AIs at the right time. Consider the following example:
+- P1 (human) is allied to P2 and P3 and is weak
+- P2 (AI) is allied to P1 and P3 and is moderately strong
+- P3 (AI) is allied to P1 and is strong enough to defeat both players
+
+Assuming all players are in relatively close proximity, the only way P1 can survive is by attacking P2 before P3 attacks P2.  
+If P3 attacks P2 before P1, P1 will break their alliance towards P3 and P3 will retaliate in the same fashion. P3 will likely devastate P1 before they can level the playing field.  
+However, if P1 attacks P2 first, they break this weak alliance, allowing P3 to fight P2 without breaking its alliance to P1.
 
 **SuggestPact(otherPlayerIdx, PactType, duration)**  
 Let the AI send a request to the other player for a new pact.

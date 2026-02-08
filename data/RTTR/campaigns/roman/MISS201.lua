@@ -1,14 +1,13 @@
 ------------------------------------------------------------------------------
 -- LUA-Script for MISS201.WLD (mission 2 of the original "Roman Campaign"   --
 --                                                                          --
--- Authors: CrazyL, Spikeone, ArthurMurray47                                --
+-- Authors: CrazyL, Spikeone, ArthurMurray47, kubaau                        --
 ------------------------------------------------------------------------------
 
 
 -------------------------------- TODO -----------------------------------------
 -- EnableNextMissions()
 -- Set Portraits
--- Set AI Agression Level
 -- RttR: AI doesn't go south
 -------------------------------------------------------------------------------
 
@@ -186,6 +185,7 @@ function onSettingsReady()
     checkVersion()
     rttr:Log("-----------------------\n MISS201.lua loaded... \n-----------------------\n")
     rttr:ResetAddons()
+    rttr:SetAddon(ADDON_CATAPULTS_ATTACK_ALLIES, true)
     rttr:SetAddon(ADDON_FRONTIER_DISTANCE_REACHABLE, true)
     rttr:SetGameSettings({
         ["fow"] = EXP_CLASSIC,
@@ -202,7 +202,6 @@ function onSettingsReady()
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Shaka')          -- Enemy Name
     rttr:GetPlayer(1):SetPortrait(9)
-    rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 end
 
 function getAllowedChanges()
@@ -221,6 +220,10 @@ end
 
 -- start callback
 function onStart(isFirstStart)
+    if isFirstStart then
+        rttr:GetPlayer(1):MakeOneSidedAllianceTo(0) -- !GLOBAL_SET_COMPUTER_ALLIANCE  1 0
+    end
+
     for i = 0, 1 do                          -- set resources
         addPlayerRes(i, not isFirstStart)
         addPlayerBld(i, not isFirstStart)
