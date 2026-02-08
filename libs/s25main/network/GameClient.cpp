@@ -330,8 +330,10 @@ void GameClient::StartGame(const unsigned random_init)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
         MapLoader loader(gameWorld);
-        if(!loader.Load(mapinfo.filepath)
-           || (!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(*game, *this, mapinfo.luaFilepath)))
+        if((!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(*game, *this, mapinfo.luaFilepath))
+           || !loader.Load(mapinfo.filepath)) // Do not reorder: load lua first, load map second.
+                                              // If the map is loaded first and it does not have a player HQ set, it
+                                              // will not load correctly, even though the HQ may be set using LUA.
         {
             OnError(ClientError::InvalidMap);
             return;

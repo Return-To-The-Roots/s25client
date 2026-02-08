@@ -221,6 +221,10 @@ rttr:RegisterTranslations(
     }
 })
 
+function getNumPlayers()
+    return 1
+end
+
 -- format mission texts
 -- BUG:     NewLine at the end is wrongly interpreted, adding 2x Space resolves this issue
 function MissionText(e)
@@ -252,13 +256,6 @@ function onSettingsReady()
     rttr:GetPlayer(0):SetNation(NAT_ROMANS)     -- nation
     rttr:GetPlayer(0):SetColor(0)               -- 0:blue, 1:red, 2:yellow, 
     rttr:GetPlayer(0):SetPortrait(0)
-
-    rttr:GetPlayer(1):Close()
-    rttr:GetPlayer(2):Close()
-    rttr:GetPlayer(3):Close()
-    rttr:GetPlayer(4):Close()
-    rttr:GetPlayer(5):Close()
-    rttr:GetPlayer(6):Close()
 end
 
 function getAllowedChanges()

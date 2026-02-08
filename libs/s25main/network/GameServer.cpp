@@ -519,6 +519,14 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
     return playerWasAssigned;
 }
 
+void GameServer::SetNumPlayers(unsigned num)
+{
+    playerInfos.resize(num);
+}
+
+/**
+ *  startet das Spiel.
+ */
 bool GameServer::StartGame()
 {
     lanAnnouncer.Stop();
