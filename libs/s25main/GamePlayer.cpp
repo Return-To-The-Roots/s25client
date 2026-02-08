@@ -1426,6 +1426,10 @@ void GamePlayer::Surrender()
     if(isDefeated)
         return;
 
+    const auto shipsCopy = ships; // copy to avoid modification during iteration
+    for(auto* ship : shipsCopy)
+        ship->Sink();
+
     isDefeated = true;
 
     // GUI Bescheid sagen
@@ -1897,17 +1901,10 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     return (false);
 }
 
-/// Meldet das Schiff wieder ab
-void GamePlayer::RemoveShip(noShip* ship)
+void GamePlayer::RemoveShip(noShip& ship)
 {
-    for(unsigned i = 0; i < ships.size(); ++i)
-    {
-        if(ships[i] == ship)
-        {
-            ships.erase(ships.begin() + i);
-            return;
-        }
-    }
+    RTTR_Assert(helpers::contains(ships, &ship));
+    helpers::erase(ships, &ship);
 }
 
 /// Versucht, für ein untätiges Schiff eine Arbeit zu suchen

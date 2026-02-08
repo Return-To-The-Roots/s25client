@@ -441,8 +441,7 @@ void nobHarborBuilding::StopExplorationExpedition()
 /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
 void nobHarborBuilding::OrderExpeditionWares()
 {
-    RTTR_Assert(!IsBeingDestroyedNow()); // Wares should already be canceled!
-    if(this->IsBeingDestroyedNow())      // don't order new stuff if we are about to be destroyed
+    if(IsBeingDestroyedNow()) // don't order new stuff if we are about to be destroyed
         return;
 
     if(!expedition.active) // expedition no longer active?
@@ -496,11 +495,8 @@ void nobHarborBuilding::OrderExpeditionWares()
         orderware_ev = GetEvMgr().AddEvent(this, 210, 10);
 }
 
-/// Eine bestellte Ware konnte doch nicht kommen
 void nobHarborBuilding::WareLost(Ware& ware)
 {
-    RTTR_Assert(!IsBeingDestroyedNow());
-    // ggf. neue Waren für Expedition bestellen
     if(expedition.active && (ware.type == GoodType::Boards || ware.type == GoodType::Stones))
         OrderExpeditionWares();
     nobBaseWarehouse::WareLost(ware);

@@ -114,7 +114,7 @@ public:
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
-    nobBaseWarehouse* GetFirstWH()
+    nobBaseWarehouse* GetFirstWH() const
     {
         return buildings.GetStorehouses().empty() ? nullptr : buildings.GetStorehouses().front();
     }
@@ -234,7 +234,7 @@ public:
     /// Registriert ein Schiff beim Einwohnermeldeamt
     void RegisterShip(noShip& ship);
     /// Meldet das Schiff wieder ab
-    void RemoveShip(noShip* ship);
+    void RemoveShip(noShip& ship);
     /// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
     void GetJobForShip(noShip& ship);
     /// Schiff für Hafen bestellen. Wenn ein Schiff kommt, true.
