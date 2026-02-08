@@ -726,7 +726,20 @@ void GamePlayer::FindCarrierForAllRoads()
 void GamePlayer::FindMaterialForBuildingSites()
 {
     for(noBuildingSite* bldSite : buildings.GetBuildingSites())
-        bldSite->OrderConstructionMaterial();
+    {
+        bool reachable = false;
+        const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
+
+        // Check paths in all directions
+        for(const auto dir : helpers::EnumRange<Direction>{})
+        {
+            const auto* route = routes[dir];
+            if(route && dir != Direction::NorthWest)
+                reachable = true;
+        }
+        if (reachable)
+            bldSite->OrderConstructionMaterial();       
+    }
 }
 
 void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
@@ -820,6 +833,26 @@ void GamePlayer::FindWarehouseForAllJobs()
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
+        // is it a buildingsite and is it connected?
+        if (it->workplace->GetType() == NodalObjectType::Buildingsite)
+        {
+            noBuildingSite* bldSite = static_cast<noBuildingSite*>(it->workplace);
+            bool reachable = false;
+            const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
+
+            // Check paths in all directions
+            for(const auto dir : helpers::EnumRange<Direction>{})
+            {
+                const auto* route = routes[dir];
+                if(route && dir != Direction::NorthWest)
+                    reachable = true;
+            }
+            if (!reachable)
+            {
+                ++it;
+                continue;
+            }
+        }
         if(FindWarehouseForJob(it->job, *it->workplace))
             it = jobs_wanted.erase(it);
         else
@@ -833,6 +866,26 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     {
         if(it->job == job)
         {
+            // is it a buildingsite and is it connected?
+            if (it->workplace->GetType() == NodalObjectType::Buildingsite)
+            {
+                noBuildingSite* bldSite = static_cast<noBuildingSite*>(it->workplace);
+                bool reachable = false;
+                const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
+
+                // Check paths in all directions
+                for(const auto dir : helpers::EnumRange<Direction>{})
+                {
+                    const auto* route = routes[dir];
+                    if(route && dir != Direction::NorthWest)
+                        reachable = true;
+                }
+                if (!reachable)
+                {
+                    ++it;
+                    continue;
+                }
+            }
             if(FindWarehouseForJob(it->job, *it->workplace))
                 it = jobs_wanted.erase(it);
             else
