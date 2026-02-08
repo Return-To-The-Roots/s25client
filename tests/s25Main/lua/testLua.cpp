@@ -6,6 +6,7 @@
 #include "Loader.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "Settings.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "enum_cast.hpp"
@@ -903,6 +904,16 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     executeLua("assert(not player:IsAttackable(0))");
 
     BOOST_TEST_REQUIRE(getLog() == "Pact created\n");
+}
+
+BOOST_AUTO_TEST_CASE(CampaignStatusCanBeChangedFromLua)
+{
+    SETTINGS.campaigns.readSaveData("campaign_id", "110");
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 1)");
+    executeLua("rttr:SetCampaignChapterCompleted('campaign_id', 3)");
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 4)");
+    executeLua("rttr:EnableCampaignChapter('campaign_id', 1)");       // noop - already completed
+    BOOST_TEST_REQUIRE(SETTINGS.campaigns.createSaveData()["campaign_id"] == "12021");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
