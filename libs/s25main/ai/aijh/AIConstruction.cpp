@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,6 +10,7 @@
 #include "addons/const_addons.h"
 #include "ai/AIInterface.h"
 #include "ai/aijh/AIPlayerJH.h"
+#include "ai/random.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -465,10 +466,11 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     const BuildingType biggestBld = GetBiggestAllowedMilBuilding().value();
 
     const Inventory& inventory = aii.GetInventory();
-    if(((rand() % 3) == 0 || inventory.people[Job::Private] < 15)
+    if((inventory.people[Job::Private] < 15 || AI::randomChance(3))
        && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
         bld = BuildingType::Guardhouse;
-    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && rand() % 10 != 0 && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
+    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && !AI::randomChance(10)
+       && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
     {
         if(aii.CanBuildBuildingtype(BuildingType::Watchtower))
             return BuildingType::Watchtower;
@@ -476,9 +478,9 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     }
     if(biggestBld == BuildingType::Watchtower || biggestBld == BuildingType::Fortress)
     {
-        if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
+        if(!aijh.UpdateUpgradeBuilding() && bldPlanner.GetNumBuildingSites(biggestBld) < 1
            && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0)
-           && rand() % 10 != 0)
+           && !AI::randomChance(10))
         {
             return biggestBld;
         }
@@ -488,23 +490,22 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     sortedMilitaryBlds military = aii.gwb.LookForMilitaryBuildings(pt, 3);
     for(const nobBaseMilitary* milBld : military)
     {
-        unsigned distance = aii.gwb.CalcDistance(milBld->GetPos(), pt);
+        const unsigned distance = aii.gwb.CalcDistance(milBld->GetPos(), pt);
 
-        // Prüfen ob Feind in der Nähe
+        // Check for close enemy
         if(milBld->GetPlayer() != playerId && distance < 35)
         {
-            int randmil = rand();
-            bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult()
+            bool buildCatapult = AI::randomChance(8) && aii.CanBuildCatapult()
                                  && bldPlanner.GetNumAdditionalBuildingsWanted(BuildingType::Catapult) > 0;
-            // another catapult within "min" radius? ->dont build here!
-            const unsigned min = 16;
-            if(buildCatapult && aii.gwb.CalcDistance(pt, aii.GetStorehouses().front()->GetPos()) < min)
+            // another catapult within this radius? ->dont build here!
+            constexpr unsigned minCatapultDist = 16;
+            if(buildCatapult && aii.gwb.CalcDistance(pt, aii.GetStorehouses().front()->GetPos()) < minCatapultDist)
                 buildCatapult = false;
             if(buildCatapult)
             {
                 for(const nobUsual* catapult : aii.GetBuildings(BuildingType::Catapult))
                 {
-                    if(aii.gwb.CalcDistance(pt, catapult->GetPos()) < min)
+                    if(aii.gwb.CalcDistance(pt, catapult->GetPos()) < minCatapultDist)
                     {
                         buildCatapult = false;
                         break;
@@ -515,7 +516,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
             {
                 for(const noBuildingSite* bldSite : aii.GetBuildingSites())
                 {
-                    if(bldSite->GetBuildingType() == bld && aii.gwb.CalcDistance(pt, bldSite->GetPos()) < min)
+                    if(bldSite->GetBuildingType() == bld
+                       && aii.gwb.CalcDistance(pt, bldSite->GetPos()) < minCatapultDist)
                     {
                         buildCatapult = false;
                         break;
@@ -526,19 +528,21 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
                 bld = BuildingType::Catapult;
             else
             {
-                if(randmil % 2 == 0 && aii.CanBuildBuildingtype(BuildingType::Watchtower))
-                    bld = BuildingType::Watchtower;
-                else
-                    bld = biggestBld;
-            }
-            // slim chance for a guardhouse instead of tower or fortress so we can expand towards an enemy even if there
-            // are no big building spots in that direction
-            if(randmil % 10 == 0)
-            {
-                if(aii.CanBuildBuildingtype(BuildingType::Guardhouse))
-                    bld = BuildingType::Guardhouse;
-                else
-                    bld = GetSmallestAllowedMilBuilding();
+                // slim chance for a guardhouse instead of tower or fortress so we can expand towards an enemy even if
+                // there are no big building spots in that direction
+                if(AI::randomChance(10))
+                {
+                    if(aii.CanBuildBuildingtype(BuildingType::Guardhouse))
+                        bld = BuildingType::Guardhouse;
+                    else
+                        bld = GetSmallestAllowedMilBuilding();
+                } else
+                {
+                    if(aii.CanBuildBuildingtype(BuildingType::Watchtower) && AI::randomChance())
+                        bld = BuildingType::Watchtower;
+                    else
+                        bld = biggestBld;
+                }
             }
             break;
         }
