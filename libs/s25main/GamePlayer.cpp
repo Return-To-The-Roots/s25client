@@ -1132,6 +1132,24 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
         if(possibleClient.bld == lastBld)
             continue;
 
+        // is it a buildingsite and is it connected?
+        if (possibleClient.bld->GetType() == NodalObjectType::Buildingsite)
+        {
+            noBuildingSite* bldSite = static_cast<noBuildingSite*>(possibleClient.bld);
+            bool reachable = false;
+            const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
+
+            // Check paths in all directions
+            for(const auto dir : helpers::EnumRange<Direction>{})
+            {
+                const auto* route = routes[dir];
+                if(route && dir != Direction::NorthWest)
+                    reachable = true;
+            }
+            if (!reachable)
+                continue;
+        }        
+
         lastBld = possibleClient.bld;
 
         // Just to be sure no underflow happens...
