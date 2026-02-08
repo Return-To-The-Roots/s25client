@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright (C) 2005 - 2026 Settlers Freaks <sf-team at siedler25.org>
 
 SPDX-License-Identifier: GPL-2.0-or-later
 -->
@@ -46,6 +46,10 @@ Every map script must have 1 function:
 You need to implement this and return the major/main version your script works with.
 If it does not match the current version an error will be shown and the script will not be used.
 See also `rttr:GetFeatureLevel()`.
+
+### Feature level 7
+
+- Allow relative paths for images referenced by campaign files.
 
 ## Example
 

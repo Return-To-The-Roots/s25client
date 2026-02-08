@@ -15,10 +15,9 @@ class LuaRef;
 
 struct ImageResource
 {
-    boost::filesystem::path filePath;
+    std::string filePath;
     unsigned index;
-    ImageResource(boost::filesystem::path path = boost::filesystem::path(), unsigned index = 0)
-        : filePath(std::move(path)), index(index){};
+    ImageResource(std::string path = "", unsigned index = 0) : filePath(std::move(path)), index(index){};
 };
 
 struct MissionSelectionInfo
