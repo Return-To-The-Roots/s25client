@@ -24,6 +24,17 @@ T randomValue(RandomT& rng, T min = std::numeric_limits<T>::min(), T max = std::
     return static_cast<T>(distr(rng));
 }
 
+/// Return a true in `chance` out of `total` cases:
+///   randomChance()       ... return true|false with 50% chance each
+///   randomChance(15)     ... return true in 1/15 of the cases
+///   randomChance(20, 5)  ... return true in 5 out of 20 cases, i.e. a probability of 25%. Sames as randomChance(4, 1)
+template<typename RandomT>
+bool randomChance(RandomT& rng, unsigned total = 2u, unsigned chance = 1u)
+{
+    RTTR_Assert(total > 0u);
+    return (chance >= total) || randomValue(rng, 1u, total) <= chance;
+}
+
 /// Return a random enumerator from the given enum
 template<typename T, typename RandomT>
 T randomEnum(RandomT& rng)

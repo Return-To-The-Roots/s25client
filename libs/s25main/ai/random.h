@@ -24,8 +24,7 @@ T randomValue(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits
 ///   randomChance(20, 5)  ... return true in 5 out of 20 cases, i.e. a probability of 25%. Sames as randomChance(4, 1)
 inline bool randomChance(unsigned total = 2u, unsigned chance = 1u)
 {
-    RTTR_Assert(total > 0u);
-    return (chance >= total) || randomValue(1u, total) <= chance;
+    return helpers::randomChance(getRandomGenerator(), total, chance);
 }
 
 template<typename ContainerT>
