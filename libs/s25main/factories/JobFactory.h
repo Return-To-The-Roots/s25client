@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -18,5 +18,5 @@ public:
     JobFactory() = delete;
 
     // Erstellt Job anhand der job-id
-    static std::unique_ptr<noFigure> CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode* goal);
+    static std::unique_ptr<noFigure> CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode& goal);
 };

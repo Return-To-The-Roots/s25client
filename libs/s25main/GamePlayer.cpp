@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -434,7 +434,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
 
     // Order a worker if needed
     const auto& description = BLD_WORK_DESC[bldType];
-    if(description.job && description.job != Job::Private)
+    if(description.job && !isSoldierJob(*description.job))
     {
         AddJobWanted(*description.job, bld);
     }
@@ -620,35 +620,35 @@ void GamePlayer::RoadDestroyed()
     }
 }
 
-bool GamePlayer::FindCarrierForRoad(RoadSegment* rs) const
+bool GamePlayer::FindCarrierForRoad(RoadSegment& rs) const
 {
-    RTTR_Assert(rs->GetF1() != nullptr && rs->GetF2() != nullptr);
+    RTTR_Assert(rs.GetF1() != nullptr && rs.GetF2() != nullptr);
     std::array<unsigned, 2> length;
     std::array<nobBaseWarehouse*, 2> best;
 
     // Braucht der ein Boot?
-    if(rs->GetRoadType() == RoadType::Water)
+    if(rs.GetRoadType() == RoadType::Water)
     {
         // dann braucht man Träger UND Boot
-        best[0] = FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
-                                length.data(), rs);
+        best[0] = FindWarehouse(*rs.GetF1(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
+                                length.data(), &rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
-                                &length[1], rs);
+        best[1] = FindWarehouse(*rs.GetF2(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
+                                &length[1], &rs);
     } else
     {
         // 1. Flagge des Weges
-        best[0] = FindWarehouse(*rs->GetF1(), FW::HasFigure(Job::Helper, false), false, false, length.data(), rs);
+        best[0] = FindWarehouse(*rs.GetF1(), FW::HasFigure(Job::Helper, false), false, false, length.data(), &rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs->GetF2(), FW::HasFigure(Job::Helper, false), false, false, &length[1], rs);
+        best[1] = FindWarehouse(*rs.GetF2(), FW::HasFigure(Job::Helper, false), false, false, &length[1], &rs);
     }
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
     if(best[0] && (!best[1] || length[0] < length[1]))
-        best[0]->OrderCarrier(*rs->GetF1(), *rs);
+        best[0]->OrderCarrier(*rs.GetF1(), rs);
     else if(best[1])
-        best[1]->OrderCarrier(*rs->GetF2(), *rs);
+        best[1]->OrderCarrier(*rs.GetF2(), rs);
     else
         return false;
     return true;
@@ -719,7 +719,7 @@ void GamePlayer::FindCarrierForAllRoads()
     for(RoadSegment* rs : roads)
     {
         if(!rs->hasCarrier(0))
-            FindCarrierForRoad(rs);
+            FindCarrierForRoad(*rs);
     }
 }
 
@@ -731,8 +731,7 @@ void GamePlayer::FindMaterialForBuildingSites()
 
 void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
 {
-    // Und gleich suchen
-    if(!FindWarehouseForJob(job, workplace))
+    if(!FindWarehouseForJob(job, *workplace))
     {
         JobNeeded jn = {job, workplace};
         jobs_wanted.push_back(jn);
@@ -803,9 +802,9 @@ void GamePlayer::ToolOrderProcessed(Tool tool)
     }
 }
 
-bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode* goal) const
+bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode& goal) const
 {
-    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasFigure(job, true), false, false);
+    nobBaseWarehouse* wh = FindWarehouse(goal, FW::HasFigure(job, true), false, false);
 
     if(wh)
     {
@@ -821,7 +820,7 @@ void GamePlayer::FindWarehouseForAllJobs()
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
-        if(FindWarehouseForJob(it->job, it->workplace))
+        if(FindWarehouseForJob(it->job, *it->workplace))
             it = jobs_wanted.erase(it);
         else
             ++it;
@@ -834,7 +833,7 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     {
         if(it->job == job)
         {
-            if(FindWarehouseForJob(it->job, it->workplace))
+            if(FindWarehouseForJob(it->job, *it->workplace))
                 it = jobs_wanted.erase(it);
             else
                 ++it;
@@ -843,10 +842,10 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     }
 }
 
-Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
+Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
 {
     /// Gibt es ein Lagerhaus mit dieser Ware?
-    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasMinWares(ware, 1), false, true);
+    nobBaseWarehouse* wh = FindWarehouse(goal, FW::HasMinWares(ware, 1), false, true);
 
     if(wh)
     {
@@ -857,8 +856,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
         {
             // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
             if((ware != GoodType::Boards && ware != GoodType::Stones)
-               || goal->GetBuildingType() == BuildingType::Woodcutter
-               || goal->GetBuildingType() == BuildingType::Sawmill)
+               || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill)
                 return wh->OrderWare(ware, goal);
             else
                 return nullptr;
@@ -872,7 +870,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
             if(curWare->IsLostWare() && curWare->type == ware)
             {
                 // got a lost ware with a road to goal -> find best
-                unsigned curLength = curWare->CheckNewGoalForLostWare(*goal);
+                unsigned curLength = curWare->CheckNewGoalForLostWare(goal);
                 if(curLength < bestLength)
                 {
                     bestLength = curLength;
@@ -889,27 +887,27 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
     return nullptr;
 }
 
-nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road) const
+nofCarrier* GamePlayer::OrderDonkey(RoadSegment& road) const
 {
     std::array<unsigned, 2> length;
     std::array<nobBaseWarehouse*, 2> best;
 
     // 1. Flagge des Weges
-    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(Job::PackDonkey, false), false, false, length.data(), road);
+    best[0] = FindWarehouse(*road.GetF1(), FW::HasFigure(Job::PackDonkey, false), false, false, length.data(), &road);
     // 2. Flagge des Weges
-    best[1] = FindWarehouse(*road->GetF2(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[1], road);
+    best[1] = FindWarehouse(*road.GetF2(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[1], &road);
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
     if(best[0] && (!best[1] || length[0] < length[1]))
-        return best[0]->OrderDonkey(road, road->GetF1());
+        return best[0]->OrderDonkey(road, *road.GetF1());
     else if(best[1])
-        return best[1]->OrderDonkey(road, road->GetF2());
+        return best[1]->OrderDonkey(road, *road.GetF2());
     else
         return nullptr;
 }
 
-RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
+RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode& start, noRoadNode** goal)
 {
     // Bisher höchste Trägerproduktivität und die entsprechende Straße dazu
     unsigned best_productivity = 0;
@@ -926,9 +924,9 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
             noRoadNode* current_best_goal = nullptr;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = world.FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg)
+            bool isF1Reachable = world.FindHumanPathOnRoads(start, *roadSeg->GetF1(), &length1, nullptr, roadSeg)
                                  != RoadPathDirection::None;
-            bool isF2Reachable = world.FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg)
+            bool isF2Reachable = world.FindHumanPathOnRoads(start, *roadSeg->GetF2(), &length2, nullptr, roadSeg)
                                  != RoadPathDirection::None;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
@@ -1225,7 +1223,7 @@ bool GamePlayer::IsAttackable(const unsigned char playerId) const
         return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
 }
 
-void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts,
+void GamePlayer::OrderTroops(nobMilitary& goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts,
                              unsigned total_max) const
 {
     // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
@@ -1237,7 +1235,7 @@ void GamePlayer::OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER
         for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
             desiredRanks[i] = counts[i] > 0;
 
-        wh = FindWarehouse(*goal, FW::HasAnyMatchingSoldier(desiredRanks), false, false);
+        wh = FindWarehouse(goal, FW::HasAnyMatchingSoldier(desiredRanks), false, false);
         if(wh)
         {
             wh->OrderTroops(goal, counts, total_max);
@@ -1309,9 +1307,8 @@ void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
     /// Find wh with given job type (e.g. geologist, scout, ...)
     nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job, true), false, false);
 
-    /// Wenns eins gibt, dann rufen
     if(wh)
-        wh->OrderJob(job, flag, true);
+        wh->OrderJob(job, *flag, true);
 }
 
 bool GamePlayer::IsFlagWorker(const nofFlagWorker* flagworker)

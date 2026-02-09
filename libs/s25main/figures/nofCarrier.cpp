@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -715,9 +715,9 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         RTTR_Assert(otherRoad->getCarrier(carrierNr) == nullptr); // No carrier expected
 
     if(ct == CarrierType::Normal)
-        world->GetPlayer(player).FindCarrierForRoad(otherRoad);
+        world->GetPlayer(player).FindCarrierForRoad(*otherRoad);
     else if(ct == CarrierType::Donkey)
-        otherRoad->setCarrier(1, world->GetPlayer(player).OrderDonkey(otherRoad));
+        otherRoad->setCarrier(1, world->GetPlayer(player).OrderDonkey(*otherRoad));
 }
 
 void nofCarrier::HandleDerivedEvent(const unsigned id)

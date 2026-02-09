@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -24,11 +24,6 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
     RTTR_Assert(dynamic_cast<nobUsual*>(static_cast<GameObject*>(
       workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
 }
-
-nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player,
-                                     nobBaseWarehouse* goalWh)
-    : noFigure(job, pos, player, goalWh), state(State::FigureWork), workplace(nullptr), was_sounding(false)
-{}
 
 void nofBuildingWorker::Serialize(SerializedGameData& sgd) const
 {

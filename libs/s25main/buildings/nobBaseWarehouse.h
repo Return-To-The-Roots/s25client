@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -44,6 +44,12 @@ struct InventorySettings : GoodsAndPeopleArray<InventorySetting>
 /// Change events: 1=InventorySettings
 class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 {
+public:
+    static constexpr bool isStorehouseGOT(const GO_Type got)
+    {
+        return got == GO_Type::NobStorehouse || got == GO_Type::NobHarborbuilding || got == GO_Type::NobHq;
+    }
+
 protected:
     // Liste von Waren, die noch rausgebracht werden müssen, was im Moment aber nicht möglich ist,
     // weil die Flagge voll ist vor dem Lagerhaus
@@ -74,13 +80,14 @@ protected:
     InventorySettings inventorySettings;       /// die Inventar-Einstellungen, real
 
 private:
-    /// Prüft, ob alle Bedingungen zum Rekrutieren erfüllt sind
-    bool AreRecruitingConditionsComply();
-    /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
-    /// (muss in dem Fall true zurückgeben)
-    virtual bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal);
-    /// Dasselbe für Menschen
-    virtual bool UseFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNode& goal);
+    /// Check if soldiers can be recruited
+    bool CanRecruitSoldiers();
+    /// Derived classes may use ordered wares immediately, e.g. for sending via ship instead of by road
+    /// Return true if so and take ownership of the ware
+    virtual bool UseWareAtOnce(std::unique_ptr<Ware>& /*ware*/, noBaseBuilding& /*goal*/) { return false; }
+    /// Derived classes may use ordered figures immediately, e.g. for sending via ship instead of by road
+    /// Return true if so and take ownership of the figure
+    virtual bool UseFigureAtOnce(std::unique_ptr<noFigure>& /*fig*/, noRoadNode& /*goal*/) { return false; }
     /// Prüft verschiedene Verwendungszwecke für eine neuangekommende Ware
     void CheckUsesForNewWare(GoodType gt);
     /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
@@ -174,11 +181,11 @@ public:
     /// Bestellt einen Träger
     void OrderCarrier(noRoadNode& goal, RoadSegment& workplace);
     /// Bestellt irgendeinen Beruf (ggf. stellt er ihn noch mit einem Werkzeug her)
-    bool OrderJob(Job job, noRoadNode* goal, bool allow_recruiting);
+    bool OrderJob(Job job, noRoadNode& goal, bool allow_recruiting);
     /// Bestellt einen Esel
-    nofCarrier* OrderDonkey(RoadSegment* road, noRoadNode* goal_flag);
+    nofCarrier* OrderDonkey(RoadSegment& road, noRoadNode& goal_flag);
     /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurück
-    Ware* OrderWare(GoodType good, noBaseBuilding* goal);
+    Ware* OrderWare(GoodType good, noBaseBuilding& goal);
     /// Returns true, if the given job can be recruited. Excludes soldiers and carriers!
     bool CanRecruit(Job job) const;
 
@@ -248,7 +255,7 @@ public:
     }
     /// Order troops of each rank according to `counts` without exceeding `max` in total. The number of soldiers
     /// of each rank that is sent out is subtracted from the corresponding count in `counts` and from `max`.
-    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max);
+    void OrderTroops(nobMilitary& goal, std::array<unsigned, NUM_SOLDIER_RANKS>& counts, unsigned& max);
 
     /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
     nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;

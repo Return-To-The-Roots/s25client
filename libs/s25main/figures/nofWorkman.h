@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -40,10 +40,7 @@ protected:
     MapPoint FindPointWithResource(ResourceType type) const;
 
 public:
-    /// Going to workplace
     nofWorkman(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
-    /// Going to warehouse
-    nofWorkman(Job job, MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofWorkman(SerializedGameData& sgd, unsigned obj_id);
 
     void HandleDerivedEvent(unsigned id) override;

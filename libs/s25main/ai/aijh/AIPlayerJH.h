@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -75,8 +75,8 @@ public:
     }
     /// returns the percentage*100 of possible normal building places
     unsigned BQsurroundcheck(MapPoint pt, unsigned range, bool includeexisting, unsigned limit = 0);
-    /// returns list entry of the building the ai uses for troop upgrades
-    int UpdateUpgradeBuilding();
+    /// returns the building the AI uses for troop upgrades
+    const nobMilitary* UpdateUpgradeBuilding();
     /// returns amount of good/people stored in warehouses right now
     unsigned AmountInStorage(GoodType good) const;
     unsigned AmountInStorage(Job job) const;

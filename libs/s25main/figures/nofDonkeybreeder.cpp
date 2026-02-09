@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -68,7 +68,7 @@ void nofDonkeybreeder::WorkFinished()
 {
     // Straße und Zielflagge für Esel suchen
     noRoadNode* flag_goal;
-    RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(workplace, &flag_goal);
+    RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(*workplace, &flag_goal);
 
     // Esel erzeugen und zum Ziel beordern
     auto donkey = std::make_unique<nofCarrier>(CarrierType::Donkey, pos, player, road, flag_goal);

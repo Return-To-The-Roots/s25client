@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -110,7 +110,7 @@ public:
     /// (Unbesetzte) Straße aus der Liste entfernen
     void DeleteRoad(RoadSegment* rs);
     /// Sucht einen Träger für die Straße und ruft ggf den Träger aus dem jeweiligen nächsten Lagerhaus
-    bool FindCarrierForRoad(RoadSegment* rs) const;
+    bool FindCarrierForRoad(RoadSegment& rs) const;
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
@@ -143,12 +143,12 @@ public:
     /// Versucht für alle verlorenen Waren ohne Ziel Lagerhaus zu finden
     void FindClientForLostWares();
     /// Bestellt eine Ware und gibt sie zurück, falls es eine gibt, ansonsten 0
-    Ware* OrderWare(GoodType ware, noBaseBuilding* goal);
+    Ware* OrderWare(GoodType ware, noBaseBuilding& goal);
     /// Versucht einen Esel zu bestellen, gibt 0 zurück, falls keinen gefunden
-    nofCarrier* OrderDonkey(RoadSegment* road) const;
+    nofCarrier* OrderDonkey(RoadSegment& road) const;
     /// Versucht für einen Esel eine Straße zu finden, in goal wird die Zielflagge zurückgegeben,
     /// sofern eine Straße gefunden wurde, ansonsten ist das ein Lagerhaus oder 0, falls auch das nich gefunden wurde
-    RoadSegment* FindRoadForDonkey(noRoadNode* start, noRoadNode** goal);
+    RoadSegment* FindRoadForDonkey(noRoadNode& start, noRoadNode** goal);
 
     /// Sucht für eine (neuproduzierte) Ware einen Abnehmer (wenns keinen gibt, wird ein Lagerhaus gesucht, wenn
     /// es auch dorthin keinen Weg gibt, wird 0 zurückgegeben
@@ -202,7 +202,7 @@ public:
     /// Are these players allied? (-> Teamview, attack support, ...)
     bool IsAlly(unsigned char playerId) const;
     /// Order troops of each rank according to `counts` without exceeding `total_max` in total
-    void OrderTroops(nobMilitary* goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned total_max) const;
+    void OrderTroops(nobMilitary& goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts, unsigned total_max) const;
     /// Prüft die Besatzung von allen Militärgebäuden und reguliert entsprechend (bei Veränderung der
     /// Militäreinstellungen)
     void RegulateAllTroops();
@@ -427,7 +427,7 @@ private:
     /// Called after a pact was changed(added/removed) in both players
     void PactChanged(PactType pt);
     // Sucht Weg für Job zu entsprechenden noRoadNode
-    bool FindWarehouseForJob(Job job, noRoadNode* goal) const;
+    bool FindWarehouseForJob(Job job, noRoadNode& goal) const;
     /// Prüft, ob der Spieler besiegt wurde
     void TestDefeat();
     nobHQ* GetHQ() const;
