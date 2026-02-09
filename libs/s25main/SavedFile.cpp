@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,6 +6,8 @@
 #include "BasePlayerInfo.h"
 #include "RTTR_Version.h"
 #include "enum_cast.hpp"
+#include "helpers/format.hpp"
+#include "gameData/MaxPlayers.h"
 #include "libendian/ConvertEndianess.h"
 #include "s25util/BinaryFile.h"
 #include "s25util/Serializer.h"
@@ -145,6 +147,11 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     Serializer ser;
     ser.ReadFromFile(file);
     const unsigned playerCt = ser.PopUnsignedChar();
+    if(playerCt > MAX_PLAYERS)
+    {
+        throw std::length_error(
+          helpers::format(_("Number of players (%1%) exceeds maximum allowed of %2%!"), playerCt, MAX_PLAYERS));
+    }
     players.reserve(playerCt);
     for(unsigned i = 0; i < playerCt; i++)
     {
