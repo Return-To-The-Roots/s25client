@@ -57,6 +57,10 @@ public:
     noFlag* GetFlag() const;
     /// Same as GetFlag()->GetPos()
     MapPoint GetFlagPos() const;
+    /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
+    bool IsConnectedToRoadSystem(const noFlag* flag) const;
+
+    noFlag* FindTargetStoreHouseFlag(MapPoint pt) const;
 
     /// Return the offset of the door, which is also where people disappear into the building, the builder is building
     /// and the wares are lying

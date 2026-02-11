@@ -727,18 +727,12 @@ void GamePlayer::FindMaterialForBuildingSites()
 {
     for(noBuildingSite* bldSite : buildings.GetBuildingSites())
     {
-        bool reachable = false;
-        const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
-
-        // Check paths in all directions
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        // is it connected?
+        if (!bldSite->IsConnectedToRoadSystem(bldSite->GetFlag()))
         {
-            const auto* route = routes[dir];
-            if(route && dir != Direction::NorthWest)
-                reachable = true;
+            continue;
         }
-        if (reachable)
-            bldSite->OrderConstructionMaterial();       
+        bldSite->OrderConstructionMaterial();       
     }
 }
 
@@ -833,21 +827,11 @@ void GamePlayer::FindWarehouseForAllJobs()
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
-        // is it a buildingsite and is it connected?
-        if (it->workplace->GetType() == NodalObjectType::Buildingsite)
+        // is the workplace connected?
+        if (it->workplace->GetType() == NodalObjectType::Buildingsite || it->workplace->GetType() == NodalObjectType::Building)
         {
             noBuildingSite* bldSite = static_cast<noBuildingSite*>(it->workplace);
-            bool reachable = false;
-            const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
-
-            // Check paths in all directions
-            for(const auto dir : helpers::EnumRange<Direction>{})
-            {
-                const auto* route = routes[dir];
-                if(route && dir != Direction::NorthWest)
-                    reachable = true;
-            }
-            if (!reachable)
+            if (!bldSite->IsConnectedToRoadSystem(bldSite->GetFlag()))
             {
                 ++it;
                 continue;
@@ -866,21 +850,11 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     {
         if(it->job == job)
         {
-            // is it a buildingsite and is it connected?
-            if (it->workplace->GetType() == NodalObjectType::Buildingsite)
+            // is the workplace connected?
+            if (it->workplace->GetType() == NodalObjectType::Buildingsite || it->workplace->GetType() == NodalObjectType::Building)
             {
                 noBuildingSite* bldSite = static_cast<noBuildingSite*>(it->workplace);
-                bool reachable = false;
-                const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
-
-                // Check paths in all directions
-                for(const auto dir : helpers::EnumRange<Direction>{})
-                {
-                    const auto* route = routes[dir];
-                    if(route && dir != Direction::NorthWest)
-                        reachable = true;
-                }
-                if (!reachable)
+                if (!bldSite->IsConnectedToRoadSystem(bldSite->GetFlag()))
                 {
                     ++it;
                     continue;
@@ -1132,23 +1106,11 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
         if(possibleClient.bld == lastBld)
             continue;
 
-        // is it a buildingsite and is it connected?
-        if (possibleClient.bld->GetType() == NodalObjectType::Buildingsite)
+        // is it connected?
+        if (!possibleClient.bld->IsConnectedToRoadSystem(possibleClient.bld->GetFlag()))
         {
-            noBuildingSite* bldSite = static_cast<noBuildingSite*>(possibleClient.bld);
-            bool reachable = false;
-            const helpers::EnumArray<RoadSegment*, Direction> routes = bldSite->GetFlag()->getRoutes();
-
-            // Check paths in all directions
-            for(const auto dir : helpers::EnumRange<Direction>{})
-            {
-                const auto* route = routes[dir];
-                if(route && dir != Direction::NorthWest)
-                    reachable = true;
-            }
-            if (!reachable)
-                continue;
-        }        
+            continue;
+        }      
 
         lastBld = possibleClient.bld;
 
