@@ -211,7 +211,7 @@ bool noBaseBuilding::IsConnectedToRoadSystem(const noFlag* flag) const
 {
     noFlag* targetFlag = noBaseBuilding::FindTargetStoreHouseFlag(flag->GetPos());
     if(targetFlag)
-        return (targetFlag == flag);
+        return (targetFlag == flag || (world->FindPathForWareOnRoads(*flag, *targetFlag, nullptr, nullptr) != RoadPathDirection::None));
     else
         return false;
 }
