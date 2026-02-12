@@ -726,7 +726,7 @@ void GamePlayer::FindCarrierForAllRoads()
 void GamePlayer::FindMaterialForBuildingSites()
 {
     for(noBuildingSite* bldSite : buildings.GetBuildingSites())
-        bldSite->OrderConstructionMaterial();       
+        bldSite->OrderConstructionMaterial();
 }
 
 void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
