@@ -207,35 +207,6 @@ MapPoint noBaseBuilding::GetFlagPos() const
     return world->GetNeighbour(pos, Direction::SouthEast);
 }
 
-bool noBaseBuilding::IsConnectedToRoadSystem(const noFlag* flag) const
-{
-    noFlag* targetFlag = noBaseBuilding::FindTargetStoreHouseFlag(flag->GetPos());
-    if(targetFlag)
-        return (targetFlag == flag || (world->FindPathForWareOnRoads(*flag, *targetFlag, nullptr, nullptr) != RoadPathDirection::None));
-    else
-        return false;
-}
-
-noFlag* noBaseBuilding::FindTargetStoreHouseFlag(const MapPoint pt) const
-{
-    unsigned minDistance = std::numeric_limits<unsigned>::max();
-    const nobBaseWarehouse* minTarget = nullptr;
-    GamePlayer& owner = world->GetPlayer(player);
-    for(const nobBaseWarehouse* wh : owner.GetBuildingRegister().GetStorehouses())
-    {
-        unsigned dist = world->CalcDistance(pt, wh->GetPos());
-        if(dist < minDistance)
-        {
-            minDistance = dist;
-            minTarget = wh;
-        }
-    }
-    if(!minTarget)
-        return nullptr;
-    else
-        return minTarget->GetFlag();
-}
-
 void noBaseBuilding::WareNotNeeded(Ware* ware)
 {
     if(!ware)

@@ -727,11 +727,6 @@ void GamePlayer::FindMaterialForBuildingSites()
 {
     for(noBuildingSite* bldSite : buildings.GetBuildingSites())
     {
-        // is it connected?
-        if (!bldSite->IsConnectedToRoadSystem(bldSite->GetFlag()))
-        {
-            continue;
-        }
         bldSite->OrderConstructionMaterial();       
     }
 }
@@ -811,7 +806,8 @@ void GamePlayer::ToolOrderProcessed(Tool tool)
 
 bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode& goal) const
 {
-    nobBaseWarehouse* wh = FindWarehouse(goal, FW::HasFigure(job, true), false, false);
+    /// find path towards warehouse to improve pathfinding performance for unconnected buildings.
+    nobBaseWarehouse* wh = FindWarehouse(goal, FW::HasFigure(job, true), true, false);
 
     if(wh)
     {
@@ -827,16 +823,6 @@ void GamePlayer::FindWarehouseForAllJobs()
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
-        // is the workplace connected?
-        if (it->workplace->GetType() == NodalObjectType::Buildingsite || it->workplace->GetType() == NodalObjectType::Building)
-        {
-            noBuildingSite* bldSite = static_cast<noBuildingSite*>(it->workplace);
-            if (!bldSite->IsConnectedToRoadSystem(bldSite->GetFlag()))
-            {
-                ++it;
-                continue;
-            }
-        }
         if(FindWarehouseForJob(it->job, *it->workplace))
             it = jobs_wanted.erase(it);
         else
@@ -850,16 +836,6 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     {
         if(it->job == job)
         {
-            // is the workplace connected?
-            if (it->workplace->GetType() == NodalObjectType::Buildingsite || it->workplace->GetType() == NodalObjectType::Building)
-            {
-                noBuildingSite* bldSite = static_cast<noBuildingSite*>(it->workplace);
-                if (!bldSite->IsConnectedToRoadSystem(bldSite->GetFlag()))
-                {
-                    ++it;
-                    continue;
-                }
-            }
             if(FindWarehouseForJob(it->job, *it->workplace))
                 it = jobs_wanted.erase(it);
             else
@@ -872,7 +848,8 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
 Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
 {
     /// Gibt es ein Lagerhaus mit dieser Ware?
-    nobBaseWarehouse* wh = FindWarehouse(goal, FW::HasMinWares(ware, 1), false, true);
+    /// find path towards warehouse to improve pathfinding performance for unconnected buildings.
+    nobBaseWarehouse* wh = FindWarehouse(goal, FW::HasMinWares(ware, 1), true, true);
 
     if(wh)
     {
@@ -1106,11 +1083,6 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
         if(possibleClient.bld == lastBld)
             continue;
 
-        // is it connected?
-        if (!possibleClient.bld->IsConnectedToRoadSystem(possibleClient.bld->GetFlag()))
-        {
-            continue;
-        }      
 
         lastBld = possibleClient.bld;
 
@@ -1121,7 +1093,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a
         // better score. This eliminates the worst case scenario where all nodes in a split road network would be hit by
         // the pathfinding only to conclude that there is no possible path.
-        if(world.FindPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr,
+        /// find path towards warehouse to improve pathfinding performance for unconnected buildings.
+        if(world.FindPathForWareOnRoads(*possibleClient.bld, *start, &path_length, nullptr,
                                         (possibleClient.points - best_points) * 2 - 1)
            != RoadPathDirection::None)
         {
