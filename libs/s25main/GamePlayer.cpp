@@ -726,9 +726,7 @@ void GamePlayer::FindCarrierForAllRoads()
 void GamePlayer::FindMaterialForBuildingSites()
 {
     for(noBuildingSite* bldSite : buildings.GetBuildingSites())
-    {
         bldSite->OrderConstructionMaterial();       
-    }
 }
 
 void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
@@ -1082,7 +1080,6 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
         // get rid of double building entries. TODO: why are there double entries!?
         if(possibleClient.bld == lastBld)
             continue;
-
 
         lastBld = possibleClient.bld;
 
