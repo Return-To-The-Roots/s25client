@@ -46,6 +46,7 @@ set(s25Main_SRCS
     ${SOURCES_SUBDIRS}
         CombatEventLogger.cpp
         CombatLossTracker.cpp
+        WareEventLogger.cpp
         ai/aijh/AIAdjuster.cpp
         ai/aijh/TargetSelector.cpp
         ai/aijh/TargetSelectorAttrition.cpp

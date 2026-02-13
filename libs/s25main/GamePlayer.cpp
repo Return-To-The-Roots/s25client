@@ -13,6 +13,7 @@
 #include "SerializedGameData.h"
 #include "TradePathCache.h"
 #include "Ware.h"
+#include "WareEventLogger.h"
 #include "WineLoader.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
@@ -1801,12 +1802,18 @@ bool GamePlayer::IsWareDependent(const Ware& ware)
 
 void GamePlayer::IncreaseInventoryWare(const GoodType ware, const unsigned count)
 {
-    global_inventory.Add(ConvertShields(ware), count);
+    const GoodType normalized = ConvertShields(ware);
+    WareEventLogger::LogInventoryChange(world.GetEvMgr().GetCurrentGF(), static_cast<unsigned char>(GetPlayerId()),
+                                        normalized, static_cast<int>(count));
+    global_inventory.Add(normalized, count);
 }
 
 void GamePlayer::DecreaseInventoryWare(const GoodType ware, const unsigned count)
 {
-    global_inventory.Remove(ConvertShields(ware), count);
+    const GoodType normalized = ConvertShields(ware);
+    WareEventLogger::LogInventoryChange(world.GetEvMgr().GetCurrentGF(), static_cast<unsigned char>(GetPlayerId()),
+                                        normalized, -static_cast<int>(count));
+    global_inventory.Remove(normalized, count);
 }
 
 /// Registriert ein Schiff beim Einwohnermeldeamt
