@@ -36,7 +36,7 @@ bool nofWorkman::StartWorking()
     current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
     state = State::Work;
     workplace->is_working = true;
-    // Waren verbrauchen
+    // Consume wares
     workplace->ConsumeWares();
     return true;
 }
@@ -54,32 +54,32 @@ void nofWorkman::HandleStateWaiting1()
 void nofWorkman::HandleStateWaiting2()
 {
     current_ev = nullptr;
-    // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
+    // Produce ware... (not "really" yet, only virtual for now)
     if(!(ware = ProduceWare()).has_value())
     {
-        // Soll keine erzeugt werden --> wieder anfangen zu arbeiten
+        // If none should be produced -> start working again
         TryToWork();
     } else
     {
-        // und diese raustragen
+        // and carry it out
         StartWalking(Direction::SouthEast);
         state = State::CarryoutWare;
     }
 
-    // abgeleiteten Klassen Bescheid sagen
+    // Notify derived classes
     WorkFinished();
 }
 
 void nofWorkman::HandleStateWork()
 {
-    // Nach Arbeiten wird noch ein bisschen gewartet, bevor das Produkt herausgetragen wird
-    // Bei 0 mind. 1 GF
+    // After working, wait a little before carrying the product out
+    // At 0, at least 1 GF
     current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
     state = State::Waiting2;
-    // wir arbeiten nicht mehr
+    // We are no longer working
     workplace->is_working = false;
 
-    // Evtl. Sounds löschen
+    // Possibly stop sounds
     if(was_sounding)
     {
         world->GetSoundMgr().stopSounds(*this);
@@ -100,7 +100,7 @@ struct NodeHasResource
 
 MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
 {
-    // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
+    // Check all points until we find one where we can dig
     const std::vector<MapPoint> pts =
       world->GetMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
     if(!pts.empty())

@@ -22,6 +22,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/BuildingProperties.h"
+#include "gameData/MilitaryConsts.h"
 
 /// The time the attacker stands at the buildings flag before it starts blocking the road
 /// Only used for AttackingWaitingfordefender
@@ -36,6 +37,8 @@ nofAttacker::nofAttacker(const nofPassiveSoldier& other, nobBaseMilitary& attack
       ship_obj_id(0)
 {
     attacked_goal.LinkAggressor(*this);
+    if(hitpoints > HITPOINTS[GetRank()])
+        hitpoints = static_cast<unsigned char>(HITPOINTS[GetRank()]);
 }
 
 nofAttacker::~nofAttacker() = default;
@@ -109,6 +112,8 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
         shipPos = MapPoint::Invalid(); //-V656
         ship_obj_id = 0;
     }
+    if(hitpoints > HITPOINTS[GetRank()])
+        hitpoints = static_cast<unsigned char>(HITPOINTS[GetRank()]);
 }
 
 void nofAttacker::Walked()

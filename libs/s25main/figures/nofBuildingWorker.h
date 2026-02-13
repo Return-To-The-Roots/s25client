@@ -11,30 +11,30 @@ class nobUsual;
 class nobBaseWarehouse;
 class SerializedGameData;
 
-/// Repräsentiert einen Arbeiter in einem Gebäude
+/// Represents a worker in a building
 class nofBuildingWorker : public noFigure
 {
 public:
-    /// Was der gerade so schönes macht
+    /// Current activity/state
     enum class State : uint8_t
     {
-        FigureWork,                         /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
-        EnterBuilding,                      /// Betreten des Gebäudes
-        Waiting1,                           /// Warten, bis man anfängt zu produzieren
-        Waiting2,                           /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
-        CarryoutWare,                       /// Raustragen der Ware
-        Work,                               /// Arbeiten
-        WaitingForWaresOrProductionStopped, /// Warten auf Waren oder weil Produktion eingetellt wurde
-        WalkToWorkpoint,                    /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
-        WalkingHome,                        /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)
-        WaitForWareSpace,                   /// auf einen freien Platz an der Flagge vor dem Gebäude warten
-        HunterChasing,                      /// Jäger: verfolgt das Tier bis auf eine gewisse Distanz
-        HunterFindingShootingpoint,  /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
-        HunterShooting,              /// Jäger: Tier erschießen
-        HunterWalkingToCadaver,      /// Jäger: Zum Kadaver laufen
-        HunterEviscerating,          /// Jäger: Tier ausnehmen
-        CatapultTargetBuilding,      /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
-        CatapultBackoff,             /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
+        FigureWork,                         /// noFigure work (walking to workplace, wandering, etc.)
+        EnterBuilding,                      /// Entering the building
+        Waiting1,                           /// Waiting to start producing
+        Waiting2,                           /// Waiting after producing before carrying out the ware (craftsmen only)
+        CarryoutWare,                       /// Carrying out the ware
+        Work,                               /// Working
+        WaitingForWaresOrProductionStopped, /// Waiting for wares or because production was stopped
+        WalkToWorkpoint,                    /// Walking to the "work point" (farmers only)
+        WalkingHome,                        /// Walking back home from the work point (farmers only)
+        WaitForWareSpace,                   /// Waiting for a free slot at the flag in front of the building
+        HunterChasing,                      /// Hunter: chasing the animal up to a certain distance
+        HunterFindingShootingpoint,  /// Hunter: finds a point around the animal to shoot from
+        HunterShooting,              /// Hunter: shooting the animal
+        HunterWalkingToCadaver,      /// Hunter: walking to the cadaver
+        HunterEviscerating,          /// Hunter: eviscerating the animal
+        CatapultTargetBuilding,      /// Catapult: turns to the target building and shoots
+        CatapultBackoff,             /// Catapult: stops shooting and turns back to the start position
         HunterWaitingForAnimalReady, /// Hunter: Arrived at shooting pos and waiting for animal to be ready to
                                      /// be shot
     };
@@ -43,19 +43,18 @@ public:
 protected:
     State state;
 
-    /// Arbeitsplatz (Haus, in dem er arbeitet)
+    /// Workplace (house he works in)
     nobUsual* workplace;
 
-    // Ware, die er evtl gerade trägt
+    // Ware currently being carried (if any)
     helpers::OptionalEnum<GoodType> ware;
 
-    /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gegeben (zu Optimeriungszwecken)
+    /// Whether the worker produced sounds while working (optimization)
     bool was_sounding;
 
-    /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch
-    /// nicht) also fertig mit Arbeiten sind
+    /// Called by derived classes when they want to drop the ware at the flag (or not), i.e. finished working
     void WorkingReady();
-    /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+    /// If the worker should "quit" the workplace, stop walking to the target (for any reason)
     void AbrogateWorkplace() override;
     /// Tries to start working.
     /// Checks preconditions (production enabled, wares available...) and starts the pre-Work-Waiting period if ok
@@ -65,27 +64,27 @@ protected:
     virtual bool AreWaresAvailable() const;
 
 private:
-    /// von noFigure aufgerufen
-    void Walked() override;      // wenn man gelaufen ist
-    void GoalReached() override; // wenn das Ziel erreicht wurde
+    /// Called by noFigure
+    void Walked() override;      // after walking
+    void GoalReached() override; // when the goal is reached
 
 protected:
-    /// Malt den Arbeiter beim Arbeiten
+    /// Draws the worker while working
     virtual void DrawWorking(DrawPoint drawPt) = 0;
     static constexpr unsigned short CARRY_ID_CARRIER_OFFSET = 100;
     /// Ask derived class for an ID into JOBS.BOB when the figure is carrying a ware
     /// Use GD_* + CARRY_ID_CARRIER_OFFSET for using carrier graphics
     virtual unsigned short GetCarryID() const = 0;
-    /// Laufen an abgeleitete Klassen weiterleiten
+    /// Forward walking to derived classes
     virtual void WalkedDerived() = 0;
-    /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
+    /// Work had to be aborted because the workplace was lost
     virtual void WorkAborted();
-    /// Arbeitsplatz wurde erreicht
+    /// Workplace was reached
     virtual void WorkplaceReached();
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
     virtual void DrawWalkingWithWare(DrawPoint drawPt);
-    /// Zeichnen der Figur in sonstigen Arbeitslagen
+    /// Draw the figure in other work states
     virtual void DrawOtherStates(DrawPoint drawPt);
 
 public:
@@ -105,12 +104,12 @@ public:
 
     void Draw(DrawPoint drawPt) override;
 
-    /// Wenn eine neue Ware kommt oder die Produktion wieder erlaubt wurde, wird das aufgerufen
+    /// Called when a new ware arrives or production is allowed again
     void GotWareOrProductionAllowed();
-    /// Wenn wieder Platz an der Flagge ist und eine Ware wieder rausgetragen werden kann
+    /// Called when there is space at the flag so a ware can be carried out again
     bool FreePlaceAtFlag();
-    /// Wenn das Haus des Arbeiters abbrennt
+    /// Called when the worker's house burns down
     void LostWork();
-    /// Wird aufgerufen, nachdem die Produktion in dem Gebäude, wo er arbeitet, verboten wurde
+    /// Called after production is forbidden in the building where he works
     void ProductionStopped();
 };

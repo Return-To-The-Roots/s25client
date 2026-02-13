@@ -5,6 +5,10 @@
 add_executable(ai-battle main.cpp HeadlessGame.cpp)
 find_package(yaml-cpp REQUIRED)
 target_link_libraries(ai-battle PRIVATE s25Main Boost::program_options Boost::nowide yaml-cpp)
+target_include_directories(ai-battle PRIVATE
+    ${PROJECT_SOURCE_DIR}/libs/s25main
+    ${PROJECT_SOURCE_DIR}/libs/rttrConfig/src
+)
 
 if(WIN32)
     include(GatherDll)

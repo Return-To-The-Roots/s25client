@@ -19,7 +19,7 @@ struct StatsConfig
     std::string savesPath = "/home/pavel/s2/manual/saves/";
     std::string screensPath = "/home/pavel/s2/manual/screens/";
 
-    std::string weightsPath = "/home/pavel/s2/volume/config/weights_DA.yaml";
+    std::string weightsPath = "/home/pavel/s2/volume/config/version_DB.yaml";
 };
 
 extern StatsConfig STATS_CONFIG;

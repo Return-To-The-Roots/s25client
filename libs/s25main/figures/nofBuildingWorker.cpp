@@ -109,26 +109,26 @@ void nofBuildingWorker::Walked()
     {
         case State::EnterBuilding:
         {
-            // Hab ich noch ne Ware in der Hand?
+            // Do I still have a ware in hand?
 
             if(ware)
             {
-                // dann war draußen kein Platz --> ist jetzt evtl Platz?
+                // Then there was no space outside -> maybe there is space now?
                 state = State::WaitForWareSpace;
                 if(workplace->GetFlag()->HasSpaceForWare())
                     FreePlaceAtFlag();
-                // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
+                // Wait now, i.e. no longer working -> bad for productivity
                 workplace->StartNotWorking();
             } else
             {
-                // Anfangen zu Arbeiten
+                // Start working
                 TryToWork();
             }
         }
         break;
         case State::CarryoutWare:
         {
-            // Alles weitere übernimmt nofBuildingWorker
+            // nofBuildingWorker takes over from here
             WorkingReady();
         }
         break;
@@ -138,37 +138,37 @@ void nofBuildingWorker::Walked()
 
 void nofBuildingWorker::WorkingReady()
 {
-    // wir arbeiten nicht mehr
+    // We are no longer working
     workplace->is_working = false;
 
-    // Trage ich eine Ware?
+    // Am I carrying a ware?
     if(ware)
     {
         noFlag* flag = workplace->GetFlag();
-        // Ist noch Platz an der Fahne?
+        // Is there still space at the flag?
         if(flag->HasSpaceForWare())
         {
-            // Ware erzeugen
+            // Create ware
             auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
             real_ware->WaitAtFlag(flag);
-            // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
+            // Increase inventory accordingly, distinguishing shields!
             GoodType ware_type = ConvertShields(real_ware->type);
             world->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
-            // Abnehmer für Ware finden
+            // Find a recipient for the ware
             real_ware->SetGoal(world->GetPlayer(player).FindClientForWare(*real_ware));
-            // Ware soll ihren weiteren Weg berechnen
+            // Ware should calculate its further route
             real_ware->RecalcRoute();
-            // Ware ablegen
+            // Drop the ware
             flag->AddWare(std::move(real_ware));
-            // Warenstatistik erhöhen
+            // Increase ware statistics
             world->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
             workplace->RegisterProducedGood(ware_type);
-            // Tragen nun keine Ware mehr
+            // No longer carrying a ware
             ware = boost::none;
         }
     }
 
-    // Wieder reingehen
+    // Go back inside
     StartWalking(Direction::NorthWest);
     state = State::EnterBuilding;
 }
@@ -184,7 +184,7 @@ void nofBuildingWorker::TryToWork()
     } else
     {
         state = State::WaitingForWaresOrProductionStopped;
-        // Nun arbeite ich nich mehr
+        // Not working anymore
         workplace->StartNotWorking();
     }
 }
@@ -196,30 +196,30 @@ bool nofBuildingWorker::AreWaresAvailable() const
 
 void nofBuildingWorker::GotWareOrProductionAllowed()
 {
-    // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
+    // If waiting for wares, we can start working then
     if(state == State::WaitingForWaresOrProductionStopped)
     {
-        // anfangen zu arbeiten
+        // start working
         TryToWork();
     }
 }
 
 void nofBuildingWorker::GoalReached()
 {
-    // Tür zumachen (ist immer bis zu Erstbesetzung offen)
+    // Close the door (always open until the first assignment)
     workplace->CloseDoor();
-    // Gebäude Bescheid sagen, dass ich da bin
+    // Notify the building that I am here
     workplace->WorkerArrived();
 
     WorkplaceReached();
 
-    // ggf. anfangen zu arbeiten
+    // Start working if applicable
     TryToWork();
 }
 
 bool nofBuildingWorker::FreePlaceAtFlag()
 {
-    // Hinaus gehen, um Ware abzulegen, falls wir auf einen freien Platz warten
+    // Go out to drop the ware if we are waiting for a free slot
     if(state == State::WaitForWareSpace)
     {
         StartWalking(Direction::SouthEast);
@@ -235,7 +235,7 @@ void nofBuildingWorker::LostWork()
         default: break;
         case State::FigureWork:
         {
-            // Auf Wegen nach Hause gehen
+            // Go home via roads
             GoHome();
         }
         break;
@@ -250,17 +250,17 @@ void nofBuildingWorker::LostWork()
         case State::CatapultTargetBuilding:
         case State::CatapultBackoff:
         {
-            // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
+            // Remove the current event since the work is interrupted
             GetEvMgr().RemoveEvent(current_ev);
 
-            // Bescheid sagen, dass Arbeit abgebrochen wurde
+            // Notify that work was aborted
             WorkAborted();
 
-            // Rumirren
+            // Wander
             StartWandering();
             Wander();
 
-            // Evtl. Sounds löschen
+            // Possibly stop sounds
             world->GetSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
@@ -274,15 +274,14 @@ void nofBuildingWorker::LostWork()
         case State::HunterFindingShootingpoint:
         case State::HunterWalkingToCadaver:
         {
-            // Bescheid sagen, dass Arbeit abgebrochen wurde
+            // Notify that work was aborted
             WorkAborted();
 
-            // Rumirren
-            // Bei diesen States läuft man schon, darf also nicht noch zusätzlich Wander aufrufen, da man dann ja im
-            // Laufen nochmal losläuft!
+            // Wander
+            // In these states we are already walking, so don't call Wander again or we'd start walking twice!
             StartWandering();
 
-            // Evtl. Sounds löschen
+            // Possibly stop sounds
             world->GetSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
@@ -295,7 +294,7 @@ void nofBuildingWorker::LostWork()
 
 void nofBuildingWorker::ProductionStopped()
 {
-    // Wenn ich gerade warte und schon ein Arbeitsevent angemeldet habe, muss das wieder abgemeldet werden
+    // If I'm waiting and already registered a work event, it has to be removed again
     if(state == State::Waiting1)
     {
         GetEvMgr().RemoveEvent(current_ev);
@@ -309,10 +308,10 @@ void nofBuildingWorker::WorkAborted() {}
 
 void nofBuildingWorker::WorkplaceReached() {}
 
-/// Zeichnen der Figur in sonstigen Arbeitslagen
+/// Draw the figure in other work states
 void nofBuildingWorker::DrawOtherStates(DrawPoint) {}
 
-/// Zeichnet Figur beim Hereinlaufen/nach Hause laufen mit evtl. getragenen Waren
+/// Draw the figure while entering/returning home, possibly carrying wares
 void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
 {
     unsigned short id = GetCarryID();

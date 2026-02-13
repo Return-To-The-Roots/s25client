@@ -10,7 +10,8 @@ add_executable(data-extractor main.cpp
         SnapshotLoader.cpp
 )
 find_package(yaml-cpp REQUIRED)
-find_package(Arrow REQUIRED)
+#find_package(Arrow REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 include(FetchContent)
 FetchContent_Declare(

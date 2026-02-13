@@ -6,6 +6,7 @@
 #include "StatsConfig.h"
 #include "WeightParser.h"
 #include "gameData/MaxPlayers.h"
+#include "helpers/EnumRange.h"
 
 #include <array>
 #include <cctype>
@@ -174,6 +175,54 @@ void applyDisableBuildingCfg(const YAML::Node& disableNode, AIConfig& config)
         }
     }
 }
+
+std::optional<Tool> parseToolName(const std::string& toolName)
+{
+    const auto iter = GOOD_NAMES_MAP.find(toolName);
+    if(iter == GOOD_NAMES_MAP.end())
+        return std::nullopt;
+
+    const GoodType good = iter->second;
+    for(const auto tool : helpers::enumRange<Tool>())
+    {
+        if(TOOL_TO_GOOD[tool] == good)
+            return tool;
+    }
+    return std::nullopt;
+}
+
+void applyToolPriorityCfg(const YAML::Node& toolPriorityNode, AIConfig& config)
+{
+    if(!toolPriorityNode)
+        return;
+
+    if(!toolPriorityNode.IsMap())
+    {
+        std::cerr << "Warning: toolPriority must be a map of tool names to values." << std::endl;
+        return;
+    }
+
+    for(const auto& node : toolPriorityNode)
+    {
+        try
+        {
+            const std::string toolName = node.first.as<std::string>();
+            const auto tool = parseToolName(toolName);
+            if(!tool)
+            {
+                std::cerr << "Warning: Unknown tool '" << toolName << "' in toolPriority map." << std::endl;
+                continue;
+            }
+            config.toolPriority[*tool] = node.second.as<signed>();
+        } catch(const YAML::TypedBadConversion<signed>& e)
+        {
+            std::cerr << "Warning: Invalid toolPriority value, skipping. Error: " << e.what() << std::endl;
+        } catch(const YAML::TypedBadConversion<std::string>& e)
+        {
+            std::cerr << "Warning: Invalid toolPriority key, skipping. Error: " << e.what() << std::endl;
+        }
+    }
+}
 } // namespace
 
 extern void applyWeightsCfg(std::string weightCfgPath)
@@ -191,6 +240,7 @@ extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
         applyBldPlannerCfg(rootNode["buildPlanner"], targetConfig);
         applyCombatCfg(rootNode["combat"], targetConfig);
         applyDisableBuildingCfg(rootNode["disableBuilding"], targetConfig);
+        applyToolPriorityCfg(rootNode["toolPriority"], targetConfig);
         std::locale::global(oldLocale);
     } catch(const YAML::Exception& e)
     {

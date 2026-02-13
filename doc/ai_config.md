@@ -1,8 +1,8 @@
 # AIConfig Summary
 
 `AIConfig` describes the configurable behaviour for AI-controlled players. It
-collects per-building weight parameters, location heuristics, combat pacing, and
-explicit building disables. The structure is defined in
+collects per-building weight parameters, location heuristics, combat pacing,
+tool priorities, and explicit building disables. The structure is defined in
 `libs/s25main/ai/aijh/AIConfig.h` and populated through YAML in
 `libs/s25main/ai/aijh/AIConfig.cpp`.
 
@@ -23,6 +23,9 @@ explicit building disables. The structure is defined in
   “disabled” state for the owning player. `GamePlayer` checks this list when it
   initializes (and when loading saves) and flips the corresponding entries in
   `building_enabled` to `false` so those blueprints cannot be queued.
+- `toolPriority` – Per-tool priority values used by `AIPlayerJH::AdjustSettings`
+  when managing tool production. Defaults to the hardcoded `TOOL_PRIORITY`
+  table unless overridden.
 
 ## YAML Configuration
 
@@ -35,6 +38,7 @@ following top-level sections if present:
 | `buildPlanner`  | Building-name map parsed through `Weights::parseWantedParams` to update `wantedParams`.|
 | `combat`        | Optional object containing `fulfillment`, `attackIntervals`, and `targetSelection`.    |
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |
+| `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
 
 Invalid entries log warnings but leave defaults untouched. Player-specific
 overrides can be loaded with `ApplyPlayerWeightsCfg`, which stores a dedicated

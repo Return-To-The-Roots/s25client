@@ -5,6 +5,7 @@
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameData/ToolConsts.h"
 
 #include <vector>
 #include <yaml-cpp/yaml.h>
@@ -34,6 +35,7 @@ struct AIConfig
     helpers::EnumArray<LocationParams, BuildingType> locationParams;
     CombatConfig combat;
     std::vector<BuildingType> disableBuilding;
+    helpers::EnumArray<signed, Tool> toolPriority = TOOL_PRIORITY;
 };
 
 extern AIConfig AI_CONFIG;

@@ -4,6 +4,7 @@
 
 #include "AIPlayerJH.h"
 
+#include "AIConfig.h"
 #include "BuildingPlanner.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -52,6 +53,7 @@ void AIPlayerJH::AdjustSettings()
     if(bldPlanner->GetNumBuildings(BuildingType::Metalworks) > 0u)
     {
         ToolSettings toolsettings{};
+        const auto& toolPriority = config_.toolPriority;
         const auto calcToolPriority = [&](const Tool tool) {
             const GoodType good = TOOL_TO_GOOD[tool];
             unsigned numToolsAvailable = inventory[good];
@@ -69,7 +71,7 @@ void AIPlayerJH::AdjustSettings()
                 if(requiredTools > 0)
                 {
                     if(requiredTools > static_cast<signed>(numToolsAvailable))
-                        return TOOL_PRIORITY[tool];
+                        return toolPriority[tool];
                     numToolsAvailable -= requiredTools;
                 }
             }
@@ -90,7 +92,7 @@ void AIPlayerJH::AdjustSettings()
                 const GoodType good = TOOL_TO_GOOD[tool];
                 if(inventory[good] < static_cast<unsigned>(TOOL_BASIS[tool]))
                 {
-                    toolsettings[tool] = TOOL_PRIORITY[tool];
+                    toolsettings[tool] = toolPriority[tool];
                     all_meet_basis = false;
                 }
                 else
@@ -101,7 +103,7 @@ void AIPlayerJH::AdjustSettings()
             if(all_meet_basis)
             {
                 for(const auto tool : helpers::enumRange<Tool>())
-                    toolsettings[tool] = TOOL_PRIORITY[tool];
+                    toolsettings[tool] = toolPriority[tool];
             }
         }
 

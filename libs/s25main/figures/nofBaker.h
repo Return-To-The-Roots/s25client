@@ -9,14 +9,14 @@
 class SerializedGameData;
 class nobUsual;
 
-/// Klasse für den Schreiner
+/// Class for the carpenter
 class nofBaker : public nofWorkman
 {
-    /// Zeichnet ihn beim Arbeiten
+    /// Draws him while working
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 76; }
-    /// Der Arbeiter erzeugt eine Ware
+    /// The worker produces a ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
 
 public:
