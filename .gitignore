@@ -13,9 +13,12 @@
 .DS_Store
 .vscode
 .vs
+.idea
 /S2
 /build
+/contrib
 /external/boost*
+/tmp
 /win32/*.aps
 /data/RTTR/languages/*.mo
 .aider*
