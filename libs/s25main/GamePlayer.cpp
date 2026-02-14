@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GamePlayer.h"
+#include "BuildingEventLogger.h"
 #include "Cheats.h"
 #include "ai/aijh/AIConfig.h"
 #include "EventManager.h"
@@ -416,12 +417,20 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
 void GamePlayer::AddBuildingSite(noBuildingSite* bldSite)
 {
     RTTR_Assert(bldSite->GetPlayer() == GetPlayerId());
+    const MapPoint pos = bldSite->GetPos();
+    BuildingEventLogger::LogConstructionSiteCreated(world.GetEvMgr().GetCurrentGF(),
+                                                    static_cast<unsigned char>(GetPlayerId()),
+                                                    bldSite->GetBuildingType(), pos.x, pos.y);
     buildings.Add(bldSite);
 }
 
 void GamePlayer::RemoveBuildingSite(noBuildingSite* bldSite)
 {
     RTTR_Assert(bldSite->GetPlayer() == GetPlayerId());
+    const MapPoint pos = bldSite->GetPos();
+    BuildingEventLogger::LogConstructionSiteCancelled(world.GetEvMgr().GetCurrentGF(),
+                                                      static_cast<unsigned char>(GetPlayerId()),
+                                                      bldSite->GetBuildingType(), pos.x, pos.y, bldSite);
     buildings.Remove(bldSite);
 }
 

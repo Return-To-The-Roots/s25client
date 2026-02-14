@@ -9,6 +9,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "RTTR_Assert.h"
+#include "ToolPriorityEventLogger.h"
 #include "addons/const_addons.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/BuildingConsts.h"
@@ -111,6 +112,7 @@ void AIPlayerJH::AdjustSettings()
         {
             if(toolsettings[tool] != player.GetToolPriority(tool))
             {
+                ToolPriorityEventLogger::LogToolPriorityChanges(currentGF_, playerId, toolsettings);
                 aii.ChangeTools(toolsettings);
                 break;
             }

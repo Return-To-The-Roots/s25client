@@ -44,8 +44,10 @@ source_group(other FILES ${SOURCES_OTHER})
 set(s25Main_SRCS
     ${SOURCES_OTHER}
     ${SOURCES_SUBDIRS}
+        BuildingEventLogger.cpp
         CombatEventLogger.cpp
         CombatLossTracker.cpp
+        ToolPriorityEventLogger.cpp
         WareEventLogger.cpp
         ai/aijh/AIAdjuster.cpp
         ai/aijh/TargetSelector.cpp

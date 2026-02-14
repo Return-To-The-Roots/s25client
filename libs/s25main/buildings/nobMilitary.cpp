@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "nobMilitary.h"
+#include "BuildingEventLogger.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
@@ -1012,6 +1013,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     // Recalculate territory
     world->RecalcTerritory(*this, TerritoryChangeReason::Captured);
+    BuildingEventLogger::LogBuildingCaptured(GetEvMgr().GetCurrentGF(), player, bldType_, GetObjId(), pos.x, pos.y);
     CombatEventLogger::LogCapture(GetEvMgr().GetCurrentGF(), new_owner, old_player, bldType_, GetObjId());
 
     // Update visibility for the former owner

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "nofBuilder.h"
+#include "BuildingEventLogger.h"
 #include "EventManager.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
@@ -141,6 +142,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
 
                 // Unregister the construction site
                 GamePlayer& owner = world->GetPlayer(player);
+                BuildingEventLogger::MarkConstructionSiteConstructed(building_site);
                 owner.RemoveBuildingSite(building_site);
                 if(world->IsHarborBuildingSiteFromSea(building_site))
                     world->RemoveHarborBuildingSiteFromSea(building_site);
@@ -156,6 +158,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 noBuilding* bld = BuildingFactory::CreateBuilding(*world, building_type, pos, player, building_nation);
                 bld->SetBuildStartingFrame(startFrame);
                 bld->SetBuildCompleteFrame(completionGF);
+                BuildingEventLogger::LogBuildingConstructed(completionGF, player, building_type, bld->GetObjId(), pos.x,
+                                                            pos.y);
                 world->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
 
                 // Special handling for warehouses

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "noBaseBuilding.h"
+#include "BuildingEventLogger.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -74,6 +75,9 @@ void noBaseBuilding::Destroy()
 {
     DestroyAllRoads();
     world->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
+    if(GetGOT() != GO_Type::Buildingsite)
+        BuildingEventLogger::LogBuildingDestroyed(world->GetEvMgr().GetCurrentGF(), player, bldType_, GetObjId(), pos.x,
+                                                  pos.y);
 
     if(world->GetGameInterface())
         world->GetGameInterface()->GI_UpdateMinimap(pos);
