@@ -1398,7 +1398,7 @@ void nobMilitary::SearchArmor()
           world->GetPlayer(player).FindWarehouse(*this, FW::HasMinWares(GoodType::Armor), false, false);
         if(wh)
         {
-            Ware* ware = wh->OrderWare(GoodType::Armor, this);
+            Ware* ware = wh->OrderWare(GoodType::Armor, *this);
 
             if(!ware)
             {

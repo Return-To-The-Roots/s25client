@@ -914,7 +914,7 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     const auto attackerBldPos = attackerBld->GetPos();
     const auto defenderBldPos = defenderBld->GetPos();
     AddSoldiers(defenderBldPos, 0, 1);
-    AddSoldiersWithRank(attackerBldPos, 6, 0);
+    AddSoldiersWithRankAndArmor(attackerBldPos, 6, Job::Private);
     // Make defender building flag unreachable
     const auto terrain = this->world.GetDescription().terrain.find(
       [](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable) && t.GetBQ() != TerrainBQ::Danger; });
