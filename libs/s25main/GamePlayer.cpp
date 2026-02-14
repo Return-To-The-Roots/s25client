@@ -726,7 +726,13 @@ void GamePlayer::FindCarrierForAllRoads()
 void GamePlayer::FindMaterialForBuildingSites()
 {
     for(noBuildingSite* bldSite : buildings.GetBuildingSites())
+    {
+        // isolated building site?
+        if(!bldSite->IsConnected())
+            continue;
+
         bldSite->OrderConstructionMaterial();
+    }
 }
 
 void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
@@ -820,7 +826,9 @@ void GamePlayer::FindWarehouseForAllJobs()
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
-        if(FindWarehouseForJob(it->job, *it->workplace))
+        auto* bld = static_cast<noBaseBuilding*>(it->workplace);
+
+        if(bld->IsConnected() && FindWarehouseForJob(it->job, *it->workplace))
             it = jobs_wanted.erase(it);
         else
             ++it;
@@ -833,7 +841,9 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     {
         if(it->job == job)
         {
-            if(FindWarehouseForJob(it->job, *it->workplace))
+            auto* bld = static_cast<noBaseBuilding*>(it->workplace);
+
+            if(bld->IsConnected() && FindWarehouseForJob(it->job, *it->workplace))
                 it = jobs_wanted.erase(it);
             else
                 ++it;
@@ -1079,6 +1089,9 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
         if(possibleClient.bld == lastBld)
             continue;
 
+        if(!possibleClient.bld->IsConnected())
+            continue;
+
         lastBld = possibleClient.bld;
 
         // Just to be sure no underflow happens...
@@ -1141,6 +1154,10 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
     for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
         unsigned way_points;
+
+        // isolated military bulding?
+        if(!milBld->IsConnected())
+            continue;
 
         points = milBld->CalcCoinsPoints();
         // Wenn 0, will er gar keine Münzen (Goldzufuhr gestoppt)
