@@ -207,6 +207,21 @@ MapPoint noBaseBuilding::GetFlagPos() const
     return world->GetNeighbour(pos, Direction::SouthEast);
 }
 
+bool noBaseBuilding::IsConnected() const
+{
+    const helpers::EnumArray<RoadSegment*, Direction> routes = this->GetFlag()->getRoutes();
+
+    // Check paths in all directions
+    for(const auto dir : helpers::EnumRange<Direction>{})
+    {
+        const auto* route = routes[dir];
+        if(route && dir != Direction::NorthWest)
+            return true;
+    }
+
+    return false;
+}
+
 void noBaseBuilding::WareNotNeeded(Ware* ware)
 {
     if(!ware)
