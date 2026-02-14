@@ -32,6 +32,12 @@ struct VirtualInventory
         visual.Add(job, amount);
         real.Add(job, amount);
     }
+    /// Adds armored figures to both inventories
+    void Add(const ArmoredSoldier soldier, unsigned amount = 1)
+    {
+        visual.Add(soldier, amount);
+        real.Add(soldier, amount);
+    }
     /// Removes goods from both inventories
     void Remove(const GoodType good, unsigned amount = 1)
     {
@@ -45,8 +51,17 @@ struct VirtualInventory
         real.Remove(job, amount);
     }
 
+    /// Removes armored figures from both inventories
+    void Remove(const ArmoredSoldier soldier, unsigned amount = 1)
+    {
+        visual.Remove(soldier, amount);
+        real.Remove(soldier, amount);
+    }
+
     /// Returns the real number of people of the given type
     unsigned operator[](Job job) const { return real.people[job]; }
     /// Returns the real number of wares of the given type
     unsigned operator[](GoodType good) const { return real.goods[good]; }
+    /// Returns the real number of armored soldiers of the given type
+    unsigned operator[](ArmoredSoldier soldier) const { return real.armoredSoldiers[soldier]; }
 };

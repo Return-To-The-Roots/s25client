@@ -159,11 +159,7 @@ protected:
     ChangeBuildOrder(const bool useCustomBuildOrder, const BuildOrders& data)
         : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(useCustomBuildOrder), data(data)
     {}
-    ChangeBuildOrder(Serializer& ser) : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
-    {
-        for(BuildingType& i : data)
-            i = helpers::popEnum<BuildingType>(ser);
-    }
+    ChangeBuildOrder(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
@@ -248,7 +244,7 @@ class ChangeTransport : public GameCommand
 
 protected:
     ChangeTransport(const TransportOrders& data) : GameCommand(GCType::ChangeTransport), data(data) {}
-    ChangeTransport(Serializer& ser) : GameCommand(GCType::ChangeTransport) { helpers::popContainer(ser, data); }
+    ChangeTransport(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override
@@ -405,6 +401,25 @@ public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
+/// Allow/stop armor delivery to building
+class SetArmorAllowed : public Coords
+{
+    GC_FRIEND_DECL;
+    const bool enabled;
+
+protected:
+    SetArmorAllowed(const MapPoint pt, bool enabled) : Coords(GCType::SetArmorAllowed, pt), enabled(enabled) {}
+    SetArmorAllowed(Serializer& ser) : Coords(GCType::SetArmorAllowed, ser), enabled(ser.PopBool()) {}
+
+public:
+    void Serialize(Serializer& ser) const override
+    {
+        Coords::Serialize(ser);
+        ser.PushBool(enabled);
+    }
+    void Execute(GameWorld& world, uint8_t playerId) override;
+};
+
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
 class SetProductionEnabled : public Coords
 {
@@ -484,13 +499,7 @@ protected:
     SetAllInventorySettings(const MapPoint pt, bool isJob, std::vector<InventorySetting> states)
         : Coords(GCType::SetAllInventorySettings, pt), isJob(isJob), states(std::move(states))
     {}
-    SetAllInventorySettings(Serializer& ser) : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
-    {
-        const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
-        states.reserve(numStates);
-        for(unsigned i = 0; i < numStates; i++)
-            states.push_back(InventorySetting(ser.PopUnsignedChar()));
-    }
+    SetAllInventorySettings(Deserializer& ser);
 
 public:
     void Serialize(Serializer& ser) const override

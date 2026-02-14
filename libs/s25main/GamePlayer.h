@@ -157,6 +157,7 @@ public:
 
     /// Sucht einen Abnehmer (sprich Militärgebäude), wenn es keinen findet, wird ein Warenhaus zurückgegeben bzw. 0
     nobBaseMilitary* FindClientForCoin(const Ware& ware) const;
+    nobBaseMilitary* FindClientForArmor(const Ware& ware) const;
 
     /// Gibt Priorität der Baustelle zurück (entscheidet selbständig, welche Reihenfolge usw)
     /// je kleiner die Rückgabe, destro größer die Priorität!
@@ -184,6 +185,8 @@ public:
     void DecreaseInventoryWare(GoodType ware, unsigned count);
     void IncreaseInventoryJob(const Job job, unsigned count) { global_inventory.Add(job, count); }
     void DecreaseInventoryJob(const Job job, unsigned count) { global_inventory.Remove(job, count); }
+    void IncreaseInventoryJob(const ArmoredSoldier job, unsigned count) { global_inventory.Add(job, count); }
+    void DecreaseInventoryJob(const ArmoredSoldier job, unsigned count) { global_inventory.Remove(job, count); }
 
     /// Gibt Inventory-Settings zurück
     const Inventory& GetInventory() const { return global_inventory; }

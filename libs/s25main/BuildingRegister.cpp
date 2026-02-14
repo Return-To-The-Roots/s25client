@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "BuildingRegister.h"
+#include "LeatherLoader.h"
 #include "SerializedGameData.h"
 #include "WineLoader.h"
 #include "buildings/noBuildingSite.h"
@@ -39,6 +40,9 @@ void BuildingRegister::Deserialize(SerializedGameData& sgd)
         for(const auto bld : helpers::enumRange<BuildingType>())
         {
             if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonBuildingType(bld))
+                continue;
+
+            if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonBuildingType(bld))
                 continue;
 
             if(BuildingProperties::IsUsual(bld))

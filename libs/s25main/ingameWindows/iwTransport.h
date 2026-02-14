@@ -6,7 +6,7 @@
 
 #include "TransmitSettingsIgwAdapter.h"
 #include "gameTypes/SettingsTypes.h"
-#include <array>
+#include <vector>
 
 class ITexture;
 class GameWorldViewer;
@@ -25,8 +25,7 @@ private:
 
     static constexpr auto numButtons = std::tuple_size_v<TransportOrders>;
     std::array<ButtonData, numButtons> buttonData;
-
-    TransportOrders pendingOrder;
+    std::vector<TransportOrders::value_type> pendingOrder;
 
 public:
     iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
@@ -38,4 +37,6 @@ private:
     void TransmitSettings() override;
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
+
+    void fillTransportOrder(const TransportOrders& transport_order);
 };

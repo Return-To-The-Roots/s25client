@@ -861,6 +861,7 @@ void dskGameLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
             {
                 gameLobby_->getSettings().setSelection(AddonId::PEACEFULMODE, true);
                 gameLobby_->getSettings().setSelection(AddonId::NO_COINS_DEFAULT, true);
+                gameLobby_->getSettings().setSelection(AddonId::NO_ARMOR_DEFAULT, true);
                 gameLobby_->getSettings().setSelection(AddonId::LIMIT_CATAPULTS, 2);
                 UpdateGGS();
             } else if(mbr == MsgboxResult::No)

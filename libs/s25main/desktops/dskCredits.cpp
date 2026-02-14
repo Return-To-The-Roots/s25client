@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "dskCredits.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -357,7 +358,7 @@ void dskCredits::DrawCredit()
 template<typename T>
 T randEnum()
 {
-    return T(rand() % (helpers::NumEnumValues_v<T> - 2));
+    return T(rand() % helpers::NumEnumValues_v<T>);
 }
 
 void dskCredits::DrawBobs()
@@ -395,25 +396,51 @@ void dskCredits::DrawBobs()
         }
 
         b.color = PLAYER_COLORS[rand() % PLAYER_COLORS.size()];
-        const auto job = randEnum<Job>();
 
-        // exclude "headless" bobs
-        if(job == Job::Miller || job == Job::Baker || job == Job::Brewer || job == Job::Armorer
-           || job == Job::CharBurner /* Comes from another file */ || wineaddon::isWineAddonJobType(job))
-        {
-            const auto ware = randEnum<GoodType>();
-            // Japanese shield is missing
-            b.id = rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
-            b.hasWare = true;
-        } else
+        auto isHeadlessBob = [](Job const& job) {
+            return job == Job::Miller || job == Job::Baker || job == Job::Brewer || job == Job::Armorer;
+        };
+
+        auto isJobDrawable = [&isHeadlessBob](Job const& job) {
+            if(job == Job::CharBurner)
+                return false;
+            if(wineaddon::isWineAddonJobType(job))
+                return false;
+            if(leatheraddon::isLeatherAddonJobType(job))
+                return false;
+            if(isHeadlessBob(job))
+                return false;
+            return true;
+        };
+
+        auto isWareDrawable = [](GoodType const& ware) {
+            if(wineaddon::isWineAddonGoodType(ware))
+                return false;
+            if(leatheraddon::isLeatherAddonGoodType(ware))
+                return false;
+            return true;
+        };
+
+        const auto job = randEnum<Job>();
+        if(isJobDrawable(job))
         {
             // only native nations are loaded
             b.id = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATIVE_NATIONS));
             b.hasWare = false;
+            b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
+            bobs.push_back(b);
+        } else
+        {
+            const auto ware = randEnum<GoodType>();
+            if(isWareDrawable(ware))
+            {
+                // Japanese shield is missing
+                b.id = rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
+                b.hasWare = true;
+                b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
+                bobs.push_back(b);
+            }
         }
-
-        b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
-        bobs.push_back(b);
     }
 
     // draw bobs

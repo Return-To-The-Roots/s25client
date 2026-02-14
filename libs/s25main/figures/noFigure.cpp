@@ -6,9 +6,12 @@
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "helpers/containerUtils.h"
@@ -17,6 +20,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bob.h"
+#include "ogl/glFont.h"
 #include "ogl/glSmartBitmap.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
@@ -46,7 +50,8 @@ const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::GotToGoal), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0),
-      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
+      armor(false)
 {
     // If the goal is a storehouse we won't work there but go to the new home
     if(goal && nobBaseWarehouse::isStorehouseGOT(goal->GetGOT()))
@@ -56,7 +61,8 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::Job), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0),
-      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+      wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
+      armor(false)
 {}
 
 void noFigure::Destroy()
@@ -79,6 +85,7 @@ void noFigure::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedShort(rs_pos);
     sgd.PushBool(rs_dir);
     sgd.PushBool(on_ship);
+    sgd.PushBool(armor);
 
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         sgd.PushObject(goal_);
@@ -98,7 +105,7 @@ void noFigure::Serialize(SerializedGameData& sgd) const
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), fs(sgd.Pop<FigureState>()), job_(sgd.Pop<Job>()), player(sgd.PopUnsignedChar()),
       cur_rs(sgd.PopObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
-      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF)
+      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF), armor(sgd.GetGameDataVersion() >= 12 ? sgd.PopBool() : false)
 {
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         goal_ = sgd.PopObject<noRoadNode>();
@@ -753,6 +760,9 @@ void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, Job job)
     const GamePlayer& owner = world->GetPlayer(player);
     LOADER.getBobSprite(owner.nation, job, GetCurMoveDir(), ani_step)
       .drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
+
+    if(armor)
+        DrawArmor(InterpolateWalkDrawPos(drawPt));
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
@@ -799,8 +809,29 @@ void noFigure::DrawWalking(DrawPoint drawPt)
         case Job::TempleServant:
             DrawWalking(drawPt, "wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::TEMPLESERVANT_WALKING]);
             break;
+        case Job::Skinner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::SkinnerWalking]);
+            break;
+        case Job::Tanner:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::TannerWalking]);
+            break;
+        case Job::LeatherWorker:
+            DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::LeatherworkerWalking]);
+            break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }
+}
+
+void noFigure::DrawArmor(DrawPoint drawPt)
+{
+    if(world->GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
+    {
+        SmallFont->Draw(drawPt + DrawPoint(7, -20), "+", FontStyle::CENTER, COLOR_RED);
+        SmallFont->Draw(drawPt + DrawPoint(10, -20), "1", FontStyle::CENTER, COLOR_RED);
+    }
+
+    LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::ArmorIconAboveArmoredSoldier])
+      ->DrawFull(drawPt + DrawPoint(0, -22));
 }
 
 void noFigure::Die()
@@ -825,7 +856,14 @@ void noFigure::RemoveFromInventory()
         world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
         world->GetPlayer(player).DecreaseInventoryWare(GoodType::Boat, 1);
     } else
+    {
         world->GetPlayer(player).DecreaseInventoryJob(job_, 1);
+        if(isSoldier(GetJobType()))
+        {
+            if(armor)
+                world->GetPlayer(player).DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(GetJobType()), 1);
+        }
+    }
 }
 
 void noFigure::DieFailedTrade()

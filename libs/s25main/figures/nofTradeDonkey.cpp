@@ -60,6 +60,8 @@ void nofTradeDonkey::GoalReached()
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
+    if(armor)
+        whOwner.IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(this->GetJobType()), 1);
     wh->AddFigure(world->RemoveFigure(pos, *this));
 }
 
@@ -114,7 +116,9 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
             LOADER.GetWareDonkeyTex(*gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
         }
     } else
+    {
         DrawWalking(drawPt);
+    }
 }
 
 void nofTradeDonkey::LostWork() {}

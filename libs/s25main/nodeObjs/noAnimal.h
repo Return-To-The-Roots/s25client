@@ -9,6 +9,7 @@
 #include "gameTypes/AnimalTypes.h"
 
 class nofHunter;
+class nofSkinner;
 class SerializedGameData;
 
 /// Klasse für die Tiere (ausgenommen Esel und Schweine natürlich)
@@ -33,6 +34,8 @@ class noAnimal : public noMovable
     unsigned short pause_way;
     /// Jäger, der das Tier jagt (0, falls nicht gejagt)
     nofHunter* hunter;
+    /// Skinner, skinning the animal (0, if not skinned)
+    nofSkinner* skinner;
     /// Nächster Zeitpunkt, ab wann der Sound gespielt werden soll (bei Enten und Schafen)
     unsigned sound_moment;
 
@@ -56,6 +59,7 @@ public:
     void Destroy() override
     {
         RTTR_Assert(!hunter);
+        RTTR_Assert(!skinner);
         noMovable::Destroy();
     }
 
@@ -70,8 +74,15 @@ public:
     /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
     void StartLiving();
 
+    bool CanBeSkinned() const;
+    bool IsGettingSkinned() const;
+    void BeginSkinning(nofSkinner* skinner);
+    void StopSkinning();
+    void Skinned();
+
     /// Kann das Tier noch vom Jäger gejagt werden?
     bool CanHunted() const;
+    bool IsHunted() const;
 
     /// Ein Jäger geht das Tier jagen
     void BeginHunting(nofHunter* hunter);

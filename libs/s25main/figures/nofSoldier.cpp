@@ -11,15 +11,18 @@
 #include "gameData/MilitaryConsts.h"
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
-                       nobBaseMilitary* const home, const unsigned char rank)
+                       nobBaseMilitary* const home, const unsigned char rank, bool armor)
     : noFigure(SOLDIER_JOBS[rank], pos, player, goal), building(home), hitpoints(HITPOINTS[rank])
 {
+    this->armor = armor;
     RTTR_Assert(IsSoldier());
 }
 
-nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank)
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank,
+                       bool armor)
     : noFigure(SOLDIER_JOBS[rank], pos, player), building(&home), hitpoints(HITPOINTS[rank])
 {
+    this->armor = armor;
     RTTR_Assert(IsSoldier());
 }
 
@@ -49,6 +52,8 @@ void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
 {
     const GamePlayer& owner = world->GetPlayer(player);
     LOADER.getBobSprite(owner.nation, job_, GetCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
+    if(armor)
+        this->DrawArmor(drawPt);
 }
 
 void nofSoldier::AbrogateWorkplace()

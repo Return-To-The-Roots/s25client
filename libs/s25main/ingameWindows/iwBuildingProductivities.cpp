@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwBuildingProductivities.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WineLoader.h"
 #include "addons/const_addons.h"
@@ -15,7 +17,7 @@
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
 
-const std::array<BuildingType, 27> iwBuildingProductivities::allIcons = {
+const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
   // clang-format off
   BuildingType::Woodcutter,    BuildingType::Slaughterhouse,
   BuildingType::Forester,      BuildingType::Metalworks,
@@ -30,22 +32,15 @@ const std::array<BuildingType, 27> iwBuildingProductivities::allIcons = {
   BuildingType::PigFarm,       BuildingType::GraniteMine,
   BuildingType::DonkeyBreeder, BuildingType::Charburner,
   BuildingType::Vineyard,      BuildingType::Winery,
-  BuildingType::Temple,
+  BuildingType::Temple,        BuildingType::Skinner,
+  BuildingType::Tannery,       BuildingType::LeatherWorks,
   // clang-format on
 };
 
 void iwBuildingProductivities::setBuildingOrder()
 {
     usedIcons.assign(allIcons.begin(), allIcons.end());
-
-    const auto isUnused = [&](BuildingType const& bld) {
-        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonBuildingType(bld))
-            return true;
-        if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && bld == BuildingType::Charburner)
-            return true;
-        return false;
-    };
-    helpers::erase_if(usedIcons, isUnused);
+    helpers::erase_if(usedIcons, makeIsUnusedBuilding(player.GetGameWorld().GetGGS()));
 }
 
 /// Abstand vom linken, oberen Fensterrand

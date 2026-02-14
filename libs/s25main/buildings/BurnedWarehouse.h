@@ -1,22 +1,18 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-#include "helpers/EnumArray.h"
 #include "nodeObjs/noCoordBase.h"
-#include "gameTypes/JobTypes.h"
-#include <array>
+#include "gameTypes/GoodsAndPeopleArray.h"
 class SerializedGameData;
 
 /// Unsichtbares Objekt, welches die fliehenden Leute aus einem ehemaligen abgebrannten Lagerhaus/HQ spuckt
 class BurnedWarehouse : public noCoordBase
 {
 public:
-    using PeopleArray = helpers::EnumArray<uint32_t, Job>;
-
-    BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& people);
+    BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray<unsigned>& people);
     BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
     ~BurnedWarehouse() override;
@@ -37,5 +33,5 @@ private:
     /// Aktuelle Rausgeh-Phase
     unsigned go_out_phase;
     // Leute, die noch rauskommen müssen
-    PeopleArray people;
+    PeopleArray<unsigned> people;
 };

@@ -23,8 +23,11 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include <rttr/test/testHelpers.hpp>
+#include <boost/test/data/monomorphic.hpp>
+#include <boost/test/data/test_case.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -110,8 +113,10 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
             world.MakeVisibleAroundPoint(pt, 1, i);
     }
 
-    void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank)
+    void AddSoldiersWithRankAndArmor(MapPoint bldPos, unsigned numSoldiers, Job soldierType,
+                                     unsigned numArmoredSoldiers = 0)
     {
+        auto const rank = getSoldierRank(soldierType);
         BOOST_TEST_REQUIRE(rank <= world.GetGGS().GetMaxMilitaryRank());
         auto* bld = world.template GetSpecObj<nobMilitary>(bldPos);
         BOOST_TEST_REQUIRE(bld);
@@ -121,6 +126,13 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
             auto& soldier =
               world.AddFigure(bldPos, std::make_unique<nofPassiveSoldier>(bldPos, bld->GetPlayer(), bld, bld, rank));
             world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier.GetJobType(), 1);
+            if(numArmoredSoldiers > 0)
+            {
+                world.GetPlayer(bld->GetPlayer())
+                  .IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(soldier.GetJobType()), 1);
+                soldier.SetArmor(true);
+                numArmoredSoldiers--;
+            }
             // Let him "walk" to goal -> Already reached -> Added and all internal states set correctly
             soldier.WalkToGoal();
             BOOST_TEST_REQUIRE(soldier.HasNoGoal());
@@ -130,8 +142,8 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
 
     void AddSoldiers(MapPoint bldPos, unsigned numWeak, unsigned numStrong)
     {
-        AddSoldiersWithRank(bldPos, numWeak, 0);
-        AddSoldiersWithRank(bldPos, numStrong, 4);
+        AddSoldiersWithRankAndArmor(bldPos, numWeak, Job::Private);
+        AddSoldiersWithRankAndArmor(bldPos, numStrong, Job::General);
     }
 };
 
@@ -385,8 +397,8 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     initGameRNG();
 
     AddSoldiers(milBld0Pos, 1, 5);
-    AddSoldiersWithRank(milBld1Pos, 1, 0);
-    AddSoldiersWithRank(milBld1Pos, 1, 1);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::PrivateFirstClass);
     BuildRoadForBlds(milBld0Pos, hqPos[0]);
 
     // Finish recruiting, carrier outhousing etc.
@@ -451,13 +463,75 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
+{
+    initGameRNG();
+
+    AddSoldiersWithRankAndArmor(milBld0Pos, 3, Job::General, 2);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private, 1);
+
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 3u);
+    BOOST_TEST_REQUIRE(milBld1->GetNumTroops() == 1u);
+
+    // Start attack ->1 (strong one first)
+    this->Attack(milBld1Pos, 1, true);
+    RTTR_EXEC_TILL(30, milBld0->GetNumTroops() == 2);
+
+    auto countArmoredSoldiers = [](nobMilitary* bld) {
+        const auto troops = bld->GetTroops();
+        return std::count_if(std::begin(troops), std::end(troops),
+                             [](const auto& soldier) { return soldier.HasArmor(); });
+    };
+
+    auto countNotArmoredSoldiers = [](nobMilitary* bld) {
+        const auto troops = bld->GetTroops();
+        return std::count_if(std::begin(troops), std::end(troops),
+                             [](const auto& soldier) { return !soldier.HasArmor(); });
+    };
+
+    BOOST_TEST_REQUIRE(countArmoredSoldiers(milBld0) == 1u);
+    BOOST_TEST_REQUIRE(countNotArmoredSoldiers(milBld0) == 1u);
+
+    // Start attack ->1 (weak one first)
+    this->Attack(milBld1Pos, 1, false);
+    RTTR_EXEC_TILL(30, milBld0->GetNumTroops() == 1);
+    BOOST_TEST_REQUIRE(countArmoredSoldiers(milBld0) == 1u);
+    BOOST_TEST_REQUIRE(countNotArmoredSoldiers(milBld0) == 0u);
+
+    const Inventory& attackedPlInventory = world.GetPlayer(1).GetInventory();
+    const unsigned numOldWeakSoldiers = attackedPlInventory.people[Job::Private];
+    const unsigned numOldWeakSoldiersWithArmor =
+      attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)];
+
+    // Run till attackers reach flag of bld. The bld will send a defender.
+    // 20 GFs/node + 60 GFs for leaving
+    const unsigned distance = world.CalcDistance(milBld0Pos, milBld1Pos);
+    RTTR_EXEC_TILL(distance * 20 + 60, milBld1->GetDefender() != nullptr);
+
+    const auto soldiers = world.GetFigures(milBld1->GetFlagPos());
+    BOOST_TEST_REQUIRE(soldiers.size() == 1u);
+    const auto& attacker = dynamic_cast<const nofAttacker&>(*soldiers.begin());
+    BOOST_TEST_REQUIRE(static_cast<const nofAttacker&>(attacker).GetPlayer() == curPlayer);
+
+    // Lets fight until defender has no armor anymore
+    // He should not lose a hitpoint but the armor
+    RTTR_EXEC_TILL(1000, milBld1->GetDefender()->HasArmor() == false);
+    BOOST_TEST_REQUIRE(attackedPlInventory.armoredSoldiers[jobEnumToAmoredSoldierEnum(Job::Private)]
+                       == numOldWeakSoldiersWithArmor - 1);
+    BOOST_TEST_REQUIRE(attackedPlInventory.people[Job::Private] == numOldWeakSoldiers);
+    BOOST_TEST_REQUIRE(milBld1->GetDefender()->GetHitpoints() == HITPOINTS[milBld1->GetDefender()->GetRank()]);
+}
+
 BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonEnable, AttackFixture<>)
 {
     this->ggs.setSelection(AddonId::COINS_CAPTURED_BLD, 1); // addon is active on second run
 
     initGameRNG();
     AddSoldiers(milBld0Pos, 1, 5);
-    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
     // Finish recruiting, carrier outhousing etc.
     RTTR_SKIP_GFS(400);
 
@@ -481,7 +555,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
 
     initGameRNG();
     AddSoldiers(milBld0Pos, 1, 5);
-    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
     // Finish recruiting, carrier outhousing etc.
     RTTR_SKIP_GFS(400);
 
@@ -499,6 +573,45 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
     BOOST_TEST_REQUIRE(milBld1->IsGoldDisabled());
 }
 
+enum Case
+{
+    EnableAfterDisable,
+    DisableAfterEnable,
+    KeepEnabled,
+    KeepDisabled
+};
+
+BOOST_DATA_TEST_CASE_F(AttackFixture<>, ConquerBldArmorAddon,
+                       boost::unit_test::data::make(std::array{Case::EnableAfterDisable, Case::DisableAfterEnable,
+                                                               Case::KeepEnabled, Case::KeepDisabled}))
+{
+    if(sample == Case::EnableAfterDisable)
+        this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 1);
+    else if(sample == Case::DisableAfterEnable)
+        this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 2);
+    else
+        this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 0);
+
+    initGameRNG();
+    AddSoldiers(milBld0Pos, 1, 5);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
+
+    // ensure that armor are enabled/disabled
+    bool armorAllowedBeforeAttack = (sample == Case::KeepEnabled || sample == Case::DisableAfterEnable);
+    milBld1->SetArmorAllowed(armorAllowedBeforeAttack);
+    BOOST_TEST_REQUIRE(milBld1->IsArmorAllowed() == armorAllowedBeforeAttack);
+
+    // Start attack -> 1
+    this->Attack(milBld1Pos, 5, false);
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 1u);
+
+    RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
+
+    // check if armor were enabled/disabled after building was captured
+    bool armorAlloweAfterCaptured = (sample == Case::KeepEnabled || sample == Case::EnableAfterDisable);
+    BOOST_TEST_REQUIRE(milBld1->IsArmorAllowed() == armorAlloweAfterCaptured);
+}
+
 using AttackFixture4P = AttackFixture<4, 32, 34>;
 BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 {
@@ -514,7 +627,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     this->ChangeMilitary(milSettings);
 
     AddSoldiers(milBld0Pos, 0, 6);
-    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
     MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SouthEast);
 
     // Scenario 1: Attack with one soldier.
@@ -541,7 +654,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     // Door opened
     BOOST_TEST_REQUIRE(milBld1->IsDoorOpen());
     // New soldiers walked in
-    AddSoldiersWithRank(milBld1Pos, 4, 0);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 4, Job::Private);
     // Let attacker walk in (try it at least)
     RTTR_EXEC_TILL(20, attacker.GetPos() == milBld1Pos);
     RTTR_EXEC_TILL(20, attacker.GetPos() == milBld1FlagPos);
@@ -576,7 +689,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     MapPoint bldPos = hqPos[curPlayer] + MapPoint(3, 0);
     auto* alliedBld = static_cast<nobMilitary*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Guardhouse, bldPos, curPlayer, Nation::Africans));
-    AddSoldiersWithRank(bldPos, 2, 0);
+    AddSoldiersWithRankAndArmor(bldPos, 2, Job::Private);
     this->Attack(milBld1Pos, 1, false);
     BOOST_TEST_REQUIRE(alliedBld->GetLeavingFigures().size() == 1u);
     auto& alliedAttacker = dynamic_cast<nofAttacker&>(alliedBld->GetLeavingFigures().front());
@@ -585,7 +698,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     bldPos = hqPos[curPlayer] + MapPoint(3, 0);
     auto* hostileBld = static_cast<nobMilitary*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Guardhouse, bldPos, curPlayer, Nation::Africans));
-    AddSoldiersWithRank(bldPos, 2, 0);
+    AddSoldiersWithRankAndArmor(bldPos, 2, Job::Private);
     this->Attack(milBld1Pos, 1, false);
     BOOST_TEST_REQUIRE(hostileBld->GetLeavingFigures().size() == 1u);
     auto& hostileAttacker = dynamic_cast<nofAttacker&>(hostileBld->GetLeavingFigures().front());
@@ -662,7 +775,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // 1. Carrier with coin walking in the building
     // 2. Carrier with coin walking out of the building
     AddSoldiers(milBld0Pos, 0, 6);
-    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
     MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SouthEast);
 
     curPlayer = 1;
@@ -801,7 +914,7 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     const auto attackerBldPos = attackerBld->GetPos();
     const auto defenderBldPos = defenderBld->GetPos();
     AddSoldiers(defenderBldPos, 0, 1);
-    AddSoldiersWithRank(attackerBldPos, 6, 0);
+    AddSoldiersWithRankAndArmor(attackerBldPos, 6, Job::Private);
     // Make defender building flag unreachable
     const auto terrain = this->world.GetDescription().terrain.find(
       [](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable) && t.GetBQ() != TerrainBQ::Danger; });
@@ -898,10 +1011,10 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
       BuildingFactory::CreateBuilding(world, BuildingType::Barracks, rightBldPos, 1, Nation::Babylonians);
     BOOST_TEST_REQUIRE(rightBld);
 
-    AddSoldiersWithRank(leftBldPos, 1, 0);
-    AddSoldiersWithRank(rightBldPos, 1, 0);
-    AddSoldiersWithRank(milBld1Pos, 1, 0);
-    AddSoldiersWithRank(milBld0Pos, 6, 4);
+    AddSoldiersWithRankAndArmor(leftBldPos, 1, Job::Private);
+    AddSoldiersWithRankAndArmor(rightBldPos, 1, Job::Private);
+    AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
+    AddSoldiersWithRankAndArmor(milBld0Pos, 6, Job::General);
 
     curPlayer = 1;
     // Build 2 roads to attack building to test that destroying them does not cause a bug
@@ -947,8 +1060,8 @@ struct FreeFightFixture : AttackFixture<2>
         : attackerBld(*milBld0), attackedBld(*milBld1), attackedBldPos(milBld1Pos),
           fightSpot(attackedBldPos - MapPoint(3, 0))
     {
-        AddSoldiersWithRank(milBld0Pos, 6, 0);
-        AddSoldiersWithRank(milBld1Pos, 6, 0);
+        AddSoldiersWithRankAndArmor(milBld0Pos, 6, Job::Private);
+        AddSoldiersWithRankAndArmor(milBld1Pos, 6, Job::Private);
         this->Attack(attackedBldPos, 1, true);
         auto& attacker = dynamic_cast<nofAttacker&>(attackerBld.GetLeavingFigures().front());
         attacker_ = &attacker;

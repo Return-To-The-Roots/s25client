@@ -6,6 +6,7 @@
 #include "RTTR_AssertError.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
+#include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
@@ -23,6 +24,7 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
 {
     helpers::EnumArray<unsigned, Job> numPeople, numPeoplePlayer;
     helpers::EnumArray<unsigned, GoodType> numGoods, numGoodsPlayer;
+    helpers::EnumArray<unsigned, ArmoredSoldier> numArmoredSoldiers, numArmoredSoldiersPlayer;
     AddGoodsFixture()
     {
         GamePlayer& player = world.GetPlayer(0);
@@ -31,6 +33,7 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
             player.GetFirstWH()->SetRealReserve(i, 0); //-V522
         numPeople = numPeoplePlayer = player.GetInventory().people;
         numGoods = numGoodsPlayer = player.GetInventory().goods;
+        numArmoredSoldiers = numArmoredSoldiersPlayer = player.GetInventory().armoredSoldiers;
     }
 
     /// Asserts that the expected and actual good count match for the HQ
@@ -42,6 +45,12 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
             {
                 BOOST_TEST(hq.GetNumVisualFigures(i) == numPeople[i]);
                 BOOST_TEST(hq.GetNumRealFigures(i) == numPeople[i]);
+            }
+        for(const auto i : helpers::enumRange<ArmoredSoldier>())
+            BOOST_TEST_CONTEXT("ArmoredSoldier: " << rttr::enum_cast(i))
+            {
+                BOOST_TEST(hq.GetNumVisualArmoredFigures(i) == numArmoredSoldiers[i]);
+                BOOST_TEST(hq.GetNumRealArmoredFigures(i) == numArmoredSoldiers[i]);
             }
         for(const auto i : helpers::enumRange<GoodType>())
             BOOST_TEST_CONTEXT("Good: " << rttr::enum_cast(i))
@@ -56,6 +65,8 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
         GamePlayer& player = world.GetPlayer(0);
         for(const auto i : helpers::enumRange<Job>())
             BOOST_TEST(player.GetInventory()[i] == numPeoplePlayer[i]);
+        for(const auto i : helpers::enumRange<ArmoredSoldier>())
+            BOOST_TEST(player.GetInventory()[i] == numArmoredSoldiersPlayer[i]);
         for(const auto i : helpers::enumRange<GoodType>())
             BOOST_TEST(player.GetInventory()[i] == numGoodsPlayer[i]);
     }
@@ -87,7 +98,13 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
         newGoods.Add(i, rttr::enum_cast(i) + 1);
         numPeople[i] += rttr::enum_cast(i) + 1;
     }
+    for(const auto i : helpers::enumRange<ArmoredSoldier>())
+    {
+        newGoods.Add(i, rttr::enum_cast(i) + 1);
+        numArmoredSoldiers[i] += rttr::enum_cast(i) + 1;
+    }
     numPeoplePlayer = numPeople;
+    numArmoredSoldiersPlayer = numArmoredSoldiers;
     hq.AddGoods(newGoods, true);
     testNumGoodsHQ();
     testNumGoodsPlayer();
@@ -95,6 +112,9 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     // Add only to hq but not to player
     for(const auto i : helpers::enumRange<Job>())
         numPeople[i] += newGoods[i];
+    for(const auto i : helpers::enumRange<ArmoredSoldier>())
+        numArmoredSoldiers[i] += newGoods[i];
+
     hq.AddGoods(newGoods, false);
     testNumGoodsHQ();
     testNumGoodsPlayer();
@@ -257,4 +277,55 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
         BOOST_TEST(wh2->GetNumVisualWares(good) == 1u);
         BOOST_TEST(wh2->GetNumRealWares(good) == 1u);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(AddSoldierWithArmor, EmptyWorldFixture1P)
+{
+    GamePlayer& player = world.GetPlayer(0);
+
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
+    for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
+        hq->SetRealReserve(i, 0);
+
+    auto soldierWithArmor =
+      std::make_unique<nofPassiveSoldier>(player.GetHQPos(), 0, nullptr, nullptr, getSoldierRank(Job::Sergeant));
+    soldierWithArmor->SetArmor(true);
+
+    hq->AddFigure(std::move(soldierWithArmor));
+    BOOST_TEST_REQUIRE(hq->GetNumRealArmoredFigures(ArmoredSoldier::Sergeant) == 1);
+    BOOST_TEST_REQUIRE(hq->GetNumVisualArmoredFigures(ArmoredSoldier::Sergeant) == 1);
+    BOOST_TEST_REQUIRE(hq->GetNumRealWares(GoodType::Armor) == 0);
+    BOOST_TEST_REQUIRE(hq->GetNumVisualWares(GoodType::Armor) == 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(CheckReserveSoldierWithArmor, EmptyWorldFixture1P)
+{
+    GamePlayer& player = world.GetPlayer(0);
+
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
+
+    auto soldierWithArmor =
+      std::make_unique<nofPassiveSoldier>(player.GetHQPos(), 0, nullptr, nullptr, getSoldierRank(Job::Sergeant));
+    soldierWithArmor->SetArmor(true);
+
+    hq->AddFigure(std::move(soldierWithArmor));
+    BOOST_TEST_REQUIRE(hq->GetNumRealArmoredFigures(ArmoredSoldier::Sergeant) == 0);
+    BOOST_TEST_REQUIRE(hq->GetNumVisualArmoredFigures(ArmoredSoldier::Sergeant) == 0);
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Sergeant) == 0);
+    BOOST_TEST_REQUIRE(hq->GetNumVisualFigures(Job::Sergeant) == 0);
+    BOOST_TEST_REQUIRE(*hq->GetReserveAvailablePointer(getSoldierRank(Job::Sergeant)) == 1);
+    BOOST_TEST_REQUIRE(*hq->GetReserveArmoredAvailablePointer(getSoldierRank(Job::Sergeant)) == 1);
+    BOOST_TEST_REQUIRE(hq->GetNumRealWares(GoodType::Armor) == 0);
+    BOOST_TEST_REQUIRE(hq->GetNumVisualWares(GoodType::Armor) == 0);
+
+    // free reserve
+    for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
+        player.GetFirstWH()->SetRealReserve(i, 0);
+
+    BOOST_TEST_REQUIRE(hq->GetNumRealArmoredFigures(ArmoredSoldier::Sergeant) == 1);
+    BOOST_TEST_REQUIRE(hq->GetNumVisualArmoredFigures(ArmoredSoldier::Sergeant) == 1);
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Sergeant) == 1);
+    BOOST_TEST_REQUIRE(hq->GetNumVisualFigures(Job::Sergeant) == 1);
+    BOOST_TEST_REQUIRE(*hq->GetReserveAvailablePointer(getSoldierRank(Job::Sergeant)) == 0);
+    BOOST_TEST_REQUIRE(*hq->GetReserveArmoredAvailablePointer(getSoldierRank(Job::Sergeant)) == 0);
 }

@@ -6,12 +6,15 @@
 #include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "Ware.h"
 #include "WindowManager.h"
+#include "addons/const_addons.h"
 #include "controls/ctrlButton.h"
 #include "factories/GameCommandFactory.h"
 #include "figures/noFigure.h"
+#include "figures/nofSoldier.h"
 #include "helpers/EnumArray.h"
 #include "helpers/EnumRange.h"
 #include "iwHelp.h"
@@ -201,8 +204,17 @@ void iwShip::DrawCargo()
 
     // Count figures by type
     helpers::EnumArray<unsigned short, Job> orderedFigures{};
+    helpers::EnumArray<unsigned short, ArmoredSoldier> armoredFigures{};
     for(const noFigure& figure : ship->GetFigures())
+    {
         orderedFigures[figure.GetJobType()]++;
+
+        if(isSoldier(figure.GetJobType()))
+        {
+            if(figure.HasArmor())
+                armoredFigures[jobEnumToAmoredSoldierEnum(figure.GetJobType())]++;
+        }
+    }
 
     // Count wares by type
     helpers::EnumArray<unsigned short, GoodType> orderedWares{};
@@ -265,11 +277,33 @@ void iwShip::DrawCargo()
                   .GetPlayerImage("wine_bobs",
                                   wineaddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
                   ->DrawFull(drawPt, COLOR_WHITE, owner.color);
+            } else if(leatheraddon::isLeatherAddonJobType(job))
+            {
+                leatheraddon::BobType type = leatheraddon::BobType::SkinnerWalking;
+                if(job == Job::Tanner)
+                    type = leatheraddon::BobType::TannerWalking;
+                else if(job == Job::LeatherWorker)
+                    type = leatheraddon::BobType::LeatherworkerWalking;
+
+                LOADER
+                  .GetPlayerImage("leather_bobs",
+                                  leatheraddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
+                  ->DrawFull(drawPt, COLOR_WHITE, owner.color);
             } else
             {
                 const auto& spriteData = JOB_SPRITE_CONSTS[job];
                 LOADER.GetBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,
                                             spriteData.isFat(), 0, drawPt, owner.color);
+            }
+
+            if(isSoldier(job) && armoredFigures[jobEnumToAmoredSoldierEnum(job)] > 0)
+            {
+                armoredFigures[jobEnumToAmoredSoldierEnum(job)]--;
+                if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
+                {
+                    SmallFont->Draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
+                    SmallFont->Draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
+                }
             }
 
             drawPt.x += xStep;

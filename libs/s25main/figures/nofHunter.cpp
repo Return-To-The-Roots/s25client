@@ -376,12 +376,18 @@ void nofHunter::HandleStateEviscerating()
         world->GetSoundMgr().stopSounds(*this);
         was_sounding = false;
     }
-    // Tier verschwinden lassen
-    auto ownedAnimal = world->RemoveFigure(pos, *animal);
+
+    // see comment at noAnimal::HandleEvent for explanation of ownership of animal
+    animal->Eviscerated();
+    if(!animal->IsGettingSkinned())
+    {
+        // Tier verschwinden lassen
+        auto ownedAnimal = world->RemoveFigure(pos, *animal);
+        // Tier vernichten
+        ownedAnimal->Destroy();
+    }
     animal = nullptr;
-    // Tier vernichten
-    ownedAnimal->Eviscerated();
-    ownedAnimal->Destroy();
+
     // Fleisch in die Hand nehmen
     ware = GoodType::Meat;
     // und zurück zur Hütte

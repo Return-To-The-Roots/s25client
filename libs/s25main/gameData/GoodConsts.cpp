@@ -43,4 +43,7 @@ const helpers::EnumArray<std::string, GoodType> WARE_NAMES = {{
   /* 34 */ "",                           // Schild
   /* 35 */ gettext_noop("Grapes"),
   /* 36 */ gettext_noop("Wine"),
+  /* 37 */ gettext_noop("Skins"),
+  /* 38 */ gettext_noop("Leather"),
+  /* 39 */ gettext_noop("Armor"),
 }};

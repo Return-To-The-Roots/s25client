@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwWares.h"
+#include "AddonHelperFunctions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "WineLoader.h"
@@ -88,57 +90,32 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
       GoodType::Shovel,  GoodType::Crucible, GoodType::RodAndLine,
       GoodType::Scythe,  GoodType::Cleaver,  GoodType::Rollingpin,
       GoodType::Bow,     GoodType::Sword,    GoodType::ShieldRomans /* nation specific */,
-      GoodType::Boat,    GoodType::Grapes,   GoodType::Wine};
+      GoodType::Boat,    GoodType::Grapes,   GoodType::Wine,
+      GoodType::Skins,   GoodType::Leather,  GoodType::Armor,
+    };
 
-    std::vector<Job> JOB_DISPLAY_ORDER{Job::Helper,
-                                       Job::Builder,
-                                       Job::Planer,
-                                       Job::Woodcutter,
-                                       Job::Forester,
-                                       Job::Stonemason,
-                                       Job::Fisher,
-                                       Job::Hunter,
-                                       Job::Carpenter,
-                                       Job::Farmer,
-                                       Job::PigBreeder,
-                                       Job::DonkeyBreeder,
-                                       Job::Miller,
-                                       Job::Baker,
-                                       Job::Butcher,
-                                       Job::Brewer,
-                                       Job::Miner,
-                                       Job::IronFounder,
-                                       Job::Armorer,
-                                       Job::Minter,
-                                       Job::Metalworker,
-                                       Job::Shipwright,
-                                       Job::Geologist,
-                                       Job::Scout,
-                                       Job::PackDonkey,
-                                       Job::CharBurner,
-                                       Job::Winegrower,
-                                       Job::Vintner,
-                                       Job::TempleServant,
-                                       Job::Private,
-                                       Job::PrivateFirstClass,
-                                       Job::Sergeant,
-                                       Job::Officer,
+    std::vector<Job> JOB_DISPLAY_ORDER{Job::Helper,        Job::Builder,
+                                       Job::Planer,        Job::Woodcutter,
+                                       Job::Forester,      Job::Stonemason,
+                                       Job::Fisher,        Job::Hunter,
+                                       Job::Carpenter,     Job::Farmer,
+                                       Job::PigBreeder,    Job::DonkeyBreeder,
+                                       Job::Miller,        Job::Baker,
+                                       Job::Butcher,       Job::Brewer,
+                                       Job::Miner,         Job::IronFounder,
+                                       Job::Armorer,       Job::Minter,
+                                       Job::Metalworker,   Job::Shipwright,
+                                       Job::Geologist,     Job::Scout,
+                                       Job::PackDonkey,    Job::CharBurner,
+                                       Job::Winegrower,    Job::Vintner,
+                                       Job::TempleServant, Job::Skinner,
+                                       Job::Tanner,        Job::LeatherWorker,
+                                       Job::Private,       Job::PrivateFirstClass,
+                                       Job::Sergeant,      Job::Officer,
                                        Job::General};
 
-    const auto isUnusedWare = [&](GoodType const& type) {
-        return !wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonGoodType(type);
-    };
-
-    auto isUnusedJob = [&](Job const& job) {
-        if(!wineaddon::isAddonActive(player.GetGameWorld()) && wineaddon::isWineAddonJobType(job))
-            return true;
-        if(!player.GetGameWorld().GetGGS().isEnabled(AddonId::CHARBURNER) && job == Job::CharBurner)
-            return true;
-        return false;
-    };
-
-    helpers::erase_if(WARE_DISPLAY_ORDER, isUnusedWare);
-    helpers::erase_if(JOB_DISPLAY_ORDER, isUnusedJob);
+    helpers::erase_if(WARE_DISPLAY_ORDER, makeIsUnusedWare(player.GetGameWorld().GetGGS()));
+    helpers::erase_if(JOB_DISPLAY_ORDER, makeIsUnusedJob(player.GetGameWorld().GetGGS()));
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();
@@ -234,6 +211,22 @@ void iwWares::Msg_PaintBefore()
                   (curPage_ == warePageID) ? inventory[static_cast<GoodType>(i)] : inventory[static_cast<Job>(i)];
                 text->SetText(std::to_string(amount));
                 text->SetTextColor((amount == 0) ? COLOR_RED : COLOR_YELLOW);
+
+                if(leatheraddon::isAddonActive(player.GetGameWorld()))
+                {
+                    if(peoplePageID == curPage_ && isSoldier(static_cast<Job>(i)))
+                    {
+                        auto* tooltip = group->GetCtrl<ctrlBaseTooltip>(100 + i);
+                        std::string toolTip = _(JOB_NAMES[static_cast<Job>(i)]);
+
+                        toolTip += std::string(" (")
+                                   + std::to_string(inventory[jobEnumToAmoredSoldierEnum(static_cast<Job>(i))])
+                                   + std::string("/") + std::to_string(amount) + std::string(" ")
+                                   + std::string(_("with armor)"));
+
+                        tooltip->SetTooltip(toolTip);
+                    }
+                }
             }
         }
     }

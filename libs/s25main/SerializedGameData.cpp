@@ -40,6 +40,7 @@
 #include "figures/nofGeologist.h"
 #include "figures/nofHunter.h"
 #include "figures/nofIronfounder.h"
+#include "figures/nofLeatherWorker.h"
 #include "figures/nofMetalworker.h"
 #include "figures/nofMiller.h"
 #include "figures/nofMiner.h"
@@ -51,7 +52,9 @@
 #include "figures/nofScout_Free.h"
 #include "figures/nofScout_LookoutTower.h"
 #include "figures/nofShipWright.h"
+#include "figures/nofSkinner.h"
 #include "figures/nofStonemason.h"
+#include "figures/nofTanner.h"
 #include "figures/nofTempleServant.h"
 #include "figures/nofTradeDonkey.h"
 #include "figures/nofTradeLeader.h"
@@ -102,7 +105,8 @@
 /// 9: Drop serialization of node BQ
 /// 10: troop_limits state introduced to military buildings
 /// 11: wineaddon added, three new building types and two new goods
-static const unsigned currentGameDataVersion = 11;
+/// 12:: leatheraddon added, three new building types and three new goods
+static const unsigned currentGameDataVersion = 12;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
@@ -180,6 +184,10 @@ std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type 
         RTTR_CREATE_GO(GO_Type::NofTempleservant, nofTempleServant);
         RTTR_CREATE_GO(GO_Type::Grapefield, noGrapefield);
         RTTR_CREATE_GO(GO_Type::NobTemple, nobTemple);
+        RTTR_CREATE_GO(GO_Type::NofSkinner, nofSkinner);
+        RTTR_CREATE_GO(GO_Type::NofTanner, nofTanner);
+        RTTR_CREATE_GO(GO_Type::NofLeatherWorker, nofLeatherWorker);
+
         case GO_Type::Nothing: RTTR_Assert(false); break;
 #undef RTTR_CREATE_GO
     }

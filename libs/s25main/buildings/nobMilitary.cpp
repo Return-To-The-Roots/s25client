@@ -7,6 +7,7 @@
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "Loader.h"
 #include "Point.h"
 #include "SerializedGameData.h"
@@ -40,8 +41,9 @@
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false),
-      coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(nullptr),
-      upgrade_event(nullptr), is_regulating_troops(false)
+      coinsDisabledVirtual(false), numArmor(0), armorAllowed(true), armorAllowedVirtual(true), capturing(false),
+      capturing_soldiers(0), gold_order_event(nullptr), armor_order_event(nullptr), upgrade_event(nullptr),
+      armor_upgrade_event(nullptr), is_regulating_troops(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     world->GetMilitarySquares().Add(this);
@@ -68,6 +70,12 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
     {
         coinsDisabled = true;
         coinsDisabledVirtual = true;
+    }
+
+    if(world->GetGGS().isEnabled(AddonId::NO_ARMOR_DEFAULT))
+    {
+        armorAllowed = false;
+        armorAllowedVirtual = false;
     }
 }
 
@@ -122,11 +130,14 @@ void nobMilitary::DestroyBuilding()
     far_away_capturers.clear();
 
     // Events ggf. entfernen
-    GetEvMgr().RemoveEvent(goldorder_event);
+    GetEvMgr().RemoveEvent(gold_order_event);
+    GetEvMgr().RemoveEvent(armor_order_event);
     GetEvMgr().RemoveEvent(upgrade_event);
+    GetEvMgr().RemoveEvent(armor_upgrade_event);
 
     // übriggebliebene Goldmünzen in der Inventur abmelden
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
+    world->GetPlayer(player).DecreaseInventoryWare(GoodType::Armor, numArmor);
 
     nobBaseMilitary::DestroyBuilding();
     // If this was occupied, recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
@@ -146,7 +157,7 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(size);
     sgd.PushBool(capturing);
     sgd.PushUnsignedInt(capturing_soldiers);
-    sgd.PushEvent(goldorder_event);
+    sgd.PushEvent(gold_order_event);
     sgd.PushEvent(upgrade_event);
 
     sgd.PushObjectContainer(ordered_troops, true);
@@ -154,13 +165,19 @@ void nobMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(troops, true);
     sgd.PushObjectContainer(far_away_capturers, true);
     helpers::pushContainer(sgd, troop_limits);
+
+    sgd.PushUnsignedChar(numArmor);
+    sgd.PushBool(armorAllowed);
+    sgd.PushEvent(armor_order_event);
+    sgd.PushEvent(armor_upgrade_event);
+    sgd.PushObjectContainer(ordered_armor, true);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
       coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.Pop<FrontierDistance>()),
       size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()),
-      goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
+      gold_order_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
 {
     sgd.PopObjectContainer(ordered_troops, GO_Type::NofPassivesoldier);
     sgd.PopObjectContainer(ordered_coins, GO_Type::Ware);
@@ -171,6 +188,21 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
         troop_limits.fill(GetMaxTroopsCt());
     else
         helpers::popContainer(sgd, troop_limits);
+
+    if(sgd.GetGameDataVersion() >= 12)
+    {
+        numArmor = sgd.PopUnsignedChar();
+        armorAllowedVirtual = armorAllowed = sgd.PopBool();
+        armor_order_event = sgd.PopEvent();
+        armor_upgrade_event = sgd.PopEvent();
+        sgd.PopObjectContainer(ordered_armor, GO_Type::Ware);
+    } else
+    {
+        numArmor = 0;
+        armorAllowedVirtual = armorAllowed = true;
+        armor_order_event = nullptr;
+        armor_upgrade_event = nullptr;
+    }
 
     // ins Militärquadrat einfügen
     world->GetMilitarySquares().Add(this);
@@ -220,9 +252,23 @@ void nobMilitary::Draw(DrawPoint drawPt)
     if(bitmap)
         bitmap->DrawFull(drawPt + BORDER_FLAG_OFFSET[nation][size]);
 
+    // If coins or armor delivery disabled, show sign at building
+    if(leatheraddon::isAddonActive(world->GetPlayer(player).GetGameWorld()))
+    {
+        if(coinsDisabledVirtual)
+            LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::StopCoinsXSignOverride])
+              ->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
+
+        if(!armorAllowedVirtual)
+            LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::StopArmorXSign])
+              ->DrawFull(drawPt + BUILDING_ARMOR_SIGN_CONSTS[nation][bldType_]);
+    }
     // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
-    if(coinsDisabledVirtual)
-        LOADER.GetMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
+    else
+    {
+        if(coinsDisabledVirtual)
+            LOADER.GetMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
+    }
 }
 
 void nobMilitary::HandleEvent(const unsigned id)
@@ -256,7 +302,7 @@ void nobMilitary::HandleEvent(const unsigned id)
         // Goldbestell-Event
         case 1:
         {
-            goldorder_event = nullptr;
+            gold_order_event = nullptr;
 
             // ggf. nach neuen Goldmünzen suchen
             SearchCoins();
@@ -315,6 +361,35 @@ void nobMilitary::HandleEvent(const unsigned id)
             }
         }
         break;
+        // Order armor event
+        case 3:
+        {
+            armor_order_event = nullptr;
+            SearchArmor();
+        }
+        break;
+        // Armor upgrade event
+        case 4:
+        {
+            armor_upgrade_event = nullptr;
+
+            auto canidate = std::find_if(troops.rbegin(), troops.rend(),
+                                         [](OwnedSortedTroops::value_type& troop) { return !troop->HasArmor(); });
+
+            if(canidate != troops.rend())
+            {
+                auto& soldier = *canidate;
+                soldier->SetArmor(true);
+
+                --numArmor;
+                world->GetPlayer(player).DecreaseInventoryWare(GoodType::Armor, 1);
+                world->GetPlayer(player).IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(soldier->GetJobType()), 1);
+
+                PrepareArmorUpgrading();
+                SearchArmor();
+            }
+        }
+        break;
     }
 }
 
@@ -326,6 +401,11 @@ unsigned nobMilitary::GetMilitaryRadius() const
 unsigned nobMilitary::GetMaxCoinCt() const
 {
     return NUM_GOLDS[nation][size];
+}
+
+unsigned nobMilitary::GetMaxArmorCt() const
+{
+    return NUM_ARMOR[nation][size];
 }
 
 unsigned nobMilitary::GetMaxTroopsCt() const
@@ -604,31 +684,58 @@ bool nobMilitary::IsInTroops(const nofPassiveSoldier& soldier) const
 void nobMilitary::TakeWare(Ware* ware)
 {
     // Goldmünze in Bestellliste aufnehmen
-    RTTR_Assert(!helpers::contains(ordered_coins, ware));
-    ordered_coins.push_back(ware);
+    if(ware->type == GoodType::Coins)
+    {
+        RTTR_Assert(!helpers::contains(ordered_coins, ware));
+        ordered_coins.push_back(ware);
+    } else if(ware->type == GoodType::Armor)
+    {
+        RTTR_Assert(!helpers::contains(ordered_armor, ware));
+        ordered_armor.push_back(ware);
+    }
 }
 
 void nobMilitary::AddWare(std::unique_ptr<Ware> ware)
 {
-    // Ein Golstück mehr
-    ++numCoins;
-    // aus der Bestellliste raushaun
-    RTTR_Assert(helpers::contains(ordered_coins, ware.get()));
-    ordered_coins.remove(ware.get());
+    if(ware->type == GoodType::Coins)
+    {
+        // Ein Golstück mehr
+        ++numCoins;
+        // aus der Bestellliste raushaun
+        RTTR_Assert(helpers::contains(ordered_coins, ware.get()));
+        ordered_coins.remove(ware.get());
 
-    // Ware vernichten
-    world->GetPlayer(player).RemoveWare(*ware);
-    ware.reset();
+        // Ware vernichten
+        world->GetPlayer(player).RemoveWare(*ware);
+        ware.reset();
 
-    // Evtl. Soldaten befördern
-    PrepareUpgrading();
+        // Evtl. Soldaten befördern
+        PrepareUpgrading();
+    } else if(ware->type == GoodType::Armor)
+    {
+        ++numArmor;
+        RTTR_Assert(helpers::contains(ordered_armor, ware.get()));
+        ordered_armor.remove(ware.get());
+
+        world->GetPlayer(player).RemoveWare(*ware);
+        ware.reset();
+
+        PrepareArmorUpgrading();
+    }
 }
 
 void nobMilitary::WareLost(Ware& ware)
 {
-    // Ein Goldstück konnte nicht kommen --> aus der Bestellliste entfernen
-    RTTR_Assert(helpers::contains(ordered_coins, &ware));
-    ordered_coins.remove(&ware);
+    if(ware.type == GoodType::Coins)
+    {
+        // Ein Goldstück konnte nicht kommen --> aus der Bestellliste entfernen
+        RTTR_Assert(helpers::contains(ordered_coins, &ware));
+        ordered_coins.remove(&ware);
+    } else if(ware.type == GoodType::Armor)
+    {
+        RTTR_Assert(helpers::contains(ordered_armor, &ware));
+        ordered_armor.remove(&ware);
+    }
 }
 
 bool nobMilitary::FreePlaceAtFlag()
@@ -656,6 +763,11 @@ void nobMilitary::CancelOrders()
         WareNotNeeded(ordered_coin);
 
     ordered_coins.clear();
+
+    for(auto* ordered_armor : ordered_armor)
+        WareNotNeeded(ordered_armor);
+
+    ordered_armor.clear();
 }
 
 void nobMilitary::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
@@ -713,10 +825,12 @@ void nobMilitary::AddPassiveSoldier(std::unique_ptr<nofPassiveSoldier> soldier)
     {
         // Evtl. Soldaten befördern
         PrepareUpgrading();
+        PrepareArmorUpgrading();
     }
 
     // Goldmünzen suchen, evtl sinds ja neue Soldaten
     SearchCoins();
+    SearchArmor();
 }
 
 void nobMilitary::SoldierLost(nofSoldier* soldier)
@@ -922,6 +1036,9 @@ void nobMilitary::Capture(const unsigned char new_owner)
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
     world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
 
+    world->GetPlayer(player).DecreaseInventoryWare(GoodType::Armor, numArmor);
+    world->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Armor, numArmor);
+
     // Reset desired troop setting
     troop_limits.fill(GetMaxTroopsCt());
 
@@ -1026,6 +1143,18 @@ void nobMilitary::Capture(const unsigned char new_owner)
         case 2: // disable coin order
             coinsDisabled = true;
             coinsDisabledVirtual = true;
+            break;
+    }
+
+    switch(world->GetGGS().getSelection(AddonId::ARMOR_CAPTURED_BLD))
+    {
+        case 1: // enable armor order
+            armorAllowed = true;
+            armorAllowedVirtual = true;
+            break;
+        case 2: // disable armor order
+            armorAllowed = false;
+            armorAllowed = false;
             break;
     }
 }
@@ -1140,6 +1269,33 @@ void nobMilitary::SetCoinsAllowed(const bool enabled)
     }
 }
 
+void nobMilitary::SetArmorAllowed(const bool enabled)
+{
+    if(armorAllowed == enabled)
+        return;
+
+    armorAllowed = enabled;
+    if(GAMECLIENT.GetPlayerId() != player || GAMECLIENT.IsReplayModeOn())
+        armorAllowedVirtual = armorAllowed;
+
+    if(armorAllowed)
+        SearchArmor();
+    else
+    {
+        // send armor back if just deactivated
+        for(auto it = ordered_armor.begin(); it != ordered_armor.end();)
+        {
+            // But only those, that are not just Being carried in
+            if((*it)->GetLocation() != this)
+            {
+                WareNotNeeded(*it);
+                it = ordered_armor.erase(it);
+            } else
+                ++it;
+        }
+    }
+}
+
 unsigned nobMilitary::CalcCoinsPoints() const
 {
     // Will ich überhaupt Goldmünzen, wenn nich, sofort raus
@@ -1168,6 +1324,28 @@ unsigned nobMilitary::CalcCoinsPoints() const
     return static_cast<unsigned>(points);
 }
 
+unsigned nobMilitary::CalcArmorPoints() const
+{
+    if(!WantArmor())
+        return 0;
+
+    // choose 10000 as basic, so we can stil subtract something
+    int points = 10000;
+
+    // If we have already armor in house or ordered, our request is less important
+    points -= (numArmor + ordered_armor.size()) * 30;
+
+    auto numberOfUpgradeSoldier =
+      helpers::count_if(troops, [](OwnedSortedTroops::value_type const& troop) { return !troop->HasArmor(); });
+
+    points += static_cast<int>(numberOfUpgradeSoldier * 20);
+
+    if(points < 0)
+        throw std::logic_error("Negative points are not allowed");
+
+    return static_cast<unsigned>(points);
+}
+
 bool nobMilitary::WantCoins() const
 {
     // Wenn die Goldzufuhr gestoppt wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
@@ -1177,7 +1355,7 @@ bool nobMilitary::WantCoins() const
 void nobMilitary::SearchCoins()
 {
     // Brauche ich überhaupt Goldmünzen bzw. hab ich vielleicht schon ein Event angemeldet?
-    if(WantCoins() && !goldorder_event)
+    if(WantCoins() && !gold_order_event)
     {
         // Lagerhaus mit Goldmünzen suchen
         nobBaseWarehouse* wh =
@@ -1198,7 +1376,41 @@ void nobMilitary::SearchCoins()
             RTTR_Assert(helpers::contains(ordered_coins, ware));
 
             // Nach einer Weile nochmal nach evtl neuen Goldmünzen gucken
-            goldorder_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 1);
+            gold_order_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 1);
+        }
+    }
+}
+
+bool nobMilitary::WantArmor() const
+{
+    // If armor delivery stopped or stock already full, we do not want any armor
+    return (armorAllowed && numArmor + ordered_armor.size() != GetMaxArmorCt() && !new_built);
+}
+
+void nobMilitary::SearchArmor()
+{
+    if(!leatheraddon::isAddonActive(world->GetPlayer(player).GetGameWorld()))
+        return;
+
+    if(WantArmor() && !armor_order_event)
+    {
+        nobBaseWarehouse* wh =
+          world->GetPlayer(player).FindWarehouse(*this, FW::HasMinWares(GoodType::Armor), false, false);
+        if(wh)
+        {
+            Ware* ware = wh->OrderWare(GoodType::Armor, *this);
+
+            if(!ware)
+            {
+                RTTR_Assert(false);
+                LOG.write("nobMilitary::SearchArmor: WARNING: ware = nullptr. Bug alarm!\n");
+                return;
+            }
+
+            RTTR_Assert(helpers::contains(ordered_armor, ware));
+
+            // After some time, try to order new armor
+            armor_order_event = GetEvMgr().AddEvent(this, 200 + RANDOM_RAND(400), 3);
         }
     }
 }
@@ -1234,6 +1446,22 @@ void nobMilitary::PrepareUpgrading()
     upgrade_event = GetEvMgr().AddEvent(this, UPGRADE_TIME + RANDOM_RAND(UPGRADE_TIME_RANDOM), 2);
 }
 
+void nobMilitary::PrepareArmorUpgrading()
+{
+    if(!numArmor)
+        return;
+
+    if(armor_upgrade_event)
+        return;
+
+    if(std::none_of(troops.begin(), troops.end(),
+                    [](OwnedSortedTroops::value_type& troop) { return !troop->HasArmor(); }))
+        return;
+
+    // All here --> Trigger armor upgrade event
+    armor_upgrade_event = GetEvMgr().AddEvent(this, UPGRADE_TIME + RANDOM_RAND(UPGRADE_TIME_RANDOM), 4);
+}
+
 void nobMilitary::HitOfCatapultStone()
 {
     // Ein Soldat weniger, falls es noch welche gibt
@@ -1241,10 +1469,21 @@ void nobMilitary::HitOfCatapultStone()
     {
         std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
         helpers::pop_front(troops);
-        // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
-        soldier->RemoveFromInventory();
-        soldier->LeftBuilding();
-        soldier->Destroy();
+
+        // 30 percent chance to survive if the soldier has an armor
+        const bool survived = soldier->HasArmor() && (RANDOM_RAND(100) < 30);
+        if(!survived)
+        {
+            // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
+            soldier->RemoveFromInventory();
+            soldier->LeftBuilding();
+            soldier->Destroy();
+        } else
+        {
+            soldier->SetArmor(false);
+            world->GetPlayer(player).DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(soldier->GetJobType()), 1);
+            troops.insert(std::move(soldier));
+        }
     }
 
     // If there are troops left, order some more, else this will be destroyed

@@ -2087,12 +2087,16 @@ void AIPlayerJH::InitDistribution()
     goodSettings[18] = 10; // boards new buildings
     goodSettings[19] = 4;  // boards metalworks
     goodSettings[20] = 2;  // boards shipyard
+    goodSettings[21] = 1;  // boards tannery
 
-    goodSettings[21] = 10; // water bakery
-    goodSettings[22] = 10; // water brewery
-    goodSettings[23] = 10; // water pigfarm
-    goodSettings[24] = 10; // water donkeybreeder
-    goodSettings[25] = 2;  // water vineyard
+    goodSettings[22] = 10; // water bakery
+    goodSettings[23] = 10; // water brewery
+    goodSettings[24] = 10; // water pigfarm
+    goodSettings[25] = 10; // water donkeybreeder
+    goodSettings[26] = 2;  // water vineyard
+
+    goodSettings[27] = 8; // ham slaughterhouse
+    goodSettings[28] = 3; // ham skinner
     aii.ChangeDistribution(goodSettings);
 }
 
