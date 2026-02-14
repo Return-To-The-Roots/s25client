@@ -15,6 +15,9 @@ tool priorities, and explicit building disables. The structure is defined in
 - `combat` – A `CombatConfig` block holding:
   - `fulfillmentLow/Medium/High` thresholds that describe how many soldiers the
     AI wants on hand before escalating attack plans.
+  - `forceAdvantageRatio` – Attrition-mode multiplier against the strongest
+    attackable enemy's military stat before switching to biting target
+    selection.
   - `attackIntervals[AI::Level]` – Minimum frames between attack attempts per
     AI difficulty (easy/medium/hard).
   - `targetSelection` – Algorithm used to select objectives. Options are
@@ -36,7 +39,7 @@ following top-level sections if present:
 |-----------------|---------------------------------------------------------------------------------------|
 | `posFinder`     | Building-name map whose values feed `Weights::parseLocationParams` per entry.          |
 | `buildPlanner`  | Building-name map parsed through `Weights::parseWantedParams` to update `wantedParams`.|
-| `combat`        | Optional object containing `fulfillment`, `attackIntervals`, and `targetSelection`.    |
+| `combat`        | Optional object containing `fulfillment`, `forceAdvantageRatio`, `attackIntervals`, and `targetSelection`. |
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |
 | `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
 

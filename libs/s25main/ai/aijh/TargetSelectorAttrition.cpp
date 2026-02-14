@@ -4,6 +4,7 @@
 
 #include "AIPlayerJH.h"
 
+#include "AIConfig.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "EventManager.h"
@@ -20,7 +21,6 @@ namespace {
 
 constexpr unsigned RECENT_RECAPTURE_WINDOW_GFS = 2000;
 constexpr unsigned RECENT_TARGET_WINDOW_GFS = 1000;
-constexpr double FORCE_ADVANTAGE_RATIO = 1.25; // 25% advantage
 
 unsigned GetSoldierCount(const nobBaseMilitary& building)
 {
@@ -33,7 +33,8 @@ unsigned GetSoldierCount(const nobBaseMilitary& building)
     return building.DefendersAvailable() ? 1u : 0u;
 }
 
-bool HasForceAdvantage(const GameWorldBase& gwb, const AIInterface& aii, unsigned char player_id)
+bool HasForceAdvantage(const GameWorldBase& gwb, const AIInterface& aii, unsigned char player_id,
+                       double forceAdvantageRatio)
 {
     const auto& player = gwb.GetPlayer(player_id);
     const unsigned own_strength = player.GetStatisticCurrentValue(StatisticType::Military);
@@ -51,7 +52,7 @@ bool HasForceAdvantage(const GameWorldBase& gwb, const AIInterface& aii, unsigne
     if(strongest_enemy == 0)
         return true;
 
-    return static_cast<double>(own_strength) >= static_cast<double>(strongest_enemy) * FORCE_ADVANTAGE_RATIO;
+    return static_cast<double>(own_strength) >= static_cast<double>(strongest_enemy) * forceAdvantageRatio;
 }
 
 bool IsRecentCapture(const nobBaseMilitary& target, unsigned currentGF, unsigned captureWindow)
@@ -97,9 +98,6 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
     if(potentialTargets.empty())
         return nullptr;
 
-    if(HasForceAdvantage(gwb, aii, playerId))
-        return SelectAttackTargetBiting();
-
     const unsigned currentGF = gwb.GetEvMgr().GetCurrentGF();
     std::vector<const nobBaseMilitary*> recaptureCandidates;
     recaptureCandidates.reserve(potentialTargets.size());
@@ -116,7 +114,10 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
     if(const nobBaseMilitary* recapture = PickBestTarget(recaptureCandidates, currentGF, RECENT_RECAPTURE_WINDOW_GFS))
         return recapture;
 
-    return PickBestTarget(potentialTargets, currentGF, RECENT_TARGET_WINDOW_GFS);
+    if(HasForceAdvantage(gwb, aii, playerId, config_.combat.forceAdvantageRatio))
+        return SelectAttackTargetBiting();
+
+    return nullptr;
 }
 
 } // namespace AIJH

@@ -71,6 +71,18 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
         }
     }
 
+    if(const YAML::Node value = combatNode["forceAdvantageRatio"])
+    {
+        try
+        {
+            config.combat.forceAdvantageRatio = value.as<double>();
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid combat forceAdvantageRatio value, using default. Error: " << e.what()
+                      << std::endl;
+        }
+    }
+
     if(const YAML::Node attackIntervalsNode = combatNode["attackIntervals"])
     {
         try

@@ -1218,41 +1218,15 @@ void AIPlayerJH::HandleNewMilitaryBuildingOccupied(const MapPoint pt)
 
     // try to build one the following buildings around the new military building
 
-    std::array<BuildingType, 11> bldToTest = {BuildingType::Storehouse,
-                                              // BuildingType::Woodcutter,
-                                              BuildingType::Quarry, BuildingType::GoldMine, BuildingType::CoalMine,
-                                              BuildingType::IronMine, BuildingType::GraniteMine, BuildingType::Fishery,
-                                              /*BuildingType::Farm,  */ BuildingType::Hunter, BuildingType::Forester};
-    unsigned bldToTestStartIdx = 0;
-    // remove the storehouse from the building test list if we are close to another storehouse already
-    for(const nobBaseWarehouse* bldSite : aii.GetStorehouses())
-    {
-        unsigned minDistance = 20;
-        if(aii.GetStorehouses().size() < 2)
-        {
-            minDistance = 20;
-        }
+    if(construction->Wanted(BuildingType::Storehouse))
+        AddGlobalBuildJob(BuildingType::Storehouse);
 
-        if(gwb.CalcDistance(bldSite->GetPos(), pt) < minDistance)
-        {
-            bldToTestStartIdx = 1;
-            break;
-        }
-    }
-    // same is true for warehouses which are still in production
-    for(const noBuildingSite* bldSite : aii.GetBuildingSites())
-    {
-        if(BuildingProperties::IsWareHouse(bldSite->GetBuildingType()))
-        {
-            if(gwb.CalcDistance(bldSite->GetPos(), pt) < 20)
-            {
-                bldToTestStartIdx = 1;
-                break;
-            }
-        }
-    }
+    std::array<BuildingType, 8> bldToTest = {// BuildingType::Woodcutter,
+                                             BuildingType::Quarry, BuildingType::GoldMine, BuildingType::CoalMine,
+                                             BuildingType::IronMine, BuildingType::GraniteMine, BuildingType::Fishery,
+                                             /*BuildingType::Farm,  */ BuildingType::Hunter, BuildingType::Forester};
 
-    for(unsigned i = bldToTestStartIdx; i < bldToTest.size(); ++i)
+    for(unsigned i = 0; i < bldToTest.size(); ++i)
     {
         if(construction->Wanted(bldToTest[i]))
         {
