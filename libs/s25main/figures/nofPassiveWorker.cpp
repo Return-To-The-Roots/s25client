@@ -9,10 +9,10 @@ class SerializedGameData;
 class noRoadNode;
 
 nofPassiveWorker::nofPassiveWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
-    : nofArmored(job, pos, player, goal)
+    : noFigure(job, pos, player, goal)
 {}
 
-nofPassiveWorker::nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id) : nofArmored(sgd, obj_id) {}
+nofPassiveWorker::nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id) {}
 
 /// von noFigure aufgerufen
 // wenn man gelaufen ist
@@ -33,7 +33,6 @@ void nofPassiveWorker::AbrogateWorkplace() {}
 void nofPassiveWorker::Draw(DrawPoint drawPt)
 {
     DrawWalking(drawPt);
-    DrawArmorWalking(drawPt);
 }
 
 /// Für alle restlichen Events, die nicht von noFigure behandelt werden

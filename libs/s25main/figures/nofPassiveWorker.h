@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include "figures/nofArmored.h"
+#include "figures/noFigure.h"
 
 class SerializedGameData;
 class noRoadNode;
 
 /// Arbeiter, der keine Arbeiten verrichtet, sondern nur entsprechend dem Beruf gezeichnet werden muss
 /// und z.B. zum Auslagern benutzt wird ober beim Abbrennen eines Lagerhaus
-class nofPassiveWorker : public nofArmored
+class nofPassiveWorker : public noFigure
 {
 private:
     /// von noFigure aufgerufen

@@ -110,7 +110,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
                 auto& figure = world->AddFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
                 if(isSoldier(job))
                 {
-                    auto const armoredSoldier = figureToAmoredSoldierEnum(&figure);
+                    auto const armoredSoldier = jobEnumToAmoredSoldierEnum(job);
                     if(people[armoredSoldier] > 0)
                     {
                         figure.SetArmor(true);

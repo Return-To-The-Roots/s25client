@@ -49,7 +49,6 @@ void nofPassiveSoldier::Draw(DrawPoint drawPt)
 {
     // Soldat normal laufend zeichnen
     DrawWalkingBobJobs(drawPt, job_);
-    DrawArmorWalking(drawPt);
 }
 
 void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
@@ -126,7 +125,7 @@ void nofPassiveSoldier::Upgrade()
     // Inventur entsprechend erhöhen und verringern
     owner.IncreaseInventoryJob(job_, 1);
     owner.DecreaseInventoryJob(Job(unsigned(job_) - 1), 1);
-    if(HasArmor())
+    if(armor)
     {
         owner.IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(job_), 1);
         owner.DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(Job(unsigned(job_) - 1)), 1);

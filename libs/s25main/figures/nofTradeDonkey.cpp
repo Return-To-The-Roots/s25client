@@ -16,14 +16,14 @@
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
                                const boost_variant2<GoodType, Job>& what)
-    : nofArmored(holds_alternative<Job>(what) ? get<Job>(what) : Job::PackDonkey, pos, player), successor(nullptr)
+    : noFigure(holds_alternative<Job>(what) ? get<Job>(what) : Job::PackDonkey, pos, player), successor(nullptr)
 {
     if(holds_alternative<GoodType>(what))
         gt = get<GoodType>(what);
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : nofArmored(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
+    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
       gt(sgd.PopOptionalEnum<GoodType>())
 {
     if(sgd.GetGameDataVersion() < 6)
@@ -38,7 +38,7 @@ nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {
-    nofArmored::Serialize(sgd);
+    noFigure::Serialize(sgd);
 
     sgd.PushObject(successor, true);
     sgd.PushOptionalEnum<uint8_t>(gt);
@@ -60,8 +60,8 @@ void nofTradeDonkey::GoalReached()
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
-    if(HasArmor())
-        whOwner.IncreaseInventoryJob(figureToAmoredSoldierEnum(this), 1);
+    if(armor)
+        whOwner.IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(this->GetJobType()), 1);
     wh->AddFigure(world->RemoveFigure(pos, *this));
 }
 
@@ -118,7 +118,6 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
     } else
     {
         DrawWalking(drawPt);
-        DrawArmorWalking(drawPt);
     }
 }
 

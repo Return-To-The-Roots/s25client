@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "figures/nofArmored.h"
+#include "figures/noFigure.h"
 #include "variant.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/TradeDirection.h"
@@ -14,7 +14,7 @@ class SerializedGameData;
 
 /// For wares: donkey who carry the wares and follow the leader
 /// Can also be the other people following the leader!
-class nofTradeDonkey : public nofArmored
+class nofTradeDonkey : public noFigure
 {
     /// Successor (nullptr if this is the last one)
     nofTradeDonkey* successor;

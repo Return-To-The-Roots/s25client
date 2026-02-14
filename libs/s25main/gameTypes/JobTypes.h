@@ -8,8 +8,6 @@
 #include <array>
 #include <cstdint>
 
-class nofArmored;
-
 enum class Job : uint8_t
 {
     Helper,            // 0
@@ -91,4 +89,3 @@ constexpr bool isSoldier(const Job job)
 }
 
 ArmoredSoldier jobEnumToAmoredSoldierEnum(Job job);
-ArmoredSoldier figureToAmoredSoldierEnum(const nofArmored* figure);

@@ -284,11 +284,10 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode& goal, const bool allo
     std::unique_ptr<noFigure> fig = JobFactory::CreateJob(job, pos, player, *goal);
     if(isSoldier(fig->GetJobType()))
     {
-        auto* armoredFigure = checkedCast<nofArmored*>(fig.get());
         if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(job)] > 0)
         {
             inventory.real.Remove(jobEnumToAmoredSoldierEnum(job));
-            armoredFigure->SetArmor(true);
+            fig->SetArmor(true);
         }
     }
 
@@ -478,10 +477,10 @@ void nobBaseWarehouse::HandleSendoutEvent()
         {
             auto fig = std::make_unique<nofPassiveWorker>(jobType, pos, player, nullptr);
 
-            if(isSoldier(jobType) && inventory.real.armoredSoldiers[figureToAmoredSoldierEnum(fig.get())] > 0)
+            if(isSoldier(jobType) && inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(jobType)] > 0)
             {
                 fig->SetArmor(true);
-                inventory.real.Remove(figureToAmoredSoldierEnum(fig.get()));
+                inventory.real.Remove(jobEnumToAmoredSoldierEnum(jobType));
             }
 
             if(wh)
@@ -859,17 +858,16 @@ void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool in
             }
         } else if(isSoldier(figure->GetJobType()))
         {
-            auto* armoredFigure = checkedCast<nofArmored*>(figure.get());
             if(increase_visual_counts)
             {
                 inventory.Add(figure->GetJobType());
-                if(armoredFigure && armoredFigure->HasArmor())
-                    inventory.Add(figureToAmoredSoldierEnum(armoredFigure));
+                if(figure->HasArmor())
+                    inventory.Add(jobEnumToAmoredSoldierEnum(figure->GetJobType()));
             } else
             {
                 inventory.real.Add(figure->GetJobType());
-                if(armoredFigure && armoredFigure->HasArmor())
-                    inventory.real.Add(figureToAmoredSoldierEnum(armoredFigure));
+                if(figure->HasArmor())
+                    inventory.real.Add(jobEnumToAmoredSoldierEnum(figure->GetJobType()));
             }
         } else
         {
@@ -893,11 +891,10 @@ void nobBaseWarehouse::RemoveArmoredFigurFromVisualInventory(noFigure* figure)
 {
     if(isSoldier(figure->GetJobType()))
     {
-        auto* armoredFigure = checkedCast<nofArmored*>(figure);
-        if(armoredFigure && armoredFigure->HasArmor())
+        if(figure->HasArmor())
         {
-            RTTR_Assert(inventory.visual.armoredSoldiers[figureToAmoredSoldierEnum(armoredFigure)] > 0);
-            inventory.visual.Remove(figureToAmoredSoldierEnum(armoredFigure));
+            RTTR_Assert(inventory.visual.armoredSoldiers[jobEnumToAmoredSoldierEnum(figure->GetJobType())] > 0);
+            inventory.visual.Remove(jobEnumToAmoredSoldierEnum(figure->GetJobType()));
         }
     }
 }
@@ -906,10 +903,9 @@ void nobBaseWarehouse::AddArmoredFigurToVisualInventory(noFigure* figure)
 {
     if(isSoldier(figure->GetJobType()))
     {
-        auto* armoredFigure = checkedCast<nofArmored*>(figure);
-        if(armoredFigure && armoredFigure->HasArmor())
+        if(figure->HasArmor())
         {
-            inventory.visual.Add(figureToAmoredSoldierEnum(armoredFigure));
+            inventory.visual.Add(jobEnumToAmoredSoldierEnum(figure->GetJobType()));
         }
     }
 }
@@ -1009,10 +1005,10 @@ nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker& att
     auto soldier = std::make_unique<nofAggressiveDefender>(pos, player, *this, rank - 1, attacker);
     nofAggressiveDefender& soldierRef = *soldier;
     inventory.real.Remove(SOLDIER_JOBS[rank - 1]);
-    if(inventory.real.armoredSoldiers[figureToAmoredSoldierEnum(soldier.get())] > 0)
+    if(inventory.real.armoredSoldiers[jobEnumToAmoredSoldierEnum(soldier->GetJobType())] > 0)
     {
         soldier->SetArmor(true);
-        inventory.real.Remove(figureToAmoredSoldierEnum(soldier.get()));
+        inventory.real.Remove(jobEnumToAmoredSoldierEnum(soldier->GetJobType()));
     }
     AddLeavingFigure(std::move(soldier));
 
@@ -1036,12 +1032,12 @@ void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldie
     {
         inventory.real.Add(soldier->GetJobType());
         if(soldier->HasArmor())
-            inventory.real.Add(figureToAmoredSoldierEnum(soldier.get()));
+            inventory.real.Add(jobEnumToAmoredSoldierEnum(soldier->GetJobType()));
     } else
     {
         inventory.Add(SOLDIER_JOBS[soldier->GetRank()]);
         if(soldier->HasArmor())
-            inventory.Add(figureToAmoredSoldierEnum(soldier.get()));
+            inventory.Add(jobEnumToAmoredSoldierEnum(soldier->GetJobType()));
     }
 
     // Evtl. geht der Soldat wieder in die Reserve

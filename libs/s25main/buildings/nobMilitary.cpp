@@ -383,7 +383,7 @@ void nobMilitary::HandleEvent(const unsigned id)
 
                 --numArmor;
                 world->GetPlayer(player).DecreaseInventoryWare(GoodType::Armor, 1);
-                world->GetPlayer(player).IncreaseInventoryJob(figureToAmoredSoldierEnum(soldier.get()), 1);
+                world->GetPlayer(player).IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(soldier->GetJobType()), 1);
 
                 PrepareArmorUpgrading();
                 SearchArmor();
@@ -1481,7 +1481,7 @@ void nobMilitary::HitOfCatapultStone()
         } else
         {
             soldier->SetArmor(false);
-            world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(soldier.get()), 1);
+            world->GetPlayer(player).DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(soldier->GetJobType()), 1);
             troops.insert(std::move(soldier));
         }
     }

@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "figures/nofArmored.h"
+#include "figures/noFigure.h"
 
 class nobBaseMilitary;
 class SerializedGameData;
 
 /// Basisklasse für alle Soldatentypen
-class nofSoldier : public nofArmored
+class nofSoldier : public noFigure
 {
 protected:
     /// Heimatgebäude, ist bei Soldaten aus HQs das HQ!

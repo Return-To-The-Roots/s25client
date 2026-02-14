@@ -124,7 +124,6 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::DefendingWaiting:
         {
             DrawSoldierWaiting(drawPt);
-            DrawArmorNotWalking(drawPt);
             break;
         }
         case SoldierState::FigureWork:
@@ -141,7 +140,6 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::SeaattackingReturnToShip:
         {
             DrawWalkingBobJobs(drawPt, job_);
-            DrawArmorWalking(drawPt);
             break;
         }
     }
@@ -351,10 +349,10 @@ void nofActiveSoldier::InformTargetsAboutCancelling()
 
 void nofActiveSoldier::TakeHit()
 {
-    if(HasArmor())
+    if(armor)
     {
-        SetArmor(false);
-        world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(this), 1);
+        armor = false;
+        world->GetPlayer(player).DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(GetJobType()), 1);
     } else
     {
         RTTR_Assert(hitpoints > 0u);

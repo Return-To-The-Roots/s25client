@@ -12,7 +12,6 @@
 #include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
-#include "figures/nofArmored.h"
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "nofCarrier.h"
@@ -31,6 +30,10 @@
 #include "gameData/JobConsts.h"
 #include "s25util/Log.h"
 #include "s25util/colors.h"
+#include "ogl/glFont.h"
+#include "addons/const_addons.h"
+#include "world/GameWorld.h"
+#include "GlobalGameSettings.h"
 
 const RoadSegment noFigure::emulated_wanderroad(RoadType::Normal, nullptr, nullptr,
                                                 std::vector<Direction>(0, Direction::East));
@@ -758,6 +761,9 @@ void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, Job job)
     const GamePlayer& owner = world->GetPlayer(player);
     LOADER.getBobSprite(owner.nation, job, GetCurMoveDir(), ani_step)
       .drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
+
+    if(armor)
+        DrawArmor(InterpolateWalkDrawPos(drawPt));
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
@@ -817,6 +823,18 @@ void noFigure::DrawWalking(DrawPoint drawPt)
     }
 }
 
+void noFigure::DrawArmor(DrawPoint drawPt)
+{
+     if(world->GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
+     {
+         SmallFont->Draw(drawPt + DrawPoint(7, -20), "+", FontStyle::CENTER, COLOR_RED);
+         SmallFont->Draw(drawPt + DrawPoint(10, -20), "1", FontStyle::CENTER, COLOR_RED);
+     }
+
+     LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::ArmorIconAboveArmoredSoldier])
+       ->DrawFull(drawPt + DrawPoint(0, -22));
+ }
+
 void noFigure::Die()
 {
     // Weg mit mir
@@ -843,9 +861,8 @@ void noFigure::RemoveFromInventory()
         world->GetPlayer(player).DecreaseInventoryJob(job_, 1);
         if(isSoldier(GetJobType()))
         {
-            auto* armoredFigure = checkedCast<nofArmored*>(this);
-            if(armoredFigure && armoredFigure->HasArmor())
-                world->GetPlayer(player).DecreaseInventoryJob(figureToAmoredSoldierEnum(armoredFigure), 1);
+            if(armor)
+                world->GetPlayer(player).DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(GetJobType()), 1);
         }
     }
 }

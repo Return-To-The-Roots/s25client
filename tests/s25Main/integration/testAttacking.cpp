@@ -128,7 +128,8 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
             world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier.GetJobType(), 1);
             if(numArmoredSoldiers > 0)
             {
-                world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(figureToAmoredSoldierEnum(&soldier), 1);
+                world.GetPlayer(bld->GetPlayer())
+                  .IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(soldier.GetJobType()), 1);
                 soldier.SetArmor(true);
                 numArmoredSoldiers--;
             }
