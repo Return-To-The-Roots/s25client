@@ -76,9 +76,10 @@ protected:
 
     /*
        The armor variable must be a member of noFigure. Otherwise a circular dependency
-       between objects during object deserialization exists. If a soldier is sent to a military building from a warehouse, the
-       soldier is inserted into the ordered_troops list of the military building. This soldier is also in the leave
-       queue of the warehouse after some time. When the game is stored in this state a circular dependency exists.
+       between objects during object deserialization exists. If a soldier is sent to a military building from a
+       warehouse, the soldier is inserted into the ordered_troops list of the military building. This soldier is also in
+       the leave queue of the warehouse after some time. When the game is stored in this state a circular dependency
+       exists.
 
        What happens during deserialization?
 
