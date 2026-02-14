@@ -42,6 +42,7 @@ constexpr helpers::EnumArray<std::array<int, NUM_MILITARY_BLDS>, Nation> NUM_TRO
 constexpr helpers::EnumArray<std::array<int, NUM_MILITARY_BLDS>, Nation> NUM_GOLDS = {
   {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
 
+/// Number of armor slots for each military building
 constexpr helpers::EnumArray<std::array<int, NUM_MILITARY_BLDS>, Nation> NUM_ARMOR = {
   {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
 
