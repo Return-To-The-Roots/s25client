@@ -732,7 +732,6 @@ void GamePlayer::FindMaterialForBuildingSites()
             continue;
 
         bldSite->OrderConstructionMaterial();
-
     }
 }
 
@@ -827,7 +826,7 @@ void GamePlayer::FindWarehouseForAllJobs()
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
-        noBaseBuilding* bld = static_cast<noBaseBuilding*>(it->workplace);
+        auto* bld = static_cast<noBaseBuilding*>(it->workplace);
 
         if(bld->IsConnected() && FindWarehouseForJob(it->job, *it->workplace))
             it = jobs_wanted.erase(it);
@@ -842,7 +841,7 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     {
         if(it->job == job)
         {
-            noBaseBuilding* bld = static_cast<noBaseBuilding*>(it->workplace);
+            auto* bld = static_cast<noBaseBuilding*>(it->workplace);
 
             if(bld->IsConnected() && FindWarehouseForJob(it->job, *it->workplace))
                 it = jobs_wanted.erase(it);
