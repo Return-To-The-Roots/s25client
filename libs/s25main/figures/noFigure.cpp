@@ -6,10 +6,12 @@
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "LeatherLoader.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "WineLoader.h"
+#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "helpers/containerUtils.h"
@@ -18,6 +20,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bob.h"
+#include "ogl/glFont.h"
 #include "ogl/glSmartBitmap.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
@@ -30,10 +33,6 @@
 #include "gameData/JobConsts.h"
 #include "s25util/Log.h"
 #include "s25util/colors.h"
-#include "ogl/glFont.h"
-#include "addons/const_addons.h"
-#include "world/GameWorld.h"
-#include "GlobalGameSettings.h"
 
 const RoadSegment noFigure::emulated_wanderroad(RoadType::Normal, nullptr, nullptr,
                                                 std::vector<Direction>(0, Direction::East));
@@ -825,15 +824,15 @@ void noFigure::DrawWalking(DrawPoint drawPt)
 
 void noFigure::DrawArmor(DrawPoint drawPt)
 {
-     if(world->GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
-     {
-         SmallFont->Draw(drawPt + DrawPoint(7, -20), "+", FontStyle::CENTER, COLOR_RED);
-         SmallFont->Draw(drawPt + DrawPoint(10, -20), "1", FontStyle::CENTER, COLOR_RED);
-     }
+    if(world->GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
+    {
+        SmallFont->Draw(drawPt + DrawPoint(7, -20), "+", FontStyle::CENTER, COLOR_RED);
+        SmallFont->Draw(drawPt + DrawPoint(10, -20), "1", FontStyle::CENTER, COLOR_RED);
+    }
 
-     LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::ArmorIconAboveArmoredSoldier])
-       ->DrawFull(drawPt + DrawPoint(0, -22));
- }
+    LOADER.GetImageN("leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::ArmorIconAboveArmoredSoldier])
+      ->DrawFull(drawPt + DrawPoint(0, -22));
+}
 
 void noFigure::Die()
 {
