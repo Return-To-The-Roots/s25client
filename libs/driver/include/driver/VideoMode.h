@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -15,3 +15,14 @@ struct VideoMode
     bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
     bool operator!=(const VideoMode& o) const { return !(*this == o); }
 };
+
+enum class DisplayMode
+{
+    Windowed,
+    Fullscreen,
+    BorderlessWindow,
+};
+constexpr auto maxEnumValue(DisplayMode)
+{
+    return DisplayMode::BorderlessWindow;
+}

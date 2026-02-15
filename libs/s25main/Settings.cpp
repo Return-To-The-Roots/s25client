@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,7 +9,9 @@
 #include "driver/VideoInterface.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "enum_cast.hpp"
 #include "files.h"
+#include "helpers/MaxEnumValue.h"
 #include "helpers/strUtils.h"
 #include "languages.h"
 #include "gameData/PortraitConsts.h"
@@ -95,13 +97,13 @@ void Settings::LoadDefaults()
     if(VIDEODRIVER.IsLoaded())
     {
         video.fullscreenSize = VIDEODRIVER.GetWindowSize();
-        video.windowedSize = VIDEODRIVER.IsFullscreen() ? VideoMode(800, 600) : video.fullscreenSize;
-        video.displayMode = (VIDEODRIVER.IsFullscreen() ? DisplayMode::Fullscreen : DisplayMode::None)
-                            | (VIDEODRIVER.IsResizable() ? DisplayMode::Resizable : DisplayMode::None);
+        video.windowedSize =
+          (VIDEODRIVER.GetDisplayMode() == DisplayMode::Fullscreen) ? video.fullscreenSize : VideoMode(800, 600);
+        video.displayMode = VIDEODRIVER.GetDisplayMode();
     } else
     {
         video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
-        video.displayMode = DisplayMode::Resizable;
+        video.displayMode = DisplayMode::Windowed;
     }
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
@@ -241,10 +243,14 @@ void Settings::Load()
         video.windowedSize.height = iniVideo->getIntValue("windowed_height");
         video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
         video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
-        const auto fullscreen = iniVideo->getBoolValue("fullscreen");
-        const auto resizable = iniVideo->getValue("resizable", true);
-        video.displayMode = (fullscreen ? DisplayMode::Fullscreen : DisplayMode::None)
-                            | (resizable ? DisplayMode::Resizable : DisplayMode::None);
+        const auto displayMode = iniVideo->getValue("displayMode", -1);
+        if(displayMode >= 0 && static_cast<unsigned>(displayMode) <= helpers::MaxEnumValue_v<DisplayMode>)
+            video.displayMode = DisplayMode(displayMode);
+        else
+        {
+            video.displayMode =
+              iniVideo->getValue("fullscreen", false) ? DisplayMode::Fullscreen : DisplayMode::Windowed;
+        }
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.shared_textures = iniVideo->getBoolValue("shared_textures");
@@ -446,8 +452,7 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
-    iniVideo->setValue("fullscreen", (video.displayMode & DisplayMode::Fullscreen) != DisplayMode::None);
-    iniVideo->setValue("resizable", (video.displayMode & DisplayMode::Resizable) != DisplayMode::None);
+    iniVideo->setValue("displayMode", rttr::enum_cast(video.displayMode));
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.shared_textures);

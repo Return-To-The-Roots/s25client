@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -66,9 +66,10 @@ public:
     void* GetMapPointer() const override;
 
 private:
-    std::pair<DWORD, DWORD> GetStyleFlags(bool fullscreen) const;
-    /// Calculate the rect for the window and adjusts the (usable) size if required
-    RECT CalculateWindowRect(bool fullscreen, VideoMode& size) const;
+    /// Get style and extended style flags
+    std::pair<DWORD, DWORD> GetStyleFlags(DisplayMode mode) const;
+    /// Calculate the rect for the window of the requested size
+    RECT CalculateWindowRect(DisplayMode mode, VideoMode size) const;
     bool RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, DisplayMode displayMode);
     bool InitOGL();
     static bool MakeFullscreen(const VideoMode& resolution);
@@ -88,6 +89,6 @@ private:
     HWND screen;     /// Fensterhandle.
     HDC screen_dc;   /// Zeichenkontext des Fensters.
     HGLRC screen_rc; /// OpenGL-Kontext des Fensters.
-    bool isWindowResizable, isMinimized;
+    bool isDisplayModeChangeable, isMinimized;
     std::wstring windowClassName;
 };

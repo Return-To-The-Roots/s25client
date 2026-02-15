@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -71,8 +71,6 @@ public:
     /// Get the renderer size in pixels
     Extent GetRenderSize() const;
     DisplayMode GetDisplayMode() const;
-    bool IsFullscreen() const;
-    bool IsResizable() const;
 
     /// Get the factor required to scale "normal" DPI to the display DPI
     float getDpiScale() const;
