@@ -32,11 +32,17 @@
 #    include <gl4esinit.h>
 #endif
 
+namespace {
+
 /// Check that the (SDL) call returns success or print the error
 /// Can be used in conditions: if(CHECK_SDL(SDL_Foo()))
-#define CHECK_SDL(call) ((call) >= 0 || (PrintError(), false))
-
-namespace {
+bool CHECK_SDL(int sdlResult)
+{
+    if(sdlResult >= 0)
+        return true;
+    VideoSDL2::PrintError();
+    return false;
+}
 
 template<typename T>
 struct SDLMemoryDeleter
