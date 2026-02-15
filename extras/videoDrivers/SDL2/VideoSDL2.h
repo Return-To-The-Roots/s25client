@@ -53,9 +53,10 @@ public:
     /// Get (device-dependent!) window pointer, HWND in Windows
     void* GetMapPointer() const override;
 
-private:
     static void PrintError();
     static void PrintError(const std::string& msg);
+
+private:
     void HandlePaste();
     void UpdateCurrentSizes();
     void MoveWindowToCenter();
