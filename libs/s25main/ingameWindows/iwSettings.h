@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,6 +16,6 @@ public:
 
 private:
     std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
 };

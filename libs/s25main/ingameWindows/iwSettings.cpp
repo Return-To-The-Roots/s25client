@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,6 +11,7 @@
 #include "controls/ctrlOptionGroup.h"
 #include "driver/VideoInterface.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "enum_cast.hpp"
 #include "helpers/format.hpp"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
@@ -21,15 +22,13 @@ enum
 {
     ID_txtResolution,
     ID_txtFullScreen,
-    ID_grpFullscreen,
+    ID_cbDisplayMode,
     ID_cbResolution,
     ID_txtMapScrollMode,
     ID_cbMapScrollMode,
     ID_cbSmartCursor,
     ID_cbStatisticScale,
 };
-constexpr auto ID_btOn = 1;
-constexpr auto ID_btOff = 0;
 } // namespace
 
 iwSettings::iwSettings()
@@ -37,15 +36,17 @@ iwSettings::iwSettings()
                    LOADER.GetImageN("resource", 41))
 {
     // Controls are in 2 columns, the left might be the label for the control on the right
+    constexpr auto rowWidth = 350;
     constexpr auto leftColOffset = 15u;   // X-position of the left column
-    constexpr auto rightColOffset = 200u; // X-position of the right column
-    constexpr Extent ctrlSize(150, 22);
-    constexpr auto rowWidth = rightColOffset + ctrlSize.x;
+    constexpr auto rightColOffset = 180u; // X-position of the right column
+    constexpr Extent ctrlSize(rowWidth - rightColOffset, 22);
+    constexpr Extent cbSize = Extent(rowWidth - leftColOffset, 26);
 
-    AddText(ID_txtResolution, DrawPoint(leftColOffset, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
-            NormalFont);
-    auto* cbResolution =
-      AddComboBox(ID_cbResolution, DrawPoint(rightColOffset, 35), ctrlSize, TextureColor::Grey, NormalFont, 110);
+    DrawPoint curPos(leftColOffset, 40);
+    AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    auto* cbResolution = AddComboBox(ID_cbResolution, DrawPoint(rightColOffset, curPos.y - 5), ctrlSize,
+                                     TextureColor::Grey, NormalFont, 110);
+    curPos.y += ctrlSize.y + 5;
 
     VIDEODRIVER.ListVideoModes(video_modes);
     for(unsigned i = 0; i < video_modes.size(); ++i)
@@ -62,20 +63,18 @@ iwSettings::iwSettings()
             --i;
         }
     }
-    AddText(ID_txtFullScreen, DrawPoint(leftColOffset, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
-    DrawPoint curPos(rightColOffset, 70);
-    optiongroup->AddTextButton(ID_btOn, curPos, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
-    curPos.y += ctrlSize.y + 3;
-    optiongroup->AddTextButton(ID_btOff, curPos, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
-    optiongroup->SetSelection((bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen) ? 1 : 2)); //-V807
 
-    curPos = DrawPoint(leftColOffset, curPos.y + ctrlSize.y + 5);
-    const auto cbSize = Extent(rowWidth - curPos.x, 26);
+    AddText(ID_txtFullScreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlComboBox* cbDisplayMode = AddComboBox(ID_cbDisplayMode, DrawPoint(rightColOffset, curPos.y - 5), ctrlSize,
+                                              TextureColor::Grey, NormalFont, 100);
+    cbDisplayMode->AddString(_("Windowed"));
+    cbDisplayMode->AddString(_("Fullscreen"));
+    cbDisplayMode->AddString(_("Borderless window"));
+    cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode));
+    curPos.y += ctrlSize.y + 10;
 
-    AddText(ID_txtMapScrollMode, DrawPoint(leftColOffset, curPos.y + 5), _("Map scroll mode:"), COLOR_YELLOW,
-            FontStyle{}, NormalFont);
-    ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y), ctrlSize,
+    AddText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y - 5), ctrlSize,
                                                 TextureColor::Grey, NormalFont, 100);
     cbMapScrollMode->AddString(
       _("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
@@ -84,7 +83,7 @@ iwSettings::iwSettings()
     cbMapScrollMode->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
     cbMapScrollMode->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
 
-    curPos.y += cbSize.y + 3;
+    curPos.y += ctrlSize.y + 10;
     AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
       ->setChecked(SETTINGS.global.smartCursor)
       ->SetTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
@@ -103,9 +102,9 @@ iwSettings::~iwSettings()
         auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
         SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
-        const auto fullscreen = bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen);
+        const auto fullscreen = SETTINGS.video.displayMode == DisplayMode::Fullscreen;
         if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
-           || fullscreen != VIDEODRIVER.IsFullscreen())
+           || SETTINGS.video.displayMode != VIDEODRIVER.GetDisplayMode())
         {
             const auto screenSize = fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
             if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
@@ -121,15 +120,10 @@ iwSettings::~iwSettings()
     }
 }
 
-void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwSettings::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
-    switch(ctrl_id)
-    {
-        case ID_grpFullscreen:
-            SETTINGS.video.displayMode =
-              bitset::set(SETTINGS.video.displayMode, DisplayMode::Fullscreen, (selection == ID_btOn));
-            break;
-    }
+    RTTR_Assert(ctrl_id == ID_cbDisplayMode);
+    SETTINGS.video.displayMode = DisplayMode(selection);
 }
 
 void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)

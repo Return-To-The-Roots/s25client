@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -131,7 +131,7 @@ void dskBenchmark::Msg_PaintAfter()
 void dskBenchmark::SetActive(bool activate)
 {
     if(!IsActive() && activate)
-        VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), DisplayMode::Resizable);
+        VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
     dskMenuBase::SetActive(activate);
 }
 

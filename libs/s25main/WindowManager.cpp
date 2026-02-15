@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -381,10 +381,13 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     if(ke.alt && (ke.kt == KeyType::Return))
     {
         // Switch Fullscreen/Windowed
-        SETTINGS.video.displayMode ^= DisplayMode::Fullscreen;
-        const auto isFullscreen = (SETTINGS.video.displayMode & DisplayMode::Fullscreen) != DisplayMode::None;
-        const auto newScreenSize = isFullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
-        VIDEODRIVER.ResizeScreen(newScreenSize, SETTINGS.video.displayMode);
+        const auto newMode =
+          (SETTINGS.video.displayMode == DisplayMode::Fullscreen) ? DisplayMode::Windowed : DisplayMode::Fullscreen;
+        const auto newScreenSize =
+          (newMode == DisplayMode::Fullscreen) ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+        VIDEODRIVER.ResizeScreen(newScreenSize, newMode);
+
+        SETTINGS.video.displayMode = VIDEODRIVER.GetDisplayMode();
     } else if(ke.kt == KeyType::Print)
         TakeScreenshot();
     else
@@ -413,16 +416,16 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     curRenderSize = sr.newSize;
 
     // Don't change fullscreen size (only in menu)
-    if(!bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen))
+    if(SETTINGS.video.displayMode != DisplayMode::Fullscreen)
         SETTINGS.video.windowedSize = VIDEODRIVER.GetWindowSize();
 
-    // ist unser Desktop gültig?
+    // Desktop (still) valid?
     if(!curDesktop)
         return;
 
     curDesktop->Msg_ScreenResize(sr);
 
-    // IngameWindow verschieben falls nötig, so dass sie komplett sichtbar sind
+    // Move IngameWindows so they are completely visible
     for(const auto& window : windows)
     {
         DrawPoint delta = window->GetPos() + DrawPoint(window->GetSize()) - DrawPoint(sr.newSize);

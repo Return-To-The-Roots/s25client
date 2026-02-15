@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -54,10 +54,12 @@ public:
     void* GetMapPointer() const override;
 
 private:
-    void PrintError(const std::string& msg) const;
+    static void PrintError();
+    static void PrintError(const std::string& msg);
     void HandlePaste();
     void UpdateCurrentSizes();
     void MoveWindowToCenter();
+    void UpdateCurrentDisplayMode();
 
     SDL_Window* window;
     SDL_GLContext context;

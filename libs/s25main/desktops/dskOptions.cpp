@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -79,7 +79,7 @@ enum
     ID_txtResolution,
     ID_cbResolution,
     ID_txtFullscreen,
-    ID_grpFullscreen,
+    ID_cbDisplayMode,
     ID_txtFramerate,
     ID_cbFramerate,
     ID_txtVBO,
@@ -331,9 +331,12 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtFullscreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    mainGroup = groupGraphics->AddOptionGroup(ID_grpFullscreen, GroupSelectType::Check);
-    mainGroup->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("Fullscreen"), NormalFont);
-    mainGroup->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Windowed"), NormalFont);
+    ctrlComboBox* cbDisplayMode = groupGraphics->AddComboBox(ID_cbDisplayMode, curPos + ctrlOffset, ctrlSizeLarge,
+                                                             TextureColor::Grey, NormalFont, 100);
+    cbDisplayMode->AddString(_("Windowed"));
+    cbDisplayMode->AddString(_("Fullscreen"));
+    cbDisplayMode->AddString(_("Borderless window"));
+    cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode));
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacing;
@@ -458,10 +461,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
             cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
     }
 
-    // Set "Fullscreen"
-    groupGraphics->GetCtrl<ctrlOptionGroup>(ID_grpFullscreen)
-      ->SetSelection(bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen)); //-V807
-
     // Fill "Limit Framerate"
     auto* cbFrameRate = groupGraphics->GetCtrl<ctrlComboBox>(ID_cbFramerate);
     if(VIDEODRIVER.HasVSync())
@@ -583,6 +582,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
             break;
         case ID_cbAudioDriver: SETTINGS.driver.audio = combo->GetText(selection); break;
+        case ID_cbDisplayMode: SETTINGS.video.displayMode = DisplayMode(selection); break;
     }
 }
 
@@ -593,9 +593,6 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
     switch(ctrl_id)
     {
         case ID_grpIpv6: SETTINGS.server.ipv6 = enabled; break;
-        case ID_grpFullscreen:
-            SETTINGS.video.displayMode = bitset::set(SETTINGS.video.displayMode, DisplayMode::Fullscreen, enabled);
-            break;
         case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
         case ID_grpOptTextures: SETTINGS.video.shared_textures = enabled; break;
         case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;
@@ -665,7 +662,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             SETTINGS.Save();
 
-            // Is the selected backend required to support GUI scaling to fullfill the user's choice?
+            // Is the selected backend required to support GUI scaling to fulfill the user's choice?
             // If so, warn the user if the backend is unable to support GUI scaling.
             if(VIDEODRIVER.getGuiScale().percent() == 100
                && (SETTINGS.video.guiScale != 100
@@ -676,9 +673,9 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
                   this, MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
             }
 
-            const auto fullscreen = bitset::isSet(SETTINGS.video.displayMode, DisplayMode::Fullscreen);
+            const auto fullscreen = SETTINGS.video.displayMode == DisplayMode::Fullscreen;
             if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
-               || fullscreen != VIDEODRIVER.IsFullscreen())
+               || VIDEODRIVER.GetDisplayMode() != SETTINGS.video.displayMode)
             {
                 const auto screenSize = fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
                 if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
