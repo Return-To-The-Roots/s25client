@@ -131,7 +131,7 @@ void dskBenchmark::Msg_PaintAfter()
 void dskBenchmark::SetActive(bool activate)
 {
     if(!IsActive() && activate)
-        VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), DisplayMode::Resizable);
+        VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
     dskMenuBase::SetActive(activate);
 }
 

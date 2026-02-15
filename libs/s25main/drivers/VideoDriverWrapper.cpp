@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -144,7 +144,7 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode di
 
     const bool result = videodriver->ResizeScreen(size, displayMode);
 #ifdef _WIN32
-    if(!videodriver->IsFullscreen())
+    if(videodriver->GetDisplayMode() != DisplayMode::Fullscreen)
     {
         // We cannot change the size of a maximized window. So restore it here
         WINDOWPLACEMENT wp;
@@ -502,11 +502,6 @@ DisplayMode VideoDriverWrapper::GetDisplayMode() const
     return videodriver->GetDisplayMode();
 }
 
-bool VideoDriverWrapper::IsFullscreen() const
-{
-    return videodriver->IsFullscreen();
-}
-
 float VideoDriverWrapper::getDpiScale() const
 {
     return videodriver->getDpiScale();
@@ -525,9 +520,4 @@ void VideoDriverWrapper::setGuiScalePercent(unsigned percent)
 GuiScaleRange VideoDriverWrapper::getGuiScaleRange() const
 {
     return videodriver->getGuiScaleRange();
-}
-
-bool VideoDriverWrapper::IsResizable() const
-{
-    return videodriver->IsResizable();
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     video->tickCount_ += 1;
     dsk->Msg_PaintBefore();
     // Resize the screen and test that the final position got updated too
-    VIDEODRIVER.ResizeScreen(VideoMode(1024, 768), DisplayMode::Resizable);
+    VIDEODRIVER.ResizeScreen(VideoMode(1024, 768), DisplayMode::Windowed);
     // Pass the animation
     video->tickCount_ += 1100;
     dsk->Msg_PaintBefore();

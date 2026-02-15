@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -33,8 +33,6 @@ public:
     VideoMode GetWindowSize() const override final { return windowSize_; }
     Extent GetRenderSize() const override final { return scaledRenderSize_; }
     DisplayMode GetDisplayMode() const override final { return displayMode_; }
-    bool IsFullscreen() const override final { return bitset::isSet(displayMode_, DisplayMode::Fullscreen); }
-    bool IsResizable() const override final { return bitset::isSet(displayMode_, DisplayMode::Fullscreen); }
 
     float getDpiScale() const override final { return dpiScale_; }
 
@@ -50,11 +48,6 @@ public:
 protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
-
-    void SetResizableFlag(bool resizable)
-    {
-        displayMode_ = bitset::set(displayMode_, DisplayMode::Resizable, resizable);
-    }
 
     VideoDriverLoaderInterface* CallBack; /// DriverCallback to notify on player input
     bool initialized;
