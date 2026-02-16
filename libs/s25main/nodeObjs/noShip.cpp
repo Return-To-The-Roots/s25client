@@ -554,6 +554,10 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     if(!world->FindShipPathToHarbor(pos, new_goal, seaId_, &route_, nullptr))
         return;
 
+    // Route empty? Don't bother
+    if(route_.size() <= 0)
+        return;
+
     // Dann fahren wir da mal hin
     curRouteIdx = 0;
     goal_harborId = new_goal;
