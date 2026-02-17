@@ -7,6 +7,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "MilitaryStatsHolder.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
@@ -272,6 +273,8 @@ void noFighting::HandleEvent(const unsigned id)
                         player_won = soldiers[turn]->GetPlayer();
                         // Soldat Bescheid sagen, dass er stirbt
                         CombatLossTracker::ReportLoss(*soldiers[1 - turn]);
+                        MilitaryStatsHolder::ReportUnitLost(soldiers[1 - turn]->GetPlayer(),
+                                                            soldiers[1 - turn]->GetRank());
                         soldiers[1 - turn]->LostFighting();
                         const unsigned gf = GetEvMgr().GetCurrentGF();
                         const unsigned winnerIdx = turn;

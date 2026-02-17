@@ -47,6 +47,7 @@ set(s25Main_SRCS
         BuildingEventLogger.cpp
         CombatEventLogger.cpp
         CombatLossTracker.cpp
+        MilitaryStatsHolder.cpp
         ToolPriorityEventLogger.cpp
         WareEventLogger.cpp
         ai/aijh/AIAdjuster.cpp

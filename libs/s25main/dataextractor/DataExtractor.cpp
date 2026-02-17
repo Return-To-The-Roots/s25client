@@ -1,6 +1,7 @@
 #include "dataextractor/DataExtractor.h"
 
 #include "GamePlayer.h"
+#include "MilitaryStatsHolder.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "helpers/EnumRange.h"
 
@@ -14,6 +15,7 @@
 
 #include <fstream> 
 #include <iostream>
+#include <array>
 #include <vector>
 #include <unordered_map>
 #include <set>
@@ -39,6 +41,13 @@ void DataExtractor::ProcessSnapshot(const GamePlayer& player, uint32_t gameframe
         uint32_t value = player.GetStatisticCurrentValue(type);
         snapshot_data_map[StatisticTypeName(type)] = value;
     }
+
+    const auto& militaryStats = MilitaryStatsHolder::GetPlayerStats(static_cast<unsigned char>(player.GetPlayerId()));
+    snapshot_data_map["MilRecruitsAcquired"] = militaryStats.recruitsAcquired;
+    snapshot_data_map["MilUpgrades"] = militaryStats.upgrades;
+    static constexpr std::array<char, NUM_SOLDIER_RANKS> rankLabels = {'P', 'F', 'S', 'O', 'G'};
+    for(std::size_t i = 0; i < militaryStats.lossesByRank.size(); ++i)
+        snapshot_data_map["MilLostRank" + std::string(1, rankLabels[i])] = militaryStats.lossesByRank[i];
 
     // Process buildings
     const auto& building_nums = player.GetBuildingRegister().GetBuildingNums();

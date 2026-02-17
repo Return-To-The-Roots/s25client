@@ -336,30 +336,6 @@ void HeadlessGame::PrintState()
     printConsole("└────────────────────────┴─────────────────┴─────────────┴───────────┴───────────┴───────────┘\n");
 
     printConsole("\n");
-    printConsole("┌────────────────────────┬──────────────┬──────────────┬────────────┐\n");
-    printConsole("│ Player                 │  Army Weight │ Fulfillment  │ Mode       │\n");
-    printConsole("├────────────────────────┼──────────────┼──────────────┼────────────┤\n");
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
-    {
-        const GamePlayer& player = world_.GetPlayer(playerId);
-        const char* modeLabel = "N/A";
-        char weightBuffer[16] = "-";
-        char fulfillBuffer[16] = "-";
-        if(playerId < players_.size())
-        {
-            if(const auto* aiJH = dynamic_cast<AIJH::AIPlayerJH*>(players_[playerId].get()))
-            {
-                std::snprintf(weightBuffer, sizeof(weightBuffer), "%.1f", aiJH->GetCombatAttackWeight());
-                std::snprintf(fulfillBuffer, sizeof(fulfillBuffer), "%.2f", aiJH->GetCombatFulfillmentLevel());
-                modeLabel = aiJH->IsInDefenseMode() ? "Defense" : "Attack";
-            }
-        }
-
-        printConsole("│ %s%-22s%s │ %12s │ %12s │ %-10s │\n", player.IsDefeated() ? "\x1b[9m" : "",
-                     player.name.c_str(), player.IsDefeated() ? "\x1b[29m" : "", weightBuffer, fulfillBuffer,
-                     modeLabel);
-    }
-    printConsole("└────────────────────────┴──────────────┴──────────────┴────────────┘\n");
 
     lastReportGf_ = em_.GetCurrentGF();
 }

@@ -9,6 +9,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "MilitaryStatsHolder.h"
 #include "Point.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
@@ -300,6 +301,7 @@ void nobMilitary::HandleEvent(const unsigned id)
             {
                 auto upgradedSoldier = helpers::extractPtr(troops, soldierToUpgrade);
                 upgradedSoldier->Upgrade();
+                MilitaryStatsHolder::ReportUnitUpgrade(player);
                 troops.insert(std::move(upgradedSoldier));
 
                 // Consume one gold coin

@@ -18,7 +18,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
     if(potentialTargets.empty())
         return nullptr;
 
-    const bool inDefenseMode = (attackMode == CombatMode::DefenseMode);
+    // const bool inDefenseMode = (attackMode == CombatMode::DefenseMode);
     const nobBaseMilitary* bestTarget = nullptr;
     unsigned bestLossCount = 0;
 
@@ -49,8 +49,8 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
                 continue;
         }
 
-        if(inDefenseMode && !CanAttackInDefenseMode(*target, potentialAttackers))
-            continue;
+        // if(inDefenseMode && !CanAttackInDefenseMode(*target, potentialAttackers))
+        //     continue;
 
         if(target->GetBuildingType() == BuildingType::Headquarters)
             return target;

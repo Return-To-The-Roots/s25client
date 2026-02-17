@@ -14,6 +14,9 @@ find_package(yaml-cpp REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 include(FetchContent)
+# Keep reconfigure/build fully offline in environments without network.
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+set(FETCHCONTENT_FULLY_DISCONNECTED ON)
 FetchContent_Declare(
         fast-cpp-csv-parser
         GIT_REPOSITORY https://github.com/ben-strasser/fast-cpp-csv-parser.git

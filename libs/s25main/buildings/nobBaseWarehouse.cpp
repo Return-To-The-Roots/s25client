@@ -8,6 +8,7 @@
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "MilitaryStatsHolder.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "WineLoader.h"
@@ -473,6 +474,7 @@ void nobBaseWarehouse::HandleRecrutingEvent()
 
     inventory.Add(Job::Private, real_recruits);
     owner.IncreaseInventoryJob(Job::Private, real_recruits);
+    MilitaryStatsHolder::ReportRecruitAcquire(player, real_recruits);
 
     inventory.Remove(Job::Helper, real_recruits);
     owner.DecreaseInventoryJob(Job::Helper, real_recruits);
