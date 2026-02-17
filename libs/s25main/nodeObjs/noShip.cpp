@@ -517,11 +517,12 @@ noShip::Result noShip::DriveToHarbourPlace()
         }
     }
 
-    // Already arrived? (e. g. adjacent harbor)
+    // Already arrived after possibly recalculating route? (FindShipPathToHarbor)
     if(curRouteIdx == route_.size())
         return Result::GoalReached;
-    else
-        StartDriving(route_[curRouteIdx++]);
+
+    RTTR_Assert(curRouteIdx < route_.size());
+    StartDriving(route_[curRouteIdx++]);
 
     return Result::Driving;
 }
@@ -563,15 +564,12 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     curRouteIdx = 0;
     goal_harborId = new_goal;
 
-    // Already arrived? (e. g. adjacent harbor)
-    if(curRouteIdx == route_.size())
+    // Only start driving if not arrived yet
+    if(curRouteIdx < route_.size())
     {
-        state = State::ExpeditionWaiting;
-        return;
-    } else
         state = State::ExpeditionDriving;
-
-    StartDriving(route_[curRouteIdx++]);
+        StartDriving(route_[curRouteIdx++]);
+    }
 }
 
 /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
