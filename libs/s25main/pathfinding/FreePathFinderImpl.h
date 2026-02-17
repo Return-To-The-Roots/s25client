@@ -171,8 +171,8 @@ bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Directio
 {
     RTTR_Assert(pos < route.size());
 
-    // route empty?
-    if(route.size() <= 0)
+    // Empty routes are not considered passable
+    if(route.empty())
         return false;
 
     MapPoint curPt(start);

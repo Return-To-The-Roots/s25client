@@ -517,7 +517,12 @@ noShip::Result noShip::DriveToHarbourPlace()
         }
     }
 
-    StartDriving(route_[curRouteIdx++]);
+    // Route empty? Assume we already arrived
+    if(route_.empty())
+        return Result::GoalReached;
+    else
+        StartDriving(route_[curRouteIdx++]);
+
     return Result::Driving;
 }
 
@@ -554,14 +559,17 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     if(!world->FindShipPathToHarbor(pos, new_goal, seaId_, &route_, nullptr))
         return;
 
-    // Route empty? Don't bother
-    if(route_.size() <= 0)
-        return;
-
     // Dann fahren wir da mal hin
     curRouteIdx = 0;
     goal_harborId = new_goal;
-    state = State::ExpeditionDriving;
+
+    // Route empty? Assume we already arrived
+    if(route_.empty())
+    {
+        state = State::ExpeditionWaiting;
+        return;
+    } else
+        state = State::ExpeditionDriving;
 
     StartDriving(route_[curRouteIdx++]);
 }
