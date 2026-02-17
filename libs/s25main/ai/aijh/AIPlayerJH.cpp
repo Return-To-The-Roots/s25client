@@ -260,9 +260,6 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         InitializeCombatsLogFile();
     LogFinishedCombats(gf);
 
-    if(defeated)
-        return;
-
     if(IsStatsPeriodHit(gf, STATS_CONFIG.stats_period))
     {
         saveStats(gf);
@@ -271,8 +268,12 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         saveDebugStats(gf);
     }
-    if(TestDefeat())
+    if(defeated)
         return;
+
+    if(TestDefeat()){
+       return;
+    }
     if(!isInitGfCompleted)
     {
         InitStoreAndMilitarylists();

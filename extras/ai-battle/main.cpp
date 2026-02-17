@@ -42,6 +42,7 @@ int main(int argc, char** argv)
     boost::optional<unsigned int> savePeriod;
     boost::optional<unsigned int> debugStatsPeriod;
     boost::optional<unsigned int> minimapPeriod;
+    bool disableEventLogging = false;
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     po::options_description desc("Allowed options");
@@ -53,6 +54,8 @@ int main(int argc, char** argv)
         ("save_period", po::value(&savePeriod),"Save period")
         ("debug_stats_period", po::value(&debugStatsPeriod),"Debug stats period")
         ("minimap_period", po::value(&minimapPeriod),"Minimap save period")
+        ("disable_event_logging", po::bool_switch(&disableEventLogging),
+         "Disable event logger output (combat/building/ware/tool-priority)")
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
@@ -186,6 +189,7 @@ int main(int argc, char** argv)
         STATS_CONFIG.save_period = savePeriod.get_value_or(0);
         STATS_CONFIG.debug_stats_period = debugStatsPeriod.get_value_or(0);
         STATS_CONFIG.minimap_period = minimapPeriod.get_value_or(0);
+        STATS_CONFIG.disableEventLogging = disableEventLogging;
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         ggs.setSelection(AddonId::DEMOLITION_PROHIBITION, 2);

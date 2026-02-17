@@ -17,7 +17,7 @@ constexpr std::array<char, NUM_SOLDIER_RANKS> kRankLabels = {'P', 'F', 'S', 'O',
 
 std::ofstream OpenCombatLog()
 {
-    if(STATS_CONFIG.statsPath.empty())
+    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
         return {};
     const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "combat_log.txt";
     return std::ofstream(path.string(), std::ios::app);

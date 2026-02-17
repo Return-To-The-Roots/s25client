@@ -13,7 +13,7 @@ namespace {
 
 std::ofstream OpenToolPriorityLog()
 {
-    if(STATS_CONFIG.statsPath.empty())
+    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
         return {};
     const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "tool_priority.csv";
     return std::ofstream(path.string(), std::ios::app);

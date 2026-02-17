@@ -16,6 +16,7 @@
 .idea
 /S2
 /build
+/cmake-build-debug
 /contrib
 /external/boost*
 /tmp

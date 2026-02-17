@@ -16,7 +16,7 @@ std::unordered_set<const void*> gConstructedSites;
 
 std::ofstream OpenBuildingLog()
 {
-    if(STATS_CONFIG.statsPath.empty())
+    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
         return {};
     const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "building_log.csv";
     return std::ofstream(path.string(), std::ios::app);

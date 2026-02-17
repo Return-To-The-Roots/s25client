@@ -199,7 +199,7 @@ void HeadlessGame::Run(unsigned maxGF)
             fmt % STATS_CONFIG.savesPath % toPaddedString(gf, 8);
             SaveGame(fmt.str());
         };
-        if(currentGF % 10000u == 0 && GetActivePlayerCount() <= 1u)
+        if((STATS_CONFIG.stats_period == 0 || currentGF % STATS_CONFIG.stats_period == 1) && GetActivePlayerCount() <= 1u)
         {
             if(STATS_CONFIG.save_period > 0) saveGameForFrame(currentGF);
             break;
