@@ -564,12 +564,15 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     curRouteIdx = 0;
     goal_harborId = new_goal;
 
-    // Only start driving if not arrived yet
-    if(curRouteIdx < route_.size())
+    // Already arrived after calculating route? (FindShipPathToHarbor)
+    if(curRouteIdx == route_.size())
     {
-        state = State::ExpeditionDriving;
-        StartDriving(route_[curRouteIdx++]);
+        HandleState_ExpeditionDriving();
+        return;
     }
+
+    state = State::ExpeditionDriving;
+    StartDriving(route_[curRouteIdx++]);
 }
 
 /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
