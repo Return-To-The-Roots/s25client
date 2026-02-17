@@ -884,7 +884,7 @@ void Loader::fillCaches()
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
 
-    libsiedler2::Archiv wine_bob_carrier = GetArchive("wine_bobs");
+    libsiedler2::Archiv& wine_bob_carrier = GetArchive("wine_bobs");
 
     for(bool fat : {true, false})
     {
