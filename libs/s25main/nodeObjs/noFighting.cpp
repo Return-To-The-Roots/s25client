@@ -13,6 +13,7 @@
 #include "addons/const_addons.h"
 #include "CombatLossTracker.h"
 #include "CombatEventLogger.h"
+#include "MilitaryEventLogger.h"
 #include "figures/nofActiveSoldier.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
@@ -275,6 +276,9 @@ void noFighting::HandleEvent(const unsigned id)
                         CombatLossTracker::ReportLoss(*soldiers[1 - turn]);
                         MilitaryStatsHolder::ReportUnitLost(soldiers[1 - turn]->GetPlayer(),
                                                             soldiers[1 - turn]->GetRank());
+                        MilitaryEventLogger::LogLoss(
+                          GetEvMgr().GetCurrentGF(), soldiers[1 - turn]->GetPlayer(), soldiers[1 - turn]->GetRank(),
+                          targetBuildingType_, targetBuildingObjId_);
                         soldiers[1 - turn]->LostFighting();
                         const unsigned gf = GetEvMgr().GetCurrentGF();
                         const unsigned winnerIdx = turn;

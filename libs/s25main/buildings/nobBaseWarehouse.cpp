@@ -9,6 +9,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "MilitaryStatsHolder.h"
+#include "MilitaryEventLogger.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "WineLoader.h"
@@ -475,6 +476,8 @@ void nobBaseWarehouse::HandleRecrutingEvent()
     inventory.Add(Job::Private, real_recruits);
     owner.IncreaseInventoryJob(Job::Private, real_recruits);
     MilitaryStatsHolder::ReportRecruitAcquire(player, real_recruits);
+    MilitaryEventLogger::LogRecruit(GetEvMgr().GetCurrentGF(), player, static_cast<unsigned char>(getSoldierRank(Job::Private)),
+                                    bldType_, GetObjId(), real_recruits);
 
     inventory.Remove(Job::Helper, real_recruits);
     owner.DecreaseInventoryJob(Job::Helper, real_recruits);

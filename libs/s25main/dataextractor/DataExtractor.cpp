@@ -42,12 +42,18 @@ void DataExtractor::ProcessSnapshot(const GamePlayer& player, uint32_t gameframe
         snapshot_data_map[StatisticTypeName(type)] = value;
     }
 
+    MilitaryStatsHolder::RefreshDensities(player);
     const auto& militaryStats = MilitaryStatsHolder::GetPlayerStats(static_cast<unsigned char>(player.GetPlayerId()));
     snapshot_data_map["MilRecruitsAcquired"] = militaryStats.recruitsAcquired;
     snapshot_data_map["MilUpgrades"] = militaryStats.upgrades;
     static constexpr std::array<char, NUM_SOLDIER_RANKS> rankLabels = {'P', 'F', 'S', 'O', 'G'};
     for(std::size_t i = 0; i < militaryStats.lossesByRank.size(); ++i)
         snapshot_data_map["MilLostRank" + std::string(1, rankLabels[i])] = militaryStats.lossesByRank[i];
+    snapshot_data_map["MilDensityFar"] = static_cast<uint32_t>(militaryStats.densityFar * 1000.0);
+    snapshot_data_map["MilDensityMid"] = static_cast<uint32_t>(militaryStats.densityMid * 1000.0);
+    snapshot_data_map["MilDensityHarbor"] = static_cast<uint32_t>(militaryStats.densityHarbor * 1000.0);
+    snapshot_data_map["MilDensityNear"] = static_cast<uint32_t>(militaryStats.densityNear * 1000.0);
+    snapshot_data_map["MilDensityTotal"] = static_cast<uint32_t>(militaryStats.densityTotal * 1000.0);
 
     // Process buildings
     const auto& building_nums = player.GetBuildingRegister().GetBuildingNums();

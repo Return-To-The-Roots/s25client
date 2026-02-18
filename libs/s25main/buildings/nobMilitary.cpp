@@ -9,6 +9,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "MilitaryEventLogger.h"
 #include "MilitaryStatsHolder.h"
 #include "Point.h"
 #include "SerializedGameData.h"
@@ -118,6 +119,7 @@ void nobMilitary::DestroyBuilding()
     // Send stationed soldiers outside
     for(auto& troop : troops)
     {
+        MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, troop->GetRank(), bldType_, GetObjId());
         troop->LeftBuilding();
         auto& soldier = world->AddFigure(pos, std::move(troop));
         soldier.StartWandering();
@@ -302,6 +304,8 @@ void nobMilitary::HandleEvent(const unsigned id)
                 auto upgradedSoldier = helpers::extractPtr(troops, soldierToUpgrade);
                 upgradedSoldier->Upgrade();
                 MilitaryStatsHolder::ReportUnitUpgrade(player);
+                MilitaryEventLogger::LogUpgrade(GetEvMgr().GetCurrentGF(), player, upgradedSoldier->GetRank(), bldType_,
+                                                GetObjId());
                 troops.insert(std::move(upgradedSoldier));
 
                 // Consume one gold coin
@@ -466,6 +470,8 @@ void nobMilitary::RegulateTroops()
             {
                 if((*it)->GetRank() == rank)
                 {
+                    MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, (*it)->GetRank(), bldType_,
+                                                         GetObjId());
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(std::move(*it));
                     it = troops.erase(it);
@@ -520,6 +526,8 @@ void nobMilitary::RegulateTroops()
             {
                 for(auto it = troops.begin(); diff && troops.size() > 1; ++diff)
                 {
+                    MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, (*it)->GetRank(), bldType_,
+                                                         GetObjId());
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(std::move(*it));
                     it = troops.erase(it);
@@ -530,6 +538,8 @@ void nobMilitary::RegulateTroops()
             {
                 for(auto it = troops.rbegin(); diff && troops.size() > 1; ++diff)
                 {
+                    MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, (*it)->GetRank(), bldType_,
+                                                         GetObjId());
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(std::move(*it));
                     it = helpers::erase_reverse(troops, it);
@@ -704,9 +714,11 @@ void nobMilitary::AddPassiveSoldier(std::unique_ptr<nofPassiveSoldier> soldier)
 {
     RTTR_Assert(soldier->GetPlayer() == player);
     RTTR_Assert(troops.size() < GetMaxTroopsCt());
+    const unsigned char rank = soldier->GetRank();
 
     ordered_troops.erase(soldier.get());
     troops.insert(std::move(soldier));
+    MilitaryEventLogger::LogDeployment(GetEvMgr().GetCurrentGF(), player, rank, bldType_, GetObjId());
 
     // Was this building occupied for the first time?
     if(new_built)
@@ -752,6 +764,8 @@ void nobMilitary::SendAttacker(nofPassiveSoldier*& passive_soldier, nobBaseMilit
                                const nobHarborBuilding* harbor)
 {
     auto attacker = std::make_unique<nofAttacker>(*passive_soldier, goal, harbor);
+    MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, passive_soldier->GetRank(), bldType_,
+                                         GetObjId());
     passive_soldier->LeftBuilding();
     helpers::extractPtr(troops, passive_soldier)->Destroy();
     passive_soldier = nullptr;
@@ -809,6 +823,8 @@ nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker& attacker
     {
         // Create a new aggressive defender from that soldier
         auto defender = std::make_unique<nofAggressiveDefender>(*soldier, attacker);
+        MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, soldier->GetRank(), bldType_,
+                                             GetObjId());
         soldier->LeftBuilding();
         helpers::extractPtr(troops, soldier)->Destroy();
         troops_on_mission.push_back(defender.get());
@@ -962,6 +978,8 @@ std::unique_ptr<nofDefender> nobMilitary::ProvideDefender(nofAttacker& attacker)
     auto defender = std::make_unique<nofDefender>(*soldier, attacker);
 
     auto oldSoldier = helpers::extractPtr(troops, soldier);
+    MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, oldSoldier->GetRank(), bldType_,
+                                         GetObjId());
     oldSoldier->LeftBuilding();
     oldSoldier->Destroy();
 
@@ -1308,6 +1326,8 @@ void nobMilitary::HitOfCatapultStone()
     {
         std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
         helpers::pop_front(troops);
+        MilitaryEventLogger::LogUndeployment(GetEvMgr().GetCurrentGF(), player, soldier->GetRank(), bldType_,
+                                             GetObjId());
         // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
         soldier->RemoveFromInventory();
         soldier->LeftBuilding();
