@@ -558,16 +558,9 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     // Dann fahren wir da mal hin
     curRouteIdx = 0;
     goal_harborId = new_goal;
-
-    // Already arrived after calculating route? (FindShipPathToHarbor)
-    if(curRouteIdx == route_.size())
-    {
-        HandleState_ExpeditionDriving();
-        return;
-    }
-
     state = State::ExpeditionDriving;
-    StartDriving(route_[curRouteIdx++]);
+    
+    HandleState_ExpeditionDriving();
 }
 
 /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
