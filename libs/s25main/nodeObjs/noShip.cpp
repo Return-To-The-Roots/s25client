@@ -559,7 +559,7 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     curRouteIdx = 0;
     goal_harborId = new_goal;
     state = State::ExpeditionDriving;
-    
+
     HandleState_ExpeditionDriving();
 }
 
