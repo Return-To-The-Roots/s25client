@@ -18,6 +18,9 @@ tool priorities, and explicit building disables. The structure is defined in
   - `forceAdvantageRatio` – Attrition-mode multiplier against the strongest
     attackable enemy's military stat before switching to biting target
     selection.
+  - `minNearTroopsDensity` – Minimum
+    `MilitaryStatsHolder::densityNear` value required before attrition-mode AI
+    is allowed to switch to biting target selection.
   - `attackIntervals[AI::Level]` – Minimum frames between attack attempts per
     AI difficulty (easy/medium/hard).
   - `targetSelection` – Algorithm used to select objectives. Options are
@@ -39,7 +42,7 @@ following top-level sections if present:
 |-----------------|---------------------------------------------------------------------------------------|
 | `posFinder`     | Building-name map whose values feed `Weights::parseLocationParams` per entry.          |
 | `buildPlanner`  | Building-name map parsed through `Weights::parseWantedParams` to update `wantedParams`.|
-| `combat`        | Optional object containing `fulfillment`, `forceAdvantageRatio`, `attackIntervals`, and `targetSelection`. |
+| `combat`        | Optional object containing `fulfillment`, `forceAdvantageRatio`, `minNearTroopsDensity`, `attackIntervals`, and `targetSelection`. |
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |
 | `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
 
@@ -53,6 +56,7 @@ overrides can be loaded with `ApplyPlayerWeightsCfg`, which stores a dedicated
   `AI_CONFIG` singleton. Both AI planners (`AIPlayerJH`) and `GamePlayer` query
   this data.
 - The combat block defaults to attack intervals of 2500/750/100 frames
-  (easy/medium/hard) and uses random target selection until overridden.
+  (easy/medium/hard), `minNearTroopsDensity = 1.0`, and uses random target
+  selection until overridden.
 - `disableBuilding` defaults to an empty list; omitting it in YAML preserves the
   original behaviour where all buildings start enabled.

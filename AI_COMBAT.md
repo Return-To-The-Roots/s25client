@@ -3,8 +3,10 @@
 ## Tuning Sources
 - Combat thresholds and attack cadence now live in `AI_CONFIG.combat` (see `libs/s25main/ai/aijh/AIConfig.cpp:15`). Defaults:
   - Fulfillment levels: low `4.0`, medium `8.0`, high `12.0`.
+  - Minimum near-frontier troops density for attrition-to-biting switch: `1.0`.
   - Attack intervals (frames): Easy `2500`, Medium `750`, Hard `100`.
-- Optional YAML overrides can be supplied under a `combat` section with `fulfillment.low|medium|high` and `attackIntervals.easy|medium|hard`.
+- Optional YAML overrides can be supplied under a `combat` section with `fulfillment.low|medium|high`,
+  `forceAdvantageRatio`, `minNearTroopsDensity`, and `attackIntervals.easy|medium|hard`.
 
 ## Update Cadence
 - The AI runs its main loop in `AIPlayerJH::RunGF`. Every 500 game frames (offset per player) it refreshes the combat stance via `UpdateCombatMode`, using the configured fulfillment levels.

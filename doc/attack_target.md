@@ -106,8 +106,11 @@ When running with `TargetSelectionMode::Biting` the selector:
 When running with `TargetSelectionMode::Attrition` the selector:
 
 1. Pulls the latest `StatisticType::Military` values for the AI and every
-   attackable opponent. If its own forces are at least 25% stronger than the
-   strongest enemy it simply defers to the Biting heuristic.
+   attackable opponent and refreshes `MilitaryStatsHolder` densities for the
+   AI player. It defers to the Biting heuristic only if both checks pass:
+   enough global force advantage (`combat.forceAdvantageRatio`) and sufficient
+   near-frontier troop density
+   (`combat.minNearTroopsDensity` against `densityNear`).
 2. Otherwise it enumerates the same candidate list but first filters for
    `nobMilitary` buildings that were originally owned by the AI
    (`GetOriginOwner`). The AI prefers retaking these forts.

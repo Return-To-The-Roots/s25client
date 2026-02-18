@@ -24,6 +24,7 @@ struct CombatConfig
     double fulfillmentMedium = 8.0;
     double fulfillmentHigh = 12.0;
     double forceAdvantageRatio = 1.10;
+    double minNearTroopsDensity = 1.0;
     helpers::EnumArray<unsigned, AI::Level> attackIntervals;
     TargetSelectionAlgorithm targetSelection = TargetSelectionAlgorithm::Random;
 

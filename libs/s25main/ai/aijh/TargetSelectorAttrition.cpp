@@ -5,6 +5,7 @@
 #include "AIPlayerJH.h"
 
 #include "AIConfig.h"
+#include "MilitaryStatsHolder.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "EventManager.h"
@@ -53,6 +54,17 @@ bool HasForceAdvantage(const GameWorldBase& gwb, const AIInterface& aii, unsigne
         return true;
 
     return static_cast<double>(own_strength) >= static_cast<double>(strongest_enemy) * forceAdvantageRatio;
+}
+
+bool HasNearTroopsDensityForBiting(const GameWorldBase& gwb, unsigned char player_id, double minNearTroopsDensity)
+{
+    if(minNearTroopsDensity <= 0.0)
+        return true;
+
+    const auto& player = gwb.GetPlayer(player_id);
+    MilitaryStatsHolder::RefreshDensities(player);
+    const auto& stats = MilitaryStatsHolder::GetPlayerStats(player_id);
+    return stats.densityNear >= minNearTroopsDensity;
 }
 
 bool IsRecentCapture(const nobBaseMilitary& target, unsigned currentGF, unsigned captureWindow)
@@ -114,7 +126,8 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
     if(const nobBaseMilitary* recapture = PickBestTarget(recaptureCandidates, currentGF, RECENT_RECAPTURE_WINDOW_GFS))
         return recapture;
 
-    if(HasForceAdvantage(gwb, aii, playerId, config_.combat.forceAdvantageRatio))
+    if(HasForceAdvantage(gwb, aii, playerId, config_.combat.forceAdvantageRatio)
+       && HasNearTroopsDensityForBiting(gwb, playerId, config_.combat.minNearTroopsDensity))
         return SelectAttackTargetBiting();
 
     return nullptr;

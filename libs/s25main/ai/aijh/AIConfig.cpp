@@ -83,6 +83,18 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
         }
     }
 
+    if(const YAML::Node value = combatNode["minNearTroopsDensity"])
+    {
+        try
+        {
+            config.combat.minNearTroopsDensity = value.as<double>();
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid combat minNearTroopsDensity value, using default. Error: "
+                      << e.what() << std::endl;
+        }
+    }
+
     if(const YAML::Node attackIntervalsNode = combatNode["attackIntervals"])
     {
         try
