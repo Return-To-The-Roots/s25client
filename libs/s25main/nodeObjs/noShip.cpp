@@ -517,10 +517,6 @@ noShip::Result noShip::DriveToHarbourPlace()
         }
     }
 
-    // Already arrived after possibly recalculating route? (FindShipPathToHarbor)
-    if(curRouteIdx == route_.size())
-        return Result::GoalReached;
-
     RTTR_Assert(curRouteIdx < route_.size());
     StartDriving(route_[curRouteIdx++]);
 
