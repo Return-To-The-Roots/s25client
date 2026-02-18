@@ -519,7 +519,6 @@ noShip::Result noShip::DriveToHarbourPlace()
 
     RTTR_Assert(curRouteIdx < route_.size());
     StartDriving(route_[curRouteIdx++]);
-
     return Result::Driving;
 }
 
