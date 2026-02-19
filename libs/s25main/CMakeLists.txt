@@ -62,8 +62,8 @@ set(s25Main_SRCS
         ai/aijh/AIConfig.h
         ai/aijh/PlannerHelper.cpp
         ai/aijh/PlannerHelper.h
-        ai/aijh/PositionFinder.cpp
-        ai/aijh/PositionFinder.h
+        ai/aijh/GlobalPositionFinder.cpp
+        ai/aijh/GlobalPositionFinder.h
         ai/RatedPoint.h
         ai/aijh/WeightParser.h
         ai/aijh/WeightParams.h

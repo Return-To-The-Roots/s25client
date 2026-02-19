@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "PositionFinder.h"
 #include "ai/AIEventManager.h"
 #include "ai/AIPlayer.h"
 #include "ai/aijh/AIMap.h"
@@ -30,7 +29,7 @@ class Base;
 }
 
 namespace AIJH {
-class PositionFinder;
+class GlobalPositionFinder;
 class BuildingPlanner;
 class AIConstruction;
 class AIJob;
@@ -334,7 +333,7 @@ private:
     AIEventManager eventManager;
     std::unique_ptr<BuildingPlanner> bldPlanner;
     std::unique_ptr<AIConstruction> construction;
-    std::unique_ptr<PositionFinder> positionFinder;
+    std::unique_ptr<GlobalPositionFinder> globalPositionFinder;
 
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subProduction, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;

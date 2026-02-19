@@ -10,6 +10,7 @@
 #include "BuildingRegister.h"
 #include "FindWhConditions.h"
 #include "CombatLossTracker.h"
+#include "GlobalPositionFinder.h"
 #include "GameCommands.h"
 #include "GamePlayer.h"
 #include "Jobs.h"
@@ -189,7 +190,8 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
       config_(GetAIConfigForPlayer(playerId)), resourceMaps(createResourceMaps(aii, aiMap)),
       isInitGfCompleted(false), defeated(player.IsDefeated()),
       attackMode(CombatMode::DefenseMode), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
-      construction(std::make_unique<AIConstruction>(*this)), positionFinder(std::make_unique<PositionFinder>(*this))
+      construction(std::make_unique<AIConstruction>(*this)),
+      globalPositionFinder(std::make_unique<GlobalPositionFinder>(*this))
 {
     InitNodes();
     InitResourceMaps();
@@ -521,7 +523,7 @@ void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front, b
 
 MapPoint AIPlayerJH::FindBestPosition(BuildingType bt)
 {
-    return positionFinder->FindBestPosition(bt);
+    return globalPositionFinder->FindBestPosition(bt);
 }
 void AIPlayerJH::AddBuildJobAroundEveryWarehouse(BuildingType bt)
 {
