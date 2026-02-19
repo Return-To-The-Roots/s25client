@@ -31,13 +31,21 @@ struct CombatConfig
     CombatConfig();
 };
 
+struct DistributionParams
+{
+    helpers::EnumArray<double, GoodType> overstockingPenalty{};
+};
+
 struct AIConfig
 {
     helpers::EnumArray<WantedParams, BuildingType> wantedParams;
     helpers::EnumArray<LocationParams, BuildingType> locationParams;
+    helpers::EnumArray<DistributionParams, BuildingType> distributionParams;
     CombatConfig combat;
     std::vector<BuildingType> disableBuilding;
     helpers::EnumArray<signed, Tool> toolPriority = TOOL_PRIORITY;
+
+    AIConfig();
 };
 
 extern AIConfig AI_CONFIG;

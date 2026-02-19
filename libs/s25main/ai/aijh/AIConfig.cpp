@@ -20,6 +20,12 @@
 // Define the global instance
 AIConfig AI_CONFIG;
 
+AIConfig::AIConfig()
+{
+    distributionParams[BuildingType::Brewery].overstockingPenalty[GoodType::Beer] = -0.04;
+    distributionParams[BuildingType::Mint].overstockingPenalty[GoodType::Coins] = -0.04;
+}
+
 CombatConfig::CombatConfig()
 {
     attackIntervals[AI::Level::Easy] = 2500;
@@ -247,6 +253,81 @@ void applyToolPriorityCfg(const YAML::Node& toolPriorityNode, AIConfig& config)
         }
     }
 }
+
+void applyDistributionAdjusterCfg(const YAML::Node& distributionNode, AIConfig& config)
+{
+    if(!distributionNode)
+        return;
+
+    if(!distributionNode.IsMap())
+    {
+        std::cerr << "Warning: distributionAdjuster must be a map of building names." << std::endl;
+        return;
+    }
+
+    for(const auto& buildingNode : distributionNode)
+    {
+        try
+        {
+            const std::string bldName = buildingNode.first.as<std::string>();
+            const auto bldIter = BUILDING_NAME_MAP.find(bldName);
+            if(bldIter == BUILDING_NAME_MAP.end())
+            {
+                std::cerr << "Warning: Unknown building '" << bldName << "' in distributionAdjuster map."
+                          << std::endl;
+                continue;
+            }
+
+            const YAML::Node paramsNode = buildingNode.second;
+            if(!paramsNode.IsMap())
+            {
+                std::cerr << "Warning: distributionAdjuster entry for '" << bldName
+                          << "' must be a map." << std::endl;
+                continue;
+            }
+
+            if(const YAML::Node penaltiesNode = paramsNode["overstockingPenalty"])
+            {
+                if(!penaltiesNode.IsMap())
+                {
+                    std::cerr << "Warning: overstockingPenalty for '" << bldName
+                              << "' must be a map of good names to linear penalties." << std::endl;
+                    continue;
+                }
+
+                for(const auto& penaltyNode : penaltiesNode)
+                {
+                    try
+                    {
+                        const std::string goodName = penaltyNode.first.as<std::string>();
+                        const auto goodIter = GOOD_NAMES_MAP.find(goodName);
+                        if(goodIter == GOOD_NAMES_MAP.end())
+                        {
+                            std::cerr << "Warning: Unknown good '" << goodName
+                                      << "' in distributionAdjuster overstockingPenalty map." << std::endl;
+                            continue;
+                        }
+
+                        config.distributionParams[bldIter->second].overstockingPenalty[goodIter->second] =
+                          penaltyNode.second.as<double>();
+                    } catch(const YAML::TypedBadConversion<double>& e)
+                    {
+                        std::cerr << "Warning: Invalid distributionAdjuster penalty value, skipping. Error: "
+                                  << e.what() << std::endl;
+                    } catch(const YAML::TypedBadConversion<std::string>& e)
+                    {
+                        std::cerr << "Warning: Invalid distributionAdjuster penalty key, skipping. Error: "
+                                  << e.what() << std::endl;
+                    }
+                }
+            }
+        } catch(const YAML::TypedBadConversion<std::string>& e)
+        {
+            std::cerr << "Warning: Invalid distributionAdjuster building key, skipping. Error: "
+                      << e.what() << std::endl;
+        }
+    }
+}
 } // namespace
 
 extern void applyWeightsCfg(std::string weightCfgPath)
@@ -265,6 +346,7 @@ extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
         applyCombatCfg(rootNode["combat"], targetConfig);
         applyDisableBuildingCfg(rootNode["disableBuilding"], targetConfig);
         applyToolPriorityCfg(rootNode["toolPriority"], targetConfig);
+        applyDistributionAdjusterCfg(rootNode["distributionAdjuster"], targetConfig);
         std::locale::global(oldLocale);
     } catch(const YAML::Exception& e)
     {

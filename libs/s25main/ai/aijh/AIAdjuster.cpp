@@ -44,6 +44,18 @@ std::size_t GetIronMetalworksDistributionIndex()
     return idx;
 }
 
+std::size_t GetGrainBreweryDistributionIndex()
+{
+    static const std::size_t idx = GetDistributionIndex(GoodType::Grain, BuildingType::Brewery);
+    return idx;
+}
+
+std::size_t GetCoalMintDistributionIndex()
+{
+    static const std::size_t idx = GetDistributionIndex(GoodType::Coal, BuildingType::Mint);
+    return idx;
+}
+
 } // namespace
 
 namespace AIJH {
@@ -142,36 +154,84 @@ void AIPlayerJH::AdjustSettings()
 
 void AIPlayerJH::AdjustDistribution()
 {
-    if(bldPlanner->GetNumBuildings(BuildingType::Metalworks) == 0u || metalworksIronDistributionBase_ == 0u)
+    const bool adjustMetalworks = bldPlanner->GetNumBuildings(BuildingType::Metalworks) > 0u
+                                  && metalworksIronDistributionBase_ > 0u;
+    const bool adjustBrewery = bldPlanner->GetNumBuildings(BuildingType::Brewery) > 0u
+                               && breweryGrainDistributionBase_ > 0u;
+    const bool adjustMint = bldPlanner->GetNumBuildings(BuildingType::Mint) > 0u
+                            && mintCoalDistributionBase_ > 0u;
+    if(!adjustMetalworks && !adjustBrewery && !adjustMint)
         return;
 
     const Inventory& inventory = aii.GetInventory();
-    int min_surplus = std::numeric_limits<int>::max();
-    for(const auto tool : helpers::enumRange<Tool>())
-    {
-        const GoodType good = TOOL_TO_GOOD[tool];
-        const int surplus = static_cast<int>(inventory[good]) - TOOL_BASIS[tool];
-        min_surplus = std::min(min_surplus, surplus);
-    }
-
-    const std::size_t idx = GetIronMetalworksDistributionIndex();
     VisualSettings visualSettings{};
     player.FillVisualSettings(visualSettings);
-    const uint8_t currentPriority = visualSettings.distribution[idx];
+    bool hasChanges = false;
 
-    uint8_t newPriority = metalworksIronDistributionBase_;
-    if(min_surplus >= 0)
+    if(adjustMetalworks)
     {
-        const int decrease = 2 + min_surplus * 2;
-        newPriority = static_cast<uint8_t>(
-          std::max(0, static_cast<int>(metalworksIronDistributionBase_) - decrease));
+        int min_surplus = std::numeric_limits<int>::max();
+        for(const auto tool : helpers::enumRange<Tool>())
+        {
+            const GoodType good = TOOL_TO_GOOD[tool];
+            const int surplus = static_cast<int>(inventory[good]) - TOOL_BASIS[tool];
+            min_surplus = std::min(min_surplus, surplus);
+        }
+
+        const std::size_t idx = GetIronMetalworksDistributionIndex();
+        const uint8_t currentPriority = visualSettings.distribution[idx];
+        uint8_t newPriority = metalworksIronDistributionBase_;
+        if(min_surplus >= 0)
+        {
+            const int decrease = 2 + min_surplus * 2;
+            newPriority = static_cast<uint8_t>(
+              std::max(0, static_cast<int>(metalworksIronDistributionBase_) - decrease));
+        }
+        if(newPriority != currentPriority)
+        {
+            visualSettings.distribution[idx] = newPriority;
+            hasChanges = true;
+        }
     }
 
-    if(newPriority == currentPriority)
-        return;
+    if(adjustBrewery)
+    {
+        const std::size_t idx = GetGrainBreweryDistributionIndex();
+        const uint8_t currentPriority = visualSettings.distribution[idx];
+        const auto& params = config_.distributionParams[BuildingType::Brewery];
+        double rawDelta = 0.0;
+        for(const auto good : helpers::enumRange<GoodType>())
+            rawDelta += params.overstockingPenalty[good] * static_cast<double>(inventory[good]);
+        const int priorityDelta = static_cast<int>(rawDelta);
+        const uint8_t newPriority = static_cast<uint8_t>(
+          std::clamp(static_cast<int>(breweryGrainDistributionBase_) + priorityDelta, 0, 10));
+        if(newPriority != currentPriority)
+        {
+            visualSettings.distribution[idx] = newPriority;
+            hasChanges = true;
+        }
+    }
 
-    visualSettings.distribution[idx] = newPriority;
-    aii.ChangeDistribution(visualSettings.distribution);
+    if(adjustMint)
+    {
+        const std::size_t idx = GetCoalMintDistributionIndex();
+        const uint8_t currentPriority = visualSettings.distribution[idx];
+        const auto& params = config_.distributionParams[BuildingType::Mint];
+        double rawDelta = 0.0;
+        for(const auto good : helpers::enumRange<GoodType>())
+            rawDelta += params.overstockingPenalty[good] * static_cast<double>(inventory[good]);
+        const int priorityDelta = static_cast<int>(rawDelta);
+        const uint8_t newPriority = static_cast<uint8_t>(
+          std::clamp(static_cast<int>(mintCoalDistributionBase_) + priorityDelta, 0, 10));
+        if(newPriority != currentPriority)
+        {
+            visualSettings.distribution[idx] = newPriority;
+            hasChanges = true;
+        }
+    }
+
+    if(hasChanges)
+        aii.ChangeDistribution(visualSettings.distribution);
 }
 
 unsigned AIPlayerJH::CalcMilSettings()

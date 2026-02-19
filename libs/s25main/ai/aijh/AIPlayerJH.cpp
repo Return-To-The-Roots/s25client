@@ -2524,17 +2524,21 @@ void AIPlayerJH::InitDistribution()
     goodSettings[23] = 10; // water pigfarm
     goodSettings[24] = 10; // water donkeybreeder
     goodSettings[25] = 2;  // water vineyard
-    const auto ironMetalworksIdx = [] {
+    const auto findDistributionIndex = [](GoodType good, BuildingType bld) {
         for(std::size_t idx = 0; idx < distributionMap.size(); ++idx)
         {
-            if(std::get<0>(distributionMap[idx]) == GoodType::Iron
-               && std::get<1>(distributionMap[idx]) == BuildingType::Metalworks)
+            if(std::get<0>(distributionMap[idx]) == good && std::get<1>(distributionMap[idx]) == bld)
                 return idx;
         }
         RTTR_Assert(false);
         return std::size_t{};
-    }();
+    };
+    const std::size_t ironMetalworksIdx = findDistributionIndex(GoodType::Iron, BuildingType::Metalworks);
+    const std::size_t grainBreweryIdx = findDistributionIndex(GoodType::Grain, BuildingType::Brewery);
+    const std::size_t coalMintIdx = findDistributionIndex(GoodType::Coal, BuildingType::Mint);
     metalworksIronDistributionBase_ = goodSettings[ironMetalworksIdx];
+    breweryGrainDistributionBase_ = goodSettings[grainBreweryIdx];
+    mintCoalDistributionBase_ = goodSettings[coalMintIdx];
     aii.ChangeDistribution(goodSettings);
 }
 

@@ -32,6 +32,10 @@ tool priorities, and explicit building disables. The structure is defined in
 - `toolPriority` – Per-tool priority values used by `AIPlayerJH::AdjustSettings`
   when managing tool production. Defaults to the hardcoded `TOOL_PRIORITY`
   table unless overridden.
+- `distributionParams[BuildingType]` – Distribution adjuster tuning per
+  building. Each `DistributionParams` entry currently exposes
+  `overstockingPenalty[GoodType]`, a linear coefficient applied to stock levels
+  when reducing a building’s distribution priority.
 
 ## YAML Configuration
 
@@ -45,10 +49,23 @@ following top-level sections if present:
 | `combat`        | Optional object containing `fulfillment`, `forceAdvantageRatio`, `minNearTroopsDensity`, `attackIntervals`, and `targetSelection`. |
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |
 | `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
+| `distributionAdjuster` | Building-name map for distribution penalties. Each building may define `overstockingPenalty` as a map of good names to linear coefficients. |
 
 Invalid entries log warnings but leave defaults untouched. Player-specific
 overrides can be loaded with `ApplyPlayerWeightsCfg`, which stores a dedicated
 `AIConfig` instance per player ID.
+
+Example:
+
+```yaml
+distributionAdjuster:
+  Brewery:
+    overstockingPenalty:
+      Beer: -0.04
+```
+
+With this setting, every 25 beer in stock lowers `Grain -> Brewery`
+distribution by 1.
 
 ## Usage Notes
 

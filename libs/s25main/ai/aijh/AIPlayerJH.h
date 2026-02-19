@@ -304,7 +304,7 @@ private:
     unsigned CalcPotentialAttackers(const nobBaseMilitary& target) const;
     void EvaluateCaptureRisks();
     double ComputeCaptureRisk(const nobMilitary& building) const;
-    /// Adjust the iron distribution for metalworks according to tool stock
+    /// Adjust distribution priorities according to stock-dependent penalties
     void AdjustDistribution();
 
     /// The current job the AI is working on
@@ -320,6 +320,8 @@ private:
     helpers::EnumArray<unsigned, GoodType> goodsProduced{};
 
     uint8_t metalworksIronDistributionBase_ = 0;
+    uint8_t breweryGrainDistributionBase_ = 0;
+    uint8_t mintCoalDistributionBase_ = 0;
     unsigned attack_interval;
     unsigned build_interval;
     int isInitGfCompleted;
