@@ -30,6 +30,21 @@ LocationParams Weights::parseLocationParams(const YAML::Node& node, const Locati
     LocationParams params = defaults;
     if(node["buildOnBorder"])
         params.buildOnBorder = node["buildOnBorder"].as<bool>();
+    if(node["resources"])
+        for(const auto& weightEntry : node["resources"])
+        {
+            std::string resourceStr = weightEntry.first.as<std::string>();
+            AIResource resourceType;
+            try
+            {
+                resourceType = AI_RESOURCE_NAME_MAP.at(resourceStr);
+            } catch(...)
+            {
+                continue;
+            }
+
+            params.minResources[resourceType] = static_cast<unsigned>(weightEntry.second.as<double>());
+        }
     if(node["proximity"])
         for(const auto& weightEntry : node["proximity"])
         {

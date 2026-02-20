@@ -43,6 +43,46 @@ int ComputeRatingBonus(const AIPlayerJH& aijh, AIConstruction& construction, con
     const int neighbors = construction.CountUsualBuildingInRadius(candidate, radius, targetType);
     return neighbors * multiplier;
 }
+
+bool MeetsMinimalResourceRequirement(const AIPlayerJH& aijh, const BuildingType type, const AIResource res, int rating)
+{
+    const unsigned minRequirement = aijh.GetConfig().locationParams[type].minResources[res];
+    return rating >= static_cast<int>(minRequirement);
+}
+
+bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, AIInterface& aii, const BuildingType type,
+                                    const MapPoint& pt)
+{
+    switch(type)
+    {
+        case BuildingType::Woodcutter:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Wood,
+                                                   aii.CalcResourceValue(pt, AIResource::Wood));
+        case BuildingType::Forester:
+        case BuildingType::Farm:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Plantspace,
+                                                   aii.CalcResourceValue(pt, AIResource::Plantspace));
+        case BuildingType::Quarry:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Stones,
+                                                   aii.CalcResourceValue(pt, AIResource::Stones));
+        case BuildingType::Fishery:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Fish,
+                                                   aii.CalcResourceValue(pt, AIResource::Fish));
+        case BuildingType::GoldMine:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Gold,
+                                                   aii.CalcResourceValue(pt, AIResource::Gold));
+        case BuildingType::CoalMine:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Coal,
+                                                   aii.CalcResourceValue(pt, AIResource::Coal));
+        case BuildingType::IronMine:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Ironore,
+                                                   aii.CalcResourceValue(pt, AIResource::Ironore));
+        case BuildingType::GraniteMine:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Granite,
+                                                   aii.CalcResourceValue(pt, AIResource::Granite));
+        default: return true;
+    }
+}
 } // namespace
 
 GlobalPositionFinder::GlobalPositionFinder(AIPlayerJH& aijh) : aijh(aijh) {}
@@ -125,7 +165,7 @@ std::optional<int> GlobalPositionFinder::GetPointRating(const BuildingType type,
         case BuildingType::Woodcutter:
         {
             const int woodRating = aii.CalcResourceValue(pt, AIResource::Wood);
-            if(woodRating < 50 || construction.OtherUsualBuildingInRadius(pt, 3, BuildingType::Woodcutter))
+            if(construction.OtherUsualBuildingInRadius(pt, 3, BuildingType::Woodcutter))
                 return std::nullopt;
             const int ratingBonus = ComputeRatingBonus(aijh, construction, type, BuildingType::Forester, 7, 300, pt);
             return woodRating + ratingBonus;
@@ -133,33 +173,35 @@ std::optional<int> GlobalPositionFinder::GetPointRating(const BuildingType type,
         case BuildingType::Forester:
         {
             const int plantspaceRating = aii.CalcResourceValue(pt, AIResource::Plantspace);
-            if(plantspaceRating < 50)
-                return std::nullopt;
             const int ratingBonus = ComputeRatingBonus(aijh, construction, type, BuildingType::Woodcutter, 6, 50, pt);
             return plantspaceRating + ratingBonus;
         }
         case BuildingType::Farm:
         {
             const int plantspaceRating = aii.CalcResourceValue(pt, AIResource::Plantspace);
-            if(plantspaceRating < 85 || construction.OtherUsualBuildingInRadius(pt, 8, BuildingType::Forester))
+            if(construction.OtherUsualBuildingInRadius(pt, 8, BuildingType::Forester))
                 return std::nullopt;
             return plantspaceRating;
         }
         case BuildingType::Quarry:
         {
             const int stoneRating = aii.CalcResourceValue(pt, AIResource::Stones);
-            if(stoneRating < 40 || !ValidStoneinRange(pt))
+            if(!ValidStoneinRange(pt))
                 return std::nullopt;
             return stoneRating;
         }
         case BuildingType::Fishery:
         {
             const int fishRating = aii.CalcResourceValue(pt, AIResource::Fish);
-            if(fishRating < 20 || aii.isBuildingNearby(BuildingType::Fishery, pt, 5)
+            if(aii.isBuildingNearby(BuildingType::Fishery, pt, 5)
                || !ValidFishInRange(pt))
                 return std::nullopt;
             return fishRating;
         }
+        case BuildingType::GoldMine: return aii.CalcResourceValue(pt, AIResource::Gold);
+        case BuildingType::CoalMine: return aii.CalcResourceValue(pt, AIResource::Coal);
+        case BuildingType::IronMine: return aii.CalcResourceValue(pt, AIResource::Ironore);
+        case BuildingType::GraniteMine: return aii.CalcResourceValue(pt, AIResource::Granite);
         default: return 1;
     }
 }
@@ -182,6 +224,8 @@ MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)
         if(aii.isHarborPosClose(pt, 2, true) && requiredSize != BuildingQuality::Harbor)
             continue;
         if(IsBorderBlocked(aijh, aii, bt, pt))
+            continue;
+        if(!MeetsPointResourceRequirements(aijh, aii, bt, pt))
             continue;
 
         const std::optional<int> pointRating = GetPointRating(bt, pt);

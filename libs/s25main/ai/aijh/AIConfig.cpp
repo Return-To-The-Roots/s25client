@@ -22,6 +22,16 @@ AIConfig AI_CONFIG;
 
 AIConfig::AIConfig()
 {
+    locationParams[BuildingType::Woodcutter].minResources[AIResource::Wood] = 50;
+    locationParams[BuildingType::Forester].minResources[AIResource::Plantspace] = 50;
+    locationParams[BuildingType::Farm].minResources[AIResource::Plantspace] = 85;
+    locationParams[BuildingType::Quarry].minResources[AIResource::Stones] = 40;
+    locationParams[BuildingType::Fishery].minResources[AIResource::Fish] = 20;
+    locationParams[BuildingType::GoldMine].minResources[AIResource::Gold] = 1;
+    locationParams[BuildingType::CoalMine].minResources[AIResource::Coal] = 1;
+    locationParams[BuildingType::IronMine].minResources[AIResource::Ironore] = 1;
+    locationParams[BuildingType::GraniteMine].minResources[AIResource::Granite] = 1;
+
     distributionParams[GoodType::Grain][BuildingType::Brewery].enabled = true;
     distributionParams[GoodType::Grain][BuildingType::Brewery].overstockingPenalty[GoodType::Beer] =
       BuildParams{0.0, -0.04, 0.0, {}, 0, 99999, true};

@@ -12,6 +12,8 @@ tool priorities, and explicit building disables. The structure is defined in
   planner uses to decide whether another building of a given type is needed.
 - `locationParams[BuildingType]` – Position-finding weights that rate how
   attractive a potential site is (terrain access, distance modifiers, etc.).
+  Includes `resources` thresholds for minimal required AI resource values per
+  building placement heuristic.
 - `combat` – A `CombatConfig` block holding:
   - `fulfillmentLow/Medium/High` thresholds that describe how many soldiers the
     AI wants on hand before escalating attack plans.
@@ -45,7 +47,7 @@ following top-level sections if present:
 
 | Key             | Description                                                                           |
 |-----------------|---------------------------------------------------------------------------------------|
-| `posFinder`     | Building-name map whose values feed `Weights::parseLocationParams` per entry.          |
+| `posFinder`     | Building-name map whose values feed `Weights::parseLocationParams` per entry (including `resources`, `proximity`, `rating`, `buildOnBorder`). |
 | `buildPlanner`  | Building-name map parsed through `Weights::parseWantedParams` to update `wantedParams`.|
 | `combat`        | Optional object containing `fulfillment`, `forceAdvantageRatio`, `minNearTroopsDensity`, `attackIntervals`, and `targetSelection`. |
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |

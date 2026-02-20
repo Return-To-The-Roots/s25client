@@ -44,6 +44,7 @@ struct LocationParams
 {
     bool enabled = false;
     bool buildOnBorder = true;
+    helpers::EnumArray<unsigned, AIResource> minResources = helpers::EnumArray<unsigned, AIResource>{};
     helpers::EnumArray<ProximityParams, BuildingType> proximity = helpers::EnumArray<ProximityParams, BuildingType>{};
     helpers::EnumArray<RatingParams, BuildingType> rating = helpers::EnumArray<RatingParams, BuildingType>{};
 };
