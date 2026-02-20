@@ -12,6 +12,7 @@
 #include "helpers/OptionalEnum.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/SettingsTypes.h"
 #include <list>
 #include <memory>
 #include <queue>
@@ -320,8 +321,7 @@ private:
     helpers::EnumArray<unsigned, GoodType> goodsProduced{};
 
     uint8_t metalworksIronDistributionBase_ = 0;
-    uint8_t breweryGrainDistributionBase_ = 0;
-    uint8_t mintCoalDistributionBase_ = 0;
+    Distributions distributionAdjusterBase_{};
     unsigned attack_interval;
     unsigned build_interval;
     int isInitGfCompleted;

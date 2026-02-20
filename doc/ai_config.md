@@ -32,10 +32,11 @@ tool priorities, and explicit building disables. The structure is defined in
 - `toolPriority` – Per-tool priority values used by `AIPlayerJH::AdjustSettings`
   when managing tool production. Defaults to the hardcoded `TOOL_PRIORITY`
   table unless overridden.
-- `distributionParams[BuildingType]` – Distribution adjuster tuning per
-  building. Each `DistributionParams` entry currently exposes
-  `overstockingPenalty[GoodType]`, a linear coefficient applied to stock levels
-  when reducing a building’s distribution priority.
+- `distributionParams[GoodType][BuildingType]` – Distribution adjuster tuning
+  per distribution edge (`distributed good -> target building`). Each
+  `DistributionParams` entry exposes `overstockingPenalty[GoodType]` as
+  `BuildParams`, so penalties can use `constant`, `linear`, `exponential`,
+  `logTwo`, `min`, and `max`.
 
 ## YAML Configuration
 
@@ -49,7 +50,7 @@ following top-level sections if present:
 | `combat`        | Optional object containing `fulfillment`, `forceAdvantageRatio`, `minNearTroopsDensity`, `attackIntervals`, and `targetSelection`. |
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |
 | `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
-| `distributionAdjuster` | Building-name map for distribution penalties. Each building may define `overstockingPenalty` as a map of good names to linear coefficients. |
+| `distributionAdjuster` | Map of distributed goods to target buildings. Each `distributedGood -> building` node may define `overstockingPenalty` as a map of stock goods to `BuildParams`. |
 
 Invalid entries log warnings but leave defaults untouched. Player-specific
 overrides can be loaded with `ApplyPlayerWeightsCfg`, which stores a dedicated
@@ -59,13 +60,22 @@ Example:
 
 ```yaml
 distributionAdjuster:
-  Brewery:
-    overstockingPenalty:
-      Beer: -0.04
+  Fish:
+    CoalMine:
+      overstockingPenalty:
+        Coal:
+          min: 50
+          linear: -0.02
+    GoldMine:
+      overstockingPenalty:
+        Coal:
+          min: 35
+          linear: -0.04
 ```
 
-With this setting, every 25 beer in stock lowers `Grain -> Brewery`
-distribution by 1.
+With these settings:
+- `Fish -> CoalMine` drops by 1 for each 50 coal over 50 stock.
+- `Fish -> GoldMine` drops by 1 for each 25 coal over 35 stock.
 
 ## Usage Notes
 

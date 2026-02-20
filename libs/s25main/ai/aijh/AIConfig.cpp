@@ -22,8 +22,12 @@ AIConfig AI_CONFIG;
 
 AIConfig::AIConfig()
 {
-    distributionParams[BuildingType::Brewery].overstockingPenalty[GoodType::Beer] = -0.04;
-    distributionParams[BuildingType::Mint].overstockingPenalty[GoodType::Coins] = -0.04;
+    distributionParams[GoodType::Grain][BuildingType::Brewery].enabled = true;
+    distributionParams[GoodType::Grain][BuildingType::Brewery].overstockingPenalty[GoodType::Beer] =
+      BuildParams{0.0, -0.04, 0.0, {}, 0, 99999, true};
+    distributionParams[GoodType::Coal][BuildingType::Mint].enabled = true;
+    distributionParams[GoodType::Coal][BuildingType::Mint].overstockingPenalty[GoodType::Coins] =
+      BuildParams{0.0, -0.04, 0.0, {}, 0, 99999, true};
 }
 
 CombatConfig::CombatConfig()
@@ -261,69 +265,93 @@ void applyDistributionAdjusterCfg(const YAML::Node& distributionNode, AIConfig& 
 
     if(!distributionNode.IsMap())
     {
-        std::cerr << "Warning: distributionAdjuster must be a map of building names." << std::endl;
+        std::cerr << "Warning: distributionAdjuster must be a map of distributed goods." << std::endl;
         return;
     }
 
-    for(const auto& buildingNode : distributionNode)
+    for(const auto& goodNode : distributionNode)
     {
         try
         {
-            const std::string bldName = buildingNode.first.as<std::string>();
-            const auto bldIter = BUILDING_NAME_MAP.find(bldName);
-            if(bldIter == BUILDING_NAME_MAP.end())
+            const std::string distributedGoodName = goodNode.first.as<std::string>();
+            const auto distributedGoodIt = GOOD_NAMES_MAP.find(distributedGoodName);
+            if(distributedGoodIt == GOOD_NAMES_MAP.end())
             {
-                std::cerr << "Warning: Unknown building '" << bldName << "' in distributionAdjuster map."
+                std::cerr << "Warning: Unknown distributed good '" << distributedGoodName
+                          << "' in distributionAdjuster map."
                           << std::endl;
                 continue;
             }
 
-            const YAML::Node paramsNode = buildingNode.second;
-            if(!paramsNode.IsMap())
+            const YAML::Node buildingMapNode = goodNode.second;
+            if(!buildingMapNode.IsMap())
             {
-                std::cerr << "Warning: distributionAdjuster entry for '" << bldName
-                          << "' must be a map." << std::endl;
+                std::cerr << "Warning: distributionAdjuster entry for '" << distributedGoodName
+                          << "' must be a map of building names." << std::endl;
                 continue;
             }
 
-            if(const YAML::Node penaltiesNode = paramsNode["overstockingPenalty"])
+            for(const auto& buildingNode : buildingMapNode)
             {
-                if(!penaltiesNode.IsMap())
+                const std::string bldName = buildingNode.first.as<std::string>();
+                const auto bldIter = BUILDING_NAME_MAP.find(bldName);
+                if(bldIter == BUILDING_NAME_MAP.end())
                 {
-                    std::cerr << "Warning: overstockingPenalty for '" << bldName
-                              << "' must be a map of good names to linear penalties." << std::endl;
+                    std::cerr << "Warning: Unknown building '" << bldName
+                              << "' in distributionAdjuster map for good '" << distributedGoodName << "'."
+                              << std::endl;
                     continue;
                 }
 
-                for(const auto& penaltyNode : penaltiesNode)
+                DistributionParams& params = config.distributionParams[distributedGoodIt->second][bldIter->second];
+                const YAML::Node paramsNode = buildingNode.second;
+                if(!paramsNode.IsMap())
                 {
-                    try
-                    {
-                        const std::string goodName = penaltyNode.first.as<std::string>();
-                        const auto goodIter = GOOD_NAMES_MAP.find(goodName);
-                        if(goodIter == GOOD_NAMES_MAP.end())
-                        {
-                            std::cerr << "Warning: Unknown good '" << goodName
-                                      << "' in distributionAdjuster overstockingPenalty map." << std::endl;
-                            continue;
-                        }
+                    std::cerr << "Warning: distributionAdjuster entry for '" << distributedGoodName << " -> " << bldName
+                              << "' must be a map." << std::endl;
+                    continue;
+                }
 
-                        config.distributionParams[bldIter->second].overstockingPenalty[goodIter->second] =
-                          penaltyNode.second.as<double>();
-                    } catch(const YAML::TypedBadConversion<double>& e)
+                if(const YAML::Node penaltiesNode = paramsNode["overstockingPenalty"])
+                {
+                    if(!penaltiesNode.IsMap())
                     {
-                        std::cerr << "Warning: Invalid distributionAdjuster penalty value, skipping. Error: "
-                                  << e.what() << std::endl;
-                    } catch(const YAML::TypedBadConversion<std::string>& e)
+                        std::cerr << "Warning: overstockingPenalty for '" << distributedGoodName << " -> " << bldName
+                                  << "' must be a map of good names to BuildParams." << std::endl;
+                        continue;
+                    }
+
+                    for(const auto& penaltyNode : penaltiesNode)
                     {
-                        std::cerr << "Warning: Invalid distributionAdjuster penalty key, skipping. Error: "
-                                  << e.what() << std::endl;
+                        try
+                        {
+                            const std::string goodName = penaltyNode.first.as<std::string>();
+                            const auto goodIter = GOOD_NAMES_MAP.find(goodName);
+                            if(goodIter == GOOD_NAMES_MAP.end())
+                            {
+                                std::cerr << "Warning: Unknown good '" << goodName
+                                          << "' in distributionAdjuster overstockingPenalty map." << std::endl;
+                                continue;
+                            }
+
+                            params.overstockingPenalty[goodIter->second] =
+                              Weights::parseBuildParams(penaltyNode.second, params.overstockingPenalty[goodIter->second]);
+                            params.enabled = true;
+                        } catch(const YAML::TypedBadConversion<std::string>& e)
+                        {
+                            std::cerr << "Warning: Invalid distributionAdjuster penalty key, skipping. Error: "
+                                      << e.what() << std::endl;
+                        } catch(const YAML::Exception& e)
+                        {
+                            std::cerr << "Warning: Invalid distributionAdjuster penalty value, skipping. Error: "
+                                      << e.what() << std::endl;
+                        }
                     }
                 }
             }
         } catch(const YAML::TypedBadConversion<std::string>& e)
         {
-            std::cerr << "Warning: Invalid distributionAdjuster building key, skipping. Error: "
+            std::cerr << "Warning: Invalid distributionAdjuster key, skipping. Error: "
                       << e.what() << std::endl;
         }
     }

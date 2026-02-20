@@ -11,5 +11,8 @@ double CALC::calcCount(unsigned x, BuildParams params)
 {
     double log2_linear = fabs(params.logTwo.linear);
     double log2Val = std::max(0.0, std::log(params.logTwo.constant + log2_linear * x));
-    return params.constant + params.linear * x + boost::math::sign(params.logTwo.linear) * log2Val;
+    // Clamp exponent input to keep exp() numerically stable for large stocks/counts.
+    const double expInput = std::min<double>(x, 50.0);
+    const double expVal = params.exponential * std::exp(expInput);
+    return params.constant + params.linear * x + expVal + boost::math::sign(params.logTwo.linear) * log2Val;
 }

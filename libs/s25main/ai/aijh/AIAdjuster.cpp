@@ -44,18 +44,6 @@ std::size_t GetIronMetalworksDistributionIndex()
     return idx;
 }
 
-std::size_t GetGrainBreweryDistributionIndex()
-{
-    static const std::size_t idx = GetDistributionIndex(GoodType::Grain, BuildingType::Brewery);
-    return idx;
-}
-
-std::size_t GetCoalMintDistributionIndex()
-{
-    static const std::size_t idx = GetDistributionIndex(GoodType::Coal, BuildingType::Mint);
-    return idx;
-}
-
 } // namespace
 
 namespace AIJH {
@@ -156,12 +144,6 @@ void AIPlayerJH::AdjustDistribution()
 {
     const bool adjustMetalworks = bldPlanner->GetNumBuildings(BuildingType::Metalworks) > 0u
                                   && metalworksIronDistributionBase_ > 0u;
-    const bool adjustBrewery = bldPlanner->GetNumBuildings(BuildingType::Brewery) > 0u
-                               && breweryGrainDistributionBase_ > 0u;
-    const bool adjustMint = bldPlanner->GetNumBuildings(BuildingType::Mint) > 0u
-                            && mintCoalDistributionBase_ > 0u;
-    if(!adjustMetalworks && !adjustBrewery && !adjustMint)
-        return;
 
     const Inventory& inventory = aii.GetInventory();
     VisualSettings visualSettings{};
@@ -194,35 +176,44 @@ void AIPlayerJH::AdjustDistribution()
         }
     }
 
-    if(adjustBrewery)
+    for(std::size_t idx = 0; idx < distributionMap.size(); ++idx)
     {
-        const std::size_t idx = GetGrainBreweryDistributionIndex();
-        const uint8_t currentPriority = visualSettings.distribution[idx];
-        const auto& params = config_.distributionParams[BuildingType::Brewery];
-        double rawDelta = 0.0;
-        for(const auto good : helpers::enumRange<GoodType>())
-            rawDelta += params.overstockingPenalty[good] * static_cast<double>(inventory[good]);
-        const int priorityDelta = static_cast<int>(rawDelta);
-        const uint8_t newPriority = static_cast<uint8_t>(
-          std::clamp(static_cast<int>(breweryGrainDistributionBase_) + priorityDelta, 0, 10));
-        if(newPriority != currentPriority)
-        {
-            visualSettings.distribution[idx] = newPriority;
-            hasChanges = true;
-        }
-    }
+        const auto& mapping = distributionMap[idx];
+        const GoodType distributedGood = std::get<0>(mapping);
+        const BuildingType targetBuilding = std::get<1>(mapping);
 
-    if(adjustMint)
-    {
-        const std::size_t idx = GetCoalMintDistributionIndex();
-        const uint8_t currentPriority = visualSettings.distribution[idx];
-        const auto& params = config_.distributionParams[BuildingType::Mint];
+        // Keep the existing dedicated Metalworks logic unchanged.
+        if(distributedGood == GoodType::Iron && targetBuilding == BuildingType::Metalworks)
+            continue;
+        if(bldPlanner->GetNumBuildings(targetBuilding) == 0u)
+            continue;
+
+        const DistributionParams& params = config_.distributionParams[distributedGood][targetBuilding];
+        if(!params.enabled)
+            continue;
+
         double rawDelta = 0.0;
+        bool hasPenalty = false;
         for(const auto good : helpers::enumRange<GoodType>())
-            rawDelta += params.overstockingPenalty[good] * static_cast<double>(inventory[good]);
+        {
+            const BuildParams penalty = params.overstockingPenalty[good];
+            if(!penalty.enabled)
+                continue;
+            hasPenalty = true;
+            if(inventory[good] <= penalty.min)
+                continue;
+
+            const unsigned overstock = inventory[good] - penalty.min;
+            const double value = CALC::calcCount(overstock, penalty);
+            rawDelta += std::min<double>(value, penalty.max);
+        }
+        if(!hasPenalty)
+            continue;
+
+        const uint8_t currentPriority = visualSettings.distribution[idx];
         const int priorityDelta = static_cast<int>(rawDelta);
         const uint8_t newPriority = static_cast<uint8_t>(
-          std::clamp(static_cast<int>(mintCoalDistributionBase_) + priorityDelta, 0, 10));
+          std::clamp(static_cast<int>(distributionAdjusterBase_[idx]) + priorityDelta, 0, 10));
         if(newPriority != currentPriority)
         {
             visualSettings.distribution[idx] = newPriority;

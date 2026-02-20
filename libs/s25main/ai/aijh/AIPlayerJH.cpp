@@ -2534,11 +2534,8 @@ void AIPlayerJH::InitDistribution()
         return std::size_t{};
     };
     const std::size_t ironMetalworksIdx = findDistributionIndex(GoodType::Iron, BuildingType::Metalworks);
-    const std::size_t grainBreweryIdx = findDistributionIndex(GoodType::Grain, BuildingType::Brewery);
-    const std::size_t coalMintIdx = findDistributionIndex(GoodType::Coal, BuildingType::Mint);
     metalworksIronDistributionBase_ = goodSettings[ironMetalworksIdx];
-    breweryGrainDistributionBase_ = goodSettings[grainBreweryIdx];
-    mintCoalDistributionBase_ = goodSettings[coalMintIdx];
+    distributionAdjusterBase_ = goodSettings;
     aii.ChangeDistribution(goodSettings);
 }
 

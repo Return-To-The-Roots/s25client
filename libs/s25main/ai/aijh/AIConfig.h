@@ -33,14 +33,15 @@ struct CombatConfig
 
 struct DistributionParams
 {
-    helpers::EnumArray<double, GoodType> overstockingPenalty{};
+    bool enabled = false;
+    helpers::EnumArray<BuildParams, GoodType> overstockingPenalty{};
 };
 
 struct AIConfig
 {
     helpers::EnumArray<WantedParams, BuildingType> wantedParams;
     helpers::EnumArray<LocationParams, BuildingType> locationParams;
-    helpers::EnumArray<DistributionParams, BuildingType> distributionParams;
+    helpers::EnumArray<helpers::EnumArray<DistributionParams, BuildingType>, GoodType> distributionParams;
     CombatConfig combat;
     std::vector<BuildingType> disableBuilding;
     helpers::EnumArray<signed, Tool> toolPriority = TOOL_PRIORITY;
