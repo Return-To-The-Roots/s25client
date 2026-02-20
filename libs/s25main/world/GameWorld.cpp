@@ -730,7 +730,7 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
                        const bool strong_soldiers)
 {
     auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
-    if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
+    if(!attacked_building || !attacked_building->CanBeAttackedBy(player_attacker))
         return;
 
     // Militärgebäude in der Nähe finden
@@ -803,9 +803,13 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
         curNumSoldiers++;
     }
 
-    if(curNumSoldiers > 0 && HasLua())
+    if(curNumSoldiers > 0)
     {
-        GetLua().EventAttack(player_attacker, attacked_building->GetPlayer(), curNumSoldiers);
+        GetPlayer(attacked_building->GetPlayer()).OnAttackedBy(player_attacker);
+        if(HasLua())
+        {
+            GetLua().EventAttack(player_attacker, attacked_building->GetPlayer(), curNumSoldiers);
+        }
     }
 }
 
@@ -851,9 +855,13 @@ void GameWorld::AttackViaSea(const unsigned char player_attacker, const MapPoint
         counter++;
     }
 
-    if(counter > 0 && HasLua())
+    if(counter > 0)
     {
-        GetLua().EventAttack(player_attacker, attacked_building.GetPlayer(), counter);
+        GetPlayer(attacked_building.GetPlayer()).OnAttackedBy(player_attacker);
+        if(HasLua())
+        {
+            GetLua().EventAttack(player_attacker, attacked_building.GetPlayer(), counter);
+        }
     }
 }
 
@@ -1228,7 +1236,7 @@ void GameWorld::RecalcMovingVisibilities(const MapPoint pt, const unsigned char 
         if(current_owner
            && (old_vis == Visibility::Invisible || (old_vis == Visibility::FogOfWar && old_owner != current_owner)))
         {
-            if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).CanAttack(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }
@@ -1252,7 +1260,7 @@ void GameWorld::RecalcMovingVisibilities(const MapPoint pt, const unsigned char 
         if(current_owner
            && (old_vis == Visibility::Invisible || (old_vis == Visibility::FogOfWar && old_owner != current_owner)))
         {
-            if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).CanAttack(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }

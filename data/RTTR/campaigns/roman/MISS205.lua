@@ -1,14 +1,13 @@
 ------------------------------------------------------------------------------
 -- LUA-Script for MISS205.WLD (mission 6 of the original "Roman Campaign"   --
 --                                                                          --
--- Authors: CrazyL, Spikeone, ArthurMurray47                                --
+-- Authors: CrazyL, Spikeone, ArthurMurray47, kubaau                        --
 ------------------------------------------------------------------------------
 
 
 -------------------------------- TODO -----------------------------------------
 -- EnableNextMissions()
 -- Set Portraits
--- Set AI Agression Level
 -------------------------------------------------------------------------------
 
 
@@ -113,6 +112,7 @@ function onSettingsReady()
     checkVersion()
     rttr:Log("-----------------------\n MISS205.lua loaded... \n-----------------------\n")
     rttr:ResetAddons()
+    rttr:SetAddon(ADDON_CATAPULTS_ATTACK_ALLIES, true)
     rttr:SetAddon(ADDON_FRONTIER_DISTANCE_REACHABLE, true)
     rttr:SetGameSettings({
         ["fow"] = EXP_CLASSIC,
@@ -129,14 +129,12 @@ function onSettingsReady()
     rttr:GetPlayer(1):SetColor(1)               -- yellow
     rttr:GetPlayer(1):SetName('Erik')           -- Enemy Name
     rttr:GetPlayer(1):SetPortrait(3)
-    rttr:GetPlayer(1):SetTeam(TM_TEAM1)
 
     rttr:GetPlayer(2):SetAI(3)                  -- hard AI
     rttr:GetPlayer(2):SetNation(NAT_VIKINGS)    -- nation
     rttr:GetPlayer(2):SetColor(2)               -- red
     rttr:GetPlayer(2):SetName('Olof')           -- Enemy Name
     rttr:GetPlayer(2):SetPortrait(5)
-    rttr:GetPlayer(2):SetTeam(TM_TEAM1)
 end
 
 function getAllowedChanges()
@@ -155,6 +153,8 @@ end
 
 -- start callback
 function onStart(isFirstStart)
+    -- no alliances in this mission
+
     for i = 0, 2 do                         -- set resources
         addPlayerRes(i, not isFirstStart)
         addPlayerBld(i, not isFirstStart)

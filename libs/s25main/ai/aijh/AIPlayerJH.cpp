@@ -1533,7 +1533,7 @@ void AIPlayerJH::TryToAttack()
             if(target->GetGOT() == GO_Type::NobMilitary && static_cast<const nobMilitary*>(target)->IsNewBuilt())
                 continue;
             MapPoint dest = target->GetPos();
-            if(gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE && aii.IsPlayerAttackable(target->GetPlayer())
+            if(gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE && aii.CanAttack(target->GetPlayer())
                && aii.IsVisible(dest))
             {
                 if(target->GetGOT() != GO_Type::NobMilitary && !target->DefendersAvailable())
@@ -1636,7 +1636,7 @@ void AIPlayerJH::TrySeaAttack()
         {
             if(aii.IsVisible(hb->GetPos()))
             {
-                if(aii.IsPlayerAttackable(hb->GetPlayer()))
+                if(aii.CanAttack(hb->GetPlayer()))
                 {
                     // attackers for this building?
                     const std::vector<unsigned short> testseaidswithattackers =
@@ -1690,7 +1690,7 @@ void AIPlayerJH::TrySeaAttack()
         sortedMilitaryBlds buildings = gwb.LookForMilitaryBuildings(gwb.GetHarborPoint(searcharoundharborspots[i]), 2);
         for(const nobBaseMilitary* milBld : buildings)
         {
-            if(aii.IsPlayerAttackable(milBld->GetPlayer()) && aii.IsVisible(milBld->GetPos()))
+            if(aii.CanAttack(milBld->GetPlayer()) && aii.IsVisible(milBld->GetPos()))
             {
                 const auto* enemyTarget = dynamic_cast<const nobMilitary*>((milBld));
 

@@ -546,7 +546,7 @@ void nofAttacker::OrderAggressiveDefender()
         GamePlayer& bldOwner = world->GetPlayer(bldOwnerId);
         if(!bldOwner.IsAlly(attacked_goal->GetPlayer()))
             continue;
-        if(!bldOwner.IsAttackable(player))
+        if(!bldOwner.CanAttack(player))
             continue;
         // If player did not decide on sending do it now.
         // Doing this as late as here reduces chances,
