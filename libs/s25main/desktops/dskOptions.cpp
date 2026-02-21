@@ -254,7 +254,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlOptionGroup* upnp = groupCommon->AddOptionGroup(ID_grpUPNP, GroupSelectType::Check);
     upnp->AddTextButton(ID_btOn, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, _("On"), NormalFont);
     upnp->AddTextButton(ID_btOff, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Off"), NormalFont);
-    upnp->SetSelection(SETTINGS.global.use_upnp);
+    upnp->SetSelection(SETTINGS.global.useUPNP);
     curPos.y += rowHeight;
 
     // Proxy type
@@ -312,8 +312,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     mainGroup->AddTextButton(ID_btSubmitDebugAsk, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Ask always"),
                              NormalFont);
 
-    mainGroup->SetSelection((SETTINGS.global.submit_debug_data == 1) ? ID_btSubmitDebugOn :
-                                                                       ID_btSubmitDebugAsk); //-V807
+    mainGroup->SetSelection((SETTINGS.global.submitDebugData == 1) ? ID_btSubmitDebugOn : ID_btSubmitDebugAsk); //-V807
     curPos.y += rowHeight;
 
     groupCommon->AddText(ID_txtGFInfo, curPos, _("Show GameFrame Info:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -479,7 +478,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     groupGraphics->GetCtrl<ctrlOptionGroup>(ID_grpVBO)->SetSelection(SETTINGS.video.vbo);
 
-    groupGraphics->GetCtrl<ctrlOptionGroup>(ID_grpOptTextures)->SetSelection(SETTINGS.video.shared_textures);
+    groupGraphics->GetCtrl<ctrlOptionGroup>(ID_grpOptTextures)->SetSelection(SETTINGS.video.sharedTextures);
     // }
 
     // Sound
@@ -594,7 +593,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
     {
         case ID_grpIpv6: SETTINGS.server.ipv6 = enabled; break;
         case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
-        case ID_grpOptTextures: SETTINGS.video.shared_textures = enabled; break;
+        case ID_grpOptTextures: SETTINGS.video.sharedTextures = enabled; break;
         case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;
         case ID_grpBirdSounds: SETTINGS.sound.birdsEnabled = enabled; break;
         case ID_grpMusic:
@@ -606,9 +605,9 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             break;
         case ID_grpDebugData:
             // Special case: Uses e.g. ID_btSubmitDebugOn directly
-            SETTINGS.global.submit_debug_data = selection;
+            SETTINGS.global.submitDebugData = selection;
             break;
-        case ID_grpUPNP: SETTINGS.global.use_upnp = enabled; break;
+        case ID_grpUPNP: SETTINGS.global.useUPNP = enabled; break;
         case ID_grpSmartCursor:
             SETTINGS.global.smartCursor = enabled;
             VIDEODRIVER.SetMouseWarping(enabled);
