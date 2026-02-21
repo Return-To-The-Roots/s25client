@@ -51,7 +51,7 @@ void ctrlComboBox::Resize(const Extent& newSize)
     {
         // zu große geworden?
         listSize.y += font->getHeight();
-        unsigned short scaledMaxHeight = ScaleIf(Extent(0, max_list_height)).y;
+        unsigned short scaledMaxHeight = Extent(0, max_list_height).y;
 
         if(listSize.y > scaledMaxHeight)
         {

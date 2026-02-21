@@ -12,7 +12,7 @@ struct ScaleWindowPropUp
     ScaleWindowPropUp(const Extent& size) : size(size) {}
 
     template<typename T_Pt>
-    static T_Pt scale(const T_Pt& value, const Extent& size);
+    static T_Pt scale(const T_Pt& value, const Extent& size, const unsigned limfactor);
     template<typename T_Pt>
     T_Pt operator()(const T_Pt& value) const;
 };
@@ -25,18 +25,28 @@ struct RescaleWindowProp
     /// Scale the point or size from beeing relative to the oldSize to relative to the newSize
     template<typename T_Pt>
     T_Pt operator()(const T_Pt& oldValue) const;
+    template<typename T_Pt>
+    T_Pt operator()(const T_Pt& trueValue, const unsigned limfactor) const;
 };
 
 template<typename T_Pt>
-inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale)
+inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale, const unsigned limfactor)
 {
-    return T_Pt(value * sizeToScale / Extent(800, 600));
+    T_Pt scaledValue(value * sizeToScale / Extent(800, 600));
+    if(limfactor > 0)
+    {
+        if(scaledValue.x > value.x << limfactor)
+            scaledValue.x = value.x << limfactor;
+        if(scaledValue.y > value.y << limfactor)
+            scaledValue.y = value.y << limfactor; 
+    }
+    return scaledValue;
 }
 
 template<typename T_Pt>
 inline T_Pt ScaleWindowPropUp::operator()(const T_Pt& value) const
 {
-    return scale(value, size);
+    return scale(value, size, 0);
 }
 
 template<typename T_Pt>
@@ -44,10 +54,23 @@ inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue) const
 {
     T_Pt realValue(oldValue.x * 800 / oldSize.x, oldValue.y * 600 / oldSize.y);
     // Check for rounding errors
-    T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize);
+    T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize, 0);
     if(checkValue.x < oldValue.x)
         realValue.x++;
     if(checkValue.y < oldValue.y)
         realValue.y++;
-    return ScaleWindowPropUp::scale(realValue, newSize);
+    return ScaleWindowPropUp::scale(realValue, newSize, 0);
+}
+
+template<typename T_Pt>
+inline T_Pt RescaleWindowProp::operator()(const T_Pt& trueValue, const unsigned limfactor) const
+{
+    T_Pt realValue(trueValue.x, trueValue.y);
+    // Check for rounding errors
+    T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize, limfactor);
+    if(checkValue.x < trueValue.x)
+        realValue.x++;
+    if(checkValue.y < trueValue.y)
+        realValue.y++;
+    return ScaleWindowPropUp::scale(realValue, newSize, limfactor);
 }

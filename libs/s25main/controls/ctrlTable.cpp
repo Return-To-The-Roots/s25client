@@ -453,6 +453,7 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool /*visible*
     ResetButtonWidths();
 }
 
+// TODO: Update resize and Reset Buttons
 void ctrlTable::ResetButtonWidths()
 {
     auto addColumnWidth = [](unsigned cur, const Column& c) { return cur + c.width; };
