@@ -48,7 +48,9 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
         if(sgd.GetGameDataVersion() < 5)
         {
             const auto iWare = sgd.PopUnsignedChar();
-            if(iWare == rttr::enum_cast(GoodType::Nothing))
+            // GoodType::Nothing is moved because of adding new wares due addons
+            // The old GoodType::Nothing is now GoodType::Grapes
+            if(iWare == rttr::enum_cast(GoodType::Grapes))
                 ware = boost::none;
             else
                 ware = GoodType(iWare);
@@ -79,11 +81,13 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
         case State::FigureWork:
         case State::HunterChasing:
         case State::HunterWalkingToCadaver:
-        case State::HunterFindingShootingpoint: DrawWalking(drawPt); break;
+        case State::HunterFindingShootingpoint:
+        case State::SkinnerWalkingToCarcass: DrawWalking(drawPt); break;
         case State::Work:
         case State::HunterShooting:
         case State::HunterEviscerating:
         case State::HunterWaitingForAnimalReady:
+        case State::SkinnerSkinningCarcass:
         case State::CatapultTargetBuilding:
         case State::CatapultBackoff: DrawWorking(drawPt); break;
         case State::CarryoutWare: DrawWalkingWithWare(drawPt); break;
@@ -241,6 +245,7 @@ void nofBuildingWorker::LostWork()
         case State::HunterShooting:
         case State::HunterEviscerating:
         case State::HunterWaitingForAnimalReady:
+        case State::SkinnerSkinningCarcass:
         case State::CatapultTargetBuilding:
         case State::CatapultBackoff:
         {
@@ -267,6 +272,7 @@ void nofBuildingWorker::LostWork()
         case State::HunterChasing:
         case State::HunterFindingShootingpoint:
         case State::HunterWalkingToCadaver:
+        case State::SkinnerWalkingToCarcass:
         {
             // Bescheid sagen, dass Arbeit abgebrochen wurde
             WorkAborted();

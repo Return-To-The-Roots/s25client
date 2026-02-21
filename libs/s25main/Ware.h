@@ -114,6 +114,7 @@ public:
     {
         switch(value)
         {
+            case GoodType::Armor: return ("GoodType::Armor");
             case GoodType::Axe: return ("GoodType::Axe");
             case GoodType::Beer: return ("GoodType::Beer");
             case GoodType::Boards: return ("GoodType::Boards");
@@ -133,6 +134,7 @@ public:
             case GoodType::Hammer: return ("GoodType::Hammer");
             case GoodType::Iron: return ("GoodType::Iron");
             case GoodType::IronOre: return ("GoodType::IronOre");
+            case GoodType::Leather: return ("GoodType::Leather");
             case GoodType::Meat: return ("GoodType::Meat");
             case GoodType::Nothing: return ("GoodType::Nothing");
             case GoodType::PickAxe: return ("GoodType::PickAxe");
@@ -145,6 +147,7 @@ public:
             case GoodType::ShieldRomans: return ("GoodType::ShieldRomans");
             case GoodType::ShieldVikings: return ("GoodType::ShieldVikings");
             case GoodType::Shovel: return ("GoodType::Shovel");
+            case GoodType::Skins: return ("GoodType::Skins");
             case GoodType::Stones: return ("GoodType::Stones");
             case GoodType::Sword: return ("GoodType::Sword");
             case GoodType::Tongs: return ("GoodType::Tongs");

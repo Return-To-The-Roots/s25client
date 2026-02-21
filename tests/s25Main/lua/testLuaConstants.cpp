@@ -76,7 +76,10 @@ BOOST_AUTO_TEST_CASE(AllGoodTypesWork)
             GD_MEAT,
             GD_HAM,
             GD_GRAPES,
-            GD_WINE
+            GD_WINE,
+            GD_SKINS,
+            GD_LEATHER,
+            GD_ARMOR
         )
     )LUA");
     executeLua(R"LUA(
@@ -129,7 +132,10 @@ BOOST_AUTO_TEST_CASE(AllBuildingTypesWork)
             BLD_HARBORBUILDING,
             BLD_VINEYARD,
             BLD_WINERY,
-            BLD_TEMPLE
+            BLD_TEMPLE,
+            BLD_SKINNER,
+            BLD_TANNERY,
+            BLD_LEATHERWORKS
         )
     )LUA");
     executeLua(R"LUA(
@@ -180,7 +186,10 @@ BOOST_AUTO_TEST_CASE(AllJobTypesWork)
             JOB_CHARBURNER,
             JOB_WINEGROWER,
             JOB_VINTNER,
-            JOB_TEMPLESERVANT
+            JOB_TEMPLESERVANT,
+            JOB_SKINNER,
+            JOB_TANNER,
+            JOB_LEATHERWORKER
         )
     )LUA");
     executeLua(R"LUA(

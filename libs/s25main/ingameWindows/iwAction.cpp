@@ -104,11 +104,11 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
           // Linebreak
           {{BuildingType::Woodcutter, BuildingType::Forester, BuildingType::Quarry, BuildingType::Fishery,
             BuildingType::Hunter, BuildingType::Barracks, BuildingType::Guardhouse, BuildingType::LookoutTower,
-            BuildingType::Well},
+            BuildingType::Well, BuildingType::Skinner},
            {BuildingType::Sawmill, BuildingType::Slaughterhouse, BuildingType::Mill, BuildingType::Bakery,
             BuildingType::Ironsmelter, BuildingType::Metalworks, BuildingType::Armory, BuildingType::Mint,
-            BuildingType::Shipyard, BuildingType::Brewery, BuildingType::Winery, BuildingType::Storehouse,
-            BuildingType::Watchtower, BuildingType::Catapult},
+            BuildingType::Shipyard, BuildingType::Brewery, BuildingType::Winery, BuildingType::Tannery,
+            BuildingType::LeatherWorks, BuildingType::Storehouse, BuildingType::Watchtower, BuildingType::Catapult},
            {BuildingType::Farm, BuildingType::PigFarm, BuildingType::DonkeyBreeder, BuildingType::Charburner,
             BuildingType::Vineyard, BuildingType::Temple, BuildingType::Fortress, BuildingType::HarborBuilding},
            {BuildingType::GoldMine, BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine}}};
@@ -150,6 +150,13 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             building_available[BuildingType::Vineyard] = false;
             building_available[BuildingType::Winery] = false;
             building_available[BuildingType::Temple] = false;
+        }
+
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::LEATHER))
+        {
+            building_available[BuildingType::Skinner] = false;
+            building_available[BuildingType::Tannery] = false;
+            building_available[BuildingType::LeatherWorks] = false;
         }
 
         constexpr helpers::EnumArray<unsigned, BuildTab> NUM_TABS = {1, 2, 3, 1, 3};

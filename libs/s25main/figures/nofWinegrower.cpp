@@ -61,10 +61,19 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
     }
 }
 
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
+#endif
+
 unsigned short nofWinegrower::GetCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
+
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
 
 void nofWinegrower::WorkStarted()
 {

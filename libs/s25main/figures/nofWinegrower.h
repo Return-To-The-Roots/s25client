@@ -9,10 +9,6 @@
 class SerializedGameData;
 class nobUsual;
 
-#ifdef _MSC_VER
-#    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
-#endif
-
 class nofWinegrower : public nofFarmhand
 {
     /// harvesting grapes or planting
