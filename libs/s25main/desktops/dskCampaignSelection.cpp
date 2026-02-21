@@ -193,12 +193,11 @@ void dskCampaignSelection::Draw_()
 {
     Desktop::Draw_();
 
-    // TODO: Check how to call Scale from here.
     // replace this by AddImageButton as soon as it can handle this scenario correctly
     if(campaignImage_)
     {
-        campaignImage_->DrawFull(Rect(ScaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY()),0),
-                                      ScaleIf(Extent(secondColumnExtentX, campaignImageExtentY), 0)));
+        campaignImage_->DrawFull(Rect(ScaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY())),
+                                      ScaleIf(Extent(secondColumnExtentX, campaignImageExtentY))));
     }
 }
 

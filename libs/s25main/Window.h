@@ -75,15 +75,11 @@ public:
     DrawPoint GetDrawPos() const;
     /// Get the size of the window
     Extent GetSize() const;
-    Extent GetTrueSize() const;
-    /// Get limitation factor
-    unsigned GetLimFactor() const;
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
     /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
     /// content)
     virtual Rect GetBoundaryRect() const;
-    /// TODO: Check components that overlay this function
     /// setzt die Größe des Fensters
     virtual void Resize(const Extent& newSize) { size_ = newSize; }
     /// setzt die Breite des Fensters
@@ -290,14 +286,14 @@ protected:
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
+    /// scales X- und Y values to fit the screen
+    template<class T_Pt>
+    static T_Pt Scale(const T_Pt& pt);
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
-    T_Pt ScaleIf(const T_Pt& pt, const unsigned limfactor) const;
+    T_Pt ScaleIf(const T_Pt& pt) const;
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
-    void SetScale(bool scale);
-    void Scale();
-    /// setzt the limiting factor for scaling
-    void SetLimFactor(unsigned int limfactor) { this->limfactor_ = std::clamp(limfactor,(unsigned) 0, (unsigned) 3); }
+    void SetScale(bool scale = true) { this->scale_ = scale; }
     /// zeichnet das Fenster.
     virtual void Draw_();
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -308,11 +304,9 @@ private:
     unsigned id_;          /// ID des Fensters.
     DrawPoint pos_;        /// Position des Fensters.
     Extent size_;          /// Höhe des Fensters.
-    Extent true_size_;     /// Enscaled size of the Window.
     bool active_;          /// Fenster aktiv?
     bool visible_;         /// Fenster sichtbar?
     bool scale_;           /// Sollen Controls an Fenstergröße angepasst werden?
-    unsigned limfactor_;   /// Limiting factor 1-3 considered for scaling, disabled when 0. TODO: Factor shall be multiple of base size.
 
     std::map<Window*, Rect> lockedAreas_; /// gesperrte Regionen des Fensters.
     std::vector<Window*> tofreeAreas_;
@@ -327,9 +321,7 @@ inline T* Window::AddCtrl(T* ctrl)
     RTTR_Assert(childIdToWnd_.find(ctrl->GetID()) == childIdToWnd_.end());
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
-    ctrl->SetScale(scale_);
-    ctrl->SetLimFactor(limfactor_);
-    ctrl->Scale();
+    ctrl->scale_ = scale_;
     ctrl->SetActive(active_);
 
     return ctrl;

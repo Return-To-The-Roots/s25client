@@ -25,7 +25,6 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
     : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.GetRenderSize()), background(background), lastFPS_(0)
 {
     SetScale(true);
-    SetLimFactor(0);
     SetFpsDisplay(true);
     // By default limit the maximum frame rate to 60 FPS - used for main menu
     if(SETTINGS.video.framerate < 0)

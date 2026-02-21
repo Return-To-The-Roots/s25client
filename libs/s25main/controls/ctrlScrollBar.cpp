@@ -157,7 +157,6 @@ void ctrlScrollBar::SetPageSize(unsigned short pagesize)
     }
 }
 
-// TODO: Update resize
 void ctrlScrollBar::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
