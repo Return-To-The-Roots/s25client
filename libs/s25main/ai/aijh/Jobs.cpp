@@ -23,7 +23,7 @@ AIJob::AIJob(AIPlayerJH& aijh) : aijh(aijh), state(JobState::Waiting) {}
 void BuildJob::ExecuteJob()
 {
     // are we allowed to plan construction work in the area in this nwf?
-    if(!aijh.GetConstruction().CanStillConstructHere(around))
+    if(searchMode != SearchMode::Global && !aijh.GetConstruction().CanStillConstructHere(around))
         return;
 
     if(state == JobState::Waiting)

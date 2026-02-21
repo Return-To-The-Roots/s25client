@@ -46,20 +46,24 @@ AIConstruction::~AIConstruction() = default;
 
 void AIConstruction::AddGlobalBuildJob(std::unique_ptr<BuildJob> job)
 {
-    BuildingType jobType = job->GetType();
-    bool alreadyinlist = false;
-    for(auto& buildJob : globalBuildJobs)
+    const BuildingType jobType = job->GetType();
+    constexpr unsigned maxQueuedMilitaryGlobalJobsPerType = 3;
+    unsigned jobsOfSameType = 0;
+
+    for(const auto& buildJob : globalBuildJobs)
     {
         if(buildJob.GetType() == jobType)
         {
-            alreadyinlist = true;
-            break;
+            if(!BuildingProperties::IsMilitary(jobType))
+                return;
+
+            ++jobsOfSameType;
+            if(jobsOfSameType >= maxQueuedMilitaryGlobalJobsPerType)
+                return;
         }
     }
-    if(!alreadyinlist)
-    {
-        globalBuildJobs.emplace(std::move(*job));
-    }
+
+    globalBuildJobs.emplace(std::move(*job));
 }
 
 void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
@@ -107,12 +111,12 @@ void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
 
 void AIConstruction::ExecuteJobs(unsigned limit)
 {
-    unsigned i = 0; // count up to limit
-    unsigned initconjobs = std::min<unsigned>(connectJobs.size(), 5);
-    unsigned initbuildjobs = std::min<unsigned>(buildJobs.size(), 5);
-    // go through list, until limit is reached or list empty or when every entry has been checked
+    unsigned processed = 0;
+    const unsigned initconjobs = std::min<unsigned>(connectJobs.size(), 5);
+    const unsigned initglobaljobs = std::min<unsigned>(globalBuildJobs.size(), 5);
+    const unsigned initbuildjobs = std::min<unsigned>(buildJobs.size(), 5);
 
-    for(; i < limit && !connectJobs.empty() && i < initconjobs; i++)
+    for(unsigned i = 0; processed < limit && !connectJobs.empty() && i < initconjobs; i++, processed++)
     {
         auto job = std::move(connectJobs.front());
         connectJobs.pop_front();
@@ -124,8 +128,7 @@ void AIConstruction::ExecuteJobs(unsigned limit)
         }
     }
 
-    std::vector<BuildJob> unfinishedJobs;
-    for(; i < limit && !globalBuildJobs.empty() && i < (initconjobs + initbuildjobs); i++)
+    for(unsigned i = 0; processed < limit && !globalBuildJobs.empty() && i < initglobaljobs; i++, processed++)
     {
         auto job = PopGlobalBuildJob();
         job->ExecuteJob();
@@ -136,12 +139,8 @@ void AIConstruction::ExecuteJobs(unsigned limit)
             globalBuildJobs.emplace(std::move(*job));
         }
     }
-    for (auto& job : unfinishedJobs)
-    {
-        globalBuildJobs.emplace(std::move(job));
-    }
 
-    for(; i < limit && !buildJobs.empty() && i < (initconjobs + initbuildjobs); i++)
+    for(unsigned i = 0; processed < limit && !buildJobs.empty() && i < initbuildjobs; i++, processed++)
     {
         auto job = GetBuildJob();
         job->ExecuteJob();

@@ -80,6 +80,12 @@ bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, AIInterface& aii, co
         case BuildingType::GraniteMine:
             return MeetsMinimalResourceRequirement(aijh, type, AIResource::Granite,
                                                    aii.CalcResourceValue(pt, AIResource::Granite));
+        case BuildingType::Barracks:
+        case BuildingType::Guardhouse:
+        case BuildingType::Watchtower:
+        case BuildingType::Fortress:
+            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Borderland,
+                                                   aii.CalcResourceValue(pt, AIResource::Borderland));
         default: return true;
     }
 }
@@ -202,6 +208,10 @@ std::optional<int> GlobalPositionFinder::GetPointRating(const BuildingType type,
         case BuildingType::CoalMine: return aii.CalcResourceValue(pt, AIResource::Coal);
         case BuildingType::IronMine: return aii.CalcResourceValue(pt, AIResource::Ironore);
         case BuildingType::GraniteMine: return aii.CalcResourceValue(pt, AIResource::Granite);
+        case BuildingType::Barracks:
+        case BuildingType::Guardhouse:
+        case BuildingType::Watchtower:
+        case BuildingType::Fortress: return aii.CalcResourceValue(pt, AIResource::Borderland);
         default: return 1;
     }
 }
