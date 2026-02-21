@@ -1389,11 +1389,11 @@ void GameClient::ExecuteGameFrame()
 void GameClient::HandleAutosave()
 {
     // If inactive or during replay -> no autosave
-    if(!SETTINGS.interface.autosave_interval || replayMode)
+    if(!SETTINGS.interface.autosaveInterval || replayMode)
         return;
 
     // Alle .... GF
-    if(GetGFNumber() % SETTINGS.interface.autosave_interval == 0)
+    if(GetGFNumber() % SETTINGS.interface.autosaveInterval == 0)
     {
         std::string filename;
         if(mapinfo.title.empty())

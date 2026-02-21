@@ -60,8 +60,8 @@ protected:
 public:
     struct
     {
-        uint8_t submit_debug_data;
-        bool use_upnp, smartCursor, debugMode, showGFInfo;
+        uint8_t submitDebugData;
+        bool useUPNP, smartCursor, debugMode, showGFInfo;
     } global;
 
     struct
@@ -70,7 +70,7 @@ public:
         signed short framerate; // <0 for unlimited, 0 for HW Vsync
         DisplayMode displayMode;
         bool vbo;
-        bool shared_textures;
+        bool sharedTextures;
         unsigned guiScale; ///< UI scaling in percent; 0 indicates automatic selection
     } video;
 
@@ -100,12 +100,12 @@ public:
         std::string name;
         unsigned portraitIndex;
         std::string password;
-        bool save_password;
+        bool savePassword;
     } lobby;
 
     struct
     {
-        std::string last_ip; /// last entered ip or hostname
+        std::string lastIP; /// last entered ip or hostname
         uint16_t localPort;
         bool ipv6; /// listen/connect on ipv6 as default or not
     } server;
@@ -114,7 +114,7 @@ public:
 
     struct
     {
-        unsigned autosave_interval;
+        unsigned autosaveInterval;
         MapScrollMode mapScrollMode;
         bool enableWindowPinning;
         unsigned windowSnapDistance;
@@ -122,7 +122,7 @@ public:
 
     struct
     {
-        bool scale_statistics;
+        bool scaleStatistics;
         bool showNames;
         bool showProductivity;
         bool showBQ;

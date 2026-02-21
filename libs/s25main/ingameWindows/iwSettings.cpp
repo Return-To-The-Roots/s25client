@@ -89,7 +89,7 @@ iwSettings::iwSettings()
       ->SetTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
-      ->setChecked(SETTINGS.ingame.scale_statistics);
+      ->setChecked(SETTINGS.ingame.scaleStatistics);
 }
 
 iwSettings::~iwSettings()
@@ -134,6 +134,6 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
             SETTINGS.global.smartCursor = checked;
             VIDEODRIVER.SetMouseWarping(checked);
             break;
-        case ID_cbStatisticScale: SETTINGS.ingame.scale_statistics = checked; break;
+        case ID_cbStatisticScale: SETTINGS.ingame.scaleStatistics = checked; break;
     }
 }
