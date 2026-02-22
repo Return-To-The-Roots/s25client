@@ -75,6 +75,10 @@ public:
     DrawPoint GetDrawPos() const;
     /// Get the size of the window
     Extent GetSize() const;
+    /// Get the original size of the window
+    Extent GetOrigSize() const;
+    /// Get the original size of the window
+    void SetOrigSize(Extent origSize);
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
     /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
@@ -291,7 +295,7 @@ protected:
     static T_Pt Scale(const T_Pt& pt);
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
-    T_Pt ScaleIf(const T_Pt& pt) const;
+    T_Pt ScaleIf(const T_Pt& pt);
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
     /// zeichnet das Fenster.
@@ -304,6 +308,7 @@ private:
     unsigned id_;          /// ID des Fensters.
     DrawPoint pos_;        /// Position des Fensters.
     Extent size_;          /// Höhe des Fensters.
+    Extent orig_size_;     /// Original / unscaled size of the window.
     bool active_;          /// Fenster aktiv?
     bool visible_;         /// Fenster sichtbar?
     bool scale_;           /// Sollen Controls an Fenstergröße angepasst werden?
@@ -322,6 +327,9 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
+    /// Hack: Take origSize that was set by the last ScaleIf(Extent) to pass to children.
+    ctrl->SetOrigSize(GetOrigSize());
+    orig_size_ = Extent(0,0);
     ctrl->SetActive(active_);
 
     return ctrl;

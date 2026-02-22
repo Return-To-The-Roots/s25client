@@ -18,8 +18,8 @@
 #include <cstdarg>
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
-    : parent_(parent), id_(id), pos_(pos), size_(size), active_(false), visible_(true), scale_(false),
-      isInMouseRelay(false), animations_(this)
+    : parent_(parent), id_(id), pos_(pos), size_(size), orig_size_(Extent(0,0)), active_(false), visible_(true),
+      scale_(false), isInMouseRelay(false), animations_(this)
 {}
 
 Window::~Window()
@@ -63,6 +63,16 @@ DrawPoint Window::GetDrawPos() const
 Extent Window::GetSize() const
 {
     return size_;
+}
+
+Extent Window::GetOrigSize() const
+{
+    return orig_size_;
+}
+
+void Window::SetOrigSize(Extent origSize)
+{
+    orig_size_ = origSize;
 }
 
 Rect Window::GetDrawRect() const
@@ -540,8 +550,8 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         if(!ctrl)
             continue;
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
-        Extent newSize = rescale(ctrl->GetSize());
-        ctrl->SetPos(rescale(ctrl->GetPos()));
+        Extent newSize = rescale(ctrl->GetSize(), ctrl->GetOrigSize());
+        ctrl->SetPos(rescale(ctrl->GetPos(), DrawPoint(0,0)));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -555,14 +565,19 @@ T_Pt Window::Scale(const T_Pt& pt)
 }
 
 template<class T_Pt>
-T_Pt Window::ScaleIf(const T_Pt& pt) const
+T_Pt Window::ScaleIf(const T_Pt& pt)
 {
+    if(std::is_same_v<T_Pt, Extent>)
+    {
+        orig_size_.x = pt.x;
+        orig_size_.y = pt.y;
+    }   
     return scale_ ? Scale(pt) : pt;
 }
 
 // Inlining removes those. so add it here
-template DrawPoint Window::ScaleIf(const DrawPoint&) const;
-template Extent Window::ScaleIf(const Extent&) const;
+template DrawPoint Window::ScaleIf(const DrawPoint&);
+template Extent Window::ScaleIf(const Extent&);
 
 bool Window::IsInLockedRegion(const Position& pos, const Window* exception) const
 {
