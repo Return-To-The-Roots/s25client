@@ -12,7 +12,7 @@ struct ScaleWindowPropUp
     ScaleWindowPropUp(const Extent& size) : size(size) {}
 
     template<typename T_Pt>
-    static T_Pt scale(const T_Pt& value, const Extent& size);
+    static T_Pt scale(const T_Pt& value, const Extent& size, const unsigned limfactor);
     template<typename T_Pt>
     T_Pt operator()(const T_Pt& value) const;
 };
@@ -24,19 +24,20 @@ struct RescaleWindowProp
     RescaleWindowProp(Extent oldSize, Extent newSize) : oldSize(oldSize), newSize(newSize) {}
     /// Scale the point or size from beeing relative to the oldSize to relative to the newSize
     template<typename T_Pt>
-    T_Pt operator()(const T_Pt& oldValue, const T_Pt& origValue) const;
+    T_Pt operator()(const T_Pt& oldValue, const T_Pt& origValue, const unsigned limfactor) const;
 };
 
 template<typename T_Pt>
-inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale)
+inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale, const unsigned limfactor)
 {
     T_Pt scaledValue(value * sizeToScale / Extent(800, 600));
-    if(std::is_same_v<T_Pt, Extent>)
+    // Limit the scaling by a multiple (limfactor) of the base value
+    if(limfactor)
     {
-        if(scaledValue.x > value.x << 1)
-            scaledValue.x = value.x << 1;
-        if(scaledValue.y > value.y << 1)
-            scaledValue.y = value.y << 1;
+        if(scaledValue.x > value.x << limfactor)
+            scaledValue.x = value.x << limfactor;
+        if(scaledValue.y > value.y << limfactor)
+            scaledValue.y = value.y << limfactor;
     }
     return scaledValue;
 }
@@ -44,23 +45,23 @@ inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScal
 template<typename T_Pt>
 inline T_Pt ScaleWindowPropUp::operator()(const T_Pt& value) const
 {
-    return scale(value, size);
+    return scale(value, size, 0);
 }
 
 template<typename T_Pt>
-inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue, const T_Pt& origValue) const
+inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue, const T_Pt& origValue, const unsigned limfactor) const
 {
     T_Pt realValue(oldValue.x * 800 / oldSize.x, oldValue.y * 600 / oldSize.y);
-    if(std::is_same_v<T_Pt, Extent> && (origValue.x != 0 && origValue.y != 0))
+    if(limfactor && (origValue.x != 0 && origValue.y != 0))
     {
         realValue.x = origValue.x;
         realValue.y = origValue.y;
     }
     // Check for rounding errors
-    T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize);
+    T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize, limfactor);
     if(checkValue.x < oldValue.x)
         realValue.x++;
     if(checkValue.y < oldValue.y)
         realValue.y++;
-    return ScaleWindowPropUp::scale(realValue, newSize);
+    return ScaleWindowPropUp::scale(realValue, newSize, limfactor);
 }

@@ -230,7 +230,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, Bui
 ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                   const std::string& text, const glFont* font, const std::string& tooltip)
 {
-    return AddCtrl(new ctrlTextButton(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, tooltip));
+    return AddCtrl(new ctrlTextButton(this, id, ScaleIf(pos), ScaleLimIf(size), tc, text, font, tooltip));
 }
 
 ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
@@ -550,8 +550,8 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         if(!ctrl)
             continue;
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
-        Extent newSize = rescale(ctrl->GetSize(), ctrl->GetOrigSize());
-        ctrl->SetPos(rescale(ctrl->GetPos(), DrawPoint(0,0)));
+        Extent newSize = rescale(ctrl->GetSize(), ctrl->GetOrigSize(), 1);
+        ctrl->SetPos(rescale(ctrl->GetPos(), DrawPoint(0,0), 0));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -559,20 +559,24 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 }
 
 template<class T_Pt>
-T_Pt Window::Scale(const T_Pt& pt)
+T_Pt Window::Scale(const T_Pt& pt, const unsigned limfactor)
 {
-    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize());
+    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize(), limfactor);
 }
 
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt)
 {
-    if(std::is_same_v<T_Pt, Extent>)
-    {
-        orig_size_.x = pt.x;
-        orig_size_.y = pt.y;
-    }   
-    return scale_ ? Scale(pt) : pt;
+    return scale_ ? Scale(pt, 0) : pt;
+}
+
+template<class T_Pt>
+T_Pt Window::ScaleLimIf(const T_Pt& pt)
+{
+    orig_size_.x = pt.x;
+    orig_size_.y = pt.y;
+   
+    return scale_ ? Scale(pt, 1) : pt;
 }
 
 // Inlining removes those. so add it here

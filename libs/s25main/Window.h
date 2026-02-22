@@ -290,12 +290,17 @@ protected:
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
-    /// scales X- und Y values to fit the screen
+    /// scales X- und Y values to fit the screen considering a limiting factor
+    /// factor shall be between 0-3, 0 disables limiting.
     template<class T_Pt>
-    static T_Pt Scale(const T_Pt& pt);
+    static T_Pt Scale(const T_Pt& pt, const unsigned limfactor);
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt);
+    /// Scales the value when scale_ is true with predefined scale limitation, else returns the value
+    /// only call once for a ctrl, so it is considered correctly in AddCtrl
+    template<class T_Pt>
+    T_Pt ScaleLimIf(const T_Pt& pt);
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
     /// zeichnet das Fenster.
@@ -327,7 +332,7 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
-    /// Hack: Take origSize that was set by the last ScaleIf(Extent) to pass to children.
+    // hack: take origSize that was set by the last (and presumably only) ScaleLimIf(Extent) call to pass to children.
     ctrl->SetOrigSize(GetOrigSize());
     orig_size_ = Extent(0,0);
     ctrl->SetActive(active_);

@@ -22,8 +22,8 @@ MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTim
 void MoveAnimation::onRescale(const ScreenResizeEvent& rs)
 {
     RescaleWindowProp rescale(rs.oldSize, rs.newSize);
-    origPos_ = rescale(origPos_, DrawPoint(0,0));
-    newPos_ = rescale(newPos_, DrawPoint(0,0));
+    origPos_ = rescale(origPos_, DrawPoint(0,0), 0);
+    newPos_ = rescale(newPos_, DrawPoint(0,0), 0);
 }
 
 void MoveAnimation::doUpdate(Window* element, double nextFramepartTime)
