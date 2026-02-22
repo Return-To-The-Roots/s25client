@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -53,6 +53,7 @@
 #include "ingameWindows/iwPostWindow.h"
 #include "ingameWindows/iwRoadWindow.h"
 #include "ingameWindows/iwSave.h"
+#include "ingameWindows/iwSettings.h"
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwStatistics.h"
@@ -826,6 +827,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KeyType::F9:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
+        case KeyType::F10: WINDOWMANAGER.ToggleWindow(std::make_unique<iwSettings>()); return true;
         case KeyType::F11: // Music player (midi files)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
