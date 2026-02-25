@@ -8,6 +8,8 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
 #endif
+#include "Point.h"
+#include "Rect.h"
 #include <windows.h>
 #include <string>
 #include <utility>
@@ -65,11 +67,13 @@ public:
 private:
     /// Get style and extended style flags
     std::pair<DWORD, DWORD> GetStyleFlags(DisplayMode mode) const;
-    /// Calculate the rect for the window of the requested size
-    RECT CalculateWindowRect(DisplayMode mode, VideoMode size) const;
+    /// Calculate the rect for the window of the requested size at the display mode
+    /// Returns the final rect (position&size) for the window and the possibly adjusted size of the render region
+    std::pair<Rect, VideoMode> CalculateWindowRect(DisplayMode mode, VideoMode requestedSize) const;
     bool RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, DisplayMode displayMode);
     bool InitOGL();
     static bool MakeFullscreen(const VideoMode& resolution);
+    VideoMode getDesktopSize(VideoMode fallback) const;
 
     /// Callback for pressed character keys
     void OnWMChar(unsigned c, bool disablepaste = false, LPARAM lParam = 0);

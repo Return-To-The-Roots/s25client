@@ -23,43 +23,50 @@ enum
     ID_txtResolution,
     ID_txtFullScreen,
     ID_cbDisplayMode,
+    ID_cbLockWindowSize,
     ID_cbResolution,
     ID_txtMapScrollMode,
     ID_cbMapScrollMode,
     ID_cbSmartCursor,
     ID_cbStatisticScale,
+    ID_btApply,
+    ID_btAbort,
 };
 } // namespace
 
 iwSettings::iwSettings()
-    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 228), _("Settings"),
-                   LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 254), _("Settings"),
+                   LOADER.GetImageN("resource", 41), false)
 {
     // Controls are in 2 columns, the left might be the label for the control on the right
     constexpr auto rowWidth = 350;
-    constexpr auto leftColOffset = 15u;   // X-position of the left column
+    constexpr auto leftColOffset = 17u;   // X-position of the left column
     constexpr auto rightColOffset = 180u; // X-position of the right column
     constexpr Extent ctrlSize(rowWidth - rightColOffset, 22);
     constexpr Extent cbSize = Extent(rowWidth - leftColOffset, 26);
+    // 2 buttons evenly spaced
+    constexpr Extent btSize = Extent(rowWidth / 3, 22);
+    constexpr auto btSpacing = btSize.x / 3;
 
-    DrawPoint curPos(leftColOffset, 40);
+    DrawPoint curPos(leftColOffset, 30);
     AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     auto* cbResolution = AddComboBox(ID_cbResolution, DrawPoint(rightColOffset, curPos.y - 5), ctrlSize,
                                      TextureColor::Grey, NormalFont, 110);
     curPos.y += ctrlSize.y + 5;
 
-    VIDEODRIVER.ListVideoModes(video_modes);
-    for(unsigned i = 0; i < video_modes.size(); ++i)
+    VIDEODRIVER.ListVideoModes(supportedVideoModes);
+    for(unsigned i = 0; i < supportedVideoModes.size(); ++i)
     {
         // >=800x600, alles andere macht keinen Sinn
-        if(video_modes[i].width >= 800 && video_modes[i].height >= 600)
+        if(supportedVideoModes[i].width >= 800 && supportedVideoModes[i].height >= 600)
         {
-            cbResolution->AddString(helpers::format("%ux%u", video_modes[i].width, video_modes[i].height));
-            if(video_modes[i] == SETTINGS.video.fullscreenSize)
+            cbResolution->AddString(
+              helpers::format("%ux%u", supportedVideoModes[i].width, supportedVideoModes[i].height));
+            if(supportedVideoModes[i] == SETTINGS.video.fullscreenSize)
                 cbResolution->SetSelection(i);
         } else
         {
-            video_modes.erase(video_modes.begin() + i);
+            supportedVideoModes.erase(supportedVideoModes.begin() + i);
             --i;
         }
     }
@@ -70,8 +77,13 @@ iwSettings::iwSettings()
     cbDisplayMode->AddString(_("Windowed"));
     cbDisplayMode->AddString(_("Fullscreen"));
     cbDisplayMode->AddString(_("Borderless window"));
-    cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode));
-    curPos.y += ctrlSize.y + 10;
+    cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
+
+    curPos.y += ctrlSize.y + 1;
+    AddCheckBox(ID_cbLockWindowSize, curPos, cbSize, TextureColor::Grey, _("Lock window size:"), NormalFont, false)
+      ->setChecked(!SETTINGS.video.displayMode.resizeable);
+
+    curPos.y += cbSize.y + 15;
 
     AddText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y - 5), ctrlSize,
@@ -90,50 +102,57 @@ iwSettings::iwSettings()
     curPos.y += cbSize.y + 3;
     AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
       ->setChecked(SETTINGS.ingame.scaleStatistics);
+
+    curPos = DrawPoint(leftColOffset + btSpacing, GetSize().y - 40);
+    AddTextButton(ID_btApply, curPos, btSize, TextureColor::Green2, _("Apply"), NormalFont, _("Apply Changes"));
+    curPos.x += btSize.x + btSpacing;
+    AddTextButton(ID_btAbort, curPos, btSize, TextureColor::Red1, _("Abort"), NormalFont, _("Close Without Saving"));
 }
 
-iwSettings::~iwSettings()
-{
-    try
-    {
-        auto* MouseMdCombo = GetCtrl<ctrlComboBox>(ID_cbMapScrollMode);
-        SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(MouseMdCombo->GetSelection().get());
-
-        auto* SizeCombo = GetCtrl<ctrlComboBox>(ID_cbResolution);
-        SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
-
-        const auto fullscreen = SETTINGS.video.displayMode == DisplayMode::Fullscreen;
-        if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
-           || SETTINGS.video.displayMode != VIDEODRIVER.GetDisplayMode())
-        {
-            const auto screenSize = fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-            if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
-            {
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                  _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
-                  MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
-            }
-        }
-    } catch(...)
-    {
-        // ignored
-    }
-}
-
-void iwSettings::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
-{
-    RTTR_Assert(ctrl_id == ID_cbDisplayMode);
-    SETTINGS.video.displayMode = DisplayMode(selection);
-}
-
-void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
+void iwSettings::Msg_ButtonClick(unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_cbSmartCursor:
-            SETTINGS.global.smartCursor = checked;
-            VIDEODRIVER.SetMouseWarping(checked);
-            break;
-        case ID_cbStatisticScale: SETTINGS.ingame.scaleStatistics = checked; break;
+        case ID_btApply:
+        {
+            SETTINGS.global.smartCursor = GetCtrl<ctrlCheck>(ID_cbSmartCursor)->isChecked();
+            VIDEODRIVER.SetMouseWarping(SETTINGS.global.smartCursor);
+            SETTINGS.ingame.scaleStatistics = GetCtrl<ctrlCheck>(ID_cbStatisticScale)->isChecked();
+            SETTINGS.video.displayMode = DisplayMode(*GetCtrl<ctrlComboBox>(ID_cbDisplayMode)->GetSelection());
+            SETTINGS.video.displayMode.resizeable = !GetCtrl<ctrlCheck>(ID_cbLockWindowSize)->isChecked();
+            SETTINGS.interface.mapScrollMode =
+              static_cast<MapScrollMode>(GetCtrl<ctrlComboBox>(ID_cbMapScrollMode)->GetSelection().get());
+            SETTINGS.video.fullscreenSize =
+              supportedVideoModes[GetCtrl<ctrlComboBox>(ID_cbResolution)->GetSelection().get()];
+            closeBehavior_ = CloseBehavior::Regular;
+
+            const auto screenSize = SETTINGS.video.displayMode == DisplayMode::Fullscreen ?
+                                      SETTINGS.video.fullscreenSize :
+                                      SETTINGS.video.windowedSize;
+            if(VIDEODRIVER.GetWindowSize() != screenSize || SETTINGS.video.displayMode != VIDEODRIVER.GetDisplayMode())
+            {
+                if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
+                {
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                      _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
+                      MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
+                }
+            }
+        }
+        break;
+        case ID_btAbort: Close(); break;
+        default: RTTR_Assert(false);
     }
+}
+
+void iwSettings::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+{
+    // Handle on apply and just disable closing the window without the buttons (apply/discard)
+    closeBehavior_ = CloseBehavior::Custom;
+}
+
+void iwSettings::Msg_CheckboxChange(const unsigned /*ctrl_id*/, const bool /*checked*/)
+{
+    // Handle on apply and just disable closing the window without the buttons (apply/discard)
+    closeBehavior_ = CloseBehavior::Custom;
 }
