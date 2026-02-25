@@ -60,7 +60,7 @@ bool VideoDriver::IsTouchEvent() const
     return mouse_xy.num_tfingers > 0;
 }
 
-VideoMode VideoDriver::FindClosestVideoMode(const VideoMode& mode) const
+VideoMode VideoDriver::FindClosestVideoMode(const VideoMode mode) const
 {
     std::vector<VideoMode> avModes;
     ListVideoModes(avModes);

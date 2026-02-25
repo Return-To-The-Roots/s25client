@@ -117,7 +117,7 @@ constexpr Offset ctrlOffset2 = ctrlOffset + Offset(200, 0); // Offset of 2nd con
 constexpr Extent ctrlSize(190, 22);
 constexpr Extent ctrlSizeLarge = ctrlSize + Extent(ctrlOffset2 - ctrlOffset);
 
-VideoMode getAspectRatio(const VideoMode& vm)
+VideoMode getAspectRatio(const VideoMode vm)
 {
     // First some a bit off values where the aspect ratio is defined by convention
     if(vm == VideoMode(1360, 1024))
