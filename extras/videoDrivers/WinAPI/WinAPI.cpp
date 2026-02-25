@@ -117,7 +117,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode
 
     VideoMode windowSize = (displayMode == DisplayMode::Fullscreen) ? FindClosestVideoMode(newSize) : newSize;
     // Try to switch full screen first
-    if(displayMode_ == DisplayMode::Fullscreen)
+    if(displayMode_ == DisplayMode::Fullscreen && displayMode != DisplayMode::Fullscreen)
     {
         if(ChangeDisplaySettings(nullptr, 0) != DISP_CHANGE_SUCCESSFUL)
             return false;
@@ -133,12 +133,12 @@ bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode
     SetWindowLongPtr(screen, GWL_EXSTYLE, exStyle);
     displayMode_ = displayMode;
 
-    const RECT wRect = CalculateWindowRect(displayMode, windowSize);
+    const auto [wndArea, adjustedSize] = CalculateWindowRect(displayMode, windowSize);
 
-    // Sett size and position
+    // Set size and position
     UINT flags = SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED;
-    SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, flags);
-    SetNewSize(windowSize, Extent(windowSize.width, windowSize.height));
+    SetWindowPos(screen, HWND_TOP, wndArea.left, wndArea.top, wndArea.getSize().x, wndArea.getSize().y, flags);
+    SetNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
 
     ShowWindow(screen, SW_SHOW);
     SetForegroundWindow(screen);
@@ -160,37 +160,49 @@ std::pair<DWORD, DWORD> VideoWinAPI::GetStyleFlags(const DisplayMode mode) const
         {
             result.first |= WS_OVERLAPPEDWINDOW;
             result.second |= WS_EX_WINDOWEDGE;
+            if(!mode.resizeable)
+                result.first &= ~WS_THICKFRAME;
         }
         return result;
     }
 }
 
-RECT VideoWinAPI::CalculateWindowRect(const DisplayMode mode, VideoMode size) const
+std::pair<Rect, VideoMode> VideoWinAPI::CalculateWindowRect(const DisplayMode mode, VideoMode requestedSize) const
 {
-    RECT wRect;
-    if(mode == DisplayMode::Fullscreen)
+    switch(mode.type)
     {
-        wRect.left = 0;
-        wRect.top = 0;
-    } else
-    {
-        RECT workArea;
-        SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
-        const unsigned waWidth = workArea.right - workArea.left;
-        const unsigned waHeight = workArea.bottom - workArea.top;
-        size.width = std::min<uint16_t>(size.width, waWidth);
-        size.height = std::min<uint16_t>(size.height, waHeight);
-        wRect.left = (waWidth - size.width) / 2;
-        wRect.top = (waHeight - size.height) / 2;
+        case DisplayMode::Fullscreen:
+        {
+            const auto size = FindClosestVideoMode(requestedSize);
+            return std::make_pair(Rect(Position::all(0), size.width, size.height), size);
+        };
+        case DisplayMode::BorderlessWindow:
+        {
+            const auto size = getDesktopSize(requestedSize);
+            return std::make_pair(Rect(Position::all(0), size.width, size.height), size);
+        }
+        case DisplayMode::Windowed:
+        {
+            RECT workArea;
+            SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+            const unsigned waWidth = workArea.right - workArea.left;
+            const unsigned waHeight = workArea.bottom - workArea.top;
+            const VideoMode size(std::min<uint16_t>(requestedSize.width, waWidth),
+                                 std::min<uint16_t>(requestedSize.height, waHeight));
+            RECT wRect;
+            wRect.left = (waWidth - size.width) / 2;
+            wRect.top = (waHeight - size.height) / 2;
+            wRect.right = wRect.left + size.width;
+            wRect.bottom = wRect.top + size.height;
+            // Calculate real right/bottom based on the window style
+            const auto [style, exStyle] = GetStyleFlags(mode);
+            AdjustWindowRectEx(&wRect, style, false, exStyle);
+            return std::make_pair(Rect(wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top),
+                                  size);
+        }
     }
-    wRect.right = wRect.left + size.width;
-    wRect.bottom = wRect.top + size.height;
 
-    const auto [style, exStyle] = GetStyleFlags(mode);
-    // Calculate real right/bottom based on the window style
-    AdjustWindowRectEx(&wRect, style, false, exStyle);
-
-    return wRect;
+    BOOST_UNREACHABLE_RETURN(std::make_pair(RECT{0, 0, requestedSize.width, requestedSize.height}, requestedSize));
 }
 
 bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, DisplayMode displayMode)
@@ -215,19 +227,16 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
         return false;
 
     // Create window
-    const auto reqWindowSize = (displayMode == DisplayMode::Fullscreen) ? FindClosestVideoMode(wndSize) : wndSize;
-    const RECT wRect = CalculateWindowRect(displayMode, reqWindowSize);
-    const VideoMode adjWindowSize(static_cast<unsigned short>(wRect.right - wRect.left),
-                                  static_cast<unsigned short>(wRect.bottom - wRect.top));
+    const auto [wndArea, adjustedSize] = CalculateWindowRect(displayMode, wndSize);
     const auto [style, exStyle] = GetStyleFlags(displayMode);
     screen =
-      CreateWindowExW(exStyle, windowClassName.c_str(), wTitle.c_str(), style, wRect.left, wRect.top,
-                      adjWindowSize.width, adjWindowSize.height, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
+      CreateWindowExW(exStyle, windowClassName.c_str(), wTitle.c_str(), style, wndArea.left, wndArea.top,
+                      wndArea.getSize().x, wndArea.getSize().y, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
 
     if(screen == nullptr)
         return false;
 
-    SetNewSize(adjWindowSize, Extent(adjWindowSize.width, adjWindowSize.height));
+    SetNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
 
     SetClipboardViewer(screen);
 
@@ -310,6 +319,24 @@ bool VideoWinAPI::MakeFullscreen(const VideoMode& resolution)
         return false;
     }
     return true;
+}
+
+VideoMode VideoWinAPI::getDesktopSize(const VideoMode fallback) const
+{
+    HMONITOR monitor;
+    if(screen)
+        monitor = MonitorFromWindow(screen, MONITOR_DEFAULTTONEAREST);
+    else
+        monitor = MonitorFromPoint(POINT{0, 0}, MONITOR_DEFAULTTOPRIMARY);
+
+    MONITORINFO mi{};
+    mi.cbSize = sizeof(mi);
+    if(GetMonitorInfo(monitor, &mi) == TRUE)
+    {
+        return VideoMode(static_cast<unsigned short>(mi.rcMonitor.right - mi.rcMonitor.left),
+                         static_cast<unsigned short>(mi.rcMonitor.bottom - mi.rcMonitor.top));
+    } else
+        return fallback;
 }
 
 void VideoWinAPI::DestroyScreen()

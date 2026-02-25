@@ -12,10 +12,12 @@ class iwSettings : public IngameWindow
 {
 public:
     iwSettings();
-    ~iwSettings() override;
 
-private:
-    std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
+protected:
+    void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
+
+private:
+    std::vector<VideoMode> supportedVideoModes;
 };

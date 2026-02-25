@@ -75,8 +75,9 @@ enum
     ID_grpGFInfo,
     ID_txtResolution,
     ID_cbResolution,
-    ID_txtFullscreen,
+    ID_txtDisplayMode,
     ID_cbDisplayMode,
+    ID_grpLockWindowSize,
     ID_txtFramerate,
     ID_cbFramerate,
     ID_grpVBO,
@@ -331,13 +332,17 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacing;
-    groupGraphics->AddText(ID_txtFullscreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    groupGraphics->AddText(ID_txtDisplayMode, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbDisplayMode = groupGraphics->AddComboBox(ID_cbDisplayMode, curPos + ctrlOffset, ctrlSizeLarge,
                                                              TextureColor::Grey, NormalFont, 100);
     cbDisplayMode->AddString(_("Windowed"));
     cbDisplayMode->AddString(_("Fullscreen"));
     cbDisplayMode->AddString(_("Borderless window"));
-    cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode));
+    cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
+    curPos.y += rowHeight;
+
+    addOnOffOption(*groupGraphics, curPos, ID_grpLockWindowSize, _("Lock window size:"),
+                   !SETTINGS.video.displayMode.resizeable);
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacing;
@@ -572,6 +577,14 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
     switch(ctrl_id)
     {
         case ID_grpIpv6: SETTINGS.server.ipv6 = enabled; break;
+        case ID_grpLockWindowSize:
+        {
+            SETTINGS.video.displayMode.resizeable = !enabled;
+            const auto newDisplayMode = SETTINGS.video.displayMode;
+            if(newDisplayMode == DisplayMode::Windowed && VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed)
+                VIDEODRIVER.ResizeScreen(VIDEODRIVER.GetWindowSize(), newDisplayMode);
+        }
+        break;
         case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
         case ID_grpOptTextures: SETTINGS.video.sharedTextures = enabled; break;
         case ID_grpEffects: SETTINGS.sound.effectsEnabled = enabled; break;

@@ -16,13 +16,27 @@ struct VideoMode
     bool operator!=(const VideoMode& o) const { return !(*this == o); }
 };
 
-enum class DisplayMode
+// Enum like type with extra flag
+struct DisplayMode
 {
-    Windowed,
-    Fullscreen,
-    BorderlessWindow,
+    enum Type
+    {
+        Windowed,
+        Fullscreen,
+        BorderlessWindow,
+    } type = Windowed;
+    bool resizeable = true;
+
+    constexpr DisplayMode() = default;
+    constexpr DisplayMode(Type t) : type(t) {}
+    constexpr explicit DisplayMode(unsigned t) : type(Type(t)) {}
+    constexpr bool operator==(const Type& t) const { return type == t; }
+    constexpr bool operator!=(const Type& t) const { return type != t; }
+    constexpr bool operator==(const DisplayMode& o) const { return o.type == type && o.resizeable == resizeable; }
+    constexpr bool operator!=(const DisplayMode& o) const { return !(o == *this); }
 };
-constexpr auto maxEnumValue(DisplayMode)
+
+constexpr auto maxEnumValue(DisplayMode::Type)
 {
     return DisplayMode::BorderlessWindow;
 }
