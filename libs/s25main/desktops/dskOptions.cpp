@@ -644,9 +644,12 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             // Is the selected backend required to support GUI scaling to fulfill the user's choice?
             // If so, warn the user if the backend is unable to support GUI scaling.
-            if(VIDEODRIVER.getGuiScale().percent() == 100
-               && (SETTINGS.video.guiScale != 100
-                   || (SETTINGS.video.guiScale == 0 && VIDEODRIVER.getGuiScaleRange().recommendedPercent != 100)))
+            const auto requestedGuiScale = SETTINGS.video.guiScale;
+            const bool autoGuiScale = requestedGuiScale == 0;
+            if((!autoGuiScale && requestedGuiScale != VIDEODRIVER.getGuiScale().percent())
+               || (autoGuiScale
+                   && VIDEODRIVER.getGuiScaleRange().recommendedPercent != VIDEODRIVER.getGuiScale().percent()))
+
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("The selected video driver does not support GUI scaling! Setting won't be used."),
