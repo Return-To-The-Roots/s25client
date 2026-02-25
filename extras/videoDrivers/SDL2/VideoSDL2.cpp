@@ -228,7 +228,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, Dis
     return true;
 }
 
-bool VideoSDL2::ResizeScreen(VideoMode reqSize, DisplayMode displayMode)
+bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -252,7 +252,8 @@ bool VideoSDL2::ResizeScreen(VideoMode reqSize, DisplayMode displayMode)
         if(displayMode_ != DisplayMode::Fullscreen)
             MoveWindowToCenter();
     }
-    const VideoMode newSize = displayMode_ == DisplayMode::BorderlessWindow ? getDesktopSize(reqSize) : reqSize;
+    if(displayMode_ == DisplayMode::BorderlessWindow)
+        newSize = getDesktopSize(newSize);
     if(newSize != GetWindowSize())
     {
         if(displayMode_ == DisplayMode::Fullscreen)
