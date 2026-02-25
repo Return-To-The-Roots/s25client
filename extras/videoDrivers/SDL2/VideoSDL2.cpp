@@ -142,7 +142,7 @@ static VideoMode getDesktopSize(VideoMode fallback)
     return fallback;
 }
 
-bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, DisplayMode displayMode)
+bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -228,7 +228,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, Di
     return true;
 }
 
-bool VideoSDL2::ResizeScreen(const VideoMode& reqSize, DisplayMode displayMode)
+bool VideoSDL2::ResizeScreen(VideoMode reqSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;

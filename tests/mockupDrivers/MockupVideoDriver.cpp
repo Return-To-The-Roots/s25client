@@ -31,13 +31,13 @@ bool MockupVideoDriver::Initialize()
     return true;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode& newSize, DisplayMode displayMode)
+bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode newSize, DisplayMode displayMode)
 {
     ResizeScreen(newSize, displayMode);
     return true;
 }
 
-bool MockupVideoDriver::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
+bool MockupVideoDriver::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
 {
     SetNewSize(newSize, Extent(newSize.width, newSize.height));
     displayMode_ = displayMode;
