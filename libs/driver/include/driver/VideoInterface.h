@@ -27,9 +27,9 @@ public:
     virtual bool Initialize() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode) = 0;
+    virtual bool CreateScreen(const std::string& title, VideoMode newSize, DisplayMode displayMode) = 0;
 
-    virtual bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) = 0;
+    virtual bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) = 0;
 
     /// Schliesst das Fenster.
     virtual void DestroyScreen() = 0;

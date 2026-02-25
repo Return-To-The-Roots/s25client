@@ -29,10 +29,10 @@ public:
     bool Initialize() override;
 
     /// Create window/rendering context with given title, size and display mode, return true on success
-    bool CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode) override;
+    bool CreateScreen(const std::string& title, const VideoMode newSize, DisplayMode displayMode) override;
 
     /// Change window/resolution, return true on success
-    bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) override;
+    bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) override;
 
     /// Close window
     void DestroyScreen() override;
@@ -70,9 +70,9 @@ private:
     /// Calculate the rect for the window of the requested size at the display mode
     /// Returns the final rect (position&size) for the window and the possibly adjusted size of the render region
     std::pair<Rect, VideoMode> CalculateWindowRect(DisplayMode mode, VideoMode requestedSize) const;
-    bool RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, DisplayMode displayMode);
+    bool RegisterAndCreateWindow(const std::string& title, VideoMode wndSize, DisplayMode displayMode);
     bool InitOGL();
-    static bool MakeFullscreen(const VideoMode& resolution);
+    static bool MakeFullscreen(VideoMode resolution);
     VideoMode getDesktopSize(VideoMode fallback) const;
 
     /// Callback for pressed character keys
