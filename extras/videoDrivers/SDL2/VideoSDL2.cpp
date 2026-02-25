@@ -134,6 +134,14 @@ void VideoSDL2::UpdateCurrentSizes()
     SetNewSize(VideoMode(w, h), Extent(w2, h2));
 }
 
+static VideoMode getDesktopSize(VideoMode fallback)
+{
+    SDL_DisplayMode dskSize;
+    if(CHECK_SDL(SDL_GetDesktopDisplayMode(0, &dskSize)))
+        return VideoMode(dskSize.w, dskSize.h);
+    return fallback;
+}
+
 bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, DisplayMode displayMode)
 {
     if(!initialized)
@@ -158,16 +166,23 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, Di
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
 
     const int wndPos = SDL_WINDOWPOS_CENTERED;
-    const auto fullscreen = displayMode == DisplayMode::Fullscreen;
-    const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
     const unsigned commonFlags = SDL_WINDOW_OPENGL;
     // TODO: Fix GUI scaling with High DPI support enabled.
     // See https://github.com/Return-To-The-Roots/s25client/issues/1621
     // commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-    const unsigned windowTypeFlag =
-      fullscreen ? SDL_WINDOW_FULLSCREEN :
-                   (displayMode == DisplayMode::BorderlessWindow ? SDL_WINDOW_BORDERLESS : SDL_WINDOW_RESIZABLE);
+    unsigned windowTypeFlag = 0;
+    auto requestedSize = size;
+    if(displayMode == DisplayMode::Fullscreen)
+    {
+        windowTypeFlag = SDL_WINDOW_FULLSCREEN;
+        requestedSize = FindClosestVideoMode(size);
+    } else if(displayMode == DisplayMode::BorderlessWindow)
+    {
+        windowTypeFlag = SDL_WINDOW_BORDERLESS;
+        requestedSize = getDesktopSize(size);
+    } else if(displayMode.resizeable)
+        windowTypeFlag = SDL_WINDOW_RESIZABLE;
 
     window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
                               commonFlags | windowTypeFlag);
@@ -175,28 +190,12 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, Di
     if(!window)
     {
         PrintError();
-        // Fallback to borderless fullscreen
-        if(fullscreen)
-        {
-            SDL_DisplayMode dskSize;
-            if(!CHECK_SDL(SDL_GetDesktopDisplayMode(0, &dskSize)))
-            {
-                dskSize.w = size.width;
-                dskSize.h = size.height;
-            }
-            window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, dskSize.w, dskSize.h,
-                                      commonFlags | SDL_WINDOW_BORDERLESS);
-        }
-        // No borderless -> Resizable
-        if(!window)
-        {
-            window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, size.width, size.height,
-                                      commonFlags | SDL_WINDOW_RESIZABLE);
-        }
-    }
-
-    if(!window)
-    {
+        // Fallback to borderless fullscreen if unable to set resolution
+        if(displayMode == DisplayMode::Fullscreen)
+            return CreateScreen(title, size, DisplayMode::BorderlessWindow);
+        // No borderless -> Resizable window as last fallback to at least show something
+        if(displayMode == DisplayMode::BorderlessWindow)
+            return CreateScreen(title, size, DisplayMode::Windowed);
         PrintError();
         return false;
     }
@@ -204,7 +203,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, Di
     UpdateCurrentDisplayMode();
     UpdateCurrentSizes();
 
-    if(displayMode_ != DisplayMode::Fullscreen)
+    if(displayMode != DisplayMode::Fullscreen)
         MoveWindowToCenter();
 
     SDL_Surface* iconSurf =
@@ -229,7 +228,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, Di
     return true;
 }
 
-bool VideoSDL2::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
+bool VideoSDL2::ResizeScreen(const VideoMode& reqSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -245,13 +244,15 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
                     displayMode = DisplayMode::BorderlessWindow;
             }
         }
-        SDL_SetWindowResizable(window, static_cast<SDL_bool>(displayMode == DisplayMode::Windowed));
-        SDL_SetWindowBordered(window, static_cast<SDL_bool>(displayMode != DisplayMode::BorderlessWindow));
+        SDL_SetWindowResizable(window,
+                               static_cast<SDL_bool>(displayMode == DisplayMode::Windowed && displayMode.resizeable));
+        SDL_SetWindowBordered(window, static_cast<SDL_bool>(displayMode == DisplayMode::Windowed));
 
         UpdateCurrentDisplayMode();
         if(displayMode_ != DisplayMode::Fullscreen)
             MoveWindowToCenter();
     }
+    const VideoMode newSize = displayMode_ == DisplayMode::BorderlessWindow ? getDesktopSize(reqSize) : reqSize;
     if(newSize != GetWindowSize())
     {
         if(displayMode_ == DisplayMode::Fullscreen)
@@ -260,9 +261,9 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
             SDL_DisplayMode target;
             target.w = targetMode.width;
             target.h = targetMode.height;
-            target.format = 0;           // don't care
-            target.refresh_rate = 0;     // don't care
-            target.driverdata = nullptr; // initialize to 0
+            target.format = 0;       // don't care
+            target.refresh_rate = 0; // don't care
+            target.driverdata = nullptr;
             // Explicitly change the window size to avoid a bug with SDL reporting the wrong size until alt+tab
             SDL_SetWindowSize(window, target.w, target.h);
             if(!CHECK_SDL(SDL_SetWindowDisplayMode(window, &target)))
@@ -598,7 +599,7 @@ void VideoSDL2::MoveWindowToCenter()
     SDL_Rect usableBounds;
     CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
     int top, left, bottom, right;
-    if(CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)) != 0)
+    if(!CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)))
         top = left = bottom = right = 0;
     usableBounds.w -= left + right;
     usableBounds.h -= top + bottom;
@@ -620,4 +621,5 @@ void VideoSDL2::UpdateCurrentDisplayMode()
         displayMode_ = DisplayMode::BorderlessWindow;
     else
         displayMode_ = DisplayMode::Windowed;
+    displayMode_.resizeable = (flags & SDL_WINDOW_RESIZABLE) != 0;
 }
