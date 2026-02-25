@@ -13,9 +13,9 @@
 #include "world/GameWorld.h"
 #include "s25util/colors.h"
 
-/// Länge des Wachs-Wartens
+/// Length of growth waiting phase
 const unsigned GROWING_WAITING_LENGTH = 1100;
-/// Länge des Wachsens
+/// Length of growth phase
 const unsigned GROWING_LENGTH = 16;
 
 noGrainfield::noGrainfield(const MapPoint pos)
@@ -30,7 +30,7 @@ void noGrainfield::Destroy()
 {
     GetEvMgr().RemoveEvent(event);
 
-    // Bauplätze drumrum neu berechnen
+    // Recalculate surrounding build-quality tiles
     world->RecalcBQAroundPoint(pos);
 
     noCoordBase::Destroy();
@@ -65,10 +65,10 @@ void noGrainfield::Draw(DrawPoint drawPt)
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
-            // altes Feld ausblenden
+            // Fade out old field
             LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
 
-            // neues Feld einblenden
+            // Fade in new field
             LOADER.grainfield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
         }
         break;
@@ -76,7 +76,7 @@ void noGrainfield::Draw(DrawPoint drawPt)
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
-            // Feld ausblenden
+            // Fade out field
             LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
         }
         break;
@@ -89,39 +89,38 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
     {
         case State::GrowingWaiting:
         {
-            // Feld hat gewartet, also wächst es jetzt
+            // Waiting phase ended, now it grows
             event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
             state = State::Growing;
         }
         break;
         case State::Growing:
         {
-            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter
-            // wächst
+            // If fully grown, stop here; otherwise schedule another waiting event to continue growth
             if(++size != 3)
             {
                 event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
-                // Erstmal wieder bis zum nächsten Wachsstumsschub warten
+                // Wait for the next growth step
                 state = State::GrowingWaiting;
             } else
             {
-                // bin nun ausgewachsen
+                // Fully grown now
                 state = State::Normal;
-                // nach langer Zeit verdorren
+                // Wither after a long time
                 event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
             }
         }
         break;
         case State::Normal:
         {
-            // Jetzt lebt es schon zu lange --> hokus pokus verschwindibus!
+            // It has existed too long now -> start disappearing
             state = State::Withering;
             event = GetEvMgr().AddEvent(this, 20);
         }
         break;
         case State::Withering:
         {
-            // Selbst zerstören
+            // Destroy itself
             event = nullptr;
             world->SetNO(pos, nullptr);
             GetEvMgr().AddToKillList(this);
@@ -132,7 +131,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
 
 void noGrainfield::BeginHarvesting()
 {
-    // Event killen, damit wir nicht plötzlich verschwinden, wenn er uns aberntet
+    // Cancel event so it does not disappear while being harvested
     GetEvMgr().RemoveEvent(event);
     event = nullptr;
     state = State::Normal;
@@ -140,6 +139,6 @@ void noGrainfield::BeginHarvesting()
 
 void noGrainfield::EndHarvesting()
 {
-    // nach langer Zeit verdorren (von neuem)
+    // Wither after a long time (again)
     event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
 }

@@ -361,7 +361,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             {
                 newFrontierDistance = FrontierDistance::Near;
             }
-            // in mittlerem Umkreis, also theoretisch angreifbar?
+            // In medium range, i.e. theoretically attackable?
             else if(distance < BASE_ATTACKING_DISTANCE + (GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
             {
                 newFrontierDistance = FrontierDistance::Mid;
@@ -408,7 +408,7 @@ void nobMilitary::NewEnemyMilitaryBuilding(const FrontierDistance distance)
         // Close range
         frontier_distance = FrontierDistance::Near;
     }
-    // in mittlerem Umkreis?
+    // In medium range?
     else if(distance == FrontierDistance::Mid)
     {
         // Medium distance (only if we were previously far away)

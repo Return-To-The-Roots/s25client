@@ -19,12 +19,12 @@ nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nob
 
 nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
-/// Malt den Arbeiter beim Arbeiten
+/// Draws the worker while working
 void nofStonemason::DrawWorking(DrawPoint drawPt)
 {
     unsigned now_id;
 
-    // Stein hauen
+    // Hammering stone
     LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
       ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
 
@@ -40,36 +40,36 @@ unsigned short nofStonemason::GetCarryID() const
     return 63;
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+/// Notify derived class when work starts (preparations)
 void nofStonemason::WorkStarted() {}
 
-/// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+/// Notify derived class when work is finished
 void nofStonemason::WorkFinished()
 {
-    // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
+    // Cut off one chunk of granite (if it is already minimal, remove it from the map)
     if(world->GetSpecObj<noGranite>(pos)->IsSmall())
     {
-        // Granitklötzchen löschen
+        // Remove the granite chunk
         world->DestroyNO(pos);
 
-        // Minimap Bescheid geben (Granitglötzchen muss weg)
+        // Notify minimap (granite chunk disappeared)
         if(world->GetGameInterface())
             world->GetGameInterface()->GI_UpdateMinimap(pos);
 
-        // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
+        // Recalculate nearby BQ, as it may have changed now
         world->RecalcBQAroundPoint(pos);
     } else
-        // ansonsten wird er um 1 kleiner
+        // Otherwise decrease size by 1
         world->GetSpecObj<noGranite>(pos)->Hew();
 
-    // Stein in die Hand nehmen
+    // Pick up a stone
     ware = GoodType::Stones;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
 nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
-    // An dieser Position muss es nur Stein geben
+    // This position must contain granite
     return ((world->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PointQuality::Class1 :
                                                                         PointQuality::NotPossible);
 }

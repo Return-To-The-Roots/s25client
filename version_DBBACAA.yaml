@@ -1,0 +1,417 @@
+---
+combat:
+  fulfillment:
+    low: 5.0
+    medium: 9.0
+    fulfillmentHigh: 13.0
+  targetSelection: "Attrition"
+  forceAdvantageRatio: 0.9
+  minNearTroopsDensity: 1.25
+distributionAdjuster:
+  Fish:
+    CoalMine:
+      overstockingPenalty:
+        Coal:
+          min: 50
+          linear: -0.02
+    GoldMine:
+      overstockingPenalty:
+        Gold:
+          min: 25
+          linear: -0.04
+    IronMine:
+      overstockingPenalty:
+        IronOre:
+          min: 25
+          linear: -0.04
+  Grain:
+    Brewery:
+      overstockingPenalty:
+        Beer:
+          min: 50
+          linear: -0.05
+        Sword:
+          min: 10
+          linear: 0.1
+  Coal:
+    Mint:
+     overstockingPenalty:
+        Coins:
+          min: 20
+          linear: -0.05
+posFinder:
+  Barracks:
+    resources:
+      Borderland: 1
+  Guardhouse:
+    resources:
+      Borderland: 1
+  Watchtower:
+    resources:
+      Borderland: 1
+  Fortress:
+    resources:
+      Borderland: 1
+  Bakery:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Brewery:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Armory:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Metalworks:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Ironsmelter:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Slaughterhouse:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  PigFarm:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Mill:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Well:
+    proximity:
+      Forester:
+        minimal:
+          constant: 4
+  Storehouse:
+    buildOnBorder: false
+    proximity:
+      Storehouse:
+        minimal:
+          constant: 20
+  Sawmill:
+    rating:
+      enabled: false
+    proximity:
+      Sawmill:
+        minimal:
+          linear: 2.0
+  Forester:
+    rating:
+      Woodcutter:
+        radius: 6.0
+        multiplier: 50.0
+    proximity:
+      Farm:
+        minimal:
+          constant: 8.0
+      Forester:
+        minimal:
+          constant: 11.0
+      Storehouse:
+        minimal:
+          constant: 11.0
+  Woodcutter:
+    rating:
+      Forester:
+        radius: 7.0
+        multiplier: 300.0
+  DonkeyBreeder:
+    rating:
+      enabled: false
+    proximity:
+      DonkeyBreeder:
+        minimal:
+          constant: 20.0
+  Farm:
+    buildOnBorder: false
+buildPlanner:
+  Farm:
+    goods:
+      Grain:
+        min: 50.0
+        linear: -0.02
+    stats:
+      Country:
+        min: 2000.0
+        linear: 0.004
+    buildings:
+      Mill:
+        linear: 1.2
+      Brewery:
+        linear: 1.2
+      PigFarm:
+        linear: 1.2
+      DonkeyBreeder:
+        linear: 1.2
+    workersAdvance:
+      constant: 3.0
+  Mill:
+    goods:
+      Flour:
+        min: 50.0
+        linear: -0.02
+      Grain:
+        min: 50.0
+        linear: 0.02
+    buildings:
+      Farm:
+        linear: 0.55
+      Brewery:
+        linear: -1.0
+      DonkeyBreeder:
+        linear: -1.0
+    productivity:
+      min: 90.0
+  Mint:
+    goods:
+      Coins:
+        min: 25.0
+        linear: -0.02
+    buildings:
+      GoldMine:
+        linear: 1.0
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 1.0
+  Well:
+    goods:
+      Flour:
+        linear: 0.02
+      Water:
+        min: 50.0
+        linear: -0.02
+    buildings:
+      Bakery:
+        linear: 1.1
+      Brewery:
+        linear: 1.1
+      PigFarm:
+        linear: 1.1
+      DonkeyBreeder:
+        linear: 1.1
+  Armory:
+    buildings:
+      Metalworks:
+        linear: -1.0
+      Ironsmelter:
+        min: 2.0
+        linear: 1.0
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 2.0
+  Bakery:
+    goods:
+      Bread:
+        min: 50.0
+        linear: -0.02
+      Flour:
+        min: 50.0
+        linear: 0.04
+    buildings:
+      Mill:
+        linear: 1.0
+    productivity:
+      min: 90.0
+    workersAdvance:
+      constant: 2.0
+  Quarry:
+    goods:
+      Stones:
+        min: 100.0
+        linear: -0.01
+    buildings:
+      Sawmill:
+        max: 6.0
+        linear: 0.5
+        constant: 1.0
+      IronMine:
+        max: 6.0
+        linear: 0.5
+  Brewery:
+    goods:
+      Beer:
+        min: 50.0
+        linear: -0.02
+    buildings:
+      Farm:
+        min: 3.0
+        constant: 1.0
+      Armory:
+        linear: 0.25
+    productivity:
+      max: 90.0
+      min: 70.0
+  PigFarm:
+    goods:
+      Ham:
+        min: 50.0
+        linear: -0.02
+    buildings:
+      Farm:
+        linear: 0.25
+      Brewery:
+        linear: -1.0
+      DonkeyBreeder:
+        linear: -1.0
+    productivity:
+      max: 90.0
+      min: 70.0
+  Sawmill:
+    goods:
+      Boards:
+        min: 100.0
+        linear: -0.025
+    stats:
+      Country:
+        linear: 0.0012
+        logTwo:
+          linear: 0.04
+          constant: -3.0
+        constant: 2.0
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 2.0
+  CoalMine:
+    goods:
+      Fish:
+        linear: 0.02
+      Iron:
+        min: 50.0
+        linear: -0.02
+      Meat:
+        linear: 0.02
+      Bread:
+        linear: 0.02
+    buildings:
+      Farm:
+        linear: 0.67
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 2.0
+  Forester:
+    buildings:
+      Sawmill:
+        linear: 0.34
+        constant: 1.0
+    resources:
+      Wood:
+        min: 200.0
+        logTwo:
+          linear: -0.01
+        constant: 1.0
+  GoldMine:
+    goods:
+      Fish:
+        linear: 0.02
+      Gold:
+        min: 50.0
+        linear: -0.02
+      Meat:
+        linear: 0.02
+      Bread:
+        linear: 0.02
+    buildings:
+      Farm:
+        linear: 0.17
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 2.0
+  IronMine:
+    goods:
+      Fish:
+        linear: 0.02
+      Meat:
+        linear: 0.02
+      Bread:
+        linear: 0.02
+      IronOre:
+        min: 50.0
+        linear: -0.02
+    buildings:
+      Farm:
+        linear: 0.2
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 2.0
+  Metalworks:
+    max: 2.0
+    buildings:
+      Ironsmelter:
+        min: 2.0
+        logTwo:
+          linear: 1.15
+          constant: -2.0
+        constant: 1.0
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 1.0
+  Woodcutter:
+    buildings:
+      Sawmill:
+        linear: 2.0
+        constant: 2.0
+    resources:
+      Wood:
+        max: 3.0
+        min: 200.0
+        logTwo:
+          linear: 0.005
+  Ironsmelter:
+    goods:
+      Iron:
+        min: 50.0
+        linear: -0.02
+      IronOre:
+        min: 50.0
+        linear: 0.02
+    buildings:
+      IronMine:
+        linear: 0.9
+    productivity:
+      max: 90.0
+      min: 70.0
+    workersAdvance:
+      constant: 2.0
+  DonkeyBreeder:
+    stats:
+      Country:
+        max: 2.0
+        min: 2000.0
+        linear: 4.0E-4
+  Slaughterhouse:
+    buildings:
+      PigFarm:
+        min: 1.0
+        linear: 0.67
+        constant: 1.0
+disableBuilding:
+- "Fortress"

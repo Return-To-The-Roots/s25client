@@ -34,6 +34,14 @@ struct RatingParams
     int multiplier = 0;
 };
 
+struct ResourceRatingParams
+{
+    bool enabled = false;
+    AIResource resource = AIResource::Wood;
+    unsigned defaultRadius = 0;
+    int defaultMultiplier = 0;
+};
+
 struct ProximityParams
 {
     BuildParams minimal = {};
@@ -44,7 +52,9 @@ struct LocationParams
 {
     bool enabled = false;
     bool buildOnBorder = true;
+    ResourceRatingParams resourceRating = {};
     helpers::EnumArray<unsigned, AIResource> minResources = helpers::EnumArray<unsigned, AIResource>{};
+    helpers::EnumArray<BuildParams, AIResource> resourcePenalty = helpers::EnumArray<BuildParams, AIResource>{};
     helpers::EnumArray<ProximityParams, BuildingType> proximity = helpers::EnumArray<ProximityParams, BuildingType>{};
     helpers::EnumArray<RatingParams, BuildingType> rating = helpers::EnumArray<RatingParams, BuildingType>{};
 };

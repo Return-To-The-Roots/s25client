@@ -30,6 +30,24 @@ LocationParams Weights::parseLocationParams(const YAML::Node& node, const Locati
     LocationParams params = defaults;
     if(node["buildOnBorder"])
         params.buildOnBorder = node["buildOnBorder"].as<bool>();
+    if(const YAML::Node resourceRatingNode = node["resourceRating"])
+    {
+        params.resourceRating.enabled = true;
+        if(const YAML::Node resourceNode = resourceRatingNode["resource"])
+        {
+            try
+            {
+                params.resourceRating.resource = AI_RESOURCE_NAME_MAP.at(resourceNode.as<std::string>());
+            } catch(...)
+            {
+                // Keep defaults for unknown resource names.
+            }
+        }
+        if(const YAML::Node radiusNode = resourceRatingNode["defaultRadius"])
+            params.resourceRating.defaultRadius = static_cast<unsigned>(radiusNode.as<double>());
+        if(const YAML::Node multiplierNode = resourceRatingNode["defaultMultiplier"])
+            params.resourceRating.defaultMultiplier = static_cast<int>(multiplierNode.as<double>());
+    }
     if(node["resources"])
         for(const auto& weightEntry : node["resources"])
         {
@@ -44,6 +62,22 @@ LocationParams Weights::parseLocationParams(const YAML::Node& node, const Locati
             }
 
             params.minResources[resourceType] = static_cast<unsigned>(weightEntry.second.as<double>());
+        }
+    if(node["resourcePenalty"])
+        for(const auto& penaltyEntry : node["resourcePenalty"])
+        {
+            std::string resourceStr = penaltyEntry.first.as<std::string>();
+            AIResource resourceType;
+            try
+            {
+                resourceType = AI_RESOURCE_NAME_MAP.at(resourceStr);
+            } catch(...)
+            {
+                continue;
+            }
+
+            params.resourcePenalty[resourceType] =
+              Weights::parseBuildParams(penaltyEntry.second, params.resourcePenalty[resourceType]);
         }
     if(node["proximity"])
         for(const auto& weightEntry : node["proximity"])

@@ -25,23 +25,27 @@ bool IsBorderBlocked(const AIPlayerJH& aijh, const AIInterface& aii, const Build
 }
 
 int ComputeRatingBonus(const AIPlayerJH& aijh, AIConstruction& construction, const BuildingType buildingType,
-                       const BuildingType targetType, const unsigned defaultRadius, const int defaultMultiplier,
                        const MapPoint& candidate)
 {
-    unsigned radius = defaultRadius;
-    int multiplier = defaultMultiplier;
-    const auto& ratingParams = aijh.GetConfig().locationParams[buildingType].rating[targetType];
-    if(ratingParams.enabled)
+    int totalBonus = 0;
+    const auto& locationParams = aijh.GetConfig().locationParams[buildingType];
+    for(const auto targetType : helpers::enumRange<BuildingType>())
     {
-        radius = ratingParams.radius;
-        multiplier = ratingParams.multiplier;
+        const auto& ratingParams = locationParams.rating[targetType];
+        if(!ratingParams.enabled)
+            continue;
+
+        const unsigned radius = ratingParams.radius > 0 ? ratingParams.radius : locationParams.resourceRating.defaultRadius;
+        const int multiplier =
+          ratingParams.multiplier != 0 ? ratingParams.multiplier : locationParams.resourceRating.defaultMultiplier;
+
+        if(radius == 0 || multiplier == 0)
+            continue;
+
+        const int neighbors = construction.CountUsualBuildingInRadius(candidate, radius, targetType);
+        totalBonus += neighbors * multiplier;
     }
-
-    if(radius == 0 || multiplier == 0)
-        return 0;
-
-    const int neighbors = construction.CountUsualBuildingInRadius(candidate, radius, targetType);
-    return neighbors * multiplier;
+    return totalBonus;
 }
 
 bool MeetsMinimalResourceRequirement(const AIPlayerJH& aijh, const BuildingType type, const AIResource res, int rating)
@@ -53,41 +57,48 @@ bool MeetsMinimalResourceRequirement(const AIPlayerJH& aijh, const BuildingType 
 bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, AIInterface& aii, const BuildingType type,
                                     const MapPoint& pt)
 {
-    switch(type)
+    const auto& minRequirements = aijh.GetConfig().locationParams[type].minResources;
+    for(const auto resource : helpers::enumRange<AIResource>())
     {
-        case BuildingType::Woodcutter:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Wood,
-                                                   aii.CalcResourceValue(pt, AIResource::Wood));
-        case BuildingType::Forester:
-        case BuildingType::Farm:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Plantspace,
-                                                   aii.CalcResourceValue(pt, AIResource::Plantspace));
-        case BuildingType::Quarry:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Stones,
-                                                   aii.CalcResourceValue(pt, AIResource::Stones));
-        case BuildingType::Fishery:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Fish,
-                                                   aii.CalcResourceValue(pt, AIResource::Fish));
-        case BuildingType::GoldMine:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Gold,
-                                                   aii.CalcResourceValue(pt, AIResource::Gold));
-        case BuildingType::CoalMine:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Coal,
-                                                   aii.CalcResourceValue(pt, AIResource::Coal));
-        case BuildingType::IronMine:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Ironore,
-                                                   aii.CalcResourceValue(pt, AIResource::Ironore));
-        case BuildingType::GraniteMine:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Granite,
-                                                   aii.CalcResourceValue(pt, AIResource::Granite));
-        case BuildingType::Barracks:
-        case BuildingType::Guardhouse:
-        case BuildingType::Watchtower:
-        case BuildingType::Fortress:
-            return MeetsMinimalResourceRequirement(aijh, type, AIResource::Borderland,
-                                                   aii.CalcResourceValue(pt, AIResource::Borderland));
-        default: return true;
+        if(minRequirements[resource] == 0)
+            continue;
+
+        if(!MeetsMinimalResourceRequirement(aijh, type, resource, aii.CalcResourceValue(pt, resource)))
+            return false;
     }
+    return true;
+}
+
+int ComputeResourcePenalty(const AIPlayerJH& aijh, AIInterface& aii, const BuildingType type, const MapPoint& pt)
+{
+    int totalPenalty = 0;
+    const auto& penaltyParams = aijh.GetConfig().locationParams[type].resourcePenalty;
+    for(const auto resource : helpers::enumRange<AIResource>())
+    {
+        const BuildParams params = penaltyParams[resource];
+        if(!params.enabled)
+            continue;
+
+        const unsigned resourceValue = aii.CalcResourceValue(pt, resource);
+        if(resourceValue < params.min)
+            continue;
+
+        const double value = CALC::calcCount(resourceValue, params);
+        totalPenalty += static_cast<int>(std::min<double>(value, params.max));
+    }
+    return totalPenalty;
+}
+
+int ComputeResourceRating(const AIPlayerJH& aijh, AIInterface& aii, AIConstruction& construction, const BuildingType type,
+                          const MapPoint& pt)
+{
+    const auto& resourceRating = aijh.GetConfig().locationParams[type].resourceRating;
+    int rating = 1;
+    if(resourceRating.enabled)
+        rating = aii.CalcResourceValue(pt, resourceRating.resource);
+
+    rating += ComputeRatingBonus(aijh, construction, type, pt);
+    return rating;
 }
 } // namespace
 
@@ -166,54 +177,19 @@ std::optional<int> GlobalPositionFinder::GetPointRating(const BuildingType type,
 
     AIInterface& aii = aijh.GetInterface();
     AIConstruction& construction = aijh.GetConstruction();
+
     switch(type)
     {
-        case BuildingType::Woodcutter:
-        {
-            const int woodRating = aii.CalcResourceValue(pt, AIResource::Wood);
-            if(construction.OtherUsualBuildingInRadius(pt, 3, BuildingType::Woodcutter))
-                return std::nullopt;
-            const int ratingBonus = ComputeRatingBonus(aijh, construction, type, BuildingType::Forester, 7, 300, pt);
-            return woodRating + ratingBonus;
-        }
-        case BuildingType::Forester:
-        {
-            const int plantspaceRating = aii.CalcResourceValue(pt, AIResource::Plantspace);
-            const int ratingBonus = ComputeRatingBonus(aijh, construction, type, BuildingType::Woodcutter, 6, 50, pt);
-            return plantspaceRating + ratingBonus;
-        }
-        case BuildingType::Farm:
-        {
-            const int plantspaceRating = aii.CalcResourceValue(pt, AIResource::Plantspace);
-            if(construction.OtherUsualBuildingInRadius(pt, 8, BuildingType::Forester))
-                return std::nullopt;
-            return plantspaceRating;
-        }
         case BuildingType::Quarry:
-        {
-            const int stoneRating = aii.CalcResourceValue(pt, AIResource::Stones);
             if(!ValidStoneinRange(pt))
                 return std::nullopt;
-            return stoneRating;
-        }
-        case BuildingType::Fishery:
-        {
-            const int fishRating = aii.CalcResourceValue(pt, AIResource::Fish);
-            if(aii.isBuildingNearby(BuildingType::Fishery, pt, 5)
-               || !ValidFishInRange(pt))
-                return std::nullopt;
-            return fishRating;
-        }
-        case BuildingType::GoldMine: return aii.CalcResourceValue(pt, AIResource::Gold);
-        case BuildingType::CoalMine: return aii.CalcResourceValue(pt, AIResource::Coal);
-        case BuildingType::IronMine: return aii.CalcResourceValue(pt, AIResource::Ironore);
-        case BuildingType::GraniteMine: return aii.CalcResourceValue(pt, AIResource::Granite);
-        case BuildingType::Barracks:
-        case BuildingType::Guardhouse:
-        case BuildingType::Watchtower:
-        case BuildingType::Fortress: return aii.CalcResourceValue(pt, AIResource::Borderland);
-        default: return 1;
+            break;
+        default: break;
     }
+
+    const int baseRating = ComputeResourceRating(aijh, aii, construction, type, pt);
+    const int resourcePenalty = ComputeResourcePenalty(aijh, aii, type, pt);
+    return baseRating - resourcePenalty;
 }
 
 MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)

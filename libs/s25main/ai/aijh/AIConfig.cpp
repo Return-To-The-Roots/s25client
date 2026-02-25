@@ -22,6 +22,30 @@ AIConfig AI_CONFIG;
 
 AIConfig::AIConfig()
 {
+    auto setResourceRating = [this](const BuildingType type, const AIResource resource, const unsigned defaultRadius,
+                                    const int defaultMultiplier) {
+        locationParams[type].resourceRating.enabled = true;
+        locationParams[type].resourceRating.resource = resource;
+        locationParams[type].resourceRating.defaultRadius = defaultRadius;
+        locationParams[type].resourceRating.defaultMultiplier = defaultMultiplier;
+    };
+
+    setResourceRating(BuildingType::Woodcutter, AIResource::Wood, 7, 300);
+    locationParams[BuildingType::Woodcutter].rating[BuildingType::Forester].enabled = true;
+    setResourceRating(BuildingType::Forester, AIResource::Plantspace, 6, 50);
+    locationParams[BuildingType::Forester].rating[BuildingType::Woodcutter].enabled = true;
+    setResourceRating(BuildingType::Farm, AIResource::Plantspace, 0, 0);
+    setResourceRating(BuildingType::Quarry, AIResource::Stones, 0, 0);
+    setResourceRating(BuildingType::Fishery, AIResource::Fish, 0, 0);
+    setResourceRating(BuildingType::GoldMine, AIResource::Gold, 0, 0);
+    setResourceRating(BuildingType::CoalMine, AIResource::Coal, 0, 0);
+    setResourceRating(BuildingType::IronMine, AIResource::Ironore, 0, 0);
+    setResourceRating(BuildingType::GraniteMine, AIResource::Granite, 0, 0);
+    setResourceRating(BuildingType::Barracks, AIResource::Borderland, 0, 0);
+    setResourceRating(BuildingType::Guardhouse, AIResource::Borderland, 0, 0);
+    setResourceRating(BuildingType::Watchtower, AIResource::Borderland, 0, 0);
+    setResourceRating(BuildingType::Fortress, AIResource::Borderland, 0, 0);
+
     locationParams[BuildingType::Woodcutter].minResources[AIResource::Wood] = 50;
     locationParams[BuildingType::Forester].minResources[AIResource::Plantspace] = 50;
     locationParams[BuildingType::Farm].minResources[AIResource::Plantspace] = 85;
@@ -31,6 +55,8 @@ AIConfig::AIConfig()
     locationParams[BuildingType::CoalMine].minResources[AIResource::Coal] = 1;
     locationParams[BuildingType::IronMine].minResources[AIResource::Ironore] = 1;
     locationParams[BuildingType::GraniteMine].minResources[AIResource::Granite] = 1;
+    locationParams[BuildingType::Well].resourcePenalty[AIResource::Stones] =
+      BuildParams{0.0, 0.025, 0.0, {}, 0, 99999, true};
 
     distributionParams[GoodType::Grain][BuildingType::Brewery].enabled = true;
     distributionParams[GoodType::Grain][BuildingType::Brewery].overstockingPenalty[GoodType::Beer] =

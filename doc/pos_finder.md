@@ -1,69 +1,128 @@
-# PositionFinder Overview
+# Position Finding Overview
 
-`AIJH::PositionFinder` is the micro-service the JH AI uses to scout fresh
-construction sites. It sits next to `AIConstruction` and `BuildingPlanner`
-and evaluates terrain, proximity constraints, and resource overlays before a
-build job settles on a final `MapPoint`.
+The current AI position search is implemented by
+`AIJH::GlobalPositionFinder` (`libs/s25main/ai/aijh/GlobalPositionFinder.cpp`).
+It does a full-map scan and returns one best point for a requested
+`BuildingType`.
 
-## Responsibilities
-- Gather anchor positions (current military buildings plus the HQ) and
-  search rings around them for promising sites.
-- Enforce proximity rules derived from `AIConfig::locationParams`, avoiding
-  duplicate infrastructure or overcrowded storehouses.
-- Query resource maps (wood, plant space, fish, stones) and rate candidates
-  with heuristics tuned per building type.
-- Validate that resources are actually harvestable by checking fishable
-  coast tiles and granite nodes reachable via human paths.
+## Entry Point
 
-## Main Entry Points
-- `FindBestPosition(BuildingType)`: iterates over anchor positions and keeps
-  the highest-rated candidate returned by `FindPositionAround`.
-- `FindPositionAround(type, around, radius)`: applies building-specific
-  heuristics after a general proximity check. Special cases:
-  - **Woodcutter** – scores wood density and boosts locations near foresters.
-  - **Forester** – prefers plant space with nearby woodcutters.
-  - **Farm** – targets rich plant space away from foresters.
-  - **Quarry** – requires confirmable granite nodes via `ValidStoneInRange`.
-  - **Fishery** – searches coast-adjacent water with reachable fish spots.
-  - **Default** – falls back to `AIPlayerJH::SimpleFindPosition` when no
-    dedicated heuristic exists.
-- `CheckProximity(type, pt)`: enforces per-building minimal radii around
-  other structures, short-circuiting early for overlapping storehouses.
-- `FindBestPositions(...)`: wraps `AIResourceMap::findBestPositions` after
-  refreshing the relevant resource mask around the reference node.
-- `ValidFishInRange` / `ValidStoneInRange`: verify that the chosen tile has
-  accessible resources (fish or granite) within a bounded search radius and
-  that a worker path exists.
+- `GlobalPositionFinder::FindBestPosition(BuildingType bt)`
 
-## Usage Notes
-- `PositionFinder` assumes `AIConstruction` tracks “usual” buildings and
-  exposes helper queries such as `OtherUsualBuildingInRadius` and
-  `OtherStoreInRadius`.
-- Ratings returned by `FindPositionAround` combine raw resource scores with
-  bonuses (foresters near woodcutters, woodcutters near foresters, etc.), so
-  callers should treat only the final `MapPoint` as significant and ignore
-  the absolute rating value.
-- When no valid site is found the class returns `MapPoint::Invalid`, letting
-  higher-level build jobs reschedule or downgrade/upgrade their plans.
+Called by `AIPlayerJH::FindBestPosition`, and used by global build jobs.
 
-## Configuration
-- Woodcutter/forester synergies use the `posFinder.<Building>.rating` block
-  from the AI weights YAML. Each entry accepts `radius` (tiles to check) and
-  `multiplier` (bonus per neighbor). Example:
+## Global Scan Pipeline
 
-```
+For each map point, the finder applies filters in this order:
+
+1. AI node ownership/reachability/farm state:
+   - reject if `!node.reachable || !node.owned || node.farmed`
+2. Building size fit:
+   - reject if `!canUseBq(node.bq, BUILDING_SIZE[bt])`
+3. Harbor proximity:
+   - reject if `isHarborPosClose(pt, 2, true)` for non-harbor buildings
+4. Border rule:
+   - `locationParams[bt].buildOnBorder == false` rejects points with
+     `Borderland > 1`
+5. Minimal resource requirements:
+   - checked before rating via `locationParams[bt].minResources[...]`
+6. Point rating and proximity:
+   - `GetPointRating(bt, pt)` may reject the point (`std::nullopt`)
+
+The highest positive rating wins (`bestValue` starts at `0`), otherwise
+`MapPoint::Invalid()` is returned.
+
+## Resource Requirement Check
+
+`MeetsPointResourceRequirements(...)` is data-driven:
+
+- It iterates all `AIResource` values.
+- For each resource with `locationParams[building].minResources[resource] > 0`,
+  it requires `CalcResourceValue(point, resource) >= minResources[resource]`.
+- If all configured minimums pass, the point is accepted.
+
+## Rating Logic
+
+`GetPointRating(...)` now has three stages:
+
+1. `CheckProximity(...)` (may reject point)
+2. Building-specific hard constraints (switch-case rejections only)
+3. Generic rating from config:
+   - base rating from `locationParams[type].resourceRating`
+   - sum of configured neighborhood bonuses from `locationParams[type].rating[...]`
+   - minus `resourcePenalty[...]` values
+
+Resource base rating and bonus defaults are not hardcoded in the switch anymore.
+They are read from `LocationParams`.
+
+The switch currently only applies special constraints:
+
+- `Woodcutter`: reject if another woodcutter in radius `3`
+- `Farm`: reject if forester in radius `8`
+- `Quarry`: requires `ValidStoneinRange(...)`
+- `Fishery`: reject if fishery nearby in radius `5` and requires `ValidFishInRange(...)`
+
+## Proximity Logic (Current Behavior)
+
+`CheckProximity(...)` reads `locationParams[type].proximity[otherType]`.
+For an enabled rule it computes:
+
+- `minRadius = CALC::calcCount(numBuildingsOfType, proximity.minimal)`
+
+Then it checks either:
+
+- `OtherStoreInRadius` for `otherType == Storehouse`
+- `OtherUsualBuildingInRadius` otherwise
+
+Important current detail: the implementation returns on the first enabled
+proximity rule it encounters in enum iteration, so it does not combine all
+enabled proximity rules in one pass.
+
+## Resource Availability Helpers
+
+- `ValidFishInRange(pt)`
+  - scans radius `5` for fish resource nodes and requires a short human path
+    (`FindHumanPath(pt, nb, 10)`) to a neighboring water node.
+- `ValidStoneinRange(pt)`
+  - scans rings up to radius `8` for granite nodal objects and requires human
+    path reachability (`FindHumanPath(pt, granitePt, 20)`).
+
+## Config Knobs
+
+Position behavior is configured through `posFinder` / `locationParams`:
+
+- `buildOnBorder` (`bool`)
+- `resources` (`minResources` per `AIResource`)
+- `resourceRating`:
+  - `resource` (`AIResource`) for base `CalcResourceValue(...)`
+  - `defaultRadius` fallback for enabled `rating` entries without explicit radius
+  - `defaultMultiplier` fallback for enabled `rating` entries without explicit multiplier
+- `resourcePenalty` (per-resource `BuildParams`, applied for all building types)
+- `proximity` (dynamic radius via `BuildParams`)
+- `rating` (per-neighbor type `radius` + `multiplier`)
+
+Example (woodcutter/forester rating override):
+
+```yaml
 posFinder:
   Woodcutter:
+    resourceRating:
+      resource: Wood
+      defaultRadius: 7
+      defaultMultiplier: 300
     rating:
       Forester:
-        radius: 7        # default search radius
-        multiplier: 300  # default bonus per forester
+        # radius/multiplier omitted -> uses resourceRating defaults
   Forester:
+    resourceRating:
+      resource: Plantspace
+      defaultRadius: 6
+      defaultMultiplier: 50
     rating:
       Woodcutter:
-        radius: 6        # default search radius
-        multiplier: 50   # default bonus per woodcutter
+        # radius/multiplier omitted -> uses resourceRating defaults
+  Well:
+    resourcePenalty:
+      Stones:
+        linear: 0.025
 ```
-
-- Omitting the block keeps the compiled defaults (7/300 and 6/50), so only
-  add entries when tuning the AI’s building placement heuristics.

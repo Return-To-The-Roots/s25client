@@ -4,11 +4,14 @@
 
 #include "world/MapLoader.h"
 #include "Game.h"
+#include "BuildingEventLogger.h"
+#include "EventManager.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
 #include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "buildings/noBuilding.h"
 #include "factories/BuildingFactory.h"
 #include "lua/GameDataLoader.h"
 #include "pathfinding/PathConditionShip.h"
@@ -328,7 +331,7 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
             case 0xCC:
             {
                 if(lc >= 0x01 && lc <= 0x07)
-                    obj = new noGranite(GraniteType::One, lc - 1);
+                    obj = new noGranite(GraniteType::One, noGranite::EncodeBoostedState(lc - 1));
                 else
                     LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
@@ -338,7 +341,7 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
             case 0xCD:
             {
                 if(lc >= 0x01 && lc <= 0x07)
-                    obj = new noGranite(GraniteType::Two, lc - 1);
+                    obj = new noGranite(GraniteType::Two, noGranite::EncodeBoostedState(lc - 1));
                 else
                     LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
@@ -413,8 +416,10 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
             return false;
         }
 
-        BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, hqPositions[i], i,
-                                        world.GetPlayer(i).nation);
+        noBuilding* hq = BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, hqPositions[i], i,
+                                                         world.GetPlayer(i).nation);
+        BuildingEventLogger::LogBuildingConstructed(world.GetEvMgr().GetCurrentGF(), i, BuildingType::Headquarters,
+                                                    hq->GetObjId(), hqPositions[i].x, hqPositions[i].y);
     }
     return true;
 }

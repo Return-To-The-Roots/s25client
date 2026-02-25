@@ -1,0 +1,7 @@
+runId,player0Id,player1Id,outcome,reason,decisionFrame,winnerPlayerId,loserPlayerId,player0WinLabel,player1WinLabel
+216,0,1,win,elimination,130000,0.0,1.0,1.0,0.0
+217,0,1,win,elimination,150000,0.0,1.0,1.0,0.0
+218,0,1,win,elimination,165000,1.0,0.0,0.0,1.0
+219,0,1,win,elimination,205000,0.0,1.0,1.0,0.0
+220,0,1,draw,deadline_draw,240000,,,0.5,0.5
+221,0,1,win,elimination,145000,0.0,1.0,1.0,0.0

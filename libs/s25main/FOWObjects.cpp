@@ -9,6 +9,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/BuildingConsts.h"
 #include "s25util/colors.h"
+#include <algorithm>
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
 unsigned CalcPlayerFOWDrawColor(const unsigned color)
@@ -168,5 +169,11 @@ void fowGranite::Serialize(SerializedGameData& sgd) const
 
 void fowGranite::Draw(DrawPoint drawPt) const
 {
-    LOADER.granite_cache[type][state].DrawFull(drawPt, FOW_DRAW_COLOR);
+    constexpr unsigned char boostedStateFlag = 0x80;
+    constexpr unsigned char rawStateMask = 0x7F;
+    const unsigned char rawState = state & rawStateMask;
+    const bool boosted = (state & boostedStateFlag) != 0u;
+    const unsigned visualSize = boosted ? (rawState / 2u) : rawState;
+    const unsigned char visualIndex = static_cast<unsigned char>(std::min<unsigned>(visualSize, 5u));
+    LOADER.granite_cache[type][visualIndex].DrawFull(drawPt, FOW_DRAW_COLOR);
 }
