@@ -12,57 +12,54 @@
 #include <string>
 #include <utility>
 
-/// Klasse für den WinAPI Videotreiber.
 class VideoWinAPI final : public VideoDriver
 {
-    /// Treiberaufräumfunktion.
     void CleanUp();
 
 public:
     VideoWinAPI(VideoDriverLoaderInterface* CallBack);
-
     ~VideoWinAPI();
 
-    /// Funktion zum Auslesen des Treibernamens.
+    /// Return name of driver
     const char* GetName() const override;
 
-    /// Treiberinitialisierungsfunktion.
+    /// Initialize the driver, return true on success
     bool Initialize() override;
 
-    /// Erstellt das Fenster mit entsprechenden Werten.
+    /// Create window/rendering context with given title, size and display mode, return true on success
     bool CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode) override;
 
-    /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
+    /// Change window/resolution, return true on success
     bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) override;
 
-    /// Schliesst das Fenster.
+    /// Close window
     void DestroyScreen() override;
 
-    /// Wechselt die OpenGL-Puffer.
+    /// Swap OpenGL buffers
     bool SwapBuffers() override;
 
-    /// Die Nachrichtenschleife.
+    /// Process messages/events, return false when the application should quit
     bool MessageLoop() override;
 
     /// Popup Window
     void ShowErrorMessage(const std::string& title, const std::string& message) override;
 
-    /// Funktion zum Auslesen des TickCounts.
+    /// Return the current tick count (time since epoch in ms)
     unsigned long GetTickCount() const override;
 
-    /// Funktion zum Holen einer Subfunktion.
+    /// Get a pointer to an OpenGL function loader
     OpenGL_Loader_Proc GetLoaderFunction() const override;
 
-    /// Listet verfügbare Videomodi auf
+    /// Return supported resolutions
     void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
 
-    /// Funktion zum Setzen der Mauskoordinaten.
+    /// Set position of the mouse cursor in screen coordinates
     void SetMousePos(Position pos) override;
 
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const override;
 
-    /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+    /// Get pointer to window (device-dependent!)
     void* GetMapPointer() const override;
 
 private:
@@ -74,21 +71,21 @@ private:
     bool InitOGL();
     static bool MakeFullscreen(const VideoMode& resolution);
 
-    /// Funktion zum Senden einer gedrückten Taste.
+    /// Callback for pressed character keys
     void OnWMChar(unsigned c, bool disablepaste = false, LPARAM lParam = 0);
     void OnWMKeyDown(unsigned c, LPARAM lParam = 0);
 
-    /// Funktion zum Pasten von Text aus dem Clipboard.
+    /// Handle paste from clipboard (CTRL+V)
     void OnWMPaste();
 
-    /// Callbackfunktion der WinAPI.
+    /// Window callback function
     static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
-    int mouse_z;     /// Scrolling position for mousewheel.
-    HWND screen;     /// Fensterhandle.
-    HDC screen_dc;   /// Zeichenkontext des Fensters.
-    HGLRC screen_rc; /// OpenGL-Kontext des Fensters.
+    int mouse_z;     /// Scrolling position for mouse wheel.
+    HWND screen;     /// window handle
+    HDC screen_dc;   /// Draw context of the window.
+    HGLRC screen_rc; /// OpenGL-context of the window.
     bool isDisplayModeChangeable, isMinimized;
     std::wstring windowClassName;
 };
