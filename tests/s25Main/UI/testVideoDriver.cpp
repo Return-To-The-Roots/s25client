@@ -15,7 +15,7 @@
 #include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
-static std::ostream& operator<<(std::ostream& os, const VideoMode& mode)
+static std::ostream& operator<<(std::ostream& os, const VideoMode mode)
 {
     return os << mode.width << "x" << mode.height;
 }

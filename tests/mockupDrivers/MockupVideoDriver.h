@@ -13,8 +13,8 @@ public:
     ~MockupVideoDriver() override;
     const char* GetName() const override;
     bool Initialize() override;
-    bool CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode) override;
-    bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) override;
+    bool CreateScreen(const std::string& title, VideoMode newSize, DisplayMode displayMode) override;
+    bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) override;
     void DestroyScreen() override {}
     bool SwapBuffers() override { return true; }
     bool MessageLoop() override;

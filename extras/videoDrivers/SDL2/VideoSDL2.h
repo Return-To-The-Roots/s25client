@@ -24,8 +24,8 @@ public:
 
     bool Initialize() override;
 
-    bool CreateScreen(const std::string& title, const VideoMode& size, DisplayMode displayMode) override;
-    bool ResizeScreen(const VideoMode& newSize, DisplayMode displayMode) override;
+    bool CreateScreen(const std::string& title, VideoMode size, DisplayMode displayMode) override;
+    bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) override;
 
     void DestroyScreen() override;
 

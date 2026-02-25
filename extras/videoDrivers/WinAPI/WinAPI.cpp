@@ -80,7 +80,7 @@ void VideoWinAPI::CleanUp()
     initialized = false;
 }
 
-bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSize, DisplayMode displayMode)
+bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -105,7 +105,7 @@ bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSiz
     return true;
 }
 
-bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, DisplayMode displayMode)
+bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
 {
     if(!initialized || !isDisplayModeChangeable)
         return false;
@@ -205,7 +205,7 @@ std::pair<Rect, VideoMode> VideoWinAPI::CalculateWindowRect(const DisplayMode mo
     BOOST_UNREACHABLE_RETURN(std::make_pair(RECT{0, 0, requestedSize.width, requestedSize.height}, requestedSize));
 }
 
-bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, DisplayMode displayMode)
+bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode wndSize, DisplayMode displayMode)
 {
     std::wstring wTitle = boost::nowide::widen(title);
     windowClassName = wTitle.substr(0, wTitle.find(' '));
@@ -301,7 +301,7 @@ bool VideoWinAPI::InitOGL()
     return true;
 }
 
-bool VideoWinAPI::MakeFullscreen(const VideoMode& resolution)
+bool VideoWinAPI::MakeFullscreen(const VideoMode resolution)
 {
     DEVMODE dm;
     memset(&dm, 0, sizeof(dm));
