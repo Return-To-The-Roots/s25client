@@ -416,7 +416,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     curRenderSize = sr.newSize;
 
     // Don't change fullscreen size (only in menu)
-    if(SETTINGS.video.displayMode != DisplayMode::Fullscreen)
+    if(SETTINGS.video.displayMode == DisplayMode::Windowed)
         SETTINGS.video.windowedSize = VIDEODRIVER.GetWindowSize();
 
     // Desktop (still) valid?

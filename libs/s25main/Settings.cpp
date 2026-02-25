@@ -244,13 +244,14 @@ void Settings::Load()
         video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
         video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
         const auto displayMode = iniVideo->getValue("displayMode", -1);
-        if(displayMode >= 0 && static_cast<unsigned>(displayMode) <= helpers::MaxEnumValue_v<DisplayMode>)
+        if(displayMode >= 0 && static_cast<unsigned>(displayMode) <= helpers::MaxEnumValue_v<DisplayMode::Type>)
             video.displayMode = DisplayMode(displayMode);
         else
         {
             video.displayMode =
               iniVideo->getValue("fullscreen", false) ? DisplayMode::Fullscreen : DisplayMode::Windowed;
         }
+        video.displayMode.resizeable = !iniVideo->getValue("lock_window_size", false);
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
         video.sharedTextures = iniVideo->getBoolValue("shared_textures");
@@ -452,7 +453,8 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
-    iniVideo->setValue("displayMode", rttr::enum_cast(video.displayMode));
+    iniVideo->setValue("displayMode", rttr::enum_cast(video.displayMode.type));
+    iniVideo->setValue("lock_window_size", !video.displayMode.resizeable);
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
     iniVideo->setValue("shared_textures", video.sharedTextures);
