@@ -96,13 +96,14 @@ void Settings::LoadDefaults()
     // {
     if(VIDEODRIVER.IsLoaded())
     {
-        video.fullscreenSize = VIDEODRIVER.GetWindowSize();
-        video.windowedSize =
-          (VIDEODRIVER.GetDisplayMode() == DisplayMode::Fullscreen) ? video.fullscreenSize : VideoMode(800, 600);
+        video.fullscreenSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Fullscreen) ? VIDEODRIVER.GetWindowSize() :
+                                                                                           VIDEODRIVER.MinWindowSize;
+        video.windowedSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed) ? VIDEODRIVER.GetWindowSize() :
+                                                                                       VIDEODRIVER.MinWindowSize;
         video.displayMode = VIDEODRIVER.GetDisplayMode();
     } else
     {
-        video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
+        video.windowedSize = video.fullscreenSize = VIDEODRIVER.MinWindowSize;
         video.displayMode = DisplayMode::Windowed;
     }
     video.framerate = 0; // Special value for HW vsync
