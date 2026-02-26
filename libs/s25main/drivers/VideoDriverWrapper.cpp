@@ -16,6 +16,7 @@
 #include "s25util/Log.h"
 #include "s25util/error.h"
 #include <glad/glad.h>
+#include <array>
 #include <ctime>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #    include <valgrind/memcheck.h>
@@ -84,14 +85,6 @@ void VideoDriverWrapper::UnloadDriver()
     renderer_.reset();
 }
 
-/**
- *  Erstellt das Fenster.
- *
- *  @param[in] width  Breite des Fensters
- *  @param[in] height Höhe des Fensters
- *
- *  @return Bei Erfolg @p true ansonsten @p false
- */
 bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
@@ -125,15 +118,6 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode di
     return true;
 }
 
-/**
- *  Verändert Auflösung, Fenster/Fullscreen
- *
- *  @param[in] screenWidth neue Breite des Fensters
- *  @param[in] screenHeight neue Höhe des Fensters
- *  @param[in] fullscreen Vollbild oder nicht
- *
- *  @return Bei Erfolg @p true ansonsten @p false
- */
 bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
@@ -158,9 +142,6 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode di
     return result;
 }
 
-/**
- *  Zerstört den DriverWrapper-Bildschirm.
- */
 bool VideoDriverWrapper::DestroyScreen()
 {
     if(!videodriver)
@@ -198,9 +179,6 @@ unsigned VideoDriverWrapper::GetFPS() const
     return frameCtr_->getFrameRate();
 }
 
-/**
- *  Löscht alle herausgegebenen Texturen aus dem Speicher.
- */
 void VideoDriverWrapper::CleanUp()
 {
     if(!texture_list.empty())
@@ -296,9 +274,6 @@ bool VideoDriverWrapper::setHwVSync(bool enabled)
     return wglSwapIntervalEXT(enabled ? 1 : 0) != 0;
 }
 
-/**
- *  Viewport (neu) setzen
- */
 void VideoDriverWrapper::RenewViewport()
 {
     if(!videodriver->IsOpenGL() || !renderer_)
@@ -356,9 +331,6 @@ void VideoDriverWrapper::RenewViewport()
     ClearScreen();
 }
 
-/**
- *  lädt die driverwrapper-extensions.
- */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
     if(videodriver->IsOpenGL())
@@ -456,15 +428,12 @@ void VideoDriverWrapper::SetMousePos(const Position& newPos)
     videodriver->SetMousePos(newPos);
 }
 
-/**
- *  Listet verfügbare Videomodi auf.
- */
-void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) const
+std::vector<VideoMode> VideoDriverWrapper::ListVideoModes() const
 {
     if(!videodriver)
-        return;
+        return {};
 
-    videodriver->ListVideoModes(video_modes);
+    return videodriver->ListVideoModes();
 }
 
 bool VideoDriverWrapper::HasVSync() const
@@ -472,9 +441,6 @@ bool VideoDriverWrapper::HasVSync() const
     return wglSwapIntervalEXT != nullptr;
 }
 
-/**
- *  Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows.
- */
 void* VideoDriverWrapper::GetMapPointer() const
 {
     if(!videodriver)

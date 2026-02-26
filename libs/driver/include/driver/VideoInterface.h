@@ -46,7 +46,7 @@ public:
     /// Funktion zum Holen einer Subfunktion.
     virtual OpenGL_Loader_Proc GetLoaderFunction() const = 0;
 
-    virtual void ListVideoModes(std::vector<VideoMode>& video_modes) const = 0;
+    virtual std::vector<VideoMode> ListVideoModes() const = 0;
 
     /// Funktion zum Auslesen der Mauskoordinaten.
     virtual Position GetMousePos() const = 0;

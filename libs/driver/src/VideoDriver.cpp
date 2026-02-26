@@ -62,8 +62,7 @@ bool VideoDriver::IsTouchEvent() const
 
 VideoMode VideoDriver::FindClosestVideoMode(const VideoMode mode) const
 {
-    std::vector<VideoMode> avModes;
-    ListVideoModes(avModes);
+    std::vector<VideoMode> avModes = ListVideoModes();
     if(avModes.empty())
         throw std::runtime_error("No supported video modes found!");
     unsigned minSizeDiff = std::numeric_limits<unsigned>::max();
