@@ -435,7 +435,8 @@ std::vector<VideoMode> VideoDriverWrapper::ListVideoModes() const
 
     auto videoModes = videodriver->ListVideoModes();
     // Remove everything below 800x600
-    helpers::erase_if(videoModes, [](const auto& m) { return m.width < 800 && m.height < 600; });
+    helpers::erase_if(videoModes,
+                      [](const auto& m) { return m.width < MinWindowSize.width && m.height < MinWindowSize.height; });
     return videoModes;
 }
 
@@ -465,10 +466,10 @@ void* VideoDriverWrapper::GetMapPointer() const
 
 VideoMode VideoDriverWrapper::GetWindowSize() const
 {
-    // Always return at least 800x600 even if real window is smaller
+    // Always return at least MinWindowSize even if real window is smaller
     VideoMode windowSize = videodriver->GetWindowSize();
-    windowSize.width = std::max<unsigned>(800, windowSize.width);
-    windowSize.height = std::max<unsigned>(600, windowSize.height);
+    windowSize.width = std::max(MinWindowSize.width, windowSize.width);
+    windowSize.height = std::max(MinWindowSize.height, windowSize.height);
     return windowSize;
 }
 

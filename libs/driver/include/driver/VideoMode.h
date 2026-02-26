@@ -10,10 +10,10 @@ struct VideoMode
     unsigned short width;
     unsigned short height;
 
-    VideoMode() : width(0), height(0) {}
-    VideoMode(unsigned short width, unsigned short height) : width(width), height(height) {}
-    bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
-    bool operator!=(const VideoMode& o) const { return !(*this == o); }
+    constexpr VideoMode() : width(0), height(0) {}
+    constexpr VideoMode(unsigned short width, unsigned short height) : width(width), height(height) {}
+    constexpr bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
+    constexpr bool operator!=(const VideoMode& o) const { return !(*this == o); }
 };
 
 // Enum like type with extra flag
