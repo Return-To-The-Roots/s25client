@@ -412,7 +412,8 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     if(newSize == curRenderSize)
         return;
 
-    ScreenResizeEvent sr(curRenderSize, elMax(Extent(800, 600), newSize));
+    constexpr Extent minSize(VideoDriverWrapper::MinWindowSize.width, VideoDriverWrapper::MinWindowSize.height);
+    ScreenResizeEvent sr(curRenderSize, elMax(minSize, newSize));
     curRenderSize = sr.newSize;
 
     // Don't change fullscreen size (only in menu)
