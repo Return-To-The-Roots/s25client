@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
     REQUIRE(cb->GetNumItems() == 0);
     REQUIRE(!cb->GetSelection());
 
-    cb->AddString("text");
+    cb->AddItem("text");
     REQUIRE(cb->GetNumItems() == 1);
     REQUIRE(!cb->GetSelection());
     REQUIRE(cb->GetText(0) == "text");
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
     for(int i = 0; i < 10; i++)
     {
         lines.emplace_back(randString());
-        cb->AddString(lines.back());
+        cb->AddItem(lines.back());
         REQUIRE(cb->GetNumItems() == lines.size());
         REQUIRE(cb->GetSelection() == 0u);
     }
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
 
     for(int i = 0; i < 3; i++)
     {
-        cb->AddString(randString());
+        cb->AddItem(randString());
     }
     REQUIRE(!cb->GetSelection());
     mock::sequence s;
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     for(int i = 0; i < 10; i++)
     {
         lines.emplace_back(randString());
-        list->AddString(lines.back());
+        list->AddItem(lines.back());
         REQUIRE(list->GetNumLines() == lines.size());
         REQUIRE(!list->GetSelection());
     }
