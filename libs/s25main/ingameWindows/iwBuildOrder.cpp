@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -36,7 +36,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     fillBuildOrder(GAMECLIENT.visual_settings.build_order);
 
     for(const auto buildOrder : pendingBuildOrder)
-        list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
+        list->AddItem(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
     AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 215), _("Top"));
@@ -52,8 +52,8 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     AddImage(5, DrawPoint(240, 150), LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
 
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
-    combo->AddString(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
-    combo->AddString(_("After the following order")); // "Nach folgender Reihenfolge"
+    combo->AddItem(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
+    combo->AddItem(_("After the following order")); // "Nach folgender Reihenfolge"
 
     // Eintrag in Combobox auswählen
     useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
@@ -205,7 +205,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
 
             // Liste füllen
             for(unsigned char i = 0; i < 31; ++i)
-                list->AddString(_(BUILDING_NAMES[pendingBuildOrder[i]]));
+                list->AddItem(_(BUILDING_NAMES[pendingBuildOrder[i]]));
             list->SetSelection(0);
 
             GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
@@ -226,5 +226,5 @@ void iwBuildOrder::UpdateSettings()
     }
     GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
     for(unsigned char i = 0; i < pendingBuildOrder.size(); ++i)
-        GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[pendingBuildOrder[i]]), i);
+        GetCtrl<ctrlList>(0)->SetItemText(i, _(BUILDING_NAMES[pendingBuildOrder[i]]));
 }

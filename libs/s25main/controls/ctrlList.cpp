@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -127,11 +127,6 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
     return false;
 }
 
-/**
- *  Zeichenmethode.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- */
 void ctrlList::Draw_()
 {
     if(lines.empty())
@@ -162,10 +157,7 @@ void ctrlList::Draw_()
     }
 }
 
-/**
- *  fügt eine Zeile hinzu.
- */
-void ctrlList::AddString(const std::string& text)
+void ctrlList::AddItem(const std::string& text)
 {
     // lines-Array ggf vergrößern
     lines.push_back(text);
@@ -173,31 +165,18 @@ void ctrlList::AddString(const std::string& text)
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(lines.size()));
 }
 
-/**
- *  Verändert einen String
- */
-void ctrlList::SetString(const std::string& text, const unsigned id)
+void ctrlList::SetItemText(const unsigned id, const std::string& text)
 {
-    lines[id] = text;
+    lines.at(id) = text;
 }
 
-/**
- *  löscht alle Items.
- */
 void ctrlList::DeleteAllItems()
 {
     lines.clear();
     selection_ = boost::none;
 }
 
-/**
- *  liefert den Wert einer Zeile.
- *
- *  @param[in] line Die Zeile
- *
- *  @return Text der Zeile
- */
-const std::string& ctrlList::GetItemText(unsigned short line) const
+const std::string& ctrlList::GetItemText(unsigned line) const
 {
     RTTR_Assert(line < lines.size());
     return lines[line];
@@ -212,12 +191,6 @@ const std::string& ctrlList::GetSelItemText() const
         return EMPTY;
 }
 
-/**
- *  Größe ändern.
- *
- *  @param[in] width  Neue Breite
- *  @param[in] height Neue Höhe
- */
 void ctrlList::Resize(const Extent& newSize)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
@@ -237,9 +210,6 @@ void ctrlList::Resize(const Extent& newSize)
     Window::Resize(newSize);
 }
 
-/**
- *  vertauscht zwei Zeilen
- */
 void ctrlList::Swap(unsigned first, unsigned second)
 {
     // Evtl Selection auf das jeweilige Element beibehalten?
@@ -252,10 +222,7 @@ void ctrlList::Swap(unsigned first, unsigned second)
     std::swap(lines[first], lines[second]);
 }
 
-/**
- *  entfernt eine Zeile
- */
-void ctrlList::Remove(const unsigned short index)
+void ctrlList::Remove(const unsigned index)
 {
     if(index < lines.size())
     {

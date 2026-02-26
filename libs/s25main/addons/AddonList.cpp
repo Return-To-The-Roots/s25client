@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -32,7 +32,7 @@ AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly) : Add
 
     auto* cb = window.AddComboBox(2, cbPos, Extent(220, 20), TextureColor::Grey, NormalFont, 100, readonly);
     for(const auto& option : addon.options)
-        cb->AddString(option);
+        cb->AddItem(option);
     if(readonly)
         window.AddImage(3, cbPos - DrawPoint(1, 0), LOADER.GetImageN("io_new", 14), _("Locked"));
 }

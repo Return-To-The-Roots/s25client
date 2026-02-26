@@ -210,7 +210,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     for(unsigned i = 0; i < Portraits.size(); ++i)
     {
-        combo->AddString(_(Portraits[i].name));
+        combo->AddItem(_(Portraits[i].name));
         if(SETTINGS.lobby.portraitIndex == i)
             combo->SetSelection(i);
     }
@@ -224,7 +224,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     {
         const Language& l = LANGUAGES.getLanguage(i);
 
-        combo->AddString(_(l.name));
+        combo->AddItem(_(l.name));
         if(SETTINGS.language.language == l.code)
         {
             combo->SetSelection(static_cast<unsigned short>(i));
@@ -273,8 +273,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupCommon->AddText(ID_txtProxyType, curPos, _("Proxytyp:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo =
       groupCommon->AddComboBox(ID_cbProxyType, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey, NormalFont, 100);
-    combo->AddString(_("No Proxy"));
-    combo->AddString(_("Socks v4"));
+    combo->AddItem(_("No Proxy"));
+    combo->AddItem(_("Socks v4"));
     // TODO: not implemented
     // combo->AddString(_("Socks v5"));
 
@@ -290,10 +290,10 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupCommon->AddText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupCommon->AddComboBox(ID_cbMapScrollMode, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                      NormalFont, 100);
-    combo->AddString(_("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
-    combo->AddString(
+    combo->AddItem(_("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
+    combo->AddItem(
       _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
-    combo->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
+    combo->AddItem(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
     combo->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
     curPos.y += rowHeight;
 
@@ -335,9 +335,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupGraphics->AddText(ID_txtDisplayMode, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbDisplayMode = groupGraphics->AddComboBox(ID_cbDisplayMode, curPos + ctrlOffset, ctrlSizeLarge,
                                                              TextureColor::Grey, NormalFont, 100);
-    cbDisplayMode->AddString(_("Windowed"));
-    cbDisplayMode->AddString(_("Fullscreen"));
-    cbDisplayMode->AddString(_("Borderless window"));
+    cbDisplayMode->AddItem(_("Windowed"));
+    cbDisplayMode->AddItem(_("Fullscreen"));
+    cbDisplayMode->AddItem(_("Borderless window"));
     cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
     curPos.y += rowHeight;
 
@@ -363,7 +363,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     for(const auto& video_driver : video_drivers)
     {
-        combo->AddString(video_driver.GetName());
+        combo->AddItem(video_driver.GetName());
         if(video_driver.GetName() == SETTINGS.driver.video)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
@@ -414,7 +414,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     for(const auto& audio_driver : audio_drivers)
     {
-        combo->AddString(audio_driver.GetName());
+        combo->AddItem(audio_driver.GetName());
         if(audio_driver.GetName() == SETTINGS.driver.audio)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
@@ -441,7 +441,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
             str << " ";
         str << " (" << ratio.width << ":" << ratio.height << ")";
 
-        cbVideoModes.AddString(str.str());
+        cbVideoModes.AddItem(str.str());
 
         // Select, if this is the current resolution
         if(videoMode == SETTINGS.video.fullscreenSize) //-V807
@@ -451,13 +451,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // Fill "Limit Framerate"
     auto* cbFrameRate = groupGraphics->GetCtrl<ctrlComboBox>(ID_cbFramerate);
     if(VIDEODRIVER.HasVSync())
-        cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
+        cbFrameRate->AddItem(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
     for(int framerate : Settings::SCREEN_REFRESH_RATES)
     {
         if(framerate == -1)
-            cbFrameRate->AddString(_("Disabled"));
+            cbFrameRate->AddItem(_("Disabled"));
         else
-            cbFrameRate->AddString(helpers::toString(framerate) + " FPS");
+            cbFrameRate->AddItem(helpers::toString(framerate) + " FPS");
         if(SETTINGS.video.framerate == framerate)
             cbFrameRate->SetSelection(cbFrameRate->GetNumItems() - 1);
     }
@@ -784,7 +784,7 @@ void dskOptions::updateGuiScale()
     combo->DeleteAllItems();
 
     guiScales_.push_back(0);
-    combo->AddString(helpers::format(_("Auto (%u%%)"), range.recommendedPercent));
+    combo->AddItem(helpers::format(_("Auto (%u%%)"), range.recommendedPercent));
     if(SETTINGS.video.guiScale == 0)
         combo->SetSelection(0);
 
@@ -794,7 +794,7 @@ void dskOptions::updateGuiScale()
             recommendedGuiScaleIndex_ = guiScales_.size();
         guiScales_.push_back(percent);
 
-        combo->AddString(helpers::toString(percent) + "%");
+        combo->AddItem(helpers::toString(percent) + "%");
         if(percent == SETTINGS.video.guiScale)
             combo->SetSelection(combo->GetNumItems() - 1);
     }

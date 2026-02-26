@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -229,13 +229,13 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     // Zeiten zur Combobox hinzufügen
     for(unsigned i = 0; i < NUM_DURATIONS; ++i)
     {
-        combo->AddString(helpers::format("%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i])));
+        combo->AddItem(helpers::format("%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i])));
     }
     // Erstes Item in der Combobox vorerst auswählen
     combo->SetSelection(0);
 
     // Option "ewig" noch hinzufügen
-    combo->AddString(_("Eternal"));
+    combo->AddItem(_("Eternal"));
 
     AddTextButton(7, DrawPoint(110, 170), Extent(100, 22), TextureColor::Green2, _("Confirm"), NormalFont);
 }
