@@ -134,10 +134,11 @@ void VideoSDL2::UpdateCurrentSizes()
     SetNewSize(VideoMode(w, h), Extent(w2, h2));
 }
 
-static VideoMode getDesktopSize(VideoMode fallback)
+static VideoMode getDesktopSize(SDL_Window* window, VideoMode fallback)
 {
+    const int display = window ? std::max(0, SDL_GetWindowDisplayIndex(window)) : 0;
     SDL_DisplayMode dskSize;
-    if(CHECK_SDL(SDL_GetDesktopDisplayMode(0, &dskSize)))
+    if(CHECK_SDL(SDL_GetDesktopDisplayMode(display, &dskSize)))
         return VideoMode(dskSize.w, dskSize.h);
     return fallback;
 }
@@ -180,7 +181,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, Dis
     } else if(displayMode == DisplayMode::BorderlessWindow)
     {
         windowTypeFlag = SDL_WINDOW_BORDERLESS;
-        requestedSize = getDesktopSize(size);
+        requestedSize = getDesktopSize(nullptr, size);
     } else if(displayMode.resizeable)
         windowTypeFlag = SDL_WINDOW_RESIZABLE;
 
@@ -233,6 +234,8 @@ bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
     if(!initialized)
         return false;
 
+    bool centerWindow = false;
+
     if(displayMode_ != displayMode)
     {
         if(displayMode_ == DisplayMode::Fullscreen || displayMode == DisplayMode::Fullscreen)
@@ -249,11 +252,10 @@ bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
         SDL_SetWindowBordered(window, static_cast<SDL_bool>(displayMode == DisplayMode::Windowed));
 
         UpdateCurrentDisplayMode();
-        if(displayMode_ != DisplayMode::Fullscreen)
-            MoveWindowToCenter();
+        centerWindow = true;
     }
     if(displayMode_ == DisplayMode::BorderlessWindow)
-        newSize = getDesktopSize(newSize);
+        newSize = getDesktopSize(nullptr, newSize);
     if(newSize != GetWindowSize())
     {
         if(displayMode_ == DisplayMode::Fullscreen)
@@ -270,9 +272,14 @@ bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
             if(!CHECK_SDL(SDL_SetWindowDisplayMode(window, &target)))
                 return false;
         } else
+        {
             SDL_SetWindowSize(window, newSize.width, newSize.height);
+            centerWindow = true;
+        }
         UpdateCurrentSizes();
     }
+    if(centerWindow)
+        MoveWindowToCenter();
 
     return true;
 }
@@ -599,19 +606,27 @@ void* VideoSDL2::GetMapPointer() const
 
 void VideoSDL2::MoveWindowToCenter()
 {
+    SDL_PumpEvents(); // Let window system run update events/initialization
+    const int display = window ? std::max(0, SDL_GetWindowDisplayIndex(window)) : 0;
+
     SDL_Rect usableBounds;
-    CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
+    CHECK_SDL(SDL_GetDisplayUsableBounds(display, &usableBounds));
     int top, left, bottom, right;
     if(!CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)))
         top = left = bottom = right = 0;
-    usableBounds.w -= left + right;
-    usableBounds.h -= top + bottom;
-    if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)
+    auto wndOuterSize = GetWindowSize();
+    wndOuterSize.width += left + right;
+    wndOuterSize.height += top + bottom;
+    if(usableBounds.w < wndOuterSize.width || usableBounds.h < wndOuterSize.height)
     {
-        SDL_SetWindowSize(window, usableBounds.w, usableBounds.h);
+        SDL_SetWindowSize(window, usableBounds.w - left - right, usableBounds.h - top - bottom);
         UpdateCurrentSizes();
+        wndOuterSize.width = usableBounds.w;
+        wndOuterSize.height = usableBounds.h;
     }
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    const int x = usableBounds.x + (usableBounds.w - wndOuterSize.width) / 2 + left;
+    const int y = usableBounds.y + (usableBounds.h - wndOuterSize.height) / 2 + top;
+    SDL_SetWindowPosition(window, x, y);
 }
 
 void VideoSDL2::UpdateCurrentDisplayMode()
