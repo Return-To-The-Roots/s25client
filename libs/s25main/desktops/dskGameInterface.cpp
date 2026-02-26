@@ -301,8 +301,10 @@ void dskGameInterface::Resize(const Extent& newSize)
     cbb.buildBorder(newSize, borders);
 
     // move buttons
-    DrawPoint barPos((newSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
-                     newSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    // Get real renderer size as newSize may get capped but we want to keep the manually drawn borders intact
+    const Extent realNewSize = VIDEODRIVER.GetRenderSize();
+    DrawPoint barPos = DrawPoint((realNewSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
+                                 realNewSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
     auto* button = GetCtrl<ctrlButton>(ID_btMap);
     button->SetPos(barPos);
