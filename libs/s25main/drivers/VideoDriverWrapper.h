@@ -111,6 +111,8 @@ public:
     /// Calculate the size of the texture which is optimal for the driver and at least minSize
     Extent calcPreferredTextureSize(const Extent& minSize) const;
 
+    static constexpr VideoMode MinWindowSize{800, 600};
+
 private:
     bool Initialize();
     bool setHwVSync(bool enabled);
