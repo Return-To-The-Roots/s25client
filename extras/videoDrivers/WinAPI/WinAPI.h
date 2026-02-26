@@ -53,7 +53,7 @@ public:
     OpenGL_Loader_Proc GetLoaderFunction() const override;
 
     /// Return supported resolutions
-    void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
+    std::vector<VideoMode> ListVideoModes() const override;
 
     /// Set position of the mouse cursor in screen coordinates
     void SetMousePos(Position pos) override;

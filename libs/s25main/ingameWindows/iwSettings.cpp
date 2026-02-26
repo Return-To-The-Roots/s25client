@@ -12,6 +12,7 @@
 #include "driver/VideoInterface.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "enum_cast.hpp"
+#include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
@@ -54,21 +55,14 @@ iwSettings::iwSettings()
                                      TextureColor::Grey, NormalFont, 110);
     curPos.y += ctrlSize.y + 5;
 
-    VIDEODRIVER.ListVideoModes(supportedVideoModes);
-    for(unsigned i = 0; i < supportedVideoModes.size(); ++i)
+    supportedVideoModes = VIDEODRIVER.ListVideoModes();
+    // Remove everything below 800x600
+    helpers::erase_if(supportedVideoModes, [](const auto& it) { return it.width < 800 && it.height < 600; });
+    for(const auto& videoMode : supportedVideoModes)
     {
-        // >=800x600, alles andere macht keinen Sinn
-        if(supportedVideoModes[i].width >= 800 && supportedVideoModes[i].height >= 600)
-        {
-            cbResolution->AddString(
-              helpers::format("%ux%u", supportedVideoModes[i].width, supportedVideoModes[i].height));
-            if(supportedVideoModes[i] == SETTINGS.video.fullscreenSize)
-                cbResolution->SetSelection(i);
-        } else
-        {
-            supportedVideoModes.erase(supportedVideoModes.begin() + i);
-            --i;
-        }
+        cbResolution->AddString(helpers::format("%ux%u", videoMode.width, videoMode.height));
+        if(videoMode == SETTINGS.video.fullscreenSize)
+            cbResolution->SetSelection(cbResolution->GetNumItems() - 1);
     }
 
     AddText(ID_txtFullScreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);

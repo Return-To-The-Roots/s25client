@@ -419,18 +419,20 @@ OpenGL_Loader_Proc VideoWinAPI::GetLoaderFunction() const
     return wglGetProcAddress_Wrapper;
 }
 
-void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
+std::vector<VideoMode> VideoWinAPI::ListVideoModes() const
 {
     DEVMODE dm;
     memset(&dm, 0, sizeof(dm));
     dm.dmSize = sizeof(dm);
     unsigned m = 0;
+    std::vector<VideoMode> video_modes;
     while(EnumDisplaySettings(nullptr, m++, &dm))
     {
         VideoMode vm(static_cast<unsigned short>(dm.dmPelsWidth), static_cast<unsigned short>(dm.dmPelsHeight));
         if(!helpers::contains(video_modes, vm))
             video_modes.push_back(vm);
     }
+    return video_modes;
 }
 
 void VideoWinAPI::SetMousePos(Position pos)

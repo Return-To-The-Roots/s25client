@@ -60,8 +60,9 @@ public:
     // Should only be used to draw the mouse. For everything else use the events
     Position GetMousePos() const;
 
-    /// Listet verfügbare Videomodi auf
-    void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+    /// Get supported resolutions
+    std::vector<VideoMode> ListVideoModes() const;
+    std::vector<VideoMode> GetDefaultWindowSizes() const;
     bool HasVSync() const;
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows

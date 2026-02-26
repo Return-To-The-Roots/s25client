@@ -64,9 +64,9 @@ OpenGL_Loader_Proc MockupVideoDriver::GetLoaderFunction() const
     return dummyLoader;
 }
 
-void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
+std::vector<VideoMode> MockupVideoDriver::ListVideoModes() const
 {
-    video_modes = video_modes_;
+    return video_modes_;
 }
 
 void MockupVideoDriver::SetMousePos(Position pos)
