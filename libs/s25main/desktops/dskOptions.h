@@ -31,6 +31,8 @@ private:
 
     void updateGuiScale();
     void scrollGuiScale(bool up);
+    void updateWindowSizeComboBox();
+    void updateResolutionGroups();
 
     GlobalGameSettings ggs;
     std::vector<VideoMode> videoModes_;    ///< Sorted list of filtered video modes

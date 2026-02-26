@@ -436,6 +436,17 @@ std::vector<VideoMode> VideoDriverWrapper::ListVideoModes() const
     return videodriver->ListVideoModes();
 }
 
+std::vector<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
+{
+    std::vector<VideoMode> defaultWindowSizes = {
+      VideoMode(800, 600),  VideoMode(1024, 768), VideoMode(1152, 648), VideoMode(1280, 720),  VideoMode(1280, 800),
+      VideoMode(1366, 768), VideoMode(1440, 810), VideoMode(1600, 900), VideoMode(1680, 1050), VideoMode(1920, 1080)};
+    std::vector<VideoMode> windowSizes = ListVideoModes();
+    windowSizes.insert(windowSizes.end(), defaultWindowSizes.begin(), defaultWindowSizes.end());
+    helpers::makeUnique(windowSizes);
+    return windowSizes;
+}
+
 bool VideoDriverWrapper::HasVSync() const
 {
     return wglSwapIntervalEXT != nullptr;
