@@ -113,16 +113,16 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     if(displayMode == displayMode_ && newSize == GetWindowSize())
         return true;
 
-    ShowWindow(screen, SW_HIDE);
-
     VideoMode windowSize = (displayMode == DisplayMode::Fullscreen) ? FindClosestVideoMode(newSize) : newSize;
     // Try to switch full screen first
     if(displayMode_ == DisplayMode::Fullscreen && displayMode != DisplayMode::Fullscreen)
     {
+        ShowWindow(screen, SW_HIDE);
         if(ChangeDisplaySettings(nullptr, 0) != DISP_CHANGE_SUCCESSFUL)
             return false;
     } else if(displayMode == DisplayMode::Fullscreen)
     {
+        ShowWindow(screen, SW_HIDE);
         if(!MakeFullscreen(windowSize))
             return false;
     }
@@ -141,6 +141,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     SetNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
 
     ShowWindow(screen, SW_SHOW);
+    SetActiveWindow(screen);
     SetForegroundWindow(screen);
     SetFocus(screen);
 
@@ -197,6 +198,9 @@ std::pair<Rect, VideoMode> VideoWinAPI::CalculateWindowRect(const DisplayMode mo
             // Calculate real right/bottom based on the window style
             const auto [style, exStyle] = GetStyleFlags(mode);
             AdjustWindowRectEx(&wRect, style, false, exStyle);
+            // Make sure border/title bar is visible
+            wRect.left = std::max<LONG>(wRect.left, 0);
+            wRect.top = std::max<LONG>(wRect.top, 0);
             return std::make_pair(Rect(wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top),
                                   size);
         }
