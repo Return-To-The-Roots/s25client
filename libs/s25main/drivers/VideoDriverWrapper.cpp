@@ -433,7 +433,10 @@ std::vector<VideoMode> VideoDriverWrapper::ListVideoModes() const
     if(!videodriver)
         return {};
 
-    return videodriver->ListVideoModes();
+    auto videoModes = videodriver->ListVideoModes();
+    // Remove everything below 800x600
+    helpers::erase_if(videoModes, [](const auto& m) { return m.width < 800 && m.height < 600; });
+    return videoModes;
 }
 
 std::vector<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
