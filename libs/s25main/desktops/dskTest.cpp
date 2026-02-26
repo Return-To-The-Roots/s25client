@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -83,9 +83,9 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
     AddEdit(ID_edtTest, btPos, Extent(150, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
     btPos.x += 170;
     ctrlComboBox* cb = AddComboBox(ID_cbTxtSize, btPos, Extent(100, 22), TextureColor::Green2, NormalFont, 100);
-    cb->AddString("Small Font");
-    cb->AddString("Medium Font");
-    cb->AddString("Large Font");
+    cb->AddItem("Small Font");
+    cb->AddItem("Medium Font");
+    cb->AddItem("Large Font");
     cb->SetSelection(0);
     btPos.x += 110;
     btPos.y += 11;

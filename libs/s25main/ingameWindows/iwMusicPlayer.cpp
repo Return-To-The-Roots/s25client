@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -215,7 +215,7 @@ void iwMusicPlayer::UpdateFromPlaylist(const Playlist& playlist)
     lstSongs->DeleteAllItems();
 
     for(const auto& song : playlist.getSongs())
-        lstSongs->AddString(song);
+        lstSongs->AddItem(song);
 
     const auto& currentSong = playlist.getCurrentSong();
     if(!currentSong.empty())
@@ -370,7 +370,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
 
             if(valid)
             {
-                GetCtrl<ctrlList>(ID_lstSongs)->AddString(msg);
+                GetCtrl<ctrlList>(ID_lstSongs)->AddItem(msg);
                 changed = true;
             } else
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be opened!"),
@@ -398,7 +398,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
             std::vector<boost::filesystem::path> oggFiles = ListDir(msg, "ogg");
 
             for(const auto& oggFile : oggFiles)
-                GetCtrl<ctrlList>(ID_lstSongs)->AddString(oggFile.string());
+                GetCtrl<ctrlList>(ID_lstSongs)->AddItem(oggFile.string());
 
             changed = true;
         }
@@ -442,7 +442,7 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
     for(const auto& playlistPath : playlists)
     {
         // Reduce to pure filename
-        cbPlaylist->AddString(playlistPath.stem().string());
+        cbPlaylist->AddItem(playlistPath.stem().string());
         if(playlistPath == currentPath)
             cbPlaylist->SetSelection(i);
         ++i;
