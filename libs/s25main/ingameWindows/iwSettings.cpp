@@ -78,8 +78,6 @@ iwSettings::iwSettings()
       ->setChecked(!SETTINGS.video.displayMode.resizeable);
 
     supportedResolutions_ = VIDEODRIVER.ListVideoModes();
-    // Remove everything below 800x600
-    helpers::erase_if(supportedResolutions_, [](const auto& it) { return it.width < 800 && it.height < 600; });
     for(const auto& videoMode : supportedResolutions_)
     {
         cbResolution->AddItem(helpers::format("%ux%u", videoMode.width, videoMode.height));

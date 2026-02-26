@@ -766,8 +766,6 @@ void dskOptions::loadVideoModes()
 {
     // Get available modes
     videoModes_ = VIDEODRIVER.ListVideoModes();
-    // Remove everything below 800x600
-    helpers::erase_if(videoModes_, [](const auto& it) { return it.width < 800 && it.height < 600; });
     // Sort by aspect ratio
     helpers::sort(videoModes_, cmpVideoModes);
     windowSizes_ = VIDEODRIVER.GetDefaultWindowSizes();
