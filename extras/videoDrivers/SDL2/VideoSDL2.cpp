@@ -540,11 +540,12 @@ unsigned long VideoSDL2::GetTickCount() const
     return SDL_GetTicks();
 }
 
-void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
+std::vector<VideoMode> VideoSDL2::ListVideoModes() const
 {
     int display = SDL_GetWindowDisplayIndex(window);
     if(display < 0)
         display = 0;
+    std::vector<VideoMode> video_modes;
     for(int i = SDL_GetNumDisplayModes(display) - 1; i >= 0; --i)
     {
         SDL_DisplayMode mode;
@@ -557,6 +558,7 @@ void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
                 video_modes.push_back(vm);
         }
     }
+    return video_modes;
 }
 
 OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const

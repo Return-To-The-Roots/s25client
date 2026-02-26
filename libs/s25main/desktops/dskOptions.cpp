@@ -430,7 +430,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // and add to the combo box
     ctrlComboBox& cbVideoModes = *groupGraphics->GetCtrl<ctrlComboBox>(ID_cbResolution);
-    for(const auto& videoMode : video_modes)
+    for(const auto& videoMode : videoModes_)
     {
         VideoMode ratio = getAspectRatio(videoMode);
         s25util::ClassicImbuedStream<std::ostringstream> str;
@@ -547,7 +547,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                   ->SetEnabled(true);
             break;
         case ID_cbMapScrollMode: SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(selection); break;
-        case ID_cbResolution: SETTINGS.video.fullscreenSize = video_modes[selection]; break;
+        case ID_cbResolution: SETTINGS.video.fullscreenSize = videoModes_[selection]; break;
         case ID_cbFramerate:
             if(VIDEODRIVER.HasVSync())
             {
@@ -735,11 +735,11 @@ static bool cmpVideoModes(const VideoMode& left, const VideoMode& right)
 void dskOptions::loadVideoModes()
 {
     // Get available modes
-    VIDEODRIVER.ListVideoModes(video_modes);
+    videoModes_ = VIDEODRIVER.ListVideoModes();
     // Remove everything below 800x600
-    helpers::erase_if(video_modes, [](const auto& it) { return it.width < 800 && it.height < 600; });
+    helpers::erase_if(videoModes_, [](const auto& it) { return it.width < 800 && it.height < 600; });
     // Sort by aspect ratio
-    std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
+    std::sort(videoModes_.begin(), videoModes_.end(), cmpVideoModes);
 }
 
 void dskOptions::Msg_ScreenResize(const ScreenResizeEvent& sr)

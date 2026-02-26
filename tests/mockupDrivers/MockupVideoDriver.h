@@ -20,7 +20,7 @@ public:
     bool MessageLoop() override;
     unsigned long GetTickCount() const override;
     OpenGL_Loader_Proc GetLoaderFunction() const override;
-    void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
+    std::vector<VideoMode> ListVideoModes() const override;
     void SetMousePos(Position pos) override;
     KeyEvent GetModKeyState() const override;
     void* GetMapPointer() const override;
