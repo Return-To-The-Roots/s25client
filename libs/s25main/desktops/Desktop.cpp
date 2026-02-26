@@ -11,16 +11,13 @@
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include <RescaleWindowProp.h>
 #include <limits>
 
 // Set to highest possible so it is drawn last
 const unsigned Desktop::fpsDisplayId = std::numeric_limits<unsigned>::max();
+constexpr DrawPoint fpsDisplayPos(800, 0);
 
-/**
- *  Konstruktor für einen Spieldesktop
- *
- *  @param[in] background Hintergrund des Desktops
- */
 Desktop::Desktop(glArchivItem_Bitmap* background)
     : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.GetRenderSize()), background(background), lastFPS_(0)
 {
@@ -36,12 +33,6 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
 
 Desktop::~Desktop() = default;
 
-/**
- *  Zeichenmethode zum Zeichnen des Desktops
- *  und der ggf. enthaltenen Steuerelemente.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- */
 void Desktop::Draw_()
 {
     unsigned curFPS = VIDEODRIVER.GetFPS();
@@ -54,14 +45,14 @@ void Desktop::Draw_()
     Window::Draw_();
 }
 
-/**
- *  Reagiert auf Spielfenstergrößenänderung
- */
 void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
     Window::Msg_ScreenResize(sr);
     // Resize to new screen size
     Resize(sr.newSize);
+    auto* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
+    if(fpsDisplay)
+        fpsDisplay->SetPos(Scale(fpsDisplayPos));
 }
 
 void Desktop::SetFpsDisplay(bool show)
@@ -70,7 +61,7 @@ void Desktop::SetFpsDisplay(bool show)
         DeleteCtrl(fpsDisplayId);
     else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
     {
-        AddText(fpsDisplayId, DrawPoint(800, 0), helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT,
+        AddText(fpsDisplayId, fpsDisplayPos, helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT,
                 SmallFont);
     }
 }
