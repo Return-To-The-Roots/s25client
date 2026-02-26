@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -33,6 +33,16 @@ namespace detail {
     {};
     template<class T, class U>
     constexpr bool has_find_v = has_find<T, U>::value;
+
+    template<typename T, typename = void>
+    struct is_less_comparable : std::false_type
+    {};
+
+    template<typename T>
+    struct is_less_comparable<T, std::void_t<decltype(std::declval<const T&>() < std::declval<const T&>())>> :
+        std::true_type
+    {};
+
 } // namespace detail
 
 /// Removes an element from a container by its reverse iterator and returns an iterator to the next element
@@ -144,19 +154,6 @@ void makeUniqueSorted(T& container)
     const auto newEnd = std::unique(begin(container), end(container));
     container.erase(newEnd, end(container));
 }
-/// Remove duplicate values from the given container, sorts it first
-template<class T>
-void makeUnique(T& container)
-{
-    sort(container);
-    makeUniqueSorted(container);
-}
-template<class T, class T_Predicate>
-void makeUnique(T& container, T_Predicate&& predicate)
-{
-    sort(container, std::forward<T_Predicate>(predicate));
-    makeUniqueSorted(container);
-}
 /// Remove duplicate values from the given container without changing the order
 template<class T>
 void makeUniqueStable(T& container)
@@ -175,6 +172,24 @@ void makeUniqueStable(T& container)
             *(itInsert++) = std::move(*it);
     }
     container.erase(itInsert, end(container));
+}
+
+/// Remove duplicate values from the given container, sorts it first if possible
+template<class T>
+void makeUnique(T& container)
+{
+    if constexpr(detail::is_less_comparable<typename T::value_type>::value)
+    {
+        std::sort(begin(container), end(container));
+        makeUniqueSorted(container);
+    } else
+        makeUniqueStable(container);
+}
+template<class T, class T_Predicate>
+void makeUnique(T& container, T_Predicate&& predicate)
+{
+    std::sort(begin(container), end(container), std::forward<T_Predicate>(predicate));
+    makeUniqueSorted(container);
 }
 
 /// Returns the index of the given element in the container or -1 when not found
