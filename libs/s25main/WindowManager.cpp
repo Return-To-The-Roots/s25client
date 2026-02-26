@@ -431,6 +431,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
         DrawPoint delta = window->GetPos() + DrawPoint(window->GetSize()) - DrawPoint(sr.newSize);
         if(delta.x > 0 || delta.y > 0)
             window->SetPos(window->GetPos() - elMax(delta, DrawPoint(0, 0)));
+        window->Msg_ScreenResize(sr);
     }
 }
 

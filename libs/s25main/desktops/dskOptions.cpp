@@ -73,8 +73,12 @@ enum
     ID_grpSmartCursor,
     ID_grpWindowPinning,
     ID_grpGFInfo,
+    ID_grpResolution,
     ID_txtResolution,
     ID_cbResolution,
+    ID_grpWindowSize,
+    ID_txtWindowSize,
+    ID_cbWindowSize,
     ID_txtDisplayMode,
     ID_cbDisplayMode,
     ID_grpLockWindowSize,
@@ -326,12 +330,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     addOnOffOption(*groupCommon, curPos, ID_grpGFInfo, _("Show GameFrame Info:"), SETTINGS.global.showGFInfo);
 
     curPos = optionRowsStartPosition;
-    groupGraphics->AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
-                           NormalFont);
-    groupGraphics->AddComboBox(ID_cbResolution, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 150);
-    curPos.y += rowHeight;
 
-    curPos.y += sectionSpacing;
     groupGraphics->AddText(ID_txtDisplayMode, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbDisplayMode = groupGraphics->AddComboBox(ID_cbDisplayMode, curPos + ctrlOffset, ctrlSizeLarge,
                                                              TextureColor::Grey, NormalFont, 100);
@@ -341,7 +340,16 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
     curPos.y += rowHeight;
 
-    addOnOffOption(*groupGraphics, curPos, ID_grpLockWindowSize, _("Lock window size:"),
+    auto* grpResolution = groupGraphics->AddGroup(ID_grpResolution);
+    grpResolution->AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
+                           NormalFont);
+    grpResolution->AddComboBox(ID_cbResolution, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 150);
+    auto* grpWindowSize = groupGraphics->AddGroup(ID_grpWindowSize);
+    grpWindowSize->AddText(ID_txtWindowSize, curPos, _("Window size:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    grpWindowSize->AddComboBox(ID_cbWindowSize, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 150);
+    curPos.y += rowHeight;
+
+    addOnOffOption(*grpWindowSize, curPos, ID_grpLockWindowSize, _("Lock window size:"),
                    !SETTINGS.video.displayMode.resizeable);
     curPos.y += rowHeight;
 
@@ -429,7 +437,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     loadVideoModes();
 
     // and add to the combo box
-    ctrlComboBox& cbVideoModes = *groupGraphics->GetCtrl<ctrlComboBox>(ID_cbResolution);
+    ctrlComboBox& cbVideoModes = *grpResolution->GetCtrl<ctrlComboBox>(ID_cbResolution);
     for(const auto& videoMode : videoModes_)
     {
         VideoMode ratio = getAspectRatio(videoMode);
@@ -447,6 +455,16 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(videoMode == SETTINGS.video.fullscreenSize) //-V807
             cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
     }
+    ctrlComboBox& cbWindowSize = *grpWindowSize->GetCtrl<ctrlComboBox>(ID_cbWindowSize);
+    cbWindowSize.AddItem(""); // Placeholder for current window size
+    for(const auto& size : windowSizes_)
+    {
+        s25util::ClassicImbuedStream<std::ostringstream> str;
+        str << size.width << "x" << size.height;
+        cbWindowSize.AddItem(str.str());
+    }
+    updateWindowSizeComboBox();
+    updateResolutionGroups();
 
     // Fill "Limit Framerate"
     auto* cbFrameRate = groupGraphics->GetCtrl<ctrlComboBox>(ID_cbFramerate);
@@ -548,6 +566,15 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             break;
         case ID_cbMapScrollMode: SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(selection); break;
         case ID_cbResolution: SETTINGS.video.fullscreenSize = videoModes_[selection]; break;
+        case ID_cbWindowSize:
+            if(selection > 0)
+            {
+                SETTINGS.video.windowedSize = windowSizes_[selection - 1];
+                if(SETTINGS.video.displayMode == DisplayMode::Windowed
+                   && VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed)
+                    VIDEODRIVER.ResizeScreen(SETTINGS.video.windowedSize, DisplayMode::Windowed);
+            }
+            break;
         case ID_cbFramerate:
             if(VIDEODRIVER.HasVSync())
             {
@@ -566,7 +593,10 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
             break;
         case ID_cbAudioDriver: SETTINGS.driver.audio = combo->GetText(selection); break;
-        case ID_cbDisplayMode: SETTINGS.video.displayMode = DisplayMode(selection); break;
+        case ID_cbDisplayMode:
+            SETTINGS.video.displayMode = DisplayMode(selection);
+            updateResolutionGroups();
+            break;
     }
 }
 
@@ -740,12 +770,15 @@ void dskOptions::loadVideoModes()
     helpers::erase_if(videoModes_, [](const auto& it) { return it.width < 800 && it.height < 600; });
     // Sort by aspect ratio
     helpers::sort(videoModes_, cmpVideoModes);
+    windowSizes_ = VIDEODRIVER.GetDefaultWindowSizes();
+    std::sort(windowSizes_.begin(), windowSizes_.end(), cmpVideoModes);
 }
 
 void dskOptions::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
     Desktop::Msg_ScreenResize(sr);
     updateGuiScale();
+    updateWindowSizeComboBox();
 }
 
 bool dskOptions::Msg_WheelUp(const MouseCoords& mc)
@@ -837,4 +870,26 @@ void dskOptions::updatePortraitControls()
 
     auto* portraitCombo = groupCommon->GetCtrl<ctrlComboBox>(ID_cbCommonPortrait);
     portraitCombo->SetSelection(SETTINGS.lobby.portraitIndex);
+}
+
+void dskOptions::updateWindowSizeComboBox()
+{
+    auto* cbWindowSize =
+      GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlGroup>(ID_grpWindowSize)->GetCtrl<ctrlComboBox>(ID_cbWindowSize);
+
+    const VideoMode currentSize =
+      VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed ? VIDEODRIVER.GetWindowSize() : SETTINGS.video.windowedSize;
+    s25util::ClassicImbuedStream<std::ostringstream> curStr;
+    curStr << currentSize.width << "x" << currentSize.height;
+    cbWindowSize->SetText(0, curStr.str());
+    // Not found == -1 -> First entry selected
+    cbWindowSize->SetSelection(static_cast<unsigned>(helpers::indexOf(windowSizes_, currentSize) + 1));
+}
+
+void dskOptions::updateResolutionGroups()
+{
+    const auto currentDisplayMode = SETTINGS.video.displayMode;
+    auto& grpGraphics = *GetCtrl<ctrlGroup>(ID_grpGraphics);
+    grpGraphics.GetCtrl<ctrlGroup>(ID_grpResolution)->SetVisible(currentDisplayMode == DisplayMode::Fullscreen);
+    grpGraphics.GetCtrl<ctrlGroup>(ID_grpWindowSize)->SetVisible(currentDisplayMode == DisplayMode::Windowed);
 }
