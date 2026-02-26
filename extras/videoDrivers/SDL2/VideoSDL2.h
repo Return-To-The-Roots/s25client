@@ -41,8 +41,8 @@ public:
 
     OpenGL_Loader_Proc GetLoaderFunction() const override;
 
-    /// Add supported video modes
-    void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
+    /// Get supported video modes
+    std::vector<VideoMode> ListVideoModes() const override;
 
     /// Set mouse position
     void SetMousePos(Position pos) override;
