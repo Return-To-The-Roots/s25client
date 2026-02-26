@@ -137,12 +137,12 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
     AddText(ID_txtAutoSave, pos, _("Auto-Save every:"), 0xFFFFFF00, FontStyle::RIGHT | FontStyle::VCENTER, NormalFont);
 
     // Add intervals
-    combo->AddString(_("Disabled"));
+    combo->AddItem(_("Disabled"));
     for(const std::chrono::minutes interval : AUTO_SAVE_INTERVALS)
-        combo->AddString((boost::format(_("%1% min")) % interval.count()).str());
+        combo->AddItem((boost::format(_("%1% min")) % interval.count()).str());
     // Last entry is only for debugging
     if(SETTINGS.global.debugMode)
-        combo->AddString(_("Every GF"));
+        combo->AddItem(_("Every GF"));
 
     // Select interval
     combo->SetSelection(0); // Use disabled by default and change if possible

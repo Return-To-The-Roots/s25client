@@ -60,7 +60,7 @@ iwSettings::iwSettings()
     helpers::erase_if(supportedVideoModes, [](const auto& it) { return it.width < 800 && it.height < 600; });
     for(const auto& videoMode : supportedVideoModes)
     {
-        cbResolution->AddString(helpers::format("%ux%u", videoMode.width, videoMode.height));
+        cbResolution->AddItem(helpers::format("%ux%u", videoMode.width, videoMode.height));
         if(videoMode == SETTINGS.video.fullscreenSize)
             cbResolution->SetSelection(cbResolution->GetNumItems() - 1);
     }
@@ -68,9 +68,9 @@ iwSettings::iwSettings()
     AddText(ID_txtFullScreen, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbDisplayMode = AddComboBox(ID_cbDisplayMode, DrawPoint(rightColOffset, curPos.y - 5), ctrlSize,
                                               TextureColor::Grey, NormalFont, 100);
-    cbDisplayMode->AddString(_("Windowed"));
-    cbDisplayMode->AddString(_("Fullscreen"));
-    cbDisplayMode->AddString(_("Borderless window"));
+    cbDisplayMode->AddItem(_("Windowed"));
+    cbDisplayMode->AddItem(_("Fullscreen"));
+    cbDisplayMode->AddItem(_("Borderless window"));
     cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
 
     curPos.y += ctrlSize.y + 1;
@@ -82,11 +82,11 @@ iwSettings::iwSettings()
     AddText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbMapScrollMode = AddComboBox(ID_cbMapScrollMode, DrawPoint(rightColOffset, curPos.y - 5), ctrlSize,
                                                 TextureColor::Grey, NormalFont, 100);
-    cbMapScrollMode->AddString(
+    cbMapScrollMode->AddItem(
       _("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
-    cbMapScrollMode->AddString(
+    cbMapScrollMode->AddItem(
       _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
-    cbMapScrollMode->AddString(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
+    cbMapScrollMode->AddItem(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
     cbMapScrollMode->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
 
     curPos.y += ctrlSize.y + 10;
