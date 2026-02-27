@@ -18,6 +18,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <chrono>
 #include <map>
+#include <memory>
 #include <vector>
 
 class ctrlBuildingIcon;
@@ -135,7 +136,7 @@ public:
     AnimationManager& GetAnimationManager() { return animations_; }
 
     template<typename T>
-    T* AddCtrl(T* ctrl);
+    T* AddCtrl(std::unique_ptr<T> ctrl);
 
     ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation,
                                       unsigned short size = 36, const std::string& tooltip = "");
@@ -287,7 +288,7 @@ protected:
         Pressed
     };
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
-    using ControlMap = std::map<unsigned, Window*>;
+    using ControlMap = std::map<unsigned, std::unique_ptr<Window>>;
 
     /// Scale the value from the reference coordinates to current render size
     template<class T_Pt>
@@ -323,44 +324,42 @@ private:
 };
 
 template<typename T>
-inline T* Window::AddCtrl(T* ctrl)
+T* Window::AddCtrl(std::unique_ptr<T> ctrl)
 {
+    RTTR_Assert(ctrl);
     RTTR_Assert(childIdToWnd_.find(ctrl->GetID()) == childIdToWnd_.end());
-    childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
+    T* ctrlPtr = ctrl.get();
     ctrl->scale_ = scale_;
-    ctrl->SetActive(active_);
+    childIdToWnd_.emplace(ctrl->GetID(), std::move(ctrl));
 
-    return ctrl;
+    ctrlPtr->SetActive(active_);
+    return ctrlPtr;
 }
 
 template<typename T>
-inline T* Window::GetCtrl(unsigned id)
+T* Window::GetCtrl(unsigned id)
+{
+    return const_cast<T*>(static_cast<const Window&>(*this).GetCtrl<T>(id));
+}
+
+template<typename T>
+const T* Window::GetCtrl(unsigned id) const
 {
     auto it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
         return nullptr;
 
-    return dynamic_cast<T*>(it->second);
+    return dynamic_cast<T*>(it->second.get());
 }
 
 template<typename T>
-inline const T* Window::GetCtrl(unsigned id) const
-{
-    auto it = childIdToWnd_.find(id);
-    if(it == childIdToWnd_.end())
-        return nullptr;
-
-    return dynamic_cast<T*>(it->second);
-}
-
-template<typename T>
-inline std::vector<T*> Window::GetCtrls()
+std::vector<T*> Window::GetCtrls()
 {
     std::vector<T*> result;
-    for(auto* wnd : childIdToWnd_ | boost::adaptors::map_values)
+    for(const auto& wnd : childIdToWnd_ | boost::adaptors::map_values)
     {
-        T* ctrl = dynamic_cast<T*>(wnd);
+        T* ctrl = dynamic_cast<T*>(wnd.get());
         if(ctrl)
             result.push_back(ctrl);
     }
@@ -368,12 +367,12 @@ inline std::vector<T*> Window::GetCtrls()
 }
 
 template<typename T>
-inline std::vector<const T*> Window::GetCtrls() const
+std::vector<const T*> Window::GetCtrls() const
 {
     std::vector<const T*> result;
-    for(auto* const wnd : childIdToWnd_ | boost::adaptors::map_values)
+    for(const auto& wnd : childIdToWnd_ | boost::adaptors::map_values)
     {
-        const T* ctrl = dynamic_cast<const T*>(wnd);
+        const T* ctrl = dynamic_cast<const T*>(wnd.get());
         if(ctrl)
             result.push_back(ctrl);
     }
