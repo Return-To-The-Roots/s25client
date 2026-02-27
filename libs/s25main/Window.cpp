@@ -30,9 +30,6 @@ Window::~Window()
         delete ctrl;
 }
 
-/**
- *  zeichnet das Fenster.
- */
 void Window::Draw()
 {
     if(visible_)
@@ -49,8 +46,7 @@ DrawPoint Window::GetDrawPos() const
     DrawPoint result = pos_;
     const Window* temp = this;
 
-    // Relative Koordinaten in absolute umrechnen
-    // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
+    // Convert relative to absolute coordinates, i.e. sum positions of parents
     while(temp->parent_)
     {
         temp = temp->parent_;
@@ -76,17 +72,10 @@ Rect Window::GetBoundaryRect() const
     return GetDrawRect();
 }
 
-/**
- *  Sendet eine Fensternachricht an die Steuerelemente.
- *
- *  @param[in] msg   Die Nachricht.
- *  @param[in] id    Die ID des Quellsteuerelements.
- *  @param[in] param Ein nachrichtenspezifischer Parameter.
- */
 bool Window::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
-    // Abgeleitete Klassen fragen, ob das Weiterleiten von Nachrichten erlaubt ist
-    // (IngameFenster könnten ja z.B. minimiert sein)
+    // Ask derived classes whether relaying messages is allowed
+    // (For example, ingame windows might not want to receive keyboard messages when they are minimized)
     if(!IsMessageRelayAllowed())
         return false;
 
@@ -103,19 +92,17 @@ bool Window::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 
 bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
 {
-    // Abgeleitete Klassen fragen, ob das Weiterleiten von Mausnachrichten erlaubt ist
-    // (IngameFenster könnten ja z.B. minimiert sein)
+    // Ask derived classes whether relaying messages is allowed
     if(!IsMessageRelayAllowed())
         return false;
 
     bool processed = false;
     isInMouseRelay = true;
 
-    // Alle Controls durchgehen
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     for(Window* wnd : childIdToWnd_ | boost::adaptors::map_values | boost::adaptors::reversed)
     {
-        if(!lockedAreas_.empty() && IsInLockedRegion(mc.pos, wnd))
+        if(!lockedAreas_.empty() && IsInLockedRegion(mc.pos, wnd.get()))
             continue;
 
         if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
@@ -137,7 +124,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
  */
 void Window::SetActive(bool activate)
 {
-    this->active_ = activate;
+    active_ = activate;
     ActivateControls(activate);
 }
 
@@ -193,7 +180,6 @@ void Window::SetPos(const DrawPoint& newPos)
     pos_ = newPos;
 }
 
-/// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
 bool Window::IsMessageRelayAllowed() const
 {
     return true;
