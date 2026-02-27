@@ -13,7 +13,7 @@ class noAnimal;
 class nofSkinner : public nofWorkman
 {
     /// animal, which is skinned
-    noAnimal* animal;
+    noAnimal* animal = nullptr;
 
     /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
