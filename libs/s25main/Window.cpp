@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -560,7 +560,9 @@ T_Pt Window::ScaleIf(const T_Pt& pt) const
     return scale_ ? Scale(pt) : pt;
 }
 
-// Inlining removes those. so add it here
+// Explicit template instantiations for the used types to avoid linker errors
+template DrawPoint Window::Scale(const DrawPoint&);
+template Extent Window::Scale(const Extent&);
 template DrawPoint Window::ScaleIf(const DrawPoint&) const;
 template Extent Window::ScaleIf(const Extent&) const;
 
