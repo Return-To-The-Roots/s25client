@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -58,7 +58,7 @@ namespace libsiedler2 {
 class ArchivItem_Map;
 }
 
-/// Die Basisklasse der Fenster.
+/// Base class for windows and controls
 class Window
 {
 public:
@@ -67,36 +67,37 @@ public:
 
     Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
     virtual ~Window();
-    /// zeichnet das Fenster.
+    /// Draw all contained controls if the window is visible
     void Draw();
-    /// Get the current position
+    /// Get the current position relative to the parent window
     DrawPoint GetPos() const;
-    /// Get the absolute (X,Y) position as when calling GetX/GetY for drawing
+    /// Get the absolute position for drawing
     DrawPoint GetDrawPos() const;
     /// Get the size of the window
     Extent GetSize() const;
-    /// gets the extent of the window in absolute coordinates
+    /// Get the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
-    /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
-    /// content)
+    /// Get the actual extents of the rect
+    /// (might be different to the draw rect if the window resizes according to content)
     virtual Rect GetBoundaryRect() const;
-    /// setzt die Größe des Fensters
+    /// Change the size
     virtual void Resize(const Extent& newSize) { size_ = newSize; }
-    /// setzt die Breite des Fensters
+    /// Change only the width
     void SetWidth(unsigned width) { Resize(Extent(width, size_.y)); }
-    /// setzt die Höhe des Fensters
+    /// Change only the height
     void SetHeight(unsigned height) { Resize(Extent(size_.x, height)); }
-    /// Sendet eine Tastaturnachricht an die Steuerelemente.
+    /// Send a keyboard message to all controls, return true if handled
     bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
-    /// Sendet eine Mausnachricht weiter an alle Steuerelemente
+    /// Send a mouse message to all controls, return true if handled
     bool RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
-    /// aktiviert das Fenster.
+    /// Make the window active or inactive. Inactive controls e.g. don't react to events
     virtual void SetActive(bool activate = true);
-    /// aktiviert die Steuerelemente des Fensters.
+    /// Activate/deactivate only the elements of the window
     void ActivateControls(bool activate = true);
-    /// Sperrt eine bestimmte Region für Mausereignisse.
+    /// Lock a region which won't react to mouse events anymore except for the given window/control.
+    /// Only a single region can be locked per window.
     void LockRegion(Window* window, const Rect& rect);
-    /// Gibt eine gesperrte Region wieder frei.
+    /// Release the region locked for the given window/control.
     void FreeRegion(Window* window);
     /// Check if the given point is in a region locked by any window other than exception
     bool IsInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
@@ -108,13 +109,11 @@ public:
     /// Set the position for the window
     void SetPos(const DrawPoint& newPos);
 
-    // macht das Fenster sichtbar oder blendet es aus
-    virtual void SetVisible(bool visible) { this->visible_ = visible; }
-    /// Ist das Fenster sichtbar?
+    // Make the window visible or hide it
+    virtual void SetVisible(bool visible) { visible_ = visible; }
     bool IsVisible() const { return visible_; }
-    /// Ist das Fenster aktiv?
     bool IsActive() const { return active_; }
-    /// liefert das übergeordnete Fenster
+    /// Get the parent window (containing this) or nullptr if this is a top-level window
     Window* GetParent() const { return parent_; }
     unsigned GetID() const { return id_; }
     /// Get control with given ID of given type or nullptr if not found or other type
@@ -185,6 +184,11 @@ public:
     ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
     ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                         std::vector<TableColumn> columns);
+    /// Add text
+    /// @param color    Text color (ARGB)
+    /// @param format   can be a combination of FontStyle::LEFT/CENTER/RIGHT and FontStyle::TOP/VCENTER/BOTTOM and
+    /// FontStyle::OUTLINE/NO_OUTLINE
+    ///                 Alignment specifies how the position is treated, i.e. where relative to the text it will be.
     ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                       const glFont* font);
     ctrlMapSelection* AddMapSelection(unsigned id, const DrawPoint& pos, const Extent& size,
@@ -192,13 +196,13 @@ public:
     TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
                                       FontStyle format, const glFont* font);
     ctrlTimer* AddTimer(unsigned id, std::chrono::milliseconds timeout);
-    /// fügt ein vertieftes variables TextCtrl hinzu.
-    /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
+    /// Add a 3D text control with a variable text. The text is formatted like printf but with pointers
+    /// to int (%d), unsigned (%u) or const char (%s) which must be valid for the lifetime of the var text!
     ctrlVarDeepening* AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                       const std::string& formatstr, const glFont* font, unsigned color,
                                       unsigned parameters, ...);
-    /// fügt ein variables TextCtrl hinzu.
-    /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
+    /// Add a text control with a variable text. The text is formatted like printf but with pointers
+    /// to int (%d), unsigned (%u) or const char (%s) which must be valid for the lifetime of the var text!
     ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color,
                             FontStyle format, const glFont* font, unsigned parameters, ...);
     ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size,
@@ -210,14 +214,13 @@ public:
     static void Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated);
     static void Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
                               bool illuminated = false, unsigned contentColor = COLOR_WHITE);
-    /// Zeichnet ein Rechteck
     static void DrawRectangle(const Rect& rect, unsigned color);
-    /// Zeichnet eine Linie
     static void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color);
 
     // GUI-Notify-Messages
 
-    // Nachrichten, die von oben (WindowManager) nach unten (zu Controls) gereicht werden
+    // These messages get passed downwards (WindowManager to controls)
+    // Return true if the message was handled
     virtual void Msg_PaintBefore();
     virtual void Msg_PaintAfter();
     virtual bool Msg_LeftDown(const MouseCoords&) { return false; }
@@ -232,7 +235,7 @@ public:
     virtual bool Msg_KeyDown(const KeyEvent&) { return false; }
     virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
 
-    // Nachrichten, die von unten (Controls) nach oben (Fenster) gereicht werden
+    // Callback messages that are passed upwards (from controls to window)
     virtual void Msg_ButtonClick(unsigned /*ctrl_id*/) {}
     virtual void Msg_EditEnter(unsigned /*ctrl_id*/) {}
     virtual void Msg_EditChange(unsigned /*ctrl_id*/) {}
@@ -251,10 +254,10 @@ public:
     virtual void Msg_TableRightButton(unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
     virtual void Msg_TableLeftButton(unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
 
-    // Sonstiges
+    /// Callback of a message box when closed
     virtual void Msg_MsgBoxResult(unsigned /*msgbox_id*/, MsgboxResult /*mbr*/) {}
 
-    // Nachrichten, die von Controls von ctrlGroup weitergeleitet werden
+    // Callbacks triggered by controls of ctrlGroup
     virtual void Msg_Group_ButtonClick(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
     virtual void Msg_Group_EditEnter(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
     virtual void Msg_Group_EditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
@@ -286,32 +289,36 @@ protected:
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
-    /// scales X- und Y values to fit the screen
+    /// Scale the value from the reference coordinates to current render size
     template<class T_Pt>
     static T_Pt Scale(const T_Pt& pt);
-    /// Scales the value when scale_ is true, else returns the value
+    /// Scales the value when scale_ is true, else returns the value unchanged
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt) const;
-    /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
-    void SetScale(bool scale = true) { this->scale_ = scale; }
-    /// zeichnet das Fenster.
+    /// Set whether controls of this window shall be scaled
+    void SetScale(bool scale = true) { scale_ = scale; }
+    /// Implementation of drawing the window, derived classes can override this to draw custom backgrounds or similar
     virtual void Draw_();
-    /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
+    /// Shall messages be relayed to the controls of this window?
     virtual bool IsMessageRelayAllowed() const;
 
 private:
-    Window* const parent_; /// Handle auf das Parentfenster.
-    unsigned id_;          /// ID des Fensters.
-    DrawPoint pos_;        /// Position des Fensters.
-    Extent size_;          /// Höhe des Fensters.
-    bool active_;          /// Fenster aktiv?
-    bool visible_;         /// Fenster sichtbar?
-    bool scale_;           /// Sollen Controls an Fenstergröße angepasst werden?
+    Window* const parent_; /// Handle to parent window
+    unsigned id_;          /// ID of the window, must be unique among siblings
+    DrawPoint pos_;        /// Position relative to parent window.
+    Extent size_;          /// Size of the window
+    bool active_;          /// Window active?
+    bool visible_;         /// Window visible?
+    bool scale_;           /// Shall the controls of this window be scaled according to the render size?
 
-    std::map<Window*, Rect> lockedAreas_; /// gesperrte Regionen des Fensters.
+    /// Locked areas for mouse events.
+    /// The key is the window/control for which the area is locked, i.e. which control is the only one getting mouse
+    /// events from this region, the value is the locked area relative to this window. Only a single area can be locked
+    /// per window/control.
+    std::map<Window*, Rect> lockedAreas_;
     std::vector<Window*> tofreeAreas_;
     bool isInMouseRelay;
-    ControlMap childIdToWnd_; /// Die Steuerelemente des Fensters.
+    ControlMap childIdToWnd_; /// Controls contained in this window, mapped by their ID
     AnimationManager animations_;
 };
 
