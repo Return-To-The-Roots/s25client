@@ -12,7 +12,7 @@ struct ScaleWindowPropUp
     ScaleWindowPropUp(const Extent& size) : size(size) {}
 
     template<typename T_Pt>
-    static T_Pt scale(const T_Pt& value, const Extent& size, const unsigned limfactor);
+    static T_Pt scale(const T_Pt& value, const Extent& size, const Extent& limfactors);
     template<typename T_Pt>
     T_Pt operator()(const T_Pt& value) const;
 };
@@ -24,22 +24,23 @@ struct RescaleWindowProp
     RescaleWindowProp(Extent oldSize, Extent newSize) : oldSize(oldSize), newSize(newSize) {}
     /// Scale the point or size from beeing relative to the oldSize to relative to the newSize
     template<typename T_Pt>
-    T_Pt operator()(const T_Pt& oldValue, const T_Pt& origValue, const unsigned limfactor) const;
+    T_Pt operator()(const T_Pt& oldValue, const Extent& limfactors) const;
 };
 
 template<typename T_Pt>
-inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale, const unsigned limfactor)
+inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale, const Extent& limfactors)
 {
-    T_Pt scaledValue(value * sizeToScale / Extent(800, 600));
-    // Limit the scaling by a multiple (limfactor) of the base value
-    if(limfactor)
+    // Slow the scaling by a limfactor value for X and Y
+    if(limfactors.x > 0 && limfactors.y > 0 && limfactors.x < 11 && limfactors.y < 11)
     {
-        if(scaledValue.x > value.x << limfactor)
-            scaledValue.x = value.x << limfactor;
-        if(scaledValue.y > value.y << limfactor)
-            scaledValue.y = value.y << limfactor;
+        T_Pt diff(sizeToScale - Extent(800,600));
+        T_Pt limScaledValue(value * (sizeToScale-diff*limfactors/10) / Extent(800, 600));
+        return limScaledValue;
+    } else
+    {
+        T_Pt scaledValue(value * sizeToScale / Extent(800, 600));
+        return scaledValue;
     }
-    return scaledValue;
 }
 
 template<typename T_Pt>
@@ -49,19 +50,24 @@ inline T_Pt ScaleWindowPropUp::operator()(const T_Pt& value) const
 }
 
 template<typename T_Pt>
-inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue, const T_Pt& origValue, const unsigned limfactor) const
+inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue, const Extent& limfactors) const
 {
-    T_Pt realValue(oldValue.x * 800 / oldSize.x, oldValue.y * 600 / oldSize.y);
-    if(limfactor && (origValue.x != 0 && origValue.y != 0))
+    T_Pt realValue;
+    if(limfactors.x > 0 && limfactors.y > 0 && limfactors.x < 11 && limfactors.y < 11)
     {
-        realValue.x = origValue.x;
-        realValue.y = origValue.y;
+        T_Pt diff(oldSize - Extent(800,600));
+        T_Pt limUnscaleValue(oldValue.x * 800 / (oldSize.x - (diff.x*limfactors.x/10)), oldValue.y * 600 / (oldSize.y - (diff.y*limfactors.y/10)));
+        realValue = limUnscaleValue;
+    } else 
+    {
+        T_Pt unscaleValue(oldValue.x * 800 / oldSize.x, oldValue.y * 600 / oldSize.y);
+        realValue = unscaleValue;
     }
     // Check for rounding errors
-    T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize, limfactor);
+    T_Pt checkValue = ScaleWindowPropUp::scale(realValue, oldSize, limfactors);
     if(checkValue.x < oldValue.x)
         realValue.x++;
     if(checkValue.y < oldValue.y)
         realValue.y++;
-    return ScaleWindowPropUp::scale(realValue, newSize, limfactor);
+    return ScaleWindowPropUp::scale(realValue, newSize, limfactors);
 }

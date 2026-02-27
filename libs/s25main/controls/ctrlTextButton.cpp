@@ -11,9 +11,11 @@ static constexpr unsigned contentOffset = 2;
 
 ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
                                const TextureColor tc, const std::string& text, const glFont* font,
-                               const std::string& tooltip)
+                               const std::string& tooltip, const Extent& limitFactors)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
-{}
+{
+    Window::SetLimitFactors(limitFactors);
+}
 
 void ctrlTextButton::ResizeForMaxChars(unsigned numChars)
 {

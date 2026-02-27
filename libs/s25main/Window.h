@@ -76,9 +76,11 @@ public:
     /// Get the size of the window
     Extent GetSize() const;
     /// Get the original size of the window
-    Extent GetOrigSize() const;
+    Extent GetLimitFactors() const;
+    /// get Scale-Value to check if Controls needs to be scaled or not.
+    bool GetScale() { return this->scale_; }
     /// Get the original size of the window
-    void SetOrigSize(Extent origSize);
+    void SetLimitFactors(Extent limitFactors);
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
     /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
@@ -290,17 +292,15 @@ protected:
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
-    /// scales X- und Y values to fit the screen considering a limiting factor
+    /// scales X- and Y values to fit the screen considering a limiting factor
     /// factor shall be between 0-3, 0 disables limiting.
     template<class T_Pt>
-    static T_Pt Scale(const T_Pt& pt, const unsigned limfactor);
+    static T_Pt Scale(const T_Pt& pt, const Extent& limfactors);
+    /// scales X- and Y values of position and size considering a limiting factor for size
+    void ScaleByFactor();
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt);
-    /// Scales the value when scale_ is true with predefined scale limitation, else returns the value
-    /// only call once for a ctrl, so it is considered correctly in AddCtrl
-    template<class T_Pt>
-    T_Pt ScaleLimIf(const T_Pt& pt);
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
     /// zeichnet das Fenster.
@@ -313,7 +313,7 @@ private:
     unsigned id_;          /// ID des Fensters.
     DrawPoint pos_;        /// Position des Fensters.
     Extent size_;          /// Höhe des Fensters.
-    Extent orig_size_;     /// Original / unscaled size of the window.
+    Extent limit_factors_; /// X and Y scaling limiting factors from 1 (unscaled) - 10 (fully scaled)
     bool active_;          /// Fenster aktiv?
     bool visible_;         /// Fenster sichtbar?
     bool scale_;           /// Sollen Controls an Fenstergröße angepasst werden?
@@ -332,9 +332,11 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
-    // hack: take origSize that was set by the last (and presumably only) ScaleLimIf(Extent) call to pass to children.
-    ctrl->SetOrigSize(GetOrigSize());
-    orig_size_ = Extent(0,0);
+    Extent limfactors = ctrl->limit_factors_;
+    if (limfactors.x > 0 && limfactors.y > 0 && limfactors.x < 11 && limfactors.y < 11)
+    {
+        ctrl->ScaleByFactor();
+    }
     ctrl->SetActive(active_);
 
     return ctrl;

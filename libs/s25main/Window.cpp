@@ -18,7 +18,7 @@
 #include <cstdarg>
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
-    : parent_(parent), id_(id), pos_(pos), size_(size), orig_size_(Extent(0,0)), active_(false), visible_(true),
+    : parent_(parent), id_(id), pos_(pos), size_(size), limit_factors_(Extent(0,0)), active_(false), visible_(true),
       scale_(false), isInMouseRelay(false), animations_(this)
 {}
 
@@ -65,14 +65,14 @@ Extent Window::GetSize() const
     return size_;
 }
 
-Extent Window::GetOrigSize() const
+Extent Window::GetLimitFactors() const
 {
-    return orig_size_;
+    return limit_factors_;
 }
 
-void Window::SetOrigSize(Extent origSize)
+void Window::SetLimitFactors(Extent limitFactors)
 {
-    orig_size_ = origSize;
+    limit_factors_ = limitFactors;
 }
 
 Rect Window::GetDrawRect() const
@@ -230,7 +230,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, Bui
 ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                   const std::string& text, const glFont* font, const std::string& tooltip)
 {
-    return AddCtrl(new ctrlTextButton(this, id, ScaleIf(pos), ScaleLimIf(size), tc, text, font, tooltip));
+    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, Extent (7,5)));
 }
 
 ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
@@ -550,8 +550,8 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         if(!ctrl)
             continue;
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
-        Extent newSize = rescale(ctrl->GetSize(), ctrl->GetOrigSize(), 1);
-        ctrl->SetPos(rescale(ctrl->GetPos(), DrawPoint(0,0), 0));
+        Extent newSize = rescale(ctrl->GetSize(), ctrl->GetLimitFactors());
+        ctrl->SetPos(rescale(ctrl->GetPos(), Extent(0,0)));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -559,24 +559,24 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 }
 
 template<class T_Pt>
-T_Pt Window::Scale(const T_Pt& pt, const unsigned limfactor)
+T_Pt Window::Scale(const T_Pt& pt, const Extent& limfactors)
 {
-    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize(), limfactor);
+    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize(), limfactors);
+}
+
+void Window::ScaleByFactor()
+{
+    if(scale_)
+    {
+        pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), Extent(0,0));
+        size_ = ScaleWindowPropUp::scale(size_, VIDEODRIVER.GetRenderSize(), limit_factors_);
+    }
 }
 
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt)
 {
-    return scale_ ? Scale(pt, 0) : pt;
-}
-
-template<class T_Pt>
-T_Pt Window::ScaleLimIf(const T_Pt& pt)
-{
-    orig_size_.x = pt.x;
-    orig_size_.y = pt.y;
-   
-    return scale_ ? Scale(pt, 1) : pt;
+    return scale_ ? Scale(pt, Extent(0,0)) : pt;
 }
 
 // Inlining removes those. so add it here
