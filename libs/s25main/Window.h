@@ -293,7 +293,7 @@ protected:
     /// scales X- and Y values to fit the screen, additionally considering a limiting factor for size
     template<class T_Pt>
     static T_Pt Scale(const T_Pt& pt, const LimitFactors& limfactors);
-    /// scales X- and Y values of pos_ and size_, additionally considering limitFactors_ for size_ scaling 
+    /// scales X- and Y values of pos_ and size_, additionally considering limitFactors_ for size_ scaling
     void ScaleByFactor();
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
