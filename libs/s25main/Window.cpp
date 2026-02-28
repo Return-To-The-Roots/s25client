@@ -18,7 +18,7 @@
 #include <cstdarg>
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
-    : parent_(parent), id_(id), pos_(pos), size_(size), limit_factors_(Extent(0,0)), active_(false), visible_(true),
+    : parent_(parent), id_(id), pos_(pos), size_(size), limit_factors_(Extent(0, 0)), active_(false), visible_(true),
       scale_(false), isInMouseRelay(false), animations_(this)
 {}
 
@@ -230,7 +230,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, Bui
 ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                   const std::string& text, const glFont* font, const std::string& tooltip)
 {
-    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, Extent (7,5)));
+    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, Extent (7, 5)));
 }
 
 ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
@@ -551,7 +551,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
             continue;
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
         Extent newSize = rescale(ctrl->GetSize(), ctrl->GetLimitFactors());
-        ctrl->SetPos(rescale(ctrl->GetPos(), Extent(0,0)));
+        ctrl->SetPos(rescale(ctrl->GetPos(), Extent(0, 0)));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -568,7 +568,7 @@ void Window::ScaleByFactor()
 {
     if(scale_)
     {
-        pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), Extent(0,0));
+        pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), Extent(0, 0));
         size_ = ScaleWindowPropUp::scale(size_, VIDEODRIVER.GetRenderSize(), limit_factors_);
     }
 }
@@ -576,7 +576,7 @@ void Window::ScaleByFactor()
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt) const
 {
-    return scale_ ? Scale(pt, Extent(0,0)) : pt;
+    return scale_ ? Scale(pt, Extent(0, 0)) : pt;
 }
 
 // Inlining removes those. so add it here
