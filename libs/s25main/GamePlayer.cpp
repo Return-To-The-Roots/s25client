@@ -1954,7 +1954,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
         if(ship.GetPos() == dest)
         {
             hb.ShipArrived(ship);
-            return (true);
+            return true;
         }
 
         if(world.FindShipPathToHarbor(ship.GetPos(), hb.GetHarborPosID(), ship.GetSeaID(), &route, &distance))
@@ -1973,10 +1973,10 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     {
         best_ship->GoToHarbor(hb, best_route);
 
-        return (true);
+        return true;
     }
 
-    return (false);
+    return false;
 }
 
 /// Meldet das Schiff wieder ab
@@ -2049,14 +2049,9 @@ void GamePlayer::GetJobForShip(noShip& ship)
         ship.GoToHarbor(*best, best_route);
 }
 
-/// Gibt die ID eines Schiffes zurück
-unsigned GamePlayer::GetShipID(const noShip* const ship) const
+unsigned GamePlayer::GetShipID(const noShip& ship) const
 {
-    for(unsigned i = 0; i < ships.size(); ++i)
-        if(ships[i] == ship)
-            return i;
-
-    return 0xFFFFFFFF;
+    return static_cast<unsigned>(helpers::indexOf(ships, &ship));
 }
 
 /// Gibt ein Schiff anhand der ID zurück bzw. nullptr, wenn keines mit der ID existiert

@@ -157,7 +157,7 @@ public:
     void HandleBuildingFinished(MapPoint pt, BuildingType bld);
 
     void HandleExpedition(MapPoint pt);
-    void HandleExpedition(const noShip* ship);
+    void HandleExpedition(const noShip& ship);
     // Handle chopped tree, test for new space
     void HandleTreeChopped(MapPoint pt);
     // Handle new colony

@@ -149,7 +149,7 @@ public:
     /// Return the list of ships
     const std::vector<noShip*>& GetShips() const { return player_.GetShips(); }
     /// Return the ID of a given ship
-    unsigned GetShipID(const noShip* ship) const { return player_.GetShipID(ship); }
+    unsigned GetShipID(const noShip& ship) const { return player_.GetShipID(ship); }
     /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a
     /// given starting harbor
     bool IsExplorationDirectionPossible(MapPoint pt, const nobHarborBuilding* originHarbor,
@@ -165,16 +165,16 @@ public:
     bool StartStopExpedition(const nobHarborBuilding* hb, bool start);
     using GameCommandFactory::StartStopExpedition;
 
-    bool FoundColony(const noShip* ship) { return FoundColony(GetShipID(ship)); }
+    bool FoundColony(const noShip& ship) { return FoundColony(GetShipID(ship)); }
     using GameCommandFactory::FoundColony;
 
-    bool TravelToNextSpot(ShipDirection direction, const noShip* ship)
+    bool TravelToNextSpot(ShipDirection direction, const noShip& ship)
     {
         return TravelToNextSpot(direction, GetShipID(ship));
     }
     using GameCommandFactory::TravelToNextSpot;
 
-    bool CancelExpedition(const noShip* ship) { return CancelExpedition(GetShipID(ship)); }
+    bool CancelExpedition(const noShip& ship) { return CancelExpedition(GetShipID(ship)); }
     using GameCommandFactory::CancelExpedition;
 
     bool SetShipYardMode(const nobShipYard* shipyard, bool buildShips);

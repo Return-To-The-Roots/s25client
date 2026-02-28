@@ -35,7 +35,7 @@
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* const ship, const DrawPoint& pos)
     : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv),
       gcFactory(gcFactory), player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
-      ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
+      ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(*ship) : 0)
 {
     AddImage(0, DrawPoint(126, 101), LOADER.GetImageN("io", 228));
     AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TextureColor::Grey,

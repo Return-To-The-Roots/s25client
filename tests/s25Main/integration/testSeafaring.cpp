@@ -14,8 +14,10 @@
 #include "postSystem/ShipPostMsg.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
+#include "world/MapLoader.h"
 #include "nodeObjs/noShip.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "rttr/test/testHelpers.hpp"
 #include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
@@ -122,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     BOOST_TEST_REQUIRE(player.GetShips().size() == 1u);
     noShip* ship = player.GetShipByID(0);
     BOOST_TEST_REQUIRE(ship);
-    BOOST_TEST_REQUIRE(player.GetShipID(ship) == 0u);
+    BOOST_TEST_REQUIRE(player.GetShipID(*ship) == 0u);
 }
 
 template<unsigned T_numPlayers = 3, unsigned T_hbId = 1, unsigned T_width = SeaWorldDefault::width,
@@ -166,31 +168,29 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
 
         BOOST_TEST_REQUIRE(player.GetNumShips() == 1u);
         postBox->Clear();
+        initGameRNG();
     }
 };
 
 BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
 {
-    initGameRNG();
-
     curPlayer = 0;
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    const noShip* ship = player.GetShipByID(0);
+    const noShip& ship = ensureNonNull(player.GetShipByID(0));
     const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
     const unsigned hbId = world.GetHarborPointID(hbPos);
-    BOOST_TEST_REQUIRE(ship);
-    BOOST_TEST_REQUIRE(ship->IsIdling());
+    BOOST_TEST_REQUIRE(ship.IsIdling());
     BOOST_TEST_REQUIRE(!harbor.IsExplorationExpeditionActive());
     this->StartStopExplorationExpedition(hbPos, true);
     BOOST_TEST_REQUIRE(harbor.IsExplorationExpeditionActive());
     // Expedition not ready, ship still idling
-    BOOST_TEST_REQUIRE(ship->IsIdling());
+    BOOST_TEST_REQUIRE(ship.IsIdling());
 
     // Wait till scouts arrive
-    RTTR_EXEC_TILL(380, !ship->IsIdling());
-    BOOST_TEST_REQUIRE(ship->IsGoingToHarbor(harbor));
-    BOOST_TEST_REQUIRE(ship->GetTargetHarbor() == hbId);
+    RTTR_EXEC_TILL(380, !ship.IsIdling());
+    BOOST_TEST_REQUIRE(ship.IsGoingToHarbor(harbor));
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == hbId);
     BOOST_TEST_REQUIRE(player.GetShipsToHarbor(harbor) == 1u);
 
     // No available scouts
@@ -206,11 +206,11 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_TEST_REQUIRE(harbor.GetNumRealFigures(Job::Scout) == 3u);
 
     // Let ship arrive
-    RTTR_EXEC_TILL(180, ship->IsIdling());
-    BOOST_TEST_REQUIRE(!ship->IsGoingToHarbor(harbor));
+    RTTR_EXEC_TILL(180, ship.IsIdling());
+    BOOST_TEST_REQUIRE(!ship.IsGoingToHarbor(harbor));
     BOOST_TEST_REQUIRE(player.GetShipsToHarbor(harbor) == 0u);
-    BOOST_TEST_REQUIRE(ship->GetTargetHarbor() == 0u);
-    BOOST_TEST_REQUIRE(ship->GetHomeHarbor() == 0u);
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == 0u);
+    BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == 0u);
 
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::Visible; //-V807
@@ -225,61 +225,59 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     // Start again (everything is here)
     this->StartStopExplorationExpedition(hbPos, true);
     // ...so we can start right now
-    BOOST_TEST_REQUIRE(ship->IsOnExplorationExpedition());
+    BOOST_TEST_REQUIRE(ship.IsOnExplorationExpedition());
     // Load and start
     RTTR_SKIP_GFS(202);
-    BOOST_TEST_REQUIRE(ship->GetHomeHarbor() == hbId);
-    BOOST_TEST_REQUIRE(ship->GetTargetHarbor() == targetHbId);
+    BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == hbId);
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == targetHbId);
 
     unsigned distance = world.CalcDistance(hbPos, world.GetHarborPoint(targetHbId));
     // Let the ship scout the harbor
-    RTTR_EXEC_TILL(distance * 2 * 20, !ship->IsMoving());
-    BOOST_TEST_REQUIRE(ship->IsOnExplorationExpedition());
-    BOOST_TEST_REQUIRE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship->GetPos()) <= 2u);
+    RTTR_EXEC_TILL(distance * 2 * 20, !ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.IsOnExplorationExpedition());
+    BOOST_TEST_REQUIRE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship.GetPos()) <= 2u);
     // Now the ship waits and will select the next harbor. We allow another one:
     world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::FogOfWar;
     targetHbId = 6u;
-    RTTR_EXEC_TILL(350, ship->IsMoving());
-    BOOST_TEST_REQUIRE(ship->GetHomeHarbor() == hbId);
-    BOOST_TEST_REQUIRE(ship->GetTargetHarbor() == targetHbId);
-    distance = world.CalcDistance(ship->GetPos(), world.GetHarborPoint(targetHbId));
+    RTTR_EXEC_TILL(350, ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == hbId);
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == targetHbId);
+    distance = world.CalcDistance(ship.GetPos(), world.GetHarborPoint(targetHbId));
     // Let the ship scout the harbor
-    RTTR_EXEC_TILL(distance * 2 * 20, !ship->IsMoving());
-    BOOST_TEST_REQUIRE(ship->IsOnExplorationExpedition());
-    BOOST_TEST_REQUIRE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship->GetPos()) <= 2u);
+    RTTR_EXEC_TILL(distance * 2 * 20, !ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.IsOnExplorationExpedition());
+    BOOST_TEST_REQUIRE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship.GetPos()) <= 2u);
 
     // Now disallow the first harbor so ship returns home
     world.GetNodeWriteable(world.GetHarborPoint(8)).fow[curPlayer].visibility = Visibility::Visible;
 
-    RTTR_EXEC_TILL(350, ship->IsMoving());
-    BOOST_TEST_REQUIRE(ship->GetHomeHarbor() == hbId);
-    BOOST_TEST_REQUIRE(ship->GetTargetHarbor() == hbId);
+    RTTR_EXEC_TILL(350, ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == hbId);
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == hbId);
 
-    distance = world.CalcDistance(ship->GetPos(), world.GetHarborPoint(hbId));
+    distance = world.CalcDistance(ship.GetPos(), world.GetHarborPoint(hbId));
     // And at some time it should return home
-    RTTR_EXEC_TILL(distance * 2 * 20 + 200, ship->IsIdling());
-    BOOST_TEST_REQUIRE(ship->GetSeaID() == 1u);
-    BOOST_TEST_REQUIRE(ship->GetPos() == world.GetCoastalPoint(hbId, 1));
+    RTTR_EXEC_TILL(distance * 2 * 20 + 200, ship.IsIdling());
+    BOOST_TEST_REQUIRE(ship.GetSeaID() == 1u);
+    BOOST_TEST_REQUIRE(ship.GetPos() == world.GetCoastalPoint(hbId, 1));
 
     // Now try to start an expedition but all harbors are explored -> Load, Unload, Idle
     world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::Visible;
     this->StartStopExplorationExpedition(hbPos, true);
-    BOOST_TEST_REQUIRE(ship->IsOnExplorationExpedition());
-    RTTR_EXEC_TILL(2 * 200 + 5, ship->IsIdling());
+    BOOST_TEST_REQUIRE(ship.IsOnExplorationExpedition());
+    RTTR_EXEC_TILL(2 * 200 + 5, ship.IsIdling());
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
 {
-    initGameRNG();
-
     curPlayer = 0;
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    const noShip* ship = player.GetShipByID(0);
+    const noShip& ship = ensureNonNull(player.GetShipByID(0));
     const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
     const unsigned hbId = world.GetHarborPointID(hbPos);
-    unsigned numScouts = player.GetInventory().people[Job::Scout]; //-V807
-    BOOST_TEST_REQUIRE(ship->IsIdling());
+    unsigned numScouts = player.GetInventory()[Job::Scout]; //-V807
+    BOOST_TEST_REQUIRE(ship.IsIdling());
 
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     world.GetPlayer(curPlayer).team = Team::Team1;
@@ -293,32 +291,32 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     this->StartStopExplorationExpedition(hbPos, true);
 
     // Start it
-    RTTR_EXEC_TILL(600, ship->IsOnExplorationExpedition() && ship->IsMoving());
+    RTTR_EXEC_TILL(600, ship.IsOnExplorationExpedition() && ship.IsMoving());
     // Incorporate recruitment
-    BOOST_TEST_REQUIRE(player.GetInventory().people[Job::Scout] >= numScouts);
-    numScouts = player.GetInventory().people[Job::Scout];
+    BOOST_TEST_REQUIRE(player.GetInventory()[Job::Scout] >= numScouts);
+    numScouts = player.GetInventory()[Job::Scout];
 
-    BOOST_TEST_REQUIRE(ship->GetHomeHarbor() == hbId);
-    BOOST_TEST_REQUIRE(ship->GetTargetHarbor() == targetHbId);
+    BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == hbId);
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == targetHbId);
 
     // Run till ship is coming back
-    RTTR_EXEC_TILL(1000, ship->GetTargetHarbor() == hbId);
+    RTTR_EXEC_TILL(1000, ship.GetTargetHarbor() == hbId);
     // Avoid that it goes back to that point
     world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[1].visibility = Visibility::Visible;
 
     // Destroy home harbor
     world.DestroyNO(hbPos);
-    RTTR_EXEC_TILL(2000, ship->IsLost());
-    BOOST_TEST_REQUIRE(!ship->IsMoving());
+    RTTR_EXEC_TILL(2000, ship.IsLost());
+    BOOST_TEST_REQUIRE(!ship.IsMoving());
 
     MapPoint newHbPos = world.GetHarborPoint(6);
     auto* newHarbor = dynamic_cast<nobHarborBuilding*>(
       BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, newHbPos, curPlayer, Nation::Romans));
 
-    BOOST_TEST_REQUIRE(!ship->IsLost());
-    BOOST_TEST_REQUIRE(ship->IsMoving());
-    RTTR_EXEC_TILL(1200, ship->IsIdling());
-    BOOST_TEST(player.GetInventory().people[Job::Scout] == numScouts);
+    BOOST_TEST_REQUIRE(!ship.IsLost());
+    BOOST_TEST_REQUIRE(ship.IsMoving());
+    RTTR_EXEC_TILL(1200, ship.IsIdling());
+    BOOST_TEST(player.GetInventory()[Job::Scout] == numScouts);
     BOOST_TEST(newHarbor->GetNumRealFigures(Job::Scout) == newHarbor->GetNumVisualFigures(Job::Scout)); //-V522
     BOOST_TEST(newHarbor->GetNumRealFigures(Job::Scout)
                  + world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos())->GetNumRealFigures(Job::Scout)
@@ -327,24 +325,21 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
 
 BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
 {
-    initGameRNG();
-
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    const noShip* ship = player.GetShipByID(0);
+    const noShip& ship = ensureNonNull(player.GetShipByID(0));
     const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
-    BOOST_TEST_REQUIRE(ship);
-    BOOST_TEST_REQUIRE(ship->IsIdling());
+    BOOST_TEST_REQUIRE(ship.IsIdling());
     BOOST_TEST_REQUIRE(!harbor.IsExpeditionActive());
     this->StartStopExpedition(hbPos, true);
     BOOST_TEST_REQUIRE(harbor.IsExpeditionActive());
     // Expedition not ready, ship still idling
-    BOOST_TEST_REQUIRE(ship->IsIdling());
+    BOOST_TEST_REQUIRE(ship.IsIdling());
 
     // Wait till wares arrive
-    RTTR_EXEC_TILL(3400, !ship->IsIdling());
+    RTTR_EXEC_TILL(3400, !ship.IsIdling());
     // Expedition ready, ship ordered
-    BOOST_TEST_REQUIRE(ship->IsGoingToHarbor(harbor));
+    BOOST_TEST_REQUIRE(ship.IsGoingToHarbor(harbor));
     BOOST_TEST_REQUIRE(player.GetShipsToHarbor(harbor) == 1u);
 
     // No available boards
@@ -360,80 +355,80 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_TEST_REQUIRE(harbor.GetNumRealWares(GoodType::Boards) > 0u);
 
     // Let ship arrive
-    RTTR_EXEC_TILL(180, ship->IsIdling());
-    BOOST_TEST_REQUIRE(!ship->IsGoingToHarbor(harbor));
+    RTTR_EXEC_TILL(180, ship.IsIdling());
+    BOOST_TEST_REQUIRE(!ship.IsGoingToHarbor(harbor));
     BOOST_TEST_REQUIRE(player.GetShipsToHarbor(harbor) == 0u);
 
     // Start again (everything is here)
     this->StartStopExpedition(hbPos, true);
     // ...so we can start right now
-    BOOST_TEST_REQUIRE(ship->IsOnExpedition());
+    BOOST_TEST_REQUIRE(ship.IsOnExpedition());
 
     // Wait for ship to be "loaded"
-    RTTR_EXEC_TILL(200, ship->IsWaitingForExpeditionInstructions());
+    RTTR_EXEC_TILL(200, ship.IsWaitingForExpeditionInstructions());
     // Ship should be waiting for expedition instructions (where to go) and player should have received a message
-    BOOST_TEST_REQUIRE(ship->GetCurrentHarbor() == harbor.GetHarborPosID());
+    BOOST_TEST_REQUIRE(ship.GetCurrentHarbor() == harbor.GetHarborPosID());
     BOOST_TEST_REQUIRE(postBox->GetNumMsgs() == 1u);
     const auto* msg = dynamic_cast<const ShipPostMsg*>(postBox->GetMsg(0));
     BOOST_TEST_REQUIRE(msg);
-    BOOST_TEST_REQUIRE(msg->GetPos() == ship->GetPos()); //-V522
+    BOOST_TEST_REQUIRE(msg->GetPos() == ship.GetPos()); //-V522
 
     // Harbor pos taken by other player
     this->TravelToNextSpot(ShipDirection::SouthEast, player.GetShipID(ship));
-    BOOST_TEST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(ship.IsWaitingForExpeditionInstructions());
 
     // Last free one (far south -> North is closer)
     this->TravelToNextSpot(ShipDirection::North, player.GetShipID(ship));
-    BOOST_TEST_REQUIRE(!ship->IsWaitingForExpeditionInstructions());
-    BOOST_TEST_REQUIRE(ship->IsMoving());
+    BOOST_TEST_REQUIRE(!ship.IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(ship.IsMoving());
 
     unsigned gfsToDest;
-    RTTR_EXEC_TILL_CT_GF(1000, ship->IsWaitingForExpeditionInstructions(), gfsToDest);
-    BOOST_TEST_REQUIRE(ship->GetCurrentHarbor() == 8u);
-    BOOST_TEST_REQUIRE(world.CalcDistance(ship->GetPos(), world.GetHarborPoint(8)) == 1u);
+    RTTR_EXEC_TILL_CT_GF(1000, ship.IsWaitingForExpeditionInstructions(), gfsToDest);
+    BOOST_TEST_REQUIRE(ship.GetCurrentHarbor() == 8u);
+    BOOST_TEST_REQUIRE(world.CalcDistance(ship.GetPos(), world.GetHarborPoint(8)) == 1u);
 
     // Cancel expedition -> Ship is going back to harbor
     this->CancelExpedition(player.GetShipID(ship));
-    BOOST_TEST_REQUIRE(ship->IsMoving());
+    BOOST_TEST_REQUIRE(ship.IsMoving());
     // Let ship arrive and unload
-    RTTR_EXEC_TILL(gfsToDest + 300, ship->IsIdling());
+    RTTR_EXEC_TILL(gfsToDest + 300, ship.IsIdling());
 
     // Start again (everything is here)
     this->StartStopExpedition(hbPos, true);
-    BOOST_TEST_REQUIRE(ship->IsOnExpedition());
+    BOOST_TEST_REQUIRE(ship.IsOnExpedition());
 
     // Wait for ship to be "loaded"
-    RTTR_EXEC_TILL(200, ship->IsWaitingForExpeditionInstructions());
-    BOOST_TEST_REQUIRE(ship->GetCurrentHarbor() == harbor.GetHarborPosID());
+    RTTR_EXEC_TILL(200, ship.IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(ship.GetCurrentHarbor() == harbor.GetHarborPosID());
 
     // Try to found colony -> Fail
     this->FoundColony(player.GetShipID(ship));
-    BOOST_TEST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(ship.IsWaitingForExpeditionInstructions());
     // Go back to free spot
     this->TravelToNextSpot(ShipDirection::North, player.GetShipID(ship));
-    BOOST_TEST_REQUIRE(!ship->IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(!ship.IsWaitingForExpeditionInstructions());
     for(unsigned gf = 0; gf < 2; gf++)
     {
         // Send commands that should be ignored as ship is not expecting them
         this->FoundColony(player.GetShipID(ship));
-        BOOST_TEST_REQUIRE(ship->IsMoving());
+        BOOST_TEST_REQUIRE(ship.IsMoving());
         this->TravelToNextSpot(ShipDirection::South, player.GetShipID(ship));
         this->CancelExpedition(player.GetShipID(ship));
-        BOOST_TEST_REQUIRE(ship->IsMoving());
+        BOOST_TEST_REQUIRE(ship.IsMoving());
         this->em.ExecuteNextGF();
     }
     // Go to destination
     postBox->Clear();
     RTTR_SKIP_GFS(gfsToDest);
-    BOOST_TEST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(ship.IsWaitingForExpeditionInstructions());
     // This should again trigger a message
     msg = dynamic_cast<const ShipPostMsg*>(postBox->GetMsg(0));
     BOOST_TEST_REQUIRE(msg);
-    BOOST_TEST_REQUIRE(msg->GetPos() == ship->GetPos());
+    BOOST_TEST_REQUIRE(msg->GetPos() == ship.GetPos());
     // And now we can found a new colony
     this->FoundColony(player.GetShipID(ship));
     // Ship is free again
-    BOOST_TEST_REQUIRE(ship->IsIdling());
+    BOOST_TEST_REQUIRE(ship.IsIdling());
     const noBuildingSite* newHarbor = world.GetSpecObj<noBuildingSite>(world.GetHarborPoint(8));
     BOOST_TEST_REQUIRE(newHarbor);
     BOOST_TEST_REQUIRE(world.IsHarborBuildingSiteFromSea(newHarbor));
@@ -446,19 +441,17 @@ using ShipReadyFixtureBig = ShipReadyFixture<1, 2, 64, 800>;
 
 BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
 {
-    initGameRNG();
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    const noShip* ship = player.GetShipByID(0);
+    const noShip& ship = ensureNonNull(player.GetShipByID(0));
     nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
-    BOOST_TEST_REQUIRE(ship);
     // Go to opposite one
     const unsigned targetHbId = 7;
     // Make sure that the other harbor is far away
     BOOST_TEST_REQUIRE(world.CalcHarborDistance(2, targetHbId) > 600u);
     // Add some scouts
     Inventory newScouts;
-    newScouts.people[Job::Scout] = 20;
+    newScouts[Job::Scout] = 20;
     harbor.AddGoods(newScouts, true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     for(unsigned i = 1; i <= 8; i++)
@@ -468,10 +461,10 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     this->StartStopExplorationExpedition(hbPos, true);
     BOOST_TEST_REQUIRE(harbor.IsExplorationExpeditionActive());
     // Wait till ship has arrived and starts loading
-    RTTR_EXEC_TILL(100, ship->IsOnExplorationExpedition());
+    RTTR_EXEC_TILL(100, ship.IsOnExplorationExpedition());
     // Wait till ship has loaded scouts
-    RTTR_EXEC_TILL(200, ship->IsMoving());
-    BOOST_TEST_REQUIRE(ship->GetTargetHarbor() == targetHbId);
+    RTTR_EXEC_TILL(200, ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == targetHbId);
 }
 
 namespace {

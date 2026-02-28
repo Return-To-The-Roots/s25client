@@ -243,7 +243,7 @@ public:
     /// Schiff für Hafen bestellen. Wenn ein Schiff kommt, true.
     bool OrderShip(nobHarborBuilding& hb);
     /// Gibt die ID eines Schiffes zurück
-    unsigned GetShipID(const noShip* ship) const;
+    unsigned GetShipID(const noShip& ship) const;
     /// Gibt ein Schiff anhand der ID zurück bzw. nullptr, wenn keines mit der ID existiert
     noShip* GetShipByID(unsigned ship_id) const;
     /// Gibt die Gesamtanzahl von Schiffen zurück

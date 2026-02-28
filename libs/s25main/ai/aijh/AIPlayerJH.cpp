@@ -1193,17 +1193,17 @@ void AIPlayerJH::HandleNewColonyFounded(const MapPoint pt)
     construction->AddConnectFlagJob(gwb.GetSpecObj<noFlag>(gwb.GetNeighbour(pt, Direction::SouthEast)));
 }
 
-void AIPlayerJH::HandleExpedition(const noShip* ship)
+void AIPlayerJH::HandleExpedition(const noShip& ship)
 {
-    if(!ship->IsWaitingForExpeditionInstructions())
+    if(!ship.IsWaitingForExpeditionInstructions())
         return;
-    if(ship->IsAbleToFoundColony())
+    if(ship.IsAbleToFoundColony())
         aii.FoundColony(ship);
     else
     {
         for(auto dir : helpers::enumRange(AI::randomEnum<ShipDirection>()))
         {
-            if(aii.IsExplorationDirectionPossible(ship->GetPos(), ship->GetCurrentHarbor(), dir))
+            if(aii.IsExplorationDirectionPossible(ship.GetPos(), ship.GetCurrentHarbor(), dir))
             {
                 aii.TravelToNextSpot(dir, ship);
                 return;
@@ -1232,7 +1232,7 @@ void AIPlayerJH::HandleExpedition(const MapPoint pt)
     }
     if(ship)
     {
-        HandleExpedition(ship);
+        HandleExpedition(*ship);
     }
 }
 
@@ -1456,19 +1456,19 @@ void AIPlayerJH::CheckExpeditions()
     for(const nobHarborBuilding* harbor : harbors)
     {
         bool isHarborRelevant = HarborPosRelevant(harbor->GetHarborPosID(), true);
-        if(harbor->IsExpeditionActive() != isHarborRelevant) // harbor is collecting for expedition and shouldnt OR not
-                                                             // collecting and should -> toggle expedition
+        if(harbor->IsExpeditionActive() != isHarborRelevant) // harbor is collecting for expedition and shouldn't
+                                                             // OR not collecting and should -> toggle expedition
         {
             aii.StartStopExpedition(harbor->GetPos(), isHarborRelevant);
         }
     }
-    // find lost expedition ships - ai should get a notice and catch them all but just in case some fell through the
-    // system
+    // find lost expedition ships
+    // AI should get a notice and catch them all but just in case some fell through the system
     const std::vector<noShip*>& ships = aii.GetShips();
-    for(const noShip* harbor : ships)
+    for(const noShip* ship : ships)
     {
-        if(harbor->IsWaitingForExpeditionInstructions())
-            HandleExpedition(harbor);
+        if(ship->IsWaitingForExpeditionInstructions())
+            HandleExpedition(*ship);
     }
 }
 
