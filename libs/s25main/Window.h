@@ -76,7 +76,7 @@ public:
     /// Get the size of the window
     Extent GetSize() const;
     /// Get the Limit Factors for scaling
-    Extent GetLimitFactors() const;
+    LimitFactors GetLimitFactors() const;
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
     /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
@@ -89,7 +89,7 @@ public:
     /// setzt die Höhe des Fensters
     void SetHeight(unsigned height) { Resize(Extent(size_.x, height)); }
     /// Set the Limit Factors for scaling
-    void SetLimitFactors(Extent limitFactors);
+    void SetLimitFactors(LimitFactors limitFactors);
     /// Sendet eine Tastaturnachricht an die Steuerelemente.
     bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Sendet eine Mausnachricht weiter an alle Steuerelemente
@@ -290,10 +290,10 @@ protected:
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
-    /// scales X- and Y values to fit the screen considering a limiting factor
+    /// scales X- and Y values to fit the screen, additionally considering a limiting factor for size
     template<class T_Pt>
-    static T_Pt Scale(const T_Pt& pt, const Extent& limfactors);
-    /// scales X- and Y values of position and size considering the current limiting factor for size
+    static T_Pt Scale(const T_Pt& pt, const LimitFactors& limfactors);
+    /// scales X- and Y values of pos_ and size_, additionally considering limitFactors_ for size_ scaling 
     void ScaleByFactor();
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
@@ -310,7 +310,7 @@ private:
     unsigned id_;          /// ID des Fensters.
     DrawPoint pos_;        /// Position des Fensters.
     Extent size_;          /// Höhe des Fensters.
-    Extent limit_factors_; /// X and Y scaling limiting factors from 1 (unscaled) - 10 (fully scaled)
+    LimitFactors limitFactors_; /// X and Y scaling limiting factors
     bool active_;          /// Fenster aktiv?
     bool visible_;         /// Fenster sichtbar?
     bool scale_;           /// Sollen Controls an Fenstergröße angepasst werden?
@@ -329,7 +329,7 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
-    if(ctrl->limit_factors_ != Extent(0, 0))
+    if(ctrl->limitFactors_ != LimitFactors(0, 0))
         ctrl->ScaleByFactor();
     ctrl->SetActive(active_);
 

@@ -12,7 +12,7 @@ struct ScaleWindowPropUp
     ScaleWindowPropUp(const Extent& size) : size(size) {}
 
     template<typename T_Pt>
-    static T_Pt scale(const T_Pt& value, const Extent& size, const Extent& limfactors);
+    static T_Pt scale(const T_Pt& value, const Extent& size, const LimitFactors& limfactors);
     template<typename T_Pt>
     T_Pt operator()(const T_Pt& value) const;
 };
@@ -24,11 +24,11 @@ struct RescaleWindowProp
     RescaleWindowProp(Extent oldSize, Extent newSize) : oldSize(oldSize), newSize(newSize) {}
     /// Scale the point or size from beeing relative to the oldSize to relative to the newSize
     template<typename T_Pt>
-    T_Pt operator()(const T_Pt& oldValue, const Extent& limfactors) const;
+    T_Pt operator()(const T_Pt& oldValue, const LimitFactors& limfactors) const;
 };
 
 template<typename T_Pt>
-inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale, const Extent& limfactors)
+inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScale, const LimitFactors& limfactors)
 {
     if(limfactors.x > 0 && limfactors.x < 11 && limfactors.y > 0 && limfactors.y < 11)
     {
@@ -45,11 +45,11 @@ inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent& sizeToScal
 template<typename T_Pt>
 inline T_Pt ScaleWindowPropUp::operator()(const T_Pt& value) const
 {
-    return scale(value, size, Extent(0, 0));
+    return scale(value, size, LimitFactors(0, 0));
 }
 
 template<typename T_Pt>
-inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue, const Extent& limfactors) const
+inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue, const LimitFactors& limfactors) const
 {
     T_Pt realValue;
     if(limfactors.x > 0 && limfactors.x < 11 && limfactors.y > 0 && limfactors.y < 11)

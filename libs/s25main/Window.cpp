@@ -17,8 +17,8 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <cstdarg>
 
-Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
-    : parent_(parent), id_(id), pos_(pos), size_(size), limit_factors_(Extent(0, 0)), active_(false), visible_(true),
+Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const LimitFactors& size)
+    : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(LimitFactors(0, 0)), active_(false), visible_(true),
       scale_(false), isInMouseRelay(false), animations_(this)
 {}
 
@@ -65,14 +65,14 @@ Extent Window::GetSize() const
     return size_;
 }
 
-Extent Window::GetLimitFactors() const
+LimitFactors Window::GetLimitFactors() const
 {
-    return limit_factors_;
+    return limitFactors_;
 }
 
-void Window::SetLimitFactors(Extent limitFactors)
+void Window::SetLimitFactors(LimitFactors limitFactors)
 {
-    limit_factors_ = limitFactors;
+    limitFactors_ = limitFactors;
 }
 
 Rect Window::GetDrawRect() const
@@ -230,7 +230,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, Bui
 ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                   const std::string& text, const glFont* font, const std::string& tooltip)
 {
-    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, Extent(7, 5)));
+    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, LimitFactors(7, 5)));
 }
 
 ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
@@ -551,7 +551,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
             continue;
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
         Extent newSize = rescale(ctrl->GetSize(), ctrl->GetLimitFactors());
-        ctrl->SetPos(rescale(ctrl->GetPos(), Extent(0, 0)));
+        ctrl->SetPos(rescale(ctrl->GetPos(), LimitFactors(0, 0)));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -559,7 +559,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 }
 
 template<class T_Pt>
-T_Pt Window::Scale(const T_Pt& pt, const Extent& limfactors)
+T_Pt Window::Scale(const T_Pt& pt, const LimitFactors& limfactors)
 {
     return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize(), limfactors);
 }
@@ -568,15 +568,15 @@ void Window::ScaleByFactor()
 {
     if(scale_)
     {
-        pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), Extent(0, 0));
-        size_ = ScaleWindowPropUp::scale(size_, VIDEODRIVER.GetRenderSize(), limit_factors_);
+        pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
+        size_ = ScaleWindowPropUp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
     }
 }
 
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt) const
 {
-    return scale_ ? Scale(pt, Extent(0, 0)) : pt;
+    return scale_ ? Scale(pt, LimitFactors(0, 0)) : pt;
 }
 
 // Inlining removes those. so add it here
