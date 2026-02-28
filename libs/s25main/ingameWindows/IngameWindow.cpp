@@ -5,6 +5,7 @@
 #include "IngameWindow.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "Point.h"
 #include "RTTR_Assert.h"
 #include "Settings.h"
 #include "WindowManager.h"
@@ -199,10 +200,7 @@ bool IngameWindow::Msg_LeftDown(const MouseCoords& mc)
             buttonStates_[btn] = ButtonState::Pressed;
             if(btn == IwButton::Title)
             {
-                // start moving
-                isMoving = true;
-                snapOffset_ = SnapOffset::all(0);
-                lastMousePos = mc.pos;
+                StartDragging(mc.pos);
                 return true;
             }
         }
@@ -212,7 +210,8 @@ bool IngameWindow::Msg_LeftDown(const MouseCoords& mc)
 
 bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
 {
-    isMoving = false;
+    // If we handled the msg event. Don't return yet in case touch dblclick triggered dragging
+    const bool handled = StopDragging();
 
     for(const auto btn : helpers::enumRange<IwButton>())
     {
@@ -260,7 +259,18 @@ bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
         Close();
         return true;
     }
-    return false;
+    return handled;
+}
+
+bool IngameWindow::Msg_MiddleDown(const MouseCoords& mc)
+{
+    StartDragging(mc.pos);
+    return true;
+}
+
+bool IngameWindow::Msg_MiddleUp(const MouseCoords&)
+{
+    return StopDragging();
 }
 
 bool IngameWindow::Msg_MouseMove(const MouseCoords& mc)
@@ -492,4 +502,21 @@ Rect IngameWindow::GetButtonBounds(IwButton btn) const
         case IwButton::PinOrMinimize: pos.x += GetSize().x - ButtonSize.x; break;
     }
     return Rect(pos, size);
+}
+
+void IngameWindow::StartDragging(const Position& pos)
+{
+    isMoving = true;
+    snapOffset_ = SnapOffset::all(0);
+    lastMousePos = pos;
+}
+
+bool IngameWindow::StopDragging()
+{
+    if(isMoving)
+    {
+        isMoving = false;
+        return true;
+    }
+    return false;
 }

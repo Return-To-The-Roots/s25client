@@ -229,7 +229,8 @@ Change the players nation.
 Change the players team.
 
 **SetColor(color or colorIdx)**  
-Sets the players color by index or directly if its alpha value is not zero.
+Sets the players color by index into the [`PLAYER_COLORS`](https://github.com/Return-To-The-Roots/libutil/blob/master/libs/common/include/s25util/colors.h#L34-L46) array.
+You can also use custom colors by specifying an ARGB value with a non-zero alpha channel (`0xFF` is strongly recommended).
 Duplicate color values are possible, so you have to ensure unique colors if you want them!
 
 **Close()**  

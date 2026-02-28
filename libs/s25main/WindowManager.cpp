@@ -346,6 +346,19 @@ void WindowManager::Msg_RightUp(const MouseCoords& mc)
     RelayMouseMessage(&Window::Msg_RightUp, mc);
 }
 
+void WindowManager::Msg_MiddleDown(const MouseCoords& mc)
+{
+    Window* activeWindow = findAndActivateWindow(mc.pos);
+
+    if(activeWindow)
+        RelayMouseMessage(&Window::Msg_MiddleDown, mc, activeWindow);
+}
+
+void WindowManager::Msg_MiddleUp(const MouseCoords& mc)
+{
+    RelayMouseMessage(&Window::Msg_MiddleUp, mc);
+}
+
 void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 {
     RelayMouseMessage(&Window::Msg_WheelUp, mc, findAndActivateWindow(mc.pos));

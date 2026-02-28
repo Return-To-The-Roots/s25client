@@ -43,10 +43,19 @@ void nofVintner::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
+#endif
+
 unsigned short nofVintner::GetCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
+
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
 
 void nofVintner::DrawWalkingWithWare(DrawPoint drawPt)
 {

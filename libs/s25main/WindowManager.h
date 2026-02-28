@@ -87,14 +87,18 @@ public:
     void CloseNow(IngameWindow* window);
     /// merkt einen Desktop zum Wechsel vor.
     Desktop* Switch(std::unique_ptr<Desktop> desktop);
-    /// Verarbeitung des Drückens der Linken Maustaste.
+    /// Process press of left mouse button
     void Msg_LeftDown(MouseCoords mc) override;
-    /// Verarbeitung des Loslassens der Linken Maustaste.
+    /// Process release of left mouse button
     void Msg_LeftUp(MouseCoords mc) override;
-    /// Verarbeitung des Drückens der Rechten Maustaste.
-    void Msg_RightUp(const MouseCoords& mc) override;
-    /// Verarbeitung des Loslassens der Rechten Maustaste.
+    /// Process press of right mouse button
     void Msg_RightDown(const MouseCoords& mc) override;
+    /// Process release of right mouse button
+    void Msg_RightUp(const MouseCoords& mc) override;
+    /// Process press of middle mouse button
+    void Msg_MiddleDown(const MouseCoords& mc) override;
+    /// Process release of middle mouse button
+    void Msg_MiddleUp(const MouseCoords& mc) override;
     /// Verarbeitung des Drückens des Rad hoch.
     void Msg_WheelUp(const MouseCoords& mc) override;
     /// Verarbeitung Rad runter.

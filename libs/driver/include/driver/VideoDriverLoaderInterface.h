@@ -17,6 +17,8 @@ public:
     virtual void Msg_LeftUp(MouseCoords mc) = 0;
     virtual void Msg_RightDown(const MouseCoords& mc) = 0;
     virtual void Msg_RightUp(const MouseCoords& mc) = 0;
+    virtual void Msg_MiddleDown(const MouseCoords& mc) = 0;
+    virtual void Msg_MiddleUp(const MouseCoords& mc) = 0;
     virtual void Msg_WheelUp(const MouseCoords& mc) = 0;
     virtual void Msg_WheelDown(const MouseCoords& mc) = 0;
     virtual void Msg_MouseMove(const MouseCoords& mc) = 0;

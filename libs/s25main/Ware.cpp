@@ -77,8 +77,23 @@ static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
 
 Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), next_dir(PopRoadPathDirection(sgd)), state(sgd.Pop<State>()),
-      location(sgd.PopObject<noRoadNode>()), type(sgd.Pop<GoodType>()), goal(sgd.PopObject<noBaseBuilding>()),
-      next_harbor(sgd.PopMapPoint())
+      location(sgd.PopObject<noRoadNode>()), type([&]() {
+          // GoodType::Nothing is moved because of adding new wares due addons
+          auto ware = sgd.Pop<GoodType>();
+          if(sgd.GetGameDataVersion() < 11)
+          {
+              // The old GoodType::Nothing is now GoodType::Grapes
+              if(ware == GoodType::Grapes)
+                  ware = GoodType::Nothing;
+          } else if(sgd.GetGameDataVersion() < 12)
+          {
+              // The old GoodType::Nothing is now GoodType::Skins
+              if(ware == GoodType::Skins)
+                  ware = GoodType::Nothing;
+          }
+          return ware;
+      }()),
+      goal(sgd.PopObject<noBaseBuilding>()), next_harbor(sgd.PopMapPoint())
 {}
 
 void Ware::SetGoal(noBaseBuilding* newGoal)

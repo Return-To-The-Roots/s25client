@@ -85,8 +85,8 @@ const char* GetDriverName()
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
-    : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(nullptr), screen_dc(nullptr),
-      screen_rc(nullptr), isWindowResizable(false), isMinimized(true)
+    : VideoDriver(CallBack), mouse_z(0), screen(nullptr), screen_dc(nullptr), screen_rc(nullptr),
+      isWindowResizable(false), isMinimized(true)
 {
     pVideoWinAPI = this;
 }
@@ -665,24 +665,28 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             pVideoWinAPI->CallBack->Msg_MouseMove(pVideoWinAPI->mouse_xy);
             break;
         case WM_LBUTTONDOWN:
-            pVideoWinAPI->mouse_l = true;
             pVideoWinAPI->mouse_xy.ldown = true;
             pVideoWinAPI->CallBack->Msg_LeftDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_LBUTTONUP:
-            pVideoWinAPI->mouse_l = false;
             pVideoWinAPI->mouse_xy.ldown = false;
             pVideoWinAPI->CallBack->Msg_LeftUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_RBUTTONDOWN:
-            pVideoWinAPI->mouse_r = true;
             pVideoWinAPI->mouse_xy.rdown = true;
             pVideoWinAPI->CallBack->Msg_RightDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_RBUTTONUP:
-            pVideoWinAPI->mouse_r = false;
             pVideoWinAPI->mouse_xy.rdown = false;
             pVideoWinAPI->CallBack->Msg_RightUp(pVideoWinAPI->mouse_xy);
+            break;
+        case WM_MBUTTONDOWN:
+            pVideoWinAPI->mouse_xy.mdown = true;
+            pVideoWinAPI->CallBack->Msg_MiddleDown(pVideoWinAPI->mouse_xy);
+            break;
+        case WM_MBUTTONUP:
+            pVideoWinAPI->mouse_xy.mdown = false;
+            pVideoWinAPI->CallBack->Msg_MiddleUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_MOUSEWHEEL:
             // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat

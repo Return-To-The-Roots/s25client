@@ -84,8 +84,6 @@ private:
     static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
-    bool mouse_l;    /// Status der Linken Maustaste.
-    bool mouse_r;    /// Status der Rechten Maustaste.
     int mouse_z;     /// Scrolling position for mousewheel.
     HWND screen;     /// Fensterhandle.
     HDC screen_dc;   /// Zeichenkontext des Fensters.

@@ -59,10 +59,19 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
           ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
 }
 
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
+#endif
+
 unsigned short nofCharburner::GetCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
+
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofCharburner::WorkStarted() {}

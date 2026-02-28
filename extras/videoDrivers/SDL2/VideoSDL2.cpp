@@ -392,29 +392,43 @@ bool VideoSDL2::MessageLoop()
             case SDL_MOUSEBUTTONDOWN:
                 mouse_xy.pos = getGuiScale().screenToView(Position(ev.button.x, ev.button.y));
 
-                if(/*!mouse_xy.ldown && */ ev.button.button == SDL_BUTTON_LEFT)
+                switch(ev.button.button)
                 {
-                    mouse_xy.ldown = true;
-                    CallBack->Msg_LeftDown(mouse_xy);
-                }
-                if(/*!mouse_xy.rdown &&*/ ev.button.button == SDL_BUTTON_RIGHT)
-                {
-                    mouse_xy.rdown = true;
-                    CallBack->Msg_RightDown(mouse_xy);
+                    case SDL_BUTTON_LEFT:
+                        mouse_xy.ldown = true;
+                        CallBack->Msg_LeftDown(mouse_xy);
+                        break;
+
+                    case SDL_BUTTON_RIGHT:
+                        mouse_xy.rdown = true;
+                        CallBack->Msg_RightDown(mouse_xy);
+                        break;
+
+                    case SDL_BUTTON_MIDDLE:
+                        mouse_xy.mdown = true;
+                        CallBack->Msg_MiddleDown(mouse_xy);
+                        break;
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
                 mouse_xy.pos = getGuiScale().screenToView(Position(ev.button.x, ev.button.y));
 
-                if(/*mouse_xy.ldown &&*/ ev.button.button == SDL_BUTTON_LEFT)
+                switch(ev.button.button)
                 {
-                    mouse_xy.ldown = false;
-                    CallBack->Msg_LeftUp(mouse_xy);
-                }
-                if(/*mouse_xy.rdown &&*/ ev.button.button == SDL_BUTTON_RIGHT)
-                {
-                    mouse_xy.rdown = false;
-                    CallBack->Msg_RightUp(mouse_xy);
+                    case SDL_BUTTON_LEFT:
+                        mouse_xy.ldown = false;
+                        CallBack->Msg_LeftUp(mouse_xy);
+                        break;
+
+                    case SDL_BUTTON_RIGHT:
+                        mouse_xy.rdown = false;
+                        CallBack->Msg_RightUp(mouse_xy);
+                        break;
+
+                    case SDL_BUTTON_MIDDLE:
+                        mouse_xy.mdown = false;
+                        CallBack->Msg_MiddleUp(mouse_xy);
+                        break;
                 }
                 break;
             case SDL_MOUSEWHEEL:

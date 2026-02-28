@@ -7,7 +7,6 @@
 #include "GoodTypes.h"
 #include "GoodsAndPeopleArray.h"
 #include "JobTypes.h"
-#include "RTTR_Assert.h"
 
 /// Struct for wares and people (for HQs, warehouses etc)
 struct Inventory : GoodsAndPeopleArray<unsigned>
@@ -16,6 +15,11 @@ struct Inventory : GoodsAndPeopleArray<unsigned>
     void clear();
     void Add(const GoodType good, unsigned amount = 1) { goods[good] += amount; }
     void Add(const Job job, unsigned amount = 1) { people[job] += amount; }
+    void Add(const ArmoredSoldier soldier, unsigned amount = 1)
+    {
+        armoredSoldiers[soldier] += amount;
+        RTTR_Assert(armoredSoldiers[soldier] <= people[amoredEnumToSoldierEnum(soldier)]);
+    }
     void Remove(const GoodType good, unsigned amount = 1)
     {
         RTTR_Assert(goods[good] >= amount);
@@ -25,5 +29,11 @@ struct Inventory : GoodsAndPeopleArray<unsigned>
     {
         RTTR_Assert(people[job] >= amount);
         people[job] -= amount;
+    }
+    void Remove(const ArmoredSoldier soldier, unsigned amount = 1)
+    {
+        RTTR_Assert(armoredSoldiers[soldier] >= amount);
+        armoredSoldiers[soldier] -= amount;
+        RTTR_Assert(armoredSoldiers[soldier] <= people[amoredEnumToSoldierEnum(soldier)]);
     }
 };

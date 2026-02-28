@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DrawPoint.h"
+#include "Point.h"
 #include "SnapOffset.h"
 #include "Window.h"
 #include "helpers/EnumArray.h"
@@ -100,6 +101,8 @@ public:
 
     bool Msg_LeftDown(const MouseCoords&) override;
     bool Msg_LeftUp(const MouseCoords&) override;
+    bool Msg_MiddleDown(const MouseCoords&) override;
+    bool Msg_MiddleUp(const MouseCoords&) override;
     bool Msg_MouseMove(const MouseCoords&) override;
 
 protected:
@@ -118,6 +121,11 @@ protected:
     bool IsMessageRelayAllowed() const override;
 
     void SaveOpenStatus(bool isOpen) const;
+
+    void StartDragging(const Position& pos);
+
+    // Return true if dragging stopped
+    bool StopDragging();
 
     unsigned short iwHeight;
     std::string title_;

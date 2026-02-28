@@ -222,8 +222,10 @@ public:
     virtual void Msg_PaintAfter();
     virtual bool Msg_LeftDown(const MouseCoords&) { return false; }
     virtual bool Msg_RightDown(const MouseCoords&) { return false; }
+    virtual bool Msg_MiddleDown(const MouseCoords&) { return false; }
     virtual bool Msg_LeftUp(const MouseCoords&) { return false; }
     virtual bool Msg_RightUp(const MouseCoords&) { return false; }
+    virtual bool Msg_MiddleUp(const MouseCoords&) { return false; }
     virtual bool Msg_WheelUp(const MouseCoords&) { return false; }
     virtual bool Msg_WheelDown(const MouseCoords&) { return false; }
     virtual bool Msg_MouseMove(const MouseCoords&) { return false; }

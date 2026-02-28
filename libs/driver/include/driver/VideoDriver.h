@@ -49,11 +49,12 @@ protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
 
-    VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
-    bool initialized;                     /// Initialisierungsstatus.
-    MouseCoords mouse_xy;                 /// Status der Maus.
-    std::array<bool, 512> keyboard;       /// Status der Tastatur;
-    bool isFullscreen_;                   /// Vollbild an/aus?
+    VideoDriverLoaderInterface* CallBack; /// DriverCallback to notify on player input
+    bool initialized;
+    MouseCoords mouse_xy;           /// Mouse state
+    std::array<bool, 512> keyboard; /// Keyboard state
+    bool isFullscreen_;
+
 private:
     // cached as possibly used often
     VideoMode windowSize_;    ///< Size of the window or fullscreen resolution

@@ -54,6 +54,7 @@ public:
     bool SeaAttack(MapPoint pt, unsigned soldiers_count, bool strong_soldiers);
     /// Toggles coin delivery on/off for a military building
     bool SetCoinsAllowed(MapPoint pt, bool enabled);
+    bool SetArmorAllowed(MapPoint pt, bool enabled);
     /// Stops/starts production of a producer
     bool SetProductionEnabled(MapPoint pt, bool enabled);
     bool NotifyAlliesOfLocation(MapPoint pt);

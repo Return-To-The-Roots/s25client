@@ -5,6 +5,7 @@
 #pragma once
 
 #include <s25util/warningSuppression.h>
+#include <RTTR_Assert.h>
 #include <array>
 #include <cstdint>
 
@@ -45,11 +46,14 @@ enum class Job : uint8_t
     Winegrower,        // 32
     Vintner,           // 33
     TempleServant,     // 34
+    Skinner,           // 35
+    Tanner,            // 36
+    LeatherWorker,     // 37
 };
 
 constexpr auto maxEnumValue(Job)
 {
-    return Job::TempleServant;
+    return Job::LeatherWorker;
 }
 
 /// Job types of soldiers, weak ones first
@@ -64,4 +68,34 @@ constexpr unsigned NUM_SOLDIER_RANKS = SOLDIER_JOBS.size();
 constexpr unsigned getSoldierRank(Job soldierJob)
 {
     return static_cast<uint8_t>(soldierJob) - static_cast<uint8_t>(Job::Private);
+}
+
+enum class ArmoredSoldier : uint8_t
+{
+    Private,
+    PrivateFirstClass,
+    Sergeant,
+    Officer,
+    General,
+};
+
+constexpr auto maxEnumValue(ArmoredSoldier)
+{
+    return ArmoredSoldier::General;
+}
+
+constexpr bool isSoldier(const Job job)
+{
+    return job >= Job::Private && job <= Job::General;
+}
+
+inline ArmoredSoldier jobEnumToAmoredSoldierEnum(const Job job)
+{
+    RTTR_Assert(isSoldier(job));
+    return static_cast<ArmoredSoldier>(getSoldierRank(job));
+}
+
+inline Job amoredEnumToSoldierEnum(const ArmoredSoldier armoredSoldier)
+{
+    return Job(SOLDIER_JOBS[static_cast<uint8_t>(armoredSoldier) - static_cast<uint8_t>(ArmoredSoldier::Private)]);
 }

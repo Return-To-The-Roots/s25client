@@ -16,6 +16,7 @@ struct MouseCoords
     Position pos = Position(0, 0);
     bool ldown = false;        /// left button down
     bool rdown = false;        /// right button down
+    bool mdown = false;        /// middle button down
     bool dbl_click = false;    /// double-click (left button)
     unsigned num_tfingers = 0; /// Count of fingers currently on touchscreen
 };

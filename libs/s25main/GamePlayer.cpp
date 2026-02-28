@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GamePlayer.h"
+#include "AddonHelperFunctions.h"
 #include "Cheats.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GameInterface.h"
 #include "GlobalGameSettings.h"
+#include "LeatherLoader.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "TradePathCache.h"
@@ -138,6 +140,8 @@ void GamePlayer::LoadStandardDistribution()
     distribution[GoodType::Stones].client_buildings.push_back(BuildingType::Catapult);
     distribution[GoodType::Grapes].client_buildings.push_back(BuildingType::Winery);
     distribution[GoodType::Wine].client_buildings.push_back(BuildingType::Temple);
+    distribution[GoodType::Skins].client_buildings.push_back(BuildingType::Tannery);
+    distribution[GoodType::Leather].client_buildings.push_back(BuildingType::LeatherWorks);
 
     // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
     for(const auto i : helpers::enumRange<GoodType>())
@@ -200,6 +204,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     helpers::pushContainer(sgd, tools_ordered);
     helpers::pushContainer(sgd, global_inventory.goods);
     helpers::pushContainer(sgd, global_inventory.people);
+    helpers::pushContainer(sgd, global_inventory.armoredSoldiers);
 
     // für Statistik
     for(const Statistic& curStatistic : statistic)
@@ -266,8 +271,16 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
             continue;
 
+        if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
+            continue;
+
         Distribution& dist = distribution[i];
         helpers::popContainer(sgd, dist.percent_buildings);
+        // Set standard value otherwise its zero and Slaughterhouse never gets ham
+        // because the ham distribution was not there in earlier versions
+        if(sgd.GetGameDataVersion() < 12 && i == GoodType::Ham)
+            dist.percent_buildings[BuildingType::Slaughterhouse] = 8;
+
         if(sgd.GetGameDataVersion() < 7)
         {
             dist.client_buildings.resize(sgd.PopUnsignedInt());
@@ -284,17 +297,35 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     useCustomBuildOrder_ = sgd.PopBool();
 
-    if(sgd.GetGameDataVersion() < 11)
+    if(sgd.GetGameDataVersion() < 12)
     {
-        std::vector<BuildingType> build_order_raw(build_order.size() - 3);
+        auto countOfNotAvailableBuildingsInSaveGame =
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonBuildings : numLeatherAddonBuildings;
+        std::vector<BuildingType> build_order_raw(build_order.size() - countOfNotAvailableBuildingsInSaveGame);
         helpers::popContainer(sgd, build_order_raw, true);
-        build_order_raw.insert(build_order_raw.end(),
-                               {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+
+        if(sgd.GetGameDataVersion() < 11)
+        {
+            build_order_raw.insert(build_order_raw.end(),
+                                   {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
+        }
+
+        if(sgd.GetGameDataVersion() < 12)
+        {
+            build_order_raw.insert(build_order_raw.end(),
+                                   {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
+        }
+
         std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
 
-        std::vector<uint8_t> transportPrio_raw(transportPrio.size() - 2);
+        auto countOfNotAvailableGoodsInSaveGame =
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
+        std::vector<uint8_t> transportPrio_raw(transportPrio.size() - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, transportPrio_raw, true);
         std::copy(transportPrio_raw.begin(), transportPrio_raw.end(), transportPrio.begin());
+        std::transform(transportPrio.begin(), transportPrio.end() - countOfNotAvailableGoodsInSaveGame,
+                       transportPrio.begin(),
+                       [](uint8_t& prio) { return prio < transportPrioOfLeatherworks ? prio : prio + 1; });
     } else
     {
         helpers::popContainer(sgd, build_order);
@@ -308,20 +339,29 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     helpers::popContainer(sgd, tools_ordered);
     tools_ordered_delta = {};
 
-    if(sgd.GetGameDataVersion() < 11)
+    if(sgd.GetGameDataVersion() < 12)
     {
-        std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size() - 2);
+        auto countOfNotAvailableGoodsInSaveGame =
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
+        std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size()
+                                                            - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, global_inventory_good_raw, true);
         std::copy(global_inventory_good_raw.begin(), global_inventory_good_raw.end(), global_inventory.goods.begin());
 
-        std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size() - 3);
+        auto countOfNotAvailableJobsInSaveGame =
+          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonJobs : numLeatherAddonJobs;
+        std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size()
+                                                              - countOfNotAvailableJobsInSaveGame);
         helpers::popContainer(sgd, global_inventory_people_raw, true);
         std::copy(global_inventory_people_raw.begin(), global_inventory_people_raw.end(),
                   global_inventory.people.begin());
+
+        std::fill(global_inventory.armoredSoldiers.begin(), global_inventory.armoredSoldiers.end(), 0);
     } else
     {
         helpers::popContainer(sgd, global_inventory.goods);
         helpers::popContainer(sgd, global_inventory.people);
+        helpers::popContainer(sgd, global_inventory.armoredSoldiers);
     }
 
     // Visuelle Einstellungen festlegen
@@ -996,9 +1036,11 @@ struct ClientForWare
 
 noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
 {
-    // Wenn es eine Goldmünze ist, wird das Ziel auf eine andere Art und Weise berechnet
+    // If the ware is a coin or an armor, the goal is determined by another logic
     if(ware.type == GoodType::Coins)
         return FindClientForCoin(ware);
+    else if(ware.type == GoodType::Armor)
+        return FindClientForArmor(ware);
 
     // Warentyp herausfinden
     GoodType gt = ware.type;
@@ -1147,44 +1189,65 @@ nobBaseWarehouse* GamePlayer::FindWarehouseForWare(const Ware& ware) const
     return wh;
 }
 
-nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
+template<class T_GetPriority, class T_Buildings>
+typename T_Buildings::value_type GamePlayer::FindClientImpl(const Ware& ware, T_GetPriority&& getPriority,
+                                                            const T_Buildings& buildings) const
 {
-    nobBaseMilitary* bb = nullptr;
-    unsigned best_points = 0, points;
-
-    // Militärgebäude durchgehen
-    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+    // TODO(replay): Unify with FindClientForWare: Sort by estimated priority first for less path finding.
+    // See PR #1720
+    typename T_Buildings::value_type bestClient = nullptr;
+    unsigned bestPoints = 0;
+    const auto& wareLocation = *ware.GetLocation();
+    const MapPoint warePos = wareLocation.GetPos();
+    for(auto* bld : buildings)
     {
         // Optimization: Ignore if unconnected
-        if(!milBld->IsConnected())
+        if(!bld->IsConnected())
             continue;
+        const auto points = getPriority(*bld);
 
-        points = milBld->CalcCoinsPoints();
-        // Wenn 0, will er gar keine Münzen (Goldzufuhr gestoppt)
-        if(points)
+        // Consider costs for reaching the building
+        // We want only: points - pathCosts > bestPoints, i.e. 0 <= pathCosts < points - bestPoints
+        // So only check if difference is strictly positive, which covers the points==0 case
+        if(points > bestPoints)
         {
-            unsigned way_points;
-
-            // Weg dorthin berechnen
-            if(world.FindPathForWareOnRoads(*ware.GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
+            const unsigned maxPathCosts = points - bestPoints - 1;
+            const unsigned distance = world.CalcDistance(warePos, bld->GetPos());
+            if(distance > maxPathCosts)
+                continue;
+            unsigned pathCosts;
+            if(world.FindPathForWareOnRoads(wareLocation, *bld, &pathCosts, nullptr, maxPathCosts)
+               != RoadPathDirection::None)
             {
-                // Die Wegpunkte noch davon abziehen
-                points -= way_points;
-                // Besser als der bisher Beste?
-                if(points > best_points)
-                {
-                    best_points = points;
-                    bb = milBld;
-                }
+                RTTR_Assert(points > pathCosts && points - pathCosts > bestPoints);
+                bestPoints = points - pathCosts;
+                bestClient = bld;
             }
         }
     }
+    return bestClient;
+}
 
-    // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
-    if(!bb)
-        bb = FindWarehouseForWare(ware);
+nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
+{
+    nobBaseMilitary* result = FindClientImpl(
+      ware, [](const nobMilitary& bld) { return bld.CalcCoinsPoints(); }, buildings.GetMilitaryBuildings());
+    // Send to warehouse if no military building needs the coins
+    if(!result)
+        result = FindWarehouseForWare(ware);
 
-    return bb;
+    return result;
+}
+
+nobBaseMilitary* GamePlayer::FindClientForArmor(const Ware& ware) const
+{
+    nobBaseMilitary* result = FindClientImpl(
+      ware, [](const nobMilitary& bld) { return bld.CalcArmorPoints(); }, buildings.GetMilitaryBuildings());
+    // Send to warehouse if no military building needs the coins
+    if(!result)
+        result = FindWarehouseForWare(ware);
+
+    return result;
 }
 
 unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)

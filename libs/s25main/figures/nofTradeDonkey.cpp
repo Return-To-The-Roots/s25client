@@ -60,6 +60,8 @@ void nofTradeDonkey::GoalReached()
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
+    if(hasArmor_)
+        whOwner.IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(this->GetJobType()), 1);
     wh->AddFigure(world->RemoveFigure(pos, *this));
 }
 
