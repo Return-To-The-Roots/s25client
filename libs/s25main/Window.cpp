@@ -18,8 +18,8 @@
 #include <cstdarg>
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const LimitFactors& size)
-    : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(LimitFactors(0, 0)), active_(false), visible_(true),
-      scale_(false), isInMouseRelay(false), animations_(this)
+    : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(LimitFactors(0, 0)), active_(false),
+      visible_(true), scale_(false), isInMouseRelay(false), animations_(this)
 {}
 
 Window::~Window()
