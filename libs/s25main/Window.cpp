@@ -574,14 +574,14 @@ void Window::ScaleByFactor()
 }
 
 template<class T_Pt>
-T_Pt Window::ScaleIf(const T_Pt& pt)
+T_Pt Window::ScaleIf(const T_Pt& pt) const
 {
     return scale_ ? Scale(pt, Extent(0,0)) : pt;
 }
 
 // Inlining removes those. so add it here
-template DrawPoint Window::ScaleIf(const DrawPoint&);
-template Extent Window::ScaleIf(const Extent&);
+template DrawPoint Window::ScaleIf(const DrawPoint&) const;
+template Extent Window::ScaleIf(const Extent&) const;
 
 bool Window::IsInLockedRegion(const Position& pos, const Window* exception) const
 {
