@@ -329,7 +329,7 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
-    if (ctrl->limit_factors_ != Extent(0, 0))
+    if(ctrl->limit_factors_ != Extent(0, 0))
         ctrl->ScaleByFactor();
     ctrl->SetActive(active_);
 

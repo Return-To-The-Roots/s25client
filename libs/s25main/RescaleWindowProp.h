@@ -55,7 +55,7 @@ inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue, const Extent& li
     if(limfactors.x > 0 && limfactors.x < 11 && limfactors.y > 0 && limfactors.y < 11)
     {
         T_Pt diff(oldSize - Extent(800, 600));
-        T_Pt limUnscaleValue(oldValue.x * 800 / (oldSize.x - (diff.x * limfactors.x / 10)), 
+        T_Pt limUnscaleValue(oldValue.x * 800 / (oldSize.x - (diff.x * limfactors.x / 10)),
                              oldValue.y * 600 / (oldSize.y - (diff.y * limfactors.y / 10)));
         realValue = limUnscaleValue;
     } else
