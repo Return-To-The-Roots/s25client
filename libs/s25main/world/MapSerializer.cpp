@@ -123,17 +123,13 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         }
     }
 
-    // Katapultsteine deserialisieren
     sgd.PopObjectContainer(world.catapult_stones, GO_Type::Catapultstone);
 
-    // Meeresinformationen deserialisieren
     world.seas.resize(sgd.PopUnsignedInt());
     for(auto& sea : world.seas)
-    {
         sea.nodes_count = sgd.PopUnsignedInt();
-    }
 
-    // Hafenpositionen serialisieren
+    // Deserialize harbor data
     const unsigned numHarborPositions = sgd.PopUnsignedInt();
     world.harbor_pos.clear();
     world.harbor_pos.reserve(numHarborPositions);

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,12 +8,6 @@
 #include <boost/config.hpp>
 #include <array>
 #include <stdexcept>
-
-// This was added to Boost 1.71 only
-#ifdef BOOST_MSVC
-#    undef BOOST_UNREACHABLE_RETURN
-#    define BOOST_UNREACHABLE_RETURN(x) __assume(0);
-#endif
 
 Position GetNeighbour(const Position& p, const Direction dir)
 {
@@ -36,8 +30,8 @@ Position GetNeighbour(const Position& p, const Direction dir)
         case Direction::SouthEast: return Position(p.x + (p.y & 1), p.y + 1);
         case Direction::SouthWest: return Position(p.x - !(p.y & 1), p.y + 1);
     }
-    RTTR_Assert(false);
-    BOOST_UNREACHABLE_RETURN({})
+    RTTR_Assert(false);          // LCOV_EXCL_LINE
+    BOOST_UNREACHABLE_RETURN({}) // LCOV_EXCL_LINE
 }
 
 Position GetNeighbour2(Position pt, unsigned dir)

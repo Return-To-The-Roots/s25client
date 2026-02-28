@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,11 +10,13 @@
 #include "buildings/nobShipYard.h"
 #include "factories/BuildingFactory.h"
 #include "helpers/IdRange.h"
+#include "helpers/Range.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/ShipPostMsg.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noShip.h"
 #include "gameTypes/GameTypesOutput.h"
@@ -170,6 +172,18 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         BOOST_TEST_REQUIRE(player.GetNumShips() == 1u);
         postBox->Clear();
         initGameRNG();
+    }
+
+    ShipDirection GetShipDir(const noShip& ship, HarborId targetHbId) const
+    {
+        for(const auto dir : helpers::enumRange<ShipDirection>())
+        {
+            if(world.GetNextFreeHarborPoint(ship.GetPos(), ship.GetCurrentHarbor(), dir, ship.GetPlayerId())
+               == targetHbId)
+                return dir;
+        }
+        BOOST_TEST_FAIL("No dir found");                    // LCOV_EXCL_LINE
+        BOOST_UNREACHABLE_RETURN(ShipDirection::NorthWest); // LCOV_EXCL_LINE
     }
 };
 
@@ -716,6 +730,97 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     BOOST_TEST(harbor1.GetNumVisualWares(goodType) == numVisWaresBefore + 1u);
     BOOST_TEST(harbor1.GetNumRealWares(goodType) == numRealWaresBefore + 1u);
     BOOST_TEST(MockWare::destroyed);
+}
+
+BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
+{
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const noShip& ship = ensureNonNull(player.GetShipByID(0));
+    nobHarborBuilding& homeHarbor = *player.GetBuildingRegister().GetHarbors().front();
+    const MapPoint homeHbPos = homeHarbor.GetPos();
+    Inventory expWares;
+    expWares.Add(Job::Builder);
+    expWares.Add(GoodType::Boards, 20);
+    expWares.Add(GoodType::Stones, 20);
+    homeHarbor.AddGoods(expWares, true);
+
+    /* A ship might get stuck when targeting a harbor (2) SE of the current harbor (1): Issue #1784
+       Harbors are at NE coast of island, (1) directly at sea, (2) one node inland:
+      ________
+      _____H1 C
+      ______H2__
+      ____________
+     Coastal point of (1) is E, coastal point of (2) is NE -> Same point
+    So going to that harbor involves no movement which breaks assumptions.
+    */
+
+    // Put the harbors up into the sea so we can control the coastal point
+    const MapPoint harborPos = homeHbPos + MapPoint(7, -3);                       // (1)
+    const MapPoint nbHbPos = world.GetNeighbour(harborPos, Direction::SouthEast); // (2)
+    const MapPoint otherHbPos = world.MakeMapPoint(homeHbPos - Point(3, 0));      // Unrelated harbor
+    const std::vector<MapPoint> harborPoints = {harborPos, nbHbPos, otherHbPos};
+    for(const MapPoint p : harborPoints)
+        world.GetNodeWriteable(p).bq = BuildingQuality::Harbor;
+    // These nodes and 3 left of it get land terrain (below)
+    const std::array nodes{
+      world.GetNeighbour(world.GetNeighbour(harborPos, Direction::NorthEast), Direction::NorthEast),
+      world.GetNeighbour(harborPos, Direction::NorthWest), harborPos, nbHbPos};
+    for(auto p : nodes)
+    {
+        for([[maybe_unused]] auto i : helpers::range(2))
+        {
+            auto& node = world.GetNodeWriteable(p);
+            node.t1 = node.t2 = GetLandTerrain(world.GetDescription());
+            p = world.GetNeighbour(p, Direction::West);
+        }
+    }
+    const auto coastPoint = world.GetNeighbour(harborPos, Direction::East);
+    // And the coastal point
+    {
+        auto& node = world.GetNodeWriteable(world.GetNeighbour(coastPoint, Direction::NorthWest));
+        node.t1 = GetLandTerrain(world.GetDescription());
+    }
+    MapLoader::InitSeasAndHarbors(world, harborPoints);
+
+    const auto harborId = world.GetHarborPointID(harborPos);
+    const auto nbHbId = world.GetHarborPointID(nbHbPos);
+    BOOST_TEST_REQUIRE(harborId.isValid());
+    BOOST_TEST_REQUIRE(nbHbId.isValid());
+    const auto seaId = world.GetSeaId(harborId, Direction::East);
+    BOOST_TEST_REQUIRE(seaId.isValid());
+    BOOST_TEST_REQUIRE(world.GetCoastalPoint(harborId, seaId) == coastPoint);
+    const auto nbSeaId = world.GetSeaId(nbHbId, Direction::NorthEast);
+    BOOST_TEST_REQUIRE(nbSeaId == seaId);
+    BOOST_TEST_REQUIRE(world.GetCoastalPoint(nbHbId, seaId) == coastPoint);
+
+    this->StartStopExpedition(homeHbPos, true);
+    BOOST_TEST_REQUIRE(homeHarbor.IsExpeditionActive());
+    // Wait till ship has loaded wares and is ready
+    RTTR_EXEC_TILL(500, ship.IsWaitingForExpeditionInstructions());
+
+    this->TravelToNextSpot(this->GetShipDir(ship, harborId), player.GetShipID(ship));
+    BOOST_TEST_REQUIRE(!ship.IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == harborId);
+
+    RTTR_EXEC_TILL(500, ship.IsWaitingForExpeditionInstructions());
+    BOOST_TEST_REQUIRE(ship.GetPos() == coastPoint);
+
+    this->TravelToNextSpot(this->GetShipDir(ship, nbHbId), player.GetShipID(ship));
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == nbHbId);
+    // Already there
+    BOOST_TEST(ship.IsWaitingForExpeditionInstructions());
+    BOOST_TEST(ship.GetPos() == coastPoint);
+
+    // Can move
+    const auto otherHarborId = world.GetHarborPointID(otherHbPos);
+    BOOST_TEST_REQUIRE(otherHarborId.isValid());
+    // Precondition that any ship dir will be found
+    BOOST_TEST_REQUIRE(world.IsHarborAtSea(otherHarborId, seaId));
+    this->TravelToNextSpot(this->GetShipDir(ship, otherHarborId), player.GetShipID(ship));
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == otherHarborId);
+    // Moving
+    BOOST_TEST_REQUIRE(ship.IsMoving());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
