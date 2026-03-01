@@ -88,6 +88,7 @@ BOOST_AUTO_TEST_CASE(AddonWindow)
 
 BOOST_FIXTURE_TEST_CASE(JumpWindow, SmallWorldFixture)
 {
+    uiHelper::Fixture f;
     // Test if it is constructible only, accesses GameClient for buttons
     GameWorldViewer gwv(0, world);
     GameWorldView view(gwv, Position(0, 0), Extent(100, 100));
