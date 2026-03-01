@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -112,10 +112,12 @@ void iwShip::DrawContent()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(const auto dir : helpers::EnumRange<ShipDirection>{})
+        {
             GetCtrl<Window>(12 + rttr::enum_cast(dir))
-              ->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir,
-                                                                 ship->GetPlayerId())
-                           > 0);
+              ->SetVisible(gwv.GetWorld()
+                             .GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir, ship->GetPlayerId())
+                             .isValid());
+        }
     } else
     {
         // Alle Buttons inklusive Anker in der Mitte ausblenden

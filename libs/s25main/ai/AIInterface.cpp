@@ -9,6 +9,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
+#include "helpers/IdRange.h"
 #include "helpers/containerUtils.h"
 #include "network/GameMessage_Chat.h"
 #include "pathfinding/FreePathFinder.h"
@@ -49,16 +50,16 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 AIInterface::AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, unsigned char playerID)
     : gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID)
 {
-    for(unsigned curHarborId = 1; curHarborId <= gwb.GetNumHarborPoints(); curHarborId++)
+    for(const auto curHarborId : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
     {
         bool hasOtherHarbor = false;
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const unsigned short seaId = gwb.GetSeaId(curHarborId, dir);
+            const SeaId seaId = gwb.GetSeaId(curHarborId, dir);
             if(!seaId)
                 continue;
 
-            for(unsigned otherHarborId = curHarborId + 1; otherHarborId <= gwb.GetNumHarborPoints(); otherHarborId++)
+            for(const auto otherHarborId : helpers::idRangeAfter(curHarborId, gwb.GetNumHarborPoints()))
             {
                 if(gwb.IsHarborAtSea(otherHarborId, seaId))
                 {
@@ -281,11 +282,10 @@ bool AIInterface::isBuildingNearby(BuildingType bldType, const MapPoint pt, unsi
 
 bool AIInterface::isHarborPosClose(const MapPoint pt, unsigned maxDistance, bool onlyempty) const
 {
-    // skip harbordummy
-    for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
+    for(const auto id : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
     {
-        const MapPoint harborPoint = gwb.GetHarborPoint(i);
-        if(gwb.CalcDistance(pt, harborPoint) <= maxDistance && helpers::contains(usableHarbors_, i))
+        const MapPoint harborPoint = gwb.GetHarborPoint(id);
+        if(gwb.CalcDistance(pt, harborPoint) <= maxDistance && helpers::contains(usableHarbors_, id))
         {
             if(!onlyempty || !IsBuildingOnNode(harborPoint, BuildingType::HarborBuilding))
                 return true;
@@ -300,10 +300,10 @@ bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHar
     return IsExplorationDirectionPossible(pt, originHarbor->GetHarborPosID(), direction);
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID,
+bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, HarborId originHarborID,
                                                  ShipDirection direction) const
 {
-    return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction, playerID_) > 0;
+    return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction, playerID_).isValid();
 }
 
 bool AIInterface::SetCoinsAllowed(const nobMilitary* building, const bool enabled)

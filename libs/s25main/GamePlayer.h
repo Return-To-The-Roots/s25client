@@ -12,6 +12,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapTypes.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/StatisticTypes.h"
@@ -250,13 +251,13 @@ public:
     unsigned GetNumShips() const { return ships.size(); }
     /// Gibt liste der Schiffe zurück
     const std::vector<noShip*>& GetShips() const { return ships; }
-    /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-    void GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, unsigned short seaId) const;
+    /// Add all unique harbor buildings at the given sea to the given vector
+    void AddHarborsAtSea(std::vector<nobHarborBuilding*>& harborBuildings, SeaId seaId) const;
     /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
     unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
     /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
     /// gibt true zurück, falls erfolgreich
-    bool FindHarborForUnloading(noShip* ship, MapPoint start, unsigned* goal_harborId, std::vector<Direction>* route,
+    bool FindHarborForUnloading(noShip* ship, MapPoint start, HarborId* goalHarborId, std::vector<Direction>* route,
                                 nobHarborBuilding* exception);
     /// A ship has discovered new hostile territory --> determines if this is new
     /// i.e. there is a sufficient distance to older locations

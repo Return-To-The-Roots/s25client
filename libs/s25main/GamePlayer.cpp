@@ -2058,16 +2058,15 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
         return ships[ship_id];
 }
 
-/// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const
+void GamePlayer::AddHarborsAtSea(std::vector<nobHarborBuilding*>& harborBuildings, const SeaId seaId) const
 {
     for(nobHarborBuilding* harbor : buildings.GetHarbors())
     {
-        if(helpers::contains(harbor_buildings, harbor))
+        if(helpers::contains(harborBuildings, harbor))
             continue;
 
         if(world.IsHarborAtSea(harbor->GetHarborPosID(), seaId))
-            harbor_buildings.push_back(harbor);
+            harborBuildings.push_back(harbor);
     }
 }
 
@@ -2086,7 +2085,7 @@ unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
-bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId,
+bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, HarborId* goalHarborId,
                                         std::vector<Direction>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = nullptr;
@@ -2118,7 +2117,7 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
     {
         // Weg dorthin suchen
         route->clear();
-        *goal_harborId = best->GetHarborPosID();
+        *goalHarborId = best->GetHarborPosID();
         const MapPoint coastPt = world.GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
         if(start == coastPt
            || world.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))

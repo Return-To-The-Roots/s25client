@@ -17,6 +17,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "helpers/IdRange.h"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/containerUtils.h"
 #include "network/GameMessages.h"
@@ -1596,12 +1597,11 @@ void AIPlayerJH::TrySeaAttack()
         return;
     if(aii.GetHarbors().empty())
         return;
-    std::vector<unsigned short> seaidswithattackers;
-    std::vector<unsigned> attackersatseaid;
-    std::vector<int> invalidseas;
+    std::vector<SeaId> seaidswithattackers;
+    std::vector<SeaId> invalidseas;
     std::deque<const nobBaseMilitary*> potentialTargets;
     std::deque<const nobBaseMilitary*> undefendedTargets;
-    std::vector<int> searcharoundharborspots;
+    std::vector<HarborId> searcharoundharborspots;
     // all seaids with at least 1 ship count available attackers for later checks
     for(const noShip* ship : aii.GetShips())
     {
@@ -1613,7 +1613,6 @@ void AIPlayerJH::TrySeaAttack()
             if(attackercount) // got attackers at this sea id? -> add to valid list
             {
                 seaidswithattackers.push_back(ship->GetSeaID());
-                attackersatseaid.push_back(attackercount);
             } else // not listed but no attackers? ->invalid
             {
                 invalidseas.push_back(ship->GetSeaID());
@@ -1628,8 +1627,8 @@ void AIPlayerJH::TrySeaAttack()
             LOG.write(("attackers at sea ids for player %i, sea id %i, count %i \n",playerId, seaidswithattackers[i],
     attackersatseaid[i]);
     }*/
-    // first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
-    for(unsigned i = 1; i < gwb.GetNumHarborPoints(); i++)
+    // first check all harbors there might be some undefended ones
+    for(const auto i : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
     {
         const nobHarborBuilding* hb;
         if((hb = gwb.GetSpecObj<nobHarborBuilding>(gwb.GetHarborPoint(i))))
@@ -1639,7 +1638,7 @@ void AIPlayerJH::TrySeaAttack()
                 if(aii.IsPlayerAttackable(hb->GetPlayer()))
                 {
                     // attackers for this building?
-                    const std::vector<unsigned short> testseaidswithattackers =
+                    const std::vector<SeaId> testseaidswithattackers =
                       gwb.GetFilteredSeaIDsForAttack(gwb.GetHarborPoint(i), seaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty()) // harbor can be attacked?
                     {
@@ -1700,7 +1699,7 @@ void AIPlayerJH::TrySeaAttack()
                    && (!milBld->DefendersAvailable())) // undefended headquarter(or unlikely as it is a harbor...) -
                                                        // priority list!
                 {
-                    const std::vector<unsigned short> testseaidswithattackers =
+                    const std::vector<SeaId> testseaidswithattackers =
                       gwb.GetFilteredSeaIDsForAttack(milBld->GetPos(), seaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty())
                     {
@@ -1736,7 +1735,7 @@ void AIPlayerJH::TrySeaAttack()
     {
         // TODO: decide if it is worth attacking the target and not just "possible"
         // test only if we should have attackers from one of our valid sea ids
-        const std::vector<unsigned short> testseaidswithattackers =
+        const std::vector<SeaId> testseaidswithattackers =
           gwb.GetFilteredSeaIDsForAttack(ship->GetPos(), seaidswithattackers, playerId);
         if(!testseaidswithattackers.empty()) // only do the final check if it will probably be a good result
         {
@@ -2224,29 +2223,28 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
     return ((count * 100) / maxvalue);
 }
 
-bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty) const
+bool AIPlayerJH::HarborPosRelevant(HarborId harborId, bool onlyempty) const
 {
-    if(harborid < 1 || harborid > gwb.GetNumHarborPoints()) // not a real harbor - shouldnt happen...
+    if(!harborId || harborId.value() > gwb.GetNumHarborPoints()) // not a real harbor - shouldnt happen...
     {
         RTTR_Assert(false);
         return false;
     }
     if(!onlyempty)
-        return helpers::contains(aii.getUsableHarbors(), harborid);
+        return helpers::contains(aii.getUsableHarbors(), harborId);
 
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        const unsigned short seaId = gwb.GetSeaId(harborid, dir);
+        const SeaId seaId = gwb.GetSeaId(harborId, dir);
         if(!seaId)
             continue;
 
-        for(unsigned curHarborId = 1; curHarborId <= gwb.GetNumHarborPoints();
-            curHarborId++) // start at 1 harbor dummy yadayada :>
+        for(const auto curHarborId : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
         {
-            if(curHarborId != harborid && gwb.IsHarborAtSea(curHarborId, seaId))
+            if(curHarborId != harborId && gwb.IsHarborAtSea(HarborId(curHarborId), seaId))
             {
                 // check if the spot is actually free for colonization?
-                if(gwb.IsHarborPointFree(curHarborId, playerId))
+                if(gwb.IsHarborPointFree(HarborId(curHarborId), playerId))
                     return true;
             }
         }
@@ -2256,7 +2254,7 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty) const
 
 bool AIPlayerJH::NoEnemyHarbor()
 {
-    for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
+    for(const auto i : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
     {
         if(aii.IsBuildingOnNode(gwb.GetHarborPoint(i), BuildingType::HarborBuilding)
            && !aii.IsOwnTerritory(gwb.GetHarborPoint(i)))
@@ -2311,13 +2309,13 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
 
 unsigned AIPlayerJH::GetNumAIRelevantSeaIds() const
 {
-    std::vector<unsigned short> validseaids;
-    std::list<unsigned short> onetimeuseseaids;
-    for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
+    std::vector<SeaId> validseaids;
+    std::list<SeaId> onetimeuseseaids;
+    for(const auto i : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const unsigned short seaId = gwb.GetSeaId(i, dir);
+            const SeaId seaId = gwb.GetSeaId(i, dir);
             if(!seaId)
                 continue;
             // there is a sea id? -> check if it is already a validid or a once found id

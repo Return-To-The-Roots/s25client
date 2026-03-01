@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,6 +16,7 @@
 #include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
+#include "helpers/IdRange.h"
 #include "helpers/containerUtils.h"
 #include "helpers/mathFuncs.h"
 #include "helpers/reverse.h"
@@ -1375,13 +1376,13 @@ void GameWorld::PlaceAndFixWater()
 }
 
 /// Gründet vom Schiff aus eine neue Kolonie
-bool GameWorld::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId)
+bool GameWorld::FoundColony(const HarborId harbor, const unsigned char player, const SeaId seaId)
 {
     // Ist es hier überhaupt noch möglich, eine Kolonie zu gründen?
-    if(!IsHarborAtSea(harbor_point, seaId) || !IsHarborPointFree(harbor_point, player))
+    if(!IsHarborAtSea(harbor, seaId) || !IsHarborPointFree(harbor, player))
         return false;
 
-    MapPoint pos(GetHarborPoint(harbor_point));
+    MapPoint pos(GetHarborPoint(harbor));
     DestroyNO(pos, false);
 
     // Hafenbaustelle errichten
@@ -1412,11 +1413,11 @@ bool GameWorld::IsHarborBuildingSiteFromSea(const noBuildingSite* building_site)
     return helpers::contains(harbor_building_sites_from_sea, building_site);
 }
 
-std::vector<unsigned> GameWorld::GetUnexploredHarborPoints(const unsigned hbIdToSkip, const unsigned seaId,
+std::vector<HarborId> GameWorld::GetUnexploredHarborPoints(const HarborId hbIdToSkip, const SeaId seaId,
                                                            unsigned playerId) const
 {
-    std::vector<unsigned> hps;
-    for(unsigned i = 1; i <= GetNumHarborPoints(); ++i)
+    std::vector<HarborId> hps;
+    for(const auto i : helpers::idRange<HarborId>(GetNumHarborPoints()))
     {
         if(i == hbIdToSkip || !IsHarborAtSea(i, seaId))
             continue;
