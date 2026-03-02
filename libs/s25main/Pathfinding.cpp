@@ -67,7 +67,20 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId
     }
     // Add a few fields reserve
     maxDistance += 6;
-    return FindShipPath(start, GetCoastalPoint(harborId, seaId), maxDistance, route, length);
+
+    MapPoint harborPoint = GetCoastalPoint(harborId, seaId);
+
+    // already arrived?
+    if(start == harborPoint)
+    {
+        if(length)
+            *length = 0;
+        if(route)
+            route->clear();
+        return true;
+    }
+
+    return FindShipPath(start, harborPoint, maxDistance, route, length);
 }
 
 bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, unsigned maxDistance,

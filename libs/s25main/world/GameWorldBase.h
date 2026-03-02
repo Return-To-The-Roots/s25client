@@ -116,6 +116,7 @@ public:
                                                    bool random_route = false, unsigned* length = nullptr,
                                                    std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
+    /// If starting point equals the coastal point of target harbor, set length 0, clear route and return true.
     bool FindShipPathToHarbor(MapPoint start, unsigned harborId, unsigned seaId, std::vector<Direction>* route,
                               unsigned* length);
     /// Find path for ships with a limited distance. Return true on success
