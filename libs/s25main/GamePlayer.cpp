@@ -1955,7 +1955,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
             {
                 hb.ShipArrived(ship);
                 return (true);
-            }           
+            }
 
             if(distance < best_distance)
             {
