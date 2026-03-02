@@ -256,6 +256,7 @@ public:
     unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
     /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
     /// gibt true zurück, falls erfolgreich
+    /// If starting point equals the coastal point of target harbor, also return true.
     bool FindHarborForUnloading(noShip* ship, MapPoint start, unsigned* goal_harborId, std::vector<Direction>* route,
                                 nobHarborBuilding* exception);
     /// A ship has discovered new hostile territory --> determines if this is new

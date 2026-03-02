@@ -1948,17 +1948,15 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 
         noShip& ship = *it.ship;
 
-        MapPoint dest = world.GetCoastalPoint(hb.GetHarborPosID(), ship.GetSeaID());
-
-        // ship already there?
-        if(ship.GetPos() == dest)
-        {
-            hb.ShipArrived(ship);
-            return (true);
-        }
-
         if(world.FindShipPathToHarbor(ship.GetPos(), hb.GetHarborPosID(), ship.GetSeaID(), &route, &distance))
         {
+            // ship already there?
+            if(distance == 0 && route.empty())
+            {
+                hb.ShipArrived(ship);
+                return (true);
+            }           
+
             if(distance < best_distance)
             {
                 best_ship = &ship;
@@ -2017,20 +2015,18 @@ void GamePlayer::GetJobForShip(noShip& ship)
         // liegen wir am gleichen Meer?
         if(world.IsHarborAtSea(harbor->GetHarborPosID(), ship.GetSeaID()))
         {
-            const MapPoint coastPt = world.GetCoastalPoint(harbor->GetHarborPosID(), ship.GetSeaID());
-
-            // Evtl. sind wir schon da?
-            if(ship.GetPos() == coastPt)
-            {
-                harbor->ShipArrived(ship);
-                return;
-            }
-
             unsigned length;
             std::vector<Direction> route;
 
             if(world.FindShipPathToHarbor(ship.GetPos(), harbor->GetHarborPosID(), ship.GetSeaID(), &route, &length))
             {
+                // ship already there?
+                if(length == 0 && route.empty())
+                {
+                    harbor->ShipArrived(ship);
+                    return;
+                }
+
                 // Punkte ausrechnen
                 int points = harbor->GetNeedForShip(ships_coming) - length;
                 if(points > best_points || !best)
@@ -2129,9 +2125,7 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
         // Weg dorthin suchen
         route->clear();
         *goal_harborId = best->GetHarborPosID();
-        const MapPoint coastPt = world.GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
-        if(start == coastPt
-           || world.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
+        if(world.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
             return true;
     }
 

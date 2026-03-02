@@ -55,19 +55,6 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId
 {
     // Find the distance to the furthest harbor from the target harbor and take that as maximum
     unsigned maxDistance = 0;
-
-    for(const auto dir : helpers::EnumRange<ShipDirection>{})
-    {
-        const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(harborId, dir);
-        for(const HarborPos::Neighbor& neighbor : neighbors)
-        {
-            if(IsHarborAtSea(neighbor.id, seaId) && neighbor.distance > maxDistance)
-                maxDistance = neighbor.distance;
-        }
-    }
-    // Add a few fields reserve
-    maxDistance += 6;
-
     const MapPoint coastalPoint = GetCoastalPoint(harborId, seaId);
 
     // already arrived?
@@ -80,6 +67,17 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId
         return true;
     }
 
+    for(const auto dir : helpers::EnumRange<ShipDirection>{})
+    {
+        const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(harborId, dir);
+        for(const HarborPos::Neighbor& neighbor : neighbors)
+        {
+            if(IsHarborAtSea(neighbor.id, seaId) && neighbor.distance > maxDistance)
+                maxDistance = neighbor.distance;
+        }
+    }
+    // Add a few fields reserve
+    maxDistance += 6;
     return FindShipPath(start, coastalPoint, maxDistance, route, length);
 }
 
