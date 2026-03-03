@@ -1951,7 +1951,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
         if(world.FindShipPathToHarbor(ship.GetPos(), hb.GetHarborPosID(), ship.GetSeaID(), &route, &distance))
         {
             // ship already there?
-            if(distance == 0 && route.empty())
+            if(distance == 0)
             {
                 hb.ShipArrived(ship);
                 return (true);
@@ -2021,7 +2021,7 @@ void GamePlayer::GetJobForShip(noShip& ship)
             if(world.FindShipPathToHarbor(ship.GetPos(), harbor->GetHarborPosID(), ship.GetSeaID(), &route, &length))
             {
                 // ship already there?
-                if(length == 0 && route.empty())
+                if(length == 0)
                 {
                     harbor->ShipArrived(ship);
                     return;
