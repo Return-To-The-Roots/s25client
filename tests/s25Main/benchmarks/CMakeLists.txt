@@ -17,7 +17,7 @@ else()
     FetchContent_MakeAvailable(GoogleBenchmark)
 endif()
 
-file(GLOB sources *.cpp)
+file(GLOB sources CONFIGURE_DEPENDS *.cpp)
 set(benchmarksCommands "")
 foreach(src IN LISTS sources)
     get_filename_component(name ${src} NAME_WE)
