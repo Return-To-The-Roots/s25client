@@ -1982,14 +1982,9 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 /// Meldet das Schiff wieder ab
 void GamePlayer::RemoveShip(noShip* ship)
 {
-    for(unsigned i = 0; i < ships.size(); ++i)
-    {
-        if(ships[i] == ship)
-        {
-            ships.erase(ships.begin() + i);
-            return;
-        }
-    }
+    auto it = helpers::find(ships, ship);
+    RTTR_Assert(it != ships.end());
+    ships.erase(it);
 }
 
 /// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
