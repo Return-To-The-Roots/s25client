@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -140,7 +140,7 @@ bool askForDebugData()
 }
 bool shouldSendDebugData()
 {
-    return (SETTINGS.global.submit_debug_data == 1) || askForDebugData();
+    return (SETTINGS.global.submitDebugData == 1) || askForDebugData();
 }
 
 void showCrashMessage()

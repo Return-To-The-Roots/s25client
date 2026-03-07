@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -24,8 +24,8 @@ public:
 
     bool Initialize() override;
 
-    bool CreateScreen(const std::string& title, const VideoMode& size, bool fullscreen) override;
-    bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
+    bool CreateScreen(const std::string& title, VideoMode size, DisplayMode displayMode) override;
+    bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) override;
 
     void DestroyScreen() override;
 
@@ -41,8 +41,8 @@ public:
 
     OpenGL_Loader_Proc GetLoaderFunction() const override;
 
-    /// Add supported video modes
-    void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
+    /// Get supported video modes
+    std::vector<VideoMode> ListVideoModes() const override;
 
     /// Set mouse position
     void SetMousePos(Position pos) override;
@@ -53,11 +53,14 @@ public:
     /// Get (device-dependent!) window pointer, HWND in Windows
     void* GetMapPointer() const override;
 
+    static void PrintError();
+    static void PrintError(const std::string& msg);
+
 private:
-    void PrintError(const std::string& msg) const;
     void HandlePaste();
     void UpdateCurrentSizes();
     void MoveWindowToCenter();
+    void UpdateCurrentDisplayMode();
 
     SDL_Window* window;
     SDL_GLContext context;

@@ -115,11 +115,12 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
 {
     Desktop* dsk = WINDOWMANAGER.GetCurrentDesktop();
     std::vector<TestWindow*> wnds;
+    wnds.reserve(6);
     // Top level controls
     for(int i = 0; i < 3; i++)
     {
-        wnds.push_back(new TestWindow(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0)));
-        dsk->AddCtrl(wnds.back());
+        wnds.push_back(
+          dsk->AddCtrl(std::make_unique<TestWindow>(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0))));
     }
     // Some groups with own controls
     for(int i = 0; i < 3; i++)
@@ -127,8 +128,8 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
         ctrlGroup* grp = dsk->AddGroup(100 + i);
         for(int i = 0; i < 3; i++)
         {
-            wnds.push_back(new TestWindow(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0)));
-            grp->AddCtrl(wnds.back());
+            wnds.push_back(
+              grp->AddCtrl(std::make_unique<TestWindow>(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0))));
         }
     }
     mock::sequence s;

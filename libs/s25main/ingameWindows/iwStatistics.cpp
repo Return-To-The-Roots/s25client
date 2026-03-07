@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -183,7 +183,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     timeChanger->SetSelection(ID_time15m, true);
     currentTime = StatisticTime::T15Minutes;
 
-    if(!SETTINGS.ingame.scale_statistics)
+    if(!SETTINGS.ingame.scaleStatistics)
         txtMinValueY->SetVisible(false);
 }
 
@@ -334,7 +334,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
         {
             const auto idx = (currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex);
             max = std::max(max, stat.data[type][idx]);
-            if(SETTINGS.ingame.scale_statistics) //-V807
+            if(SETTINGS.ingame.scaleStatistics) //-V807
                 min = std::min(min, stat.data[type][idx]);
         }
     }
@@ -346,7 +346,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
     }
     // Add values to axis
     txtMaxValueY->SetText(std::to_string(max));
-    if(SETTINGS.ingame.scale_statistics)
+    if(SETTINGS.ingame.scaleStatistics)
         txtMinValueY->SetText(std::to_string(min));
 
     // Draw the line diagram
@@ -366,7 +366,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
             DrawPoint curPos = topLeft + DrawPoint((NUM_STAT_STEPS - i) * stepX, diagramSize.y);
             unsigned curStatVal =
               stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)];
-            if(SETTINGS.ingame.scale_statistics)
+            if(SETTINGS.ingame.scaleStatistics)
                 curPos.y -= ((curStatVal - min) * diagramSize.y) / (max - min);
             else
                 curPos.y -= (curStatVal * diagramSize.y) / max;
