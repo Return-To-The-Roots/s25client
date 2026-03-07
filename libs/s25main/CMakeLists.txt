@@ -50,6 +50,7 @@ set(s25Main_SRCS
         CountryEventLogger.cpp
         MilitaryEventLogger.cpp
         MilitaryStatsHolder.cpp
+        TroopsLimitEventLogger.cpp
         ToolPriorityEventLogger.cpp
         WareEventLogger.cpp
         ai/aijh/AIAdjuster.cpp

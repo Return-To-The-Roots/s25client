@@ -13,6 +13,7 @@
 #include "MilitaryStatsHolder.h"
 #include "Point.h"
 #include "SerializedGameData.h"
+#include "TroopsLimitEventLogger.h"
 #include "Ware.h"
 #include "addons/const_addons.h"
 #include "CombatEventLogger.h"
@@ -603,6 +604,7 @@ void nobMilitary::SetTotalTroopLimit(const unsigned limit)
     if(total_troop_limit == clamped_limit)
         return;
     total_troop_limit = clamped_limit;
+    TroopsLimitEventLogger::LogLimitChange(GetEvMgr().GetCurrentGF(), player, total_troop_limit, bldType_, GetObjId());
     RegulateTroops();
 }
 

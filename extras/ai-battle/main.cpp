@@ -112,9 +112,9 @@ int main(int argc, char** argv)
         std::string savesDir = *output_path + "/saves/";
         bfs::create_directory(savesDir);
         STATS_CONFIG.savesPath = savesDir;
-        std::string screensDir = *output_path + "/screens/";
-        bfs::create_directory(screensDir);
-        STATS_CONFIG.screensPath = screensDir;
+        std::string minimapsDir = *output_path + "/minimaps/";
+        bfs::create_directory(minimapsDir);
+        STATS_CONFIG.screensPath = minimapsDir;
 
         std::string logsDir = *output_path + "/logs/";
         bfs::create_directory(logsDir);

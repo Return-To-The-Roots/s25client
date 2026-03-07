@@ -340,6 +340,11 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         CheckGranitMine();
     }
 
+    if((gf + playerId * 19) % 1000 == 0)
+    {
+        UpdateTroopsLimit();
+    }
+
     if((gf + playerId * 11) % 150 == 0)
     {
         AdjustSettings();
@@ -1661,6 +1666,65 @@ bool AIPlayerJH::HasFrontierBuildings()
             return true;
     }
     return false;
+}
+
+void AIPlayerJH::UpdateTroopsLimit()
+{
+    std::vector<const nobMilitary*> eligibleBuildings;
+    eligibleBuildings.reserve(aii.GetMilitaryBuildings().size());
+
+    unsigned totalSoldiers = SoldierAvailable();
+    unsigned totalCapacity = 0;
+
+    for(const nobMilitary* milBld : aii.GetMilitaryBuildings())
+    {
+        if(!milBld || milBld->GetFrontierDistance() == FrontierDistance::Far)
+            continue;
+
+        eligibleBuildings.push_back(milBld);
+        totalCapacity += milBld->GetMaxTroopsCt();
+        totalSoldiers += milBld->GetNumTroops();
+    }
+
+    if(eligibleBuildings.empty())
+        return;
+
+    const unsigned distributableSoldiers = std::min(totalSoldiers, totalCapacity);
+    std::vector<unsigned> newLimits(eligibleBuildings.size(), 1u);
+
+    unsigned assigned = static_cast<unsigned>(newLimits.size());
+    if(distributableSoldiers > assigned)
+    {
+        unsigned remaining = distributableSoldiers - assigned;
+        const unsigned startIdx = (currentGF_ / 1000u + playerId) % static_cast<unsigned>(eligibleBuildings.size());
+
+        while(remaining > 0)
+        {
+            bool assignedInThisRound = false;
+            for(unsigned offset = 0; offset < eligibleBuildings.size() && remaining > 0; ++offset)
+            {
+                const unsigned idx = (startIdx + offset) % static_cast<unsigned>(eligibleBuildings.size());
+                const unsigned cap = eligibleBuildings[idx]->GetMaxTroopsCt();
+                if(newLimits[idx] < cap)
+                {
+                    ++newLimits[idx];
+                    --remaining;
+                    assignedInThisRound = true;
+                }
+            }
+
+            if(!assignedInThisRound)
+                break;
+        }
+    }
+
+    for(unsigned i = 0; i < eligibleBuildings.size(); ++i)
+    {
+        const nobMilitary* milBld = eligibleBuildings[i];
+        const unsigned limit = std::min(newLimits[i], milBld->GetMaxTroopsCt());
+        if(milBld->GetTotalTroopLimit() != limit)
+            aii.SetTotalTroopLimit(milBld->GetPos(), limit);
+    }
 }
 
 void AIPlayerJH::CheckExpeditions()

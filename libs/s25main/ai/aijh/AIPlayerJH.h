@@ -76,6 +76,8 @@ public:
     void saveDebugStats(unsigned gf) const;
     /// military & tool production settings
     void AdjustSettings();
+    /// Recalculate total troop limits for non-far military buildings with fair distribution
+    void UpdateTroopsLimit();
     /// return number of seaIds with at least 2 harbor spots
     unsigned GetNumAIRelevantSeaIds() const;
 
