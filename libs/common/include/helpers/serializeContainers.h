@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "serializeEnums.h"
+#include "underlyingIntegral.h"
 #include "s25util/Serializer.h"
 #include <type_traits>
 
@@ -28,18 +29,14 @@ namespace detail {
     template<typename T>
     std::enable_if_t<!std::is_enum_v<T>, T> popEnumOrIntegral(Serializer& ser)
     {
-        return ser.Pop<T>();
+        using Integral = underlyingIntegral_t<T>;
+        return T(ser.Pop<Integral>());
     }
 
     template<typename T>
     void pushContainer(Serializer& ser, const T& container, long)
     {
-        using Type = typename T::value_type;
-        // Deactivated to bug in clang-tidy
-        // NOLINTBEGIN(modernize-type-traits)
-        using Integral =
-          typename std::conditional_t<std::is_enum_v<Type>, std::underlying_type<Type>, std::common_type<Type>>::type;
-        // NOLINTEND(modernize-type-traits)
+        using Integral = underlyingIntegral_t<typename T::value_type>;
         for(const auto el : container)
         {
             // Cast also required for bool vector -.-
@@ -82,7 +79,7 @@ template<typename T>
 void pushContainer(Serializer& ser, const T& container, bool ignoreSize = false)
 {
     using Type = typename T::value_type;
-    static_assert(std::is_integral_v<Type> || std::is_enum_v<Type>, "Only integral types and enums are possible");
+    static_assert(IsIntegralLike_v<Type>, "Only integral(-like) types are possible");
 
     if(detail::isResizableContainer_v<T> && !ignoreSize)
         ser.PushVarSize(container.size());
@@ -93,7 +90,7 @@ template<typename T>
 void popContainer(Serializer& ser, T&& result, bool ignoreSize = false)
 {
     using Type = typename std::remove_reference_t<T>::value_type;
-    static_assert(std::is_integral_v<Type> || std::is_enum_v<Type>, "Only integral types and enums are possible");
+    static_assert(IsIntegralLike_v<Type>, "Only integral(-like) types are possible");
 
     if(!ignoreSize)
         detail::maybePopSizeAndResize(ser, result);

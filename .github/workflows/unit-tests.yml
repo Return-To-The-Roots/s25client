@@ -207,6 +207,9 @@ jobs:
       - name: Build
         run: tools/ci/build.sh
 
+      - name: Test
+        run: tools/ci/test.sh
+
       - run: tools/ci/collectCoverageData.sh && external/libutil/tools/ci/uploadCoverageData.sh
         if: matrix.coverage && success()
 

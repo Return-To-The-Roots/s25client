@@ -336,7 +336,7 @@ add_subdirectory(libs)
 add_subdirectory(extras)
 
 find_package(Gettext REQUIRED)
-file(GLOB RTTR_PO_FILES external/languages/*.po)
+file(GLOB RTTR_PO_FILES CONFIGURE_DEPENDS external/languages/*.po)
 set(RTTR_TRANSLATION_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gen/languages) # Used by copyDepsToBuildDir
 gettext_create_translations(external/languages/rttr.pot ALL
     DESTINATION ${RTTR_TRANSLATION_OUTPUT}

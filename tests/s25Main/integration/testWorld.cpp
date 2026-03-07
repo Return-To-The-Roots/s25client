@@ -8,6 +8,7 @@
 #include "RttrConfig.h"
 #include "RttrForeachPt.h"
 #include "files.h"
+#include "helpers/IdRange.h"
 #include "lua/GameDataLoader.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/MockLocalGameState.h"
@@ -200,16 +201,16 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, hbPos));
     // All harbors valid
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == hbPos.size());
-    for(unsigned startHb = 1; startHb < world.GetNumHarborPoints(); startHb++)
+    for(const auto startHb : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            unsigned seaId = world.GetSeaId(startHb, dir);
+            SeaId seaId = world.GetSeaId(startHb, dir);
             if(!seaId)
                 continue;
             MapPoint startPt = world.GetCoastalPoint(startHb, seaId);
             BOOST_TEST_REQUIRE(startPt == world.GetNeighbour(world.GetHarborPoint(startHb), dir));
-            for(unsigned targetHb = 1; targetHb < world.GetNumHarborPoints(); targetHb++)
+            for(const auto targetHb : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
             {
                 MapPoint destPt = world.GetCoastalPoint(targetHb, seaId);
                 BOOST_TEST_REQUIRE(destPt.isValid());

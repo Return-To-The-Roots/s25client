@@ -7,6 +7,7 @@
 #include "helpers/PtrSpan.h"
 #include "noMovable.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapTypes.h"
 #include "gameTypes/ShipDirection.h"
 #include <list>
 #include <memory>
@@ -52,9 +53,9 @@ class noShip : public noMovable
     friend constexpr auto maxEnumValue(State) { return State::SeaattackReturnDriving; }
 
     /// Das Meer, auf dem dieses Schiff fährt
-    unsigned short seaId_;
+    SeaId seaId_;
     /// Zielpunkt des Schiffes
-    unsigned goal_harborId;
+    HarborId goalHarbor;
     /// Anlegepunkt am Zielhafen, d.h. die Richtung relativ zum Zielpunkt
     unsigned char goal_dir;
     /// Namen des Schiffs
@@ -72,7 +73,7 @@ class noShip : public noMovable
     /// Anzahl der Soldaten, die noch kommen müssten
     unsigned remaining_sea_attackers;
     /// Heimathafen der Schiffs-Angreifer
-    unsigned home_harbor;
+    HarborId homeHarbor;
     /// Anzahl an Strecke, die das Schiff schon seit Expeditionsstart zurückgelegt hat
     unsigned covered_distance;
 
@@ -145,7 +146,7 @@ public:
     /// Gibt den Besitzer zurück
     unsigned char GetPlayerId() const { return ownerId_; }
     /// Gibt die ID des Meeres zurück, auf dem es sich befindet
-    unsigned short GetSeaID() const { return seaId_; }
+    SeaId GetSeaID() const { return seaId_; }
     /// Gibt den Schiffsnamen zurück
     const std::string& GetName() const { return name; }
     /// Hat das Schiff gerade nichts zu tun
@@ -182,18 +183,18 @@ public:
     unsigned GetVisualRange() const;
 
     /// Return the harbor ID where the ship currently is. Only valid when waiting for expedition instructions
-    unsigned GetCurrentHarbor() const;
+    HarborId GetCurrentHarbor() const;
     /// Return the harbor the ship is currently targeting (0 if ship is idling)
-    unsigned GetTargetHarbor() const;
+    HarborId GetTargetHarbor() const;
     /// Return the source harbor from where the ship left the current mission (0 if ship is idling)
-    unsigned GetHomeHarbor() const;
+    HarborId GetHomeHarbor() const;
 
     /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
     void GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction>& route);
     /// Startet eine Expedition
-    void StartExpedition(unsigned homeHarborId);
+    void StartExpedition(HarborId homeHarborId);
     /// Startet eine Erkundungs-Expedition
-    void StartExplorationExpedition(unsigned homeHarborId);
+    void StartExplorationExpedition(HarborId homeHarborId);
     /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
     void ContinueExpedition(ShipDirection dir);
     /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
@@ -209,11 +210,11 @@ public:
     bool IsGoingToHarbor(const nobHarborBuilding& hb) const;
 
     /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-    void PrepareTransport(unsigned homeHarborId, MapPoint goal, std::list<std::unique_ptr<noFigure>> figures,
+    void PrepareTransport(HarborId homeHarborId, MapPoint goal, std::list<std::unique_ptr<noFigure>> figures,
                           std::list<std::unique_ptr<Ware>> wares);
 
     /// Belädt das Schiff mit Schiffs-Angreifern
-    void PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, std::vector<std::unique_ptr<nofAttacker>> attackers);
+    void PrepareSeaAttack(HarborId homeHarborId, MapPoint goal, std::vector<std::unique_ptr<nofAttacker>> attackers);
     /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
     void SeaAttackerWishesNoReturn();
     /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt

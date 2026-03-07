@@ -4,10 +4,10 @@
 
 set(RTTR_Assert_Enabled 2 CACHE STRING "Status of RTTR assertions: 0=Disabled, 1=Enabled, 2=Default(Enabled only in debug)")
 
-file(GLOB COMMON_SRC src/*.cpp)
-file(GLOB COMMON_HEADERS include/*.h include/*.hpp)
-file(GLOB COMMON_HELPERS_SRC src/helpers/*.cpp)
-file(GLOB COMMON_HELPERS_HEADERS include/helpers/*.h include/helpers/*.hpp)
+file(GLOB COMMON_SRC CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB COMMON_HEADERS CONFIGURE_DEPENDS include/*.h include/*.hpp)
+file(GLOB COMMON_HELPERS_SRC CONFIGURE_DEPENDS src/helpers/*.cpp)
+file(GLOB COMMON_HELPERS_HEADERS CONFIGURE_DEPENDS include/helpers/*.h include/helpers/*.hpp)
 set(ALL_SRC ${COMMON_SRC} ${COMMON_HEADERS} ${COMMON_HELPERS_SRC} ${COMMON_HELPERS_HEADERS})
 
 source_group(src FILES ${COMMON_SRC} ${COMMON_HEADERS})
