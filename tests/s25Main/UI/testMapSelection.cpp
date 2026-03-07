@@ -104,11 +104,11 @@ SelectionMapInputData createInputForSelectionMap(rttr::test::TmpFolder const& tm
     storeBitmap(conqueredPath, createBitmapWithOneColor(overlaySize, red));
 
     SelectionMapInputData selectionMapInputData;
-    selectionMapInputData.background = {backgroundPath, 0};
-    selectionMapInputData.map = {mapPath, 0};
-    selectionMapInputData.missionMapMask = {missionmapmaskPath, 0};
-    selectionMapInputData.marker = {markerPath, 0};
-    selectionMapInputData.conquered = {conqueredPath, 0};
+    selectionMapInputData.background = {backgroundPath.string(), 0};
+    selectionMapInputData.map = {mapPath.string(), 0};
+    selectionMapInputData.missionMapMask = {missionmapmaskPath.string(), 0};
+    selectionMapInputData.marker = {markerPath.string(), 0};
+    selectionMapInputData.conquered = {conqueredPath.string(), 0};
     selectionMapInputData.mapOffsetInBackground = mapOffsetInBackground;
     selectionMapInputData.disabledColor = disabledColor;
     selectionMapInputData.missionSelectionInfos = {{red, {Position((mapSize.x * 3) / 4, mapSize.y / 4)}},
