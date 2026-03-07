@@ -157,7 +157,7 @@ public:
     void HandleBuildingFinished(MapPoint pt, BuildingType bld);
 
     void HandleExpedition(MapPoint pt);
-    void HandleExpedition(const noShip* ship);
+    void HandleExpedition(const noShip& ship);
     // Handle chopped tree, test for new space
     void HandleTreeChopped(MapPoint pt);
     // Handle new colony
@@ -175,8 +175,8 @@ public:
     /// sea attack
     void TrySeaAttack();
     /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when
-    /// onlyempty=true there has to be at least 1 other free harborid
-    bool HarborPosRelevant(unsigned harborid, bool onlyempty = false) const;
+    /// onlyempty=true there has to be at least 1 other free harborId
+    bool HarborPosRelevant(HarborId harborId, bool onlyempty = false) const;
     /// Update BQ and farming ground around new building site + road
     void RecalcGround(MapPoint buildingPos, std::vector<Direction>& route_road);
 

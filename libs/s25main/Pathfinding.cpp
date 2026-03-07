@@ -50,11 +50,22 @@ RoadPathDirection GameWorld::FindPathForWareOnRoads(const noRoadNode& start, con
         return RoadPathDirection::None;
 }
 
-bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId,
+bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, HarborId harborId, SeaId seaId,
                                          std::vector<Direction>* route, unsigned* length)
 {
     // Find the distance to the furthest harbor from the target harbor and take that as maximum
     unsigned maxDistance = 0;
+    const MapPoint coastalPoint = GetCoastalPoint(harborId, seaId);
+
+    // already arrived?
+    if(start == coastalPoint)
+    {
+        if(length)
+            *length = 0;
+        if(route)
+            route->clear();
+        return true;
+    }
 
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
     {
@@ -67,7 +78,7 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId
     }
     // Add a few fields reserve
     maxDistance += 6;
-    return FindShipPath(start, GetCoastalPoint(harborId, seaId), maxDistance, route, length);
+    return FindShipPath(start, coastalPoint, maxDistance, route, length);
 }
 
 bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, unsigned maxDistance,

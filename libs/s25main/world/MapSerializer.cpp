@@ -48,7 +48,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
 
             for(const auto& c : curNeighbors)
             {
-                sgd.PushUnsignedInt(c.id);
+                sgd.PushUnsignedInt(c.id.value());
                 sgd.PushUnsignedInt(c.distance);
             }
         }
@@ -115,11 +115,6 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     for(auto& node : world.nodes)
     {
         node.Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
-        if(node.harborId)
-        {
-            HarborPos p(curPos);
-            world.harbor_pos.push_back(p);
-        }
         curPos.x++;
         if(curPos.x >= world.GetWidth())
         {
@@ -128,17 +123,13 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         }
     }
 
-    // Katapultsteine deserialisieren
     sgd.PopObjectContainer(world.catapult_stones, GO_Type::Catapultstone);
 
-    // Meeresinformationen deserialisieren
     world.seas.resize(sgd.PopUnsignedInt());
     for(auto& sea : world.seas)
-    {
         sea.nodes_count = sgd.PopUnsignedInt();
-    }
 
-    // Hafenpositionen serialisieren
+    // Deserialize harbor data
     const unsigned numHarborPositions = sgd.PopUnsignedInt();
     world.harbor_pos.clear();
     world.harbor_pos.reserve(numHarborPositions);
@@ -155,12 +146,14 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
             for(const auto j : helpers::range<unsigned>(numNeighbors))
             {
                 RTTR_UNUSED(j);
-                const auto id = sgd.PopUnsignedInt();
+                const auto id = HarborId(sgd.PopUnsignedInt());
                 const auto distance = sgd.PopUnsignedInt();
                 neighbor.emplace_back(id, distance);
             }
         }
     }
+    if(sgd.GetGameDataVersion() < 13 && !world.harbor_pos.empty())
+        world.harbor_pos.erase(world.harbor_pos.begin());
 
     sgd.PopObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);
 

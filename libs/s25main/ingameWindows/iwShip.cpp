@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -35,7 +35,7 @@
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* const ship, const DrawPoint& pos)
     : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv),
       gcFactory(gcFactory), player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
-      ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
+      ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(*ship) : 0)
 {
     AddImage(0, DrawPoint(126, 101), LOADER.GetImageN("io", 228));
     AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TextureColor::Grey,
@@ -112,10 +112,12 @@ void iwShip::DrawContent()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(const auto dir : helpers::EnumRange<ShipDirection>{})
+        {
             GetCtrl<Window>(12 + rttr::enum_cast(dir))
-              ->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir,
-                                                                 ship->GetPlayerId())
-                           > 0);
+              ->SetVisible(gwv.GetWorld()
+                             .GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir, ship->GetPlayerId())
+                             .isValid());
+        }
     } else
     {
         // Alle Buttons inklusive Anker in der Mitte ausblenden

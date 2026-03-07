@@ -29,6 +29,7 @@ public:
 
     class iterator
     {
+    protected:
         T value;
 
     public:

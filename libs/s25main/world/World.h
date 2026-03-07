@@ -6,6 +6,7 @@
 
 #include "enum_cast.hpp"
 #include "helpers/PtrSpan.h"
+#include "helpers/StrongIdVector.h"
 #include "world/MapBase.h"
 #include "world/MilitarySquares.h"
 #include "gameTypes/Direction.h"
@@ -53,10 +54,10 @@ class World : public MapBase
     /// Eigenschaften von einem Punkt auf der Map
     std::vector<MapNode> nodes;
 
-    std::vector<Sea> seas;
+    helpers::StrongIdVector<Sea, SeaId> seas;
 
     /// Alle Hafenpositionen
-    std::vector<HarborPos> harbor_pos;
+    helpers::StrongIdVector<HarborPos, HarborId> harbor_pos;
 
     WorldDescription description_;
 
@@ -177,24 +178,24 @@ public:
     template<class T_Predicate>
     bool HasTerrain(MapPoint pt, T_Predicate predicate) const;
 
-    unsigned GetSeaSize(unsigned seaId) const;
+    unsigned GetSeaSize(SeaId seaId) const;
     /// Return the id of the sea at which the coast in the given direction of the harbor lies. 0 = None
-    unsigned short GetSeaId(unsigned harborId, Direction dir) const;
+    SeaId GetSeaId(HarborId harborId, Direction dir) const;
     /// Is the harbor at the given sea
-    bool IsHarborAtSea(unsigned harborId, unsigned short seaId) const;
+    bool IsHarborAtSea(HarborId harborId, SeaId seaId) const;
     /// Return the coast pt for a given harbor (where ships can land) if any
-    MapPoint GetCoastalPoint(unsigned harborId, unsigned short seaId) const;
+    MapPoint GetCoastalPoint(HarborId harborId, SeaId seaId) const;
     /// Return the number of harbor points
-    unsigned GetNumHarborPoints() const { return harbor_pos.size() - 1; }
+    unsigned GetNumHarborPoints() const { return harbor_pos.size(); }
     /// Return the coordinates for a given harbor point
-    MapPoint GetHarborPoint(unsigned harborId) const;
+    MapPoint GetHarborPoint(HarborId harborId) const;
     /// Return the ID of the harbor point on that node or 0 if there is none
-    unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
-    const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(unsigned harborId, const ShipDirection& dir) const;
+    HarborId GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
+    const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(HarborId harborId, const ShipDirection& dir) const;
     /// Berechnet die Entfernung zwischen 2 Hafenpunkten
-    unsigned CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const;
+    unsigned CalcHarborDistance(HarborId haborId1, HarborId harborId2) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
-    unsigned short GetSeaFromCoastalPoint(MapPoint pt) const;
+    SeaId GetSeaFromCoastalPoint(MapPoint pt) const;
 
     RoadDir toRoadDir(MapPoint& pt, const Direction dir) const
     {
