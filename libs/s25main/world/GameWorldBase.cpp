@@ -339,25 +339,23 @@ HarborId GameWorldBase::GetHarborInDir(const MapPoint pt, const HarborId originH
 {
     RTTR_Assert(originHarborId);
 
-    // Herausfinden, in welcher Richtung sich dieser Punkt vom Ausgangspunkt unterscheidet
-    helpers::OptionalEnum<Direction> coastal_point_dir;
     const MapPoint hbPt = GetHarborPoint(originHarborId);
 
-    for(const auto dir : helpers::EnumRange<Direction>{})
+    // Find sea of harbor point
+    SeaId seaId;
+    for(const auto d : helpers::EnumRange<Direction>{})
     {
-        if(GetNeighbour(hbPt, dir) == pt)
+        if(GetNeighbour(hbPt, d) == pt)
         {
-            coastal_point_dir = dir;
+            seaId = GetSeaId(originHarborId, d);
             break;
         }
     }
+    RTTR_Assert(seaId);
 
-    RTTR_Assert(coastal_point_dir);
-
-    SeaId seaId = GetSeaId(originHarborId, *coastal_point_dir);
     const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(originHarborId, dir);
 
-    for(auto neighbor : neighbors)
+    for(const auto& neighbor : neighbors)
     {
         if(IsHarborAtSea(neighbor.id, seaId) && isHarborOk(neighbor.id))
             return neighbor.id;
