@@ -5,6 +5,7 @@
 #include "world/MapLoader.h"
 #include "Game.h"
 #include "BuildingEventLogger.h"
+#include "CountryEventLogger.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
@@ -421,6 +422,21 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
         BuildingEventLogger::LogBuildingConstructed(world.GetEvMgr().GetCurrentGF(), i, BuildingType::Headquarters,
                                                     hq->GetObjId(), hqPositions[i].x, hqPositions[i].y);
     }
+
+    const unsigned initialGF = world.GetEvMgr().GetCurrentGF();
+    if(initialGF == 0)
+    {
+        for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+        {
+            if(!world.GetPlayer(i).isUsed())
+                continue;
+
+            const int initialCountrySize =
+              static_cast<int>(world.GetPlayer(i).GetStatisticCurrentValue(StatisticType::Country));
+            CountryEventLogger::LogCountrySizeChange(initialGF, static_cast<unsigned char>(i), initialCountrySize);
+        }
+    }
+
     return true;
 }
 

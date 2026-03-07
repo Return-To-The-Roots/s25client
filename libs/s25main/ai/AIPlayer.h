@@ -44,21 +44,21 @@ public:
 
     void saveStats(unsigned gf) const;
 
-    /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
+    /// Own player ID that the AI should know, e.g. when exploring the map
     const unsigned char playerId;
-    /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
+    /// Reference to the own GameClientPlayer, i.e. the economy, to gather relevant information from it
     const GamePlayer& player;
-    /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
+    /// Reference to the game world to gather relevant information from it
     const GameWorldBase& gwb;
-    /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
-    /// (beispielsweise Siegesbedingungen, FOW usw.)
+    /// Reference to global game settings, as they can also influence further decisions
+    /// (for example victory conditions, FoW, etc.)
     const GlobalGameSettings& ggs;
 
 protected:
-    /// Queue der GameCommands, die noch bearbeitet werden müssen
+    /// Queue of game commands that still need to be processed
     std::vector<gc::GameCommandPtr> gcs;
-    /// Stärke der KI
+    /// AI difficulty level
     const AI::Level level;
-    /// Abstrahiertes Interfaces, leitet Befehle weiter an
+    /// Abstracted interface that forwards commands
     AIInterface aii;
 };

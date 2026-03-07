@@ -20,7 +20,7 @@ struct StatsConfig
     std::string screensPath = "/home/pavel/s2/manual/screens/";
     bool disableEventLogging = false;
 
-    std::string weightsPath = "/home/pavel/s2/volume/config/version_DB.yaml";
+    std::string weightsPath = "/home/pavel/s2/volume/config/Version_AAAAA.yaml";
 };
 
 extern StatsConfig STATS_CONFIG;

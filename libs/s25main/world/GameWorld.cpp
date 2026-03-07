@@ -4,6 +4,7 @@
 
 #include "world/GameWorld.h"
 #include "CombatLossTracker.h"
+#include "CountryEventLogger.h"
 #include "CombatEventLogger.h"
 #include "EventManager.h"
 #include "GameInterface.h"
@@ -477,9 +478,12 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
         MakeVisibleAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 
     // Notify players
+    const unsigned currentGF = GetEvMgr().GetCurrentGF();
     for(unsigned i = 0; i < GetNumPlayers(); ++i)
     {
         GetPlayer(i).ChangeStatisticValue(StatisticType::Country, sizeChanges[i]);
+        if(currentGF > 0 && sizeChanges[i] != 0)
+            CountryEventLogger::LogCountrySizeChange(currentGF, static_cast<unsigned char>(i), sizeChanges[i]);
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)

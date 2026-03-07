@@ -9,18 +9,18 @@
 class SerializedGameData;
 class nobUsual;
 
-/// Klasse für den Schmied
+/// Class for the armorer
 class nofArmorer : public nofWorkman
 {
 private:
-    /// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
+    /// Determines what the armorer should forge next (always alternating sword and shield)
     bool sword_shield;
 
 protected:
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override;
-    /// Der Arbeiter erzeugt eine Ware
+    /// The worker produces one ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
     void HandleDerivedEvent(unsigned id) override;
 

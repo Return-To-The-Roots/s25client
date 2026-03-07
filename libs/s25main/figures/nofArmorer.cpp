@@ -60,7 +60,7 @@ unsigned short nofArmorer::GetCarryID() const
         return 56;
     else
     {
-        // Je nach Nation einen bestimmtem Schild fertigen
+        // Produce a nation-specific shield
         switch(world->GetPlayer(player).nation)
         {
             case Nation::Africans: return 60; //-V525
@@ -86,7 +86,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
                 nofWorkman::HandleStateWaiting1();
             } else
             {
-                // Nach 1. Warten wird gearbeitet
+                // After the first waiting phase, start working
                 current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
                 state = State::Work;
                 workplace->is_working = true;

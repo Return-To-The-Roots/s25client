@@ -5,6 +5,7 @@ This document summarizes the runtime event loggers currently available in `s25ma
 - `WareEventLogger`
 - `BuildingEventLogger`
 - `CombatEventLogger`
+- `CountryEventLogger`
 
 All loggers are gated by `STATS_CONFIG.statsPath`. If it is empty, no log file is written.
 
@@ -92,3 +93,26 @@ Tracks combat-related AI and world events for debugging and analysis.
 
 ### Notes
 - Capture logging includes a destroyed-building summary gathered before capture finalization.
+
+## CountryEventLogger
+
+### Purpose
+Tracks country-size changes per player.
+
+### Hooks
+- Territory recalculation in `GameWorld::RecalcTerritory(...)`
+- Initial country-size snapshot after HQ placement at gameframe `0`
+
+### Output
+- File: `country_log.csv`
+- Format: CSV
+- Header:
+  - `gameframe,playerId,change`
+
+### Semantics
+- `change > 0`: country size increased
+- `change < 0`: country size decreased
+- At gameframe `0`, the logger writes each active player's initial country size as a positive value.
+
+### Notes
+- `playerId` is written as 1-based (`playerId + 1`).
