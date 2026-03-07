@@ -178,7 +178,22 @@ void Game::CheckObjective()
             world_.GetGameInterface()->GI_TeamWinner(*bestTeam);
         else
             world_.GetGameInterface()->GI_Winner(bestPlayer);
+
+        if(world_.HasLua() && IsWinnerHuman(bestTeam.value_or(0), bestPlayer))
+            world_.GetLua().EventHumanWinner();
     }
+}
+
+bool Game::IsWinnerHuman(unsigned bestTeam, unsigned bestPlayer) const
+{
+    if(world_.GetPlayer(bestPlayer).isHuman())
+        return true;
+
+    for(auto i = 0u; i < world_.GetNumPlayers(); ++i)
+        if(world_.GetPlayer(bestTeam & (1 << i)).isHuman())
+            return true;
+
+    return false;
 }
 
 AIPlayer* Game::GetAIPlayer(unsigned id)

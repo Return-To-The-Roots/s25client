@@ -38,6 +38,7 @@ private:
     void StatisticStep();
     /// Check if the objective was reached (if set)
     void CheckObjective();
+    bool IsWinnerHuman(unsigned bestTeam, unsigned bestPlayer) const;
 
     bool started_, finished_;
     std::unique_ptr<LuaInterfaceGame> lua;
