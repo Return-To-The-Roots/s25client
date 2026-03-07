@@ -10,6 +10,7 @@
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
 #include "factories/BuildingFactory.h"
+#include "helpers/IdRange.h"
 #include "lua/GameDataLoader.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
@@ -146,7 +147,7 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
             world_.harbor_pos.push_back(HarborPos(pt));
 
         // Will be set later
-        node.harborId = 0;
+        node.harborId.reset();
 
         node.t1 = getTerrainFromS2(t1 & 0x3F); // Only lower 6 bits
         node.t2 = getTerrainFromS2(t2 & 0x3F); // Only lower 6 bits
@@ -173,7 +174,7 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
         node.reserved = false;
         node.owner = 0;
         std::fill(node.boundary_stones.begin(), node.boundary_stones.end(), 0);
-        node.seaId = 0;
+        node.seaId.reset();
 
         Visibility fowVisibility;
         switch(exploration)
@@ -427,42 +428,48 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
         MapNode& node = world.GetNodeInt(pt);
-        node.seaId = 0u;
-        node.harborId = 0;
+        node.seaId.reset();
+        node.harborId.reset();
     }
 
-    /// Weltmeere vermessen
+    /// Determine all seas
     world.seas.clear();
+    SeaId curSeaId(1);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        // Noch kein Meer an diesem Punkt  Aber trotzdem Teil eines noch nicht vermessenen Meeres?
+        // Point is not yet assigned a sea but should be
         if(!world.GetNode(pt).seaId && world.IsSeaPoint(pt))
         {
-            unsigned sea_size = MeasureSea(world, pt, world.seas.size() + 1);
-            world.seas.push_back(World::Sea(sea_size));
+            const auto seaSize = MeasureSea(world, pt, curSeaId);
+            world.seas.push_back(World::Sea(seaSize));
+            curSeaId = curSeaId.next();
         }
     }
 
-    /// Die Meere herausfinden, an die die Hafenpunkte grenzen
-    unsigned curHarborId = 1;
-    for(auto it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
+    /// Determine seas adjacent to the harbor places
+    HarborId curHarborId(1);
+    for(auto it = world.harbor_pos.begin(); it != world.harbor_pos.end();)
     {
-        std::vector<bool> hasCoastAtSea(world.seas.size() + 1, false);
+        helpers::StrongIdVector<bool, SeaId> hasCoastAtSea(world.seas.size(), false);
         bool foundCoast = false;
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
+            SeaId seaId;
             // Skip point at NW as often there is no path from it if the harbor is north of an island
-            unsigned short seaId =
-              (dir == Direction::NorthWest) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
-            // Only 1 coastal point per sea
-            if(hasCoastAtSea[seaId])
-                seaId = 0;
-            else
-                hasCoastAtSea[seaId] = true;
-
+            if(dir != Direction::NorthWest)
+            {
+                seaId = world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
+                if(seaId)
+                {
+                    foundCoast = true;
+                    // Only 1 coastal point per sea
+                    if(hasCoastAtSea[seaId])
+                        seaId.reset();
+                    else
+                        hasCoastAtSea[seaId] = true;
+                }
+            }
             it->seaIds[dir] = seaId;
-            if(seaId)
-                foundCoast = true;
         }
         if(!foundCoast)
         {
@@ -470,7 +477,8 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
             it = world.harbor_pos.erase(it);
         } else
         {
-            world.GetNodeInt(it->pos).harborId = curHarborId++;
+            world.GetNodeInt(it->pos).harborId = curHarborId;
+            curHarborId = curHarborId.next();
             ++it;
         }
     }
@@ -479,7 +487,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     CalcHarborPosNeighbors(world);
 
     // Validate
-    for(unsigned startHbId = 1; startHbId < world.harbor_pos.size(); ++startHbId)
+    for(const auto startHbId : helpers::idRange<HarborId>(world.harbor_pos.size()))
     {
         const HarborPos& startHbPos = world.harbor_pos[startHbId];
         for(const std::vector<HarborPos::Neighbor>& neighbors : startHbPos.neighbors)
@@ -530,7 +538,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
     // FIFO queue used for a BFS
     std::queue<CalcHarborPosNeighborsNode> todo_list;
 
-    for(unsigned startHbId = 1; startHbId < world.harbor_pos.size(); ++startHbId)
+    for(const auto startHbId : helpers::idRange<HarborId>(world.harbor_pos.size()))
     {
         RTTR_Assert(todo_list.empty());
 
@@ -540,17 +548,17 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         // 1 - Coast to a harbor
         std::vector<int8_t> ptToVisitOrHb(ptIsSeaPt);
 
-        std::vector<bool> hbFound(world.harbor_pos.size(), false);
+        helpers::StrongIdVector<bool, HarborId> hbFound(world.harbor_pos.size(), false);
         // For each sea, store the coastal point indices and their harbor
-        std::vector<std::multimap<unsigned, unsigned>> coastToHarborPerSea(world.seas.size() + 1);
+        helpers::StrongIdVector<std::multimap<unsigned, HarborId>, SeaId> coastToHarborPerSea(world.seas.size());
         std::vector<MapPoint> ownCoastalPoints;
 
         // mark coastal points around harbors
-        for(unsigned otherHbId = 1; otherHbId < world.harbor_pos.size(); ++otherHbId)
+        for(const auto otherHbId : helpers::idRange<HarborId>(world.harbor_pos.size()))
         {
             for(const auto dir : helpers::EnumRange<Direction>{})
             {
-                unsigned seaId = world.GetSeaId(otherHbId, dir);
+                SeaId seaId = world.GetSeaId(otherHbId, dir);
                 // No sea? -> Next
                 if(!seaId)
                     continue;
@@ -573,7 +581,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         for(const MapPoint& ownCoastPt : ownCoastalPoints)
         {
             // Special case: Get all harbors that share the coast point with us
-            unsigned short seaId = world.GetSeaFromCoastalPoint(ownCoastPt);
+            SeaId seaId = world.GetSeaFromCoastalPoint(ownCoastPt);
             auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(world.GetIdx(ownCoastPt));
             for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
             {
@@ -605,11 +613,11 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 if(ptValue > 0) // found harbor(s)
                 {
                     ShipDirection shipDir = world.GetShipDir(world.harbor_pos[startHbId].pos, curPt);
-                    unsigned seaId = world.GetSeaFromCoastalPoint(curPt);
+                    SeaId seaId = world.GetSeaFromCoastalPoint(curPt);
                     auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(idx);
                     for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
                     {
-                        unsigned otherHbId = it->second;
+                        const HarborId otherHbId = it->second;
                         if(hbFound[otherHbId])
                             continue;
 
@@ -623,7 +631,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                         for(const auto hbDir : helpers::EnumRange<Direction>{})
                         {
                             if(otherHb.seaIds[hbDir] == seaId && world.GetNeighbour(otherHb.pos, hbDir) != curPt)
-                                otherHb.seaIds[hbDir] = 0;
+                                otherHb.seaIds[hbDir].reset();
                         }
                     }
                 }
@@ -636,7 +644,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
 /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
 /// Wasserpunkte mit der gleichen ID belegt und die Anzahl zur�ckgibt
-unsigned MapLoader::MeasureSea(World& world, const MapPoint start, unsigned short seaId)
+unsigned MapLoader::MeasureSea(World& world, const MapPoint start, SeaId seaId)
 {
     // Breitensuche von diesem Punkt aus durchf�hren
     std::vector<bool> visited(world.GetWidth() * world.GetHeight(), false);

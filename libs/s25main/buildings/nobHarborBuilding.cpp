@@ -791,7 +791,7 @@ void nobHarborBuilding::ShipLost(noShip* /*ship*/)
 }
 
 /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
-unsigned nobHarborBuilding::GetHarborPosID() const
+HarborId nobHarborBuilding::GetHarborPosID() const
 {
     return world->GetHarborPointID(pos);
 }
@@ -850,14 +850,14 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
     if(world->GetGOT(pos) != GO_Type::NobHarborbuilding)
         return connections;
 
-    std::vector<nobHarborBuilding*> harbor_buildings;
-    for(unsigned short seaId : seaIds)
+    std::vector<nobHarborBuilding*> harborBuildings;
+    for(SeaId seaId : seaIds)
     {
-        if(seaId != 0)
-            world->GetPlayer(player).GetHarborsAtSea(harbor_buildings, seaId);
+        if(seaId)
+            world->GetPlayer(player).AddHarborsAtSea(harborBuildings, seaId);
     }
 
-    for(auto* harbor_building : harbor_buildings)
+    for(auto* harbor_building : harborBuildings)
     {
         ShipConnection sc;
         sc.dest = harbor_building;
@@ -1181,9 +1181,9 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
     }
     return buildings;
 }
-/// Gibt die Angreifergebäude zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
+
 std::vector<nobHarborBuilding::SeaAttackerBuilding>
-nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>& defender_harbors)
+nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defender_harbors)
 {
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     sortedMilitaryBlds all_buildings = world->LookForMilitaryBuildings(pos, 3);
@@ -1204,7 +1204,7 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
 
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
         unsigned min_distance = 0xffffffff;
-        for(unsigned int defender_harbor : defender_harbors)
+        for(HarborId defender_harbor : defender_harbors)
         {
             min_distance = std::min(min_distance, world->CalcHarborDistance(GetHarborPosID(), defender_harbor));
         }
@@ -1233,11 +1233,11 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
 void nobHarborBuilding::AddSeaAttacker(std::unique_ptr<nofAttacker> attacker)
 {
     unsigned best_distance = 0xffffffff;
-    unsigned best_harbor_point = 0xffffffff;
+    HarborId best_harbor_point;
     RTTR_Assert(attacker->GetAttackedGoal());
-    std::vector<unsigned> harbor_points =
+    std::vector<HarborId> harbor_points =
       world->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
-    for(unsigned int harbor_point : harbor_points)
+    for(HarborId harbor_point : harbor_points)
     {
         unsigned tmp_distance = world->CalcHarborDistance(this->GetHarborPosID(), harbor_point);
         if(tmp_distance < best_distance)
@@ -1248,7 +1248,7 @@ void nobHarborBuilding::AddSeaAttacker(std::unique_ptr<nofAttacker> attacker)
     }
 
     // no harbor to target (should not happen) or no target (might happen very very rarely not sure)
-    if(best_harbor_point == 0xffffffff)
+    if(!best_harbor_point)
     {
         // notify target about noShow, notify home that soldier wont return, add to inventory
         attacker->SeaAttackFailedBeforeLaunch(); // set state, remove target & home

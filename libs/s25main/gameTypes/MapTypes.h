@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "FlagType.h"
+#include "helpers/StrongId.h"
 #include <cstdint>
 
 /// Visibility of a node
@@ -43,3 +44,6 @@ constexpr auto maxEnumValue(PointRoad)
 {
     return PointRoad::Boat;
 }
+
+using SeaId = helpers::StrongId<uint16_t, struct SeaIdTag>;
+using HarborId = helpers::StrongId<uint32_t, struct HarborIdTag>;

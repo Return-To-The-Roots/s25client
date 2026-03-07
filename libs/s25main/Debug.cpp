@@ -238,7 +238,7 @@ bool DebugInfo::SendString(const char* str, size_t len)
         len = strlen(str) + 1;
 
     if(!SendUnsigned(len))
-        return (false);
+        return false;
 
     return (Send(str, len));
 }

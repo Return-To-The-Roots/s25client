@@ -55,8 +55,8 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
             worldNode.shadow = rttr::test::randomValue(0, 20);
             worldNode.resources = Resource(rttr::test::randomValue<uint8_t>());
             worldNode.reserved = rttr::test::randomValue(0, 1) == 0;
-            worldNode.seaId = rttr::test::randomValue(0, 20);
-            worldNode.harborId = rttr::test::randomValue(0, 20);
+            worldNode.seaId = SeaId(rttr::test::randomValue(0, 20));
+            worldNode.harborId = HarborId(rttr::test::randomValue(0, 20));
         }
         world.InitAfterLoad();
         world.GetPlayer(0).name = "Human";

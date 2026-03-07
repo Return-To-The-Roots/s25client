@@ -90,12 +90,13 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         BOOST_TEST_REQUIRE(hqPos[1].x < hqPos[2].x);
 
         // Harbors must be at same sea
-        BOOST_TEST_REQUIRE(world.IsHarborAtSea(1, 1));
-        BOOST_TEST_REQUIRE(world.IsHarborAtSea(3, 1));
-        BOOST_TEST_REQUIRE(world.IsHarborAtSea(6, 1));
-        harborPos[0] = world.GetHarborPoint(1);
-        harborPos[1] = world.GetHarborPoint(3);
-        harborPos[2] = world.GetHarborPoint(6);
+        constexpr SeaId seaId(1);
+        BOOST_TEST_REQUIRE(world.IsHarborAtSea(HarborId(1), seaId));
+        BOOST_TEST_REQUIRE(world.IsHarborAtSea(HarborId(3), seaId));
+        BOOST_TEST_REQUIRE(world.IsHarborAtSea(HarborId(6), seaId));
+        harborPos[0] = world.GetHarborPoint(HarborId(1));
+        harborPos[1] = world.GetHarborPoint(HarborId(3));
+        harborPos[2] = world.GetHarborPoint(HarborId(6));
         // Place harbors (Player 0 has none)
         for(unsigned i = 1; i < 3; i++)
         {
@@ -105,7 +106,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
               BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, harborPos[i], i, Nation(i));
             BOOST_TEST_REQUIRE(hb);
             BuildRoadForBlds(harborPos[i], hqPos[i]);
-            MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), 1);
+            MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), seaId);
             shipPos = world.MakeMapPoint(Position(shipPos) + (Position(shipPos) - Position(harborPos[i])) * 8);
             BOOST_TEST_REQUIRE(shipPos.isValid());
             auto& ship = world.AddFigure(shipPos, std::make_unique<noShip>(shipPos, i));
@@ -114,21 +115,21 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 
         // Build some military buildings
 
-        milBld1NearPos = FindBldPos(world.GetHarborPoint(3) + MapPoint(3, 2), BuildingQuality::House, 1);
+        milBld1NearPos = FindBldPos(world.GetHarborPoint(HarborId(3)) + MapPoint(3, 2), BuildingQuality::House, 1);
         BOOST_TEST_REQUIRE(milBld1NearPos.isValid());
         BOOST_TEST_REQUIRE(world.GetBQ(milBld1NearPos, 1) >= BuildingQuality::House);
         milBld1Near = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Near);
 
-        milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 4), BuildingQuality::House, 1);
+        milBld1FarPos = FindBldPos(world.GetHarborPoint(HarborId(4)) - MapPoint(1, 4), BuildingQuality::House, 1);
         BOOST_TEST_REQUIRE(milBld1FarPos.isValid());
         BOOST_TEST_REQUIRE(world.GetBQ(milBld1FarPos, 1) >= BuildingQuality::House);
         milBld1Far = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Far);
 
-        milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(2, 2), BuildingQuality::House, 2);
+        milBld2Pos = FindBldPos(world.GetHarborPoint(HarborId(6)) - MapPoint(2, 2), BuildingQuality::House, 2);
         BOOST_TEST_REQUIRE(milBld2Pos.isValid());
         BOOST_TEST_REQUIRE(world.GetBQ(milBld2Pos, 2) >= BuildingQuality::House);
         milBld2 = dynamic_cast<nobMilitary*>(
@@ -352,8 +353,8 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     BOOST_TEST_REQUIRE(milBld2->GetNumTroops() == 4u);
 
     // Test for unowned harbor
-    const MapPoint harborBot1 = world.GetHarborPoint(7);
-    const MapPoint harborBot2 = world.GetHarborPoint(8);
+    const MapPoint harborBot1 = world.GetHarborPoint(HarborId(7));
+    const MapPoint harborBot2 = world.GetHarborPoint(HarborId(8));
     BOOST_TEST_REQUIRE(world.GetNode(harborBot1).owner == 0u);
     BOOST_TEST_REQUIRE(world.GetNode(harborBot2).owner == 0u);
     // Place military bld for player 1, first make some owned land
@@ -617,15 +618,15 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
 
     // Still have our harbor
-    const unsigned hbId = world.GetHarborPointID(harborPos[1]);
+    const HarborId hbId = world.GetHarborPointID(harborPos[1]);
     BOOST_TEST_REQUIRE(hbId);
     // Should have coast at NE (NW is skipped)
-    BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::West) == 0u);
-    BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::NorthWest) == 0u);
-    BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::NorthEast) == 1u);
-    BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::East) == 0u);
-    BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::SouthEast) == 0u);
-    BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::SouthWest) == 0u);
+    BOOST_TEST_REQUIRE(!world.GetSeaId(hbId, Direction::West));
+    BOOST_TEST_REQUIRE(!world.GetSeaId(hbId, Direction::NorthWest));
+    BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::NorthEast) == SeaId(1));
+    BOOST_TEST_REQUIRE(!world.GetSeaId(hbId, Direction::East));
+    BOOST_TEST_REQUIRE(!world.GetSeaId(hbId, Direction::SouthEast));
+    BOOST_TEST_REQUIRE(!world.GetSeaId(hbId, Direction::SouthWest));
 
     // So we should still be able to attack
     BOOST_TEST_REQUIRE(gwv.GetNumSoldiersForSeaAttack(harborPos[1]) == 5u);

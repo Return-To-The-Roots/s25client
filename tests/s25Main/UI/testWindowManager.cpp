@@ -48,7 +48,20 @@ struct WMFixture : mock::cleanup
     {
         dsk = static_cast<TestDesktop*>(WINDOWMANAGER.Switch(std::make_unique<TestDesktop>()));
         MOCK_EXPECT(dsk->Msg_MouseMove).once().returns(true);
+        MOCK_EXPECT(dsk->Msg_LeftDown).once().returns(true);
+        MOCK_EXPECT(dsk->Msg_LeftUp).once().returns(true);
         WINDOWMANAGER.Draw();
+
+        // Ensure next click in test won't be registered as double-click
+        // by doing a fake click outside of any relevant space and time
+        MouseCoords mc1(-100, -100);
+        mc1.ldown = true;
+        MouseCoords mc1_u(mc1.pos);
+        video->tickCount_ = DOUBLE_CLICK_INTERVAL * 100;
+        WINDOWMANAGER.Msg_LeftDown(mc1);
+        WINDOWMANAGER.Msg_LeftUp(mc1);
+        video->tickCount_ = 0;
+
         mock::verify(*dsk);
         mock::reset(*dsk);
     }
