@@ -1,9 +1,11 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "helpers/EnumRange.h"
+#include "helpers/IdRange.h"
 #include "helpers/Range.h"
+#include "helpers/StrongIdVector.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -142,4 +144,43 @@ BOOST_AUTO_TEST_CASE(RangeClassIsPythonLike)
         const auto r = helpers::range(4, 4);
         BOOST_TEST(IntVec(r.begin(), r.end()) == IntVec{});
     }
+}
+
+BOOST_AUTO_TEST_CASE(IdRangeWorks)
+{
+    using MyId = helpers::StrongId<unsigned, struct MyIdTag>;
+    using Vec = std::vector<MyId>;
+
+    // Range-based-for support
+    Vec actual;
+    for(const auto i : helpers::idRange<MyId>(3))
+        actual.push_back(i);
+    BOOST_TEST_REQUIRE(actual.size() == 3u);
+    BOOST_TEST(actual[0] == MyId(1));
+    BOOST_TEST(actual[1] == MyId(2));
+    BOOST_TEST(actual[2] == MyId(3));
+
+    actual.clear();
+    for(const auto i : helpers::idRangeAfter(MyId(2), 4))
+        actual.push_back(i);
+    BOOST_TEST_REQUIRE(actual.size() == 2u);
+    BOOST_TEST(actual[0] == MyId(3));
+    BOOST_TEST(actual[1] == MyId(4));
+
+    actual.clear();
+    for(const auto i : helpers::idRangeAfter(MyId(4), 4))
+        actual.push_back(i); // LCOV_EXCL_LINE
+    BOOST_TEST(actual.empty());
+}
+
+BOOST_AUTO_TEST_CASE(VectorWithStrongId)
+{
+    using MyId = helpers::StrongId<unsigned, struct MyIdTag>;
+    helpers::StrongIdVector<int, MyId> vec(3);
+    int ctr = 0;
+    for(int& i : vec)
+        i = ++ctr;
+    ctr = 0;
+    for(const auto i : helpers::idRange<MyId>(vec.size()))
+        BOOST_TEST(vec[i] == ++ctr);
 }

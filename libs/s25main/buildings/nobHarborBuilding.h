@@ -6,6 +6,7 @@
 
 #include "helpers/EnumArray.h"
 #include "nobBaseWarehouse.h"
+#include "gameTypes/MapTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include <list>
 
@@ -51,7 +52,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     /// Bestell-Ware-Event
     const GameEvent* orderware_ev;
     /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
-    helpers::EnumArray<uint16_t, Direction> seaIds;
+    helpers::EnumArray<SeaId, Direction> seaIds;
     /// Liste von Waren, die weggeschifft werden sollen
     std::list<std::unique_ptr<Ware>> wares_for_ships;
     /// Liste von Menschen, die weggeschifft werden sollen
@@ -146,7 +147,7 @@ public:
     void RemoveDependentFigure(noFigure& figure) override;
 
     /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
-    unsigned GetHarborPosID() const;
+    HarborId GetHarborPosID() const;
 
     struct ShipConnection
     {
@@ -197,7 +198,7 @@ public:
 
     /// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
     /// defender_harbors sind dabei mögliche Zielhäfen
-    std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>& defender_harbors);
+    std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defender_harbors);
     /// Gibt verfügbare Angreifer zurück
     std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaIdAttack();
 

@@ -36,8 +36,6 @@ void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
     this->lt = lt;
     GameObject::ResetCounters();
 
-    // Dummy so that the harbor "0" might be used for ships with no particular destination
-    harbor_pos.push_back(HarborPos(MapPoint::Invalid()));
     noNodeObj = std::make_unique<noNothing>();
 }
 
@@ -338,25 +336,24 @@ bool World::IsWaterPoint(const MapPoint pt) const
     return World::IsOfTerrain(pt, [](const auto& desc) { return desc.kind == TerrainKind::Water; });
 }
 
-unsigned World::GetSeaSize(const unsigned seaId) const
+unsigned World::GetSeaSize(const SeaId seaId) const
 {
-    RTTR_Assert(seaId > 0 && seaId <= seas.size());
-    return seas[seaId - 1].nodes_count;
+    RTTR_Assert(seaId && seaId.value() <= seas.size());
+    return seas[seaId].nodes_count;
 }
 
-unsigned short World::GetSeaId(const unsigned harborId, const Direction dir) const
+SeaId World::GetSeaId(const HarborId harborId, const Direction dir) const
 {
     RTTR_Assert(harborId);
     return harbor_pos[harborId].seaIds[dir];
 }
 
-/// Grenzt der Hafen an ein bestimmtes Meer an?
-bool World::IsHarborAtSea(const unsigned harborId, const unsigned short seaId) const
+bool World::IsHarborAtSea(const HarborId harborId, const SeaId seaId) const
 {
     return GetCoastalPoint(harborId, seaId).isValid();
 }
 
-MapPoint World::GetCoastalPoint(const unsigned harborId, const unsigned short seaId) const
+MapPoint World::GetCoastalPoint(const HarborId harborId, const SeaId seaId) const
 {
     RTTR_Assert(harborId);
     RTTR_Assert(seaId);
@@ -401,28 +398,27 @@ void World::RemoveCatapultStone(CatapultStone* cs)
     catapult_stones.remove(cs);
 }
 
-MapPoint World::GetHarborPoint(const unsigned harborId) const
+MapPoint World::GetHarborPoint(const HarborId harborId) const
 {
     RTTR_Assert(harborId);
 
     return harbor_pos[harborId].pos;
 }
 
-const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const unsigned harborId,
+const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const HarborId harborId,
                                                                   const ShipDirection& dir) const
 {
     RTTR_Assert(harborId);
     return harbor_pos[harborId].neighbors[dir];
 }
 
-/// Berechnet die Entfernung zwischen 2 Hafenpunkten
-unsigned World::CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const
+unsigned World::CalcHarborDistance(HarborId haborId1, HarborId harborId2) const
 {
-    if(habor_id1 == harborId2) // special case: distance to self
+    if(haborId1 == harborId2) // special case: distance to self
         return 0;
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
     {
-        for(const HarborPos::Neighbor& n : harbor_pos[habor_id1].neighbors[dir])
+        for(const HarborPos::Neighbor& n : harbor_pos[haborId1].neighbors[dir])
         {
             if(n.id == harborId2)
                 return n.distance;
@@ -432,20 +428,20 @@ unsigned World::CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const
     return 0xffffffff;
 }
 
-unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const
+SeaId World::GetSeaFromCoastalPoint(const MapPoint pt) const
 {
     // Point itself must not be a sea
     if(GetNode(pt).seaId)
-        return 0;
+        return SeaId::invalidValue();
 
     // Should not be inside water itself
     if(IsWaterPoint(pt))
-        return 0;
+        return SeaId::invalidValue();
 
     // Surrounding must be valid sea
     for(const MapPoint nb : GetNeighbours(pt))
     {
-        unsigned short seaId = GetNode(nb).seaId;
+        SeaId seaId = GetNode(nb).seaId;
         if(seaId)
         {
             // Check size (TODO: Others checks like harbor spots?)
@@ -454,7 +450,7 @@ unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const
         }
     }
 
-    return 0;
+    return SeaId::invalidValue();
 }
 
 void World::SetRoad(const MapPoint pt, RoadDir roadDir, PointRoad type)

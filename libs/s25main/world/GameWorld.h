@@ -155,7 +155,7 @@ public:
     void PlaceAndFixWater();
 
     /// Gründet vom Schiff aus eine neue Kolonie, gibt true zurück bei Erfolg
-    bool FoundColony(unsigned harbor_point, unsigned char player, unsigned short seaId);
+    bool FoundColony(HarborId harbor, unsigned char player, SeaId seaId);
     /// Registriert eine Baustelle eines Hafens, die vom Schiff aus gesetzt worden ist
     void AddHarborBuildingSiteFromSea(noBuildingSite* building_site)
     {
@@ -166,7 +166,7 @@ public:
     /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
     bool IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const;
     /// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
-    std::vector<unsigned> GetUnexploredHarborPoints(unsigned hbIdToSkip, unsigned seaId, unsigned playerId) const;
+    std::vector<HarborId> GetUnexploredHarborPoints(HarborId hbIdToSkip, SeaId seaId, unsigned playerId) const;
 
     /// Writeable access to node. Use only for initial map setup!
     MapNode& GetNodeWriteable(MapPoint pt);

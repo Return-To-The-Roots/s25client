@@ -33,8 +33,8 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
         fow[z].Serialize(sgd);
     sgd.PushObject(obj);
     sgd.PushObjectContainer(figures);
-    sgd.PushUnsignedShort(seaId);
-    sgd.PushUnsignedInt(harborId);
+    sgd.PushUnsignedShort(seaId.value());
+    sgd.PushUnsignedInt(harborId.value());
 }
 
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
@@ -72,6 +72,6 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
         fow[z].Deserialize(sgd);
     obj = sgd.PopObject<noBase>();
     sgd.PopObjectContainer(figures);
-    seaId = sgd.PopUnsignedShort();
-    harborId = sgd.PopUnsignedInt();
+    seaId = SeaId(sgd.PopUnsignedShort());
+    harborId = HarborId(sgd.PopUnsignedInt());
 }

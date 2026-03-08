@@ -4,7 +4,7 @@
 
 set(SOURCES_SUBDIRS )
 macro(AddDirectory dir)
-    file(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
+    file(GLOB SUB_FILES CONFIGURE_DEPENDS ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
     set(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
     source_group(${dir} FILES ${SUB_FILES})
 endmacro()
@@ -12,7 +12,7 @@ endmacro()
 AddDirectory(gameData)
 AddDirectory(lua)
 
-file(GLOB SOURCES_OTHER *.cpp *.h)
+file(GLOB SOURCES_OTHER CONFIGURE_DEPENDS *.cpp *.h)
 source_group(other FILES ${SOURCES_OTHER})
 
 find_package(Lua 5.1 REQUIRED)

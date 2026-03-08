@@ -39,10 +39,10 @@ public:
 
     unsigned char GetPlayerId() const { return playerID_; }
     unsigned GetNumPlayers() const { return gwb.GetNumPlayers(); }
-    const std::vector<unsigned>& getUsableHarbors() const { return usableHarbors_; }
+    const std::vector<HarborId>& getUsableHarbors() const { return usableHarbors_; }
 
     bool IsDefeated() const { return player_.IsDefeated(); }
-    /// Return the resource buried on a given spot (gold, coal, ironore, granite (sub), fish, nothing)
+    /// Return the resource buried on a given spot (gold, coal, iron ore, granite (sub), fish, nothing)
     AISubSurfaceResource GetSubsurfaceResource(MapPoint pt) const;
     /// Return the resource on top on a given spot (wood, stones, nothing)
     AISurfaceResource GetSurfaceResource(MapPoint pt) const;
@@ -149,14 +149,14 @@ public:
     /// Return the list of ships
     const std::vector<noShip*>& GetShips() const { return player_.GetShips(); }
     /// Return the ID of a given ship
-    unsigned GetShipID(const noShip* ship) const { return player_.GetShipID(ship); }
+    unsigned GetShipID(const noShip& ship) const { return player_.GetShipID(ship); }
     /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a
     /// given starting harbor
     bool IsExplorationDirectionPossible(MapPoint pt, const nobHarborBuilding* originHarbor,
                                         ShipDirection direction) const;
     /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a
     /// given starting harbor
-    bool IsExplorationDirectionPossible(MapPoint pt, unsigned originHarborID, ShipDirection direction) const;
+    bool IsExplorationDirectionPossible(MapPoint pt, HarborId originHarborID, ShipDirection direction) const;
     Nation GetNation() const { return player_.nation; }
 
     bool SetCoinsAllowed(const nobMilitary* building, bool enabled);
@@ -165,16 +165,16 @@ public:
     bool StartStopExpedition(const nobHarborBuilding* hb, bool start);
     using GameCommandFactory::StartStopExpedition;
 
-    bool FoundColony(const noShip* ship) { return FoundColony(GetShipID(ship)); }
+    bool FoundColony(const noShip& ship) { return FoundColony(GetShipID(ship)); }
     using GameCommandFactory::FoundColony;
 
-    bool TravelToNextSpot(ShipDirection direction, const noShip* ship)
+    bool TravelToNextSpot(ShipDirection direction, const noShip& ship)
     {
         return TravelToNextSpot(direction, GetShipID(ship));
     }
     using GameCommandFactory::TravelToNextSpot;
 
-    bool CancelExpedition(const noShip* ship) { return CancelExpedition(GetShipID(ship)); }
+    bool CancelExpedition(const noShip& ship) { return CancelExpedition(GetShipID(ship)); }
     using GameCommandFactory::CancelExpedition;
 
     bool SetShipYardMode(const nobShipYard* shipyard, bool buildShips);
@@ -212,5 +212,5 @@ private:
     /// ID of AI player
     const unsigned char playerID_;
     /// Harbor ids which have at least one other harbor at the same sea
-    std::vector<unsigned> usableHarbors_;
+    std::vector<HarborId> usableHarbors_;
 };
