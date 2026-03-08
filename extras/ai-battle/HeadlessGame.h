@@ -42,6 +42,7 @@ public:
 private:
     void PrintState();
     void SaveMinimap(unsigned currentGF);
+    void WritePlayersMetadata() const;
 
     boost::filesystem::path map_;
     std::unique_ptr<Savegame> startSave_;

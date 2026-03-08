@@ -19,14 +19,17 @@
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
+#include "gameData/NationConsts.h"
 #include "gameData/GameConsts.h"
 #include "IngameMinimap.h"
+#include "nlohmann/json.hpp"
 #include "s25util/colors.h"
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
 #include <exception>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <utility>
@@ -43,6 +46,30 @@ namespace bnw = boost::nowide;
 using bfs::canonical;
 
 namespace {
+std::string TeamToString(const Team team)
+{
+    switch(team)
+    {
+        case Team::None: return "None";
+        case Team::Random: return "Random";
+        case Team::Team1: return "Team1";
+        case Team::Team2: return "Team2";
+        case Team::Team3: return "Team3";
+        case Team::Team4: return "Team4";
+        case Team::Random1To2: return "Random1To2";
+        case Team::Random1To3: return "Random1To3";
+        case Team::Random1To4: return "Random1To4";
+    }
+    return "Unknown";
+}
+
+std::string ToHexColor(const unsigned color)
+{
+    std::ostringstream ss;
+    ss << "0x" << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << color;
+    return ss.str();
+}
+
 class HeadlessLocalGameState : public ILocalGameState
 {
 public:
@@ -132,6 +159,7 @@ HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, 
         players_.push_back(AIFactory::Create(world_.GetPlayer(playerId).aiInfo, playerId, world_));
 
     world_.InitAfterLoad();
+    WritePlayersMetadata();
 }
 
 HeadlessGame::~HeadlessGame()
@@ -280,6 +308,41 @@ void HeadlessGame::SaveGame(const bfs::path& path) const
     save.Save(path, "AI Battle");
 
     bnw::cout << "Savegame written to " << canonical(path) << '\n';
+}
+
+void HeadlessGame::WritePlayersMetadata() const
+{
+    if(STATS_CONFIG.statsPath.empty())
+        return;
+
+    const bfs::path path = bfs::path(STATS_CONFIG.statsPath) / "players.json";
+    try
+    {
+        bfs::create_directories(path.parent_path());
+
+        nlohmann::json players = nlohmann::json::array();
+        for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
+        {
+            const GamePlayer& player = world_.GetPlayer(playerId);
+            if(player.ps == PlayerState::Locked)
+                continue;
+            players.push_back({{"playerId", player.GetPlayerId() + 1},
+                               {"team", static_cast<unsigned>(player.team)},
+                               {"teamName", TeamToString(player.team)},
+                               {"color", player.color},
+                               {"colorHex", ToHexColor(player.color)},
+                               {"nation", static_cast<unsigned>(player.nation)},
+                               {"nationName", NationNames[player.nation]}});
+        }
+
+        std::ofstream file(path.string(), std::ios::trunc);
+        if(!file)
+            throw std::runtime_error("Could not open " + path.string());
+        file << players.dump(2) << std::endl;
+    } catch(const std::exception& e)
+    {
+        bnw::cerr << "Failed to write player metadata: " << e.what() << std::endl;
+    }
 }
 
 std::string ToString(const std::chrono::milliseconds& time)
