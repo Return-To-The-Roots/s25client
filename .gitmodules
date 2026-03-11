@@ -38,3 +38,6 @@
 [submodule "data/RTTR/MAPS"]
 	path = data/RTTR/MAPS
 	url = https://github.com/Return-To-The-Roots/s25maps.git
+[submodule "external/proto-repo"]
+	path = external/proto-repo
+	url = git@github.com:pakopachevskiy/proto-repo.git

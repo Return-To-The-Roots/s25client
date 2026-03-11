@@ -10,8 +10,10 @@
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
 #include "GlobalGameSettings.h"
+#include "MilitaryEventLogger.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "buildings/noBuilding.h"
 #include "factories/BuildingFactory.h"
 #include "lua/GameDataLoader.h"
@@ -421,6 +423,13 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
                                                          world.GetPlayer(i).nation);
         BuildingEventLogger::LogBuildingConstructed(world.GetEvMgr().GetCurrentGF(), i, BuildingType::Headquarters,
                                                     hq->GetObjId(), hqPositions[i].x, hqPositions[i].y);
+        if(world.GetEvMgr().GetCurrentGF() == 0)
+        {
+            const auto* const warehouse = static_cast<const nobBaseWarehouse*>(hq);
+            MilitaryEventLogger::LogInitialInventoryRecruits(0, static_cast<unsigned char>(i),
+                                                             BuildingType::Headquarters, hq->GetObjId(),
+                                                             warehouse->GetInventory());
+        }
     }
 
     const unsigned initialGF = world.GetEvMgr().GetCurrentGF();

@@ -56,6 +56,20 @@ void LogRecruit(unsigned gf, unsigned char playerId, unsigned char rank, Buildin
     LogEvent(gf, playerId, "rec", rank, buildingType, buildingId, count);
 }
 
+void LogInitialInventoryRecruits(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                                 const Inventory& inventory)
+{
+    for(const Job soldierJob : SOLDIER_JOBS)
+    {
+        const unsigned count = inventory[soldierJob];
+        if(count == 0)
+            continue;
+
+        LogRecruit(gf, playerId, static_cast<unsigned char>(getSoldierRank(soldierJob)), buildingType, buildingId,
+                   count);
+    }
+}
+
 void LogUpgrade(unsigned gf, unsigned char playerId, unsigned char newRank, BuildingType buildingType,
                 unsigned buildingId, unsigned count)
 {

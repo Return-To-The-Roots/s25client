@@ -4,12 +4,15 @@
 
 #pragma once
 
+#include "gameTypes/Inventory.h"
 #include "gameTypes/BuildingType.h"
 
 namespace MilitaryEventLogger {
 
 void LogRecruit(unsigned gf, unsigned char playerId, unsigned char rank, BuildingType buildingType, unsigned buildingId,
                 unsigned count);
+void LogInitialInventoryRecruits(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                                 const Inventory& inventory);
 void LogUpgrade(unsigned gf, unsigned char playerId, unsigned char newRank, BuildingType buildingType,
                 unsigned buildingId, unsigned count = 1);
 void LogLoss(unsigned gf, unsigned char playerId, unsigned char rank, BuildingType targetType, unsigned targetId,
@@ -20,4 +23,3 @@ void LogUndeployment(unsigned gf, unsigned char playerId, unsigned char rank, Bu
                      unsigned buildingId);
 
 } // namespace MilitaryEventLogger
-
