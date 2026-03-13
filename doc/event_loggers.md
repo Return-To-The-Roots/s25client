@@ -8,6 +8,8 @@ This document summarizes the runtime event loggers currently available in `s25ma
 - `CountryEventLogger`
 
 All loggers are gated by `STATS_CONFIG.statsPath`. If it is empty, no log file is written.
+Text and protobuf event loggers buffer new records in memory and flush them when logging reaches the next
+500-gameframe boundary, with a final flush during shutdown.
 
 ## WareEventLogger
 

@@ -4,24 +4,16 @@
 
 #include "CombatEventLogger.h"
 
-#include "ai/aijh/StatsConfig.h"
+#include "EventLogBatchWriter.h"
 #include "gameData/BuildingConsts.h"
-#include <boost/filesystem/path.hpp>
-#include <fstream>
 #include <map>
+#include <sstream>
 #include <unordered_map>
 
 namespace {
 
 constexpr std::array<char, NUM_SOLDIER_RANKS> kRankLabels = {'P', 'F', 'S', 'O', 'G'};
-
-std::ofstream OpenCombatLog()
-{
-    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
-        return {};
-    const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "combat_log.txt";
-    return std::ofstream(path.string(), std::ios::app);
-}
+EventLogBatchWriter gCombatLog("combat_log.txt");
 
 std::string FormatRankCounts(const std::array<unsigned, NUM_SOLDIER_RANKS>& counts)
 {
@@ -83,45 +75,42 @@ void LogAttackOrder(unsigned gf, unsigned char attackerPlayer, unsigned char def
                     unsigned targetObjId, bool strongSoldiers, unsigned desiredCount, unsigned actualCount,
                     const std::array<unsigned, NUM_SOLDIER_RANKS>& actualByRank)
 {
-    std::ofstream log = OpenCombatLog(  );
-    if(!log)
-        return;
-    log << gf << " ATTACK_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-        << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
-        << " " << targetObjId << " strong=" << (strongSoldiers ? "true" : "false") << " desired=" << desiredCount
-        << " actual=" << actualCount << " actual_by_rank=" << FormatRankCounts(actualByRank) << std::endl;
+    std::ostringstream line;
+    line << gf << " ATTACK_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
+         << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
+         << " " << targetObjId << " strong=" << (strongSoldiers ? "true" : "false") << " desired=" << desiredCount
+         << " actual=" << actualCount << " actual_by_rank=" << FormatRankCounts(actualByRank);
+    gCombatLog.Append(gf, line.str());
 }
 
 void LogAggressiveDefenderOrder(unsigned gf, unsigned char attackerPlayer, BuildingType targetType,
                                 unsigned targetObjId, unsigned char defenderPlayer, BuildingType defenderHomeType,
                                 unsigned defenderHomeObjId, unsigned char defenderRank)
 {
-    std::ofstream log = OpenCombatLog();
-    if(!log)
-        return;
-    log << gf << " AGG_DEFENDER_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-        << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
-        << " " << targetObjId
-        << " defender_home=" << BUILDING_NAMES_1.at(defenderHomeType) << " " << defenderHomeObjId
-        << " defender_rank=" << FormatRank(defenderRank) << std::endl;
+    std::ostringstream line;
+    line << gf << " AGG_DEFENDER_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
+         << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
+         << " " << targetObjId
+         << " defender_home=" << BUILDING_NAMES_1.at(defenderHomeType) << " " << defenderHomeObjId
+         << " defender_rank=" << FormatRank(defenderRank);
+    gCombatLog.Append(gf, line.str());
 }
 
 void LogFightResult(unsigned gf, unsigned char attackerPlayer, BuildingType targetType, unsigned targetObjId,
                     unsigned char defenderPlayer, unsigned attackerRank, unsigned attackerStartHp, unsigned defenderRank,
                     unsigned defenderStartHp, const char* winnerRole, unsigned winnerRemainingHp)
 {
-    std::ofstream log = OpenCombatLog();
-    if(!log)
-        return;
-    log << gf << " FIGHT attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-        << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=";
+    std::ostringstream line;
+    line << gf << " FIGHT attacker=" << static_cast<unsigned>(attackerPlayer + 1)
+         << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=";
     if(targetObjId == 0)
-        log << "Unknown";
+        line << "Unknown";
     else
-        log << BUILDING_NAMES_1.at(targetType) << " " << targetObjId;
-    log << " attacker_rank=" << FormatRank(attackerRank) << " attacker_hp=" << attackerStartHp
-        << " defender_rank=" << FormatRank(defenderRank) << " defender_hp=" << defenderStartHp
-        << " winner=" << winnerRole << " winner_hp=" << winnerRemainingHp << std::endl;
+        line << BUILDING_NAMES_1.at(targetType) << " " << targetObjId;
+    line << " attacker_rank=" << FormatRank(attackerRank) << " attacker_hp=" << attackerStartHp
+         << " defender_rank=" << FormatRank(defenderRank) << " defender_hp=" << defenderStartHp
+         << " winner=" << winnerRole << " winner_hp=" << winnerRemainingHp;
+    gCombatLog.Append(gf, line.str());
 }
 
 void RecordCaptureDestroyed(const unsigned capturingObjId, const BuildingType type)
@@ -134,9 +123,6 @@ void RecordCaptureDestroyed(const unsigned capturingObjId, const BuildingType ty
 void LogCapture(unsigned gf, unsigned char attackerPlayer, unsigned char defenderPlayer, BuildingType buildingType,
                 unsigned buildingObjId)
 {
-    std::ofstream log = OpenCombatLog();
-    if(!log)
-        return;
     auto it = gCaptureDestroyed.find(buildingObjId);
     std::map<BuildingType, unsigned> destroyed;
     if(it != gCaptureDestroyed.end())
@@ -144,10 +130,12 @@ void LogCapture(unsigned gf, unsigned char attackerPlayer, unsigned char defende
         destroyed = std::move(it->second.destroyed);
         gCaptureDestroyed.erase(it);
     }
-    log << gf << " CAPTURE attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-        << " defender=" << static_cast<unsigned>(defenderPlayer + 1)
-        << " target=" << BUILDING_NAMES_1.at(buildingType) << " " << buildingObjId
-        << " destroyed=" << FormatDestroyedBuildings(destroyed) << std::endl;
+    std::ostringstream line;
+    line << gf << " CAPTURE attacker=" << static_cast<unsigned>(attackerPlayer + 1)
+         << " defender=" << static_cast<unsigned>(defenderPlayer + 1)
+         << " target=" << BUILDING_NAMES_1.at(buildingType) << " " << buildingObjId
+         << " destroyed=" << FormatDestroyedBuildings(destroyed);
+    gCombatLog.Append(gf, line.str());
 }
 
 } // namespace CombatEventLogger

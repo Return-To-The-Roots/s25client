@@ -4,20 +4,21 @@
 
 #include "ToolPriorityEventLogger.h"
 
-#include "ai/aijh/StatsConfig.h"
+#include "EventLogBatchWriter.h"
 #include "helpers/EnumRange.h"
-#include <boost/filesystem/path.hpp>
-#include <fstream>
+#include <sstream>
 
 namespace {
 
-std::ofstream OpenToolPriorityLog()
-{
-    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
-        return {};
-    const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "tool_priority.csv";
-    return std::ofstream(path.string(), std::ios::app);
-}
+const std::string kToolPriorityHeader = [] {
+    std::ostringstream header;
+    header << "gameframe,playerId";
+    for(const auto tool : helpers::enumRange<Tool>())
+        header << "," << TOOL_NAMES_1.at(tool);
+    return header.str();
+}();
+
+EventLogBatchWriter gToolPriorityLog("tool_priority.csv", kToolPriorityHeader);
 
 } // namespace
 
@@ -25,24 +26,14 @@ namespace ToolPriorityEventLogger {
 
 void LogToolPriorityChanges(unsigned gf, unsigned char playerId, const ToolSettings& newSettings)
 {
-    std::ofstream log = OpenToolPriorityLog();
-    if(!log)
-        return;
-
-    if(log.tellp() == 0)
-    {
-        log << "gameframe,playerId";
-        for(const auto tool : helpers::enumRange<Tool>())
-            log << "," << TOOL_NAMES_1.at(tool);
-        log << std::endl;
-    }
-
-    log << gf << "," << static_cast<unsigned>(playerId + 1);
+    std::ostringstream line;
+    line << gf << "," << static_cast<unsigned>(playerId + 1);
     for(const auto tool : helpers::enumRange<Tool>())
     {
-        log << "," << static_cast<unsigned>(newSettings[tool]);
+        line << "," << static_cast<unsigned>(newSettings[tool]);
     }
-    log << std::endl;
+
+    gToolPriorityLog.Append(gf, line.str());
 }
 
 } // namespace ToolPriorityEventLogger

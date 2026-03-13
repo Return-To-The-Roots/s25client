@@ -4,6 +4,7 @@
 
 find_package(BZip2 1.0.6 REQUIRED)
 gather_dll(BZIP2)
+find_package(Protobuf REQUIRED)
 
 set(SOURCES_SUBDIRS )
 macro(AddDirectory dir)
@@ -71,8 +72,13 @@ set(s25Main_SRCS
         ai/aijh/WeightParams.h
 )
 
+set(WARES_LOG_PROTO ${PROJECT_SOURCE_DIR}/external/proto-repo/wares_log.proto)
+protobuf_generate_cpp(WARES_LOG_PROTO_SRCS WARES_LOG_PROTO_HDRS ${WARES_LOG_PROTO})
+set_source_files_properties(${WARES_LOG_PROTO_SRCS} PROPERTIES COMPILE_OPTIONS "-Wno-missing-declarations")
+list(APPEND s25Main_SRCS ${WARES_LOG_PROTO_SRCS} ${WARES_LOG_PROTO_HDRS})
+
 add_library(s25Main STATIC ${s25Main_SRCS})
-target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(s25Main PUBLIC cxx_std_17)
 find_package(yaml-cpp REQUIRED)
@@ -93,6 +99,7 @@ target_link_libraries(s25Main PUBLIC
     nlohmann_json::nlohmann_json
     Boost::filesystem Boost::disable_autolinking
     PRIVATE BZip2::BZip2 Boost::iostreams Boost::locale Boost::nowide samplerate_cpp yaml-cpp
+            protobuf::libprotobuf
 )
 
 if(WIN32)

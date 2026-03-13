@@ -4,36 +4,23 @@
 
 #include "BuildingEventLogger.h"
 
-#include "ai/aijh/StatsConfig.h"
+#include "EventLogBatchWriter.h"
 #include "gameData/BuildingConsts.h"
-#include <boost/filesystem/path.hpp>
-#include <fstream>
+#include <sstream>
 #include <unordered_set>
 
 namespace {
 
 std::unordered_set<const void*> gConstructedSites;
-
-std::ofstream OpenBuildingLog()
-{
-    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
-        return {};
-    const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "building_log.csv";
-    return std::ofstream(path.string(), std::ios::app);
-}
+EventLogBatchWriter gBuildingLog("building_log.csv", "gameframe,playerId,event,buildingType,buildingId,x,y");
 
 void LogEvent(unsigned gf, unsigned char playerId, const char* eventName, BuildingType buildingType, unsigned buildingId,
               unsigned x, unsigned y)
 {
-    std::ofstream log = OpenBuildingLog();
-    if(!log)
-        return;
-
-    if(log.tellp() == 0)
-        log << "gameframe,playerId,event,buildingType,buildingId,x,y" << std::endl;
-
-    log << gf << "," << static_cast<unsigned>(playerId + 1) << "," << eventName << ","
-        << BUILDING_NAMES_1.at(buildingType) << "," << buildingId << "," << x << "," << y << std::endl;
+    std::ostringstream line;
+    line << gf << "," << static_cast<unsigned>(playerId + 1) << "," << eventName << ","
+         << BUILDING_NAMES_1.at(buildingType) << "," << buildingId << "," << x << "," << y;
+    gBuildingLog.Append(gf, line.str());
 }
 
 } // namespace
