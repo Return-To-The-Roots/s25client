@@ -69,11 +69,6 @@ using Position = Point<int>;
 /// Type for describing an extent/size etc. (unsigned type)
 using Extent = Point<unsigned>;
 using PointF = Point<float>;
-/// Type for describing limiting scaling factors for GUI elements (unsigned type)
-/// Limits scaling from Base Resolution 800x600 to fit screen size in a granularity of 10
-/// Valid range is from 1 up to 10, values outside the range don't impose any limiting
-/// e. g. Value 1: scales 1/10 of the difference between screensize and Base Resolution
-using LimitFactors = Point<unsigned>;
 //-V:all:810
 
 //////////////////////////////////////////////////////////////////////////

@@ -58,6 +58,8 @@ namespace libsiedler2 {
 class ArchivItem_Map;
 }
 
+using LimitFactors = Point<unsigned>;
+
 /// Die Basisklasse der Fenster.
 class Window
 {

@@ -550,7 +550,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
     // If the window elements don't get scaled there is nothing to do
     if(!scale_)
         return;
-    RescaleWindowProp rescale(sr.oldSize, sr.newSize);
+    ScaleWindowProp rescale(sr.oldSize, sr.newSize);
     for(Window* ctrl : childIdToWnd_ | boost::adaptors::map_values)
     {
         if(!ctrl)
@@ -567,13 +567,13 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 template<class T_Pt>
 T_Pt Window::Scale(const T_Pt& pt, const LimitFactors& limfactors)
 {
-    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize(), limfactors);
+    return ScaleWindowProp::scale(pt, VIDEODRIVER.GetRenderSize(), limfactors);
 }
 
 void Window::ScaleByFactor()
 {
-    pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
-    size_ = ScaleWindowPropUp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
+    pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
+    size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
 }
 
 template<class T_Pt>
