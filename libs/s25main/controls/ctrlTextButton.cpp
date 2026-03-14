@@ -12,7 +12,7 @@ static constexpr unsigned contentOffset = 2;
 ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
                                const TextureColor tc, const std::string& text, const glFont* font,
                                const std::string& tooltip, const LimitFactors& limitFactors)
-    : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
+    : ctrlButton(parent, id, pos, size, tc, tooltip, limitFactors), ctrlBaseText(text, COLOR_YELLOW, font)
 {
     Window::SetLimitFactors(limitFactors);
 }

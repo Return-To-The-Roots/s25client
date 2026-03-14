@@ -8,8 +8,8 @@
 #include "drivers/VideoDriverWrapper.h"
 
 ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                       const std::string& tooltip)
-    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(ButtonState::Up), hasBorder(true),
+                       const std::string& tooltip, const LimitFactors& factors)
+    : Window(parent, id, pos, size, factors), ctrlBaseTooltip(tooltip), tc(tc), state(ButtonState::Up), hasBorder(true),
       isChecked(false), isIlluminated(false), isEnabled(true)
 {}
 

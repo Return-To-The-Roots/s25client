@@ -65,7 +65,7 @@ public:
     using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
     using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
-    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
+    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0), const LimitFactors& factors = LimitFactors(0, 0));
     virtual ~Window();
     /// zeichnet das Fenster.
     void Draw();
@@ -300,6 +300,8 @@ protected:
     T_Pt ScaleIf(const T_Pt& pt) const;
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
+    /// get Scale-Value
+    bool GetScale() { return this->scale_; }
     /// zeichnet das Fenster.
     virtual void Draw_();
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -329,8 +331,6 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
-    if(ctrl->limitFactors_ != LimitFactors(0, 0))
-        ctrl->ScaleByFactor();
     ctrl->SetActive(active_);
 
     return ctrl;

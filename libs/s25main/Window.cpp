@@ -17,10 +17,13 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <cstdarg>
 
-Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const LimitFactors& size)
-    : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(LimitFactors(0, 0)), active_(false),
+Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const LimitFactors& factors)
+    : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(factors), active_(false),
       visible_(true), scale_(false), isInMouseRelay(false), animations_(this)
-{}
+{
+    if(parent != nullptr && parent->GetScale() && factors != (LimitFactors(0, 0)))
+        ScaleByFactor();
+}
 
 Window::~Window()
 {
@@ -566,11 +569,8 @@ T_Pt Window::Scale(const T_Pt& pt, const LimitFactors& limfactors)
 
 void Window::ScaleByFactor()
 {
-    if(scale_)
-    {
-        pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
-        size_ = ScaleWindowPropUp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
-    }
+    pos_ = ScaleWindowPropUp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
+    size_ = ScaleWindowPropUp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
 }
 
 template<class T_Pt>
