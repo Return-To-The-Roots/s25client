@@ -153,7 +153,11 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         }
     }
     if(sgd.GetGameDataVersion() < 13 && !world.harbor_pos.empty())
-        world.harbor_pos.erase(world.harbor_pos.begin());
+    {
+        // Workaround for save games without increased game data version after introducing the change
+        if(!world.harbor_pos.front().pos.isValid())
+            world.harbor_pos.erase(world.harbor_pos.begin());
+    }
 
     sgd.PopObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);
 
