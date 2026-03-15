@@ -144,7 +144,7 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
 
         // Hafenplatz?
         if((t1 & libsiedler2::HARBOR_MASK) != 0)
-            world_.harbor_pos.push_back(HarborPos(pt));
+            world_.harborData.push_back(HarborPos(pt));
 
         // Will be set later
         node.harborId.reset();
@@ -423,7 +423,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
 bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
 {
     for(MapPoint pt : additionalHarbors)
-        world.harbor_pos.push_back(HarborPos(pt));
+        world.harborData.push_back(HarborPos(pt));
     // Clear current harbors and seas
     RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
@@ -448,7 +448,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 
     /// Determine seas adjacent to the harbor places
     HarborId curHarborId(1);
-    for(auto it = world.harbor_pos.begin(); it != world.harbor_pos.end();)
+    for(auto it = world.harborData.begin(); it != world.harborData.end();)
     {
         helpers::StrongIdVector<bool, SeaId> hasCoastAtSea(world.seas.size(), false);
         bool foundCoast = false;
@@ -474,7 +474,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         if(!foundCoast)
         {
             LOG.write("Map Bug: Found harbor without coast at %1%. Removing!\n") % it->pos;
-            it = world.harbor_pos.erase(it);
+            it = world.harborData.erase(it);
         } else
         {
             world.GetNodeInt(it->pos).harborId = curHarborId;
@@ -487,9 +487,9 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     CalcHarborPosNeighbors(world);
 
     // Validate
-    for(const auto startHbId : helpers::idRange<HarborId>(world.harbor_pos.size()))
+    for(const auto startHbId : helpers::idRange<HarborId>(world.harborData.size()))
     {
-        const HarborPos& startHbPos = world.harbor_pos[startHbId];
+        const HarborPos& startHbPos = world.harborData[startHbId];
         for(const std::vector<HarborPos::Neighbor>& neighbors : startHbPos.neighbors)
         {
             for(const HarborPos::Neighbor& neighbor : neighbors)
@@ -519,7 +519,7 @@ struct CalcHarborPosNeighborsNode
 /// Calculate the distance from each harbor to the others
 void MapLoader::CalcHarborPosNeighbors(World& world)
 {
-    for(HarborPos& harbor : world.harbor_pos)
+    for(HarborPos& harbor : world.harborData)
     {
         for(const auto dir : helpers::EnumRange<ShipDirection>{})
             harbor.neighbors[dir].clear();
@@ -538,7 +538,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
     // FIFO queue used for a BFS
     std::queue<CalcHarborPosNeighborsNode> todo_list;
 
-    for(const auto startHbId : helpers::idRange<HarborId>(world.harbor_pos.size()))
+    for(const auto startHbId : helpers::idRange<HarborId>(world.harborData.size()))
     {
         RTTR_Assert(todo_list.empty());
 
@@ -548,13 +548,13 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         // 1 - Coast to a harbor
         std::vector<int8_t> ptToVisitOrHb(ptIsSeaPt);
 
-        helpers::StrongIdVector<bool, HarborId> hbFound(world.harbor_pos.size(), false);
+        helpers::StrongIdVector<bool, HarborId> hbFound(world.harborData.size(), false);
         // For each sea, store the coastal point indices and their harbor
         helpers::StrongIdVector<std::multimap<unsigned, HarborId>, SeaId> coastToHarborPerSea(world.seas.size());
         std::vector<MapPoint> ownCoastalPoints;
 
         // mark coastal points around harbors
-        for(const auto otherHbId : helpers::idRange<HarborId>(world.harbor_pos.size()))
+        for(const auto otherHbId : helpers::idRange<HarborId>(world.harborData.size()))
         {
             for(const auto dir : helpers::EnumRange<Direction>{})
             {
@@ -586,7 +586,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
             {
                 ShipDirection shipDir = world.GetShipDir(ownCoastPt, ownCoastPt);
-                world.harbor_pos[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, 0));
+                world.harborData[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, 0));
                 hbFound[it->second] = true;
             }
             todo_list.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
@@ -612,7 +612,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
                 if(ptValue > 0) // found harbor(s)
                 {
-                    ShipDirection shipDir = world.GetShipDir(world.harbor_pos[startHbId].pos, curPt);
+                    ShipDirection shipDir = world.GetShipDir(world.harborData[startHbId].pos, curPt);
                     SeaId seaId = world.GetSeaFromCoastalPoint(curPt);
                     auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(idx);
                     for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
@@ -622,11 +622,11 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                             continue;
 
                         hbFound[otherHbId] = true;
-                        world.harbor_pos[startHbId].neighbors[shipDir].push_back(
+                        world.harborData[startHbId].neighbors[shipDir].push_back(
                           HarborPos::Neighbor(otherHbId, curNode.distance + 1));
 
                         // Make this the only coastal point of this harbor for this sea
-                        HarborPos& otherHb = world.harbor_pos[otherHbId];
+                        HarborPos& otherHb = world.harborData[otherHbId];
                         RTTR_Assert(seaId);
                         for(const auto hbDir : helpers::EnumRange<Direction>{})
                         {

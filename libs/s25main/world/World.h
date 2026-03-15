@@ -57,7 +57,7 @@ class World : public MapBase
     helpers::StrongIdVector<Sea, SeaId> seas;
 
     /// Alle Hafenpositionen
-    helpers::StrongIdVector<HarborPos, HarborId> harbor_pos;
+    helpers::StrongIdVector<HarborPos, HarborId> harborData;
 
     WorldDescription description_;
 
@@ -186,7 +186,7 @@ public:
     /// Return the coast pt for a given harbor (where ships can land) if any
     MapPoint GetCoastalPoint(HarborId harborId, SeaId seaId) const;
     /// Return the number of harbor points
-    unsigned GetNumHarborPoints() const { return harbor_pos.size(); }
+    unsigned GetNumHarborPoints() const { return harborData.size(); }
     /// Return the coordinates for a given harbor point
     MapPoint GetHarborPoint(HarborId harborId) const;
     /// Return the ID of the harbor point on that node or 0 if there is none

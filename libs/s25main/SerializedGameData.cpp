@@ -106,7 +106,7 @@
 /// 10: troop_limits state introduced to military buildings
 /// 11: wineaddon added, three new building types and two new goods
 /// 12: leatheraddon added, three new building types and three new goods
-/// 13: SeaId & HarborId: World::harbor_pos w/o dummy entry at 0
+/// 13: SeaId & HarborId: World::harborData w/o dummy entry at 0
 static const unsigned currentGameDataVersion = 13;
 // clang-format on
 
