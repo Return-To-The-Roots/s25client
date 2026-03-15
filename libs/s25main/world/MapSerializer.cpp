@@ -37,8 +37,8 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
         sgd.PushUnsignedInt(sea.nodes_count);
     }
     // Hafenpositionen serialisieren
-    sgd.PushUnsignedInt(world.harbor_pos.size());
-    for(const auto& curHarborPos : world.harbor_pos)
+    sgd.PushUnsignedInt(world.harborData.size());
+    for(const auto& curHarborPos : world.harborData)
     {
         helpers::pushPoint(sgd, curHarborPos.pos);
         helpers::pushContainer(sgd, curHarborPos.seaIds);
@@ -131,13 +131,13 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
 
     // Deserialize harbor data
     const unsigned numHarborPositions = sgd.PopUnsignedInt();
-    world.harbor_pos.clear();
-    world.harbor_pos.reserve(numHarborPositions);
+    world.harborData.clear();
+    world.harborData.reserve(numHarborPositions);
     for(const auto i : helpers::range<unsigned>(numHarborPositions))
     {
         RTTR_UNUSED(i);
-        world.harbor_pos.emplace_back(sgd.PopMapPoint());
-        auto& curHarborPos = world.harbor_pos.back();
+        world.harborData.emplace_back(sgd.PopMapPoint());
+        auto& curHarborPos = world.harborData.back();
         helpers::popContainer(sgd, curHarborPos.seaIds);
         for(auto& neighbor : curHarborPos.neighbors)
         {
@@ -152,11 +152,11 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
             }
         }
     }
-    if(sgd.GetGameDataVersion() < 13 && !world.harbor_pos.empty())
+    if(sgd.GetGameDataVersion() < 13 && !world.harborData.empty())
     {
         // Workaround for save games without increased game data version after introducing the change
-        if(!world.harbor_pos.front().pos.isValid())
-            world.harbor_pos.erase(world.harbor_pos.begin());
+        if(!world.harborData.front().pos.isValid())
+            world.harborData.erase(world.harborData.begin());
     }
 
     sgd.PopObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);

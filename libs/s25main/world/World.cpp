@@ -68,7 +68,7 @@ void World::Unload()
         node.figures.clear();
 
     catapult_stones.clear();
-    harbor_pos.clear();
+    harborData.clear();
     description_ = WorldDescription();
     noNodeObj.reset();
     Resize(MapExtent::all(0));
@@ -345,7 +345,7 @@ unsigned World::GetSeaSize(const SeaId seaId) const
 SeaId World::GetSeaId(const HarborId harborId, const Direction dir) const
 {
     RTTR_Assert(harborId);
-    return harbor_pos[harborId].seaIds[dir];
+    return harborData[harborId].seaIds[dir];
 }
 
 bool World::IsHarborAtSea(const HarborId harborId, const SeaId seaId) const
@@ -361,8 +361,8 @@ MapPoint World::GetCoastalPoint(const HarborId harborId, const SeaId seaId) cons
     // Take point at NW last as often there is no path from it if the harbor is north of an island
     for(auto dir : helpers::enumRange(Direction::NorthEast))
     {
-        if(harbor_pos[harborId].seaIds[dir] == seaId)
-            return GetNeighbour(harbor_pos[harborId].pos, dir);
+        if(harborData[harborId].seaIds[dir] == seaId)
+            return GetNeighbour(harborData[harborId].pos, dir);
     }
 
     // Keinen Punkt gefunden
@@ -402,14 +402,14 @@ MapPoint World::GetHarborPoint(const HarborId harborId) const
 {
     RTTR_Assert(harborId);
 
-    return harbor_pos[harborId].pos;
+    return harborData[harborId].pos;
 }
 
 const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const HarborId harborId,
                                                                   const ShipDirection& dir) const
 {
     RTTR_Assert(harborId);
-    return harbor_pos[harborId].neighbors[dir];
+    return harborData[harborId].neighbors[dir];
 }
 
 unsigned World::CalcHarborDistance(HarborId haborId1, HarborId harborId2) const
@@ -418,7 +418,7 @@ unsigned World::CalcHarborDistance(HarborId haborId1, HarborId harborId2) const
         return 0;
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
     {
-        for(const HarborPos::Neighbor& n : harbor_pos[haborId1].neighbors[dir])
+        for(const HarborPos::Neighbor& n : harborData[haborId1].neighbors[dir])
         {
             if(n.id == harborId2)
                 return n.distance;
