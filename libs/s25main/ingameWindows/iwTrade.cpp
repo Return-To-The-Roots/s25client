@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -40,8 +40,8 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     AddText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
     ctrlComboBox* box = this->AddComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TextureColor::Grey,
                                           NormalFont, 200); // Ware or figure?
-    box->AddString(_("Wares"));
-    box->AddString(_("Settlers"));
+    box->AddItem(_("Wares"));
+    box->AddItem(_("Settlers"));
     AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // Create possible wares, figures
@@ -108,13 +108,13 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selecti
             {
                 // Add ware names
                 for(GoodType ware : wares)
-                    names->AddString(_(WARE_NAMES[ware]));
+                    names->AddItem(_(WARE_NAMES[ware]));
 
             } else
             {
                 // Add job names
                 for(Job job : jobs)
-                    names->AddString(_(JOB_NAMES[job]));
+                    names->AddItem(_(JOB_NAMES[job]));
             }
             names->SetSelection(0);
             Msg_ComboSelectItem(4, 0);

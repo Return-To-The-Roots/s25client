@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -53,6 +53,7 @@
 #include "ingameWindows/iwPostWindow.h"
 #include "ingameWindows/iwRoadWindow.h"
 #include "ingameWindows/iwSave.h"
+#include "ingameWindows/iwSettings.h"
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwStatistics.h"
@@ -300,8 +301,10 @@ void dskGameInterface::Resize(const Extent& newSize)
     cbb.buildBorder(newSize, borders);
 
     // move buttons
-    DrawPoint barPos((newSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
-                     newSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    // Get real renderer size as newSize may get capped but we want to keep the manually drawn borders intact
+    const Extent realNewSize = VIDEODRIVER.GetRenderSize();
+    DrawPoint barPos = DrawPoint((realNewSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
+                                 realNewSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
     auto* button = GetCtrl<ctrlButton>(ID_btMap);
     button->SetPos(barPos);
@@ -826,6 +829,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KeyType::F9:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
+        case KeyType::F10: WINDOWMANAGER.ToggleWindow(std::make_unique<iwSettings>()); return true;
         case KeyType::F11: // Music player (midi files)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;

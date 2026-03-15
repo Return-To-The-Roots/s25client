@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -65,7 +65,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType serverType)
     AddTextButton(ID_btBack, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
 
     host->SetFocus();
-    host->SetText(SETTINGS.server.last_ip);
+    host->SetText(SETTINGS.server.lastIP);
     port->SetText(SETTINGS.server.localPort);
 }
 
@@ -105,7 +105,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             }
 
             // save settings
-            SETTINGS.server.last_ip = edtHost->GetText();
+            SETTINGS.server.lastIP = edtHost->GetText();
 
             if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), serverType_, *port, false,
                                    SETTINGS.server.ipv6))

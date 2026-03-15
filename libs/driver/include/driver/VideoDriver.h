@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -32,7 +32,7 @@ public:
 
     VideoMode GetWindowSize() const override final { return windowSize_; }
     Extent GetRenderSize() const override final { return scaledRenderSize_; }
-    bool IsFullscreen() const override final { return isFullscreen_; }
+    DisplayMode GetDisplayMode() const override final { return displayMode_; }
 
     float getDpiScale() const override final { return dpiScale_; }
 
@@ -46,14 +46,14 @@ public:
     bool IsOpenGL() const override { return true; }
 
 protected:
-    VideoMode FindClosestVideoMode(const VideoMode& mode) const;
+    VideoMode FindClosestVideoMode(VideoMode mode) const;
     void SetNewSize(VideoMode windowSize, Extent renderSize);
 
     VideoDriverLoaderInterface* CallBack; /// DriverCallback to notify on player input
     bool initialized;
     MouseCoords mouse_xy;           /// Mouse state
     std::array<bool, 512> keyboard; /// Keyboard state
-    bool isFullscreen_;
+    DisplayMode displayMode_;       /// Fullscreen/resizable?
 
 private:
     // cached as possibly used often

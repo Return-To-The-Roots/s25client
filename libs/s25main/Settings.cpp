@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,9 +6,12 @@
 #include "DrawPoint.h"
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
+#include "driver/VideoInterface.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "enum_cast.hpp"
 #include "files.h"
+#include "helpers/MaxEnumValue.h"
 #include "helpers/strUtils.h"
 #include "languages.h"
 #include "gameData/PortraitConsts.h"
@@ -82,8 +85,8 @@ void Settings::LoadDefaults()
     // global
     // {
     // 0 = ask user at start, 1 = enabled, 2 = always ask
-    global.submit_debug_data = 0;
-    global.use_upnp = false;
+    global.submitDebugData = 0;
+    global.useUPNP = false;
     global.smartCursor = true;
     global.debugMode = false;
     global.showGFInfo = false;
@@ -93,17 +96,19 @@ void Settings::LoadDefaults()
     // {
     if(VIDEODRIVER.IsLoaded())
     {
-        video.fullscreenSize = VIDEODRIVER.GetWindowSize();
-        video.windowedSize = VIDEODRIVER.IsFullscreen() ? VideoMode(800, 600) : video.fullscreenSize;
-        video.fullscreen = VIDEODRIVER.IsFullscreen();
+        video.fullscreenSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Fullscreen) ? VIDEODRIVER.GetWindowSize() :
+                                                                                           VIDEODRIVER.MinWindowSize;
+        video.windowedSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed) ? VIDEODRIVER.GetWindowSize() :
+                                                                                       VIDEODRIVER.MinWindowSize;
+        video.displayMode = VIDEODRIVER.GetDisplayMode();
     } else
     {
-        video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
-        video.fullscreen = false;
+        video.windowedSize = video.fullscreenSize = VIDEODRIVER.MinWindowSize;
+        video.displayMode = DisplayMode::Windowed;
     }
     video.framerate = 0; // Special value for HW vsync
     video.vbo = true;
-    video.shared_textures = SHARED_TEXTURES_DEFAULT;
+    video.sharedTextures = SHARED_TEXTURES_DEFAULT;
     video.guiScale = 0; // special value indicating automatic selection
     // }
 
@@ -136,12 +141,12 @@ void Settings::LoadDefaults()
     lobby.name = System::getUserName();
     lobby.portraitIndex = 0;
     lobby.password.clear();
-    lobby.save_password = false;
+    lobby.savePassword = false;
     // }
 
     // server
     // {
-    server.last_ip.clear();
+    server.lastIP.clear();
     server.localPort = 3665;
     server.ipv6 = false;
     // }
@@ -151,7 +156,7 @@ void Settings::LoadDefaults()
 
     // interface
     // {
-    interface.autosave_interval = 0;
+    interface.autosaveInterval = 0;
     interface.mapScrollMode = MAP_SCROLL_MODE_DEFAULT;
     interface.enableWindowPinning = false;
     interface.windowSnapDistance = 8;
@@ -169,7 +174,7 @@ void Settings::LoadIngameDefaults()
 {
     // ingame
     // {
-    ingame.scale_statistics = false;
+    ingame.scaleStatistics = false;
     ingame.showBQ = false;
     ingame.showNames = false;
     ingame.showProductivity = false;
@@ -226,8 +231,8 @@ void Settings::Load()
         if(iniGlobal->getValue("gameversion") != rttr::version::GetRevision())
             s25util::warning("Your application version has changed - please recheck your settings!");
 
-        global.submit_debug_data = iniGlobal->getIntValue("submit_debug_data");
-        global.use_upnp = iniGlobal->getBoolValue("use_upnp");
+        global.submitDebugData = iniGlobal->getIntValue("submit_debug_data");
+        global.useUPNP = iniGlobal->getBoolValue("use_upnp");
         global.smartCursor = iniGlobal->getValue("smartCursor", true);
         global.debugMode = iniGlobal->getValue("debugMode", false);
         global.showGFInfo = iniGlobal->getValue("showGFInfo", false);
@@ -239,10 +244,18 @@ void Settings::Load()
         video.windowedSize.height = iniVideo->getIntValue("windowed_height");
         video.fullscreenSize.width = iniVideo->getIntValue("fullscreen_width");
         video.fullscreenSize.height = iniVideo->getIntValue("fullscreen_height");
-        video.fullscreen = iniVideo->getBoolValue("fullscreen");
+        const auto displayMode = iniVideo->getValue("displayMode", -1);
+        if(displayMode >= 0 && static_cast<unsigned>(displayMode) <= helpers::MaxEnumValue_v<DisplayMode::Type>)
+            video.displayMode = DisplayMode(displayMode);
+        else
+        {
+            video.displayMode =
+              iniVideo->getValue("fullscreen", false) ? DisplayMode::Fullscreen : DisplayMode::Windowed;
+        }
+        video.displayMode.resizeable = !iniVideo->getValue("lock_window_size", false);
         video.framerate = iniVideo->getValue("framerate", 0);
         video.vbo = iniVideo->getBoolValue("vbo");
-        video.shared_textures = iniVideo->getBoolValue("shared_textures");
+        video.sharedTextures = iniVideo->getBoolValue("shared_textures");
         video.guiScale = iniVideo->getValue("gui_scale", 0);
         // };
 
@@ -278,7 +291,7 @@ void Settings::Load()
         lobby.name = iniLobby->getValue("name");
         lobby.portraitIndex = iniLobby->getIntValue("portrait_index");
         lobby.password = iniLobby->getValue("password");
-        lobby.save_password = iniLobby->getBoolValue("save_password");
+        lobby.savePassword = iniLobby->getBoolValue("save_password");
         // }
 
         if(lobby.name.empty())
@@ -291,7 +304,7 @@ void Settings::Load()
 
         // server
         // {
-        server.last_ip = iniServer->getValue("last_ip");
+        server.lastIP = iniServer->getValue("last_ip");
         boost::optional<uint16_t> port = validate::checkPort(iniServer->getValue("local_port"));
         server.localPort = port.value_or(3665);
         server.ipv6 = iniServer->getBoolValue("ipv6");
@@ -318,7 +331,7 @@ void Settings::Load()
 
         // interface
         // {
-        interface.autosave_interval = iniInterface->getIntValue("autosave_interval");
+        interface.autosaveInterval = iniInterface->getIntValue("autosave_interval");
         try
         {
             interface.mapScrollMode = static_cast<MapScrollMode>(iniInterface->getIntValue("map_scroll_mode"));
@@ -370,7 +383,7 @@ void Settings::LoadIngame()
             throw std::runtime_error("Missing section");
         // ingame
         // {
-        ingame.scale_statistics = iniIngame->getBoolValue("scale_statistics");
+        ingame.scaleStatistics = iniIngame->getBoolValue("scale_statistics");
         ingame.showBQ = iniIngame->getBoolValue("show_building_quality");
         ingame.showNames = iniIngame->getBoolValue("show_names");
         ingame.showProductivity = iniIngame->getBoolValue("show_productivity");
@@ -428,8 +441,8 @@ void Settings::Save()
     // {
     iniGlobal->setValue("version", VERSION);
     iniGlobal->setValue("gameversion", rttr::version::GetRevision());
-    iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
-    iniGlobal->setValue("use_upnp", global.use_upnp);
+    iniGlobal->setValue("submit_debug_data", global.submitDebugData);
+    iniGlobal->setValue("use_upnp", global.useUPNP);
     iniGlobal->setValue("smartCursor", global.smartCursor);
     iniGlobal->setValue("debugMode", global.debugMode);
     iniGlobal->setValue("showGFInfo", global.showGFInfo);
@@ -441,10 +454,11 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
-    iniVideo->setValue("fullscreen", video.fullscreen);
+    iniVideo->setValue("displayMode", rttr::enum_cast(video.displayMode.type));
+    iniVideo->setValue("lock_window_size", !video.displayMode.resizeable);
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
-    iniVideo->setValue("shared_textures", video.shared_textures);
+    iniVideo->setValue("shared_textures", video.sharedTextures);
     iniVideo->setValue("gui_scale", video.guiScale);
     // };
 
@@ -474,12 +488,12 @@ void Settings::Save()
     iniLobby->setValue("name", lobby.name);
     iniLobby->setValue("portrait_index", lobby.portraitIndex);
     iniLobby->setValue("password", lobby.password);
-    iniLobby->setValue("save_password", lobby.save_password);
+    iniLobby->setValue("save_password", lobby.savePassword);
     // }
 
     // server
     // {
-    iniServer->setValue("last_ip", server.last_ip);
+    iniServer->setValue("last_ip", server.lastIP);
     iniServer->setValue("local_port", server.localPort);
     iniServer->setValue("ipv6", server.ipv6);
     // }
@@ -493,7 +507,7 @@ void Settings::Save()
 
     // interface
     // {
-    iniInterface->setValue("autosave_interval", interface.autosave_interval);
+    iniInterface->setValue("autosave_interval", interface.autosaveInterval);
     iniInterface->setValue("map_scroll_mode", static_cast<int>(interface.mapScrollMode));
     iniInterface->setValue("enable_window_pinning", interface.enableWindowPinning);
     iniInterface->setValue("window_snap_distance", interface.windowSnapDistance);
@@ -531,7 +545,7 @@ void Settings::SaveIngame()
 
     // ingame
     // {
-    iniIngame->setValue("scale_statistics", ingame.scale_statistics);
+    iniIngame->setValue("scale_statistics", ingame.scaleStatistics);
     iniIngame->setValue("show_building_quality", ingame.showBQ);
     iniIngame->setValue("show_names", ingame.showNames);
     iniIngame->setValue("show_productivity", ingame.showProductivity);

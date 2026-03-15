@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -20,25 +20,23 @@ public:
              const glFont* font);
     ~ctrlList() override;
 
-    /// Größe verändern
+    /// Change size
     void Resize(const Extent& newSize) override;
 
-    /// Neuen String zur Listbox hinzufügen.
-    void AddString(const std::string& text);
-    /// Verändert einen String
-    void SetString(const std::string& text, unsigned id);
-    /// Listbox leeren.
+    /// Add item to listbox.
+    void AddItem(const std::string& text);
+    /// Change text of an item.
+    void SetItemText(unsigned id, const std::string& text);
     void DeleteAllItems();
-    /// liefert den Wert einer Zeile.
-    const std::string& GetItemText(unsigned short line) const;
-    /// liefert den Wert der aktuell gewählten Zeile.
+    const std::string& GetItemText(unsigned line) const;
+    /// Get the value of the currently selected item
     const std::string& GetSelItemText() const;
-    /// Vertauscht zwei Zeilen.
+    /// Exchange the text of 2 items
     void Swap(unsigned first, unsigned second);
-    /// Löscht ein Element
-    void Remove(unsigned short index);
+    /// Deletes an item. If the deleted item is selected then the selection is cleared.
+    void Remove(unsigned index);
 
-    unsigned short GetNumLines() const { return static_cast<unsigned short>(lines.size()); }
+    unsigned GetNumLines() const { return static_cast<unsigned>(lines.size()); }
     const boost::optional<unsigned>& GetSelection() const { return selection_; };
     void SetSelection(const boost::optional<unsigned>& selection);
 
@@ -50,7 +48,6 @@ public:
     bool Msg_WheelDown(const MouseCoords& mc) override;
 
 protected:
-    /// Zeichenmethode.
     void Draw_() override;
 
 private:

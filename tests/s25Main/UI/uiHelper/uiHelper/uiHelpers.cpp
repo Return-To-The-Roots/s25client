@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -29,7 +29,7 @@ void initGUITests()
         rttr::test::LogAccessor logAcc;
         VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
         RTTR_REQUIRE_LOG_CONTAINS("Mockup Video Driver", false);
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Windowed);
         BOOST_TEST_CHECKPOINT("Load dummy files");
         LOADER.LoadDummyGUIFiles();
         LOADER.LoadDummySoundFiles();
