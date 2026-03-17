@@ -42,6 +42,7 @@
 #include "gameData/TerrainDesc.h"
 #include <algorithm>
 #include <functional>
+#include <map>
 #include <set>
 #include <stdexcept>
 #include <unordered_set>
@@ -796,7 +797,8 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
             const auto* attachedBuilding = dynamic_cast<const noBaseBuilding*>(attachedObj);
             if(attachedBuilding && attachedBuilding != exception)
             {
-                CombatEventLogger::RecordCaptureDestroyed(capturingObjId, attachedBuilding->GetBuildingType());
+                CombatEventLogger::RecordCaptureDestroyed(capturingObjId, attachedBuilding->GetBuildingType(),
+                                                          attachedBuilding->GetObjId());
                 CombatLossTracker::ReportDestroyedBuilding(capturingObjId, attachedBuilding->GetBuildingType());
             }
         }
@@ -808,7 +810,8 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
     {
         if(const auto* baseBuilding = dynamic_cast<const noBaseBuilding*>(no))
         {
-            CombatEventLogger::RecordCaptureDestroyed(capturingObjId, baseBuilding->GetBuildingType());
+            CombatEventLogger::RecordCaptureDestroyed(capturingObjId, baseBuilding->GetBuildingType(),
+                                                      baseBuilding->GetObjId());
             CombatLossTracker::ReportDestroyedBuilding(capturingObjId, baseBuilding->GetBuildingType());
         }
     }
@@ -852,11 +855,11 @@ void GameWorld::UpdateMilitaryRiskEstimates()
     }
 }
 
-/// Kleine Klasse für Angriffsfunktion für einen potentielle angreifenden Soldaten
+/// Small helper type for the attack routine for a potentially attacking soldier
 struct PotentialAttacker
 {
     nofPassiveSoldier* soldier;
-    /// Weglänge zum Angriffsziel
+    /// Path length to the attack target
     unsigned distance;
 };
 
@@ -867,15 +870,15 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
     if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
         return;
 
-    // Militärgebäude in der Nähe finden
+    // Find nearby military buildings
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
-    // Liste von verfügbaren Soldaten, geordnet einfügen, damit man dann starke oder schwache Soldaten nehmen kann
+    // Insert available soldiers into an ordered list so we can later pick strong or weak soldiers
     std::list<PotentialAttacker> potentialAttackers;
 
     for(const auto* building : buildings)
     {
-        // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
+        // Must be one of our buildings and a regular military building only (no HQ etc.)
         if(building->GetPlayer() != player_attacker || !BuildingProperties::IsMilitary(building->GetBuildingType()))
             continue;
 
@@ -929,21 +932,36 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
     // Send the soldiers to attack
     unsigned curNumSoldiers = 0;
     std::array<unsigned, NUM_SOLDIER_RANKS> actualByRank{};
+    std::map<unsigned, CombatEventLogger::AttackSource> sourcesByBuilding;
 
     for(PotentialAttacker& pa : potentialAttackers)
     {
         if(curNumSoldiers >= soldiers_count)
             break;
+        nobMilitary* const home = pa.soldier->getHome();
+        RTTR_Assert(home);
         const unsigned char rank = pa.soldier->GetRank();
-        pa.soldier->getHome()->SendAttacker(pa.soldier, *attacked_building);
+        auto [it, inserted] = sourcesByBuilding.emplace(home->GetObjId(),
+                                                        CombatEventLogger::AttackSource{home->GetBuildingType(),
+                                                                                        home->GetObjId(), 0});
+        if(!inserted)
+            RTTR_Assert(it->second.buildingType == home->GetBuildingType());
+        it->second.count++;
         const std::size_t rankIdx = std::min<std::size_t>(rank, actualByRank.size() - 1);
+        it->second.byRank[rankIdx]++;
+        home->SendAttacker(pa.soldier, *attacked_building);
         actualByRank[rankIdx]++;
         curNumSoldiers++;
     }
 
+    std::vector<CombatEventLogger::AttackSource> sources;
+    sources.reserve(sourcesByBuilding.size());
+    for(const auto& entry : sourcesByBuilding)
+        sources.push_back(entry.second);
+
     CombatEventLogger::LogAttackOrder(GetEvMgr().GetCurrentGF(), player_attacker, attacked_building->GetPlayer(),
                                       attacked_building->GetBuildingType(), attacked_building->GetObjId(),
-                                      strong_soldiers, soldiers_count, curNumSoldiers, actualByRank);
+                                      strong_soldiers, soldiers_count, curNumSoldiers, actualByRank, sources);
 
     if(curNumSoldiers > 0 && HasLua())
     {

@@ -570,9 +570,12 @@ void nofAttacker::OrderAggressiveDefender()
         huntingDefender = bld->SendAggressiveDefender(*this);
         if(huntingDefender)
         {
+            CombatEventLogger::AttackSource source{bld->GetBuildingType(), bld->GetObjId(), 1};
+            source.byRank[std::min<std::size_t>(huntingDefender->GetRank(), source.byRank.size() - 1)] = 1;
             CombatEventLogger::LogAggressiveDefenderOrder(
               GetEvMgr().GetCurrentGF(), player, attacked_goal->GetBuildingType(), attacked_goal->GetObjId(),
-              attacked_goal->GetPlayer(), bld->GetBuildingType(), bld->GetObjId(), huntingDefender->GetRank());
+              attacked_goal->GetPlayer(), std::vector<CombatEventLogger::AttackSource>{source},
+              huntingDefender->GetRank());
             // Cannot be hunted again
             mayBeHunted = false;
             break;

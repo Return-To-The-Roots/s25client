@@ -41,28 +41,56 @@ std::string FormatRank(const unsigned rank)
     return "?";
 }
 
-std::string FormatDestroyedBuildings(const std::map<BuildingType, unsigned>& destroyed)
+struct DestroyedBuilding
+{
+    BuildingType type;
+    unsigned buildingObjId;
+};
+
+std::string FormatDestroyedBuildings(const std::vector<DestroyedBuilding>& destroyed)
 {
     if(destroyed.empty())
         return "none";
 
     std::string result;
+    for(std::size_t i = 0; i < destroyed.size(); ++i)
+    {
+        if(i != 0)
+            result += ",";
+        result += BUILDING_NAMES_1.at(destroyed[i].type);
+        result += " ";
+        result += std::to_string(destroyed[i].buildingObjId);
+    }
+    return result;
+}
+
+std::string FormatSources(const std::vector<CombatEventLogger::AttackSource>& sources)
+{
+    if(sources.empty())
+        return "none";
+
+    std::string result;
     bool first = true;
-    for(const auto& entry : destroyed)
+    for(const CombatEventLogger::AttackSource& source : sources)
     {
         if(!first)
             result += ",";
         first = false;
-        result += BUILDING_NAMES_1.at(entry.first);
-        result += ": ";
-        result += std::to_string(entry.second);
+        result += BUILDING_NAMES_1.at(source.buildingType);
+        result += " ";
+        result += std::to_string(source.buildingObjId);
+        result += ":";
+        result += std::to_string(source.count);
+        result += "(";
+        result += FormatRankCounts(source.byRank);
+        result += ")";
     }
     return result;
 }
 
 struct CaptureDestroyedData
 {
-    std::map<BuildingType, unsigned> destroyed;
+    std::vector<DestroyedBuilding> destroyed;
 };
 
 std::unordered_map<unsigned, CaptureDestroyedData> gCaptureDestroyed;
@@ -73,26 +101,27 @@ namespace CombatEventLogger {
 
 void LogAttackOrder(unsigned gf, unsigned char attackerPlayer, unsigned char defenderPlayer, BuildingType targetType,
                     unsigned targetObjId, bool strongSoldiers, unsigned desiredCount, unsigned actualCount,
-                    const std::array<unsigned, NUM_SOLDIER_RANKS>& actualByRank)
+                    const std::array<unsigned, NUM_SOLDIER_RANKS>& actualByRank,
+                    const std::vector<AttackSource>& sources)
 {
     std::ostringstream line;
     line << gf << " ATTACK_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
          << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
          << " " << targetObjId << " strong=" << (strongSoldiers ? "true" : "false") << " desired=" << desiredCount
-         << " actual=" << actualCount << " actual_by_rank=" << FormatRankCounts(actualByRank);
+         << " actual=" << actualCount << " actual_by_rank=" << FormatRankCounts(actualByRank)
+         << " sources=" << FormatSources(sources);
     gCombatLog.Append(gf, line.str());
 }
 
 void LogAggressiveDefenderOrder(unsigned gf, unsigned char attackerPlayer, BuildingType targetType,
-                                unsigned targetObjId, unsigned char defenderPlayer, BuildingType defenderHomeType,
-                                unsigned defenderHomeObjId, unsigned char defenderRank)
+                                unsigned targetObjId, unsigned char defenderPlayer,
+                                const std::vector<AttackSource>& sources, unsigned char defenderRank)
 {
     std::ostringstream line;
     line << gf << " AGG_DEFENDER_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
          << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
-         << " " << targetObjId
-         << " defender_home=" << BUILDING_NAMES_1.at(defenderHomeType) << " " << defenderHomeObjId
-         << " defender_rank=" << FormatRank(defenderRank);
+         << " " << targetObjId << " defender_rank=" << FormatRank(defenderRank)
+         << " sources=" << FormatSources(sources);
     gCombatLog.Append(gf, line.str());
 }
 
@@ -113,18 +142,18 @@ void LogFightResult(unsigned gf, unsigned char attackerPlayer, BuildingType targ
     gCombatLog.Append(gf, line.str());
 }
 
-void RecordCaptureDestroyed(const unsigned capturingObjId, const BuildingType type)
+void RecordCaptureDestroyed(const unsigned capturingObjId, const BuildingType type, const unsigned destroyedObjId)
 {
     if(!capturingObjId)
         return;
-    gCaptureDestroyed[capturingObjId].destroyed[type]++;
+    gCaptureDestroyed[capturingObjId].destroyed.push_back(DestroyedBuilding{type, destroyedObjId});
 }
 
 void LogCapture(unsigned gf, unsigned char attackerPlayer, unsigned char defenderPlayer, BuildingType buildingType,
                 unsigned buildingObjId)
 {
     auto it = gCaptureDestroyed.find(buildingObjId);
-    std::map<BuildingType, unsigned> destroyed;
+    std::vector<DestroyedBuilding> destroyed;
     if(it != gCaptureDestroyed.end())
     {
         destroyed = std::move(it->second.destroyed);
