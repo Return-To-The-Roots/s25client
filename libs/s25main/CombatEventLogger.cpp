@@ -4,42 +4,21 @@
 
 #include "CombatEventLogger.h"
 
-#include "EventLogBatchWriter.h"
-#include "gameData/BuildingConsts.h"
-#include <map>
-#include <sstream>
+#include "ai/aijh/StatsConfig.h"
+#include "combat_log.pb.h"
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/io/zero_copy_stream_impl.h"
+#include <boost/filesystem/path.hpp>
+#include <algorithm>
+#include <cstdint>
+#include <fstream>
+#include <string>
+#include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace {
-
-constexpr std::array<char, NUM_SOLDIER_RANKS> kRankLabels = {'P', 'F', 'S', 'O', 'G'};
-EventLogBatchWriter gCombatLog("combat_log.txt");
-
-std::string FormatRankCounts(const std::array<unsigned, NUM_SOLDIER_RANKS>& counts)
-{
-    std::string result;
-    for(int idx = static_cast<int>(NUM_SOLDIER_RANKS) - 1; idx >= 0; --idx)
-    {
-        const unsigned count = counts[idx];
-        if(count == 0)
-            continue;
-        if(!result.empty())
-            result += ",";
-        result.push_back(kRankLabels[idx]);
-        result.push_back('-');
-        result += std::to_string(count);
-    }
-    if(result.empty())
-        result = "none";
-    return result;
-}
-
-std::string FormatRank(const unsigned rank)
-{
-    if(rank < kRankLabels.size())
-        return std::string(1, kRankLabels[rank]);
-    return "?";
-}
+namespace pb = ru::pkopachevsky::proto;
 
 struct DestroyedBuilding
 {
@@ -47,53 +26,181 @@ struct DestroyedBuilding
     unsigned buildingObjId;
 };
 
-std::string FormatDestroyedBuildings(const std::vector<DestroyedBuilding>& destroyed)
-{
-    if(destroyed.empty())
-        return "none";
+unsigned gLastLoggedGF = 0;
+bool gHasLastLoggedGF = false;
+std::vector<pb::CombatLogRecord> gPendingRecords;
+unsigned gNextFlushGF = 0;
+bool gHasNextFlushGF = false;
+constexpr unsigned kFlushPeriodGF = 500;
 
-    std::string result;
-    for(std::size_t i = 0; i < destroyed.size(); ++i)
-    {
-        if(i != 0)
-            result += ",";
-        result += BUILDING_NAMES_1.at(destroyed[i].type);
-        result += " ";
-        result += std::to_string(destroyed[i].buildingObjId);
-    }
-    return result;
+uint64_t gNextCombatId = 1;
+std::unordered_map<unsigned, uint64_t> gActiveCombatIds;
+std::unordered_map<unsigned, std::vector<DestroyedBuilding>> gCaptureDestroyed;
+
+std::ofstream OpenCombatLog()
+{
+    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
+        return {};
+    const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "combat_log.pb";
+    return std::ofstream(path.string(), std::ios::binary | std::ios::app);
 }
 
-std::string FormatSources(const std::vector<CombatEventLogger::AttackSource>& sources)
+bool WriteDelimitedRecord(std::ostream& os, const pb::CombatLogRecord& record)
 {
-    if(sources.empty())
-        return "none";
+    std::string payload;
+    if(!record.SerializeToString(&payload))
+        return false;
 
-    std::string result;
-    bool first = true;
-    for(const CombatEventLogger::AttackSource& source : sources)
-    {
-        if(!first)
-            result += ",";
-        first = false;
-        result += BUILDING_NAMES_1.at(source.buildingType);
-        result += " ";
-        result += std::to_string(source.buildingObjId);
-        result += ":";
-        result += std::to_string(source.count);
-        result += "(";
-        result += FormatRankCounts(source.byRank);
-        result += ")";
-    }
-    return result;
+    google::protobuf::io::OstreamOutputStream zeroCopyOut(&os);
+    google::protobuf::io::CodedOutputStream codedOut(&zeroCopyOut);
+    codedOut.WriteVarint32(static_cast<uint32_t>(payload.size()));
+    codedOut.WriteRaw(payload.data(), static_cast<int>(payload.size()));
+    return !codedOut.HadError() && os.good();
 }
 
-struct CaptureDestroyedData
+void FlushPendingRecords()
 {
-    std::vector<DestroyedBuilding> destroyed;
+    if(gPendingRecords.empty())
+        return;
+
+    std::ofstream log = OpenCombatLog();
+    if(!log)
+        return;
+
+    for(const auto& record : gPendingRecords)
+    {
+        if(!WriteDelimitedRecord(log, record))
+            return;
+    }
+
+    gPendingRecords.clear();
+}
+
+struct PendingFlushAtExit
+{
+    ~PendingFlushAtExit() { FlushPendingRecords(); }
 };
 
-std::unordered_map<unsigned, CaptureDestroyedData> gCaptureDestroyed;
+PendingFlushAtExit gPendingFlushAtExit;
+
+pb::BuildingType ToProtoBuildingType(const BuildingType buildingType)
+{
+    const int raw = static_cast<int>(buildingType);
+    if(raw >= static_cast<int>(BuildingType::Headquarters) && raw <= static_cast<int>(BuildingType::HarborBuilding))
+        return static_cast<pb::BuildingType>(raw + 1);
+    return pb::BuildingType::BUILDING_TYPE_UNSPECIFIED;
+}
+
+pb::Rank ToProtoRank(const unsigned rank)
+{
+    if(rank < NUM_SOLDIER_RANKS)
+        return static_cast<pb::Rank>(rank + 1);
+    return pb::Rank::RANK_UNSPECIFIED;
+}
+
+pb::CombatWinnerRole ToProtoWinnerRole(const char* winnerRole)
+{
+    const std::string_view role = winnerRole ? std::string_view(winnerRole) : std::string_view{};
+    if(role == "Attacker")
+        return pb::CombatWinnerRole::COMBAT_WINNER_ROLE_ATTACKER;
+    if(role == "Defender")
+        return pb::CombatWinnerRole::COMBAT_WINNER_ROLE_DEFENDER;
+    return pb::CombatWinnerRole::COMBAT_WINNER_ROLE_UNSPECIFIED;
+}
+
+void FillTarget(pb::CombatLogTarget* target, const BuildingType buildingType, const unsigned buildingObjId)
+{
+    target->set_building_type(ToProtoBuildingType(buildingType));
+    target->set_building_id(buildingObjId);
+}
+
+void AddRankCounts(google::protobuf::RepeatedPtrField<pb::CombatLogCountByRank>* out,
+                   const std::array<unsigned, NUM_SOLDIER_RANKS>& counts)
+{
+    for(std::size_t rank = 0; rank < counts.size(); ++rank)
+    {
+        if(counts[rank] == 0)
+            continue;
+        auto* entry = out->Add();
+        entry->set_rank(ToProtoRank(static_cast<unsigned>(rank)));
+        entry->set_count(counts[rank]);
+    }
+}
+
+void AddAttackSources(google::protobuf::RepeatedPtrField<pb::CombatLogAttackSource>* out,
+                      const std::vector<CombatEventLogger::AttackSource>& sources)
+{
+    for(const CombatEventLogger::AttackSource& source : sources)
+    {
+        auto* entry = out->Add();
+        FillTarget(entry->mutable_source(), source.buildingType, source.buildingObjId);
+        entry->set_total_count(source.count);
+        AddRankCounts(entry->mutable_by_rank(), source.byRank);
+    }
+}
+
+void AddDestroyedBuildings(google::protobuf::RepeatedPtrField<pb::CombatDestroyedBuilding>* out,
+                           const std::vector<DestroyedBuilding>& destroyed)
+{
+    for(const DestroyedBuilding& building : destroyed)
+    {
+        auto* entry = out->Add();
+        FillTarget(entry->mutable_building(), building.type, building.buildingObjId);
+    }
+}
+
+uint64_t AllocateCombatId()
+{
+    return gNextCombatId++;
+}
+
+uint64_t GetOrCreateCombatId(const unsigned targetObjId)
+{
+    if(targetObjId == 0)
+        return AllocateCombatId();
+
+    const auto it = gActiveCombatIds.find(targetObjId);
+    if(it != gActiveCombatIds.end())
+        return it->second;
+
+    const uint64_t combatId = AllocateCombatId();
+    gActiveCombatIds[targetObjId] = combatId;
+    return combatId;
+}
+
+pb::CombatLogRecord CreateRecord(const unsigned gf, const uint64_t combatId)
+{
+    pb::CombatLogRecord record;
+    if(gHasLastLoggedGF && gf >= gLastLoggedGF)
+        record.set_delta_gf(gf - gLastLoggedGF);
+    else if(!gHasLastLoggedGF)
+        record.set_delta_gf(gf);
+    else
+        record.set_delta_gf(0);
+
+    gLastLoggedGF = gf;
+    gHasLastLoggedGF = true;
+    record.set_combat_id(combatId);
+    return record;
+}
+
+void EnqueueRecord(const unsigned gf, pb::CombatLogRecord&& record)
+{
+    gPendingRecords.push_back(std::move(record));
+
+    if(!gHasNextFlushGF)
+    {
+        gNextFlushGF = kFlushPeriodGF;
+        gHasNextFlushGF = true;
+    }
+
+    if(gf >= gNextFlushGF)
+    {
+        FlushPendingRecords();
+        while(gf >= gNextFlushGF)
+            gNextFlushGF += kFlushPeriodGF;
+    }
+}
 
 } // namespace
 
@@ -104,67 +211,92 @@ void LogAttackOrder(unsigned gf, unsigned char attackerPlayer, unsigned char def
                     const std::array<unsigned, NUM_SOLDIER_RANKS>& actualByRank,
                     const std::vector<AttackSource>& sources)
 {
-    std::ostringstream line;
-    line << gf << " ATTACK_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-         << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
-         << " " << targetObjId << " strong=" << (strongSoldiers ? "true" : "false") << " desired=" << desiredCount
-         << " actual=" << actualCount << " actual_by_rank=" << FormatRankCounts(actualByRank)
-         << " sources=" << FormatSources(sources);
-    gCombatLog.Append(gf, line.str());
+    pb::CombatLogRecord record = CreateRecord(gf, GetOrCreateCombatId(targetObjId));
+    auto* event = record.mutable_attack_order();
+    event->set_attacker_player_id(static_cast<uint32_t>(attackerPlayer + 1));
+    event->set_defender_player_id(static_cast<uint32_t>(defenderPlayer + 1));
+    FillTarget(event->mutable_target(), targetType, targetObjId);
+    event->set_strong_soldiers(strongSoldiers);
+    event->set_desired_count(desiredCount);
+    event->set_actual_count(actualCount);
+    AddRankCounts(event->mutable_actual_by_rank(), actualByRank);
+    AddAttackSources(event->mutable_sources(), sources);
+    EnqueueRecord(gf, std::move(record));
 }
 
 void LogAggressiveDefenderOrder(unsigned gf, unsigned char attackerPlayer, BuildingType targetType,
                                 unsigned targetObjId, unsigned char defenderPlayer,
                                 const std::vector<AttackSource>& sources, unsigned char defenderRank)
 {
-    std::ostringstream line;
-    line << gf << " AGG_DEFENDER_ORDER attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-         << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=" << BUILDING_NAMES_1.at(targetType)
-         << " " << targetObjId << " defender_rank=" << FormatRank(defenderRank)
-         << " sources=" << FormatSources(sources);
-    gCombatLog.Append(gf, line.str());
+    pb::CombatLogRecord record = CreateRecord(gf, GetOrCreateCombatId(targetObjId));
+    auto* event = record.mutable_aggressive_defender_order();
+    event->set_attacker_player_id(static_cast<uint32_t>(attackerPlayer + 1));
+    event->set_defender_player_id(static_cast<uint32_t>(defenderPlayer + 1));
+    FillTarget(event->mutable_target(), targetType, targetObjId);
+    event->set_defender_rank(ToProtoRank(defenderRank));
+    AddAttackSources(event->mutable_sources(), sources);
+    EnqueueRecord(gf, std::move(record));
 }
 
 void LogFightResult(unsigned gf, unsigned char attackerPlayer, BuildingType targetType, unsigned targetObjId,
                     unsigned char defenderPlayer, unsigned attackerRank, unsigned attackerStartHp, unsigned defenderRank,
-                    unsigned defenderStartHp, const char* winnerRole, unsigned winnerRemainingHp)
+                    unsigned defenderStartHp, const char* winnerRole, unsigned winnerRemainingHp, unsigned x,
+                    unsigned y)
 {
-    std::ostringstream line;
-    line << gf << " FIGHT attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-         << " defender=" << static_cast<unsigned>(defenderPlayer + 1) << " target=";
-    if(targetObjId == 0)
-        line << "Unknown";
-    else
-        line << BUILDING_NAMES_1.at(targetType) << " " << targetObjId;
-    line << " attacker_rank=" << FormatRank(attackerRank) << " attacker_hp=" << attackerStartHp
-         << " defender_rank=" << FormatRank(defenderRank) << " defender_hp=" << defenderStartHp
-         << " winner=" << winnerRole << " winner_hp=" << winnerRemainingHp;
-    gCombatLog.Append(gf, line.str());
+    pb::CombatLogRecord record = CreateRecord(gf, GetOrCreateCombatId(targetObjId));
+    auto* event = record.mutable_fight();
+    event->set_attacker_player_id(static_cast<uint32_t>(attackerPlayer + 1));
+    event->set_defender_player_id(static_cast<uint32_t>(defenderPlayer + 1));
+    FillTarget(event->mutable_target(), targetType, targetObjId);
+    event->set_attacker_rank(ToProtoRank(attackerRank));
+    event->set_attacker_hp(attackerStartHp);
+    event->set_defender_rank(ToProtoRank(defenderRank));
+    event->set_defender_hp(defenderStartHp);
+    event->set_winner(ToProtoWinnerRole(winnerRole));
+    event->set_winner_hp(winnerRemainingHp);
+    event->set_x(x);
+    event->set_y(y);
+    EnqueueRecord(gf, std::move(record));
 }
 
 void RecordCaptureDestroyed(const unsigned capturingObjId, const BuildingType type, const unsigned destroyedObjId)
 {
     if(!capturingObjId)
         return;
-    gCaptureDestroyed[capturingObjId].destroyed.push_back(DestroyedBuilding{type, destroyedObjId});
+    gCaptureDestroyed[capturingObjId].push_back(DestroyedBuilding{type, destroyedObjId});
 }
 
 void LogCapture(unsigned gf, unsigned char attackerPlayer, unsigned char defenderPlayer, BuildingType buildingType,
                 unsigned buildingObjId)
 {
-    auto it = gCaptureDestroyed.find(buildingObjId);
+    const uint64_t combatId = GetOrCreateCombatId(buildingObjId);
+
     std::vector<DestroyedBuilding> destroyed;
+    const auto it = gCaptureDestroyed.find(buildingObjId);
     if(it != gCaptureDestroyed.end())
     {
-        destroyed = std::move(it->second.destroyed);
+        destroyed = std::move(it->second);
         gCaptureDestroyed.erase(it);
     }
-    std::ostringstream line;
-    line << gf << " CAPTURE attacker=" << static_cast<unsigned>(attackerPlayer + 1)
-         << " defender=" << static_cast<unsigned>(defenderPlayer + 1)
-         << " target=" << BUILDING_NAMES_1.at(buildingType) << " " << buildingObjId
-         << " destroyed=" << FormatDestroyedBuildings(destroyed);
-    gCombatLog.Append(gf, line.str());
+
+    pb::CombatLogRecord record = CreateRecord(gf, combatId);
+    auto* event = record.mutable_capture();
+    event->set_attacker_player_id(static_cast<uint32_t>(attackerPlayer + 1));
+    event->set_defender_player_id(static_cast<uint32_t>(defenderPlayer + 1));
+    FillTarget(event->mutable_target(), buildingType, buildingObjId);
+    AddDestroyedBuildings(event->mutable_destroyed(), destroyed);
+    EnqueueRecord(gf, std::move(record));
+
+    FinishCombat(buildingObjId);
+}
+
+void FinishCombat(const unsigned targetObjId)
+{
+    if(targetObjId == 0)
+        return;
+
+    gActiveCombatIds.erase(targetObjId);
+    gCaptureDestroyed.erase(targetObjId);
 }
 
 } // namespace CombatEventLogger

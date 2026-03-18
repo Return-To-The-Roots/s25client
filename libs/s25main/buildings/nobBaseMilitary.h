@@ -72,11 +72,7 @@ public:
 
     /// Register and unregister soldiers currently attacking this building
     void LinkAggressor(nofAttacker& soldier) { aggressors.push_back(&soldier); }
-    virtual void UnlinkAggressor(nofAttacker& soldier)
-    {
-        RTTR_Assert(IsAggressor(soldier));
-        aggressors.remove(&soldier);
-    }
+    virtual void UnlinkAggressor(nofAttacker& soldier);
 
     /// Register and unregister aggressive defenders supporting this building
     void LinkAggressiveDefender(nofAggressiveDefender& soldier) { aggressive_defenders.push_back(&soldier); }

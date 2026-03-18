@@ -77,6 +77,14 @@ protobuf_generate_cpp(WARES_LOG_PROTO_SRCS WARES_LOG_PROTO_HDRS ${WARES_LOG_PROT
 set_source_files_properties(${WARES_LOG_PROTO_SRCS} PROPERTIES COMPILE_OPTIONS "-Wno-missing-declarations")
 list(APPEND s25Main_SRCS ${WARES_LOG_PROTO_SRCS} ${WARES_LOG_PROTO_HDRS})
 
+set(COMBAT_LOG_PROTOS
+    ${PROJECT_SOURCE_DIR}/external/proto-repo/commons.proto
+    ${PROJECT_SOURCE_DIR}/external/proto-repo/combat_log.proto
+)
+protobuf_generate_cpp(COMBAT_LOG_PROTO_SRCS COMBAT_LOG_PROTO_HDRS ${COMBAT_LOG_PROTOS})
+set_source_files_properties(${COMBAT_LOG_PROTO_SRCS} PROPERTIES COMPILE_OPTIONS "-Wno-missing-declarations")
+list(APPEND s25Main_SRCS ${COMBAT_LOG_PROTO_SRCS} ${COMBAT_LOG_PROTO_HDRS})
+
 add_library(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)

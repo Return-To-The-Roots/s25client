@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "nobBaseMilitary.h"
+#include "CombatEventLogger.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -140,6 +141,14 @@ void nobBaseMilitary::AddLeavingFigure(std::unique_ptr<noFigure> fig)
 {
     AddLeavingEvent();
     leave_house.push_back(std::move(fig));
+}
+
+void nobBaseMilitary::UnlinkAggressor(nofAttacker& soldier)
+{
+    RTTR_Assert(IsAggressor(soldier));
+    aggressors.remove(&soldier);
+    if(aggressors.empty())
+        CombatEventLogger::FinishCombat(GetObjId());
 }
 
 nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender& defender)

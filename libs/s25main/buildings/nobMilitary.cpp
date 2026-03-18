@@ -1381,7 +1381,11 @@ void nobMilitary::UnlinkAggressor(nofAttacker& soldier)
     far_away_capturers.remove(&soldier);
 
     if(aggressors.empty())
+    {
+        if(!capturing && far_away_capturers.empty())
+            CombatEventLogger::FinishCombat(GetObjId());
         RegulateTroops();
+    }
 }
 
 void nobMilitary::CapturingSoldierArrived()

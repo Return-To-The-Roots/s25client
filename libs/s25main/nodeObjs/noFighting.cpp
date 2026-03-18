@@ -303,11 +303,12 @@ void noFighting::HandleEvent(const unsigned id)
                             winnerRole = "Attacker";
                         else if(roles_[winnerIdx] == CombatRole::Defender)
                             winnerRole = "Defender";
+                        const MapPoint pos = soldiers[turn]->GetPos();
                         CombatEventLogger::LogFightResult(
                           gf, attackerPlayer, targetBuildingType_, targetBuildingObjId_, defenderPlayer, attackerRank,
-                          attackerHp, defenderRank, defenderHp, winnerRole, soldiers[winnerIdx]->GetHitpoints());
+                          attackerHp, defenderRank, defenderHp, winnerRole, soldiers[winnerIdx]->GetHitpoints(), pos.x,
+                          pos.y);
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
-                        const MapPoint pos = soldiers[turn]->GetPos();
                         auto& winningSoldier = world->AddFigure(pos, std::move(soldiers[turn]));
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
                         // Do this before calling WonFighting so this fight doesn't block the soldier looking for a new

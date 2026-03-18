@@ -30,10 +30,12 @@ void LogAggressiveDefenderOrder(unsigned gf, unsigned char attackerPlayer, Build
 
 void LogFightResult(unsigned gf, unsigned char attackerPlayer, BuildingType targetType, unsigned targetObjId,
                     unsigned char defenderPlayer, unsigned attackerRank, unsigned attackerStartHp, unsigned defenderRank,
-                    unsigned defenderStartHp, const char* winnerRole, unsigned winnerRemainingHp);
+                    unsigned defenderStartHp, const char* winnerRole, unsigned winnerRemainingHp, unsigned x,
+                    unsigned y);
 
 void RecordCaptureDestroyed(unsigned capturingObjId, BuildingType type, unsigned destroyedObjId);
 void LogCapture(unsigned gf, unsigned char attackerPlayer, unsigned char defenderPlayer, BuildingType buildingType,
                 unsigned buildingObjId);
+void FinishCombat(unsigned targetObjId);
 
 } // namespace CombatEventLogger
