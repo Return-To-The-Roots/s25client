@@ -6,6 +6,7 @@ This document summarizes the runtime event loggers currently available in `s25ma
 - `BuildingEventLogger`
 - `CombatEventLogger`
 - `CountryEventLogger`
+- `CountryPlotEventLogger`
 
 All loggers are gated by `STATS_CONFIG.statsPath`. If it is empty, no log file is written.
 Text and protobuf event loggers buffer new records in memory and flush them when logging reaches the next
@@ -118,3 +119,25 @@ Tracks country-size changes per player.
 
 ### Notes
 - `playerId` is written as 1-based (`playerId + 1`).
+
+## CountryPlotEventLogger
+
+### Purpose
+Tracks exact territory plots acquired or lost by player.
+
+### Hooks
+- Territory recalculation in `GameWorld::RecalcTerritory(...)`
+- Initial country snapshot after HQ placement at gameframe `0`
+
+### Output
+- File: `country_plots_log.pb`
+- Format: length-delimited protobuf stream
+- Stream layout:
+  - one `CountryPlotsLogHeader`
+  - followed by repeated `CountryPlotsLogRecord`
+
+### Semantics
+- Each record represents one territory-update event, not one row per player.
+- Changed plots are grouped by `old_owner_id -> new_owner_id`.
+- Plot positions are stored as packed delta-encoded row-major indices within a local bounding box.
+- At gameframe `0`, the logger writes a full initial ownership snapshot as `0 -> player` transitions.

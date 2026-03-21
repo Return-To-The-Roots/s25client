@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "BuildingEventLogger.h"
 #include "CountryEventLogger.h"
+#include "CountryPlotEventLogger.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
@@ -435,6 +436,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
     const unsigned initialGF = world.GetEvMgr().GetCurrentGF();
     if(initialGF == 0)
     {
+        CountryPlotEventLogger::LogInitialCountryPlots(initialGF, world);
         for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
         {
             if(!world.GetPlayer(i).isUsed())

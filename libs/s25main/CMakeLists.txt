@@ -49,6 +49,7 @@ set(s25Main_SRCS
         CombatEventLogger.cpp
         CombatLossTracker.cpp
         CountryEventLogger.cpp
+        CountryPlotEventLogger.cpp
         MilitaryEventLogger.cpp
         MilitaryStatsHolder.cpp
         TroopsLimitEventLogger.cpp
@@ -84,6 +85,11 @@ set(COMBAT_LOG_PROTOS
 protobuf_generate_cpp(COMBAT_LOG_PROTO_SRCS COMBAT_LOG_PROTO_HDRS ${COMBAT_LOG_PROTOS})
 set_source_files_properties(${COMBAT_LOG_PROTO_SRCS} PROPERTIES COMPILE_OPTIONS "-Wno-missing-declarations")
 list(APPEND s25Main_SRCS ${COMBAT_LOG_PROTO_SRCS} ${COMBAT_LOG_PROTO_HDRS})
+
+set(COUNTRY_PLOTS_LOG_PROTO ${PROJECT_SOURCE_DIR}/external/proto-repo/country_plots_log.proto)
+protobuf_generate_cpp(COUNTRY_PLOTS_LOG_PROTO_SRCS COUNTRY_PLOTS_LOG_PROTO_HDRS ${COUNTRY_PLOTS_LOG_PROTO})
+set_source_files_properties(${COUNTRY_PLOTS_LOG_PROTO_SRCS} PROPERTIES COMPILE_OPTIONS "-Wno-missing-declarations")
+list(APPEND s25Main_SRCS ${COUNTRY_PLOTS_LOG_PROTO_SRCS} ${COUNTRY_PLOTS_LOG_PROTO_HDRS})
 
 add_library(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

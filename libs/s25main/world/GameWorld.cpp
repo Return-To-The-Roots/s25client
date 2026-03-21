@@ -4,8 +4,9 @@
 
 #include "world/GameWorld.h"
 #include "CombatLossTracker.h"
-#include "CountryEventLogger.h"
 #include "CombatEventLogger.h"
+#include "CountryEventLogger.h"
+#include "CountryPlotEventLogger.h"
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
@@ -400,6 +401,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
       CreateTerritoryRegion(building, militaryRadius + TERRITORY_EXTRA_RADIUS, reason);
 
     std::vector<MapPoint> ptsWithChangedOwners;
+    std::vector<CountryPlotEventLogger::OwnershipChange> ownershipChanges;
     std::vector<int> sizeChanges(GetNumPlayers());
     const unsigned capturingObjId = (reason == TerritoryChangeReason::Captured) ? building.GetObjId() : 0;
 
@@ -416,6 +418,7 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
 
         SetOwner(curMapPt, newOwner);
         ptsWithChangedOwners.push_back(curMapPt);
+        ownershipChanges.push_back(CountryPlotEventLogger::OwnershipChange{pt, oldOwner, newOwner});
         if(newOwner != 0)
             sizeChanges[newOwner - 1]++;
         if(oldOwner != 0)
@@ -480,6 +483,12 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
 
     // Notify players
     const unsigned currentGF = GetEvMgr().GetCurrentGF();
+    if(currentGF > 0 && !ownershipChanges.empty())
+    {
+        CountryPlotEventLogger::LogCountryPlotChanges(
+          currentGF, *this, MakeMapPoint(region.startPt),
+          MapExtent(static_cast<MapCoord>(region.size.x), static_cast<MapCoord>(region.size.y)), ownershipChanges);
+    }
     for(unsigned i = 0; i < GetNumPlayers(); ++i)
     {
         GetPlayer(i).ChangeStatisticValue(StatisticType::Country, sizeChanges[i]);
