@@ -376,7 +376,7 @@ ctrlProgress* Window::AddProgress(unsigned id, const DrawPoint& pos, const Exten
 ctrlScrollBar* Window::AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
                                     TextureColor tc, unsigned short page_size)
 {
-    button_height = ScaleIf(Extent(0, button_height)).y;
+    button_height = Extent(0, button_height).y;
 
     return AddCtrl(new ctrlScrollBar(this, id, pos, size, button_height, tc, page_size));
 }

@@ -30,11 +30,18 @@ ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Exte
     : Window(parent, id, pos, size), tc(tc), font(font), time_color(0xFFFFFFFF)
 {
     // Zeilen pro Seite festlegen errechnen
-    page_size = (size.y - 4) / (font->getHeight() + 2);
+    page_size = (GetSize().y - 4) / (font->getHeight() + 2);
+
+    const bool tmpScale = GetScale();
+
+    // Always exclude the following from scaling
+    SetScale(false);
 
     // Scrollbalken hinzufügen
-    AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc,
+    AddScrollBar(0, DrawPoint(GetSize().x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, GetSize().y), SCROLLBAR_WIDTH, tc,
                  page_size);
+
+    SetScale(tmpScale);
 
     // Breite der Klammern <> um die Spielernamen berechnen
     bracket1_size = font->getWidth("<");

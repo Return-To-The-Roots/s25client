@@ -19,7 +19,7 @@ ctrlScrollBar::ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, 
     AddImageButton(1, DrawPoint(0, (size.y > button_height) ? size.y - button_height : 1),
                    Extent(size.x, button_height), tc, LOADER.GetImageN("io", 34));
 
-    Resize(size);
+    Resize(GetSize());
 }
 
 void ctrlScrollBar::Scroll(int distance)
