@@ -146,6 +146,7 @@ static VideoMode getAspectRatio(const VideoMode& vm)
 
 dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 {
+    SetLimit(false);
     AddText(ID_txtOptions, DrawPoint(400, 10), _("Options"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     ctrlOptionGroup* mainGroup = AddOptionGroup(ID_grpOptions, GroupSelectType::Check);

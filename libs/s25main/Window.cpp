@@ -19,11 +19,12 @@
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const LimitFactors& factors)
     : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(factors), active_(false),
-      visible_(true), scale_(false), isInMouseRelay(false), animations_(this)
+      visible_(true), scale_(false), limit_(false), isInMouseRelay(false), animations_(this)
 {
     if(parent != nullptr && parent->GetScale())
     {
         scale_ = parent->GetScale();
+        limit_ = parent->GetLimit();
         ScaleByFactor();
     }
 }
@@ -556,7 +557,10 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         if(!ctrl)
             continue;
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
-        Extent newSize = rescale(ctrl->GetSize(), ctrl->GetLimitFactors());
+        LimitFactors limits(0, 0);
+        if(limit_)
+            limits = ctrl->GetLimitFactors();
+        Extent newSize = rescale(ctrl->GetSize(), limits);
         ctrl->SetPos(rescale(ctrl->GetPos(), LimitFactors(0, 0)));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
@@ -573,7 +577,10 @@ T_Pt Window::Scale(const T_Pt& pt, const LimitFactors& limfactors)
 void Window::ScaleByFactor()
 {
     pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
-    size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
+    if(limit_)
+        size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
+    else
+        size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
 }
 
 template<class T_Pt>

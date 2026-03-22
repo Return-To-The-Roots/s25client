@@ -302,8 +302,12 @@ protected:
     T_Pt ScaleIf(const T_Pt& pt) const;
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
+    /// Sets the limit value, deciding of control size shall be limited.
+    void SetLimit(bool limit = true) { this->limit_ = limit; }
     /// get Scale-Value
     bool GetScale() { return this->scale_; }
+    /// get Limit-Value
+    bool GetLimit() { return this->limit_; }
     /// zeichnet das Fenster.
     virtual void Draw_();
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -318,6 +322,7 @@ private:
     bool active_;               /// Fenster aktiv?
     bool visible_;              /// Fenster sichtbar?
     bool scale_;                /// Sollen Controls an Fenstergröße angepasst werden?
+    bool limit_;                /// Should control size be limited?
 
     std::map<Window*, Rect> lockedAreas_; /// gesperrte Regionen des Fensters.
     std::vector<Window*> tofreeAreas_;
@@ -333,6 +338,7 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
+    ctrl->limit_ = limit_;
     ctrl->SetActive(active_);
 
     return ctrl;
