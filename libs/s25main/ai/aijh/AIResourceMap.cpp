@@ -93,13 +93,13 @@ unsigned AIResourceMap::calcResources(const MapPoint& pt, unsigned radius) const
     std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
     {
-        if(pt.x < map.GetSize().x && pt.y < map.GetSize().y)
-        {
-            const unsigned idx = map.GetIdx(curPt);
-            if(!aiMap[idx].reachable || !aiMap[idx].owned || aiMap[idx].farmed)
-                continue;
-            sum += map[idx];
-        }
+        if(curPt.x >= map.GetSize().x || curPt.y >= map.GetSize().y)
+            continue;
+
+        const unsigned idx = map.GetIdx(curPt);
+        if(!aiMap[idx].reachable || !aiMap[idx].owned || aiMap[idx].farmed)
+            continue;
+        sum += map[idx];
     }
 
     return sum;

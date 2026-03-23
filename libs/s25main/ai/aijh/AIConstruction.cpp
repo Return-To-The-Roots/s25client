@@ -193,6 +193,9 @@ std::unique_ptr<BuildJob> AIConstruction::GetBuildJob()
 
 void AIConstruction::AddConnectFlagJob(const noFlag* flag)
 {
+    if(!flag)
+        return;
+
     // already in list?
     for(auto& connectJob : connectJobs)
     {
@@ -300,9 +303,9 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
 bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route,
                                             unsigned maxSearchRadius /*= 14*/)
 {
-    // TODO: die methode kann  ganz schön böse Laufzeiten bekommen... Optimieren?
+    // TODO: This method can get pretty nasty runtimes... optimize it?
 
-    // Radius in dem nach würdigen Fahnen gesucht wird
+    // Radius in which to search for suitable flags
     // const unsigned short maxSearchRadius = 10;
 
     // flag of a military building? -> check if we really want to connect this right now
@@ -312,15 +315,15 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     //     if(!MilitaryBuildingWantsRoad(*milBld))
     //         return false;
     // }
-    // Ziel, das möglichst schnell erreichbar sein soll
+    // Target that should be reachable as quickly as possible
     // noFlag *targetFlag = gwb->GetSpecObj<nobHQ>(player->hqPos)->GetFlag();
     noFlag* targetFlag = FindTargetStoreHouseFlag(flag->GetPos());
 
-    // Falls kein Lager mehr vorhanden ist, brauchen wir auch keinen Weg suchen
+    // If there is no warehouse left, there is no need to look for a road
     if(!targetFlag)
         return false;
 
-    // Flaggen in der Umgebung holen
+    // Collect nearby flags
     std::vector<const noFlag*> flags = FindFlags(flag->GetPos(), maxSearchRadius);
 
 #ifdef DEBUG_AI
@@ -331,7 +334,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     unsigned shortestLength = 99999;
     std::vector<Direction> tmpRoute;
 
-    // Jede Flagge testen...
+    // Test each flag...
     for(const noFlag* curFlag : flags)
     {
         tmpRoute.clear();
@@ -339,11 +342,12 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         // the flag should not be at a military building!
         // if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag->GetPos(), Direction::NorthWest), true))
         //     continue;
-        // Gibts überhaupt einen Pfad zu dieser Flagge
+        // Is there any path to this flag at all?
         if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag->GetPos(), &tmpRoute, &length))
             continue;
 
-        // Wenn ja, dann gucken ob dieser Pfad möglichst kurz zum "höheren" Ziel (allgemeines Lager im Moment) ist
+        // If so, check whether this path is as short as possible to the "higher" target
+        // (currently the main warehouse)
         unsigned maxNonFlagPts = 0;
         // check for non-flag points on planned route: more than 2 nonflaggable spaces on the route -> not really valid
         // path
@@ -370,21 +374,22 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         unsigned distance = 0;
         bool pathFound = curFlag == targetFlag || aii.FindPathOnRoads(*curFlag, *targetFlag, &distance);
 
-        // Gewählte Fahne hat leider auch kein Anschluß an ein Lager, zu schade!
+        // Unfortunately, the selected flag is also not connected to a warehouse
         if(!pathFound)
             continue;
 
-        // Sind wir mit der Fahne schon verbunden? Einmal reicht!
+        // Are we already connected to this flag? Once is enough!
         if(aii.FindPathOnRoads(*curFlag, *flag))
             continue;
 
         unsigned odd = length % 2 != 0 ? 5 : 0;
-        // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
-        // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
-        if(odd + 2 * length + distance + 10 * maxNonFlagPts < shortestLength)
+        const unsigned score = odd + 2 * length + distance + 10 * maxNonFlagPts;
+        // Shorter than the last one? Take it! Weight the new build segment higher (2) so
+        // shorter new road segments are preferred when total path options are similar
+        if(score < shortestLength)
         {
             shortest = curFlag;
-            shortestLength = 2 * length + distance + 10 * maxNonFlagPts;
+            shortestLength = score;
             route = tmpRoute;
         }
     }
@@ -441,17 +446,17 @@ bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target
 {
     bool foundPath;
 
-    // Gucken obs einen Weg gibt
+    // Check whether a path exists
     if(route.empty())
     {
         foundPath = aii.FindFreePathForNewRoad(start->GetPos(), target->GetPos(), &route);
     } else
     {
-        // Wenn Route übergeben wurde, davon ausgehen dass diese auch existiert
+        // If a route was passed in, assume that it exists
         foundPath = true;
     }
 
-    // Wenn Pfad gefunden, Befehl zum Straße bauen und Flagen setzen geben
+    // If a path was found, issue the command to build the road and place flags
     if(foundPath)
     {
         aii.BuildRoad(start->GetPos(), false, route);
@@ -548,7 +553,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     {
         unsigned distance = aii.gwb.CalcDistance(milBld->GetPos(), pt);
 
-        // Prüfen ob Feind in der Nähe
+        // Check whether an enemy is nearby
         if(milBld->GetPlayer() != playerId && distance < 35)
         {
             int randmil = rand();
@@ -624,12 +629,12 @@ bool AIConstruction::Wanted(BuildingType type) const
 bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direction>& route)
 {
     // LOG.write(("ai build alt road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
-    // Radius in dem nach würdigen Fahnen gesucht wird
+    // Radius in which to search for suitable flags
     const unsigned short maxRoadLength = 10;
-    // Faktor um den der Weg kürzer sein muss als ein vorhander Pfad, um gebaut zu werden
+    // Factor by which the path must be shorter than an existing path to be worth building
     const unsigned short lengthFactor = 5;
 
-    // Flaggen in der Umgebung holen
+    // Collect nearby flags
     std::vector<const noFlag*> flags = FindFlags(flag->GetPos(), maxRoadLength);
     std::vector<Direction> mainroad = route;
     // targetflag for mainroad
@@ -640,7 +645,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
     }
     const auto* mainflag = aii.gwb.GetSpecObj<noFlag>(t);
 
-    // Jede Flagge testen...
+    // Test each flag...
     for(const noFlag* i : flags)
     {
         const noFlag& curFlag = *i;
@@ -658,15 +663,15 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         if(!IsConnectedToRoadSystem(&curFlag))
             continue;
 
-        // Gibts überhaupt einen Pfad zu dieser Flagge
+        // Is there any path to this flag at all?
         if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag.GetPos(), &route, &newLength))
             continue;
 
-        // Wenn ja, dann gucken ob unser momentaner Weg zu dieser Flagge vielleicht voll weit ist und sich eine Straße
-        // lohnt
+        // If so, check whether our current route to this flag is much longer and a new road
+        // would be worth it
         unsigned oldLength = 0;
 
-        // Aktuelle Strecke zu der Flagge
+        // Current route to this flag
         bool pathAvailable = aii.FindPathOnRoads(curFlag, *flag, &oldLength);
         if(!pathAvailable && mainflag)
         {
@@ -706,7 +711,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         if(size > 2 || crossmainpath)
             continue;
 
-        // Lohnt sich die Straße?
+        // Is the road worth it?
         if(!pathAvailable || newLength * lengthFactor < oldLength)
         {
             if(BuildRoad(flag, &curFlag, route))

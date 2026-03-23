@@ -8,6 +8,7 @@
 #include "buildings/nobMilitary.h"
 #include "gameData/MilitaryConsts.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <list>
 #include <vector>
@@ -53,11 +54,20 @@ std::vector<const nobBaseMilitary*>
         return potentialTargets;
 
     constexpr unsigned limit = 40;
-    for(const nobMilitary* milBld : militaryBuildings)
+    std::vector<const nobMilitary*> sampledBuildings(militaryBuildings.begin(), militaryBuildings.end());
+    if(sampledBuildings.size() > limit)
     {
-        if(rand() % numMilBlds > limit)
-            continue;
+        // Randomly sample up to `limit` military buildings so target expansion work stays bounded.
+        for(unsigned i = 0; i < limit; ++i)
+        {
+            const unsigned j = i + rand() % (sampledBuildings.size() - i);
+            std::swap(sampledBuildings[i], sampledBuildings[j]);
+        }
+        sampledBuildings.resize(limit);
+    }
 
+    for(const nobMilitary* milBld : sampledBuildings)
+    {
         if(milBld->GetFrontierDistance() == FrontierDistance::Far)
             continue;
 
