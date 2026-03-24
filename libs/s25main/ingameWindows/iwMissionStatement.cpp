@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,7 +13,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
                                        HelpImage image)
     : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title,
                    LOADER.GetImageN("io", 5), true, CloseBehavior::Custom),
-      pauseGame_(pauseGame)
+      pauseGame_(pauseGame && !GAMECLIENT.IsReplayModeOn())
 {
     glArchivItem_Bitmap* img = (image == IM_NONE) ? nullptr : LOADER.GetImageN("io", image);
     const Extent imgSize(img ? img->GetSize() : Extent::all(0));
