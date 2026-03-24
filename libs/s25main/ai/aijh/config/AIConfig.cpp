@@ -3,7 +3,7 @@
 //
 
 #include "AIConfig.h"
-#include "StatsConfig.h"
+#include "ai/aijh/debug/StatsConfig.h"
 #include "WeightParser.h"
 #include "gameData/MaxPlayers.h"
 #include "helpers/EnumRange.h"

@@ -4,7 +4,7 @@
 
 #ifndef RATEDPOINT_H
 #define RATEDPOINT_H
-#include "ai/aijh/AIMap.h"
+#include "ai/aijh/runtime/AIMap.h"
 #include <optional>
 #include <set>
 

@@ -9,7 +9,7 @@
 #include "Point.h"
 #include "addons/const_addons.h"
 #include "ai/AIInterface.h"
-#include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobBaseWarehouse.h"

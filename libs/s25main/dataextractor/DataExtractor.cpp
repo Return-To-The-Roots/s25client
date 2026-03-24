@@ -2,7 +2,7 @@
 
 #include "GamePlayer.h"
 #include "MilitaryStatsHolder.h"
-#include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "helpers/EnumRange.h"
 
 #include "gameTypes/BuildingType.h"

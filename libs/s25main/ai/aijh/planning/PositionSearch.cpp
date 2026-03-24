@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PositionSearch.h"
-#include "AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "gameData/BuildingConsts.h"
 
 AIJH::PositionSearch::PositionSearch(const AIPlayerJH& player, const MapPoint pt, AIResource res, int minimum,

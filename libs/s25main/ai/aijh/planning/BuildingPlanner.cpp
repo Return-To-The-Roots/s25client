@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "BuildingPlanner.h"
-#include "AIConfig.h"
-#include "AIPlayerJH.h"
+#include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "BuildingCalculator.h"
 #include "GlobalGameSettings.h"
 #include "PlannerHelper.h"

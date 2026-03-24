@@ -4,8 +4,8 @@
 
 #include "AIPlayerJH.h"
 
-#include "AIConfig.h"
-#include "BuildingPlanner.h"
+#include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/planning/BuildingPlanner.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "RTTR_Assert.h"

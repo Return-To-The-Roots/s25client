@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "AIPlayerJH.h"
+#include "AICombatController.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 
 #include "buildings/nobMilitary.h"
 
@@ -12,7 +13,7 @@
 
 namespace AIJH {
 
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetRandom() const
+const nobBaseMilitary* AICombatController::SelectAttackTargetRandom() const
 {
     unsigned hq_or_harbor_without_soldiers = 0;
     std::vector<const nobBaseMilitary*> potentialTargets = GetPotentialTargets(hq_or_harbor_without_soldiers);
@@ -25,7 +26,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetRandom() const
         std::shuffle(beginShuffle, potentialTargets.end(), std::mt19937(std::random_device()()));
     }
 
-    const bool inDefenseMode = (attackMode == CombatMode::DefenseMode);
+    const bool inDefenseMode = IsInDefenseMode();
     for(const nobBaseMilitary* target : potentialTargets)
     {
         const unsigned potentialAttackers = CalcPotentialAttackers(*target);
@@ -33,10 +34,10 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetRandom() const
             continue;
 
         unsigned attackersStrength = 0;
-        sortedMilitaryBlds myBuildings = gwb.LookForMilitaryBuildings(target->GetPos(), 2);
+        sortedMilitaryBlds myBuildings = owner_.gwb.LookForMilitaryBuildings(target->GetPos(), 2);
         for(const nobBaseMilitary* otherMilBld : myBuildings)
         {
-            if(otherMilBld->GetPlayer() == playerId)
+            if(otherMilBld->GetPlayer() == owner_.playerId)
             {
                 const auto* myMil = dynamic_cast<const nobMilitary*>(otherMilBld);
                 if(!myMil || myMil->IsUnderAttack())
@@ -47,7 +48,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetRandom() const
             }
         }
 
-        if(level == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
+        if(owner_.GetLevel() == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
         {
             const auto* enemyTarget = static_cast<const nobMilitary*>(target);
             if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 2 || enemyTarget->GetNumTroops() == 0)
@@ -63,5 +64,9 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetRandom() const
     return nullptr;
 }
 
-} // namespace AIJH
+const nobBaseMilitary* AIPlayerJH::SelectAttackTargetRandom() const
+{
+    return combatController_->SelectAttackTargetRandom();
+}
 
+} // namespace AIJH

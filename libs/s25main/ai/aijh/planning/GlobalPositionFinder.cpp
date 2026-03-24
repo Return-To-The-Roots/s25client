@@ -4,15 +4,15 @@
 
 #include "GlobalPositionFinder.h"
 
-#include "AIPlayerJH.h"
-#include "AIConfig.h"
+#include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "RttrForeachPt.h"
 #include "ai/AIInterface.h"
 #include "ai/AIResource.h"
 #include "gameData/BuildingConsts.h"
-#include "WeightParams.h"
+#include "ai/aijh/config/WeightParams.h"
 
 namespace AIJH {
 namespace {

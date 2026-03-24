@@ -6,7 +6,7 @@
 #include <exception>
 
 #include "dataextractor/DataExtractor.h"
-#include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "RttrConfig.h"
 #include "SnapshotLoader.h"
 

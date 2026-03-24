@@ -1,5 +1,5 @@
-#include "AIConfig.h"
-#include "AIPlayerJH.h"
+#include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 
 namespace AIJH {
 class BuildCalculator

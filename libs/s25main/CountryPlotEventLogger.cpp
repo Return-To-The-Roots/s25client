@@ -5,7 +5,7 @@
 #include "CountryPlotEventLogger.h"
 
 #include "RttrForeachPt.h"
-#include "ai/aijh/StatsConfig.h"
+#include "ai/aijh/debug/StatsConfig.h"
 #include "country_plots_log.pb.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl.h"

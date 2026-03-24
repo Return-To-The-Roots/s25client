@@ -7,7 +7,7 @@
 #include "Loader.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
-#include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"

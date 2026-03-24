@@ -5,7 +5,7 @@
 #include "GamePlayer.h"
 #include "BuildingEventLogger.h"
 #include "Cheats.h"
-#include "ai/aijh/AIConfig.h"
+#include "ai/aijh/config/AIConfig.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GameInterface.h"

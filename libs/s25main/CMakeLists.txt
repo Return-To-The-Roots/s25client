@@ -16,6 +16,11 @@ endmacro()
 AddDirectory(addons)
 AddDirectory(ai)
 AddDirectory(ai/aijh)
+AddDirectory(ai/aijh/runtime)
+AddDirectory(ai/aijh/planning)
+AddDirectory(ai/aijh/combat)
+AddDirectory(ai/aijh/config)
+AddDirectory(ai/aijh/debug)
 AddDirectory(dataextractor)
 AddDirectory(animation)
 AddDirectory(buildings)
@@ -55,22 +60,22 @@ set(s25Main_SRCS
         TroopsLimitEventLogger.cpp
         ToolPriorityEventLogger.cpp
         WareEventLogger.cpp
-        ai/aijh/AIAdjuster.cpp
-        ai/aijh/TargetSelector.cpp
-        ai/aijh/TargetSelectorAttrition.cpp
-        ai/aijh/TargetSelectorBiting.cpp
-        ai/aijh/TargetSelectorPrudent.cpp
-        ai/aijh/TargetSelectorRandom.cpp
-        ai/aijh/BuildingCalculator.cpp
-        ai/aijh/AIConfig.cpp
-        ai/aijh/AIConfig.h
-        ai/aijh/PlannerHelper.cpp
-        ai/aijh/PlannerHelper.h
-        ai/aijh/GlobalPositionFinder.cpp
-        ai/aijh/GlobalPositionFinder.h
+        ai/aijh/runtime/AIAdjuster.cpp
+        ai/aijh/combat/TargetSelector.cpp
+        ai/aijh/combat/TargetSelectorAttrition.cpp
+        ai/aijh/combat/TargetSelectorBiting.cpp
+        ai/aijh/combat/TargetSelectorPrudent.cpp
+        ai/aijh/combat/TargetSelectorRandom.cpp
+        ai/aijh/planning/BuildingCalculator.cpp
+        ai/aijh/config/AIConfig.cpp
+        ai/aijh/config/AIConfig.h
+        ai/aijh/planning/PlannerHelper.cpp
+        ai/aijh/planning/PlannerHelper.h
+        ai/aijh/planning/GlobalPositionFinder.cpp
+        ai/aijh/planning/GlobalPositionFinder.h
         ai/RatedPoint.h
-        ai/aijh/WeightParser.h
-        ai/aijh/WeightParams.h
+        ai/aijh/config/WeightParser.h
+        ai/aijh/config/WeightParams.h
 )
 
 set(WARES_LOG_PROTO ${PROJECT_SOURCE_DIR}/external/proto-repo/wares_log.proto)

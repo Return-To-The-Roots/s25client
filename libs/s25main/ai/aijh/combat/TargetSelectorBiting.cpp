@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "AIPlayerJH.h"
+#include "AICombatController.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 
 #include "buildings/nobMilitary.h"
 #include "gameTypes/BuildingType.h"
@@ -11,7 +12,7 @@
 
 namespace AIJH {
 
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
+const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
 {
     unsigned unused_special_targets = 0;
     std::vector<const nobBaseMilitary*> potentialTargets = GetPotentialTargets(unused_special_targets);
@@ -29,10 +30,10 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
             continue;
 
         unsigned attackersStrength = 0;
-        sortedMilitaryBlds myBuildings = gwb.LookForMilitaryBuildings(target->GetPos(), 2);
+        sortedMilitaryBlds myBuildings = owner_.gwb.LookForMilitaryBuildings(target->GetPos(), 2);
         for(const nobBaseMilitary* otherMilBld : myBuildings)
         {
-            if(otherMilBld->GetPlayer() != playerId)
+            if(otherMilBld->GetPlayer() != owner_.playerId)
                 continue;
             const auto* myMil = dynamic_cast<const nobMilitary*>(otherMilBld);
             if(!myMil || myMil->IsUnderAttack())
@@ -42,7 +43,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
             attackersStrength += myMil->GetSoldiersStrengthForAttack(target->GetPos(), newAttackers);
         }
 
-        if(level == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
+        if(owner_.GetLevel() == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
         {
             const auto* enemyTarget = static_cast<const nobMilitary*>(target);
             if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 1 || enemyTarget->GetNumTroops() == 0)
@@ -69,5 +70,9 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
     return bestTarget;
 }
 
-} // namespace AIJH
+const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
+{
+    return combatController_->SelectAttackTargetBiting();
+}
 
+} // namespace AIJH

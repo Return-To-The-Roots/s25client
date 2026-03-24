@@ -5,7 +5,7 @@
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
 #include "ai/AIPlayer.h"
-#include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "buildings/noBuilding.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseWarehouse.h"

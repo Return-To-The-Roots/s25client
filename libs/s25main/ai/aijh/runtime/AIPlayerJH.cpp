@@ -4,18 +4,21 @@
 
 #include "AIPlayerJH.h"
 
-#include "AIConfig.h"
-#include "AIConstruction.h"
-#include "BuildingPlanner.h"
+#include "ai/aijh/combat/AICombatController.h"
+#include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/debug/AIStatsReporter.h"
+#include "ai/aijh/debug/StatsConfig.h"
+#include "ai/aijh/planning/AIConstruction.h"
+#include "ai/aijh/planning/BuildingPlanner.h"
+#include "ai/aijh/planning/GlobalPositionFinder.h"
+#include "ai/aijh/planning/Jobs.h"
+#include "ai/aijh/runtime/AIRoadController.h"
 #include "BuildingRegister.h"
 #include "FindWhConditions.h"
 #include "CombatLossTracker.h"
-#include "GlobalPositionFinder.h"
 #include "GameCommands.h"
 #include "GamePlayer.h"
-#include "Jobs.h"
 #include "RttrForeachPt.h"
-#include "StatsConfig.h"
 #include "addons/const_addons.h"
 #include "ai/AIEvents.h"
 #include "boost/filesystem/fstream.hpp"
@@ -186,12 +189,15 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 }
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-    : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()),
-      config_(GetAIConfigForPlayer(playerId)), resourceMaps(createResourceMaps(aii, aiMap)),
+    : AIPlayer(playerId, gwb, level), config_(GetAIConfigForPlayer(playerId)),
+      UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
       isInitGfCompleted(false), defeated(player.IsDefeated()),
-      attackMode(CombatMode::DefenseMode), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
+      bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this)),
-      globalPositionFinder(std::make_unique<GlobalPositionFinder>(*this))
+      globalPositionFinder(std::make_unique<GlobalPositionFinder>(*this)),
+      statsReporter_(std::make_unique<AIStatsReporter>(*this)),
+      combatController_(std::make_unique<AICombatController>(*this)),
+      roadController_(std::make_unique<AIRoadController>(*this))
 {
     InitNodes();
     InitResourceMaps();
@@ -202,11 +208,19 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     attack_interval = config_.combat.attackIntervals[level];
     switch(config_.combat.targetSelection)
     {
-        case TargetSelectionAlgorithm::Prudent: targetSelectionMode_ = TargetSelectionMode::Prudent; break;
-        case TargetSelectionAlgorithm::Biting: targetSelectionMode_ = TargetSelectionMode::Biting; break;
-        case TargetSelectionAlgorithm::Attrition: targetSelectionMode_ = TargetSelectionMode::Attrition; break;
+        case TargetSelectionAlgorithm::Prudent:
+            combatController_->SetTargetSelectionMode(AICombatController::TargetSelectionMode::Prudent);
+            break;
+        case TargetSelectionAlgorithm::Biting:
+            combatController_->SetTargetSelectionMode(AICombatController::TargetSelectionMode::Biting);
+            break;
+        case TargetSelectionAlgorithm::Attrition:
+            combatController_->SetTargetSelectionMode(AICombatController::TargetSelectionMode::Attrition);
+            break;
         case TargetSelectionAlgorithm::Random:
-        default: targetSelectionMode_ = TargetSelectionMode::Random; break;
+        default:
+            combatController_->SetTargetSelectionMode(AICombatController::TargetSelectionMode::Random);
+            break;
     }
     switch(level)
     {
@@ -1273,42 +1287,12 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
 
 void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, Direction dir)
 {
-    // todo: detect "bad" roads and handle them
-    const auto* flag = gwb.GetSpecObj<noFlag>(pt);
-    // does the flag still exist?
-    if(!flag)
-        return;
-    // does the roadsegment still exist?
-    const RoadSegment* const roadSeg = flag->GetRoute(dir);
-    if(!roadSeg || roadSeg->GetLength() < 4) // road too short to need flags
-        return;
-    // check if this road leads to a warehouseflag and if it does start setting flags from the warehouseflag else from
-    // the new flag goal is to move roadsegments with a length of more than 2 away from the warehouse
-    const noFlag& otherFlag = roadSeg->GetOtherFlag(*flag);
-    MapPoint bldPos = gwb.GetNeighbour(otherFlag.GetPos(), Direction::NorthWest);
-    if(aii.IsBuildingOnNode(bldPos, BuildingType::Storehouse)
-       || aii.IsBuildingOnNode(bldPos, BuildingType::HarborBuilding)
-       || aii.IsBuildingOnNode(bldPos, BuildingType::Headquarters))
-        construction->SetFlagsAlongRoad(otherFlag, roadSeg->GetOtherFlagDir(*flag) + 3u);
-    else
-    {
-        // set flags on our new road starting from the new flag
-        construction->SetFlagsAlongRoad(*flag, dir);
-    }
+    roadController_->HandleRoadConstructionComplete(pt, dir);
 }
 
-void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction)
+void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction dir)
 {
-    const auto* flag = gwb.GetSpecObj<noFlag>(pt);
-    // does the flag still exist?
-    if(!flag)
-        return;
-    // is it our flag?
-    if(flag->GetPlayer() != playerId)
-        return;
-    // if it isnt a useless flag AND it has no current road connection then retry to build a road.
-    if(RemoveUnusedRoad(*flag, boost::none, true, false))
-        construction->AddConnectFlagJob(flag);
+    roadController_->HandleRoadConstructionFailed(pt, dir);
 }
 
 void AIPlayerJH::HandleMilitaryBuilingLost(const MapPoint pt)
@@ -1778,464 +1762,74 @@ void AIPlayerJH::CheckGranitMine()
     }
 }
 
-namespace {
-const std::array<unsigned, NUM_SOLDIER_RANKS> kSoldierAttackWeights = {3, 4, 5, 6, 7};
-
-double rollProbability()
-{
-    return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
-}
-} // namespace
-
 double AIPlayerJH::ComputeFulfillmentLevel(double* outTotalWeight) const
 {
-    double totalWeight = 0.0;
-    unsigned frontierCount = 0;
-
-    const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
-    for(const nobMilitary* milBld : militaryBuildings)
-    {
-        if(!milBld)
-            continue;
-        if(milBld->GetFrontierDistance() != FrontierDistance::Near)
-            continue;
-        if(milBld->IsNewBuilt())
-            continue;
-
-        const noFlag* flag = milBld->GetFlag();
-        if(!flag)
-            continue;
-
-        ++frontierCount;
-
-        std::vector<nofPassiveSoldier*> attackers = milBld->GetSoldiersForAttack(flag->GetPos());
-        if(attackers.empty())
-            continue;
-
-        bool skippedHighest = false;
-        for(nofPassiveSoldier* soldier : attackers)
-        {
-            if(!soldier)
-                continue;
-            if(!skippedHighest)
-            {
-                skippedHighest = true;
-                continue;
-            }
-
-            const size_t rankIdx = std::min<size_t>(soldier->GetRank(), kSoldierAttackWeights.size() - 1);
-            totalWeight += kSoldierAttackWeights[rankIdx];
-        }
-    }
-
-    if(outTotalWeight)
-        *outTotalWeight = totalWeight;
-    if(frontierCount == 0)
-        return 0.0;
-
-    return totalWeight / static_cast<double>(frontierCount);
+    return combatController_->ComputeFulfillmentLevel(outTotalWeight);
 }
 
 double AIPlayerJH::ComputeEnemyFrontlineWeight() const
 {
-    double totalWeight = 0.0;
-    const unsigned numPlayers = aii.GetNumPlayers();
-
-    for(unsigned enemyId = 0; enemyId < numPlayers; ++enemyId)
-    {
-        if(enemyId == playerId)
-            continue;
-        if(!aii.IsPlayerAttackable(enemyId))
-            continue;
-
-        const GamePlayer& enemyPlayer = gwb.GetPlayer(enemyId);
-        const std::list<nobMilitary*>& enemyBuildings = enemyPlayer.GetBuildingRegister().GetMilitaryBuildings();
-        for(const nobMilitary* building : enemyBuildings)
-        {
-            if(!building)
-                continue;
-            if(building->GetFrontierDistance() != FrontierDistance::Near)
-                continue;
-            if(building->IsNewBuilt())
-                continue;
-
-            const noFlag* flag = building->GetFlag();
-            if(!flag)
-                continue;
-
-            const std::vector<nofPassiveSoldier*> attackers = building->GetSoldiersForAttack(flag->GetPos());
-            if(attackers.empty())
-                continue;
-
-            bool skippedHighest = false;
-            for(nofPassiveSoldier* soldier : attackers)
-            {
-                if(!soldier)
-                    continue;
-                if(!skippedHighest)
-                {
-                    skippedHighest = true;
-                    continue;
-                }
-
-                const size_t rankIdx = std::min<size_t>(soldier->GetRank(), kSoldierAttackWeights.size() - 1);
-                totalWeight += kSoldierAttackWeights[rankIdx];
-            }
-        }
-    }
-
-    return totalWeight;
+    return combatController_->ComputeEnemyFrontlineWeight();
 }
 
 double AIPlayerJH::GetCombatFulfillmentLevel() const
 {
-    return combatFulfillmentLevel_;
+    return combatController_->GetCombatFulfillmentLevel();
 }
 
 double AIPlayerJH::GetCombatAttackWeight() const
 {
-    return combatAttackWeight_;
+    return combatController_->GetCombatAttackWeight();
+}
+
+bool AIPlayerJH::IsInDefenseMode() const
+{
+    return combatController_->IsInDefenseMode();
 }
 
 void AIPlayerJH::UpdateCombatMode()
 {
-    const auto& combatCfg = config_.combat;
-    const double lowLevel = combatCfg.fulfillmentLow;       // Average force threshold that should trigger defensive stance
-    const double mediumLevel = combatCfg.fulfillmentMedium;
-    const double highLevel = combatCfg.fulfillmentHigh;     // Ready-to-strike threshold
-    const double halfPi = std::acos(-1.0) * 0.5;
-
-    double totalWeight = 0.0;
-    const double fulfillment = ComputeFulfillmentLevel(&totalWeight);
-    combatFulfillmentLevel_ = fulfillment;
-    combatAttackWeight_ = totalWeight;
-    const double enemyWeight = ComputeEnemyFrontlineWeight();
-
-    if(totalWeight > enemyWeight * 3.0)
-    {
-        attackMode = CombatMode::AttackMode;
-        return;
-    }
-
-    if(fulfillment >= highLevel)
-    {
-        attackMode = CombatMode::AttackMode;
-        return;
-    }
-
-    if(attackMode == CombatMode::DefenseMode)
-    {
-        if(fulfillment <= lowLevel)
-            return;
-
-        if(fulfillment > mediumLevel && fulfillment < highLevel)
-        {
-            double normalized = (highLevel - fulfillment) / (highLevel - mediumLevel);
-            normalized = std::clamp(normalized, 0.0, 1.0);
-            const double probability = std::cos(normalized * halfPi);
-            if(rollProbability() <= probability)
-                attackMode = CombatMode::AttackMode;
-        }
-    } else
-    {
-        if(fulfillment <= lowLevel)
-        {
-            attackMode = CombatMode::DefenseMode;
-            return;
-        }
-
-        if(fulfillment > lowLevel && fulfillment < mediumLevel)
-        {
-            double normalized = (fulfillment - lowLevel) / (mediumLevel - lowLevel);
-            normalized = std::clamp(normalized, 0.0, 1.0);
-            const double probability = std::cos(normalized * halfPi);
-            if(rollProbability() <= probability)
-                attackMode = CombatMode::DefenseMode;
-        }
-    }
+    combatController_->UpdateCombatMode();
 }
 
 bool AIPlayerJH::CanAttackInDefenseMode(const nobBaseMilitary& target, const unsigned attackersCount) const
 {
-    if(attackersCount == 0)
-        return false;
-
-    const double lowLevel = config_.combat.fulfillmentLow;
-    const bool wantsRetake =
-      combatFulfillmentLevel_ <= lowLevel && IsRecentlyLostMilitaryBuilding(target.GetPos());
-
-    if(!wantsRetake && !IsLonelyEnemyStronghold(target))
-        return false;
-
-    const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(&target);
-    if(enemyMilitary)
-    {
-        const unsigned defenders = enemyMilitary->GetNumTroops();
-        if(attackersCount <= defenders)
-            return false;
-    } else if(target.DefendersAvailable())
-    {
-        // Warehouses and HQs do not expose troop counts; just avoid attacking staffed buildings.
-        return false;
-    }
-
-    return true;
+    return combatController_->CanAttackInDefenseMode(target, attackersCount);
 }
 
 bool AIPlayerJH::IsLonelyEnemyStronghold(const nobBaseMilitary& target) const
 {
-    const sortedMilitaryBlds nearby = gwb.LookForMilitaryBuildings(target.GetPos(), 12);
-    unsigned nearbyEnemy = 0;
-
-    for(const nobBaseMilitary* candidate : nearby)
-    {
-        if(candidate == &target)
-            continue;
-        if(candidate->GetPlayer() != target.GetPlayer())
-            continue;
-        if(candidate->GetGOT() != GO_Type::NobMilitary)
-            continue;
-
-        ++nearbyEnemy;
-        if(nearbyEnemy > 1)
-            return false;
-    }
-
-    return true;
+    return combatController_->IsLonelyEnemyStronghold(target);
 }
 
 void AIPlayerJH::TryToAttack()
 {
-    const nobBaseMilitary* target = SelectAttackTarget(targetSelectionMode_);
-    if(!target)
-        return;
-
-    const unsigned attackersCount = CalcPotentialAttackers(*target);
-    if(attackersCount == 0)
-        return;
-
-    if(aii.Attack(target->GetPos(), attackersCount, true))
-        TrackCombatStart(*target);
+    combatController_->TryToAttack();
 }
 
 unsigned AIPlayerJH::CalcPotentialAttackers(const nobBaseMilitary& target) const
 {
-    unsigned attackersCount = 0;
-    sortedMilitaryBlds myBuildings = gwb.LookForMilitaryBuildings(target.GetPos(), 2);
-    for(const nobBaseMilitary* otherMilBld : myBuildings)
-    {
-        if(otherMilBld->GetPlayer() == playerId)
-        {
-            const auto* myMil = dynamic_cast<const nobMilitary*>(otherMilBld);
-            if(!myMil || myMil->IsUnderAttack())
-                continue;
-
-            unsigned newAttackers = 0;
-            myMil->GetSoldiersStrengthForAttack(target.GetPos(), newAttackers);
-            attackersCount += newAttackers;
-        }
-    }
-    return attackersCount;
+    return combatController_->CalcPotentialAttackers(target);
 }
 
 double AIPlayerJH::GetCaptureRiskEstimate(const nobBaseMilitary& building) const
 {
-    const auto* mil = dynamic_cast<const nobMilitary*>(&building);
-    if(!mil)
-        return 0.0;
-    return mil->GetCaptureRiskEstimate();
+    return combatController_->GetCaptureRiskEstimate(building);
 }
 
 void AIPlayerJH::EvaluateCaptureRisks()
 {
-    for(nobMilitary* building : aii.GetMilitaryBuildings())
-    {
-        if(!building)
-            continue;
-
-        if(building->IsUnderAttack())
-            continue;
-
-        const double risk = ComputeCaptureRisk(*building);
-        building->SetCaptureRiskEstimate(risk);
-        const double importance = static_cast<double>(building->EstimateCaptureLossCount());
-        building->SetImportanceEstimate(importance);
-    }
+    combatController_->EvaluateCaptureRisks();
 }
 
 double AIPlayerJH::ComputeCaptureRisk(const nobMilitary& building) const
 {
-    return gwb.ComputeCaptureRisk(building);
+    return combatController_->ComputeCaptureRisk(building);
 }
 
 void AIPlayerJH::TrySeaAttack()
 {
-    if(aii.GetNumShips() < 1)
-        return;
-    if(aii.GetHarbors().empty())
-        return;
-    std::vector<unsigned short> seaidswithattackers;
-    std::vector<unsigned> attackersatseaid;
-    std::vector<int> invalidseas;
-    std::deque<const nobBaseMilitary*> potentialTargets;
-    std::deque<const nobBaseMilitary*> undefendedTargets;
-    std::vector<int> searcharoundharborspots;
-    // all seaids with at least 1 ship count available attackers for later checks
-    for(const noShip* ship : aii.GetShips())
-    {
-        // sea id not already listed as valid or invalid?
-        if(!helpers::contains(seaidswithattackers, ship->GetSeaID())
-           && !helpers::contains(invalidseas, ship->GetSeaID()))
-        {
-            unsigned attackercount = gwb.GetNumSoldiersForSeaAttackAtSea(playerId, ship->GetSeaID(), false);
-            if(attackercount) // got attackers at this sea id? -> add to valid list
-            {
-                seaidswithattackers.push_back(ship->GetSeaID());
-                attackersatseaid.push_back(attackercount);
-            } else // not listed but no attackers? ->invalid
-            {
-                invalidseas.push_back(ship->GetSeaID());
-            }
-        }
-    }
-    if(seaidswithattackers.empty()) // no sea ids with attackers? skip the rest
-        return;
-    /*else
-    {
-        for(unsigned i=0;i<seaidswithattackers.size();i++)
-            LOG.write(("attackers at sea ids for player %i, sea id %i, count %i \n",playerId, seaidswithattackers[i],
-    attackersatseaid[i]);
-    }*/
-    // first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
-    for(unsigned i = 1; i < gwb.GetNumHarborPoints(); i++)
-    {
-        const nobHarborBuilding* hb;
-        if((hb = gwb.GetSpecObj<nobHarborBuilding>(gwb.GetHarborPoint(i))))
-        {
-            if(aii.IsVisible(hb->GetPos()))
-            {
-                if(aii.IsPlayerAttackable(hb->GetPlayer()))
-                {
-                    // attackers for this building?
-                    const std::vector<unsigned short> testseaidswithattackers =
-                      gwb.GetFilteredSeaIDsForAttack(gwb.GetHarborPoint(i), seaidswithattackers, playerId);
-                    if(!testseaidswithattackers.empty()) // harbor can be attacked?
-                    {
-                        if(!hb->DefendersAvailable()) // no defenders?
-                            undefendedTargets.push_back(hb);
-                        else // todo: maybe only attack this when there is a fair win chance for the attackers?
-                            potentialTargets.push_back(hb);
-                        // LOG.write(("found a defended harbor we can attack at %i,%i \n",hb->GetPos());
-                    }
-                } else // cant attack player owning the harbor -> add to list
-                {
-                    searcharoundharborspots.push_back(i);
-                }
-            }
-            // else: not visible for player no need to look any further here
-        } else // no harbor -> add to list
-        {
-            searcharoundharborspots.push_back(i);
-            // LOG.write(("found an unused harborspot we have to look around of at %i,%i
-            // \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
-        }
-    }
-    auto prng = std::mt19937(std::random_device()());
-    // any undefendedTargets? -> pick one by random
-    if(!undefendedTargets.empty())
-    {
-        std::shuffle(undefendedTargets.begin(), undefendedTargets.end(), prng);
-        for(const nobBaseMilitary* targetMilBld : undefendedTargets)
-        {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers =
-              gwb.GetSoldiersForSeaAttack(playerId, targetMilBld->GetPos());
-            if(!attackers.empty()) // try to attack it!
-            {
-                if(aii.SeaAttack(targetMilBld->GetPos(), 1, true))
-                {
-                    TrackCombatStart(*targetMilBld);
-                    return;
-                }
-            }
-        }
-    }
-    // add all military buildings around still valid harborspots (unused or used by ally)
-    unsigned limit = 15;
-    unsigned skip = 0;
-    if(searcharoundharborspots.size() > 15)
-        skip = std::max<int>(rand() % (searcharoundharborspots.size() / 15 + 1) * 15, 1) - 1;
-    for(unsigned i = skip; i < searcharoundharborspots.size() && limit > 0; i++)
-    {
-        limit--;
-        // now add all military buildings around the harborspot to our list of potential targets
-        sortedMilitaryBlds buildings = gwb.LookForMilitaryBuildings(gwb.GetHarborPoint(searcharoundharborspots[i]), 2);
-        for(const nobBaseMilitary* milBld : buildings)
-        {
-            if(aii.IsPlayerAttackable(milBld->GetPlayer()) && aii.IsVisible(milBld->GetPos()))
-            {
-                const auto* enemyTarget = dynamic_cast<const nobMilitary*>((milBld));
-
-                if(enemyTarget && enemyTarget->IsNewBuilt())
-                    continue;
-                if((milBld->GetGOT() != GO_Type::NobMilitary)
-                   && (!milBld->DefendersAvailable())) // undefended headquarter(or unlikely as it is a harbor...) -
-                                                       // priority list!
-                {
-                    const std::vector<unsigned short> testseaidswithattackers =
-                      gwb.GetFilteredSeaIDsForAttack(milBld->GetPos(), seaidswithattackers, playerId);
-                    if(!testseaidswithattackers.empty())
-                    {
-                        undefendedTargets.push_back(milBld);
-                    } // else - no attackers - do nothing
-                } else // normal target - check is done after random shuffle so we dont have to check every possible
-                       // target and instead only enough to get 1 good one
-                {
-                    potentialTargets.push_back(milBld);
-                }
-            } // not attackable or no vision of region - do nothing
-        }
-    }
-    // now we have a deque full of available and maybe undefended targets that are available for attack -> shuffle and
-    // attack the first one we can attack("should" be the first we check...)  any undefendedTargets? -> pick one by
-    // random
-    if(!undefendedTargets.empty())
-    {
-        std::shuffle(undefendedTargets.begin(), undefendedTargets.end(), prng);
-        for(const nobBaseMilitary* targetMilBld : undefendedTargets)
-        {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers =
-              gwb.GetSoldiersForSeaAttack(playerId, targetMilBld->GetPos());
-            if(!attackers.empty()) // try to attack it!
-            {
-                if(aii.SeaAttack(targetMilBld->GetPos(), 1, true))
-                {
-                    TrackCombatStart(*targetMilBld);
-                    return;
-                }
-            }
-        }
-    }
-    std::shuffle(potentialTargets.begin(), potentialTargets.end(), prng);
-    for(const nobBaseMilitary* ship : potentialTargets)
-    {
-        // TODO: decide if it is worth attacking the target and not just "possible"
-        // test only if we should have attackers from one of our valid sea ids
-        const std::vector<unsigned short> testseaidswithattackers =
-          gwb.GetFilteredSeaIDsForAttack(ship->GetPos(), seaidswithattackers, playerId);
-        if(!testseaidswithattackers.empty()) // only do the final check if it will probably be a good result
-        {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers =
-              gwb.GetSoldiersForSeaAttack(playerId, ship->GetPos()); // now get a final list of attackers and attack it
-            if(!attackers.empty())
-            {
-                if(aii.SeaAttack(ship->GetPos(), attackers.size(), true))
-                {
-                    TrackCombatStart(*ship);
-                    return;
-                }
-            }
-        }
-    }
+    combatController_->TrySeaAttack();
 }
 
 
@@ -2299,143 +1893,24 @@ void AIPlayerJH::SendAIEvent(std::unique_ptr<AIEvent::Base> ev)
 bool AIPlayerJH::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
                                     helpers::OptionalEnum<Direction> excludeDir, std::vector<const noFlag*> oldFlags)
 {
-    // If oldFlags is empty we just started
-    if(!oldFlags.empty() && &startFlag == &curFlag)
-        return true;
-    if(maxlen < 1)
-        return false;
-    for(Direction testDir : helpers::EnumRange<Direction>{})
-    {
-        if(testDir == excludeDir)
-            continue;
-        if(testDir == Direction::NorthWest
-           && (aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest),
-                                      NodalObjectType::Building)
-               || aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest),
-                                         NodalObjectType::Buildingsite)))
-        {
-            continue;
-        }
-        const RoadSegment* route = curFlag.GetRoute(testDir);
-        if(route)
-        {
-            const noFlag& flag = route->GetOtherFlag(curFlag);
-            if(!helpers::contains(oldFlags, &flag))
-            {
-                oldFlags.push_back(&flag);
-                Direction revDir = route->GetOtherFlagDir(curFlag) + 3u;
-                if(IsFlagPartofCircle(startFlag, maxlen - 1, flag, revDir, oldFlags))
-                    return true;
-            }
-        }
-    }
-    return false;
+    return roadController_->IsFlagPartofCircle(startFlag, maxlen, curFlag, excludeDir, std::move(oldFlags));
 }
 
 void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
 {
-    std::vector<const noFlag*> flags = construction->FindFlags(pt, 25);
-    // Jede Flagge testen...
-    std::vector<const noFlag*> reconnectflags;
-    for(const noFlag* flag : flags)
-    {
-        if(RemoveUnusedRoad(*flag, boost::none, true, false))
-            reconnectflags.push_back(flag);
-    }
-    UpdateNodesAround(pt, 25);
-    for(const noFlag* flag : reconnectflags)
-        construction->AddConnectFlagJob(flag);
+    roadController_->RemoveAllUnusedRoads(pt);
 }
 
 void AIPlayerJH::CheckForUnconnectedBuildingSites()
 {
-    if(construction->GetConnectJobNum() > 0 || construction->GetBuildJobNum() > 0)
-        return;
-    for(noBuildingSite* bldSite : player.GetBuildingRegister().GetBuildingSites()) //-V807
-    {
-        noFlag* flag = bldSite->GetFlag();
-        bool foundRoute = false;
-        for(const auto dir : helpers::EnumRange<Direction>{})
-        {
-            if(dir == Direction::NorthWest)
-                continue;
-            if(flag->GetRoute(dir))
-            {
-                foundRoute = true;
-                break;
-            }
-        }
-        if(!foundRoute)
-            construction->AddConnectFlagJob(flag);
-    }
+    roadController_->CheckForUnconnectedBuildingSites();
 }
 
 bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum<Direction> excludeDir,
                                   bool firstflag /*= true*/, bool allowcircle /*= true*/,
                                   bool keepstartflag /*= false*/)
 {
-    helpers::OptionalEnum<Direction> foundDir, foundDir2;
-    unsigned char finds = 0;
-    // Count roads from this flag...
-    for(Direction dir : helpers::EnumRange<Direction>{})
-    {
-        if(dir == excludeDir)
-            continue;
-        if(dir == Direction::NorthWest
-           && (aii.IsObjectTypeOnNode(gwb.GetNeighbour(startFlag.GetPos(), Direction::NorthWest),
-                                      NodalObjectType::Building)
-               || aii.IsObjectTypeOnNode(gwb.GetNeighbour(startFlag.GetPos(), Direction::NorthWest),
-                                         NodalObjectType::Buildingsite)))
-        {
-            // the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant
-            // reconnect it -> burn it(burning takes place at the pathfinding job))
-            return true;
-        }
-        if(startFlag.GetRoute(dir))
-        {
-            finds++;
-            if(finds == 1)
-                foundDir = dir;
-            else if(finds == 2)
-                foundDir2 = dir;
-        }
-    }
-    // if we found more than 1 road -> the flag is still in use.
-    if(finds > 2)
-        return false;
-    else if(finds == 2)
-    {
-        if(allowcircle)
-        {
-            if(!IsFlagPartofCircle(startFlag, 10, startFlag, boost::none, {}))
-                return false;
-            if(!firstflag)
-                return false;
-        } else
-            return false;
-    }
-
-    // kill the flag
-    if(keepstartflag)
-    {
-        if(foundDir)
-            aii.DestroyRoad(startFlag.GetPos(), *foundDir);
-    } else
-        aii.DestroyFlag(&startFlag);
-
-    // nothing found?
-    if(!foundDir)
-        return false;
-    // at least 1 road exists
-    Direction revDir1 = startFlag.GetRoute(*foundDir)->GetOtherFlagDir(startFlag) + 3u;
-    RemoveUnusedRoad(startFlag.GetRoute(*foundDir)->GetOtherFlag(startFlag), revDir1, false);
-    // 2 roads exist
-    if(foundDir2)
-    {
-        Direction revDir2 = startFlag.GetRoute(*foundDir2)->GetOtherFlagDir(startFlag) + 3u;
-        RemoveUnusedRoad(startFlag.GetRoute(*foundDir2)->GetOtherFlag(startFlag), revDir2, false);
-    }
-    return false;
+    return roadController_->RemoveUnusedRoad(startFlag, excludeDir, firstflag, allowcircle, keepstartflag);
 }
 
 unsigned AIPlayerJH::SoldierAvailable(int rank)

@@ -1,10 +1,10 @@
 #include "BuildingCalculator.h"
 
-#include "AIConfig.h"
-#include "AIPlayerJH.h"
+#include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "BuildingPlanner.h"
 #include "PlannerHelper.h"
-#include "WeightParams.h"
+#include "ai/aijh/config/WeightParams.h"
 #include "addons/const_addons.h"
 #include "gameTypes/GoodTypes.h"
 

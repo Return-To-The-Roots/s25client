@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "AIPlayerJH.h"
+#include "AICombatController.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 
-#include "AIConfig.h"
+#include "ai/aijh/config/AIConfig.h"
 #include "MilitaryStatsHolder.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
@@ -103,14 +104,14 @@ const nobBaseMilitary*
 
 } // namespace
 
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
+const nobBaseMilitary* AICombatController::SelectAttackTargetAttrition() const
 {
     unsigned unused_special_targets = 0;
     std::vector<const nobBaseMilitary*> potentialTargets = GetPotentialTargets(unused_special_targets);
     if(potentialTargets.empty())
         return nullptr;
 
-    const unsigned currentGF = gwb.GetEvMgr().GetCurrentGF();
+    const unsigned currentGF = owner_.gwb.GetEvMgr().GetCurrentGF();
     std::vector<const nobBaseMilitary*> recaptureCandidates;
     recaptureCandidates.reserve(potentialTargets.size());
 
@@ -118,7 +119,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
     {
         if(target->GetGOT() != GO_Type::NobMilitary)
             continue;
-        if(target->GetOriginOwner() != playerId)
+        if(target->GetOriginOwner() != owner_.playerId)
             continue;
         recaptureCandidates.push_back(target);
     }
@@ -126,11 +127,16 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
     if(const nobBaseMilitary* recapture = PickBestTarget(recaptureCandidates, currentGF, RECENT_RECAPTURE_WINDOW_GFS))
         return recapture;
 
-    if(HasForceAdvantage(gwb, aii, playerId, config_.combat.forceAdvantageRatio)
-       && HasNearTroopsDensityForBiting(gwb, playerId, config_.combat.minNearTroopsDensity))
+    if(HasForceAdvantage(owner_.gwb, owner_.GetInterface(), owner_.playerId, owner_.GetConfig().combat.forceAdvantageRatio)
+       && HasNearTroopsDensityForBiting(owner_.gwb, owner_.playerId, owner_.GetConfig().combat.minNearTroopsDensity))
         return SelectAttackTargetBiting();
 
     return nullptr;
+}
+
+const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
+{
+    return combatController_->SelectAttackTargetAttrition();
 }
 
 } // namespace AIJH

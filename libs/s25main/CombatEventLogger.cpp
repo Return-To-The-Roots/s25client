@@ -4,7 +4,7 @@
 
 #include "CombatEventLogger.h"
 
-#include "ai/aijh/StatsConfig.h"
+#include "ai/aijh/debug/StatsConfig.h"
 #include "combat_log.pb.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl.h"

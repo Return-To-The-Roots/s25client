@@ -29,6 +29,7 @@ public:
 
     const std::string& GetPlayerName() const { return player.name; }
     unsigned char GetPlayerId() const { return playerId; }
+    AI::Level GetLevel() const { return level; }
 
     /// Get the game commands and mark them as processed
     std::vector<gc::GameCommandPtr> FetchGameCommands()

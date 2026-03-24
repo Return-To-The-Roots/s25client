@@ -6,8 +6,8 @@
 
 #include "ai/AIEventManager.h"
 #include "ai/AIPlayer.h"
-#include "ai/aijh/AIMap.h"
-#include "ai/aijh/AIResourceMap.h"
+#include "ai/aijh/runtime/AIMap.h"
+#include "ai/aijh/runtime/AIResourceMap.h"
 #include "helpers/EnumArray.h"
 #include "helpers/OptionalEnum.h"
 #include "gameTypes/GoodTypes.h"
@@ -34,12 +34,19 @@ class GlobalPositionFinder;
 class BuildingPlanner;
 class AIConstruction;
 class AIJob;
+class BuildJob;
+class ConnectJob;
+class EventJob;
+class SearchJob;
+class AIStatsReporter;
+class AICombatController;
+class AIRoadController;
 
 /// Create a subscription which records all nodes for which the BQ (may) have changed
 /// Requires arguments to have the same lifetime as the subscription
 Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& bqsToUpdate);
 
-/// Klasse für die besser JH-KI
+/// Concrete AI player implementation for the JH AI.
 class AIPlayerJH final : public AIPlayer
 {
 public:
@@ -53,6 +60,7 @@ public:
     AIPlayerJH(unsigned char playerId, const GameWorldBase& gwb, AI::Level level);
     ~AIPlayerJH() override;
 
+    // Core orchestration and shared context
     AIInterface& GetInterface() { return aii; }
     const AIInterface& GetInterface() const { return aii; }
     const AIConfig& GetConfig() const { return config_; }
@@ -66,21 +74,10 @@ public:
     void RunGF(unsigned gf, bool gfisnwf) override;
     void OnChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) override;
 
-    /// Test whether the player should resign or not
-    bool TestDefeat();
-    /// calculates the values the ai should pick for harbor flag & 1 bar buildings between 50% and 100%
-    /// return value is whatever has to be added to 4(=50%) for harbor and if anything is left that has to be added to 1
-    /// bar setting
-    unsigned CalcMilSettings();
+    // Reporting and top-level state access
     void saveStats(unsigned gf) const;
-    void saveDebugStats(unsigned gf) const;
-    /// military & tool production settings
-    void AdjustSettings();
-    /// Recalculate total troop limits for non-far military buildings with fair distribution
-    void UpdateTroopsLimit();
-    /// return number of seaIds with at least 2 harbor spots
-    unsigned GetNumAIRelevantSeaIds() const;
 
+    // Shared map and resource accessors
     bool IsInvalidShipyardPosition(MapPoint pt);
 
     int GetResMapValue(MapPoint pt, AIResource res) const;
@@ -96,18 +93,66 @@ public:
     }
     /// returns the percentage*100 of possible normal building places
     unsigned BQsurroundcheck(MapPoint pt, unsigned range, bool includeexisting, unsigned limit = 0);
-    /// returns list entry of the building the ai uses for troop upgrades
-    int UpdateUpgradeBuilding();
     /// returns amount of good/people stored in warehouses right now
     unsigned AmountInStorage(GoodType good) const;
     unsigned AmountInStorage(Job job) const;
+    /// return number of seaIds with at least 2 harbor spots
+    unsigned GetNumAIRelevantSeaIds() const;
 
+    // Building planning, job scheduling, and logistics
+    /// Finds the best position for a specific resource in an area using the resource maps,
+    /// satisfying the minimum value, returns false if no such position is found
+    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, unsigned radius,
+                              int minimum = 1);
+    /// Finds a position for the desired building size
+    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const;
+    /// Find a position for a specific building around a given point
+    MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
+
+    unsigned GetAvailableResources (AISurfaceResource resource) const;
+    /// Density in percent (0-100)
+    unsigned GetDensity(MapPoint pt, AIResource res, int radius);
+
+    // Miscellaneous AI queries and scripting hooks
+    const helpers::EnumArray<unsigned, GoodType>& GetProducedGoods() const { return goodsProduced; }
+    unsigned GetProductivity(BuildingType type) const;
+
+private:
+    friend class BuildJob;
+    friend class ConnectJob;
+    friend class EventJob;
+    friend class SearchJob;
+    friend class AICombatController;
+    friend class AIRoadController;
+
+    // Lifecycle orchestration
+    /// Test whether the player should resign or not
+    bool TestDefeat();
+    void saveDebugStats(unsigned gf) const;
     void PlanNewBuildings(unsigned gf);
-
     void SendAIEvent(std::unique_ptr<AIEvent::Base> ev);
-
     /// Executes a job form the job queue
     void ExecuteAIJob();
+    /// Initializes the nodes on start of the game
+    void InitNodes();
+    /// Initialize the resource maps
+    void InitResourceMaps();
+    /// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know
+    /// whether its a load game or new game so this runs when the ai starts in both cases)
+    // now used to init farm space around farms ... lazy legacy
+    void InitStoreAndMilitarylists();
+    // set default start values for the ai for distribution
+    void InitDistribution();
+    /// military & tool production settings
+    void AdjustSettings();
+    /// calculates the values the ai should pick for harbor flag & 1 bar buildings between 50% and 100%
+    /// return value is whatever has to be added to 4(=50%) for harbor and if anything is left that has to be added to 1
+    /// bar setting
+    unsigned CalcMilSettings();
+    /// Recalculate total troop limits for non-far military buildings with fair distribution
+    void UpdateTroopsLimit();
+
+    // Planner-facing helpers
     /// Tries to build a bld of the given type at that point.
     /// If front is true, then the job is enqueued at the front, else the back
     /// If searchPosition is true, then the point is searched for a good position (around that pt) otherwise the point
@@ -126,6 +171,8 @@ public:
     /// blocks max rank soldiers in warehouse 1 (hq most often), then balances soldiers among frontier warehouses - if
     /// there are no frontier warehouses just pick anything but 1 if there is just 1 then dont block
     void DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWarehouse* upwh);
+    /// returns list entry of the building the ai uses for troop upgrades
+    int UpdateUpgradeBuilding();
     /// returns true if at least 1 military building has a flag > 0
     bool HasFrontierBuildings();
     /// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there
@@ -134,35 +181,26 @@ public:
     void SetSendingForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
     /// activate gathering of swords,shields,beer,privates(if there is an upgrade building), helpers(if necessary)
     void SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
-    /// Initializes the nodes on start of the game
-    void InitNodes();
     /// Updates the nodes around a position
     void UpdateNodesAround(MapPoint pt, unsigned radius);
     /// Returns the resource on a specific point
     AINodeResource CalcResource(MapPoint pt);
-    /// Initialize the resource maps
-    void InitResourceMaps();
-    /// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know
-    /// whether its a load game or new game so this runs when the ai starts in both cases)
-    // now used to init farm space around farms ... lazy legacy
-    void InitStoreAndMilitarylists();
-    // set default start values for the ai for distribution
-    void InitDistribution();
     // returns true if we can get to the startflag in <maxlen without turning back
     bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
                             helpers::OptionalEnum<Direction> excludeDir, std::vector<const noFlag*> oldFlags);
-    /// Finds the best position for a specific resource in an area using the resource maps,
-    /// satisfying the minimum value, returns false if no such position is found
-    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, unsigned radius,
-                              int minimum = 1);
-    /// Finds a position for the desired building size
-    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const;
-    /// Find a position for a specific building around a given point
-    MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
+    /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when
+    /// onlyempty=true there has to be at least 1 other free harborid
+    bool HarborPosRelevant(unsigned harborid, bool onlyempty = false) const;
+    // check if there are free soldiers (in hq/storehouses)
+    unsigned SoldierAvailable(int rank = -1);
+    bool HuntablesinRange(MapPoint pt, unsigned min);
+    bool ValidTreeinRange(MapPoint pt);
+    bool ValidStoneinRange(MapPoint pt);
+    bool ValidFishInRange(MapPoint pt);
+    void ExecuteLuaConstructionOrder(MapPoint pt, BuildingType bt, bool forced = false);
+    bool NoEnemyHarbor();
 
-    unsigned GetAvailableResources (AISurfaceResource resource) const;
-    /// Density in percent (0-100)
-    unsigned GetDensity(MapPoint pt, AIResource res, int radius);
+    // Event handling and runtime maintenance
     /// Does some actions after a new military building is occupied
     void HandleNewMilitaryBuildingOccupied(MapPoint pt);
     /// Does some actions after a military building is lost
@@ -181,7 +219,6 @@ public:
     void HandleBorderChanged(MapPoint pt);
     // Handle usual building finished
     void HandleBuildingFinished(MapPoint pt, BuildingType bld);
-
     void HandleExpedition(MapPoint pt);
     void HandleExpedition(const noShip* ship);
     // Handle chopped tree, test for new space
@@ -205,22 +242,15 @@ public:
     const nobBaseMilitary* SelectAttackTargetAttrition() const;
     /// sea attack
     void TrySeaAttack();
-    /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when
-    /// onlyempty=true there has to be at least 1 other free harborid
-    bool HarborPosRelevant(unsigned harborid, bool onlyempty = false) const;
     /// Update BQ and farming ground around new building site + road
     void RecalcGround(MapPoint buildingPos, std::vector<Direction>& route_road);
-
     void SaveResourceMapsToFile();
-
     void InitReachableNodes();
     void IterativeReachableNodeChecker(std::queue<MapPoint> toCheck);
     void UpdateReachableNodes(const std::vector<MapPoint>& pts);
-
     /// disconnects 'inland' military buildings from road system(and sends out soldiers), sets stop gold, uses the
     /// upgrade building (order new private, kick out general)
     void MilUpgradeOptim();
-
     void SetFarmedNodes(MapPoint pt, bool set);
     // removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a
     // new connection
@@ -229,60 +259,19 @@ public:
     // finds all unused flags and roads, removes flags or reconnects them as neccessary
     void RemoveAllUnusedRoads(MapPoint pt);
     void CheckForUnconnectedBuildingSites();
-    // check if there are free soldiers (in hq/storehouses)
-    unsigned SoldierAvailable(int rank = -1);
-
-    bool HuntablesinRange(MapPoint pt, unsigned min);
-
-    bool ValidTreeinRange(MapPoint pt);
-
-    bool ValidStoneinRange(MapPoint pt);
-
-    bool ValidFishInRange(MapPoint pt);
-
-    void ExecuteLuaConstructionOrder(MapPoint pt, BuildingType bt, bool forced = false);
-
-    bool NoEnemyHarbor();
-
-    MapPoint UpgradeBldPos;
-
-    const helpers::EnumArray<unsigned, GoodType>& GetProducedGoods() const { return goodsProduced; }
-
-    unsigned GetProductivity(BuildingType type) const;
     double GetCombatFulfillmentLevel() const;
     double GetCombatAttackWeight() const;
-    bool IsInDefenseMode() const { return attackMode == CombatMode::DefenseMode; }
+    bool IsInDefenseMode() const;
     double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;
 
-private:
+    // Core state and combat bookkeeping
     const AIConfig& config_;
-    struct ActiveCombat
-    {
-        MapPoint pos;
-        unsigned targetObjId;
-        unsigned char defenderPlayer;
-        BuildingType buildingType;
-        unsigned startGf;
-        bool sawAggressor = false;
-    };
+    MapPoint UpgradeBldPos;
 
     struct RecentlyLostBuilding
     {
         MapPoint pos;
         unsigned gf;
-    };
-
-    enum class CombatLogState
-    {
-        Pending,
-        Success,
-        Failure
-    };
-
-    enum class CombatMode
-    {
-        AttackMode,
-        DefenseMode
     };
 
     void UpdateCombatMode();
@@ -293,11 +282,6 @@ private:
     void TrackCombatStart(const nobBaseMilitary& target);
     void LogFinishedCombats(unsigned gf) const;
     void InitializeCombatsLogFile() const;
-    std::string GetCombatsLogPath() const;
-    std::string FormatPlayerLabel(unsigned playerIdx) const;
-    void LogPlayerMetadata(std::ofstream& combatsFile) const;
-    CombatLogState EvaluateCombatState(ActiveCombat& combat, unsigned gf) const;
-    bool HasOwnAggressors(const nobBaseMilitary& building) const;
     void RememberLostMilitaryBuilding(MapPoint pt);
     void ForgetLostMilitaryBuilding(MapPoint pt);
     void PruneRecentlyLostBuildings();
@@ -329,20 +313,16 @@ private:
     int isInitGfCompleted;
     /// resigned yes/no
     bool defeated;
-    CombatMode attackMode;
-    TargetSelectionMode targetSelectionMode_ = TargetSelectionMode::Random;
-    double combatFulfillmentLevel_ = 0.0;
-    double combatAttackWeight_ = 0.0;
-    mutable std::vector<ActiveCombat> activeCombats_;
     AIEventManager eventManager;
     std::unique_ptr<BuildingPlanner> bldPlanner;
     std::unique_ptr<AIConstruction> construction;
     std::unique_ptr<GlobalPositionFinder> globalPositionFinder;
+    std::unique_ptr<AIStatsReporter> statsReporter_;
+    std::unique_ptr<AICombatController> combatController_;
+    std::unique_ptr<AIRoadController> roadController_;
 
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subProduction, subBQ;
     std::vector<MapPoint> nodesWithOutdatedBQ;
-    mutable unsigned lastStatsFrame_ = 0;
-    mutable bool combatsLogInitialized_ = false;
     unsigned currentGF_ = 0;
     std::vector<RecentlyLostBuilding> recentlyLostBuildings_;
 };

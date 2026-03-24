@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "AIPlayerJH.h"
+#include "AICombatController.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
@@ -30,7 +31,7 @@ unsigned GetSoldierCount(const nobBaseMilitary& building)
 
 } // namespace
 
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetPrudent() const
+const nobBaseMilitary* AICombatController::SelectAttackTargetPrudent() const
 {
     unsigned unused_special_targets = 0;
     std::vector<const nobBaseMilitary*> potentialTargets = GetPotentialTargets(unused_special_targets);
@@ -73,7 +74,7 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetPrudent() const
     {
         unsigned counterStrength = 0;
         sortedMilitaryBlds enemyBuildings =
-          gwb.LookForMilitaryBuildings(target->GetPos(), static_cast<unsigned short>(BASE_ATTACKING_DISTANCE));
+          owner_.gwb.LookForMilitaryBuildings(target->GetPos(), static_cast<unsigned short>(BASE_ATTACKING_DISTANCE));
 
         for(const nobBaseMilitary* enemyBld : enemyBuildings)
         {
@@ -104,5 +105,9 @@ const nobBaseMilitary* AIPlayerJH::SelectAttackTargetPrudent() const
     return counterFiltered.front();
 }
 
-} // namespace AIJH
+const nobBaseMilitary* AIPlayerJH::SelectAttackTargetPrudent() const
+{
+    return combatController_->SelectAttackTargetPrudent();
+}
 
+} // namespace AIJH

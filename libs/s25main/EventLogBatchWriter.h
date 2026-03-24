@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "ai/aijh/StatsConfig.h"
+#include "ai/aijh/debug/StatsConfig.h"
 #include <boost/filesystem/path.hpp>
 #include <fstream>
 #include <string>

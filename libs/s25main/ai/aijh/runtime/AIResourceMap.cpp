@@ -5,7 +5,7 @@
 #include "AIResourceMap.h"
 #include "RttrForeachPt.h"
 #include "ai/AIInterface.h"
-#include "ai/aijh/AIMap.h"
+#include "ai/aijh/runtime/AIMap.h"
 #include "gameData/TerrainDesc.h"
 
 #include <boost/concept/detail/has_constraints.hpp>

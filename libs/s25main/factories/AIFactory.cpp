@@ -4,7 +4,7 @@
 
 #include "AIFactory.h"
 #include "ai/DummyAI.h"
-#include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "gameTypes/AIInfo.h"
 
 std::unique_ptr<AIPlayer> AIFactory::Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world)

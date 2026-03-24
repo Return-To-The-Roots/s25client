@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "AIPlayerJH.h"
+#include "AICombatController.h"
+#include "ai/aijh/runtime/AIPlayerJH.h"
 
 #include "helpers/containerUtils.h"
 #include "buildings/nobMilitary.h"
@@ -19,35 +20,54 @@ using ::BASE_ATTACKING_DISTANCE;
 
 namespace {
 
-using TargetSelectorFn = const nobBaseMilitary* (AIPlayerJH::*)() const;
-using Mode = AIPlayerJH::TargetSelectionMode;
+using TargetSelectorFn = const nobBaseMilitary* (AICombatController::*)() const;
+using Mode = AICombatController::TargetSelectionMode;
+
+Mode ToCombatMode(AIPlayerJH::TargetSelectionMode mode)
+{
+    switch(mode)
+    {
+        case AIPlayerJH::TargetSelectionMode::Random: return Mode::Random;
+        case AIPlayerJH::TargetSelectionMode::Prudent: return Mode::Prudent;
+        case AIPlayerJH::TargetSelectionMode::Biting: return Mode::Biting;
+        case AIPlayerJH::TargetSelectionMode::Attrition: return Mode::Attrition;
+    }
+    return Mode::Random;
+}
 
 TargetSelectorFn ResolveSelector(Mode mode)
 {
     switch(mode)
     {
-        case Mode::Random: return &AIPlayerJH::SelectAttackTargetRandom;
-        case Mode::Prudent: return &AIPlayerJH::SelectAttackTargetPrudent;
-        case Mode::Biting: return &AIPlayerJH::SelectAttackTargetBiting;
-        case Mode::Attrition: return &AIPlayerJH::SelectAttackTargetAttrition;
+        case Mode::Random: return &AICombatController::SelectAttackTargetRandom;
+        case Mode::Prudent: return &AICombatController::SelectAttackTargetPrudent;
+        case Mode::Biting: return &AICombatController::SelectAttackTargetBiting;
+        case Mode::Attrition: return &AICombatController::SelectAttackTargetAttrition;
     }
     return nullptr;
 }
 
 } // namespace
 
-const nobBaseMilitary* AIPlayerJH::SelectAttackTarget(TargetSelectionMode mode) const
+const nobBaseMilitary* AICombatController::SelectAttackTarget(TargetSelectionMode mode) const
 {
     const TargetSelectorFn selector = ResolveSelector(mode);
     return selector ? (this->*selector)() : nullptr;
 }
 
+const nobBaseMilitary* AIPlayerJH::SelectAttackTarget(TargetSelectionMode mode) const
+{
+    return combatController_->SelectAttackTarget(ToCombatMode(mode));
+}
+
 std::vector<const nobBaseMilitary*>
-  AIPlayerJH::GetPotentialTargets(unsigned& hq_or_harbor_without_soldiers) const
+  AICombatController::GetPotentialTargets(unsigned& hq_or_harbor_without_soldiers) const
 {
     hq_or_harbor_without_soldiers = 0;
     std::vector<const nobBaseMilitary*> potentialTargets;
 
+    const AIInterface& aii = owner_.GetInterface();
+    const GameWorldBase& gwb = owner_.gwb;
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     const unsigned numMilBlds = militaryBuildings.size();
     if(numMilBlds == 0)
