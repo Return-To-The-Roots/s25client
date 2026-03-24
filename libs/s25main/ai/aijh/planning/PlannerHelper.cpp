@@ -4,6 +4,7 @@
 
 #include "PlannerHelper.h"
 
+#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/JobConsts.h"
 

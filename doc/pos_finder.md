@@ -1,7 +1,8 @@
 # Position Finding Overview
 
 The current AI position search is implemented by
-`AIJH::GlobalPositionFinder` (`libs/s25main/ai/aijh/GlobalPositionFinder.cpp`).
+`AIJH::GlobalPositionFinder`
+(`libs/s25main/ai/aijh/planning/GlobalPositionFinder.cpp`).
 It does a full-map scan and returns one best point for a requested
 `BuildingType`.
 

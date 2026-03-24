@@ -1,5 +1,8 @@
 # S2 AI Overview
 
+For the JH AI directory split and file-placement rules, see
+`libs/s25main/ai/aijh/README.md`.
+
 ## Player-Level Architecture
 - `libs/s25main/ai/AIPlayer.h` defines the abstract façade every bot shares: it tracks the owning `GamePlayer`, queues `GameCommand` objects, and exposes lifecycle hooks (`RunGF`, `OnChatMessage`).  
 - `libs/s25main/ai/aijh/runtime/AIPlayerJH.*` implements the production AI. It wires in module singletons (construction, planner, jobs) and orchestrates frame updates, configuration, and defeat checks. `DummyAI.h` remains a minimal placeholder for testing.
@@ -22,10 +25,10 @@
 
 ## Resource & Position Evaluation
 - `AIResourceMap` (`libs/s25main/ai/aijh/runtime/AIResourceMap.*`) maintains per-resource heatmaps. It switches between diminishing and replenishable update strategies and can block tiles after they are reserved.  
-- `PositionFinder` (`libs/s25main/ai/aijh/PositionFinder.*`) combines resource maps, planner statistics, and proximity rules to rank candidate spots using `RatedPoint`/`RatedPointSet` (`libs/s25main/ai/RatedPoint.h`). Specialized handlers exist for woodcutters, foresters, and farms; the fallback delegates to `AIPlayerJH::SimpleFindPosition`.
+- `GlobalPositionFinder` (`libs/s25main/ai/aijh/planning/GlobalPositionFinder.*`) combines resource maps, planner statistics, and proximity rules to rank candidate spots using `RatedPoint`/`RatedPointSet` (`libs/s25main/ai/RatedPoint.h`). Specialized handlers exist for woodcutters, foresters, and farms; the fallback delegates to `AIPlayerJH::SimpleFindPosition`.
 
 ## Configuration & Tuning
-- YAML-driven weights live in `AIConfig.*`, `WeightParams.*`, `WeightParser.*`, and `StatsConfig.*`. `initAIConfig` loads defaults, applies planner- and position-finder overrides, then exposes `AI_CONFIG` for runtime queries.  
+- YAML-driven weights live in `ai/aijh/config/AIConfig.*`, `ai/aijh/config/WeightParams.*`, `ai/aijh/config/WeightParser.*`, and `ai/aijh/debug/StatsConfig.*`. `initAIConfig` loads defaults, applies planner- and position-finder overrides, then exposes `AI_CONFIG` for runtime queries.  
 - Build demand, proximity minima, and productivity curves are described via `BuildParams` and `WantedParams`, enabling balance tweaks without recompilation. Sanitizing changes requires re-running the AI or reloading the save to rebuild caches.
 
 ## Extensibility Notes

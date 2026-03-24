@@ -1,7 +1,15 @@
-#include "ai/aijh/config/AIConfig.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#pragma once
+
+#include "ai/AIResource.h"
+#include "helpers/EnumArray.h"
+#include "gameTypes/BuildingCount.h"
+#include "gameTypes/BuildingType.h"
+
+struct Inventory;
 
 namespace AIJH {
+class AIPlayerJH;
+
 class BuildCalculator
 {
 public:

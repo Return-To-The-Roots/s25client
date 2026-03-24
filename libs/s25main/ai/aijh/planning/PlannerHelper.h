@@ -1,4 +1,10 @@
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#pragma once
+
+#include "gameTypes/BuildingType.h"
+
+namespace AIJH {
+class AIPlayerJH;
+}
 
 extern unsigned maxWorkers(const AIJH::AIPlayerJH& aijh, BuildingType type);
 extern unsigned maxFishers(const AIJH::AIPlayerJH& aijh);

@@ -3,8 +3,8 @@
 `AIConfig` describes the configurable behaviour for AI-controlled players. It
 collects per-building weight parameters, location heuristics, combat pacing,
 tool priorities, and explicit building disables. The structure is defined in
-`libs/s25main/ai/aijh/AIConfig.h` and populated through YAML in
-`libs/s25main/ai/aijh/AIConfig.cpp`.
+`libs/s25main/ai/aijh/config/AIConfig.h` and populated through YAML in
+`libs/s25main/ai/aijh/config/AIConfig.cpp`.
 
 ## Structure
 

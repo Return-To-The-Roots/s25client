@@ -1,9 +1,12 @@
 # AIPlayerJH Statistics Logging
 
-`libs/s25main/ai/aijh/AIPlayerJHStats.cpp` extends the JH AI with a telemetry
-pipeline that captures both long-term economy metrics and short-lived combat
-outcomes. The code is organized around three main areas: combat tracking,
-per-frame CSV dumps, and less frequent human-readable snapshots.
+`libs/s25main/ai/aijh/debug/AIStatsReporter.cpp` implements the telemetry
+pipeline used by the JH AI, while
+`libs/s25main/ai/aijh/runtime/AIPlayerJHStats.cpp` keeps the compatibility
+entry points on `AIPlayerJH`. Together they capture both long-term economy
+metrics and short-lived combat outcomes. The code is organized around three
+main areas: combat tracking, per-frame CSV dumps, and less frequent
+human-readable snapshots.
 
 ## Combat tracking & logging
 

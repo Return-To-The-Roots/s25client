@@ -1,8 +1,9 @@
 # AI Attack Target Selection
 
 Most of the orchestration still lives in `AIPlayerJH.cpp`, but the target
-selection logic has been extracted into `ai/aijh/TargetSelector.cpp` so it
-can evolve independently of the combat-resolution code.
+selection logic has been extracted into
+`ai/aijh/combat/TargetSelector.cpp` so it can evolve independently of the
+combat-resolution code.
 
 ## Trigger Flow
 

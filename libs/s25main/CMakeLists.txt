@@ -15,7 +15,6 @@ endmacro()
 
 AddDirectory(addons)
 AddDirectory(ai)
-AddDirectory(ai/aijh)
 AddDirectory(ai/aijh/runtime)
 AddDirectory(ai/aijh/planning)
 AddDirectory(ai/aijh/combat)
