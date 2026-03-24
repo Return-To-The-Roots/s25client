@@ -1223,14 +1223,10 @@ bool GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
     return true;
 }
 
-/**
- *  Pause-Nachricht von Server
- *
- *  @param[in] message Nachricht, welche ausgeführt wird
- */
 bool GameClient::OnGameMessage(const GameMessage_Pause& msg)
 {
-    if(state != ClientState::Game)
+    // Ignore recorded pause messages in replay mode
+    if(state != ClientState::Game || replayMode)
         return true;
     if(framesinfo.isPaused == msg.paused)
         return true;
@@ -1660,6 +1656,8 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     }
 
     SetPause(false);
+    if(GetGFNumber() < GetLastReplayGF())
+        gf = std::min(gf, GetLastReplayGF() + 1u);
     skiptogf = gf;
 
     // GFs überspringen
@@ -1683,6 +1681,8 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
         }
         ExecuteGameFrame();
     }
+    // Either we force-stopped skipping (skiptogf set to 0) or we reached the target gf
+    RTTR_Assert(skiptogf == 0u || GetGFNumber() == gf);
 
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat
     unsigned ticks = VIDEODRIVER.GetTickCount() - start_ticks;
@@ -1755,11 +1755,11 @@ void GameClient::SetPause(bool pause)
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(replayMode)
     {
+        // Pause instantly
         framesinfo.isPaused = pause;
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(IsHost())
     {
-        // Pause instantly
         auto* msg = new GameMessage_Pause(pause);
         if(pause)
             OnGameMessage(*msg);
