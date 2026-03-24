@@ -143,6 +143,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
 
     if(numMilitaryBlds == 0 && GetNumMilitaryBldSites() == 0)
     {
+        setBuildingsWanted(calculator.GetStartupSet());
         return;
     }
     // std::size_t storehouses = aijh.player.GetBuildingRegister().GetStorehouses().size();

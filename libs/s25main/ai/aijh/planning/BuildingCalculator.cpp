@@ -26,9 +26,10 @@ BuildCalculator::BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingN
 helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
 {
     auto values = helpers::EnumArray<unsigned, BuildingType>();
-    values[BuildingType::Forester] = Calc(BuildingType::Forester);
-    values[BuildingType::Sawmill] = Calc(BuildingType::Sawmill);
-    values[BuildingType::Woodcutter] = Calc(BuildingType::Woodcutter);
+    // Seed the basic wood chain even when no external AI weights are loaded.
+    values[BuildingType::Forester] = 1;
+    values[BuildingType::Sawmill] = 1;
+    values[BuildingType::Woodcutter] = 1;
     values[BuildingType::Quarry] = 1 + numMilitaryBlds / 3;
     values[BuildingType::Fishery] = 1 + numMilitaryBlds / 5;
     values[BuildingType::GraniteMine] = -1;

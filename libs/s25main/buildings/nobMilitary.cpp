@@ -842,10 +842,13 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
 {
     // Determine how many soldiers we may take based on the attack settings
 
+    unsigned availableTroops = GetNumTroops();
+    if(availableTroops == 0)
+        return 0;
+    if(availableTroops > 1 || !troops_on_mission.empty())
+        --availableTroops;
     unsigned short soldiers_count =
-      (GetNumTroops() > 1) ?
-        ((GetNumTroops() - 1) * world->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) :
-        0;
+      availableTroops * world->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3];
 
     unsigned distance = world->CalcDistance(pos, dest);
 

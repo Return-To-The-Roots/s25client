@@ -144,7 +144,8 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt, bool /* 
         {
             // Do not place directly next to other grain fields and buildings!
             noType = world->GetNO(nb)->GetType();
-            if(noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite)
+            if(noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite
+               || noType == NodalObjectType::Grainfield)
                 return PointQuality::NotPossible;
         }
 

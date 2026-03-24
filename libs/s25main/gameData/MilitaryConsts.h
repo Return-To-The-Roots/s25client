@@ -24,7 +24,7 @@ constexpr unsigned MAX_MILITARY_RANK = NUM_SOLDIER_RANKS - 1u;
 constexpr unsigned NUM_MILITARY_BLDS = 4;
 
 /// Base attacking distance (allows bringing all available soldiers)
-constexpr unsigned BASE_ATTACKING_DISTANCE = 17;
+constexpr unsigned BASE_ATTACKING_DISTANCE = 21;
 
 /// Extended distance beyond the base range; each additional step removes one
 /// soldier from the attacking army
