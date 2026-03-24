@@ -6,6 +6,7 @@
 #include "EventManager.h"
 #include "Game.h"
 #include "WindowManager.h"
+#include "ai/AICommandSink.h"
 #include "ai/AIInterface.h"
 #include "ai/AIPlayer.h"
 #include "ingameWindows/iwMissionStatement.h"
@@ -404,12 +405,12 @@ void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggest
         kaguya::LuaRef onPactCancel = lua["onSuggestPact"];
         if(onPactCancel.type() == LUA_TFUNCTION)
         {
-            AIInterface& aii = ai->getAIInterface();
+            AICommandSink& commands = ai->getAIInterface().Commands();
             auto luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
             if(luaResult)
-                aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
+                commands.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
             else
-                aii.CancelPact(pt, suggestedByPlayerId);
+                commands.CancelPact(pt, suggestedByPlayerId);
         }
     }
 }

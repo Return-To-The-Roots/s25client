@@ -6,6 +6,8 @@
 
 #include "ai/aijh/runtime/AIPlayerJH.h"
 
+#include "ai/AICommandSink.h"
+#include "ai/AIQueryService.h"
 #include "ai/aijh/config/AIConfig.h"
 #include "helpers/containerUtils.h"
 #include "buildings/nobHarborBuilding.h"
@@ -43,7 +45,8 @@ double AICombatController::ComputeFulfillmentLevel(double* outTotalWeight) const
     double totalWeight = 0.0;
     unsigned frontierCount = 0;
 
-    const std::list<nobMilitary*>& militaryBuildings = owner_.GetInterface().GetMilitaryBuildings();
+    const AIQueryService& queries = owner_.GetInterface().Queries();
+    const std::list<nobMilitary*>& militaryBuildings = queries.GetMilitaryBuildings();
     for(const nobMilitary* milBld : militaryBuildings)
     {
         if(!milBld)
@@ -90,13 +93,14 @@ double AICombatController::ComputeFulfillmentLevel(double* outTotalWeight) const
 double AICombatController::ComputeEnemyFrontlineWeight() const
 {
     double totalWeight = 0.0;
-    const unsigned numPlayers = owner_.GetInterface().GetNumPlayers();
+    const AIQueryService& queries = owner_.GetInterface().Queries();
+    const unsigned numPlayers = queries.GetNumPlayers();
 
     for(unsigned enemyId = 0; enemyId < numPlayers; ++enemyId)
     {
         if(enemyId == owner_.playerId)
             continue;
-        if(!owner_.GetInterface().IsPlayerAttackable(enemyId))
+        if(!queries.IsPlayerAttackable(enemyId))
             continue;
 
         const GamePlayer& enemyPlayer = owner_.gwb.GetPlayer(enemyId);
@@ -246,6 +250,7 @@ bool AICombatController::IsLonelyEnemyStronghold(const nobBaseMilitary& target) 
 
 void AICombatController::TryToAttack()
 {
+    AICommandSink& commands = owner_.GetInterface().Commands();
     const nobBaseMilitary* target = SelectAttackTarget(targetSelectionMode_);
     if(!target)
         return;
@@ -254,7 +259,7 @@ void AICombatController::TryToAttack()
     if(attackersCount == 0)
         return;
 
-    if(owner_.GetInterface().Attack(target->GetPos(), attackersCount, true))
+    if(commands.Attack(target->GetPos(), attackersCount, true))
         owner_.TrackCombatStart(*target);
 }
 
@@ -288,7 +293,8 @@ double AICombatController::GetCaptureRiskEstimate(const nobBaseMilitary& buildin
 
 void AICombatController::EvaluateCaptureRisks()
 {
-    for(nobMilitary* building : owner_.GetInterface().GetMilitaryBuildings())
+    const AIQueryService& queries = owner_.GetInterface().Queries();
+    for(nobMilitary* building : queries.GetMilitaryBuildings())
     {
         if(!building)
             continue;
@@ -309,10 +315,11 @@ double AICombatController::ComputeCaptureRisk(const nobMilitary& building) const
 
 void AICombatController::TrySeaAttack()
 {
-    AIInterface& aii = owner_.GetInterface();
-    if(aii.GetNumShips() < 1)
+    const AIQueryService& queries = owner_.GetInterface().Queries();
+    AICommandSink& commands = owner_.GetInterface().Commands();
+    if(queries.GetNumShips() < 1)
         return;
-    if(aii.GetHarbors().empty())
+    if(queries.GetHarbors().empty())
         return;
     std::vector<unsigned short> seaidswithattackers;
     std::vector<unsigned> attackersatseaid;
@@ -320,7 +327,7 @@ void AICombatController::TrySeaAttack()
     std::deque<const nobBaseMilitary*> potentialTargets;
     std::deque<const nobBaseMilitary*> undefendedTargets;
     std::vector<int> searcharoundharborspots;
-    for(const noShip* ship : aii.GetShips())
+    for(const noShip* ship : queries.GetShips())
     {
         if(!helpers::contains(seaidswithattackers, ship->GetSeaID())
            && !helpers::contains(invalidseas, ship->GetSeaID()))
@@ -343,9 +350,9 @@ void AICombatController::TrySeaAttack()
         const nobHarborBuilding* hb;
         if((hb = owner_.gwb.GetSpecObj<nobHarborBuilding>(owner_.gwb.GetHarborPoint(i))))
         {
-            if(aii.IsVisible(hb->GetPos()))
+            if(queries.IsVisible(hb->GetPos()))
             {
-                if(aii.IsPlayerAttackable(hb->GetPlayer()))
+                if(queries.IsPlayerAttackable(hb->GetPlayer()))
                 {
                     const std::vector<unsigned short> testseaidswithattackers =
                       owner_.gwb.GetFilteredSeaIDsForAttack(owner_.gwb.GetHarborPoint(i), seaidswithattackers, owner_.playerId);
@@ -372,7 +379,7 @@ void AICombatController::TrySeaAttack()
         {
             std::vector<GameWorldBase::PotentialSeaAttacker> attackers =
               owner_.gwb.GetSoldiersForSeaAttack(owner_.playerId, targetMilBld->GetPos());
-            if(!attackers.empty() && aii.SeaAttack(targetMilBld->GetPos(), 1, true))
+            if(!attackers.empty() && commands.SeaAttack(targetMilBld->GetPos(), 1, true))
             {
                 owner_.TrackCombatStart(*targetMilBld);
                 return;
@@ -391,7 +398,7 @@ void AICombatController::TrySeaAttack()
           owner_.gwb.LookForMilitaryBuildings(owner_.gwb.GetHarborPoint(searcharoundharborspots[i]), 2);
         for(const nobBaseMilitary* milBld : buildings)
         {
-            if(aii.IsPlayerAttackable(milBld->GetPlayer()) && aii.IsVisible(milBld->GetPos()))
+            if(queries.IsPlayerAttackable(milBld->GetPlayer()) && queries.IsVisible(milBld->GetPos()))
             {
                 const auto* enemyTarget = dynamic_cast<const nobMilitary*>(milBld);
                 if(enemyTarget && enemyTarget->IsNewBuilt())
@@ -417,7 +424,7 @@ void AICombatController::TrySeaAttack()
         {
             std::vector<GameWorldBase::PotentialSeaAttacker> attackers =
               owner_.gwb.GetSoldiersForSeaAttack(owner_.playerId, targetMilBld->GetPos());
-            if(!attackers.empty() && aii.SeaAttack(targetMilBld->GetPos(), 1, true))
+            if(!attackers.empty() && commands.SeaAttack(targetMilBld->GetPos(), 1, true))
             {
                 owner_.TrackCombatStart(*targetMilBld);
                 return;
@@ -434,7 +441,7 @@ void AICombatController::TrySeaAttack()
         {
             std::vector<GameWorldBase::PotentialSeaAttacker> attackers =
               owner_.gwb.GetSoldiersForSeaAttack(owner_.playerId, ship->GetPos());
-            if(!attackers.empty() && aii.SeaAttack(ship->GetPos(), attackers.size(), true))
+            if(!attackers.empty() && commands.SeaAttack(ship->GetPos(), attackers.size(), true))
             {
                 owner_.TrackCombatStart(*ship);
                 return;

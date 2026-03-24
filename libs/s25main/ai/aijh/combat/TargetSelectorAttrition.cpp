@@ -5,6 +5,7 @@
 #include "AICombatController.h"
 #include "ai/aijh/runtime/AIPlayerJH.h"
 
+#include "ai/AIQueryService.h"
 #include "ai/aijh/config/AIConfig.h"
 #include "MilitaryStatsHolder.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -35,7 +36,7 @@ unsigned GetSoldierCount(const nobBaseMilitary& building)
     return building.DefendersAvailable() ? 1u : 0u;
 }
 
-bool HasForceAdvantage(const GameWorldBase& gwb, const AIInterface& aii, unsigned char player_id,
+bool HasForceAdvantage(const GameWorldBase& gwb, const AIQueryService& queries, unsigned char player_id,
                        double forceAdvantageRatio)
 {
     const auto& player = gwb.GetPlayer(player_id);
@@ -44,7 +45,7 @@ bool HasForceAdvantage(const GameWorldBase& gwb, const AIInterface& aii, unsigne
     unsigned strongest_enemy = 0;
     for(unsigned pid = 0; pid < gwb.GetNumPlayers(); ++pid)
     {
-        if(pid == player_id || !aii.IsPlayerAttackable(pid))
+        if(pid == player_id || !queries.IsPlayerAttackable(pid))
             continue;
 
         const unsigned enemy_strength = gwb.GetPlayer(pid).GetStatisticCurrentValue(StatisticType::Military);
@@ -127,7 +128,8 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetAttrition() const
     if(const nobBaseMilitary* recapture = PickBestTarget(recaptureCandidates, currentGF, RECENT_RECAPTURE_WINDOW_GFS))
         return recapture;
 
-    if(HasForceAdvantage(owner_.gwb, owner_.GetInterface(), owner_.playerId, owner_.GetConfig().combat.forceAdvantageRatio)
+    if(HasForceAdvantage(owner_.gwb, owner_.GetInterface().Queries(), owner_.playerId,
+                         owner_.GetConfig().combat.forceAdvantageRatio)
        && HasNearTroopsDensityForBiting(owner_.gwb, owner_.playerId, owner_.GetConfig().combat.minNearTroopsDensity))
         return SelectAttackTargetBiting();
 

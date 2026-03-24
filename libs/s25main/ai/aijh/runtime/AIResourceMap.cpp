@@ -4,7 +4,7 @@
 
 #include "AIResourceMap.h"
 #include "RttrForeachPt.h"
-#include "ai/AIInterface.h"
+#include "ai/AIQueryService.h"
 #include "ai/aijh/runtime/AIMap.h"
 #include "gameData/TerrainDesc.h"
 
@@ -29,9 +29,10 @@ static constexpr bool isDiminishable(AIResource res)
     return false;
 }
 
-AIResourceMap::AIResourceMap(const AIResource res, bool isInfinite, const AIInterface& aii, const AIMap& aiMap)
+AIResourceMap::AIResourceMap(const AIResource res, bool isInfinite, const AIQueryService& queries,
+                             const GameWorldBase& world, const AIMap& aiMap)
     : res(res), isInfinite(isInfinite), isDiminishableResource(isDiminishable(res)), resRadius(RES_RADIUS[res]),
-      aii(aii), aiMap(aiMap)
+      queries_(queries), world_(world), aiMap(aiMap)
 {}
 
 AIResourceMap::~AIResourceMap() = default;
@@ -60,8 +61,8 @@ void AIResourceMap::init()
         {
             // Calculate only if we can build there
             const bool isValid =
-              aii.gwb.IsOfTerrain(pt, [requiredTerrain](const TerrainDesc& desc) { return desc.Is(requiredTerrain); });
-            map[pt] = isValid ? aii.CalcResourceValue(pt, res) : 0;
+              world_.IsOfTerrain(pt, [requiredTerrain](const TerrainDesc& desc) { return desc.Is(requiredTerrain); });
+            map[pt] = isValid ? queries_.CalcResourceValue(pt, res) : 0;
         }
     }
 }
@@ -90,7 +91,7 @@ unsigned AIResourceMap::calcResources() const
 unsigned AIResourceMap::calcResources(const MapPoint& pt, unsigned radius) const
 {
     unsigned sum = 0;
-    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = world_.GetPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
     {
         if(curPt.x >= map.GetSize().x || curPt.y >= map.GetSize().y)
@@ -111,11 +112,11 @@ int AIResourceMap::getResourcesAt(const MapPoint& pt) const
 }
 
 RatedPointSet AIResourceMap::findBestPositions(const MapPoint& pt, BuildingQuality size, unsigned radius,
-                                                         int minimum, int maxCount) const
+                                               int minimum, int maxCount) const
 {
     int min_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
     RatedPointSet topSet(maxCount);
-    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = world_.GetPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
     {
         const unsigned idx = map.GetIdx(curPt);
@@ -124,19 +125,19 @@ RatedPointSet AIResourceMap::findBestPositions(const MapPoint& pt, BuildingQuali
         {
             if(!aiMap[idx].reachable || !aiMap[idx].owned || aiMap[idx].farmed)
                 continue;
-            RTTR_Assert(aii.GetBuildingQuality(curPt)
+            RTTR_Assert(queries_.GetBuildingQuality(curPt)
                         == aiMap[curPt].bq); // Temporary, to check if aiMap is correctly update, see below
-            if(!canUseBq(aii.GetBuildingQuality(curPt), size)) // map[idx].bq; TODO: Update nodes BQ and use that
+            if(!canUseBq(queries_.GetBuildingQuality(curPt), size)) // map[idx].bq; TODO: Update nodes BQ and use that
                 continue;
             // special case fish -> check for other fishery buildings
-            if(res == AIResource::Fish && aii.isBuildingNearby(BuildingType::Fishery, curPt, 5))
+            if(res == AIResource::Fish && queries_.isBuildingNearby(BuildingType::Fishery, curPt, 5))
                 continue;
             if(res == AIResource::Borderland
-               && (aii.gwb.IsOnRoad(aii.gwb.GetNeighbour(curPt, Direction::SouthEast))
-                   || aii.gwb.IsInsideComputerBarrier(curPt)))
+               && (world_.IsOnRoad(world_.GetNeighbour(curPt, Direction::SouthEast))
+                   || world_.IsInsideComputerBarrier(curPt)))
                 continue;
             // dont build next to empty harborspots
-            if(aii.isHarborPosClose(curPt, 2, true))
+            if(queries_.isHarborPosClose(curPt, 2, true))
                 continue;
             auto worst = topSet.insert({curPt, map[idx]});
             if(worst)
@@ -153,7 +154,7 @@ std::pair<MapPoint, int> AIResourceMap::findBestPosition(const MapPoint& pt, Bui
 {
     MapPoint best = MapPoint::Invalid();
     int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
-    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = world_.GetPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
     {
         const unsigned idx = map.GetIdx(curPt);
@@ -162,19 +163,19 @@ std::pair<MapPoint, int> AIResourceMap::findBestPosition(const MapPoint& pt, Bui
         {
             if(!aiMap[idx].reachable || !aiMap[idx].owned || aiMap[idx].farmed)
                 continue;
-            RTTR_Assert(aii.GetBuildingQuality(curPt)
+            RTTR_Assert(queries_.GetBuildingQuality(curPt)
                         == aiMap[curPt].bq); // Temporary, to check if aiMap is correctly update, see below
-            if(!canUseBq(aii.GetBuildingQuality(curPt), size)) // map[idx].bq; TODO: Update nodes BQ and use that
+            if(!canUseBq(queries_.GetBuildingQuality(curPt), size)) // map[idx].bq; TODO: Update nodes BQ and use that
                 continue;
             // special case fish -> check for other fishery buildings
-            if(res == AIResource::Fish && aii.isBuildingNearby(BuildingType::Fishery, curPt, 5))
+            if(res == AIResource::Fish && queries_.isBuildingNearby(BuildingType::Fishery, curPt, 5))
                 continue;
             if(res == AIResource::Borderland
-               && (aii.gwb.IsOnRoad(aii.gwb.GetNeighbour(curPt, Direction::SouthEast))
-                   || aii.gwb.IsInsideComputerBarrier(curPt)))
+               && (world_.IsOnRoad(world_.GetNeighbour(curPt, Direction::SouthEast))
+                   || world_.IsInsideComputerBarrier(curPt)))
                 continue;
             // dont build next to empty harborspots
-            if(aii.isHarborPosClose(curPt, 2, true))
+            if(queries_.isHarborPosClose(curPt, 2, true))
                 continue;
             best = curPt;
             best_value = map[idx];
@@ -200,8 +201,8 @@ void AIResourceMap::updateAroundDiminishable(const MapPoint& pt, const int radiu
     // variable to remember the first calculation we did in the circle.
     int circleStartValue = 0;
 
-    for(MapCoord tx = aii.gwb.GetXA(pt, Direction::West), r = 1; r <= radius;
-        tx = aii.gwb.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
+    for(MapCoord tx = world_.GetXA(pt, Direction::West), r = 1; r <= radius;
+        tx = world_.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
     {
         MapPoint curPt(tx, pt.y);
         for(const auto curDir : helpers::enumRange(Direction::NorthEast))
@@ -213,7 +214,7 @@ void AIResourceMap::updateAroundDiminishable(const MapPoint& pt, const int radiu
                 // unknown
                 if((r < 2 || !lastCircleValueCalculated) && step < 1 && curDir == Direction::NorthEast && resMapVal)
                 {
-                    resMapVal = aii.CalcResourceValue(curPt, res);
+                    resMapVal = queries_.CalcResourceValue(curPt, res);
                     circleStartValue = resMapVal;
                     lastCircleValueCalculated = true;
                     lastValueCalculated = true;
@@ -225,17 +226,17 @@ void AIResourceMap::updateAroundDiminishable(const MapPoint& pt, const int radiu
                 } else if(step < 1 && curDir == Direction::NorthEast) // circle not yet started? -> last direction was
                                                                       // outward (left=0)
                 {
-                    resMapVal = aii.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
+                    resMapVal = queries_.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
                     circleStartValue = resMapVal;
                 } else if(lastValueCalculated)
                 {
                     if(step > 0) // we moved direction i%6
-                        resMapVal = aii.CalcResourceValue(curPt, res, curDir, resMapVal);
+                        resMapVal = queries_.CalcResourceValue(curPt, res, curDir, resMapVal);
                     else // last step was the previous direction
-                        resMapVal = aii.CalcResourceValue(curPt, res, curDir - 1u, resMapVal);
+                        resMapVal = queries_.CalcResourceValue(curPt, res, curDir - 1u, resMapVal);
                 } else
                 {
-                    resMapVal = aii.CalcResourceValue(curPt, res);
+                    resMapVal = queries_.CalcResourceValue(curPt, res);
                     lastValueCalculated = true;
                 }
             }
@@ -250,28 +251,28 @@ void AIResourceMap::updateAroundReplinishable(const MapPoint& pt, const int radi
     int circleStartValue = 0;
 
     int resValue = 0;
-    for(MapCoord tx = aii.gwb.GetXA(pt, Direction::West), r = 1; r <= radius;
-        tx = aii.gwb.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
+    for(MapCoord tx = world_.GetXA(pt, Direction::West), r = 1; r <= radius;
+        tx = world_.GetXA(MapPoint(tx, pt.y), Direction::West), ++r)
     {
         MapPoint curPt(tx, pt.y);
         for(const auto curDir : helpers::enumRange(Direction::NorthEast))
         {
-            for(MapCoord step = 0; step < r; ++step, curPt = aii.gwb.GetNeighbour(curPt, curDir))
+            for(MapCoord step = 0; step < r; ++step, curPt = world_.GetNeighbour(curPt, curDir))
             {
                 if(r == 1 && step == 0 && curDir == Direction::NorthEast)
                 {
                     // only do a complete calculation for the first point!
-                    resValue = aii.CalcResourceValue(curPt, res);
+                    resValue = queries_.CalcResourceValue(curPt, res);
                     circleStartValue = resValue;
                 } else if(step == 0 && curDir == Direction::NorthEast)
                 {
                     // circle not yet started? -> last direction was outward
-                    resValue = aii.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
+                    resValue = queries_.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
                     circleStartValue = resValue;
                 } else if(step > 0) // we moved direction i%6
-                    resValue = aii.CalcResourceValue(curPt, res, curDir, resValue);
+                    resValue = queries_.CalcResourceValue(curPt, res, curDir, resValue);
                 else // last step was the previous direction
-                    resValue = aii.CalcResourceValue(curPt, res, curDir - 1u, resValue);
+                    resValue = queries_.CalcResourceValue(curPt, res, curDir - 1u, resValue);
                 map[curPt] = resValue;
             }
         }

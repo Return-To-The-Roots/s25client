@@ -178,19 +178,20 @@ static bool isUnlimitedResource(const AIResource res, const GlobalGameSettings& 
 
 // Needed because AIResourceMap is not default initializable
 template<size_t... I>
-static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap, std::index_sequence<I...>)
+static auto createResourceMaps(const AIQueryService& queries, const GameWorldBase& world, const AIMap& aiMap,
+                               std::index_sequence<I...>)
 {
     return helpers::EnumArray<AIResourceMap, AIResource>{
-      AIResourceMap(AIResource(I), isUnlimitedResource(AIResource(I), aii.gwb.GetGGS()), aii, aiMap)...};
+      AIResourceMap(AIResource(I), isUnlimitedResource(AIResource(I), world.GetGGS()), queries, world, aiMap)...};
 }
-static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
+static auto createResourceMaps(const AIQueryService& queries, const GameWorldBase& world, const AIMap& aiMap)
 {
-    return createResourceMaps(aii, aiMap, std::make_index_sequence<helpers::NumEnumValues_v<AIResource>>{});
+    return createResourceMaps(queries, world, aiMap, std::make_index_sequence<helpers::NumEnumValues_v<AIResource>>{});
 }
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), config_(GetAIConfigForPlayer(playerId)),
-      UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
+      UpgradeBldPos(MapPoint::Invalid()), resourceMaps(createResourceMaps(aii.Queries(), gwb, aiMap)),
       isInitGfCompleted(false), defeated(player.IsDefeated()),
       bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this)),

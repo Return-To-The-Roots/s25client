@@ -5,6 +5,7 @@
 #include "AICombatController.h"
 #include "ai/aijh/runtime/AIPlayerJH.h"
 
+#include "ai/AIQueryService.h"
 #include "helpers/containerUtils.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/MilitaryConsts.h"
@@ -66,9 +67,9 @@ std::vector<const nobBaseMilitary*>
     hq_or_harbor_without_soldiers = 0;
     std::vector<const nobBaseMilitary*> potentialTargets;
 
-    const AIInterface& aii = owner_.GetInterface();
+    const AIQueryService& queries = owner_.GetInterface().Queries();
     const GameWorldBase& gwb = owner_.gwb;
-    const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
+    const std::list<nobMilitary*>& militaryBuildings = queries.GetMilitaryBuildings();
     const unsigned numMilBlds = militaryBuildings.size();
     if(numMilBlds == 0)
         return potentialTargets;
@@ -100,8 +101,8 @@ std::vector<const nobBaseMilitary*>
             if(target->GetGOT() == GO_Type::NobMilitary && static_cast<const nobMilitary*>(target)->IsNewBuilt())
                 continue;
             const MapPoint dest = target->GetPos();
-            if(gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE && aii.IsPlayerAttackable(target->GetPlayer())
-               && aii.IsVisible(dest))
+            if(gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE && queries.IsPlayerAttackable(target->GetPlayer())
+               && queries.IsVisible(dest))
             {
                 if(target->GetGOT() != GO_Type::NobMilitary && !target->DefendersAvailable())
                 {

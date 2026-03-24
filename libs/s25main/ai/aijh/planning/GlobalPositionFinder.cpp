@@ -9,19 +9,20 @@
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "RttrForeachPt.h"
-#include "ai/AIInterface.h"
+#include "ai/AIQueryService.h"
 #include "ai/AIResource.h"
 #include "gameData/BuildingConsts.h"
 #include "ai/aijh/config/WeightParams.h"
 
 namespace AIJH {
 namespace {
-bool IsBorderBlocked(const AIPlayerJH& aijh, const AIInterface& aii, const BuildingType type, const MapPoint& pt)
+bool IsBorderBlocked(const AIPlayerJH& aijh, const AIQueryService& queries, const BuildingType type,
+                     const MapPoint& pt)
 {
     const auto& locationParams = aijh.GetConfig().locationParams[type];
     if(locationParams.buildOnBorder)
         return false;
-    return aii.CalcResourceValue(pt, AIResource::Borderland) > 1;
+    return queries.CalcResourceValue(pt, AIResource::Borderland) > 1;
 }
 
 int ComputeRatingBonus(const AIPlayerJH& aijh, AIConstruction& construction, const BuildingType buildingType,
@@ -54,7 +55,7 @@ bool MeetsMinimalResourceRequirement(const AIPlayerJH& aijh, const BuildingType 
     return rating >= static_cast<int>(minRequirement);
 }
 
-bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, AIInterface& aii, const BuildingType type,
+bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, const AIQueryService& queries, const BuildingType type,
                                     const MapPoint& pt)
 {
     const auto& minRequirements = aijh.GetConfig().locationParams[type].minResources;
@@ -63,13 +64,14 @@ bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, AIInterface& aii, co
         if(minRequirements[resource] == 0)
             continue;
 
-        if(!MeetsMinimalResourceRequirement(aijh, type, resource, aii.CalcResourceValue(pt, resource)))
+        if(!MeetsMinimalResourceRequirement(aijh, type, resource, queries.CalcResourceValue(pt, resource)))
             return false;
     }
     return true;
 }
 
-int ComputeResourcePenalty(const AIPlayerJH& aijh, AIInterface& aii, const BuildingType type, const MapPoint& pt)
+int ComputeResourcePenalty(const AIPlayerJH& aijh, const AIQueryService& queries, const BuildingType type,
+                           const MapPoint& pt)
 {
     int totalPenalty = 0;
     const auto& penaltyParams = aijh.GetConfig().locationParams[type].resourcePenalty;
@@ -79,7 +81,7 @@ int ComputeResourcePenalty(const AIPlayerJH& aijh, AIInterface& aii, const Build
         if(!params.enabled)
             continue;
 
-        const unsigned resourceValue = aii.CalcResourceValue(pt, resource);
+        const unsigned resourceValue = queries.CalcResourceValue(pt, resource);
         if(resourceValue < params.min)
             continue;
 
@@ -89,13 +91,13 @@ int ComputeResourcePenalty(const AIPlayerJH& aijh, AIInterface& aii, const Build
     return totalPenalty;
 }
 
-int ComputeResourceRating(const AIPlayerJH& aijh, AIInterface& aii, AIConstruction& construction, const BuildingType type,
-                          const MapPoint& pt)
+int ComputeResourceRating(const AIPlayerJH& aijh, const AIQueryService& queries, AIConstruction& construction,
+                          const BuildingType type, const MapPoint& pt)
 {
     const auto& resourceRating = aijh.GetConfig().locationParams[type].resourceRating;
     int rating = 1;
     if(resourceRating.enabled)
-        rating = aii.CalcResourceValue(pt, resourceRating.resource);
+        rating = queries.CalcResourceValue(pt, resourceRating.resource);
 
     rating += ComputeRatingBonus(aijh, construction, type, pt);
     return rating;
@@ -175,7 +177,7 @@ std::optional<int> GlobalPositionFinder::GetPointRating(const BuildingType type,
     if(!CheckProximity(type, pt))
         return std::nullopt;
 
-    AIInterface& aii = aijh.GetInterface();
+    const AIQueryService& queries = aijh.GetInterface().Queries();
     AIConstruction& construction = aijh.GetConstruction();
 
     switch(type)
@@ -187,8 +189,8 @@ std::optional<int> GlobalPositionFinder::GetPointRating(const BuildingType type,
         default: break;
     }
 
-    const int baseRating = ComputeResourceRating(aijh, aii, construction, type, pt);
-    const int resourcePenalty = ComputeResourcePenalty(aijh, aii, type, pt);
+    const int baseRating = ComputeResourceRating(aijh, queries, construction, type, pt);
+    const int resourcePenalty = ComputeResourcePenalty(aijh, queries, type, pt);
     return baseRating - resourcePenalty;
 }
 
@@ -196,7 +198,7 @@ MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)
 {
     int bestValue = 0;
     MapPoint bestPt = MapPoint::Invalid();
-    AIInterface& aii = aijh.GetInterface();
+    const AIQueryService& queries = aijh.GetInterface().Queries();
     const MapExtent mapSize = aijh.GetWorld().GetSize();
     const BuildingQuality requiredSize = BUILDING_SIZE[bt];
 
@@ -207,11 +209,11 @@ MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)
             continue;
         if(!canUseBq(node.bq, requiredSize))
             continue;
-        if(aii.isHarborPosClose(pt, 2, true) && requiredSize != BuildingQuality::Harbor)
+        if(queries.isHarborPosClose(pt, 2, true) && requiredSize != BuildingQuality::Harbor)
             continue;
-        if(IsBorderBlocked(aijh, aii, bt, pt))
+        if(IsBorderBlocked(aijh, queries, bt, pt))
             continue;
-        if(!MeetsPointResourceRequirements(aijh, aii, bt, pt))
+        if(!MeetsPointResourceRequirements(aijh, queries, bt, pt))
             continue;
 
         const std::optional<int> pointRating = GetPointRating(bt, pt);

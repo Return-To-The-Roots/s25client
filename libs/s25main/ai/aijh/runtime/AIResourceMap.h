@@ -15,13 +15,15 @@
 #include <optional>
 #include <set>
 
-class AIInterface;
+class AIQueryService;
+class GameWorldBase;
 namespace AIJH {
 
 class AIResourceMap
 {
 public:
-    AIResourceMap(AIResource res, bool isInfinite, const AIInterface& aii, const AIMap& aiMap);
+    AIResourceMap(AIResource res, bool isInfinite, const AIQueryService& queries, const GameWorldBase& world,
+                  const AIMap& aiMap);
     ~AIResourceMap();
 
     /// Initialize the resource map
@@ -57,7 +59,8 @@ private:
     const unsigned resRadius;
 
     NodeMapBase<int> map;
-    const AIInterface& aii;
+    const AIQueryService& queries_;
+    const GameWorldBase& world_;
     const AIMap& aiMap;
 };
 } // namespace AIJH
