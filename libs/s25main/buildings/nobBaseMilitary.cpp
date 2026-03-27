@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -96,7 +96,6 @@ void nobBaseMilitary::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(leave_house);
     sgd.PushEvent(leaving_event);
     sgd.PushBool(go_out);
-    sgd.PushUnsignedInt(0); // former age, compatibility with 0.7, remove it in furher versions
     sgd.PushObjectContainer(troops_on_mission);
     sgd.PushObjectContainer(aggressors, true);
     sgd.PushObjectContainer(aggressive_defenders, true);
@@ -108,7 +107,8 @@ nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id)
     sgd.PopObjectContainer(leave_house);
     leaving_event = sgd.PopEvent();
     go_out = sgd.PopBool();
-    sgd.PopUnsignedInt(); // former age, compatibility with 0.7, remove it in furher versions
+    if(sgd.GetGameDataVersion() < 14)
+        sgd.PopUnsignedInt(); // former age
     sgd.PopObjectContainer(troops_on_mission);
     sgd.PopObjectContainer(aggressors, GO_Type::NofAttacker);
     sgd.PopObjectContainer(aggressive_defenders, GO_Type::NofAggressivedefender);

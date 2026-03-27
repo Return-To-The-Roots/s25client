@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -107,7 +107,8 @@
 /// 11: wineaddon added, three new building types and two new goods
 /// 12: leatheraddon added, three new building types and three new goods
 /// 13: SeaId & HarborId: World::harborData w/o dummy entry at 0
-static const unsigned currentGameDataVersion = 13;
+/// 14: Remove "age" field in nobBaseMilitary
+static const unsigned currentGameDataVersion = 14;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
