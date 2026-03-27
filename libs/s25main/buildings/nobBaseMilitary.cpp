@@ -30,44 +30,42 @@ nobBaseMilitary::~nobBaseMilitary() = default;
 
 void nobBaseMilitary::DestroyBuilding()
 {
-    // Soldaten Bescheid sagen, die evtl auf Mission sind
+    // Notify soldiers on mission.
     // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
     std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
     for(auto* it : tmpTroopsOnMission)
         it->HomeDestroyed();
     troops_on_mission.clear();
 
-    // Und die, die das Gebäude evtl gerade angreifen
+    // Notify soldiers attacking this building
     // ATTENTION: iterators can be deleted in AttackedGoalDestroyed, -> copy first
     std::vector<nofAttacker*> tmpAggressors(aggressors.begin(), aggressors.end());
     for(auto* tmpAggressor : tmpAggressors)
         tmpAggressor->AttackedGoalDestroyed();
     aggressors.clear();
 
-    // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen können
+    // Notify soldiers from other buildings defending this
     std::vector<nofAggressiveDefender*> tmpDefenders(aggressive_defenders.begin(), aggressive_defenders.end());
     for(auto* tmpDefender : tmpDefenders)
         tmpDefender->AttackedGoalDestroyed();
     aggressive_defenders.clear();
 
-    // Verteidiger Bescheid sagen
     if(defender_)
     {
         defender_->HomeDestroyed();
         defender_ = nullptr;
     }
 
-    // Warteschlangenevent vernichten
     GetEvMgr().RemoveEvent(leaving_event);
 
-    // Soldaten, die noch in der Warteschlange hängen, rausschicken
+    // Put all leaving figures outside
     for(auto& fig : leave_house)
     {
         noFigure& figRef = world->AddFigure(pos, std::move(fig));
 
-        if(figRef.DoJobWorks() && dynamic_cast<nofActiveSoldier*>(&figRef))
-            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch
-            // Bescheid gesagt werden!
+        // DoJobWorks implies ActiveSoldier or TradeDonkey
+        // Notify the soldier
+        if(figRef.IsDoingJobWorks() && dynamic_cast<nofActiveSoldier*>(&figRef))
             static_cast<nofActiveSoldier&>(figRef).HomeDestroyedAtBegin();
         else
         {
@@ -79,8 +77,7 @@ void nobBaseMilitary::DestroyBuilding()
 
     leave_house.clear();
 
-    // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
-    // da, wir ja nicht mehr existieren
+    // Let close military buildings recalculate distances to update flags etc.
     sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
     for(auto* building : buildings)
     {
@@ -117,7 +114,6 @@ nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id)
 
 void nobBaseMilitary::AddLeavingEvent()
 {
-    // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
     if(!go_out)
     {
         leaving_event = GetEvMgr().AddEvent(this, 20 + RANDOM_RAND(10));
@@ -225,27 +221,21 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
 
 bool nobBaseMilitary::CallDefender(nofAttacker& attacker)
 {
-    // Ist noch ein Verteidiger draußen (der z.B. grad wieder reingeht?
+    // Use existing defender (e.g. just going back in) if possible
     if(defender_)
     {
-        // Dann nehmen wir den, müssen ihm nur den neuen Angreifer mitteilen
         defender_->NewAttacker(attacker);
-        // Leute, die aus diesem Gebäude zum Angriff/aggressiver Verteidigung rauskommen wollen,
-        // blocken
-        CancelJobs();
-
+        // Block soldiers leaving this building e.g. for attacks or aggressive defending
+        StopLeavingSoldiers();
         return true;
-    }
-    // ansonsten einen neuen aus dem Gebäude holen
-    else
+    } else
     {
         auto defender = ProvideDefender(attacker);
         if(!defender)
             return false; // Building empty -> Can be conquered
 
-        // Leute, die aus diesem Gebäude zum Angriff/aggressiver Verteidigung rauskommen wollen,
-        // blocken
-        CancelJobs();
+        // Block soldiers leaving this building e.g. for attacks or aggressive defending
+        StopLeavingSoldiers();
         // Soldat muss noch rauskommen
         defender_ = defender.get();
         AddLeavingFigure(std::move(defender));
@@ -286,14 +276,12 @@ void nobBaseMilitary::CheckArrestedAttackers()
 {
     for(nofAttacker* aggressor : aggressors)
     {
-        // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum)?
+        // Ready, i.e. waiting around the flag?
         if(aggressor->IsAttackerReady())
         {
-            // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
-            // vor ihm ihn den Weg versperren)?
+            // Can he still reach the flag? Could be blocked by other soldiers
             if(world->FindHumanPath(aggressor->GetPos(), world->GetNeighbour(pos, Direction::SouthEast), 5, false))
             {
-                // dann kann der zur Flagge gehen
                 aggressor->AttackFlag();
                 return;
             }
@@ -305,16 +293,13 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
 {
     for(nofAttacker* aggressor : aggressors)
     {
-        // Wartet der Soldat überhaupt um die Flagge?
         if(aggressor->IsAttackerReady())
         {
-            // Und steht er auch weiter außen?, sonst machts natürlich keinen Sinn..
+            // Only move closer
             if(aggressor->GetRadius() > radius)
             {
-                // Und findet er einen zu diesem Punkt?
                 if(world->FindHumanPath(aggressor->GetPos(), pt, 50, false))
                 {
-                    // dann soll er dorthin gehen
                     aggressor->StartSucceeding(pt, radius);
                     return true;
                 }
@@ -353,28 +338,20 @@ bool nobBaseMilitary::IsOnMission(const nofActiveSoldier& soldier) const
     return helpers::contains(troops_on_mission, &soldier);
 }
 
-/// Bricht einen aktuell von diesem Haus gestarteten Angriff/aggressive Verteidigung ab, d.h. setzt die Soldaten
-/// aus der Warteschleife wieder in das Haus --> wenn Angreifer an der Fahne ist und Verteidiger rauskommen soll
-void nobBaseMilitary::CancelJobs()
+void nobBaseMilitary::StopLeavingSoldiers()
 {
-    // Soldaten, die noch in der Warteschlange hängen, rausschicken
     for(auto it = leave_house.begin(); it != leave_house.end();)
     {
-        // Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen
-        // sollen zum Kampf
-        if((*it)->DoJobWorks() && (*it)->GetGOT() != GO_Type::NofDefender)
+        // Just take soldiers (in Job state) and no normal defenders which should always come out
+        if((*it)->IsDoingJobWorks() && (*it)->GetGOT() != GO_Type::NofDefender)
         {
             auto soldier = boost::dynamic_pointer_cast<nofActiveSoldier>(std::move(*it));
             RTTR_Assert(soldier);
 
-            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
             soldier->InformTargetsAboutCancelling();
-            // Wieder in das Haus verfrachten
             this->AddActiveSoldier(std::move(soldier));
             it = leave_house.erase(it);
         } else
             ++it;
     }
-
-    // leave_house.clear();
 }

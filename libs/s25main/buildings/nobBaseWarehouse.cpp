@@ -622,20 +622,19 @@ void nobBaseWarehouse::HandleLeaveEvent()
         const auto it = helpers::find_if(leave_house, [](const auto& sld) {
             return sld->GetGOT() == GO_Type::NofAggressivedefender || sld->GetGOT() == GO_Type::NofDefender;
         });
-        // no defender found? trigger next leaving event :)
+        // no defender found? enqueue next leaving event
         if(it == leave_house.end())
         {
             go_out = false;
             AddLeavingEvent();
             return;
         }
-        // and make him leave the house first
-        // remove defender from list, insert him again in front of all others
+        // Move defender to front to make him leave first
         leave_house.push_front(std::move(*it));
         leave_house.erase(it);
     }
 
-    // Figuren kommen zuerst raus
+    // Figures first, then wares
     if(!leave_house.empty())
     {
         noFigure& fig = world->AddFigure(pos, std::move(leave_house.front()));
@@ -672,7 +671,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
     {
         if(GetFlag()->HasSpaceForWare())
         {
-            // Dann Ware raustragen lassen
+            // Send first ware
             auto ware = std::move(waiting_wares.front());
             waiting_wares.pop_front();
             inventory.visual.Remove(ConvertShields(ware->type));
@@ -681,13 +680,12 @@ void nobBaseWarehouse::HandleLeaveEvent()
               .WalkToGoal();
         } else
         {
-            // Kein Platz mehr für Waren --> keiner brauch mehr rauszukommen, und Figuren gibts ja auch keine mehr
+            // No space and no figures (checked above)
             go_out = false;
         }
     }
 
-    // Wenn keine Figuren und Waren mehr da sind (bzw die Flagge vorm Haus voll ist), brauch auch keiner mehr
-    // rauszukommen
+    // Nothing left waiting -> stop
     if(leave_house.empty() && waiting_wares.empty())
         go_out = false;
 
@@ -1084,9 +1082,7 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
                     return defender;
                 }
                 ++r;
-            }
-            // Reserve
-            else if(reserve_soldiers_available[i])
+            } else if(reserve_soldiers_available[i])
             {
                 if(r == rank)
                 {
@@ -1137,39 +1133,23 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
 
 bool nobBaseWarehouse::CanRecruitSoldiers()
 {
-    // Mindestanzahl der Gehilfen die vorhanden sein müssen anhand der 1. Militäreinstellung ausrechnen
-    unsigned needed_helpers = 100 - 10 * world->GetPlayer(player).GetMilitarySetting(0);
-
-    // einer muss natürlich mindestens vorhanden sein!
-    if(!needed_helpers)
-        needed_helpers = 1;
-
-    // Wenn alle Bedingungen erfüllt sind, Event anmelden
+    // Minimal number of helpers required according to current setting, at least 1
+    const unsigned needed_helpers = std::max(1, 100 - 10 * world->GetPlayer(player).GetMilitarySetting(0));
     return (inventory[Job::Helper] >= needed_helpers && inventory[GoodType::Sword] && inventory[GoodType::ShieldRomans]
             && inventory[GoodType::Beer]);
 }
 
 void nobBaseWarehouse::TryRecruiting()
 {
-    // Wenn noch kein Event angemeldet wurde und alle Bedingungen erfüllt sind, kann ein neues angemeldet werden
-    if(!recruiting_event)
-    {
-        if(CanRecruitSoldiers())
-            recruiting_event = GetEvMgr().AddEvent(this, RECRUITE_GF + RANDOM_RAND(RECRUITE_RANDOM_GF), 2);
-    }
+    if(!recruiting_event && CanRecruitSoldiers())
+        recruiting_event = GetEvMgr().AddEvent(this, RECRUITE_GF + RANDOM_RAND(RECRUITE_RANDOM_GF), 2);
 }
 
 void nobBaseWarehouse::TryStopRecruiting()
 {
-    // Wenn ein Event angemeldet wurde und die Bedingungen nicht mehr erfüllt sind, muss es wieder vernichtet werden
-    if(recruiting_event)
-    {
-        if(!CanRecruitSoldiers())
-        {
-            GetEvMgr().RemoveEvent(recruiting_event);
-            recruiting_event = nullptr;
-        }
-    }
+    // Remove existing event if we have not enough recruits/wares
+    if(recruiting_event && !CanRecruitSoldiers())
+        GetEvMgr().RemoveEvent(recruiting_event);
 }
 
 const Inventory& nobBaseWarehouse::GetInventory() const
