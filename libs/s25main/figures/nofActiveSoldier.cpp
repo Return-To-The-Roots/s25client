@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -83,8 +83,7 @@ void nofActiveSoldier::WalkingHome()
 
     // Walking home to our military building
 
-    if(GetPos() == building->GetFlagPos()) // Are we already at the flag?
-
+    if(GetPos() == building->GetFlagPos())  // Are we already at the flag?
         StartWalking(Direction::NorthWest); // Enter via the door
     else if(GetPos() == building->GetPos()) // or are we at the building
         building->AddActiveSoldier(world->RemoveFigure(pos, *this));

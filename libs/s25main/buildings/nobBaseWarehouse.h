@@ -215,7 +215,7 @@ public:
     void WareLost(Ware& ware) override;
     /// Bestellte Ware, die sich noch hier drin befindet, storniert ihre Auslieferung
     void CancelWare(Ware*& ware);
-    /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
+    /// Bestellte Figur, die sich noch ind er Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
     virtual void CancelFigure(noFigure* figure);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)

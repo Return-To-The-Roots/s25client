@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -227,8 +227,7 @@ public:
 
     unsigned char GetPlayer() const { return player; }
 
-    /// Macht die Figur Job-Arbeiten?
-    bool DoJobWorks() const { return fs == FigureState::Job; }
+    bool IsDoingJobWorks() const { return fs == FigureState::Job; }
 
     void Abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 

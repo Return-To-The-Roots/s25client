@@ -1015,7 +1015,7 @@ std::unique_ptr<nofDefender> nobMilitary::ProvideDefender(nofAttacker& attacker)
     if(!soldier)
     {
         /// Soldaten, die noch auf Mission gehen wollen, canceln und für die Verteidigung mit einziehen
-        CancelJobs();
+        StopLeavingSoldiers();
         // Nochmal versuchen
         soldier = ChooseSoldier();
         if(!soldier)
