@@ -251,6 +251,7 @@ public:
     /// Prüft, ob es Waren zum Auslagern gibt
     bool AreWaresToEmpty() const;
 
+    void FigureLeft(const noFigure& fig) override;
     /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
     void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier) override;
     /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück

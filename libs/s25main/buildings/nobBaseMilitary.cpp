@@ -347,10 +347,11 @@ void nobBaseMilitary::StopLeavingSoldiers()
         {
             auto soldier = boost::dynamic_pointer_cast<nofActiveSoldier>(std::move(*it));
             RTTR_Assert(soldier);
+            it = leave_house.erase(it);
+            FigureLeft(*soldier);
 
             soldier->InformTargetsAboutCancelling();
-            this->AddActiveSoldier(std::move(soldier));
-            it = leave_house.erase(it);
+            AddActiveSoldier(std::move(soldier));
         } else
             ++it;
     }

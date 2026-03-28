@@ -645,28 +645,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
             fig.InitializeRoadWalking(GetRoute(Direction::SouthEast), 0, true);
 
         fig.ActAtFirst();
-        // Bei Lagerhausarbeitern das nicht abziehen!
-        if(!fig.MemberOfWarehouse())
-        {
-            // War das ein Boot-Träger?
-            if(fig.GetJobType() == Job::BoatCarrier)
-            {
-                // Remove helper and boat separately
-                inventory.visual.Remove(Job::Helper);
-                inventory.visual.Remove(GoodType::Boat);
-            } else
-                inventory.visual.Remove(fig.GetJobType());
-
-            RemoveArmoredFigurFromVisualInventory(fig);
-
-            if(fig.GetGOT() == GO_Type::NofTradedonkey)
-            {
-                // Trade donkey carrying wares?
-                const auto& carriedWare = static_cast<nofTradeDonkey&>(fig).GetCarriedWare();
-                if(carriedWare)
-                    inventory.visual.Remove(*carriedWare);
-            }
-        }
+        FigureLeft(fig);
     } else
     {
         if(GetFlag()->HasSpaceForWare())
@@ -691,6 +670,30 @@ void nobBaseWarehouse::HandleLeaveEvent()
 
     if(go_out)
         leaving_event = GetEvMgr().AddEvent(this, LEAVE_INTERVAL + RANDOM_RAND(LEAVE_INTERVAL_RAND));
+}
+
+void nobBaseWarehouse::FigureLeft(const noFigure& fig)
+{
+    // Adapt inventory for non-warehouse workers
+    if(fig.MemberOfWarehouse())
+        return;
+    if(fig.GetJobType() == Job::BoatCarrier)
+    {
+        // Remove helper and boat separately
+        inventory.visual.Remove(Job::Helper);
+        inventory.visual.Remove(GoodType::Boat);
+    } else
+        inventory.visual.Remove(fig.GetJobType());
+
+    RemoveArmoredFigurFromVisualInventory(fig);
+
+    if(fig.GetGOT() == GO_Type::NofTradedonkey)
+    {
+        // Trade donkey carrying wares?
+        const auto& carriedWare = static_cast<const nofTradeDonkey&>(fig).GetCarriedWare();
+        if(carriedWare)
+            inventory.visual.Remove(*carriedWare);
+    }
 }
 
 Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding& goal)
@@ -1012,18 +1015,9 @@ void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
 
 void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
 {
-    // Add soldier. If he is still in the leave-queue, then don't add him to the visual settings again
-    if(helpers::contains(leave_house, soldier))
-    {
-        inventory.real.Add(soldier->GetJobType());
-        if(soldier->HasArmor())
-            inventory.real.Add(jobEnumToAmoredSoldierEnum(soldier->GetJobType()));
-    } else
-    {
-        inventory.Add(soldier->GetJobType());
-        if(soldier->HasArmor())
-            inventory.Add(jobEnumToAmoredSoldierEnum(soldier->GetJobType()));
-    }
+    inventory.Add(soldier->GetJobType());
+    if(soldier->HasArmor())
+        inventory.Add(jobEnumToAmoredSoldierEnum(soldier->GetJobType()));
 
     // Evtl. geht der Soldat wieder in die Reserve
     RefreshReserve(soldier->GetRank());
@@ -1109,7 +1103,6 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
     for(auto it = leave_house.begin(); it != leave_house.end(); ++it)
     {
         std::unique_ptr<nofSoldier> soldier;
-        // Soldat?
         if((*it)->GetGOT() == GO_Type::NofAggressivedefender)
         {
             soldier = boost::static_pointer_cast<nofSoldier>(std::move(*it));
