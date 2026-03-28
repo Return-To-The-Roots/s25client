@@ -142,6 +142,8 @@ protected:
     virtual std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) = 0;
     /// Add a figure that will leave the house
     void AddLeavingFigure(std::unique_ptr<noFigure> fig);
+    /// Called when a figure has left the building, i.e. the leave queue
+    virtual void FigureLeft(const noFigure& fig) = 0;
 };
 
 class sortedMilitaryBlds : public boost::container::flat_set<nobBaseMilitary*, nobBaseMilitary::Comparer>

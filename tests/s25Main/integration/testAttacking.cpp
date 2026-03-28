@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -29,6 +29,7 @@
 #include <boost/test/data/monomorphic.hpp>
 #include <boost/test/data/test_case.hpp>
 #include <boost/test/unit_test.hpp>
+#include <array>
 #include <iostream>
 
 using SoldierState = nofActiveSoldier::SoldierState;
@@ -105,6 +106,15 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
             this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
         }
         curPlayer = 0;
+        initGameRNG();
+    }
+
+    void FinishRecruiting(nobBaseWarehouse& hq)
+    {
+        Inventory goods;
+        goods.Add(Job::Helper, 100);
+        hq.AddGoods(goods, true);
+        RTTR_EXEC_TILL(600, hq.GetNumVisualWares(GoodType::Sword) == 0u);
     }
 
     void MakeVisible(const MapPoint& pt)
@@ -242,8 +252,6 @@ struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
 
 BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, NumSoldierTestFixture)
 {
-    initGameRNG();
-
     // Connect buildings
     curPlayer = 1;
     BuildRoadForBlds(hqPos[1], milBld1Near->GetPos());
@@ -306,7 +314,6 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, NumSoldierTestFixture)
 
 BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
 {
-    initGameRNG();
     GameWorldViewer gwv(curPlayer, world);
 
     // Add soldiers (3 strong, 3 weak)
@@ -394,8 +401,6 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
 
 BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
 {
-    initGameRNG();
-
     AddSoldiers(milBld0Pos, 1, 5);
     AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
     AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::PrivateFirstClass);
@@ -465,8 +470,6 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
 
 BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
 {
-    initGameRNG();
-
     AddSoldiersWithRankAndArmor(milBld0Pos, 3, Job::General, 2);
     AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private, 1);
 
@@ -527,7 +530,6 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonEnable, AttackFixture<>)
 {
     this->ggs.setSelection(AddonId::COINS_CAPTURED_BLD, 1); // addon is active on second run
 
-    initGameRNG();
     AddSoldiers(milBld0Pos, 1, 5);
     AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
     // Finish recruiting, carrier outhousing etc.
@@ -551,7 +553,6 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
 {
     this->ggs.setSelection(AddonId::COINS_CAPTURED_BLD, 2); // addon is active on second run
 
-    initGameRNG();
     AddSoldiers(milBld0Pos, 1, 5);
     AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
     // Finish recruiting, carrier outhousing etc.
@@ -590,7 +591,6 @@ BOOST_DATA_TEST_CASE_F(AttackFixture<>, ConquerBldArmorAddon,
     else
         this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 0);
 
-    initGameRNG();
     AddSoldiers(milBld0Pos, 1, 5);
     AddSoldiersWithRankAndArmor(milBld1Pos, 1, Job::Private);
 
@@ -613,7 +613,6 @@ BOOST_DATA_TEST_CASE_F(AttackFixture<>, ConquerBldArmorAddon,
 using AttackFixture4P = AttackFixture<4, 32, 34>;
 BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 {
-    initGameRNG();
     world.GetPlayer(0).team = Team::Team1; //-V525
     world.GetPlayer(1).team = Team::None;
     world.GetPlayer(2).team = Team::Team1; // Allied to 0
@@ -983,7 +982,7 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     DestroyRoad(flagPos, Direction::East);
     BOOST_TEST_REQUIRE(gwv.GetNumSoldiersForAttack(defenderBldPos) == 0u);
     // Fight ended
-    RTTR_EXEC_TILL(200, !defender.IsFightingAtFlag());
+    RTTR_EXEC_TILL(500, !defender.IsFightingAtFlag());
     // Attacker2 should go home
     BOOST_TEST(attacker2.GetState() == SoldierState::WalkingHome);
     BOOST_TEST(!attacker2.GetAttackedGoal());
@@ -995,6 +994,64 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     BOOST_TEST(attacker3.IsMoving()); // Not stuck
     RTTR_EXEC_TILL(100, defender.IsFightingAtFlag());
     BOOST_TEST(attacker3.GetState() == SoldierState::AttackingFightingVsDefender);
+}
+
+BOOST_FIXTURE_TEST_CASE(CancelAgressiveDefenders, AttackFixture<2>)
+{
+    // Reproduce issue #1907:
+    // Accounting of soldiers that were about to leave but got canceled was wrong
+    // Situation:
+    //  - Attack on "military storehouse", i.e. HQ.
+    //  - HQ sends aggressive defender about to leave.
+    //  - Attacker reaches flag and requests defender which cancels any agressive defenders
+    AddSoldiersWithRankAndArmor(milBld0Pos, 4, Job::General);
+    auto& attackedHq = ensureNonNull(world.GetSpecObj<nobBaseWarehouse>(hqPos[1]));
+    FinishRecruiting(attackedHq);
+    const auto getSoldiers = [&attackedHq]() {
+        std::array<std::array<unsigned, NUM_SOLDIER_RANKS>, 2> soldiers{};
+        for(const auto job : SOLDIER_JOBS)
+        {
+            soldiers[0][getSoldierRank(job)] = attackedHq.GetNumRealFigures(job);
+            soldiers[1][getSoldierRank(job)] = attackedHq.GetNumVisualFigures(job);
+        }
+        return soldiers;
+    };
+    auto soldiersBefore = getSoldiers();
+
+    this->Attack(attackedHq.GetPos(), 1, true);
+    BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().size() == 1u);
+    // multiple soldiers and last is aggressive
+    auto& attacker = dynamic_cast<nofAttacker&>(milBld0->GetLeavingFigures().front());
+    RTTR_EXEC_TILL(70, milBld0->GetLeavingFigures().empty()); //-V807
+    if(!attacker.GetHuntingDefender())
+    {
+        auto* aggDefender = attackedHq.SendAggressiveDefender(attacker);
+        BOOST_TEST_REQUIRE(aggDefender);
+        attacker.LetsFight(*aggDefender);
+    }
+    BOOST_TEST_REQUIRE(!attackedHq.GetLeavingFigures().empty());
+    // Still there visually, but not real
+    auto soldiersNow = getSoldiers();
+    BOOST_TEST(soldiersNow[0] != soldiersBefore[0]);
+    BOOST_TEST(soldiersNow[1] == soldiersBefore[1]);
+    moveObjTo(world, attacker, attackedHq.GetFlagPos());
+    rescheduleWalkEvent(em, attacker, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::AttackingWaitingForDefender);
+    // All agressive defenders are cancelled
+    for(const auto& fig : attackedHq.GetLeavingFigures())
+        BOOST_TEST(fig.GetGOT() != GO_Type::NofAggressivedefender);
+    BOOST_TEST_REQUIRE(!attackedHq.GetLeavingFigures().empty());
+    // Defender is coming
+    BOOST_TEST_REQUIRE(attackedHq.GetLeavingFigures().front().GetGOT() == GO_Type::NofDefender);
+    const auto defenderRank = getSoldierRank(attackedHq.GetLeavingFigures().front().GetJobType());
+    // Counts unchanged until defender is out
+    BOOST_TEST(getSoldiers() == soldiersNow);
+    RTTR_EXEC_TILL(70, attackedHq.GetLeavingFigures().empty());
+    soldiersNow = getSoldiers();
+    auto soldiersExpected = soldiersBefore;
+    soldiersExpected[1][defenderRank] = --soldiersExpected[0][defenderRank]; // Defender is out
+    BOOST_TEST(soldiersNow == soldiersExpected);
 }
 
 using DestroyRoadsOnConquerFixture = AttackFixture<2, 24>;

@@ -288,7 +288,7 @@ void nobMilitary::HandleEvent(const unsigned id)
                 // Dann raus mit denen
                 noFigure& soldier = world->AddFigure(pos, std::move(leave_house.front()));
                 leave_house.pop_front();
-
+                FigureLeft(soldier);
                 soldier.ActAtFirst();
             }
 
