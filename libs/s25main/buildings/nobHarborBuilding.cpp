@@ -58,12 +58,6 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     world->GetMilitarySquares().Add(this);
     world->RecalcTerritory(*this, TerritoryChangeReason::Build);
 
-    // Alle Waren 0
-    inventory.clear();
-
-    // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
-    AddToInventory();
-
     // Take 1 as the reserve per rank
     for(unsigned i = 0; i <= world->GetGGS().GetMaxMilitaryRank(); ++i)
     {
