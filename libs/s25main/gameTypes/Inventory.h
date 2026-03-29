@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,8 +9,22 @@
 #include "JobTypes.h"
 
 /// Struct for wares and people (for HQs, warehouses etc)
-struct Inventory : GoodsAndPeopleArray<unsigned>
+struct Inventory : private GoodsAndPeopleCounts
 {
+    using GoodsAndPeopleCounts::armoredSoldiers;
+    using GoodsAndPeopleCounts::goods;
+    using GoodsAndPeopleCounts::people;
+    // Write access is only allowed via Add and Remove, or explicitely via underlying arrays
+    // to ensure amounts are non-negative and armored soldier count is valid
+    auto operator[](GoodType good) const { return goods[good]; }
+    auto operator[](Job job) const { return people[job]; }
+    auto operator[](ArmoredSoldier soldier) const { return armoredSoldiers[soldier]; }
+
+    GoodCounts& goodsOnly() { return *this; }
+    const GoodCounts& goodsOnly() const { return *this; }
+    PeopleCounts& peopleOnly() { return *this; }
+    const PeopleCounts& peopleOnly() const { return *this; }
+
     /// Sets everything to 0
     void clear();
     void Add(const GoodType good, unsigned amount = 1) { goods[good] += amount; }

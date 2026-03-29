@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -300,8 +300,13 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 
     inventory.real = inventory.visual;
 
-    // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
-    AddToInventory();
+    GamePlayer& owner = world->GetPlayer(player);
+    for(const auto i : helpers::enumRange<GoodType>())
+        owner.IncreaseInventoryWare(i, inventory[i]);
+    for(const auto i : helpers::enumRange<Job>())
+        owner.IncreaseInventoryJob(i, inventory[i]);
+    for(const auto i : helpers::enumRange<ArmoredSoldier>())
+        owner.IncreaseInventoryJob(i, inventory[i]);
 
     // Take 1 as the reserve per rank
     for(unsigned i = 0; i <= world->GetGGS().GetMaxMilitaryRank(); ++i)

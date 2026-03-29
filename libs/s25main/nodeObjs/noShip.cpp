@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -251,11 +251,11 @@ void noShip::HandleEvent(const unsigned id)
 
                 if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
                 {
-                    Inventory goods;
+                    GoodsAndPeopleCounts goods;
                     goods.goods[GoodType::Boards] = BUILDING_COSTS[BuildingType::HarborBuilding].boards;
                     goods.goods[GoodType::Stones] = BUILDING_COSTS[BuildingType::HarborBuilding].stones;
                     goods.people[Job::Builder] = 1;
-                    static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
+                    static_cast<nobBaseWarehouse*>(hb)->AddToInventory(goods, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();
                     world->GetPlayer(ownerId_).GetJobForShip(*this);
@@ -277,9 +277,9 @@ void noShip::HandleEvent(const unsigned id)
                 if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
                 {
                     // Späher wieder entladen
-                    Inventory goods;
-                    goods.people[Job::Scout] = world->GetGGS().GetNumScoutsExpedition();
-                    static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
+                    PeopleCounts people;
+                    people[Job::Scout] = world->GetGGS().GetNumScoutsExpedition();
+                    static_cast<nobBaseWarehouse*>(hb)->AddToInventory(people, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();
                     world->GetPlayer(ownerId_).GetJobForShip(*this);

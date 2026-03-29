@@ -113,9 +113,8 @@ void nobBaseWarehouse::DestroyBuilding()
                                reserve_soldiers_available_with_armor[rank]);
         }
     }
-
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
-    world->AddFigure(pos, std::make_unique<BurnedWarehouse>(pos, player, inventory.real));
+    world->AddFigure(pos, std::make_unique<BurnedWarehouse>(pos, player, inventory.real.peopleOnly()));
 
     nobBaseMilitary::DestroyBuilding();
 }
@@ -188,8 +187,8 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
             continue;
 
-        inventory.visual[i] = sgd.PopUnsignedInt();
-        inventory.real[i] = sgd.PopUnsignedInt();
+        inventory.visual.Add(i, sgd.PopUnsignedInt());
+        inventory.real.Add(i, sgd.PopUnsignedInt());
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
     for(const auto i : helpers::enumRange<Job>())
@@ -200,8 +199,8 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonJobType(i))
             continue;
 
-        inventory.visual[i] = sgd.PopUnsignedInt();
-        inventory.real[i] = sgd.PopUnsignedInt();
+        inventory.visual.Add(i, sgd.PopUnsignedInt());
+        inventory.real.Add(i, sgd.PopUnsignedInt());
         inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
     if(sgd.GetGameDataVersion() >= 12)
@@ -1150,7 +1149,13 @@ const Inventory& nobBaseWarehouse::GetInventory() const
     return inventory.visual;
 }
 
-void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
+void nobBaseWarehouse::AddToInventory(const GoodsAndPeopleCounts& what, bool addToPlayer)
+{
+    AddToInventory(static_cast<const GoodCounts&>(what), addToPlayer);
+    AddToInventory(static_cast<const PeopleCounts&>(what), addToPlayer);
+}
+
+void nobBaseWarehouse::AddToInventory(const GoodCounts& goods, bool addToPlayer)
 {
     GamePlayer& owner = world->GetPlayer(player);
     for(const auto i : helpers::enumRange<GoodType>())
@@ -1160,49 +1165,39 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
         // Can only add canonical shields (romans)
         RTTR_Assert(i == GoodType::ShieldRomans || ConvertShields(i) != GoodType::ShieldRomans);
 
-        inventory.Add(i, goods.goods[i]);
+        inventory.Add(i, goods[i]);
         if(addToPlayer)
-            owner.IncreaseInventoryWare(i, goods.goods[i]);
+            owner.IncreaseInventoryWare(i, goods[i]);
         CheckUsesForNewWare(i);
     }
+}
 
+void nobBaseWarehouse::AddToInventory(const PeopleCounts& people, bool addToPlayer)
+{
+    GamePlayer& owner = world->GetPlayer(player);
     for(const auto i : helpers::enumRange<Job>())
     {
-        if(!goods.people[i])
+        if(!people[i])
             continue;
         // Boatcarriers are added as carriers and boat individually
         RTTR_Assert(i != Job::BoatCarrier);
 
-        inventory.Add(i, goods.people[i]);
+        inventory.Add(i, people[i]);
         if(addToPlayer)
-            owner.IncreaseInventoryJob(i, goods.people[i]);
+            owner.IncreaseInventoryJob(i, people[i]);
 
         if(isSoldier(i))
         {
             const auto armoredSoldier = jobEnumToAmoredSoldierEnum(i);
-            if(goods[armoredSoldier])
+            if(people[armoredSoldier])
             {
-                inventory.Add(armoredSoldier, goods[armoredSoldier]);
+                inventory.Add(armoredSoldier, people[armoredSoldier]);
                 if(addToPlayer)
-                    owner.IncreaseInventoryJob(armoredSoldier, goods[armoredSoldier]);
+                    owner.IncreaseInventoryJob(armoredSoldier, people[armoredSoldier]);
             }
         }
-
         CheckJobsForNewFigure(i);
     }
-}
-
-void nobBaseWarehouse::AddToInventory()
-{
-    GamePlayer& owner = world->GetPlayer(player);
-    for(const auto i : helpers::enumRange<GoodType>())
-        owner.IncreaseInventoryWare(i, inventory[i]);
-
-    for(const auto i : helpers::enumRange<Job>())
-        owner.IncreaseInventoryJob(i, inventory[i]);
-
-    for(const auto i : helpers::enumRange<ArmoredSoldier>())
-        owner.IncreaseInventoryJob(i, inventory[i]);
 }
 
 bool nobBaseWarehouse::CanRecruit(const Job job) const

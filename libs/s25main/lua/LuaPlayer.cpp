@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -187,14 +187,11 @@ bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& ware
     if(!warehouse)
         return false;
 
-    Inventory goods;
-
+    GoodCounts counts;
     for(const auto& ware : wares)
-    {
-        goods.Add(ware.first, ware.second);
-    }
+        counts[ware.first] += ware.second;
 
-    warehouse->AddGoods(goods, true);
+    warehouse->AddToInventory(counts, true);
     return true;
 }
 
@@ -205,20 +202,20 @@ bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
     if(!warehouse)
         return false;
 
-    Inventory goods;
+    GoodsAndPeopleCounts counts;
 
     for(const auto& it : people)
     {
         const Job job = it.first;
         if(job == Job::BoatCarrier)
         {
-            goods.Add(Job::Helper, it.second);
-            goods.Add(GoodType::Boat, it.second);
+            counts[Job::Helper] += it.second;
+            counts[GoodType::Boat] += it.second;
         } else
-            goods.Add(job, it.second);
+            counts[it.first] += it.second;
     }
 
-    warehouse->AddGoods(goods, true);
+    warehouse->AddToInventory(counts, true);
     return true;
 }
 

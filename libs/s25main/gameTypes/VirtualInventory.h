@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -59,9 +59,9 @@ struct VirtualInventory
     }
 
     /// Returns the real number of people of the given type
-    unsigned operator[](Job job) const { return real.people[job]; }
+    unsigned operator[](Job job) const { return real[job]; }
     /// Returns the real number of wares of the given type
-    unsigned operator[](GoodType good) const { return real.goods[good]; }
+    unsigned operator[](GoodType good) const { return real[good]; }
     /// Returns the real number of armored soldiers of the given type
-    unsigned operator[](ArmoredSoldier soldier) const { return real.armoredSoldiers[soldier]; }
+    unsigned operator[](ArmoredSoldier soldier) const { return real[soldier]; }
 };

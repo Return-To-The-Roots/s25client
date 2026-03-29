@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -28,9 +28,9 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     rttr::test::LogAccessor logAcc;
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
-    Inventory goods;
-    goods.goods[GoodType::Iron] = 10;
-    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddGoods(goods, true);
+    GoodCounts goods;
+    goods[GoodType::Iron] = 10;
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(goods, true);
     MapPoint bldPos = hqPos + MapPoint(2, 0);
     BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, bldPos, curPlayer, Nation::Africans);
     this->BuildRoad(world.GetNeighbour(bldPos, Direction::SouthEast), false,
@@ -74,10 +74,10 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
 
 BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
 {
-    Inventory inv;
-    inv.Add(GoodType::Boards, 10);
-    inv.Add(GoodType::Iron, 10);
-    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddGoods(inv, true);
+    GoodCounts goods;
+    goods[GoodType::Boards] = 10;
+    goods[GoodType::Iron] = 10;
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(goods, true);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ToolSettings settings;

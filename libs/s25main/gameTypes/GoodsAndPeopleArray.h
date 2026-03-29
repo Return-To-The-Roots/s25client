@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -19,16 +19,29 @@ struct PeopleArray
 
     const T& operator[](Job job) const { return people[job]; }
     T& operator[](Job job) { return people[job]; }
+    T& operator[](ArmoredSoldier soldier) { return armoredSoldiers[soldier]; }
     const T& operator[](ArmoredSoldier soldier) const { return armoredSoldiers[soldier]; }
+};
+
+template<typename T>
+struct GoodsArray
+{
+    helpers::EnumArray<T, GoodType> goods = {};
+    const T& operator[](GoodType good) const { return goods[good]; }
+    T& operator[](GoodType good) { return goods[good]; }
 };
 
 /// Combined array for goods and people with typed accessors
 template<typename T>
-struct GoodsAndPeopleArray : PeopleArray<T>
+struct GoodsAndPeopleArray : PeopleArray<T>, GoodsArray<T>
 {
     using PeopleArray<T>::operator[];
-    helpers::EnumArray<T, GoodType> goods = {};
-
-    const T& operator[](GoodType good) const { return goods[good]; }
-    T& operator[](GoodType good) { return goods[good]; }
+    using GoodsArray<T>::operator[];
 };
+
+/// Raw count of goods
+using GoodCounts = GoodsArray<unsigned>;
+/// Raw count of people
+using PeopleCounts = PeopleArray<unsigned>;
+/// Raw count of goods and people
+using GoodsAndPeopleCounts = GoodsAndPeopleArray<unsigned>;
