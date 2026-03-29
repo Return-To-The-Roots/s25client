@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,6 +9,7 @@
 #include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "helpers/IdRange.h"
 #include "lua/GameDataLoader.h"
@@ -78,7 +79,10 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
 
     if(!Load(map, world_.GetGGS().exploration))
         return false;
-    if(!PlaceHQs(world_.GetGGS().randomStartPosition))
+    std::vector<MapPoint> hqPositions = hqPositions_;
+    if(world_.GetGGS().randomStartPosition)
+        RANDOM_SHUFFLE2(hqPositions, 0);
+    if(!PlaceHQs())
         return false;
 
     world_.CreateTradeGraphs();
@@ -97,9 +101,9 @@ bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const
     return true;
 }
 
-bool MapLoader::PlaceHQs(bool randomStartPos)
+bool MapLoader::PlaceHQs()
 {
-    return PlaceHQs(world_, hqPositions_, randomStartPos);
+    return PlaceHQs(world_, hqPositions_);
 }
 
 void MapLoader::InitShadows(World& world)
@@ -393,14 +397,8 @@ void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
     }
 }
 
-bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, bool randomStartPos)
+bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions)
 {
-    // random locations? -> randomize them :)
-    if(randomStartPos)
-    {
-        RANDOM_SHUFFLE2(hqPositions, 0);
-    }
-
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         // Skip unused slots

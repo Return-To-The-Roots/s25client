@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -52,7 +52,7 @@ bool CreateEmptyWorld::operator()(GameWorld& world) const
             }
             curPt.y += playerDist.y;
         }
-        if(!MapLoader::PlaceHQs(world, hqPositions, false))
+        if(!MapLoader::PlaceHQs(world, hqPositions))
             return false; // LCOV_EXCL_LINE
     }
     world.InitAfterLoad();

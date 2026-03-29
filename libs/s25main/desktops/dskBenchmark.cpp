@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -220,7 +220,7 @@ void dskBenchmark::startTest(Benchmark test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world_, hqs, false);
+            MapLoader::PlaceHQs(game_->world_, hqs);
             break;
         }
         case Benchmark::FullGame:
@@ -230,7 +230,7 @@ void dskBenchmark::startTest(Benchmark test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world_, hqs, false);
+            MapLoader::PlaceHQs(game_->world_, hqs);
             for(unsigned i = 0; i < hqs.size(); i++)
             {
                 std::vector<MapPoint> pts = game_->world_.GetPointsInRadius(hqs[i], 15);

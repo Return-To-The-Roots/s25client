@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -47,7 +47,7 @@ public:
     bool Load(const boost::filesystem::path& mapFilePath);
     bool LoadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath);
     /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
-    bool PlaceHQs(bool randomStartPos);
+    bool PlaceHQs();
 
     /// Return the position of the players HQ (only valid after successful load)
     MapPoint GetHQPos(unsigned player) const { return hqPositions_[player]; }
@@ -56,5 +56,5 @@ public:
     static void SetMapExplored(World& world);
     static bool InitSeasAndHarbors(World& world,
                                    const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
-    static bool PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, bool randomStartPos);
+    static bool PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions);
 };
