@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -73,9 +73,9 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
 
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
-        Inventory inv;
-        inv.Add(goodsToCollect[0], amountsToAdd[playerIdx]);
-        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])->AddGoods(inv, true);
+        GoodCounts inv;
+        inv[goodsToCollect[0]] = amountsToAdd[playerIdx];
+        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])->AddToInventory(inv, true);
     }
     world.GetEvMgr().ExecuteNextGF();
     econHandler.UpdateAmounts();
@@ -112,9 +112,9 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     const auto& goodsToCollect = world.getEconHandler()->GetGoodTypesToCollect();
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
-        Inventory inv;
-        inv.Add(goodsToCollect[0], rttr::test::randomValue(1u, 50u));
-        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])->AddGoods(inv, true);
+        GoodCounts inv;
+        inv[goodsToCollect[0]] = rttr::test::randomValue(1u, 50u);
+        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])->AddToInventory(inv, true);
     }
     world.GetEvMgr().ExecuteNextGF();
     world.getEconHandler()->UpdateAmounts();

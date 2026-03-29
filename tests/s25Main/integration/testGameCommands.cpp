@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -434,12 +434,12 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_TEST_REQUIRE(wh);
     BOOST_TEST_REQUIRE(wh->GetInventory().people[Job::General] == 0u); //-V522
-    Inventory goods;
-    goods.Add(Job::PrivateFirstClass, 1);
-    goods.Add(Job::Sergeant, 1);
-    goods.Add(Job::Officer, 1);
-    goods.Add(Job::General, 2);
-    wh->AddGoods(goods, true);
+    PeopleCounts soldiers;
+    soldiers[Job::PrivateFirstClass] = 1;
+    soldiers[Job::Sergeant] = 1;
+    soldiers[Job::Officer] = 1;
+    soldiers[Job::General] = 2;
+    wh->AddToInventory(soldiers, true);
     // Don't keep any reserve
     for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
         this->ChangeReserve(hqPos, i, 0);
@@ -893,12 +893,12 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     GamePlayer& player = world.GetPlayer(curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_TEST_REQUIRE(wh);
-    Inventory goods;
+    PeopleCounts soldiers;
 
     // Add enough soldiers per rank
     for(auto i : SOLDIER_JOBS)
-        goods.Add(i, 50);
-    wh->AddGoods(goods, true); //-V522
+        soldiers[i] = 50;
+    wh->AddToInventory(soldiers, true); //-V522
 
     // Use more
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)

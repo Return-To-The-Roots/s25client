@@ -95,14 +95,14 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
 
     AttackFixtureBase()
     {
-        Inventory goods;
-        goods.Add(Job::General, 3);
+        PeopleCounts soldiers;
+        soldiers[Job::General] = 3;
         for(unsigned i = 0; i < T_numPlayers; i++)
         {
             curPlayer = i;
             hqPos[i] = world.GetPlayer(i).GetHQPos();
             MakeVisible(hqPos[i]);
-            world.template GetSpecObj<nobBaseWarehouse>(hqPos[i])->AddGoods(goods, true);
+            world.template GetSpecObj<nobBaseWarehouse>(hqPos[i])->AddToInventory(soldiers, true);
             this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
         }
         curPlayer = 0;
@@ -111,9 +111,9 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
 
     void FinishRecruiting(nobBaseWarehouse& hq)
     {
-        Inventory goods;
-        goods.Add(Job::Helper, 100);
-        hq.AddGoods(goods, true);
+        PeopleCounts helpers;
+        helpers[Job::Helper] = 100;
+        hq.AddToInventory(helpers, true);
         RTTR_EXEC_TILL(600, hq.GetNumVisualWares(GoodType::Sword) == 0u);
     }
 

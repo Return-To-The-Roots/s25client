@@ -467,9 +467,9 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     // Make sure that the other harbor is far away
     BOOST_TEST_REQUIRE(world.CalcHarborDistance(HarborId(2), targetHbId) > 600u);
     // Add some scouts
-    Inventory newScouts;
+    PeopleCounts newScouts;
     newScouts[Job::Scout] = 20;
-    harbor.AddGoods(newScouts, true);
+    harbor.AddToInventory(newScouts, true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     for(const auto i : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
         world.GetNodeWriteable(world.GetHarborPoint(i)).fow[curPlayer].visibility = Visibility::Visible;
@@ -503,10 +503,10 @@ public:
         auto* harbor = static_cast<nobHarborBuilding*>(
           BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_TEST_REQUIRE(harbor);
-        Inventory inv;
-        inv.Add(GoodType::Wood, 10);
-        inv.Add(Job::Woodcutter, 10);
-        harbor->AddGoods(inv, true);
+        GoodsAndPeopleCounts goods;
+        goods[GoodType::Wood] = 10;
+        goods[Job::Woodcutter] = 10;
+        harbor->AddToInventory(goods, true);
         return *harbor;
     }
 
@@ -738,11 +738,11 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     const noShip& ship = ensureNonNull(player.GetShipByID(0));
     nobHarborBuilding& homeHarbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint homeHbPos = homeHarbor.GetPos();
-    Inventory expWares;
-    expWares.Add(Job::Builder);
-    expWares.Add(GoodType::Boards, 20);
-    expWares.Add(GoodType::Stones, 20);
-    homeHarbor.AddGoods(expWares, true);
+    GoodsAndPeopleCounts expWares;
+    expWares[Job::Builder] = 1;
+    expWares[GoodType::Boards] = 20;
+    expWares[GoodType::Stones] = 20;
+    homeHarbor.AddToInventory(expWares, true);
 
     /* A ship might get stuck when targeting a harbor (2) SE of the current harbor (1): Issue #1784
        Harbors are at NE coast of island, (1) directly at sea, (2) one node inland:

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -18,15 +18,15 @@ struct ArmoredSoldierFixture : public WorldWithGCExecution3P
         {
             auto* curWh = world.GetSpecObj<nobBaseWarehouse>(world.GetPlayer(i).GetHQPos());
             BOOST_TEST_REQUIRE(curWh);
-            Inventory newGoods;
+            PeopleCounts soldiers;
             for(auto soldier : SOLDIER_JOBS)
             {
-                newGoods.armoredSoldiers[jobEnumToAmoredSoldierEnum(soldier)] = 2u;
-                newGoods.people[soldier] = 3u;
+                soldiers[jobEnumToAmoredSoldierEnum(soldier)] = 2u;
+                soldiers[soldier] = 3u;
                 curWh->SetRealReserve(getSoldierRank(soldier), 0);
                 curWh->SetReserveVisual(getSoldierRank(soldier), 0);
             }
-            curWh->AddGoods(newGoods, true);
+            curWh->AddToInventory(soldiers, true);
         }
     }
 };

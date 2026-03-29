@@ -84,8 +84,8 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     testNumGoodsHQ();
 
     // Add nothing -> nothing changed
-    Inventory newGoods;
-    hq.AddGoods(newGoods, true);
+    GoodsAndPeopleCounts newGoods;
+    hq.AddToInventory(newGoods, true);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
@@ -95,17 +95,17 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
         // Boat carrier gets divided upfront
         if(i == Job::BoatCarrier)
             continue;
-        newGoods.Add(i, rttr::enum_cast(i) + 1);
+        newGoods[i] = rttr::enum_cast(i) + 1;
         numPeople[i] += rttr::enum_cast(i) + 1;
     }
     for(const auto i : helpers::enumRange<ArmoredSoldier>())
     {
-        newGoods.Add(i, rttr::enum_cast(i) + 1);
+        newGoods[i] = rttr::enum_cast(i) + 1;
         numArmoredSoldiers[i] += rttr::enum_cast(i) + 1;
     }
     numPeoplePlayer = numPeople;
     numArmoredSoldiersPlayer = numArmoredSoldiers;
-    hq.AddGoods(newGoods, true);
+    hq.AddToInventory(newGoods, true);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
@@ -115,39 +115,39 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     for(const auto i : helpers::enumRange<ArmoredSoldier>())
         numArmoredSoldiers[i] += newGoods[i];
 
-    hq.AddGoods(newGoods, false);
+    hq.AddToInventory(newGoods, false);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
     // Add wares
-    newGoods.clear();
+    newGoods = {};
     for(const auto i : helpers::enumRange<GoodType>())
     {
         // Only roman shields get added
         if(ConvertShields(i) == GoodType::ShieldRomans && i != GoodType::ShieldRomans)
             continue;
-        newGoods.Add(i, rttr::enum_cast(i) + 2);
+        newGoods[i] = rttr::enum_cast(i) + 2;
         numGoods[i] += rttr::enum_cast(i) + 2;
     }
     numGoodsPlayer = numGoods;
-    hq.AddGoods(newGoods, true);
+    hq.AddToInventory(newGoods, true);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
     // Add only to hq but not to player
     for(const auto i : helpers::enumRange<GoodType>())
         numGoods[i] += newGoods[i];
-    hq.AddGoods(newGoods, false);
+    hq.AddToInventory(newGoods, false);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
 #if RTTR_ENABLE_ASSERTS
-    newGoods.clear();
-    newGoods.Add(Job::BoatCarrier);
-    RTTR_REQUIRE_ASSERT(hq.AddGoods(newGoods, false));
-    newGoods.clear();
-    newGoods.Add(GoodType::ShieldAfricans);
-    RTTR_REQUIRE_ASSERT(hq.AddGoods(newGoods, false));
+    PeopleCounts invPeople;
+    invPeople[Job::BoatCarrier] = 1;
+    RTTR_REQUIRE_ASSERT(hq.AddToInventory(invPeople, false));
+    GoodCounts invGoods;
+    invGoods[GoodType::ShieldAfricans] = 1;
+    RTTR_REQUIRE_ASSERT(hq.AddToInventory(invGoods, false));
 #endif
 }
 
@@ -221,20 +221,20 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     milSettings[0] = 0; // No recruitment
     this->ChangeMilitary(milSettings);
 
-    Inventory inv;
+    GoodsAndPeopleCounts inv;
     for(const auto job : helpers::enumRange<Job>())
     {
         if(job == Job::BoatCarrier)
             continue;
-        inv.Add(job);
+        inv[job] = 1;
     }
     for(const auto good : helpers::enumRange<GoodType>())
     {
         if(ConvertShields(good) != good)
             continue;
-        inv.Add(good);
+        inv[good] = 1;
     }
-    wh1->AddGoods(inv, true);
+    wh1->AddToInventory(inv, true);
 
     for(const auto job : helpers::enumRange<Job>())
     {

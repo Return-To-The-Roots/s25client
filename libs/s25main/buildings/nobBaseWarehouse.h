@@ -122,8 +122,6 @@ protected:
     /// Versucht Rekrutierungsevent abzumeldne, falls die Bedingungen nicht mehr erfüllt sind (z.B. wenn Ware
     /// rausgetragen wurde o.ä.)
     void TryStopRecruiting();
-    /// Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
-    void AddToInventory();
     /// Recruts a worker of the given job if possible
     bool TryRecruitJob(Job job);
 
@@ -146,10 +144,12 @@ public:
 
     const Inventory& GetInventory() const;
 
-    /// Adds specified goods. If addToPlayer is true,
+    /// Adds specified goods and people. If addToPlayer is true,
     /// then they are also added to the owners inventory (for newly created/arrived goods)
     /// Use false for goods, that are only moved between players units
-    void AddGoods(const Inventory& goods, bool addToPlayer);
+    void AddToInventory(const GoodsAndPeopleCounts& what, bool addToPlayer);
+    void AddToInventory(const PeopleCounts& people, bool addToPlayer);
+    void AddToInventory(const GoodCounts& goods, bool addToPlayer);
 
     /// Gibt Anzahl der Waren bzw. Figuren zurück
     unsigned GetNumRealWares(GoodType type) const { return inventory.real[type]; }

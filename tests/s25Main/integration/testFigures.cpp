@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -27,9 +27,9 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     MapPoint whPos(flagPos.x + 5, flagPos.y);
     auto* wh = static_cast<nobBaseWarehouse*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Romans));
-    Inventory inv;
-    inv.Add(Job::Helper, 1);
-    wh->AddGoods(inv, true);
+    PeopleCounts inv;
+    inv[Job::Helper] = 1;
+    wh->AddToInventory(inv, true);
     const unsigned numHelpers = world.GetPlayer(curPlayer).GetInventory().people[Job::Helper]; //-V807
     MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SouthEast);
     // Build a road -> Requests a worker

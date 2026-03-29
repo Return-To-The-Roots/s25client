@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -54,9 +54,9 @@ void nofTradeDonkey::GoalReached()
 
     if(gt)
     {
-        Inventory goods;
-        goods.goods[*gt] = 1;
-        wh->AddGoods(goods, true);
+        GoodCounts goods;
+        goods[*gt] = 1;
+        wh->AddToInventory(goods, true);
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
