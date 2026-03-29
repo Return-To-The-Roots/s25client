@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -141,7 +141,7 @@ bool CreateSeaWorld::operator()(GameWorld& world) const
 
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
 
-    if(!MapLoader::PlaceHQs(world, hqPositions, false))
+    if(!MapLoader::PlaceHQs(world, hqPositions))
         return false; // LCOV_EXCL_LINE
     world.InitAfterLoad();
 
@@ -194,7 +194,7 @@ bool CreateWaterWorld::operator()(GameWorld& world) const
             node.t1 = node.t2 = t;
         }
     }
-    BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
+    BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions));
 
     std::vector<MapPoint> harbors;
     for(MapPoint hqPos : hqPositions)
