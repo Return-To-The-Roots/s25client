@@ -12,6 +12,7 @@
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
 #include <utility>
+#include <bitset>
 
 namespace {
 enum
@@ -148,7 +149,7 @@ void iwAddons::UpdateView(const AddonGroup selection)
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
         const Addon* addon = ggs.getAddon(i);
-        const bool isVisible = (addon->getGroups() & selection) != AddonGroup(0);
+        const bool isVisible = bitset::any(addon->getGroups(), selection);
         auto* group = GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
 
         // Don't show addon's gui if addon is beyond selected group or is beyond current page scope
