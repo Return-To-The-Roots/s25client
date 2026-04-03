@@ -74,6 +74,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
 
 BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
 {
+    addStartResources();
     initGameRNG();
 
     const GamePlayer& player = world.GetPlayer(curPlayer);
@@ -190,6 +191,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
 BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
 {
     curPlayer = 0;
+    addStartResources();
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip& ship = ensureNonNull(player.GetShipByID(0));
     const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
@@ -286,6 +288,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
 
 BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
 {
+    addStartResources();
     curPlayer = 0;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip& ship = ensureNonNull(player.GetShipByID(0));
@@ -341,6 +344,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
 
 BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
 {
+    addStartResources();
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip& ship = ensureNonNull(player.GetShipByID(0));
     const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();

@@ -507,7 +507,7 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
     { // Schiffen Bescheid sagen
         for(noShip* ship : ships)
             ship->HarborDestroyed(static_cast<nobHarborBuilding*>(bld));
-    } else if(bldType == BuildingType::Headquarters)
+    } else if(bldType == BuildingType::Headquarters && bld->GetPos() == hqPos)
     {
         hqPos = MapPoint::Invalid();
         for(const noBaseBuilding* bld : buildings.GetStorehouses())
@@ -1497,10 +1497,14 @@ void GamePlayer::TestDefeat()
         Surrender();
 }
 
-nobHQ* GamePlayer::GetHQ() const
+const nobHQ* GamePlayer::GetHQ() const
 {
-    const MapPoint& hqPos = GetHQPos();
-    return const_cast<nobHQ*>(hqPos.isValid() ? GetGameWorld().GetSpecObj<nobHQ>(hqPos) : nullptr);
+    return hqPos.isValid() ? GetGameWorld().GetSpecObj<nobHQ>(hqPos) : nullptr;
+}
+
+nobHQ* GamePlayer::GetHQ()
+{
+    return const_cast<nobHQ*>(std::as_const(*this).GetHQ());
 }
 
 void GamePlayer::Surrender()

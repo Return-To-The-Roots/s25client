@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,6 +10,7 @@
 #include "buildings/nobHQ.h"
 #include "enum_cast.hpp"
 #include "helpers/EnumRange.h"
+#include "helpers/Range.h"
 #include "lua/LuaTraits.h" // IWYU pragma: keep
 #include "notifications/BuildingNote.h"
 #include "postSystem/DiplomacyPostQuestion.h"
@@ -20,6 +21,8 @@
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/Resource.h"
+#include "gameData/ShieldConsts.h"
+#include "rttr/test/random.hpp"
 #include "s25util/Serializer.h"
 #include "s25util/StringConversion.h"
 #include "s25util/tmpFile.h"
@@ -166,7 +169,18 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     hqs[0] = world.GetSpecObj<nobHQ>(world.GetPlayer(0).GetHQPos());
     hqs[1] = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
 
-    BOOST_TEST_REQUIRE(hqs[0]->GetNumRealWares(GoodType::Boards) > 0u);
+    // Add some random resources to HQs
+    for(auto* hq : hqs)
+    {
+        GoodsAndPeopleCounts inv;
+        for([[maybe_unused]] const auto i : helpers::range(5))
+        {
+            inv[rttr::test::randomEnum<Job>()] = rttr::test::randomValue(1u, 10u);
+            inv[ConvertShields(rttr::test::randomEnum<GoodType>())] = rttr::test::randomValue(1u, 10u);
+        }
+        inv[Job::BoatCarrier] = 0;
+        hq->AddToInventory(inv, true);
+    }
 
     executeLua("rttr:ClearResources()");
     for(auto& hq : hqs)
@@ -183,7 +197,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
         }
     }
 
-    for(unsigned i = 0; i < 2; i++)
+    for([[maybe_unused]] const auto i : helpers::range(2))
     {
         BOOST_TEST(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.GetEvMgr().GetCurrentGF())));
         world.GetEvMgr().ExecuteNextGF();

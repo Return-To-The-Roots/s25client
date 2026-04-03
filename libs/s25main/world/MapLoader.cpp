@@ -101,9 +101,9 @@ bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const
     return true;
 }
 
-bool MapLoader::PlaceHQs()
+bool MapLoader::PlaceHQs(bool addStartWares)
 {
-    return PlaceHQs(world_, hqPositions_);
+    return PlaceHQs(world_, hqPositions_, addStartWares);
 }
 
 void MapLoader::InitShadows(World& world)
@@ -397,7 +397,7 @@ void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
     }
 }
 
-bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions)
+bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, const bool addStartWares)
 {
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
@@ -412,8 +412,10 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPo
             return false;
         }
 
-        BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, hqPositions[i], i,
-                                        world.GetPlayer(i).nation);
+        auto* hq = checkedCast<nobHQ*>(BuildingFactory::CreateBuilding(world, BuildingType::Headquarters,
+                                                                       hqPositions[i], i, world.GetPlayer(i).nation));
+        if(addStartWares)
+            hq->addStartWares();
     }
     return true;
 }

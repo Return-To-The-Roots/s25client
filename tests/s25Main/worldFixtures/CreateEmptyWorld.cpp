@@ -3,14 +3,29 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "worldFixtures/CreateEmptyWorld.h"
+#include "GamePlayer.h"
 #include "RttrForeachPt.h"
+#include "buildings/nobHQ.h"
 #include "initGameRNG.hpp"
 #include "lua/GameDataLoader.h"
+#include "worldFixtures/WorldFixture.h"
 #include "worldFixtures/terrainHelpers.h"
 #include "world/GameWorld.h"
 #include "world/MapLoader.h"
+#include <boost/test/unit_test.hpp>
 #include <cmath>
 #include <stdexcept>
+
+void WorldFixtureBase::addStartResources()
+{
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+        addStartResources(i);
+}
+
+void WorldFixtureBase::addStartResources(unsigned playerIdx)
+{
+    world.GetPlayer(playerIdx).GetHQ()->addStartWares();
+}
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}
 
@@ -52,8 +67,7 @@ bool CreateEmptyWorld::operator()(GameWorld& world) const
             }
             curPt.y += playerDist.y;
         }
-        if(!MapLoader::PlaceHQs(world, hqPositions))
-            return false; // LCOV_EXCL_LINE
+        BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
     }
     world.InitAfterLoad();
     return true;

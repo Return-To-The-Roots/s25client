@@ -25,6 +25,7 @@ BOOST_AUTO_TEST_SUITE(Production)
 
 BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
 {
+    addStartResources();
     rttr::test::LogAccessor logAcc;
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
@@ -72,10 +73,11 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
 
 BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
 {
-    GoodCounts goods;
-    goods[GoodType::Boards] = 10;
-    goods[GoodType::Iron] = 10;
-    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(goods, true);
+    GoodsAndPeopleCounts inv;
+    inv[GoodType::Boards] = 10;
+    inv[GoodType::Iron] = 10;
+    inv[Job::Metalworker] = 1;
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ToolSettings settings;

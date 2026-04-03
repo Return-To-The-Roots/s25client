@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -111,6 +111,7 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
 
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {
+    addStartResources();
     // Place some trees to reduce BQ at some points
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -86,33 +86,44 @@ struct WorldDefault<2>
     static constexpr unsigned height = 20;
 };
 
-template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault<T_numPlayers>::width,
-         unsigned T_height = WorldDefault<T_numPlayers>::height>
-struct WorldFixture
+struct WorldFixtureBase
 {
     std::shared_ptr<Game> game;
     TestEventManager& em;
     GlobalGameSettings& ggs;
     GameWorld& world;
-    T_WorldCreator worldCreator;
-    WorldFixture()
+    WorldFixtureBase(unsigned numPlayers)
         : game(std::make_shared<Game>(GlobalGameSettings(), std::make_unique<TestEventManager>(),
-                                      std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
+                                      std::vector<PlayerInfo>(numPlayers, GetPlayer()))),
           em(static_cast<TestEventManager&>(*game->em_)), ggs(const_cast<GlobalGameSettings&>(game->ggs_)),
-          world(game->world_), worldCreator(MapExtent(T_width, T_height))
-    {
-        // Fast moving ships
+          world(game->world_)
+    { // Fast moving ships
         ggs.setSelection(AddonId::SHIP_SPEED, 4);
         // Explored area stays explored. Avoids fow creation
         ggs.exploration = Exploration::Classic;
-        BOOST_TEST_REQUIRE(worldCreator(world));
-        BOOST_TEST_REQUIRE(world.GetNumPlayers() == T_numPlayers);
     }
+    /// Add start resources to HQs of all players
+    void addStartResources();
+    /// Add start resources to HQ of the given player
+    void addStartResources(unsigned playerIdx);
+
     static PlayerInfo GetPlayer()
     {
         PlayerInfo result;
         result.ps = PlayerState::Occupied;
         return result;
+    }
+};
+
+template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault<T_numPlayers>::width,
+         unsigned T_height = WorldDefault<T_numPlayers>::height>
+struct WorldFixture : WorldFixtureBase
+{
+    T_WorldCreator worldCreator;
+    WorldFixture() : WorldFixtureBase(T_numPlayers), worldCreator(MapExtent(T_width, T_height))
+    {
+        BOOST_TEST_REQUIRE(worldCreator(world));
+        BOOST_TEST_REQUIRE(world.GetNumPlayers() == T_numPlayers);
     }
 };
 

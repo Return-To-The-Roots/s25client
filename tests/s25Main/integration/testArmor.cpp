@@ -42,6 +42,8 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
     ArmorTradeFixture()
     {
         curPlayer = 1;
+        addStartResources();
+
         world.GetPlayer(0).team = Team::Team1; //-V525
         world.GetPlayer(1).team = Team::Team1;
         world.GetPlayer(2).team = Team::Team2;
@@ -200,8 +202,7 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFail)
     RTTR_SKIP_GFS(40);
 
     // Add a ring of enemy owned land so they cannot pass
-    std::vector<MapPoint> pts = world.GetPointsInRadius(curWh->GetPos(), 10);
-    for(const MapPoint& pt : pts)
+    for(const MapPoint& pt : world.GetPointsInRadius(curWh->GetPos(), 10))
     {
         if(world.CalcDistance(pt, curWh->GetPos()) >= 8)
             world.SetOwner(pt, 2 + 1); // playerID = 2 -> Owner = +1

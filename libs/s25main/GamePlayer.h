@@ -93,6 +93,8 @@ public:
     const GameWorld& GetGameWorld() const { return world; }
 
     const MapPoint& GetHQPos() const { return hqPos; }
+    const nobHQ* GetHQ() const;
+    nobHQ* GetHQ();
     bool IsHQTent() const;
     void SetHQIsTent(bool isTent);
 
@@ -444,7 +446,6 @@ private:
 
     /// Prüft, ob der Spieler besiegt wurde
     void TestDefeat();
-    nobHQ* GetHQ() const;
 
     //////////////////////////////////////////////////////////////////////////
     /// Unsynchronized state (e.g. lua, gui...)
