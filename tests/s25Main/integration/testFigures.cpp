@@ -23,6 +23,7 @@ BOOST_AUTO_TEST_SUITE(FigureTests)
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 {
+    world.GetPlayer(curPlayer).GetFirstWH()->AddToInventory(PeopleCounts::make(Job::Helper, 10), true);
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
     MapPoint whPos(flagPos.x + 5, flagPos.y);
     auto* wh = static_cast<nobBaseWarehouse*>(
@@ -62,6 +63,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
 {
+    addStartResources();
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
     MapPoint whFlagPos(flagPos.x + 5, flagPos.y);
     MapPoint whPos = world.GetNeighbour(whFlagPos, Direction::NorthWest);

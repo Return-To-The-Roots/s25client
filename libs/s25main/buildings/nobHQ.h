@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "nobBaseWarehouse.h"
+#include "gameTypes/GameSettingTypes.h"
 #include "gameData/MilitaryConsts.h"
 class SerializedGameData;
 
@@ -17,10 +18,9 @@ public:
     nobHQ(MapPoint pos, unsigned char player, Nation nation, bool isTent = false);
     nobHQ(SerializedGameData& sgd, unsigned obj_id);
 
-protected:
-    void DestroyBuilding() override;
+    static GoodsAndPeopleCounts getStartInventory(StartWares setting);
+    void addStartWares();
 
-public:
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const final { return GO_Type::NobHq; }
@@ -32,4 +32,7 @@ public:
     void HandleEvent(unsigned id) override;
     bool IsTent() const { return isTent_; }
     void SetIsTent(const bool isTent) { isTent_ = isTent; }
+
+protected:
+    void DestroyBuilding() override;
 };

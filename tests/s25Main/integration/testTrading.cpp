@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -24,6 +24,7 @@ struct TradeFixture : public WorldWithGCExecution3P
     TradeFixture()
     {
         curPlayer = 1;
+        addStartResources();
         world.GetPlayer(0).team = Team::Team1; //-V525
         world.GetPlayer(1).team = Team::Team1;
         world.GetPlayer(2).team = Team::Team2;

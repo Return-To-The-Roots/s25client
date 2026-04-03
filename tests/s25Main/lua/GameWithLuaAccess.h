@@ -96,7 +96,7 @@ public:
         std::vector<Nation> playerNations;
         playerNations.push_back(world.GetPlayer(0).nation);
         playerNations.push_back(world.GetPlayer(1).nation);
-        BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions));
+        BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
 
         for(unsigned id = 0; id < world.GetNumPlayers(); id++)
         {

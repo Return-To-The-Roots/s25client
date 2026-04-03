@@ -15,6 +15,7 @@
 #include "gameTypes/JobTypes.h"
 #include "gameData/ShieldConsts.h"
 #include <rttr/test/LogAccessor.hpp>
+#include <rttr/test/random.hpp>
 #include <boost/test/unit_test.hpp>
 #include <array>
 #include <gameData/SettingTypeConv.h>
@@ -154,6 +155,15 @@ BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
     auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
       world, BuildingType::Storehouse, player.GetHQPos() + MapPoint(4, 0), 0, Nation::Romans));
     world.BuildRoad(0, false, hq->GetFlagPos(), {4, Direction::East});
+
+    // Need some builders, hammers and helpers
+    {
+        GoodsAndPeopleCounts inv;
+        inv[Job::Builder] = rttr::test::randomValue(3, 7);
+        inv[GoodType::Hammer] = rttr::test::randomValue(3, 7);
+        inv[Job::Helper] = rttr::test::randomValue(7, 23); // At least one per hammer
+        hq->AddToInventory(inv, true);
+    }
 
     // Order all existing builders
     while(hq->GetNumRealFigures(Job::Builder) > 0u)

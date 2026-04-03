@@ -141,8 +141,7 @@ bool CreateSeaWorld::operator()(GameWorld& world) const
 
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
 
-    if(!MapLoader::PlaceHQs(world, hqPositions))
-        return false; // LCOV_EXCL_LINE
+    BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
     world.InitAfterLoad();
 
     /* The HQs and harbor(ids) are here: (H=HQ, 1-8=harbor)
@@ -194,7 +193,7 @@ bool CreateWaterWorld::operator()(GameWorld& world) const
             node.t1 = node.t2 = t;
         }
     }
-    BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions));
+    BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
 
     std::vector<MapPoint> harbors;
     for(MapPoint hqPos : hqPositions)

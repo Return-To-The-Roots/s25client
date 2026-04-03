@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -28,6 +28,7 @@ struct HarborFixture : WorldFixture<CreateEmptyWorld, 1>
 
 BOOST_FIXTURE_TEST_CASE(StartExpeditionThenCancel, HarborFixture)
 {
+    addStartResources();
     BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) >= 1u); // Must have a builder
     const auto numLeavingFigs = hq->GetLeavingFigures().size();
     hb->StartExpedition();
@@ -40,6 +41,7 @@ BOOST_FIXTURE_TEST_CASE(StartExpeditionThenCancel, HarborFixture)
 
 BOOST_FIXTURE_TEST_CASE(StartExpeditionThenDestroy, HarborFixture)
 {
+    addStartResources();
     BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) >= 1u); // Must have a builder
     const auto numLeavingFigs = hq->GetLeavingFigures().size();
     hb->StartExpedition();

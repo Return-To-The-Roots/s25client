@@ -364,6 +364,7 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
 {
+    addStartResources();
     initGameRNG();
 
     const MapPoint closePt = hqPos + MapPoint(2, 0);
@@ -435,6 +436,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(wh);
     BOOST_TEST_REQUIRE(wh->GetInventory().people[Job::General] == 0u); //-V522
     PeopleCounts soldiers;
+    soldiers[Job::Private] = 10;
     soldiers[Job::PrivateFirstClass] = 1;
     soldiers[Job::Sergeant] = 1;
     soldiers[Job::Officer] = 1;
@@ -526,6 +528,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 namespace {
 void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType)
 {
+    worldFixture.addStartResources();
     const MapPoint flagPt = worldFixture.world.GetNeighbour(worldFixture.hqPos, Direction::SouthEast) + MapPoint(3, 0);
     GamePlayer& player = worldFixture.world.GetPlayer(worldFixture.curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
@@ -814,6 +817,7 @@ auto makeVector(const helpers::EnumArray<U, T>& srcArray)
 
 BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 {
+    addStartResources();
     GamePlayer& player = world.GetPlayer(curPlayer);
     const nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_TEST_REQUIRE(wh);

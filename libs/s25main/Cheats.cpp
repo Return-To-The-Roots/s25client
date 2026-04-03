@@ -1,4 +1,4 @@
-// Copyright (C) 2024-2026 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2024 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -77,12 +77,10 @@ void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
     if(!canPlaceCheatBuilding(mp))
         return;
 
-    // The new HQ will have default resources.
-    // In the original game, new HQs created in the Roman campaign had no resources.
     world_.DestroyNO(mp, false); // if CanPlaceCheatBuilding is true then this must be safe to destroy
     auto* hq =
       BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation);
-    static_cast<nobHQ*>(hq)->SetIsTent(player.IsHQTent());
+    checkedCast<nobHQ*>(hq)->SetIsTent(player.IsHQTent());
 }
 
 void Cheats::toggleHumanAIPlayer()
