@@ -467,9 +467,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     // Make sure that the other harbor is far away
     BOOST_TEST_REQUIRE(world.CalcHarborDistance(HarborId(2), targetHbId) > 600u);
     // Add some scouts
-    PeopleCounts newScouts;
-    newScouts[Job::Scout] = 20;
-    harbor.AddToInventory(newScouts, true);
+    harbor.AddToInventory(PeopleCounts::make(Job::Scout, 20), true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     for(const auto i : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
         world.GetNodeWriteable(world.GetHarborPoint(i)).fow[curPlayer].visibility = Visibility::Visible;

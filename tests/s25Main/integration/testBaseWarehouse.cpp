@@ -142,12 +142,8 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     testNumGoodsPlayer();
 
 #if RTTR_ENABLE_ASSERTS
-    PeopleCounts invPeople;
-    invPeople[Job::BoatCarrier] = 1;
-    RTTR_REQUIRE_ASSERT(hq.AddToInventory(invPeople, false));
-    GoodCounts invGoods;
-    invGoods[GoodType::ShieldAfricans] = 1;
-    RTTR_REQUIRE_ASSERT(hq.AddToInventory(invGoods, false));
+    RTTR_REQUIRE_ASSERT(hq.AddToInventory(PeopleCounts::make(Job::BoatCarrier, 1), false));
+    RTTR_REQUIRE_ASSERT(hq.AddToInventory(GoodCounts::make(GoodType::ShieldAfricans, 1), false));
 #endif
 }
 

@@ -28,9 +28,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     rttr::test::LogAccessor logAcc;
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
-    GoodCounts goods;
-    goods[GoodType::Iron] = 10;
-    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(goods, true);
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(GoodCounts::make(GoodType::Iron, 10), true);
     MapPoint bldPos = hqPos + MapPoint(2, 0);
     BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, bldPos, curPlayer, Nation::Africans);
     this->BuildRoad(world.GetNeighbour(bldPos, Direction::SouthEast), false,

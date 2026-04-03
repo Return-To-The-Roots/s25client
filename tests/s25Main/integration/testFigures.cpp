@@ -27,9 +27,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     MapPoint whPos(flagPos.x + 5, flagPos.y);
     auto* wh = static_cast<nobBaseWarehouse*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Romans));
-    PeopleCounts inv;
-    inv[Job::Helper] = 1;
-    wh->AddToInventory(inv, true);
+    wh->AddToInventory(PeopleCounts::make(Job::Helper, 1), true);
     const unsigned numHelpers = world.GetPlayer(curPlayer).GetInventory().people[Job::Helper]; //-V807
     MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SouthEast);
     // Build a road -> Requests a worker

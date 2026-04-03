@@ -73,9 +73,8 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
 
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
-        GoodCounts inv;
-        inv[goodsToCollect[0]] = amountsToAdd[playerIdx];
-        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])->AddToInventory(inv, true);
+        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])
+          ->AddToInventory(GoodCounts::make(goodsToCollect[0], amountsToAdd[playerIdx]), true);
     }
     world.GetEvMgr().ExecuteNextGF();
     econHandler.UpdateAmounts();
@@ -112,9 +111,8 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     const auto& goodsToCollect = world.getEconHandler()->GetGoodTypesToCollect();
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
-        GoodCounts inv;
-        inv[goodsToCollect[0]] = rttr::test::randomValue(1u, 50u);
-        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])->AddToInventory(inv, true);
+        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])
+          ->AddToInventory(GoodCounts::make(goodsToCollect[0], rttr::test::randomValue(1u, 50u)), true);
     }
     world.GetEvMgr().ExecuteNextGF();
     world.getEconHandler()->UpdateAmounts();
