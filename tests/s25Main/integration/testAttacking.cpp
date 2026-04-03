@@ -95,8 +95,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
 
     AttackFixtureBase()
     {
-        PeopleCounts soldiers;
-        soldiers[Job::General] = 3;
+        const auto soldiers = PeopleCounts::make(Job::General, 3);
         for(unsigned i = 0; i < T_numPlayers; i++)
         {
             curPlayer = i;
@@ -111,9 +110,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
 
     void FinishRecruiting(nobBaseWarehouse& hq)
     {
-        PeopleCounts helpers;
-        helpers[Job::Helper] = 100;
-        hq.AddToInventory(helpers, true);
+        hq.AddToInventory(PeopleCounts::make(Job::Helper, 100), true);
         RTTR_EXEC_TILL(600, hq.GetNumVisualWares(GoodType::Sword) == 0u);
     }
 

@@ -21,6 +21,14 @@ struct PeopleArray
     T& operator[](Job job) { return people[job]; }
     T& operator[](ArmoredSoldier soldier) { return armoredSoldiers[soldier]; }
     const T& operator[](ArmoredSoldier soldier) const { return armoredSoldiers[soldier]; }
+
+    static PeopleArray make(Job job, T value, ArmoredSoldier armoredType = ArmoredSoldier(0), T armoredValue = 0)
+    {
+        PeopleArray res;
+        res[job] = value;
+        res[armoredType] = armoredValue;
+        return res;
+    }
 };
 
 template<typename T>
@@ -29,6 +37,12 @@ struct GoodsArray
     helpers::EnumArray<T, GoodType> goods = {};
     const T& operator[](GoodType good) const { return goods[good]; }
     T& operator[](GoodType good) { return goods[good]; }
+    static GoodsArray make(GoodType good, T value)
+    {
+        GoodsArray res;
+        res[good] = value;
+        return res;
+    }
 };
 
 /// Combined array for goods and people with typed accessors

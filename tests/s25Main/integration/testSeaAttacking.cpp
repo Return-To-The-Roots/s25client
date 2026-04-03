@@ -78,9 +78,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             SetCurPlayer(i);
             hqPos[i] = world.GetPlayer(i).GetHQPos();
             auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos[i]);
-            PeopleCounts soldiers;
-            soldiers[Job::General] = 3;
-            hq->AddToInventory(soldiers, true);
+            hq->AddToInventory(PeopleCounts::make(Job::General, 3), true);
             this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
         }
         // Assert player positions: 0: Top, 1: Left, 2: Right
@@ -425,9 +423,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     BuildRoadForBlds(milBld2Pos, hqPos[2]);
     // Add 1 soldier to dest harbor so we have a defender
     nobHarborBuilding& hbDest = *world.GetSpecObj<nobHarborBuilding>(harborPos[1]);
-    PeopleCounts soldiers;
-    soldiers[Job::Sergeant] = 1;
-    hbDest.AddToInventory(soldiers, true);
+    hbDest.AddToInventory(PeopleCounts::make(Job::Sergeant, 1), true);
     // Don't keep him in reserve
     hbDest.SetRealReserve(getSoldierRank(Job::Sergeant), 0);
     BOOST_TEST_REQUIRE(hbDest.GetNumVisualFigures(Job::Sergeant) == 1u);

@@ -277,8 +277,7 @@ void noShip::HandleEvent(const unsigned id)
                 if(hb && hb->GetGOT() == GO_Type::NobHarborbuilding)
                 {
                     // Späher wieder entladen
-                    PeopleCounts people;
-                    people[Job::Scout] = world->GetGGS().GetNumScoutsExpedition();
+                    const auto people = PeopleCounts::make(Job::Scout, world->GetGGS().GetNumScoutsExpedition());
                     static_cast<nobBaseWarehouse*>(hb)->AddToInventory(people, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();
