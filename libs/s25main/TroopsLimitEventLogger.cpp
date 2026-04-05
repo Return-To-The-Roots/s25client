@@ -10,7 +10,8 @@
 
 namespace {
 
-EventLogBatchWriter gTroopsLimitLog("troops_limit_log.csv", "gameframe,playerId,newLimit,buildingType,buildingId");
+EventLogBatchWriter gTroopsLimitLog(EventLoggerType::TroopsLimit, "troops_limit_log.csv",
+                                    "gameframe,playerId,newLimit,buildingType,buildingId");
 
 } // namespace
 

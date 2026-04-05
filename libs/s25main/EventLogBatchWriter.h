@@ -14,15 +14,15 @@
 class EventLogBatchWriter
 {
 public:
-    explicit EventLogBatchWriter(std::string fileName, std::string header = {})
-        : fileName_(std::move(fileName)), header_(std::move(header))
+    explicit EventLogBatchWriter(EventLoggerType loggerType, std::string fileName, std::string header = {})
+        : loggerType_(loggerType), fileName_(std::move(fileName)), header_(std::move(header))
     {}
 
     ~EventLogBatchWriter() { Flush(); }
 
     void Append(unsigned gf, std::string line)
     {
-        if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
+        if(!STATS_CONFIG.IsEventLoggerEnabled(loggerType_))
             return;
 
         pendingLines_.push_back(std::move(line));
@@ -62,7 +62,7 @@ public:
 private:
     std::ofstream Open() const
     {
-        if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
+        if(!STATS_CONFIG.IsEventLoggerEnabled(loggerType_))
             return {};
 
         const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / fileName_;
@@ -71,6 +71,7 @@ private:
 
     static constexpr unsigned kFlushPeriodGF = 500;
 
+    EventLoggerType loggerType_;
     std::string fileName_;
     std::string header_;
     std::vector<std::string> pendingLines_;

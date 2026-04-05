@@ -18,7 +18,7 @@ const std::string kToolPriorityHeader = [] {
     return header.str();
 }();
 
-EventLogBatchWriter gToolPriorityLog("tool_priority.csv", kToolPriorityHeader);
+EventLogBatchWriter gToolPriorityLog(EventLoggerType::ToolPriority, "tool_priority.csv", kToolPriorityHeader);
 
 } // namespace
 

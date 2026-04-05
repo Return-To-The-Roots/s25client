@@ -9,7 +9,7 @@
 
 namespace {
 
-EventLogBatchWriter gCountryLog("country_log.csv", "gameframe,playerId,change");
+EventLogBatchWriter gCountryLog(EventLoggerType::Country, "country_log.csv", "gameframe,playerId,change");
 
 } // namespace
 

@@ -12,7 +12,8 @@
 namespace {
 
 std::unordered_set<const void*> gConstructedSites;
-EventLogBatchWriter gBuildingLog("building_log.csv", "gameframe,playerId,event,buildingType,buildingId,x,y");
+EventLogBatchWriter gBuildingLog(EventLoggerType::Building, "building_log.csv",
+                                 "gameframe,playerId,event,buildingType,buildingId,x,y");
 
 void LogEvent(unsigned gf, unsigned char playerId, const char* eventName, BuildingType buildingType, unsigned buildingId,
               unsigned x, unsigned y)

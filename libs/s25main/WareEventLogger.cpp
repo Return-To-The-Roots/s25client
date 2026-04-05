@@ -25,7 +25,7 @@ constexpr unsigned kFlushPeriodGF = 500;
 
 std::ofstream OpenWaresLog()
 {
-    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Ware))
         return {};
     const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "wares_log.pb";
     return std::ofstream(path.string(), std::ios::binary | std::ios::app);
@@ -83,6 +83,9 @@ namespace WareEventLogger {
 
 void LogInventoryChange(unsigned gf, unsigned char playerId, GoodType good, int count)
 {
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Ware))
+        return;
+
     pb::WaresLogRecord record;
     if(gHasLastLoggedGF && gf >= gLastLoggedGF)
         record.set_delta_gf(gf - gLastLoggedGF);

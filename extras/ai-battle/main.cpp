@@ -21,6 +21,7 @@
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 #include <filesystem>
+#include <set>
 #include <stdexcept>
 
 namespace bnw = boost::nowide;
@@ -43,7 +44,13 @@ int main(int argc, char** argv)
     boost::optional<unsigned int> debugStatsPeriod;
     boost::optional<unsigned int> minimapPeriod;
     bool disableEventLogging = false;
+    std::vector<std::string> enabledEventLoggerNames;
+    std::set<EventLoggerType> enabledEventLoggers;
     unsigned random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+    const std::string enabledEventLoggersHelp =
+      "Enable only the specified event loggers. Accepts a whitespace-separated or comma-separated list. "
+      "Supported names: "
+      + GetSupportedEventLoggerNames();
 
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -55,7 +62,10 @@ int main(int argc, char** argv)
         ("debug_stats_period", po::value(&debugStatsPeriod),"Debug stats period")
         ("minimap_period", po::value(&minimapPeriod),"Minimap save period")
         ("disable_event_logging", po::bool_switch(&disableEventLogging),
-         "Disable event logger output (combat/building/ware/tool-priority)")
+         "Disable all event logger output")
+        ("enabled_event_loggers",
+         po::value<std::vector<std::string>>(&enabledEventLoggerNames)->multitoken()->composing(),
+         enabledEventLoggersHelp.c_str())
         ("map,m", po::value<std::string>()->required(),"Map to load")
         ("ai", po::value<std::vector<std::string>>()->required(),"AI player(s) to add")
         ("objective", po::value<std::string>()->default_value("none"),"none(default)|domination|conquer")
@@ -94,6 +104,34 @@ int main(int argc, char** argv)
         }
 
         po::notify(options);
+        if(disableEventLogging && options.count("enabled_event_loggers"))
+        {
+            throw std::invalid_argument(
+              "disable_event_logging and enabled_event_loggers cannot be used together");
+        }
+        for(const std::string& rawEntry : enabledEventLoggerNames)
+        {
+            std::size_t entryStart = 0;
+            while(entryStart <= rawEntry.size())
+            {
+                const std::size_t separatorPos = rawEntry.find(',', entryStart);
+                const std::string loggerName = rawEntry.substr(entryStart, separatorPos - entryStart);
+                if(loggerName.empty())
+                    throw std::invalid_argument("Invalid enabled_event_loggers entry: " + rawEntry);
+
+                EventLoggerType loggerType;
+                if(!TryParseEventLoggerType(loggerName, loggerType))
+                {
+                    throw std::invalid_argument("Unknown event logger: " + loggerName
+                                                + ". Supported names: " + GetSupportedEventLoggerNames());
+                }
+                enabledEventLoggers.insert(loggerType);
+
+                if(separatorPos == std::string::npos)
+                    break;
+                entryStart = separatorPos + 1;
+            }
+        }
     } catch(const std::exception& e)
     {
         bnw::cerr << "Error: " << e.what() << std::endl;
@@ -190,6 +228,7 @@ int main(int argc, char** argv)
         STATS_CONFIG.debug_stats_period = debugStatsPeriod.get_value_or(0);
         STATS_CONFIG.minimap_period = minimapPeriod.get_value_or(0);
         STATS_CONFIG.disableEventLogging = disableEventLogging;
+        STATS_CONFIG.enabledEventLoggers = enabledEventLoggers;
 
         ggs.setSelection(AddonId::INEXHAUSTIBLE_MINES, 1);
         ggs.setSelection(AddonId::DEMOLITION_PROHIBITION, 2);

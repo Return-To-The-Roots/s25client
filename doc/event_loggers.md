@@ -7,8 +7,14 @@ This document summarizes the runtime event loggers currently available in `s25ma
 - `CombatEventLogger`
 - `CountryEventLogger`
 - `CountryPlotEventLogger`
+- `MilitaryEventLogger`
+- `TroopsLimitEventLogger`
+- `ToolPriorityEventLogger`
 
 All loggers are gated by `STATS_CONFIG.statsPath`. If it is empty, no log file is written.
+When running `extras/ai-battle`, `--disable_event_logging` disables all event loggers and
+`--enabled_event_loggers <names...>` restricts output to a subset. Supported CLI names are
+`building`, `combat`, `country`, `country-plot`, `military`, `tool-priority`, `troops-limit`, and `ware`.
 Text and protobuf event loggers buffer new records in memory and flush them when logging reaches the next
 500-gameframe boundary, with a final flush during shutdown.
 
@@ -22,13 +28,11 @@ Tracks inventory ware deltas per player.
 - `GamePlayer::DecreaseInventoryWare(...)`
 
 ### Output
-- File: `wares_log.csv`
-- Format: CSV
-- Header:
-  - `gameframe,playerId,goodtype,count`
+- File: `wares_log.pb`
+- Format: length-delimited protobuf stream of `WaresLogRecord`
 - Semantics:
-  - `count > 0`: ware added to inventory
-  - `count < 0`: ware removed from inventory
+  - `delta > 0`: ware added to inventory
+  - `delta < 0`: ware removed from inventory
 
 ### Notes
 - Ware type is normalized through `ConvertShields(...)` before logging.
@@ -89,10 +93,8 @@ Tracks combat-related AI and world events for debugging and analysis.
 - Building destruction attribution in `GameWorld`
 
 ### Output
-- File: `combat_log.txt`
-- Format: line-based text (not CSV)
-- Typical line shape:
-  - `#<gf> <EVENT_NAME> key=value ...`
+- File: `combat_log.pb`
+- Format: length-delimited protobuf stream of `CombatLogRecord`
 
 ### Notes
 - Capture logging includes a destroyed-building summary gathered before capture finalization.
@@ -141,3 +143,55 @@ Tracks exact territory plots acquired or lost by player.
 - Changed plots are grouped by `old_owner_id -> new_owner_id`.
 - Plot positions are stored as packed delta-encoded row-major indices within a local bounding box.
 - At gameframe `0`, the logger writes a full initial ownership snapshot as `0 -> player` transitions.
+
+## MilitaryEventLogger
+
+### Purpose
+Tracks soldier inventory and movement events tied to military buildings.
+
+### Events
+- `rec`: recruit added
+- `upg`: soldier upgraded
+- `los`: soldier lost in combat
+- `dep`: soldier deployed to a building
+- `und`: soldier undeployed from a building
+
+### Hooks (representative)
+- Initial HQ soldier snapshot in `MapLoader`
+- Recruit creation in `nobBaseWarehouse`
+- Deployment, undeployment, and upgrades in `nobMilitary`
+- Combat losses in `noFighting`
+
+### Output
+- File: `military_log.csv`
+- Format: CSV
+- Header:
+  - `gameframe,playerId,event,rank,buildingType,buildingId,count`
+
+## TroopsLimitEventLogger
+
+### Purpose
+Tracks changes to the effective troop limit of military buildings.
+
+### Hooks
+- Troop-limit recalculation in `nobMilitary`
+
+### Output
+- File: `troops_limit_log.csv`
+- Format: CSV
+- Header:
+  - `gameframe,playerId,newLimit,buildingType,buildingId`
+
+## ToolPriorityEventLogger
+
+### Purpose
+Tracks AI tool-priority table updates per player.
+
+### Hooks
+- Tool-priority adjustments in `AIAdjuster`
+
+### Output
+- File: `tool_priority.csv`
+- Format: CSV
+- Header:
+  - `gameframe,playerId,<one column per tool>`

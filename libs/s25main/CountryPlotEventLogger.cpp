@@ -90,7 +90,7 @@ bool EnsureHeaderWritten(std::ofstream& log)
 
 std::ofstream OpenCountryPlotsLog()
 {
-    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::CountryPlot))
         return {};
     return std::ofstream(GetCountryPlotsLogPath().string(), std::ios::binary | std::ios::app);
 }
@@ -157,6 +157,9 @@ namespace CountryPlotEventLogger {
 
 void LogInitialCountryPlots(unsigned gf, const GameWorldBase& world)
 {
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::CountryPlot))
+        return;
+
     RememberHeaderInfo(world);
 
     std::vector<OwnershipChange> changes;
@@ -175,7 +178,7 @@ void LogInitialCountryPlots(unsigned gf, const GameWorldBase& world)
 void LogCountryPlotChanges(unsigned gf, const GameWorldBase& world, MapPoint origin, MapExtent size,
                            const std::vector<OwnershipChange>& changes)
 {
-    if(changes.empty())
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::CountryPlot) || changes.empty())
         return;
 
     RememberHeaderInfo(world);

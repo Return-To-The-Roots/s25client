@@ -39,7 +39,7 @@ std::unordered_map<unsigned, std::vector<DestroyedBuilding>> gCaptureDestroyed;
 
 std::ofstream OpenCombatLog()
 {
-    if(STATS_CONFIG.disableEventLogging || STATS_CONFIG.statsPath.empty())
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Combat))
         return {};
     const boost::filesystem::path path = boost::filesystem::path(STATS_CONFIG.statsPath) / "combat_log.pb";
     return std::ofstream(path.string(), std::ios::binary | std::ios::app);
@@ -211,6 +211,9 @@ void LogAttackOrder(unsigned gf, unsigned char attackerPlayer, unsigned char def
                     const std::array<unsigned, NUM_SOLDIER_RANKS>& actualByRank,
                     const std::vector<AttackSource>& sources)
 {
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Combat))
+        return;
+
     pb::CombatLogRecord record = CreateRecord(gf, GetOrCreateCombatId(targetObjId));
     auto* event = record.mutable_attack_order();
     event->set_attacker_player_id(static_cast<uint32_t>(attackerPlayer + 1));
@@ -228,6 +231,9 @@ void LogAggressiveDefenderOrder(unsigned gf, unsigned char attackerPlayer, Build
                                 unsigned targetObjId, unsigned char defenderPlayer,
                                 const std::vector<AttackSource>& sources, unsigned char defenderRank)
 {
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Combat))
+        return;
+
     pb::CombatLogRecord record = CreateRecord(gf, GetOrCreateCombatId(targetObjId));
     auto* event = record.mutable_aggressive_defender_order();
     event->set_attacker_player_id(static_cast<uint32_t>(attackerPlayer + 1));
@@ -243,6 +249,9 @@ void LogFightResult(unsigned gf, unsigned char attackerPlayer, BuildingType targ
                     unsigned defenderStartHp, const char* winnerRole, unsigned winnerRemainingHp, unsigned x,
                     unsigned y)
 {
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Combat))
+        return;
+
     pb::CombatLogRecord record = CreateRecord(gf, GetOrCreateCombatId(targetObjId));
     auto* event = record.mutable_fight();
     event->set_attacker_player_id(static_cast<uint32_t>(attackerPlayer + 1));
@@ -261,7 +270,7 @@ void LogFightResult(unsigned gf, unsigned char attackerPlayer, BuildingType targ
 
 void RecordCaptureDestroyed(const unsigned capturingObjId, const BuildingType type, const unsigned destroyedObjId)
 {
-    if(!capturingObjId)
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Combat) || !capturingObjId)
         return;
     gCaptureDestroyed[capturingObjId].push_back(DestroyedBuilding{type, destroyedObjId});
 }
@@ -269,6 +278,9 @@ void RecordCaptureDestroyed(const unsigned capturingObjId, const BuildingType ty
 void LogCapture(unsigned gf, unsigned char attackerPlayer, unsigned char defenderPlayer, BuildingType buildingType,
                 unsigned buildingObjId)
 {
+    if(!STATS_CONFIG.IsEventLoggerEnabled(EventLoggerType::Combat))
+        return;
+
     const uint64_t combatId = GetOrCreateCombatId(buildingObjId);
 
     std::vector<DestroyedBuilding> destroyed;

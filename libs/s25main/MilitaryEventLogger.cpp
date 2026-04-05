@@ -13,7 +13,8 @@
 namespace {
 
 constexpr std::array<char, NUM_SOLDIER_RANKS> kRankLabels = {'P', 'F', 'S', 'O', 'G'};
-EventLogBatchWriter gMilitaryLog("military_log.csv", "gameframe,playerId,event,rank,buildingType,buildingId,count");
+EventLogBatchWriter gMilitaryLog(EventLoggerType::Military, "military_log.csv",
+                                 "gameframe,playerId,event,rank,buildingType,buildingId,count");
 
 char RankLabel(unsigned char rank)
 {
