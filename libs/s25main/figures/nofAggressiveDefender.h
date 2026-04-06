@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -69,9 +69,6 @@ public:
     void MissAggressiveDefendingContinueWalking();
     /// Wenn der jeweils andere Soldat, mit dem man kämpfen wollte, nicht mehr kommen kann
     void AttackerLost();
-    /// Ich befinde mich noch im Lagerhaus in der Warteschlange und muss mein HQ etc. verteidigen
-    /// Mission muss also abgebrochen werden
-    void NeedForHomeDefence();
 
     // Debugging
     const nofAttacker* GetAttacker() const { return attacker; }

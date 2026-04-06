@@ -1013,14 +1013,7 @@ std::unique_ptr<nofDefender> nobMilitary::ProvideDefender(nofAttacker& attacker)
 {
     nofPassiveSoldier* soldier = ChooseSoldier();
     if(!soldier)
-    {
-        /// Soldaten, die noch auf Mission gehen wollen, canceln und für die Verteidigung mit einziehen
-        StopLeavingSoldiers();
-        // Nochmal versuchen
-        soldier = ChooseSoldier();
-        if(!soldier)
-            return nullptr;
-    }
+        return nullptr;
 
     auto defender = std::make_unique<nofDefender>(*soldier, attacker);
 
