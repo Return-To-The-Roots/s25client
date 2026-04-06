@@ -785,7 +785,7 @@ void nobMilitary::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
 
     // Returned home
     if(soldier.get() == defender_)
-        NoDefender();
+        ResetDefender();
     else if(helpers::contains(troops_on_mission, soldier.get()))
     {
         troops_on_mission.remove(soldier.get());

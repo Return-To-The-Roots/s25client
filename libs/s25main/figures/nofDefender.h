@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -43,7 +43,7 @@ public:
 
     GO_Type GetGOT() const final { return GO_Type::NofDefender; }
 
-    /// Inform that a new attacker arrived at the flag while we are going on such that we can come right back
+    /// Inform that a new attacker arrived at the flag while we are going in such that we can come right back
     void NewAttacker(nofAttacker& attacker) { this->attacker = &attacker; }
     /// The attacker won't come to the flag anymore
     void AttackerArrested();

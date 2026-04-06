@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -152,7 +152,7 @@ void nofDefender::LostFighting()
     // Notify building if it still exists
     if(building)
     {
-        building->NoDefender();
+        building->ResetDefender();
         // A military building potentially needs to get new soldiers if this wasn't the last one
         if(BuildingProperties::IsMilitary(building->GetBuildingType()))
         {

@@ -337,17 +337,17 @@ void nobBaseMilitary::StopLeavingSoldiers()
 {
     for(auto it = leave_house.begin(); it != leave_house.end();)
     {
-        // Just take soldiers (in Job state) and no normal defenders which should always come out
-        if((*it)->IsDoingJobWorks() && (*it)->GetGOT() != GO_Type::NofDefender)
+        // Only take active soldiers
+        if(!dynamic_cast<nofActiveSoldier*>(it->get()))
+            ++it;
+        else
         {
-            auto soldier = boost::dynamic_pointer_cast<nofActiveSoldier>(std::move(*it));
-            RTTR_Assert(soldier);
+            auto soldier = boost::static_pointer_cast<nofActiveSoldier>(std::move(*it));
             it = leave_house.erase(it);
             FigureLeft(*soldier);
 
             soldier->InformTargetsAboutCancelling();
             AddActiveSoldier(std::move(soldier));
-        } else
-            ++it;
+        }
     }
 }
