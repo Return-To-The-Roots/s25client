@@ -221,8 +221,23 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
 
 bool nobBaseMilitary::CallDefender(nofAttacker& attacker)
 {
-    // Block soldiers leaving this building e.g. for attacks or aggressive defending
-    StopLeavingSoldiers();
+    // Stop attacking soldiers (including aggressive defenders) from leaving this building
+    for(auto it = leave_house.begin(); it != leave_house.end();)
+    {
+        if(!dynamic_cast<nofActiveSoldier*>(it->get()))
+            ++it;
+        else
+        {
+            auto soldier = boost::static_pointer_cast<nofActiveSoldier>(std::move(*it));
+            // At this point there shouldn't be a defender leaving as we are just requesting one
+            RTTR_Assert(soldier->GetGOT() != GO_Type::NofDefender);
+            it = leave_house.erase(it);
+            FigureLeft(*soldier);
+
+            soldier->InformTargetsAboutCancelling();
+            AddActiveSoldier(std::move(soldier));
+        }
+    }
     // Use existing defender (e.g. just going back in) if possible
     if(defender_)
     {
@@ -331,23 +346,4 @@ bool nobBaseMilitary::IsAggressiveDefender(const nofAggressiveDefender& soldier)
 bool nobBaseMilitary::IsOnMission(const nofActiveSoldier& soldier) const
 {
     return helpers::contains(troops_on_mission, &soldier);
-}
-
-void nobBaseMilitary::StopLeavingSoldiers()
-{
-    for(auto it = leave_house.begin(); it != leave_house.end();)
-    {
-        // Only take active soldiers
-        if(!dynamic_cast<nofActiveSoldier*>(it->get()))
-            ++it;
-        else
-        {
-            auto soldier = boost::static_pointer_cast<nofActiveSoldier>(std::move(*it));
-            it = leave_house.erase(it);
-            FigureLeft(*soldier);
-
-            soldier->InformTargetsAboutCancelling();
-            AddActiveSoldier(std::move(soldier));
-        }
-    }
 }

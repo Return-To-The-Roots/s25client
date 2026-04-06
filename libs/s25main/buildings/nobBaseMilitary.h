@@ -107,8 +107,6 @@ public:
     void CheckArrestedAttackers();
     /// Der Verteidiger ist entweder tot oder wieder reingegegangen
     void ResetDefender() { defender_ = nullptr; }
-    /// Stop all soldiers going for an attack from leaving the house, i.e. put them from the queue back in
-    void StopLeavingSoldiers();
 
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
     virtual bool DefendersAvailable() const = 0;
