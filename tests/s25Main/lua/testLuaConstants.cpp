@@ -36,7 +36,7 @@ struct LuaConstsTestsFixture : public LuaTestsFixture
     }
 };
 
-/// Tests that documented constants from doc/lua/constants.md work
+/// Tests that documented constants from docs/lua/constants.md work
 BOOST_FIXTURE_TEST_SUITE(LuaConstantsSuite, LuaConstsTestsFixture)
 
 BOOST_AUTO_TEST_CASE(AllGoodTypesWork)

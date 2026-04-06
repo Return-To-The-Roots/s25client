@@ -4,11 +4,11 @@ Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
 SPDX-License-Identifier: GPL-2.0-or-later
 -->
 
-# Content
+# Lua Scripting
 
-[Events](events.md)  
-[Functions](functions.md)  
-[Constants](constants.md)  
+- [Events](events.md)
+- [Functions](functions.md)
+- [Constants](constants.md)
 
 ## Map scripts
 
@@ -93,4 +93,4 @@ See also `rttr:GetFeatureLevel()`.
 
 For a more complete example usage of all functions have a look at [tests/testData/maps/LuaFunctions.lua](../../tests/testData/maps/LuaFunctions.lua)
 
-[Back](#Content)
+[Back](#lua-scripting)

@@ -4,8 +4,9 @@ Regular garrisons (`nobMilitary`) continuously rebalance their soldiers through 
 `libs/s25main/buildings/nobMilitary.cpp`. The goal is to meet the currently desired garrison size and any per-rank limits
 that stem from the Military Control add-on.
 
-See also: `doc/military_understaffed_assignment.md` for the specific behavior when total soldiers are insufficient to
-fully staff all garrisons.
+See also: [Understaffed military garrison assignment](understaffed-assignment.md)
+for the specific behavior when total soldiers are insufficient to fully staff
+all garrisons.
 
 ## Regulation Loop (`nobMilitary::RegulateTroops`)
 
