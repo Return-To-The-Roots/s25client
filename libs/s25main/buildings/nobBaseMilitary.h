@@ -106,7 +106,7 @@ public:
     /// zu kommen, diese Funktion sucht nach solchen Soldaten schickt einen ggf. zur Flagge, um anzugreifen
     void CheckArrestedAttackers();
     /// Der Verteidiger ist entweder tot oder wieder reingegegangen
-    void NoDefender() { defender_ = nullptr; }
+    void ResetDefender() { defender_ = nullptr; }
     /// Stop all soldiers going for an attack from leaving the house, i.e. put them from the queue back in
     void StopLeavingSoldiers();
 

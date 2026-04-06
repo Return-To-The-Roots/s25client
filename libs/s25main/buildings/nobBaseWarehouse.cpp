@@ -1026,7 +1026,7 @@ void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldie
 
     // Returned home
     if(soldier.get() == defender_)
-        NoDefender();
+        ResetDefender();
     else
     {
         // Ggf. war er auf Mission
