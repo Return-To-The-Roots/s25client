@@ -1098,28 +1098,22 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::ProvideDefender(nofAttacker& atta
         }
     }
 
-    // Kein Soldat gefunden, als letzten Hoffnung die Soldaten nehmen, die ggf in der Warteschlange noch hängen
+    // If no soldier was found take a soldier that is about to leave (to another building)
     for(auto it = leave_house.begin(); it != leave_house.end(); ++it)
     {
-        std::unique_ptr<nofSoldier> soldier;
-        if((*it)->GetGOT() == GO_Type::NofAggressivedefender)
+        if((*it)->GetGOT() == GO_Type::NofPassivesoldier)
         {
-            soldier = boost::static_pointer_cast<nofSoldier>(std::move(*it));
-            static_cast<nofAggressiveDefender&>(*soldier).NeedForHomeDefence();
-        } else if((*it)->GetGOT() == GO_Type::NofPassivesoldier)
-            soldier = boost::static_pointer_cast<nofSoldier>(std::move(*it));
-        else
-            continue;
+            std::unique_ptr<nofSoldier> soldier = boost::static_pointer_cast<nofSoldier>(std::move(*it));
 
-        leave_house.erase(it); // Only allowed in the loop as we return now
-        soldier->Abrogate();
+            leave_house.erase(it); // Only allowed in the loop as we return now
+            soldier->Abrogate();
 
-        auto defender = std::make_unique<nofDefender>(pos, player, *this, soldier->GetRank(), attacker);
-        defender->SetArmor(soldier->HasArmor());
-        soldier->Destroy();
-        return defender;
+            auto defender = std::make_unique<nofDefender>(pos, player, *this, soldier->GetRank(), attacker);
+            defender->SetArmor(soldier->HasArmor());
+            soldier->Destroy();
+            return defender;
+        }
     }
-
     return nullptr;
 }
 

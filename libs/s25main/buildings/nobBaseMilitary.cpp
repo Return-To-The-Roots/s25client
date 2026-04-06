@@ -221,27 +221,22 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
 
 bool nobBaseMilitary::CallDefender(nofAttacker& attacker)
 {
+    // Block soldiers leaving this building e.g. for attacks or aggressive defending
+    StopLeavingSoldiers();
     // Use existing defender (e.g. just going back in) if possible
     if(defender_)
     {
         defender_->NewAttacker(attacker);
-        // Block soldiers leaving this building e.g. for attacks or aggressive defending
-        StopLeavingSoldiers();
-        return true;
-    } else
-    {
-        auto defender = ProvideDefender(attacker);
-        if(!defender)
-            return false; // Building empty -> Can be conquered
-
-        // Block soldiers leaving this building e.g. for attacks or aggressive defending
-        StopLeavingSoldiers();
-        // Soldat muss noch rauskommen
-        defender_ = defender.get();
-        AddLeavingFigure(std::move(defender));
-
         return true;
     }
+    auto defender = ProvideDefender(attacker);
+    if(!defender)
+        return false; // Building empty -> Can be conquered
+
+    // Soldat muss noch rauskommen
+    defender_ = defender.get();
+    AddLeavingFigure(std::move(defender));
+    return true;
 }
 
 nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -249,11 +249,6 @@ void nofAggressiveDefender::AttackerLost()
     RTTR_Assert(attacker);
     attacker = nullptr;
     // TODO(Replay) When still in leave queue abort to avoid going out and right back
-}
-
-void nofAggressiveDefender::NeedForHomeDefence()
-{
-    InformTargetsAboutCancelling();
 }
 
 void nofAggressiveDefender::InformTargetsAboutCancelling()
