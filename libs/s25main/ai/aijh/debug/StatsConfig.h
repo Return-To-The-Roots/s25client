@@ -4,6 +4,7 @@
 #define STATSCONFIG_H
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <set>
 #include <string>
 
@@ -98,7 +99,10 @@ struct StatsConfig
     bool disableEventLogging = false;
     std::set<EventLoggerType> enabledEventLoggers;
 
-    std::string weightsPath = "/home/pavel/s2/volume/config/Version_AAAAA.yaml";
+    std::string weightsPath = []() -> std::string {
+        const char* env = std::getenv("RTTR_WEIGHTS_PATH");
+        return env ? env : "";
+    }();
 
     bool IsEventLoggerEnabled(const EventLoggerType loggerType) const
     {

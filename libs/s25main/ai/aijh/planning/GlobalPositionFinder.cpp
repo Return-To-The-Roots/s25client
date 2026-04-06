@@ -70,6 +70,24 @@ bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, const AIQueryService
     return true;
 }
 
+/// Map a BuildingQuality to its building-size level (Castle=4, House=3, Hut=2, Flag/Mine=1, Nothing=0).
+int BQLevel(BuildingQuality bq)
+{
+    switch(bq)
+    {
+        case BuildingQuality::Harbor:
+        case BuildingQuality::Castle: return 4;
+        case BuildingQuality::House: return 3;
+        case BuildingQuality::Hut: return 2;
+        case BuildingQuality::Mine:
+        case BuildingQuality::Flag: return 1;
+        case BuildingQuality::Nothing:
+        default: return 0;
+    }
+}
+
+constexpr int maxBQLevel = 4; // Castle/Harbor
+
 int ComputeResourcePenalty(const AIPlayerJH& aijh, const AIQueryService& queries, const BuildingType type,
                            const MapPoint& pt)
 {
@@ -88,6 +106,23 @@ int ComputeResourcePenalty(const AIPlayerJH& aijh, const AIQueryService& queries
         const double value = CALC::calcCount(resourceValue, params);
         totalPenalty += static_cast<int>(std::min<double>(value, params.max));
     }
+
+    // Penalize for BQ degradation at adjacent points
+    const double bqPenaltyPerLevel = aijh.GetConfig().bqPenaltyPerLevel;
+    if(bqPenaltyPerLevel > 0.0)
+    {
+        double bqPenalty = 0.0;
+        const GameWorldBase& world = aijh.GetWorld();
+        for(const MapPoint nb : world.GetNeighbours(pt))
+        {
+            const Node& nbNode = aijh.GetAINode(nb);
+            const int decrease = maxBQLevel - BQLevel(nbNode.bq);
+            if(decrease > 0)
+                bqPenalty += decrease * bqPenaltyPerLevel;
+        }
+        totalPenalty += static_cast<int>(bqPenalty);
+    }
+
     return totalPenalty;
 }
 

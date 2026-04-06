@@ -411,6 +411,17 @@ extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
         applyDisableBuildingCfg(rootNode["disableBuilding"], targetConfig);
         applyToolPriorityCfg(rootNode["toolPriority"], targetConfig);
         applyDistributionAdjusterCfg(rootNode["distributionAdjuster"], targetConfig);
+        if(const YAML::Node value = rootNode["bqPenaltyPerLevel"])
+        {
+            try
+            {
+                targetConfig.bqPenaltyPerLevel = value.as<double>();
+            } catch(const YAML::TypedBadConversion<double>& e)
+            {
+                std::cerr << "Warning: Invalid bqPenaltyPerLevel value, using default. Error: " << e.what()
+                          << std::endl;
+            }
+        }
         std::locale::global(oldLocale);
     } catch(const YAML::Exception& e)
     {
