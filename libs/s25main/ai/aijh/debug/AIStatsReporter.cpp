@@ -6,11 +6,8 @@
 
 #include "ai/aijh/runtime/AIPlayerJH.h"
 
-#include "BasePlayerInfo.h"
 #include "ai/aijh/planning/BuildingPlanner.h"
 #include "BuildingRegister.h"
-#include "CombatLossTracker.h"
-#include "EventManager.h"
 #include "GamePlayer.h"
 #include "ai/aijh/debug/StatsConfig.h"
 #include "ai/aijh/planning/Jobs.h"
@@ -20,7 +17,6 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
-#include "figures/nofAttacker.h"
 #include "helpers/EnumRange.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
@@ -29,24 +25,16 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ToolConsts.h"
 #include "gameTypes/VisualSettings.h"
-#include "s25util/colors.h"
-
-#include <boost/filesystem/path.hpp>
 #include <boost/format.hpp>
-#include <algorithm>
-#include <array>
 #include <chrono>
 #include <cstdint>
 #include <ctime>
-#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <sstream>
 #include <utility>
-
-namespace fs = std::filesystem;
 
 namespace {
 
@@ -143,224 +131,17 @@ std::string CurrentTimestamp()
     return ss.str();
 }
 
-std::string FormatRankCounts(const std::array<unsigned, NUM_SOLDIER_RANKS>& counts)
-{
-    static constexpr std::array<char, NUM_SOLDIER_RANKS> rankLabels = {'P', 'F', 'S', 'O', 'G'};
-    std::string result;
-    for(int idx = static_cast<int>(NUM_SOLDIER_RANKS) - 1; idx >= 0; --idx)
-    {
-        const unsigned count = counts[idx];
-        if(count == 0)
-            continue;
-        if(!result.empty())
-            result += ",";
-        result.push_back(rankLabels[idx]);
-        result.push_back('-');
-        result += std::to_string(count);
-    }
-    if(result.empty())
-        result = "none";
-    return result;
-}
-
-std::string FormatDestroyedBuildings(const std::map<BuildingType, unsigned>& destroyed)
-{
-    if(destroyed.empty())
-        return "none";
-
-    std::string result;
-    bool first = true;
-    for(const auto& entry : destroyed)
-    {
-        if(entry.second == 0)
-            continue;
-        if(!first)
-            result += ",";
-        first = false;
-        result += BUILDING_NAMES_1.at(entry.first);
-        result += ": ";
-        result += std::to_string(entry.second);
-    }
-
-    if(result.empty())
-        result = "none";
-    return result;
-}
-
 } // namespace
 
 namespace AIJH {
 
 AIStatsReporter::AIStatsReporter(AIPlayerJH& owner) : owner_(owner) {}
 
-void AIStatsReporter::TrackCombatStart(const nobBaseMilitary& target)
-{
-    const unsigned startGf = owner_.gwb.GetEvMgr().GetCurrentGF();
-    const unsigned objId = target.GetObjId();
-    const auto it = std::find_if(activeCombats_.begin(), activeCombats_.end(),
-                                 [objId](const ActiveCombat& combat) { return combat.targetObjId == objId; });
-    if(it != activeCombats_.end())
-        return;
+void AIStatsReporter::TrackCombatStart(const nobBaseMilitary& /*target*/) {}
 
-    double captureRisk = 0.0;
-    if(const auto* mil = dynamic_cast<const nobMilitary*>(&target))
-        captureRisk = mil->GetCaptureRiskEstimate();
-    CombatLossTracker::RegisterCombat(objId, captureRisk);
-    activeCombats_.push_back({target.GetPos(), objId, target.GetPlayer(), target.GetBuildingType(), startGf, false});
-}
+void AIStatsReporter::InitializeCombatsLogFile() const {}
 
-std::string AIStatsReporter::GetCombatsLogPath() const
-{
-    const fs::path filePath = fs::path(STATS_CONFIG.statsPath) / "combats.txt";
-    return filePath.string();
-}
-
-std::string AIStatsReporter::FormatPlayerLabel(unsigned playerIdx) const
-{
-    const GamePlayer& pl = owner_.gwb.GetPlayer(playerIdx);
-    const unsigned color = pl.color;
-    const int colorIdx = BasePlayerInfo::GetColorIdx(color);
-    static constexpr std::array<const char*, PLAYER_COLORS.size()> colorNames = {
-      "Blue", "Yellow", "Red", "Magenta", "Black", "Green", "Orange", "Cyan", "White", "Brown", "Purple"};
-    const std::string colorName =
-      (colorIdx >= 0 && static_cast<size_t>(colorIdx) < colorNames.size()) ? colorNames[colorIdx] : "Unknown";
-    const std::string nationName = _(NationNames[pl.nation]);
-    std::ostringstream ss;
-    ss << "Player " << (playerIdx + 1) << " - " << colorName << " " << nationName;
-    return ss.str();
-}
-
-void AIStatsReporter::LogPlayerMetadata(std::ofstream& combatsFile) const
-{
-    bool first = true;
-    for(unsigned playerIdx = 0; playerIdx < owner_.gwb.GetNumPlayers(); ++playerIdx)
-    {
-        const GamePlayer& player = owner_.gwb.GetPlayer(playerIdx);
-        if(player.ps != PlayerState::Occupied)
-            continue;
-        if(!first)
-            combatsFile << ", ";
-        combatsFile << FormatPlayerLabel(playerIdx);
-        first = false;
-    }
-    combatsFile << std::endl;
-}
-
-void AIStatsReporter::InitializeCombatsLogFile() const
-{
-    if(combatsLogInitialized_)
-        return;
-
-    std::ofstream combatsFile(GetCombatsLogPath(), std::ios::trunc);
-    if(!combatsFile)
-    {
-        std::cerr << "Unable to open combats log file for writing!" << std::endl;
-        return;
-    }
-
-    LogPlayerMetadata(combatsFile);
-    combatsLogInitialized_ = true;
-}
-
-bool AIStatsReporter::HasOwnAggressors(const nobBaseMilitary& building) const
-{
-    for(const nofAttacker* attacker : building.GetAggressors())
-    {
-        if(attacker && attacker->GetPlayer() == owner_.playerId)
-            return true;
-    }
-    return false;
-}
-
-AIStatsReporter::CombatLogState AIStatsReporter::EvaluateCombatState(ActiveCombat& combat, const unsigned gf) const
-{
-    static constexpr unsigned kCombatGraceGf = 500;
-    static constexpr unsigned kCombatStaleGf = 2500;
-
-    const noBase* nodeObj = owner_.gwb.GetNO(combat.pos);
-    const auto* building = dynamic_cast<const nobBaseMilitary*>(nodeObj);
-    if(!building)
-        return CombatLogState::Success;
-
-    if(building->GetObjId() != combat.targetObjId)
-        return CombatLogState::Success;
-
-    if(HasOwnAggressors(*building))
-    {
-        combat.sawAggressor = true;
-        return CombatLogState::Pending;
-    }
-
-    if(!combat.sawAggressor)
-    {
-        const unsigned age = gf - combat.startGf;
-        if(age < kCombatGraceGf)
-            return CombatLogState::Pending;
-        if(age >= kCombatStaleGf)
-            return CombatLogState::Failure;
-        return CombatLogState::Pending;
-    }
-
-    const unsigned char owner = building->GetPlayer();
-    if(owner == owner_.playerId)
-        return CombatLogState::Success;
-    if(owner != combat.defenderPlayer)
-        return CombatLogState::Success;
-    return CombatLogState::Failure;
-}
-
-void AIStatsReporter::LogFinishedCombats(const unsigned gf) const
-{
-    if(activeCombats_.empty())
-        return;
-
-    std::vector<std::pair<ActiveCombat, bool>> finishedCombats;
-    finishedCombats.reserve(activeCombats_.size());
-    auto it = activeCombats_.begin();
-    while(it != activeCombats_.end())
-    {
-        const CombatLogState state = EvaluateCombatState(*it, gf);
-        if(state == CombatLogState::Pending)
-        {
-            ++it;
-            continue;
-        }
-
-        finishedCombats.emplace_back(*it, state == CombatLogState::Success);
-        it = activeCombats_.erase(it);
-    }
-
-    if(finishedCombats.empty())
-        return;
-
-    InitializeCombatsLogFile();
-    std::ofstream combatsFile(GetCombatsLogPath(), std::ios::app);
-    if(!combatsFile)
-    {
-        std::cerr << "Unable to open combats log file for appending!" << std::endl;
-        return;
-    }
-
-    for(const auto& entry : finishedCombats)
-    {
-        const ActiveCombat& combat = entry.first;
-        const bool success = entry.second;
-        const CombatStats stats = CombatLossTracker::TakeStats(combat.targetObjId);
-        std::ostringstream riskStream;
-        riskStream << std::fixed << std::setprecision(2) << stats.captureRisk;
-        combatsFile << "#" << gf << " Player #" << static_cast<unsigned>(owner_.playerId + 1) << " attacks Player #"
-                    << static_cast<unsigned>(combat.defenderPlayer + 1) << " "
-                    << BUILDING_NAMES_1.at(combat.buildingType) << " " << combat.targetObjId << ". Attack #"
-                    << (success ? "succed" : "failed") << " Forces: Attacker "
-                    << FormatRankCounts(stats.attackerForces) << " . Defender " << FormatRankCounts(stats.defenderForces)
-                    << " Losses: Attacker " << FormatRankCounts(stats.attackerLosses) << " . Defender "
-                    << FormatRankCounts(stats.defenderLosses) << " CaptureRisk=" << riskStream.str()
-                    << " StartGF=" << combat.startGf << " EndGF=" << gf;
-        if(success)
-            combatsFile << " Destroyed: " << FormatDestroyedBuildings(stats.destroyedBuildings);
-        combatsFile << std::endl;
-    }
-}
+void AIStatsReporter::LogFinishedCombats(const unsigned /*gf*/) const {}
 
 void AIStatsReporter::SaveStats(unsigned gf) const
 {

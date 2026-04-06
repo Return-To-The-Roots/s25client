@@ -43,7 +43,7 @@ struct AIConfig
     helpers::EnumArray<LocationParams, BuildingType> locationParams;
     helpers::EnumArray<helpers::EnumArray<DistributionParams, BuildingType>, GoodType> distributionParams;
     CombatConfig combat;
-    double bqPenaltyPerLevel = 0.25;
+    double bqPenaltyPerLevel = 0.05;
     std::vector<BuildingType> disableBuilding;
     helpers::EnumArray<signed, Tool> toolPriority = TOOL_PRIORITY;
 

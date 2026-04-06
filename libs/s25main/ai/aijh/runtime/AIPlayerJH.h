@@ -75,7 +75,7 @@ public:
     void OnChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) override;
 
     // Reporting and top-level state access
-    void saveStats(unsigned gf) const;
+    void saveStats(unsigned gf) const override;
 
     // Shared map and resource accessors
     bool IsInvalidShipyardPosition(MapPoint pt);

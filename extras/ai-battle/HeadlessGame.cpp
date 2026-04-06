@@ -229,12 +229,16 @@ void HeadlessGame::Run(unsigned maxGF)
         };
         if((STATS_CONFIG.stats_period == 0 || currentGF % STATS_CONFIG.stats_period == 1) && GetActivePlayerCount() <= 1u)
         {
-            if(STATS_CONFIG.save_period > 0) saveGameForFrame(currentGF);
             break;
         }
 
         if(STATS_CONFIG.save_period > 0 && (currentGF == 1 || currentGF % STATS_CONFIG.save_period == 0))
             saveGameForFrame(currentGF);
+    }
+    if(STATS_CONFIG.stats_period == 0)
+    {
+        for(auto& player : players_)
+            player->saveStats(em_.GetCurrentGF());
     }
     PrintState();
 }

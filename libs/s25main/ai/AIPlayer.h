@@ -43,7 +43,7 @@ public:
     const AIInterface& getAIInterface() const { return aii; }
     AIInterface& getAIInterface() { return aii; }
 
-    void saveStats(unsigned gf) const;
+    virtual void saveStats(unsigned /*gf*/) const {}
 
     /// Own player ID that the AI should know, e.g. when exploring the map
     const unsigned char playerId;

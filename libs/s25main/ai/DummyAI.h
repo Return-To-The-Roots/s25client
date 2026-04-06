@@ -17,9 +17,9 @@ public:
     void RunGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
 
     void OnChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
-    void saveStats(unsigned int gf) const
+    void saveStats(unsigned int gf) const override
     {
-        gf = gf;
+        (void)gf;
     }
 
 };
