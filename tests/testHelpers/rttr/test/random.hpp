@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -35,4 +35,11 @@ auto randomPoint(typename T::ElementType min = std::numeric_limits<typename T::E
     return T{randomValue(min, max), randomValue(min, max)};
 }
 std::string randString(int len = -1);
+
+template<typename ContainerT>
+auto randomElement(ContainerT& container)
+{
+    return helpers::getRandomElement(getRandState(), container);
+}
+
 } // namespace rttr::test

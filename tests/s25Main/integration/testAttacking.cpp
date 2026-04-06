@@ -25,12 +25,14 @@
 #include "gameTypes/GameTypesOutput.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
+#include "rttr/test/random.hpp"
 #include <rttr/test/testHelpers.hpp>
 #include <boost/test/data/monomorphic.hpp>
 #include <boost/test/data/test_case.hpp>
 #include <boost/test/unit_test.hpp>
 #include <array>
 #include <iostream>
+#include <numeric>
 
 using SoldierState = nofActiveSoldier::SoldierState;
 
@@ -45,11 +47,19 @@ BOOST_AUTO_TEST_SUITE(AttackSuite)
 
 namespace {
 
+namespace dataset = boost::unit_test::data;
+
 struct AttackDefaults
 {
     static constexpr unsigned width = 20;
     static constexpr unsigned height = 12;
 };
+
+template<typename T>
+auto calcSum(const T& collection)
+{
+    return std::accumulate(std::begin(collection), std::end(collection), 0u);
+}
 
 /// Reschedule the walk event of the obj to be executed in numGFs GFs
 void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
@@ -95,13 +105,11 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
 
     AttackFixtureBase()
     {
-        const auto soldiers = PeopleCounts::make(Job::General, 3);
         for(unsigned i = 0; i < T_numPlayers; i++)
         {
             curPlayer = i;
             hqPos[i] = world.GetPlayer(i).GetHQPos();
             MakeVisible(hqPos[i]);
-            world.template GetSpecObj<nobBaseWarehouse>(hqPos[i])->AddToInventory(soldiers, true);
             this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
         }
         curPlayer = 0;
@@ -145,6 +153,29 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
         AddSoldiers(bldPos, numWeak, Job::Private);
         AddSoldiers(bldPos, numStrong, Job::General);
     }
+
+    // Named constants for indices to make access to the returned array easier to read
+    static constexpr unsigned real = 0;
+    static constexpr unsigned visual = 1;
+    static auto getNumSoldiers(const nobBaseWarehouse& wh)
+    {
+        std::array<std::array<unsigned, NUM_SOLDIER_RANKS>, 2> soldiers{};
+        for(const auto job : SOLDIER_JOBS)
+        {
+            soldiers[real][getSoldierRank(job)] = wh.GetNumRealFigures(job);
+            soldiers[visual][getSoldierRank(job)] = wh.GetNumVisualFigures(job);
+        }
+        return soldiers;
+    }
+    // Get counts of soldiers
+    auto getTotalSoldiers(unsigned player)
+    {
+        const auto& inv = world.GetPlayer(player).GetInventory();
+        std::array<unsigned, NUM_SOLDIER_RANKS> soldiers{};
+        for(const auto job : SOLDIER_JOBS)
+            soldiers[getSoldierRank(job)] = inv[job];
+        return soldiers;
+    }
 };
 
 // Size is chosen based on current maximum attacking distances!
@@ -158,6 +189,12 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
 
     NumSoldierTestFixture() : gwv(curPlayer, world)
     {
+        // Add some soldiers to the HQs
+        for(const auto pos : hqPos)
+        {
+            world.GetSpecObj<nobBaseWarehouse>(pos)->AddToInventory(
+              PeopleCounts::make(Job::General, rttr::test::randomValue(3, 10)), true);
+        }
         // Assert player positions: 0: Top-Left, 1: Top-Right, 2: Bottom-Middle
         BOOST_TEST_REQUIRE(hqPos[0].x < hqPos[1].x);
         BOOST_TEST_REQUIRE(hqPos[0].y < hqPos[2].y);
@@ -557,8 +594,8 @@ enum Case
 };
 
 BOOST_DATA_TEST_CASE_F(AttackFixture<>, ConquerBldArmorAddon,
-                       boost::unit_test::data::make(std::array{Case::EnableAfterDisable, Case::DisableAfterEnable,
-                                                               Case::KeepEnabled, Case::KeepDisabled}))
+                       dataset::make(std::array{Case::EnableAfterDisable, Case::DisableAfterEnable, Case::KeepEnabled,
+                                                Case::KeepDisabled}))
 {
     if(sample == Case::EnableAfterDisable)
         this->ggs.setSelection(AddonId::ARMOR_CAPTURED_BLD, 1);
@@ -972,61 +1009,178 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     BOOST_TEST(attacker3.GetState() == SoldierState::AttackingFightingVsDefender);
 }
 
-BOOST_FIXTURE_TEST_CASE(CancelAgressiveDefenders, AttackFixture<2>)
+enum AttackedBldType
 {
+    Hq,
+    MillitaryBld
+};
+
+#ifndef __INTELLISENSE__
+BOOST_DATA_TEST_CASE_F(AttackFixture<2>, HandleLeavingAggDefendersOnAttack,
+                       dataset::make(std::array{AttackedBldType::Hq, AttackedBldType::MillitaryBld})
+                         * dataset::make(std::array{false, true}),
+                       test_case, useAllDefenders)
+#else
+struct HandleLeavingAggDefendersOnAttack : AttackFixture<2>
+{
+    void test(AttackedBldType test_case, bool useAllDefenders);
+};
+void HandleLeavingAggDefendersOnAttack::test(AttackedBldType test_case, bool useAllDefenders)
+#endif
+{
+    // When defender is called, leaving aggressive defenders should be canceled.
+    // When there is no other soldier left to send as defender, an agressive defenders should be used as defender
+    // instead.
+    //
     // Reproduce issue #1907:
     // Accounting of soldiers that were about to leave but got canceled was wrong
-    // Situation:
+    // Situation (happens with a single attacker already):
     //  - Attack on "military storehouse", i.e. HQ.
     //  - HQ sends aggressive defender about to leave.
     //  - Attacker reaches flag and requests defender which cancels any agressive defenders
-    AddSoldiers(milBld0Pos, 4, Job::General);
+    //  - Readding that defender cause error in accounting
+    //
+    // Handling for "real" military buildings and attackable warehouses (HQ) is different, so test all combinations
+    std::array<nofAttacker*, 5> attackers{};
+    AddSoldiers(milBld0Pos, attackers.size() + 1, Job::General);
     auto& attackedHq = ensureNonNull(world.GetSpecObj<nobBaseWarehouse>(hqPos[1]));
-    const auto getSoldiers = [&attackedHq]() {
-        std::array<std::array<unsigned, NUM_SOLDIER_RANKS>, 2> soldiers{};
-        for(const auto job : SOLDIER_JOBS)
-        {
-            soldiers[0][getSoldierRank(job)] = attackedHq.GetNumRealFigures(job);
-            soldiers[1][getSoldierRank(job)] = attackedHq.GetNumVisualFigures(job);
-        }
-        return soldiers;
-    };
-    auto soldiersBefore = getSoldiers();
-
-    this->Attack(attackedHq.GetPos(), 1, true);
-    BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().size() == 1u);
-    // multiple soldiers and last is aggressive
-    auto& attacker = dynamic_cast<nofAttacker&>(milBld0->GetLeavingFigures().front());
-    RTTR_EXEC_TILL(70, milBld0->GetLeavingFigures().empty()); //-V807
-    if(!attacker.GetHuntingDefender())
+    auto& attackedBld = (test_case == AttackedBldType::Hq) ? attackedHq : static_cast<nobBaseMilitary&>(*milBld1);
+    const auto attackedPlayer = attackedBld.GetPlayer();
+    const auto numGenerals = rttr::test::randomValue<unsigned>(1, attackers.size() / 2);
+    const auto numPrivates = rttr::test::randomValue<unsigned>(1, attackers.size() / 2);
+    if(test_case == AttackedBldType::Hq)
     {
-        auto* aggDefender = attackedHq.SendAggressiveDefender(attacker);
-        BOOST_TEST_REQUIRE(aggDefender);
-        attacker.LetsFight(*aggDefender);
+        // Make sure they can be sent out (aggressive defenders are not taken from the reserve)
+        attackedHq.SetRealReserve(getSoldierRank(Job::General), 0);
+        attackedHq.SetRealReserve(getSoldierRank(Job::Private), 0);
+        auto startSoldiers = PeopleCounts::make(Job::General, numGenerals);
+        startSoldiers[Job::Private] = numPrivates;
+        attackedHq.AddToInventory(startSoldiers, true);
+    } else
+    {
+        AddSoldiers(attackedBld.GetPos(), numGenerals, Job::General);
+        AddSoldiers(attackedBld.GetPos(), numPrivates, Job::Private);
     }
-    BOOST_TEST_REQUIRE(!attackedHq.GetLeavingFigures().empty());
-    // Still there visually, but not real
-    auto soldiersNow = getSoldiers();
-    BOOST_TEST(soldiersNow[0] != soldiersBefore[0]);
-    BOOST_TEST(soldiersNow[1] == soldiersBefore[1]);
-    moveObjTo(world, attacker, attackedHq.GetFlagPos());
+    // Total soldiers should not change because none die in this test case
+    // This ensures they are not double-accounted during conversion from agressive defender to defender
+    // and not missed when removed from the leave queue
+    const auto totalSoldiersBefore = getTotalSoldiers(attackedPlayer);
+    const auto soldiersBefore = getNumSoldiers(attackedHq);
+    const auto numAttackers = useAllDefenders ? attackers.size() : 1u;
+    this->Attack(attackedBld.GetPos(), numAttackers, true);
+    BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().size() == numAttackers);
+    {
+        int i = 0;
+        for(auto& fig : milBld0->GetLeavingFigures())
+            attackers[i++] = &dynamic_cast<nofAttacker&>(fig);
+    }
+    // Let one out then call SendAggressiveDefender for all attackers.
+    // This is technically wrong but we want to ensure they come from the target bld only and are still in the leave
+    // queue when the first attacker calls the defender
+    RTTR_EXEC_TILL(50, milBld0->GetLeavingFigures().size() < numAttackers);
+    for(unsigned i = 0; i < numAttackers; i++)
+    {
+        auto* attacker = attackers[i];
+        if(attacker && !attacker->GetHuntingDefender())
+        {
+            auto* aggDefender = attackedBld.SendAggressiveDefender(*attacker);
+            if(aggDefender)
+                attacker->LetsFight(*aggDefender);
+        }
+    }
+    if(useAllDefenders)
+    {
+        if(test_case == AttackedBldType::Hq) // HQs will be empty as all are leaving
+            BOOST_TEST_REQUIRE(attackedBld.GetLeavingFigures().size() == numGenerals + numPrivates);
+        else // Military buildings keep at least one
+            BOOST_TEST_REQUIRE(attackedBld.GetLeavingFigures().size() == numGenerals + numPrivates - 1u);
+    } else
+        BOOST_TEST_REQUIRE(!attackedBld.GetLeavingFigures().empty());
+    if(test_case == AttackedBldType::Hq)
+    {
+        auto curSoldiers = getNumSoldiers(attackedHq);
+        // Still there visually
+        BOOST_TEST(curSoldiers[visual] == soldiersBefore[visual]);
+        // but not real
+        BOOST_TEST(curSoldiers[real] != soldiersBefore[real]);
+        if(useAllDefenders)
+            BOOST_TEST(calcSum(curSoldiers[real]) == 0u);
+        else
+            BOOST_TEST(calcSum(curSoldiers[real]) == calcSum(soldiersBefore[real]) - numAttackers);
+    }
+    BOOST_TEST(getTotalSoldiers(attackedPlayer) == totalSoldiersBefore);
+    // Move attacker to flag to trigger defender request
+    auto& attacker = *attackers.front();
+    moveObjTo(world, attacker, attackedBld.GetFlagPos());
     rescheduleWalkEvent(em, attacker, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::AttackingWaitingForDefender);
     // All agressive defenders are cancelled
-    for(const auto& fig : attackedHq.GetLeavingFigures())
+    for(const auto& fig : attackedBld.GetLeavingFigures())
         BOOST_TEST(fig.GetGOT() != GO_Type::NofAggressivedefender);
-    BOOST_TEST_REQUIRE(!attackedHq.GetLeavingFigures().empty());
+    BOOST_TEST_REQUIRE(!attackedBld.GetLeavingFigures().empty());
     // Defender is coming
-    BOOST_TEST_REQUIRE(attackedHq.GetLeavingFigures().front().GetGOT() == GO_Type::NofDefender);
-    const auto defenderRank = getSoldierRank(attackedHq.GetLeavingFigures().front().GetJobType());
-    // Counts unchanged until defender is out
-    BOOST_TEST(getSoldiers() == soldiersNow);
+    BOOST_TEST_REQUIRE(attackedBld.GetLeavingFigures().front().GetGOT() == GO_Type::NofDefender);
+    const auto defenderRank = getSoldierRank(attackedBld.GetLeavingFigures().front().GetJobType());
+    if(test_case == AttackedBldType::Hq)
+    {
+        const auto curSoldiers = getNumSoldiers(attackedHq);
+        // Only defender is missing, only from real count (until actually left)
+        BOOST_TEST(calcSum(curSoldiers[real]) == calcSum(soldiersBefore[real]) - 1);
+        BOOST_TEST(curSoldiers[visual] == soldiersBefore[visual]);
+    }
+    BOOST_TEST(getTotalSoldiers(attackedPlayer) == totalSoldiersBefore);
+    RTTR_EXEC_TILL(70, attackedBld.GetLeavingFigures().empty());
+    if(test_case == AttackedBldType::Hq)
+    {
+        auto soldiersExpected = soldiersBefore;
+        soldiersExpected[visual][defenderRank] = --soldiersExpected[real][defenderRank]; // Defender is out
+        BOOST_TEST(getNumSoldiers(attackedHq) == soldiersExpected);
+    }
+    BOOST_TEST(getTotalSoldiers(attackedPlayer) == totalSoldiersBefore);
+}
+
+BOOST_FIXTURE_TEST_CASE(LeavingSoldierUsedAsDefender, AttackFixture<2>)
+{
+    // When the only soldier in a HQ is currently leaving (to a building) it is used as defender
+    // Counts need to be correct at all times
+    AddSoldiers(milBld0Pos, 2, Job::General);
+    auto& attackedHq = ensureNonNull(world.GetSpecObj<nobBaseWarehouse>(hqPos[1]));
+    const auto soldierJob = rttr::test::randomElement(SOLDIER_JOBS);
+    attackedHq.SetRealReserve(getSoldierRank(soldierJob), 0);
+    attackedHq.AddToInventory(PeopleCounts::make(soldierJob, 1), true);
+    const auto attackedPlayer = attackedHq.GetPlayer();
+    const auto totalSoldiersBefore = getTotalSoldiers(attackedPlayer);
+    const auto soldiersBefore = getNumSoldiers(attackedHq);
+
+    this->Attack(attackedHq.GetPos(), 1, true);
+    BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().size() == 1);
+    auto& attacker = dynamic_cast<nofAttacker&>(milBld0->GetLeavingFigures().front());
+    RTTR_EXEC_TILL(50, milBld0->GetLeavingFigures().empty());
+    curPlayer = attackedPlayer;
+    BuildRoadForBlds(milBld1Pos, hqPos[1]);
+    curPlayer = 0;
+    BOOST_TEST_REQUIRE(!attackedHq.GetLeavingFigures().empty());
+    {
+        const auto& leavingSoldier = dynamic_cast<nofSoldier&>(attackedHq.GetLeavingFigures().front());
+        BOOST_TEST(leavingSoldier.GetGoal() == milBld1);
+    }
+    BOOST_TEST(getTotalSoldiers(attackedPlayer) == totalSoldiersBefore);
+    const auto soldiersNow = getNumSoldiers(attackedHq);
+    BOOST_TEST(soldiersNow[visual] == soldiersBefore[visual]);
+    BOOST_TEST(calcSum(soldiersNow[real]) == 0u);
+    moveObjTo(world, attacker, attackedHq.GetFlagPos());
+    rescheduleWalkEvent(em, attacker, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST_REQUIRE(attackedHq.GetLeavingFigures().size() == 1);
+    BOOST_TEST(attackedHq.GetLeavingFigures().front().GetGOT() == GO_Type::NofDefender);
+    BOOST_TEST(getTotalSoldiers(attackedPlayer) == totalSoldiersBefore);
+    BOOST_TEST(getNumSoldiers(attackedHq) == soldiersNow);
     RTTR_EXEC_TILL(70, attackedHq.GetLeavingFigures().empty());
-    soldiersNow = getSoldiers();
-    auto soldiersExpected = soldiersBefore;
-    soldiersExpected[1][defenderRank] = --soldiersExpected[0][defenderRank]; // Defender is out
-    BOOST_TEST(soldiersNow == soldiersExpected);
+    BOOST_TEST(getTotalSoldiers(attackedPlayer) == totalSoldiersBefore);
+    const auto soldiersAfter = getNumSoldiers(attackedHq);
+    BOOST_TEST(calcSum(soldiersAfter[visual]) == 0u);
+    BOOST_TEST(calcSum(soldiersAfter[real]) == 0u);
 }
 
 using DestroyRoadsOnConquerFixture = AttackFixture<2, 24>;
