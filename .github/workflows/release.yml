@@ -1,8 +1,10 @@
-# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2026 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 name: Create Release
+permissions:
+  contents: write
 
 on:
   push:
@@ -18,7 +20,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Extract tag name
         id: get_tag
         run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
@@ -60,12 +62,11 @@ jobs:
           fi
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          name: Release ${{ github.ref }}
           body: |
             Return To The Roots (Settlers II(R) Clone)
             ${{ env.TAG_MSG }}
@@ -73,21 +74,7 @@ jobs:
             - ${{steps.filenames.outputs.devTools}} contains optional binaries for development. Extract over the source folder if required
           draft: false
           prerelease: false
-      - name: Upload source distribution
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{steps.filenames.outputs.src}}
-          asset_name: ${{steps.filenames.outputs.src}}
-          asset_content_type: application/tar.gz
-      - name: Upload Dev Tools
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{steps.filenames.outputs.devTools}}
-          asset_name: ${{steps.filenames.outputs.devTools}}
-          asset_content_type: application/tar.gz
+          files: |
+            ${{steps.filenames.outputs.src}}
+            ${{steps.filenames.outputs.devTools}}
+          fail_on_unmatched_files: true

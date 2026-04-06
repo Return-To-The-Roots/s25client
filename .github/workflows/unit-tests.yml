@@ -1,8 +1,10 @@
-# Copyright (C) 2005 - 2025 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2026 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 name: Unit tests
+permissions:
+  contents: write
 
 on:
   push:
@@ -37,11 +39,11 @@ jobs:
           - { os: windows-2022, generator: Visual Studio 17 2022, type: Release, platform: x64}
     runs-on: ${{matrix.os}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: true
       - name: Install boost
-        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
+        uses: MarkusJx/install-boost@8ba8b2fac59ef3d91a838bb4aa53ceabd33d1aa3  # v2.5.1
         id: install-boost
         with:
           boost_version: ${{env.BOOST_VERSION}}
@@ -139,18 +141,18 @@ jobs:
           echo "GCOV=$GCOV" >> $GITHUB_ENV
 
       # Coverage collection requires access to history to find merge-base
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: "!matrix.coverage"
         with:
           submodules: true
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: matrix.coverage
         with:
           submodules: true
           fetch-depth: 0 # Full history
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ${{env.DEPS_DIR}}
           key: ${{matrix.os}}-${{env.BOOST_VERSION}}
@@ -182,7 +184,7 @@ jobs:
           fi
 
       - name: Setup CCache
-        uses: hendrikmuhs/ccache-action@v1
+        uses: hendrikmuhs/ccache-action@33522472633dbd32578e909b315f5ee43ba878ce # v1.2.22
         with:
           key: ${{matrix.os}}-${{matrix.compiler}}-${{matrix.type}}-${{matrix.boost}}
           max-size: 200M
@@ -218,7 +220,7 @@ jobs:
 
       - name: Upload coverage (Coveralls)
         if: matrix.coverage && success()
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@5cbfd81b66ca5d10c19b062c04de0199c215fb6e # v2.3.7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           path-to-lcov: srccov.info
