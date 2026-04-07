@@ -13,7 +13,7 @@ class ctrlTextButton : public ctrlButton, public ctrlBaseText
 public:
     ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                    const std::string& text, const glFont* font, const std::string& tooltip,
-                   const LimitFactors& limitFactors);
+                   const ScaleLimPercent& scalePercentage);
 
     /// Changes width so at most this many chars can be shown
     void ResizeForMaxChars(unsigned numChars);

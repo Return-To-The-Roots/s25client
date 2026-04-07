@@ -17,16 +17,16 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <cstdarg>
 
-Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const LimitFactors& factors)
-    : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(factors), active_(false),
+Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const ScaleLimPercent& scalePercentage)
+    : parent_(parent), id_(id), pos_(pos), size_(size), scalePercentage_(scalePercentage), active_(false),
       visible_(true), scale_(false), limit_(false), isInMouseRelay(false), animations_(this)
 {
-    SetLimitFactors(factors);
+    SetScalePercentage(scalePercentage);
     if(parent != nullptr && parent->GetScale())
     {
         scale_ = parent->GetScale();
         limit_ = parent->GetLimit();
-        ScaleByFactor();
+        Scale();
     }
 }
 
@@ -73,20 +73,20 @@ Extent Window::GetSize() const
     return size_;
 }
 
-LimitFactors Window::GetLimitFactors() const
+ScaleLimPercent Window::GetScalePercentage() const
 {
-    return limitFactors_;
+    return scalePercentage_;
 }
 
-void Window::SetLimitFactors(LimitFactors limitFactors)
+void Window::SetScalePercentage(ScaleLimPercent scalePercentage)
 {
-    if(limitFactors.x > 100)
-        limitFactors.x = 100;
+    if(scalePercentage.x > 100)
+        scalePercentage.x = 100;
 
-    if(limitFactors.y > 100)
-        limitFactors.y = 100;
+    if(scalePercentage.y > 100)
+        scalePercentage.y = 100;
 
-    limitFactors_ = limitFactors;
+    scalePercentage_ = scalePercentage;
 }
 
 Rect Window::GetDrawRect() const
@@ -244,7 +244,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, Bui
 ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                   const std::string& text, const glFont* font, const std::string& tooltip)
 {
-    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, LimitFactors(30, 50)));
+    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, ScaleLimPercent(30, 50)));
 }
 
 ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
@@ -564,11 +564,11 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         if(!ctrl)
             continue;
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
-        LimitFactors limits(0, 0);
+        ScaleLimPercent limits(100, 100);
         if(limit_)
-            limits = ctrl->GetLimitFactors();
+            limits = ctrl->GetScalePercentage();
         Extent newSize = rescale(ctrl->GetSize(), limits);
-        ctrl->SetPos(rescale(ctrl->GetPos(), LimitFactors(100, 100)));
+        ctrl->SetPos(rescale(ctrl->GetPos(), ScaleLimPercent(100, 100)));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -576,24 +576,21 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 }
 
 template<class T_Pt>
-T_Pt Window::Scale(const T_Pt& pt, const LimitFactors& limfactors)
+T_Pt Window::Scale(const T_Pt& pt, const ScaleLimPercent& scalePercentage)
 {
-    return ScaleWindowProp::scale(pt, VIDEODRIVER.GetRenderSize(), limfactors);
+    return ScaleWindowProp::scale(pt, VIDEODRIVER.GetRenderSize(), scalePercentage);
 }
 
-void Window::ScaleByFactor()
+void Window::Scale()
 {
-    pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(100, 100));
-    if(limit_)
-        size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
-    else
-        size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), LimitFactors(100, 100));
+    pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize(), ScaleLimPercent(100, 100));
+    size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limit_ ? scalePercentage_ : ScaleLimPercent(100, 100));
 }
 
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt) const
 {
-    return scale_ ? Scale(pt, LimitFactors(100, 100)) : pt;
+    return scale_ ? Scale(pt, ScaleLimPercent(100, 100)) : pt;
 }
 
 // Inlining removes those. so add it here

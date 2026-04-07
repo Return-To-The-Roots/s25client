@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE(MouseOver, uiHelper::Fixture)
     const auto pos = rttr::test::randomPoint<DrawPoint>();
     const auto size = rttr::test::randomPoint<Extent>(10);
     const auto font = createMockFont({'H', 'e', 'l', 'o', '?'});
-    ctrlTextButton bt(nullptr, 1, pos, size, TextureColor::Bricks, "Hello", font.get(), "", LimitFactors(100, 100));
+    ctrlTextButton bt(nullptr, 1, pos, size, TextureColor::Bricks, "Hello", font.get(), "", ScaleLimPercent(100, 100));
     BOOST_TEST(bt.IsMouseOver(pos));
     BOOST_TEST(!bt.IsMouseOver(pos - DrawPoint(1, 0)));
     BOOST_TEST(!bt.IsMouseOver(pos - DrawPoint(0, 1)));
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
     }
     {
         ctrlTextButton txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(),
-                           TextureColor::Green1, "foo", font.get(), "tooltip", LimitFactors(100, 100));
+                           TextureColor::Green1, "foo", font.get(), "tooltip", ScaleLimPercent(100, 100));
         const Extent sizeBefore = txt.GetSize();
         // Don't assume size, so get size for 0 chars
         txt.ResizeForMaxChars(0);

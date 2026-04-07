@@ -58,7 +58,7 @@ namespace libsiedler2 {
 class ArchivItem_Map;
 }
 
-using LimitFactors = Point<unsigned>;
+using ScaleLimPercent = Point<unsigned>;
 
 /// Die Basisklasse der Fenster.
 class Window
@@ -67,7 +67,7 @@ public:
     using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
     using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
-    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0), const LimitFactors& factors = LimitFactors(100, 100));
+    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0), const ScaleLimPercent& factors = ScaleLimPercent(100, 100));
     virtual ~Window();
     /// zeichnet das Fenster.
     void Draw();
@@ -78,7 +78,7 @@ public:
     /// Get the size of the window
     Extent GetSize() const;
     /// Get the Limit Factors for scaling
-    LimitFactors GetLimitFactors() const;
+    ScaleLimPercent GetScalePercentage() const;
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
     /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
@@ -91,7 +91,7 @@ public:
     /// setzt die Höhe des Fensters
     void SetHeight(unsigned height) { Resize(Extent(size_.x, height)); }
     /// Set the Limit Factors for scaling
-    void SetLimitFactors(LimitFactors limitFactors);
+    void SetScalePercentage(ScaleLimPercent scalePercentage);
     /// Sendet eine Tastaturnachricht an die Steuerelemente.
     bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Sendet eine Mausnachricht weiter an alle Steuerelemente
@@ -294,9 +294,9 @@ protected:
 
     /// scales X- and Y values to fit the screen, additionally considering a limiting factor for size
     template<class T_Pt>
-    static T_Pt Scale(const T_Pt& pt, const LimitFactors& limfactors);
-    /// scales X- and Y values of pos_ and size_, additionally considering limitFactors_ for size_ scaling
-    void ScaleByFactor();
+    static T_Pt Scale(const T_Pt& pt, const ScaleLimPercent& scalePercentage);
+    /// scales X- and Y values of pos_ and size_, additionally considering scalePercentage_ for size_ scaling
+    void Scale();
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt) const;
@@ -318,7 +318,7 @@ private:
     unsigned id_;               /// ID des Fensters.
     DrawPoint pos_;             /// Position des Fensters.
     Extent size_;               /// Höhe des Fensters.
-    LimitFactors limitFactors_; /// X and Y scaling limiting factors
+    ScaleLimPercent scalePercentage_; /// X and Y scaling limiting factors
     bool active_;               /// Fenster aktiv?
     bool visible_;              /// Fenster sichtbar?
     bool scale_;                /// Sollen Controls an Fenstergröße angepasst werden?
