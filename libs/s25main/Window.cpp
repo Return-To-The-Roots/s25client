@@ -21,6 +21,7 @@ Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& 
     : parent_(parent), id_(id), pos_(pos), size_(size), limitFactors_(factors), active_(false),
       visible_(true), scale_(false), limit_(false), isInMouseRelay(false), animations_(this)
 {
+    SetLimitFactors(factors);
     if(parent != nullptr && parent->GetScale())
     {
         scale_ = parent->GetScale();
@@ -79,6 +80,12 @@ LimitFactors Window::GetLimitFactors() const
 
 void Window::SetLimitFactors(LimitFactors limitFactors)
 {
+    if(limitFactors.x > 100)
+        limitFactors.x = 100;
+
+    if(limitFactors.y > 100)
+        limitFactors.y = 100;
+
     limitFactors_ = limitFactors;
 }
 
@@ -237,7 +244,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, Bui
 ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                   const std::string& text, const glFont* font, const std::string& tooltip)
 {
-    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, LimitFactors(7, 5)));
+    return AddCtrl(new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip, LimitFactors(30, 50)));
 }
 
 ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
@@ -561,7 +568,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         if(limit_)
             limits = ctrl->GetLimitFactors();
         Extent newSize = rescale(ctrl->GetSize(), limits);
-        ctrl->SetPos(rescale(ctrl->GetPos(), LimitFactors(0, 0)));
+        ctrl->SetPos(rescale(ctrl->GetPos(), LimitFactors(100, 100)));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -576,17 +583,17 @@ T_Pt Window::Scale(const T_Pt& pt, const LimitFactors& limfactors)
 
 void Window::ScaleByFactor()
 {
-    pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
+    pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize(), LimitFactors(100, 100));
     if(limit_)
         size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limitFactors_);
     else
-        size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), LimitFactors(0, 0));
+        size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), LimitFactors(100, 100));
 }
 
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt) const
 {
-    return scale_ ? Scale(pt, LimitFactors(0, 0)) : pt;
+    return scale_ ? Scale(pt, LimitFactors(100, 100)) : pt;
 }
 
 // Inlining removes those. so add it here

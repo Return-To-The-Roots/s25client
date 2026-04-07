@@ -67,7 +67,7 @@ public:
     using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
     using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
-    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0), const LimitFactors& factors = LimitFactors(0, 0));
+    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0), const LimitFactors& factors = LimitFactors(100, 100));
     virtual ~Window();
     /// zeichnet das Fenster.
     void Draw();

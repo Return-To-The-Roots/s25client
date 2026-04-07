@@ -17,7 +17,7 @@ class ctrlButton : public Window, public ctrlBaseTooltip
 {
 public:
     ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-               const std::string& tooltip, const LimitFactors& factors = LimitFactors(0, 0));
+               const std::string& tooltip, const LimitFactors& factors = LimitFactors(100, 100));
     ~ctrlButton() override;
 
     void SetEnabled(bool enable = true);
