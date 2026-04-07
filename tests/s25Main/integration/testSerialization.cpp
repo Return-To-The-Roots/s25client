@@ -41,6 +41,7 @@
 BOOST_TEST_DONT_PRINT_LOG_VALUE(Resource)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AddonId)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(nofBuildingWorker::State)
+// LCOV_EXCL_STOP
 
 namespace {
 using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
