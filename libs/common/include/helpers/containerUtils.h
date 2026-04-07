@@ -128,6 +128,13 @@ size_t count_if(const T& container, T_Predicate&& predicate)
     return static_cast<std::make_unsigned_t<decltype(result)>>(result);
 }
 
+/// Sort collection with optional predicate
+template<class T, class T_Predicate = std::less<>>
+void sort(T& container, T_Predicate&& predicate = T_Predicate{})
+{
+    std::sort(begin(container), end(container), std::forward<T_Predicate>(predicate));
+}
+
 /// Remove duplicate values from the given sorted container
 template<class T>
 void makeUniqueSorted(T& container)
@@ -139,13 +146,13 @@ void makeUniqueSorted(T& container)
 template<class T>
 void makeUnique(T& container)
 {
-    std::sort(begin(container), end(container));
+    sort(container);
     makeUniqueSorted(container);
 }
 template<class T, class T_Predicate>
 void makeUnique(T& container, T_Predicate&& predicate)
 {
-    std::sort(begin(container), end(container), std::forward<T_Predicate>(predicate));
+    sort(container, std::forward<T_Predicate>(predicate));
     makeUniqueSorted(container);
 }
 /// Remove duplicate values from the given container without changing the order
