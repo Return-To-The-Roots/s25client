@@ -12,7 +12,7 @@
 #include "libsiedler2/ArchivItem_Text.h"
 #include <algorithm>
 
-static bool operator<(const Language& o1, const Language& o2)
+static bool operator<(const Language& o1, const Language& o2) noexcept
 {
     if(o1.name < o2.name)
         return true;
@@ -45,7 +45,7 @@ void Languages::loadLanguages()
     }
 
     // Sprachen sortieren
-    std::sort(languages.begin(), languages.end());
+    helpers::sort(languages);
 
     // Systemsprache hinzufügen
     Language l(gettext_noop("System language"), "");

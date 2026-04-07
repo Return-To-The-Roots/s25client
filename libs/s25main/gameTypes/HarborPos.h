@@ -19,7 +19,7 @@ struct HarborPos
 
         Neighbor(HarborId id, unsigned distance) noexcept : id(id), distance(distance) {}
 
-        bool operator<(const Neighbor& two) const
+        bool operator<(const Neighbor& two) const noexcept
         {
             return (distance < two.distance) || (distance == two.distance && id.value() < two.id.value());
         }

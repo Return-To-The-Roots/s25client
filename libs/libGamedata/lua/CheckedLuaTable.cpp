@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "CheckedLuaTable.h"
+#include "helpers/containerUtils.h"
 #include "s25util/Log.h"
 #include <boost/algorithm/string/join.hpp>
 #include <algorithm>
@@ -22,7 +23,7 @@ void CheckedLuaTable::checkUnused()
     checkEnabled = false;
 
     std::vector<std::string> tableKeys = table.keys<std::string>();
-    std::sort(tableKeys.begin(), tableKeys.end());
+    helpers::sort(tableKeys);
     std::vector<std::string> unusedKeys;
     std::set_difference(tableKeys.begin(), tableKeys.end(), accessedKeys_.begin(), accessedKeys_.end(),
                         std::back_inserter(unusedKeys));

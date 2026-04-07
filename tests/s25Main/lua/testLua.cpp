@@ -819,8 +819,8 @@ BOOST_AUTO_TEST_CASE(onOccupied)
     {
         Points& gamePts = gamePtsPerPlayer[i];
         Points& luaPts = luaPtsPerPlayer[i];
-        std::sort(gamePts.begin(), gamePts.end());
-        std::sort(luaPts.begin(), luaPts.end());
+        helpers::sort(gamePts);
+        helpers::sort(luaPts);
         BOOST_TEST_REQUIRE(luaPts == gamePts, boost::test_tools::per_element());
     }
 }
@@ -851,8 +851,8 @@ BOOST_AUTO_TEST_CASE(onExplored)
     {
         Points& gamePts = gamePtsPerPlayer[i];
         Points& luaPts = luaPtsPerPlayer[i];
-        std::sort(gamePts.begin(), gamePts.end());
-        std::sort(luaPts.begin(), luaPts.end());
+        helpers::sort(gamePts);
+        helpers::sort(luaPts);
         BOOST_TEST_REQUIRE(luaPts == gamePts, boost::test_tools::per_element());
     }
 }

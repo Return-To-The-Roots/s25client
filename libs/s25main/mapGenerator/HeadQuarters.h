@@ -66,7 +66,7 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
     const auto byDistanceToOtherHqs = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
         return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
     };
-    std::sort(possiblePositions.begin(), possiblePositions.end(), byDistanceToOtherHqs);
+    helpers::sort(possiblePositions, byDistanceToOtherHqs);
 
     // 3. filter out points within minimum distance to existing HQs
     const unsigned minHqDistance = (map.size.x + map.size.y) / 16;
