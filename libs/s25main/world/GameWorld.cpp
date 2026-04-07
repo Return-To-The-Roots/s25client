@@ -842,9 +842,9 @@ void GameWorld::AttackViaSea(const unsigned char player_attacker, const MapPoint
 
     // Sort them
     if(strong_soldiers)
-        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::greater<>>());
+        helpers::sort(attackers, CmpSeaAttacker<std::greater<>>());
     else
-        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<>>());
+        helpers::sort(attackers, CmpSeaAttacker<std::less<>>());
 
     auto& attacked_building = *GetSpecObj<nobBaseMilitary>(pt);
     unsigned counter = 0;

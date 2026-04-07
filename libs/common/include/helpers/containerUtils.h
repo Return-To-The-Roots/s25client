@@ -132,6 +132,8 @@ size_t count_if(const T& container, T_Predicate&& predicate)
 template<class T, class T_Predicate = std::less<>>
 void sort(T& container, T_Predicate&& predicate = T_Predicate{})
 {
+    using std::begin;
+    using std::end;
     std::sort(begin(container), end(container), std::forward<T_Predicate>(predicate));
 }
 

@@ -71,7 +71,7 @@ public:
             return sortBy(worldDesc_.get(t1)) < sortBy(worldDesc_.get(t2));
         };
 
-        std::sort(textures.begin(), textures.end(), lessThan);
+        helpers::sort(textures, lessThan);
     }
 
     template<class T_Predicate>

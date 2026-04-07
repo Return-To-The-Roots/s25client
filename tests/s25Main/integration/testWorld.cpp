@@ -155,15 +155,15 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
     BOOST_TEST(hqsOriginalMap.size() == numPlayers);
     BOOST_TEST(hqsShuffledMap.size() == numPlayers);
     // The loader stores the HQ positions read from the map
-    BOOST_TEST(hqsShuffledMap == hqsOriginalMap);
+    BOOST_TEST(hqsShuffledMap == hqsOriginalMap, boost::test_tools::per_element());
     // When shuffled the positions should have changed
-    BOOST_TEST(hqsShuffledWorld != hqsOriginalWorld);
+    BOOST_TEST(hqsShuffledWorld != hqsOriginalWorld, boost::test_tools::per_element());
     helpers::sort(hqsOriginalMap, MapPointLess{});
     helpers::sort(hqsShuffledWorld, MapPointLess{});
     helpers::sort(hqsOriginalWorld, MapPointLess{});
     // But the same positions should be used just in different order
-    BOOST_TEST(hqsOriginalMap == hqsOriginalWorld);
-    BOOST_TEST(hqsShuffledWorld == hqsOriginalWorld);
+    BOOST_TEST(hqsOriginalMap == hqsOriginalWorld, boost::test_tools::per_element());
+    BOOST_TEST(hqsShuffledWorld == hqsOriginalWorld, boost::test_tools::per_element());
 }
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)

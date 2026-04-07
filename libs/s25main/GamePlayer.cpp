@@ -1022,7 +1022,7 @@ struct ClientForWare
         : bld(bld), estimate(estimate), points(points)
     {}
 
-    bool operator<(const ClientForWare& b) const
+    bool operator<(const ClientForWare& b) const noexcept
     {
         // use estimate, points and object id (as tie breaker) for sorting
         if(estimate != b.estimate)
@@ -1118,7 +1118,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
     }
 
     // sort our clients, highest score first
-    std::sort(possibleClients.begin(), possibleClients.end());
+    helpers::sort(possibleClients);
 
     noBaseBuilding* lastBld = nullptr;
     noBaseBuilding* bestBld = nullptr;
@@ -1903,7 +1903,7 @@ struct ShipForHarbor
 
     ShipForHarbor(noShip* ship, uint32_t estimate) : ship(ship), estimate(estimate) {}
 
-    bool operator<(const ShipForHarbor& b) const
+    bool operator<(const ShipForHarbor& b) const noexcept
     {
         return (estimate < b.estimate) || (estimate == b.estimate && ship->GetObjId() < b.ship->GetObjId());
     }
@@ -1934,7 +1934,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
         }
     }
 
-    std::sort(sfh.begin(), sfh.end());
+    helpers::sort(sfh);
 
     noShip* best_ship = nullptr;
     uint32_t best_distance = std::numeric_limits<uint32_t>::max();
@@ -2313,7 +2313,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
     const MapPoint goalFlagPos = goalWh->GetFlagPos();
 
     std::vector<nobBaseWarehouse*> whs(buildings.GetStorehouses().begin(), buildings.GetStorehouses().end());
-    std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, world));
+    helpers::sort(whs, WarehouseDistanceComparator(*goalWh, world));
     TradePathCache& tradePathCache = world.GetTradePathCache();
     for(nobBaseWarehouse* wh : whs)
     {

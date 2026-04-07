@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "ListDir.h"
+#include "helpers/containerUtils.h"
 #include "s25util/strAlgos.h"
 #include <boost/filesystem.hpp>
 #include <algorithm>
@@ -41,6 +42,6 @@ std::vector<bfs::path> ListDir(const bfs::path& path, std::string extension, boo
         result.emplace_back(std::move(curPath));
     }
 
-    std::sort(result.begin(), result.end());
+    helpers::sort(result);
     return result;
 }

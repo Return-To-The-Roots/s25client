@@ -56,7 +56,7 @@ public:
     const nofDefender* GetDefender() const { return defender_; }
 
     /// Compares according to build time (Age): Bigger objIds are "younger"
-    bool operator<(const nobBaseMilitary& other) const { return GetObjId() > other.GetObjId(); }
+    bool operator<(const nobBaseMilitary& other) const noexcept { return GetObjId() > other.GetObjId(); }
 
     /// Meldet ein neues "Rausgeh"-Event an, falls gerade keiner rausgeht
     /// (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)

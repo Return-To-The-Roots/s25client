@@ -5,6 +5,7 @@
 #include "PointOutput.h"
 #include "enum_cast.hpp"
 #include "helpers/EnumArray.h"
+#include "helpers/containerUtils.h"
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
@@ -39,8 +40,8 @@ BOOST_AUTO_TEST_CASE(GetAllNeighboursUnion)
 
     auto resultPoints = world.GetAllNeighboursUnion(testPoints);
 
-    std::sort(resultPoints.begin(), resultPoints.end(), MapPointLess());
-    std::sort(expectedResultPoints.begin(), expectedResultPoints.end(), MapPointLess());
+    helpers::sort(resultPoints, MapPointLess());
+    helpers::sort(expectedResultPoints, MapPointLess());
 
     BOOST_TEST(resultPoints == expectedResultPoints, boost::test_tools::per_element());
 }

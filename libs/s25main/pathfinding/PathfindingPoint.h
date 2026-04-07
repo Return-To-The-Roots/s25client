@@ -17,7 +17,7 @@ public:
     {}
 
     /// Operator für den Vergleich
-    bool operator<(const PathfindingPoint& rhs) const
+    bool operator<(const PathfindingPoint& rhs) const noexcept
     {
         // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng monoton
         // steigende Folge brauchen

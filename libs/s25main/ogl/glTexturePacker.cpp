@@ -4,6 +4,7 @@
 
 #include "glTexturePacker.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
 #include "ogl/saveBitmap.h"
@@ -117,7 +118,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
 
 bool glTexturePacker::pack()
 {
-    std::sort(items.begin(), items.end(), isSizeGreater);
+    helpers::sort(items, isSizeGreater);
 
     if(packHelper(items))
         return true;

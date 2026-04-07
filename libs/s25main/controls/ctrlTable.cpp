@@ -8,6 +8,7 @@
 #include "ctrlScrollBar.h"
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
+#include "helpers/containerUtils.h"
 #include "helpers/mathFuncs.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
@@ -295,7 +296,7 @@ void ctrlTable::SortRows(unsigned column, const TableSortDir sortDir)
         const int cmpResult = Compare(a, b, sortType);
         return (sortDir == TableSortDir::Ascending) ? cmpResult < 0 : cmpResult > 0;
     };
-    std::sort(rows_.begin(), rows_.end(), compareFunc);
+    helpers::sort(rows_, compareFunc);
 }
 
 /**

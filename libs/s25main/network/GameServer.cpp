@@ -476,7 +476,7 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
     }
 
     // To make the teams as even as possible we start to assign the most constrained players first
-    std::sort(playersToAssign.begin(), playersToAssign.end(), [](const AssignPlayer& lhs, const AssignPlayer& rhs) {
+    helpers::sort(playersToAssign, [](const AssignPlayer& lhs, const AssignPlayer& rhs) {
         return lhs.possibleTeams.size() < rhs.possibleTeams.size();
     });
 
