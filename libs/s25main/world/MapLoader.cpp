@@ -79,9 +79,6 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
 
     if(!Load(map, world_.GetGGS().exploration))
         return false;
-    std::vector<MapPoint> hqPositions = hqPositions_;
-    if(world_.GetGGS().randomStartPosition)
-        RANDOM_SHUFFLE2(hqPositions, 0);
     if(!PlaceHQs())
         return false;
 
@@ -103,7 +100,10 @@ bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const
 
 bool MapLoader::PlaceHQs(bool addStartWares)
 {
-    return PlaceHQs(world_, hqPositions_, addStartWares);
+    std::vector<MapPoint> hqPositions = hqPositions_;
+    if(world_.GetGGS().randomStartPosition)
+        RANDOM_SHUFFLE2(hqPositions, 0);
+    return PlaceHQs(world_, hqPositions, addStartWares);
 }
 
 void MapLoader::InitShadows(World& world)
