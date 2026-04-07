@@ -51,8 +51,8 @@ public:
     /// Return false if there was an error (e.g. invalid start position)
     bool PlaceHQs(bool addStartWares = true);
 
-    /// Return the position of the players HQ (only valid after successful load)
-    MapPoint GetHQPos(unsigned player) const { return hqPositions_[player]; }
+    /// Return the (original/unshuffled) position of the players HQ (only valid after successful load)
+    MapPoint GetOriginalHQPos(unsigned player) const { return hqPositions_[player]; }
 
     static void InitShadows(World& world);
     static void SetMapExplored(World& world);

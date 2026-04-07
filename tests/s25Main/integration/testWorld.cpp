@@ -40,20 +40,6 @@ struct UninitializedWorldCreator
     bool operator()(GameWorldBase&) { return true; }
 };
 
-struct LoadWorldFromFileCreator : MapTestFixture
-{
-    std::vector<MapPoint> hqs;
-
-    explicit LoadWorldFromFileCreator(MapExtent) {}
-    bool operator()(GameWorldBase& world)
-    {
-        MapLoader loader(world);
-        BOOST_TEST_REQUIRE(loader.Load(testMapPath));
-        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-            hqs.push_back(loader.GetHQPos(i));
-        return true;
-    }
-};
 struct LoadWorldAndS2MapCreator : MapTestFixture
 {
     libsiedler2::ArchivItem_Map map;
@@ -72,7 +58,6 @@ struct LoadWorldAndS2MapCreator : MapTestFixture
 };
 
 using WorldLoadedWithS2MapFixture = WorldFixture<LoadWorldAndS2MapCreator>;
-using WorldLoaded1PFixture = WorldFixture<LoadWorldFromFileCreator, 1>;
 using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1>;
 } // namespace
 
@@ -133,12 +118,52 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
+BOOST_AUTO_TEST_CASE(HQPlacement)
 {
-    GamePlayer& player = world.GetPlayer(0);
-    BOOST_TEST_REQUIRE(player.isUsed());
-    BOOST_TEST_REQUIRE(worldCreator.hqs[0].isValid());
-    BOOST_TEST_REQUIRE(world.GetNO(worldCreator.hqs[0])->GetGOT() == GO_Type::NobHq);
+    constexpr auto numPlayers = 4u;
+
+    std::vector<MapPoint> hqsOriginalMap, hqsShuffledMap, hqsOriginalWorld, hqsShuffledWorld;
+    for(const bool randStartPos : {false, true})
+    {
+        BOOST_TEST_INFO_SCOPE("Random: " << randStartPos);
+        WorldFixtureBase fixture(numPlayers);
+        fixture.ggs.randomStartPosition = randStartPos;
+        auto& world = fixture.world;
+        MapLoader loader(world);
+        BOOST_TEST_REQUIRE(loader.Load(testMapPath));
+        auto& hqsMap = randStartPos ? hqsShuffledMap : hqsOriginalMap;
+        auto& hqsWorld = randStartPos ? hqsShuffledWorld : hqsOriginalWorld;
+        hqsWorld.resize(world.GetNumPlayers());
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+        {
+            BOOST_TEST_INFO_SCOPE("Player: " << i);
+            GamePlayer& player = world.GetPlayer(i);
+            BOOST_TEST_REQUIRE(player.isUsed());
+
+            auto hqPos = loader.GetOriginalHQPos(i);
+            BOOST_TEST_REQUIRE(hqPos.isValid());
+            BOOST_TEST(!helpers::contains(hqsMap, hqPos)); // Unique position
+            hqsMap.push_back(hqPos);
+            BOOST_TEST(world.GetNO(hqPos)->GetGOT() == GO_Type::NobHq);
+
+            hqPos = world.GetPlayer(i).GetHQPos();
+            BOOST_TEST_REQUIRE(hqPos.isValid());
+            BOOST_TEST(!helpers::contains(hqsWorld, hqPos)); // Unique position
+            hqsWorld[i] = hqPos;
+        }
+    }
+    BOOST_TEST(hqsOriginalMap.size() == numPlayers);
+    BOOST_TEST(hqsShuffledMap.size() == numPlayers);
+    // The loader stores the HQ positions read from the map
+    BOOST_TEST(hqsShuffledMap == hqsOriginalMap);
+    // When shuffled the positions should have changed
+    BOOST_TEST(hqsShuffledWorld != hqsOriginalWorld);
+    helpers::sort(hqsOriginalMap, MapPointLess{});
+    helpers::sort(hqsShuffledWorld, MapPointLess{});
+    helpers::sort(hqsOriginalWorld, MapPointLess{});
+    // But the same positions should be used just in different order
+    BOOST_TEST(hqsOriginalMap == hqsOriginalWorld);
+    BOOST_TEST(hqsShuffledWorld == hqsOriginalWorld);
 }
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
