@@ -78,7 +78,7 @@ public:
     DrawPoint GetDrawPos() const;
     /// Get the size of the window
     Extent GetSize() const;
-    /// Get the Limit Factors for scaling
+    /// Get the Scaling Percentage
     ScaleLimPercent GetScalePercentage() const;
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
@@ -91,7 +91,7 @@ public:
     void SetWidth(unsigned width) { Resize(Extent(width, size_.y)); }
     /// setzt die Höhe des Fensters
     void SetHeight(unsigned height) { Resize(Extent(size_.x, height)); }
-    /// Set the Limit Factors for scaling
+    /// Set the Scaling Percentage
     void SetScalePercentage(ScaleLimPercent scalePercentage);
     /// Sendet eine Tastaturnachricht an die Steuerelemente.
     bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
@@ -293,7 +293,7 @@ protected:
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
-    /// scales X- and Y values to fit the screen, additionally considering a limiting factor for size
+    /// scales X- and Y values to fit the screen, additionally considering a scaling percentage for size
     template<class T_Pt>
     static T_Pt Scale(const T_Pt& pt, const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100));
     /// scales X- and Y values of pos_ and size_, additionally considering scalePercentage_ for size_ scaling
