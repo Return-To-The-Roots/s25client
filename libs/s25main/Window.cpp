@@ -568,7 +568,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         if(limit_)
             limits = ctrl->GetScalePercentage();
         Extent newSize = rescale(ctrl->GetSize(), limits);
-        ctrl->SetPos(rescale(ctrl->GetPos(), ScaleLimPercent(100, 100)));
+        ctrl->SetPos(rescale(ctrl->GetPos()));
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -583,14 +583,14 @@ T_Pt Window::Scale(const T_Pt& pt, const ScaleLimPercent& scalePercentage)
 
 void Window::Scale()
 {
-    pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize(), ScaleLimPercent(100, 100));
+    pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize());
     size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limit_ ? scalePercentage_ : ScaleLimPercent(100, 100));
 }
 
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt) const
 {
-    return scale_ ? Scale(pt, ScaleLimPercent(100, 100)) : pt;
+    return scale_ ? Scale(pt) : pt;
 }
 
 // Inlining removes those. so add it here

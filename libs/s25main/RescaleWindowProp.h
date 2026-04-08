@@ -18,18 +18,15 @@ struct ScaleWindowProp
     /// Reference Resolution used
     static constexpr Extent REFERENCE_RESOLUTION = Extent(800, 600);
 
-    Extent size, oldSize, newSize;
-    ScaleWindowProp(const Extent& size) : size(size) {}
+    Extent oldSize, newSize;
     ScaleWindowProp(Extent oldSize, Extent newSize) : oldSize(oldSize), newSize(newSize) {}
 
     template<typename T_Pt>
-    static T_Pt scale(const T_Pt& value, const Extent& size, const ScaleLimPercent& scalePercentage);
+    static T_Pt scale(const T_Pt& value, const Extent& size, const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100));
 
-    template<typename T_Pt>
-    T_Pt operator()(const T_Pt& value) const;
     /// Scale the point or size from beeing relative to the oldSize to relative to the newSize
     template<typename T_Pt>
-    T_Pt operator()(const T_Pt& oldValue, const ScaleLimPercent& scalePercentage) const;
+    T_Pt operator()(const T_Pt& oldValue, const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100)) const;
 };
 
 template<typename T_Pt>
@@ -38,12 +35,6 @@ inline T_Pt ScaleWindowProp::scale(const T_Pt& value, const Extent& sizeToScale,
     T_Pt diff(sizeToScale - REFERENCE_RESOLUTION);
     T_Pt limScaledValue(value * (sizeToScale - diff + (diff * scalePercentage / 100)) / REFERENCE_RESOLUTION);
     return limScaledValue;
-}
-
-template<typename T_Pt>
-inline T_Pt ScaleWindowProp::operator()(const T_Pt& value) const
-{
-    return scale(value, size, ScaleLimPercent(100, 100));
 }
 
 template<typename T_Pt>
