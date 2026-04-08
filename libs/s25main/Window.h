@@ -315,15 +315,15 @@ protected:
     virtual bool IsMessageRelayAllowed() const;
 
 private:
-    Window* const parent_;              /// Handle auf das Parentfenster.
-    unsigned id_;                       /// ID des Fensters.
-    DrawPoint pos_;                     /// Position des Fensters.
-    Extent size_;                       /// Höhe des Fensters.
-    ScaleLimPercent scalePercentage_;   /// X and Y scaling limiting percentage
-    bool active_;                       /// Fenster aktiv?
-    bool visible_;                      /// Fenster sichtbar?
-    bool scale_;                        /// Sollen Controls an Fenstergröße angepasst werden?
-    bool limit_;                        /// Should control size be limited?
+    Window* const parent_;            /// Handle auf das Parentfenster.
+    unsigned id_;                     /// ID des Fensters.
+    DrawPoint pos_;                   /// Position des Fensters.
+    Extent size_;                     /// Höhe des Fensters.
+    ScaleLimPercent scalePercentage_; /// X and Y scaling limiting percentage
+    bool active_;                     /// Fenster aktiv?
+    bool visible_;                    /// Fenster sichtbar?
+    bool scale_;                      /// Sollen Controls an Fenstergröße angepasst werden?
+    bool limit_;                      /// Should control size be limited?
 
     std::map<Window*, Rect> lockedAreas_; /// gesperrte Regionen des Fensters.
     std::vector<Window*> tofreeAreas_;
