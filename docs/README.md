@@ -116,6 +116,8 @@ platform support, and optional sanitizers for development builds.
   pipeline and heuristics.
 - [Construction mechanics](ai/construction-mechanics.md) – Queueing and
   deduplication of AI construction work.
+- [Road route selection](ai/road-route-selection.md) – How the AI scores
+  nearby flag connections and picks new road segments.
 - [Position finding](ai/position-finding.md) – Finder logic for strategic
   placement.
 - [Statistics logging](ai/statistics-logging.md) – AIPlayerJH stats collection

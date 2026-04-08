@@ -114,7 +114,20 @@ Game CreateHeadlessGame(const GlobalGameSettings& ggs, const std::vector<AI::Inf
         const unsigned numPlayers = save->GetNumPlayers();
         players.reserve(numPlayers);
         for(unsigned i = 0; i < numPlayers; ++i)
+        {
             players.emplace_back(save->GetPlayer(i));
+            PlayerInfo& player = players.back();
+
+            if(!player.isUsed())
+                continue;
+
+            // Headless AI-battle saves used to store AI-driven slots as "Occupied", which drops aiInfo from the
+            // lightweight player header. Reapply the CLI AI roster when available and otherwise fall back to AIJH.
+            if(i < ais.size() && ais[i].type != AI::Type::None)
+                player.aiInfo = ais[i];
+            else if(player.ps == PlayerState::Occupied && player.aiInfo.type == AI::Type::Dummy)
+                player.aiInfo = AI::Info(AI::Type::Default, AI::Level::Hard);
+        }
         GlobalGameSettings saveSettings = save->ggs;
         const unsigned startGF = save->start_gf;
         startSave = std::move(save);
@@ -451,7 +464,7 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
             pi.ps = PlayerState::Locked;
         } else
         {
-            pi.ps = PlayerState::Occupied;
+            pi.ps = PlayerState::AI;
             // Fallback: reuse colors if the number of AIs exceeds the available set
             nextColorIdx+=2;
             pi.color = PLAYER_COLORS[nextColorIdx % PLAYER_COLORS.size()];

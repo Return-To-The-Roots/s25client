@@ -232,10 +232,11 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(TestDefeat())
         return;
 
-    if(!isInitGfCompleted)
+    if(isInitGfCompleted == 0)
     {
         InitStoreAndMilitarylists();
         InitDistribution();
+        isInitGfCompleted = 1;
     }
     if(isInitGfCompleted < 10)
     {

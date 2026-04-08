@@ -5,5 +5,5 @@
 #include "GamePlayerInfo.h"
 
 GamePlayerInfo::GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo)
-    : PlayerInfo(playerInfo), id(playerId), isDefeated(false)
+    : PlayerInfo(playerInfo), id(playerId), isDefeated(playerInfo.ps == PlayerState::Locked)
 {}
