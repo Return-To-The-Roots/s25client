@@ -13,17 +13,6 @@ find_package(yaml-cpp REQUIRED)
 #find_package(Arrow REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-include(FetchContent)
-# Keep reconfigure/build fully offline in environments without network.
-set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
-set(FETCHCONTENT_FULLY_DISCONNECTED ON)
-FetchContent_Declare(
-        fast-cpp-csv-parser
-        GIT_REPOSITORY https://github.com/ben-strasser/fast-cpp-csv-parser.git
-        GIT_TAG master
-)
-FetchContent_MakeAvailable(fast-cpp-csv-parser)
-
 target_link_libraries(
         data-extractor
         PRIVATE s25Main
@@ -35,7 +24,7 @@ target_link_libraries(
 
 target_include_directories(
         data-extractor
-        PRIVATE ${fast-cpp-csv-parser_SOURCE_DIR}
+        PRIVATE ${CMAKE_SOURCE_DIR}/libs/s25main
 )
 # Add a definition to use C++17 filesystem (required by some CSV parsers)
 target_compile_definitions(data-extractor PRIVATE USE_CXX17_FILESYSTEM)

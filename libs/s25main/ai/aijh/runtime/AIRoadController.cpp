@@ -19,6 +19,8 @@ AIRoadController::AIRoadController(AIPlayerJH& owner) : owner_(owner) {}
 
 void AIRoadController::HandleRoadConstructionComplete(MapPoint pt, Direction dir)
 {
+    AIConstruction& construction = owner_.GetConstruction();
+    const AIInterface& ai = owner_.GetInterface();
     const auto* flag = owner_.gwb.GetSpecObj<noFlag>(pt);
     if(!flag)
         return;
@@ -29,12 +31,11 @@ void AIRoadController::HandleRoadConstructionComplete(MapPoint pt, Direction dir
 
     const noFlag& otherFlag = roadSeg->GetOtherFlag(*flag);
     const MapPoint bldPos = owner_.gwb.GetNeighbour(otherFlag.GetPos(), Direction::NorthWest);
-    if(owner_.aii.IsBuildingOnNode(bldPos, BuildingType::Storehouse)
-       || owner_.aii.IsBuildingOnNode(bldPos, BuildingType::HarborBuilding)
-       || owner_.aii.IsBuildingOnNode(bldPos, BuildingType::Headquarters))
-        owner_.construction->SetFlagsAlongRoad(otherFlag, roadSeg->GetOtherFlagDir(*flag) + 3u);
+    if(ai.IsBuildingOnNode(bldPos, BuildingType::Storehouse) || ai.IsBuildingOnNode(bldPos, BuildingType::HarborBuilding)
+       || ai.IsBuildingOnNode(bldPos, BuildingType::Headquarters))
+        construction.SetFlagsAlongRoad(otherFlag, roadSeg->GetOtherFlagDir(*flag) + 3u);
     else
-        owner_.construction->SetFlagsAlongRoad(*flag, dir);
+        construction.SetFlagsAlongRoad(*flag, dir);
 }
 
 void AIRoadController::HandleRoadConstructionFailed(const MapPoint pt, Direction)
@@ -46,13 +47,14 @@ void AIRoadController::HandleRoadConstructionFailed(const MapPoint pt, Direction
         return;
 
     if(RemoveUnusedRoad(*flag, boost::none, true, false))
-        owner_.construction->AddConnectFlagJob(flag);
+        owner_.GetConstruction().AddConnectFlagJob(flag);
 }
 
-bool AIRoadController::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
+bool AIRoadController::IsFlagPartOfCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
                                           helpers::OptionalEnum<Direction> excludeDir,
                                           std::vector<const noFlag*> oldFlags)
 {
+    const AIInterface& ai = owner_.GetInterface();
     if(!oldFlags.empty() && &startFlag == &curFlag)
         return true;
     if(maxlen < 1)
@@ -62,10 +64,10 @@ bool AIRoadController::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxl
         if(testDir == excludeDir)
             continue;
         if(testDir == Direction::NorthWest
-           && (owner_.aii.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest),
-                                             NodalObjectType::Building)
-               || owner_.aii.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest),
-                                                NodalObjectType::Buildingsite)))
+           && (ai.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest),
+                                     NodalObjectType::Building)
+               || ai.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(curFlag.GetPos(), Direction::NorthWest),
+                                        NodalObjectType::Buildingsite)))
         {
             continue;
         }
@@ -77,7 +79,7 @@ bool AIRoadController::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxl
             {
                 oldFlags.push_back(&flag);
                 Direction revDir = route->GetOtherFlagDir(curFlag) + 3u;
-                if(IsFlagPartofCircle(startFlag, maxlen - 1, flag, revDir, oldFlags))
+                if(IsFlagPartOfCircle(startFlag, maxlen - 1, flag, revDir, oldFlags))
                     return true;
             }
         }
@@ -87,7 +89,8 @@ bool AIRoadController::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxl
 
 void AIRoadController::RemoveAllUnusedRoads(const MapPoint pt)
 {
-    std::vector<const noFlag*> flags = owner_.construction->FindFlags(pt, 25);
+    AIConstruction& construction = owner_.GetConstruction();
+    std::vector<const noFlag*> flags = construction.FindFlags(pt, 25);
     std::vector<const noFlag*> reconnectflags;
     for(const noFlag* flag : flags)
     {
@@ -96,12 +99,13 @@ void AIRoadController::RemoveAllUnusedRoads(const MapPoint pt)
     }
     owner_.UpdateNodesAround(pt, 25);
     for(const noFlag* flag : reconnectflags)
-        owner_.construction->AddConnectFlagJob(flag);
+        construction.AddConnectFlagJob(flag);
 }
 
 void AIRoadController::CheckForUnconnectedBuildingSites()
 {
-    if(owner_.construction->GetConnectJobNum() > 0 || owner_.construction->GetBuildJobNum() > 0)
+    AIConstruction& construction = owner_.GetConstruction();
+    if(construction.GetConnectJobNum() > 0 || construction.GetBuildJobNum() > 0)
         return;
 
     for(noBuildingSite* bldSite : owner_.player.GetBuildingRegister().GetBuildingSites())
@@ -119,13 +123,14 @@ void AIRoadController::CheckForUnconnectedBuildingSites()
             }
         }
         if(!foundRoute)
-            owner_.construction->AddConnectFlagJob(flag);
+            construction.AddConnectFlagJob(flag);
     }
 }
 
 bool AIRoadController::RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum<Direction> excludeDir,
                                         bool firstflag, bool allowcircle, bool keepstartflag)
 {
+    AIInterface& ai = owner_.GetInterface();
     helpers::OptionalEnum<Direction> foundDir, foundDir2;
     unsigned char finds = 0;
     for(Direction dir : helpers::EnumRange<Direction>{})
@@ -133,10 +138,10 @@ bool AIRoadController::RemoveUnusedRoad(const noFlag& startFlag, helpers::Option
         if(dir == excludeDir)
             continue;
         if(dir == Direction::NorthWest
-           && (owner_.aii.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(startFlag.GetPos(), Direction::NorthWest),
-                                             NodalObjectType::Building)
-               || owner_.aii.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(startFlag.GetPos(), Direction::NorthWest),
-                                                NodalObjectType::Buildingsite)))
+           && (ai.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(startFlag.GetPos(), Direction::NorthWest),
+                                     NodalObjectType::Building)
+               || ai.IsObjectTypeOnNode(owner_.gwb.GetNeighbour(startFlag.GetPos(), Direction::NorthWest),
+                                        NodalObjectType::Buildingsite)))
         {
             return true;
         }
@@ -156,7 +161,7 @@ bool AIRoadController::RemoveUnusedRoad(const noFlag& startFlag, helpers::Option
     {
         if(allowcircle)
         {
-            if(!IsFlagPartofCircle(startFlag, 10, startFlag, boost::none, {}))
+            if(!IsFlagPartOfCircle(startFlag, 10, startFlag, boost::none, {}))
                 return false;
             if(!firstflag)
                 return false;
@@ -168,10 +173,10 @@ bool AIRoadController::RemoveUnusedRoad(const noFlag& startFlag, helpers::Option
     if(keepstartflag)
     {
         if(foundDir)
-            owner_.aii.DestroyRoad(startFlag.GetPos(), *foundDir);
+            ai.DestroyRoad(startFlag.GetPos(), *foundDir);
     }
     else
-        owner_.aii.DestroyFlag(&startFlag);
+        ai.DestroyFlag(&startFlag);
 
     if(!foundDir)
         return false;

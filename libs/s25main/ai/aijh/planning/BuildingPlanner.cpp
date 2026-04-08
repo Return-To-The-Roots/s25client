@@ -4,34 +4,36 @@
 
 #include "BuildingPlanner.h"
 #include "ai/aijh/config/AIConfig.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIWorldView.h"
 #include "BuildingCalculator.h"
 #include "GlobalGameSettings.h"
 #include "PlannerHelper.h"
+#include "GamePlayer.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/Inventory.h"
 #include "gameData/BuildingProperties.h"
 #include <algorithm>
 #include <cmath>
 
 namespace AIJH {
-BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : buildingsWanted(), expansionRequired(false)
+BuildingPlanner::BuildingPlanner(AIWorldView& aijh) : buildingsWanted(), expansionRequired(false)
 {
     RefreshBuildingNums(aijh);
     InitBuildingsWanted(aijh);
     UpdateBuildingsWanted(aijh);
 }
 
-void BuildingPlanner::Update(unsigned gf, AIPlayerJH& aijh)
+void BuildingPlanner::Update(unsigned gf, AIWorldView& aijh)
 {
     RefreshBuildingNums(aijh);
     expansionRequired = CalcIsExpansionRequired(aijh, gf > 500 && gf % 500 == 0);
 
-    signed boardsDemand = aijh.player.GetBuildingRegister().CalcBoardsDemand();
-    boardsBalance = aijh.player.GetInventory().goods[GoodType::Boards] - boardsDemand;
+    signed boardsDemand = aijh.GetPlayer().GetBuildingRegister().CalcBoardsDemand();
+    boardsBalance = aijh.GetPlayer().GetInventory().goods[GoodType::Boards] - boardsDemand;
     if(gf % 2500 == 0)
     {
         woodAvailable = aijh.GetAvailableResources(AISurfaceResource::Wood);
@@ -39,12 +41,12 @@ void BuildingPlanner::Update(unsigned gf, AIPlayerJH& aijh)
     }
 }
 
-void BuildingPlanner::RefreshBuildingNums(const AIPlayerJH& aijh)
+void BuildingPlanner::RefreshBuildingNums(AIWorldView& aijh)
 {
-    buildingNums = aijh.player.GetBuildingRegister().GetBuildingNums();
+    buildingNums = aijh.GetPlayer().GetBuildingRegister().GetBuildingNums();
 }
 
-bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const
+bool BuildingPlanner::CalcIsExpansionRequired(AIWorldView& aijh, bool recalc) const
 {
     if(!expansionRequired && !recalc)
         return false;
@@ -60,7 +62,7 @@ bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) con
     } else
     {
         // Check if we could build the missing building around any military building or storehouse. If not, expand.
-        const BuildingRegister& buildingRegister = aijh.player.GetBuildingRegister();
+        const BuildingRegister& buildingRegister = aijh.GetPlayer().GetBuildingRegister();
         std::vector<noBuilding*> blds(buildingRegister.GetMilitaryBuildings().begin(),
                                       buildingRegister.GetMilitaryBuildings().end());
         blds.insert(blds.end(), buildingRegister.GetStorehouses().begin(), buildingRegister.GetStorehouses().end());
@@ -108,7 +110,7 @@ unsigned BuildingPlanner::GetNumBuildingsWanted(BuildingType type) const
     return buildingsWanted[type];
 }
 
-void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
+void BuildingPlanner::InitBuildingsWanted(AIWorldView& aijh)
 {
     std::fill(buildingsWanted.begin(), buildingsWanted.end(), 0u);
     buildingsWanted[BuildingType::Forester] = 0;
@@ -133,13 +135,13 @@ void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
     }
 }
 
-void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
+void BuildingPlanner::UpdateBuildingsWanted(AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     BuildCalculator calculator = BuildCalculator(aijh, buildingNums, inventory, woodAvailable);
 
     // no military buildings -> usually start only
-    const unsigned numMilitaryBlds = aijh.player.GetBuildingRegister().GetMilitaryBuildings().size();
+    const unsigned numMilitaryBlds = aijh.GetPlayer().GetBuildingRegister().GetMilitaryBuildings().size();
 
     if(numMilitaryBlds == 0 && GetNumMilitaryBldSites() == 0)
     {
@@ -212,12 +214,13 @@ int BuildingPlanner::GetNumAdditionalBuildingsWanted(BuildingType type) const
     return static_cast<int>(buildingsWanted[type]) - static_cast<int>(GetNumBuildings(type));
 }
 
-bool BuildingPlanner::IsGoldEnabled(const AIPlayerJH& aijh)
+bool BuildingPlanner::IsGoldEnabled(AIWorldView& aijh)
 {
-    return aijh.ggs.GetMaxMilitaryRank() == 0 || !aijh.ggs.isEnabled(AddonId::CHANGE_GOLD_DEPOSITS);
+    return aijh.GetGameSettings().GetMaxMilitaryRank() == 0
+           || !aijh.GetGameSettings().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS);
 }
 
-bool BuildingPlanner::WantMoreMilitaryBlds(const AIPlayerJH& aijh) const
+bool BuildingPlanner::WantMoreMilitaryBlds(AIWorldView& aijh) const
 {
     if(GetNumMilitaryBldSites() >= std::min(8u,GetNumMilitaryBlds() + 3))
         return false;
@@ -225,7 +228,7 @@ bool BuildingPlanner::WantMoreMilitaryBlds(const AIPlayerJH& aijh) const
         return true;
     if(GetNumBuildings(BuildingType::Sawmill) > 0)
         return true;
-    if(aijh.player.GetInventory().goods[GoodType::Boards] > 30 && GetNumBuildingSites(BuildingType::Sawmill) > 0)
+    if(aijh.GetPlayer().GetInventory().goods[GoodType::Boards] > 30 && GetNumBuildingSites(BuildingType::Sawmill) > 0)
         return true;
     return GetNumMilitaryBlds() + GetNumMilitaryBldSites() < 3;
 }

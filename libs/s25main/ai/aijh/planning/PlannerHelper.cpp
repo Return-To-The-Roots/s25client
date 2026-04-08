@@ -4,13 +4,15 @@
 
 #include "PlannerHelper.h"
 
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "GamePlayer.h"
+#include "ai/aijh/runtime/AIWorldView.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/JobConsts.h"
+#include "gameTypes/Inventory.h"
 
-unsigned maxWorkers(const AIJH::AIPlayerJH& aijh, BuildingType type)
+unsigned maxWorkers(const AIJH::AIWorldView& aijh, BuildingType type)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     helpers::OptionalEnum<Job> job = BLD_WORK_DESC[type].job;
     if(job.has_value())
     {
@@ -21,40 +23,40 @@ unsigned maxWorkers(const AIJH::AIPlayerJH& aijh, BuildingType type)
     return inventory.people[Job::Helper];
 }
 
-unsigned maxFishers(const AIJH::AIPlayerJH& aijh)
+unsigned maxFishers(const AIJH::AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     return inventory.goods[GoodType::RodAndLine] + inventory.people[Job::Fisher];
 }
 
-unsigned maxHunters(const AIJH::AIPlayerJH& aijh)
+unsigned maxHunters(const AIJH::AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     return inventory.goods[GoodType::Bow] + inventory.people[Job::Hunter];
 }
 
-unsigned maxBakers(const AIJH::AIPlayerJH& aijh)
+unsigned maxBakers(const AIJH::AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     return inventory.goods[GoodType::Rollingpin] + inventory.people[Job::Baker];
 }
-unsigned maxButcher(const AIJH::AIPlayerJH& aijh)
+unsigned maxButcher(const AIJH::AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     return inventory.goods[GoodType::Cleaver] + inventory.people[Job::Butcher];
 }
-unsigned maxFarmer(const AIJH::AIPlayerJH& aijh)
+unsigned maxFarmer(const AIJH::AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     return inventory.goods[GoodType::Scythe] + inventory.people[Job::Farmer];
 }
-unsigned maxWoodcutter(const AIJH::AIPlayerJH& aijh)
+unsigned maxWoodcutter(const AIJH::AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     return inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
 }
-unsigned maxIronFounder(const AIJH::AIPlayerJH& aijh)
+unsigned maxIronFounder(const AIJH::AIWorldView& aijh)
 {
-    const Inventory& inventory = aijh.player.GetInventory();
+    const Inventory& inventory = aijh.GetPlayer().GetInventory();
     return inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder];
 }

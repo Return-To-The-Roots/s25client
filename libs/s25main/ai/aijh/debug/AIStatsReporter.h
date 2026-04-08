@@ -4,18 +4,17 @@
 
 #pragma once
 
+#include "ai/aijh/debug/AIStatsSource.h"
 #include "gameTypes/BuildingType.h"
 
 class nobBaseMilitary;
 
 namespace AIJH {
 
-class AIPlayerJH;
-
 class AIStatsReporter
 {
 public:
-    explicit AIStatsReporter(AIPlayerJH& owner);
+    explicit AIStatsReporter(const AIStatsSource& owner);
 
     void TrackCombatStart(const nobBaseMilitary& target);
     void LogFinishedCombats(unsigned gf) const;
@@ -24,7 +23,7 @@ public:
     void SaveDebugStats(unsigned gf) const;
 
 private:
-    AIPlayerJH& owner_;
+    const AIStatsSource& owner_;
     mutable unsigned lastStatsFrame_ = 0;
 };
 

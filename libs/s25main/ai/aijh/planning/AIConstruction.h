@@ -25,7 +25,7 @@ class array;
 }
 
 namespace AIJH {
-class AIPlayerJH;
+class AIPlanningContext;
 class BuildingPlanner;
 class BuildJob;
 class ConnectJob;
@@ -33,7 +33,7 @@ class ConnectJob;
 class AIConstruction
 {
 public:
-    AIConstruction(AIPlayerJH& aijh);
+    AIConstruction(AIPlanningContext& aijh);
     ~AIConstruction();
 
     /// Adds a build job to the queue
@@ -91,7 +91,7 @@ public:
     void ConstructionsExecuted();
 
 private:
-    AIPlayerJH& aijh;
+    AIPlanningContext& aijh;
     AIInterface& aii;
     const BuildingPlanner& bldPlanner;
 

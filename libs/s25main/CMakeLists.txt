@@ -60,6 +60,8 @@ set(s25Main_SRCS
         ToolPriorityEventLogger.cpp
         WareEventLogger.cpp
         ai/aijh/runtime/AIAdjuster.cpp
+        ai/aijh/runtime/AIMapState.cpp
+        ai/aijh/runtime/AIWorldQueries.cpp
         ai/aijh/combat/TargetSelector.cpp
         ai/aijh/combat/TargetSelectorAttrition.cpp
         ai/aijh/combat/TargetSelectorBiting.cpp
@@ -96,6 +98,21 @@ set_source_files_properties(${COUNTRY_PLOTS_LOG_PROTO_SRCS} PROPERTIES COMPILE_O
 list(APPEND s25Main_SRCS ${COUNTRY_PLOTS_LOG_PROTO_SRCS} ${COUNTRY_PLOTS_LOG_PROTO_HDRS})
 
 add_library(s25Main STATIC ${s25Main_SRCS})
+
+set(AIJH_DEPENDENCY_GUARD_SCRIPT ${PROJECT_SOURCE_DIR}/cmake/CheckAIJHDependencies.cmake)
+add_custom_target(ai_jh_dependency_guards
+    COMMAND ${CMAKE_COMMAND} -DROOT=${PROJECT_SOURCE_DIR} -P ${AIJH_DEPENDENCY_GUARD_SCRIPT}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    COMMENT "Checking AI JH dependency boundaries"
+)
+add_dependencies(s25Main ai_jh_dependency_guards)
+
+if(BUILD_TESTING)
+    add_test(NAME ai_jh_dependency_guards
+             COMMAND ${CMAKE_COMMAND} -DROOT=${PROJECT_SOURCE_DIR} -P ${AIJH_DEPENDENCY_GUARD_SCRIPT}
+             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+endif()
+
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(s25Main PUBLIC cxx_std_17)

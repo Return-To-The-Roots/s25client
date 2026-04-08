@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "ai/aijh/combat/AICombatContext.h"
+
 #include <vector>
 
 class noFlag;
@@ -12,20 +14,12 @@ class nobMilitary;
 
 namespace AIJH {
 
-class AIPlayerJH;
-
 class AICombatController
 {
 public:
-    enum class TargetSelectionMode
-    {
-        Random,
-        Prudent,
-        Biting,
-        Attrition
-    };
+    using TargetSelectionMode = AICombatTargetSelectionMode;
 
-    explicit AICombatController(AIPlayerJH& owner);
+    explicit AICombatController(AICombatContext& owner);
 
     void SetTargetSelectionMode(TargetSelectionMode mode) { targetSelectionMode_ = mode; }
 
@@ -59,7 +53,7 @@ private:
         DefenseMode
     };
 
-    AIPlayerJH& owner_;
+    AICombatContext& owner_;
     CombatMode attackMode_ = CombatMode::DefenseMode;
     TargetSelectionMode targetSelectionMode_ = TargetSelectionMode::Random;
     double combatFulfillmentLevel_ = 0.0;

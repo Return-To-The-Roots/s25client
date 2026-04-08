@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AICombatController.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
 
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/MilitaryConsts.h"
+#include "world/GameWorldBase.h"
 
 #include <algorithm>
 #include <limits>
@@ -74,7 +74,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetPrudent() const
     {
         unsigned counterStrength = 0;
         sortedMilitaryBlds enemyBuildings =
-          owner_.gwb.LookForMilitaryBuildings(target->GetPos(), static_cast<unsigned short>(BASE_ATTACKING_DISTANCE));
+          owner_.GetWorld().LookForMilitaryBuildings(target->GetPos(), static_cast<unsigned short>(BASE_ATTACKING_DISTANCE));
 
         for(const nobBaseMilitary* enemyBld : enemyBuildings)
         {
@@ -103,11 +103,6 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetPrudent() const
 
     std::shuffle(counterFiltered.begin(), counterFiltered.end(), std::mt19937(std::random_device()()));
     return counterFiltered.front();
-}
-
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetPrudent() const
-{
-    return combatController_->SelectAttackTargetPrudent();
 }
 
 } // namespace AIJH

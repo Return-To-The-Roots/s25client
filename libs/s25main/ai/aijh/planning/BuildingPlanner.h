@@ -10,14 +10,14 @@
 
 namespace AIJH {
 
-class AIPlayerJH;
+class AIWorldView;
 
 class BuildingPlanner
 {
 public:
-    BuildingPlanner(const AIPlayerJH& aijh);
+    BuildingPlanner(AIWorldView& aijh);
     /// Refresh the number of buildings by asking the GameClientPlayer
-    void Update(unsigned gf, AIPlayerJH& aijh);
+    void Update(unsigned gf, AIWorldView& aijh);
 
     /// Return the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
     unsigned GetNumBuildings(BuildingType type) const;
@@ -30,18 +30,18 @@ public:
 
     unsigned GetNumBuildingsWanted(BuildingType type) const;
 
-    void InitBuildingsWanted(const AIPlayerJH& aijh);
+    void InitBuildingsWanted(AIWorldView& aijh);
     unsigned GetNumBuildings(BuildingType type, unsigned wood_available);
-    void UpdateBuildingsWanted(const AIPlayerJH& aijh);
+    void UpdateBuildingsWanted(AIWorldView& aijh);
 
     /// Return the number of buildings that we want to build of the current type
     int GetNumAdditionalBuildingsWanted(BuildingType type) const;
  /// Checks whether the ai wants to construct more mil buildings atm
-    bool WantMoreMilitaryBlds(const AIPlayerJH& aijh) const;
+    bool WantMoreMilitaryBlds(AIWorldView& aijh) const;
     bool IsExpansionRequired() const { return expansionRequired; }
 
     void setBuildingsWanted(helpers::EnumArray<unsigned, BuildingType> values);
-    static bool IsGoldEnabled(const AIPlayerJH& aijh);
+    static bool IsGoldEnabled(AIWorldView& aijh);
 private:
 
     /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
@@ -54,7 +54,7 @@ private:
     unsigned woodAvailable = 0;
     unsigned stoneAvailable = 0;
 
-    void RefreshBuildingNums(const AIPlayerJH& aijh);
-    bool CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const;
+    void RefreshBuildingNums(AIWorldView& aijh);
+    bool CalcIsExpansionRequired(AIWorldView& aijh, bool recalc) const;
 };
 } // namespace AIJH

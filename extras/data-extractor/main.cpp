@@ -5,8 +5,9 @@
 #include <algorithm> // For std::transform
 #include <exception>
 
+#include "ai/AIPlayer.h"
 #include "dataextractor/DataExtractor.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/debug/AIStatsSource.h"
 #include "RttrConfig.h"
 #include "SnapshotLoader.h"
 
@@ -100,7 +101,8 @@ int main(int argc, char* argv[]) {
     bool write_header = true;
     for (const auto& snapshot : snapshots) {
         const AIPlayer* ai = snapshot.game->GetAIPlayer(snapshot.player->GetPlayerId());
-        extractor.ProcessSnapshot(*snapshot.player, snapshot.gameframe, ai);
+        const auto* statsSource = dynamic_cast<const AIJH::AIStatsSource*>(ai);
+        extractor.ProcessSnapshot(*snapshot.player, snapshot.gameframe, statsSource);
         const bool flushed = FlushSnapshot(extractor, outputFormat, write_header);
         if(flushed && write_header)
             write_header = false;

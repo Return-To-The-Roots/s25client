@@ -8,12 +8,12 @@
 struct Inventory;
 
 namespace AIJH {
-class AIPlayerJH;
+class AIWorldView;
 
 class BuildCalculator
 {
 public:
-    BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingNums, const Inventory& inventory,
+    BuildCalculator(const AIWorldView& aijh, BuildingCount buildingNums, const Inventory& inventory,
                     unsigned woodAvailable);
 
     helpers::EnumArray<unsigned, BuildingType> GetStartupSet();
@@ -22,7 +22,7 @@ public:
     unsigned CalcPigFarms();
 
 private:
-    const AIPlayerJH& aijh;
+    const AIWorldView& aijh;
     BuildingCount buildingNums;
     const Inventory& inventory;
     unsigned woodAvailable;

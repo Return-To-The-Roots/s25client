@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AICombatController.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
 
 #include "buildings/nobMilitary.h"
 #include "gameTypes/BuildingType.h"
+#include "world/GameWorldBase.h"
 
 #include <vector>
 
@@ -30,10 +30,10 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
             continue;
 
         unsigned attackersStrength = 0;
-        sortedMilitaryBlds myBuildings = owner_.gwb.LookForMilitaryBuildings(target->GetPos(), 2);
+        sortedMilitaryBlds myBuildings = owner_.GetWorld().LookForMilitaryBuildings(target->GetPos(), 2);
         for(const nobBaseMilitary* otherMilBld : myBuildings)
         {
-            if(otherMilBld->GetPlayer() != owner_.playerId)
+            if(otherMilBld->GetPlayer() != owner_.GetPlayerId())
                 continue;
             const auto* myMil = dynamic_cast<const nobMilitary*>(otherMilBld);
             if(!myMil || myMil->IsUnderAttack())
@@ -46,7 +46,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
         if(owner_.GetLevel() == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
         {
             const auto* enemyTarget = static_cast<const nobMilitary*>(target);
-            if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 1 || enemyTarget->GetNumTroops() == 0)
+            if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 1)
                 continue;
         }
 
@@ -68,11 +68,6 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
     }
 
     return bestTarget;
-}
-
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetBiting() const
-{
-    return combatController_->SelectAttackTargetBiting();
 }
 
 } // namespace AIJH

@@ -9,7 +9,7 @@
 #include "Point.h"
 #include "addons/const_addons.h"
 #include "ai/AIInterface.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlanningContext.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -36,7 +36,7 @@
 
 namespace AIJH {
 
-AIConstruction::AIConstruction(AIPlayerJH& aijh)
+AIConstruction::AIConstruction(AIPlanningContext& aijh)
     : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner())
 {
     std::fill(constructionorders.begin(), constructionorders.end(), 0u);
@@ -530,7 +530,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     if(((rand() % 3) == 0 || inventory.people[Job::Private] < 15)
        && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BuildingType::Quarry) > 0))
         bld = BuildingType::Guardhouse;
-    if(aijh.getAIInterface().isHarborPosClose(pt, 19) && rand() % 10 != 0 && aijh.ggs.isEnabled(AddonId::SEA_ATTACK))
+    if(aijh.GetInterface().isHarborPosClose(pt, 19) && rand() % 10 != 0
+       && aijh.GetGameSettings().isEnabled(AddonId::SEA_ATTACK))
     {
         if(aii.CanBuildBuildingtype(BuildingType::Watchtower))
             return BuildingType::Watchtower;

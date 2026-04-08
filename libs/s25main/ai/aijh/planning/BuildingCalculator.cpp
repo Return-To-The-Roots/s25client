@@ -1,12 +1,14 @@
 #include "BuildingCalculator.h"
 
 #include "ai/aijh/config/AIConfig.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIWorldView.h"
 #include "BuildingPlanner.h"
 #include "PlannerHelper.h"
 #include "ai/aijh/config/WeightParams.h"
 #include "addons/const_addons.h"
+#include "GamePlayer.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/Inventory.h"
 
 #include <cmath>
 
@@ -17,10 +19,10 @@ class GamePlayer;
 namespace AIJH {
 const double PI = acos(-1.0);
 
-BuildCalculator::BuildCalculator(const AIPlayerJH& aijh, BuildingCount buildingNums, const Inventory& inventory,
+BuildCalculator::BuildCalculator(const AIWorldView& aijh, BuildingCount buildingNums, const Inventory& inventory,
                                  unsigned woodAvailable)
     : aijh(aijh), buildingNums(buildingNums), inventory(inventory), woodAvailable(woodAvailable),
-      numMilitaryBlds(aijh.player.GetBuildingRegister().GetMilitaryBuildings().size())
+      numMilitaryBlds(aijh.GetPlayer().GetBuildingRegister().GetMilitaryBuildings().size())
 {}
 
 helpers::EnumArray<unsigned, BuildingType> BuildCalculator::GetStartupSet()
@@ -92,7 +94,7 @@ unsigned BuildCalculator::Calc(BuildingType type)
         BuildParams params = wantedParams.statsWeights[statType];
         if(!params.enabled)
             continue;
-        unsigned statValue = aijh.player.GetStatisticCurrentValue(statType);
+        unsigned statValue = aijh.GetPlayer().GetStatisticCurrentValue(statType);
         if(statValue >= params.min)
         {
             double value = CALC::calcCount(statValue, params);

@@ -5,10 +5,11 @@
 #include "GlobalPositionFinder.h"
 
 #include "ai/aijh/config/AIConfig.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlanningContext.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "RttrForeachPt.h"
+#include "ai/AIInterface.h"
 #include "ai/AIQueryService.h"
 #include "ai/AIResource.h"
 #include "gameData/BuildingConsts.h"
@@ -16,7 +17,7 @@
 
 namespace AIJH {
 namespace {
-bool IsBorderBlocked(const AIPlayerJH& aijh, const AIQueryService& queries, const BuildingType type,
+bool IsBorderBlocked(const AIWorldView& aijh, const AIQueryService& queries, const BuildingType type,
                      const MapPoint& pt)
 {
     const auto& locationParams = aijh.GetConfig().locationParams[type];
@@ -25,7 +26,7 @@ bool IsBorderBlocked(const AIPlayerJH& aijh, const AIQueryService& queries, cons
     return queries.CalcResourceValue(pt, AIResource::Borderland) > 1;
 }
 
-int ComputeRatingBonus(const AIPlayerJH& aijh, AIConstruction& construction, const BuildingType buildingType,
+int ComputeRatingBonus(const AIWorldView& aijh, AIConstruction& construction, const BuildingType buildingType,
                        const MapPoint& candidate)
 {
     int totalBonus = 0;
@@ -49,13 +50,14 @@ int ComputeRatingBonus(const AIPlayerJH& aijh, AIConstruction& construction, con
     return totalBonus;
 }
 
-bool MeetsMinimalResourceRequirement(const AIPlayerJH& aijh, const BuildingType type, const AIResource res, int rating)
+bool MeetsMinimalResourceRequirement(const AIWorldView& aijh, const BuildingType type, const AIResource res,
+                                     int rating)
 {
     const unsigned minRequirement = aijh.GetConfig().locationParams[type].minResources[res];
     return rating >= static_cast<int>(minRequirement);
 }
 
-bool MeetsPointResourceRequirements(const AIPlayerJH& aijh, const AIQueryService& queries, const BuildingType type,
+bool MeetsPointResourceRequirements(const AIWorldView& aijh, const AIQueryService& queries, const BuildingType type,
                                     const MapPoint& pt)
 {
     const auto& minRequirements = aijh.GetConfig().locationParams[type].minResources;
@@ -88,7 +90,7 @@ int BQLevel(BuildingQuality bq)
 
 constexpr int maxBQLevel = 4; // Castle/Harbor
 
-int ComputeResourcePenalty(const AIPlayerJH& aijh, const AIQueryService& queries, const BuildingType type,
+int ComputeResourcePenalty(const AIWorldView& aijh, const AIQueryService& queries, const BuildingType type,
                            const MapPoint& pt)
 {
     int totalPenalty = 0;
@@ -126,7 +128,7 @@ int ComputeResourcePenalty(const AIPlayerJH& aijh, const AIQueryService& queries
     return totalPenalty;
 }
 
-int ComputeResourceRating(const AIPlayerJH& aijh, const AIQueryService& queries, AIConstruction& construction,
+int ComputeResourceRating(const AIWorldView& aijh, const AIQueryService& queries, AIConstruction& construction,
                           const BuildingType type, const MapPoint& pt)
 {
     const auto& resourceRating = aijh.GetConfig().locationParams[type].resourceRating;
@@ -139,7 +141,7 @@ int ComputeResourceRating(const AIPlayerJH& aijh, const AIQueryService& queries,
 }
 } // namespace
 
-GlobalPositionFinder::GlobalPositionFinder(AIPlayerJH& aijh) : aijh(aijh) {}
+GlobalPositionFinder::GlobalPositionFinder(AIPlanningContext& aijh) : aijh(aijh) {}
 
 bool GlobalPositionFinder::CheckProximity(const BuildingType type, const MapPoint& pt) const
 {

@@ -2,7 +2,7 @@
 
 #include "GamePlayer.h"
 #include "MilitaryStatsHolder.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/debug/AIStatsSource.h"
 #include "helpers/EnumRange.h"
 
 #include "gameTypes/BuildingType.h"
@@ -26,7 +26,7 @@
 
 namespace fs = boost::filesystem; 
 
-void DataExtractor::ProcessSnapshot(const GamePlayer& player, uint32_t gameframe, const AIPlayer* aiPlayer)
+void DataExtractor::ProcessSnapshot(const GamePlayer& player, uint32_t gameframe, const AIJH::AIStatsSource* aiStats)
 {
     // Create a snapshot object that will hold all data for this gameframe
     SnapshotData snapshot_data_map; // Renamed to avoid conflict with a type if any
@@ -68,19 +68,12 @@ void DataExtractor::ProcessSnapshot(const GamePlayer& player, uint32_t gameframe
 
     // Process merchandise (inventory)
     Inventory inventory = player.GetInventory();
-    const helpers::EnumArray<unsigned, GoodType>* producedGoods = nullptr;
-    if(aiPlayer)
-    {
-        const auto* aiJH = dynamic_cast<const AIJH::AIPlayerJH*>(aiPlayer);
-        if(aiJH)
-            producedGoods = &aiJH->GetProducedGoods();
-    }
     for (GoodType type : helpers::EnumRange<GoodType>{})
     {
         std::string goodName = GOOD_NAMES_1.at(type);
         snapshot_data_map[goodName] = inventory.goods[type];
-        if(producedGoods)
-            snapshot_data_map[goodName + "Produced"] = (*producedGoods)[type];
+        if(aiStats)
+            snapshot_data_map[goodName + "Produced"] = aiStats->GetProducedGoods()[type];
     }
     for(Job job : helpers::EnumRange<Job>{})
         snapshot_data_map["Job" + JOB_NAMES_1.at(job)] = inventory.people[job];

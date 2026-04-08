@@ -4,11 +4,10 @@
 
 #include "AIStatsReporter.h"
 
-#include "ai/aijh/runtime/AIPlayerJH.h"
-
 #include "ai/aijh/planning/BuildingPlanner.h"
 #include "BuildingRegister.h"
 #include "GamePlayer.h"
+#include "ai/AIResource.h"
 #include "ai/aijh/debug/StatsConfig.h"
 #include "ai/aijh/planning/Jobs.h"
 #include "dataextractor/DataExtractor.h"
@@ -135,7 +134,7 @@ std::string CurrentTimestamp()
 
 namespace AIJH {
 
-AIStatsReporter::AIStatsReporter(AIPlayerJH& owner) : owner_(owner) {}
+AIStatsReporter::AIStatsReporter(const AIStatsSource& owner) : owner_(owner) {}
 
 void AIStatsReporter::TrackCombatStart(const nobBaseMilitary& /*target*/) {}
 
@@ -145,7 +144,8 @@ void AIStatsReporter::LogFinishedCombats(const unsigned /*gf*/) const {}
 
 void AIStatsReporter::SaveStats(unsigned gf) const
 {
-    if(owner_.player.ps == PlayerState::Locked)
+    const GamePlayer& player = owner_.GetPlayer();
+    if(player.ps == PlayerState::Locked)
         return;
 
     std::ofstream statsFile = createCsvFile("stats");
@@ -153,7 +153,7 @@ void AIStatsReporter::SaveStats(unsigned gf) const
         return;
 
     DataExtractor extractor;
-    extractor.ProcessSnapshot(owner_.player, gf, &owner_);
+    extractor.ProcessSnapshot(player, gf, &owner_);
     if(const SnapshotData* snapshot = extractor.GetCurrentSnapshot())
     {
         const bool writeHeader = !statsSnapshotHeaderWritten;
@@ -166,7 +166,8 @@ void AIStatsReporter::SaveStats(unsigned gf) const
 
 void AIStatsReporter::SaveDebugStats(unsigned gf) const
 {
-    if(owner_.player.ps == PlayerState::Locked)
+    const GamePlayer& player = owner_.GetPlayer();
+    if(player.ps == PlayerState::Locked)
         return;
 
     InitializeStatsCsvFiles();
@@ -177,8 +178,8 @@ void AIStatsReporter::SaveDebugStats(unsigned gf) const
     std::ofstream otherFile = createCsvFile("other");
 
     const unsigned previousStatsFrame = lastStatsFrame_;
-    const BuildingRegister& buildingRegister = owner_.player.GetBuildingRegister();
-    const Inventory& playerInventory = owner_.player.GetInventory();
+    const BuildingRegister& buildingRegister = player.GetBuildingRegister();
+    const Inventory& playerInventory = player.GetInventory();
     std::uint64_t totalBuildTime = 0;
     unsigned completedBuildings = 0;
     const auto accumulateBuild = [&](const noBaseBuilding& building) {
@@ -253,15 +254,15 @@ void AIStatsReporter::SaveDebugStats(unsigned gf) const
     }
 
     outfile << CurrentTimestamp() << std::endl;
-    outfile << owner_.player.name << std::endl;
+    outfile << player.name << std::endl;
 
     outfile << " Score: ";
-    outfile << " Cou: " << owner_.player.GetStatisticCurrentValue(StatisticType::Country);
-    outfile << " Bui: " << owner_.player.GetStatisticCurrentValue(StatisticType::Buildings);
-    outfile << " Mer: " << owner_.player.GetStatisticCurrentValue(StatisticType::Merchandise);
-    outfile << " Mil: " << owner_.player.GetStatisticCurrentValue(StatisticType::Military);
-    outfile << " Gol: " << owner_.player.GetStatisticCurrentValue(StatisticType::Gold);
-    outfile << " Pro: " << owner_.player.GetStatisticCurrentValue(StatisticType::Productivity);
+    outfile << " Cou: " << player.GetStatisticCurrentValue(StatisticType::Country);
+    outfile << " Bui: " << player.GetStatisticCurrentValue(StatisticType::Buildings);
+    outfile << " Mer: " << player.GetStatisticCurrentValue(StatisticType::Merchandise);
+    outfile << " Mil: " << player.GetStatisticCurrentValue(StatisticType::Military);
+    outfile << " Gol: " << player.GetStatisticCurrentValue(StatisticType::Gold);
+    outfile << " Pro: " << player.GetStatisticCurrentValue(StatisticType::Productivity);
     outfile << std::endl;
 
     outfile << " Resources: ";
@@ -270,11 +271,11 @@ void AIStatsReporter::SaveDebugStats(unsigned gf) const
 
     outfile << " Tools: " << std::endl;
     for(Tool tool : helpers::EnumRange<Tool>{})
-        outfile << TOOL_NAMES_1.at(tool) << ":" << owner_.player.GetToolPriority(tool) << std::endl;
+        outfile << TOOL_NAMES_1.at(tool) << ":" << player.GetToolPriority(tool) << std::endl;
     outfile << std::endl;
 
     VisualSettings visual_settings{};
-    owner_.player.FillVisualSettings(visual_settings);
+    player.FillVisualSettings(visual_settings);
     outfile << " Goods Distribution: " << std::endl;
     GoodType current_good = GoodType::Nothing;
     for(std::size_t idx = 0; idx < distributionMap.size(); ++idx)

@@ -18,7 +18,7 @@ class Base;
 
 namespace AIJH {
 
-class AIPlayerJH;
+class AIPlanningContext;
 class PositionSearch;
 
 enum class JobState
@@ -42,14 +42,14 @@ enum class SearchMode
 class AIJob
 {
 public:
-    AIJob(AIPlayerJH& aijh);
+    AIJob(AIPlanningContext& aijh);
     virtual ~AIJob() = default;
     virtual void ExecuteJob() = 0;
     JobState GetState() const { return state; }
     void SetState(JobState s) { state = s; }
 
 protected:
-    AIPlayerJH& aijh;
+    AIPlanningContext& aijh;
     JobState state;
 };
 
@@ -67,7 +67,7 @@ protected:
 class BuildJob : public AIJob, public JobWithTarget
 {
 public:
-    BuildJob(AIPlayerJH& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SearchMode::Radius)
+    BuildJob(AIPlanningContext& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SearchMode::Radius)
         : AIJob(aijh),  priority(10000), type(type), around(around), searchMode(searchMode)
     {}
 
@@ -97,7 +97,7 @@ struct CompareByPriority {
 class ConnectJob : public AIJob, public JobWithTarget
 {
 public:
-    ConnectJob(AIPlayerJH& aijh, MapPoint flagPos) : AIJob(aijh), flagPos(flagPos) {}
+    ConnectJob(AIPlanningContext& aijh, MapPoint flagPos) : AIJob(aijh), flagPos(flagPos) {}
     void ExecuteJob() override;
     MapPoint getFlag() const { return flagPos; }
 
@@ -109,7 +109,7 @@ private:
 class EventJob : public AIJob
 {
 public:
-    EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev);
+    EventJob(AIPlanningContext& aijh, std::unique_ptr<AIEvent::Base> ev);
     ~EventJob() override;
     void ExecuteJob() override;
     const AIEvent::Base& GetEvent() const { return *ev; }
@@ -121,7 +121,7 @@ private:
 class SearchJob : public AIJob
 {
 public:
-    SearchJob(AIPlayerJH& aijh, PositionSearch* search) : AIJob(aijh), search(search) {}
+    SearchJob(AIPlanningContext& aijh, PositionSearch* search) : AIJob(aijh), search(search) {}
     ~SearchJob() override;
     void ExecuteJob() override;
 

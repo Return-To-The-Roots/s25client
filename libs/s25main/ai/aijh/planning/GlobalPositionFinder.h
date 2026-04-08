@@ -11,12 +11,12 @@
 #include <optional>
 
 namespace AIJH {
-class AIPlayerJH;
+class AIPlanningContext;
 
 class GlobalPositionFinder
 {
 public:
-    GlobalPositionFinder(AIPlayerJH& aijh);
+    GlobalPositionFinder(AIPlanningContext& aijh);
 
     MapPoint FindBestPosition(BuildingType bt);
 
@@ -26,7 +26,7 @@ private:
     bool ValidStoneinRange(MapPoint pt) const;
     std::optional<int> GetPointRating(BuildingType type, const MapPoint& pt) const;
 
-    AIPlayerJH& aijh;
+    AIPlanningContext& aijh;
 };
 } // namespace AIJH
 

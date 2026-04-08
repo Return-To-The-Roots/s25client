@@ -8,7 +8,7 @@
 #include "ai/aijh/planning/AIConstruction.h"
 #include "ai/aijh/planning/BuildingPlanner.h"
 #include "ai/aijh/planning/PositionSearch.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIPlanningContext.h"
 #include "buildings/noBuildingSite.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"
@@ -18,7 +18,7 @@
 
 namespace AIJH {
 
-AIJob::AIJob(AIPlayerJH& aijh) : aijh(aijh), state(JobState::Waiting) {}
+AIJob::AIJob(AIPlanningContext& aijh) : aijh(aijh), state(JobState::Waiting) {}
 
 void BuildJob::ExecuteJob()
 {
@@ -134,7 +134,7 @@ void BuildJob::TryToBuild()
 #ifdef DEBUG_AI
     if(type == BuildingType::Farm)
         std::cout << " Player " << (unsigned)aijh.GetPlayerId() << " built farm at " << foundPos << " on value of "
-                  << aijh.resourceMaps[PLANTSPACE][foundPos] << std::endl;
+                  << aijh.GetResMapValue(foundPos, AIResource::Plantspace) << std::endl;
 #endif
 
     if(!aijh.GetInterface().SetBuildingSite(foundPos, type))
@@ -270,7 +270,7 @@ void BuildJob::TryToBuildSecondaryRoad()
         state = JobState::Finished;
 }
 
-EventJob::EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev) : AIJob(aijh), ev(std::move(ev)) {}
+EventJob::EventJob(AIPlanningContext& aijh, std::unique_ptr<AIEvent::Base> ev) : AIJob(aijh), ev(std::move(ev)) {}
 
 EventJob::~EventJob() = default;
 
@@ -290,7 +290,7 @@ void EventJob::ExecuteJob()
         case EventType::BuildingLost:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleMilitaryBuilingLost(evb.GetPos());
+            aijh.HandleMilitaryBuildingLost(evb.GetPos());
             state = JobState::Finished;
         }
         break;
@@ -305,7 +305,7 @@ void EventJob::ExecuteJob()
         {
             // todo maybe do sth about it?
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleBuilingDestroyed(evb.GetPos(), evb.GetBuildingType());
+            aijh.HandleBuildingDestroyed(evb.GetPos(), evb.GetBuildingType());
             state = JobState::Finished;
         }
         break;

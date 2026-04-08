@@ -13,7 +13,7 @@
 
 namespace AIJH {
 
-class AIPlayerJH;
+class AIWorldView;
 
 enum class PositionSearchState
 {
@@ -25,10 +25,10 @@ enum class PositionSearchState
 class PositionSearch
 {
 public:
-    PositionSearch(const AIPlayerJH& player, MapPoint pt, AIResource res, int minimum, BuildingType bld,
+    PositionSearch(const AIWorldView& player, MapPoint pt, AIResource res, int minimum, BuildingType bld,
                    bool searchGlobalOptimum = false);
 
-    PositionSearchState execute(const AIPlayerJH& player);
+    PositionSearchState execute(const AIWorldView& player);
     BuildingType GetBld() const { return bld; }
     MapPoint GetResultPt() const { return resultPt; }
 

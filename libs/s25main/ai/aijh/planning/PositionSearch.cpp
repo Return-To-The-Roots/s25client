@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PositionSearch.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
+#include "ai/aijh/runtime/AIWorldView.h"
 #include "gameData/BuildingConsts.h"
+#include "world/GameWorldBase.h"
 
-AIJH::PositionSearch::PositionSearch(const AIPlayerJH& player, const MapPoint pt, AIResource res, int minimum,
+AIJH::PositionSearch::PositionSearch(const AIWorldView& player, const MapPoint pt, AIResource res, int minimum,
                                      BuildingType bld, bool searchGlobalOptimum /*= false*/)
     : startPt(pt), res(res), minimum(minimum), size(BUILDING_SIZE[bld]), bld(bld),
       searchGlobalOptimum(searchGlobalOptimum), nodesPerStep(25), // TODO: Make it depend on something...
@@ -19,7 +20,7 @@ AIJH::PositionSearch::PositionSearch(const AIPlayerJH& player, const MapPoint pt
     tested[player.GetWorld().GetIdx(pt)] = true;
 }
 
-AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player)
+AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIWorldView& player)
 {
     const AIResourceMap& resMap = player.GetResMap(res);
     // make nodesPerStep tests

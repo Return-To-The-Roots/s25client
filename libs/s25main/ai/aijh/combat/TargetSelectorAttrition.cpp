@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AICombatController.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
 
+#include "ai/AIInterface.h"
 #include "ai/AIQueryService.h"
 #include "ai/aijh/config/AIConfig.h"
 #include "MilitaryStatsHolder.h"
@@ -112,7 +112,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetAttrition() const
     if(potentialTargets.empty())
         return nullptr;
 
-    const unsigned currentGF = owner_.gwb.GetEvMgr().GetCurrentGF();
+    const unsigned currentGF = owner_.GetWorld().GetEvMgr().GetCurrentGF();
     std::vector<const nobBaseMilitary*> recaptureCandidates;
     recaptureCandidates.reserve(potentialTargets.size());
 
@@ -120,7 +120,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetAttrition() const
     {
         if(target->GetGOT() != GO_Type::NobMilitary)
             continue;
-        if(target->GetOriginOwner() != owner_.playerId)
+        if(target->GetOriginOwner() != owner_.GetPlayerId())
             continue;
         recaptureCandidates.push_back(target);
     }
@@ -128,17 +128,13 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetAttrition() const
     if(const nobBaseMilitary* recapture = PickBestTarget(recaptureCandidates, currentGF, RECENT_RECAPTURE_WINDOW_GFS))
         return recapture;
 
-    if(HasForceAdvantage(owner_.gwb, owner_.GetInterface().Queries(), owner_.playerId,
+    if(HasForceAdvantage(owner_.GetWorld(), owner_.GetInterface().Queries(), owner_.GetPlayerId(),
                          owner_.GetConfig().combat.forceAdvantageRatio)
-       && HasNearTroopsDensityForBiting(owner_.gwb, owner_.playerId, owner_.GetConfig().combat.minNearTroopsDensity))
+       && HasNearTroopsDensityForBiting(owner_.GetWorld(), owner_.GetPlayerId(),
+                                        owner_.GetConfig().combat.minNearTroopsDensity))
         return SelectAttackTargetBiting();
 
     return nullptr;
-}
-
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetAttrition() const
-{
-    return combatController_->SelectAttackTargetAttrition();
 }
 
 } // namespace AIJH

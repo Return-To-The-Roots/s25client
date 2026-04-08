@@ -3,12 +3,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AICombatController.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
 
+#include "ai/AIInterface.h"
 #include "ai/AIQueryService.h"
 #include "helpers/containerUtils.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/MilitaryConsts.h"
+#include "world/GameWorldBase.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -23,18 +24,6 @@ namespace {
 
 using TargetSelectorFn = const nobBaseMilitary* (AICombatController::*)() const;
 using Mode = AICombatController::TargetSelectionMode;
-
-Mode ToCombatMode(AIPlayerJH::TargetSelectionMode mode)
-{
-    switch(mode)
-    {
-        case AIPlayerJH::TargetSelectionMode::Random: return Mode::Random;
-        case AIPlayerJH::TargetSelectionMode::Prudent: return Mode::Prudent;
-        case AIPlayerJH::TargetSelectionMode::Biting: return Mode::Biting;
-        case AIPlayerJH::TargetSelectionMode::Attrition: return Mode::Attrition;
-    }
-    return Mode::Random;
-}
 
 TargetSelectorFn ResolveSelector(Mode mode)
 {
@@ -56,11 +45,6 @@ const nobBaseMilitary* AICombatController::SelectAttackTarget(TargetSelectionMod
     return selector ? (this->*selector)() : nullptr;
 }
 
-const nobBaseMilitary* AIPlayerJH::SelectAttackTarget(TargetSelectionMode mode) const
-{
-    return combatController_->SelectAttackTarget(ToCombatMode(mode));
-}
-
 std::vector<const nobBaseMilitary*>
   AICombatController::GetPotentialTargets(unsigned& hq_or_harbor_without_soldiers) const
 {
@@ -68,7 +52,7 @@ std::vector<const nobBaseMilitary*>
     std::vector<const nobBaseMilitary*> potentialTargets;
 
     const AIQueryService& queries = owner_.GetInterface().Queries();
-    const GameWorldBase& gwb = owner_.gwb;
+    const GameWorldBase& gwb = owner_.GetWorld();
     const std::list<nobMilitary*>& militaryBuildings = queries.GetMilitaryBuildings();
     const unsigned numMilBlds = militaryBuildings.size();
     if(numMilBlds == 0)

@@ -11,7 +11,7 @@ class AIPlayer;
 class ctrlMultiline;
 class GameWorldView;
 namespace AIJH {
-class AIPlayerJH;
+class AIDebugView;
 }
 
 class iwAIDebug : public IngameWindow
@@ -29,7 +29,7 @@ private:
     class DebugPrinter;
 
     GameWorldView& gwv;
-    std::vector<const AIJH::AIPlayerJH*> ais_;
+    std::vector<const AIJH::AIDebugView*> ais_;
     ctrlMultiline* text;
     DebugPrinter* printer;
 };

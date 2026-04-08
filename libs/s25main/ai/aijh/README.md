@@ -28,15 +28,37 @@ historical file growth.
 The intended dependency direction is:
 
 - `runtime` may depend on `planning`, `combat`, `config`, and `debug`
-- `planning` may depend on `config` and selected runtime coordination types
-- `combat` may depend on `config` and selected runtime coordination types
-- `debug` may depend on runtime state for reporting, but should not drive
-  planning or combat policy
+- `planning` may depend on `config`, `runtime/AIWorldView.h`, and
+  `runtime/AIPlanningContext.h`
+- `combat` may depend on `config` and `combat/AICombatContext.h`, but should
+  not include `planning/` or `runtime/` headers directly
+- `debug` may depend on read-only debug/runtime views for reporting:
+  `debug/AIStatsSource.h`, `debug/AIDebugView.h`, and `runtime/AIMap.h`
+- `debug` must not drive planning or combat policy and must not include
+  runtime coordinator/controller headers such as `AIPlayerJH.h`
 - `config` should stay low-level and reusable
 
 The split is primarily about readability and ownership. Cross-folder includes
 are still allowed when needed, but new code should avoid turning the
 subdirectories back into a flat dependency mesh.
+
+## Guardrails
+
+The build now contains a dependency guard target:
+
+- `ai_jh_dependency_guards`
+
+It checks a small set of enforced boundaries:
+
+- `planning/` may only include `runtime/AIWorldView.h` and
+  `runtime/AIPlanningContext.h` from the runtime folder
+- `combat/` must not include `planning/` or runtime headers directly
+- `debug/` must stay on read-only views and must not include runtime
+  implementation headers or `AIPlayerJH`
+
+If one of these boundaries needs to change, update both the code and
+`cmake/CheckAIJHDependencies.cmake` in the same patch so the exception is
+explicit.
 
 ## Placement Rules
 

@@ -4,9 +4,10 @@
 
 #include "iwAIDebug.h"
 #include "Loader.h"
+#include "ai/AIPlayer.h"
 #include "ai/AIEvents.h"
+#include "ai/aijh/debug/AIDebugView.h"
 #include "ai/aijh/planning/Jobs.h"
-#include "ai/aijh/runtime/AIPlayerJH.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlMultiline.h"
 #include "helpers/EnumArray.h"
@@ -36,7 +37,7 @@ class iwAIDebug::DebugPrinter : public IDrawNodeCallback
     glFont& font;
 
 public:
-    DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : font(*NormalFont), ai(ai), overlay(overlay)
+    DebugPrinter(const AIJH::AIDebugView* ai, unsigned overlay) : font(*NormalFont), ai(ai), overlay(overlay)
     {
         // Cache images
         bqImgs[BuildingQuality::Nothing] = nullptr;
@@ -51,7 +52,7 @@ public:
         ticks[1] = LOADER.GetTextureN("io", 32);
     }
 
-    const AIJH::AIPlayerJH* ai;
+    const AIJH::AIDebugView* ai;
     unsigned overlay;
 
     void onDraw(const MapPoint& pt, const DrawPoint& curPos) override
@@ -80,9 +81,9 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
 {
     for(const AIPlayer* ai : ais)
     {
-        const auto* aijh = dynamic_cast<const AIJH::AIPlayerJH*>(ai);
-        if(aijh)
-            ais_.push_back(aijh);
+        const auto* aiDebugView = dynamic_cast<const AIJH::AIDebugView*>(ai);
+        if(aiDebugView)
+            ais_.push_back(aiDebugView);
     }
     // Wenn keine KI-Spieler, schließen
     if(ais_.empty())
@@ -93,7 +94,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
 
     ctrlComboBox* players =
       AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
-    for(const AIJH::AIPlayerJH* ai : ais_)
+    for(const AIJH::AIDebugView* ai : ais_)
     {
         players->AddString(ai->GetPlayerName());
     }

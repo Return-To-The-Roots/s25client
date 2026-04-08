@@ -11,9 +11,10 @@
 #include "helpers/EnumArray.h"
 #include "gameTypes/GoodTypes.h"
 
-class AIPlayer;
-
 class GamePlayer;
+namespace AIJH {
+class AIStatsSource;
+}
 
 // Define the snapshot data type
 using SnapshotData = std::unordered_map<std::string, uint32_t>;
@@ -28,7 +29,7 @@ public:
 
     DataExtractor() = default;
 
-    void ProcessSnapshot(const GamePlayer& player, uint32_t gameframe, const AIPlayer* aiPlayer = nullptr);
+    void ProcessSnapshot(const GamePlayer& player, uint32_t gameframe, const AIJH::AIStatsSource* aiStats = nullptr);
 
     const SnapshotData* GetCurrentSnapshot() const;
     bool HasSnapshot() const { return currentSnapshot_.has_value(); }
