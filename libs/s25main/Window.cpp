@@ -17,7 +17,8 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <cstdarg>
 
-Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const ScaleLimPercent& scalePercentage)
+Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
+               const ScaleLimPercent& scalePercentage)
     : parent_(parent), id_(id), pos_(pos), size_(size), scalePercentage_(scalePercentage), active_(false),
       visible_(true), scale_(false), limit_(false), isInMouseRelay(false), animations_(this)
 {
@@ -310,8 +311,7 @@ ctrlDeepening* Window::AddImageDeepening(unsigned id, const DrawPoint& pos, cons
 ctrlEdit* Window::AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                           unsigned short maxlength, bool password, bool disabled, bool notify)
 {
-    return AddCtrl(
-      new ctrlEdit(this, id, pos, size, tc, font, maxlength, password, disabled, notify));
+    return AddCtrl(new ctrlEdit(this, id, pos, size, tc, font, maxlength, password, disabled, notify));
 }
 
 ctrlGroup* Window::AddGroup(unsigned id)
@@ -377,8 +377,8 @@ ctrlProgress* Window::AddProgress(unsigned id, const DrawPoint& pos, const Exten
                                   const std::string& tooltip, const Extent& padding, unsigned force_color,
                                   const std::string& button_minus_tooltip, const std::string& button_plus_tooltip)
 {
-    return AddCtrl(new ctrlProgress(this, id, pos, size, tc, button_minus, button_plus, maximum,
-                                    padding, force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
+    return AddCtrl(new ctrlProgress(this, id, pos, size, tc, button_minus, button_plus, maximum, padding, force_color,
+                                    tooltip, button_minus_tooltip, button_plus_tooltip));
 }
 
 ctrlScrollBar* Window::AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
@@ -450,8 +450,7 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned id, const DrawPoint& pos, con
     va_list liste;
     va_start(liste, parameters);
 
-    auto* ctrl =
-      new ctrlVarDeepening(this, id, pos, size, tc, formatstr, font, color, parameters, liste);
+    auto* ctrl = new ctrlVarDeepening(this, id, pos, size, tc, formatstr, font, color, parameters, liste);
 
     va_end(liste);
 
@@ -584,7 +583,8 @@ T_Pt Window::Scale(const T_Pt& pt, const ScaleLimPercent& scalePercentage)
 void Window::Scale()
 {
     pos_ = ScaleWindowProp::scale(pos_, VIDEODRIVER.GetRenderSize());
-    size_ = ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limit_ ? scalePercentage_ : ScaleLimPercent(100, 100));
+    size_ =
+      ScaleWindowProp::scale(size_, VIDEODRIVER.GetRenderSize(), limit_ ? scalePercentage_ : ScaleLimPercent(100, 100));
 }
 
 template<class T_Pt>

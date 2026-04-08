@@ -38,8 +38,8 @@ ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Exte
     SetScale(false);
 
     // Scrollbalken hinzufügen
-    AddScrollBar(0, DrawPoint(GetSize().x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, GetSize().y), SCROLLBAR_WIDTH, tc,
-                 page_size);
+    AddScrollBar(0, DrawPoint(GetSize().x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, GetSize().y), SCROLLBAR_WIDTH,
+                 tc, page_size);
 
     SetScale(tmpScale);
 

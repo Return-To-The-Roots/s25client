@@ -22,7 +22,8 @@ struct ScaleWindowProp
     ScaleWindowProp(Extent oldSize, Extent newSize) : oldSize(oldSize), newSize(newSize) {}
 
     template<typename T_Pt>
-    static T_Pt scale(const T_Pt& value, const Extent& size, const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100));
+    static T_Pt scale(const T_Pt& value, const Extent& size,
+                      const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100));
 
     /// Scale the point or size from beeing relative to the oldSize to relative to the newSize
     template<typename T_Pt>
@@ -42,8 +43,9 @@ inline T_Pt ScaleWindowProp::operator()(const T_Pt& oldValue, const ScaleLimPerc
 {
     T_Pt realValue;
     T_Pt diff(oldSize - REFERENCE_RESOLUTION);
-    T_Pt limUnscaleValue(oldValue.x * REFERENCE_RESOLUTION.x / (oldSize.x - diff.x + (diff.x * scalePercentage.x / 100)),
-                            oldValue.y * REFERENCE_RESOLUTION.y / (oldSize.y - diff.y + (diff.y * scalePercentage.y / 100)));
+    T_Pt limUnscaleValue(
+      oldValue.x * REFERENCE_RESOLUTION.x / (oldSize.x - diff.x + (diff.x * scalePercentage.x / 100)),
+      oldValue.y * REFERENCE_RESOLUTION.y / (oldSize.y - diff.y + (diff.y * scalePercentage.y / 100)));
     realValue = limUnscaleValue;
     // Check for rounding errors
     T_Pt checkValue = ScaleWindowProp::scale(realValue, oldSize, scalePercentage);

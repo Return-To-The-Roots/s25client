@@ -67,7 +67,8 @@ public:
     using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
     using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
-    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0), const ScaleLimPercent& factors = ScaleLimPercent(100, 100));
+    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0),
+           const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100));
     virtual ~Window();
     /// zeichnet das Fenster.
     void Draw();
@@ -305,24 +306,24 @@ protected:
     /// Sets the limit value, deciding of control size shall be limited.
     void SetLimit(bool limit = true) { this->limit_ = limit; }
     /// get Scale-Value
-    bool GetScale() { return this->scale_; }
+    bool GetScale() const { return this->scale_; }
     /// get Limit-Value
-    bool GetLimit() { return this->limit_; }
+    bool GetLimit() const { return this->limit_; }
     /// zeichnet das Fenster.
     virtual void Draw_();
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
     virtual bool IsMessageRelayAllowed() const;
 
 private:
-    Window* const parent_;      /// Handle auf das Parentfenster.
-    unsigned id_;               /// ID des Fensters.
-    DrawPoint pos_;             /// Position des Fensters.
-    Extent size_;               /// Höhe des Fensters.
-    ScaleLimPercent scalePercentage_; /// X and Y scaling limiting factors
-    bool active_;               /// Fenster aktiv?
-    bool visible_;              /// Fenster sichtbar?
-    bool scale_;                /// Sollen Controls an Fenstergröße angepasst werden?
-    bool limit_;                /// Should control size be limited?
+    Window* const parent_;              /// Handle auf das Parentfenster.
+    unsigned id_;                       /// ID des Fensters.
+    DrawPoint pos_;                     /// Position des Fensters.
+    Extent size_;                       /// Höhe des Fensters.
+    ScaleLimPercent scalePercentage_;   /// X and Y scaling limiting percentage
+    bool active_;                       /// Fenster aktiv?
+    bool visible_;                      /// Fenster sichtbar?
+    bool scale_;                        /// Sollen Controls an Fenstergröße angepasst werden?
+    bool limit_;                        /// Should control size be limited?
 
     std::map<Window*, Rect> lockedAreas_; /// gesperrte Regionen des Fensters.
     std::vector<Window*> tofreeAreas_;
