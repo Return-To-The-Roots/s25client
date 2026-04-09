@@ -12,6 +12,7 @@
 #include "ai/AIInterface.h"
 #include "ai/AIQueryService.h"
 #include "ai/AIResource.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/BuildingConsts.h"
 #include "ai/aijh/config/WeightParams.h"
 
@@ -219,6 +220,8 @@ MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)
         if(!node.reachable || !node.owned || node.farmed)
             continue;
         if(!canUseBq(node.bq, requiredSize))
+            continue;
+        if(!BuildingProperties::IsMilitary(bt) && queries.IsReservedMilitaryBorderSlot(pt, node.bq))
             continue;
         if(queries.isHarborPosClose(pt, 2, true) && requiredSize != BuildingQuality::Harbor)
             continue;

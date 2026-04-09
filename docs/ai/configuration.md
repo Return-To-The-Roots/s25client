@@ -44,6 +44,12 @@ tool priorities, building-quality penalties, and explicit building disables. The
   building-location search. The default is `0.05`.
 - `bqPenalty.roadRoute` – Multiplier applied to the road-route building-quality
   downgrade penalty during road candidate scoring. The default is `1.0`.
+- `reserveMilitaryBorderSlots` – When `true`, non-military position finding
+  rejects near-border plots that could host a military building. The default is
+  `true`.
+- `reserveMilitaryBorderlandThreshold` – `Borderland` level above which a plot
+  is treated as border-adjacent for military-slot reservation. Higher values
+  mean stricter “closer to the border” filtering. The default is `150`.
 
 ## YAML Configuration
 
@@ -59,6 +65,8 @@ following top-level sections if present:
 | `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
 | `distributionAdjuster` | Map of distributed goods to target buildings. Each `distributedGood -> building` node may define `overstockingPenalty` as a map of stock goods to `BuildParams`. |
 | `bqPenalty` | Map with `buildLocation` and `roadRoute` scalars controlling BQ-related penalties in site and road scoring. |
+| `reserveMilitaryBorderSlots` | Boolean toggle for preserving border plots that are suitable for military expansion from non-military placement. |
+| `reserveMilitaryBorderlandThreshold` | Unsigned cutoff for `AIResource::Borderland`; plots above this level are treated as border-adjacent for the reservation rule. |
 
 Invalid entries log warnings but leave defaults untouched. Player-specific
 overrides can be loaded with `ApplyPlayerWeightsCfg`, which stores a dedicated
@@ -97,5 +105,6 @@ With these settings:
   when scoring building sites.
 - `bqPenalty.roadRoute` defaults to `1.0`, which matches the current built-in
   route scoring weight for one building-quality downgrade level.
+- `reserveMilitaryBorderSlots` defaults to `true`.
 - `disableBuilding` defaults to an empty list; omitting it in YAML preserves the
   original behaviour where all buildings start enabled.

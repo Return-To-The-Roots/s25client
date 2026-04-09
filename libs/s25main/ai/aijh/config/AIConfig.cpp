@@ -471,6 +471,28 @@ extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
         applyToolPriorityCfg(rootNode["toolPriority"], targetConfig);
         applyDistributionAdjusterCfg(rootNode["distributionAdjuster"], targetConfig);
         applyBQPenaltyCfg(rootNode["bqPenalty"], targetConfig);
+        if(const YAML::Node value = rootNode["reserveMilitaryBorderSlots"])
+        {
+            try
+            {
+                targetConfig.reserveMilitaryBorderSlots = value.as<bool>();
+            } catch(const YAML::TypedBadConversion<bool>& e)
+            {
+                std::cerr << "Warning: Invalid reserveMilitaryBorderSlots value, using default. Error: "
+                          << e.what() << std::endl;
+            }
+        }
+        if(const YAML::Node value = rootNode["reserveMilitaryBorderlandThreshold"])
+        {
+            try
+            {
+                targetConfig.reserveMilitaryBorderlandThreshold = value.as<unsigned>();
+            } catch(const YAML::TypedBadConversion<unsigned>& e)
+            {
+                std::cerr << "Warning: Invalid reserveMilitaryBorderlandThreshold value, using default. Error: "
+                          << e.what() << std::endl;
+            }
+        }
         if(const YAML::Node value = rootNode["bqPenaltyPerLevel"])
         {
             try

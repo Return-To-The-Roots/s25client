@@ -10,6 +10,8 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 #include "helpers/containerUtils.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noTree.h"
@@ -283,6 +285,26 @@ BuildingQuality AIQueryService::GetBuildingQuality(const MapPoint pt) const
 BuildingQuality AIQueryService::GetBuildingQualityAnyOwner(const MapPoint pt) const
 {
     return gwb.GetNode(pt).bq;
+}
+
+bool AIQueryService::IsReservedMilitaryBorderSlot(const MapPoint pt, const BuildingQuality currentBQ) const
+{
+    if(!reserveMilitaryBorderSlots_ || !IsOwnTerritory(pt))
+        return false;
+
+    const int borderlandLevel = CalcResourceValue(pt, AIResource::Borderland);
+    if(borderlandLevel <= static_cast<int>(reserveMilitaryBorderlandThreshold_))
+        return false;
+
+    for(const BuildingType militaryType : BuildingProperties::militaryBldTypes)
+    {
+        if(!CanBuildBuildingtype(militaryType))
+            continue;
+        if(canUseBq(currentBQ, BUILDING_SIZE[militaryType]))
+            return true;
+    }
+
+    return false;
 }
 
 unsigned AIQueryService::EstimateBuildLocationBQPenalty(const MapPoint buildingPos) const

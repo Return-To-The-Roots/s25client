@@ -8,9 +8,9 @@
 
 namespace AIJH {
 
-MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const
+MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingType type, unsigned radius) const
 {
-    return worldQueries_->SimpleFindPosition(pt, size, radius);
+    return worldQueries_->SimpleFindPosition(pt, type, radius);
 }
 
 MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapPoint& around)

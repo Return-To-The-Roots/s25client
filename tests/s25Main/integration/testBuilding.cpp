@@ -287,15 +287,43 @@ BOOST_FIXTURE_TEST_CASE(EstimateBuildLocationBQPenalty_MatchesActualAdjacentBQLo
     };
 
     unsigned actualPenalty = 0;
-    for(size_t i = 0; i < neighbours.size(); ++i)
+    size_t i = 0;
+    for(const MapPoint nb : neighbours)
     {
         const unsigned beforeValue = getBQPenaltyValue(beforeBQs[i]);
-        const unsigned afterValue = getBQPenaltyValue(world.GetBQ(neighbours[i], 0));
+        const unsigned afterValue = getBQPenaltyValue(world.GetBQ(nb, 0));
         if(beforeValue > afterValue)
             actualPenalty += beforeValue - afterValue;
+        ++i;
     }
 
     BOOST_TEST(estimatedPenalty == actualPenalty);
+}
+
+BOOST_FIXTURE_TEST_CASE(ReservedMilitaryBorderSlot_RequiresHighBorderlandAndMilitaryBQ, EmptyWorldFixture1PBiggest)
+{
+    const AIQueryService queries(world, 0);
+
+    MapPoint reservedPt = MapPoint::Invalid();
+    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(world.GetPlayer(0).GetHQPos(), 12))
+    {
+        if(!queries.IsOwnTerritory(pt))
+            continue;
+
+        const BuildingQuality currentBQ = queries.GetBuildingQuality(pt);
+        const int borderlandLevel = queries.CalcResourceValue(pt, AIResource::Borderland);
+        if(borderlandLevel > 150 && currentBQ >= BuildingQuality::Hut && currentBQ <= BuildingQuality::Castle)
+        {
+            reservedPt = pt;
+            break;
+        }
+    }
+    BOOST_TEST_REQUIRE(reservedPt.isValid());
+    BOOST_TEST(queries.IsReservedMilitaryBorderSlot(reservedPt, queries.GetBuildingQuality(reservedPt)));
+
+    AIQueryService disabledQueries(world, 0);
+    disabledQueries.SetReserveMilitaryBorderSlots(false);
+    BOOST_TEST(!disabledQueries.IsReservedMilitaryBorderSlot(reservedPt, disabledQueries.GetBuildingQuality(reservedPt)));
 }
 
 BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)

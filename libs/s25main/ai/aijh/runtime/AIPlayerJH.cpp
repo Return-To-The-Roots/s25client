@@ -145,6 +145,9 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
       combatController_(std::make_unique<AICombatController>(*this)),
       roadController_(std::make_unique<AIRoadController>(*this))
 {
+    aii.Queries().SetReserveMilitaryBorderSlots(config_.reserveMilitaryBorderSlots);
+    aii.Queries().SetReserveMilitaryBorderlandThreshold(config_.reserveMilitaryBorderlandThreshold);
+
     InitNodes();
     InitResourceMaps();
 #ifdef DEBUG_AI

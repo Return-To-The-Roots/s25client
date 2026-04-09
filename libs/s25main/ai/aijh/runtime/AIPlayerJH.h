@@ -113,7 +113,7 @@ public:
     // Planner- and debug-facing queries
     MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, unsigned radius,
                               int minimum = 1);
-    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const;
+    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingType type, unsigned radius) const;
     MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
 
     unsigned GetAvailableResources(AISurfaceResource resource) const;

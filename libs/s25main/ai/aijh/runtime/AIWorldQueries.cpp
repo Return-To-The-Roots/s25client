@@ -24,8 +24,9 @@
 
 namespace AIJH {
 
-MapPoint AIWorldQueries::SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const
+MapPoint AIWorldQueries::SimpleFindPosition(const MapPoint& pt, const BuildingType type, const unsigned radius) const
 {
+    const BuildingQuality size = BUILDING_SIZE[type];
     const std::vector<MapPoint> pts = owner_.gwb.GetPointsInRadius(pt, radius);
     MapPoint bestFallback = MapPoint::Invalid();
     int bestQualityDelta = std::numeric_limits<int>::max();
@@ -41,6 +42,8 @@ MapPoint AIWorldQueries::SimpleFindPosition(const MapPoint& pt, BuildingQuality 
         }
         RTTR_Assert(owner_.aii.GetBuildingQuality(curPt) == owner_.GetAINode(curPt).bq);
         const BuildingQuality nodeBq = owner_.aii.GetBuildingQuality(curPt);
+        if(!BuildingProperties::IsMilitary(type) && owner_.aii.Queries().IsReservedMilitaryBorderSlot(curPt, nodeBq))
+            continue;
         if(nodeBq == size)
             return curPt;
         if(canUseBq(nodeBq, size))
@@ -73,7 +76,7 @@ MapPoint AIWorldQueries::FindPositionForBuildingAround(BuildingType type, const 
         case BuildingType::Mill:
         case BuildingType::Well:
         {
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
+            foundPos = SimpleFindPosition(around, type, searchRadius);
             if(owner_.construction->OtherUsualBuildingInRadius(foundPos, 4, BuildingType::Forester))
                 foundPos = MapPoint::Invalid();
             break;
@@ -81,7 +84,7 @@ MapPoint AIWorldQueries::FindPositionForBuildingAround(BuildingType type, const 
         case BuildingType::Hunter:
         {
             if(HuntablesinRange(around, (2 << owner_.GetBldPlanner().GetNumBuildings(BuildingType::Hunter))))
-                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
+                foundPos = SimpleFindPosition(around, type, searchRadius);
             break;
         }
         case BuildingType::Quarry:
@@ -127,15 +130,15 @@ MapPoint AIWorldQueries::FindPositionForBuildingAround(BuildingType type, const 
             break;
         case BuildingType::Storehouse:
             if(!owner_.construction->OtherStoreInRadius(around, 15))
-                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
+                foundPos = SimpleFindPosition(around, type, searchRadius);
             break;
         case BuildingType::HarborBuilding:
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
+            foundPos = SimpleFindPosition(around, type, searchRadius);
             if(foundPos.isValid() && !HarborPosRelevant(owner_.GetWorld().GetHarborPointID(foundPos)))
                 foundPos = MapPoint::Invalid();
             break;
         case BuildingType::Shipyard:
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
+            foundPos = SimpleFindPosition(around, type, searchRadius);
             if(foundPos.isValid() && IsInvalidShipyardPosition(foundPos))
                 foundPos = MapPoint::Invalid();
             break;
@@ -145,11 +148,11 @@ MapPoint AIWorldQueries::FindPositionForBuildingAround(BuildingType type, const 
             foundPos = owner_.FindBestPosition(around, AIResource::Plantspace, BUILDING_SIZE[type], searchRadius, 85);
             break;
         case BuildingType::Catapult:
-            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
+            foundPos = SimpleFindPosition(around, type, searchRadius);
             if(foundPos.isValid() && owner_.aii.isBuildingNearby(BuildingType::Catapult, foundPos, 7))
                 foundPos = MapPoint::Invalid();
             break;
-        default: foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius); break;
+        default: foundPos = SimpleFindPosition(around, type, searchRadius); break;
     }
     return foundPos;
 }

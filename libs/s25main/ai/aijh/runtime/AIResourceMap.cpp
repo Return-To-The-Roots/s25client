@@ -127,7 +127,10 @@ RatedPointSet AIResourceMap::findBestPositions(const MapPoint& pt, BuildingQuali
                 continue;
             RTTR_Assert(queries_.GetBuildingQuality(curPt)
                         == aiMap[curPt].bq); // Temporary, to check if aiMap is correctly update, see below
-            if(!canUseBq(queries_.GetBuildingQuality(curPt), size)) // map[idx].bq; TODO: Update nodes BQ and use that
+            const BuildingQuality currentBQ = queries_.GetBuildingQuality(curPt);
+            if(!canUseBq(currentBQ, size)) // map[idx].bq; TODO: Update nodes BQ and use that
+                continue;
+            if(res != AIResource::Borderland && queries_.IsReservedMilitaryBorderSlot(curPt, currentBQ))
                 continue;
             // special case fish -> check for other fishery buildings
             if(res == AIResource::Fish && queries_.isBuildingNearby(BuildingType::Fishery, curPt, 5))
@@ -165,7 +168,10 @@ std::pair<MapPoint, int> AIResourceMap::findBestPosition(const MapPoint& pt, Bui
                 continue;
             RTTR_Assert(queries_.GetBuildingQuality(curPt)
                         == aiMap[curPt].bq); // Temporary, to check if aiMap is correctly update, see below
-            if(!canUseBq(queries_.GetBuildingQuality(curPt), size)) // map[idx].bq; TODO: Update nodes BQ and use that
+            const BuildingQuality currentBQ = queries_.GetBuildingQuality(curPt);
+            if(!canUseBq(currentBQ, size)) // map[idx].bq; TODO: Update nodes BQ and use that
+                continue;
+            if(res != AIResource::Borderland && queries_.IsReservedMilitaryBorderSlot(curPt, currentBQ))
                 continue;
             // special case fish -> check for other fishery buildings
             if(res == AIResource::Fish && queries_.isBuildingNearby(BuildingType::Fishery, curPt, 5))

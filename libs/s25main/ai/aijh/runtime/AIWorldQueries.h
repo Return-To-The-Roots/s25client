@@ -18,7 +18,7 @@ class AIWorldQueries
 public:
     explicit AIWorldQueries(AIPlayerJH& owner) : owner_(owner) {}
 
-    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, unsigned radius) const;
+    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingType type, unsigned radius) const;
     MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
     unsigned GetAvailableResources(AISurfaceResource resource) const;
     unsigned GetDensity(MapPoint pt, AIResource res, int radius);

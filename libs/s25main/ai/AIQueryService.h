@@ -32,6 +32,8 @@ public:
     AIQueryService(const GameWorldBase& gwb, unsigned char playerID);
     ~AIQueryService();
 
+    void SetReserveMilitaryBorderSlots(bool enabled) { reserveMilitaryBorderSlots_ = enabled; }
+    void SetReserveMilitaryBorderlandThreshold(unsigned threshold) { reserveMilitaryBorderlandThreshold_ = threshold; }
     unsigned char GetPlayerId() const { return playerID_; }
     unsigned GetNumPlayers() const { return gwb.GetNumPlayers(); }
     const std::vector<unsigned>& getUsableHarbors() const { return usableHarbors_; }
@@ -51,6 +53,7 @@ public:
     bool CalcBQSumDifference(MapPoint pt1, MapPoint pt2) const;
     BuildingQuality GetBuildingQuality(MapPoint pt) const;
     BuildingQuality GetBuildingQualityAnyOwner(MapPoint pt) const;
+    bool IsReservedMilitaryBorderSlot(MapPoint pt, BuildingQuality currentBQ) const;
     unsigned EstimateBuildLocationBQPenalty(MapPoint buildingPos) const;
     unsigned EstimateRoadRouteBQPenalty(MapPoint start, const std::vector<Direction>& route) const;
     bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr,
@@ -93,5 +96,7 @@ private:
     const GameWorldBase& gwb;
     const GamePlayer& player_;
     const unsigned char playerID_;
+    bool reserveMilitaryBorderSlots_ = true;
+    unsigned reserveMilitaryBorderlandThreshold_ = 150;
     std::vector<unsigned> usableHarbors_;
 };

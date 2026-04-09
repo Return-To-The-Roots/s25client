@@ -50,6 +50,8 @@ struct AIConfig
     helpers::EnumArray<helpers::EnumArray<DistributionParams, BuildingType>, GoodType> distributionParams;
     CombatConfig combat;
     BQPenaltyConfig bqPenalty;
+    bool reserveMilitaryBorderSlots = true;
+    unsigned reserveMilitaryBorderlandThreshold = 150;
     std::vector<BuildingType> disableBuilding;
     helpers::EnumArray<signed, Tool> toolPriority = TOOL_PRIORITY;
 
