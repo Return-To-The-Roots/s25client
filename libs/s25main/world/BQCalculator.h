@@ -15,6 +15,10 @@ struct BQCalculator
     template<typename T_IsOnRoad>
     BuildingQuality operator()(MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly = false) const;
 
+    template<typename T_IsOnRoad, typename T_GetBlockingManner>
+    BuildingQuality operator()(MapPoint pt, T_IsOnRoad isOnRoad, T_GetBlockingManner getBlockingManner,
+                               bool flagOnly) const;
+
 private:
     const World& world;
 };
@@ -22,8 +26,16 @@ private:
 template<typename T_IsOnRoad>
 BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad, const bool flagOnly /*= false*/) const
 {
+    const auto getBlockingManner = [this](MapPoint point) { return world.GetNO(point)->GetBM(); };
+    return (*this)(pt, isOnRoad, getBlockingManner, flagOnly);
+}
+
+template<typename T_IsOnRoad, typename T_GetBlockingManner>
+BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad, T_GetBlockingManner getBlockingManner,
+                                         const bool flagOnly) const
+{
     // Cannot build on blocking objects
-    if(world.GetNO(pt)->GetBM() != BlockingManner::None)
+    if(getBlockingManner(pt) != BlockingManner::None)
         return BuildingQuality::Nothing;
 
     //////////////////////////////////////////////////////////////////////////
@@ -130,7 +142,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // Blocking manners of neighbours (cache for reuse)
     helpers::EnumArray<BlockingManner, Direction> neighbourBlocks;
     for(const auto dir : helpers::EnumRange<Direction>{})
-        neighbourBlocks[dir] = world.GetNO(neighbours[dir])->GetBM();
+        neighbourBlocks[dir] = getBlockingManner(neighbours[dir]);
 
     // Don't build anything around charburner piles
     if(helpers::contains(neighbourBlocks, BlockingManner::NothingAround))
@@ -182,7 +194,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(unsigned i = 0; i < 12; ++i)
         {
-            BlockingManner bm = world.GetNO(world.GetNeighbour2(pt, i))->GetBM();
+            BlockingManner bm = getBlockingManner(world.GetNeighbour2(pt, i));
 
             if(bm == BlockingManner::Building)
             {

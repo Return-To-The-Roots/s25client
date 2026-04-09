@@ -37,13 +37,19 @@ struct DistributionParams
     helpers::EnumArray<BuildParams, GoodType> overstockingPenalty{};
 };
 
+struct BQPenaltyConfig
+{
+    double buildLocation = 0.05;
+    double roadRoute = 1.0;
+};
+
 struct AIConfig
 {
     helpers::EnumArray<WantedParams, BuildingType> wantedParams;
     helpers::EnumArray<LocationParams, BuildingType> locationParams;
     helpers::EnumArray<helpers::EnumArray<DistributionParams, BuildingType>, GoodType> distributionParams;
     CombatConfig combat;
-    double bqPenaltyPerLevel = 0.05;
+    BQPenaltyConfig bqPenalty;
     std::vector<BuildingType> disableBuilding;
     helpers::EnumArray<signed, Tool> toolPriority = TOOL_PRIORITY;
 

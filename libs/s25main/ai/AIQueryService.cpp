@@ -17,8 +17,10 @@
 #include "pathfinding/PathConditionRoad.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "gameData/TerrainDesc.h"
+#include "world/BQCalculator.h"
 #include <limits>
 #include <numeric>
+#include <set>
 
 namespace {
 /// Param for road-build pathfinding
@@ -41,6 +43,28 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
         return false;
     const auto* prp = static_cast<const Param_RoadPath*>(param);
     return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BuildingQuality::Nothing;
+}
+
+unsigned GetBuildingQualityPenaltyValue(BuildingQuality bq)
+{
+    switch(bq)
+    {
+        case BuildingQuality::Nothing: return 0;
+        case BuildingQuality::Flag: return 1;
+        case BuildingQuality::Hut: return 2;
+        case BuildingQuality::House: return 3;
+        case BuildingQuality::Mine: return 3;
+        case BuildingQuality::Castle: return 4;
+        case BuildingQuality::Harbor: return 4;
+    }
+    return 0;
+}
+
+unsigned GetBuildingQualityPenalty(BuildingQuality before, BuildingQuality after)
+{
+    const unsigned beforeValue = GetBuildingQualityPenaltyValue(before);
+    const unsigned afterValue = GetBuildingQualityPenaltyValue(after);
+    return (beforeValue > afterValue) ? (beforeValue - afterValue) : 0;
 }
 } // namespace
 
@@ -259,6 +283,64 @@ BuildingQuality AIQueryService::GetBuildingQuality(const MapPoint pt) const
 BuildingQuality AIQueryService::GetBuildingQualityAnyOwner(const MapPoint pt) const
 {
     return gwb.GetNode(pt).bq;
+}
+
+unsigned AIQueryService::EstimateBuildLocationBQPenalty(const MapPoint buildingPos) const
+{
+    const BQCalculator bqCalculator(gwb);
+    const auto isOnRoad = [&](MapPoint pt) { return gwb.IsOnRoad(pt); };
+    const auto getHypotheticalBlockingManner = [&](MapPoint pt) {
+        return (pt == buildingPos) ? BlockingManner::Building : gwb.GetNO(pt)->GetBM();
+    };
+
+    unsigned penalty = 0;
+    for(const MapPoint nb : gwb.GetNeighbours(buildingPos))
+    {
+        const BuildingQuality beforeBQ = gwb.GetBQ(nb, playerID_);
+        const BuildingQuality afterNodeBQ = bqCalculator(nb, isOnRoad, getHypotheticalBlockingManner, false);
+        const BuildingQuality afterBQ = gwb.AdjustBQ(nb, playerID_, afterNodeBQ);
+        penalty += GetBuildingQualityPenalty(beforeBQ, afterBQ);
+    }
+
+    return penalty;
+}
+
+unsigned AIQueryService::EstimateRoadRouteBQPenalty(MapPoint start, const std::vector<Direction>& route) const
+{
+    if(route.empty())
+        return 0;
+
+    std::set<MapPoint, MapPointLess> routePoints;
+    std::set<MapPoint, MapPointLess> affectedPoints;
+
+    auto addAffectedPoint = [&](MapPoint pt) {
+        routePoints.insert(pt);
+        affectedPoints.insert(pt);
+        affectedPoints.insert(gwb.GetNeighbour(pt, Direction::East));
+        affectedPoints.insert(gwb.GetNeighbour(pt, Direction::SouthEast));
+        affectedPoints.insert(gwb.GetNeighbour(pt, Direction::SouthWest));
+    };
+
+    addAffectedPoint(start);
+    for(const Direction dir : route)
+    {
+        start = gwb.GetNeighbour(start, dir);
+        addAffectedPoint(start);
+    }
+
+    const BQCalculator bqCalculator(gwb);
+    const auto isOnHypotheticalRoad = [&](MapPoint pt) { return gwb.IsOnRoad(pt) || routePoints.count(pt) > 0; };
+
+    unsigned penalty = 0;
+    for(const MapPoint pt : affectedPoints)
+    {
+        const BuildingQuality beforeBQ = gwb.GetBQ(pt, playerID_);
+        const BuildingQuality afterNodeBQ = bqCalculator(pt, isOnHypotheticalRoad);
+        const BuildingQuality afterBQ = gwb.AdjustBQ(pt, playerID_, afterNodeBQ);
+        penalty += GetBuildingQualityPenalty(beforeBQ, afterBQ);
+    }
+
+    return penalty;
 }
 
 bool AIQueryService::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route,

@@ -105,6 +105,7 @@ Then it computes:
 ```text
 score = oddPenalty + 2 * newRoadLength + warehouseRoadDistance
         + 10 * maxNonFlaggableRun
+        + bqPenalty.roadRoute * routeBQPenalty
 ```
 
 Where:
@@ -114,10 +115,15 @@ Where:
 - `warehouseRoadDistance` is the existing road-network distance from the
   candidate flag to the selected warehouse,
 - `maxNonFlaggableRun` is the longest consecutive stretch of
-  `BuildingQuality::Nothing` along the new route.
+  `BuildingQuality::Nothing` along the new route,
+- `routeBQPenalty` is the summed downgrade cost caused by the hypothetical road
+  reducing building quality on route tiles and their nearby affected plots,
+- `bqPenalty.roadRoute` comes from `AIConfig` and defaults to `1.0`.
 
 The doubled weight on `newRoadLength` means the AI prefers short new
-construction even when the total end-to-end route would be similar either way.
+construction even when the total end-to-end route would be similar either way,
+while the BQ term lightly discourages routes that destroy more valuable
+building plots.
 
 ## How Existing Road Distance Is Measured
 
@@ -158,7 +164,7 @@ This pass:
 The road is built only if:
 
 - no current path exists, or
-- `newLength * 5 < oldLength`.
+- `newLength * 5 + bqPenalty.roadRoute * routeBQPenalty < oldLength`.
 
 So secondary roads are conservative shortcuts. They are not meant to fine-tune
 every route, only to add clearly superior bypasses.

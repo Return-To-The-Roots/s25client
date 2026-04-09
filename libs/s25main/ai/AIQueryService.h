@@ -51,6 +51,8 @@ public:
     bool CalcBQSumDifference(MapPoint pt1, MapPoint pt2) const;
     BuildingQuality GetBuildingQuality(MapPoint pt) const;
     BuildingQuality GetBuildingQualityAnyOwner(MapPoint pt) const;
+    unsigned EstimateBuildLocationBQPenalty(MapPoint buildingPos) const;
+    unsigned EstimateRoadRouteBQPenalty(MapPoint start, const std::vector<Direction>& route) const;
     bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr,
                                 unsigned* length = nullptr) const;
     bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length = nullptr) const;

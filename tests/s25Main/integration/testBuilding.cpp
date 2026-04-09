@@ -5,6 +5,7 @@
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "ai/AIQueryService.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
@@ -205,6 +206,96 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
         BOOST_TEST_REQUIRE(world.GetNode(pt - MapPoint(1, 0)).bq == leftBQ);
         BOOST_TEST_REQUIRE(world.GetNode(pt + MapPoint(1, 0)).bq == BuildingQuality::House);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(EstimateRoadRouteBQPenalty_IsZeroForExistingRoad, EmptyWorldFixture1PBiggest)
+{
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        world.SetOwner(pt, 1);
+
+    const MapPoint start(4, 3);
+    const std::vector<Direction> route(4, Direction::SouthEast);
+    MapPoint curPt = start;
+    for(const Direction dir : route)
+    {
+        world.SetPointRoad(curPt, dir, PointRoad::Normal);
+        world.RecalcBQForRoad(curPt);
+        curPt = world.GetNeighbour(curPt, dir);
+    }
+    world.RecalcBQForRoad(curPt);
+
+    const AIQueryService queries(world, 0);
+    BOOST_TEST(queries.EstimateRoadRouteBQPenalty(start, route) == 0u);
+}
+
+BOOST_FIXTURE_TEST_CASE(EstimateRoadRouteBQPenalty_IsLowerNearExistingRoads, EmptyWorldFixture1PBiggest)
+{
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        world.SetOwner(pt, 1);
+
+    const std::vector<Direction> route(4, Direction::SouthEast);
+
+    const MapPoint existingRoadStart(4, 3);
+    MapPoint curPt = existingRoadStart;
+    for(const Direction dir : route)
+    {
+        world.SetPointRoad(curPt, dir, PointRoad::Normal);
+        world.RecalcBQForRoad(curPt);
+        curPt = world.GetNeighbour(curPt, dir);
+    }
+    world.RecalcBQForRoad(curPt);
+
+    const AIQueryService queries(world, 0);
+    const unsigned nearPenalty = queries.EstimateRoadRouteBQPenalty(MapPoint(5, 3), route);
+    const unsigned pristinePenalty = queries.EstimateRoadRouteBQPenalty(MapPoint(12, 3), route);
+
+    BOOST_TEST(nearPenalty > 0u);
+    BOOST_TEST(pristinePenalty > 0u);
+    BOOST_TEST(nearPenalty < pristinePenalty);
+}
+
+BOOST_FIXTURE_TEST_CASE(EstimateBuildLocationBQPenalty_MatchesActualAdjacentBQLoss, EmptyWorldFixture1PBiggest)
+{
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        world.SetOwner(pt, 1);
+
+    const MapPoint buildingPos(8, 8);
+    const auto neighbours = world.GetNeighbours(buildingPos);
+
+    const AIQueryService queries(world, 0);
+    const unsigned estimatedPenalty = queries.EstimateBuildLocationBQPenalty(buildingPos);
+
+    std::vector<BuildingQuality> beforeBQs;
+    beforeBQs.reserve(neighbours.size());
+    for(const MapPoint nb : neighbours)
+        beforeBQs.push_back(world.GetBQ(nb, 0));
+
+    world.SetBuildingSite(BuildingType::Woodcutter, buildingPos, 0);
+
+    auto getBQPenaltyValue = [](BuildingQuality bq) {
+        switch(bq)
+        {
+            case BuildingQuality::Nothing: return 0u;
+            case BuildingQuality::Flag: return 1u;
+            case BuildingQuality::Hut: return 2u;
+            case BuildingQuality::House: return 3u;
+            case BuildingQuality::Mine: return 3u;
+            case BuildingQuality::Castle: return 4u;
+            case BuildingQuality::Harbor: return 4u;
+        }
+        return 0u;
+    };
+
+    unsigned actualPenalty = 0;
+    for(size_t i = 0; i < neighbours.size(); ++i)
+    {
+        const unsigned beforeValue = getBQPenaltyValue(beforeBQs[i]);
+        const unsigned afterValue = getBQPenaltyValue(world.GetBQ(neighbours[i], 0));
+        if(beforeValue > afterValue)
+            actualPenalty += beforeValue - afterValue;
+    }
+
+    BOOST_TEST(estimatedPenalty == actualPenalty);
 }
 
 BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)

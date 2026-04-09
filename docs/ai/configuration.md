@@ -2,7 +2,7 @@
 
 `AIConfig` describes the configurable behaviour for AI-controlled players. It
 collects per-building weight parameters, location heuristics, combat pacing,
-tool priorities, and explicit building disables. The structure is defined in
+tool priorities, building-quality penalties, and explicit building disables. The structure is defined in
 `libs/s25main/ai/aijh/config/AIConfig.h` and populated through YAML in
 `libs/s25main/ai/aijh/config/AIConfig.cpp`.
 
@@ -39,6 +39,11 @@ tool priorities, and explicit building disables. The structure is defined in
   `DistributionParams` entry exposes `overstockingPenalty[GoodType]` as
   `BuildParams`, so penalties can use `constant`, `linear`, `exponential`,
   `logTwo`, `min`, and `max`.
+- `bqPenalty.buildLocation` – Penalty applied per lost building-quality level
+  when the global position finder evaluates nearby plot degradation during
+  building-location search. The default is `0.05`.
+- `bqPenalty.roadRoute` – Multiplier applied to the road-route building-quality
+  downgrade penalty during road candidate scoring. The default is `1.0`.
 
 ## YAML Configuration
 
@@ -53,6 +58,7 @@ following top-level sections if present:
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |
 | `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
 | `distributionAdjuster` | Map of distributed goods to target buildings. Each `distributedGood -> building` node may define `overstockingPenalty` as a map of stock goods to `BuildParams`. |
+| `bqPenalty` | Map with `buildLocation` and `roadRoute` scalars controlling BQ-related penalties in site and road scoring. |
 
 Invalid entries log warnings but leave defaults untouched. Player-specific
 overrides can be loaded with `ApplyPlayerWeightsCfg`, which stores a dedicated
@@ -87,5 +93,9 @@ With these settings:
 - The combat block defaults to attack intervals of 2500/750/100 frames
   (easy/medium/hard), `minNearTroopsDensity = 1.0`, and uses random target
   selection until overridden.
+- `bqPenalty.buildLocation` defaults to `0.05` for adjacent-plot degradation
+  when scoring building sites.
+- `bqPenalty.roadRoute` defaults to `1.0`, which matches the current built-in
+  route scoring weight for one building-quality downgrade level.
 - `disableBuilding` defaults to an empty list; omitting it in YAML preserves the
   original behaviour where all buildings start enabled.

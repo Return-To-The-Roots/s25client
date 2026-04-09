@@ -392,6 +392,65 @@ void applyDistributionAdjusterCfg(const YAML::Node& distributionNode, AIConfig& 
         }
     }
 }
+
+void applyBQPenaltyCfg(const YAML::Node& bqPenaltyNode, AIConfig& config)
+{
+    if(!bqPenaltyNode)
+        return;
+
+    if(!bqPenaltyNode.IsMap())
+    {
+        std::cerr << "Warning: bqPenalty must be a map." << std::endl;
+        return;
+    }
+
+    if(const YAML::Node value = bqPenaltyNode["buildLocation"])
+    {
+        try
+        {
+            config.bqPenalty.buildLocation = value.as<double>();
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid bqPenalty.buildLocation value, using default. Error: " << e.what()
+                      << std::endl;
+        }
+    }
+
+    if(const YAML::Node value = bqPenaltyNode["locationSearch"])
+    {
+        try
+        {
+            config.bqPenalty.buildLocation = value.as<double>();
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid bqPenalty.locationSearch value, using default. Error: " << e.what()
+                      << std::endl;
+        }
+    }
+
+    if(const YAML::Node value = bqPenaltyNode["level"])
+    {
+        try
+        {
+            config.bqPenalty.buildLocation = value.as<double>();
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid bqPenalty.level value, using default. Error: " << e.what() << std::endl;
+        }
+    }
+
+    if(const YAML::Node value = bqPenaltyNode["roadRoute"])
+    {
+        try
+        {
+            config.bqPenalty.roadRoute = value.as<double>();
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid bqPenalty.roadRoute value, using default. Error: " << e.what()
+                      << std::endl;
+        }
+    }
+}
 } // namespace
 
 extern void applyWeightsCfg(std::string weightCfgPath)
@@ -411,15 +470,27 @@ extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
         applyDisableBuildingCfg(rootNode["disableBuilding"], targetConfig);
         applyToolPriorityCfg(rootNode["toolPriority"], targetConfig);
         applyDistributionAdjusterCfg(rootNode["distributionAdjuster"], targetConfig);
+        applyBQPenaltyCfg(rootNode["bqPenalty"], targetConfig);
         if(const YAML::Node value = rootNode["bqPenaltyPerLevel"])
         {
             try
             {
-                targetConfig.bqPenaltyPerLevel = value.as<double>();
+                targetConfig.bqPenalty.buildLocation = value.as<double>();
             } catch(const YAML::TypedBadConversion<double>& e)
             {
                 std::cerr << "Warning: Invalid bqPenaltyPerLevel value, using default. Error: " << e.what()
                           << std::endl;
+            }
+        }
+        if(const YAML::Node value = rootNode["roadRouteBQPenaltyMultiplier"])
+        {
+            try
+            {
+                targetConfig.bqPenalty.roadRoute = value.as<double>();
+            } catch(const YAML::TypedBadConversion<double>& e)
+            {
+                std::cerr << "Warning: Invalid roadRouteBQPenaltyMultiplier value, using default. Error: "
+                          << e.what() << std::endl;
             }
         }
         std::locale::global(oldLocale);
