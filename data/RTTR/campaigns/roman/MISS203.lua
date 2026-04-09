@@ -6,7 +6,6 @@
 
 
 -------------------------------- TODO -----------------------------------------
--- EnableNextMissions()
 -- Set Portraits
 -- Set AI Agression Level
 -------------------------------------------------------------------------------
@@ -498,9 +497,10 @@ function MissionEvent(e, onLoad)
         rttr:GetPlayer(0):EnableBuilding(BLD_SHIPYARD, not onLoad)
 
     elseif(e == 99) then
-        -- TODO: EnableNextMissions()
         -- Show opened arc
         rttr:GetWorld():AddStaticObject(97, 68, 561, 0xFFFF, 2)
+        rttr:SetCampaignChapterCompleted("roman", 3)
+        rttr:EnableCampaignChapter("roman", 4)
     end
 
     -- update event state

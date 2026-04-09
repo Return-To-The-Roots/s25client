@@ -27,6 +27,7 @@ rttr:RegisterTranslations(
 
 campaign = {
     version = 1,
+    uid = "roman",
     author = "Bluebyte",
     name = _"name",
     shortDescription = _"shortDescription",
