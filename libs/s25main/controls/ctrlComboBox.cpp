@@ -25,7 +25,7 @@ ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, co
     if(!readonly)
         AddImageButton(1, DrawPoint(size.x - size.y, 0), Extent(size.y, size.y), tc, LOADER.GetImageN("io", 34));
 
-    Resize(size);
+    Resize(GetSize());
 }
 
 /**
