@@ -5,6 +5,7 @@
 #pragma once
 
 #include "helpers/OptionalEnum.h"
+#include "RoadEventLogger.h"
 #include "world/GameWorldBase.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadPathDirection.h"
@@ -78,9 +79,12 @@ public:
     void RoadNodeAvailable(MapPoint pt);
 
     /// Place a flag for the player specific
-    void SetFlag(MapPoint pt, unsigned char player);
+    void SetFlag(MapPoint pt, unsigned char player,
+                 RoadEventLogger::FlagBuildReason reason = RoadEventLogger::FlagBuildReason::Manual);
     /// Flagge soll zerstrört werden
-    void DestroyFlag(MapPoint pt, unsigned char playerId);
+    void DestroyFlag(MapPoint pt, unsigned char playerId,
+                     RoadEventLogger::FlagDemolitionReason reason = RoadEventLogger::FlagDemolitionReason::Manual,
+                     unsigned initiatorPlayerId = 0);
     /// Baustelle setzen
     void SetBuildingSite(BuildingType type, MapPoint pt, unsigned char player);
     /// Gebäude bzw Baustelle abreißen

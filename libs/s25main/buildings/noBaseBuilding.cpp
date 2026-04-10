@@ -8,6 +8,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "RoadEventLogger.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "EventManager.h"
@@ -34,6 +35,8 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     {
         world->DestroyNO(flagPt, false);
         world->SetNO(flagPt, new noFlag(flagPt, player));
+        RoadEventLogger::LogFlagBuilt(world->GetEvMgr().GetCurrentGF(), *world, player, flagPt,
+                                      RoadEventLogger::FlagBuildReason::BuildingFront);
     }
 
     // Set the road connection to the building if it does not already exist (e.g., from a previous construction site)
@@ -47,6 +50,8 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         auto* rs = new RoadSegment(RoadType::Normal, world->GetSpecObj<noRoadNode>(flagPt), this, route);
         world->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NorthWest, rs); // on the flag
         SetRoute(Direction::SouthEast, rs);                                        // on the building
+        RoadEventLogger::LogRoadConstructed(world->GetEvMgr().GetCurrentGF(), *world, player, flagPt, route,
+                                            RoadType::Normal, false);
     } else
     {
         // Reuse the existing road that is already attached to the flag
@@ -73,6 +78,8 @@ noBaseBuilding::~noBaseBuilding() = default;
 
 void noBaseBuilding::Destroy()
 {
+    const RoadEventLogger::ScopedRoadDemolitionContext demolitionContext(
+      RoadEventLogger::RoadDemolitionReason::BuildingDestroyed);
     DestroyAllRoads();
     world->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
     if(GetGOT() != GO_Type::Buildingsite)

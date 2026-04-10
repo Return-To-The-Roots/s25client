@@ -5,6 +5,7 @@
 #include "RoadSegment.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "RoadEventLogger.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"
@@ -109,6 +110,10 @@ void RoadSegment::Serialize(SerializedGameData& sgd) const
  */
 void RoadSegment::SplitRoad(noFlag* splitflag)
 {
+    const RoadEventLogger::ScopedRoadDemolitionContext demolitionContext(RoadEventLogger::RoadDemolitionReason::Split);
+    RoadEventLogger::LogRoadDemolished(GetEvMgr().GetCurrentGF(), *world, f1->GetPlayer(), f1->GetPos(), f2->GetPos(),
+                                       route, rt);
+
     // Flag 1 _________ This flag _________ Flag 2
     //         |          broken road           |
 
@@ -150,6 +155,10 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     splitflag->SetRoute(second->route.front(), second);
     second->f2->SetRoute(second->route.back() + 3u, second);
+    RoadEventLogger::LogRoadConstructed(GetEvMgr().GetCurrentGF(), *world, f1->GetPlayer(), f1->GetPos(), route, rt,
+                                        false);
+    RoadEventLogger::LogRoadConstructed(GetEvMgr().GetCurrentGF(), *world, splitflag->GetPlayer(),
+                                        splitflag->GetPos(), second_route, rt, false);
 
     // Notify all characters on the road
     t = f1->GetPos();

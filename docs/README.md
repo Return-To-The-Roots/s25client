@@ -91,6 +91,8 @@ platform support, and optional sanitizers for development builds.
   soldiers are tracked and consumed.
 - [Construction economy](gameplay/economy/construction-economy.md) – Materials
   and builder flow for new structures.
+- [Roads](gameplay/economy/roads.md) – Road network mechanics, transport
+  segments, and AI road construction flow.
 - [Food economy](gameplay/economy/food-economy.md) – Food production and
   consumption chain summary.
 - [Mining economy](gameplay/economy/mining-economy.md) – Ore and coal supply
@@ -129,5 +131,7 @@ platform support, and optional sanitizers for development builds.
   local generation workflow.
 - [Event loggers](development/event-loggers.md) – Logging infrastructure for
   gameplay and AI analysis.
+- [Road and flag rendering](development/road-and-flag-rendering.md) – How
+  terrain roads, flag sprites, fog-of-war state, and road previews are drawn.
 - [Data extractor](tools/data-extractor.md) – Snapshot generation and exported
   data formats.

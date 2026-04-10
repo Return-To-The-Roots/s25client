@@ -7,6 +7,7 @@
 #include "FOWObjects.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "RoadEventLogger.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
@@ -75,6 +76,7 @@ noFlag::~noFlag() = default;
 
 void noFlag::Destroy()
 {
+    RoadEventLogger::LogFlagDemolished(GetEvMgr().GetCurrentGF(), *world, player, pos);
     /// Da ist dann nichts
     world->SetNO(pos, nullptr);
 
@@ -90,6 +92,9 @@ void noFlag::Destroy()
     // Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
     world->GetPlayer(player).FlagDestroyed(this);
 
+    const RoadEventLogger::ScopedRoadDemolitionContext demolitionContext(
+      RoadEventLogger::RoadDemolitionReason::FlagDestroyed,
+      RoadEventLogger::GetCurrentFlagDemolitionInitiatorPlayerId());
     noRoadNode::Destroy();
 }
 
@@ -303,6 +308,8 @@ void noFlag::Upgrade()
 void noFlag::Capture(const unsigned char new_owner)
 {
     // Alle Straßen um mich herum zerstören bis auf die zum Gebäude
+    const RoadEventLogger::ScopedRoadDemolitionContext demolitionContext(
+      RoadEventLogger::RoadDemolitionReason::Capture, static_cast<unsigned>(new_owner + 1));
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
         if(dir != Direction::NorthWest)

@@ -15,6 +15,7 @@ enum class EventLoggerType
     Country,
     CountryPlot,
     Military,
+    Road,
     ToolPriority,
     TroopsLimit,
     Ware,
@@ -29,6 +30,7 @@ inline const char* GetEventLoggerCliName(const EventLoggerType loggerType)
         case EventLoggerType::Country: return "country";
         case EventLoggerType::CountryPlot: return "country-plot";
         case EventLoggerType::Military: return "military";
+        case EventLoggerType::Road: return "road";
         case EventLoggerType::ToolPriority: return "tool-priority";
         case EventLoggerType::TroopsLimit: return "troops-limit";
         case EventLoggerType::Ware: return "ware";
@@ -39,7 +41,7 @@ inline const char* GetEventLoggerCliName(const EventLoggerType loggerType)
 
 inline std::string GetSupportedEventLoggerNames()
 {
-    return "building, combat, country, country-plot, military, tool-priority, troops-limit, ware";
+    return "building, combat, country, country-plot, military, road, tool-priority, troops-limit, ware";
 }
 
 inline bool TryParseEventLoggerType(std::string loggerName, EventLoggerType& out)
@@ -70,6 +72,8 @@ inline bool TryParseEventLoggerType(std::string loggerName, EventLoggerType& out
         out = EventLoggerType::CountryPlot;
     else if(loggerName == "military")
         out = EventLoggerType::Military;
+    else if(loggerName == "road" || loggerName == "roads")
+        out = EventLoggerType::Road;
     else if(loggerName == "toolpriority")
         out = EventLoggerType::ToolPriority;
     else if(loggerName == "troopslimit")

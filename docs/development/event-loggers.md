@@ -8,13 +8,14 @@ This document summarizes the runtime event loggers currently available in `s25ma
 - `CountryEventLogger`
 - `CountryPlotEventLogger`
 - `MilitaryEventLogger`
+- `RoadEventLogger`
 - `TroopsLimitEventLogger`
 - `ToolPriorityEventLogger`
 
 All loggers are gated by `STATS_CONFIG.statsPath`. If it is empty, no log file is written.
 When running `extras/ai-battle`, `--disable_event_logging` disables all event loggers and
 `--enabled_event_loggers <names...>` restricts output to a subset. Supported CLI names are
-`building`, `combat`, `country`, `country-plot`, `military`, `tool-priority`, `troops-limit`, and `ware`.
+`building`, `combat`, `country`, `country-plot`, `military`, `road`, `tool-priority`, `troops-limit`, and `ware`.
 Text and protobuf event loggers buffer new records in memory and flush them when logging reaches the next
 500-gameframe boundary, with a final flush during shutdown.
 
@@ -167,6 +168,40 @@ Tracks soldier inventory and movement events tied to military buildings.
 - Format: CSV
 - Header:
   - `gameframe,playerId,event,rank,buildingType,buildingId,count`
+
+## RoadEventLogger
+
+### Purpose
+Tracks road and flag lifecycle events relevant to logistics-network changes.
+
+### Events
+- Road constructed
+- Road construction failed
+- Road demolished
+- Flag built
+- Flag demolished
+
+### Hooks (representative)
+- Flag creation and destruction in `GameWorld`
+- Road construction in `GameWorld::BuildRoad(...)`
+- Road segment destruction in `noRoadNode`
+- Road splitting in `RoadSegment`
+- Building-front flag and access-road creation in `noBaseBuilding`
+- Capture and territory-driven road teardown in `noFlag` / `GameWorld`
+
+### Output
+- File: `road_log.pb`
+- Format: length-delimited protobuf stream
+- Stream layout:
+  - one `RoadLogHeader`
+  - followed by repeated `RoadLogRecord`
+
+### Notes
+- `player_id` values are written as 1-based IDs.
+- Demolition events carry reason codes, with optional initiator player IDs when
+  known.
+- The logger records player-built road construction, split replacement
+  segments, implicit building-front access roads, and road/flag teardown events.
 
 ## TroopsLimitEventLogger
 

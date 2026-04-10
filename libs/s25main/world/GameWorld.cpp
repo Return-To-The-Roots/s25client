@@ -11,6 +11,7 @@
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "RoadEventLogger.h"
 #include "RttrForeachPt.h"
 #include "TradePathCache.h"
 #include "addons/const_addons.h"
@@ -77,7 +78,7 @@ MilitarySquares& GameWorld::GetMilitarySquares()
     return militarySquares;
 }
 
-void GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
+void GameWorld::SetFlag(const MapPoint pt, const unsigned char player, const RoadEventLogger::FlagBuildReason reason)
 {
     if(GetBQ(pt, player) == BuildingQuality::Nothing)
         return;
@@ -88,14 +89,20 @@ void GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
     // Gucken, nicht, dass schon eine Flagge dasteht
     if(GetNO(pt)->GetType() != NodalObjectType::Flag)
     {
+        Direction splitRoadDir;
+        const noFlag* splitRoadFlag = GetRoadFlag(pt, splitRoadDir);
+        const bool splitsExistingRoad = splitRoadFlag && splitRoadFlag->GetRoute(splitRoadDir);
         DestroyNO(pt, false);
         SetNO(pt, new noFlag(pt, player));
 
         RecalcBQAroundPointBig(pt);
+        RoadEventLogger::LogFlagBuilt(GetEvMgr().GetCurrentGF(), *this, player, pt,
+                                      splitsExistingRoad ? RoadEventLogger::FlagBuildReason::Split : reason);
     }
 }
 
-void GameWorld::DestroyFlag(const MapPoint pt, unsigned char playerId)
+void GameWorld::DestroyFlag(const MapPoint pt, const unsigned char playerId,
+                            const RoadEventLogger::FlagDemolitionReason reason, const unsigned initiatorPlayerId)
 {
     // Let's see if there is a flag
     if(GetNO(pt)->GetType() == NodalObjectType::Flag)
@@ -118,6 +125,9 @@ void GameWorld::DestroyFlag(const MapPoint pt, unsigned char playerId)
         // Demolish, also the building
         flag->DestroyAttachedBuilding();
 
+        const RoadEventLogger::ScopedFlagDemolitionContext flagDemolitionContext(reason,
+                                                                                 initiatorPlayerId ? initiatorPlayerId
+                                                                                                   : static_cast<unsigned>(playerId + 1));
         DestroyNO(pt, false);
         RecalcBQAroundPointBig(pt);
     }
@@ -200,11 +210,17 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
     if(route.size() < 2)
     {
         RTTR_Assert(false);
+        RoadEventLogger::LogRoadConstructionFailed(GetEvMgr().GetCurrentGF(), *this, playerId, start, route,
+                                                   boat_road ? RoadType::Water : RoadType::Normal,
+                                                   RoadEventLogger::RoadConstructionFailureReason::RouteTooShort);
         return;
     }
 
     if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerId)
     {
+        RoadEventLogger::LogRoadConstructionFailed(GetEvMgr().GetCurrentGF(), *this, playerId, start, route,
+                                                   boat_road ? RoadType::Water : RoadType::Normal,
+                                                   RoadEventLogger::RoadConstructionFailureReason::InvalidStartFlag);
         GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
         return;
     }
@@ -221,12 +237,18 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         {
             // No? Then check whether the desired road is already there
             if(!RoadAlreadyBuilt(boat_road, start, route))
+            {
+                RoadEventLogger::LogRoadConstructionFailed(GetEvMgr().GetCurrentGF(), *this, playerId, start, route,
+                                                           boat_road ? RoadType::Water : RoadType::Normal,
+                                                           RoadEventLogger::RoadConstructionFailureReason::BlockedRoute);
                 GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
+            }
             return;
         }
     }
 
     curPt = GetNeighbour(curPt, route.back());
+    bool createdEndFlag = false;
 
     // Check whether there is a flag at the end or whether one can be built
     if(GetNO(curPt)->GetGOT() == GO_Type::Flag)
@@ -234,6 +256,9 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         // Wrong player?
         if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
         {
+            RoadEventLogger::LogRoadConstructionFailed(GetEvMgr().GetCurrentGF(), *this, playerId, start, route,
+                                                       boat_road ? RoadType::Water : RoadType::Normal,
+                                                       RoadEventLogger::RoadConstructionFailureReason::EndFlagWrongOwner);
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
@@ -242,11 +267,15 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         // Check if we can build a flag there
         if(GetBQ(curPt, playerId) == BuildingQuality::Nothing || IsFlagAround(curPt))
         {
+            RoadEventLogger::LogRoadConstructionFailed(GetEvMgr().GetCurrentGF(), *this, playerId, start, route,
+                                                       boat_road ? RoadType::Water : RoadType::Normal,
+                                                       RoadEventLogger::RoadConstructionFailureReason::EndFlagCannotBePlaced);
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
         // no flag so far, but possible to place one -> Do it
-        SetFlag(curPt, playerId);
+        SetFlag(curPt, playerId, RoadEventLogger::FlagBuildReason::RoadEndpoint);
+        createdEndFlag = true;
     }
 
     // Destroy possible decorative objects at start
@@ -273,6 +302,8 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
 
     // Tell the economy that a new road has been built
     GetPlayer(playerId).NewRoadConnection(rs);
+    RoadEventLogger::LogRoadConstructed(GetEvMgr().GetCurrentGF(), *this, playerId, start, route,
+                                        boat_road ? RoadType::Water : RoadType::Normal, createdEndFlag);
     GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
 
     // Add flags on land roads for human players if addon is enabled
@@ -283,7 +314,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
         {
             roadPt = GetNeighbour(roadPt, curDir);
             if(!IsFlagAround(roadPt))
-                SetFlag(roadPt, playerId);
+                SetFlag(roadPt, playerId, RoadEventLogger::FlagBuildReason::AutoFlags);
         }
     }
 }
@@ -454,6 +485,10 @@ void GameWorld::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeR
         if(flag->GetPlayer() + 1 == owner && IsPlayerTerritory(curMapPt, owner))
             continue;
 
+        const unsigned initiatorPlayerId =
+          (reason == TerritoryChangeReason::Captured) ? static_cast<unsigned>(building.GetPlayer() + 1) : 0;
+        const RoadEventLogger::ScopedRoadDemolitionContext demolitionContext(
+          RoadEventLogger::RoadDemolitionReason::TerritoryRecalc, initiatorPlayerId);
         flag->DestroyRoad(dir);
     }
 
@@ -825,7 +860,14 @@ void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
         }
     }
 
-    DestroyNO(pt, false);
+    if(noType == NodalObjectType::Flag)
+    {
+        const unsigned initiatorPlayerId = newOwner;
+        const RoadEventLogger::ScopedFlagDemolitionContext flagDemolitionContext(
+          RoadEventLogger::FlagDemolitionReason::TerritoryRecalc, initiatorPlayerId);
+        DestroyNO(pt, false);
+    } else
+        DestroyNO(pt, false);
 }
 
 void GameWorld::RoadNodeAvailable(const MapPoint pt)

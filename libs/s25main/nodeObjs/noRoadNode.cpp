@@ -4,7 +4,9 @@
 
 #include "noRoadNode.h"
 
+#include "EventManager.h"
 #include "GamePlayer.h"
+#include "RoadEventLogger.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "world/GameWorld.h"
@@ -74,6 +76,14 @@ void noRoadNode::DestroyRoad(const Direction dir)
     RoadSegment* route = GetRoute(dir);
     if(!route)
         return;
+
+    std::vector<Direction> routeDirs(route->GetLength());
+    for(unsigned z = 0; z < route->GetLength(); ++z)
+        routeDirs[z] = route->GetRoute(z);
+    RoadEventLogger::LogRoadDemolished(world->GetEvMgr().GetCurrentGF(), *world, route->GetF1()->GetPlayer(),
+                                       route->GetF1()->GetPos(), route->GetF2()->GetPos(), routeDirs,
+                                       route->GetRoadType());
+
     MapPoint t = route->GetF1()->GetPos();
     for(unsigned z = 0; z < route->GetLength(); ++z)
     {

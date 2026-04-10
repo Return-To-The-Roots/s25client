@@ -4,6 +4,7 @@
 
 #include "GameCommands.h"
 #include "GamePlayer.h"
+#include "RoadEventLogger.h"
 #include "WineLoader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -23,12 +24,13 @@ namespace gc {
 
 void SetFlag::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.SetFlag(pt_, playerId);
+    world.SetFlag(pt_, playerId, RoadEventLogger::FlagBuildReason::Manual);
 }
 
 void DestroyFlag::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.DestroyFlag(pt_, playerId);
+    world.DestroyFlag(pt_, playerId, RoadEventLogger::FlagDemolitionReason::Manual,
+                      static_cast<unsigned>(playerId + 1));
 }
 
 BuildRoad::BuildRoad(Serializer& ser)
@@ -68,7 +70,11 @@ void DestroyRoad::Execute(GameWorld& world, uint8_t playerId)
 {
     auto* flag = world.GetSpecObj<noFlag>(pt_);
     if(flag && flag->GetPlayer() == playerId)
+    {
+        const RoadEventLogger::ScopedRoadDemolitionContext demolitionContext(
+          RoadEventLogger::RoadDemolitionReason::Manual, static_cast<unsigned>(playerId + 1));
         flag->DestroyRoad(start_dir);
+    }
 }
 
 UpgradeRoad::UpgradeRoad(Serializer& ser)
