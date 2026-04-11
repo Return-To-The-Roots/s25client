@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -174,10 +174,10 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     ctrlComboBox* cbCheckEvents =
       AddComboBox(ID_cbCheckEventForPlayer, curPos, ctrlSize, TextureColor::Grey, NormalFont, 100);
     curPos.y += spaceY;
-    cbCheckEvents->AddString(_("BQ check disabled"));
+    cbCheckEvents->AddItem(_("BQ check disabled"));
     for(const std::chrono::milliseconds ms : BQ_CHECK_INTERVALS)
     {
-        cbCheckEvents->AddString((boost::format(_("BQ check every %1%ms")) % ms.count()).str());
+        cbCheckEvents->AddItem((boost::format(_("BQ check every %1%ms")) % ms.count()).str());
     }
     cbCheckEvents->SetSelection(0);
     using namespace std::chrono_literals;
@@ -187,13 +187,13 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     {
         ctrlComboBox* data = AddComboBox(ID_cbShowWhat, curPos, ctrlSize, TextureColor::Grey, NormalFont, 100);
         curPos.y += spaceY;
-        data->AddString(_("Nothing"));
-        data->AddString(_("Reserved"));
-        data->AddString(_("Altitude"));
-        data->AddString(_("Resources"));
-        data->AddString(_("Sea Id"));
-        data->AddString(_("Owner"));
-        data->AddString(_("Restricted area"));
+        data->AddItem(_("Nothing"));
+        data->AddItem(_("Reserved"));
+        data->AddItem(_("Altitude"));
+        data->AddItem(_("Resources"));
+        data->AddItem(_("Sea Id"));
+        data->AddItem(_("Owner"));
+        data->AddItem(_("Restricted area"));
         data->SetSelection(1);
         ctrlComboBox* players = AddComboBox(ID_cbShowForPlayer, curPos, ctrlSize, TextureColor::Grey, NormalFont, 100);
         curPos.y += spaceY;
@@ -201,9 +201,9 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);
             if(!p.isUsed())
-                players->AddString((boost::format(_("Player %1%")) % pIdx).str());
+                players->AddItem((boost::format(_("Player %1%")) % pIdx).str());
             else
-                players->AddString(p.name);
+                players->AddItem(p.name);
         }
         players->SetSelection(0);
         printer->showDataIdx = data->GetSelection().get();

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -233,43 +233,43 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     AddText(ID_txtExploration, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(ID_cbExploration, DrawPoint(600, 400), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         readonlySettings);
-    combo->AddString(_("Off (all visible)"));
-    combo->AddString(_("Classic (Settlers 2)"));
-    combo->AddString(_("Fog of War"));
-    combo->AddString(_("FoW - all explored"));
+    combo->AddItem(_("Off (all visible)"));
+    combo->AddItem(_("Classic (Settlers 2)"));
+    combo->AddItem(_("Fog of War"));
+    combo->AddItem(_("FoW - all explored"));
 
     AddText(ID_txtGoods, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(ID_cbGoods, DrawPoint(600, 370), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         readonlySettings);
-    combo->AddString(_("Very Low"));
-    combo->AddString(_("Low"));
-    combo->AddString(_("Normal"));
-    combo->AddString(_("A lot"));
+    combo->AddItem(_("Very Low"));
+    combo->AddItem(_("Low"));
+    combo->AddItem(_("Normal"));
+    combo->AddItem(_("A lot"));
 
     AddText(ID_txtGoals, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(ID_cbGoals, DrawPoint(600, 340), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         readonlySettings);
-    combo->AddString(_("None"));
-    combo->AddString(_("Conquer 3/4 of map"));
-    combo->AddString(_("Total domination"));
-    combo->AddString(_("Economy mode"));
+    combo->AddItem(_("None"));
+    combo->AddItem(_("Conquer 3/4 of map"));
+    combo->AddItem(_("Total domination"));
+    combo->AddItem(_("Economy mode"));
 
     // Lobby game?
     if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
         for(const auto duration : TOURNAMENT_MODES_DURATION)
-            combo->AddString(helpers::format(_("Tournament: %u minutes"), duration / 1min));
+            combo->AddItem(helpers::format(_("Tournament: %u minutes"), duration / 1min));
     }
 
     AddText(ID_txtSpeed, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(ID_cbSpeed, DrawPoint(600, 310), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         !gameLobby_->isHost());
-    combo->AddString(_("Very slow"));
-    combo->AddString(_("Slow"));
-    combo->AddString(_("Normal"));
-    combo->AddString(_("Fast"));
-    combo->AddString(_("Very fast"));
+    combo->AddItem(_("Very slow"));
+    combo->AddItem(_("Slow"));
+    combo->AddItem(_("Normal"));
+    combo->AddItem(_("Fast"));
+    combo->AddItem(_("Very fast"));
 
     // Karte laden, um Kartenvorschau anzuzeigen
     if(!gameLobby_->isSavegame())
@@ -518,7 +518,7 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
             {
                 if(!gameLobby_->getPlayer(i).originName.empty())
                 {
-                    combo->AddString(gameLobby_->getPlayer(i).originName);
+                    combo->AddItem(gameLobby_->getPlayer(i).originName);
                     if(i == row)
                         combo->SetSelection(combo->GetNumItems() - 1u);
                 }

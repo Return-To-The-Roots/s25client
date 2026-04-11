@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -93,24 +93,24 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
       AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
     for(const AIJH::AIPlayerJH* ai : ais_)
     {
-        players->AddString(ai->GetPlayerName());
+        players->AddItem(ai->GetPlayerName());
     }
 
     ctrlComboBox* overlays =
       AddComboBox(ID_CbOverlay, DrawPoint(15, 60), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
-    overlays->AddString("None");
-    overlays->AddString("BuildingQuality");
-    overlays->AddString("Reachability");
-    overlays->AddString("Farmed");
-    overlays->AddString("Gold");
-    overlays->AddString("Ironore");
-    overlays->AddString("Coal");
-    overlays->AddString("Granite");
-    overlays->AddString("Fish");
-    overlays->AddString("Wood");
-    overlays->AddString("Stones");
-    overlays->AddString("Plantspace");
-    overlays->AddString("Borderland");
+    overlays->AddItem("None");
+    overlays->AddItem("BuildingQuality");
+    overlays->AddItem("Reachability");
+    overlays->AddItem("Farmed");
+    overlays->AddItem("Gold");
+    overlays->AddItem("Ironore");
+    overlays->AddItem("Coal");
+    overlays->AddItem("Granite");
+    overlays->AddItem("Fish");
+    overlays->AddItem("Wood");
+    overlays->AddItem("Stones");
+    overlays->AddItem("Plantspace");
+    overlays->AddItem("Borderland");
 
     // Show 7 lines of text and 1 empty line
     text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TextureColor::Grey,

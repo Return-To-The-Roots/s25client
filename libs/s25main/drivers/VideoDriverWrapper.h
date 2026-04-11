@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,6 +8,7 @@
 #include "Point.h"
 #include "driver/GuiScale.h"
 #include "driver/KeyEvent.h"
+#include "driver/VideoInterface.h"
 #include "driver/VideoMode.h"
 #include "s25util/Singleton.h"
 #include <memory>
@@ -36,9 +37,9 @@ public:
     IVideoDriver* GetDriver() const { return videodriver.get(); }
 
     /// Erstellt das Fenster.
-    bool CreateScreen(VideoMode size, bool fullscreen);
+    bool CreateScreen(VideoMode size, DisplayMode displayMode);
     /// Verändert Auflösung, Fenster/Fullscreen
-    bool ResizeScreen(VideoMode size, bool fullscreen);
+    bool ResizeScreen(VideoMode size, DisplayMode displayMode);
     /// Viewport (neu) setzen
     void RenewViewport();
     /// zerstört das Fenster.
@@ -59,8 +60,9 @@ public:
     // Should only be used to draw the mouse. For everything else use the events
     Position GetMousePos() const;
 
-    /// Listet verfügbare Videomodi auf
-    void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+    /// Get supported resolutions
+    std::vector<VideoMode> ListVideoModes() const;
+    std::vector<VideoMode> GetDefaultWindowSizes() const;
     bool HasVSync() const;
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
@@ -69,7 +71,7 @@ public:
     VideoMode GetWindowSize() const;
     /// Get the renderer size in pixels
     Extent GetRenderSize() const;
-    bool IsFullscreen() const;
+    DisplayMode GetDisplayMode() const;
 
     /// Get the factor required to scale "normal" DPI to the display DPI
     float getDpiScale() const;
@@ -108,6 +110,8 @@ public:
 
     /// Calculate the size of the texture which is optimal for the driver and at least minSize
     Extent calcPreferredTextureSize(const Extent& minSize) const;
+
+    static constexpr VideoMode MinWindowSize{800, 600};
 
 private:
     bool Initialize();

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -41,15 +41,15 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     curPos.y += 30;
     ctrlComboBox* combo = AddComboBox(ID_cbNumPlayers, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned n = 2; n <= MAX_PLAYERS; n++)
-        combo->AddString(helpers::format(_("%1% players"), n));
+        combo->AddItem(helpers::format(_("%1% players"), n));
 
     curPos.y += 30;
     AddText(ID_txtMapStyle, curPos, _("Style"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo =
       AddComboBox(ID_cbMapStyle, curPos + DrawPoint(100, -5), comboSizeSmall, TextureColor::Grey, NormalFont, 100);
-    combo->AddString(_("Water"));
-    combo->AddString(_("Land"));
-    combo->AddString(_("Mixed"));
+    combo->AddItem(_("Water"));
+    combo->AddItem(_("Land"));
+    combo->AddItem(_("Mixed"));
 
     curPos.y += 30;
     AddText(ID_txtMapSize, curPos, _("Size"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -61,8 +61,8 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     for(unsigned size = 32; size <= 320; size += 32)
     {
         const auto strSize = s25util::toStringClassic(size);
-        cbSizeX->AddString(strSize);
-        cbSizeY->AddString(strSize);
+        cbSizeX->AddItem(strSize);
+        cbSizeY->AddItem(strSize);
     }
 
     curPos.y += 30;
@@ -70,24 +70,24 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     curPos.y += 20;
     combo = AddComboBox(ID_cbMapType, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned i = 0; i < desc.landscapes.size(); i++)
-        combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
+        combo->AddItem(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
     curPos.y += 30;
     AddText(ID_txtMountainDist, curPos, _("HQ distance to mountain"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
     combo = AddComboBox(ID_cbMountainDist, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
-    combo->AddString(_("Close"));
-    combo->AddString(_("Normal"));
-    combo->AddString(_("Far"));
-    combo->AddString(_("Very far"));
+    combo->AddItem(_("Close"));
+    combo->AddItem(_("Normal"));
+    combo->AddItem(_("Far"));
+    combo->AddItem(_("Very far"));
 
     curPos.y += 30;
     AddText(ID_txtIslands, curPos, _("Islands"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
     combo = AddComboBox(ID_cbIslands, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
-    combo->AddString(_("Few"));
-    combo->AddString(_("Medium"));
-    combo->AddString(_("Many"));
+    combo->AddItem(_("Few"));
+    combo->AddItem(_("Medium"));
+    combo->AddItem(_("Many"));
 
     constexpr int pgrOffset = 120;
     curPos.y += 35;

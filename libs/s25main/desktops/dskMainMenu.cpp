@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -50,7 +50,7 @@ dskMainMenu::dskMainMenu()
     AddImage(ID_logo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 
     using namespace std::chrono_literals;
-    if(SETTINGS.global.submit_debug_data == 0)
+    if(SETTINGS.global.submitDebugData == 0)
         AddTimer(ID_tmrDebugData, 250ms);
 
     /*AddText(20, DrawPoint(50, 450), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, SmallFont);
@@ -73,9 +73,9 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     if(msgbox_id == 100)
     {
         if(mbr == MsgboxResult::Yes)
-            SETTINGS.global.submit_debug_data = 1;
+            SETTINGS.global.submitDebugData = 1;
         else
-            SETTINGS.global.submit_debug_data = 2;
+            SETTINGS.global.submitDebugData = 2;
 
         SETTINGS.Save();
     }

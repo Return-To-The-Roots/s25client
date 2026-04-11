@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,10 +17,7 @@ ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, co
     : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly),
       suppressSelectEvent(false)
 {
-    ctrlList* liste = AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font);
-
-    // Liste am Anfang nicht anzeigen
-    liste->SetVisible(false);
+    AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font)->SetVisible(false);
 
     if(!readonly)
         AddImageButton(1, DrawPoint(size.x - size.y, 0), Extent(size.y, size.y), tc, LOADER.GetImageN("io", 34));
@@ -28,9 +25,6 @@ ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, co
     Resize(size);
 }
 
-/**
- *  Größe verändern
- */
 void ctrlComboBox::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
@@ -76,13 +70,6 @@ boost::optional<std::string> ctrlComboBox::GetSelectedText() const
         return GetText(*selection);
     else
         return boost::none;
-}
-
-void ctrlComboBox::Msg_PaintAfter()
-{
-    // Liste erst jetzt malen, damit sie den Rest überdeckt
-    GetCtrl<ctrlList>(0)->Draw();
-    Window::Msg_PaintAfter();
 }
 
 bool ctrlComboBox::Msg_MouseMove(const MouseCoords& mc)
@@ -200,28 +187,19 @@ void ctrlComboBox::Msg_ListSelectItem(unsigned, const int selection)
     }
 }
 
-/**
- *  fügt einen String zur Liste hinzu.
- */
-void ctrlComboBox::AddString(const std::string& text)
+void ctrlComboBox::AddItem(const std::string& text)
 {
-    GetCtrl<ctrlList>(0)->AddString(text);
+    GetCtrl<ctrlList>(0)->AddItem(text);
     Resize(GetSize());
 }
 
-/**
- *  löscht alle Items der Liste.
- */
 void ctrlComboBox::DeleteAllItems()
 {
     GetCtrl<ctrlList>(0)->DeleteAllItems();
     Resize(GetSize());
 }
 
-/**
- *  wählt ein Item aus
- */
-void ctrlComboBox::SetSelection(unsigned short selection)
+void ctrlComboBox::SetSelection(unsigned selection)
 {
     // Avoid sending the change method when this is invoked intentionally
     suppressSelectEvent = true;
@@ -229,46 +207,46 @@ void ctrlComboBox::SetSelection(unsigned short selection)
     suppressSelectEvent = false;
 }
 
-/**
- *  zeichnet das Fenster.
- */
 void ctrlComboBox::Draw_()
 {
     auto* liste = GetCtrl<ctrlList>(0);
 
-    // Box
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
-    // Namen des selektierten Strings in der Box anzeigen
+    // Show selected item in the box
     if(liste->GetNumLines() > 0)
+    {
         font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER,
                    COLOR_YELLOW, GetSize().x - 2 - GetSize().y, "");
+    }
 
-    // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
-    // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.
+    // Draw button manually as we can't use DrawControls which would draw the list we do in Msg_PaintAfter
     auto* button = GetCtrl<ctrlButton>(1);
     if(button)
         button->Draw();
 }
 
-/**
- *  blendet die Liste ein oder aus.
- */
+void ctrlComboBox::Msg_PaintAfter()
+{
+    // Draw list now so it is on top of everything
+    GetCtrl<ctrlList>(0)->Draw();
+    Window::Msg_PaintAfter();
+}
+
 void ctrlComboBox::ShowList(bool show)
 {
-    auto* liste = GetCtrl<ctrlList>(0);
-    if(liste->IsVisible() == show)
+    auto* list = GetCtrl<ctrlList>(0);
+    if(list->IsVisible() == show)
         return;
 
-    // Liste entsprechend
-    liste->SetVisible(show);
-
-    // Pfeilbutton entsprechend
+    // list field
+    list->SetVisible(show);
+    // Arrow button
     GetCtrl<ctrlButton>(1)->SetChecked(show);
 
-    // Region sperren für die Liste, oder freigeben
+    // Lock/unlock region of extended list
     if(show)
-        GetParent()->LockRegion(this, liste->GetDrawRect());
+        GetParent()->LockRegion(this, list->GetDrawRect());
     else
         GetParent()->FreeRegion(this);
 

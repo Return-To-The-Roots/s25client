@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -453,7 +453,7 @@ void WindowPositioning_testOne(IngameWindow& wnd, const char* context, const std
 
 BOOST_AUTO_TEST_CASE(WindowPositioning)
 {
-    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), false);
+    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), DisplayMode::Windowed);
 
     const auto renderSize = VIDEODRIVER.GetRenderSize();
 
@@ -598,7 +598,7 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
 {
     SETTINGS.interface.windowSnapDistance = 10;
 
-    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), false);
+    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), DisplayMode::Windowed);
 
     auto& wnd1 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
       std::make_unique<IngameWindow>(0, DrawPoint(0, 500), Extent(100, 100), "Test Window 1", nullptr)));

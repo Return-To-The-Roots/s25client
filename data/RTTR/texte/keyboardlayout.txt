@@ -28,6 +28,7 @@ F1:................... (Load game)
 F2:................... Save game
 F8:................... Readme "Keyboard layout"
 F9:................... Readme
+F10:.................. Settings (UI, ...)
 F11:.................. Musicplayer
 F12:.................. Options window
 
@@ -46,5 +47,5 @@ J:.................... Go to specific GF
 P:.................... Pause/Resume (also after GF jump)
 1-7:.................. Change to other player
 ------------------------------------------------------------------------
-https://www.siedler25.org        Copyright (C) 2005-2022 Settlers Freaks
+https://www.siedler25.org        Copyright (C) 2005-2026 Settlers Freaks
 ------------------------------------------------------------------------

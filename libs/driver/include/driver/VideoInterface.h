@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,6 +10,7 @@
 #include "VideoMode.h"
 #include "exportImport.h"
 #include <string>
+#include <type_traits>
 #include <vector>
 
 /// Function type for loading OpenGL methods
@@ -26,9 +27,9 @@ public:
     virtual bool Initialize() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) = 0;
+    virtual bool CreateScreen(const std::string& title, VideoMode newSize, DisplayMode displayMode) = 0;
 
-    virtual bool ResizeScreen(const VideoMode& newSize, bool fullscreen) = 0;
+    virtual bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) = 0;
 
     /// Schliesst das Fenster.
     virtual void DestroyScreen() = 0;
@@ -45,7 +46,7 @@ public:
     /// Funktion zum Holen einer Subfunktion.
     virtual OpenGL_Loader_Proc GetLoaderFunction() const = 0;
 
-    virtual void ListVideoModes(std::vector<VideoMode>& video_modes) const = 0;
+    virtual std::vector<VideoMode> ListVideoModes() const = 0;
 
     /// Funktion zum Auslesen der Mauskoordinaten.
     virtual Position GetMousePos() const = 0;
@@ -64,7 +65,7 @@ public:
     virtual VideoMode GetWindowSize() const = 0;
     /// Get the size of the render region in pixels
     virtual Extent GetRenderSize() const = 0;
-    virtual bool IsFullscreen() const = 0;
+    virtual DisplayMode GetDisplayMode() const = 0;
 
     /// Get the factor required to scale "normal" DPI to the display DPI
     virtual float getDpiScale() const = 0;

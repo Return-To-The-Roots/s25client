@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -16,6 +16,7 @@
 #include "s25util/Log.h"
 #include "s25util/error.h"
 #include <glad/glad.h>
+#include <array>
 #include <ctime>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #    include <valgrind/memcheck.h>
@@ -84,15 +85,7 @@ void VideoDriverWrapper::UnloadDriver()
     renderer_.reset();
 }
 
-/**
- *  Erstellt das Fenster.
- *
- *  @param[in] width  Breite des Fensters
- *  @param[in] height Höhe des Fensters
- *
- *  @return Bei Erfolg @p true ansonsten @p false
- */
-bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscreen)
+bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -100,7 +93,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, fullscreen))
+    if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, displayMode))
     {
         s25util::fatal_error("Could not create window!");
         return false;
@@ -125,16 +118,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
     return true;
 }
 
-/**
- *  Verändert Auflösung, Fenster/Fullscreen
- *
- *  @param[in] screenWidth neue Breite des Fensters
- *  @param[in] screenHeight neue Höhe des Fensters
- *  @param[in] fullscreen Vollbild oder nicht
- *
- *  @return Bei Erfolg @p true ansonsten @p false
- */
-bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscreen)
+bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -142,9 +126,9 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    const bool result = videodriver->ResizeScreen(size, fullscreen);
+    const bool result = videodriver->ResizeScreen(size, displayMode);
 #ifdef _WIN32
-    if(!videodriver->IsFullscreen())
+    if(videodriver->GetDisplayMode() != DisplayMode::Fullscreen)
     {
         // We cannot change the size of a maximized window. So restore it here
         WINDOWPLACEMENT wp;
@@ -158,9 +142,6 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscree
     return result;
 }
 
-/**
- *  Zerstört den DriverWrapper-Bildschirm.
- */
 bool VideoDriverWrapper::DestroyScreen()
 {
     if(!videodriver)
@@ -198,9 +179,6 @@ unsigned VideoDriverWrapper::GetFPS() const
     return frameCtr_->getFrameRate();
 }
 
-/**
- *  Löscht alle herausgegebenen Texturen aus dem Speicher.
- */
 void VideoDriverWrapper::CleanUp()
 {
     if(!texture_list.empty())
@@ -296,9 +274,6 @@ bool VideoDriverWrapper::setHwVSync(bool enabled)
     return wglSwapIntervalEXT(enabled ? 1 : 0) != 0;
 }
 
-/**
- *  Viewport (neu) setzen
- */
 void VideoDriverWrapper::RenewViewport()
 {
     if(!videodriver->IsOpenGL() || !renderer_)
@@ -356,9 +331,6 @@ void VideoDriverWrapper::RenewViewport()
     ClearScreen();
 }
 
-/**
- *  lädt die driverwrapper-extensions.
- */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
     if(videodriver->IsOpenGL())
@@ -456,15 +428,27 @@ void VideoDriverWrapper::SetMousePos(const Position& newPos)
     videodriver->SetMousePos(newPos);
 }
 
-/**
- *  Listet verfügbare Videomodi auf.
- */
-void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) const
+std::vector<VideoMode> VideoDriverWrapper::ListVideoModes() const
 {
     if(!videodriver)
-        return;
+        return {};
 
-    videodriver->ListVideoModes(video_modes);
+    auto videoModes = videodriver->ListVideoModes();
+    // Remove everything below 800x600
+    helpers::erase_if(videoModes,
+                      [](const auto& m) { return m.width < MinWindowSize.width && m.height < MinWindowSize.height; });
+    return videoModes;
+}
+
+std::vector<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
+{
+    std::vector<VideoMode> defaultWindowSizes = {
+      VideoMode(800, 600),  VideoMode(1024, 768), VideoMode(1152, 648), VideoMode(1280, 720),  VideoMode(1280, 800),
+      VideoMode(1366, 768), VideoMode(1440, 810), VideoMode(1600, 900), VideoMode(1680, 1050), VideoMode(1920, 1080)};
+    std::vector<VideoMode> windowSizes = ListVideoModes();
+    windowSizes.insert(windowSizes.end(), defaultWindowSizes.begin(), defaultWindowSizes.end());
+    helpers::makeUnique(windowSizes);
+    return windowSizes;
 }
 
 bool VideoDriverWrapper::HasVSync() const
@@ -472,9 +456,6 @@ bool VideoDriverWrapper::HasVSync() const
     return wglSwapIntervalEXT != nullptr;
 }
 
-/**
- *  Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows.
- */
 void* VideoDriverWrapper::GetMapPointer() const
 {
     if(!videodriver)
@@ -485,10 +466,10 @@ void* VideoDriverWrapper::GetMapPointer() const
 
 VideoMode VideoDriverWrapper::GetWindowSize() const
 {
-    // Always return at least 800x600 even if real window is smaller
+    // Always return at least MinWindowSize even if real window is smaller
     VideoMode windowSize = videodriver->GetWindowSize();
-    windowSize.width = std::max<unsigned>(800, windowSize.width);
-    windowSize.height = std::max<unsigned>(600, windowSize.height);
+    windowSize.width = std::max(MinWindowSize.width, windowSize.width);
+    windowSize.height = std::max(MinWindowSize.height, windowSize.height);
     return windowSize;
 }
 
@@ -497,9 +478,9 @@ Extent VideoDriverWrapper::GetRenderSize() const
     return videodriver->GetRenderSize();
 }
 
-bool VideoDriverWrapper::IsFullscreen() const
+DisplayMode VideoDriverWrapper::GetDisplayMode() const
 {
-    return videodriver->IsFullscreen();
+    return videodriver->GetDisplayMode();
 }
 
 float VideoDriverWrapper::getDpiScale() const
