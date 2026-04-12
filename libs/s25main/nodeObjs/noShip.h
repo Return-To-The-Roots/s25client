@@ -225,6 +225,6 @@ public:
     /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde
     void NewHarborBuilt(nobHarborBuilding* hb);
 
-    /// Destroy the ship immediately
+    /// Remove the ship and its contents
     void Sink();
 };
