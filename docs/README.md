@@ -131,7 +131,15 @@ platform support, and optional sanitizers for development builds.
   local generation workflow.
 - [Event loggers](development/event-loggers.md) – Logging infrastructure for
   gameplay and AI analysis.
+- [Map file parsing and minimap rendering](development/map-file-parsing-and-minimap-rendering.md)
+  – How `.WLD` / `.SWD` files are parsed, which layers RTTR imports into the
+  live world, and how preview and ingame minimaps are rendered.
 - [Road and flag rendering](development/road-and-flag-rendering.md) – How
   terrain roads, flag sprites, fog-of-war state, and road previews are drawn.
+- [Building and site rendering](development/building-and-construction-site-rendering.md)
+  – How finished building sprites, construction progress, and fog-of-war
+  building memories are drawn.
+- [AI battle startup arguments](tools/ai-battle.md) – Headless AI simulation
+  CLI options, outputs, stats periods, and event logger controls.
 - [Data extractor](tools/data-extractor.md) – Snapshot generation and exported
   data formats.
