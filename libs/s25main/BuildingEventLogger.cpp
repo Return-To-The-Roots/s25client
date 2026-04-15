@@ -28,9 +28,10 @@ void LogEvent(unsigned gf, unsigned char playerId, const char* eventName, Buildi
 
 namespace BuildingEventLogger {
 
-void LogConstructionSiteCreated(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned x, unsigned y)
+void LogConstructionSiteCreated(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                                unsigned x, unsigned y)
 {
-    LogEvent(gf, playerId, "construction_site_created", buildingType, 0, x, y);
+    LogEvent(gf, playerId, "construction_site_created", buildingType, buildingId, x, y);
 }
 
 void MarkConstructionSiteConstructed(const void* sitePtr)
@@ -39,8 +40,8 @@ void MarkConstructionSiteConstructed(const void* sitePtr)
         gConstructedSites.insert(sitePtr);
 }
 
-void LogConstructionSiteCancelled(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned x, unsigned y,
-                                  const void* sitePtr)
+void LogConstructionSiteCancelled(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                                  unsigned x, unsigned y, const void* sitePtr)
 {
     if(sitePtr)
     {
@@ -51,7 +52,7 @@ void LogConstructionSiteCancelled(unsigned gf, unsigned char playerId, BuildingT
             return;
         }
     }
-    LogEvent(gf, playerId, "construction_site_cancelled", buildingType, 0, x, y);
+    LogEvent(gf, playerId, "construction_site_cancelled", buildingType, buildingId, x, y);
 }
 
 void LogBuildingConstructed(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,

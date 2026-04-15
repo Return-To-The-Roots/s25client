@@ -8,10 +8,11 @@
 
 namespace BuildingEventLogger {
 
-void LogConstructionSiteCreated(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned x, unsigned y);
+void LogConstructionSiteCreated(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                                unsigned x, unsigned y);
 void MarkConstructionSiteConstructed(const void* sitePtr);
-void LogConstructionSiteCancelled(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned x, unsigned y,
-                                  const void* sitePtr);
+void LogConstructionSiteCancelled(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                                  unsigned x, unsigned y, const void* sitePtr);
 void LogBuildingConstructed(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
                            unsigned x, unsigned y);
 void LogBuildingDestroyed(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,

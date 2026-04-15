@@ -420,7 +420,7 @@ void GamePlayer::AddBuildingSite(noBuildingSite* bldSite)
     const MapPoint pos = bldSite->GetPos();
     BuildingEventLogger::LogConstructionSiteCreated(world.GetEvMgr().GetCurrentGF(),
                                                     static_cast<unsigned char>(GetPlayerId()),
-                                                    bldSite->GetBuildingType(), pos.x, pos.y);
+                                                    bldSite->GetBuildingType(), bldSite->GetObjId(), pos.x, pos.y);
     buildings.Add(bldSite);
 }
 
@@ -430,7 +430,8 @@ void GamePlayer::RemoveBuildingSite(noBuildingSite* bldSite)
     const MapPoint pos = bldSite->GetPos();
     BuildingEventLogger::LogConstructionSiteCancelled(world.GetEvMgr().GetCurrentGF(),
                                                       static_cast<unsigned char>(GetPlayerId()),
-                                                      bldSite->GetBuildingType(), pos.x, pos.y, bldSite);
+                                                      bldSite->GetBuildingType(), bldSite->GetObjId(), pos.x, pos.y,
+                                                      bldSite);
     buildings.Remove(bldSite);
 }
 

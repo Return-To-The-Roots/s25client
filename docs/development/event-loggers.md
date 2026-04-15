@@ -71,7 +71,7 @@ Tracks building lifecycle events in a unified CSV stream.
 
 ### Notes
 - A completed construction site is marked via `MarkConstructionSiteConstructed(...)` so it is not additionally logged as `construction_site_cancelled`.
-- Construction-site events use `buildingId=0`.
+- Construction-site events use the construction site's object ID as `buildingId`.
 - `playerId` is written as 1-based (`playerId + 1`).
 
 ## CombatEventLogger
