@@ -590,9 +590,14 @@ bool GameWorld::DoesDestructionChangeTerritory(const noBaseBuilding& building) c
 
 unsigned GameWorld::CountBuildingsLostOnCapture(const nobMilitary& building) const
 {
+    return static_cast<unsigned>(GetBuildingsLostOnCapture(building).size());
+}
+
+std::vector<BuildingType> GameWorld::GetBuildingsLostOnCapture(const nobMilitary& building) const
+{
     const unsigned militaryRadius = building.GetMilitaryRadius();
     if(militaryRadius == 0u)
-        return 0;
+        return {};
 
     const unsigned char oldOwner = building.GetPlayer();
     unsigned char simulatedNewOwner = 0;
@@ -622,7 +627,7 @@ unsigned GameWorld::CountBuildingsLostOnCapture(const nobMilitary& building) con
     }
 
     if(ptsWithChangedOwners.empty())
-        return 0;
+        return {};
 
     const std::vector<MapPoint> ptsToHandle = GetAllNeighboursUnion(ptsWithChangedOwners);
     std::unordered_set<const noBaseBuilding*> destroyedCandidates;
@@ -663,7 +668,12 @@ unsigned GameWorld::CountBuildingsLostOnCapture(const nobMilitary& building) con
             destroyedCandidates.insert(baseBuilding);
     }
 
-    return static_cast<unsigned>(destroyedCandidates.size());
+    std::vector<BuildingType> destroyedBuildingTypes;
+    destroyedBuildingTypes.reserve(destroyedCandidates.size());
+    for(const noBaseBuilding* buildingCandidate : destroyedCandidates)
+        destroyedBuildingTypes.push_back(buildingCandidate->GetBuildingType());
+
+    return destroyedBuildingTypes;
 }
 
 TerritoryRegion GameWorld::CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius,

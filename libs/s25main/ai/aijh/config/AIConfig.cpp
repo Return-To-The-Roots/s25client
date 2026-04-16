@@ -71,6 +71,9 @@ CombatConfig::CombatConfig()
     attackIntervals[AI::Level::Easy] = 2500;
     attackIntervals[AI::Level::Medium] = 750;
     attackIntervals[AI::Level::Hard] = 100;
+
+    for(const auto buildingType : helpers::EnumRange<BuildingType>{})
+        buildingScores[buildingType] = 1;
 }
 
 namespace {
@@ -170,6 +173,42 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
         } catch(const YAML::TypedBadConversion<std::string>& e)
         {
             std::cerr << "Warning: Invalid target selection value, using default. Error: " << e.what() << std::endl;
+        }
+    }
+
+    if(const YAML::Node buildingScoresNode = combatNode["buildingScores"])
+    {
+        if(!buildingScoresNode.IsMap())
+        {
+            std::cerr << "Warning: combat.buildingScores must be a map of building names to score values."
+                      << std::endl;
+        }
+        else
+        {
+            for(const auto& buildingNode : buildingScoresNode)
+            {
+                try
+                {
+                    const std::string buildingName = buildingNode.first.as<std::string>();
+                    const auto buildingIt = BUILDING_NAME_MAP.find(buildingName);
+                    if(buildingIt == BUILDING_NAME_MAP.end())
+                    {
+                        std::cerr << "Warning: Unknown building '" << buildingName
+                                  << "' in combat.buildingScores map." << std::endl;
+                        continue;
+                    }
+
+                    config.combat.buildingScores[buildingIt->second] = buildingNode.second.as<unsigned>();
+                } catch(const YAML::TypedBadConversion<std::string>& e)
+                {
+                    std::cerr << "Warning: Invalid combat.buildingScores key, skipping. Error: " << e.what()
+                              << std::endl;
+                } catch(const YAML::TypedBadConversion<unsigned>& e)
+                {
+                    std::cerr << "Warning: Invalid combat.buildingScores value, skipping. Error: " << e.what()
+                              << std::endl;
+                }
+            }
         }
     }
 }

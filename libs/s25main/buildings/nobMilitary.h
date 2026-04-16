@@ -206,6 +206,8 @@ public:
     void SetImportanceEstimate(double value) { importance_ = std::max(0.0, value); }
     /// Estimate how many player buildings would be lost if this building were captured
     unsigned EstimateCaptureLossCount() const;
+    /// Return the building types that would be lost if this building were captured
+    std::vector<BuildingType> GetBuildingsLostOnCapture() const;
 
     /// Handle the building being captured by an enemy (player becomes the new owner)
     void Capture(unsigned char new_owner);

@@ -952,6 +952,13 @@ unsigned nobMilitary::EstimateCaptureLossCount() const
     return world->CountBuildingsLostOnCapture(*this);
 }
 
+std::vector<BuildingType> nobMilitary::GetBuildingsLostOnCapture() const
+{
+    if(!world)
+        return {};
+    return world->GetBuildingsLostOnCapture(*this);
+}
+
 bool nobMilitary::HasUpgradeableSoldier() const
 {
     const unsigned maxRank = world->GetGGS().GetMaxMilitaryRank();

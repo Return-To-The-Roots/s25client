@@ -121,6 +121,8 @@ public:
     /// Berechnet das Land in einem bestimmten Bereich um ein aktuelles Militärgebäude rum neu und gibt zurück ob sich
     /// etwas verändern würde (auf für ki wichtigem untergrund) wenn das Gebäude zerstört werden würde
     bool DoesDestructionChangeTerritory(const noBaseBuilding& building) const;
+    /// Return the building types that would be destroyed if the given military building were captured
+    std::vector<BuildingType> GetBuildingsLostOnCapture(const nobMilitary& building) const;
     /// Estimate how many buildings would be destroyed if the given military building were captured
     unsigned CountBuildingsLostOnCapture(const nobMilitary& building) const;
     /// Refresh capture risk and importance for all military buildings

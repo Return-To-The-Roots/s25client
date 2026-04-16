@@ -26,6 +26,7 @@ struct CombatConfig
     double forceAdvantageRatio = 1.10;
     double minNearTroopsDensity = 1.0;
     helpers::EnumArray<unsigned, AI::Level> attackIntervals;
+    helpers::EnumArray<unsigned, BuildingType> buildingScores;
     TargetSelectionAlgorithm targetSelection = TargetSelectionAlgorithm::Random;
 
     CombatConfig();

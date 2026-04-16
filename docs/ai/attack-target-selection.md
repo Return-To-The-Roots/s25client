@@ -98,11 +98,13 @@ When running with `TargetSelectionMode::Biting` the selector:
    isolated forts still applies before evaluating priorities.
 3. Immediately returns any valid Headquarters target, treating it as maximum
    priority regardless of collateral score.
-4. Otherwise queries `nobMilitary::EstimateCaptureLossCount()` (see
-   `libs/s25main/buildings/nobMilitary.cpp:930`) and chooses the building whose
-   capture would destroy the most dependent enemy structures. Ties fall back to
-   the first candidate that satisfied the constraints, so a target is always
-   returned when at least one viable option exists.
+4. Otherwise queries a weighted capture-loss score and chooses the building
+   whose capture would destroy the highest-scoring set of dependent enemy
+   structures. Each destroyed building contributes
+   `combat.buildingScores[BuildingType]` points, defaulting to `1` when the
+   type is not overridden in YAML. Ties fall back to the first candidate that
+   satisfied the constraints, so a target is always returned when at least one
+   viable option exists.
 
 When running with `TargetSelectionMode::Attrition` the selector:
 
