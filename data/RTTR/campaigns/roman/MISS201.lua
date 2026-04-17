@@ -162,7 +162,39 @@ rttr:RegisterTranslations(
 
         msg99   = 'Dwudziesty Siódmy Dzień Dziewiątego Miesiąca.\n\n\nZwyciężyliśmy w bitwie i wyspa jest nasza.\nWrota znów stały się aktywne.\n\nJestem podekscytowany perspektywą, dokąd teraz zaprowadzi nasza podróż.\n\nNapis na wrotach, jak poprzednio, jest po łacinie.\n\nMam nadzieję, że pójdziemy śladami naszych legendarnych poprzedników, gdy podróżowali do Rzymu...',
         msgh99  = 'Ukończyłeś tę misję.\nTrzeci Rozdział czeka na ciebie...'
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "Troisième jour de la deuxième année.\n\nNous avons atteint une seconde île qui semble\ninhabitée. Le stock d'outils du bon vieux Tortius\ns'épuise peu à peu. Nous avons un besoin urgent\nd'un atelier métallurgique pour fabriquer de\nnouveaux outils.",
+	    msgh1   = "Construisez un atelier métallurgique et progressez\nvers l'intérieur de l'île. Surveillez attentivement\nl'approvisionnement en nourriture et en matières\npremières.",
+	
+	    msg2    = "Nous avons avancé un peu vers le nord et rencontré\nun compatriote. Il est le seul survivant d'un autre\nnaufrage et se réjouit de revoir des êtres humains.\n\nNous aussi étions ravis : cet homme est brasseur.\n\nSi jamais nous devons faire face à des conflits,\nla bière renforcera le courage de notre peuple.\n\nUn soldat a besoin de bien plus qu'un bouclier et\nune épée !\n\nCet homme nous a également parlé de ruines qu'il a\ndécouvertes sur l'île. Je crains que nous devions\nbientôt faire preuve de plus de prudence.",
+	    msgh2   = "Progressez vers l'intérieur de l'île. Surveillez\nattentivement l'approvisionnement en nourriture et\nen matières premières.",
+	
+	    msg3    = "Nous avons trouvé les ruines. Elles contenaient des\nplans de construction pour un poste de garde.\n\nNous devrions désormais envisager des fortifications.\n\nJe suis plus convaincu que jamais que nous ne sommes\npas seuls sur cette île.",
+	    msgh3   = "Progressez vers l'intérieur de l'île. Surveillez\nattentivement l'approvisionnement en nourriture et\nen matières premières.",
+	
+	    msg4    = "Nous avons trouvé les ruines. Elles contenaient des\nplans de construction pour une tour de guet.\n\nQuelle est l'origine de ces structures ? Qui les a\nconstruites ? Je crains que la paix ne touche\nbientôt à sa fin.",
+	    msgh4   = "Progressez vers l'intérieur de l'île. Surveillez\nattentivement l'approvisionnement en nourriture et\nen matières premières.",
+	
+	    msg5    = "Quiconque est ou était sur cette île maîtrise\nparfaitement l'art de bâtir. Nous avons découvert\nles ruines d'une imposante forteresse d'une\nconstruction exemplaire. Nos architectes ont déjà\nétabli des plans.",
+	    msgh5   = "Progressez vers l'intérieur de l'île. Surveillez\nattentivement l'approvisionnement en nourriture et\nen matières premières.",
+	
+	    msg6    = "26e jour du troisième mois de la deuxième année.\n\nMes craintes se confirment. Mes hommes ont trouvé\nune poupée de chiffon et deux pointes de lance du\ntype utilisé par les tribus nubiennes. Ces objets\nne semblent pas très anciens.",
+	
+	    msg7    = "Notre territoire s'étend et les routes de transport\ns'allongent de plus en plus. Nous devons construire\nun entrepôt afin de répondre plus rapidement aux\nbesoins de notre peuple.",
+	
+	    msg8    = "Journal d'Octavius.\n\nQuatrième jour du quatrième mois de la deuxième année.\n\nCela devait arriver : nous avons rencontré les\nNubiens. Au début, tout était très amical. Ils nous\nont même parlé de leur relique sacrée et il est vite\napparu qu'il s'agissait de l'un des portails.\n\nIls nous en ont refusé l'accès. Nous devrons\ncombattre pour y accéder.",
+	    msgh8   = "Attaquez les Nubiens et prenez le contrôle de leur portail.",
+	
+	    msg9    = "Les Nubiens sont de piètres combattants mais ils\npossèdent une catapulte que nous devons détruire.\n\nPeut-être pourrons-nous ensuite récupérer des plans\npermettant de construire une telle arme.",
+	    msgh9   = "Capturez la catapulte puis prenez le contrôle du portail.",
+	
+	    msg99   = "27e jour du neuvième mois.\n\nNous avons remporté la bataille et l'île nous\nappartient désormais. Le portail s'est réactivé.\n\nJe suis impatient de découvrir où notre voyage\nnous mènera. L'inscription sur le portail est en\nlatin. J'espère que nous suivrons les traces de nos\nlégendaires prédécesseurs lorsqu'ils se rendirent\nà Rome...",
+	    msgh99  = "Vous avez terminé cette mission. Le troisième chapitre\nvous attend..."
+	},
 })
 
 -- format mission texts

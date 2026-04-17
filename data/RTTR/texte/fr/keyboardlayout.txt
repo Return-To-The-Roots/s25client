@@ -1,0 +1,50 @@
+RETURN TO THE ROOTS
+------------------------------------------------------------------------
+Disposition globale du clavier en jeu :
+
+Les touches entre crochets ne fonctionnent pas encore.
+
+P :.................... Pause
+
+H :.................... Aller au quartier général
+B :.................... Revenir à la position de départ
+
+N :.................... Ouvrir le bureau de poste
+L :.................... Afficher la carte
+M :.................... Sélection principale
+I :.................... Ouvrir l’inventaire
+
+ESPACE :............... Basculer l’aide à la construction
+C :.................... Informations sur les bâtiments
+S :.................... Afficher l’état des bâtiments
+
+Z :.................... Zoom sur la fenêtre actuelle
+V :.................... Accélération du jeu
+
+Alt-W, Échap :......... Fermer la fenêtre active
+Alt-Q :................ Quitter le jeu
+
+F1 :................... (Charger une partie)
+F2 :................... Sauvegarder la partie
+F8 :................... Lisezmoi « Disposition clavier »
+F9 :................... Lisezmoi
+F11 :.................. Lecteur de musique
+F12 :.................. Options
+
+Bureau de poste :
+
+SUPPR :................ Supprimer le message
+G :.................... Aller à l’événement
++/- :.................. Message suivant/précédent
+
+Flèches : Déplacement sur la carte principale
+
+En mode Replay :
+
+D :.................... Révéler/masquer les zones inconnues
+J :.................... Aller à une image précise
+P :.................... Pause/Reprendre
+1-7 :.................. Changer de joueur
+------------------------------------------------------------------------
+https://www.siedler25.org        Copyright (C) 2005-2026 Settlers Freaks
+------------------------------------------------------------------------

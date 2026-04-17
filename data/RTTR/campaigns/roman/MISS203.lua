@@ -97,7 +97,23 @@ rttr:RegisterTranslations(
 
         msg99   = 'Dotarliśmy do wrót i je aktywowaliśmy.\nDroga jest teraz wolna.',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "Neuvième jour du neuvième mois de la quatrième année.\n\nHier, nous avons rencontré un étranger à l'apparence\nvéritablement inquiétante. Il est de taille gigantesque,\na les yeux bleu clair et une chevelure dorée éclatante.\n\nIl y a longtemps, dans une taverne d'un port romain,\nj'avais entendu parler de tels hommes vivant dans le\nlointain nord. Comment est-il arrivé ici ? Il se montre\nméfiant et refuse de nous parler. Nous allons le traiter\ncomme notre invité pendant quelques jours (le pauvre\nsemble affamé). Peut-être changera-t-il alors d'attitude.",
+	    msgh1   = "Explorez les environs.",
+	
+	    msg2    = "16e jour du neuvième mois de la quatrième année.\n\nEh bien, que de merveilles peut accomplir un peu de\ngénérosité. Le géant blond nous a révélé qu'il appartient\nà un peuple qui se nomme les \" Vikings \". Il affirme\nqu'ils vivaient sur une grande île non loin à l'est,\nmais qu'ils ont été vaincus par une tribu hostile. Il\ns'appelle Erik. Quel nom étrange ! À l'en croire, il est\nconstructeur de navires. Mon cœur s'emballe à l'idée de\nremonter bientôt à bord d'un navire, d'entendre les\nvagues sous la coque, les cris des mouettes et le vent\ndans les voiles...\n\nMais nous devons d'abord construire un chantier naval\net un port.",
+	    msgh2   = "Construisez un port et un chantier naval. Dans le\nchantier naval, construisez un grand navire marchand\net organisez une expédition depuis le port.",
+	
+	    msg3    = "Sur une petite île au milieu d'un archipel, nous avons\ndécouvert un immense cimetière de baleines, contenant\ndes centaines de squelettes gigantesques. Quel spectacle\nimpressionnant. Au début, nous ne comprenions pas\ncomment ces créatures étaient arrivées là. Erik nous a\nexpliqué que son peuple vivait de ces animaux et les\nvénérait comme sacrés. C'est pourquoi leurs os étaient\napportés en ce lieu sacré après leur capture. Erik est\nmal à l'aise et souhaite partir, car il craint les\nesprits des créatures mortes.",
+	    msgh3   = "Explorez davantage l'île. Recherchez le prochain\nportail.",
+	
+	    msg99   = "Nous avons atteint le portail et l'avons activé.\n\nLa voie est désormais libre.",
+	    msgh99  = "Vous avez terminé cette mission. Le chapitre suivant\nvous attend..."
+	}
 })
 
 -- format mission texts

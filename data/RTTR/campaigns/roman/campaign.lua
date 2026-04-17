@@ -22,7 +22,13 @@ rttr:RegisterTranslations(
         name = 'Kampania Rzymian',
         shortDescription = 'Kampania Rzymian',
         longDescription= 'Dziennik Oktawiusza:\n\n\nCzwarty dzień po rozbiciu statku.\n\n\nWczoraj wszyscy ocalali spotkali się, aby omówić sytuację.\n\nPonieważ nie ma perspektyw na szybką pomoc,\npostanowiliśmy osiedlić się na tej obcej wyspie.\n\nRzeczy uratowane ze statku będą dla nas wielce pomocne.\n\nNajważniejsze jest, by wykorzystać surowce z wyspy w celu założenia osady.\n\nPilnie potrzebujemy schronienia dla:\ndrwala, cieśli i kamieniarza.'
-    }
+    },
+    fr =
+	{
+	    name = 'Campagne romaine',
+	    shortDescription = 'Campagne romaine',
+	    longDescription = "Journal d'Octavius :\n\n\nQuatrième jour après le naufrage.\n\n\nHier, tous les survivants se sont réunis afin de discuter de la situation.\n\nComme il n'y a aucun espoir de secours rapide, nous avons décidé de nous installer sur cette île étrangère.\n\nLes objets récupérés de l’épave nous seront d'une grande aide.\n\nLe plus important est d'exploiter les ressources naturelles de l'île afin d'établir une colonie.\n\nNous avons un besoin urgent de logements pour un bûcheron, un charpentier et un tailleur de pierre."
+	},
 })
 
 campaign = {

@@ -73,7 +73,17 @@ rttr:RegisterTranslations(
 
         msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nNie pozostawajmy tu dłużej niż to konieczne.',
         msgh99   = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "Une fois encore, nous nous retrouvons dans un monde\nfait de cendres et de lave. L'air est chargé d'une\nodeur putride de soufre. Tout cela provient du\nvolcan voisin qui déverse ses immondes entrailles\nsur la terre.\n\nMes hommes insistent pour que nous partions au plus\nvite ; je ne peux qu'espérer que les dieux guideront\nnos pas.",
+	    msgh1   = "Trouvez et occupez le portail ! Envisagez la\nconstruction d'un port.",
+	
+	    msg99   = "Nous avons trouvé le portail et l'avons occupé.\n\nNe restons ici que le temps strictement nécessaire.",
+	    msgh99  = "Vous avez terminé cette mission. Le chapitre suivant\nvous attend..."
+	}
 })
 
 -- format mission texts

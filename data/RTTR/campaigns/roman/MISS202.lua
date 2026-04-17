@@ -97,7 +97,23 @@ rttr:RegisterTranslations(
 
         msg99   = 'Dotarliśmy do wrót i je aktywowaliśmy.\n\nNie wiemy, dokąd dotrzemy tym razem, lecz nie zamierzamy się zatrzymać.',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "17e jour du troisième mois de la troisième année.\n\nNous avons désormais acquis une certaine routine dans l'établissement d'une colonie viable. Tout devrait maintenant fonctionner comme une horloge.\n\nNous avons rencontré un autre naufragé. Il nous a mis en garde contre des tribus nubiennes hostiles à l'est de l'île.\n\nLes montagnes à l'est contiendraient également d'importantes quantités d'or.\n\nCet homme ne connaissait rien à propos d'un portail, mais il ne connaissait qu'une petite partie de l'île.",
+	    msgh1   = "Progressez vers l'est.",
+	
+	    msg2    = "23e jour du douzième mois de la troisième année.\n\nNous sommes entrés en contact avec les Nubiens.\n\nLeur attitude est très menaçante mais pas encore ouvertement agressive. Cela ne devrait pas durer.\n\nNous devrions construire une tour de guet afin de surveiller leurs terres de plus près.\n\nLes rapports concernant de riches gisements d'or semblent exacts. Le chef nubien parade avec ses bijoux en or comme un paon.",
+	    msgh2   = "Recherchez le portail.",
+	
+	    msg3    = "Premier jour du deuxième mois de la quatrième année depuis notre arrivée.\n\nLa tribu au nord bloque notre accès à un autre portail. Elle le considère également comme une relique sacrée.\n\nNous n'avons pas d'autre choix que de combattre.",
+	    msgh3   = "Obtenez l'accès au portail au nord.",
+	
+	    msg99   = "Nous avons atteint le portail et l'avons activé.\n\nNous ignorons où il nous mènera, mais nous continuerons.",
+	    msgh99  = "Vous avez terminé cette mission.\n\nLe chapitre suivant vous attend..."
+	}
 })
 
 

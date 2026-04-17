@@ -73,7 +73,16 @@ rttr:RegisterTranslations(
 
         msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\n\nKiedy dotrzemy do naszego celu?',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
-    }
+    },
+	fr = {
+	    Diary   = "Journal",
+	
+	    msg1    = "Des éclaireurs m'ont signalé la présence d'un\npuissant ennemi à l'ouest. Nous devons tenter de\nrester ici le plus longtemps possible. En cas\nd'urgence, nous pourrons toujours fuir vers l'est\nou par la mer...",
+	    msgh1   = "Recherchez un portail. Envisagez la construction\nd'un port.",
+	
+	    msg99   = "Nous avons trouvé le portail et l'avons occupé.\n\nQuand atteindrons-nous notre destination ?",
+	    msgh99  = "Vous avez terminé cette mission. Le chapitre suivant\nvous attend..."
+	}
 })
 
 -- format mission texts

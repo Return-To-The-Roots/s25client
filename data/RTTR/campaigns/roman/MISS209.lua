@@ -85,7 +85,21 @@ rttr:RegisterTranslations(
 
         msg99   = 'Ostatni Dzień Dziesiątego Roku.\nOstatni wpis Oktawiusza w tym dzienniku.\n\nUdało się. Jutro wrócimy do Rzymu - równo dziesięć lat po tym, jak staliśmy się rozbitkami na wyspie.\n\nDziesięć lat, podczas których podążaliśmy śladami naszych przodków.\n\nDziesięć lat, podczas których nauczyliśmy się, co uczyniło Rzym wielkim.\n\nWyprawimy bogom wielką ucztę dziękczynną i ponownie zobaczymy nasze rodziny oraz przyjaciół.\n\nNie mogę się doczekać.',
         msgh99  = 'Udało ci się!'
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "L'air est chargé d'attente et même d'une certaine\nappréhension, alors que nous nous préparons à\nentamer le dernier et le plus dangereux chapitre\nde notre long voyage de retour. Reverrons-nous un\njour Rome ?\n\nNous devons rassembler toutes nos forces, car cette\nîle semble être notre meilleure chance...",
+	    msgh1   = "Soyez prudent. N'attaquez pas avant d'être certain\nde pouvoir vaincre les deux ennemis.",
+	
+	    msg2    = "17e jour du sixième mois de la dixième année.\n\nDes Romains se tiennent devant le dixième portail.\n\nIls ne sont pas du tout amicaux. Peut-être sont-ils\nl'autre face de la médaille, le frère ennemi Rémus.\n\nPeut-être leur portail est-il celui qui nous\nramènera vers notre chère Rome.\n\nComme le dit l'ancienne légende :\n\n\" Pour Rome, un frère combattra son frère. \"\nDepuis presque dix ans, nous rêvons sans cesse de\nnotre patrie. Nous n'abandonnerons pas maintenant.",
+	    msgh2   = "Rassemblez toutes vos forces pour percer !\n\nPrenez le contrôle du portail !",
+	
+	    msg99   = "Dernier jour de la dixième année.\n\nDernière entrée d'Octavius dans ce journal.\n\nNous avons réussi. Demain, nous retournerons à Rome,\nexactement dix ans après être devenus naufragés sur\ncette île. Dix années durant lesquelles nous avons\nmarché dans les pas de nos ancêtres. Dix années\ndurant lesquelles nous avons appris ce qui rendait\nRome si grande. Nous offrirons un grand festin en\nremerciement aux dieux et retrouverons nos familles\net nos amis.\n\nJ'ai peine à contenir mon impatience.",
+	    msgh99  = "Vous avez réussi !"
+	}
+    
 })
 
 -- format mission texts
