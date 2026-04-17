@@ -58,6 +58,8 @@ namespace libsiedler2 {
 class ArchivItem_Map;
 }
 
+using ScaleLimPercent = Point<unsigned>;
+
 /// Die Basisklasse der Fenster.
 class Window
 {
@@ -65,7 +67,8 @@ public:
     using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
     using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
-    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
+    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0),
+           const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100));
     virtual ~Window();
     /// zeichnet das Fenster.
     void Draw();
@@ -75,6 +78,8 @@ public:
     DrawPoint GetDrawPos() const;
     /// Get the size of the window
     Extent GetSize() const;
+    /// Get the Scaling Percentage
+    ScaleLimPercent GetScalePercentage() const;
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
     /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
@@ -86,6 +91,8 @@ public:
     void SetWidth(unsigned width) { Resize(Extent(width, size_.y)); }
     /// setzt die Höhe des Fensters
     void SetHeight(unsigned height) { Resize(Extent(size_.x, height)); }
+    /// Set the Scaling Percentage
+    void SetScalePercentage(ScaleLimPercent scalePercentage);
     /// Sendet eine Tastaturnachricht an die Steuerelemente.
     bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Sendet eine Mausnachricht weiter an alle Steuerelemente
@@ -286,27 +293,37 @@ protected:
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
-    /// scales X- und Y values to fit the screen
+    /// scales X- and Y values to fit the screen, additionally considering a scaling percentage for size
     template<class T_Pt>
-    static T_Pt Scale(const T_Pt& pt);
+    static T_Pt Scale(const T_Pt& pt, const ScaleLimPercent& scalePercentage = ScaleLimPercent(100, 100));
+    /// scales X- and Y values of pos_ and size_, additionally considering scalePercentage_ for size_ scaling
+    void Scale();
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt) const;
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
+    /// Sets the limit value, deciding of control size shall be limited.
+    void SetLimit(bool limit = true) { this->limit_ = limit; }
+    /// get Scale-Value
+    bool GetScale() const { return this->scale_; }
+    /// get Limit-Value
+    bool GetLimit() const { return this->limit_; }
     /// zeichnet das Fenster.
     virtual void Draw_();
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
     virtual bool IsMessageRelayAllowed() const;
 
 private:
-    Window* const parent_; /// Handle auf das Parentfenster.
-    unsigned id_;          /// ID des Fensters.
-    DrawPoint pos_;        /// Position des Fensters.
-    Extent size_;          /// Höhe des Fensters.
-    bool active_;          /// Fenster aktiv?
-    bool visible_;         /// Fenster sichtbar?
-    bool scale_;           /// Sollen Controls an Fenstergröße angepasst werden?
+    Window* const parent_;            /// Handle auf das Parentfenster.
+    unsigned id_;                     /// ID des Fensters.
+    DrawPoint pos_;                   /// Position des Fensters.
+    Extent size_;                     /// Höhe des Fensters.
+    ScaleLimPercent scalePercentage_; /// X and Y scaling limiting percentage
+    bool active_;                     /// Fenster aktiv?
+    bool visible_;                    /// Fenster sichtbar?
+    bool scale_;                      /// Sollen Controls an Fenstergröße angepasst werden?
+    bool limit_;                      /// Should control size be limited?
 
     std::map<Window*, Rect> lockedAreas_; /// gesperrte Regionen des Fensters.
     std::vector<Window*> tofreeAreas_;
@@ -322,6 +339,7 @@ inline T* Window::AddCtrl(T* ctrl)
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     ctrl->scale_ = scale_;
+    ctrl->limit_ = limit_;
     ctrl->SetActive(active_);
 
     return ctrl;

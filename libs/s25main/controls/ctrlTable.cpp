@@ -136,6 +136,11 @@ ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     header_height = font->getHeight() + 10;
     line_count = (GetSize().y - header_height - 2) / font->getHeight();
 
+    const bool tmpScale = GetScale();
+
+    // Always exclude the following from scaling
+    SetScale(false);
+
     // Scrollbar hinzufügen
     AddScrollBar(0, DrawPoint(GetSize().x - 20, 0), Extent(20, GetSize().y), 20, tc, line_count);
 
@@ -144,6 +149,7 @@ ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Ex
         AddTextButton(i + 1, DrawPoint(0, 0), Extent(0, header_height), tc, columns_[i].title, font);
     }
 
+    SetScale(tmpScale);
     ResetButtonWidths();
 }
 
