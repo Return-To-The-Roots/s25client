@@ -218,7 +218,53 @@ rttr:RegisterTranslations(
 
         msg99   = 'Drugi Dzień Trzynastego Miesiąca po przybyciu na ląd.\n\n\nDrugi rok rozpoczął się wczoraj i wydaje się, że pomyślnie osiedliśmy na tej wyspie.\n\nZwiadowcy zameldowali o dziwnych wydarzeniach w pobliżu wrót.\n\nWygląda na to, że otworzył się portal, który może nas wyprowadzić z tej wyspy.\n\nChyba o to chodziło w tej przedziwnej zagadce: \"aby posunąć się naprzód, trzeba nam było osiąść w miejscu.\"\n\nSprawdzimy to - być może wszystkie drogi naprawdę prowadzą do Rzymu?',
         msgh99  = 'Ukończyłeś tę misję. Drugi Rozdział czeka na ciebie...\n\nMożesz rozpocząć następną misję z menu głównego kiedy tylko chcesz.'
-    }
+    },
+	fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "Journal d'Octavius :\n\nQuatrième jour après le naufrage.\n\nHier, tous les survivants se sont réunis afin de discuter de la situation.\n\nComme il n'y a aucun espoir de secours rapide, nous avons décidé de nous installer sur cette île étrangère.\n\nLes objets récupérés de l'épave nous seront d'une grande aide.\n\nLe plus important est d'exploiter les ressources naturelles de l'île afin d'établir une colonie.\n\nNous avons un besoin urgent de logements pour un bûcheron, un charpentier et un tailleur de pierre.",
+	    msgh1   = "Construisez des logements pour un bûcheron, un charpentier et un tailleur de pierre.",
+	
+	    msg2    = "Huitième jour après le naufrage.\n\nLes besoins de base pour développer notre colonie sont désormais couverts.\n\nCependant, la réserve de bois de cette région ne durera pas longtemps.\n\nNous avons besoin d'un forestier pour assurer un approvisionnement durable en bois.",
+	    msgh2   = "Construisez une cabane de forestier.",
+	
+	    msg3    = "Onzième jour du deuxième mois après le naufrage.\n\nNous ne savons toujours pas si nous sommes les seuls habitants de cette île.\n\nPar mesure de précaution, nous devrions ériger une caserne à notre frontière exposée vers l'intérieur de l'île.",
+	    msgh3   = "Construisez une caserne à la frontière nord de votre colonie.",
+	
+	    msg4    = "Cinquième jour du troisième mois.\n\nNotre territoire s'est étendu jusqu'à la montagne au nord.\n\nNotre géologue y effectuera une prospection.\n\nÀ long terme, nous aurons besoin de combustible, de matériaux de construction ainsi que d'armes et de pièces d'or.\n\nNous devons donc trouver du minerai de fer, de l'or, du charbon et du granit.",
+	    msgh4   = "Construisez une route vers la montagne et envoyez-y votre géologue.",
+	
+	    msg5    = "Seizième jour du sixième mois.\n\nNous avons trouvé du minerai de fer et pouvons maintenant produire des armes.\n\nRien ne s'oppose plus à l'exploration de l'île.\n\nNous devons d'abord construire une mine de fer et une fonderie.\n\nUn forgeron pourra ensuite fabriquer des épées et des boucliers.\n\nNous devons aussi nourrir les mineurs, nos réserves sont presque épuisées.\n\nNous avons besoin de chasseurs et de pêcheurs !",
+	    msgh5   = "Construisez une mine de fer, une fonderie et une forge.",
+	
+	    msg6    = "Dernier jour du huitième mois après notre arrivée.\n\nUne plaine fertile s'étend au nord de notre nouveau poste frontière.\n\nElle offrira de nombreuses possibilités d'expansion, mais nous aurons besoin de plus de soldats.",
+	    msgh6   = "Rendez-vous dans la plaine au nord et continuez à fortifier la frontière.",
+	
+	    msg7    = "Douzième jour du neuvième mois.\n\nEn progressant vers le nord, nous avons enfin trouvé assez d'espace pour construire de grands bâtiments et des fermes.\n\nNous allons maintenant rechercher des ressources dans les montagnes environnantes.",
+	    msgh7   = "Recherchez de nouvelles ressources et assurez l'approvisionnement en nourriture.\n\nExplorez toute l'île.",
+	
+	    msg8    = "Notre géologue a découvert une source.\n\nNous pouvons désormais disposer d'eau fraîche.",
+	
+	    msg9    = "Nous avons assuré l'approvisionnement en combustible des ateliers métallurgiques en trouvant du charbon dans les montagnes de l'ouest.\n\nNous pouvons maintenant traiter nos minerais sans problème.\n\nTout se déroule parfaitement.",
+	
+	    msg10   = "Les géologues ont découvert des gisements de granit dans les montagnes.\n\nCela nous fournira une nouvelle source de pierre pour un certain temps.",
+	
+	    msg11   = "Nous avons découvert un filon d'or.\n\nNous pouvons maintenant frapper de précieuses pièces dans un atelier monétaire.\n\nLa vie ici devient presque aussi confortable qu'à la maison.",
+	
+	    msg12   = "Nous avons frappé nos premières pièces d'or.\n\nNous pouvons désormais financer l'entraînement de nos soldats.",
+	
+	    msg13   = "La construction de notre première ferme de céréales est terminée.\n\nLe grain peut être transformé en farine dans un moulin ou donné aux porcs.\n\nL'approvisionnement alimentaire devrait maintenant continuer à s'améliorer.",
+	
+	    msg14   = "Notre nouvelle porcherie peut fournir des animaux à abattre à un boucher.",
+	
+	    msg15   = "Le moulin à vent peut fournir suffisamment de farine à un boulanger pour fabriquer du pain.",
+	
+	    msg16   = "Nos géologues ont découvert un objet étrange.\n\nIl ressemble à un portail.\n\nNous ne sommes manifestement pas les premiers humains sur cette île.\n\nIls ont même trouvé une inscription en latin sur le portail.\n\nElle est étrange et contradictoire, peut-être s'agit-il d'une énigme :\n\n\"Consiste ut procederas !\" - \"Installe-toi pour progresser !\".\n\nQue cela peut-il signifier ?!",
+	
+	    msg99   = "Deuxième jour du treizième mois après notre arrivée.\n\nLa deuxième année a commencé hier et nous semblons avoir réussi à nous établir sur cette île.\n\nLes géologues signalent des phénomènes étranges près du portail.\n\nIl semble qu'un passage se soit ouvert et puisse nous mener hors de cette île.\n\nCela semble être la signification de l'énigme : nous devons nous installer pour pouvoir avancer.\n\nAllons voir, peut-être que tous les chemins mènent vraiment à Rome.",
+	    msgh99  = "Vous avez terminé cette mission.\n\nLe deuxième chapitre vous attend...\n\nVous pouvez lancer la mission suivante depuis le menu principal quand vous le souhaitez."
+	}
 })
 
 -- format mission texts

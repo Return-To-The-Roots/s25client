@@ -89,7 +89,21 @@ rttr:RegisterTranslations(
 
         msg99   = 'Znaleźliśmy wrota i zajęliśmy je.',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...' 
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "Quatrième jour du onzième mois de la sixième année.\n\nIl semble que notre péninsule ne soit reliée au\nreste du continent que par deux vallées étroites.\n\nDes traces indiquent la présence d'une tribu\nbarbare de Vikings au sud.",
+	    msgh1   = "Recherchez le portail.",
+	
+	    msg2    = "Un Viking capturé nous a révélé qu'une autre tribu\nextrêmement riche vit sur la péninsule à l'ouest de\nnotre position. Elle possède d'importantes réserves\nd'or. L'accès à leur territoire, à l'ouest de la\ngrande baie, est fortement fortifié. Nous n'avons\npas pu obtenir plus de détails.",
+	
+	    msg3    = "19e jour du quatrième mois de la septième année.\n\nLes Vikings semblent extrêmement puissants.\n\nNous devons trouver un moyen d'accéder à leur\nforteresse.\n\nIl est intéressant de noter que cette tribu possède\négalement un cimetière de baleines sur une petite\npéninsule au nord de leurs mines d'or. Je me demande\ns'ils craignent eux aussi les esprits des baleines ?",
+	
+	    msg99   = "Nous avons trouvé le portail et l'avons occupé.",
+	    msgh99  = "Vous avez terminé cette mission. Le chapitre suivant\nvous attend..."
+	}
 })
 
 -- format mission texts

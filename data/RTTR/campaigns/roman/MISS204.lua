@@ -89,7 +89,21 @@ rttr:RegisterTranslations(
 
         msg99   = 'Znaleźliśmy wrota i zajęliśmy je.\nMożemy przez nie przejść, kiedy tylko zechcemy!',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "Nous sommes entourés d'une étendue stérile et\ninhospitalière. Les limites de ce monde semblent\nêtre constituées soit de montagnes infranchissables,\nsoit de coulées de lave.\n\nIl est impossible de garder la notion du temps ici.\n\nUne pénombre constante recouvre tout, et il n'y a\nni lumière du soleil ni celle des étoiles.\n\nQuels mystères et dangers se cachent en ces lieux ?",
+	    msgh1   = "Continuez à chercher le portail. L'espace pour\nconstruire est limité ; utilisez vos ressources\navec soin.",
+	
+	    msg2    = "Nous avons rencontré des humains à l'apparence bien\nplus étrange encore que notre constructeur de navires\nviking. Ils se nomment les \" Fils de Nippon \".\n\nIls sont petits et minces, mais manifestement habiles\net tenaces. Leur trait le plus singulier est la\ncouleur de leur peau : jaune ocre, et leurs yeux ne\nsont que de fines fentes. Leur comportement est\namical, bien que leur apparence soit troublante.",
+	
+	    msg3    = "Les \" Fils de Nippon \" du sud ont des parents au\nnord. Leurs relations semblent très amicales.\n\nEntrer en guerre contre l'un signifie entrer en\nguerre contre l'autre. Nous devons envisager cette\néventualité avec prudence...",
+	
+	    msg99   = "Nous avons trouvé le portail et l'avons occupé.\n\nNous pouvons désormais l'emprunter à tout moment !",
+	    msgh99  = "Vous avez terminé cette mission. Le chapitre suivant\nvous attend..."
+	}
 })
 
 -- format mission texts

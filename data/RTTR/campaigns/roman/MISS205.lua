@@ -89,7 +89,21 @@ rttr:RegisterTranslations(
 
         msg99   = 'Znaleźliśmy wrota i zajęliśmy je.',
         msgh99  = 'Ukończyłeś tę misję.\nNastępny rozdział czeka na ciebie...'
-    }
+    },
+    fr =
+	{
+	    Diary   = "Journal",
+	
+	    msg1    = "Dernier jour de la cinquième année.\n\nDes gravures rupestres suggèrent l'existence d'une\nîle au sud-ouest. Il semble qu'elle contienne\nd'importants gisements d'or.",
+	    msgh1   = "Trouvez et occupez le portail ! Examinez les\npossibilités de construction d'un port.",
+	
+	    msg2    = "Les Vikings possèdent une colonie derrière la grande\nchaîne de montagnes à l'est de notre île. Depuis\nles sommets, on peut apercevoir une autre masse\nde terre très vaste au nord-est.\n\nNous n'avons toujours trouvé aucune trace de portail\net les prisonniers de guerre prétendent n'en rien\nsavoir, mais ce sont de piètres menteurs.",
+	
+	    msg3    = "Nous avons conquis la petite zone de terre au-delà\nde la chaîne de montagnes, aux dépens des Vikings.\n\nNous avons fait d'autres prisonniers qui nous ont\nindiqué l'emplacement du portail. Comme nous le\nsoupçonnions, il se trouve à l'extrême nord-est.\n\nÀ l'exception d'une petite zone au sud de cette\nterre, tout est sous contrôle des Vikings. Nous\ndevons rapidement y construire un port et obtenir\nde nouveaux approvisionnements.",
+	
+	    msg99   = "Nous avons trouvé le portail et l'avons occupé.",
+	    msgh99  = "Vous avez terminé cette mission. Le chapitre suivant\nvous attend..."
+	}
 })
 
 -- format mission texts
