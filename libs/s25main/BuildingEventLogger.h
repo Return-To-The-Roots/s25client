@@ -15,6 +15,8 @@ void LogConstructionSiteCancelled(unsigned gf, unsigned char playerId, BuildingT
                                   unsigned x, unsigned y, const void* sitePtr);
 void LogBuildingConstructed(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
                            unsigned x, unsigned y);
+void LogBuildingInhabited(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                          unsigned x, unsigned y);
 void LogBuildingDestroyed(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
                          unsigned x, unsigned y);
 void LogBuildingCaptured(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId, unsigned x,

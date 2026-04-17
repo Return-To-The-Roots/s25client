@@ -48,6 +48,7 @@ Tracks building lifecycle events in a unified CSV stream.
 - `construction_site_created`
 - `construction_site_cancelled`
 - `constructed`
+- `inhabited`
 - `destroyed`
 - `captured`
 
@@ -58,6 +59,11 @@ Tracks building lifecycle events in a unified CSV stream.
   - `GamePlayer::RemoveBuildingSite(...)`
 - Constructed:
   - Builder completion path in `nofBuilder`
+- Inhabited:
+  - `nobUsual::WorkerArrived()`
+  - `nobMilitary::AddPassiveSoldier(...)` when the garrison becomes occupied
+  - Warehouse construction completion in `nofBuilder`
+  - `MapLoader::PlaceHQs(...)` for initial headquarters placement
 - Destroyed:
   - `noBaseBuilding::Destroy()` (excluding `GO_Type::Buildingsite`)
 - Captured:
@@ -72,6 +78,9 @@ Tracks building lifecycle events in a unified CSV stream.
 ### Notes
 - A completed construction site is marked via `MarkConstructionSiteConstructed(...)` so it is not additionally logged as `construction_site_cancelled`.
 - Construction-site events use the construction site's object ID as `buildingId`.
+- `inhabited` is emitted when a building first counts as staffed: a worker for usual buildings, a stationed soldier for
+  military buildings, and immediately on construction for warehouses. Initial headquarters placement is logged as
+  inhabited immediately.
 - `playerId` is written as 1-based (`playerId + 1`).
 
 ## CombatEventLogger

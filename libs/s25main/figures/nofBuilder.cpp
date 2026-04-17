@@ -160,6 +160,9 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 bld->SetBuildCompleteFrame(completionGF);
                 BuildingEventLogger::LogBuildingConstructed(completionGF, player, building_type, bld->GetObjId(), pos.x,
                                                             pos.y);
+                if(BuildingProperties::IsWareHouse(building_type))
+                    BuildingEventLogger::LogBuildingInhabited(completionGF, player, building_type, bld->GetObjId(),
+                                                              pos.x, pos.y);
                 world->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
 
                 // Special handling for warehouses

@@ -424,6 +424,8 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
                                                          world.GetPlayer(i).nation);
         BuildingEventLogger::LogBuildingConstructed(world.GetEvMgr().GetCurrentGF(), i, BuildingType::Headquarters,
                                                     hq->GetObjId(), hqPositions[i].x, hqPositions[i].y);
+        BuildingEventLogger::LogBuildingInhabited(world.GetEvMgr().GetCurrentGF(), i, BuildingType::Headquarters,
+                                                  hq->GetObjId(), hqPositions[i].x, hqPositions[i].y);
         if(world.GetEvMgr().GetCurrentGF() == 0)
         {
             const auto* const warehouse = static_cast<const nobBaseWarehouse*>(hq);

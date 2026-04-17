@@ -717,10 +717,14 @@ void nobMilitary::AddPassiveSoldier(std::unique_ptr<nofPassiveSoldier> soldier)
     RTTR_Assert(soldier->GetPlayer() == player);
     RTTR_Assert(troops.size() < GetMaxTroopsCt());
     const unsigned char rank = soldier->GetRank();
+    const bool wasInhabited = !troops.empty();
 
     ordered_troops.erase(soldier.get());
     troops.insert(std::move(soldier));
     MilitaryEventLogger::LogDeployment(GetEvMgr().GetCurrentGF(), player, rank, bldType_, GetObjId());
+    if(!wasInhabited)
+        BuildingEventLogger::LogBuildingInhabited(GetEvMgr().GetCurrentGF(), player, bldType_, GetObjId(), pos.x,
+                                                  pos.y);
 
     // Was this building occupied for the first time?
     if(new_built)

@@ -61,6 +61,12 @@ void LogBuildingConstructed(unsigned gf, unsigned char playerId, BuildingType bu
     LogEvent(gf, playerId, "constructed", buildingType, buildingId, x, y);
 }
 
+void LogBuildingInhabited(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
+                          unsigned x, unsigned y)
+{
+    LogEvent(gf, playerId, "inhabited", buildingType, buildingId, x, y);
+}
+
 void LogBuildingDestroyed(unsigned gf, unsigned char playerId, BuildingType buildingType, unsigned buildingId,
                           unsigned x, unsigned y)
 {

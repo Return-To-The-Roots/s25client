@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "nobUsual.h"
+#include "BuildingEventLogger.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -490,6 +491,9 @@ bool nobUsual::AreThereAnyOrderedWares() const
 
 void nobUsual::WorkerArrived()
 {
+    if(!productivity_ev)
+        BuildingEventLogger::LogBuildingInhabited(GetEvMgr().GetCurrentGF(), player, bldType_, GetObjId(), pos.x,
+                                                  pos.y);
     productivity_ev = GetEvMgr().AddEvent(this, numProductivityGFs, 1);
 }
 
