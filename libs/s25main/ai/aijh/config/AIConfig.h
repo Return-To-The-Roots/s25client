@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 #include "WeightParams.h"
+#include "buildings/nobMilitary.h"
 #include "helpers/EnumArray.h"
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/BuildingType.h"
@@ -16,6 +17,12 @@ enum class TargetSelectionAlgorithm
     Prudent,
     Biting,
     Attrition
+};
+
+enum class TroopsDistributionStrategy
+{
+    Fair,
+    ProtectedBuildingValue
 };
 
 struct CombatConfig
@@ -44,6 +51,14 @@ struct BQPenaltyConfig
     double roadRoute = 1.0;
 };
 
+struct TroopsDistributionConfig
+{
+    TroopsDistributionStrategy strategy = TroopsDistributionStrategy::Fair;
+    helpers::EnumArray<double, FrontierDistance> frontierMultipliers;
+
+    TroopsDistributionConfig();
+};
+
 struct AIConfig
 {
     helpers::EnumArray<WantedParams, BuildingType> wantedParams;
@@ -51,6 +66,7 @@ struct AIConfig
     helpers::EnumArray<helpers::EnumArray<DistributionParams, BuildingType>, GoodType> distributionParams;
     CombatConfig combat;
     BQPenaltyConfig bqPenalty;
+    TroopsDistributionConfig troopsDistribution;
     bool reserveMilitaryBorderSlots = true;
     unsigned reserveMilitaryBorderlandThreshold = 150;
     std::vector<BuildingType> disableBuilding;

@@ -34,6 +34,16 @@ tool priorities, building-quality penalties, and explicit building disables. The
 - `toolPriority` – Per-tool priority values used by `AIPlayerJH::AdjustSettings`
   when managing tool production. Defaults to the hardcoded `TOOL_PRIORITY`
   table unless overridden.
+- `troopsDistribution.strategy` – Strategy used by
+  `AIMilitaryLogistics::UpdateTroopsLimit()` when distributing total troop caps
+  among non-`Far` military buildings. `Fair` gives every eligible building the
+  same weight. `ProtectedBuildingValue` weights buildings by the summed
+  `combat.buildingScores` of the buildings that would be lost if that military
+  building were captured.
+- `troopsDistribution.frontierMultipliers` – Per-`FrontierDistance`
+  multipliers applied on top of `ProtectedBuildingValue` scores. This lets
+  config favor, for example, `Near` buildings over `Mid` ones even when their
+  protected infrastructure value is similar.
 - `distributionParams[GoodType][BuildingType]` – Distribution adjuster tuning
   per distribution edge (`distributed good -> target building`). Each
   `DistributionParams` entry exposes `overstockingPenalty[GoodType]` as
@@ -63,6 +73,7 @@ following top-level sections if present:
 | `combat`        | Optional object containing `fulfillment`, `forceAdvantageRatio`, `minNearTroopsDensity`, `attackIntervals`, and `targetSelection`. |
 | `disableBuilding` | Sequence of building names (matching `BUILDING_NAME_MAP` keys) to disable entirely. |
 | `toolPriority`  | Map of tool names to signed priority values (e.g. `Tongs: 2`). Missing entries keep defaults. |
+| `troopsDistribution` | Optional map containing `strategy` (`Fair` or `ProtectedBuildingValue`) and `frontierMultipliers` (`Far`, `Mid`, `Harbor`, `Near`). |
 | `distributionAdjuster` | Map of distributed goods to target buildings. Each `distributedGood -> building` node may define `overstockingPenalty` as a map of stock goods to `BuildParams`. |
 | `bqPenalty` | Map with `buildLocation` and `roadRoute` scalars controlling BQ-related penalties in site and road scoring. |
 | `reserveMilitaryBorderSlots` | Boolean toggle for preserving border plots that are suitable for military expansion from non-military placement. |
@@ -75,6 +86,12 @@ overrides can be loaded with `ApplyPlayerWeightsCfg`, which stores a dedicated
 Example:
 
 ```yaml
+troopsDistribution:
+  strategy: ProtectedBuildingValue
+  frontierMultipliers:
+    Near: 1.1
+    Mid: 0.9
+
 distributionAdjuster:
   Fish:
     CoalMine:
@@ -105,6 +122,9 @@ With these settings:
   when scoring building sites.
 - `bqPenalty.roadRoute` defaults to `1.0`, which matches the current built-in
   route scoring weight for one building-quality downgrade level.
+- `troopsDistribution.strategy` defaults to `Fair`.
+- `troopsDistribution.frontierMultipliers` defaults to `1.0` for every
+  frontier distance.
 - `reserveMilitaryBorderSlots` defaults to `true`.
 - `disableBuilding` defaults to an empty list; omitting it in YAML preserves the
   original behaviour where all buildings start enabled.

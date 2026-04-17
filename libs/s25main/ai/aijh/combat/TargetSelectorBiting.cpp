@@ -4,6 +4,7 @@
 
 #include "AICombatController.h"
 
+#include "ai/aijh/combat/MilitaryBuildingValue.h"
 #include "ai/aijh/config/AIConfig.h"
 #include "buildings/nobMilitary.h"
 #include "gameTypes/BuildingType.h"
@@ -61,11 +62,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
 
         unsigned lossScore = 0;
         if(const auto* enemyTarget = dynamic_cast<const nobMilitary*>(target))
-        {
-            const std::vector<BuildingType> lostBuildings = enemyTarget->GetBuildingsLostOnCapture();
-            for(const BuildingType buildingType : lostBuildings)
-                lossScore += buildingScores[buildingType];
-        }
+            lossScore = CalculateMilitaryBuildingProtectionValue(*enemyTarget, buildingScores);
 
         if(!bestTarget || lossScore > bestLossScore)
         {

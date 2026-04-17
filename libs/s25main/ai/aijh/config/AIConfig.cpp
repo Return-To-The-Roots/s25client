@@ -20,6 +20,12 @@
 // Define the global instance
 AIConfig AI_CONFIG;
 
+TroopsDistributionConfig::TroopsDistributionConfig()
+{
+    for(const auto frontierDistance : helpers::enumRange<FrontierDistance>())
+        frontierMultipliers[frontierDistance] = 1.0;
+}
+
 AIConfig::AIConfig()
 {
     auto setResourceRating = [this](const BuildingType type, const AIResource resource, const unsigned defaultRadius,
@@ -78,6 +84,45 @@ CombatConfig::CombatConfig()
 
 namespace {
 std::array<std::unique_ptr<AIConfig>, MAX_PLAYERS> gPlayerConfigs;
+
+std::optional<TroopsDistributionStrategy> parseTroopsDistributionStrategy(const std::string& raw)
+{
+    std::string normalized;
+    normalized.resize(raw.size());
+    std::transform(raw.begin(), raw.end(), normalized.begin(), [](unsigned char c) {
+        if(c == '-' || c == '_')
+            return static_cast<char>(' ');
+        return static_cast<char>(std::tolower(c));
+    });
+
+    if(normalized == "fair")
+        return TroopsDistributionStrategy::Fair;
+    if(normalized == "protected building value" || normalized == "protectedbuildingvalue"
+       || normalized == "protection value")
+    {
+        return TroopsDistributionStrategy::ProtectedBuildingValue;
+    }
+    return std::nullopt;
+}
+
+std::optional<FrontierDistance> parseFrontierDistance(const std::string& raw)
+{
+    std::string normalized;
+    normalized.resize(raw.size());
+    std::transform(raw.begin(), raw.end(), normalized.begin(), [](unsigned char c) {
+        return static_cast<char>(std::tolower(c));
+    });
+
+    if(normalized == "far")
+        return FrontierDistance::Far;
+    if(normalized == "mid" || normalized == "middle")
+        return FrontierDistance::Mid;
+    if(normalized == "harbor" || normalized == "harbour")
+        return FrontierDistance::Harbor;
+    if(normalized == "near")
+        return FrontierDistance::Near;
+    return std::nullopt;
+}
 
 void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
 {
@@ -211,6 +256,78 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
             }
         }
     }
+}
+
+void applyTroopsDistributionStrategyCfg(const YAML::Node& strategyNode, AIConfig& config)
+{
+    if(!strategyNode)
+        return;
+
+    try
+    {
+        const std::string strategyValue = strategyNode.as<std::string>();
+        if(const auto parsed = parseTroopsDistributionStrategy(strategyValue))
+            config.troopsDistribution.strategy = *parsed;
+        else
+            std::cerr << "Warning: Unknown troops distribution strategy '" << strategyValue
+                      << "', defaulting to Fair." << std::endl;
+    } catch(const YAML::TypedBadConversion<std::string>& e)
+    {
+        std::cerr << "Warning: Invalid troopsDistributionStrategy value, using default. Error: " << e.what()
+                  << std::endl;
+    }
+}
+
+void applyTroopsDistributionFrontierMultipliersCfg(const YAML::Node& multipliersNode, AIConfig& config)
+{
+    if(!multipliersNode)
+        return;
+
+    if(!multipliersNode.IsMap())
+    {
+        std::cerr << "Warning: troopsDistributionFrontierMultipliers must be a map." << std::endl;
+        return;
+    }
+
+    for(const auto& node : multipliersNode)
+    {
+        try
+        {
+            const std::string frontierName = node.first.as<std::string>();
+            const auto frontierDistance = parseFrontierDistance(frontierName);
+            if(!frontierDistance)
+            {
+                std::cerr << "Warning: Unknown frontier distance '" << frontierName
+                          << "' in troopsDistributionFrontierMultipliers map." << std::endl;
+                continue;
+            }
+
+            config.troopsDistribution.frontierMultipliers[*frontierDistance] = node.second.as<double>();
+        } catch(const YAML::TypedBadConversion<std::string>& e)
+        {
+            std::cerr << "Warning: Invalid troopsDistributionFrontierMultipliers key, skipping. Error: "
+                      << e.what() << std::endl;
+        } catch(const YAML::TypedBadConversion<double>& e)
+        {
+            std::cerr << "Warning: Invalid troopsDistributionFrontierMultipliers value, skipping. Error: "
+                      << e.what() << std::endl;
+        }
+    }
+}
+
+void applyTroopsDistributionCfg(const YAML::Node& troopsDistributionNode, AIConfig& config)
+{
+    if(!troopsDistributionNode)
+        return;
+
+    if(!troopsDistributionNode.IsMap())
+    {
+        std::cerr << "Warning: troopsDistribution must be a map." << std::endl;
+        return;
+    }
+
+    applyTroopsDistributionStrategyCfg(troopsDistributionNode["strategy"], config);
+    applyTroopsDistributionFrontierMultipliersCfg(troopsDistributionNode["frontierMultipliers"], config);
 }
 
 void applyPosFinderCfg(const YAML::Node& posFinder, AIConfig& config)
@@ -510,6 +627,7 @@ extern void applyWeightsCfg(std::string weightCfgPath, AIConfig& targetConfig)
         applyToolPriorityCfg(rootNode["toolPriority"], targetConfig);
         applyDistributionAdjusterCfg(rootNode["distributionAdjuster"], targetConfig);
         applyBQPenaltyCfg(rootNode["bqPenalty"], targetConfig);
+        applyTroopsDistributionCfg(rootNode["troopsDistribution"], targetConfig);
         if(const YAML::Node value = rootNode["reserveMilitaryBorderSlots"])
         {
             try

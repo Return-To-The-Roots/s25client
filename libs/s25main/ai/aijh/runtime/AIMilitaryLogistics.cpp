@@ -4,10 +4,13 @@
 
 #include "AIPlayerJH.h"
 
+#include "ai/aijh/combat/MilitaryBuildingValue.h"
 #include "GlobalGameSettings.h"
 #include "ai/aijh/combat/AICombatController.h"
+#include "ai/aijh/config/AIConfig.h"
 #include "ai/aijh/planning/AIConstruction.h"
 #include "ai/aijh/runtime/AIMilitaryLogistics.h"
+#include "ai/aijh/runtime/TroopsDistribution.h"
 #include "buildings/nobMilitary.h"
 #include "gameData/MilitaryConsts.h"
 
@@ -17,6 +20,27 @@
 namespace {
 
 constexpr unsigned kRecentlyLostBuildingLifetime = 600;
+
+double GetTroopsDistributionScore(const AIJH::AIPlayerJH& owner, nobMilitary& milBld)
+{
+    double score = 1.0;
+    switch(owner.GetConfig().troopsDistribution.strategy)
+    {
+        case TroopsDistributionStrategy::ProtectedBuildingValue:
+        {
+            const unsigned baseValue =
+              AIJH::CalculateMilitaryBuildingProtectionValue(milBld, owner.GetConfig().combat.buildingScores);
+            const double frontierMultiplier =
+              owner.GetConfig().troopsDistribution.frontierMultipliers[milBld.GetFrontierDistance()];
+            score = static_cast<double>(baseValue) * frontierMultiplier;
+            break;
+        }
+        case TroopsDistributionStrategy::Fair:
+        default: break;
+    }
+    milBld.SetImportanceEstimate(score);
+    return score;
+}
 
 } // namespace
 
@@ -133,13 +157,13 @@ bool AIMilitaryLogistics::HasFrontierBuildings()
 
 void AIMilitaryLogistics::UpdateTroopsLimit()
 {
-    std::vector<const nobMilitary*> eligibleBuildings;
+    std::vector<nobMilitary*> eligibleBuildings;
     eligibleBuildings.reserve(owner_.aii.GetMilitaryBuildings().size());
 
     unsigned totalSoldiers = owner_.SoldierAvailable();
     unsigned totalCapacity = 0;
 
-    for(const nobMilitary* milBld : owner_.aii.GetMilitaryBuildings())
+    for(nobMilitary* milBld : owner_.aii.GetMilitaryBuildings())
     {
         if(!milBld || milBld->GetFrontierDistance() == FrontierDistance::Far)
             continue;
@@ -153,37 +177,23 @@ void AIMilitaryLogistics::UpdateTroopsLimit()
         return;
 
     const unsigned distributableSoldiers = std::min(totalSoldiers, totalCapacity);
-    std::vector<unsigned> newLimits(eligibleBuildings.size(), 1u);
+    std::vector<unsigned> capacities;
+    capacities.reserve(eligibleBuildings.size());
+    std::vector<double> scores;
+    scores.reserve(eligibleBuildings.size());
 
-    unsigned assigned = static_cast<unsigned>(newLimits.size());
-    if(distributableSoldiers > assigned)
+    for(nobMilitary* milBld : eligibleBuildings)
     {
-        unsigned remaining = distributableSoldiers - assigned;
-        const unsigned startIdx = (owner_.currentGF_ / 1000u + owner_.playerId) % static_cast<unsigned>(eligibleBuildings.size());
-
-        while(remaining > 0)
-        {
-            bool assignedInThisRound = false;
-            for(unsigned offset = 0; offset < eligibleBuildings.size() && remaining > 0; ++offset)
-            {
-                const unsigned idx = (startIdx + offset) % static_cast<unsigned>(eligibleBuildings.size());
-                const unsigned cap = eligibleBuildings[idx]->GetMaxTroopsCt();
-                if(newLimits[idx] < cap)
-                {
-                    ++newLimits[idx];
-                    --remaining;
-                    assignedInThisRound = true;
-                }
-            }
-
-            if(!assignedInThisRound)
-                break;
-        }
+        capacities.push_back(milBld->GetMaxTroopsCt());
+        scores.push_back(GetTroopsDistributionScore(owner_, *milBld));
     }
+    const unsigned startIdx = (owner_.currentGF_ / 1000u + owner_.playerId) % static_cast<unsigned>(eligibleBuildings.size());
+    const std::vector<unsigned> newLimits =
+      ComputeTroopsDistributionLimits(capacities, std::move(scores), distributableSoldiers, startIdx);
 
     for(unsigned i = 0; i < eligibleBuildings.size(); ++i)
     {
-        const nobMilitary* milBld = eligibleBuildings[i];
+        nobMilitary* milBld = eligibleBuildings[i];
         const unsigned limit = std::min(newLimits[i], milBld->GetMaxTroopsCt());
         if(milBld->GetTotalTroopLimit() != limit)
             owner_.aii.SetTotalTroopLimit(milBld->GetPos(), limit);

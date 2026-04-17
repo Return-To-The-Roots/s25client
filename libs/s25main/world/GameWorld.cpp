@@ -910,8 +910,6 @@ void GameWorld::UpdateMilitaryRiskEstimates()
 
             const double risk = ComputeCaptureRisk(*building);
             building->SetCaptureRiskEstimate(risk);
-            const double importance = static_cast<double>(building->EstimateCaptureLossCount());
-            building->SetImportanceEstimate(importance);
         }
     }
 }
