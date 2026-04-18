@@ -29,8 +29,6 @@ public:
     void UpdateTroopsLimit();
     double ComputeFulfillmentLevel(double* outTotalWeight = nullptr) const;
     double ComputeEnemyFrontlineWeight() const;
-    double GetCombatFulfillmentLevel() const;
-    double GetCombatAttackWeight() const;
     void TryToAttack();
     unsigned CalcPotentialAttackers(const nobBaseMilitary& target) const;
     double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;

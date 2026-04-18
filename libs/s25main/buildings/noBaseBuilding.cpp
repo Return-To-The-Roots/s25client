@@ -29,6 +29,8 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
       door_point_y(DOOR_CONSTS[world->GetPlayer(player).nation][type]), buildStartingFrame(world->GetEvMgr().GetCurrentGF()),
       buildCompleteFrame(0)
 {
+    world->InvalidateBuildingsLostOnCaptureCachesAround(pos);
+
     MapPoint flagPt = GetFlagPos();
     // Create a flag if none exists yet
     if(world->GetNO(flagPt)->GetType() != NodalObjectType::Flag)
@@ -80,6 +82,7 @@ void noBaseBuilding::Destroy()
 {
     const RoadEventLogger::ScopedRoadDemolitionContext demolitionContext(
       RoadEventLogger::RoadDemolitionReason::BuildingDestroyed);
+    world->InvalidateBuildingsLostOnCaptureCachesAround(pos);
     DestroyAllRoads();
     world->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
     if(GetGOT() != GO_Type::Buildingsite)

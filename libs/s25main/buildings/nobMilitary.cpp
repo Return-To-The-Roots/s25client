@@ -951,16 +951,25 @@ unsigned nobMilitary::GetGarrisonStrengthWithBonus() const
 
 unsigned nobMilitary::EstimateCaptureLossCount() const
 {
-    if(!world)
-        return 0;
-    return world->CountBuildingsLostOnCapture(*this);
+    return static_cast<unsigned>(GetBuildingsLostOnCapture().size());
 }
 
 std::vector<BuildingType> nobMilitary::GetBuildingsLostOnCapture() const
 {
     if(!world)
         return {};
-    return world->GetBuildingsLostOnCapture(*this);
+    if(!buildingsLostOnCaptureCacheValid_)
+    {
+        buildingsLostOnCaptureCache_ = world->GetBuildingsLostOnCapture(*this);
+        buildingsLostOnCaptureCacheValid_ = true;
+    }
+    return buildingsLostOnCaptureCache_;
+}
+
+void nobMilitary::InvalidateBuildingsLostOnCaptureCache()
+{
+    buildingsLostOnCaptureCacheValid_ = false;
+    buildingsLostOnCaptureCache_.clear();
 }
 
 bool nobMilitary::HasUpgradeableSoldier() const
@@ -1009,6 +1018,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     captureRisk_ = 0.0;
     captureRiskCached_ = false;
     importance_ = 0.0;
+    InvalidateBuildingsLostOnCaptureCache();
 
     // Transfer the stored gold coins from the old player to the new owner
     world->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
@@ -1049,6 +1059,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     // Recalculate territory
     world->RecalcTerritory(*this, TerritoryChangeReason::Captured);
+    world->InvalidateBuildingsLostOnCaptureCachesAround(pos);
     BuildingEventLogger::LogBuildingCaptured(GetEvMgr().GetCurrentGF(), player, bldType_, GetObjId(), pos.x, pos.y);
     CombatEventLogger::LogCapture(GetEvMgr().GetCurrentGF(), new_owner, old_player, bldType_, GetObjId());
 

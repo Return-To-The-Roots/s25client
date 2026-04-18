@@ -60,8 +60,6 @@
     void IterativeReachableNodeChecker(std::queue<MapPoint> toCheck);
     void UpdateReachableNodes(const std::vector<MapPoint>& pts);
     void MilUpgradeOptim();
-    double GetCombatFulfillmentLevel() const;
-    double GetCombatAttackWeight() const;
     double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;
 
     // Core state and combat bookkeeping

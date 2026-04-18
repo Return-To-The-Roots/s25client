@@ -140,8 +140,6 @@ double AICombatController::ComputeEnemyFrontlineWeight() const
 
 void AICombatController::TryToAttack()
 {
-    combatFulfillmentLevel_ = ComputeFulfillmentLevel(&combatAttackWeight_);
-
     AICommandSink& commands = owner_.GetInterface().Commands();
     const nobBaseMilitary* target = SelectAttackTarget(targetSelectionMode_);
     if(!target)

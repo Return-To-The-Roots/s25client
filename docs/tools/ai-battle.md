@@ -11,6 +11,16 @@ Build target:
 cmake --build build --target ai-battle
 ```
 
+Optional CMake toggle:
+
+```sh
+cmake -S . -B build -DRTTR_STRIP_AI_BATTLE=ON
+```
+
+When enabled, the build strips debug symbols from the final `ai-battle`
+executable after linking. This is useful when `RelWithDebInfo` or other
+symbol-heavy builds make the binary much larger on disk.
+
 Typical shape:
 
 ```sh

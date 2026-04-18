@@ -8,6 +8,7 @@
 #include "GlobalGameSettings.h"
 #include "ai/aijh/combat/AICombatController.h"
 #include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/planning/AIConstruction.h"
 #include "ai/aijh/runtime/AIMilitaryLogistics.h"
 #include "ai/aijh/runtime/TroopsDistribution.h"
@@ -163,14 +164,18 @@ void AIMilitaryLogistics::UpdateTroopsLimit()
     unsigned totalSoldiers = owner_.SoldierAvailable();
     unsigned totalCapacity = 0;
 
-    for(nobMilitary* milBld : owner_.aii.GetMilitaryBuildings())
     {
-        if(!milBld || milBld->GetFrontierDistance() == FrontierDistance::Far)
-            continue;
+        const ScopedAIRuntimeProfile scanProfile(AIRuntimeProfileSection::UpdateTroopsLimitScan,
+                                                 owner_.aii.GetMilitaryBuildings().size());
+        for(nobMilitary* milBld : owner_.aii.GetMilitaryBuildings())
+        {
+            if(!milBld || milBld->GetFrontierDistance() == FrontierDistance::Far)
+                continue;
 
-        eligibleBuildings.push_back(milBld);
-        totalCapacity += milBld->GetMaxTroopsCt();
-        totalSoldiers += milBld->GetNumTroops();
+            eligibleBuildings.push_back(milBld);
+            totalCapacity += milBld->GetMaxTroopsCt();
+            totalSoldiers += milBld->GetNumTroops();
+        }
     }
 
     if(eligibleBuildings.empty())
@@ -182,21 +187,33 @@ void AIMilitaryLogistics::UpdateTroopsLimit()
     std::vector<double> scores;
     scores.reserve(eligibleBuildings.size());
 
-    for(nobMilitary* milBld : eligibleBuildings)
     {
-        capacities.push_back(milBld->GetMaxTroopsCt());
-        scores.push_back(GetTroopsDistributionScore(owner_, *milBld));
+        const ScopedAIRuntimeProfile scoreProfile(AIRuntimeProfileSection::UpdateTroopsLimitScore,
+                                                  eligibleBuildings.size());
+        for(nobMilitary* milBld : eligibleBuildings)
+        {
+            capacities.push_back(milBld->GetMaxTroopsCt());
+            scores.push_back(GetTroopsDistributionScore(owner_, *milBld));
+        }
     }
     const unsigned startIdx = (owner_.currentGF_ / 1000u + owner_.playerId) % static_cast<unsigned>(eligibleBuildings.size());
-    const std::vector<unsigned> newLimits =
-      ComputeTroopsDistributionLimits(capacities, std::move(scores), distributableSoldiers, startIdx);
+    const std::vector<unsigned> newLimits = [&] {
+        const ScopedAIRuntimeProfile distributionProfile(
+          AIRuntimeProfileSection::UpdateTroopsLimitDistribute,
+          static_cast<std::uint64_t>(eligibleBuildings.size()) * distributableSoldiers);
+        return ComputeTroopsDistributionLimits(capacities, std::move(scores), distributableSoldiers, startIdx);
+    }();
 
-    for(unsigned i = 0; i < eligibleBuildings.size(); ++i)
     {
-        nobMilitary* milBld = eligibleBuildings[i];
-        const unsigned limit = std::min(newLimits[i], milBld->GetMaxTroopsCt());
-        if(milBld->GetTotalTroopLimit() != limit)
-            owner_.aii.SetTotalTroopLimit(milBld->GetPos(), limit);
+        const ScopedAIRuntimeProfile applyProfile(AIRuntimeProfileSection::UpdateTroopsLimitApply,
+                                                  eligibleBuildings.size());
+        for(unsigned i = 0; i < eligibleBuildings.size(); ++i)
+        {
+            nobMilitary* milBld = eligibleBuildings[i];
+            const unsigned limit = std::min(newLimits[i], milBld->GetMaxTroopsCt());
+            if(milBld->GetTotalTroopLimit() != limit)
+                owner_.aii.SetTotalTroopLimit(milBld->GetPos(), limit);
+        }
     }
 }
 
@@ -208,16 +225,6 @@ double AIMilitaryLogistics::ComputeFulfillmentLevel(double* outTotalWeight) cons
 double AIMilitaryLogistics::ComputeEnemyFrontlineWeight() const
 {
     return owner_.combatController_->ComputeEnemyFrontlineWeight();
-}
-
-double AIMilitaryLogistics::GetCombatFulfillmentLevel() const
-{
-    return owner_.combatController_->GetCombatFulfillmentLevel();
-}
-
-double AIMilitaryLogistics::GetCombatAttackWeight() const
-{
-    return owner_.combatController_->GetCombatAttackWeight();
 }
 
 void AIMilitaryLogistics::TryToAttack()
@@ -285,10 +292,6 @@ double AIPlayerJH::ComputeEnemyFrontlineWeight() const
 {
     return militaryLogistics_->ComputeEnemyFrontlineWeight();
 }
-
-double AIPlayerJH::GetCombatFulfillmentLevel() const { return militaryLogistics_->GetCombatFulfillmentLevel(); }
-
-double AIPlayerJH::GetCombatAttackWeight() const { return militaryLogistics_->GetCombatAttackWeight(); }
 
 void AIPlayerJH::TryToAttack() { militaryLogistics_->TryToAttack(); }
 

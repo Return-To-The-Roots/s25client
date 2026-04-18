@@ -125,6 +125,8 @@ public:
     std::vector<BuildingType> GetBuildingsLostOnCapture(const nobMilitary& building) const;
     /// Estimate how many buildings would be destroyed if the given military building were captured
     unsigned CountBuildingsLostOnCapture(const nobMilitary& building) const;
+    /// Invalidate cached capture-loss analysis for military buildings near the given point
+    void InvalidateBuildingsLostOnCaptureCachesAround(MapPoint pt);
     /// Refresh capture risk and importance for all military buildings
     void UpdateMilitaryRiskEstimates();
 

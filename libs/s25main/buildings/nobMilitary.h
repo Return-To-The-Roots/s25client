@@ -51,6 +51,9 @@ private:
     /// Cached chance that the building will be captured soon
     double captureRisk_ = 0.0;
     bool captureRiskCached_ = false;
+    /// Cached list of building types that would be lost if this building were captured
+    mutable std::vector<BuildingType> buildingsLostOnCaptureCache_;
+    mutable bool buildingsLostOnCaptureCacheValid_ = false;
     /// Estimated collateral impact if this building falls (number of dependent buildings)
     double importance_ = 0.0;
     /// Distance to the enemy border (drives garrison size); values: 0 far, 3 near, 2 harbor
@@ -208,6 +211,8 @@ public:
     unsigned EstimateCaptureLossCount() const;
     /// Return the building types that would be lost if this building were captured
     std::vector<BuildingType> GetBuildingsLostOnCapture() const;
+    /// Drop cached capture-loss analysis after nearby world changes
+    void InvalidateBuildingsLostOnCaptureCache();
 
     /// Handle the building being captured by an enemy (player becomes the new owner)
     void Capture(unsigned char new_owner);

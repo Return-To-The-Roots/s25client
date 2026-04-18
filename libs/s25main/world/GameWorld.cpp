@@ -60,6 +60,8 @@ inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& play
 
 namespace {
 constexpr int TERRITORY_EXTRA_RADIUS = 2;
+constexpr unsigned CAPTURE_LOSS_CACHE_INVALIDATION_RADIUS = MILITARY_RADIUS[NUM_MILITARY_BLDS - 1]
+                                                            + TERRITORY_EXTRA_RADIUS + 1;
 }
 
 GameWorld::GameWorld(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em)
@@ -591,6 +593,17 @@ bool GameWorld::DoesDestructionChangeTerritory(const noBaseBuilding& building) c
 unsigned GameWorld::CountBuildingsLostOnCapture(const nobMilitary& building) const
 {
     return static_cast<unsigned>(GetBuildingsLostOnCapture(building).size());
+}
+
+void GameWorld::InvalidateBuildingsLostOnCaptureCachesAround(const MapPoint pt)
+{
+    const sortedMilitaryBlds nearbyBuildings = LookForMilitaryBuildings(pt, CAPTURE_LOSS_CACHE_INVALIDATION_RADIUS);
+    for(const nobBaseMilitary* building : nearbyBuildings)
+    {
+        auto* military = dynamic_cast<nobMilitary*>(const_cast<nobBaseMilitary*>(building));
+        if(military)
+            military->InvalidateBuildingsLostOnCaptureCache();
+    }
 }
 
 std::vector<BuildingType> GameWorld::GetBuildingsLostOnCapture(const nobMilitary& building) const

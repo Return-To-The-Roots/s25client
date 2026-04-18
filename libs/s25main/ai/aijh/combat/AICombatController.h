@@ -37,15 +37,11 @@ public:
     void EvaluateCaptureRisks();
     double ComputeCaptureRisk(const nobMilitary& building) const;
 
-    double GetCombatFulfillmentLevel() const { return combatFulfillmentLevel_; }
-    double GetCombatAttackWeight() const { return combatAttackWeight_; }
     double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;
 
 private:
     AICombatContext& owner_;
     TargetSelectionMode targetSelectionMode_ = TargetSelectionMode::Prudent;
-    double combatFulfillmentLevel_ = 0.0;
-    double combatAttackWeight_ = 0.0;
 };
 
 } // namespace AIJH
