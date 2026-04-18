@@ -7,6 +7,7 @@
 #include "ai/AIInterface.h"
 #include "ai/AIQueryService.h"
 #include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "MilitaryStatsHolder.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
@@ -107,8 +108,12 @@ const nobBaseMilitary*
 
 const nobBaseMilitary* AICombatController::SelectAttackTargetAttrition() const
 {
+    const ScopedAIRuntimeProfile attritionProfile(AIRuntimeProfileSection::SelectAttackTargetAttrition);
     unsigned unused_special_targets = 0;
-    std::vector<const nobBaseMilitary*> potentialTargets = GetPotentialTargets(unused_special_targets);
+    std::vector<const nobBaseMilitary*> potentialTargets = [&] {
+        const ScopedAIRuntimeProfile potentialTargetsProfile(AIRuntimeProfileSection::AttritionGetPotentialTargets);
+        return GetPotentialTargets(unused_special_targets);
+    }();
     if(potentialTargets.empty())
         return nullptr;
 
@@ -116,23 +121,41 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetAttrition() const
     std::vector<const nobBaseMilitary*> recaptureCandidates;
     recaptureCandidates.reserve(potentialTargets.size());
 
-    for(const nobBaseMilitary* target : potentialTargets)
     {
-        if(target->GetGOT() != GO_Type::NobMilitary)
-            continue;
-        if(target->GetOriginOwner() != owner_.GetPlayerId())
-            continue;
-        recaptureCandidates.push_back(target);
+        const ScopedAIRuntimeProfile recaptureScanProfile(AIRuntimeProfileSection::AttritionRecaptureScan,
+                                                          potentialTargets.size());
+        for(const nobBaseMilitary* target : potentialTargets)
+        {
+            if(target->GetGOT() != GO_Type::NobMilitary)
+                continue;
+            if(target->GetOriginOwner() != owner_.GetPlayerId())
+                continue;
+            recaptureCandidates.push_back(target);
+        }
     }
 
-    if(const nobBaseMilitary* recapture = PickBestTarget(recaptureCandidates, currentGF, RECENT_RECAPTURE_WINDOW_GFS))
+    if(const nobBaseMilitary* recapture = [&] {
+           const ScopedAIRuntimeProfile pickRecaptureProfile(AIRuntimeProfileSection::AttritionPickRecapture,
+                                                             recaptureCandidates.size());
+           return PickBestTarget(recaptureCandidates, currentGF, RECENT_RECAPTURE_WINDOW_GFS);
+       }())
         return recapture;
 
-    if(HasForceAdvantage(owner_.GetWorld(), owner_.GetInterface().Queries(), owner_.GetPlayerId(),
-                         owner_.GetConfig().combat.forceAdvantageRatio)
-       && HasNearTroopsDensityForBiting(owner_.GetWorld(), owner_.GetPlayerId(),
-                                        owner_.GetConfig().combat.minNearTroopsDensity))
+    const bool hasForceAdvantage = [&] {
+        const ScopedAIRuntimeProfile forceAdvantageProfile(AIRuntimeProfileSection::AttritionForceAdvantageCheck);
+        return HasForceAdvantage(owner_.GetWorld(), owner_.GetInterface().Queries(), owner_.GetPlayerId(),
+                                 owner_.GetConfig().combat.forceAdvantageRatio);
+    }();
+    const bool hasNearTroopsDensity = [&] {
+        const ScopedAIRuntimeProfile nearTroopsDensityProfile(AIRuntimeProfileSection::AttritionNearTroopsDensityCheck);
+        return HasNearTroopsDensityForBiting(owner_.GetWorld(), owner_.GetPlayerId(),
+                                            owner_.GetConfig().combat.minNearTroopsDensity);
+    }();
+    if(hasForceAdvantage && hasNearTroopsDensity)
+    {
+        const ScopedAIRuntimeProfile fallbackBitingProfile(AIRuntimeProfileSection::AttritionFallbackBiting);
         return SelectAttackTargetBiting();
+    }
 
     return nullptr;
 }

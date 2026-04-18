@@ -1160,21 +1160,21 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
     nobBaseMilitary* bb = nullptr;
     unsigned best_points = 0, points;
 
-    // Militärgebäude durchgehen
+    // Iterate over all military buildings
     for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
         unsigned way_points;
 
         points = milBld->CalcCoinsPoints();
-        // Wenn 0, will er gar keine Münzen (Goldzufuhr gestoppt)
+        // If it is 0, the building does not want any coins at all (gold supply disabled)
         if(points)
         {
-            // Weg dorthin berechnen
+            // Calculate the path points to the building
             if(world.FindPathForWareOnRoads(*ware.GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
             {
-                // Die Wegpunkte noch davon abziehen
+                // Subtract the path points from the score
                 points -= way_points;
-                // Besser als der bisher Beste?
+                // Better than the current best?
                 if(points > best_points)
                 {
                     best_points = points;

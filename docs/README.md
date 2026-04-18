@@ -112,6 +112,8 @@ platform support, and optional sanitizers for development builds.
 
 - [AI adjustments](ai/adjustments.md) – Adjustment rules and tool-priority
   behavior.
+- [AI gold distribution](ai/gold-distribution.md) – How military coin supply
+  is enabled, requested, and routed between eligible buildings.
 - [AI configuration](ai/configuration.md) – Configuration surface and loaded
   settings.
 - [Attack target selection](ai/attack-target-selection.md) – Target-choice

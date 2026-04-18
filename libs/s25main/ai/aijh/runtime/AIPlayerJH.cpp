@@ -6,6 +6,7 @@
 
 #include "ai/aijh/combat/AICombatController.h"
 #include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/debug/AIStatsReporter.h"
 #include "ai/aijh/debug/StatsConfig.h"
 #include "ai/aijh/planning/AIConstruction.h"
@@ -251,22 +252,37 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             aii.Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
     }
 
-    mapState_->RefreshBuildingQualities();
+    {
+        const ScopedAIRuntimeProfile refreshBuildingQualitiesProfile(AIRuntimeProfileSection::RefreshBuildingQualities);
+        mapState_->RefreshBuildingQualities();
+    }
 
-    bldPlanner->Update(gf, *this);
+    {
+        const ScopedAIRuntimeProfile plannerUpdateProfile(AIRuntimeProfileSection::BuildingPlannerUpdate);
+        bldPlanner->Update(gf, *this);
+    }
 
     if(gfisnwf)
         construction->ConstructionsExecuted();
 
     if(gf % 100 == 0)
         bldPlanner->UpdateBuildingsWanted(*this);
-    ExecuteAIJob();
+    {
+        const ScopedAIRuntimeProfile executeAiJobProfile(AIRuntimeProfileSection::ExecuteAIJob);
+        ExecuteAIJob();
+    }
 
     if((gf + playerId * 29) % 500 == 0)
+    {
+        const ScopedAIRuntimeProfile captureRisksProfile(AIRuntimeProfileSection::EvaluateCaptureRisks);
         EvaluateCaptureRisks();
+    }
 
     if((gf + playerId * 17) % attack_interval == 0)
+    {
+        const ScopedAIRuntimeProfile tryToAttackProfile(AIRuntimeProfileSection::TryToAttack);
         TryToAttack();
+    }
     if(((gf + playerId * 17) % 73 == 0) && (level != AI::Level::Easy))
     {
         // MilUpgradeOptim();
@@ -275,25 +291,36 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if((gf + 41 + playerId * 17) % attack_interval == 0)
     {
         if(ggs.isEnabled(AddonId::SEA_ATTACK))
+        {
+            const ScopedAIRuntimeProfile seaAttackProfile(AIRuntimeProfileSection::TrySeaAttack);
             TrySeaAttack();
+        }
     }
 
     if((gf + playerId * 13) % 1500 == 0)
     {
+        const ScopedAIRuntimeProfile economicHotspotsProfile(AIRuntimeProfileSection::CheckEconomicHotspots);
         CheckExpeditions();
         CheckForester();
         CheckGraniteMine();
     }
 
     if((gf + playerId * 19) % 1000 == 0)
+    {
+        const ScopedAIRuntimeProfile troopsLimitProfile(AIRuntimeProfileSection::UpdateTroopsLimit);
         UpdateTroopsLimit();
+    }
 
     if((gf + playerId * 11) % 150 == 0)
+    {
+        const ScopedAIRuntimeProfile adjustSettingsProfile(AIRuntimeProfileSection::AdjustSettings);
         AdjustSettings();
+    }
 
     if((gf + playerId * 7) % build_interval == 0)
     {
         CheckForUnconnectedBuildingSites();
+        const ScopedAIRuntimeProfile newBuildingsProfile(AIRuntimeProfileSection::PlanNewBuildings);
         PlanNewBuildings(gf);
     }
 }

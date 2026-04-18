@@ -4,6 +4,7 @@
 
 #include "AIPlayerJH.h"
 
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/planning/AIConstruction.h"
 #include "ai/aijh/planning/BuildingPlanner.h"
 #include "ai/aijh/planning/Jobs.h"
@@ -33,17 +34,21 @@ namespace AIJH {
 void AIEventHandler::ExecuteAIJob()
 {
     unsigned quota = 10;
-    while(owner_.eventManager.EventAvailable() && quota)
     {
-        quota--;
-        owner_.currentJob = std::make_unique<EventJob>(owner_, owner_.eventManager.GetEvent());
-        owner_.currentJob->ExecuteJob();
+        const ScopedAIRuntimeProfile eventJobsProfile(AIRuntimeProfileSection::ExecuteEventJobs, quota);
+        while(owner_.eventManager.EventAvailable() && quota)
+        {
+            quota--;
+            owner_.currentJob = std::make_unique<EventJob>(owner_, owner_.eventManager.GetEvent());
+            owner_.currentJob->ExecuteJob();
+        }
     }
 
     quota = (owner_.aii.GetStorehouses().size() + owner_.aii.GetMilitaryBuildings().size()) * 1;
     if(quota > 40)
         quota = 40;
 
+    const ScopedAIRuntimeProfile constructionJobsProfile(AIRuntimeProfileSection::ExecuteConstructionJobs, quota);
     owner_.construction->ExecuteJobs(quota);
 }
 

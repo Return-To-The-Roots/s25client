@@ -5,6 +5,7 @@
 #include "Jobs.h"
 #include "ai/AIEvents.h"
 #include "ai/AIInterface.h"
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/planning/AIConstruction.h"
 #include "ai/aijh/planning/BuildingPlanner.h"
 #include "ai/aijh/planning/PositionSearch.h"
@@ -15,6 +16,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include <boost/range/adaptor/reversed.hpp>
+#include <optional>
 
 namespace AIJH {
 
@@ -22,6 +24,9 @@ AIJob::AIJob(AIPlanningContext& aijh) : aijh(aijh), state(JobState::Waiting) {}
 
 void BuildJob::ExecuteJob()
 {
+    const std::optional<ScopedAIGlobalBuildJobProfile> globalBuildJobProfile =
+      (searchMode == SearchMode::Global) ? std::make_optional<ScopedAIGlobalBuildJobProfile>(type) : std::nullopt;
+
     // are we allowed to plan construction work in the area in this nwf?
     if(searchMode != SearchMode::Global && !aijh.GetConstruction().CanStillConstructHere(around))
         return;

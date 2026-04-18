@@ -10,6 +10,7 @@
 #include "addons/const_addons.h"
 #include "ai/AIInterface.h"
 #include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/runtime/AIPlanningContext.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseMilitary.h"
@@ -117,38 +118,48 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     const unsigned initglobaljobs = std::min<unsigned>(globalBuildJobs.size(), 5);
     const unsigned initbuildjobs = std::min<unsigned>(buildJobs.size(), 5);
 
-    for(unsigned i = 0; processed < limit && !connectJobs.empty() && i < initconjobs; i++, processed++)
     {
-        auto job = std::move(connectJobs.front());
-        connectJobs.pop_front();
-        job->ExecuteJob();
-        if(job->GetState() != JobState::Finished
-           && job->GetState() != JobState::Failed) // couldnt do job? -> move to back of list
+        const ScopedAIRuntimeProfile connectJobsProfile(AIRuntimeProfileSection::ExecuteConnectJobs, initconjobs);
+        for(unsigned i = 0; processed < limit && !connectJobs.empty() && i < initconjobs; i++, processed++)
         {
-            connectJobs.push_back(std::move(job));
+            auto job = std::move(connectJobs.front());
+            connectJobs.pop_front();
+            job->ExecuteJob();
+            if(job->GetState() != JobState::Finished
+               && job->GetState() != JobState::Failed) // couldnt do job? -> move to back of list
+            {
+                connectJobs.push_back(std::move(job));
+            }
         }
     }
 
-    for(unsigned i = 0; processed < limit && !globalBuildJobs.empty() && i < initglobaljobs; i++, processed++)
     {
-        auto job = PopGlobalBuildJob();
-        job->ExecuteJob();
-        // couldnt do job? -> move to back of list
-        if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
+        const ScopedAIRuntimeProfile globalBuildJobsProfile(AIRuntimeProfileSection::ExecuteGlobalBuildJobs,
+                                                            initglobaljobs);
+        for(unsigned i = 0; processed < limit && !globalBuildJobs.empty() && i < initglobaljobs; i++, processed++)
         {
-            job->priority--;
-            globalBuildJobs.emplace(std::move(*job));
+            auto job = PopGlobalBuildJob();
+            job->ExecuteJob();
+            // couldnt do job? -> move to back of list
+            if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
+            {
+                job->priority--;
+                globalBuildJobs.emplace(std::move(*job));
+            }
         }
     }
 
-    for(unsigned i = 0; processed < limit && !buildJobs.empty() && i < initbuildjobs; i++, processed++)
     {
-        auto job = GetBuildJob();
-        job->ExecuteJob();
-        // couldnt do job? -> move to back of list
-        if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
+        const ScopedAIRuntimeProfile buildJobsProfile(AIRuntimeProfileSection::ExecuteBuildJobs, initbuildjobs);
+        for(unsigned i = 0; processed < limit && !buildJobs.empty() && i < initbuildjobs; i++, processed++)
         {
-            buildJobs.push_back(std::move(job));
+            auto job = GetBuildJob();
+            job->ExecuteJob();
+            // couldnt do job? -> move to back of list
+            if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
+            {
+                buildJobs.push_back(std::move(job));
+            }
         }
     }
 }
