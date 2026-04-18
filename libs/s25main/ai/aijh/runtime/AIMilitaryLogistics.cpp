@@ -28,11 +28,11 @@ double GetTroopsDistributionScore(const AIJH::AIPlayerJH& owner, nobMilitary& mi
     {
         case TroopsDistributionStrategy::ProtectedBuildingValue:
         {
-            const unsigned baseValue =
+            const double baseValue =
               AIJH::CalculateMilitaryBuildingProtectionValue(milBld, owner.GetConfig().combat.buildingScores);
             const double frontierMultiplier =
               owner.GetConfig().troopsDistribution.frontierMultipliers[milBld.GetFrontierDistance()];
-            score = static_cast<double>(baseValue) * frontierMultiplier;
+            score = baseValue * frontierMultiplier;
             break;
         }
         case TroopsDistributionStrategy::Fair:

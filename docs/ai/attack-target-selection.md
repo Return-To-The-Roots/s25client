@@ -30,10 +30,6 @@ combat-resolution code.
 
    ```yaml
    combat:
-     fulfillment:
-       low: 4.0
-       medium: 8.0
-       high: 12.0
      attackIntervals:
        easy: 2500
        medium: 750
@@ -85,7 +81,7 @@ When running with `TargetSelectionMode::Biting` the selector:
 3. Otherwise queries a weighted capture-loss score and chooses the building
    whose capture would destroy the highest-scoring set of dependent enemy
    structures. Each destroyed building contributes
-   `combat.buildingScores[BuildingType]` points, defaulting to `1` when the
+   `combat.buildingScores[BuildingType]` score, defaulting to `1.0` when the
    type is not overridden in YAML. Ties fall back to the first candidate that
    satisfied the constraints, so a target is always returned when at least one
    viable option exists.

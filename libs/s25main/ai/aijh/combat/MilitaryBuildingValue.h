@@ -10,10 +10,10 @@
 
 namespace AIJH {
 
-inline unsigned CalculateMilitaryBuildingProtectionValue(
-  const nobMilitary& building, const helpers::EnumArray<unsigned, BuildingType>& buildingScores)
+inline double CalculateMilitaryBuildingProtectionValue(
+  const nobMilitary& building, const helpers::EnumArray<double, BuildingType>& buildingScores)
 {
-    unsigned value = 0;
+    double value = 0.0;
     for(const BuildingType buildingType : building.GetBuildingsLostOnCapture())
         value += buildingScores[buildingType];
     return value;

@@ -26,13 +26,10 @@ enum class TroopsDistributionStrategy
 
 struct CombatConfig
 {
-    double fulfillmentLow = 4.0;
-    double fulfillmentMedium = 8.0;
-    double fulfillmentHigh = 12.0;
     double forceAdvantageRatio = 1.10;
     double minNearTroopsDensity = 1.0;
     helpers::EnumArray<unsigned, AI::Level> attackIntervals;
-    helpers::EnumArray<unsigned, BuildingType> buildingScores;
+    helpers::EnumArray<double, BuildingType> buildingScores;
     TargetSelectionAlgorithm targetSelection = TargetSelectionAlgorithm::Prudent;
 
     CombatConfig();

@@ -79,7 +79,7 @@ CombatConfig::CombatConfig()
     attackIntervals[AI::Level::Hard] = 100;
 
     for(const auto buildingType : helpers::EnumRange<BuildingType>{})
-        buildingScores[buildingType] = 1;
+        buildingScores[buildingType] = 1.0;
 }
 
 namespace {
@@ -147,23 +147,6 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
             return TargetSelectionAlgorithm::Prudent;
         return std::nullopt;
     };
-
-    if(const YAML::Node fulfillmentNode = combatNode["fulfillment"])
-    {
-        try
-        {
-            if(const YAML::Node value = fulfillmentNode["low"])
-                config.combat.fulfillmentLow = value.as<double>();
-            if(const YAML::Node value = fulfillmentNode["medium"])
-                config.combat.fulfillmentMedium = value.as<double>();
-            if(const YAML::Node value = fulfillmentNode["high"])
-                config.combat.fulfillmentHigh = value.as<double>();
-        } catch(const YAML::TypedBadConversion<double>& e)
-        {
-            std::cerr << "Warning: Invalid combat fulfillment value, using defaults. Error: " << e.what()
-                      << std::endl;
-        }
-    }
 
     if(const YAML::Node value = combatNode["forceAdvantageRatio"])
     {
@@ -243,12 +226,12 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
                         continue;
                     }
 
-                    config.combat.buildingScores[buildingIt->second] = buildingNode.second.as<unsigned>();
+                    config.combat.buildingScores[buildingIt->second] = buildingNode.second.as<double>();
                 } catch(const YAML::TypedBadConversion<std::string>& e)
                 {
                     std::cerr << "Warning: Invalid combat.buildingScores key, skipping. Error: " << e.what()
                               << std::endl;
-                } catch(const YAML::TypedBadConversion<unsigned>& e)
+                } catch(const YAML::TypedBadConversion<double>& e)
                 {
                     std::cerr << "Warning: Invalid combat.buildingScores value, skipping. Error: " << e.what()
                               << std::endl;

@@ -24,7 +24,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
     const auto& buildingScores = owner_.GetConfig().combat.buildingScores;
 
     const nobBaseMilitary* bestTarget = nullptr;
-    unsigned bestLossScore = 0;
+    double bestLossScore = 0.0;
 
     for(const nobBaseMilitary* target : potentialTargets)
     {
@@ -56,7 +56,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
         if(target->GetBuildingType() == BuildingType::Headquarters)
             return target;
 
-        unsigned lossScore = 0;
+        double lossScore = 0.0;
         if(const auto* enemyTarget = dynamic_cast<const nobMilitary*>(target))
             lossScore = CalculateMilitaryBuildingProtectionValue(*enemyTarget, buildingScores);
 
