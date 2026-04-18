@@ -220,26 +220,6 @@ double AIMilitaryLogistics::GetCombatAttackWeight() const
     return owner_.combatController_->GetCombatAttackWeight();
 }
 
-bool AIMilitaryLogistics::IsInDefenseMode() const
-{
-    return owner_.combatController_->IsInDefenseMode();
-}
-
-void AIMilitaryLogistics::UpdateCombatMode()
-{
-    owner_.combatController_->UpdateCombatMode();
-}
-
-bool AIMilitaryLogistics::CanAttackInDefenseMode(const nobBaseMilitary& target, const unsigned attackersCount) const
-{
-    return owner_.combatController_->CanAttackInDefenseMode(target, attackersCount);
-}
-
-bool AIMilitaryLogistics::IsLonelyEnemyStronghold(const nobBaseMilitary& target) const
-{
-    return owner_.combatController_->IsLonelyEnemyStronghold(target);
-}
-
 void AIMilitaryLogistics::TryToAttack()
 {
     owner_.combatController_->TryToAttack();
@@ -310,30 +290,11 @@ double AIPlayerJH::GetCombatFulfillmentLevel() const { return militaryLogistics_
 
 double AIPlayerJH::GetCombatAttackWeight() const { return militaryLogistics_->GetCombatAttackWeight(); }
 
-bool AIPlayerJH::IsInDefenseMode() const { return militaryLogistics_->IsInDefenseMode(); }
-
-void AIPlayerJH::UpdateCombatMode() { militaryLogistics_->UpdateCombatMode(); }
-
-bool AIPlayerJH::CanAttackInDefenseMode(const nobBaseMilitary& target, const unsigned attackersCount) const
-{
-    return militaryLogistics_->CanAttackInDefenseMode(target, attackersCount);
-}
-
-bool AIPlayerJH::IsLonelyEnemyStronghold(const nobBaseMilitary& target) const
-{
-    return militaryLogistics_->IsLonelyEnemyStronghold(target);
-}
-
 void AIPlayerJH::TryToAttack() { militaryLogistics_->TryToAttack(); }
 
 const nobBaseMilitary* AIPlayerJH::SelectAttackTarget(TargetSelectionMode mode) const
 {
     return combatController_->SelectAttackTarget(mode);
-}
-
-const nobBaseMilitary* AIPlayerJH::SelectAttackTargetRandom() const
-{
-    return combatController_->SelectAttackTargetRandom();
 }
 
 const nobBaseMilitary* AIPlayerJH::SelectAttackTargetPrudent() const

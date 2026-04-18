@@ -25,15 +25,11 @@ public:
 
     void TryToAttack();
     const nobBaseMilitary* SelectAttackTarget(TargetSelectionMode mode) const;
-    const nobBaseMilitary* SelectAttackTargetRandom() const;
     const nobBaseMilitary* SelectAttackTargetPrudent() const;
     const nobBaseMilitary* SelectAttackTargetBiting() const;
     const nobBaseMilitary* SelectAttackTargetAttrition() const;
     void TrySeaAttack();
 
-    void UpdateCombatMode();
-    bool CanAttackInDefenseMode(const nobBaseMilitary& target, unsigned attackersCount) const;
-    bool IsLonelyEnemyStronghold(const nobBaseMilitary& target) const;
     double ComputeFulfillmentLevel(double* outTotalWeight = nullptr) const;
     double ComputeEnemyFrontlineWeight() const;
     std::vector<const nobBaseMilitary*> GetPotentialTargets(unsigned& hqOrHarborWithoutSoldiers) const;
@@ -43,19 +39,11 @@ public:
 
     double GetCombatFulfillmentLevel() const { return combatFulfillmentLevel_; }
     double GetCombatAttackWeight() const { return combatAttackWeight_; }
-    bool IsInDefenseMode() const { return attackMode_ == CombatMode::DefenseMode; }
     double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;
 
 private:
-    enum class CombatMode
-    {
-        AttackMode,
-        DefenseMode
-    };
-
     AICombatContext& owner_;
-    CombatMode attackMode_ = CombatMode::DefenseMode;
-    TargetSelectionMode targetSelectionMode_ = TargetSelectionMode::Random;
+    TargetSelectionMode targetSelectionMode_ = TargetSelectionMode::Prudent;
     double combatFulfillmentLevel_ = 0.0;
     double combatAttackWeight_ = 0.0;
 };

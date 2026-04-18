@@ -56,8 +56,7 @@
 - Every `nobMilitary` caches the probability that nearby enemies could capture it. The value is derived from
   `GetGarrisonStrengthWithBonus()`, which includes temporary defender hitpoint bonuses, versus the total attacking
   strength enemies could send (`GetSoldiersStrengthForAttack`).
-- `AIPlayerJH` refreshes the risk on the same 500-gameframe cadence it uses for `UpdateCombatMode()`, updating frontline
-  buildings just before reconsidering combat posture. The snapshot is stored inside the building, exposed via
+- `AIPlayerJH` refreshes the risk on a 500-gameframe cadence. The snapshot is stored inside the building, exposed via
   `GetCaptureRiskEstimate()`, and serialized into combat logs so analysts can correlate attack outcomes with prior risk.
 
 ## Event Handling

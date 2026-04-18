@@ -16,7 +16,6 @@ namespace AIJH {
 
 enum class AICombatTargetSelectionMode
 {
-    Random,
     Prudent,
     Biting,
     Attrition

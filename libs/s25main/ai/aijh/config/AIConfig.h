@@ -13,7 +13,6 @@
 
 enum class TargetSelectionAlgorithm
 {
-    Random,
     Prudent,
     Biting,
     Attrition
@@ -34,7 +33,7 @@ struct CombatConfig
     double minNearTroopsDensity = 1.0;
     helpers::EnumArray<unsigned, AI::Level> attackIntervals;
     helpers::EnumArray<unsigned, BuildingType> buildingScores;
-    TargetSelectionAlgorithm targetSelection = TargetSelectionAlgorithm::Random;
+    TargetSelectionAlgorithm targetSelection = TargetSelectionAlgorithm::Prudent;
 
     CombatConfig();
 };

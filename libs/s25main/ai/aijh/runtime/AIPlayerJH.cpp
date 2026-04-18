@@ -166,9 +166,8 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
         case TargetSelectionAlgorithm::Attrition:
             combatController_->SetTargetSelectionMode(AICombatController::TargetSelectionMode::Attrition);
             break;
-        case TargetSelectionAlgorithm::Random:
         default:
-            combatController_->SetTargetSelectionMode(AICombatController::TargetSelectionMode::Random);
+            combatController_->SetTargetSelectionMode(AICombatController::TargetSelectionMode::Prudent);
             break;
     }
 
@@ -264,10 +263,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     ExecuteAIJob();
 
     if((gf + playerId * 29) % 500 == 0)
-    {
         EvaluateCaptureRisks();
-        UpdateCombatMode();
-    }
 
     if((gf + playerId * 17) % attack_interval == 0)
         TryToAttack();

@@ -67,7 +67,6 @@ set(s25Main_SRCS
         ai/aijh/combat/TargetSelectorAttrition.cpp
         ai/aijh/combat/TargetSelectorBiting.cpp
         ai/aijh/combat/TargetSelectorPrudent.cpp
-        ai/aijh/combat/TargetSelectorRandom.cpp
         ai/aijh/planning/BuildingCalculator.cpp
         ai/aijh/config/AIConfig.cpp
         ai/aijh/config/AIConfig.h

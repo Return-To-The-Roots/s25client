@@ -31,10 +31,6 @@ public:
     double ComputeEnemyFrontlineWeight() const;
     double GetCombatFulfillmentLevel() const;
     double GetCombatAttackWeight() const;
-    bool IsInDefenseMode() const;
-    void UpdateCombatMode();
-    bool CanAttackInDefenseMode(const nobBaseMilitary& target, unsigned attackersCount) const;
-    bool IsLonelyEnemyStronghold(const nobBaseMilitary& target) const;
     void TryToAttack();
     unsigned CalcPotentialAttackers(const nobBaseMilitary& target) const;
     double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;

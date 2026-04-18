@@ -29,7 +29,6 @@ TargetSelectorFn ResolveSelector(Mode mode)
 {
     switch(mode)
     {
-        case Mode::Random: return &AICombatController::SelectAttackTargetRandom;
         case Mode::Prudent: return &AICombatController::SelectAttackTargetPrudent;
         case Mode::Biting: return &AICombatController::SelectAttackTargetBiting;
         case Mode::Attrition: return &AICombatController::SelectAttackTargetAttrition;

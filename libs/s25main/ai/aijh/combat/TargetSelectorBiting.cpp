@@ -23,7 +23,6 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
 
     const auto& buildingScores = owner_.GetConfig().combat.buildingScores;
 
-    // const bool inDefenseMode = (attackMode == CombatMode::DefenseMode);
     const nobBaseMilitary* bestTarget = nullptr;
     unsigned bestLossScore = 0;
 
@@ -53,9 +52,6 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
             if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 1)
                 continue;
         }
-
-        // if(inDefenseMode && !CanAttackInDefenseMode(*target, potentialAttackers))
-        //     continue;
 
         if(target->GetBuildingType() == BuildingType::Headquarters)
             return target;

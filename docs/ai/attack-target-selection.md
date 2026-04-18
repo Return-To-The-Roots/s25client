@@ -7,16 +7,14 @@ combat-resolution code.
 
 ## Trigger Flow
 
-- Every few hundred gameframes the AI runs `UpdateCombatMode()` (lines
-  1784-1834) to keep an internal `attackMode` between Defense and Attack
-  based on the global combat fulfillment level configured in
-  `AIConfig`. When `(gf + playerId * 17) % attack_interval == 0`,
-  `TryToAttack()` executes (lines 1884-1972).
+- Every attack interval the AI calls `TryToAttack()`. The controller uses the
+  configured target-selection algorithm directly; there is no separate combat
+  posture state anymore.
 
 ## Discovering Candidate Targets
 
-1. `AIPlayerJH::SelectAttackTarget(TargetSelectionMode::Random)` (in
-   `TargetSelector.cpp`) iterates the AI’s military buildings while applying
+1. `AIPlayerJH::SelectAttackTarget(...)` (in `TargetSelector.cpp`) iterates
+   the AI’s military buildings while applying
    the same heuristics as before: skip inland posts, cap the scan to roughly
    40 per tick, and look for nearby enemy buildings via
    `gwb.LookForMilitaryBuildings(src, 2)`.
@@ -24,14 +22,10 @@ combat-resolution code.
    (`BASE_ATTACKING_DISTANCE`), and “not newly built” checks.
 3. HQs or harbors without soldiers are still inserted at the front, while
    every other target lands at the back.
-4. Only the non-prioritized suffix is shuffled, so opportunistic steals keep
-   their precedence even though the rest of the list is randomized.
-5. `SelectAttackTargetRandom()` evaluates the ordered candidates immediately
-   and returns the first viable target.
-6. `SelectAttackTargetPrudent()` uses the same discovery helper but applies
+4. `SelectAttackTargetPrudent()` uses the same discovery helper but applies
    additional heuristics (see below) before settling on a candidate.
-7. The active selection mode is configured via `combat.targetSelection`
-   in the AI weights config (defaults to `Random`).
+5. The active selection mode is configured via `combat.targetSelection`
+   in the AI weights config (defaults to `Prudent`).
    A sample `combat` block:
 
    ```yaml
@@ -44,14 +38,14 @@ combat-resolution code.
        easy: 2500
        medium: 750
        hard: 100
-    targetSelection: Prudent   # Random | Prudent | Biting | Attrition
+    targetSelection: Prudent   # Prudent | Biting | Attrition
    ```
-8. `TryToAttack()` now simply asks for a target via the configured mode and
+6. `TryToAttack()` now simply asks for a target via the configured mode and
    issues `aii.Attack`/`TrackCombatStart` when a plan is available.
 
 ## Evaluating Candidates
 
-While evaluating potential targets `SelectAttackTargetRandom()` performs:
+While evaluating potential targets the controller:
 
 1. Gather possible attackers using `gwb.LookForMilitaryBuildings(dest, 2)`.
    - Only the AI’s own `nobMilitary` buildings contribute.
@@ -63,18 +57,10 @@ While evaluating potential targets `SelectAttackTargetRandom()` performs:
 3. On **Hard** difficulty the AI requires
    `attackersStrength > enemyStrength + 2` for enemy military posts and
    refuses to attack empty garrisons (it expects defenders).
-4. When currently in Defense mode the AI calls
-   `CanAttackInDefenseMode()`:
-   - Only proceed if it either recently lost the exact building
-     (`IsRecentlyLostMilitaryBuilding`) **or** the target is a “lonely”
-     stronghold (no second enemy military building within radius 12, see
-     `IsLonelyEnemyStronghold`).
-   - The attacking force must outnumber the defenders (or, for warehouses
-     and HQs, only attack if they have zero defenders).
-5. If all checks pass the method returns the target to `TryToAttack()`,
+4. If all checks pass the method returns the target to `TryToAttack()`,
    which then re-counts nearby attackers before calling
    `aii.Attack(dest, attackersCount, true)` and `TrackCombatStart`.
-6. The helper stops after finding the first valid attack; any remaining
+5. The helper stops after finding the first valid attack; any remaining
    potential targets are reconsidered during the next interval.
 
 When running with `TargetSelectionMode::Prudent` the selector:
@@ -94,11 +80,9 @@ When running with `TargetSelectionMode::Biting` the selector:
 1. Uses the same candidate discovery pass, ensuring each target still has at
    least one available attacker and, on Hard difficulty, enough aggregate
    strength to overpower enemy garrisons.
-2. Keeps the Random-mode defense-mode restriction, so retaking lost or
-   isolated forts still applies before evaluating priorities.
-3. Immediately returns any valid Headquarters target, treating it as maximum
+2. Immediately returns any valid Headquarters target, treating it as maximum
    priority regardless of collateral score.
-4. Otherwise queries a weighted capture-loss score and chooses the building
+3. Otherwise queries a weighted capture-loss score and chooses the building
    whose capture would destroy the highest-scoring set of dependent enemy
    structures. Each destroyed building contributes
    `combat.buildingScores[BuildingType]` points, defaulting to `1` when the
@@ -133,5 +117,3 @@ When running with `TargetSelectionMode::Attrition` the selector:
 - HQs or harbors without soldiers are opportunistically prioritized.
 - Attacks require enough nearby contributors; Hard AI compares aggregate
   strength before committing.
-- Defense mode further restricts attacks to retaking lost posts or
-  punishing isolated enemy fortifications.

@@ -19,7 +19,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cmath>
 #include <cstdlib>
 #include <deque>
 #include <random>
@@ -31,11 +30,6 @@ namespace AIJH {
 namespace {
 
 const std::array<unsigned, NUM_SOLDIER_RANKS> kSoldierAttackWeights = {3, 4, 5, 6, 7};
-
-double rollProbability()
-{
-    return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
-}
 
 } // namespace
 
@@ -144,114 +138,10 @@ double AICombatController::ComputeEnemyFrontlineWeight() const
     return totalWeight;
 }
 
-void AICombatController::UpdateCombatMode()
-{
-    const auto& combatCfg = owner_.GetConfig().combat;
-    const double lowLevel = combatCfg.fulfillmentLow;
-    const double mediumLevel = combatCfg.fulfillmentMedium;
-    const double highLevel = combatCfg.fulfillmentHigh;
-    const double halfPi = std::acos(-1.0) * 0.5;
-
-    double totalWeight = 0.0;
-    const double fulfillment = ComputeFulfillmentLevel(&totalWeight);
-    combatFulfillmentLevel_ = fulfillment;
-    combatAttackWeight_ = totalWeight;
-    const double enemyWeight = ComputeEnemyFrontlineWeight();
-
-    if(totalWeight > enemyWeight * 3.0)
-    {
-        attackMode_ = CombatMode::AttackMode;
-        return;
-    }
-
-    if(fulfillment >= highLevel)
-    {
-        attackMode_ = CombatMode::AttackMode;
-        return;
-    }
-
-    if(attackMode_ == CombatMode::DefenseMode)
-    {
-        if(fulfillment <= lowLevel)
-            return;
-
-        if(fulfillment > mediumLevel && fulfillment < highLevel)
-        {
-            double normalized = (highLevel - fulfillment) / (highLevel - mediumLevel);
-            normalized = std::clamp(normalized, 0.0, 1.0);
-            const double probability = std::cos(normalized * halfPi);
-            if(rollProbability() <= probability)
-                attackMode_ = CombatMode::AttackMode;
-        }
-    }
-    else
-    {
-        if(fulfillment <= lowLevel)
-        {
-            attackMode_ = CombatMode::DefenseMode;
-            return;
-        }
-
-        if(fulfillment > lowLevel && fulfillment < mediumLevel)
-        {
-            double normalized = (fulfillment - lowLevel) / (mediumLevel - lowLevel);
-            normalized = std::clamp(normalized, 0.0, 1.0);
-            const double probability = std::cos(normalized * halfPi);
-            if(rollProbability() <= probability)
-                attackMode_ = CombatMode::DefenseMode;
-        }
-    }
-}
-
-bool AICombatController::CanAttackInDefenseMode(const nobBaseMilitary& target, const unsigned attackersCount) const
-{
-    if(attackersCount == 0)
-        return false;
-
-    const double lowLevel = owner_.GetConfig().combat.fulfillmentLow;
-    const bool wantsRetake =
-      combatFulfillmentLevel_ <= lowLevel && owner_.IsRecentlyLostMilitaryBuilding(target.GetPos());
-
-    if(!wantsRetake && !IsLonelyEnemyStronghold(target))
-        return false;
-
-    const auto* enemyMilitary = dynamic_cast<const nobMilitary*>(&target);
-    if(enemyMilitary)
-    {
-        const unsigned defenders = enemyMilitary->GetNumTroops();
-        if(attackersCount <= defenders)
-            return false;
-    }
-    else if(target.DefendersAvailable())
-        return false;
-
-    return true;
-}
-
-bool AICombatController::IsLonelyEnemyStronghold(const nobBaseMilitary& target) const
-{
-    const sortedMilitaryBlds nearby = owner_.GetWorld().LookForMilitaryBuildings(target.GetPos(), 12);
-    unsigned nearbyEnemy = 0;
-
-    for(const nobBaseMilitary* candidate : nearby)
-    {
-        if(candidate == &target)
-            continue;
-        if(candidate->GetPlayer() != target.GetPlayer())
-            continue;
-        if(candidate->GetGOT() != GO_Type::NobMilitary)
-            continue;
-
-        ++nearbyEnemy;
-        if(nearbyEnemy > 1)
-            return false;
-    }
-
-    return true;
-}
-
 void AICombatController::TryToAttack()
 {
+    combatFulfillmentLevel_ = ComputeFulfillmentLevel(&combatAttackWeight_);
+
     AICommandSink& commands = owner_.GetInterface().Commands();
     const nobBaseMilitary* target = SelectAttackTarget(targetSelectionMode_);
     if(!target)

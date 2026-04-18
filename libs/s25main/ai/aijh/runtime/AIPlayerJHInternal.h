@@ -51,7 +51,6 @@
     void CheckGraniteMine();
     void TryToAttack();
     const nobBaseMilitary* SelectAttackTarget(TargetSelectionMode mode) const;
-    const nobBaseMilitary* SelectAttackTargetRandom() const;
     const nobBaseMilitary* SelectAttackTargetPrudent() const;
     const nobBaseMilitary* SelectAttackTargetBiting() const;
     const nobBaseMilitary* SelectAttackTargetAttrition() const;
@@ -63,15 +62,11 @@
     void MilUpgradeOptim();
     double GetCombatFulfillmentLevel() const;
     double GetCombatAttackWeight() const;
-    bool IsInDefenseMode() const;
     double GetCaptureRiskEstimate(const nobBaseMilitary& building) const;
 
     // Core state and combat bookkeeping
     const AIConfig& config_;
 
-    void UpdateCombatMode();
-    bool CanAttackInDefenseMode(const nobBaseMilitary& target, unsigned attackersCount) const;
-    bool IsLonelyEnemyStronghold(const nobBaseMilitary& target) const;
     double ComputeFulfillmentLevel(double* outTotalWeight = nullptr) const;
     double ComputeEnemyFrontlineWeight() const;
     void LogFinishedCombats(unsigned gf) const;

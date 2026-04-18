@@ -23,9 +23,9 @@ This memo documents the combat lifecycles discovered while tracing `nofPassiveSo
 - For every qualifying building it pulls the passive soldiers returned by `nobMilitary::GetSoldiersForAttack(flag->GetPos())`, intentionally ignoring the first element (the strongest rank) so that one elite remains garrisoned. The rest are weighted by `kSoldierAttackWeights = {3,4,5,6,7}` based on their current rank and summed into `totalWeight`.
 - The routine counts only the buildings that passed all filters (`frontierCount`) and returns the average weight (`totalWeight / frontierCount`). `outTotalWeight`, when provided, exposes the raw pool the AI could commit across all frontlines and is later compared against randomly rolled probabilities before deciding to switch into combat mode or stay defensive.
 
-### Combat Mode Switching
+### Frontline Strength Metrics
 - `AIPlayerJH::ComputeEnemyFrontlineWeight` (`libs/s25main/ai/aijh/runtime/AIPlayerJH.cpp:1780-1826`) mirrors the fulfillment logic for every attackable opponent. It inspects their `FrontierDistance::Near` military buildings, ignores newly built outposts, drops the strongest available soldier per site, and sums the remaining weights with the same rank table so both sides are measured consistently.
-- `AIPlayerJH::UpdateCombatMode` (`libs/s25main/ai/aijh/runtime/AIPlayerJH.cpp:1838-1890`) now performs a superiority check before the older probabilistic thresholds. If our total frontline weight exceeds three times the computed enemy weight, the AI immediately flips to `CombatMode::AttackMode`. Otherwise it falls back to the configured fulfillment bands, which still use cosine-shaped probabilities between medium and high thresholds when ramping up or down.
+- `AICombatController::TryToAttack` recomputes the AI’s fulfillment snapshot immediately before target selection, storing both the average frontline weight and the total attack weight for diagnostics and downstream consumers.
 
 ### Duel Resolution (`noFighting`)
 - When two actives meet successfully, the engine instantiates `noFighting` (`libs/s25main/nodeObjs/noFighting.cpp:22-305`). The constructor removes both soldiers from the map, pauses other traffic at that node, and keeps the area visible for both owners.

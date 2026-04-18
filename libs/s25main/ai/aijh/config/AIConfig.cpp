@@ -137,14 +137,14 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
             return static_cast<char>(std::tolower(c));
         });
 
-        if(normalized == "random")
-            return TargetSelectionAlgorithm::Random;
         if(normalized == "prudent")
             return TargetSelectionAlgorithm::Prudent;
         if(normalized == "biting")
             return TargetSelectionAlgorithm::Biting;
         if(normalized == "attrition")
             return TargetSelectionAlgorithm::Attrition;
+        if(normalized == "random")
+            return TargetSelectionAlgorithm::Prudent;
         return std::nullopt;
     };
 
@@ -214,7 +214,7 @@ void applyCombatCfg(const YAML::Node& combatNode, AIConfig& config)
                 config.combat.targetSelection = *parsed;
             else
                 std::cerr << "Warning: Unknown target selection algorithm '" << selectionValue
-                          << "', defaulting to Random." << std::endl;
+                          << "', defaulting to Prudent." << std::endl;
         } catch(const YAML::TypedBadConversion<std::string>& e)
         {
             std::cerr << "Warning: Invalid target selection value, using default. Error: " << e.what() << std::endl;
