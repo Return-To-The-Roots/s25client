@@ -102,13 +102,9 @@ bool VideoSDL2::Initialize()
     rttr::ScopedLeakDisabler _;
     // Do not emulate mouse events using touch
     SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
-    if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
-    {
-        PrintError();
-        return false;
-    }
+    if(CHECK_SDL(SDL_InitSubSystem(SDL_INIT_VIDEO)))
+        initialized = true;
 
-    initialized = true;
     return initialized;
 }
 
