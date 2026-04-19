@@ -324,7 +324,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     mainGroup->AddTextButton(ID_btSubmitDebugAsk, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Ask always"),
                              NormalFont);
 
-    mainGroup->SetSelection((SETTINGS.global.submitDebugData == 1) ? ID_btSubmitDebugOn : ID_btSubmitDebugAsk); //-V807
+    mainGroup->SetSelection((SETTINGS.global.submitDebugData == SubmitDebugData::Yes) ? ID_btSubmitDebugOn :
+                                                                                        ID_btSubmitDebugAsk); //-V807
     curPos.y += rowHeight;
 
     addOnOffOption(*groupCommon, curPos, ID_grpGFInfo, _("Show GameFrame Info:"), SETTINGS.global.showGFInfo);
@@ -628,7 +629,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
             break;
         case ID_grpDebugData:
             // Special case: Uses e.g. ID_btSubmitDebugOn directly
-            SETTINGS.global.submitDebugData = selection;
+            SETTINGS.global.submitDebugData = SubmitDebugData(selection);
             break;
         case ID_grpUPNP: SETTINGS.global.useUPNP = enabled; break;
         case ID_grpSmartCursor:

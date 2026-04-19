@@ -1571,7 +1571,7 @@ bfs::path GameServer::SaveAsyncLog()
 
 void GameServer::SendAsyncLog(const bfs::path& asyncLogFilePath)
 {
-    if(SETTINGS.global.submitDebugData == 1
+    if(SETTINGS.global.submitDebugData == SubmitDebugData::Yes
 #ifdef _WIN32
        || (MessageBoxW(nullptr,
                        boost::nowide::widen(_("The game clients are out of sync. Would you like to send debug "

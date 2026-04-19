@@ -140,7 +140,7 @@ bool askForDebugData()
 }
 bool shouldSendDebugData()
 {
-    return (SETTINGS.global.submitDebugData == 1) || askForDebugData();
+    return (SETTINGS.global.submitDebugData == SubmitDebugData::Yes) || askForDebugData();
 }
 
 void showCrashMessage()
