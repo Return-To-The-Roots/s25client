@@ -99,6 +99,11 @@ enum
     ID_txtNumMsg
 };
 
+/// Size of buttons on lower bar
+constexpr Extent btSize = Extent(37, 32);
+/// Offsets of the buttons relative to the "border" graphics on the lower bar
+constexpr DrawPoint btOffset(44, 4);
+
 float getNextZoomLevel(const float currentZoom)
 {
     // Get first level bigger than current zoom
@@ -130,10 +135,11 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
 
     SetScale(false);
 
-    DrawPoint barPos((GetSize().x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
-                     GetSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    const glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
 
-    Extent btSize = Extent(37, 32);
+    auto barPos =
+      DrawPoint((GetSize().x - imgButtonBar.getWidth()) / 2, GetSize().y - imgButtonBar.getHeight()) + btOffset;
+
     AddImageButton(ID_btMap, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 50), _("Map"))
       ->SetBorder(false);
     barPos.x += btSize.x;
@@ -303,8 +309,9 @@ void dskGameInterface::Resize(const Extent& newSize)
     // move buttons
     // Get real renderer size as newSize may get capped but we want to keep the manually drawn borders intact
     const Extent realNewSize = VIDEODRIVER.GetRenderSize();
-    DrawPoint barPos = DrawPoint((realNewSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
-                                 realNewSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    const glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
+    DrawPoint barPos =
+      DrawPoint((realNewSize.x - imgButtonBar.getWidth()) / 2, realNewSize.y - imgButtonBar.getHeight()) + btOffset;
 
     auto* button = GetCtrl<ctrlButton>(ID_btMap);
     button->SetPos(barPos);
@@ -698,10 +705,11 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
-    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
-    Extent btSize = Extent(37, 32) * 4u;
-    if(IsPointInRect(mc.pos, Rect(btOrig, btSize)))
+    const glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
+    const auto btOrig = DrawPoint(VIDEODRIVER.GetRenderSize().x / 2 - imgButtonBar.getWidth() / 2,
+                                  VIDEODRIVER.GetRenderSize().y - imgButtonBar.getHeight())
+                        + btOffset;
+    if(IsPointInRect(mc.pos, Rect(btOrig, btSize * 4u)))
         return false;
 
     if(!VIDEODRIVER.IsTouch())
