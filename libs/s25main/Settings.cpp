@@ -84,8 +84,7 @@ void Settings::LoadDefaults()
 {
     // global
     // {
-    // 0 = ask user at start, 1 = enabled, 2 = always ask
-    global.submitDebugData = 0;
+    global.submitDebugData = SubmitDebugData::AskAtStart;
     global.useUPNP = false;
     global.smartCursor = true;
     global.debugMode = false;
@@ -231,7 +230,11 @@ void Settings::Load()
         if(iniGlobal->getValue("gameversion") != rttr::version::GetRevision())
             s25util::warning("Your application version has changed - please recheck your settings!");
 
-        global.submitDebugData = iniGlobal->getIntValue("submit_debug_data");
+        unsigned submitDebugData = iniGlobal->getIntValue("submit_debug_data");
+        if(submitDebugData <= helpers::MaxEnumValue_v<SubmitDebugData>)
+            global.submitDebugData = static_cast<SubmitDebugData>(submitDebugData);
+        else
+            global.submitDebugData = SubmitDebugData::AskAtStart;
         global.useUPNP = iniGlobal->getBoolValue("use_upnp");
         global.smartCursor = iniGlobal->getValue("smartCursor", true);
         global.debugMode = iniGlobal->getValue("debugMode", false);
@@ -441,7 +444,7 @@ void Settings::Save()
     // {
     iniGlobal->setValue("version", VERSION);
     iniGlobal->setValue("gameversion", rttr::version::GetRevision());
-    iniGlobal->setValue("submit_debug_data", global.submitDebugData);
+    iniGlobal->setValue("submit_debug_data", rttr::enum_cast(global.submitDebugData));
     iniGlobal->setValue("use_upnp", global.useUPNP);
     iniGlobal->setValue("smartCursor", global.smartCursor);
     iniGlobal->setValue("debugMode", global.debugMode);

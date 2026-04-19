@@ -39,6 +39,17 @@ enum class MapScrollMode
     GrabAndDrag
 };
 
+enum class SubmitDebugData : uint8_t
+{
+    AskAtStart = 0, // I.e. undecided
+    Yes = 1,
+    AlwaysAsk = 2
+};
+constexpr auto maxEnumValue(SubmitDebugData)
+{
+    return SubmitDebugData::AlwaysAsk;
+}
+
 /// Configuration class
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
@@ -60,7 +71,7 @@ protected:
 public:
     struct
     {
-        uint8_t submitDebugData;
+        SubmitDebugData submitDebugData;
         bool useUPNP, smartCursor, debugMode, showGFInfo;
     } global;
 
