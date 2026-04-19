@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -75,7 +75,7 @@ iwLobbyConnect::iwLobbyConnect()
                                 NormalFont);
     savepassword->AddTextButton(1, DrawPoint(secCtrlStartPos, curLblPos.y), btSize, TextureColor::Green2, _("Yes"),
                                 NormalFont);
-    savepassword->SetSelection((SETTINGS.lobby.save_password ? 1 : 0));
+    savepassword->SetSelection((SETTINGS.lobby.savePassword ? 1 : 0));
     curLblPos.y += 30;
 
     AddText(ID_txtProtocol, curLblPos, _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -123,7 +123,7 @@ void iwLobbyConnect::ReadFromEditAndSaveLobbyData(std::string& user, std::string
 
     // Save name and password if requested
     SETTINGS.lobby.name = user; //-V807
-    if(SETTINGS.lobby.save_password)
+    if(SETTINGS.lobby.savePassword)
         SETTINGS.lobby.password = "md5:" + pass;
     else
         SETTINGS.lobby.password.clear();
@@ -183,7 +183,7 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigne
 {
     switch(ctrl_id)
     {
-        case ID_optSavePw: SETTINGS.lobby.save_password = (selection == 1); break;
+        case ID_optSavePw: SETTINGS.lobby.savePassword = (selection == 1); break;
         case ID_optProtocol: // IPv6 yes/no
             SETTINGS.server.ipv6 = (selection == 1);
             break;

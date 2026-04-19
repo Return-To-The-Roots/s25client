@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -19,13 +19,14 @@ public:
 
     bool isReadOnly() const { return readonly; }
 
-    void AddString(const std::string& text);
+    void AddItem(const std::string& text);
     void DeleteAllItems();
-
-    void SetSelection(unsigned short selection);
+    /// Set selection to an item if within bounds. Does not trigger a notification.
+    void SetSelection(unsigned selection);
     const boost::optional<unsigned>& GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
-    unsigned short GetNumItems() const { return GetCtrl<ctrlList>(0)->GetNumLines(); }
-    const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
+    unsigned GetNumItems() const { return GetCtrl<ctrlList>(0)->GetNumLines(); }
+    const std::string& GetText(unsigned item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
+    void SetText(unsigned item, const std::string& text) { GetCtrl<ctrlList>(0)->SetItemText(item, text); }
     boost::optional<std::string> GetSelectedText() const;
 
     void Msg_PaintAfter() override;
@@ -40,6 +41,7 @@ public:
 
 protected:
     void Draw_() override;
+    /// Show or hide the list.
     void ShowList(bool show);
     Rect GetFullDrawRect(const ctrlList* list);
 

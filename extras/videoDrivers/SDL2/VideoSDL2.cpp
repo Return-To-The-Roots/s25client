@@ -1,8 +1,9 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "VideoSDL2.h"
+#include "RTTR_Assert.h"
 #include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
@@ -31,17 +32,18 @@
 #    include <gl4esinit.h>
 #endif
 
-#define CHECK_SDL(call)                 \
-    ([&]() -> bool {                    \
-        if((call) < 0)                  \
-        {                               \
-            PrintError(SDL_GetError()); \
-            return false;               \
-        }                               \
-        return true;                    \
-    })()
-
 namespace {
+
+/// Check that the (SDL) call returns success or print the error
+/// Can be used in conditions: if(CHECK_SDL(SDL_Foo()))
+bool CHECK_SDL(int sdlResult)
+{
+    if(sdlResult >= 0)
+        return true;
+    VideoSDL2::PrintError();
+    return false;
+}
+
 template<typename T>
 struct SDLMemoryDeleter
 {
@@ -100,13 +102,9 @@ bool VideoSDL2::Initialize()
     rttr::ScopedLeakDisabler _;
     // Do not emulate mouse events using touch
     SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
-    if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
-    {
-        PrintError(SDL_GetError());
-        return false;
-    }
+    if(CHECK_SDL(SDL_InitSubSystem(SDL_INIT_VIDEO)))
+        initialized = true;
 
-    initialized = true;
     return initialized;
 }
 
@@ -132,7 +130,16 @@ void VideoSDL2::UpdateCurrentSizes()
     SetNewSize(VideoMode(w, h), Extent(w2, h2));
 }
 
-bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bool fullscreen)
+static VideoMode getDesktopSize(SDL_Window* window, VideoMode fallback)
+{
+    const int display = window ? std::max(0, SDL_GetWindowDisplayIndex(window)) : 0;
+    SDL_DisplayMode dskSize;
+    if(CHECK_SDL(SDL_GetDesktopDisplayMode(display, &dskSize)))
+        return VideoMode(dskSize.w, dskSize.h);
+    return fallback;
+}
+
+bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -155,34 +162,45 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
 
-    int wndPos = SDL_WINDOWPOS_CENTERED;
-
-    const auto requestedSize = fullscreen ? FindClosestVideoMode(size) : size;
-    unsigned commonFlags = SDL_WINDOW_OPENGL;
+    const int wndPos = SDL_WINDOWPOS_CENTERED;
+    const unsigned commonFlags = SDL_WINDOW_OPENGL;
     // TODO: Fix GUI scaling with High DPI support enabled.
     // See https://github.com/Return-To-The-Roots/s25client/issues/1621
     // commonFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-    window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                              commonFlags | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
-
-    // Fallback to non-fullscreen
-    if(!window && fullscreen)
+    unsigned windowTypeFlag = 0;
+    auto requestedSize = size;
+    if(displayMode == DisplayMode::Fullscreen)
     {
-        window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
-                                  commonFlags | SDL_WINDOW_RESIZABLE);
-    }
+        windowTypeFlag = SDL_WINDOW_FULLSCREEN;
+        requestedSize = FindClosestVideoMode(size);
+    } else if(displayMode == DisplayMode::BorderlessWindow)
+    {
+        windowTypeFlag = SDL_WINDOW_BORDERLESS;
+        requestedSize = getDesktopSize(nullptr, size);
+    } else if(displayMode.resizeable)
+        windowTypeFlag = SDL_WINDOW_RESIZABLE;
+
+    window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, requestedSize.width, requestedSize.height,
+                              commonFlags | windowTypeFlag);
 
     if(!window)
     {
-        PrintError(SDL_GetError());
+        PrintError();
+        // Fallback to borderless fullscreen if unable to set resolution
+        if(displayMode == DisplayMode::Fullscreen)
+            return CreateScreen(title, size, DisplayMode::BorderlessWindow);
+        // No borderless -> Resizable window as last fallback to at least show something
+        if(displayMode == DisplayMode::BorderlessWindow)
+            return CreateScreen(title, size, DisplayMode::Windowed);
+        PrintError();
         return false;
     }
 
-    isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+    UpdateCurrentDisplayMode();
     UpdateCurrentSizes();
 
-    if(!isFullscreen_)
+    if(displayMode != DisplayMode::Fullscreen)
         MoveWindowToCenter();
 
     SDL_Surface* iconSurf =
@@ -192,7 +210,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
         SDL_SetWindowIcon(window, iconSurf);
         SDL_FreeSurface(iconSurf);
     } else
-        PrintError(SDL_GetError());
+        PrintError();
 
     context = SDL_GL_CreateContext(window);
 
@@ -207,50 +225,67 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     return true;
 }
 
-bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
+bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
 
-    if(isFullscreen_ != fullscreen)
-    {
-        SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-        isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
-        if(!isFullscreen_)
-        {
-            SDL_SetWindowResizable(window, SDL_TRUE);
-            MoveWindowToCenter();
-        }
-    }
+    bool centerWindow = false;
 
+    if(displayMode_ != displayMode)
+    {
+        if(displayMode_ == DisplayMode::Fullscreen || displayMode == DisplayMode::Fullscreen)
+        {
+            if(!CHECK_SDL(
+                 SDL_SetWindowFullscreen(window, (displayMode == DisplayMode::Fullscreen) ? SDL_WINDOW_FULLSCREEN : 0)))
+            {
+                if(displayMode == DisplayMode::Fullscreen)
+                    displayMode = DisplayMode::BorderlessWindow;
+            }
+        }
+        SDL_SetWindowResizable(window,
+                               static_cast<SDL_bool>(displayMode == DisplayMode::Windowed && displayMode.resizeable));
+        SDL_SetWindowBordered(window, static_cast<SDL_bool>(displayMode == DisplayMode::Windowed));
+
+        UpdateCurrentDisplayMode();
+        centerWindow = true;
+    }
+    if(displayMode_ == DisplayMode::BorderlessWindow)
+        newSize = getDesktopSize(nullptr, newSize);
     if(newSize != GetWindowSize())
     {
-        if(isFullscreen_)
+        if(displayMode_ == DisplayMode::Fullscreen)
         {
             auto const targetMode = FindClosestVideoMode(newSize);
             SDL_DisplayMode target;
             target.w = targetMode.width;
             target.h = targetMode.height;
-            target.format = 0;           // don't care
-            target.refresh_rate = 0;     // don't care
-            target.driverdata = nullptr; // initialize to 0
+            target.format = 0;       // don't care
+            target.refresh_rate = 0; // don't care
+            target.driverdata = nullptr;
             // Explicitly change the window size to avoid a bug with SDL reporting the wrong size until alt+tab
             SDL_SetWindowSize(window, target.w, target.h);
-            if(SDL_SetWindowDisplayMode(window, &target) < 0)
-            {
-                PrintError(SDL_GetError());
+            if(!CHECK_SDL(SDL_SetWindowDisplayMode(window, &target)))
                 return false;
-            }
         } else
         {
             SDL_SetWindowSize(window, newSize.width, newSize.height);
+            centerWindow = true;
         }
         UpdateCurrentSizes();
     }
+    if(centerWindow)
+        MoveWindowToCenter();
+
     return true;
 }
 
-void VideoSDL2::PrintError(const std::string& msg) const
+void VideoSDL2::PrintError()
+{
+    PrintError(SDL_GetError());
+}
+
+void VideoSDL2::PrintError(const std::string& msg)
 {
     boost::nowide::cerr << msg << std::endl;
 }
@@ -308,7 +343,7 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_WINDOWEVENT_RESIZED:
                     {
-                        isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+                        UpdateCurrentDisplayMode();
                         VideoMode newSize(ev.window.data1, ev.window.data2);
                         if(newSize != GetWindowSize())
                         {
@@ -508,16 +543,17 @@ unsigned long VideoSDL2::GetTickCount() const
     return SDL_GetTicks();
 }
 
-void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
+std::vector<VideoMode> VideoSDL2::ListVideoModes() const
 {
     int display = SDL_GetWindowDisplayIndex(window);
     if(display < 0)
         display = 0;
+    std::vector<VideoMode> video_modes;
     for(int i = SDL_GetNumDisplayModes(display) - 1; i >= 0; --i)
     {
         SDL_DisplayMode mode;
         if(SDL_GetDisplayMode(display, i, &mode) != 0)
-            PrintError(SDL_GetError());
+            PrintError();
         else
         {
             VideoMode vm(mode.w, mode.h);
@@ -525,6 +561,7 @@ void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
                 video_modes.push_back(vm);
         }
     }
+    return video_modes;
 }
 
 OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
@@ -565,17 +602,38 @@ void* VideoSDL2::GetMapPointer() const
 
 void VideoSDL2::MoveWindowToCenter()
 {
+    SDL_PumpEvents(); // Let window system run update events/initialization
+    const int display = window ? std::max(0, SDL_GetWindowDisplayIndex(window)) : 0;
+
     SDL_Rect usableBounds;
-    CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
+    CHECK_SDL(SDL_GetDisplayUsableBounds(display, &usableBounds));
     int top, left, bottom, right;
-    if(CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)) != 0)
+    if(!CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)))
         top = left = bottom = right = 0;
-    usableBounds.w -= left + right;
-    usableBounds.h -= top + bottom;
-    if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)
+    auto wndOuterSize = GetWindowSize();
+    wndOuterSize.width += left + right;
+    wndOuterSize.height += top + bottom;
+    if(usableBounds.w < wndOuterSize.width || usableBounds.h < wndOuterSize.height)
     {
-        SDL_SetWindowSize(window, usableBounds.w, usableBounds.h);
+        SDL_SetWindowSize(window, usableBounds.w - left - right, usableBounds.h - top - bottom);
         UpdateCurrentSizes();
+        wndOuterSize.width = usableBounds.w;
+        wndOuterSize.height = usableBounds.h;
     }
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    const int x = usableBounds.x + (usableBounds.w - wndOuterSize.width) / 2 + left;
+    const int y = usableBounds.y + (usableBounds.h - wndOuterSize.height) / 2 + top;
+    SDL_SetWindowPosition(window, x, y);
+}
+
+void VideoSDL2::UpdateCurrentDisplayMode()
+{
+    RTTR_Assert(window);
+    const auto flags = SDL_GetWindowFlags(window);
+    if(flags & SDL_WINDOW_FULLSCREEN)
+        displayMode_ = DisplayMode::Fullscreen;
+    else if((flags & SDL_WINDOW_BORDERLESS) != 0)
+        displayMode_ = DisplayMode::BorderlessWindow;
+    else
+        displayMode_ = DisplayMode::Windowed;
+    displayMode_.resizeable = (flags & SDL_WINDOW_RESIZABLE) != 0;
 }

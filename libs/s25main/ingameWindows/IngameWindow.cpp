@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -36,8 +36,8 @@ const Extent IngameWindow::borderSize(1, 1);
 IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
                            glArchivItem_Bitmap* background, bool modal, CloseBehavior closeBehavior, Window* parent)
     : Window(parent, id, pos, size), title_(std::move(title)), background(background), lastMousePos(0, 0),
-      isModal_(modal), closeme(false), isPinned_(false), isMinimized_(false), isMoving(false),
-      closeBehavior_(closeBehavior)
+      closeBehavior_(closeBehavior), isModal_(modal), closeme(false), isPinned_(false), isMinimized_(false),
+      isMoving(false)
 {
     std::fill(buttonStates_.begin(), buttonStates_.end(), ButtonState::Up);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border

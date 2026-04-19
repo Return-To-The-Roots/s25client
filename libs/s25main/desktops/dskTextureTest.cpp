@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -53,7 +53,7 @@ void dskTextureTest::Load()
     const unsigned selection = cb->GetSelection().value_or(0);
     cb->DeleteAllItems();
     for(const auto& t : desc.terrain)
-        cb->AddString(t.name);
+        cb->AddItem(t.name);
     cb->SetSelection(selection);
     Msg_ComboSelectItem(ID_cbTexture, selection);
 }

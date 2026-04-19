@@ -30,8 +30,8 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
                    LOADER.GetImageN("resource", 41)),
       extended(SETTINGS.ingame.minimapExtended)
 {
-    AddCtrl(new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE),
-                                  Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
+    AddCtrl(std::make_unique<ctrlIngameMinimap>(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE),
+                                                Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
     DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);

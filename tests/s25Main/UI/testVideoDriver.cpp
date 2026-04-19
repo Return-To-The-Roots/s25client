@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -15,7 +15,7 @@
 #include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
-static std::ostream& operator<<(std::ostream& os, const VideoMode& mode)
+static std::ostream& operator<<(std::ostream& os, const VideoMode mode)
 {
     return os << mode.width << "x" << mode.height;
 }
@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
     {
         rttr::test::LogAccessor logAcc;
         VIDEODRIVER.DestroyScreen();
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Windowed);
         logAcc.clearLog();
     }
 
@@ -89,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
 
     {
         rttr::test::LogAccessor logAcc;
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Windowed);
         logAcc.clearLog();
     }
     glGenTextures = rttrOglMock2::glGenTextures;
@@ -106,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
 BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
 {
     auto* driver = uiHelper::GetVideoDriver();
-    driver->CreateScreen("", VideoMode(800 * 2, 600 * 2), false);
+    driver->CreateScreen("", VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
 
     {
         // GUI scale 100%; translations are no-ops
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
 {
     GuiScaleRange range;
     auto* driver = uiHelper::GetVideoDriver();
-    driver->CreateScreen("", VideoMode(800 * 3, 600 * 3), false);
+    driver->CreateScreen("", VideoMode(800 * 3, 600 * 3), DisplayMode::Windowed);
 
     // Regular DPI configuration
     range = driver->getGuiScaleRange();
@@ -203,15 +203,15 @@ BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
     BOOST_TEST(range.recommendedPercent == 100u);
 
     // Maximum is constrained by width
-    driver->ResizeScreen(VideoMode(800 * 2, 600 * 3), false);
+    driver->ResizeScreen(VideoMode(800 * 2, 600 * 3), DisplayMode::Windowed);
     BOOST_TEST(driver->getGuiScaleRange().maxPercent == 200u);
 
     // Maximum is constrained by height
-    driver->ResizeScreen(VideoMode(800 * 3, 600 * 2), false);
+    driver->ResizeScreen(VideoMode(800 * 3, 600 * 2), DisplayMode::Windowed);
     BOOST_TEST(driver->getGuiScaleRange().maxPercent == 200u);
 
     // HighDPI configuration (50% larger render size than window size)
-    driver->ResizeScreen(VideoMode(800 * 2, 600 * 2), false);
+    driver->ResizeScreen(VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
     driver->SetNewSize(driver->GetWindowSize(), Extent(800 * 3, 600 * 3));
     range = driver->getGuiScaleRange();
     BOOST_TEST(range.minPercent == 100u);

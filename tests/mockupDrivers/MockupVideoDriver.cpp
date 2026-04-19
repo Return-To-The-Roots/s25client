@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -31,16 +31,16 @@ bool MockupVideoDriver::Initialize()
     return true;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode& newSize, bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode newSize, DisplayMode displayMode)
 {
-    ResizeScreen(newSize, fullscreen);
+    ResizeScreen(newSize, displayMode);
     return true;
 }
 
-bool MockupVideoDriver::ResizeScreen(const VideoMode& newSize, bool fullscreen)
+bool MockupVideoDriver::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
 {
     SetNewSize(newSize, Extent(newSize.width, newSize.height));
-    isFullscreen_ = fullscreen;
+    displayMode_ = displayMode;
     return true;
 }
 
@@ -64,9 +64,9 @@ OpenGL_Loader_Proc MockupVideoDriver::GetLoaderFunction() const
     return dummyLoader;
 }
 
-void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
+std::vector<VideoMode> MockupVideoDriver::ListVideoModes() const
 {
-    video_modes = video_modes_;
+    return video_modes_;
 }
 
 void MockupVideoDriver::SetMousePos(Position pos)
