@@ -252,6 +252,7 @@ void Settings::Load()
             video.displayMode = DisplayMode(displayMode);
         else
         {
+            // Compatibility with prior settings format
             video.displayMode =
               iniVideo->getValue("fullscreen", false) ? DisplayMode::Fullscreen : DisplayMode::Windowed;
         }
