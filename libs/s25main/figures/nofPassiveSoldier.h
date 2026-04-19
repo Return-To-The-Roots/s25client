@@ -53,6 +53,6 @@ public:
     /// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
     void NotNeeded();
     /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
-    void LeftBuilding() { building = nullptr; }
+    void LeftBuilding() { homeBld = nullptr; }
     nobMilitary* getHome() const;
 };

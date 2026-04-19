@@ -133,7 +133,7 @@ public:
     SoldierState GetState() const { return state; }
     /// Set the home (building) to nullptr
     /// e.g. after the soldier was removed from the homes list but it was not destroyed
-    void ResetHome() { building = nullptr; }
+    void ResetHome() { homeBld = nullptr; }
     void FightVsDefenderStarted() { state = SoldierState::AttackingFightingVsDefender; }
 
     // For debugging

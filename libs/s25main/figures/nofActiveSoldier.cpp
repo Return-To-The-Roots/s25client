@@ -43,11 +43,11 @@ void nofActiveSoldier::GoalReached()
 {
     // We reached the military building
     // Add myself to the building
-    if(!building)
+    if(!homeBld)
     {
         RTTR_Assert(false);
-        building = world->GetSpecObj<nobMilitary>(this->GetPos());
-        if(building)
+        homeBld = world->GetSpecObj<nobMilitary>(this->GetPos());
+        if(homeBld)
             LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position "
                       "(%i,%i) (gf: %u)\n")
               % pos.x % pos.y % GetEvMgr().GetCurrentGF();
@@ -59,7 +59,7 @@ void nofActiveSoldier::GoalReached()
             throw std::runtime_error("No building found for soldier");
         }
     }
-    building->AddActiveSoldier(world->RemoveFigure(pos, *this));
+    homeBld->AddActiveSoldier(world->RemoveFigure(pos, *this));
 }
 
 void nofActiveSoldier::ReturnHome()
@@ -71,7 +71,7 @@ void nofActiveSoldier::ReturnHome()
 void nofActiveSoldier::WalkingHome()
 {
     // Is our home military building destroyed?
-    if(!building)
+    if(!homeBld)
     {
         // Start wandering around
         state = SoldierState::FigureWork;
@@ -83,13 +83,13 @@ void nofActiveSoldier::WalkingHome()
 
     // Walking home to our military building
 
-    if(GetPos() == building->GetFlagPos())  // Are we already at the flag?
+    if(GetPos() == homeBld->GetFlagPos())   // Are we already at the flag?
         StartWalking(Direction::NorthWest); // Enter via the door
-    else if(GetPos() == building->GetPos()) // or are we at the building
-        building->AddActiveSoldier(world->RemoveFigure(pos, *this));
+    else if(GetPos() == homeBld->GetPos())  // or are we at the building
+        homeBld->AddActiveSoldier(world->RemoveFigure(pos, *this));
     else
     {
-        const auto dir = world->FindHumanPath(pos, building->GetFlagPos(), 100);
+        const auto dir = world->FindHumanPath(pos, homeBld->GetFlagPos(), 100);
 
         if(dir)
         {
