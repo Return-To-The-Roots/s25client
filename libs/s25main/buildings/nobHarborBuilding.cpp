@@ -1339,6 +1339,7 @@ std::unique_ptr<nofDefender> nobHarborBuilding::ProvideDefender(nofAttacker& att
         std::unique_ptr<nofAttacker> defender_attacker = std::move(soldiers_for_ships.begin()->attacker);
         soldiers_for_ships.pop_front();
         defender = std::make_unique<nofDefender>(pos, player, *this, defender_attacker->GetRank(), attacker);
+        defender->SetArmor(defender_attacker->HasArmor());
         defender_attacker->CancelSeaAttack();
         defender_attacker->Destroy();
     }
