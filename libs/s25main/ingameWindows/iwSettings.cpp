@@ -77,14 +77,16 @@ iwSettings::iwSettings()
       ->AddCheckBox(ID_cbLockWindowSize, curPos, cbSize, TextureColor::Grey, _("Lock window size:"), NormalFont, false)
       ->setChecked(!SETTINGS.video.displayMode.resizeable);
 
-    supportedResolutions_ = VIDEODRIVER.ListVideoModes();
+    const auto supportedResolutions = VIDEODRIVER.ListVideoModes();
+    supportedResolutions_.assign(supportedResolutions.begin(), supportedResolutions.end());
     for(const auto& videoMode : supportedResolutions_)
     {
         cbResolution->AddItem(helpers::format("%ux%u", videoMode.width, videoMode.height));
         if(videoMode == SETTINGS.video.fullscreenSize)
             cbResolution->SetSelection(cbResolution->GetNumItems() - 1);
     }
-    windowSizes_ = VIDEODRIVER.GetDefaultWindowSizes();
+    const auto windowSizes = VIDEODRIVER.GetDefaultWindowSizes();
+    windowSizes_.assign(windowSizes.begin(), windowSizes.end());
     cbWindowSize.AddItem(""); // Placeholder for current window size
     for(const auto& size : windowSizes_)
         cbWindowSize.AddItem(helpers::format("%ux%u", size.width, size.height));
