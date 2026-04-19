@@ -16,10 +16,6 @@ struct VideoMode
     constexpr bool operator!=(const VideoMode& o) const { return !(*this == o); }
     constexpr bool operator<(const VideoMode& o) const
     {
-        const auto area = static_cast<unsigned>(width) * height;
-        const auto otherArea = static_cast<unsigned>(o.width) * o.height;
-        if(area != otherArea)
-            return area < otherArea;
         if(width != o.width)
             return width < o.width;
         return height < o.height;
