@@ -428,22 +428,23 @@ void VideoDriverWrapper::SetMousePos(const Position& newPos)
     videodriver->SetMousePos(newPos);
 }
 
-std::vector<VideoMode> VideoDriverWrapper::ListVideoModes() const
+std::set<VideoMode> VideoDriverWrapper::ListVideoModes() const
 {
     if(!videodriver)
         return {};
 
-    auto videoModes = videodriver->ListVideoModes();
-    // Remove everything below 800x600
-    helpers::erase_if(videoModes,
-                      [](const auto& m) { return m.width < MinWindowSize.width && m.height < MinWindowSize.height; });
-    return videoModes;
+    const auto videoModes = videodriver->ListVideoModes();
+    std::set<VideoMode> result;
+    // Keep only modes larger than the minimum
+    std::copy_if(videoModes.begin(), videoModes.end(), std::inserter(result, result.end()),
+                 [](const auto& m) { return m.width >= MinWindowSize.width || m.height >= MinWindowSize.height; });
+    return result;
 }
 
-std::vector<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
+std::set<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
 {
     // clang-format off
-    std::vector<VideoMode> defaultWindowSizes = {
+    std::array defaultWindowSizes = {
       VideoMode(800, 600),
       VideoMode(1024, 768),
       VideoMode(1152, 648),
@@ -456,9 +457,8 @@ std::vector<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
       VideoMode(1920, 1080)
     };
     // clang-format on
-    std::vector<VideoMode> windowSizes = ListVideoModes();
-    windowSizes.insert(windowSizes.end(), defaultWindowSizes.begin(), defaultWindowSizes.end());
-    helpers::makeUnique(windowSizes);
+    std::set<VideoMode> windowSizes = ListVideoModes();
+    windowSizes.insert(defaultWindowSizes.begin(), defaultWindowSizes.end());
     return windowSizes;
 }
 

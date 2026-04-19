@@ -755,22 +755,14 @@ void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /
     }
 }
 
-static bool cmpVideoModes(const VideoMode& left, const VideoMode& right)
-{
-    if(left.width == right.width)
-        return left.height > right.height;
-    else
-        return left.width > right.width;
-}
-
 void dskOptions::loadVideoModes()
 {
     // Get available modes
-    videoModes_ = VIDEODRIVER.ListVideoModes();
-    // Sort by aspect ratio
-    helpers::sort(videoModes_, cmpVideoModes);
-    windowSizes_ = VIDEODRIVER.GetDefaultWindowSizes();
-    std::sort(windowSizes_.begin(), windowSizes_.end(), cmpVideoModes);
+    const auto videoModes = VIDEODRIVER.ListVideoModes();
+    // random access is need for selection
+    videoModes_.assign(videoModes.begin(), videoModes.end());
+    const auto windowSizes = VIDEODRIVER.GetDefaultWindowSizes();
+    windowSizes_.assign(windowSizes.begin(), windowSizes.end());
 }
 
 void dskOptions::Msg_ScreenResize(const ScreenResizeEvent& sr)

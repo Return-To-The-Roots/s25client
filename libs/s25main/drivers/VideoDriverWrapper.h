@@ -12,7 +12,9 @@
 #include "driver/VideoMode.h"
 #include "s25util/Singleton.h"
 #include <memory>
+#include <set>
 #include <string>
+#include <vector>
 
 class IVideoDriver;
 class IRenderer;
@@ -61,8 +63,8 @@ public:
     Position GetMousePos() const;
 
     /// Get supported resolutions
-    std::vector<VideoMode> ListVideoModes() const;
-    std::vector<VideoMode> GetDefaultWindowSizes() const;
+    std::set<VideoMode> ListVideoModes() const;
+    std::set<VideoMode> GetDefaultWindowSizes() const;
     bool HasVSync() const;
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
