@@ -119,12 +119,18 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     {
         ShowWindow(screen, SW_HIDE);
         if(ChangeDisplaySettings(nullptr, 0) != DISP_CHANGE_SUCCESSFUL)
+        {
+            ShowWindow(screen, SW_SHOW);
             return false;
+        }
     } else if(displayMode == DisplayMode::Fullscreen)
     {
         ShowWindow(screen, SW_HIDE);
         if(!MakeFullscreen(windowSize))
+        {
+            ShowWindow(screen, SW_SHOW);
             return false;
+        }
     }
 
     // Adjust style
