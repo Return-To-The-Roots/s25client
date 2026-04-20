@@ -222,6 +222,51 @@ This matters because AI road building is asynchronous:
 - follow-up cleanup and extra flag placement happen from the resulting road
   events.
 
+## How The AI Handles `ConnectJob`s
+
+`ConnectJob`s are the AI's deferred "make sure this flag really ends up on the
+road network" work items.
+
+They sit in their own queue inside `AIConstruction`:
+
+- `AddConnectFlagJob()` deduplicates by flag position, so one stuck building
+  site does not flood the planner with identical reconnect work.
+- `ExecuteJobs()` processes connect jobs before global or local build jobs,
+  but only up to `5` connection jobs per pass.
+- Jobs that neither finish nor fail are pushed back to the queue and retried
+  later.
+
+The AI enqueues them from several repair-style situations:
+
+- when a colony is founded and its new flag still needs a land connection,
+- when military logistics wants a frontier military building linked up,
+- when a road attempt failed and cleanup removed a dead-end fragment,
+- when periodic scans, run only if no build or connect backlog exists, find
+  building sites whose front flag still has no usable road.
+
+`ConnectJob::ExecuteJob()` is deliberately conservative:
+
+1. If another construction order was just issued nearby, the job does nothing
+   for now and stays queued. This avoids overlapping road orders in the same
+   area.
+2. If the flag no longer exists, the job fails and is discarded.
+3. If the flag belongs to a military building that already has any extra road
+   edge, the job finishes immediately. This prevents military sites from
+   collecting multiple side connections.
+4. If the flag is still disconnected, the job calls
+   `ConnectFlagToRoadSytem(flag, route, 24)` to try one normal road-building
+   attempt.
+5. If that call cannot find a valid route, the job fails. If it does issue a
+   road order, the job stays queued until a later tick sees the flag as truly
+   connected.
+6. Once the flag reaches the road system, the job finishes and
+   `RecalcGround()` updates the local AI terrain/building-quality view for the
+   finished route.
+
+So `ConnectJob`s are less about planning new expansion roads and more about
+finishing, retrying, or repairing local connections after the main build logic
+or runtime events left a flag temporarily isolated.
+
 ## Secondary Roads And Cleanup
 
 For non-military buildings, `BuildAlternativeRoad()` can add one more nearby
