@@ -128,8 +128,8 @@ void nobHarborBuilding::DestroyBuilding()
 
         soldier.CancelSeaAttack();
         RTTR_Assert(!soldier.GetAttackedGoal());
-        RTTR_Assert(soldier.HasNoHome());
-        RTTR_Assert(soldier.HasNoGoal());
+        RTTR_Assert(!soldier.GetHomeBld());
+        RTTR_Assert(!soldier.GetGoal());
         soldier.StartWandering();
         soldier.StartWalking(RANDOM_ENUM(Direction));
     }
@@ -1032,7 +1032,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>
         {
             figure->SetGoalTonullptr();
             AddFigure(std::move(figure), true);
-        } else if(figure->HasNoGoal())
+        } else if(!figure->GetGoal())
         {
             AddDependentFigure(*figure); // No goal? We take it
             AddFigure(std::move(figure), true);
@@ -1212,8 +1212,8 @@ void nobHarborBuilding::AddSeaAttacker(std::unique_ptr<nofAttacker> attacker)
         // notify target about noShow, notify home that soldier wont return, add to inventory
         attacker->SeaAttackFailedBeforeLaunch(); // set state, remove target & home
         RTTR_Assert(!attacker->GetAttackedGoal());
-        RTTR_Assert(attacker->HasNoHome());
-        RTTR_Assert(attacker->HasNoGoal());
+        RTTR_Assert(!attacker->GetHomeBld());
+        RTTR_Assert(!attacker->GetGoal());
         AddFigure(std::move(attacker), true);
         return;
     }
@@ -1232,7 +1232,7 @@ void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
       helpers::find_if(soldiers_for_ships, [attacker](const auto& it) { return it.attacker.get() == attacker; });
 
     RTTR_Assert(it != soldiers_for_ships.end());
-    if(attacker->HasNoGoal())
+    if(!attacker->GetGoal())
     {
         // No goal? We take it
         AddDependentFigure(*attacker);

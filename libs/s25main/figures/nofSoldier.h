@@ -33,14 +33,13 @@ public:
 
     void Destroy() override
     {
-        RTTR_Assert(HasNoHome());
+        RTTR_Assert(!GetHomeBld());
         noFigure::Destroy();
     }
     void Serialize(SerializedGameData& sgd) const override;
 
     unsigned char GetRank() const;
     unsigned char GetHitpoints() const;
-    bool HasNoHome() const { return homeBld == nullptr; }
     const nobBaseMilitary* GetHomeBld() const { return homeBld; }
 };
 

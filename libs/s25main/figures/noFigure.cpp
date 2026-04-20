@@ -67,7 +67,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 
 void noFigure::Destroy()
 {
-    RTTR_Assert(HasNoGoal());
+    RTTR_Assert(!goal_);
     RTTR_Assert(!cur_rs);
     noMovable::Destroy();
 
@@ -455,7 +455,7 @@ void noFigure::GoHome(noRoadNode* goal)
 
 void noFigure::StartWandering(const unsigned burned_wh_id)
 {
-    RTTR_Assert(HasNoGoal());
+    RTTR_Assert(!goal_);
     fs = FigureState::Wander;
     cur_rs = nullptr;
     rs_pos = 0;

@@ -143,7 +143,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
             }
             // Let him "walk" to goal -> Already reached -> Added and all internal states set correctly
             soldier.WalkToGoal();
-            BOOST_TEST_REQUIRE(soldier.HasNoGoal());
+            BOOST_TEST_REQUIRE(!soldier.GetGoal());
         }
         BOOST_TEST_REQUIRE(bld->GetNumTroops() == oldNumSoldiers + numSoldiers);
     }
@@ -754,7 +754,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 
     // 1. Attackers from this building
     // No home -> Wander
-    BOOST_TEST_REQUIRE(attackerFromPl0.HasNoHome());
+    BOOST_TEST_REQUIRE(!attackerFromPl0.GetHomeBld());
     rescheduleWalkEvent(em, attackerFromPl0, 1);
     RTTR_EXEC_TILL(2, attackerFromPl0.IsWandering());
     // 2. Aggressive defenders from this building
