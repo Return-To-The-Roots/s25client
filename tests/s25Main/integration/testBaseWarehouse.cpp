@@ -6,6 +6,8 @@
 #include "RTTR_AssertError.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
@@ -60,6 +62,25 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
 };
 
 using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+
+class TestWarehouse : public nobBaseWarehouse
+{
+public:
+    TestWarehouse(const MapPoint pos, const unsigned char player, const Nation nation)
+        : nobBaseWarehouse(BuildingType::Storehouse, pos, player, nation)
+    {
+        inventory.clear();
+    }
+
+    using nobBaseMilitary::CancelJobs;
+
+    GO_Type GetGOT() const final { return GO_Type::NobStorehouse; }
+    unsigned GetMilitaryRadius() const override { return 0; }
+    bool IsAttackable(unsigned /*playerIdx*/) const override { return false; }
+
+    void Draw(DrawPoint /*drawPt*/) override {}
+    void HandleEvent(const unsigned id) override { HandleBaseEvent(id); }
+};
 
 } // namespace
 
@@ -180,4 +201,43 @@ BOOST_FIXTURE_TEST_CASE(DestroyBuilding, EmptyWorldFixture1P)
     wh->AddDependentFigure(scout);
 
     world.DestroyBuilding(whPos, 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(CancelQueuedAggressiveDefenderKeepsVisualCounts, EmptyWorldFixture1P)
+{
+    GamePlayer& player = world.GetPlayer(0);
+    const MapPoint whPos = player.GetHQPos() + MapPoint(6, 0);
+
+    world.DestroyNO(whPos, false);
+    auto* wh = new TestWarehouse(whPos, 0, Nation::Romans);
+    world.SetNO(whPos, wh);
+    player.AddBuilding(wh, BuildingType::Storehouse);
+
+    for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
+        wh->SetRealReserve(i, 0);
+
+    Inventory goods;
+    goods.Add(Job::Private);
+    wh->AddGoods(goods, true);
+
+    const unsigned initialVisual = wh->GetNumVisualFigures(Job::Private);
+    const unsigned initialReal = wh->GetNumRealFigures(Job::Private);
+    BOOST_TEST_REQUIRE(initialVisual == 1u);
+    BOOST_TEST_REQUIRE(initialReal == 1u);
+
+    nofPassiveSoldier passive(whPos, 1, wh, nullptr, 0);
+    nofAttacker attacker(passive, *wh);
+
+    BOOST_TEST_REQUIRE(wh->SendAggressiveDefender(attacker));
+    BOOST_TEST_REQUIRE(wh->GetLeavingFigures().size() == 1u);
+    BOOST_TEST_REQUIRE(wh->GetNumRealFigures(Job::Private) == initialReal - 1u);
+    BOOST_TEST_REQUIRE(wh->GetNumVisualFigures(Job::Private) == initialVisual);
+
+    wh->CancelJobs();
+
+    BOOST_TEST_REQUIRE(wh->GetLeavingFigures().empty());
+    BOOST_TEST_REQUIRE(wh->GetNumRealFigures(Job::Private) == initialReal);
+    BOOST_TEST_REQUIRE(wh->GetNumVisualFigures(Job::Private) == initialVisual);
+
+    attacker.InformTargetsAboutCancelling();
 }

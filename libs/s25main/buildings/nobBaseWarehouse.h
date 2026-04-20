@@ -233,7 +233,7 @@ public:
     bool AreWaresToEmpty() const;
 
     /// Add an active soldier returning from a mission to the garrison
-    void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier) override;
+    void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier, bool wasQueuedLeaving = false) override;
     /// Return the total number of soldiers stored in the warehouse
     unsigned GetNumSoldiers() const
     {

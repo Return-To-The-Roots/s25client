@@ -65,7 +65,7 @@ public:
     void AddLeavingEvent();
 
     /// Add an active soldier returning from a mission to the garrison
-    virtual void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier) = 0;
+    virtual void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier, bool wasQueuedLeaving = false) = 0;
 
     /// Send out an aggressive defender to intercept an attacker
     virtual nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) = 0;

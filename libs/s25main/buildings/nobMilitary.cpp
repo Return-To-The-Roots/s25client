@@ -683,7 +683,7 @@ void nobMilitary::CancelOrders()
     ordered_coins.clear();
 }
 
-void nobMilitary::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
+void nobMilitary::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier, bool /*wasQueuedLeaving*/)
 {
     // An active soldier returned -> convert him into a passive soldier (clone and destroy original)
     AddPassiveSoldier(std::make_unique<nofPassiveSoldier>(*soldier));

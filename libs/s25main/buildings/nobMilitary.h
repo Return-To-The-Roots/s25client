@@ -172,7 +172,7 @@ public:
     /// Called when a soldier arrives
     void GotWorker(Job job, noFigure& worker) override;
     /// Add an active soldier returning from a mission to the garrison
-    void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier) override;
+    void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier, bool wasQueuedLeaving = false) override;
     /// Add a passive soldier arriving from a warehouse to the garrison
     void AddPassiveSoldier(std::unique_ptr<nofPassiveSoldier> soldier);
     /// Called when a soldier fails to arrive

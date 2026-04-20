@@ -943,10 +943,10 @@ void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
     troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
 }
 
-void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier)
+void nobBaseWarehouse::AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier, const bool wasQueuedLeaving)
 {
-    // Add soldier. If he is still in the leave-queue, then don't add him to the visual settings again
-    if(helpers::contains(leave_house, soldier))
+    // Soldiers restored from the leave queue are already represented visually.
+    if(wasQueuedLeaving)
         inventory.real.Add(soldier->GetJobType());
     else
         inventory.Add(SOLDIER_JOBS[soldier->GetRank()]);

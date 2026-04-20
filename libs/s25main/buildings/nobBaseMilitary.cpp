@@ -381,7 +381,7 @@ void nobBaseMilitary::CancelJobs()
             // Active soldiers performing job work must inform their targets that the mission is cancelled
             soldier->InformTargetsAboutCancelling();
             // Move the soldier back into the building
-            this->AddActiveSoldier(std::move(soldier));
+            this->AddActiveSoldier(std::move(soldier), true);
             it = leave_house.erase(it);
         } else
             ++it;
