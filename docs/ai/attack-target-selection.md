@@ -51,8 +51,9 @@ While evaluating potential targets the controller:
      accumulated across all contributors.
 2. Skip targets if `attackersCount == 0`.
 3. On **Hard** difficulty the AI requires
-   `attackersStrength > enemyStrength + 2` for enemy military posts and
-   refuses to attack empty garrisons (it expects defenders).
+   `attackersStrength > enemyStrength + 2` for defended enemy military posts.
+   Empty military garrisons are exempt from that strength gate and can be
+   attacked as soon as at least one attacker is available.
 4. If all checks pass the method returns the target to `TryToAttack()`,
    which then re-counts nearby attackers before calling
    `aii.Attack(dest, attackersCount, true)` and `TrackCombatStart`.
@@ -75,10 +76,13 @@ When running with `TargetSelectionMode::Biting` the selector:
 
 1. Uses the same candidate discovery pass, ensuring each target still has at
    least one available attacker and, on Hard difficulty, enough aggregate
-   strength to overpower enemy garrisons.
+   strength to overpower enemy garrisons that still have defenders.
 2. Immediately returns any valid Headquarters target, treating it as maximum
    priority regardless of collateral score.
-3. Otherwise queries a weighted capture-loss score and chooses the building
+3. Otherwise, any enemy military building with zero stationed defenders is
+   promoted ahead of the collateral-score heuristic, so the AI snaps it up as
+   soon as any attacker can be sent.
+4. Otherwise queries a weighted capture-loss score and chooses the building
    whose capture would destroy the highest-scoring set of dependent enemy
    structures. Each destroyed building contributes
    `combat.buildingScores[BuildingType]` score, defaulting to `1.0` when the
@@ -111,5 +115,7 @@ When running with `TargetSelectionMode::Attrition` the selector:
 - Targets must be visible, within the base 21-node range, and not freshly
   constructed.
 - HQs or harbors without soldiers are opportunistically prioritized.
-- Attacks require enough nearby contributors; Hard AI compares aggregate
-  strength before committing.
+- Empty enemy military posts are snapped up immediately once the AI can send
+  any attacker.
+- Other attacks still require enough nearby contributors; Hard AI compares
+  aggregate strength before committing against defended garrisons.

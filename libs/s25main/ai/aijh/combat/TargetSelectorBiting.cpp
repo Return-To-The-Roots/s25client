@@ -24,6 +24,7 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
     const auto& buildingScores = owner_.GetConfig().combat.buildingScores;
 
     const nobBaseMilitary* bestTarget = nullptr;
+    const nobBaseMilitary* undefendedMilitaryTarget = nullptr;
     double bestLossScore = 0.0;
 
     for(const nobBaseMilitary* target : potentialTargets)
@@ -31,6 +32,17 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
         const unsigned potentialAttackers = CalcPotentialAttackers(*target);
         if(potentialAttackers == 0)
             continue;
+
+        if(target->GetBuildingType() == BuildingType::Headquarters)
+            return target;
+
+        const auto* enemyTarget = dynamic_cast<const nobMilitary*>(target);
+        if(enemyTarget && enemyTarget->GetNumTroops() == 0)
+        {
+            if(!undefendedMilitaryTarget)
+                undefendedMilitaryTarget = target;
+            continue;
+        }
 
         unsigned attackersStrength = 0;
         sortedMilitaryBlds myBuildings = owner_.GetWorld().LookForMilitaryBuildings(target->GetPos(), 2);
@@ -46,18 +58,12 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
             attackersStrength += myMil->GetSoldiersStrengthForAttack(target->GetPos(), newAttackers);
         }
 
-        if(owner_.GetLevel() == AI::Level::Hard && target->GetGOT() == GO_Type::NobMilitary)
-        {
-            const auto* enemyTarget = static_cast<const nobMilitary*>(target);
+        if(owner_.GetLevel() == AI::Level::Hard && enemyTarget)
             if(attackersStrength <= enemyTarget->GetSoldiersStrength() + 1)
                 continue;
-        }
-
-        if(target->GetBuildingType() == BuildingType::Headquarters)
-            return target;
 
         double lossScore = 0.0;
-        if(const auto* enemyTarget = dynamic_cast<const nobMilitary*>(target))
+        if(enemyTarget)
             lossScore = CalculateMilitaryBuildingProtectionValue(*enemyTarget, buildingScores);
 
         if(!bestTarget || lossScore > bestLossScore)
@@ -66,6 +72,9 @@ const nobBaseMilitary* AICombatController::SelectAttackTargetBiting() const
             bestLossScore = lossScore;
         }
     }
+
+    if(undefendedMilitaryTarget)
+        return undefendedMilitaryTarget;
 
     return bestTarget;
 }

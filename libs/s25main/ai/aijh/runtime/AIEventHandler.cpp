@@ -44,7 +44,7 @@ void AIEventHandler::ExecuteAIJob()
         }
     }
 
-    quota = (owner_.aii.GetStorehouses().size() + owner_.aii.GetMilitaryBuildings().size()) * 1;
+    quota = std::max<unsigned>(5, (owner_.aii.GetStorehouses().size() + owner_.aii.GetMilitaryBuildings().size()) * 1);
     if(quota > 40)
         quota = 40;
 
