@@ -228,6 +228,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     LogFinishedCombats(gf);
     perfReporter_->MaybeLog(gf);
 
+    const ScopedAIRuntimeProfile runGfProfile(AIRuntimeProfileSection::RunGF);
+
     if(IsStatsPeriodHit(gf, STATS_CONFIG.stats_period))
         saveStats(gf);
     if(IsStatsPeriodHit(gf, STATS_CONFIG.debug_stats_period))
@@ -274,11 +276,11 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         ExecuteAIJob();
     }
 
-    if((gf + playerId * 29) % 500 == 0)
-    {
-        const ScopedAIRuntimeProfile captureRisksProfile(AIRuntimeProfileSection::EvaluateCaptureRisks);
-        EvaluateCaptureRisks();
-    }
+    // if((gf + playerId * 29) % 500 == 0)
+    // {
+    //     const ScopedAIRuntimeProfile captureRisksProfile(AIRuntimeProfileSection::EvaluateCaptureRisks);
+    //     EvaluateCaptureRisks();
+    // }
 
     if((gf + playerId * 17) % attack_interval == 0)
     {

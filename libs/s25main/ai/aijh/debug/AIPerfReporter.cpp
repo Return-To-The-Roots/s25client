@@ -5,6 +5,7 @@
 #include "AIPerfReporter.h"
 
 #include "GamePlayer.h"
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/debug/StatsConfig.h"
 
 #include <boost/format.hpp>
@@ -15,6 +16,26 @@ namespace {
 
 constexpr unsigned kAIPerfLogPeriodGF = 1000;
 bool perfCsvHeaderInitialized = false;
+
+struct CsvSection
+{
+    AIJH::AIRuntimeProfileSection section;
+    const char* name;
+};
+
+constexpr std::array<CsvSection, 11> kCsvSections = {{
+  {AIJH::AIRuntimeProfileSection::RunGF, "RunGF"},
+  {AIJH::AIRuntimeProfileSection::RefreshBuildingQualities, "RefreshBuildingQualities"},
+  {AIJH::AIRuntimeProfileSection::BuildingPlannerUpdate, "BuildingPlannerUpdate"},
+  {AIJH::AIRuntimeProfileSection::ExecuteAIJob, "ExecuteAIJob"},
+  {AIJH::AIRuntimeProfileSection::EvaluateCaptureRisks, "EvaluateCaptureRisks"},
+  {AIJH::AIRuntimeProfileSection::TryToAttack, "TryToAttack"},
+  {AIJH::AIRuntimeProfileSection::TrySeaAttack, "TrySeaAttack"},
+  {AIJH::AIRuntimeProfileSection::CheckEconomicHotspots, "CheckEconomicHotspots"},
+  {AIJH::AIRuntimeProfileSection::UpdateTroopsLimit, "UpdateTroopsLimit"},
+  {AIJH::AIRuntimeProfileSection::AdjustSettings, "AdjustSettings"},
+  {AIJH::AIRuntimeProfileSection::PlanNewBuildings, "PlanNewBuildings"},
+}};
 
 std::ofstream CreatePerfCsvFile()
 {
@@ -34,8 +55,16 @@ void InitializePerfCsvFile()
 
     std::ofstream perfFile = CreatePerfCsvFile();
     if(perfFile)
-        perfFile << "GameFrame,ElapsedMillis,GlobalPositionSearchInvocations,GlobalPositionSearchCooldownSkips"
-                 << std::endl;
+    {
+        perfFile << "GameFrame,ElapsedMillis,WindowGameFrames";
+        for(const auto& csvSection : kCsvSections)
+        {
+            perfFile << "," << csvSection.name << "_AvgUsPerGF";
+            perfFile << "," << csvSection.name << "_AvgUsPerCall";
+            perfFile << "," << csvSection.name << "_Calls";
+        }
+        perfFile << std::endl;
+    }
 
     perfCsvHeaderInitialized = true;
 }
@@ -67,18 +96,32 @@ void AIPerfReporter::MaybeLog(const unsigned gf)
         0 :
         std::chrono::duration_cast<std::chrono::milliseconds>(now - lastLogTime_).count();
 
-    const uint64_t globalPositionSearchInvocations = owner_.GetGlobalPositionSearchInvocationCount();
-    const uint64_t globalPositionSearchCooldownSkips = owner_.GetGlobalPositionSearchCooldownSkipCount();
+    const AIRuntimeSnapshot currentSnapshot = AIRuntimeProfiler::Instance().GetSnapshot();
+    const unsigned windowGameFrames = gf - lastLoggedGF_;
 
     perfFile << gf;
     perfFile << "," << elapsedMillis;
-    perfFile << "," << (globalPositionSearchInvocations - lastGlobalPositionSearchInvocations_);
-    perfFile << "," << (globalPositionSearchCooldownSkips - lastGlobalPositionSearchCooldownSkips_);
+    perfFile << "," << windowGameFrames;
+
+    for(const auto& csvSection : kCsvSections)
+    {
+        const unsigned idx = static_cast<unsigned>(csvSection.section);
+        const uint64_t deltaCalls = currentSnapshot[idx].calls - prevSnapshot_[idx].calls;
+        const uint64_t deltaTotalNs = currentSnapshot[idx].totalNs - prevSnapshot_[idx].totalNs;
+        const double avgUsPerGF =
+          windowGameFrames > 0 ? static_cast<double>(deltaTotalNs) / 1000.0 / windowGameFrames : 0.0;
+        const double avgUsPerCall =
+          deltaCalls > 0 ? static_cast<double>(deltaTotalNs) / 1000.0 / deltaCalls : 0.0;
+        perfFile << "," << avgUsPerGF;
+        perfFile << "," << avgUsPerCall;
+        perfFile << "," << deltaCalls;
+    }
+
     perfFile << std::endl;
 
     lastLogTime_ = now;
-    lastGlobalPositionSearchInvocations_ = globalPositionSearchInvocations;
-    lastGlobalPositionSearchCooldownSkips_ = globalPositionSearchCooldownSkips;
+    lastLoggedGF_ = gf;
+    prevSnapshot_ = currentSnapshot;
 }
 
 } // namespace AIJH

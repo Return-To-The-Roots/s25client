@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/debug/AIStatsSource.h"
 #include <chrono>
 
@@ -19,8 +20,8 @@ public:
 private:
     const AIStatsSource& owner_;
     std::chrono::steady_clock::time_point lastLogTime_{};
-    uint64_t lastGlobalPositionSearchInvocations_ = 0;
-    uint64_t lastGlobalPositionSearchCooldownSkips_ = 0;
+    unsigned lastLoggedGF_ = 0;
+    AIRuntimeSnapshot prevSnapshot_{};
 };
 
 } // namespace AIJH

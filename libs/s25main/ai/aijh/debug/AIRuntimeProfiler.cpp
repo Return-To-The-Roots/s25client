@@ -20,6 +20,7 @@ namespace {
 using namespace std::chrono;
 
 constexpr std::array<std::string_view, static_cast<unsigned>(AIRuntimeProfileSection::Count)> kSectionNames = {
+  "RunGF",
   "RefreshBuildingQualities", "BuildingPlannerUpdate",      "ExecuteAIJob",           "ExecuteEventJobs",
   "ExecuteConstructionJobs",  "ExecuteConnectJobs",         "ExecuteGlobalBuildJobs", "ExecuteBuildJobs",
   "SelectTargetAttrition",    "AttritionGetPotential",      "AttritionRecaptureScan", "AttritionPickRecap",
@@ -94,6 +95,15 @@ AIRuntimeProfiler::~AIRuntimeProfiler()
         std::fprintf(stderr, "%-24s %10llu %12.3f %12.3f %12.3f\n", BUILDING_NAMES[buildingType],
                      static_cast<unsigned long long>(stat.calls), ToMilliseconds(stat.totalNs), avgUs, maxUs);
     }
+}
+
+AIRuntimeSnapshot AIRuntimeProfiler::GetSnapshot() const
+{
+    AIRuntimeSnapshot snapshot;
+    for(unsigned i = 0; i < static_cast<unsigned>(AIRuntimeProfileSection::Count); ++i)
+        snapshot[i] = {stats_[i].calls, stats_[i].totalNs, stats_[i].maxNs, stats_[i].totalWorkUnits,
+                       stats_[i].maxWorkUnits};
+    return snapshot;
 }
 
 void AIRuntimeProfiler::AddSample(const AIRuntimeProfileSection section, const nanoseconds duration,

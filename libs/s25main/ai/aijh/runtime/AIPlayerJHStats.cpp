@@ -34,16 +34,6 @@ void AIPlayerJH::saveDebugStats(unsigned gf) const
     statsReporter_->SaveDebugStats(gf);
 }
 
-uint64_t AIPlayerJH::GetGlobalPositionSearchInvocationCount() const
-{
-    return globalPositionSearchInvocations_;
-}
-
-uint64_t AIPlayerJH::GetGlobalPositionSearchCooldownSkipCount() const
-{
-    return globalPositionSearchCooldownSkips_;
-}
-
 void AIPlayerJH::RecordGlobalPositionSearchInvocation()
 {
     ++globalPositionSearchInvocations_;

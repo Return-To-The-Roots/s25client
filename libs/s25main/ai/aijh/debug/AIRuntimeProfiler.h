@@ -7,6 +7,7 @@
 #include "gameTypes/BuildingType.h"
 #include "helpers/EnumArray.h"
 
+#include <array>
 #include <chrono>
 #include <cstdint>
 
@@ -14,6 +15,7 @@ namespace AIJH {
 
 enum class AIRuntimeProfileSection : unsigned
 {
+    RunGF,
     RefreshBuildingQualities,
     BuildingPlannerUpdate,
     ExecuteAIJob,
@@ -43,6 +45,18 @@ enum class AIRuntimeProfileSection : unsigned
     Count
 };
 
+struct AIRuntimeSectionSnapshot
+{
+    std::uint64_t calls = 0;
+    std::uint64_t totalNs = 0;
+    std::uint64_t maxNs = 0;
+    std::uint64_t totalWorkUnits = 0;
+    std::uint64_t maxWorkUnits = 0;
+};
+
+using AIRuntimeSnapshot =
+  std::array<AIRuntimeSectionSnapshot, static_cast<unsigned>(AIRuntimeProfileSection::Count)>;
+
 class AIRuntimeProfiler
 {
 public:
@@ -50,6 +64,7 @@ public:
 
     bool IsEnabled() const { return enabled_; }
     void AddSample(AIRuntimeProfileSection section, std::chrono::nanoseconds duration, std::uint64_t workUnits = 0);
+    AIRuntimeSnapshot GetSnapshot() const;
 
 private:
     AIRuntimeProfiler();

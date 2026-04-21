@@ -122,9 +122,6 @@ public:
 
     const helpers::EnumArray<unsigned, GoodType>& GetProducedGoods() const;
     unsigned GetProductivity(BuildingType type) const;
-    uint64_t GetGlobalPositionSearchInvocationCount() const override;
-    uint64_t GetGlobalPositionSearchCooldownSkipCount() const override;
-
     // Legacy collaboration API for jobs/controllers until narrower context
     // interfaces replace direct `AIPlayerJH` access.
     MapPoint FindBestPosition(BuildingType bt);
