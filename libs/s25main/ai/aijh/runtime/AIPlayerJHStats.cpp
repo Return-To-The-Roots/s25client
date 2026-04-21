@@ -4,6 +4,7 @@
 
 #include "AIPlayerJH.h"
 
+#include "ai/aijh/debug/AIPerfReporter.h"
 #include "ai/aijh/debug/AIStatsReporter.h"
 
 namespace AIJH {
@@ -31,6 +32,26 @@ void AIPlayerJH::saveStats(unsigned gf) const
 void AIPlayerJH::saveDebugStats(unsigned gf) const
 {
     statsReporter_->SaveDebugStats(gf);
+}
+
+uint64_t AIPlayerJH::GetGlobalPositionSearchInvocationCount() const
+{
+    return globalPositionSearchInvocations_;
+}
+
+uint64_t AIPlayerJH::GetGlobalPositionSearchCooldownSkipCount() const
+{
+    return globalPositionSearchCooldownSkips_;
+}
+
+void AIPlayerJH::RecordGlobalPositionSearchInvocation()
+{
+    ++globalPositionSearchInvocations_;
+}
+
+void AIPlayerJH::RecordGlobalPositionSearchCooldownSkip()
+{
+    ++globalPositionSearchCooldownSkips_;
 }
 
 } // namespace AIJH

@@ -208,6 +208,7 @@ std::optional<int> GlobalPositionFinder::GetPointRating(const BuildingType type,
 
 MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)
 {
+    aijh.RecordGlobalPositionSearchInvocation();
     int bestValue = 0;
     MapPoint bestPt = MapPoint::Invalid();
     const AIQueryService& queries = aijh.GetInterface().Queries();

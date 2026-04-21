@@ -50,6 +50,7 @@ class AIEventHandler;
 class AIMilitaryLogistics;
 class AIWorldQueries;
 class AIStatsReporter;
+class AIPerfReporter;
 class AICombatController;
 class AIRoadController;
 
@@ -121,10 +122,14 @@ public:
 
     const helpers::EnumArray<unsigned, GoodType>& GetProducedGoods() const;
     unsigned GetProductivity(BuildingType type) const;
+    uint64_t GetGlobalPositionSearchInvocationCount() const override;
+    uint64_t GetGlobalPositionSearchCooldownSkipCount() const override;
 
     // Legacy collaboration API for jobs/controllers until narrower context
     // interfaces replace direct `AIPlayerJH` access.
     MapPoint FindBestPosition(BuildingType bt);
+    void RecordGlobalPositionSearchInvocation() override;
+    void RecordGlobalPositionSearchCooldownSkip() override;
     void AddBuildJob(BuildingType type, MapPoint pt, bool front = false, bool searchPosition = true);
     void AddGlobalBuildJob(BuildingType type);
     void AddMilitaryBuildJob(MapPoint pt);

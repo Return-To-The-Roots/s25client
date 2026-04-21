@@ -89,6 +89,8 @@ public:
     void ConstructionOrdered(const BuildJob& job);
     /// To be called when the current pending construction orders were processed (usually on NWF)
     void ConstructionsExecuted();
+    bool IsGlobalSearchOnCooldown(BuildingType type) const;
+    void StartGlobalSearchCooldown(BuildingType type, unsigned durationGF);
 
 private:
     AIPlanningContext& aijh;
@@ -107,6 +109,7 @@ private:
     std::deque<MapPoint> constructionlocations;
     // contains the amount of buildings ordered since the last nwf
     helpers::EnumArray<uint8_t, BuildingType> constructionorders;
+    helpers::EnumArray<unsigned, BuildingType> nextGlobalSearchAllowedGF_{};
 };
 
 } // namespace AIJH

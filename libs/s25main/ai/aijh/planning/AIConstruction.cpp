@@ -4,6 +4,7 @@
 
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
+#include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "Jobs.h"
 #include "Point.h"
@@ -143,7 +144,8 @@ void AIConstruction::ExecuteJobs(unsigned limit)
             // couldnt do job? -> move to back of list
             if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
             {
-                job->priority--;
+                if(!job->WasBlockedByGlobalSearchCooldown())
+                    job->priority--;
                 globalBuildJobs.emplace(std::move(*job));
             }
         }
@@ -240,6 +242,18 @@ void AIConstruction::ConstructionsExecuted()
 {
     constructionlocations.clear();
     std::fill(constructionorders.begin(), constructionorders.end(), 0u);
+}
+
+bool AIConstruction::IsGlobalSearchOnCooldown(const BuildingType type) const
+{
+    const unsigned currentGF = aijh.GetWorld().GetEvMgr().GetCurrentGF();
+    return currentGF < nextGlobalSearchAllowedGF_[type];
+}
+
+void AIConstruction::StartGlobalSearchCooldown(const BuildingType type, const unsigned durationGF)
+{
+    const unsigned currentGF = aijh.GetWorld().GetEvMgr().GetCurrentGF();
+    nextGlobalSearchAllowedGF_[type] = currentGF + durationGF;
 }
 
 namespace {

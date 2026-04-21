@@ -9,6 +9,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
+#include <cstdint>
 
 class GamePlayer;
 
@@ -28,6 +29,8 @@ public:
     virtual unsigned AmountInStorage(Job job) const = 0;
     virtual unsigned GetProductivity(BuildingType type) const = 0;
     virtual const helpers::EnumArray<unsigned, GoodType>& GetProducedGoods() const = 0;
+    virtual uint64_t GetGlobalPositionSearchInvocationCount() const = 0;
+    virtual uint64_t GetGlobalPositionSearchCooldownSkipCount() const = 0;
 };
 
 } // namespace AIJH

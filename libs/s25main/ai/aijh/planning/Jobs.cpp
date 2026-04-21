@@ -20,10 +20,15 @@
 
 namespace AIJH {
 
+namespace {
+constexpr unsigned kGlobalBuildSearchCooldownGF = 1000;
+}
+
 AIJob::AIJob(AIPlanningContext& aijh) : aijh(aijh), state(JobState::Waiting) {}
 
 void BuildJob::ExecuteJob()
 {
+    blockedByGlobalSearchCooldown_ = false;
     const std::optional<ScopedAIGlobalBuildJobProfile> globalBuildJobProfile =
       (searchMode == SearchMode::Global) ? std::make_optional<ScopedAIGlobalBuildJobProfile>(type) : std::nullopt;
 
@@ -84,6 +89,12 @@ void BuildJob::TryToBuild()
     MapPoint foundPos = MapPoint::Invalid();
     if(searchMode == SearchMode::Global)
     {
+        if(aiConstruction.IsGlobalSearchOnCooldown(type))
+        {
+            aijh.RecordGlobalPositionSearchCooldownSkip();
+            blockedByGlobalSearchCooldown_ = true;
+            return;
+        }
         foundPos = aijh.FindBestPosition(type);
     } else if(searchMode == SearchMode::Radius)
     {
@@ -128,6 +139,8 @@ void BuildJob::TryToBuild()
 
     if(!foundPos.isValid())
     {
+        if(searchMode == SearchMode::Global)
+            aiConstruction.StartGlobalSearchCooldown(type, kGlobalBuildSearchCooldownGF);
         state = JobState::Failed;
 #ifdef DEBUG_AI
         std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: No Position found for "

@@ -102,8 +102,11 @@
     std::unique_ptr<AIConstruction> construction;
     std::unique_ptr<GlobalPositionFinder> globalPositionFinder;
     std::unique_ptr<AIStatsReporter> statsReporter_;
+    std::unique_ptr<AIPerfReporter> perfReporter_;
     std::unique_ptr<AICombatController> combatController_;
     std::unique_ptr<AIRoadController> roadController_;
 
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subProduction, subBQ;
     unsigned currentGF_ = 0;
+    uint64_t globalPositionSearchInvocations_ = 0;
+    uint64_t globalPositionSearchCooldownSkips_ = 0;

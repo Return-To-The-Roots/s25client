@@ -6,6 +6,7 @@
 
 #include "ai/aijh/combat/AICombatController.h"
 #include "ai/aijh/config/AIConfig.h"
+#include "ai/aijh/debug/AIPerfReporter.h"
 #include "ai/aijh/debug/AIRuntimeProfiler.h"
 #include "ai/aijh/debug/AIStatsReporter.h"
 #include "ai/aijh/debug/StatsConfig.h"
@@ -143,6 +144,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
       construction(std::make_unique<AIConstruction>(*this)),
       globalPositionFinder(std::make_unique<GlobalPositionFinder>(*this)),
       statsReporter_(std::make_unique<AIStatsReporter>(*this)),
+      perfReporter_(std::make_unique<AIPerfReporter>(*this)),
       combatController_(std::make_unique<AICombatController>(*this)),
       roadController_(std::make_unique<AIRoadController>(*this))
 {
@@ -224,6 +226,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(gf == 0)
         InitializeCombatsLogFile();
     LogFinishedCombats(gf);
+    perfReporter_->MaybeLog(gf);
 
     if(IsStatsPeriodHit(gf, STATS_CONFIG.stats_period))
         saveStats(gf);

@@ -68,18 +68,20 @@ class BuildJob : public AIJob, public JobWithTarget
 {
 public:
     BuildJob(AIPlanningContext& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SearchMode::Radius)
-        : AIJob(aijh),  priority(10000), type(type), around(around), searchMode(searchMode)
+        : AIJob(aijh), priority(10000), type(type), around(around), searchMode(searchMode)
     {}
 
     void ExecuteJob() override;
     inline BuildingType GetType() const { return type; }
     inline MapPoint GetAround() const { return around; }
+    bool WasBlockedByGlobalSearchCooldown() const { return blockedByGlobalSearchCooldown_; }
     unsigned priority;
 
 private:
     BuildingType type;
     MapPoint around;
     SearchMode searchMode;
+    bool blockedByGlobalSearchCooldown_ = false;
     std::vector<Direction> route;
 
     void TryToBuild();
