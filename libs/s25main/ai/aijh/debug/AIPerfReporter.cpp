@@ -56,7 +56,7 @@ void InitializePerfCsvFile()
     std::ofstream perfFile = CreatePerfCsvFile();
     if(perfFile)
     {
-        perfFile << "GameFrame,ElapsedMillis,WindowGameFrames";
+        perfFile << "PlayerID,GameFrame,ElapsedMillis,WindowGameFrames";
         for(const auto& csvSection : kCsvSections)
         {
             perfFile << "," << csvSection.name << "_AvgUsPerGF";
@@ -99,7 +99,8 @@ void AIPerfReporter::MaybeLog(const unsigned gf)
     const AIRuntimeSnapshot currentSnapshot = AIRuntimeProfiler::Instance().GetSnapshot();
     const unsigned windowGameFrames = gf - lastLoggedGF_;
 
-    perfFile << gf;
+    perfFile << player.GetPlayerId();
+    perfFile << "," << gf;
     perfFile << "," << elapsedMillis;
     perfFile << "," << windowGameFrames;
 

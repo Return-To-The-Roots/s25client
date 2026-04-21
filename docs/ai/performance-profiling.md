@@ -81,6 +81,7 @@ Written to `STATS_CONFIG.statsPath/ai_performance.csv`, appended each time
 
 | Column | Description |
 |---|---|
+| `PlayerID` | Zero-based index of the AI player that wrote this row |
 | `GameFrame` | Current game frame |
 | `ElapsedMillis` | Wall-clock milliseconds since the previous log row |
 | `WindowGameFrames` | Game frames covered by this row (`gf − previous gf`) |
