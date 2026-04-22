@@ -12,7 +12,7 @@
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
                        nobBaseMilitary* const home, const unsigned char rank, bool armor)
-    : noFigure(SOLDIER_JOBS[rank], pos, player, goal), building(home), hitpoints(HITPOINTS[rank])
+    : noFigure(SOLDIER_JOBS[rank], pos, player, goal), homeBld(home), hitpoints(HITPOINTS[rank])
 {
     hasArmor_ = armor;
     RTTR_Assert(IsSoldier());
@@ -20,7 +20,7 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank,
                        bool armor)
-    : noFigure(SOLDIER_JOBS[rank], pos, player), building(&home), hitpoints(HITPOINTS[rank])
+    : noFigure(SOLDIER_JOBS[rank], pos, player), homeBld(&home), hitpoints(HITPOINTS[rank])
 {
     hasArmor_ = armor;
     RTTR_Assert(IsSoldier());
@@ -31,7 +31,7 @@ void nofSoldier::Serialize(SerializedGameData& sgd) const
     noFigure::Serialize(sgd);
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
-        sgd.PushObject(building);
+        sgd.PushObject(homeBld);
 
     sgd.PushUnsignedChar(hitpoints);
 }
@@ -41,9 +41,9 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
     RTTR_Assert(IsSoldier());
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
-        building = sgd.PopObject<nobBaseMilitary>();
+        homeBld = sgd.PopObject<nobBaseMilitary>();
     else
-        building = nullptr;
+        homeBld = nullptr;
 
     hitpoints = sgd.PopUnsignedChar();
 }
@@ -58,11 +58,10 @@ void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
 
 void nofSoldier::AbrogateWorkplace()
 {
-    // Militärgebäude Bescheid sagen, dass ich nicht kommen kann
-    if(building)
+    if(homeBld)
     {
-        building->SoldierLost(this);
-        building = nullptr;
+        homeBld->SoldierLost(this);
+        homeBld = nullptr;
     }
 }
 

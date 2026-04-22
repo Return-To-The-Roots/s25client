@@ -51,7 +51,7 @@ void nofDefender::Walked()
             attacker->FightVsDefenderStarted();
             break;
         case SoldierState::DefendingWalkingFrom:
-            if(!building)
+            if(!homeBld)
             {
                 // Home destroyed -> Start wandering around
                 attacker = nullptr;
@@ -68,7 +68,7 @@ void nofDefender::Walked()
                     StartWalking(Direction::SouthEast);
                 } else
                 {
-                    nobBaseMilitary* bld = building;
+                    nobBaseMilitary* bld = homeBld;
                     RTTR_Assert(bld->GetDefender() == this); // I should be the defender
                     bld->AddActiveSoldier(world->RemoveFigure(pos, *this));
                     RTTR_Assert(!bld->GetDefender()); // No defender anymore
@@ -81,7 +81,7 @@ void nofDefender::Walked()
 
 void nofDefender::HomeDestroyed()
 {
-    building = nullptr;
+    homeBld = nullptr;
 
     switch(state)
     {
@@ -106,7 +106,7 @@ void nofDefender::HomeDestroyed()
 
 void nofDefender::HomeDestroyedAtBegin()
 {
-    building = nullptr;
+    homeBld = nullptr;
 
     state = SoldierState::FigureWork;
 
@@ -122,7 +122,7 @@ void nofDefender::WonFighting()
     // Attacker is dead
     attacker = nullptr;
 
-    if(!building)
+    if(!homeBld)
     {
         // Home destroyed so abort and wander around
         state = SoldierState::FigureWork;
@@ -132,7 +132,7 @@ void nofDefender::WonFighting()
         return;
     }
 
-    attacker = building->FindAttackerNearBuilding();
+    attacker = homeBld->FindAttackerNearBuilding();
     if(attacker)
     {
         // New attacker found so wait for him
@@ -150,23 +150,23 @@ void nofDefender::LostFighting()
     attacker = nullptr;
 
     // Notify building if it still exists
-    if(building)
+    if(homeBld)
     {
-        building->ResetDefender();
+        homeBld->ResetDefender();
         // A military building potentially needs to get new soldiers if this wasn't the last one
-        if(BuildingProperties::IsMilitary(building->GetBuildingType()))
+        if(BuildingProperties::IsMilitary(homeBld->GetBuildingType()))
         {
-            RTTR_Assert(dynamic_cast<nobBaseMilitary*>(building));
-            if(static_cast<nobMilitary*>(building)->GetNumTroops())
-                static_cast<nobMilitary*>(building)->RegulateTroops();
+            RTTR_Assert(dynamic_cast<nobBaseMilitary*>(homeBld));
+            if(static_cast<nobMilitary*>(homeBld)->GetNumTroops())
+                static_cast<nobMilitary*>(homeBld)->RegulateTroops();
         }
-        building = nullptr;
+        homeBld = nullptr;
     }
 }
 
 void nofDefender::AttackerArrested()
 {
-    attacker = building->FindAttackerNearBuilding();
+    attacker = homeBld->FindAttackerNearBuilding();
     if(!attacker)
     {
         // Go back into the building

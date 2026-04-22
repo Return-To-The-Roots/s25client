@@ -97,7 +97,7 @@ void nofPassiveSoldier::Heal()
 
 void nofPassiveSoldier::GoalReached()
 {
-    static_cast<nobMilitary*>(building)->AddPassiveSoldier(world->RemoveFigure(pos, *this));
+    static_cast<nobMilitary*>(homeBld)->AddPassiveSoldier(world->RemoveFigure(pos, *this));
 }
 
 void nofPassiveSoldier::LeaveBuilding()
@@ -105,16 +105,16 @@ void nofPassiveSoldier::LeaveBuilding()
     // Nach Hause in ein Lagerhaus gehen
     rs_dir = true;
     rs_pos = 1;
-    cur_rs = building->GetRoute(Direction::SouthEast);
+    cur_rs = homeBld->GetRoute(Direction::SouthEast);
     GoHome();
 
-    building = nullptr;
+    homeBld = nullptr;
 }
 
 void nofPassiveSoldier::Upgrade()
 {
     // We must not be in the buildings list while upgrading. This would destroy the ordered list
-    RTTR_Assert(!building || !static_cast<nobMilitary*>(building)->IsInTroops(*this));
+    RTTR_Assert(!homeBld || !static_cast<nobMilitary*>(homeBld)->IsInTroops(*this));
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 
@@ -139,11 +139,11 @@ void nofPassiveSoldier::Walked()
 
 void nofPassiveSoldier::NotNeeded()
 {
-    building = nullptr;
+    homeBld = nullptr;
     GoHome();
 }
 
 nobMilitary* nofPassiveSoldier::getHome() const
 {
-    return checkedCast<nobMilitary*>(building);
+    return checkedCast<nobMilitary*>(homeBld);
 }
