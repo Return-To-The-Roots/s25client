@@ -268,20 +268,18 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             aii.Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
     }
 
-    {
-        const ScopedAIRuntimeProfile refreshBuildingQualitiesProfile(AIRuntimeProfileSection::RefreshBuildingQualities);
-        mapState_->RefreshBuildingQualities();
-    }
 
-    {
-        const ScopedAIRuntimeProfile plannerUpdateProfile(AIRuntimeProfileSection::BuildingPlannerUpdate);
-        bldPlanner->Update(gf, *this);
-    }
 
     if(gfisnwf)
         construction->ConstructionsExecuted();
 
     if(gf % 100 == 0) {
+        const ScopedAIRuntimeProfile refreshBuildingQualitiesProfile(AIRuntimeProfileSection::RefreshBuildingQualities);
+        mapState_->RefreshBuildingQualities();
+
+        const ScopedAIRuntimeProfile plannerUpdateProfile(AIRuntimeProfileSection::BuildingPlannerUpdate);
+        bldPlanner->Update(gf, *this);
+
         bldPlanner->UpdateBuildingsWanted(*this);
         const ScopedAIRuntimeProfile executeAiJobProfile(AIRuntimeProfileSection::ExecuteAIJob);
         ExecuteAIJob();
@@ -326,7 +324,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         UpdateTroopsLimit();
     }
 
-    if((gf + playerId * 11) % 150 == 0)
+    if((gf + playerId * 11 + 100) % 150 == 0)
     {
         const ScopedAIRuntimeProfile adjustSettingsProfile(AIRuntimeProfileSection::AdjustSettings);
         AdjustSettings();
