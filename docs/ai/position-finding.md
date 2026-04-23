@@ -6,6 +6,21 @@ The current AI position search is implemented by
 It does a full-map scan and returns one best point for a requested
 `BuildingType`.
 
+See also:
+
+- [configuration.md](configuration.md) — full reference for `posFinder`
+  / `locationParams` keys (`resources`, `proximity`, `rating`,
+  `buildOnBorder`, `bqPenalty.buildLocation`,
+  `reserveMilitaryBorderSlots`).
+- [resource-value-cache.md](resource-value-cache.md) — caching policy
+  for `CalcResourceValue`, the dominant cost in this scan.
+- [construction-mechanics.md](construction-mechanics.md) — how the
+  global position search interacts with the build-job queues and the
+  per-`BuildingType` cooldown that fires on `MapPoint::Invalid()`
+  results.
+- [road-route-selection.md](road-route-selection.md) — what happens
+  after a position is chosen and the AI must wire it up.
+
 ## Entry Point
 
 - `GlobalPositionFinder::FindBestPosition(BuildingType bt)`

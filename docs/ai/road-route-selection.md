@@ -1,5 +1,15 @@
 # AI Road Route Selection
 
+See also:
+
+- [construction-mechanics.md](construction-mechanics.md) — `BuildJob`
+  flow, `constructionlocations` reservation, and the `Road and Flag
+  Utilities` overview that calls into the routines below.
+- [configuration.md](configuration.md) — `bqPenalty.roadRoute` knob
+  weighting the BQ-degradation term in the scoring formula.
+- [position-finding.md](position-finding.md) — picks the building
+  position whose flag is the source of these connection searches.
+
 The AI does not run a global road-network optimizer. Road construction is a
 local heuristic layered on top of two lower-level pathfinders:
 

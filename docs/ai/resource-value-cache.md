@@ -1,5 +1,13 @@
 # AI Resource Value Cache
 
+See also:
+
+- [position-finding.md](position-finding.md) — primary caller of
+  `CalcResourceValue` via the global building-position search.
+- [performance-profiling.md](performance-profiling.md) — where the
+  cache hit/miss counters mentioned below surface alongside section
+  timings in `ai_performance.csv`.
+
 `AIQueryService::CalcResourceValue(pt, res)` sums `GetResourceRating` across all
 map points within the resource radius. This is the dominant inner-loop cost during
 global building-position searches and border-slot reservation checks. The same

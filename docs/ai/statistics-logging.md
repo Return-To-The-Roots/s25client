@@ -1,5 +1,14 @@
 # AIPlayerJH Statistics Logging
 
+See also:
+
+- [performance-profiling.md](performance-profiling.md) — sibling
+  pipeline that writes `ai_performance.csv` and the shutdown summary.
+- [attack-target-selection.md](attack-target-selection.md) —
+  `TrackCombatStart` is invoked from the target-selection flow.
+- [adjustments.md](adjustments.md) — `saveStats` re-uses the
+  distribution-slider snapshot described there.
+
 `libs/s25main/ai/aijh/debug/AIStatsReporter.cpp` implements the telemetry
 pipeline used by the JH AI, while
 `libs/s25main/ai/aijh/runtime/AIPlayerJHStats.cpp` keeps the compatibility

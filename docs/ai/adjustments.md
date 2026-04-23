@@ -1,5 +1,12 @@
 # AI Adjustment Synopsis
 
+See also:
+
+- [configuration.md](configuration.md) — `toolPriority` config keys feed
+  `calcToolPriority` defaults.
+- [statistics-logging.md](statistics-logging.md) — `saveStats` is where the
+  distribution slider snapshot described below is emitted.
+
 ## Tool Priority Logic
 - `AIPlayerJH::AdjustSettings` refreshes tool priorities whenever at least one
   Metalworks exists. It first computes shortages with `calcToolPriority`,

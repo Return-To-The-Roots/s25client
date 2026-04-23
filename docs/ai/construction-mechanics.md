@@ -1,5 +1,19 @@
 # AI Construction Job Mechanics
 
+See also:
+
+- [position-finding.md](position-finding.md) — `FindBestPosition` /
+  `FindPositionForBuildingAround` are the searches that feed (and can
+  trip the cooldown described below).
+- [road-route-selection.md](road-route-selection.md) — details for
+  `ConnectFlagToRoadSystem`, `BuildAlternativeRoad`, and the road
+  scoring referenced by the road/flag utilities here.
+- [configuration.md](configuration.md) — `wantedParams`, `disableBuilding`,
+  and `bqPenalty` knobs that gate `Wanted()` and route choices.
+- [performance-profiling.md](performance-profiling.md) — `ExecuteAIJob`,
+  `ExecuteGlobalBuildJobs`, `ExecuteBuildJobs`, and `ExecuteConnectJobs`
+  cover this dispatch loop in profiler output.
+
 ## Job Queues and Deduplication
 - `AddGlobalBuildJob` keeps a single global job per `BuildingType`, so strategic one-off goals
   (e.g., “build a shipyard somewhere”) do not stack and spam the planner.

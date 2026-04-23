@@ -6,6 +6,22 @@ tool priorities, building-quality penalties, and explicit building disables. The
 `libs/s25main/ai/aijh/config/AIConfig.h` and populated through YAML in
 `libs/s25main/ai/aijh/config/AIConfig.cpp`.
 
+Behaviour driven by these knobs is documented in:
+
+- [position-finding.md](position-finding.md) — `posFinder` /
+  `locationParams` and `bqPenalty.buildLocation`.
+- [road-route-selection.md](road-route-selection.md) —
+  `bqPenalty.roadRoute`.
+- [attack-target-selection.md](attack-target-selection.md) — `combat`
+  block (`targetSelection`, `attackIntervals`, `forceAdvantageRatio`,
+  `minNearTroopsDensity`, `buildingScores`).
+- [troops-limiting.md](troops-limiting.md) — `troopsDistribution`
+  strategy and frontier multipliers.
+- [adjustments.md](adjustments.md) — how `toolPriority` interacts with
+  the in-game shortage logic.
+- [construction-mechanics.md](construction-mechanics.md) — `disableBuilding`
+  and `wantedParams` shape what the planner queues.
+
 ## Structure
 
 - `wantedParams[BuildingType]` – Desired counts and production weights that the

@@ -16,6 +16,15 @@ See also:
 
 - `docs/development/event-loggers.md`
 - `docs/gameplay/military/deployment.md`
+- [configuration.md](configuration.md) — `troopsDistribution.strategy`,
+  `troopsDistribution.frontierMultipliers`, and `combat.buildingScores`
+  feeding the distribution rule below.
+- [attack-target-selection.md](attack-target-selection.md) —
+  `combat.buildingScores` is shared with the Biting target selector.
+- [gold-distribution.md](gold-distribution.md) — adjacent military
+  control surface (coin enable/disable per building).
+- [performance-profiling.md](performance-profiling.md) —
+  `UpdateTroopsLimit*` profiler sections cover this code path.
 
 ## Engine Contract
 

@@ -5,6 +5,19 @@ selection logic has been extracted into
 `ai/aijh/combat/TargetSelector.cpp` so it can evolve independently of the
 combat-resolution code.
 
+See also:
+
+- [configuration.md](configuration.md) — full reference for the `combat`
+  block (`targetSelection`, `attackIntervals`, `forceAdvantageRatio`,
+  `minNearTroopsDensity`, `buildingScores`).
+- [troops-limiting.md](troops-limiting.md) — `combat.buildingScores` is
+  also the basis for the `ProtectedBuildingValue` troop-cap strategy.
+- [performance-profiling.md](performance-profiling.md) — the
+  `Attrition*`, `TryToAttack`, and `TrySeaAttack` profiler sections cover
+  this code path.
+- [statistics-logging.md](statistics-logging.md) — `TrackCombatStart`
+  feeds the combat outcome log written from here.
+
 ## Trigger Flow
 
 - Every attack interval the AI calls `TryToAttack()`. The controller uses the

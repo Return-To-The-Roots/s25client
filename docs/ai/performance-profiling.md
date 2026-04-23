@@ -1,5 +1,23 @@
 # AI Runtime Performance Profiling
 
+See also:
+
+- [construction-mechanics.md](construction-mechanics.md) — what
+  `ExecuteAIJob` / `ExecuteGlobalBuildJobs` / `ExecuteBuildJobs` /
+  `ExecuteConnectJobs` actually do.
+- [position-finding.md](position-finding.md) — `PlanNewBuildings` and
+  the global position search timed by `ExecuteGlobalBuildJobs`.
+- [resource-value-cache.md](resource-value-cache.md) — the cache hit/miss
+  counters mentioned for inclusion in the CSV output.
+- [attack-target-selection.md](attack-target-selection.md) — `TryToAttack`,
+  `TrySeaAttack`, and the `Attrition*` sections.
+- [troops-limiting.md](troops-limiting.md) — `UpdateTroopsLimit*`
+  sections.
+- [adjustments.md](adjustments.md) — `AdjustSettings` covers tool /
+  distribution slider work.
+- [statistics-logging.md](statistics-logging.md) — parallel telemetry
+  pipeline (`stats.csv`, `combats.txt`, debug dumps).
+
 The JH AI has two complementary outputs for understanding per-frame cost:
 
 - **`ai_performance.csv`** — a rolling per-window average log written during
