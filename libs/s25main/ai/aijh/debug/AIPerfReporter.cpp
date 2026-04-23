@@ -63,6 +63,7 @@ void InitializePerfCsvFile()
             perfFile << "," << csvSection.name << "_AvgUsPerCall";
             perfFile << "," << csvSection.name << "_Calls";
         }
+        perfFile << ",ResourceValueCache_Hits,ResourceValueCache_Misses";
         perfFile << std::endl;
     }
 
@@ -118,11 +119,17 @@ void AIPerfReporter::MaybeLog(const unsigned gf)
         perfFile << "," << deltaCalls;
     }
 
+    const unsigned long long currentCacheHits = owner_.GetResourceValueCacheHits();
+    const unsigned long long currentCacheMisses = owner_.GetResourceValueCacheMisses();
+    perfFile << "," << (currentCacheHits - prevCacheHits_);
+    perfFile << "," << (currentCacheMisses - prevCacheMisses_);
     perfFile << std::endl;
 
     lastLogTime_ = now;
     lastLoggedGF_ = gf;
     prevSnapshot_ = currentSnapshot;
+    prevCacheHits_ = currentCacheHits;
+    prevCacheMisses_ = currentCacheMisses;
 }
 
 } // namespace AIJH

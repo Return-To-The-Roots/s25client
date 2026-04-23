@@ -29,6 +29,8 @@ public:
     virtual unsigned AmountInStorage(Job job) const = 0;
     virtual unsigned GetProductivity(BuildingType type) const = 0;
     virtual const helpers::EnumArray<unsigned, GoodType>& GetProducedGoods() const = 0;
+    virtual unsigned long long GetResourceValueCacheHits() const = 0;
+    virtual unsigned long long GetResourceValueCacheMisses() const = 0;
 };
 
 } // namespace AIJH

@@ -13,6 +13,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/ShipDirection.h"
 #include <list>
+#include <unordered_map>
 #include <vector>
 
 class Inventory;
@@ -44,6 +45,10 @@ public:
     int CalcResourceValue(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction = boost::none,
                           int lastval = 0xffff) const;
     int GetResourceRating(MapPoint pt, AIResource res) const;
+
+    unsigned long long GetResourceValueCacheHits() const { return resourceValueCacheHits_; }
+    unsigned long long GetResourceValueCacheMisses() const { return resourceValueCacheMisses_; }
+    void ResetResourceValueCacheStats() { resourceValueCacheHits_ = resourceValueCacheMisses_ = 0; }
     bool IsBorder(MapPoint pt) const;
     bool IsOwnTerritory(MapPoint pt) const;
     bool IsRoad(MapPoint pt, Direction dir) const;
@@ -93,10 +98,41 @@ public:
 private:
     void InitUsableHarbors();
 
+    struct CachedResourceValue
+    {
+        int value;
+        unsigned expiresAtGF;
+    };
+
+    struct CacheKey
+    {
+        MapPoint pt;
+        AIResource res;
+        bool operator==(const CacheKey& other) const noexcept { return pt == other.pt && res == other.res; }
+    };
+
+    struct CacheKeyHash
+    {
+        size_t operator()(const CacheKey& k) const noexcept
+        {
+            return (static_cast<size_t>(k.pt.x) << 20) | (static_cast<size_t>(k.pt.y) << 4)
+                   | static_cast<size_t>(static_cast<unsigned>(k.res));
+        }
+    };
+
+    int ComputeResourceValueUncached(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
+                                     int lastval) const;
+    void MaybeEvictExpired(unsigned currentGF) const;
+
     const GameWorldBase& gwb;
     const GamePlayer& player_;
     const unsigned char playerID_;
     bool reserveMilitaryBorderSlots_ = true;
     unsigned reserveMilitaryBorderlandThreshold_ = 150;
     std::vector<unsigned> usableHarbors_;
+
+    mutable std::unordered_map<CacheKey, CachedResourceValue, CacheKeyHash> resourceValueCache_;
+    mutable unsigned long long resourceValueCacheHits_ = 0;
+    mutable unsigned long long resourceValueCacheMisses_ = 0;
+    mutable unsigned resourceValueCacheMissesSinceLastEvict_ = 0;
 };

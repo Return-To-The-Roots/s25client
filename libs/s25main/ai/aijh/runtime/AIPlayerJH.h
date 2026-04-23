@@ -90,6 +90,8 @@ public:
 
     // Reporting and top-level state access
     void saveStats(unsigned gf) const override;
+    unsigned long long GetResourceValueCacheHits() const override;
+    unsigned long long GetResourceValueCacheMisses() const override;
 
     // Shared map and resource accessors
     bool IsInvalidShipyardPosition(MapPoint pt);

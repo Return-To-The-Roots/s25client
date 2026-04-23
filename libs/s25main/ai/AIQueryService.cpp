@@ -4,6 +4,7 @@
 
 #include "AIQueryService.h"
 
+#include "EventManager.h"
 #include "buildings/noBaseBuilding.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
@@ -25,6 +26,30 @@
 #include <set>
 
 namespace {
+
+constexpr unsigned kDefaultTTL   = 1'000;
+constexpr unsigned kFishTTL      = 10'000;
+constexpr unsigned kPermanentTTL = 1'000'000;
+constexpr unsigned kEvictEveryNMisses       = 4096;
+constexpr size_t   kResourceValueCacheHardCap = 200'000;
+
+unsigned GetCacheTTL(AIResource res, int value)
+{
+    switch(res)
+    {
+        case AIResource::Fish:
+            return kFishTTL;
+        case AIResource::Gold:
+        case AIResource::Ironore:
+        case AIResource::Coal:
+        case AIResource::Granite:
+        case AIResource::Stones:
+            return (value == 0) ? kPermanentTTL : kDefaultTTL;
+        default: // Wood, Plantspace, Borderland
+            return kDefaultTTL;
+    }
+}
+
 /// Param for road-build pathfinding
 struct Param_RoadPath
 {
@@ -192,8 +217,8 @@ int AIQueryService::GetResourceRating(const MapPoint pt, AIResource res) const
     return 0;
 }
 
-int AIQueryService::CalcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
-                                      int lastval) const
+int AIQueryService::ComputeResourceValueUncached(const MapPoint pt, AIResource res,
+                                                  helpers::OptionalEnum<Direction> direction, int lastval) const
 {
     const unsigned resRadius = RES_RADIUS[res];
     if(!direction)
@@ -237,6 +262,49 @@ int AIQueryService::CalcResourceValue(const MapPoint pt, AIResource res, helpers
         }
         return returnVal;
     }
+}
+
+int AIQueryService::CalcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
+                                      int lastval) const
+{
+    if(direction)
+        return ComputeResourceValueUncached(pt, res, direction, lastval);
+
+    const unsigned currentGF = gwb.GetEvMgr().GetCurrentGF();
+    const CacheKey key{pt, res};
+
+    auto it = resourceValueCache_.find(key);
+    if(it != resourceValueCache_.end() && currentGF < it->second.expiresAtGF)
+    {
+        ++resourceValueCacheHits_;
+        return it->second.value;
+    }
+
+    MaybeEvictExpired(currentGF);
+
+    const int value = ComputeResourceValueUncached(pt, res, boost::none, 0xffff);
+    resourceValueCache_[key] = {value, currentGF + GetCacheTTL(res, value)};
+    ++resourceValueCacheMisses_;
+    return value;
+}
+
+void AIQueryService::MaybeEvictExpired(unsigned currentGF) const
+{
+    if(++resourceValueCacheMissesSinceLastEvict_ < kEvictEveryNMisses
+       && resourceValueCache_.size() <= kResourceValueCacheHardCap)
+        return;
+    resourceValueCacheMissesSinceLastEvict_ = 0;
+
+    for(auto it = resourceValueCache_.begin(); it != resourceValueCache_.end();)
+    {
+        if(currentGF >= it->second.expiresAtGF)
+            it = resourceValueCache_.erase(it);
+        else
+            ++it;
+    }
+
+    if(resourceValueCache_.size() > kResourceValueCacheHardCap)
+        resourceValueCache_.clear();
 }
 
 bool AIQueryService::IsBorder(const MapPoint pt) const

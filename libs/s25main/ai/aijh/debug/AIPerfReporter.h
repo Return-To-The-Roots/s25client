@@ -22,6 +22,8 @@ private:
     std::chrono::steady_clock::time_point lastLogTime_{};
     unsigned lastLoggedGF_ = 0;
     AIRuntimeSnapshot prevSnapshot_{};
+    unsigned long long prevCacheHits_ = 0;
+    unsigned long long prevCacheMisses_ = 0;
 };
 
 } // namespace AIJH

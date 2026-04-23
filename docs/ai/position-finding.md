@@ -33,6 +33,12 @@ For each map point, the finder applies filters in this order:
 The highest positive rating wins (`bestValue` starts at `0`), otherwise
 `MapPoint::Invalid()` is returned.
 
+## Resource Value Caching
+
+`CalcResourceValue` results are cached inside `AIQueryService` with per-resource
+TTLs to avoid redundant radius scans across repeated calls for the same point.
+See [resource-value-cache.md](resource-value-cache.md) for the full policy.
+
 ## Resource Requirement Check
 
 `MeetsPointResourceRequirements(...)` is data-driven:

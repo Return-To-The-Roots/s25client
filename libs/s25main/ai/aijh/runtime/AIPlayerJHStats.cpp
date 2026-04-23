@@ -4,6 +4,7 @@
 
 #include "AIPlayerJH.h"
 
+#include "ai/AIInterface.h"
 #include "ai/aijh/debug/AIPerfReporter.h"
 #include "ai/aijh/debug/AIStatsReporter.h"
 
@@ -42,6 +43,16 @@ void AIPlayerJH::RecordGlobalPositionSearchInvocation()
 void AIPlayerJH::RecordGlobalPositionSearchCooldownSkip()
 {
     ++globalPositionSearchCooldownSkips_;
+}
+
+unsigned long long AIPlayerJH::GetResourceValueCacheHits() const
+{
+    return aii.Queries().GetResourceValueCacheHits();
+}
+
+unsigned long long AIPlayerJH::GetResourceValueCacheMisses() const
+{
+    return aii.Queries().GetResourceValueCacheMisses();
 }
 
 } // namespace AIJH
