@@ -132,6 +132,16 @@ Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& b
     });
 }
 
+Subscription subscribeOwnerChangesToInvalidateBorderlandCache(const GameWorldBase& gw, AIQueryService& queries)
+{
+    constexpr unsigned kInvalidationRadius = RES_RADIUS[AIResource::Borderland] + 1;
+    return gw.GetNotifications().subscribe<NodeNote>([&queries](const NodeNote& note) {
+        if(note.type != NodeNote::Owner)
+            return;
+        queries.InvalidateResourceValueInRadius(note.pos, AIResource::Borderland, kInvalidationRadius);
+    });
+}
+
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), config_(GetAIConfigForPlayer(playerId)),
       mapState_(std::make_unique<AIMapState>(*this)),
@@ -214,6 +224,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
             economyController_->RecordProducedGood(note.good);
     });
     subBQ = recordBQsToUpdate(this->gwb, mapState_->GetNodesWithOutdatedBQ());
+    subBorderlandInvalidate = subscribeOwnerChangesToInvalidateBorderlandCache(this->gwb, aii.Queries());
 }
 
 AIPlayerJH::~AIPlayerJH() = default;

@@ -27,10 +27,11 @@
 
 namespace {
 
-constexpr unsigned kDefaultTTL   = 1'000;
-constexpr unsigned kFishTTL      = 10'000;
-constexpr unsigned kPermanentTTL = 1'000'000;
-constexpr unsigned kEvictEveryNMisses       = 4096;
+constexpr unsigned kDefaultTTL      = 1'000;
+constexpr unsigned kFishTTL         = 10'000;
+constexpr unsigned kBorderlandTTL   = 30'000;
+constexpr unsigned kPermanentTTL    = 1'000'000;
+constexpr unsigned kEvictEveryNMisses         = 4096;
 constexpr size_t   kResourceValueCacheHardCap = 200'000;
 
 unsigned GetCacheTTL(AIResource res, int value)
@@ -45,7 +46,9 @@ unsigned GetCacheTTL(AIResource res, int value)
         case AIResource::Granite:
         case AIResource::Stones:
             return (value == 0) ? kPermanentTTL : kDefaultTTL;
-        default: // Wood, Plantspace, Borderland
+        case AIResource::Borderland:
+            return kBorderlandTTL;
+        default: // Wood, Plantspace
             return kDefaultTTL;
     }
 }
@@ -305,6 +308,15 @@ void AIQueryService::MaybeEvictExpired(unsigned currentGF) const
 
     if(resourceValueCache_.size() > kResourceValueCacheHardCap)
         resourceValueCache_.clear();
+}
+
+void AIQueryService::InvalidateResourceValueInRadius(const MapPoint center, const AIResource res,
+                                                     const unsigned radius)
+{
+    if(resourceValueCache_.empty())
+        return;
+    for(const MapPoint& pt : gwb.GetPointsInRadiusWithCenter(center, radius))
+        resourceValueCache_.erase(CacheKey{pt, res});
 }
 
 bool AIQueryService::IsBorder(const MapPoint pt) const

@@ -39,7 +39,7 @@ each resource type can change in the game world:
 | `Gold`, `Ironore`, `Coal`, `Granite`, `Stones` | value > 0 | 1,000 | Deposits deplete as mines or quarries work |
 | `Wood` | any | 1,000 | Trees are actively chopped and planted |
 | `Plantspace` | any | 1,000 | Changes on farm or forester placement |
-| `Borderland` | any | 1,000 | Changes on territory shifts |
+| `Borderland` | any | 30,000 | Invalidated on territory changes; TTL is a safety net |
 
 The zero-value permanence for subsurface resources (`Gold`, `Ironore`, `Coal`,
 `Granite`) and `Stones` is correct by the game model: deposits are fixed at map
@@ -75,6 +75,19 @@ void               ResetResourceValueCacheStats();
 
 These counters are used to verify cache effectiveness and can be wired into the AI
 profiler output alongside the construction-job timings in `ai_performance.csv`.
+
+## Targeted `Borderland` invalidation
+
+`CalcResourceValue(pt, AIResource::Borderland)` depends on `IsBorder` and
+`IsOwnTerritory`, which flip whenever a military building finishes, is destroyed,
+or is captured. Rather than relying solely on the TTL, each `AIPlayerJH` subscribes
+to `NodeNote::Owner` and calls `InvalidateResourceValueInRadius(changed_pt,
+Borderland, RES_RADIUS[Borderland] + 1)` for every owner-flipped point. The
+`+1` covers `IsBorder` propagation one step beyond the changed point.
+
+This makes the 30,000-frame TTL a backstop only; actual freshness is maintained
+by the invalidation hook so `Borderland` entries stay valid during steady-state
+play and are evicted precisely on territory transitions.
 
 ## Source files
 

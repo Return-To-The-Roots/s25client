@@ -58,6 +58,10 @@ class AIRoadController;
 /// Requires arguments to have the same lifetime as the subscription
 Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& bqsToUpdate);
 
+/// Create a subscription which invalidates cached Borderland resource values on territory ownership changes.
+/// Requires arguments to have the same lifetime as the subscription.
+Subscription subscribeOwnerChangesToInvalidateBorderlandCache(const GameWorldBase& gw, AIQueryService& queries);
+
 /// Concrete AI player implementation for the JH AI.
 /// The public API lives here; internal helpers and state are declared in
 /// `AIPlayerJHInternal.h`.

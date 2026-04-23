@@ -49,6 +49,7 @@ public:
     unsigned long long GetResourceValueCacheHits() const { return resourceValueCacheHits_; }
     unsigned long long GetResourceValueCacheMisses() const { return resourceValueCacheMisses_; }
     void ResetResourceValueCacheStats() { resourceValueCacheHits_ = resourceValueCacheMisses_ = 0; }
+    void InvalidateResourceValueInRadius(MapPoint center, AIResource res, unsigned radius);
     bool IsBorder(MapPoint pt) const;
     bool IsOwnTerritory(MapPoint pt) const;
     bool IsRoad(MapPoint pt, Direction dir) const;

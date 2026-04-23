@@ -106,7 +106,8 @@
     std::unique_ptr<AICombatController> combatController_;
     std::unique_ptr<AIRoadController> roadController_;
 
-    Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subProduction, subBQ;
+    Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subProduction, subBQ,
+        subBorderlandInvalidate;
     unsigned currentGF_ = 0;
     uint64_t globalPositionSearchInvocations_ = 0;
     uint64_t globalPositionSearchCooldownSkips_ = 0;
