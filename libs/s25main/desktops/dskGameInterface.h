@@ -170,4 +170,7 @@ protected:
 
     Cheats cheats_;
     CheatCommandTracker cheatCommandTracker_;
+
+    unsigned displayedGF_ = 0;
+    unsigned lastGFDisplayUpdateTick_ = 0;
 };

@@ -462,6 +462,18 @@ void dskGameInterface::Msg_PaintAfter()
                          COLOR_YELLOW);
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
     }
+
+    // Draw current game frame label (refreshed every 2 seconds)
+    {
+        const unsigned now = VIDEODRIVER.GetTickCount();
+        if(now - lastGFDisplayUpdateTick_ >= 2000u)
+        {
+            displayedGF_ = world.GetEvMgr().GetCurrentGF();
+            lastGFDisplayUpdateTick_ = now;
+        }
+        const std::string gfText = "GF " + helpers::toString(displayedGF_);
+        NormalFont->Draw(iconPos, gfText, FontStyle::AlignH::RIGHT | FontStyle::AlignV::VCENTER, COLOR_YELLOW);
+    }
 }
 
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
