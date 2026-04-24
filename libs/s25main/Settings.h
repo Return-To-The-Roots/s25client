@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "DrawPoint.h"
+#include "driver/VideoInterface.h"
 #include "driver/VideoMode.h"
 #include "s25util/ProxySettings.h"
 #include "s25util/Singleton.h"
@@ -38,6 +39,17 @@ enum class MapScrollMode
     GrabAndDrag
 };
 
+enum class SubmitDebugData : uint8_t
+{
+    AskAtStart = 0, // I.e. undecided
+    Yes = 1,
+    AlwaysAsk = 2
+};
+constexpr auto maxEnumValue(SubmitDebugData)
+{
+    return SubmitDebugData::AlwaysAsk;
+}
+
 /// Configuration class
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
@@ -59,17 +71,17 @@ protected:
 public:
     struct
     {
-        uint8_t submit_debug_data;
-        bool use_upnp, smartCursor, debugMode, showGFInfo;
+        SubmitDebugData submitDebugData;
+        bool useUPNP, smartCursor, debugMode, showGFInfo;
     } global;
 
     struct
     {
         VideoMode fullscreenSize, windowedSize;
         signed short framerate; // <0 for unlimited, 0 for HW Vsync
-        bool fullscreen;
+        DisplayMode displayMode;
         bool vbo;
-        bool shared_textures;
+        bool sharedTextures;
         unsigned guiScale; ///< UI scaling in percent; 0 indicates automatic selection
     } video;
 
@@ -99,12 +111,12 @@ public:
         std::string name;
         unsigned portraitIndex;
         std::string password;
-        bool save_password;
+        bool savePassword;
     } lobby;
 
     struct
     {
-        std::string last_ip; /// last entered ip or hostname
+        std::string lastIP; /// last entered ip or hostname
         uint16_t localPort;
         bool ipv6; /// listen/connect on ipv6 as default or not
     } server;
@@ -113,7 +125,7 @@ public:
 
     struct
     {
-        unsigned autosave_interval;
+        unsigned autosaveInterval;
         MapScrollMode mapScrollMode;
         bool enableWindowPinning;
         unsigned windowSnapDistance;
@@ -121,7 +133,7 @@ public:
 
     struct
     {
-        bool scale_statistics;
+        bool scaleStatistics;
         bool showNames;
         bool showProductivity;
         bool showBQ;

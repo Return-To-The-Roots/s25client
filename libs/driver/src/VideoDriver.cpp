@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -19,8 +19,8 @@ IVideoDriver::~IVideoDriver() = default;
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
-    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0), scaledRenderSize_(0, 0),
-      dpiScale_(1.f), guiScale_(100), autoGuiScale_(false)
+    : CallBack(CallBack), initialized(false), displayMode_(DisplayMode::Windowed), renderSize_(0, 0),
+      scaledRenderSize_(0, 0), dpiScale_(1.f), guiScale_(100), autoGuiScale_(false)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
@@ -60,10 +60,9 @@ bool VideoDriver::IsTouchEvent() const
     return mouse_xy.num_tfingers > 0;
 }
 
-VideoMode VideoDriver::FindClosestVideoMode(const VideoMode& mode) const
+VideoMode VideoDriver::FindClosestVideoMode(const VideoMode mode) const
 {
-    std::vector<VideoMode> avModes;
-    ListVideoModes(avModes);
+    std::vector<VideoMode> avModes = ListVideoModes();
     if(avModes.empty())
         throw std::runtime_error("No supported video modes found!");
     unsigned minSizeDiff = std::numeric_limits<unsigned>::max();

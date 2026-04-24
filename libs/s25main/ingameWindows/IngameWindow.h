@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -136,6 +136,7 @@ protected:
     Extent contentOffset;
     /// Offset from content to right and bottom boundary
     Extent contentOffsetEnd;
+    CloseBehavior closeBehavior_;
 
 private:
     /// Get bounds of given button
@@ -147,7 +148,6 @@ private:
     bool isMinimized_;
     bool isMoving;
     SnapOffset snapOffset_;
-    CloseBehavior closeBehavior_;
     helpers::EnumArray<ButtonState, IwButton> buttonStates_;
     PersistentWindowSettings* windowSettings_;
     DrawPoint restorePos_;

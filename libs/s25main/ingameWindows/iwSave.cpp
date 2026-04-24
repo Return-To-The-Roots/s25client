@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -51,7 +51,7 @@ iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const u
              ctrlTable::Columns{{_("Filename"), 270, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 250, SRT::Date},
-                                {_("Game Time"), 320, SRT::Time},
+                                {_("Game Time"), 2026, SRT::Time},
                                 {}});
 
     AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
@@ -137,23 +137,23 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
     AddText(ID_txtAutoSave, pos, _("Auto-Save every:"), 0xFFFFFF00, FontStyle::RIGHT | FontStyle::VCENTER, NormalFont);
 
     // Add intervals
-    combo->AddString(_("Disabled"));
+    combo->AddItem(_("Disabled"));
     for(const std::chrono::minutes interval : AUTO_SAVE_INTERVALS)
-        combo->AddString((boost::format(_("%1% min")) % interval.count()).str());
+        combo->AddItem((boost::format(_("%1% min")) % interval.count()).str());
     // Last entry is only for debugging
     if(SETTINGS.global.debugMode)
-        combo->AddString(_("Every GF"));
+        combo->AddItem(_("Every GF"));
 
     // Select interval
     combo->SetSelection(0); // Use disabled by default and change if possible
-    if(SETTINGS.interface.autosave_interval == 1)
+    if(SETTINGS.interface.autosaveInterval == 1)
         combo->SetSelection(AUTO_SAVE_INTERVALS.size() + 1);
     else
     {
         // Start selection index at 1, 0 is "disabled"
         for(const auto& i : AUTO_SAVE_INTERVALS | boost::adaptors::indexed(1))
         {
-            if(SETTINGS.interface.autosave_interval == duration_to_gfs(i.value()))
+            if(SETTINGS.interface.autosaveInterval == duration_to_gfs(i.value()))
             {
                 combo->SetSelection(static_cast<unsigned>(i.index()));
                 break;
@@ -165,14 +165,14 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
 void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     if(selection == 0) // First entry is "disabled"
-        SETTINGS.interface.autosave_interval = 0;
+        SETTINGS.interface.autosaveInterval = 0;
     else if(selection > AUTO_SAVE_INTERVALS.size()) // Last entry is "every GF" (in debug mode)
-        SETTINGS.interface.autosave_interval = 1;
+        SETTINGS.interface.autosaveInterval = 1;
     else
     {
         // selection is the index into the array ignoring the first ("disabled") entry
         RTTR_Assert(selection >= 1 && selection <= AUTO_SAVE_INTERVALS.size());
-        SETTINGS.interface.autosave_interval = duration_to_gfs(AUTO_SAVE_INTERVALS[selection - 1]);
+        SETTINGS.interface.autosaveInterval = duration_to_gfs(AUTO_SAVE_INTERVALS[selection - 1]);
     }
 }
 
