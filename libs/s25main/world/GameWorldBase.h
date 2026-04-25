@@ -27,7 +27,6 @@ class noFlag;
 class nofPassiveSoldier;
 class RoadPathFinder;
 class SoundManager;
-class TradePathCache;
 
 constexpr Direction getOppositeDir(const RoadDir roadDir) noexcept
 {
@@ -66,7 +65,6 @@ protected:
     /// Interface zum GUI
     GameInterface* gi;
     std::unique_ptr<EconomyModeHandler> econHandler;
-    std::unique_ptr<TradePathCache> tradePathCache;
 
 public:
     GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em);
@@ -74,8 +72,6 @@ public:
 
     // Grundlegende Initialisierungen
     void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
-    /// Create Trade graphs
-    virtual void CreateTradeGraphs() = 0;
     // Remaining initialization after loading (BQ...)
     void InitAfterLoad();
 
