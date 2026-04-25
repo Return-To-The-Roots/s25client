@@ -180,7 +180,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier.GetJobType(), 1);
             // Let him "walk" to goal -> Already reached -> Added and all internal states set correctly
             soldier.WalkToGoal();
-            BOOST_TEST_REQUIRE(soldier.HasNoGoal());
+            BOOST_TEST_REQUIRE(!soldier.GetGoal());
         }
         BOOST_TEST_REQUIRE(bld->GetNumTroops() == oldNumSoldiers + numSoldiers);
     }

@@ -235,9 +235,6 @@ public:
     void StartShipJourney();
     /// Tells the figure it arrived at a harbor at the given position
     void ArrivedByShip(MapPoint harborPos);
-    /// Gibt zurück, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
-    /// Lagerhaus interniert werden muss
-    bool HasNoGoal() const { return (goal_ == nullptr); }
     /// Gibt zurück, ob die Figur auf Straßen läuft zu ihrem Arbeitsplatz o.Ä.
     bool IsWalkingOnRoad() const
     {

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -143,7 +143,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
             }
 
             CreateServerInfo csi(server_type, *port, edtName->GetText(), edtPw->GetText(), SETTINGS.server.ipv6,
-                                 SETTINGS.global.use_upnp);
+                                 SETTINGS.global.useUPNP);
 
             // Map auswählen
             WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));

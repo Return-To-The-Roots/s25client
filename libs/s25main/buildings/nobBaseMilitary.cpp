@@ -224,9 +224,8 @@ bool nobBaseMilitary::CallDefender(nofAttacker& attacker)
     // Stop attacking soldiers (including aggressive defenders) from leaving this building
     for(auto it = leave_house.begin(); it != leave_house.end();)
     {
-        if(!dynamic_cast<nofActiveSoldier*>(it->get()))
-            ++it;
-        else
+        const auto* sldPtr = dynamic_cast<nofActiveSoldier*>(it->get());
+        if(sldPtr && helpers::contains(troops_on_mission, sldPtr))
         {
             auto soldier = boost::static_pointer_cast<nofActiveSoldier>(std::move(*it));
             // At this point there shouldn't be a defender leaving as we are just requesting one
@@ -236,6 +235,12 @@ bool nobBaseMilitary::CallDefender(nofAttacker& attacker)
 
             soldier->InformTargetsAboutCancelling();
             AddActiveSoldier(std::move(soldier));
+        } else
+        {
+            // If a leaving active soldier is not on a mission he doesn't belong to this building.
+            // E.g. soldiers in harbors could be about to go home.
+            RTTR_Assert(!sldPtr || sldPtr->GetHomeBld() != this);
+            ++it;
         }
     }
     // Use existing defender (e.g. just going back in) if possible

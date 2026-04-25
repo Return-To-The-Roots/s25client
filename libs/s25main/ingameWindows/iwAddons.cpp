@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -148,7 +148,7 @@ void iwAddons::UpdateView(const AddonGroup selection)
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
         const Addon* addon = ggs.getAddon(i);
-        const bool isVisible = (addon->getGroups() & selection) != AddonGroup(0);
+        const bool isVisible = bitset::any(addon->getGroups(), selection);
         auto* group = GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
 
         // Don't show addon's gui if addon is beyond selected group or is beyond current page scope

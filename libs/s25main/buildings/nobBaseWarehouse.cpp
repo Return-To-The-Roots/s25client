@@ -676,15 +676,7 @@ void nobBaseWarehouse::FigureLeft(const noFigure& fig)
     // Adapt inventory for non-warehouse workers
     if(fig.MemberOfWarehouse())
         return;
-    if(fig.GetJobType() == Job::BoatCarrier)
-    {
-        // Remove helper and boat separately
-        inventory.visual.Remove(Job::Helper);
-        inventory.visual.Remove(GoodType::Boat);
-    } else
-        inventory.visual.Remove(fig.GetJobType());
-
-    RemoveArmoredFigurFromVisualInventory(fig);
+    RemoveFromVisualInventory(fig);
 
     if(fig.GetGOT() == GO_Type::NofTradedonkey)
     {
@@ -839,38 +831,9 @@ void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool in
     // Warenhausarbeiter werden nicht gezählt!
     if(!figure->MemberOfWarehouse())
     {
-        // War das ein Boot-Träger?
-        if(figure->GetJobType() == Job::BoatCarrier)
-        {
-            if(increase_visual_counts)
-            {
-                inventory.Add(Job::Helper);
-                inventory.Add(GoodType::Boat);
-            } else
-            {
-                inventory.real.Add(Job::Helper);
-                inventory.real.Add(GoodType::Boat);
-            }
-        } else if(isSoldier(figure->GetJobType()))
-        {
-            if(increase_visual_counts)
-            {
-                inventory.Add(figure->GetJobType());
-                if(figure->HasArmor())
-                    inventory.Add(jobEnumToAmoredSoldierEnum(figure->GetJobType()));
-            } else
-            {
-                inventory.real.Add(figure->GetJobType());
-                if(figure->HasArmor())
-                    inventory.real.Add(jobEnumToAmoredSoldierEnum(figure->GetJobType()));
-            }
-        } else
-        {
-            if(increase_visual_counts)
-                inventory.Add(figure->GetJobType());
-            else
-                inventory.real.Add(figure->GetJobType());
-        }
+        AddToRealInventory(*figure);
+        if(increase_visual_counts)
+            AddToVisualInventory(*figure);
     }
 
     // Check if we were actually waiting for this figure or if it was just added (e.g. builder that constructed it) to
@@ -882,19 +845,45 @@ void nobBaseWarehouse::AddFigure(std::unique_ptr<noFigure> figure, const bool in
     GetEvMgr().AddToKillList(std::move(figure));
 }
 
-void nobBaseWarehouse::RemoveArmoredFigurFromVisualInventory(const noFigure& figure)
+void nobBaseWarehouse::RemoveFromVisualInventory(const noFigure& figure)
 {
-    if(isSoldier(figure.GetJobType()) && figure.HasArmor())
+    const auto job = figure.GetJobType();
+    if(job == Job::BoatCarrier)
     {
-        RTTR_Assert(inventory.visual[jobEnumToAmoredSoldierEnum(figure.GetJobType())] > 0);
-        inventory.visual.Remove(jobEnumToAmoredSoldierEnum(figure.GetJobType()));
+        // Remove helper and boat separately
+        inventory.visual.Remove(Job::Helper);
+        inventory.visual.Remove(GoodType::Boat);
+    } else
+    {
+        inventory.visual.Remove(job);
+        if(isSoldier(job) && figure.HasArmor())
+            inventory.visual.Remove(jobEnumToAmoredSoldierEnum(job));
     }
 }
 
-void nobBaseWarehouse::AddArmoredFigurToVisualInventory(const noFigure& figure)
+static void addToInventory(Inventory& inventory, const noFigure& figure)
 {
-    if(isSoldier(figure.GetJobType()) && figure.HasArmor())
-        inventory.visual.Add(jobEnumToAmoredSoldierEnum(figure.GetJobType()));
+    const auto job = figure.GetJobType();
+    if(job == Job::BoatCarrier)
+    {
+        inventory.Add(Job::Helper);
+        inventory.Add(GoodType::Boat);
+    } else
+    {
+        inventory.Add(job);
+        if(isSoldier(job) && figure.HasArmor())
+            inventory.Add(jobEnumToAmoredSoldierEnum(job));
+    }
+}
+
+void nobBaseWarehouse::AddToVisualInventory(const noFigure& figure)
+{
+    addToInventory(inventory.visual, figure);
+}
+
+void nobBaseWarehouse::AddToRealInventory(const noFigure& figure)
+{
+    addToInventory(inventory.real, figure);
 }
 
 void nobBaseWarehouse::FetchWare()

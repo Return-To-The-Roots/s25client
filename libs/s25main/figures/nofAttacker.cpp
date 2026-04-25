@@ -202,15 +202,15 @@ void nofAttacker::Walked()
                 {
                     RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
                     // We will now have this building as the new home, so inform old home, hunting soldier and ship
-                    if(building)
-                        building->SoldierLost(this);
+                    if(homeBld)
+                        homeBld->SoldierLost(this);
                     CancelAtHuntingDefender();
                     if(ship_obj_id)
                         CancelAtShip();
                     // Store the goal in a temporary as attacked_goal will be reset
                     auto* goal = static_cast<nobMilitary*>(attacked_goal);
                     goal->Capture(player);
-                    building = attacked_goal;
+                    homeBld = attacked_goal;
                     attacked_goal->AddActiveSoldier(world->RemoveFigure(pos, *this));
                     RemoveFromAttackedGoal();
                     // This might call other capturers
@@ -292,7 +292,7 @@ void nofAttacker::HomeDestroyed()
         if(ship_obj_id)
             CancelAtShip();
 
-        building = nullptr;
+        homeBld = nullptr;
         state = SoldierState::FigureWork;
         StartWandering();
         Wander();
@@ -302,15 +302,15 @@ void nofAttacker::HomeDestroyed()
     } else
     {
         // If we were going back home, reset that goal
-        if(goal_ == building)
+        if(goal_ == homeBld)
             goal_ = nullptr;
-        building = nullptr;
+        homeBld = nullptr;
     }
 }
 
 void nofAttacker::HomeDestroyedAtBegin()
 {
-    building = nullptr;
+    homeBld = nullptr;
 
     // We are lost now and hence not targetable
     InformTargetsAboutCancelling();
@@ -327,7 +327,7 @@ void nofAttacker::WonFighting()
         IncreaseRank();
     // If our home was destroyed then we are lost
     // unless we are currently fighting at the flag so that building can become our new home
-    if(!building && state != SoldierState::AttackingFightingVsDefender)
+    if(!homeBld && state != SoldierState::AttackingFightingVsDefender)
     {
         // Lost -> Tell all dependents
         InformTargetsAboutCancelling();
@@ -397,7 +397,7 @@ void nofAttacker::ReturnHomeMissionAttacking()
 void nofAttacker::MissAttackingWalk()
 {
     // If our home is destroyed we are lost
-    if(!building)
+    if(!homeBld)
     {
         InformTargetsAboutCancelling();
         if(ship_obj_id)
@@ -581,7 +581,7 @@ void nofAttacker::AttackedGoalDestroyed()
         auto* harbor = world->GetSpecObj<nobHarborBuilding>(harborPos);
         RTTR_Assert(harbor);
         // go home
-        goal_ = building;
+        goal_ = homeBld;
         state = SoldierState::FigureWork;
         fs = FigureState::GotToGoal;
         harbor->CancelSeaAttacker(this);
@@ -655,12 +655,12 @@ void nofAttacker::CapturingWalking()
     if(pos == attacked_goal->GetPos())
     {
         // We switch buildings
-        if(building)
-            building->SoldierLost(this);
+        if(homeBld)
+            homeBld->SoldierLost(this);
         CancelAtHuntingDefender();
         if(ship_obj_id)
             CancelAtShip();
-        building = attacked_goal;
+        homeBld = attacked_goal;
         attacked_goal->AddActiveSoldier(world->RemoveFigure(pos, *this));
 
         // No longer attacking
@@ -687,7 +687,7 @@ void nofAttacker::CapturingWalking()
         StartWalking(Direction::NorthWest);
         RTTR_Assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
         static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
-    } else if(!building)
+    } else if(!homeBld)
     {
         // If our home is destroyed we are lost and don't walk to the target (our new home if we were at least at the
         // flag already) Notify it, if it still exists (could be destroyed in the meantime too)
@@ -845,7 +845,7 @@ void nofAttacker::StartReturnViaShip(noShip& ship)
         InformTargetsAboutCancelling();
     }
 
-    goal_ = building;
+    goal_ = homeBld;
     state = SoldierState::FigureWork;
     fs = FigureState::GotToGoal;
     on_ship = true;
@@ -883,7 +883,7 @@ void nofAttacker::CancelAtHuntingDefender()
 
 void nofAttacker::HandleState_SeaAttack_ReturnToShip()
 {
-    if(!building)
+    if(!homeBld)
     {
         // Home destroyed -> start wandering
         state = SoldierState::FigureWork;
@@ -921,7 +921,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
             Wander();
 
             // Notify home and ship
-            building->SoldierLost(this);
+            homeBld->SoldierLost(this);
             CancelAtShip();
         }
     }

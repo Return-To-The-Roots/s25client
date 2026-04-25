@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -31,9 +31,12 @@ private:
 
     void updateGuiScale();
     void scrollGuiScale(bool up);
+    void updateWindowSizeComboBox();
+    void updateResolutionGroups();
 
     GlobalGameSettings ggs;
-    std::vector<VideoMode> video_modes;    ///< Sorted list of filtered video modes
+    std::vector<VideoMode> videoModes_;    ///< Sorted list of filtered video modes
+    std::vector<VideoMode> windowSizes_;   ///< Sorted list of default window sizes
     std::vector<unsigned> guiScales_;      ///< Generated GUI scale percentages
     std::size_t recommendedGuiScaleIndex_; ///< Index of the recommended GUI scale percentage
 

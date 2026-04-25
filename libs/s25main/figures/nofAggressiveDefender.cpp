@@ -72,12 +72,12 @@ void nofAggressiveDefender::Walked()
 
 void nofAggressiveDefender::HomeDestroyed()
 {
-    building = nullptr;
+    homeBld = nullptr;
 }
 
 void nofAggressiveDefender::HomeDestroyedAtBegin()
 {
-    building = nullptr;
+    homeBld = nullptr;
 
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
     InformTargetsAboutCancelling();
@@ -105,7 +105,7 @@ void nofAggressiveDefender::WonFighting()
         IncreaseRank();
 
     // Ist evtl. unser Heimatgebäude zerstört?
-    if(!building)
+    if(!homeBld)
     {
         // Ziel Bescheid sagen
         InformTargetsAboutCancelling();
@@ -177,7 +177,7 @@ void nofAggressiveDefender::MissAggressiveDefendingContinueWalking()
 
 void nofAggressiveDefender::MissAggressiveDefendingWalk()
 {
-    if(!building)
+    if(!homeBld)
     {
         // Home destroyed so abort and wander around
         InformTargetsAboutCancelling();

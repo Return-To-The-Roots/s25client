@@ -9,19 +9,18 @@
 class nobBaseMilitary;
 class SerializedGameData;
 
-/// Basisklasse für alle Soldatentypen
+/// Base class for all solider
 class nofSoldier : public noFigure
 {
 protected:
-    /// Heimatgebäude, ist bei Soldaten aus HQs das HQ!
-    nobBaseMilitary* building;
-    /// Hitpoints
-    unsigned char hitpoints;
+    /// Build to which this soldier belongs
+    nobBaseMilitary* homeBld;
+    uint8_t hitpoints;
 
-    /// Zeichnet den Soldaten beim ganz normalen Laufen
+    /// Draw during regular walking
     void DrawSoldierWaiting(DrawPoint drawPt);
 
-    /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+    /// Tell workplace (i.e. home bld) that we are not coming back
     void AbrogateWorkplace() override;
 
     explicit nofSoldier(const nofSoldier&) = default;
@@ -34,15 +33,14 @@ public:
 
     void Destroy() override
     {
-        RTTR_Assert(HasNoHome());
+        RTTR_Assert(!GetHomeBld());
         noFigure::Destroy();
     }
     void Serialize(SerializedGameData& sgd) const override;
 
-    /// Liefert Rang des Soldaten
     unsigned char GetRank() const;
     unsigned char GetHitpoints() const;
-    bool HasNoHome() const { return building == nullptr; }
+    const nobBaseMilitary* GetHomeBld() const { return homeBld; }
 };
 
 /// Comparator to sort soldiers by rank and armor (and ID for ties), weak ones first
