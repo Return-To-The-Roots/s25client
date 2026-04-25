@@ -67,17 +67,14 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
       BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(harbor);
+    BOOST_TEST_REQUIRE(world.IsHarborAtSea(hbId, seaId));
     BOOST_TEST_REQUIRE(buildings.GetHarbors().size() == 1u); //-V807
     BOOST_TEST_REQUIRE(buildings.GetHarbors().front() == harbor);
     // A harbor is also a storehouse
     BOOST_TEST_REQUIRE(buildings.GetStorehouses().size() == 2u);
     BOOST_TEST_REQUIRE(buildings.GetHarbors().back() == harbor);
-    std::vector<nobHarborBuilding*> harbors;
     BOOST_TEST_REQUIRE(world.GetNode(MapPoint(0, 0)).seaId == seaId);
     BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::NorthEast) == seaId);
-    player.AddHarborsAtSea(harbors, seaId);
-    BOOST_TEST_REQUIRE(harbors.size() == 1u);
-    BOOST_TEST_REQUIRE(harbors.front() == harbor);
 
     const std::vector<Direction> road = FindRoadPath(world.GetNeighbour(hqPos, Direction::SouthEast),
                                                      world.GetNeighbour(hbPos, Direction::SouthEast), world);

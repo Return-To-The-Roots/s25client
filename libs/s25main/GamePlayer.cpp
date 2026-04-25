@@ -2058,18 +2058,6 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
         return ships[ship_id];
 }
 
-void GamePlayer::AddHarborsAtSea(std::vector<nobHarborBuilding*>& harborBuildings, const SeaId seaId) const
-{
-    for(nobHarborBuilding* harbor : buildings.GetHarbors())
-    {
-        if(helpers::contains(harborBuildings, harbor))
-            continue;
-
-        if(world.IsHarborAtSea(harbor->GetHarborPosID(), seaId))
-            harborBuildings.push_back(harbor);
-    }
-}
-
 /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
 unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 {

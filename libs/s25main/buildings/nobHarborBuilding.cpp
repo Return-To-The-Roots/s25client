@@ -835,21 +835,25 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
     if(world->GetGOT(pos) != GO_Type::NobHarborbuilding)
         return connections;
 
-    std::vector<nobHarborBuilding*> harborBuildings;
-    for(SeaId seaId : seaIds)
+    const auto sharesSeaWith = [&seaIds = this->seaIds, world = this->world](const nobHarborBuilding& harbor) {
+        for(SeaId seaId : seaIds)
+        {
+            if(seaId && world->IsHarborAtSea(harbor.GetHarborPosID(), seaId))
+                return true;
+        }
+        return false;
+    };
+    for(auto* harbor_building : world->GetPlayer(player).GetBuildingRegister().GetHarbors())
     {
-        if(seaId)
-            world->GetPlayer(player).AddHarborsAtSea(harborBuildings, seaId);
-    }
-
-    for(auto* harbor_building : harborBuildings)
-    {
-        ShipConnection sc;
-        sc.dest = harbor_building;
-        // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
-        // loading&unloading
-        sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
-        connections.push_back(sc);
+        if(harbor_building != this && sharesSeaWith(*harbor_building))
+        {
+            ShipConnection sc;
+            sc.dest = harbor_building;
+            // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
+            // loading&unloading
+            sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
+            connections.push_back(sc);
+        }
     }
     return connections;
 }
