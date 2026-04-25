@@ -459,10 +459,6 @@ void VideoWinAPI::SetMousePos(Position pos)
 
 void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
 {
-    // Keine Leerzeichen als Extra-Zeichen senden!
-    if(c == ' ')
-        return;
-
     KeyEvent ke(c);
     setSpecialKeys(ke, lParam);
 
