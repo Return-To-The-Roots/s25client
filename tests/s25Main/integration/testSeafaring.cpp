@@ -531,7 +531,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     // Go to opposite one
     const HarborId targetHbId(7);
     // Make sure that the other harbor is far away
-    BOOST_TEST_REQUIRE(world.CalcHarborDistance(HarborId(2), targetHbId) > 600u);
+    BOOST_TEST_REQUIRE(world.CalcHarborDistance(harbor.GetHarborPosID(), targetHbId) > 600u);
     // Add some scouts
     harbor.AddToInventory(PeopleCounts::make(Job::Scout, 20), true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
