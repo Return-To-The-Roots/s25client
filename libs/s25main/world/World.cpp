@@ -425,7 +425,7 @@ unsigned World::CalcHarborDistance(HarborId haborId1, HarborId harborId2) const
         }
     }
 
-    return 0xffffffff;
+    return std::numeric_limits<unsigned>::max();
 }
 
 SeaId World::GetSeaFromCoastalPoint(const MapPoint pt) const
