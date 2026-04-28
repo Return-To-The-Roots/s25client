@@ -214,6 +214,7 @@ MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)
     const AIQueryService& queries = aijh.GetInterface().Queries();
     const MapExtent mapSize = aijh.GetWorld().GetSize();
     const BuildingQuality requiredSize = BUILDING_SIZE[bt];
+    const bool isMilitaryBuilding = BuildingProperties::IsMilitary(bt);
 
     RTTR_FOREACH_PT(MapPoint, mapSize)
     {
@@ -222,13 +223,17 @@ MapPoint GlobalPositionFinder::FindBestPosition(const BuildingType bt)
             continue;
         if(!canUseBq(node.bq, requiredSize))
             continue;
-        if(!BuildingProperties::IsMilitary(bt) && queries.IsReservedMilitaryBorderSlot(pt, node.bq))
+        if(!isMilitaryBuilding && queries.IsReservedMilitaryBorderSlot(pt, node.bq))
             continue;
         if(queries.isHarborPosClose(pt, 2, true) && requiredSize != BuildingQuality::Harbor)
             continue;
         if(IsBorderBlocked(aijh, queries, bt, pt))
             continue;
         if(!MeetsPointResourceRequirements(aijh, queries, bt, pt))
+            continue;
+        if(isMilitaryBuilding && aijh.GetWorld().IsOnRoad(aijh.GetWorld().GetNeighbour(pt, Direction::SouthEast)))
+            continue;
+        if(isMilitaryBuilding && aijh.GetWorld().IsMilitaryBuildingNearNode(pt, aijh.GetPlayerId()))
             continue;
 
         const std::optional<int> pointRating = GetPointRating(bt, pt);

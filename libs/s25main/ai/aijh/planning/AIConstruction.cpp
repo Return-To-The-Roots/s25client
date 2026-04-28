@@ -115,29 +115,14 @@ void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
 void AIConstruction::ExecuteJobs(unsigned limit)
 {
     unsigned processed = 0;
-    const unsigned initconjobs = std::min<unsigned>(connectJobs.size(), 5);
     const unsigned initglobaljobs = std::min<unsigned>(globalBuildJobs.size(), 5);
     const unsigned initbuildjobs = std::min<unsigned>(buildJobs.size(), 5);
-
-    {
-        const ScopedAIRuntimeProfile connectJobsProfile(AIRuntimeProfileSection::ExecuteConnectJobs, initconjobs);
-        for(unsigned i = 0; processed < limit && !connectJobs.empty() && i < initconjobs; i++, processed++)
-        {
-            auto job = std::move(connectJobs.front());
-            connectJobs.pop_front();
-            job->ExecuteJob();
-            if(job->GetState() != JobState::Finished
-               && job->GetState() != JobState::Failed) // couldnt do job? -> move to back of list
-            {
-                connectJobs.push_back(std::move(job));
-            }
-        }
-    }
+    const unsigned initconjobs = connectJobs.size();
 
     {
         const ScopedAIRuntimeProfile globalBuildJobsProfile(AIRuntimeProfileSection::ExecuteGlobalBuildJobs,
                                                             initglobaljobs);
-        for(unsigned i = 0; processed < limit && !globalBuildJobs.empty() && i < initglobaljobs; i++, processed++)
+        for(unsigned i = 0; processed < limit && !globalBuildJobs.empty() && i < initglobaljobs; i++)
         {
             auto job = PopGlobalBuildJob();
             job->ExecuteJob();
@@ -147,13 +132,16 @@ void AIConstruction::ExecuteJobs(unsigned limit)
                 if(!job->WasBlockedByGlobalSearchCooldown())
                     job->priority--;
                 globalBuildJobs.emplace(std::move(*job));
+            } else
+            {
+                processed++;
             }
         }
     }
 
     {
         const ScopedAIRuntimeProfile buildJobsProfile(AIRuntimeProfileSection::ExecuteBuildJobs, initbuildjobs);
-        for(unsigned i = 0; processed < limit && !buildJobs.empty() && i < initbuildjobs; i++, processed++)
+        for(unsigned i = 0; processed < limit && !buildJobs.empty() && i < initbuildjobs; i++)
         {
             auto job = GetBuildJob();
             job->ExecuteJob();
@@ -161,6 +149,24 @@ void AIConstruction::ExecuteJobs(unsigned limit)
             if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
             {
                 buildJobs.push_back(std::move(job));
+            } else
+            {
+                processed++;
+            }
+        }
+    }
+
+    {
+        const ScopedAIRuntimeProfile connectJobsProfile(AIRuntimeProfileSection::ExecuteConnectJobs, initconjobs);
+        for(unsigned i = 0; !connectJobs.empty() && i < initconjobs; i++)
+        {
+            auto job = std::move(connectJobs.front());
+            connectJobs.pop_front();
+            job->ExecuteJob();
+            if(job->GetState() != JobState::Finished
+               && job->GetState() != JobState::Failed) // couldnt do job? -> move to back of list
+            {
+                connectJobs.push_back(std::move(job));
             }
         }
     }

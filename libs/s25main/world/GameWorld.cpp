@@ -152,30 +152,29 @@ void GameWorld::SetBuildingSite(const BuildingType type, const MapPoint pt, cons
     if(!GetPlayer(player).IsBuildingEnabled(type))
         return;
 
-    // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
+    // Check whether the building can still be built here
     if(!canUseBq(GetBQ(pt, player), BUILDING_SIZE[type]))
         return;
 
-    // Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut
-    // werden
+    // Military buildings cannot be built if another military building is already nearby
     if(BuildingProperties::IsMilitary(type))
     {
         if(IsMilitaryBuildingNearNode(pt, player))
             return;
     }
 
-    // Prüfen ob Katapult und ob Katapult erlaubt ist
+    // Check whether catapults are allowed
     if(type == BuildingType::Catapult && !GetPlayer(player).CanBuildCatapult())
         return;
 
     DestroyNO(pt, false);
 
-    // Baustelle setzen
+    // Place the construction site
     SetNO(pt, new noBuildingSite(type, pt, player));
     if(gi)
         gi->GI_UpdateMinimap(pt);
 
-    // Bauplätze drumrum neu berechnen
+    // Recalculate nearby building sites
     RecalcBQAroundPointBig(pt);
 }
 
