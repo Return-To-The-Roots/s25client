@@ -129,7 +129,14 @@ void AIConstruction::ExecuteJobs(unsigned limit)
             // couldnt do job? -> move to back of list
             if(job->GetState() != JobState::Finished && job->GetState() != JobState::Failed)
             {
-                if(!job->WasBlockedByGlobalSearchCooldown())
+                if(job->WasBlockedByGlobalSearchCooldown())
+                {
+                    if(!globalBuildJobs.empty())
+                    {
+                        const unsigned lowestPriority = globalBuildJobs.rbegin()->priority;
+                        job->priority = lowestPriority > 0 ? lowestPriority - 1 : 0;
+                    }
+                } else if(job->priority > 0)
                     job->priority--;
                 globalBuildJobs.emplace(std::move(*job));
             } else

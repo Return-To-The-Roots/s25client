@@ -57,7 +57,7 @@ See also:
   before being reinserted, preventing one stubborn goal from starving newer entries.
 - One exception exists for cooldown-blocked global jobs: if a job reaches execution while its
   per-type global-search cooldown is still active, it skips `FindBestPosition()`, stays queued,
-  and is reinserted without losing priority because no expensive search was attempted.
+  and is reinserted behind the current global queue so other global goals can run first.
 
 ## Global Search Cooldown
 - The cooldown starts only when a global building-position search returns
