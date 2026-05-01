@@ -8,12 +8,52 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "buildings/noBaseBuilding.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noTree.h"
 #include <boost/container/static_vector.hpp>
+
+namespace {
+bool IsPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const unsigned char player)
+{
+    constexpr unsigned FARM_FIELD_RADIUS = 2;
+
+    for(const auto dir : helpers::EnumRange<Direction>{})
+    {
+        if(world.GetPointRoad(pt, dir) != PointRoad::None)
+            return false;
+    }
+
+    if(!world.IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
+        return false;
+
+    const NodalObjectType noType = world.GetNO(pt)->GetType();
+    if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
+        return false;
+
+    for(const MapPoint nb : world.GetNeighbours(pt))
+    {
+        const NodalObjectType nbType = world.GetNO(nb)->GetType();
+        if(nbType == NodalObjectType::Grainfield || nbType == NodalObjectType::Grapefield
+           || nbType == NodalObjectType::Building || nbType == NodalObjectType::Buildingsite)
+            return false;
+    }
+
+    return world.CheckPointsInRadius(
+      pt, FARM_FIELD_RADIUS,
+      [&world, player](const MapPoint farmPt, unsigned) {
+          if(world.GetNO(farmPt)->GetType() != NodalObjectType::Building)
+              return false;
+
+          const auto* building = world.GetSpecObj<noBaseBuilding>(farmPt);
+          return building && building->GetPlayer() == player && building->GetBuildingType() == BuildingType::Farm;
+      },
+      false);
+}
+} // namespace
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(Job::Forester, pos, player, workplace)
@@ -109,6 +149,10 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt, bool /
         if(world->GetNO(nb)->GetType() == NodalObjectType::Building)
             return PointQuality::NotPossible;
     }
+
+    // Avoid occupying spots that an own farm could use for a new grain field.
+    if(IsPotentialNewFieldForOwnFarm(*world, pt, player))
+        return PointQuality::NotPossible;
 
     // Terrain untersuchen
     if(world->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
