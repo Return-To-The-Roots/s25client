@@ -8,13 +8,13 @@
 #include "mygettext/mygettext.h"
 
 /**
- *  Addon for allowing to have unlimited resources.
+ *  Addon for allowing granite mines to produce independently of stone resources.
  */
 class AddonInexhaustibleGraniteMines : public AddonBool
 {
 public:
     AddonInexhaustibleGraniteMines()
         : AddonBool(AddonId::INEXHAUSTIBLE_GRANITEMINES, AddonGroup::Economy, _("Inexhaustible Granite Mines"),
-                    _("Granite mines will never be depleted."))
+                    _("Granite mines can produce stone on any mountain spot and never deplete resources."))
     {}
 };
