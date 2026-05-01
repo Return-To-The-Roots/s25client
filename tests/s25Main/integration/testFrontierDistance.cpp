@@ -11,6 +11,8 @@
 #include "worldFixtures/WorldFixture.h"
 #include "worldFixtures/terrainHelpers.h"
 #include "world/MapLoader.h"
+#include "pathfinding/FindPathReachable.h"
+#include "nodeObjs/noStaticObject.h"
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
 
@@ -56,6 +58,7 @@ using FrontierWorldSmall = FrontierWorld<34u, 20u>;
 using FrontierWorldMiddle = FrontierWorld<38u, 20u>;
 using FrontierWorldBig = FrontierWorld<60u, 20u>;
 using FrontierWorldSea = FrontierWorld<SmallSeaWorldDefault<2>::width, SmallSeaWorldDefault<2>::height, CreateSeaWorld>;
+using FrontierWorldStaticBlocker = WorldFixture<CreateEmptyWorld, 0, 20u, 12u>;
 
 } // namespace
 
@@ -347,4 +350,38 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
     BOOST_TEST_REQUIRE(distance1 == FrontierDistance::Near);
 }
 
+
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlockers, FrontierWorldStaticBlocker)
+{
+    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.GetDescription());
+    const unsigned corridorY = 6;
+    const MapPoint startPt(2, corridorY);
+    const MapPoint endPt(10, corridorY);
+    constexpr unsigned maxPathLen = 8;
+
+    for(const auto y : helpers::range(0, +world.GetHeight()))
+    {
+        for(const auto x : helpers::range(0, +world.GetWidth()))
+        {
+            const MapPoint pt(x, y);
+            if(pt.y == corridorY && pt.x >= startPt.x && pt.x <= endPt.x)
+                continue;
+
+            MapNode& node = world.GetNodeWriteable(pt);
+            node.t1 = tWater;
+            node.t2 = tWater;
+        }
+    }
+
+    BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+
+    for(unsigned x = startPt.x + 1; x < endPt.x; ++x)
+    {
+        const MapPoint blockerPt(x, corridorY);
+        world.DestroyNO(blockerPt, false);
+        world.SetNO(blockerPt, new noStaticObject(blockerPt, 0, 0, 1));
+    }
+
+    BOOST_TEST_REQUIRE(!DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+}
 BOOST_AUTO_TEST_SUITE_END()
