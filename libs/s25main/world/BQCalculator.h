@@ -10,13 +10,16 @@
 
 struct BQCalculator
 {
-    BQCalculator(const World& world) : world(world) {}
+    BQCalculator(const World& world, const bool allowFreeHarborSpots = false)
+        : world(world), allowFreeHarborSpots(allowFreeHarborSpots)
+    {}
 
     template<typename T_IsOnRoad>
     BuildingQuality operator()(MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly = false) const;
 
 private:
     const World& world;
+    bool allowFreeHarborSpots;
 };
 
 template<typename T_IsOnRoad>
@@ -219,8 +222,24 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // If we can build a castle and this is a harbor point -> Allow harbor
-    if(curBQ == BuildingQuality::Castle && world.GetNode(pt).harborId)
-        curBQ = BuildingQuality::Harbor;
+    if(curBQ == BuildingQuality::Castle)
+    {
+        bool isHarborPoint = world.GetNode(pt).harborId.isValid();
+        if(!isHarborPoint && allowFreeHarborSpots)
+        {
+            for(const auto dir : helpers::EnumRange<Direction>{})
+            {
+                // Keep this in sync with harbor initialization: NW-only coasts are rejected there.
+                if(dir != Direction::NorthWest && world.GetSeaFromCoastalPoint(neighbours[dir]))
+                {
+                    isHarborPoint = true;
+                    break;
+                }
+            }
+        }
+        if(isHarborPoint)
+            curBQ = BuildingQuality::Harbor;
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // At this point we can still build a building/mine

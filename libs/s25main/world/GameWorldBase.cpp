@@ -696,7 +696,7 @@ GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, cons
 
 void GameWorldBase::RecalcBQ(const MapPoint pt)
 {
-    BQCalculator calcBQ(*this);
+    BQCalculator calcBQ(*this, GetGGS().isEnabled(AddonId::FREE_HARBOR_SPOTS));
     if(SetBQ(pt, calcBQ(pt, [this](auto pt) { return this->IsOnRoad(pt); })))
     {
         GetNotifications().publish(NodeNote(NodeNote::BQ, pt));

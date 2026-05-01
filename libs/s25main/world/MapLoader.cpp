@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "world/MapLoader.h"
+#include "BQCalculator.h"
 #include "Game.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
 #include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "addons/const_addons.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "helpers/IdRange.h"
@@ -53,7 +55,7 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
         return false;
     PlaceObjects(map);
     PlaceAnimals(map);
-    if(!InitSeasAndHarbors(world_))
+    if(!InitSeasAndHarbors(world_, std::vector<MapPoint>(), world_.GetGGS().isEnabled(AddonId::FREE_HARBOR_SPOTS)))
         return false;
 
     /// Schatten
@@ -420,10 +422,39 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPo
     return true;
 }
 
-bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
+namespace {
+bool hasHarborAt(const World& world, const MapPoint pt)
+{
+    for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+    {
+        if(world.GetHarborPoint(harborId) == pt)
+            return true;
+    }
+    return false;
+}
+
+std::vector<MapPoint> getGeneratedHarbors(const World& world)
+{
+    std::vector<MapPoint> generatedHarbors;
+    BQCalculator calcBQ(world, true);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        if(!hasHarborAt(world, pt)
+           && calcBQ(pt, [](const MapPoint&) { return false; }) == BuildingQuality::Harbor)
+            generatedHarbors.push_back(pt);
+    }
+    return generatedHarbors;
+}
+} // namespace
+
+bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors,
+                                   const bool generateHarborSpots)
 {
     for(MapPoint pt : additionalHarbors)
-        world.harborData.push_back(HarborPos(pt));
+    {
+        if(!hasHarborAt(world, pt))
+            world.harborData.push_back(HarborPos(pt));
+    }
     // Clear current harbors and seas
     RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
@@ -444,6 +475,12 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
             world.seas.push_back(World::Sea(seaSize));
             curSeaId = curSeaId.next();
         }
+    }
+
+    if(generateHarborSpots)
+    {
+        for(MapPoint pt : getGeneratedHarbors(world))
+            world.harborData.push_back(HarborPos(pt));
     }
 
     /// Determine seas adjacent to the harbor places
