@@ -79,6 +79,7 @@ void GlobalGameSettings::registerAllAddons()
         AddonHalfCostMilEquip,
         AddonInexhaustibleFish,
         AddonInexhaustibleGraniteMines,
+        AddonGraniteMinesWorkEverywhere,
         AddonInexhaustibleMines,
         AddonLimitCatapults,
         AddonManualRoadEnlargement,

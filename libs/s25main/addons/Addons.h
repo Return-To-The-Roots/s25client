@@ -36,6 +36,7 @@
 
 #include "addons/AddonInexhaustibleFish.h"
 #include "addons/AddonInexhaustibleGraniteMines.h"
+#include "addons/AddonGraniteMinesWorkEverywhere.h"
 #include "addons/AddonMaxRank.h"
 #include "addons/AddonMilitaryAid.h"
 #include "addons/AddonSeaAttack.h"
