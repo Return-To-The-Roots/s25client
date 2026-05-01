@@ -661,7 +661,10 @@ unsigned nobMilitary::CalcRequiredNumTroops(FrontierDistance assumedFrontierDist
 
 void nobMilitary::SetTroopLimit(const unsigned rank, const unsigned limit)
 {
-    troop_limits[rank] = limit;
+    if(rank >= NUM_SOLDIER_RANKS)
+        return;
+
+    troop_limits[rank] = std::min<unsigned>(limit, GetMaxTroopsCt());
     RegulateTroops();
 }
 
