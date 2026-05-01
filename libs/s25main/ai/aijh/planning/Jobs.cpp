@@ -21,7 +21,7 @@
 namespace AIJH {
 
 namespace {
-constexpr unsigned kGlobalBuildSearchCooldownGF = 1000;
+constexpr unsigned kGlobalBuildSearchCooldownGF = 500;
 }
 
 AIJob::AIJob(AIPlanningContext& aijh) : aijh(aijh), state(JobState::Waiting) {}
@@ -99,43 +99,48 @@ void BuildJob::TryToBuild()
     } else if(searchMode == SearchMode::Radius)
     {
         foundPos = aijh.FindPositionForBuildingAround(type, around);
-        if(BuildingProperties::IsMilitary(type))
+    } else if(searchMode == SearchMode::None)
+        foundPos = around;
+
+    if(BuildingProperties::IsMilitary(type)
+       && (searchMode == SearchMode::Global || searchMode == SearchMode::Radius))
+    {
+        if(foundPos.isValid())
         {
-            if(foundPos.isValid())
+            // could we build a bigger military building? check if the location is surrounded by terrain that does
+            // not allow normal buildings (probably important map part)
+            AIInterface& aiInterface = aijh.GetInterface();
+            RTTR_Assert(aiInterface.GetBuildingQuality(foundPos) == aijh.GetAINode(foundPos).bq);
+            if(type != BuildingType::Fortress && aiInterface.GetBuildingQuality(foundPos) != BuildingQuality::Mine
+               && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type]
+               && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
             {
-                // could we build a bigger military building? check if the location is surrounded by terrain that does
-                // not allow normal buildings (probably important map part)
-                AIInterface& aiInterface = aijh.GetInterface();
-                RTTR_Assert(aiInterface.GetBuildingQuality(foundPos) == aijh.GetAINode(foundPos).bq);
-                if(type != BuildingType::Fortress && aiInterface.GetBuildingQuality(foundPos) != BuildingQuality::Mine
-                   && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type]
-                   && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
+                // more than 80% is unbuildable in range 7 -> upgrade
+                for(BuildingType bld : BuildingProperties::militaryBldTypes)
                 {
-                    // more than 80% is unbuildable in range 7 -> upgrade
-                    for(BuildingType bld : BuildingProperties::militaryBldTypes)
+                    if(BUILDING_SIZE[bld] > BUILDING_SIZE[type] && aiInterface.CanBuildBuildingtype(bld))
                     {
-                        if(BUILDING_SIZE[bld] > BUILDING_SIZE[type] && aiInterface.CanBuildBuildingtype(bld))
-                        {
-                            type = bld;
-                            break;
-                        }
-                    }
-                }
-            } else if(aijh.GetBldPlanner().IsExpansionRequired() && BUILDING_SIZE[type] != BuildingQuality::Hut)
-            {
-                // Downgrade to the next smaller building
-                for(BuildingType bld : BuildingProperties::militaryBldTypes | boost::adaptors::reversed)
-                {
-                    if(BUILDING_SIZE[bld] < BUILDING_SIZE[type] && aijh.GetInterface().CanBuildBuildingtype(bld))
-                    {
-                        aijh.AddBuildJob(bld, around);
+                        type = bld;
                         break;
                     }
                 }
             }
+        } else if(aijh.GetBldPlanner().IsExpansionRequired() && BUILDING_SIZE[type] != BuildingQuality::Hut)
+        {
+            // Downgrade to the next smaller building
+            for(BuildingType bld : BuildingProperties::militaryBldTypes | boost::adaptors::reversed)
+            {
+                if(BUILDING_SIZE[bld] < BUILDING_SIZE[type] && aijh.GetInterface().CanBuildBuildingtype(bld))
+                {
+                    if(searchMode == SearchMode::Global)
+                        aijh.AddGlobalBuildJob(bld);
+                    else
+                        aijh.AddBuildJob(bld, around);
+                    break;
+                }
+            }
         }
-    } else if(searchMode == SearchMode::None)
-        foundPos = around;
+    }
 
     if(!foundPos.isValid())
     {
@@ -146,6 +151,13 @@ void BuildJob::TryToBuild()
         std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: No Position found for "
                   << BUILDING_NAMES[type] << " around " << foundPos << "." << std::endl;
 #endif
+        return;
+    }
+
+    if(searchMode == SearchMode::Global && BuildingProperties::IsMilitary(type)
+       && !aiConstruction.CanStillConstructHere(foundPos))
+    {
+        state = JobState::Failed;
         return;
     }
 

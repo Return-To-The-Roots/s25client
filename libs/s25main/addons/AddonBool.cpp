@@ -7,8 +7,9 @@
 #include "Window.h"
 #include "controls/ctrlCheck.h"
 
-AddonBool::AddonBool(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description)
-    : Addon(id, groups, name, description, 0)
+AddonBool::AddonBool(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description,
+                     unsigned defaultStatus /*=0*/)
+    : Addon(id, groups, name, description, defaultStatus)
 {}
 
 std::unique_ptr<AddonGui> AddonBool::createGui(Window& window, bool readonly) const

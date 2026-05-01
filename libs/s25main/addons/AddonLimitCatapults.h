@@ -30,6 +30,7 @@ public:
                       _("10 catapults"),
                       _("20 catapults"),
                       _("30 catapults"),
-                    })
+                    },
+                    2)
     {}
 };

@@ -654,6 +654,14 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     return bld;
 }
 
+unsigned AIConstruction::GetNumMilitaryConstructionOrders() const
+{
+    unsigned total = 0;
+    for(BuildingType bld : BuildingProperties::militaryBldTypes)
+        total += constructionorders[bld];
+    return total;
+}
+
 bool AIConstruction::Wanted(BuildingType type) const
 {
     if(!aii.CanBuildBuildingtype(type))
@@ -661,7 +669,7 @@ bool AIConstruction::Wanted(BuildingType type) const
     if(type == BuildingType::Catapult && !aii.CanBuildCatapult())
         return false;
     if(BuildingProperties::IsMilitary(type) || type == BuildingType::Storehouse)
-        return bldPlanner.WantMoreMilitaryBlds(aijh);
+        return bldPlanner.WantMoreMilitaryBlds(aijh, GetNumMilitaryConstructionOrders());
     if(type == BuildingType::Sawmill && bldPlanner.GetNumBuildings(BuildingType::Sawmill) > 1)
     {
         if(aijh.AmountInStorage(GoodType::Wood) < 15 * bldPlanner.GetNumBuildingSites(BuildingType::Sawmill))

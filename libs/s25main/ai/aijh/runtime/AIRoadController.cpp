@@ -105,7 +105,8 @@ void AIRoadController::RemoveAllUnusedRoads(const MapPoint pt)
 void AIRoadController::CheckForUnconnectedBuildingSites()
 {
     AIConstruction& construction = owner_.GetConstruction();
-    if(construction.GetConnectJobNum() > 0 || construction.GetBuildJobNum() > 0)
+    // if(construction.GetConnectJobNum() > 0 || construction.GetBuildJobNum() > 0)
+    if(construction.GetConnectJobNum() > 0 )
         return;
 
     for(noBuildingSite* bldSite : owner_.player.GetBuildingRegister().GetBuildingSites())

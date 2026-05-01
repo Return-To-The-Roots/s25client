@@ -15,11 +15,13 @@ See also:
   cover this dispatch loop in profiler output.
 
 ## Job Queues and Deduplication
-- `AddGlobalBuildJob` keeps a single global job per `BuildingType`, so strategic one-off goals
-  (e.g., “build a shipyard somewhere”) do not stack and spam the planner.
+- `AddGlobalBuildJob` keeps a single global job per `BuildingType` for non-military types, so
+  strategic one-off goals (e.g., “build a shipyard somewhere”) do not stack and spam the planner.
+  Military global jobs are capped at three queued jobs per building type rather than one.
 - Global jobs also participate in a per-`BuildingType` retry cooldown after a full-map search
   fails to find any valid position. The cooldown is only for `SearchMode::Global`; enqueueing
-  still happens normally so event-driven goals such as `Storehouse` are not lost.
+  still happens normally so event-driven goals such as `Storehouse` are not lost. The cooldown
+  duration is `kGlobalBuildSearchCooldownGF = 1000` game frames.
 - `AddBuildJob` handles per-location work. It forbids invalid shipyard spots, allows multiple
   simultaneous military builds, but deduplicates non-military jobs by `type + around` so only
   one farmhouse, quarry, etc. is queued for a specific area at a time. Jobs can be pushed to
@@ -63,9 +65,10 @@ See also:
 - The cooldown starts only when a global building-position search returns
   `MapPoint::Invalid()`. It does not start for later failures such as `SetBuildingSite()`
   rejection, BQ changes after placement, road-connection failure, or destroyed sites/flags.
-- The timer is tracked in `AIConstruction` per `BuildingType` and currently lasts `500`
-  game frames. The current implementation uses time expiry only; unrelated world updates do
-  not clear it.
+  It also does not start when a found position is rejected by `CanStillConstructHere`.
+- The timer is tracked in `AIConstruction` per `BuildingType` and lasts
+  `kGlobalBuildSearchCooldownGF = 1000` game frames. The current implementation uses time
+  expiry only; unrelated world updates do not clear it.
 - This throttle complements the global position cache instead of replacing it. Frequent cache
   invalidations can still happen, but the cooldown prevents repeated full-map rescans for the
   same building type during that short backoff window.

@@ -81,6 +81,7 @@ public:
     noFlag* FindTargetStoreHouseFlag(MapPoint pt) const;
 
     bool CanStillConstructHere(MapPoint pt) const;
+    unsigned GetNumMilitaryConstructionOrders() const;
 
     void ExecuteJobs(unsigned limit);
     /// Set flags along the road starting at the given node in the given direction

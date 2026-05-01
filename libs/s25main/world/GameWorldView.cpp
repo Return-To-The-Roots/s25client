@@ -19,6 +19,7 @@
 #include "helpers/containerUtils.h"
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
+#include "ogl/ITexture.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glFont.h"
 #include "ogl/glSmartBitmap.h"
@@ -273,7 +274,13 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                         default: break;
                     }
                 }
-                LOADER.GetMapTexture(mid)->DrawFull(curPos);
+                ITexture* cursorTex = LOADER.GetMapTexture(mid);
+                cursorTex->DrawFull(curPos);
+
+                DrawPoint coordPos = curPos;
+                coordPos.y += cursorTex->GetSize().y - cursorTex->GetOrigin().y + 2;
+                SmallFont->Draw(coordPos, helpers::toString(curPt.x) + ":" + helpers::toString(curPt.y),
+                                FontStyle::CENTER | FontStyle::TOP, COLOR_YELLOW);
             }
 
             // Currently selected point

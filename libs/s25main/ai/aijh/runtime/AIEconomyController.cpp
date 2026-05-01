@@ -138,7 +138,11 @@ nobBaseWarehouse* AIEconomyController::GetUpgradeBuildingWarehouse()
 void AIEconomyController::AddMilitaryBuildJob(MapPoint pt)
 {
     const auto milBld = owner_.construction->ChooseMilitaryBuilding(pt);
-    if(milBld)
+    if(!milBld)
+        return;
+    if(BuildingProperties::IsMilitary(*milBld))
+        AddGlobalBuildJob(*milBld);
+    else
         AddBuildJob(*milBld, pt, false, true);
 }
 

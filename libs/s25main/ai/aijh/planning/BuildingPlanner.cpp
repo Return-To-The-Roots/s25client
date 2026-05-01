@@ -220,9 +220,9 @@ bool BuildingPlanner::IsGoldEnabled(AIWorldView& aijh)
            || !aijh.GetGameSettings().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS);
 }
 
-bool BuildingPlanner::WantMoreMilitaryBlds(AIWorldView& aijh) const
+bool BuildingPlanner::WantMoreMilitaryBlds(AIWorldView& aijh, unsigned pendingMilitarySites) const
 {
-    if(GetNumMilitaryBldSites() >= std::min(8u,GetNumMilitaryBlds() + 3))
+    if(GetNumMilitaryBldSites() + pendingMilitarySites >= std::min(8u, GetNumMilitaryBlds() + pendingMilitarySites + 3))
         return false;
     if(expansionRequired)
         return true;

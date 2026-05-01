@@ -37,7 +37,7 @@ public:
     /// Return the number of buildings that we want to build of the current type
     int GetNumAdditionalBuildingsWanted(BuildingType type) const;
  /// Checks whether the ai wants to construct more mil buildings atm
-    bool WantMoreMilitaryBlds(AIWorldView& aijh) const;
+    bool WantMoreMilitaryBlds(AIWorldView& aijh, unsigned pendingMilitarySites = 0) const;
     bool IsExpansionRequired() const { return expansionRequired; }
 
     void setBuildingsWanted(helpers::EnumArray<unsigned, BuildingType> values);

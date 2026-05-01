@@ -273,14 +273,15 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if(gfisnwf)
         construction->ConstructionsExecuted();
 
-    if(gf % 100 == 0) {
+    if(gf  % 25 == 0)
+    {
         const ScopedAIRuntimeProfile refreshBuildingQualitiesProfile(AIRuntimeProfileSection::RefreshBuildingQualities);
         mapState_->RefreshBuildingQualities();
 
         const ScopedAIRuntimeProfile plannerUpdateProfile(AIRuntimeProfileSection::BuildingPlannerUpdate);
         bldPlanner->Update(gf, *this);
-
         bldPlanner->UpdateBuildingsWanted(*this);
+
         const ScopedAIRuntimeProfile executeAiJobProfile(AIRuntimeProfileSection::ExecuteAIJob);
         ExecuteAIJob();
     }
