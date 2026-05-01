@@ -125,15 +125,22 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
 
 BOOST_FIXTURE_TEST_CASE(GraniteMineWithoutResourcesNeedsAddon, GraniteMineWithoutResourcesFixture)
 {
-    const nobUsual* mine = CreateGraniteMineWithoutResources();
+    CreateGraniteMineWithoutResources();
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     RTTR_SKIP_GFS(2000);
-    BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
 
+    BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
+}
+
+BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineWorksWithoutResources, GraniteMineWithoutResourcesFixture)
+{
     ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
-    RTTR_EXEC_TILL(2000, mine->is_working || curInventory[GoodType::Stones] > initialStones);
+    CreateGraniteMineWithoutResources();
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialStones = curInventory[GoodType::Stones];
+
     RTTR_EXEC_TILL(2000, curInventory[GoodType::Stones] > initialStones);
 }
 
