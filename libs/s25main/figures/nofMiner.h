@@ -23,6 +23,7 @@ protected:
     bool AreWaresAvailable() const override;
     bool StartWorking() override;
     ResourceType GetRequiredResType() const;
+    bool CanMineWithoutResource() const;
 
 public:
     nofMiner(MapPoint pos, unsigned char player, nobUsual* workplace);
