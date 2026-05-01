@@ -46,6 +46,8 @@ const unsigned short WANDER_RADIUS = 10;
 /// Dasselbe nochmal für Soldaten
 const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
+const unsigned short WANDER_RADIUS_SOLDIERS_EXTENDED = 30;
+const unsigned short WANDER_RADIUS_SOLDIERS_VERY_LARGE = 60;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::GotToGoal), job_(job), player(player), cur_rs(nullptr),
@@ -492,6 +494,16 @@ struct IsValidFlag
     IsValidFlag(const unsigned playerId) : playerId_(playerId) {}
     bool operator()(const noFlag* const flag) const { return flag && flag->GetPlayer() == playerId_; }
 };
+
+unsigned short GetSoldierWanderSearchRadius(const GlobalGameSettings& ggs)
+{
+    switch(ggs.getSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH))
+    {
+        case 1: return WANDER_RADIUS_SOLDIERS_EXTENDED;
+        case 2: return WANDER_RADIUS_SOLDIERS_VERY_LARGE;
+        default: return WANDER_RADIUS_SOLDIERS;
+    }
+}
 } // namespace
 
 void noFigure::Wander()
@@ -508,7 +520,7 @@ void noFigure::Wander()
     if(!wander_way)
     {
         // Soldaten sind härter im Nehmen
-        const unsigned short wander_radius = IsSoldier() ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
+        const unsigned short wander_radius = IsSoldier() ? GetSoldierWanderSearchRadius(world->GetGGS()) : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags =
