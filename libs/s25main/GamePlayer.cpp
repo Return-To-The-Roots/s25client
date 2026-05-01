@@ -50,8 +50,21 @@
 #include <limits>
 #include <numeric>
 
+namespace {
+constexpr std::array<GoodType, 3> MILITARY_WAREHOUSE_GOODS = {GoodType::Beer, GoodType::Sword,
+                                                              GoodType::ShieldRomans};
+
+bool IsMilitaryWarehouseGood(const GoodType good)
+{
+    const GoodType normalizedGood = ConvertShields(good);
+    return normalizedGood == GoodType::Beer || normalizedGood == GoodType::Sword
+           || normalizedGood == GoodType::ShieldRomans;
+}
+} // namespace
+
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorld& world)
-    : GamePlayerInfo(playerId, playerInfo), world(world), hqPos(MapPoint::Invalid()), emergency(false)
+    : GamePlayerInfo(playerId, playerInfo), world(world), hqPos(MapPoint::Invalid()),
+      militaryWarehousePos(MapPoint::Invalid()), emergency(false)
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
@@ -187,6 +200,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
 
     helpers::pushContainer(sgd, shouldSendDefenderList);
     helpers::pushPoint(sgd, hqPos);
+    helpers::pushPoint(sgd, GetMilitaryWarehousePos());
 
     for(const Distribution& dist : distribution)
     {
@@ -265,6 +279,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     sgd.PopContainer(shouldSendDefenderList);
 
     hqPos = sgd.PopMapPoint();
+    militaryWarehousePos = sgd.GetGameDataVersion() >= 15 ? sgd.PopMapPoint() : hqPos;
 
     for(const auto i : helpers::enumRange<GoodType>())
     {
@@ -519,6 +534,8 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
             }
         }
     }
+    if(BuildingProperties::IsWareHouse(bldType) && bld->GetPos() == militaryWarehousePos)
+        militaryWarehousePos = hqPos;
     if(BuildingProperties::IsWareHouse(bldType) || BuildingProperties::IsMilitary(bldType))
         TestDefeat();
 }
@@ -1174,6 +1191,20 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
 
 nobBaseWarehouse* GamePlayer::FindWarehouseForWare(const Ware& ware) const
 {
+    if(IsMilitaryWarehouseGood(ware.type))
+    {
+        const nobBaseWarehouse* militaryWh = GetMilitaryWarehouse();
+        if(militaryWh && FW::AcceptsWare(ware.type)(*militaryWh))
+        {
+            if(ware.GetLocation()->GetPos() == militaryWh->GetPos())
+                return const_cast<nobBaseWarehouse*>(militaryWh);
+
+            unsigned pathCosts = 0;
+            if(world.FindPathForWareOnRoads(*ware.GetLocation(), *militaryWh, &pathCosts) != RoadPathDirection::None)
+                return const_cast<nobBaseWarehouse*>(militaryWh);
+        }
+    }
+
     // Check whs that collect this ware
     nobBaseWarehouse* wh = FindWarehouse(*ware.GetLocation(), FW::CollectsWare(ware.type), true, true);
     // If there is none, check those that accept it
@@ -1505,6 +1536,47 @@ const nobHQ* GamePlayer::GetHQ() const
 nobHQ* GamePlayer::GetHQ()
 {
     return const_cast<nobHQ*>(std::as_const(*this).GetHQ());
+}
+
+const nobBaseWarehouse* GamePlayer::GetMilitaryWarehouse() const
+{
+    const MapPoint whPos = GetMilitaryWarehousePos();
+    auto* wh = whPos.isValid() ? GetGameWorld().GetSpecObj<nobBaseWarehouse>(whPos) : nullptr;
+    if(wh && wh->GetPlayer() == GetPlayerId())
+        return wh;
+    return GetHQ();
+}
+
+bool GamePlayer::IsMilitaryWarehouse(const nobBaseWarehouse& wh) const
+{
+    const nobBaseWarehouse* militaryWh = GetMilitaryWarehouse();
+    return militaryWh && militaryWh->GetPos() == wh.GetPos();
+}
+
+void GamePlayer::SetMilitaryWarehouse(const MapPoint pt)
+{
+    auto* newMilitaryWh = GetGameWorld().GetSpecObj<nobBaseWarehouse>(pt);
+    if(!newMilitaryWh || newMilitaryWh->GetPlayer() != GetPlayerId())
+        return;
+
+    militaryWarehousePos = pt;
+    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
+    {
+        const bool isMilitaryWh = wh->GetPos() == militaryWarehousePos;
+        for(const GoodType good : MILITARY_WAREHOUSE_GOODS)
+        {
+            InventorySetting desiredSetting = wh->GetInventorySetting(good);
+            if(isMilitaryWh)
+                desiredSetting = EInventorySetting::Collect;
+            else if(desiredSetting.IsSet(EInventorySetting::Collect))
+                desiredSetting = InventorySetting();
+
+            if(wh->GetInventorySetting(good) != desiredSetting)
+                wh->SetInventorySetting(good, desiredSetting);
+            if(wh->GetInventorySettingVisual(good) != desiredSetting)
+                wh->SetInventorySettingVisual(good, desiredSetting);
+        }
+    }
 }
 
 void GamePlayer::Surrender()

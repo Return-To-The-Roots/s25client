@@ -95,6 +95,13 @@ public:
     const MapPoint& GetHQPos() const { return hqPos; }
     const nobHQ* GetHQ() const;
     nobHQ* GetHQ();
+    const MapPoint& GetMilitaryWarehousePos() const
+    {
+        return militaryWarehousePos.isValid() ? militaryWarehousePos : hqPos;
+    }
+    const nobBaseWarehouse* GetMilitaryWarehouse() const;
+    bool IsMilitaryWarehouse(const nobBaseWarehouse& wh) const;
+    void SetMilitaryWarehouse(MapPoint pt);
     bool IsHQTent() const;
     void SetHQIsTent(bool isTent);
 
@@ -381,6 +388,8 @@ private:
 
     /// Koordinaten des HQs des Spielers
     MapPoint hqPos;
+    /// Warehouse that collects beer, swords and shields for recruitment. Defaults to HQ.
+    MapPoint militaryWarehousePos;
 
     helpers::EnumArray<Distribution, GoodType> distribution;
 

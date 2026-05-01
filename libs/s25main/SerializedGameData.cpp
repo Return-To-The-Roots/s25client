@@ -108,7 +108,8 @@
 /// 12: leatheraddon added, three new building types and three new goods
 /// 13: SeaId & HarborId: World::harborData w/o dummy entry at 0
 /// 14: Remove "age" field in nobBaseMilitary
-static const unsigned currentGameDataVersion = 14;
+/// 15: Store the player's military warehouse focus
+static const unsigned currentGameDataVersion = 15;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

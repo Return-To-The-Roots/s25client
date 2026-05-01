@@ -277,6 +277,13 @@ void SetInventorySetting::Execute(GameWorld& world, uint8_t playerId)
         bld->SetInventorySetting(what, state);
 }
 
+void SetMilitaryWarehouse::Execute(GameWorld& world, uint8_t playerId)
+{
+    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
+    if(bld && bld->GetPlayer() == playerId)
+        world.GetPlayer(playerId).SetMilitaryWarehouse(pt_);
+}
+
 SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
     : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
 {

@@ -487,6 +487,19 @@ public:
     void Execute(GameWorld& world, uint8_t playerId) override;
 };
 
+/// Mark a warehouse as the player's military production warehouse
+class SetMilitaryWarehouse : public Coords
+{
+    GC_FRIEND_DECL;
+
+protected:
+    SetMilitaryWarehouse(const MapPoint pt) : Coords(GCType::SetMilitaryWarehouse, pt) {}
+    SetMilitaryWarehouse(Serializer& ser) : Coords(GCType::SetMilitaryWarehouse, ser) {}
+
+public:
+    void Execute(GameWorld& world, uint8_t playerId) override;
+};
+
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
 class SetAllInventorySettings : public Coords
 {

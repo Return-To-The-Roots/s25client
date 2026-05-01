@@ -15,7 +15,8 @@ unsigned Deserializer::getCurrentVersion()
     // 1: Add wine addon --> 3 new values in distribution
     // 2: Add leather addon --> 3 new values in distribution, 1 new value in transport order and transport order default
     // values changed, 3 new values in custom build order, 3 new jobs/wares in setAllInventory settings
-    return 2;
+    // 3: Add SetMilitaryWarehouse command
+    return 3;
 }
 
 GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
@@ -59,6 +60,7 @@ GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
         case GCType::UpgradeRoad: gc = new UpgradeRoad(ser); break;
         case GCType::SetTroopLimit: gc = new SetTroopLimit(ser); break;
         case GCType::NotifyAlliesOfLocation: gc = new NotifyAlliesOfLocation(ser); break;
+        case GCType::SetMilitaryWarehouse: gc = new SetMilitaryWarehouse(ser); break;
         default: throw std::logic_error("Invalid GC Type: " + helpers::toString(rttr::enum_cast(gcType)));
     }
     RTTR_Assert(gc->gcType == gcType);

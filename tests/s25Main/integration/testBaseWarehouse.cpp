@@ -4,10 +4,12 @@
 
 #include "GamePlayer.h"
 #include "RTTR_AssertError.h"
+#include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
+#include "nodeObjs/noFlag.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "worldFixtures/WorldWithGCExecution.h"
@@ -74,6 +76,7 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
 };
 
 using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+using LogisticsWarehouseFixture = WorldWithGCExecution<1, 32, 16>;
 
 } // namespace
 
@@ -283,6 +286,32 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
         BOOST_TEST(wh2->GetNumVisualWares(good) == 1u);
         BOOST_TEST(wh2->GetNumRealWares(good) == 1u);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(MilitaryWarehouseAttractsRecruitmentGoods, LogisticsWarehouseFixture)
+{
+    GamePlayer& player = world.GetPlayer(curPlayer);
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+    BOOST_TEST_REQUIRE(hq);
+
+    const MapPoint militaryWhPos = hqPos + MapPoint(4, 0);
+    auto* militaryWh = static_cast<nobBaseWarehouse*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, militaryWhPos, curPlayer, Nation::Romans));
+    BOOST_TEST_REQUIRE(militaryWh);
+
+    this->BuildRoad(hq->GetFlagPos(), false, std::vector<Direction>(4, Direction::East));
+    this->SetMilitaryWarehouse(militaryWhPos);
+
+    player.IncreaseInventoryWare(GoodType::Beer, 1);
+    auto beer = std::make_unique<Ware>(GoodType::Beer, nullptr, hq->GetFlag());
+    noBaseBuilding* target = player.FindClientForWare(*beer);
+
+    BOOST_TEST_REQUIRE(target);
+    BOOST_TEST(target->GetPos().x == militaryWhPos.x);
+    BOOST_TEST(target->GetPos().y == militaryWhPos.y);
+
+    beer->WareLost(curPlayer);
+    beer->Destroy();
 }
 
 BOOST_FIXTURE_TEST_CASE(AddSoldierWithArmor, EmptyWorldFixture1P)

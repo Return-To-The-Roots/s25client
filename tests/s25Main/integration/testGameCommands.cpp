@@ -892,6 +892,33 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
     this->SetInventorySetting(hqPos, Job::Woodcutter, InventorySetting());
 }
 
+BOOST_FIXTURE_TEST_CASE(SetMilitaryWarehouseTest, WorldWithGCExecution2P)
+{
+    GamePlayer& player = world.GetPlayer(curPlayer);
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+    BOOST_TEST_REQUIRE(hq);
+
+    const MapPoint whPos = hqPos + MapPoint(3, 0);
+    auto* militaryWh = static_cast<nobBaseWarehouse*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Africans));
+    BOOST_TEST_REQUIRE(militaryWh);
+
+    BOOST_TEST(player.IsMilitaryWarehouse(*hq));
+
+    this->SetInventorySetting(hqPos, GoodType::Beer, EInventorySetting::Send);
+    this->SetMilitaryWarehouse(whPos);
+
+    BOOST_TEST(player.IsMilitaryWarehouse(*militaryWh));
+    BOOST_TEST(player.GetMilitaryWarehousePos() == whPos);
+
+    for(const GoodType good : {GoodType::Beer, GoodType::Sword, GoodType::ShieldRomans})
+    {
+        BOOST_TEST(militaryWh->IsInventorySetting(good, EInventorySetting::Collect));
+        BOOST_TEST(!hq->IsInventorySetting(good, EInventorySetting::Collect));
+    }
+    BOOST_TEST(hq->IsInventorySetting(GoodType::Beer, EInventorySetting::Send));
+}
+
 BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
 {
     GamePlayer& player = world.GetPlayer(curPlayer);

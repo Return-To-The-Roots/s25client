@@ -39,12 +39,19 @@ enum
     ID_SELECT_ALL,
     ID_GOTO,
     ID_GOTO_NEXT,
+    ID_MILITARY_WAREHOUSE,
     ID_DEMOLISH
 };
+
+constexpr unsigned BUTTON_SIZE = 32;
+constexpr unsigned BUTTON_SPACING = 4;
+constexpr unsigned STORAGE_ROW_OFFSET = 115;
+constexpr unsigned WAREHOUSE_ACTION_ROW_OFFSET = 81;
+constexpr unsigned WINDOW_ACTION_ROW_OFFSET = 47;
 }
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
-    : iwWares(CGI_BUILDING + MapBase::CreateGUIID(wh->GetPos()), IngameWindow::posAtMouse, 40,
+    : iwWares(CGI_BUILDING + MapBase::CreateGUIID(wh->GetPos()), IngameWindow::posAtMouse, 74,
               _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont, wh->GetInventory(),
               gwv.GetWorld().GetPlayer(wh->GetPlayer())),
       gwv(gwv), gcFactory(gcFactory), wh(wh)
@@ -57,37 +64,49 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
     // Auswahl für Auslagern/Einlagern Verbieten-Knöpfe
     ctrlOptionGroup* group = AddOptionGroup(ID_STORE_SETTINGS_GROUP, GroupSelectType::Check);
     // Einlagern
-    group->AddImageButton(ID_COLLECT, DrawPoint(16, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
+    group->AddImageButton(ID_COLLECT, DrawPoint(16, GetFullSize().y - STORAGE_ROW_OFFSET),
+                          Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
                           LOADER.GetImageN("io_new", 4), _("Collect"));
     // Auslagern
-    group->AddImageButton(ID_TAKEOUT, DrawPoint(52, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
+    group->AddImageButton(ID_TAKEOUT, DrawPoint(52, GetFullSize().y - STORAGE_ROW_OFFSET),
+                          Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
                           LOADER.GetImageN("io", 211), _("Take out of store"));
     // Einlagern verbieten
-    group->AddImageButton(ID_STOP, DrawPoint(86, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
+    group->AddImageButton(ID_STOP, DrawPoint(86, GetFullSize().y - STORAGE_ROW_OFFSET),
+                          Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
                           LOADER.GetImageN("io", 212), _("Stop storage"));
     // nix tun auswählen
     group->SetSelection(ID_COLLECT);
     // Alle auswählen bzw setzen!
-    AddImageButton(ID_SELECT_ALL, DrawPoint(122, GetFullSize().y - 81), Extent(32, 32), TextureColor::Grey,
+    AddImageButton(ID_SELECT_ALL, DrawPoint(122, GetFullSize().y - STORAGE_ROW_OFFSET),
+                   Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
                    LOADER.GetImageN("io", 223), _("Select all"));
 
     // "Gehe Zu Ort"
-    AddImageButton(ID_GOTO, DrawPoint(122, GetFullSize().y - 47), Extent(15, 32), TextureColor::Grey,
+    AddImageButton(ID_GOTO, DrawPoint(52, GetFullSize().y - WAREHOUSE_ACTION_ROW_OFFSET),
+                   Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
                    LOADER.GetImageN("io_new", 10), _("Go to place"));
     // Go to next warehouse
-    AddImageButton(ID_GOTO_NEXT, DrawPoint(139, GetFullSize().y - 47), Extent(15, 32), TextureColor::Grey,
+    AddImageButton(ID_GOTO_NEXT, DrawPoint(52 + BUTTON_SIZE + BUTTON_SPACING,
+                                           GetFullSize().y - WAREHOUSE_ACTION_ROW_OFFSET),
+                   Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
                    LOADER.GetImageN("io_new", 13), _("Go to next warehouse"));
+    AddImageButton(ID_MILITARY_WAREHOUSE, DrawPoint(122, GetFullSize().y - WAREHOUSE_ACTION_ROW_OFFSET),
+                   Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
+                   LOADER.GetJobTex(Job::Private), _("Collect beer, swords and shields here"));
 
     UpdateOverlays();
+    UpdateMilitaryWarehouseButton();
 
     // Add demolish button if not HQ
     if(wh->GetGOT() != GO_Type::NobHq)
     {
         // Make paginate button smaller and move to make space for demolish button
-        GetCtrl<ctrlButton>(ID_PAGINATE)->SetWidth(32);
-        GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, GetFullSize().y - 47));
+        GetCtrl<ctrlButton>(ID_PAGINATE)->SetWidth(BUTTON_SIZE);
+        GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, GetFullSize().y - WINDOW_ACTION_ROW_OFFSET));
 
-        AddImageButton(ID_DEMOLISH, DrawPoint(52, GetFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
+        AddImageButton(ID_DEMOLISH, DrawPoint(52, GetFullSize().y - WINDOW_ACTION_ROW_OFFSET),
+                       Extent(BUTTON_SIZE, BUTTON_SIZE), TextureColor::Grey,
                        LOADER.GetImageN("io", 23), _("Demolish house"));
     }
 }
@@ -253,6 +272,14 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             }
         }
         break;
+        case ID_MILITARY_WAREHOUSE:
+        {
+            if(GAMECLIENT.IsReplayModeOn())
+                return;
+            if(gcFactory.SetMilitaryWarehouse(wh->GetPos()))
+                UpdateMilitaryWarehouseButton();
+        }
+        break;
         default: // an Basis weiterleiten
         {
             iwWares::Msg_ButtonClick(ctrl_id);
@@ -311,6 +338,15 @@ void iwBaseWarehouse::UpdateOverlays()
     }
 }
 
+void iwBaseWarehouse::UpdateMilitaryWarehouseButton()
+{
+    const bool isMilitaryWarehouse = gwv.GetWorld().GetPlayer(wh->GetPlayer()).IsMilitaryWarehouse(*wh);
+    auto* button = GetCtrl<ctrlButton>(ID_MILITARY_WAREHOUSE);
+    button->SetChecked(isMilitaryWarehouse);
+    button->SetIlluminated(isMilitaryWarehouse);
+    button->SetTexture(isMilitaryWarehouse ? TextureColor::Green2 : TextureColor::Grey);
+}
+
 void iwBaseWarehouse::OnChange(unsigned changeId)
 {
     if(changeId == 0)
@@ -318,5 +354,8 @@ void iwBaseWarehouse::OnChange(unsigned changeId)
         wh = nullptr;
         Close();
     } else if(changeId == 1)
+    {
         UpdateOverlays();
+        UpdateMilitaryWarehouseButton();
+    }
 }

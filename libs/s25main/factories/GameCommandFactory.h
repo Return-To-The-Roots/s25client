@@ -60,6 +60,7 @@ public:
     bool NotifyAlliesOfLocation(MapPoint pt);
     /// Sets inventory settings for a warehouse
     bool SetInventorySetting(MapPoint pt, const boost_variant2<GoodType, Job>& what, InventorySetting state);
+    bool SetMilitaryWarehouse(MapPoint pt);
     bool SetAllInventorySettings(MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
     bool ChangeReserve(MapPoint pt, unsigned char rank, unsigned count);
     bool CheatArmageddon();

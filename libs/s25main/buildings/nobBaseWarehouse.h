@@ -15,6 +15,7 @@
 #include <memory>
 
 class nofCarrier;
+class GamePlayer;
 class noFigure;
 class Ware;
 class nobMilitary;
@@ -96,6 +97,7 @@ private:
 
     friend class gc::SetInventorySetting;
     friend class gc::SetAllInventorySettings;
+    friend class GamePlayer;
     /// Verändert Ein/Auslagerungseinstellungen
     void SetInventorySetting(const boost_variant2<GoodType, Job>& what, InventorySetting state);
 

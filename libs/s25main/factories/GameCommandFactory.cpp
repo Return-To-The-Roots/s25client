@@ -113,6 +113,11 @@ bool GameCommandFactory::SetInventorySetting(const MapPoint pt, const boost_vari
     return AddGC(new gc::SetInventorySetting(pt, what, state));
 }
 
+bool GameCommandFactory::SetMilitaryWarehouse(const MapPoint pt)
+{
+    return AddGC(new gc::SetMilitaryWarehouse(pt));
+}
+
 bool GameCommandFactory::SetAllInventorySettings(const MapPoint pt, bool isJob,
                                                  const std::vector<InventorySetting>& states)
 {
