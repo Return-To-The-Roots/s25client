@@ -72,6 +72,15 @@ bool Replay::StopRecording()
     isRecording_ = false;
     file_.Close();
 
+    // Remove empty replay recordings. They are mostly produced when a game is aborted
+    // during startup, for example after an early script error.
+    if(lastGF_ == 0)
+    {
+        boost::system::error_code ec;
+        boost::filesystem::remove(filepath_, ec);
+        return !ec;
+    }
+
     BinaryFile file;
     if(!file.Open(filepath_, OpenFileMode::Read))
         return false;
