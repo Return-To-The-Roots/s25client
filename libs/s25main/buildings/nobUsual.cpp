@@ -221,7 +221,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds(); //-V522
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
-    else if(BuildingProperties::IsMine(bldType_) && worker && nation == Nation::Africans)
+    else if(BuildingProperties::IsMine(bldType_) && worker && is_working && nation == Nation::Africans)
     {
         DrawPoint offset;
         switch(bldType_)
