@@ -71,21 +71,30 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 
 bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+    return nofWorkman::AreWaresAvailable()
+           && (CanMineWithoutResource() || FindPointWithResource(GetRequiredResType()).isValid());
 }
 
 bool nofMiner::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(GetRequiredResType());
-    if(!resPt.isValid())
-        return false;
     const GlobalGameSettings& settings = world->GetGGS();
-    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                            || (workplace->GetBuildingType() == BuildingType::GraniteMine
-                                && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
-    if(!inexhaustibleRes)
-        world->ReduceResource(resPt);
+    const bool canMineWithoutResource = CanMineWithoutResource();
+    const bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES) || canMineWithoutResource;
+    if(!canMineWithoutResource)
+    {
+        MapPoint resPt = FindPointWithResource(GetRequiredResType());
+        if(!resPt.isValid())
+            return false;
+        if(!inexhaustibleRes)
+            world->ReduceResource(resPt);
+    }
     return nofWorkman::StartWorking();
+}
+
+bool nofMiner::CanMineWithoutResource() const
+{
+    return workplace->GetBuildingType() == BuildingType::GraniteMine
+           && world->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES);
 }
 
 ResourceType nofMiner::GetRequiredResType() const

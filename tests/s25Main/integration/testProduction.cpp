@@ -102,4 +102,46 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     RTTR_EXEC_TILL(1300, mw->is_working);
 }
 
+BOOST_FIXTURE_TEST_CASE(GraniteMineWithoutResourcesNeedsAddon, WorldWithGCExecution1P)
+{
+    GoodsAndPeopleCounts inv;
+    inv[GoodType::Fish] = 10;
+    inv[GoodType::PickAxe] = 1;
+    inv[Job::Miner] = 1;
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+
+    MapPoint minePos = hqPos + MapPoint(2, 0);
+    const auto* mine = static_cast<nobUsual*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::GraniteMine, minePos, curPlayer, Nation::Romans));
+    this->BuildRoad(world.GetNeighbour(minePos, Direction::SouthEast), false,
+                    std::vector<Direction>(2, Direction::West));
+
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialStones = curInventory[GoodType::Stones];
+    RTTR_EXEC_TILL(500, mine->HasWorker());
+    RTTR_SKIP_GFS(2000);
+
+    BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
+}
+
+BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineWorksWithoutResources, WorldWithGCExecution1P)
+{
+    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
+
+    GoodsAndPeopleCounts inv;
+    inv[GoodType::Fish] = 10;
+    inv[GoodType::PickAxe] = 1;
+    inv[Job::Miner] = 1;
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+
+    MapPoint minePos = hqPos + MapPoint(2, 0);
+    BuildingFactory::CreateBuilding(world, BuildingType::GraniteMine, minePos, curPlayer, Nation::Romans);
+    this->BuildRoad(world.GetNeighbour(minePos, Direction::SouthEast), false,
+                    std::vector<Direction>(2, Direction::West));
+
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialStones = curInventory[GoodType::Stones];
+    RTTR_EXEC_TILL(3000, curInventory[GoodType::Stones] > initialStones);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
