@@ -78,14 +78,12 @@ bool nofMiner::AreWaresAvailable() const
 bool nofMiner::StartWorking()
 {
     const GlobalGameSettings& settings = world->GetGGS();
-    const bool canMineWithoutResource = CanMineWithoutResource();
-    const bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES) || canMineWithoutResource;
-    if(!canMineWithoutResource)
+    if(!CanMineWithoutResource())
     {
         MapPoint resPt = FindPointWithResource(GetRequiredResType());
         if(!resPt.isValid())
             return false;
-        if(!inexhaustibleRes)
+        if(!settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
             world->ReduceResource(resPt);
     }
     return nofWorkman::StartWorking();
