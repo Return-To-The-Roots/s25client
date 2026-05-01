@@ -31,6 +31,7 @@ F9:................... Readme
 F10:.................. Settings (UI, ...)
 F11:.................. Musicplayer
 F12:.................. Options window
+Print:................ Take screenshot
 
 Post office:
 
