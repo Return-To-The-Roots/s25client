@@ -6,7 +6,9 @@
 #include "RttrForeachPt.h"
 #include "helpers/IdRange.h"
 #include "addons/const_addons.h"
+#include "worldFixtures/CreateSeaWorld.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
+#include "worldFixtures/WorldFixture.h"
 #include "worldFixtures/terrainHelpers.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/ShipDirection.h"
@@ -123,6 +125,13 @@ void testHarborPoint(const GameWorld& world, const HarborId harborId)
     BOOST_TEST_REQUIRE(hasSea);
     BOOST_TEST_REQUIRE(world.GetNode(harborPt).bq == BuildingQuality::Harbor);
 }
+
+using SeaWorldFixture = WorldFixture<CreateSeaWorld, 3, SeaWorldDefault::width, SeaWorldDefault::height>;
+
+struct MarkerlessIslandFixture : WorldFixtureBase
+{
+    MarkerlessIslandFixture() : WorldFixtureBase(3) { createMarkerlessIslandWorld(world); }
+};
 } // namespace
 
 BOOST_AUTO_TEST_CASE(GetShipDir)
@@ -190,7 +199,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonAddsCoastalHarbors, SeaWorldWithGCExecution<>)
+BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonAddsCoastalHarbors, SeaWorldFixture)
 {
     const unsigned initialHarbors = world.GetNumHarborPoints();
 
@@ -205,9 +214,8 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonAddsCoastalHarbors, SeaWorldWithGCEx
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, SeaWorldWithGCExecution<>)
+BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIslandFixture)
 {
-    createMarkerlessIslandWorld(world);
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
     world.InitAfterLoad();
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);

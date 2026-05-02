@@ -12,6 +12,6 @@ class AddonFreeHarborSpots : public AddonBool
 public:
     AddonFreeHarborSpots()
         : AddonBool(AddonId::FREE_HARBOR_SPOTS, AddonGroup::GamePlay, _("Build harbors without map markers"),
-                    _("Allows harbors on suitable coastal castle sites even if the map does not define harbor spots."))
+                    _("Allows harbors on all suitable coastal castle sites even if the map does not define harbor spots."))
     {}
 };
