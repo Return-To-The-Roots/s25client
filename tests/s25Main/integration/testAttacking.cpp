@@ -32,7 +32,6 @@
 #include <boost/test/unit_test.hpp>
 #include <array>
 #include <iostream>
-#include <memory>
 #include <numeric>
 
 using SoldierState = nofActiveSoldier::SoldierState;
@@ -70,14 +69,13 @@ std::array<unsigned, NUM_SOLDIER_RANKS> CountTroopsByRank(const nobMilitary& bld
     return counts;
 }
 
-void DeliverCoin(nobMilitary& bld, GameWorld& world)
+void DeliverCoin(nobMilitary& bld, GameWorld& world, const MapPoint hqPos)
 {
-    auto coin = std::make_unique<Ware>(GoodType::Coins, &bld, &bld);
-    world.GetPlayer(bld.GetPlayer()).RegisterWare(*coin);
-    bld.TakeWare(coin.get());
-    bld.AddWare(std::move(coin));
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+    BOOST_TEST_REQUIRE(hq);
 
-    BOOST_TEST_REQUIRE(bld.GetNumCoins() == 1u);
+    hq->AddToInventory(GoodCounts::make(GoodType::Coins, 1), true);
+    bld.SearchCoins();
 }
 
 /// Reschedule the walk event of the obj to be executed in numGFs GFs
@@ -568,9 +566,10 @@ BOOST_FIXTURE_TEST_CASE(CoinTrainingUpgradesRankChainByDefault, AttackFixture<>)
     AddSoldiers(milBld0Pos, 1, Job::PrivateFirstClass);
     AddSoldiers(milBld0Pos, 1, Job::Sergeant);
 
-    DeliverCoin(*milBld0, world);
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+    DeliverCoin(*milBld0, world, hqPos[0]);
 
-    RTTR_EXEC_TILL(5000, milBld0->GetNumCoins() == 0u);
+    RTTR_EXEC_TILL(5000, CountTroopsByRank(*milBld0)[3] == 1u);
 
     const auto counts = CountTroopsByRank(*milBld0);
     BOOST_TEST_REQUIRE(counts[0] == 0u);
@@ -587,9 +586,10 @@ BOOST_FIXTURE_TEST_CASE(SingleSoldierCoinTrainingUpgradesOnlyLowestRankSoldier, 
     AddSoldiers(milBld0Pos, 1, Job::PrivateFirstClass);
     AddSoldiers(milBld0Pos, 1, Job::Sergeant);
 
-    DeliverCoin(*milBld0, world);
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+    DeliverCoin(*milBld0, world, hqPos[0]);
 
-    RTTR_EXEC_TILL(5000, milBld0->GetNumCoins() == 0u);
+    RTTR_EXEC_TILL(5000, CountTroopsByRank(*milBld0)[1] == 2u);
 
     const auto counts = CountTroopsByRank(*milBld0);
     BOOST_TEST_REQUIRE(counts[0] == 0u);
