@@ -46,6 +46,7 @@ const unsigned short WANDER_RADIUS = 10;
 /// Dasselbe nochmal für Soldaten
 const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
+const unsigned short STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_REDUCED = WANDER_RADIUS_SOLDIERS / 2;
 const unsigned short STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_EXTENDED = 30;
 const unsigned short STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_VERY_LARGE = 60;
 
@@ -501,8 +502,9 @@ unsigned short GetStrandedSoldierReturnSearchRadius(const GlobalGameSettings& gg
 {
     switch(ggs.getSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH))
     {
-        case 1: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_EXTENDED;
-        case 2: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_VERY_LARGE;
+        case 1: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_REDUCED;
+        case 2: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_EXTENDED;
+        case 3: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_VERY_LARGE;
         default: return WANDER_RADIUS_SOLDIERS;
     }
 }
@@ -522,7 +524,8 @@ void noFigure::Wander()
     if(!wander_way)
     {
         // Soldaten sind härter im Nehmen
-        const unsigned short wander_radius = IsSoldier() ? GetStrandedSoldierReturnSearchRadius(world->GetGGS()) : WANDER_RADIUS;
+        const unsigned short wander_radius =
+          IsSoldier() ? GetStrandedSoldierReturnSearchRadius(world->GetGGS()) : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags =
