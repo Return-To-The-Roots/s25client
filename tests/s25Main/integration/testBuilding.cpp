@@ -7,11 +7,11 @@
 #include "RttrForeachPt.h"
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobUsual.h"
+#include "desktops/dskGameInterface.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofFarmhand.h"
 #include "figures/nofFisher.h"
 #include "gameTypes/Resource.h"
-#include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "worldFixtures/CreateEmptyWorld.h"
@@ -482,7 +482,6 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
     }
 }
 
-
 BOOST_FIXTURE_TEST_CASE(FisherIgnoresIsolatedFishWater, EmptyWorldFixture1PBiggest)
 {
     const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.GetDescription());
@@ -493,7 +492,7 @@ BOOST_FIXTURE_TEST_CASE(FisherIgnoresIsolatedFishWater, EmptyWorldFixture1PBigge
     BOOST_TEST_REQUIRE(fishery);
 
     nofFisher fisher(fisheryPos, 0, fishery);
-    const nofFarmhand& farmhand = fisher;
+    const nofFarmhand& fisherAsFarmhand = fisher;
 
     const MapPoint workPt = world.MakeMapPoint(fisheryPos + Position(4, 0));
     const MapPoint fishPt = world.GetNeighbour(workPt, Direction::East);
@@ -515,12 +514,10 @@ BOOST_FIXTURE_TEST_CASE(FisherIgnoresIsolatedFishWater, EmptyWorldFixture1PBigge
     makeWaterPoint(fishPt);
     world.SetResource(fishPt, Resource(ResourceType::Fish, 4));
 
-    BOOST_TEST_REQUIRE(static_cast<unsigned>(farmhand.GetPointQuality(workPt))
-                       == static_cast<unsigned>(nofFarmhand::PointQuality::NotPossible));
+    BOOST_TEST_REQUIRE(fisherAsFarmhand.GetPointQuality(workPt) == nofFarmhand::PointQuality::NotPossible);
 
     makeWaterPoint(world.GetNeighbour(fishPt, Direction::East));
 
-    BOOST_TEST_REQUIRE(static_cast<unsigned>(farmhand.GetPointQuality(workPt))
-                       == static_cast<unsigned>(nofFarmhand::PointQuality::Class1));
+    BOOST_TEST_REQUIRE(fisherAsFarmhand.GetPointQuality(workPt) == nofFarmhand::PointQuality::Class1);
 }
 BOOST_AUTO_TEST_SUITE_END()
