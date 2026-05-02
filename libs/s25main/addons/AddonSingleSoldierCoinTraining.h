@@ -11,8 +11,7 @@ class AddonSingleSoldierCoinTraining : public AddonBool
 {
 public:
     AddonSingleSoldierCoinTraining()
-        : AddonBool(AddonId::SINGLE_SOLDIER_COIN_TRAINING, AddonGroup::Military,
-                    _("Coins train only one soldier"),
-                    _("Gold coins promote only one lowest-rank soldier instead of all eligible lower-rank soldiers."))
+        : AddonBool(AddonId::SINGLE_SOLDIER_COIN_TRAINING, AddonGroup::Military, _("Coins train only one soldier"),
+                    _("Gold coins promote only one lowest-rank soldier instead of all eligible soldiers."))
     {}
 };
