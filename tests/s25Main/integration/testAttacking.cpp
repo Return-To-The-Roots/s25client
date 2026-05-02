@@ -543,6 +543,42 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
     BOOST_TEST(milBld1->GetDefender()->GetHitpoints() == HITPOINTS[milBld1->GetDefender()->GetRank()]);
 }
 
+BOOST_FIXTURE_TEST_CASE(TroopLimitKeepsOrderedRestrictedSoldier, AttackFixture<>)
+{
+    MilitarySettings milSettings = MILITARY_SETTINGS_SCALE;
+    milSettings[4 + rttr::enum_cast(FrontierDistance::Far)] = 0;
+    this->ChangeMilitary(milSettings);
+
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos[0]);
+    BOOST_TEST_REQUIRE(hq);
+
+    const Job soldierJob = Job::Private;
+    const unsigned soldierRank = getSoldierRank(soldierJob);
+    hq->AddToInventory(PeopleCounts::make(soldierJob, 2), true);
+    const unsigned hqSoldiersBefore = hq->GetNumRealFigures(soldierJob);
+    BOOST_TEST_REQUIRE(hqSoldiersBefore > 0u);
+
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+    milBld0->RegulateTroops();
+
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 0u);
+    BOOST_TEST_REQUIRE(hq->GetLeavingFigures().size() == 1u);
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(soldierJob) + 1 == hqSoldiersBefore);
+
+    this->SetInventorySetting(hqPos[0], soldierJob, EInventorySetting::Stop);
+    milBld0->SetTroopLimit(soldierRank, 0);
+
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 0u);
+    BOOST_TEST_REQUIRE(hq->GetLeavingFigures().size() == 1u);
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(soldierJob) + 1 == hqSoldiersBefore);
+
+    RTTR_EXEC_TILL(500, milBld0->GetNumTroops() == 1u);
+
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 1u);
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(soldierJob) + 1 == hqSoldiersBefore);
+    BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().empty());
+}
+
 BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonEnable, AttackFixture<>)
 {
     this->ggs.setSelection(AddonId::COINS_CAPTURED_BLD, 1); // addon is active on second run
