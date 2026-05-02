@@ -90,6 +90,39 @@ void createMarkerlessIslandWorld(GameWorld& world)
         }
     }
 }
+
+unsigned countHarborBQ(const GameWorld& world)
+{
+    unsigned result = 0;
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        if(world.GetNode(pt).bq == BuildingQuality::Harbor)
+            ++result;
+    }
+    return result;
+}
+
+void testHarborPoint(const GameWorld& world, const HarborId harborId)
+{
+    const MapPoint harborPt = world.GetHarborPoint(harborId);
+    BOOST_TEST_REQUIRE(harborPt.isValid());
+    BOOST_TEST_REQUIRE(world.GetHarborPointID(harborPt) == harborId);
+
+    bool hasSea = false;
+    for(const auto dir : helpers::EnumRange<Direction>{})
+    {
+        const SeaId seaId = world.GetSeaId(harborId, dir);
+        if(!seaId)
+            continue;
+
+        hasSea = true;
+        const MapPoint coastalPt = world.GetCoastalPoint(harborId, seaId);
+        BOOST_TEST_REQUIRE(coastalPt.isValid());
+        BOOST_TEST_REQUIRE(world.GetSeaFromCoastalPoint(coastalPt) == seaId);
+    }
+    BOOST_TEST_REQUIRE(hasSea);
+    BOOST_TEST_REQUIRE(world.GetNode(harborPt).bq == BuildingQuality::Harbor);
+}
 } // namespace
 
 BOOST_AUTO_TEST_CASE(GetShipDir)
@@ -168,10 +201,7 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonAddsCoastalHarbors, SeaWorldWithGCEx
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() > initialHarbors);
     for(unsigned harborIdx = initialHarbors + 1; harborIdx <= world.GetNumHarborPoints(); ++harborIdx)
     {
-        const MapPoint harborPt = world.GetHarborPoint(HarborId(harborIdx));
-        BOOST_TEST_REQUIRE(harborPt.isValid());
-        BOOST_TEST_REQUIRE(world.GetHarborPointID(harborPt) == HarborId(harborIdx));
-        BOOST_TEST_REQUIRE(world.GetNode(harborPt).bq == BuildingQuality::Harbor);
+        testHarborPoint(world, HarborId(harborIdx));
     }
 }
 
@@ -179,18 +209,23 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, SeaWorldWith
 {
     createMarkerlessIslandWorld(world);
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
+    world.InitAfterLoad();
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);
+    BOOST_TEST_REQUIRE(countHarborBQ(world) == 0u);
 
     ggs.setSelection(AddonId::FREE_HARBOR_SPOTS, 1);
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
+    world.InitAfterLoad();
+    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);
+    BOOST_TEST_REQUIRE(countHarborBQ(world) == 0u);
+
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
     world.InitAfterLoad();
 
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() > 0u);
     for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
     {
-        const MapPoint harborPt = world.GetHarborPoint(harborId);
-        BOOST_TEST_REQUIRE(world.GetHarborPointID(harborPt) == harborId);
-        BOOST_TEST_REQUIRE(world.GetNode(harborPt).bq == BuildingQuality::Harbor);
+        testHarborPoint(world, harborId);
     }
 }
 

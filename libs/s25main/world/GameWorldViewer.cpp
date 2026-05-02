@@ -7,7 +7,6 @@
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
-#include "addons/const_addons.h"
 #include "RttrForeachPt.h"
 #include "buildings/nobMilitary.h"
 #include "network/GameClient.h"
@@ -279,7 +278,7 @@ void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
 
 void GameWorldViewer::RecalcBQ(const MapPoint& pt)
 {
-    BQCalculator calcBQ(GetWorld(), GetWorld().GetGGS().isEnabled(AddonId::FREE_HARBOR_SPOTS));
+    BQCalculator calcBQ(GetWorld());
     visualNodes[pt].bq = calcBQ(pt, [this](const MapPoint& pos) { return IsOnRoad(pos); });
 }
 
