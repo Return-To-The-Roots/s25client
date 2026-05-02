@@ -53,6 +53,9 @@ BOOST_FIXTURE_TEST_CASE(ForesterAvoidsPotentialFarmFieldSpots, FarmerFixture)
     nofForester foresterWorker(world.GetNeighbour(foresterPt, Direction::SouthEast), 0, foresterBuilding);
     const nofFarmhand* forester = &foresterWorker;
 
+    BOOST_TEST_REQUIRE(isPointAvailable(forester, fieldPt));
+
+    ggs.setSelection(AddonId::FORESTER_FARM_FIELD_AVOIDANCE, 1);
     BOOST_TEST_REQUIRE(!isPointAvailable(forester, fieldPt));
 }
 

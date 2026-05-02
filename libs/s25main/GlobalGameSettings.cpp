@@ -104,7 +104,8 @@ void GlobalGameSettings::registerAllAddons()
         AddonWine,
         AddonLeather,
         AddonNoArmorDefault,
-        AddonArmorCapturedBld
+        AddonArmorCapturedBld,
+        AddonForesterFarmFieldAvoidance
     >;
     // clang-format on
     using namespace boost::mp11;

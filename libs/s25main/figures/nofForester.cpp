@@ -6,8 +6,10 @@
 
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "addons/const_addons.h"
 #include "buildings/noBaseBuilding.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -150,8 +152,8 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt, bool /
             return PointQuality::NotPossible;
     }
 
-    // Avoid occupying spots that an own farm could use for a new grain field.
-    if(IsPotentialNewFieldForOwnFarm(*world, pt, player))
+    if(world->GetGGS().isEnabled(AddonId::FORESTER_FARM_FIELD_AVOIDANCE)
+       && IsPotentialNewFieldForOwnFarm(*world, pt, player))
         return PointQuality::NotPossible;
 
     // Terrain untersuchen
