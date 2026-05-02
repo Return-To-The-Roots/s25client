@@ -32,6 +32,7 @@ protected:
     /// Update displayed overlay (e.g. stop symbol) for the item of the given type
     void UpdateOverlay(unsigned i, bool isWare);
     void UpdateOverlays();
+    void CollectRecruitmentGoods();
 
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;

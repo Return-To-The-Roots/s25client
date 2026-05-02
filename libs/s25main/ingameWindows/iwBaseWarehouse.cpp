@@ -154,6 +154,28 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsig
     }
 }
 
+
+void iwBaseWarehouse::CollectRecruitmentGoods()
+{
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
+
+    for(const GoodType good : RECRUITMENT_GOODS)
+    {
+        InventorySetting state = wh->GetInventorySettingVisual(good);
+        if(state.IsSet(EInventorySetting::Collect))
+            continue;
+
+        state.Toggle(EInventorySetting::Collect);
+        if(gcFactory.SetInventorySetting(wh->GetPos(), good, state))
+        {
+            wh->SetInventorySettingVisual(good, state);
+            UpdateOverlay(rttr::enum_cast(good), true);
+        }
+    }
+}
+
+
 void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
@@ -275,22 +297,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case ID_COLLECT_RECRUITMENT_GOODS:
         {
-            if(GAMECLIENT.IsReplayModeOn())
-                return;
-
-            for(const GoodType good : RECRUITMENT_GOODS)
-            {
-                InventorySetting state = wh->GetInventorySettingVisual(good);
-                if(state.IsSet(EInventorySetting::Collect))
-                    continue;
-
-                state.Toggle(EInventorySetting::Collect);
-                if(gcFactory.SetInventorySetting(wh->GetPos(), good, state))
-                {
-                    wh->SetInventorySettingVisual(good, state);
-                    UpdateOverlay(rttr::enum_cast(good), true);
-                }
-            }
+            CollectRecruitmentGoods();
         }
         break;
         default: // an Basis weiterleiten
