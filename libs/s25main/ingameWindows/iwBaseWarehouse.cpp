@@ -154,7 +154,6 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsig
     }
 }
 
-
 void iwBaseWarehouse::CollectRecruitmentGoods()
 {
     if(GAMECLIENT.IsReplayModeOn())
@@ -174,7 +173,6 @@ void iwBaseWarehouse::CollectRecruitmentGoods()
         }
     }
 }
-
 
 void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
 {
