@@ -6,12 +6,13 @@
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
 #include "helpers/Range.h"
+#include "pathfinding/FindPathReachable.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/CreateSeaWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "worldFixtures/terrainHelpers.h"
 #include "world/MapLoader.h"
-#include "pathfinding/FindPathReachable.h"
+#include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
@@ -350,7 +351,6 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
     BOOST_TEST_REQUIRE(distance1 == FrontierDistance::Near);
 }
 
-
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlockers, FrontierWorldStaticBlocker)
 {
     const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.GetDescription());
@@ -371,6 +371,24 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlocker
             node.t1 = tWater;
             node.t2 = tWater;
         }
+    }
+
+    BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+
+    for(unsigned x = startPt.x + 1; x < endPt.x; ++x)
+    {
+        const MapPoint passablePt(x, corridorY);
+        world.DestroyNO(passablePt, false);
+        world.SetNO(passablePt, new noStaticObject(passablePt, 0, 0, 0));
+    }
+
+    BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+
+    for(unsigned x = startPt.x + 1; x < endPt.x; ++x)
+    {
+        const MapPoint passablePt(x, corridorY);
+        world.DestroyNO(passablePt, false);
+        world.SetNO(passablePt, new noEnvObject(passablePt, 0, 0));
     }
 
     BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
