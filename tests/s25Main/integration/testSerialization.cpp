@@ -398,6 +398,26 @@ struct ReplayMapFixture
     }
 };
 
+BOOST_FIXTURE_TEST_CASE(EmptyReplayRecordingIsRemoved, ReplayMapFixture)
+{
+    Replay replay;
+    for(const BasePlayerInfo& player : players)
+        replay.AddPlayer(player);
+    replay.ggs.speed = GameSpeed::VeryFast;
+
+    TmpFile tmpFile(".rpl");
+    BOOST_TEST_REQUIRE(tmpFile.isValid());
+    tmpFile.close();
+    bfs::remove(tmpFile.filePath);
+
+    BOOST_TEST_REQUIRE(replay.StartRecording(tmpFile.filePath, map, 42));
+    BOOST_TEST_REQUIRE(replay.IsRecording());
+    BOOST_TEST(replay.GetLastGF() == 0u);
+
+    BOOST_TEST_REQUIRE(replay.StopRecording());
+    BOOST_TEST_REQUIRE(!replay.IsRecording());
+    BOOST_TEST(!bfs::exists(tmpFile.filePath));
+}
 BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
 {
     Replay replay;
