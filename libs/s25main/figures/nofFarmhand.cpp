@@ -27,6 +27,23 @@ nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint())
 {}
 
+unsigned nofFarmhand::GetWorkRadius(const Job job)
+{
+    switch(job)
+    {
+        case Job::Carpenter: return 0;
+        case Job::Hunter:
+        case Job::Farmer:
+        case Job::Winegrower: return 2;
+        case Job::CharBurner: return 3;
+        case Job::Woodcutter:
+        case Job::Forester: return 6;
+        case Job::Fisher: return 7;
+        case Job::Stonemason: return 8;
+        default: throw std::logic_error("Invalid job");
+    }
+}
+
 void nofFarmhand::WalkedDerived()
 {
     switch(state)
@@ -59,21 +76,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         {
             // Start working after the initial wait period
             // Work radius
-            const unsigned max_radius = [](Job job) {
-                switch(job)
-                {
-                    case Job::Carpenter: return 0;
-                    case Job::Hunter:
-                    case Job::Farmer:
-                    case Job::Winegrower: return 2;
-                    case Job::CharBurner: return 3;
-                    case Job::Woodcutter:
-                    case Job::Forester: return 6;
-                    case Job::Fisher: return 7;
-                    case Job::Stonemason: return 8;
-                    default: throw std::logic_error("Invalid job");
-                }
-            }(job_);
+            const unsigned max_radius = GetWorkRadius(job_);
             // Number of additional radii in which points should be found
             // I.e. 0 => Don't search for points further away than ones already found
             const unsigned additionalRadiiToFind = [](Job job) {

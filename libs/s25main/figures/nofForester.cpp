@@ -12,6 +12,7 @@
 #include "addons/const_addons.h"
 #include "buildings/noBaseBuilding.h"
 #include "network/GameClient.h"
+#include "nofFarmer.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
@@ -21,31 +22,11 @@
 namespace {
 bool IsPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const unsigned char player)
 {
-    constexpr unsigned FARM_FIELD_RADIUS = 2;
-
-    for(const auto dir : helpers::EnumRange<Direction>{})
-    {
-        if(world.GetPointRoad(pt, dir) != PointRoad::None)
-            return false;
-    }
-
-    if(!world.IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
+    if(nofFarmer::GetNewFieldPointQuality(world, pt) == nofFarmhand::PointQuality::NotPossible)
         return false;
-
-    const NodalObjectType noType = world.GetNO(pt)->GetType();
-    if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
-        return false;
-
-    for(const MapPoint nb : world.GetNeighbours(pt))
-    {
-        const NodalObjectType nbType = world.GetNO(nb)->GetType();
-        if(nbType == NodalObjectType::Grainfield || nbType == NodalObjectType::Grapefield
-           || nbType == NodalObjectType::Building || nbType == NodalObjectType::Buildingsite)
-            return false;
-    }
 
     return world.CheckPointsInRadius(
-      pt, FARM_FIELD_RADIUS,
+      pt, nofFarmhand::GetWorkRadius(Job::Farmer),
       [&world, player](const MapPoint farmPt, unsigned) {
           if(world.GetNO(farmPt)->GetType() != NodalObjectType::Building)
               return false;
