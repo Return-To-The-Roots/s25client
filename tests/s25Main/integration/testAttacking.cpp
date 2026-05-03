@@ -61,6 +61,23 @@ auto calcSum(const T& collection)
     return std::accumulate(std::begin(collection), std::end(collection), 0u);
 }
 
+std::array<unsigned, NUM_SOLDIER_RANKS> CountTroopsByRank(const nobMilitary& bld)
+{
+    std::array<unsigned, NUM_SOLDIER_RANKS> counts{};
+    for(const auto& soldier : bld.GetTroops())
+        ++counts[soldier.GetRank()];
+    return counts;
+}
+
+void DeliverCoin(nobMilitary& bld, GameWorld& world, const MapPoint hqPos)
+{
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+    BOOST_TEST_REQUIRE(hq);
+
+    hq->AddToInventory(GoodCounts::make(GoodType::Coins, 1), true);
+    bld.SearchCoins();
+}
+
 /// Reschedule the walk event of the obj to be executed in numGFs GFs
 void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
 {
@@ -541,6 +558,44 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
     BOOST_TEST(attackedPlInventory[jobEnumToAmoredSoldierEnum(Job::Private)] == numOldWeakSoldiersWithArmor - 1);
     BOOST_TEST(attackedPlInventory.people[Job::Private] == numOldWeakSoldiers);
     BOOST_TEST(milBld1->GetDefender()->GetHitpoints() == HITPOINTS[milBld1->GetDefender()->GetRank()]);
+}
+
+BOOST_FIXTURE_TEST_CASE(CoinTrainingUpgradesRankChainByDefault, AttackFixture<>)
+{
+    AddSoldiers(milBld0Pos, 1, Job::Private);
+    AddSoldiers(milBld0Pos, 1, Job::PrivateFirstClass);
+    AddSoldiers(milBld0Pos, 1, Job::Sergeant);
+
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+    DeliverCoin(*milBld0, world, hqPos[0]);
+
+    RTTR_EXEC_TILL(5000, CountTroopsByRank(*milBld0)[3] == 1u);
+
+    const auto counts = CountTroopsByRank(*milBld0);
+    BOOST_TEST_REQUIRE(counts[0] == 0u);
+    BOOST_TEST_REQUIRE(counts[1] == 1u);
+    BOOST_TEST_REQUIRE(counts[2] == 1u);
+    BOOST_TEST_REQUIRE(counts[3] == 1u);
+}
+
+BOOST_FIXTURE_TEST_CASE(SingleSoldierCoinTrainingUpgradesOnlyLowestRankSoldier, AttackFixture<>)
+{
+    this->ggs.setSelection(AddonId::SINGLE_SOLDIER_COIN_TRAINING, 1);
+
+    AddSoldiers(milBld0Pos, 1, Job::Private);
+    AddSoldiers(milBld0Pos, 1, Job::PrivateFirstClass);
+    AddSoldiers(milBld0Pos, 1, Job::Sergeant);
+
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+    DeliverCoin(*milBld0, world, hqPos[0]);
+
+    RTTR_EXEC_TILL(5000, CountTroopsByRank(*milBld0)[1] == 2u);
+
+    const auto counts = CountTroopsByRank(*milBld0);
+    BOOST_TEST_REQUIRE(counts[0] == 0u);
+    BOOST_TEST_REQUIRE(counts[1] == 2u);
+    BOOST_TEST_REQUIRE(counts[2] == 1u);
+    BOOST_TEST_REQUIRE(counts[3] == 0u);
 }
 
 BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonEnable, AttackFixture<>)
