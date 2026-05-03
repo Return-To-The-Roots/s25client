@@ -4,15 +4,16 @@
 
 #pragma once
 
+#include "CampaignSettings.h"
 #include "DrawPoint.h"
 #include "driver/VideoInterface.h"
 #include "driver/VideoMode.h"
+#include "gameData/const_gui_ids.h"
 #include "s25util/ProxySettings.h"
 #include "s25util/Singleton.h"
 #include <boost/optional.hpp>
 #include <array>
 #include <cstdint>
-#include <gameData/const_gui_ids.h>
 #include <map>
 #include <string>
 
@@ -150,11 +151,13 @@ public:
         std::map<unsigned, unsigned> configuration;
     } addons;
 
+    CampaignSettings campaigns;
+
     static const std::array<short, 13> SCREEN_REFRESH_RATES;
 
 private:
     static const int VERSION;
-    static const std::array<std::string, 10> SECTION_NAMES;
+    static const std::array<std::string, 11> SECTION_NAMES;
 };
 
 #define SETTINGS Settings::inst()
