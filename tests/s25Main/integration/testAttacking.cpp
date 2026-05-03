@@ -23,6 +23,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameTypes/InventorySetting.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "rttr/test/random.hpp"
@@ -541,6 +542,25 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
     BOOST_TEST(attackedPlInventory[jobEnumToAmoredSoldierEnum(Job::Private)] == numOldWeakSoldiersWithArmor - 1);
     BOOST_TEST(attackedPlInventory.people[Job::Private] == numOldWeakSoldiers);
     BOOST_TEST(milBld1->GetDefender()->GetHitpoints() == HITPOINTS[milBld1->GetDefender()->GetRank()]);
+}
+
+BOOST_FIXTURE_TEST_CASE(RestrictedSoldiersStayWhenNoWarehouseAcceptsRank, AttackFixture<>)
+{
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+
+    AddSoldiers(milBld0Pos, 2, Job::General);
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 2u);
+
+    this->SetInventorySetting(hqPos[0], Job::General, InventorySetting(EInventorySetting::Stop));
+
+    auto militarySettings = MILITARY_SETTINGS_SCALE;
+    militarySettings[4 + static_cast<unsigned>(milBld0->GetFrontierDistance())] = 0;
+    this->ChangeMilitary(militarySettings);
+
+    milBld0->RegulateTroops();
+
+    BOOST_TEST_REQUIRE(milBld0->GetNumTroops() == 2u);
+    BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().empty());
 }
 
 BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonEnable, AttackFixture<>)
