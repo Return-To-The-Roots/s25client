@@ -30,6 +30,10 @@ constexpr auto maxEnumValue(FigureState)
 }
 
 class SerializedGameData;
+class GlobalGameSettings;
+
+unsigned short GetStrandedSoldierReturnSearchTryings(const GlobalGameSettings& ggs);
+unsigned short GetStrandedSoldierReturnSearchRadius(const GlobalGameSettings& ggs, unsigned short wanderTryings);
 
 // Stellt einen Menschen dar
 class noFigure : public noMovable

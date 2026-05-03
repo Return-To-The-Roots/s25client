@@ -47,8 +47,6 @@ const unsigned short WANDER_RADIUS = 10;
 const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 const unsigned short STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_REDUCED = WANDER_RADIUS_SOLDIERS / 2;
-const unsigned short STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_EXTENDED = 30;
-const unsigned short STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_VERY_LARGE = 60;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::GotToGoal), job_(job), player(player), cur_rs(nullptr),
@@ -467,7 +465,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     // 3x rumirren und eine Flagge suchen, wenn dann keine gefunden wurde, stirbt die Figur
     wander_way = WANDER_WAY_MIN + RANDOM_RAND(WANDER_WAY_MAX - WANDER_WAY_MIN);
     // Soldaten sind härter im Nehmen
-    wander_tryings = IsSoldier() ? WANDER_TRYINGS_SOLDIERS : WANDER_TRYINGS;
+    wander_tryings = IsSoldier() ? GetStrandedSoldierReturnSearchTryings(world->GetGGS()) : WANDER_TRYINGS;
 
     // Wenn wir stehen, zusätzlich noch loslaufen!
     if(waiting_for_free_node)
@@ -496,19 +494,35 @@ struct IsValidFlag
     bool operator()(const noFlag* const flag) const { return flag && flag->GetPlayer() == playerId_; }
 };
 
+} // namespace
+
+unsigned short GetStrandedSoldierReturnSearchTryings(const GlobalGameSettings& ggs)
+{
+    switch(ggs.getSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH))
+    {
+        case 2: return 2 * WANDER_TRYINGS_SOLDIERS;
+        case 3: return 3 * WANDER_TRYINGS_SOLDIERS;
+        default: return WANDER_TRYINGS_SOLDIERS;
+    }
+}
+
 /// Radius used only for stranded soldiers looking for a return path to an own warehouse.
 /// Normal worker wandering and non-soldier fallback behavior keep using WANDER_RADIUS.
-unsigned short GetStrandedSoldierReturnSearchRadius(const GlobalGameSettings& ggs)
+unsigned short GetStrandedSoldierReturnSearchRadius(const GlobalGameSettings& ggs, const unsigned short wanderTryings)
 {
     switch(ggs.getSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH))
     {
         case 1: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_REDUCED;
-        case 2: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_EXTENDED;
-        case 3: return STRANDED_SOLDIER_RETURN_SEARCH_RADIUS_VERY_LARGE;
+        case 2: return wanderTryings > WANDER_TRYINGS_SOLDIERS ? WANDER_RADIUS_SOLDIERS : 2 * WANDER_RADIUS_SOLDIERS;
+        case 3:
+            if(wanderTryings > 2 * WANDER_TRYINGS_SOLDIERS)
+                return WANDER_RADIUS_SOLDIERS;
+            if(wanderTryings > WANDER_TRYINGS_SOLDIERS)
+                return 2 * WANDER_RADIUS_SOLDIERS;
+            return 4 * WANDER_RADIUS_SOLDIERS;
         default: return WANDER_RADIUS_SOLDIERS;
     }
 }
-} // namespace
 
 void noFigure::Wander()
 {
@@ -525,7 +539,7 @@ void noFigure::Wander()
     {
         // Soldaten sind härter im Nehmen
         const unsigned short wander_radius =
-          IsSoldier() ? GetStrandedSoldierReturnSearchRadius(world->GetGGS()) : WANDER_RADIUS;
+          IsSoldier() ? GetStrandedSoldierReturnSearchRadius(world->GetGGS(), wander_tryings) : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags =
