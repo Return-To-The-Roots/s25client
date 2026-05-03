@@ -11,6 +11,9 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorld.h"
+#include "gameTypes/Resource.h"
+#include "gameData/GameConsts.h"
+#include "random/Random.h"
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace)
@@ -69,25 +72,63 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
     }
 }
 
+MapPoint nofMiner::FindPointWithResourceQuiet(ResourceType type) const
+{
+    const auto pts = world->GetMatchingPointsInRadius<1>(
+      pos, MINER_RADIUS, [this, type](const MapPoint pt) { return world->GetNode(pt).resources.has(type); }, true);
+    return pts.empty() ? MapPoint::Invalid() : pts.front();
+}
+
+bool nofMiner::CanCreateWorkEverywhereGraniteResource() const
+{
+    return workplace->GetBuildingType() == BuildingType::GraniteMine
+           && world->GetGGS().isEnabled(AddonId::GRANITEMINES_WORK_EVERYWHERE)
+           && world->GetNode(pos).resources.getType() == ResourceType::Nothing;
+}
+
+MapPoint nofMiner::CreateWorkEverywhereGraniteResource()
+{
+    if(!CanCreateWorkEverywhereGraniteResource())
+        return MapPoint::Invalid();
+
+    world->SetResource(pos, Resource(ResourceType::Granite, static_cast<uint8_t>(8 + RANDOM_RAND(8))));
+    return pos;
+}
+
 bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+    if(!nofWorkman::AreWaresAvailable())
+        return false;
+
+    if(FindPointWithResourceQuiet(GetRequiredResType()).isValid() || CanCreateWorkEverywhereGraniteResource())
+        return true;
+
+    workplace->OnOutOfResources();
+    return false;
 }
 
 bool nofMiner::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(GetRequiredResType());
-    if(!resPt.isValid())
-        return false;
     const GlobalGameSettings& settings = world->GetGGS();
-    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                            || (workplace->GetBuildingType() == BuildingType::GraniteMine
-                                && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
+    MapPoint resPt = FindPointWithResourceQuiet(GetRequiredResType());
+    if(!resPt.isValid())
+    {
+        resPt = CreateWorkEverywhereGraniteResource();
+        if(!resPt.isValid())
+        {
+            workplace->OnOutOfResources();
+            return false;
+        }
+    }
+
+    const bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
+                                  || (workplace->GetBuildingType() == BuildingType::GraniteMine
+                                      && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
     if(!inexhaustibleRes)
         world->ReduceResource(resPt);
+
     return nofWorkman::StartWorking();
 }
-
 ResourceType nofMiner::GetRequiredResType() const
 {
     switch(workplace->GetBuildingType())

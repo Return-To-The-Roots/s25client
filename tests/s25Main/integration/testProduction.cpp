@@ -23,6 +23,27 @@ static std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
 
 BOOST_AUTO_TEST_SUITE(Production)
 
+namespace {
+struct GraniteMineWithoutResourcesFixture : WorldWithGCExecution1P
+{
+    MapPoint CreateGraniteMineWithoutResources()
+    {
+        GoodsAndPeopleCounts inv;
+        inv[GoodType::Fish] = 40;
+        inv[GoodType::PickAxe] = 1;
+        inv[Job::Miner] = 1;
+        world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+
+        MapPoint minePos = hqPos + MapPoint(2, 0);
+        const auto* mine = static_cast<nobUsual*>(
+          BuildingFactory::CreateBuilding(world, BuildingType::GraniteMine, minePos, curPlayer, Nation::Romans));
+        BuildRoad(world.GetNeighbour(minePos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
+        RTTR_EXEC_TILL(500, mine->HasWorker());
+        return minePos;
+    }
+};
+} // namespace
+
 BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
 {
     addStartResources();
@@ -100,6 +121,63 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     orders[Tool::Bow] = 1;
     this->ChangeTools(settings, orders.data());
     RTTR_EXEC_TILL(1300, mw->is_working);
+}
+
+BOOST_FIXTURE_TEST_CASE(GraniteMineWithoutResourcesNeedsAddon, GraniteMineWithoutResourcesFixture)
+{
+    CreateGraniteMineWithoutResources();
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialStones = curInventory[GoodType::Stones];
+
+    RTTR_SKIP_GFS(2000);
+
+    BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
+}
+
+BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineStillNeedsResourceSpot, GraniteMineWithoutResourcesFixture)
+{
+    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
+    CreateGraniteMineWithoutResources();
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialStones = curInventory[GoodType::Stones];
+
+    RTTR_SKIP_GFS(2000);
+
+    BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
+}
+
+BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereCreatesDepletableResource, GraniteMineWithoutResourcesFixture)
+{
+    ggs.setSelection(AddonId::GRANITEMINES_WORK_EVERYWHERE, 1);
+    const MapPoint minePos = CreateGraniteMineWithoutResources();
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialStones = curInventory[GoodType::Stones];
+
+    RTTR_EXEC_TILL(2000, curInventory[GoodType::Stones] > initialStones);
+    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Granite));
+
+    RTTR_EXEC_TILL(50000, world.GetNode(minePos).resources.getType() == ResourceType::Granite
+                            && world.GetNode(minePos).resources.getAmount() == 0u);
+    BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType()) == static_cast<unsigned>(ResourceType::Granite));
+    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
+}
+
+BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereResourceIsInexhaustibleWithGraniteAddon, GraniteMineWithoutResourcesFixture)
+{
+    ggs.setSelection(AddonId::GRANITEMINES_WORK_EVERYWHERE, 1);
+    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
+    const MapPoint minePos = CreateGraniteMineWithoutResources();
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialStones = curInventory[GoodType::Stones];
+
+    RTTR_EXEC_TILL(2000, curInventory[GoodType::Stones] > initialStones);
+    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Granite));
+    const unsigned initialResourceAmount = world.GetNode(minePos).resources.getAmount();
+
+    RTTR_SKIP_GFS(10000);
+
+    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Granite));
+    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == initialResourceAmount);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
