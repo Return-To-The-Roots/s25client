@@ -54,6 +54,8 @@ public:
     nofFarmhand(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmhand(SerializedGameData& sgd, unsigned obj_id);
 
+    static unsigned GetWorkRadius(Job job);
+
     void Serialize(SerializedGameData& sgd) const override;
 
     void HandleDerivedEvent(unsigned id) override;
