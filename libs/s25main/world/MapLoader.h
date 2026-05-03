@@ -57,7 +57,8 @@ public:
     static void InitShadows(World& world);
     static void SetMapExplored(World& world);
     static bool InitSeasAndHarbors(World& world,
-                                   const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
+                                   const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>(),
+                                   bool generateHarborSpots = false);
     /// Place the HQs on a loaded map and add starting wares if desired.
     /// Return false if there was an error.
     static bool PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, bool addStartWares = true);
