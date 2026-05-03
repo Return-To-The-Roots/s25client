@@ -108,6 +108,7 @@ jobs:
           #   Use (compiler) default C++ 17 standard
           #   Use default cmake
           - { compiler: gcc-14,   os: ubuntu-24.04, type: Debug }
+          - { compiler: gcc-16,   os: ubuntu-24.04, type: Debug, "apt_key": "0x1E9377A2BA9EF27F", "apt_repo": "ppa:ubuntu-toolchain-r/test" }
           - { compiler: clang-18, os: ubuntu-24.04, type: Debug, externalSanitizer: true }
           - { compiler: clang-21, os: ubuntu-latest, type: Debug, init_llvm: true}
 
@@ -178,6 +179,12 @@ jobs:
             if [[ "${{matrix.init_llvm}}" == "true" ]]; then
               clang_version=${compiler#clang-*}
               wget -qO- "https://apt.llvm.org/llvm.sh" | sudo bash -s -- "${clang_version}"
+            fi
+            if [[ -n "${{matrix.apt_key}}" ]]; then
+              tools/ci/add-apt-keys.sh "${{matrix.apt_key}}"
+            fi
+            if [[ -n "${{matrix.apt_repo}}" ]]; then
+              tools/ci/add-apt-repositories.sh "${{matrix.apt_repo}}"
             fi
             sudo apt-get -o Acquire::Retries=5 update
             sudo apt-get -o Acquire::Retries=5 -y -q --no-install-suggests --no-install-recommends install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
