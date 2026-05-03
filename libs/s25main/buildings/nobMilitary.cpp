@@ -514,6 +514,9 @@ void nobMilitary::RegulateTroops()
     for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; rank++)
     {
         int excess = counts[rank] - troop_limits[rank];
+        const bool rankHasReturnWarehouse =
+          excess > 0
+          && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false);
         if(excess > 0)
         {
             lack[rank] = 0;
@@ -521,7 +524,7 @@ void nobMilitary::RegulateTroops()
             std::vector<nofPassiveSoldier*> notNeededSoldiers;
             for(auto it = ordered_troops.begin(); excess && it != ordered_troops.end();)
             {
-                if((*it)->GetRank() == rank)
+                if((*it)->GetRank() == rank && rankHasReturnWarehouse)
                 {
                     notNeededSoldiers.push_back(*it);
                     it = ordered_troops.erase(it);
@@ -538,8 +541,7 @@ void nobMilitary::RegulateTroops()
             // This bit is for ordering troops later
             lack[rank] = troop_limits[rank] - counts[rank];
         }
-        if(excess > 0
-           && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false))
+        if(excess > 0 && rankHasReturnWarehouse)
         {
             for(auto it = troops.begin(); excess && it != troops.end() && troops.size() > 1;)
             {
