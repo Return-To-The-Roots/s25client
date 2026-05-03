@@ -488,6 +488,7 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
     // ESC does not close non-user-closable windows
     wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, false, CloseBehavior::Custom));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    MOCK_EXPECT(wnd1->Msg_KeyDown).once().returns(false);
     WINDOWMANAGER.Msg_KeyDown(evEsc);
     REQUIRE_WINDOW_ALIVE(wnd1);
     MOCK_EXPECT(wnd1->DrawContent).once();
@@ -496,6 +497,7 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
 
     wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true, CloseBehavior::Custom));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
+    MOCK_EXPECT(wnd2->Msg_KeyDown).once().returns(false);
     WINDOWMANAGER.Msg_KeyDown(evEsc);
     REQUIRE_WINDOW_ALIVE(wnd1);
     REQUIRE_WINDOW_ALIVE(wnd2);
