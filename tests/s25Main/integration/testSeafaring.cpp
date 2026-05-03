@@ -22,6 +22,7 @@
 #include "gameTypes/GameTypesOutput.h"
 #include "rttr/test/testHelpers.hpp"
 #include <boost/test/unit_test.hpp>
+#include <iterator>
 
 // LCOV_EXCL_START
 #define RTTR_ENUM_OUTPUT(EnumName)                                                 \
@@ -34,9 +35,20 @@ RTTR_ENUM_OUTPUT(nobShipYard::Mode)
 // LCOV_EXCL_STOP
 
 namespace {
+
+using SmallSeaWorld = WorldFixture<CreateSeaWorld, 2, SmallSeaWorldDefault<2>::width, SmallSeaWorldDefault<2>::height>;
+
 std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
 {
     return FindPathForRoad(world, fromPt, toPt, false);
+}
+/// Helper to extract only the destinations(harbors) from the connections list
+std::set<const noRoadNode*> toHarbors(const std::vector<nobHarborBuilding::ShipConnection>& connections)
+{
+    std::set<const noRoadNode*> res;
+    std::transform(connections.begin(), connections.end(), std::inserter(res, res.begin()),
+                   [](const auto& con) { return con.dest; });
+    return res;
 }
 } // namespace
 
@@ -55,21 +67,71 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
       BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(harbor);
+    BOOST_TEST_REQUIRE(world.IsHarborAtSea(hbId, seaId));
     BOOST_TEST_REQUIRE(buildings.GetHarbors().size() == 1u); //-V807
     BOOST_TEST_REQUIRE(buildings.GetHarbors().front() == harbor);
     // A harbor is also a storehouse
     BOOST_TEST_REQUIRE(buildings.GetStorehouses().size() == 2u);
     BOOST_TEST_REQUIRE(buildings.GetHarbors().back() == harbor);
-    std::vector<nobHarborBuilding*> harbors;
     BOOST_TEST_REQUIRE(world.GetNode(MapPoint(0, 0)).seaId == seaId);
     BOOST_TEST_REQUIRE(world.GetSeaId(hbId, Direction::NorthEast) == seaId);
-    player.AddHarborsAtSea(harbors, seaId);
-    BOOST_TEST_REQUIRE(harbors.size() == 1u);
-    BOOST_TEST_REQUIRE(harbors.front() == harbor);
 
     const std::vector<Direction> road = FindRoadPath(world.GetNeighbour(hqPos, Direction::SouthEast),
                                                      world.GetNeighbour(hbPos, Direction::SouthEast), world);
     BOOST_TEST_REQUIRE(!road.empty());
+}
+
+BOOST_FIXTURE_TEST_CASE(ShipConnections, SmallSeaWorld)
+{
+    unsigned curPlayer = 0;
+    const auto createHarbor = [this, &curPlayer](HarborId hbId) -> nobHarborBuilding& {
+        MapPoint hbPos = world.GetHarborPoint(hbId);
+        auto* harbor = static_cast<nobHarborBuilding*>(
+          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
+        BOOST_TEST_REQUIRE(harbor);
+        return *harbor;
+    };
+    /* Layout of harbors (1 inner + 1 outer sea)
+     *       1
+     *       2
+     * 3  4      5  6
+     *       7
+     *       8
+     */
+    // I.e.:
+    constexpr SeaId sea1(1);
+    constexpr SeaId sea2(2);
+    BOOST_TEST(world.IsHarborAtSea(HarborId(1), sea1));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(3), sea1));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(6), sea1));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(8), sea1));
+
+    BOOST_TEST(world.IsHarborAtSea(HarborId(2), sea2));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(4), sea2));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(5), sea2));
+    BOOST_TEST(world.IsHarborAtSea(HarborId(7), sea2));
+
+    const auto& hb1 = createHarbor(HarborId(1));
+    // No other harbor
+    BOOST_TEST(hb1.GetShipConnections().empty());
+    const auto& hb2 = createHarbor(HarborId(2));
+    // Different seas
+    BOOST_TEST(hb1.GetShipConnections().empty());
+    BOOST_TEST(hb2.GetShipConnections().empty());
+    using harbors_t = std::set<const noRoadNode*>;
+    // 3 and 1 share sea
+    const auto& hb3 = createHarbor(HarborId(3));
+    BOOST_TEST(toHarbors(hb1.GetShipConnections()) == harbors_t{&hb3});
+    BOOST_TEST(hb2.GetShipConnections().empty());
+    BOOST_TEST(toHarbors(hb3.GetShipConnections()) == harbors_t{&hb1});
+    // 2,4,5 share sea
+    const auto& hb4 = createHarbor(HarborId(4));
+    const auto& hb5 = createHarbor(HarborId(5));
+    BOOST_TEST(toHarbors(hb1.GetShipConnections()) == harbors_t{&hb3});
+    BOOST_TEST(toHarbors(hb2.GetShipConnections()) == (harbors_t{&hb4, &hb5}));
+    BOOST_TEST(toHarbors(hb3.GetShipConnections()) == harbors_t{&hb1});
+    BOOST_TEST(toHarbors(hb4.GetShipConnections()) == (harbors_t{&hb2, &hb5}));
+    BOOST_TEST(toHarbors(hb5.GetShipConnections()) == (harbors_t{&hb2, &hb4}));
 }
 
 BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
@@ -469,7 +531,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     // Go to opposite one
     const HarborId targetHbId(7);
     // Make sure that the other harbor is far away
-    BOOST_TEST_REQUIRE(world.CalcHarborDistance(HarborId(2), targetHbId) > 600u);
+    BOOST_TEST_REQUIRE(world.CalcHarborDistance(harbor.GetHarborPosID(), targetHbId) > 600u);
     // Add some scouts
     harbor.AddToInventory(PeopleCounts::make(Job::Scout, 20), true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
@@ -648,6 +710,105 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     BOOST_TEST_REQUIRE(ship.IsMoving());
     BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == hb1Id);
     BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == hb1Id);
+}
+
+// Dimensions must be large enough so path tolerances get too small
+using ShipReadyFixtureLarger = ShipReadyFixture<1, 2, 90, 260>;
+BOOST_FIXTURE_TEST_CASE(IncreasedPathLengthWhenHarborDestroyed, ShipReadyFixtureLarger)
+{
+    // Edge case: Path to harbor longer than any direct connection
+    /*
+     *     2
+     *     W
+     *    WLW
+     *    WLW
+     *   WWLWW
+     * 4WLLLLLW5
+     *   WWLWW
+     *   WWLWW
+     *     7
+     */
+    // Shortest path 4->5 is over south, ship might be between 2 & 4 => still finds path to 5
+    constexpr HarborId hbIdTop(2);
+    constexpr HarborId hbIdLeft(4);
+    constexpr HarborId hbIdRight(5);
+    constexpr HarborId hbIdBottom(7);
+    const MapPoint hbTopPos = world.GetHarborPoint(hbIdTop);
+    const MapPoint hbLeftPos = world.GetHarborPoint(hbIdLeft);
+    const MapPoint hbRightPos = world.GetHarborPoint(hbIdRight);
+    const MapPoint hbBottomPos = world.GetHarborPoint(hbIdBottom);
+    // Sanity check expected geometry, ensured by fixture
+    BOOST_TEST_REQUIRE(hbLeftPos.x < hbRightPos.x);
+    BOOST_TEST_REQUIRE(hbLeftPos.y == hbRightPos.y);
+    BOOST_TEST_REQUIRE(hbTopPos.y < hbLeftPos.y);
+    BOOST_TEST_REQUIRE(hbLeftPos.y < hbBottomPos.y);
+    const unsigned yDiff = hbLeftPos.y - hbTopPos.y;
+    BOOST_TEST_REQUIRE(yDiff >= 4u * 3u); // So divisions below yield noticeable difference
+    const auto t = GetLandTerrain(world.GetDescription(), ETerrain::Buildable);
+    for(const auto y : helpers::range(hbLeftPos.y - yDiff * 3u / 4u, hbLeftPos.y + yDiff / 2u))
+    {
+        auto& node = world.GetNodeWriteable(MapPoint(hbTopPos.x, y));
+        node.t1 = node.t2 = t;
+    }
+    constexpr auto horStripHeight = 2u;
+    // Horizontal land strip to avoid short cuts
+    for(const auto y : helpers::range(hbLeftPos.y - horStripHeight, hbLeftPos.y + horStripHeight))
+    {
+        for(const auto x : helpers::range(hbLeftPos.x + 4, hbRightPos.x - 4))
+        {
+            auto& node = world.GetNodeWriteable(MapPoint(x, y));
+            node.t1 = node.t2 = t;
+        }
+    }
+    MapLoader::InitSeasAndHarbors(world);
+    // Harbors unchanged
+    BOOST_TEST_REQUIRE(world.GetHarborPointID(hbTopPos) == hbIdTop);
+    BOOST_TEST_REQUIRE(world.GetHarborPointID(hbLeftPos) == hbIdLeft);
+    BOOST_TEST_REQUIRE(world.GetHarborPointID(hbRightPos) == hbIdRight);
+    BOOST_TEST_REQUIRE(world.GetHarborPointID(hbBottomPos) == hbIdBottom);
+
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const noShip& ship = ensureNonNull(player.GetShipByID(0));
+    const SeaId seaId = ship.GetSeaID();
+
+    // Start shipment to left harbor
+    nobHarborBuilding& topHarbor = *player.GetBuildingRegister().GetHarbors().front();
+    BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbLeftPos, curPlayer, Nation::Romans);
+
+    topHarbor.AddToInventory(GoodCounts::make(GoodType::Wood, 10), true);
+    SetInventorySetting(hbLeftPos, GoodType::Wood, EInventorySetting::Collect);
+
+    RTTR_EXEC_TILL(90, ship.IsLoading());
+    BOOST_TEST_REQUIRE(ship.GetPos() == world.GetCoastalPoint(hbIdTop, seaId));
+    RTTR_EXEC_TILL(400, ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == hbIdLeft);
+    const auto leftCoastPt = world.GetCoastalPoint(hbIdLeft, seaId);
+    const auto dist = world.CalcDistance(ship.GetPos(), leftCoastPt);
+
+    // Wait till ship is close to left harbor
+    constexpr auto extraDist = 16u; // Choosen to be larger than a magic number used as tolerance
+    RTTR_EXEC_TILL(2000, world.CalcDistance(ship.GetPos(), leftCoastPt) < extraDist * 2);
+
+    // Destroy home so it cannot go back, then target harbor
+    destroyBldAndFire(world, hbTopPos);
+    destroyBldAndFire(world, hbLeftPos);
+    RTTR_EXEC_TILL(10, ship.IsLost());
+    BOOST_TEST_REQUIRE(!ship.GetHomeHarbor());
+    BOOST_TEST_REQUIRE(!ship.GetTargetHarbor());
+
+    // Building harbor at right makes ship go there even though distance is (too) long
+    unsigned len;
+    BOOST_TEST_REQUIRE(
+      world.FindShipPath(ship.GetPos(), world.GetCoastalPoint(hbIdRight, seaId), unsigned(-1), nullptr, &len));
+    const auto hbDistance = world.CalcHarborDistance(hbIdLeft, hbIdRight);
+    // Reproducer requires the path to be longer than the direct distance and other connections
+    BOOST_TEST_REQUIRE(len > hbDistance + extraDist);
+    BOOST_TEST_REQUIRE(hbDistance > world.CalcHarborDistance(hbIdRight, hbIdTop));
+    BOOST_TEST_REQUIRE(hbDistance > world.CalcHarborDistance(hbIdRight, hbIdBottom));
+    BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbRightPos, curPlayer, Nation::Romans);
+    BOOST_TEST_REQUIRE(ship.IsMoving());
+    BOOST_TEST_REQUIRE(ship.GetHomeHarbor() == hbIdRight);
+    BOOST_TEST_REQUIRE(ship.GetTargetHarbor() == hbIdRight);
 }
 
 struct MockWare : Ware

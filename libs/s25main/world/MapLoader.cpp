@@ -82,8 +82,6 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
     if(!PlaceHQs())
         return false;
 
-    world_.CreateTradeGraphs();
-
     return true;
 }
 

@@ -656,13 +656,6 @@ void GameWorld::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeRea
     }
 }
 
-void GameWorld::CreateTradeGraphs()
-{
-    // Only if trade is enabled
-    if(GetGGS().isEnabled(AddonId::TRADE))
-        tradePathCache = std::make_unique<TradePathCache>(*this);
-}
-
 void GameWorld::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception)
 {
     noBase* no = GetNode(pt).obj;
@@ -864,7 +857,8 @@ void GameWorld::AttackViaSea(const unsigned char player_attacker, const MapPoint
 
 TradePathCache& GameWorld::GetTradePathCache()
 {
-    RTTR_Assert(tradePathCache);
+    if(!tradePathCache)
+        tradePathCache = std::make_unique<TradePathCache>(*this);
     return *tradePathCache;
 }
 

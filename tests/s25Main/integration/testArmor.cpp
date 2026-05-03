@@ -79,7 +79,6 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
 
         // Enable trading
         this->ggs.setSelection(AddonId::TRADE, 1);
-        world.CreateTradeGraphs();
     }
 
     void testExpectedFiguresInGlobalInventoryMatchWithHQInventory() const

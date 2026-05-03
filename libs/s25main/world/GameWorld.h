@@ -20,6 +20,7 @@ class nofAttacker;
 struct PlayerInfo;
 class RoadSegment;
 class TerritoryRegion;
+class TradePathCache;
 
 enum class TerritoryChangeReason
 {
@@ -31,6 +32,8 @@ enum class TerritoryChangeReason
 /// "Interface-Klasse" für das Spiel
 class GameWorld : public GameWorldBase
 {
+    std::unique_ptr<TradePathCache> tradePathCache;
+
     /// Destroys player belongings if that pint does not belong to the player anymore
     void DestroyPlayerRests(MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception);
 
@@ -172,9 +175,6 @@ public:
     MapNode& GetNodeWriteable(MapPoint pt);
     /// Recalculates where border stones should be done after a change in the given region
     void RecalcBorderStones(Position startPt, Extent areaSize);
-
-    /// Create Trade graphs
-    void CreateTradeGraphs() final;
 
 protected:
     void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
