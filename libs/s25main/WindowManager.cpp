@@ -136,8 +136,13 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
         const auto itActiveWnd = std::find_if(windows.rbegin(), windows.rend(), [escape](const auto& wnd) {
             return !wnd->ShouldBeClosed() && !(escape && wnd->IsPinned());
         });
-        if(itActiveWnd != windows.rend() && (*itActiveWnd)->getCloseBehavior() != CloseBehavior::Custom)
-            (*itActiveWnd)->Close();
+        if(itActiveWnd != windows.rend())
+        {
+            if((*itActiveWnd)->getCloseBehavior() == CloseBehavior::Custom)
+                CALL_MEMBER_FN(**itActiveWnd, msg)(ke);
+            else
+                (*itActiveWnd)->Close();
+        }
     } else if(!CALL_MEMBER_FN(*windows.back(), msg)(ke)) // send to active window
     {
         // If not handled yet, relay to active window
