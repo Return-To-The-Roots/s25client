@@ -522,7 +522,7 @@ unsigned short GetStrandedSoldierReturnSearchRadius(const GlobalGameSettings& gg
             // Start with the normal soldier radius, then widen the final stage after the first six failed searches.
             return wanderTriesLeft > WANDER_TRYINGS_SOLDIERS ? WANDER_RADIUS_SOLDIERS : 2 * WANDER_RADIUS_SOLDIERS;
         case StrandedSoldierReturnSearchSelection::WideThirdStage:
-            // Escalate every six failed searches: normal radius, then 2x, then 4x for the final stage.
+            // Escalate after each stage: normal radius, then 2x, then 4x for the final stage.
             if(wanderTriesLeft > 2 * WANDER_TRYINGS_SOLDIERS)
                 return WANDER_RADIUS_SOLDIERS;
             if(wanderTriesLeft > WANDER_TRYINGS_SOLDIERS)
