@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GamePlayer.h"
+#include "RttrForeachPt.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
 #include "helpers/Range.h"
@@ -359,23 +360,19 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlocker
     const MapPoint endPt(10, corridorY);
     constexpr unsigned maxPathLen = 8;
 
-    for(const auto y : helpers::range(0, +world.GetHeight()))
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        for(const auto x : helpers::range(0, +world.GetWidth()))
-        {
-            const MapPoint pt(x, y);
-            if(pt.y == corridorY && pt.x >= startPt.x && pt.x <= endPt.x)
-                continue;
+        if(pt.y == corridorY && pt.x >= startPt.x && pt.x <= endPt.x)
+            continue;
 
-            MapNode& node = world.GetNodeWriteable(pt);
-            node.t1 = tWater;
-            node.t2 = tWater;
-        }
+        MapNode& node = world.GetNodeWriteable(pt);
+        node.t1 = tWater;
+        node.t2 = tWater;
     }
 
     BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
 
-    for(unsigned x = startPt.x + 1; x < endPt.x; ++x)
+    for(const unsigned x : helpers::range<MapCoord>(startPt.x + 1, endPt.x))
     {
         const MapPoint passablePt(x, corridorY);
         world.DestroyNO(passablePt, false);
@@ -384,7 +381,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlocker
 
     BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
 
-    for(unsigned x = startPt.x + 1; x < endPt.x; ++x)
+    for(const unsigned x : helpers::range<MapCoord>(startPt.x + 1, endPt.x))
     {
         const MapPoint passablePt(x, corridorY);
         world.DestroyNO(passablePt, false);
@@ -393,7 +390,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlocker
 
     BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
 
-    for(unsigned x = startPt.x + 1; x < endPt.x; ++x)
+    for(const unsigned x : helpers::range<MapCoord>(startPt.x + 1, endPt.x))
     {
         const MapPoint blockerPt(x, corridorY);
         world.DestroyNO(blockerPt, false);
