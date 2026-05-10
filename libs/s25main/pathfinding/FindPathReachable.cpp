@@ -10,6 +10,8 @@
 
 namespace {
 
+// Keep this narrower than PathConditionHuman, but reject permanently blocking static objects:
+// Human pathing can never accept them and they cannot be removed.
 struct PathConditionReachableWithStaticBlockers : PathConditionReachable
 {
     PathConditionReachableWithStaticBlockers(const World& world) : PathConditionReachable(world) {}
