@@ -928,7 +928,10 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
         OnError(ClientError::InvalidMap);
         return true;
     }
-    mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / portFilename;
+    const auto targetPath =
+      RTTRCONFIG.ExpandPath((msg.mt == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed);
+    bfs::create_directories(targetPath);
+    mapinfo.filepath = targetPath / portFilename;
     mapinfo.type = msg.mt;
 
     // lua script file path
