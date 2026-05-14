@@ -238,6 +238,7 @@ Closes a spot kicking any player or AI there.
 
 **SetAI(level)**  
 Add an AI or change its difficulty.
+Switching a slot to an AI assigns the AI's default name. If a custom name should be kept, call `SetName(name)` after `SetAI(level)`.
 
 **SetName(name)**  
 Change the player's name.

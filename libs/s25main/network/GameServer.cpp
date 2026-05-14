@@ -938,10 +938,12 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
     } else
         playerInfos[msg.senderPlayerID].isHost = false;
 
-    player->sendMsgAsync(new GameMessage_Server_Password(passwordok));
-
     if(passwordok == "false")
+    {
+        player->sendMsg(GameMessage_Server_Password(passwordok));
         KickPlayer(msg.senderPlayerID, KickReason::WrongPassword, __LINE__);
+    } else
+        player->sendMsgAsync(new GameMessage_Server_Password(passwordok));
     return true;
 }
 
