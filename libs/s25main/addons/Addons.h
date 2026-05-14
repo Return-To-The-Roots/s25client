@@ -33,11 +33,12 @@
 
 #include "addons/AddonToolOrdering.h"
 
+#include "addons/AddonGraniteMinesWorkEverywhere.h"
 #include "addons/AddonInexhaustibleFish.h"
 #include "addons/AddonInexhaustibleGraniteMines.h"
-#include "addons/AddonGraniteMinesWorkEverywhere.h"
 #include "addons/AddonMaxRank.h"
 #include "addons/AddonMilitaryAid.h"
+#include "addons/AddonMineResourceBehavior.h"
 #include "addons/AddonSeaAttack.h"
 
 #include "addons/AddonBattlefieldPromotion.h"

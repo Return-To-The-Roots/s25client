@@ -24,8 +24,6 @@ protected:
     bool StartWorking() override;
     ResourceType GetRequiredResType() const;
     MapPoint FindPointWithResourceQuiet(ResourceType type) const;
-    bool CanCreateWorkEverywhereGraniteResource() const;
-    MapPoint CreateWorkEverywhereGraniteResource();
 
 public:
     nofMiner(MapPoint pos, unsigned char player, nobUsual* workplace);

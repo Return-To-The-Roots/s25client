@@ -7,7 +7,9 @@
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
+#include "random/Random.h"
 #include "worldFixtures/WorldWithGCExecution.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "gameData/ToolConsts.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
@@ -24,6 +26,17 @@ static std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
 BOOST_AUTO_TEST_SUITE(Production)
 
 namespace {
+GoodType GetMineGoodType(const BuildingType mineType)
+{
+    switch(mineType)
+    {
+        case BuildingType::GoldMine: return GoodType::Gold;
+        case BuildingType::IronMine: return GoodType::IronOre;
+        case BuildingType::CoalMine: return GoodType::Coal;
+        default: return GoodType::Stones;
+    }
+}
+
 struct GraniteMineWithoutResourcesFixture : WorldWithGCExecution1P
 {
     MapPoint CreateGraniteMineWithoutResources()
@@ -41,6 +54,44 @@ struct GraniteMineWithoutResourcesFixture : WorldWithGCExecution1P
         RTTR_EXEC_TILL(500, mine->HasWorker());
         return minePos;
     }
+};
+
+struct MineProductionFixture : WorldWithGCExecution1P
+{
+    void AddMinerSupplies()
+    {
+        GoodsAndPeopleCounts inv;
+        inv[GoodType::Fish] = 40;
+        inv[GoodType::PickAxe] = 1;
+        inv[Job::Miner] = 1;
+        world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+    }
+
+    const nobUsual* PlaceMine(const BuildingType mineType, MapPoint& minePos)
+    {
+        minePos = hqPos + MapPoint(2, 0);
+        return static_cast<nobUsual*>(
+          BuildingFactory::CreateBuilding(world, mineType, minePos, curPlayer, Nation::Romans));
+    }
+
+    void ConnectMineAndWaitForWorker(const MapPoint minePos, const nobUsual* mine)
+    {
+        BuildRoad(world.GetNeighbour(minePos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
+        RTTR_EXEC_TILL(500, mine->HasWorker());
+    }
+
+    MapPoint CreateMine(const BuildingType mineType, const Resource initialResource = Resource())
+    {
+        AddMinerSupplies();
+        MapPoint minePos;
+        const nobUsual* mine = PlaceMine(mineType, minePos);
+        if(initialResource.getType() != ResourceType::Nothing)
+            world.GetNodeWriteable(minePos).resources = initialResource;
+        ConnectMineAndWaitForWorker(minePos, mine);
+        return minePos;
+    }
+
+    void ResetMineProductionRng(const unsigned seed) { RANDOM.Init(seed); }
 };
 } // namespace
 
@@ -158,11 +209,13 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereCreatesDepletableResource, Gran
 
     RTTR_EXEC_TILL(50000, world.GetNode(minePos).resources.getType() == ResourceType::Granite
                             && world.GetNode(minePos).resources.getAmount() == 0u);
-    BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType()) == static_cast<unsigned>(ResourceType::Granite));
+    BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType())
+               == static_cast<unsigned>(ResourceType::Granite));
     BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
 }
 
-BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereResourceIsInexhaustibleWithGraniteAddon, GraniteMineWithoutResourcesFixture)
+BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereResourceIsInexhaustibleWithGraniteAddon,
+                        GraniteMineWithoutResourcesFixture)
 {
     ggs.setSelection(AddonId::GRANITEMINES_WORK_EVERYWHERE, 1);
     ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
@@ -178,6 +231,60 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereResourceIsInexhaustibleWithGran
 
     BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Granite));
     BOOST_TEST(world.GetNode(minePos).resources.getAmount() == initialResourceAmount);
+}
+
+BOOST_FIXTURE_TEST_CASE(CoalMineInexhaustibleBehaviorDoesNotDepleteResource, MineProductionFixture)
+{
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
+    const MapPoint minePos = CreateMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 4));
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialCoal = curInventory[GetMineGoodType(BuildingType::CoalMine)];
+
+    RTTR_EXEC_TILL(5000, curInventory[GoodType::Coal] > initialCoal);
+
+    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 4u);
+}
+
+BOOST_FIXTURE_TEST_CASE(CoalMineS4LikeExhaustionCanProduceNothing, MineProductionFixture)
+{
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
+                     static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
+    const MapPoint minePos = CreateMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 1));
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialCoal = curInventory[GoodType::Coal];
+
+    ResetMineProductionRng(2);
+    RTTR_SKIP_GFS(2000);
+
+    BOOST_TEST(curInventory[GoodType::Coal] == initialCoal);
+    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 1u);
+}
+
+BOOST_FIXTURE_TEST_CASE(CoalMineS4LikeExhaustionReducesResourceOnSuccessfulCycle, MineProductionFixture)
+{
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
+                     static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
+    const MapPoint minePos = CreateMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 15));
+
+    ResetMineProductionRng(21);
+    RTTR_EXEC_TILL(5000, world.GetNode(minePos).resources.getAmount() == 14u);
+
+    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 14u);
+}
+
+BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorCreatesDepletableResource, MineProductionFixture)
+{
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+    const MapPoint minePos = CreateMine(BuildingType::CoalMine);
+    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const unsigned initialCoal = curInventory[GoodType::Coal];
+
+    RTTR_EXEC_TILL(2000, curInventory[GoodType::Coal] > initialCoal);
+    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Coal));
+
+    RTTR_EXEC_TILL(50000, world.GetNode(minePos).resources.getType() == ResourceType::Coal
+                            && world.GetNode(minePos).resources.getAmount() == 0u);
+    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
