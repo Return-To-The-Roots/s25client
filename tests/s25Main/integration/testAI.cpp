@@ -16,11 +16,15 @@
 #include "network/GameMessage_Chat.h"
 #include "notifications/NodeNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameTypes/MineResourceBehavior.h"
+#include "gameTypes/Resource.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameData/WorldDescription.h"
 #include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 #include <memory>
@@ -49,6 +53,37 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
     if(BuildingProperties::IsWareHouse(type)) // Includes harbors
         return containsBldType(blds.GetStorehouses(), type);
     return !blds.GetBuildings(type).empty();
+}
+
+DescIdx<TerrainDesc> GetMineableTerrain(const WorldDescription& desc)
+{
+    const auto terrain = desc.terrain.find([](const TerrainDesc& t) { return t.Is(ETerrain::Mineable); });
+    BOOST_TEST_REQUIRE(terrain);
+    return terrain;
+}
+
+void makeWorldMineable(GameWorld& world)
+{
+    const DescIdx<TerrainDesc> mineableTerrain = GetMineableTerrain(world.GetDescription());
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        MapNode& node = world.GetNodeWriteable(pt);
+        node.t1 = node.t2 = mineableTerrain;
+        node.resources = Resource();
+    }
+    world.InitAfterLoad();
+}
+
+void makeMineNodesUsableForSearch(AIJH::AIPlayerJH& aijh, const GameWorld& world, const unsigned player)
+{
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        AIJH::Node& node = aijh.GetAINode(pt);
+        node.bq = world.GetBQ(pt, player);
+        node.owned = true;
+        node.reachable = true;
+        node.farmed = false;
+    }
 }
 
 struct MockAI final : public AIPlayer
@@ -107,6 +142,61 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
         BOOST_TEST(msg->destination == dest);
         BOOST_TEST(msg->text == "Hello again!");
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(MineResourceRatingAccountsForS4LikeExhaustion, EmptyWorldFixture1P)
+{
+    const MapPoint resourcePos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(2, 0));
+    world.GetNodeWriteable(resourcePos).resources = Resource(ResourceType::Coal, 1);
+
+    MockAI ai(0, world, AI::Level::Easy);
+    const int defaultRating = ai.getAIInterface().GetResourceRating(resourcePos, AIResource::Coal);
+
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
+                     static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
+    const int s4LikeRating = ai.getAIInterface().GetResourceRating(resourcePos, AIResource::Coal);
+
+    BOOST_TEST(defaultRating == static_cast<int>(RES_RADIUS[AIResource::Coal]));
+    BOOST_TEST(s4LikeRating > 0);
+    BOOST_TEST(s4LikeRating < defaultRating);
+}
+
+BOOST_FIXTURE_TEST_CASE(MineWorkEverywhereAffectsMatchingAIResourceOnly, EmptyWorldFixture1P)
+{
+    makeWorldMineable(world);
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+
+    AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
+    makeMineNodesUsableForSearch(ai, world, 0);
+
+    const MapPoint around = world.GetPlayer(0).GetHQPos();
+    BOOST_TEST(ai.FindBestPosition(around, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
+    BOOST_TEST(!ai.FindBestPosition(around, AIResource::Ironore, BuildingQuality::Mine, 5).isValid());
+}
+
+BOOST_FIXTURE_TEST_CASE(GraniteLegacyWorkEverywhereAffectsGraniteOnly, EmptyWorldFixture1P)
+{
+    makeWorldMineable(world);
+    ggs.setSelection(AddonId::GRANITEMINES_WORK_EVERYWHERE, 1);
+
+    AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
+    makeMineNodesUsableForSearch(ai, world, 0);
+
+    const MapPoint around = world.GetPlayer(0).GetHQPos();
+    BOOST_TEST(ai.FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, 5).isValid());
+    BOOST_TEST(!ai.FindBestPosition(around, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
+}
+
+BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteDoesNotImplyWorkEverywhereForAI, EmptyWorldFixture1P)
+{
+    makeWorldMineable(world);
+    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
+
+    AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
+    makeMineNodesUsableForSearch(ai, world, 0);
+
+    const MapPoint around = world.GetPlayer(0).GetHQPos();
+    BOOST_TEST(!ai.FindBestPosition(around, AIResource::Granite, BuildingQuality::Mine, 5).isValid());
 }
 
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
