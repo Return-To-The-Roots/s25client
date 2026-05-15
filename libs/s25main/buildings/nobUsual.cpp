@@ -19,8 +19,11 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorld.h"
+#include "gameTypes/MineResourceBehavior.h"
+#include "gameTypes/Resource.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
+#include "gameData/GameConsts.h"
 #include <numeric>
 
 /// Number of GFs after which the productivity is recalculated, i.e. productivity is averaged over intervals of this
@@ -517,6 +520,25 @@ void nobUsual::SetProductionEnabled(const bool enabled)
 bool nobUsual::HasWorker() const
 {
     return worker && worker->GetState() != nofBuildingWorker::State::FigureWork;
+}
+
+unsigned short nobUsual::GetDisplayProductivity() const
+{
+    if(!BuildingProperties::IsMine(bldType_)
+       || GetEffectiveMineResourceBehavior(world->GetGGS(), bldType_) != MineResourceBehavior::S4LikeExhaustion)
+        return productivity;
+
+    const ResourceType resourceType = GetMineResourceType(bldType_);
+    const std::vector<MapPoint> resourcePts = world->GetMatchingPointsInRadius<1>(
+      pos, MINER_RADIUS,
+      [this, resourceType](const MapPoint pt) { return world->GetNode(pt).resources.has(resourceType); }, true);
+
+    unsigned resourceAmount = 0;
+    for(const MapPoint pt : resourcePts)
+        resourceAmount += world->GetNode(pt).resources.getAmount();
+
+    return static_cast<unsigned short>(
+      (static_cast<unsigned>(productivity) * GetS4LikeMineProductionChance(resourceAmount)) / 100u);
 }
 
 void nobUsual::OnOutOfResources()

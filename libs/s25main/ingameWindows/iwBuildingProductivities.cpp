@@ -100,7 +100,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 
 void iwBuildingProductivities::UpdatePercents()
 {
-    percents = player.GetBuildingRegister().CalcProductivities();
+    percents = player.GetBuildingRegister().CalcDisplayProductivities();
 }
 
 void iwBuildingProductivities::Msg_PaintAfter()

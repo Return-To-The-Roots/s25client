@@ -6,6 +6,13 @@
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
 #include "gameTypes/BuildingType.h"
+#include "gameTypes/Resource.h"
+#include <algorithm>
+
+namespace {
+constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
+constexpr unsigned S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE = 5;
+} // namespace
 
 AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
 {
@@ -16,6 +23,22 @@ AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
         case BuildingType::CoalMine: return AddonId::COALMINE_RESOURCE_BEHAVIOR;
         default: return AddonId::GRANITEMINE_RESOURCE_BEHAVIOR;
     }
+}
+
+ResourceType GetMineResourceType(const BuildingType buildingType)
+{
+    switch(buildingType)
+    {
+        case BuildingType::GoldMine: return ResourceType::Gold;
+        case BuildingType::IronMine: return ResourceType::Iron;
+        case BuildingType::CoalMine: return ResourceType::Coal;
+        default: return ResourceType::Granite;
+    }
+}
+
+unsigned GetS4LikeMineProductionChance(const unsigned resourceAmount)
+{
+    return std::min(MAX_PRODUCTION_PERCENT, resourceAmount * S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE);
 }
 
 MineResourceBehavior GetConfiguredMineResourceBehavior(const GlobalGameSettings& settings,
