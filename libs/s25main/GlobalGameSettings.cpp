@@ -84,6 +84,7 @@ void GlobalGameSettings::registerAllAddons()
         AddonIronMineResourceBehavior,
         AddonGoldMineResourceBehavior,
         AddonGraniteMineResourceBehavior,
+        AddonMineNoOutputFallback,
         AddonInexhaustibleMines,
         AddonLimitCatapults,
         AddonManualRoadEnlargement,
