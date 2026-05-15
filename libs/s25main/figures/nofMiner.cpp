@@ -23,7 +23,6 @@ namespace {
 constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
 constexpr unsigned GRANITE_FALLBACK_25_PERCENT = 25;
 constexpr unsigned GRANITE_FALLBACK_50_PERCENT = 50;
-constexpr unsigned S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE = 5;
 constexpr unsigned S4LIKE_MIN_RESOURCE_AMOUNT = 1;
 constexpr uint8_t WORK_EVERYWHERE_RESOURCE_MIN_AMOUNT = 8;
 constexpr unsigned WORK_EVERYWHERE_RESOURCE_AMOUNT_VARIANTS = 8;
@@ -46,7 +45,7 @@ unsigned GetS4LikeProductionChance(const GameWorld& world, const std::vector<Map
     for(const MapPoint pt : resourcePts)
         resourceAmount += world.GetNode(pt).resources.getAmount();
 
-    return std::min(MAX_PRODUCTION_PERCENT, resourceAmount * S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE);
+    return GetS4LikeMineProductionChance(resourceAmount);
 }
 
 unsigned GetGraniteFallbackChance(const MineNoOutputFallback fallback)
@@ -251,11 +250,5 @@ bool nofMiner::StartWorking()
 
 ResourceType nofMiner::GetRequiredResType() const
 {
-    switch(workplace->GetBuildingType())
-    {
-        case BuildingType::GoldMine: return ResourceType::Gold;
-        case BuildingType::IronMine: return ResourceType::Iron;
-        case BuildingType::CoalMine: return ResourceType::Coal;
-        default: return ResourceType::Granite;
-    }
+    return GetMineResourceType(workplace->GetBuildingType());
 }

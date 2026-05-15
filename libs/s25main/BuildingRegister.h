@@ -41,8 +41,12 @@ public:
     BuildingCount GetBuildingNums() const;
     /// Calculate and fill the average productivities for all buildings.
     helpers::EnumArray<uint16_t, BuildingType> CalcProductivities() const;
+    /// Calculate and fill the average productivities shown in UI.
+    helpers::EnumArray<uint16_t, BuildingType> CalcDisplayProductivities() const;
     /// Calculate the average productivity for a building type
     unsigned CalcAverageProductivity(BuildingType bldType) const;
+    /// Calculate the average productivity shown in UI for a building type
+    unsigned CalcAverageDisplayProductivity(BuildingType bldType) const;
     /// Calculate the average productivity for all buildings
     unsigned short CalcAverageProductivity() const;
 

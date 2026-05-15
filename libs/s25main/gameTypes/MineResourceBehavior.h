@@ -4,9 +4,12 @@
 
 #pragma once
 
+#include <cstdint>
+
 class GlobalGameSettings;
 enum class AddonId;
 enum class BuildingType : unsigned char;
+enum class ResourceType : uint8_t;
 
 enum class MineResourceBehavior : unsigned
 {
@@ -17,6 +20,8 @@ enum class MineResourceBehavior : unsigned
 };
 
 AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
+ResourceType GetMineResourceType(BuildingType buildingType);
+unsigned GetS4LikeMineProductionChance(unsigned resourceAmount);
 MineResourceBehavior GetConfiguredMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
 MineResourceBehavior GetEffectiveMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
 bool IsMineResourceDepletable(const GlobalGameSettings& settings, BuildingType buildingType);

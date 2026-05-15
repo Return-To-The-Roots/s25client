@@ -155,6 +155,15 @@ helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcProductivities(
     return productivities;
 }
 
+helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcDisplayProductivities() const
+{
+    helpers::EnumArray<uint16_t, BuildingType> productivities;
+
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        productivities[bld] = static_cast<uint16_t>(CalcAverageDisplayProductivity(bld));
+    return productivities;
+}
+
 unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
 {
     if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))
@@ -166,6 +175,22 @@ unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
     {
         for(const nobUsual* bld : buildings)
             productivity += bld->GetProductivity();
+        productivity /= numBlds;
+    }
+    return productivity;
+}
+
+unsigned BuildingRegister::CalcAverageDisplayProductivity(BuildingType bldType) const
+{
+    if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))
+        return 0;
+    unsigned productivity = 0;
+    const auto& buildings = GetBuildings(bldType);
+    const unsigned numBlds = buildings.size();
+    if(numBlds > 0)
+    {
+        for(const nobUsual* bld : buildings)
+            productivity += bld->GetDisplayProductivity();
         productivity /= numBlds;
     }
     return productivity;
