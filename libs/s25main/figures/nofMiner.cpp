@@ -28,17 +28,6 @@ constexpr unsigned S4LIKE_MIN_RESOURCE_AMOUNT = 1;
 constexpr uint8_t WORK_EVERYWHERE_RESOURCE_MIN_AMOUNT = 8;
 constexpr unsigned WORK_EVERYWHERE_RESOURCE_AMOUNT_VARIANTS = 8;
 
-AddonId GetResourceBehaviorAddonId(const BuildingType buildingType)
-{
-    switch(buildingType)
-    {
-        case BuildingType::GoldMine: return AddonId::GOLDMINE_RESOURCE_BEHAVIOR;
-        case BuildingType::IronMine: return AddonId::IRONMINE_RESOURCE_BEHAVIOR;
-        case BuildingType::CoalMine: return AddonId::COALMINE_RESOURCE_BEHAVIOR;
-        default: return AddonId::GRANITEMINE_RESOURCE_BEHAVIOR;
-    }
-}
-
 MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& settings)
 {
     switch(static_cast<MineNoOutputFallback>(settings.getSelection(AddonId::MINE_NO_OUTPUT_FALLBACK)))
@@ -49,48 +38,6 @@ MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& set
         case MineNoOutputFallback::ProduceLowerGradeResource: return MineNoOutputFallback::ProduceLowerGradeResource;
         default: return MineNoOutputFallback::ProduceNothing;
     }
-}
-
-MineResourceBehavior GetConfiguredResourceBehavior(const GlobalGameSettings& settings, const BuildingType buildingType)
-{
-    switch(static_cast<MineResourceBehavior>(settings.getSelection(GetResourceBehaviorAddonId(buildingType))))
-    {
-        case MineResourceBehavior::S4LikeExhaustion: return MineResourceBehavior::S4LikeExhaustion;
-        case MineResourceBehavior::Inexhaustible: return MineResourceBehavior::Inexhaustible;
-        case MineResourceBehavior::WorkEverywhere: return MineResourceBehavior::WorkEverywhere;
-        default: return MineResourceBehavior::Default;
-    }
-}
-
-MineResourceBehavior GetEffectiveResourceBehavior(const GlobalGameSettings& settings, const BuildingType buildingType,
-                                                  const MineResourceBehavior configuredBehavior)
-{
-    if(configuredBehavior != MineResourceBehavior::Default)
-        return configuredBehavior;
-
-    if(buildingType == BuildingType::GraniteMine && settings.isEnabled(AddonId::GRANITEMINES_WORK_EVERYWHERE))
-        return MineResourceBehavior::WorkEverywhere;
-
-    if(settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-        return MineResourceBehavior::Inexhaustible;
-
-    return MineResourceBehavior::Default;
-}
-
-bool ShouldReduceResources(const GlobalGameSettings& settings, const BuildingType buildingType,
-                           const MineResourceBehavior configuredBehavior, const MineResourceBehavior effectiveBehavior)
-{
-    if(effectiveBehavior == MineResourceBehavior::Inexhaustible)
-        return false;
-
-    if(configuredBehavior == MineResourceBehavior::Default && settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-        return false;
-
-    if(configuredBehavior == MineResourceBehavior::Default && buildingType == BuildingType::GraniteMine
-       && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES))
-        return false;
-
-    return true;
 }
 
 unsigned GetS4LikeProductionChance(const GameWorld& world, const std::vector<MapPoint>& resourcePts)
@@ -232,10 +179,8 @@ unsigned short nofMiner::GetCarryID() const
 helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
     const GlobalGameSettings& settings = world->GetGGS();
-    const MineResourceBehavior configuredBehavior =
-      GetConfiguredResourceBehavior(settings, workplace->GetBuildingType());
     const MineResourceBehavior effectiveBehavior =
-      GetEffectiveResourceBehavior(settings, workplace->GetBuildingType(), configuredBehavior);
+      GetEffectiveMineResourceBehavior(settings, workplace->GetBuildingType());
 
     if(effectiveBehavior == MineResourceBehavior::S4LikeExhaustion)
     {
@@ -246,7 +191,7 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
         if(produceNothingThisCycle)
             return GetNoOutputFallbackGood(settings, workplace->GetBuildingType(), GetObjId());
 
-        if(ShouldReduceResources(settings, workplace->GetBuildingType(), configuredBehavior, effectiveBehavior))
+        if(IsMineResourceDepletable(settings, workplace->GetBuildingType()))
             ReduceS4LikeResource(*world, resourcePts);
     }
 
@@ -270,10 +215,8 @@ bool nofMiner::AreWaresAvailable() const
     if(!nofWorkman::AreWaresAvailable())
         return false;
 
-    const MineResourceBehavior configuredBehavior =
-      GetConfiguredResourceBehavior(world->GetGGS(), workplace->GetBuildingType());
     const MineResourceBehavior effectiveBehavior =
-      GetEffectiveResourceBehavior(world->GetGGS(), workplace->GetBuildingType(), configuredBehavior);
+      GetEffectiveMineResourceBehavior(world->GetGGS(), workplace->GetBuildingType());
 
     if(FindPointWithResourceQuiet(GetRequiredResType()).isValid()
        || CanCreateWorkEverywhereResource(*world, pos, effectiveBehavior))
@@ -286,10 +229,8 @@ bool nofMiner::AreWaresAvailable() const
 bool nofMiner::StartWorking()
 {
     const GlobalGameSettings& settings = world->GetGGS();
-    const MineResourceBehavior configuredBehavior =
-      GetConfiguredResourceBehavior(settings, workplace->GetBuildingType());
     const MineResourceBehavior effectiveBehavior =
-      GetEffectiveResourceBehavior(settings, workplace->GetBuildingType(), configuredBehavior);
+      GetEffectiveMineResourceBehavior(settings, workplace->GetBuildingType());
     MapPoint resPt = FindPointWithResourceQuiet(GetRequiredResType());
     if(!resPt.isValid())
     {
@@ -302,7 +243,7 @@ bool nofMiner::StartWorking()
     }
 
     if(effectiveBehavior != MineResourceBehavior::S4LikeExhaustion
-       && ShouldReduceResources(settings, workplace->GetBuildingType(), configuredBehavior, effectiveBehavior))
+       && IsMineResourceDepletable(settings, workplace->GetBuildingType()))
         world->ReduceResource(resPt);
 
     return nofWorkman::StartWorking();

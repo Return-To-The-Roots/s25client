@@ -32,6 +32,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noTree.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
@@ -139,11 +140,10 @@ static bool isUnlimitedResource(const AIResource res, const GlobalGameSettings& 
 {
     switch(res)
     {
-        case AIResource::Gold:
-        case AIResource::Ironore:
-        case AIResource::Coal: return ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES);
-        case AIResource::Granite:
-            return ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES) || ggs.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES);
+        case AIResource::Gold: return !IsMineResourceDepletable(ggs, BuildingType::GoldMine);
+        case AIResource::Ironore: return !IsMineResourceDepletable(ggs, BuildingType::IronMine);
+        case AIResource::Coal: return !IsMineResourceDepletable(ggs, BuildingType::CoalMine);
+        case AIResource::Granite: return !IsMineResourceDepletable(ggs, BuildingType::GraniteMine);
         case AIResource::Fish: return ggs.isEnabled(AddonId::INEXHAUSTIBLE_FISH);
         default: return false;
     }

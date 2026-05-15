@@ -4,6 +4,10 @@
 
 #pragma once
 
+class GlobalGameSettings;
+enum class AddonId;
+enum class BuildingType : unsigned char;
+
 enum class MineResourceBehavior : unsigned
 {
     Default,
@@ -11,3 +15,8 @@ enum class MineResourceBehavior : unsigned
     Inexhaustible,
     WorkEverywhere
 };
+
+AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
+MineResourceBehavior GetConfiguredMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
+MineResourceBehavior GetEffectiveMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
+bool IsMineResourceDepletable(const GlobalGameSettings& settings, BuildingType buildingType);
