@@ -12,6 +12,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
+#include "gameTypes/MineNoOutputFallback.h"
 #include "gameTypes/MineResourceBehavior.h"
 #include "gameTypes/Resource.h"
 #include "gameData/GameConsts.h"
@@ -20,6 +21,8 @@
 
 namespace {
 constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
+constexpr unsigned GRANITE_FALLBACK_25_PERCENT = 25;
+constexpr unsigned GRANITE_FALLBACK_50_PERCENT = 50;
 constexpr unsigned S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE = 5;
 constexpr unsigned S4LIKE_MIN_RESOURCE_AMOUNT = 1;
 constexpr uint8_t WORK_EVERYWHERE_RESOURCE_MIN_AMOUNT = 8;
@@ -33,6 +36,18 @@ AddonId GetResourceBehaviorAddonId(const BuildingType buildingType)
         case BuildingType::IronMine: return AddonId::IRONMINE_RESOURCE_BEHAVIOR;
         case BuildingType::CoalMine: return AddonId::COALMINE_RESOURCE_BEHAVIOR;
         default: return AddonId::GRANITEMINE_RESOURCE_BEHAVIOR;
+    }
+}
+
+MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& settings)
+{
+    switch(static_cast<MineNoOutputFallback>(settings.getSelection(AddonId::MINE_NO_OUTPUT_FALLBACK)))
+    {
+        case MineNoOutputFallback::ProduceGranite25: return MineNoOutputFallback::ProduceGranite25;
+        case MineNoOutputFallback::ProduceGranite50: return MineNoOutputFallback::ProduceGranite50;
+        case MineNoOutputFallback::ProduceGranite100: return MineNoOutputFallback::ProduceGranite100;
+        case MineNoOutputFallback::ProduceLowerGradeResource: return MineNoOutputFallback::ProduceLowerGradeResource;
+        default: return MineNoOutputFallback::ProduceNothing;
     }
 }
 
@@ -85,6 +100,49 @@ unsigned GetS4LikeProductionChance(const GameWorld& world, const std::vector<Map
         resourceAmount += world.GetNode(pt).resources.getAmount();
 
     return std::min(MAX_PRODUCTION_PERCENT, resourceAmount * S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE);
+}
+
+unsigned GetGraniteFallbackChance(const MineNoOutputFallback fallback)
+{
+    switch(fallback)
+    {
+        case MineNoOutputFallback::ProduceGranite25: return GRANITE_FALLBACK_25_PERCENT;
+        case MineNoOutputFallback::ProduceGranite50: return GRANITE_FALLBACK_50_PERCENT;
+        case MineNoOutputFallback::ProduceGranite100: return MAX_PRODUCTION_PERCENT;
+        default: return 0;
+    }
+}
+
+helpers::OptionalEnum<GoodType> GetLowerGradeFallbackGood(const BuildingType buildingType)
+{
+    switch(buildingType)
+    {
+        case BuildingType::GoldMine: return GoodType::IronOre;
+        case BuildingType::IronMine: return GoodType::Coal;
+        case BuildingType::CoalMine: return GoodType::Stones;
+        default: return boost::none;
+    }
+}
+
+helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings& settings,
+                                                        const BuildingType buildingType, const unsigned objId)
+{
+    const MineNoOutputFallback fallback = GetConfiguredNoOutputFallback(settings);
+    const unsigned graniteFallbackChance = GetGraniteFallbackChance(fallback);
+    if(graniteFallbackChance > 0)
+    {
+        if(graniteFallbackChance == MAX_PRODUCTION_PERCENT
+           || static_cast<unsigned>(RANDOM.Rand(RANDOM_CONTEXT2(objId), MAX_PRODUCTION_PERCENT))
+                < graniteFallbackChance)
+            return GoodType::Stones;
+
+        return boost::none;
+    }
+
+    if(fallback == MineNoOutputFallback::ProduceLowerGradeResource)
+        return GetLowerGradeFallbackGood(buildingType);
+
+    return boost::none;
 }
 
 std::vector<MapPoint> GetPointsWithResource(const GameWorld& world, const MapPoint pos, const ResourceType type)
@@ -186,7 +244,7 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
         const bool produceNothingThisCycle =
           resourcePts.empty() || productionRoll >= GetS4LikeProductionChance(*world, resourcePts);
         if(produceNothingThisCycle)
-            return boost::none;
+            return GetNoOutputFallbackGood(settings, workplace->GetBuildingType(), GetObjId());
 
         if(ShouldReduceResources(settings, workplace->GetBuildingType(), configuredBehavior, effectiveBehavior))
             ReduceS4LikeResource(*world, resourcePts);

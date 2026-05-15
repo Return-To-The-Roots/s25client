@@ -39,6 +39,7 @@
 #include "addons/AddonInexhaustibleGraniteMines.h"
 #include "addons/AddonMaxRank.h"
 #include "addons/AddonMilitaryAid.h"
+#include "addons/AddonMineNoOutputFallback.h"
 #include "addons/AddonMineResourceBehavior.h"
 #include "addons/AddonSeaAttack.h"
 
