@@ -244,6 +244,36 @@ BOOST_DATA_TEST_CASE(ClientFollowsConnectProtocol, usesLuaScriptValues, usesLuaS
     }
 }
 
+BOOST_AUTO_TEST_CASE(ClientStoresReceivedSavegamesInSaveFolder)
+{
+    rttr::test::TmpFolder testUserData;
+    rttr::test::ConfigOverride userDataOverride("USERDATA", testUserData);
+
+    GameClient client;
+    GameMessageInterface& clientMsgInterface = client;
+    TestServer server;
+    const auto serverPort = server.tryListen();
+    BOOST_TEST_REQUIRE(serverPort >= 0);
+
+    BOOST_TEST_REQUIRE(client.Connect("localhost", rttr::test::randString(10), rttr::test::randomEnum<ServerType>(),
+                                      serverPort, false, false));
+    clientMsgInterface.OnGameMessage(GameMessage_Player_Id(1));
+    client.GetMainPlayer().sendQueue.clear();
+    clientMsgInterface.OnGameMessage(GameMessage_Server_TypeOK(GameMessage_Server_TypeOK::StatusCode::Ok, ""));
+    client.GetMainPlayer().sendQueue.clear();
+    clientMsgInterface.OnGameMessage(GameMessage_Server_Password("true"));
+    client.GetMainPlayer().sendQueue.clear();
+
+    const auto expectedSavePath = RTTRCONFIG.ExpandPath(s25::folders::save) / "received.sav";
+
+    clientMsgInterface.OnGameMessage(GameMessage_Map_Info("received.sav", MapType::Savegame, 1, 1, 0, 0));
+    const auto msg = boost::dynamic_pointer_cast<GameMessage_MapRequest>(client.GetMainPlayer().sendQueue.pop());
+    BOOST_TEST_REQUIRE(msg);
+    BOOST_TEST(!msg->requestInfo);
+    BOOST_TEST(client.GetMapType() == MapType::Savegame);
+    BOOST_TEST(client.GetMapPath() == expectedSavePath);
+}
+
 BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)
 {
     rttr::test::LogAccessor _suppressLogOutput;
@@ -284,6 +314,34 @@ BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)
     MOCK_EXPECT(callbacks.CI_Error).with(ClientError::MapTransmission).once();
     const auto remainingSize = mapDataSize - chunkSize;
     clientMsgInterface.OnGameMessage(GameMessage_Map_Data(true, chunkSize, mapData.data(), remainingSize + 1u));
+    BOOST_TEST(client.GetState() == ClientState::Stopped);
+}
+
+BOOST_AUTO_TEST_CASE(ClientReportsWrongPasswordResponse)
+{
+    GameClient client;
+    GameMessageInterface& clientMsgInterface = client;
+    MockClientInterface callbacks;
+    client.SetInterface(&callbacks);
+    TestServer server;
+    const auto serverPort = server.tryListen();
+    BOOST_TEST_REQUIRE(serverPort >= 0);
+    const auto serverType = rttr::test::randomEnum<ServerType>();
+    mock::sequence s;
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::Initiated).once();
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::VerifyServer).once();
+    MOCK_EXPECT(callbacks.CI_NextConnectState).in(s).with(ConnectState::QueryPw).once();
+    MOCK_EXPECT(callbacks.CI_Error).in(s).with(ClientError::WrongPassword).once();
+
+    BOOST_TEST_REQUIRE(client.Connect("localhost", rttr::test::randString(10), serverType, serverPort, false, false));
+    clientMsgInterface.OnGameMessage(GameMessage_Player_Id(1));
+    clientMsgInterface.OnGameMessage(GameMessage_Server_TypeOK(GameMessage_Server_TypeOK::StatusCode::Ok, ""));
+    BOOST_TEST_REQUIRE(boost::dynamic_pointer_cast<GameMessage_Server_Type>(client.GetMainPlayer().sendQueue.pop()));
+    BOOST_TEST_REQUIRE(
+      boost::dynamic_pointer_cast<GameMessage_Server_Password>(client.GetMainPlayer().sendQueue.pop()));
+
+    clientMsgInterface.OnGameMessage(GameMessage_Server_Password("false"));
+
     BOOST_TEST(client.GetState() == ClientState::Stopped);
 }
 

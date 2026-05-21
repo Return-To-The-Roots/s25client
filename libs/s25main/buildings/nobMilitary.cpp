@@ -508,6 +508,20 @@ void nobMilitary::RegulateTroops()
 
     is_regulating_troops = true;
 
+    GamePlayer& owner = world->GetPlayer(player);
+    std::array<int, NUM_SOLDIER_RANKS> hasReturnWarehouseByRank;
+    hasReturnWarehouseByRank.fill(-1);
+    auto canReturnHome = [&](const nofPassiveSoldier& soldier) {
+        const unsigned rank = soldier.GetRank();
+        int& hasReturnWarehouse = hasReturnWarehouseByRank[rank];
+        if(hasReturnWarehouse < 0)
+        {
+            hasReturnWarehouse =
+              owner.FindWarehouse(*this, FW::AcceptsFigure(soldier.GetJobType()), true, false) ? 1 : 0;
+        }
+        return hasReturnWarehouse != 0;
+    };
+
     // This only has an effect if the military control addon is in use and the troop limits have been lowered.
     std::array<unsigned, NUM_SOLDIER_RANKS> counts = GetTotalSoldiersByRank();
     std::array<unsigned, NUM_SOLDIER_RANKS> lack;
@@ -521,7 +535,7 @@ void nobMilitary::RegulateTroops()
             std::vector<nofPassiveSoldier*> notNeededSoldiers;
             for(auto it = ordered_troops.begin(); excess && it != ordered_troops.end();)
             {
-                if((*it)->GetRank() == rank)
+                if((*it)->GetRank() == rank && canReturnHome(**it))
                 {
                     notNeededSoldiers.push_back(*it);
                     it = ordered_troops.erase(it);
@@ -538,12 +552,11 @@ void nobMilitary::RegulateTroops()
             // This bit is for ordering troops later
             lack[rank] = troop_limits[rank] - counts[rank];
         }
-        if(excess > 0
-           && world->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(SOLDIER_JOBS[rank]), true, false))
+        if(excess > 0)
         {
             for(auto it = troops.begin(); excess && it != troops.end() && troops.size() > 1;)
             {
-                if((*it)->GetRank() == rank)
+                if((*it)->GetRank() == rank && canReturnHome(**it))
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(std::move(*it));
@@ -565,22 +578,35 @@ void nobMilitary::RegulateTroops()
         // Zuerst die bestellten Soldaten wegschicken
         // Weak ones first
         std::vector<nofPassiveSoldier*> notNeededSoldiers;
-        GamePlayer& owner = world->GetPlayer(player);
         if(owner.GetMilitarySetting(1) > MILITARY_SETTINGS_SCALE[1] / 2)
         {
-            for(auto it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
+            for(auto it = ordered_troops.begin(); diff && it != ordered_troops.end();)
             {
-                notNeededSoldiers.push_back(*it);
-                it = ordered_troops.erase(it);
+                if(canReturnHome(**it))
+                {
+                    notNeededSoldiers.push_back(*it);
+                    it = ordered_troops.erase(it);
+                    ++diff;
+                } else
+                {
+                    ++it;
+                }
             }
         }
         // Strong ones first
         else
         {
-            for(auto it = ordered_troops.rbegin(); diff && !ordered_troops.empty(); ++diff)
+            for(auto it = ordered_troops.rbegin(); diff && it != ordered_troops.rend();)
             {
-                notNeededSoldiers.push_back(*it);
-                it = helpers::erase_reverse(ordered_troops, it);
+                if(canReturnHome(**it))
+                {
+                    notNeededSoldiers.push_back(*it);
+                    it = helpers::erase_reverse(ordered_troops, it);
+                    ++diff;
+                } else
+                {
+                    ++it;
+                }
             }
         }
 
@@ -590,32 +616,41 @@ void nobMilitary::RegulateTroops()
             notNeededSoldier->NotNeeded();
         }
 
-        // Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-        if(owner.FindWarehouse(*this, FW::NoCondition(), true, false))
+        // Dann den Rest (einer muss immer noch drinbleiben!)
+        // erst die schwachen Soldaten raus
+        if(owner.GetMilitarySetting(1) > MILITARY_SETTINGS_SCALE[1] / 2)
         {
-            // Dann den Rest (einer muss immer noch drinbleiben!)
-            // erst die schwachen Soldaten raus
-            if(owner.GetMilitarySetting(1) > MILITARY_SETTINGS_SCALE[1] / 2)
+            for(auto it = troops.begin(); diff && it != troops.end() && troops.size() > 1;)
             {
-                for(auto it = troops.begin(); diff && troops.size() > 1; ++diff)
+                if(canReturnHome(**it))
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(std::move(*it));
                     it = troops.erase(it);
+                    ++diff;
+                } else
+                {
+                    ++it;
                 }
             }
-            // erst die starken Soldaten raus
-            else
+        }
+        // erst die starken Soldaten raus
+        else
+        {
+            for(auto it = troops.rbegin(); diff && it != troops.rend() && troops.size() > 1;)
             {
-                for(auto it = troops.rbegin(); diff && troops.size() > 1; ++diff)
+                if(canReturnHome(**it))
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(std::move(*it));
                     it = helpers::erase_reverse(troops, it);
+                    ++diff;
+                } else
+                {
+                    ++it;
                 }
             }
         }
-
     } else if(diff > 0)
     {
         // Zu wenig Truppen
