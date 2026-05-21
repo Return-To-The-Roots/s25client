@@ -433,15 +433,34 @@ bool hasHarborAt(const World& world, const MapPoint pt)
     return false;
 }
 
+bool isFarEnoughFromHarbors(const World& world, const MapPoint pt, const std::vector<MapPoint>& generatedHarbors)
+{
+    for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+    {
+        if(world.CalcDistance(pt, world.GetHarborPoint(harborId)) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
+            return false;
+    }
+    for(const MapPoint generatedHarbor : generatedHarbors)
+    {
+        if(world.CalcDistance(pt, generatedHarbor) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
+            return false;
+    }
+    return true;
+}
+
 std::vector<MapPoint> getGeneratedHarbors(const World& world)
 {
     std::vector<MapPoint> generatedHarbors;
     BQCalculator calcBQ(world, true);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        if(!hasHarborAt(world, pt)
-           && calcBQ(pt, [](const MapPoint&) { return false; }) == BuildingQuality::Harbor)
+        if(!hasHarborAt(world, pt) && calcBQ(pt, [](const MapPoint&) { return false; }) == BuildingQuality::Harbor
+           && isFarEnoughFromHarbors(world, pt, generatedHarbors))
+        {
             generatedHarbors.push_back(pt);
+            if(generatedHarbors.size() == MapLoader::MAX_GENERATED_HARBOR_SPOTS)
+                return generatedHarbors;
+        }
     }
     return generatedHarbors;
 }
@@ -451,10 +470,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
                                    const bool generateHarborSpots)
 {
     for(MapPoint pt : additionalHarbors)
-    {
-        if(!hasHarborAt(world, pt))
-            world.harborData.push_back(HarborPos(pt));
-    }
+        world.harborData.push_back(HarborPos(pt));
     // Clear current harbors and seas
     RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {

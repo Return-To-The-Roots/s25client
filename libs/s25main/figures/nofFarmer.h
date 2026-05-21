@@ -5,6 +5,7 @@
 #pragma once
 
 #include "nofFarmhand.h"
+class GameWorld;
 class SerializedGameData;
 class nobUsual;
 
@@ -33,6 +34,8 @@ private:
 public:
     nofFarmer(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmer(SerializedGameData& sgd, unsigned obj_id);
+
+    static nofFarmhand::PointQuality GetNewFieldPointQuality(const GameWorld& world, MapPoint pt);
 
     void Serialize(SerializedGameData& sgd) const override;
 

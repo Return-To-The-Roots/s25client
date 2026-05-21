@@ -4,16 +4,17 @@
 
 #include "RTTR_AssertError.h"
 #include "RttrForeachPt.h"
-#include "helpers/IdRange.h"
 #include "addons/const_addons.h"
+#include "helpers/IdRange.h"
+#include "lua/GameDataLoader.h"
 #include "worldFixtures/CreateSeaWorld.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
 #include "worldFixtures/WorldFixture.h"
 #include "worldFixtures/terrainHelpers.h"
+#include "world/BQCalculator.h"
+#include "world/MapLoader.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/ShipDirection.h"
-#include "lua/GameDataLoader.h"
-#include "world/MapLoader.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -102,6 +103,38 @@ unsigned countHarborBQ(const GameWorld& world)
             ++result;
     }
     return result;
+}
+
+std::vector<MapPoint> getMarkerlessHarborCandidates(const GameWorld& world)
+{
+    std::vector<MapPoint> result;
+    BQCalculator calcBQ(world, true);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        if(calcBQ(pt, [](const MapPoint&) { return false; }) == BuildingQuality::Harbor)
+            result.push_back(pt);
+    }
+    return result;
+}
+
+std::vector<MapPoint> getHarborPointsFrom(const GameWorld& world, const unsigned firstHarborIdx)
+{
+    std::vector<MapPoint> result;
+    for(unsigned harborIdx = firstHarborIdx; harborIdx <= world.GetNumHarborPoints(); ++harborIdx)
+        result.push_back(world.GetHarborPoint(HarborId(harborIdx)));
+    return result;
+}
+
+void testMinimumHarborDistance(const GameWorld& world, const std::vector<MapPoint>& harborPoints)
+{
+    for(unsigned i = 0; i < harborPoints.size(); ++i)
+    {
+        for(unsigned j = i + 1; j < harborPoints.size(); ++j)
+        {
+            BOOST_TEST_REQUIRE(world.CalcDistance(harborPoints[i], harborPoints[j])
+                               >= MapLoader::MIN_GENERATED_HARBOR_DISTANCE);
+        }
+    }
 }
 
 void testHarborPoint(const GameWorld& world, const HarborId harborId)
@@ -208,8 +241,17 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonAddsCoastalHarbors, SeaWorldFixture)
     world.InitAfterLoad();
 
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() > initialHarbors);
+    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() <= initialHarbors + MapLoader::MAX_GENERATED_HARBOR_SPOTS);
+    const std::vector<MapPoint> generatedHarbors = getHarborPointsFrom(world, initialHarbors + 1);
+    testMinimumHarborDistance(world, generatedHarbors);
     for(unsigned harborIdx = initialHarbors + 1; harborIdx <= world.GetNumHarborPoints(); ++harborIdx)
     {
+        const MapPoint harborPt = world.GetHarborPoint(HarborId(harborIdx));
+        for(unsigned existingHarborIdx = 1; existingHarborIdx <= initialHarbors; ++existingHarborIdx)
+        {
+            BOOST_TEST_REQUIRE(world.CalcDistance(harborPt, world.GetHarborPoint(HarborId(existingHarborIdx)))
+                               >= MapLoader::MIN_GENERATED_HARBOR_DISTANCE);
+        }
         testHarborPoint(world, HarborId(harborIdx));
     }
 }
@@ -220,6 +262,8 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIs
     world.InitAfterLoad();
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);
     BOOST_TEST_REQUIRE(countHarborBQ(world) == 0u);
+    const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
+    BOOST_TEST_REQUIRE(candidates.size() > MapLoader::MAX_GENERATED_HARBOR_SPOTS);
 
     ggs.setSelection(AddonId::FREE_HARBOR_SPOTS, 1);
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
@@ -231,10 +275,46 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIs
     world.InitAfterLoad();
 
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() > 0u);
+    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() <= MapLoader::MAX_GENERATED_HARBOR_SPOTS);
+    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() < candidates.size());
+    testMinimumHarborDistance(world, getHarborPointsFrom(world, 1));
     for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
     {
         testHarborPoint(world, harborId);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonKeepsGeneratedHarborsAwayFromExistingOnes, MarkerlessIslandFixture)
+{
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
+    const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
+    BOOST_TEST_REQUIRE(!candidates.empty());
+
+    const MapPoint existingHarbor = candidates.front();
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, {existingHarbor}, true));
+    world.InitAfterLoad();
+
+    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() > 1u);
+    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(1)).x == existingHarbor.x);
+    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(1)).y == existingHarbor.y);
+    for(unsigned harborIdx = 2; harborIdx <= world.GetNumHarborPoints(); ++harborIdx)
+    {
+        BOOST_TEST_REQUIRE(world.CalcDistance(existingHarbor, world.GetHarborPoint(HarborId(harborIdx)))
+                           >= MapLoader::MIN_GENERATED_HARBOR_DISTANCE);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonDoesNotAffectRuntimeBQRecalculation, MarkerlessIslandFixture)
+{
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
+    const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
+    BOOST_TEST_REQUIRE(!candidates.empty());
+
+    ggs.setSelection(AddonId::FREE_HARBOR_SPOTS, 1);
+    world.RecalcBQ(candidates.front());
+
+    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);
+    BOOST_TEST_REQUIRE(world.GetNode(candidates.front()).bq != BuildingQuality::Harbor);
 }
 
 BOOST_FIXTURE_TEST_CASE(HarborNeighbors, SeaWorldWithGCExecution<>)

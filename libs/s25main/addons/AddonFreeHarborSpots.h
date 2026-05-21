@@ -11,8 +11,8 @@ class AddonFreeHarborSpots : public AddonBool
 {
 public:
     AddonFreeHarborSpots()
-        : AddonBool(AddonId::FREE_HARBOR_SPOTS, AddonGroup::GamePlay, _("Dangerous: Build harbors without map markers"),
-                    _("Advanced option. Allows harbors on all suitable coastal castle sites even if the map does not "
-                      "define harbor spots. May heavily alter intended map seafaring design."))
+        : AddonBool(AddonId::FREE_HARBOR_SPOTS, AddonGroup::GamePlay, _("Dangerous: Add limited extra harbor spots"),
+                    _("Advanced option. Adds only a small deterministic set of suitable coastal castle sites as extra "
+                      "harbor spots. May alter intended map seafaring design."))
     {}
 };
