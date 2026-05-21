@@ -62,6 +62,11 @@
 #include "addons/AddonAutoFlags.h"
 
 #include "addons/AddonArmorCapturedBld.h"
+#include "addons/AddonForesterFarmFieldAvoidance.h"
 #include "addons/AddonLeather.h"
 #include "addons/AddonNoArmorDefault.h"
 #include "addons/AddonWine.h"
+
+#include "addons/AddonForesterReachRadius.h"
+#include "addons/AddonStonemasonReachRadius.h"
+#include "addons/AddonWoodcutterReachRadius.h"

@@ -12,6 +12,11 @@
 #include "world/GameWorld.h"
 #include "gameData/JobConsts.h"
 
+#include "GlobalGameSettings.h"
+#include "addons/AddonForesterReachRadius.h"
+#include "addons/AddonStonemasonReachRadius.h"
+#include "addons/AddonWoodcutterReachRadius.h"
+
 nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace), dest(0, 0)
 {}
@@ -26,6 +31,35 @@ void nofFarmhand::Serialize(SerializedGameData& sgd) const
 nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint())
 {}
+
+unsigned nofFarmhand::GetWorkRadius(const Job job)
+{
+    switch(job)
+    {
+        case Job::Carpenter: return 0;
+        case Job::Hunter:
+        case Job::Farmer:
+        case Job::Winegrower: return 2;
+        case Job::CharBurner: return 3;
+        case Job::Woodcutter:
+        {
+            const unsigned sel = world->GetGGS().getSelection(AddonId::WOODCUTTER_REACH_RADIUS);
+            return woodcutterRadiusValues[sel];
+        }
+        case Job::Forester:
+        {
+            const unsigned sel = world->GetGGS().getSelection(AddonId::FORESTER_REACH_RADIUS);
+            return foresterRadiusValues[sel];
+        }
+        case Job::Fisher: return 7;
+        case Job::Stonemason:
+        {
+            const unsigned sel = world->GetGGS().getSelection(AddonId::STONEMASON_REACH_RADIUS);
+            return stonemasonRadiusValues[sel];
+        }
+        default: throw std::logic_error("Invalid job");
+    }
+}
 
 void nofFarmhand::WalkedDerived()
 {
@@ -59,21 +93,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         {
             // Start working after the initial wait period
             // Work radius
-            const unsigned max_radius = [](Job job) {
-                switch(job)
-                {
-                    case Job::Carpenter: return 0;
-                    case Job::Hunter:
-                    case Job::Farmer:
-                    case Job::Winegrower: return 2;
-                    case Job::CharBurner: return 3;
-                    case Job::Woodcutter:
-                    case Job::Forester: return 6;
-                    case Job::Fisher: return 7;
-                    case Job::Stonemason: return 8;
-                    default: throw std::logic_error("Invalid job");
-                }
-            }(job_);
+            const unsigned max_radius = GetWorkRadius(job_);
             // Number of additional radii in which points should be found
             // I.e. 0 => Don't search for points further away than ones already found
             const unsigned additionalRadiiToFind = [](Job job) {

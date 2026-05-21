@@ -57,6 +57,36 @@ unsigned short nofFarmer::GetCarryID() const
     return 71;
 }
 
+nofFarmhand::PointQuality nofFarmer::GetNewFieldPointQuality(const GameWorld& world, const MapPoint pt)
+{
+    // Nicht auf Straßen bauen!
+    for(const auto dir : helpers::EnumRange<Direction>{})
+    {
+        if(world.GetPointRoad(pt, dir) != PointRoad::None)
+            return PointQuality::NotPossible;
+    }
+
+    // Terrain untersuchen
+    if(!world.IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
+        return PointQuality::NotPossible;
+
+    // Ist Platz frei?
+    NodalObjectType noType = world.GetNO(pt)->GetType();
+    if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
+        return PointQuality::NotPossible;
+
+    for(const MapPoint nb : world.GetNeighbours(pt))
+    {
+        // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
+        noType = world.GetNO(nb)->GetType();
+        if(noType == NodalObjectType::Grainfield || noType == NodalObjectType::Grapefield
+           || noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite)
+            return PointQuality::NotPossible;
+    }
+
+    return PointQuality::Class2;
+}
+
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofFarmer::WorkStarted()
 {
@@ -123,34 +153,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt, bool /* 
     }
     // oder einen freien Platz, wo wir ein neues sähen können
     else
-    {
-        // Nicht auf Straßen bauen!
-        for(const auto dir : helpers::EnumRange<Direction>{})
-        {
-            if(world->GetPointRoad(pt, dir) != PointRoad::None)
-                return PointQuality::NotPossible;
-        }
-
-        // Terrain untersuchen
-        if(!world->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
-            return PointQuality::NotPossible;
-
-        // Ist Platz frei?
-        NodalObjectType noType = world->GetNO(pt)->GetType();
-        if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
-            return PointQuality::NotPossible;
-
-        for(const MapPoint nb : world->GetNeighbours(pt))
-        {
-            // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
-            noType = world->GetNO(nb)->GetType();
-            if(noType == NodalObjectType::Grainfield || noType == NodalObjectType::Grapefield
-               || noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite)
-                return PointQuality::NotPossible;
-        }
-
-        return PointQuality::Class2;
-    }
+        return GetNewFieldPointQuality(*world, pt);
 }
 
 void nofFarmer::WorkAborted()
