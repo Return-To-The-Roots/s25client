@@ -5,6 +5,7 @@
 #include "GameCommands.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "Replay.h"
 #include "RttrForeachPt.h"
@@ -19,6 +20,7 @@
 #include "figures/nofHunter.h"
 #include "helpers/OptionalIO.h"
 #include "helpers/format.hpp"
+#include "helpers/serializeEnums.h"
 #include "network/GameMessage_Chat.h"
 #include "network/PlayerGameCommands.h"
 #include "worldFixtures/CreateEmptyWorld.h"
@@ -30,6 +32,7 @@
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/MapInfo.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "s25util/tmpFile.h"
 #include <rttr/test/random.hpp>
 #include <rttr/test/testHelpers.hpp>
@@ -40,6 +43,7 @@
 // LCOV_EXCL_START
 BOOST_TEST_DONT_PRINT_LOG_VALUE(Resource)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(AddonId)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(MineResourceBehavior)
 BOOST_TEST_DONT_PRINT_LOG_VALUE(nofBuildingWorker::State)
 // LCOV_EXCL_STOP
 
@@ -159,6 +163,17 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
     gf = loadReplay.ReadGF();
     BOOST_TEST(!gf);
 }
+
+void PushSerializedGGSHeader(Serializer& ser)
+{
+    helpers::pushEnum<uint8_t>(ser, GameSpeed::Normal);
+    helpers::pushEnum<uint8_t>(ser, GameObjective::None);
+    helpers::pushEnum<uint8_t>(ser, StartWares::Normal);
+    ser.PushBool(false);
+    helpers::pushEnum<uint8_t>(ser, Exploration::FogOfWar);
+    ser.PushBool(true);
+    ser.PushBool(false);
+}
 } // namespace
 
 BOOST_AUTO_TEST_SUITE(Serialization)
@@ -199,6 +214,44 @@ BOOST_AUTO_TEST_CASE(SerializeGGS)
         BOOST_TEST_REQUIRE(addon->getId() == addonLoaded->getId());
         BOOST_TEST(ggs.getSelection(addon->getId()) == ggsLoaded.getSelection(addon->getId()));
     }
+}
+
+BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehaviors)
+{
+    Serializer ser;
+    PushSerializedGGSHeader(ser);
+    ser.PushUnsignedInt(1);
+    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.PushUnsignedInt(1);
+
+    Serializer loader(ser.GetData(), ser.GetLength());
+    GlobalGameSettings ggsLoaded;
+    ggsLoaded.Deserialize(loader);
+
+    for(const BuildingType mineType :
+        {BuildingType::GraniteMine, BuildingType::CoalMine, BuildingType::IronMine, BuildingType::GoldMine})
+        BOOST_TEST(GetMineResourceBehavior(ggsLoaded, mineType) == MineResourceBehavior::Inexhaustible);
+    BOOST_TEST(ggsLoaded.getSelection(AddonId::INEXHAUSTIBLE_MINES) == 0u);
+}
+
+BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBehavior)
+{
+    Serializer ser;
+    PushSerializedGGSHeader(ser);
+    ser.PushUnsignedInt(2);
+    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.PushUnsignedInt(1);
+    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::COALMINE_RESOURCE_BEHAVIOR));
+    ser.PushUnsignedInt(static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
+
+    Serializer loader(ser.GetData(), ser.GetLength());
+    GlobalGameSettings ggsLoaded;
+    ggsLoaded.Deserialize(loader);
+
+    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::CoalMine) == MineResourceBehavior::S4LikeExhaustion);
+    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::GraniteMine) == MineResourceBehavior::Inexhaustible);
+    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::IronMine) == MineResourceBehavior::Inexhaustible);
+    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::GoldMine) == MineResourceBehavior::Inexhaustible);
 }
 
 BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)

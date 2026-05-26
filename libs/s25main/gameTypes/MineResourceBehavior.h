@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "helpers/OptionalEnum.h"
 #include <cstdint>
 
 class GlobalGameSettings;
@@ -13,15 +14,15 @@ enum class ResourceType : uint8_t;
 
 enum class MineResourceBehavior : unsigned
 {
-    Default,
-    S4LikeExhaustion,
-    Inexhaustible,
-    WorkEverywhere
+    Default = 0,
+    Inexhaustible = 1,
+    S4LikeExhaustion = 2,
+    WorkEverywhere = 3
 };
 
 AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
 ResourceType GetMineResourceType(BuildingType buildingType);
+helpers::OptionalEnum<BuildingType> GetMineBuildingType(ResourceType resourceType);
 unsigned GetS4LikeMineProductionChance(unsigned resourceAmount);
-MineResourceBehavior GetConfiguredMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
-MineResourceBehavior GetEffectiveMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
+MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
 bool IsMineResourceDepletable(const GlobalGameSettings& settings, BuildingType buildingType);

@@ -198,40 +198,29 @@ BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineStillNeedsResourceSpot, GraniteM
     BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
 }
 
-BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereCreatesDepletableResource, GraniteMineWithoutResourcesFixture)
+BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereProducesWithoutCreatingResource, GraniteMineWithoutResourcesFixture)
 {
-    ggs.setSelection(AddonId::GRANITEMINES_WORK_EVERYWHERE, 1);
+    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
     const MapPoint minePos = CreateGraniteMineWithoutResources();
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     RTTR_EXEC_TILL(2000, curInventory[GoodType::Stones] > initialStones);
-    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Granite));
-
-    RTTR_EXEC_TILL(50000, world.GetNode(minePos).resources.getType() == ResourceType::Granite
-                            && world.GetNode(minePos).resources.getAmount() == 0u);
     BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType())
-               == static_cast<unsigned>(ResourceType::Granite));
+               == static_cast<unsigned>(ResourceType::Nothing));
     BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
 }
 
-BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereResourceIsInexhaustibleWithGraniteAddon,
-                        GraniteMineWithoutResourcesFixture)
+BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereIgnoresExistingResource, MineProductionFixture)
 {
-    ggs.setSelection(AddonId::GRANITEMINES_WORK_EVERYWHERE, 1);
-    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
-    const MapPoint minePos = CreateGraniteMineWithoutResources();
+    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+    const MapPoint minePos = CreateMine(BuildingType::GraniteMine, Resource(ResourceType::Coal, 4));
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     RTTR_EXEC_TILL(2000, curInventory[GoodType::Stones] > initialStones);
-    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Granite));
-    const unsigned initialResourceAmount = world.GetNode(minePos).resources.getAmount();
-
-    RTTR_SKIP_GFS(10000);
-
-    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Granite));
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == initialResourceAmount);
+    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Coal));
+    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 4u);
 }
 
 BOOST_FIXTURE_TEST_CASE(CoalMineInexhaustibleBehaviorDoesNotDepleteResource, MineProductionFixture)
@@ -373,7 +362,7 @@ BOOST_FIXTURE_TEST_CASE(CoalMineDefaultProductionIgnoresNoOutputFallback, MinePr
     BOOST_TEST(world.GetNode(minePos).resources.getAmount() < 3u);
 }
 
-BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorCreatesDepletableResource, MineProductionFixture)
+BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorProducesWithoutCreatingResource, MineProductionFixture)
 {
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
     const MapPoint minePos = CreateMine(BuildingType::CoalMine);
@@ -381,10 +370,8 @@ BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorCreatesDepletableResource,
     const unsigned initialCoal = curInventory[GoodType::Coal];
 
     RTTR_EXEC_TILL(2000, curInventory[GoodType::Coal] > initialCoal);
-    BOOST_TEST(world.GetNode(minePos).resources.has(ResourceType::Coal));
-
-    RTTR_EXEC_TILL(50000, world.GetNode(minePos).resources.getType() == ResourceType::Coal
-                            && world.GetNode(minePos).resources.getAmount() == 0u);
+    BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType())
+               == static_cast<unsigned>(ResourceType::Nothing));
     BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
 }
 

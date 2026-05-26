@@ -17,6 +17,21 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 
+namespace {
+unsigned CalcAverageProductivity(const std::list<nobUsual*>& buildings,
+                                 unsigned short (nobUsual::*getProductivity)() const)
+{
+    const unsigned numBlds = buildings.size();
+    if(numBlds == 0)
+        return 0;
+
+    unsigned productivity = 0;
+    for(const nobUsual* bld : buildings)
+        productivity += (bld->*getProductivity)();
+    return productivity / numBlds;
+}
+} // namespace
+
 void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushObjectContainer(warehouses);
@@ -160,7 +175,13 @@ helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcDisplayProducti
     helpers::EnumArray<uint16_t, BuildingType> productivities;
 
     for(const auto bld : helpers::enumRange<BuildingType>())
-        productivities[bld] = static_cast<uint16_t>(CalcAverageDisplayProductivity(bld));
+    {
+        if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bld].producedWare))
+            productivities[bld] = 0;
+        else
+            productivities[bld] =
+              static_cast<uint16_t>(::CalcAverageProductivity(GetBuildings(bld), &nobUsual::GetDisplayProductivity));
+    }
     return productivities;
 }
 
@@ -168,32 +189,7 @@ unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
 {
     if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))
         return 0;
-    unsigned productivity = 0;
-    const auto& buildings = GetBuildings(bldType);
-    const unsigned numBlds = buildings.size();
-    if(numBlds > 0)
-    {
-        for(const nobUsual* bld : buildings)
-            productivity += bld->GetProductivity();
-        productivity /= numBlds;
-    }
-    return productivity;
-}
-
-unsigned BuildingRegister::CalcAverageDisplayProductivity(BuildingType bldType) const
-{
-    if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))
-        return 0;
-    unsigned productivity = 0;
-    const auto& buildings = GetBuildings(bldType);
-    const unsigned numBlds = buildings.size();
-    if(numBlds > 0)
-    {
-        for(const nobUsual* bld : buildings)
-            productivity += bld->GetDisplayProductivity();
-        productivity /= numBlds;
-    }
-    return productivity;
+    return ::CalcAverageProductivity(GetBuildings(bldType), &nobUsual::GetProductivity);
 }
 
 unsigned short BuildingRegister::CalcAverageProductivity() const

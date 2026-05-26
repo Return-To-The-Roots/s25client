@@ -94,7 +94,7 @@ struct NodeHasResource
 };
 } // namespace
 
-MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
+MapPoint nofWorkman::FindPointWithResource(ResourceType type, const bool notify) const
 {
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
     const std::vector<MapPoint> pts =
@@ -102,7 +102,8 @@ MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
     if(!pts.empty())
         return pts.front();
 
-    workplace->OnOutOfResources();
+    if(notify)
+        workplace->OnOutOfResources();
 
     return MapPoint::Invalid();
 }

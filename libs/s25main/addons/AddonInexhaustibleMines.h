@@ -8,7 +8,11 @@
 #include "mygettext/mygettext.h"
 
 /**
- *  Addon for allowing to have unlimited resources.
+ *  Deprecated global mine setting.
+ *
+ *  Not registered anymore. The ID is still decoded when loading old
+ * settings/savegames and migrated to the per-mine
+ *  resource behavior settings.
  */
 class AddonInexhaustibleMines : public AddonBool
 {

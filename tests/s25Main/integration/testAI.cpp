@@ -170,14 +170,18 @@ BOOST_FIXTURE_TEST_CASE(MineWorkEverywhereAffectsMatchingAIResourceOnly, EmptyWo
     makeMineNodesUsableForSearch(ai, world, 0);
 
     const MapPoint around = world.GetPlayer(0).GetHQPos();
+    const MapPoint otherResourcePos = world.MakeMapPoint(around + Position(8, 0));
+    world.GetNodeWriteable(otherResourcePos).resources = Resource(ResourceType::Iron, 4);
+    BOOST_TEST(ai.getAIInterface().GetResourceRating(otherResourcePos, AIResource::Coal)
+               == static_cast<int>(RES_RADIUS[AIResource::Coal]));
     BOOST_TEST(ai.FindBestPosition(around, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
     BOOST_TEST(!ai.FindBestPosition(around, AIResource::Ironore, BuildingQuality::Mine, 5).isValid());
 }
 
-BOOST_FIXTURE_TEST_CASE(GraniteLegacyWorkEverywhereAffectsGraniteOnly, EmptyWorldFixture1P)
+BOOST_FIXTURE_TEST_CASE(GraniteWorkEverywhereAffectsGraniteOnly, EmptyWorldFixture1P)
 {
     makeWorldMineable(world);
-    ggs.setSelection(AddonId::GRANITEMINES_WORK_EVERYWHERE, 1);
+    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
 
     AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
     makeMineNodesUsableForSearch(ai, world, 0);

@@ -4,17 +4,20 @@
 
 #pragma once
 
-#include "AddonBool.h"
+#include "AddonMineResourceBehavior.h"
 #include "mygettext/mygettext.h"
 
 /**
- *  Addon for allowing granite mines to have unlimited resources.
+ *  Granite mine resource behavior list.
+ *
+ *  Reuses the old boolean INEXHAUSTIBLE_GRANITEMINES id: saved value 0 still means default behavior and saved value 1
+ *  now selects the inexhaustible behavior.
  */
-class AddonInexhaustibleGraniteMines : public AddonBool
+class AddonInexhaustibleGraniteMines : public AddonMineResourceBehaviorBase
 {
 public:
     AddonInexhaustibleGraniteMines()
-        : AddonBool(AddonId::INEXHAUSTIBLE_GRANITEMINES, AddonGroup::Economy, _("Inexhaustible Granite Mines"),
-                    _("Granite mines will never deplete stone resources."))
+        : AddonMineResourceBehaviorBase(AddonId::INEXHAUSTIBLE_GRANITEMINES, _("Granite Mine Resource Behavior"),
+                                        _("Configures how granite mines consume and exhaust stone deposits."))
     {}
 };

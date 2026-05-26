@@ -8,14 +8,43 @@
 #include "addons/Addons.h"
 #include "helpers/containerUtils.h"
 #include "helpers/serializeEnums.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "gameData/MilitaryConsts.h"
 #include "s25util/Log.h"
 #include "s25util/Serializer.h"
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <stdexcept>
+
+namespace {
+constexpr std::array<BuildingType, 4> MINE_BUILDING_TYPES = {BuildingType::GraniteMine, BuildingType::CoalMine,
+                                                             BuildingType::IronMine, BuildingType::GoldMine};
+
+helpers::OptionalEnum<BuildingType> GetMineBuildingTypeForAddonId(const AddonId id)
+{
+    for(const BuildingType mineType : MINE_BUILDING_TYPES)
+    {
+        if(GetMineResourceBehaviorAddonId(mineType) == id)
+            return mineType;
+    }
+    return boost::none;
+}
+
+void MigrateLegacyInexhaustibleMines(GlobalGameSettings& settings,
+                                     const helpers::EnumArray<bool, BuildingType>& hasMineBehaviorSetting)
+{
+    for(const BuildingType mineType : MINE_BUILDING_TYPES)
+    {
+        if(!hasMineBehaviorSetting[mineType])
+            settings.setSelection(GetMineResourceBehaviorAddonId(mineType),
+                                  static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
+    }
+}
+} // namespace
 
 GlobalGameSettings::GlobalGameSettings()
     : speed(GameSpeed::Normal), objective(GameObjective::None), startWares(StartWares::Normal), lockedTeams(false),
@@ -79,13 +108,10 @@ void GlobalGameSettings::registerAllAddons()
         AddonHalfCostMilEquip,
         AddonInexhaustibleFish,
         AddonInexhaustibleGraniteMines,
-        AddonGraniteMinesWorkEverywhere,
         AddonCoalMineResourceBehavior,
         AddonIronMineResourceBehavior,
         AddonGoldMineResourceBehavior,
-        AddonGraniteMineResourceBehavior,
         AddonMineNoOutputFallback,
-        AddonInexhaustibleMines,
         AddonLimitCatapults,
         AddonManualRoadEnlargement,
         AddonMaxRank,
@@ -193,8 +219,25 @@ void GlobalGameSettings::LoadSettings()
 {
     resetAddons();
 
+    bool migrateLegacyInexhaustibleMines = false;
+    helpers::EnumArray<bool, BuildingType> hasMineBehaviorSetting{};
     for(const auto& it : SETTINGS.addons.configuration)
-        setSelection(static_cast<AddonId>(it.first), it.second);
+    {
+        const auto id = static_cast<AddonId>(it.first);
+        const unsigned status = it.second;
+        if(id == AddonId::INEXHAUSTIBLE_MINES)
+        {
+            migrateLegacyInexhaustibleMines = status != 0;
+            continue;
+        }
+
+        if(const auto mineType = GetMineBuildingTypeForAddonId(id))
+            hasMineBehaviorSetting[*mineType] = true;
+
+        setSelection(id, status);
+    }
+    if(migrateLegacyInexhaustibleMines)
+        MigrateLegacyInexhaustibleMines(*this, hasMineBehaviorSetting);
 }
 
 /**
@@ -249,12 +292,25 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     resetAddons();
 
+    bool migrateLegacyInexhaustibleMines = false;
+    helpers::EnumArray<bool, BuildingType> hasMineBehaviorSetting{};
     for(unsigned i = 0; i < count; ++i)
     {
         auto addon = static_cast<AddonId>(ser.PopUnsignedInt());
         unsigned status = ser.PopUnsignedInt();
+        if(addon == AddonId::INEXHAUSTIBLE_MINES)
+        {
+            migrateLegacyInexhaustibleMines = status != 0;
+            continue;
+        }
+
+        if(const auto mineType = GetMineBuildingTypeForAddonId(addon))
+            hasMineBehaviorSetting[*mineType] = true;
+
         setSelection(addon, status);
     }
+    if(migrateLegacyInexhaustibleMines)
+        MigrateLegacyInexhaustibleMines(*this, hasMineBehaviorSetting);
 }
 
 void GlobalGameSettings::setSelection(AddonId id, unsigned selection)

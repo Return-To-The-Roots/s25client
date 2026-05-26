@@ -24,8 +24,6 @@ constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
 constexpr unsigned GRANITE_FALLBACK_25_PERCENT = 25;
 constexpr unsigned GRANITE_FALLBACK_50_PERCENT = 50;
 constexpr unsigned S4LIKE_MIN_RESOURCE_AMOUNT = 1;
-constexpr uint8_t WORK_EVERYWHERE_RESOURCE_MIN_AMOUNT = 8;
-constexpr unsigned WORK_EVERYWHERE_RESOURCE_AMOUNT_VARIANTS = 8;
 
 MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& settings)
 {
@@ -39,7 +37,8 @@ MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& set
     }
 }
 
-unsigned GetS4LikeProductionChance(const GameWorld& world, const std::vector<MapPoint>& resourcePts)
+unsigned GetS4LikeProductionChanceForRemainingResources(const GameWorld& world,
+                                                        const std::vector<MapPoint>& resourcePts)
 {
     unsigned resourceAmount = 0;
     for(const MapPoint pt : resourcePts)
@@ -95,25 +94,6 @@ std::vector<MapPoint> GetPointsWithResource(const GameWorld& world, const MapPoi
 {
     return world.GetMatchingPointsInRadius<1>(
       pos, MINER_RADIUS, [&world, type](const MapPoint pt) { return world.GetNode(pt).resources.has(type); }, true);
-}
-
-bool CanCreateWorkEverywhereResource(const GameWorld& world, const MapPoint pos, const MineResourceBehavior behavior)
-{
-    return behavior == MineResourceBehavior::WorkEverywhere
-           && world.GetNode(pos).resources.getType() == ResourceType::Nothing;
-}
-
-MapPoint CreateWorkEverywhereResource(GameWorld& world, const MapPoint pos, const ResourceType type,
-                                      const MineResourceBehavior behavior, const unsigned objId)
-{
-    if(!CanCreateWorkEverywhereResource(world, pos, behavior))
-        return MapPoint::Invalid();
-
-    const auto amount =
-      static_cast<uint8_t>(WORK_EVERYWHERE_RESOURCE_MIN_AMOUNT
-                           + RANDOM.Rand(RANDOM_CONTEXT2(objId), WORK_EVERYWHERE_RESOURCE_AMOUNT_VARIANTS));
-    world.SetResource(pos, Resource(type, amount));
-    return pos;
 }
 
 void ReduceS4LikeResource(GameWorld& world, const std::vector<MapPoint>& resourcePts)
@@ -178,15 +158,14 @@ unsigned short nofMiner::GetCarryID() const
 helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
     const GlobalGameSettings& settings = world->GetGGS();
-    const MineResourceBehavior effectiveBehavior =
-      GetEffectiveMineResourceBehavior(settings, workplace->GetBuildingType());
+    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, workplace->GetBuildingType());
 
-    if(effectiveBehavior == MineResourceBehavior::S4LikeExhaustion)
+    if(behavior == MineResourceBehavior::S4LikeExhaustion)
     {
         const std::vector<MapPoint> resourcePts = GetPointsWithResource(*world, pos, GetRequiredResType());
         const auto productionRoll = static_cast<unsigned>(RANDOM_RAND(MAX_PRODUCTION_PERCENT));
         const bool produceNothingThisCycle =
-          resourcePts.empty() || productionRoll >= GetS4LikeProductionChance(*world, resourcePts);
+          resourcePts.empty() || productionRoll >= GetS4LikeProductionChanceForRemainingResources(*world, resourcePts);
         if(produceNothingThisCycle)
             return GetNoOutputFallbackGood(settings, workplace->GetBuildingType(), GetObjId());
 
@@ -203,22 +182,16 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
     }
 }
 
-MapPoint nofMiner::FindPointWithResourceQuiet(ResourceType type) const
-{
-    const auto pts = GetPointsWithResource(*world, pos, type);
-    return pts.empty() ? MapPoint::Invalid() : pts.front();
-}
-
 bool nofMiner::AreWaresAvailable() const
 {
     if(!nofWorkman::AreWaresAvailable())
         return false;
 
-    const MineResourceBehavior effectiveBehavior =
-      GetEffectiveMineResourceBehavior(world->GetGGS(), workplace->GetBuildingType());
+    const MineResourceBehavior behavior = GetMineResourceBehavior(world->GetGGS(), workplace->GetBuildingType());
+    if(behavior == MineResourceBehavior::WorkEverywhere)
+        return true;
 
-    if(FindPointWithResourceQuiet(GetRequiredResType()).isValid()
-       || CanCreateWorkEverywhereResource(*world, pos, effectiveBehavior))
+    if(FindPointWithResource(GetRequiredResType(), false).isValid())
         return true;
 
     workplace->OnOutOfResources();
@@ -228,20 +201,15 @@ bool nofMiner::AreWaresAvailable() const
 bool nofMiner::StartWorking()
 {
     const GlobalGameSettings& settings = world->GetGGS();
-    const MineResourceBehavior effectiveBehavior =
-      GetEffectiveMineResourceBehavior(settings, workplace->GetBuildingType());
-    MapPoint resPt = FindPointWithResourceQuiet(GetRequiredResType());
-    if(!resPt.isValid())
-    {
-        resPt = CreateWorkEverywhereResource(*world, pos, GetRequiredResType(), effectiveBehavior, GetObjId());
-        if(!resPt.isValid())
-        {
-            workplace->OnOutOfResources();
-            return false;
-        }
-    }
+    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, workplace->GetBuildingType());
+    if(behavior == MineResourceBehavior::WorkEverywhere)
+        return nofWorkman::StartWorking();
 
-    if(effectiveBehavior != MineResourceBehavior::S4LikeExhaustion
+    const MapPoint resPt = FindPointWithResource(GetRequiredResType());
+    if(!resPt.isValid())
+        return false;
+
+    if(behavior != MineResourceBehavior::S4LikeExhaustion
        && IsMineResourceDepletable(settings, workplace->GetBuildingType()))
         world->ReduceResource(resPt);
 

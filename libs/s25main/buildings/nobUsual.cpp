@@ -525,7 +525,7 @@ bool nobUsual::HasWorker() const
 unsigned short nobUsual::GetDisplayProductivity() const
 {
     if(!BuildingProperties::IsMine(bldType_)
-       || GetEffectiveMineResourceBehavior(world->GetGGS(), bldType_) != MineResourceBehavior::S4LikeExhaustion)
+       || GetMineResourceBehavior(world->GetGGS(), bldType_) != MineResourceBehavior::S4LikeExhaustion)
         return productivity;
 
     const ResourceType resourceType = GetMineResourceType(bldType_);

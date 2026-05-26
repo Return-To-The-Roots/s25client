@@ -33,7 +33,6 @@
 
 #include "addons/AddonToolOrdering.h"
 
-#include "addons/AddonGraniteMinesWorkEverywhere.h"
 #include "addons/AddonInexhaustibleFish.h"
 #include "addons/AddonInexhaustibleGraniteMines.h"
 #include "addons/AddonMaxRank.h"
