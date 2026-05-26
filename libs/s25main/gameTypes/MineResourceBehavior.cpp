@@ -11,8 +11,7 @@
 
 namespace {
 constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
-/// S4-like mines scale output chance against a 20-resource full-productivity reference capacity.
-constexpr unsigned S4LIKE_RESOURCE_AMOUNT_FOR_FULL_PRODUCTION = 20;
+constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT = 20;
 } // namespace
 
 AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
@@ -49,10 +48,18 @@ helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resou
     }
 }
 
-unsigned GetS4LikeMineProductionChance(const unsigned resourceAmount)
+unsigned GetS4LikeMineFullProductivityResourceAmount()
 {
-    return std::min(MAX_PRODUCTION_PERCENT,
-                    resourceAmount * MAX_PRODUCTION_PERCENT / S4LIKE_RESOURCE_AMOUNT_FOR_FULL_PRODUCTION);
+    return S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT;
+}
+
+unsigned GetS4LikeMineProductionChance(const unsigned remainingMatchingResources)
+{
+    // S4-like productivity is intentionally based on a 20-resource reference amount, not the theoretical maximum
+    // resources in the mine radius. Below that amount, the production chance degrades linearly.
+    const unsigned chancePercent =
+      remainingMatchingResources * MAX_PRODUCTION_PERCENT / GetS4LikeMineFullProductivityResourceAmount();
+    return std::min(MAX_PRODUCTION_PERCENT, chancePercent);
 }
 
 MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, const BuildingType buildingType)

@@ -23,6 +23,8 @@ enum class MineResourceBehavior : unsigned
 AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
 ResourceType GetMineResourceType(BuildingType buildingType);
 helpers::OptionalEnum<BuildingType> GetMineBuildingType(ResourceType resourceType);
-unsigned GetS4LikeMineProductionChance(unsigned resourceAmount);
+/// Remaining matching resources at which S4-like mines reach full productivity.
+unsigned GetS4LikeMineFullProductivityResourceAmount();
+unsigned GetS4LikeMineProductionChance(unsigned remainingMatchingResources);
 MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
 bool IsMineResourceDepletable(const GlobalGameSettings& settings, BuildingType buildingType);
