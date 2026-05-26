@@ -5,6 +5,8 @@
 #pragma once
 
 #include "helpers/EnumArray.h"
+#include "helpers/OptionalEnum.h"
+#include "gameTypes/Resource.h"
 
 // Note: This enums are constructed for performance and easy conversion.
 // AIResource must be contiguous and it is assumed that only valid enumerators are used
@@ -83,6 +85,19 @@ constexpr AINodeResource convertToNodeResource(AISubSurfaceResource res)
 constexpr bool operator==(AINodeResource lhs, AIResource rhs) noexcept
 {
     return lhs == convertToNodeResource(rhs);
+}
+
+inline helpers::OptionalEnum<ResourceType> convertToResourceType(AIResource res)
+{
+    switch(res)
+    {
+        case AIResource::Gold: return ResourceType::Gold;
+        case AIResource::Ironore: return ResourceType::Iron;
+        case AIResource::Coal: return ResourceType::Coal;
+        case AIResource::Granite: return ResourceType::Granite;
+        case AIResource::Fish: return ResourceType::Fish;
+        default: return boost::none;
+    }
 }
 
 constexpr helpers::EnumArray<unsigned, AIResource> RES_RADIUS = {

@@ -15,7 +15,7 @@ class AddonMineResourceBehaviorBase : public AddonList
 protected:
     AddonMineResourceBehaviorBase(AddonId id, const std::string& name, const std::string& description)
         : AddonList(id, AddonGroup::Economy, name, description,
-                    {_("Default"), _("S4-like exhaustion"), _("Inexhaustible"), _("Work everywhere")},
+                    {_("Default"), _("Inexhaustible"), _("S4-like exhaustion"), _("Work everywhere")},
                     static_cast<unsigned>(MineResourceBehavior::Default))
     {}
 };
@@ -44,14 +44,5 @@ public:
     AddonGoldMineResourceBehavior()
         : AddonMineResourceBehaviorBase(AddonId::GOLDMINE_RESOURCE_BEHAVIOR, _("Gold Mine Resource Behavior"),
                                         _("Configures how gold mines consume and exhaust gold deposits."))
-    {}
-};
-
-class AddonGraniteMineResourceBehavior : public AddonMineResourceBehaviorBase
-{
-public:
-    AddonGraniteMineResourceBehavior()
-        : AddonMineResourceBehaviorBase(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, _("Granite Mine Resource Behavior"),
-                                        _("Configures how granite mines consume and exhaust stone deposits."))
     {}
 };

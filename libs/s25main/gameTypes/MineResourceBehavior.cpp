@@ -11,7 +11,8 @@
 
 namespace {
 constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
-constexpr unsigned S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE = 5;
+/// S4-like mines scale output chance against a 20-resource full-productivity reference capacity.
+constexpr unsigned S4LIKE_RESOURCE_AMOUNT_FOR_FULL_PRODUCTION = 20;
 } // namespace
 
 AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
@@ -21,7 +22,7 @@ AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
         case BuildingType::GoldMine: return AddonId::GOLDMINE_RESOURCE_BEHAVIOR;
         case BuildingType::IronMine: return AddonId::IRONMINE_RESOURCE_BEHAVIOR;
         case BuildingType::CoalMine: return AddonId::COALMINE_RESOURCE_BEHAVIOR;
-        default: return AddonId::GRANITEMINE_RESOURCE_BEHAVIOR;
+        default: return AddonId::INEXHAUSTIBLE_GRANITEMINES;
     }
 }
 
@@ -36,53 +37,37 @@ ResourceType GetMineResourceType(const BuildingType buildingType)
     }
 }
 
-unsigned GetS4LikeMineProductionChance(const unsigned resourceAmount)
+helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resourceType)
 {
-    return std::min(MAX_PRODUCTION_PERCENT, resourceAmount * S4LIKE_PRODUCTION_PERCENT_PER_RESOURCE);
+    switch(resourceType)
+    {
+        case ResourceType::Gold: return BuildingType::GoldMine;
+        case ResourceType::Iron: return BuildingType::IronMine;
+        case ResourceType::Coal: return BuildingType::CoalMine;
+        case ResourceType::Granite: return BuildingType::GraniteMine;
+        default: return boost::none;
+    }
 }
 
-MineResourceBehavior GetConfiguredMineResourceBehavior(const GlobalGameSettings& settings,
-                                                       const BuildingType buildingType)
+unsigned GetS4LikeMineProductionChance(const unsigned resourceAmount)
+{
+    return std::min(MAX_PRODUCTION_PERCENT,
+                    resourceAmount * MAX_PRODUCTION_PERCENT / S4LIKE_RESOURCE_AMOUNT_FOR_FULL_PRODUCTION);
+}
+
+MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, const BuildingType buildingType)
 {
     switch(static_cast<MineResourceBehavior>(settings.getSelection(GetMineResourceBehaviorAddonId(buildingType))))
     {
-        case MineResourceBehavior::S4LikeExhaustion: return MineResourceBehavior::S4LikeExhaustion;
         case MineResourceBehavior::Inexhaustible: return MineResourceBehavior::Inexhaustible;
+        case MineResourceBehavior::S4LikeExhaustion: return MineResourceBehavior::S4LikeExhaustion;
         case MineResourceBehavior::WorkEverywhere: return MineResourceBehavior::WorkEverywhere;
         default: return MineResourceBehavior::Default;
     }
 }
 
-MineResourceBehavior GetEffectiveMineResourceBehavior(const GlobalGameSettings& settings,
-                                                      const BuildingType buildingType)
-{
-    const MineResourceBehavior configuredBehavior = GetConfiguredMineResourceBehavior(settings, buildingType);
-    if(configuredBehavior != MineResourceBehavior::Default)
-        return configuredBehavior;
-
-    if(buildingType == BuildingType::GraniteMine && settings.isEnabled(AddonId::GRANITEMINES_WORK_EVERYWHERE))
-        return MineResourceBehavior::WorkEverywhere;
-
-    if(settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-        return MineResourceBehavior::Inexhaustible;
-
-    return MineResourceBehavior::Default;
-}
-
 bool IsMineResourceDepletable(const GlobalGameSettings& settings, const BuildingType buildingType)
 {
-    const MineResourceBehavior configuredBehavior = GetConfiguredMineResourceBehavior(settings, buildingType);
-    const MineResourceBehavior effectiveBehavior = GetEffectiveMineResourceBehavior(settings, buildingType);
-
-    if(effectiveBehavior == MineResourceBehavior::Inexhaustible)
-        return false;
-
-    if(configuredBehavior == MineResourceBehavior::Default && settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
-        return false;
-
-    if(configuredBehavior == MineResourceBehavior::Default && buildingType == BuildingType::GraniteMine
-       && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES))
-        return false;
-
-    return true;
+    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, buildingType);
+    return behavior == MineResourceBehavior::Default || behavior == MineResourceBehavior::S4LikeExhaustion;
 }

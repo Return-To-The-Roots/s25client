@@ -45,8 +45,6 @@ public:
     helpers::EnumArray<uint16_t, BuildingType> CalcDisplayProductivities() const;
     /// Calculate the average productivity for a building type
     unsigned CalcAverageProductivity(BuildingType bldType) const;
-    /// Calculate the average productivity shown in UI for a building type
-    unsigned CalcAverageDisplayProductivity(BuildingType bldType) const;
     /// Calculate the average productivity for all buildings
     unsigned short CalcAverageProductivity() const;
 

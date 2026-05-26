@@ -153,8 +153,8 @@ static bool isUnlimitedResource(const AIResource res, const GlobalGameSettings& 
 template<size_t... I>
 static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap, std::index_sequence<I...>)
 {
-    return helpers::EnumArray<AIResourceMap, AIResource>{
-      AIResourceMap(AIResource(I), isUnlimitedResource(AIResource(I), aii.gwb.GetGGS()), aii, aiMap)...};
+    return helpers::EnumArray<AIResourceMap, AIResource>{AIResourceMap(
+      static_cast<AIResource>(I), isUnlimitedResource(static_cast<AIResource>(I), aii.gwb.GetGGS()), aii, aiMap)...};
 }
 static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 {
