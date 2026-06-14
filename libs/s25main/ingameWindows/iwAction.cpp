@@ -176,7 +176,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 tooltip << _(BUILDING_NAMES[bld]);
 
                 // Radius anzeigen falls vorhanden
-                const unsigned radius = GetBuildingRadius(bld);
+                const unsigned radius = GetBuildingRadius(bld, gwv.GetWorld().GetGGS());
                 if(radius > 0)
                     tooltip << _("\nRange: ") << radius << _(" tiles");
 
@@ -195,7 +195,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                   ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
 
                 // Set hover callback to show radius preview on the game world
-                const unsigned bldRadius = GetBuildingRadius(bld);
+                const unsigned bldRadius = GetBuildingRadius(bld, gwv.GetWorld().GetGGS());
                 if(bldRadius > 0)
                 {
                     icon->SetOnHoverChanged([this, icon, bldRadius](bool hovered) noexcept {
@@ -494,6 +494,10 @@ void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned
 
 void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id)
 {
+    // Clear radius preview when switching tabs — old icons won't trigger mouse-leave
+    hoveredBldIcon_ = nullptr;
+    gwv.SetRadiusPreview(boost::none);
+
     switch(ctrl_id)
     {
         case 0: // Haupttabs
@@ -538,6 +542,10 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
 
 void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
 {
+    // Clear radius preview when switching build subtabs, same reason as above
+    hoveredBldIcon_ = nullptr;
+    gwv.SetRadiusPreview(boost::none);
+
     switch(ctrl_id)
     {
         case 1: // Gebäudetabs

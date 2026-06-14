@@ -122,10 +122,13 @@ extern const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS
 
 /// Reach radius for various production buildings (in tiles)
 constexpr unsigned FISHERY_RADIUS = 7;       ///< Fisher searches for fish within this radius
-constexpr unsigned HUNTER_RADIUS = 2;         ///< Hunter hunts animals within this radius
+constexpr unsigned HUNTER_SEARCH_RADIUS = 19;  ///< Hunter searches for animals in a square of this half-side length
 constexpr unsigned FARMER_RADIUS = 2;         ///< Farmer plants and harvests crops within this radius
 constexpr unsigned CHARBURNER_RADIUS = 3;     ///< Charburner places and harvests charcoal piles within this radius
 constexpr unsigned CATAPULT_RANGE = 12;       ///< Catapult attack range
 
+class GlobalGameSettings;
+
 /// Get the radius in tiles for a building type (influence radius for military, working radius for workers, attack range for catapult)
-unsigned GetBuildingRadius(BuildingType bld);
+/// Uses the actual game settings to get the current addon selection for adjustable ranges (woodcutter, forester, stonemason).
+unsigned GetBuildingRadius(BuildingType bld, const GlobalGameSettings& ggs);

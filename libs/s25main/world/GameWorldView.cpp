@@ -233,7 +233,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         const auto* bldUnderMouse = GetWorld().GetSpecObj<noBaseBuilding>(selPt);
         if(bldUnderMouse)
         {
-            const unsigned bldRadius = GetBuildingRadius(bldUnderMouse->GetBuildingType());
+            const unsigned bldRadius = GetBuildingRadius(bldUnderMouse->GetBuildingType(), GetWorld().GetGGS());
             if(bldRadius > 0)
                 DrawRadiusOutline(bldUnderMouse->GetPos(), bldRadius);
         }
@@ -737,15 +737,43 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
     const auto& world = GetWorld();
     // Get all border points at the exact radius
     auto pts = world.GetPointsInRadius(center, radius, ReturnMapPointWithRadius{});
+
+    const MapExtent mapSize = world.GetSize();
+    constexpr unsigned BORDER_COLOR = 0xFFFF0000; // Red with full alpha
+
+    const int mapPixelW = mapSize.x * TR_W;
+    const int mapPixelH = mapSize.y * TR_H;
+
     for(const auto& ptWithRadius : pts)
     {
         if(ptWithRadius.second != radius)
             continue;
-        // Convert map point to screen position
-        const DrawPoint screenPos = Position(world.GetNodePos(ptWithRadius.first)) - offset;
-        // Draw a small colored rectangle (border indicator)
-        constexpr unsigned BORDER_COLOR = 0xFFFF0000; // Red with full alpha
-        Window::DrawRectangle(Rect(screenPos - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+
+        const MapPoint pt = ptWithRadius.first;
+        const DrawPoint base = Position(world.GetNodePos(pt)) - offset;
+
+        // Canonical copy (always drawn)
+        Window::DrawRectangle(Rect(base - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+
+        // Toroidal wraparound copies — draw shifted by ±1 map dimension so the
+        // ring is continuous across the seam.  We unconditionally draw all four
+        // potential copies; the renderer clips anything off-screen.
+        // +x (wrap rightwards)
+        Window::DrawRectangle(Rect(base + DrawPoint(mapPixelW, 0) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // -x (wrap leftwards)
+        Window::DrawRectangle(Rect(base + DrawPoint(-mapPixelW, 0) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // +y (wrap downwards)
+        Window::DrawRectangle(Rect(base + DrawPoint(0, mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // -y (wrap upwards)
+        Window::DrawRectangle(Rect(base + DrawPoint(0, -mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // +x+y (diagonal)
+        Window::DrawRectangle(Rect(base + DrawPoint(mapPixelW, mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // +x-y
+        Window::DrawRectangle(Rect(base + DrawPoint(mapPixelW, -mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // -x+y
+        Window::DrawRectangle(Rect(base + DrawPoint(-mapPixelW, mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // -x-y
+        Window::DrawRectangle(Rect(base + DrawPoint(-mapPixelW, -mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
     }
 }
 
