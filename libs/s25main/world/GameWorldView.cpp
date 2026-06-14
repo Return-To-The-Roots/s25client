@@ -11,7 +11,9 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "MapGeometry.h"
+#include "ReturnMapPointWithRadius.h"
 #include "Settings.h"
+#include "Window.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
@@ -34,6 +36,7 @@
 #include "s25util/error.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
+#include <boost/optional.hpp>
 #include <cmath>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
@@ -218,6 +221,36 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
+
+    // Draw radius preview outline (if set via action window hover)
+    if(radiusPreview_)
+        DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
+
+    // Draw radius outline for the building under the mouse cursor
+    if(!radiusPreview_ && mousePos.x >= 0 && mousePos.x < static_cast<int>(size_.x) && mousePos.y >= 0
+       && mousePos.y < static_cast<int>(size_.y))
+    {
+        boost::optional<BuildingType> bldType;
+        const Visibility vis = gwv.GetVisibility(selPt);
+        if(vis == Visibility::Visible)
+        {
+            const auto* bld = GetWorld().GetSpecObj<noBaseBuilding>(selPt);
+            if(bld)
+                bldType = bld->GetBuildingType();
+        } else if(vis == Visibility::FogOfWar)
+        {
+            const FOWObject* fow = gwv.GetYoungestFOWObject(selPt);
+            if(fow && fow->GetType() == FoW_Type::Building)
+                bldType = static_cast<const fowBuilding&>(*fow).GetBuildingType();
+        }
+
+        if(bldType)
+        {
+            const unsigned bldRadius = GetBuildingRadius(*bldType, GetWorld().GetGGS());
+            if(bldRadius > 0)
+                DrawRadiusOutline(selPt, bldRadius);
+        }
+    }
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
@@ -710,6 +743,41 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
     auto itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
     RTTR_Assert(itPos != drawNodeCallbacks.end());
     drawNodeCallbacks.erase(itPos);
+}
+
+void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
+{
+    const auto& world = GetWorld();
+    // Get all border points at the exact radius
+    auto pts = world.GetPointsInRadius(center, radius, ReturnMapPointWithRadius{});
+
+    const MapExtent mapSize = world.GetSize();
+    constexpr unsigned BORDER_COLOR = 0xFFFF0000; // Red with full alpha
+
+    const int w = mapSize.x;
+    const int h = mapSize.y;
+
+    for(const auto& ptWithRadius : pts)
+    {
+        if(ptWithRadius.second != radius)
+            continue;
+
+        const Position pt(ptWithRadius.first);
+
+        // Draw at all 9 toroidal copies (canonical ± 1 map dimension).
+        // Using all copies guarantees the ring is continuous across the seam
+        // regardless of viewport position — the renderer clips off-screen pixels.
+        for(int dw : {-w, 0, w})
+        {
+            for(int dh : {-h, 0, h})
+            {
+                const Position copyPos = pt + Position(dw, dh);
+                const auto alt = world.GetNode(MakeMapPoint(copyPos, mapSize)).altitude;
+                const DrawPoint scr = Position(GetNodePos(copyPos) - Position(0, HEIGHT_FACTOR * alt)) - offset;
+                Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+            }
+        }
+    }
 }
 
 void GameWorldView::CalcFxLx()

@@ -8,6 +8,7 @@
 #include "DrawPoint.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
+#include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <vector>
 
@@ -45,6 +46,9 @@ class GameWorldView
     bool show_names;
     /// Show productivities
     bool show_productivity;
+
+    /// Optional radius preview (center position, radius) drawn as outline on the map
+    boost::optional<std::pair<MapPoint, unsigned>> radiusPreview_;
 
     /// Offset from world origin in screen units (not map units): "scroll position"
     DrawPoint offset;
@@ -117,6 +121,9 @@ public:
     void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
     void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
 
+    /// Set/show a radius preview outline on the map (or clear with boost::none)
+    void SetRadiusPreview(const boost::optional<std::pair<MapPoint, unsigned>>& preview) { radiusPreview_ = preview; }
+
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
 
@@ -145,6 +152,9 @@ private:
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
+
+    /// Draw a radius outline ring around a center point with the given radius
+    void DrawRadiusOutline(const MapPoint& center, unsigned radius);
 
     void SaveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();
