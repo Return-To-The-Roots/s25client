@@ -175,6 +175,11 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 std::stringstream tooltip;
                 tooltip << _(BUILDING_NAMES[bld]);
 
+                // Radius anzeigen falls vorhanden
+                const unsigned radius = GetBuildingRadius(bld, gwv.GetWorld().GetGGS());
+                if(radius > 0)
+                    tooltip << _("\nRange: ") << radius << _(" tiles");
+
                 tooltip << _("\nCosts: ");
                 if(BUILDING_COSTS[bld].boards > 0)
                     tooltip << (int)BUILDING_COSTS[bld].boards << _(" boards");
@@ -186,8 +191,26 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 }
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
-                build_tab->GetGroup(static_cast<int>(bt))
-                  ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
+                ctrlBuildingIcon* icon = build_tab->GetGroup(static_cast<int>(bt))
+                                           ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
+
+                // Set hover callback to show radius preview on the game world
+                const unsigned bldRadius = GetBuildingRadius(bld, gwv.GetWorld().GetGGS());
+                if(bldRadius > 0)
+                {
+                    icon->SetOnHoverChanged([this, icon, bldRadius](bool hovered) noexcept {
+                        if(hovered)
+                        {
+                            hoveredBldIcon_ = icon;
+                            this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, bldRadius));
+                        } else if(hoveredBldIcon_ == icon)
+                        {
+                            // Only clear if no other icon took over hover
+                            hoveredBldIcon_ = nullptr;
+                            this->gwv.SetRadiusPreview(boost::none);
+                        }
+                    });
+                }
 
                 ++k;
             }
@@ -407,6 +430,8 @@ void iwAction::Close()
 {
     if(ShouldBeClosed())
         return;
+    // Clear radius preview on the game world
+    gwv.SetRadiusPreview(boost::none);
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);
@@ -469,6 +494,10 @@ void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned
 
 void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id)
 {
+    // Clear radius preview when switching tabs — old icons won't trigger mouse-leave
+    hoveredBldIcon_ = nullptr;
+    gwv.SetRadiusPreview(boost::none);
+
     switch(ctrl_id)
     {
         case 0: // Haupttabs
@@ -513,6 +542,10 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
 
 void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
 {
+    // Clear radius preview when switching build subtabs, same reason as above
+    hoveredBldIcon_ = nullptr;
+    gwv.SetRadiusPreview(boost::none);
+
     switch(ctrl_id)
     {
         case 1: // Gebäudetabs

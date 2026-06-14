@@ -3,7 +3,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "BuildingConsts.h"
+#include "GlobalGameSettings.h"
+#include "addons/AddonForesterReachRadius.h"
+#include "addons/AddonStonemasonReachRadius.h"
+#include "addons/AddonWoodcutterReachRadius.h"
+#include "addons/const_addons.h"
 #include "mygettext/mygettext.h"
+#include "gameData/GameConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include <type_traits>
 
 const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
@@ -409,3 +416,51 @@ const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SI
     babylonians[BuildingType::Fortress] = DrawPoint(20, -34);
     return result;
 }();
+
+unsigned GetBuildingRadius(BuildingType bld, const GlobalGameSettings& ggs)
+{
+    switch(bld)
+    {
+        // Military buildings (territory influence radius)
+        case BuildingType::Barracks: return MILITARY_RADIUS[0];
+        case BuildingType::Guardhouse: return MILITARY_RADIUS[1];
+        case BuildingType::Watchtower: return MILITARY_RADIUS[2];
+        case BuildingType::Fortress: return MILITARY_RADIUS[3];
+        // Headquarters
+        case BuildingType::Headquarters: return HQ_RADIUS;
+        // Harbor building
+        case BuildingType::HarborBuilding: return HARBOR_RADIUS;
+        // Production buildings with (adjustable) reach radius
+        case BuildingType::Woodcutter:
+        {
+            const unsigned sel = ggs.getSelection(AddonId::WOODCUTTER_REACH_RADIUS);
+            return woodcutterRadiusValues[sel];
+        }
+        case BuildingType::Forester:
+        {
+            const unsigned sel = ggs.getSelection(AddonId::FORESTER_REACH_RADIUS);
+            return foresterRadiusValues[sel];
+        }
+        case BuildingType::Quarry:
+        {
+            const unsigned sel = ggs.getSelection(AddonId::STONEMASON_REACH_RADIUS);
+            return stonemasonRadiusValues[sel];
+        }
+        case BuildingType::Fishery: return FISHERY_RADIUS;
+        case BuildingType::Catapult: return CATAPULT_RANGE;
+        case BuildingType::LookoutTower:
+            return VISUALRANGE_LOOKOUTTOWER; // Scouting range
+        // Farm, Charburner, and Hunter have fixed working/search radii
+        case BuildingType::Farm: return FARMER_RADIUS;
+        case BuildingType::Charburner: return CHARBURNER_RADIUS;
+        case BuildingType::Hunter:
+            return HUNTER_SEARCH_RADIUS; // Search radius (square half-side 19)
+        // Mines extract resources from within a 2-tile radius (miner stays inside building)
+        case BuildingType::GraniteMine:
+        case BuildingType::CoalMine:
+        case BuildingType::IronMine:
+        case BuildingType::GoldMine: return MINER_RADIUS;
+        // Buildings that don't have a notable radius
+        default: return 0;
+    }
+}
