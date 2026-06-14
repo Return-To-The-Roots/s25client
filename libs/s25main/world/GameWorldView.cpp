@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "world/GameWorldView.h"
+#include <boost/optional.hpp>
 #include "CatapultStone.h"
 #include "Cheats.h"
 #include "FOWObjects.h"
@@ -230,12 +231,25 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(!radiusPreview_ && mousePos.x >= 0 && mousePos.x < static_cast<int>(size_.x) && mousePos.y >= 0
        && mousePos.y < static_cast<int>(size_.y))
     {
-        const auto* bldUnderMouse = GetWorld().GetSpecObj<noBaseBuilding>(selPt);
-        if(bldUnderMouse)
+        boost::optional<BuildingType> bldType;
+        const Visibility vis = gwv.GetVisibility(selPt);
+        if(vis == Visibility::Visible)
         {
-            const unsigned bldRadius = GetBuildingRadius(bldUnderMouse->GetBuildingType(), GetWorld().GetGGS());
+            const auto* bld = GetWorld().GetSpecObj<noBaseBuilding>(selPt);
+            if(bld)
+                bldType = bld->GetBuildingType();
+        } else if(vis == Visibility::FogOfWar)
+        {
+            const FOWObject* fow = gwv.GetYoungestFOWObject(selPt);
+            if(fow && fow->GetType() == FoW_Type::Building)
+                bldType = static_cast<const fowBuilding&>(*fow).GetBuildingType();
+        }
+
+        if(bldType)
+        {
+            const unsigned bldRadius = GetBuildingRadius(*bldType, GetWorld().GetGGS());
             if(bldRadius > 0)
-                DrawRadiusOutline(bldUnderMouse->GetPos(), bldRadius);
+                DrawRadiusOutline(selPt, bldRadius);
         }
     }
 
@@ -741,11 +755,8 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
     const MapExtent mapSize = world.GetSize();
     constexpr unsigned BORDER_COLOR = 0xFFFF0000; // Red with full alpha
 
-    // Height-adjusted screen position for a map point, accounting for viewport offset.
-    auto getScreenPos = [&](Position p) -> DrawPoint {
-        return Position(world.GetNodePos(MapPoint(MakeMapPoint(p, mapSize)))) - offset
-               + (p - Position(MakeMapPoint(p, mapSize))) * Extent(TR_W, TR_H);
-    };
+    const int w = mapSize.x;
+    const int h = mapSize.y;
 
     for(const auto& ptWithRadius : pts)
     {
@@ -753,17 +764,17 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
             continue;
 
         const Position pt(ptWithRadius.first);
-        const int w = mapSize.x;
-        const int h = mapSize.y;
 
         // Draw at all 9 toroidal copies (canonical ± 1 map dimension).
-        // getScreenPos uses MakeMapPoint + offset correction which handles
-        // the half-tile parity shift correctly.
+        // Using all copies guarantees the ring is continuous across the seam
+        // regardless of viewport position — the renderer clips off-screen pixels.
         for(int dw : {-w, 0, w})
         {
             for(int dh : {-h, 0, h})
             {
-                const DrawPoint scr = getScreenPos(pt + Position(dw, dh));
+                const Position copyPos = pt + Position(dw, dh);
+                const auto alt = world.GetNode(MakeMapPoint(copyPos, mapSize)).altitude;
+                const DrawPoint scr = Position(GetNodePos(copyPos) - Position(0, HEIGHT_FACTOR * alt)) - offset;
                 Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
             }
         }
