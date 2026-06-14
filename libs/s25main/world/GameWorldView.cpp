@@ -741,39 +741,32 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
     const MapExtent mapSize = world.GetSize();
     constexpr unsigned BORDER_COLOR = 0xFFFF0000; // Red with full alpha
 
-    const int mapPixelW = mapSize.x * TR_W;
-    const int mapPixelH = mapSize.y * TR_H;
+    // Height-adjusted screen position for a map point, accounting for viewport offset.
+    auto getScreenPos = [&](Position p) -> DrawPoint {
+        return Position(world.GetNodePos(MapPoint(MakeMapPoint(p, mapSize)))) - offset
+               + (p - Position(MakeMapPoint(p, mapSize))) * Extent(TR_W, TR_H);
+    };
 
     for(const auto& ptWithRadius : pts)
     {
         if(ptWithRadius.second != radius)
             continue;
 
-        const MapPoint pt = ptWithRadius.first;
-        const DrawPoint base = Position(world.GetNodePos(pt)) - offset;
+        const Position pt(ptWithRadius.first);
+        const int w = mapSize.x;
+        const int h = mapSize.y;
 
-        // Canonical copy (always drawn)
-        Window::DrawRectangle(Rect(base - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-
-        // Toroidal wraparound copies — draw shifted by ±1 map dimension so the
-        // ring is continuous across the seam.  We unconditionally draw all four
-        // potential copies; the renderer clips anything off-screen.
-        // +x (wrap rightwards)
-        Window::DrawRectangle(Rect(base + DrawPoint(mapPixelW, 0) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-        // -x (wrap leftwards)
-        Window::DrawRectangle(Rect(base + DrawPoint(-mapPixelW, 0) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-        // +y (wrap downwards)
-        Window::DrawRectangle(Rect(base + DrawPoint(0, mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-        // -y (wrap upwards)
-        Window::DrawRectangle(Rect(base + DrawPoint(0, -mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-        // +x+y (diagonal)
-        Window::DrawRectangle(Rect(base + DrawPoint(mapPixelW, mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-        // +x-y
-        Window::DrawRectangle(Rect(base + DrawPoint(mapPixelW, -mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-        // -x+y
-        Window::DrawRectangle(Rect(base + DrawPoint(-mapPixelW, mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-        // -x-y
-        Window::DrawRectangle(Rect(base + DrawPoint(-mapPixelW, -mapPixelH) - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        // Draw at all 9 toroidal copies (canonical ± 1 map dimension).
+        // getScreenPos uses MakeMapPoint + offset correction which handles
+        // the half-tile parity shift correctly.
+        for(int dw : {-w, 0, w})
+        {
+            for(int dh : {-h, 0, h})
+            {
+                const DrawPoint scr = getScreenPos(pt + Position(dw, dh));
+                Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+            }
+        }
     }
 }
 
