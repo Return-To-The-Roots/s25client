@@ -4,6 +4,10 @@
 
 #include "BuildingConsts.h"
 #include "mygettext/mygettext.h"
+#include "gameData/MilitaryConsts.h"
+#include "addons/AddonWoodcutterReachRadius.h"
+#include "addons/AddonForesterReachRadius.h"
+#include "addons/AddonStonemasonReachRadius.h"
 #include <type_traits>
 
 const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
@@ -409,3 +413,31 @@ const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SI
     babylonians[BuildingType::Fortress] = DrawPoint(20, -34);
     return result;
 }();
+
+unsigned GetBuildingRadius(BuildingType bld)
+{
+    switch(bld)
+    {
+        // Military buildings (territory influence radius)
+        case BuildingType::Barracks: return MILITARY_RADIUS[0];
+        case BuildingType::Guardhouse: return MILITARY_RADIUS[1];
+        case BuildingType::Watchtower: return MILITARY_RADIUS[2];
+        case BuildingType::Fortress: return MILITARY_RADIUS[3];
+        // Headquarters
+        case BuildingType::Headquarters: return HQ_RADIUS;
+        // Harbor building
+        case BuildingType::HarborBuilding: return HARBOR_RADIUS;
+        // Production buildings with reach radius
+        case BuildingType::Woodcutter: return woodcutterRadiusValues[0]; // Default radius
+        case BuildingType::Forester: return foresterRadiusValues[0];     // Default radius
+        case BuildingType::Fishery: return FISHERY_RADIUS;
+        case BuildingType::Quarry: return stonemasonRadiusValues[0];     // Default radius
+        case BuildingType::Catapult: return CATAPULT_RANGE;
+        case BuildingType::LookoutTower: return VISUALRANGE_LOOKOUTTOWER; // Scouting range
+        case BuildingType::Hunter: return HUNTER_RADIUS;
+        case BuildingType::Farm: return FARMER_RADIUS;
+        case BuildingType::Charburner: return CHARBURNER_RADIUS;
+        // Buildings that don't have a notable radius
+        default: return 0;
+    }
+}

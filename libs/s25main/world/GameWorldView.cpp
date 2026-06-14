@@ -6,6 +6,8 @@
 #include "CatapultStone.h"
 #include "Cheats.h"
 #include "FOWObjects.h"
+#include "ReturnMapPointWithRadius.h"
+#include "Window.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -219,6 +221,23 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
+
+    // Draw radius preview outline (if set via action window hover)
+    if(radiusPreview_)
+        DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
+
+    // Draw radius outline for the building under the mouse cursor
+    if(!radiusPreview_ && mousePos.x >= 0 && mousePos.x < static_cast<int>(size_.x) && mousePos.y >= 0
+       && mousePos.y < static_cast<int>(size_.y))
+    {
+        const auto* bldUnderMouse = GetWorld().GetSpecObj<noBaseBuilding>(selPt);
+        if(bldUnderMouse)
+        {
+            const unsigned bldRadius = GetBuildingRadius(bldUnderMouse->GetBuildingType());
+            if(bldRadius > 0)
+                DrawRadiusOutline(bldUnderMouse->GetPos(), bldRadius);
+        }
+    }
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
@@ -711,6 +730,23 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
     auto itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
     RTTR_Assert(itPos != drawNodeCallbacks.end());
     drawNodeCallbacks.erase(itPos);
+}
+
+void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
+{
+    const auto& world = GetWorld();
+    // Get all border points at the exact radius
+    auto pts = world.GetPointsInRadius(center, radius, ReturnMapPointWithRadius{});
+    for(const auto& ptWithRadius : pts)
+    {
+        if(ptWithRadius.second != radius)
+            continue;
+        // Convert map point to screen position
+        const DrawPoint screenPos = Position(world.GetNodePos(ptWithRadius.first)) - offset;
+        // Draw a small colored rectangle (border indicator)
+        constexpr unsigned BORDER_COLOR = 0xFFFF0000; // Red with full alpha
+        Window::DrawRectangle(Rect(screenPos - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+    }
 }
 
 void GameWorldView::CalcFxLx()

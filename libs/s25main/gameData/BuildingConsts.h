@@ -119,3 +119,13 @@ constexpr std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
 
 /// Hilfetexte für Gebäude
 extern const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS;
+
+/// Reach radius for various production buildings (in tiles)
+constexpr unsigned FISHERY_RADIUS = 7;       ///< Fisher searches for fish within this radius
+constexpr unsigned HUNTER_RADIUS = 2;         ///< Hunter hunts animals within this radius
+constexpr unsigned FARMER_RADIUS = 2;         ///< Farmer plants and harvests crops within this radius
+constexpr unsigned CHARBURNER_RADIUS = 3;     ///< Charburner places and harvests charcoal piles within this radius
+constexpr unsigned CATAPULT_RANGE = 12;       ///< Catapult attack range
+
+/// Get the radius in tiles for a building type (influence radius for military, working radius for workers, attack range for catapult)
+unsigned GetBuildingRadius(BuildingType bld);
