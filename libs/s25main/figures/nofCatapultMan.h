@@ -8,6 +8,9 @@
 class SerializedGameData;
 class nobUsual;
 
+/// Maximum distance to a target the catapult can attack (distance < 14 -> max 13)
+constexpr unsigned CATAPULT_MAX_TARGET_RANGE = 13;
+
 /// Arbeiter im Katapult
 class nofCatapultMan : public nofBuildingWorker
 {
