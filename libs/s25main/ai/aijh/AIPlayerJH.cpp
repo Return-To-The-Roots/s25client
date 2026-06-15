@@ -1965,51 +1965,26 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
     // check first if no other hunter(or hunter buildingsite) is nearby
     if(aii.isBuildingNearby(BuildingType::Hunter, pt, 14))
         return false;
-    unsigned maxrange = 25;
-    unsigned short fx, fy, lx, ly;
-    const unsigned short SQUARE_SIZE = 19;
-    unsigned huntablecount = 0;
-    if(pt.x > SQUARE_SIZE)
-        fx = pt.x - SQUARE_SIZE;
-    else
-        fx = 0;
-    if(pt.y > SQUARE_SIZE)
-        fy = pt.y - SQUARE_SIZE;
-    else
-        fy = 0;
-    if(pt.x + SQUARE_SIZE < gwb.GetWidth())
-        lx = pt.x + SQUARE_SIZE;
-    else
-        lx = gwb.GetWidth() - 1;
-    if(pt.y + SQUARE_SIZE < gwb.GetHeight())
-        ly = pt.y + SQUARE_SIZE;
-    else
-        ly = gwb.GetHeight() - 1;
-    // Durchgehen und nach Tieren suchen
-    for(MapPoint p2(0, fy); p2.y <= ly; ++p2.y)
-    {
-        for(p2.x = fx; p2.x <= lx; ++p2.x)
+    const unsigned maxrange = 25;
+
+    const auto pointToAnimal = [this](const MapPoint pt, unsigned) -> const noAnimal* {
+        for(const noBase& fig : gwb.GetFigures(pt))
         {
-            // Search for animals
-            for(const noBase& fig : gwb.GetFigures(p2))
-            {
-                if(fig.GetType() == NodalObjectType::Animal)
-                {
-                    // Ist das Tier überhaupt zum Jagen geeignet?
-                    if(!static_cast<const noAnimal&>(fig).CanHunted())
-                        continue;
-                    // Und komme ich hin?
-                    if(gwb.FindHumanPath(pt, static_cast<const noAnimal&>(fig).GetPos(), maxrange))
-                    // Dann nehmen wir es
-                    {
-                        if(++huntablecount >= min)
-                            return true;
-                    }
-                }
-            }
+            if(fig.GetType() == NodalObjectType::Animal)
+                return static_cast<const noAnimal*>(&fig);
         }
-    }
-    return false;
+        return nullptr;
+    };
+
+    const auto canAnimalBeHunted = [this, pt, maxrange](const noAnimal* const animal) {
+        return animal && animal->CanHunted()
+               && gwb.FindHumanPath(pt, animal->GetPos(), maxrange);
+    };
+
+    const auto available_animals =
+      gwb.GetPointsInRadius(pt, ANIMAL_RADIUS, pointToAnimal, canAnimalBeHunted, true);
+
+    return available_animals.size() >= min;
 }
 
 void AIPlayerJH::InitStoreAndMilitarylists()
