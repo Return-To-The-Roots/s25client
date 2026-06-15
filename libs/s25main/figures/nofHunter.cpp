@@ -131,39 +131,24 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
 
 void nofHunter::TryStartHunting()
 {
-    // Find animals in a square around building (actually should be circle, but animals are moving anyway)
-    const int SQUARE_SIZE = 19;
-
-    // Liste mit den gefundenen Tieren
-    std::vector<noAnimal*> available_animals;
-
-    // Durchgehen und nach Tieren suchen
-    Position curPos;
-    for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
-    {
-        for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
+    // Find animals in a circle around building
+    const auto pointToAnimal = [world = this->world](const MapPoint pt, unsigned) -> noAnimal* {
+        for(auto& figure : world->GetFigures(pt))
         {
-            MapPoint curMapPos = world->MakeMapPoint(curPos);
-
-            // nach Tieren suchen
-            for(auto& figure : world->GetFigures(curMapPos))
-            {
-                if(figure.GetType() != NodalObjectType::Animal)
-                    continue;
-                // Ist das Tier überhaupt zum Jagen geeignet?
-                auto& animal = static_cast<noAnimal&>(figure);
-                if(!animal.CanHunted())
-                    continue;
-
-                // Und komme ich hin?
-                if(pos == animal.GetPos() || world->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
-                {
-                    // Dann nehmen wir es
-                    available_animals.push_back(&animal);
-                }
-            }
+            if(figure.GetType() != NodalObjectType::Animal)
+                continue;
+            return static_cast<noAnimal*>(&figure);
         }
-    }
+        return nullptr;
+    };
+
+    const auto canAnimalBeHunted = [pos = this->pos](const noAnimal* const animal) {
+        return animal && animal->CanHunted()
+               && (pos == animal->GetPos() || world->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE));
+    };
+
+    const auto available_animals =
+      world->GetPointsInRadius(pos, ANIMAL_RADIUS, pointToAnimal, canAnimalBeHunted, true);
 
     // Gibt es überhaupt ein Tier, das ich jagen kann?
     if(!available_animals.empty())
