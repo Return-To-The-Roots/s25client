@@ -198,17 +198,11 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 // Set hover callback to show radius preview on the game world
                 if(radius > 0)
                 {
-                    icon->SetOnHoverChanged([this, icon, radius](bool hovered) noexcept {
+                    icon->SetOnHoverChanged([this, radius](bool hovered) noexcept {
                         if(hovered)
-                        {
-                            hoveredBldIcon_ = icon;
                             this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, radius));
-                        } else if(hoveredBldIcon_ == icon)
-                        {
-                            // Only clear if no other icon took over hover
-                            hoveredBldIcon_ = nullptr;
+                        else
                             this->gwv.SetRadiusPreview(std::nullopt);
-                        }
                     });
                 }
 
@@ -430,8 +424,6 @@ void iwAction::Close()
 {
     if(ShouldBeClosed())
         return;
-    // Clear radius preview on the game world
-    hoveredBldIcon_ = nullptr;
     gwv.SetRadiusPreview(std::nullopt);
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
@@ -495,10 +487,6 @@ void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned
 
 void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id)
 {
-    // Clear radius preview when switching tabs — old icons won't trigger mouse-leave
-    hoveredBldIcon_ = nullptr;
-    gwv.SetRadiusPreview(std::nullopt);
-
     switch(ctrl_id)
     {
         case 0: // Haupttabs
@@ -543,10 +531,6 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
 
 void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
 {
-    // Clear radius preview when switching build subtabs, same reason as above
-    hoveredBldIcon_ = nullptr;
-    gwv.SetRadiusPreview(std::nullopt);
-
     switch(ctrl_id)
     {
         case 1: // Gebäudetabs
