@@ -132,16 +132,14 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
 void nofHunter::TryStartHunting()
 {
     // Find animals in a square around building (actually should be circle, but animals are moving anyway)
-    const int SQUARE_SIZE = 19;
-
     // Liste mit den gefundenen Tieren
     std::vector<noAnimal*> available_animals;
 
     // Durchgehen und nach Tieren suchen
     Position curPos;
-    for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
+    for(curPos.y = pos.y - HUNTER_SEARCH_HALFSIDE; curPos.y <= pos.y + HUNTER_SEARCH_HALFSIDE; ++curPos.y)
     {
-        for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
+        for(curPos.x = pos.x - HUNTER_SEARCH_HALFSIDE; curPos.x <= pos.x + HUNTER_SEARCH_HALFSIDE; ++curPos.x)
         {
             MapPoint curMapPos = world->MakeMapPoint(curPos);
 

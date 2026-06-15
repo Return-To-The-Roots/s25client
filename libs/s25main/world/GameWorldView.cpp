@@ -247,7 +247,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
         if(bldType)
         {
-            const unsigned bldRadius = GetBuildingRadius(*bldType, GetWorld().GetGGS());
+            const unsigned bldRadius = GetBuildingRadius(*bldType);
             if(bldRadius > 0)
                 DrawRadiusOutline(selPt, bldRadius);
         }
