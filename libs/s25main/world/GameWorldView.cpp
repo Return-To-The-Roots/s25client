@@ -761,17 +761,17 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
             continue;
 
         const MapPoint& basePt = ptWithRadius.first;
+        const auto alt = world.GetNode(basePt).altitude;
 
-        // Draw at all 9 toroidal copies (canonical ± 1 map dimension).
-        // Using all copies guarantees the ring is continuous across the seam
-        // regardless of viewport position — the renderer clips off-screen pixels.
+        // Draw at the canonical position and its 8 toroidal copies (shifted by ± map dimensions).
+        // We use Position arithmetic (no modulo) so each shifted copy produces a different screen
+        // position. Copies outside the viewport are clipped by the renderer.
         for(int dw : {-w, 0, w})
         {
             for(int dh : {-h, 0, h})
             {
-                const MapPoint copyPt = MakeMapPoint(Position(basePt.x + dw, basePt.y + dh), mapSize);
-                const auto alt = world.GetNode(copyPt).altitude;
-                const DrawPoint scr = GetNodePos(copyPt) - DrawPoint(0, HEIGHT_FACTOR * alt) - offset;
+                const DrawPoint scr = GetNodePos(Position(basePt.x + dw, basePt.y + dh))
+                                      - DrawPoint(0, HEIGHT_FACTOR * alt) - offset;
                 Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
             }
         }
