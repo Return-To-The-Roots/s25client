@@ -207,7 +207,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                         {
                             // Only clear if no other icon took over hover
                             hoveredBldIcon_ = nullptr;
-                            this->gwv.SetRadiusPreview(boost::none);
+                            this->gwv.SetRadiusPreview(std::nullopt);
                         }
                     });
                 }
@@ -432,7 +432,7 @@ void iwAction::Close()
         return;
     // Clear radius preview on the game world
     hoveredBldIcon_ = nullptr;
-    gwv.SetRadiusPreview(boost::none);
+    gwv.SetRadiusPreview(std::nullopt);
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);
@@ -497,7 +497,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
 {
     // Clear radius preview when switching tabs — old icons won't trigger mouse-leave
     hoveredBldIcon_ = nullptr;
-    gwv.SetRadiusPreview(boost::none);
+    gwv.SetRadiusPreview(std::nullopt);
 
     switch(ctrl_id)
     {
@@ -545,7 +545,7 @@ void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned c
 {
     // Clear radius preview when switching build subtabs, same reason as above
     hoveredBldIcon_ = nullptr;
-    gwv.SetRadiusPreview(boost::none);
+    gwv.SetRadiusPreview(std::nullopt);
 
     switch(ctrl_id)
     {

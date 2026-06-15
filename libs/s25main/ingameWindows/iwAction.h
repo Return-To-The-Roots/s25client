@@ -7,8 +7,6 @@
 #include "IngameWindow.h"
 #include "variant.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/optional.hpp>
-
 class ctrlBuildingIcon;
 #include <array>
 

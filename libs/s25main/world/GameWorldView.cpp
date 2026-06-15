@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "world/GameWorldView.h"
-#include <boost/optional.hpp>
+#include <optional>
 #include "CatapultStone.h"
 #include "Cheats.h"
 #include "FOWObjects.h"
@@ -231,7 +231,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(!radiusPreview_ && mousePos.x >= 0 && mousePos.x < static_cast<int>(size_.x) && mousePos.y >= 0
        && mousePos.y < static_cast<int>(size_.y))
     {
-        boost::optional<BuildingType> bldType;
+        std::optional<BuildingType> bldType;
         const Visibility vis = gwv.GetVisibility(selPt);
         if(vis == Visibility::Visible)
         {

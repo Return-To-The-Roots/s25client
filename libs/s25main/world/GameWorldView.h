@@ -8,7 +8,7 @@
 #include "DrawPoint.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
-#include <boost/optional.hpp>
+#include <optional>
 #include <boost/signals2.hpp>
 #include <vector>
 
@@ -48,7 +48,7 @@ class GameWorldView
     bool show_productivity;
 
     /// Optional radius preview (center position, radius) drawn as outline on the map
-    boost::optional<std::pair<MapPoint, unsigned>> radiusPreview_;
+    std::optional<std::pair<MapPoint, unsigned>> radiusPreview_;
 
     /// Offset from world origin in screen units (not map units): "scroll position"
     DrawPoint offset;
@@ -121,8 +121,8 @@ public:
     void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
     void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
 
-    /// Set/show a radius preview outline on the map (or clear with boost::none)
-    void SetRadiusPreview(const boost::optional<std::pair<MapPoint, unsigned>>& preview) { radiusPreview_ = preview; }
+    /// Set/show a radius preview outline on the map (or clear with std::nullopt)
+    void SetRadiusPreview(const std::optional<std::pair<MapPoint, unsigned>>& preview) { radiusPreview_ = preview; }
 
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
