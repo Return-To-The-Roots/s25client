@@ -74,7 +74,7 @@ void iwSaveLoad::Msg_ButtonClick(const unsigned ctrl_id)
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const boost::optional<unsigned>& selection)
+void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
 {
     // On selecting a table entry put the filename into the edit control
     GetCtrl<ctrlEdit>(ID_edtFilename)

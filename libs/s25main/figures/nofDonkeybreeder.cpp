@@ -61,7 +61,7 @@ void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 helpers::OptionalEnum<GoodType> nofDonkeybreeder::ProduceWare()
 {
     /// @todo Wie kann ich hier eine Person erzeugen?
-    return boost::none;
+    return std::nullopt;
 }
 
 void nofDonkeybreeder::WorkFinished()

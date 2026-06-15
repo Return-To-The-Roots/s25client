@@ -22,7 +22,7 @@ ctrlList::~ctrlList()
     DeleteAllItems();
 }
 
-void ctrlList::SetSelection(const boost::optional<unsigned>& selection)
+void ctrlList::SetSelection(const std::optional<unsigned>& selection)
 {
     if(selection != selection_ && (!selection || *selection < lines.size()))
     {
@@ -173,7 +173,7 @@ void ctrlList::SetItemText(const unsigned id, const std::string& text)
 void ctrlList::DeleteAllItems()
 {
     lines.clear();
-    selection_ = boost::none;
+    selection_ = std::nullopt;
 }
 
 const std::string& ctrlList::GetItemText(unsigned line) const
@@ -236,7 +236,7 @@ void ctrlList::Remove(const unsigned index)
         else if(*selection_ == index)
         {
             // Current item deleted -> clear selection
-            selection_ = boost::none;
+            selection_ = std::nullopt;
             if(index < GetNumLines())
                 SetSelection(index); // select item now at deleted position
             else if(index > 0u)
@@ -255,15 +255,15 @@ Rect ctrlList::GetListDrawArea() const
     return result;
 }
 
-boost::optional<unsigned> ctrlList::GetItemFromPos(const Position& pos) const
+std::optional<unsigned> ctrlList::GetItemFromPos(const Position& pos) const
 {
     const Rect listDrawArea = GetListDrawArea();
     if(!IsPointInRect(pos, listDrawArea))
-        return boost::none;
+        return std::nullopt;
     const unsigned itemIdx =
       (pos.y - listDrawArea.getOrigin().y) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
     if(itemIdx >= GetNumLines())
-        return boost::none;
+        return std::nullopt;
     return itemIdx;
 }
 

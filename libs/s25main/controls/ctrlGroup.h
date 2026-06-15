@@ -31,9 +31,9 @@ public:
     void Msg_ScrollShow(unsigned ctrl_id, bool visible) override;
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_Timer(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
-    void Msg_TableRightButton(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
-    void Msg_TableLeftButton(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
+    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void Msg_TableRightButton(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void Msg_TableLeftButton(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
 
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void Msg_Group_EditEnter(unsigned group_id, unsigned ctrl_id) override;
@@ -47,11 +47,11 @@ public:
     void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_Group_Timer(unsigned group_id, unsigned ctrl_id) override;
     void Msg_Group_TableSelectItem(unsigned group_id, unsigned ctrl_id,
-                                   const boost::optional<unsigned>& selection) override;
+                                   const std::optional<unsigned>& selection) override;
     void Msg_Group_TableRightButton(unsigned group_id, unsigned ctrl_id,
-                                    const boost::optional<unsigned>& selection) override;
+                                    const std::optional<unsigned>& selection) override;
     void Msg_Group_TableLeftButton(unsigned group_id, unsigned ctrl_id,
-                                   const boost::optional<unsigned>& selection) override;
+                                   const std::optional<unsigned>& selection) override;
 
     bool Msg_LeftDown(const MouseCoords& mc) override;
     bool Msg_RightDown(const MouseCoords& mc) override;

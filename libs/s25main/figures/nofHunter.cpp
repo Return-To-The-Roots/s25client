@@ -211,7 +211,7 @@ void nofHunter::WalkedDerived()
 bool nofHunter::IsShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return PathConditionHuman(*world).IsNodeOk(pt) && world->FindHumanPath(this->pos, pt, 6) != boost::none;
+    return PathConditionHuman(*world).IsNodeOk(pt) && world->FindHumanPath(this->pos, pt, 6) != std::nullopt;
 }
 
 void nofHunter::HandleStateChasing()

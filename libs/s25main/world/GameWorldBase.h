@@ -127,9 +127,9 @@ public:
 
     /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
     /// prevDir (if set) will be skipped when searching for the road points
-    noFlag* GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = boost::none);
+    noFlag* GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = std::nullopt);
     const noFlag* GetRoadFlag(MapPoint pt, Direction& dir,
-                              helpers::OptionalEnum<Direction> prevDir = boost::none) const;
+                              helpers::OptionalEnum<Direction> prevDir = std::nullopt) const;
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
     Position GetNodePos(MapPoint pt) const;

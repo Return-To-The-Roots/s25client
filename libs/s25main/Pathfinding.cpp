@@ -24,7 +24,7 @@ helpers::OptionalEnum<Direction> GameWorldBase::FindHumanPath(const MapPoint sta
                                     PathConditionHuman(*this)))
         return first_dir;
     else
-        return boost::none;
+        return std::nullopt;
 }
 
 /// Wegfindung für Menschen im Straßennetz
@@ -102,19 +102,19 @@ helpers::OptionalEnum<Direction> GameWorld::FindTradePath(const MapPoint start, 
 {
     unsigned char owner = GetNode(dest).owner;
     if(owner != 0 && !GetPlayer(player).IsAlly(owner - 1))
-        return boost::none;
+        return std::nullopt;
 
     RTTR_Assert(GetNO(dest)->GetType() == NodalObjectType::Flag); // Goal should be the flag of a wh
 
     if(!PathConditionHuman(*this).IsNodeOk(dest))
-        return boost::none;
+        return std::nullopt;
 
     Direction first_dir{};
     if(GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
                                     PathConditionTrade(*this, player)))
         return first_dir;
     else
-        return boost::none;
+        return std::nullopt;
 }
 
 bool GameWorld::CheckTradeRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos,

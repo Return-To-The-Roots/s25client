@@ -14,7 +14,7 @@ void Timer::start()
 
 void Timer::stop()
 {
-    startTime = boost::none;
+    startTime = std::nullopt;
 }
 
 void Timer::restart()

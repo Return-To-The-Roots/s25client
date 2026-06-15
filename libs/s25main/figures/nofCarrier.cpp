@@ -216,7 +216,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 if(carried_ware)
                     DrawWalkingCarrier(drawPt, carried_ware->type, fat);
                 else
-                    DrawWalkingCarrier(drawPt, boost::none, fat);
+                    DrawWalkingCarrier(drawPt, std::nullopt, fat);
             }
         }
         break;

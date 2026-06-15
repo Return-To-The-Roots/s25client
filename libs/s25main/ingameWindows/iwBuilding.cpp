@@ -48,7 +48,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     ITexture* tex = visit(
       composeVisitor([](GoodType gt) -> ITexture* { return gt != GoodType::Nothing ? LOADER.GetWareTex(gt) : nullptr; },
                      [](Job job) -> ITexture* { return LOADER.GetJobTex(job); },
-                     [](boost::none_t) -> ITexture* { return nullptr; }),
+                     [](std::nullopt_t) -> ITexture* { return nullptr; }),
       producedWare);
     if(tex)
     {

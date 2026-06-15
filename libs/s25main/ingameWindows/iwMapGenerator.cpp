@@ -133,7 +133,7 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwMapGenerator::Apply()
 {
-    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(ID_cbNumPlayers)->GetSelection().get() + 2;
+    mapSettings.numPlayers = *GetCtrl<ctrlComboBox>(ID_cbNumPlayers)->GetSelection() + 2;
     mapSettings.ratioGold = GetCtrl<ctrlProgress>(ID_pgGoldRatio)->GetPosition();
     mapSettings.ratioIron = GetCtrl<ctrlProgress>(ID_pgIronRatio)->GetPosition();
     mapSettings.ratioCoal = GetCtrl<ctrlProgress>(ID_pgCoalRatio)->GetPosition();
@@ -156,9 +156,9 @@ void iwMapGenerator::Apply()
         case 2: mapSettings.style = MapStyle::Mixed; break;
     }
     mapSettings.size.x =
-      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeX)->GetSelectedText().get_value_or("128"));
+      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeX)->GetSelectedText().value_or("128"));
     mapSettings.size.y =
-      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeY)->GetSelectedText().get_value_or("128"));
+      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeY)->GetSelectedText().value_or("128"));
     switch(*GetCtrl<ctrlComboBox>(ID_cbIslands)->GetSelection())
     {
         case 0: mapSettings.islands = IslandAmount::Few; break;

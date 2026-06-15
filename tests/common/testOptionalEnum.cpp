@@ -58,14 +58,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(EmptyContainsNoValue, T, EnumsToTest)
     helpers::OptionalEnum<T> defConstruct;
     BOOST_TEST(!defConstruct);
     BOOST_TEST(!defConstruct.has_value());
-    BOOST_CHECK_THROW(defConstruct.value(), boost::bad_optional_access);
+    BOOST_CHECK_THROW(defConstruct.value(), std::bad_optional_access);
     BOOST_TEST(defConstruct.value_or(T::Value1) == T::Value1);
     BOOST_TEST(defConstruct.value_or(T::Value2) == T::Value2);
 
-    helpers::OptionalEnum<T> noneConstruct(boost::none);
+    helpers::OptionalEnum<T> noneConstruct(std::nullopt);
     BOOST_TEST(!noneConstruct);
     BOOST_TEST(!noneConstruct.has_value());
-    BOOST_CHECK_THROW(noneConstruct.value(), boost::bad_optional_access);
+    BOOST_CHECK_THROW(noneConstruct.value(), std::bad_optional_access);
     BOOST_TEST(noneConstruct.value_or(T::Value1) == T::Value1);
     BOOST_TEST(noneConstruct.value_or(T::Value2) == T::Value2);
 }

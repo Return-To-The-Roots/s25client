@@ -24,7 +24,7 @@ private:
 
     void Msg_EditEnter(unsigned ctrl_id) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
+    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
 };
 
 class iwSave : public iwSaveLoad

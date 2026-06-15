@@ -23,11 +23,11 @@ public:
     void DeleteAllItems();
     /// Set selection to an item if within bounds. Does not trigger a notification.
     void SetSelection(unsigned selection);
-    const boost::optional<unsigned>& GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
+    const std::optional<unsigned>& GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
     unsigned GetNumItems() const { return GetCtrl<ctrlList>(0)->GetNumLines(); }
     const std::string& GetText(unsigned item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
     void SetText(unsigned item, const std::string& text) { GetCtrl<ctrlList>(0)->SetItemText(item, text); }
-    boost::optional<std::string> GetSelectedText() const;
+    std::optional<std::string> GetSelectedText() const;
 
     void Msg_PaintAfter() override;
     bool Msg_MouseMove(const MouseCoords& mc) override;

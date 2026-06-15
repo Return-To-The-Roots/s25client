@@ -69,7 +69,7 @@ public:
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)
     bool IsRoadNodeForFigures(MapPoint pt);
     /// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
-    void StopOnRoads(MapPoint pt, helpers::OptionalEnum<Direction> dir = boost::none);
+    void StopOnRoads(MapPoint pt, helpers::OptionalEnum<Direction> dir = std::nullopt);
 
     /// Sagt Bescheid, dass der Punkt wieder freigeworden ist und lässt ggf. Figuren drumherum wieder weiterlaufen
     void RoadNodeAvailable(MapPoint pt);

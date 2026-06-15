@@ -133,11 +133,10 @@ void iwSettings::Msg_ButtonClick(unsigned ctrl_id)
             SETTINGS.video.displayMode = DisplayMode(*GetCtrl<ctrlComboBox>(ID_cbDisplayMode)->GetSelection());
             SETTINGS.video.displayMode.resizeable = !grpWindowSize.GetCtrl<ctrlCheck>(ID_cbLockWindowSize)->isChecked();
             SETTINGS.interface.mapScrollMode =
-              static_cast<MapScrollMode>(GetCtrl<ctrlComboBox>(ID_cbMapScrollMode)->GetSelection().get());
+              static_cast<MapScrollMode>(*GetCtrl<ctrlComboBox>(ID_cbMapScrollMode)->GetSelection());
             SETTINGS.video.fullscreenSize = supportedResolutions_
-              [GetCtrl<ctrlGroup>(ID_grpResolution)->GetCtrl<ctrlComboBox>(ID_cbResolution)->GetSelection().get()];
-            const unsigned windowSizeSelection =
-              grpWindowSize.GetCtrl<ctrlComboBox>(ID_cbWindowSize)->GetSelection().get();
+              [*GetCtrl<ctrlGroup>(ID_grpResolution)->GetCtrl<ctrlComboBox>(ID_cbResolution)->GetSelection()];
+            const unsigned windowSizeSelection = *grpWindowSize.GetCtrl<ctrlComboBox>(ID_cbWindowSize)->GetSelection();
             if(windowSizeSelection > 0)
                 SETTINGS.video.windowedSize = windowSizes_[windowSizeSelection - 1];
             else if(VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed)

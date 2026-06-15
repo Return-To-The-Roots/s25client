@@ -31,7 +31,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::GetNextDir()
         return TradeDirection::ReachedGoal;
 
     if(curRouteIdx >= path.route.size())
-        return boost::none;
+        return std::nullopt;
 
     Direction nextDir;
     // Check if the route is still valid
@@ -68,7 +68,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::RecalcRoute()
     if(nextDir)
         return TradeDirection(rttr::enum_cast(*nextDir));
     else
-        return boost::none;
+        return std::nullopt;
 }
 
 /// Assigns new start and goal positions and hence, a new route

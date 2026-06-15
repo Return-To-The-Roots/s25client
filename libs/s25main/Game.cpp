@@ -13,7 +13,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
 #include "gameData/GameConsts.h"
-#include <boost/optional.hpp>
+#include <optional>
 
 Game::Game(GlobalGameSettings settings, unsigned startGF, const std::vector<PlayerInfo>& players)
     : Game(std::move(settings), std::make_unique<EventManager>(startGF), players)
@@ -113,7 +113,7 @@ void Game::CheckObjective()
         return;
 
     unsigned maxPoints = 0, maxTeamPoints = 0, totalPoints = 0, bestPlayer = 0;
-    boost::optional<unsigned> bestTeam;
+    std::optional<unsigned> bestTeam;
 
     const auto getPlayerMask = [](unsigned playerId) { return 1u << playerId; };
 
