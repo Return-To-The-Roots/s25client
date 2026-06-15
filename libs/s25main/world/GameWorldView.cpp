@@ -36,8 +36,8 @@
 #include "s25util/error.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
-#include <boost/optional.hpp>
 #include <cmath>
+#include <optional>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
@@ -230,7 +230,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(!radiusPreview_ && mousePos.x >= 0 && mousePos.x < static_cast<int>(size_.x) && mousePos.y >= 0
        && mousePos.y < static_cast<int>(size_.y))
     {
-        boost::optional<BuildingType> bldType;
+        std::optional<BuildingType> bldType;
         const Visibility vis = gwv.GetVisibility(selPt);
         if(vis == Visibility::Visible)
         {
@@ -246,7 +246,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
         if(bldType)
         {
-            const unsigned bldRadius = GetBuildingRadius(*bldType, GetWorld().GetGGS());
+            const unsigned bldRadius = GetBuildingRadius(*bldType);
             if(bldRadius > 0)
                 DrawRadiusOutline(selPt, bldRadius);
         }
@@ -762,7 +762,7 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
         if(ptWithRadius.second != radius)
             continue;
 
-        const Position pt(ptWithRadius.first);
+        const MapPoint& basePt = ptWithRadius.first;
 
         // Draw at all 9 toroidal copies (canonical ± 1 map dimension).
         // Using all copies guarantees the ring is continuous across the seam
@@ -771,9 +771,9 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
         {
             for(int dh : {-h, 0, h})
             {
-                const Position copyPos = pt + Position(dw, dh);
-                const auto alt = world.GetNode(MakeMapPoint(copyPos, mapSize)).altitude;
-                const DrawPoint scr = Position(GetNodePos(copyPos) - Position(0, HEIGHT_FACTOR * alt)) - offset;
+                const MapPoint copyPt = MakeMapPoint(Position(basePt.x + dw, basePt.y + dh), mapSize);
+                const auto alt = world.GetNode(copyPt).altitude;
+                const DrawPoint scr = GetNodePos(copyPt) - DrawPoint(0, HEIGHT_FACTOR * alt) - offset;
                 Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
             }
         }
