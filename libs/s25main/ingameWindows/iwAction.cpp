@@ -29,6 +29,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 #include <sstream>
+#include <boost/format.hpp>
 
 // Tab - Flags
 enum TabID
@@ -178,7 +179,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 // Radius anzeigen falls vorhanden
                 const unsigned radius = GetBuildingRadius(bld, gwv.GetWorld().GetGGS());
                 if(radius > 0)
-                    tooltip << _("\nRange: ") << radius << _(" tiles");
+                    tooltip << boost::format(_("\nRange: %1% tiles")) % radius;
 
                 tooltip << _("\nCosts: ");
                 if(BUILDING_COSTS[bld].boards > 0)
@@ -195,14 +196,13 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                   ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
 
                 // Set hover callback to show radius preview on the game world
-                const unsigned bldRadius = GetBuildingRadius(bld, gwv.GetWorld().GetGGS());
-                if(bldRadius > 0)
+                if(radius > 0)
                 {
-                    icon->SetOnHoverChanged([this, icon, bldRadius](bool hovered) noexcept {
+                    icon->SetOnHoverChanged([this, icon, radius](bool hovered) noexcept {
                         if(hovered)
                         {
                             hoveredBldIcon_ = icon;
-                            this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, bldRadius));
+                            this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, radius));
                         } else if(hoveredBldIcon_ == icon)
                         {
                             // Only clear if no other icon took over hover
@@ -431,6 +431,7 @@ void iwAction::Close()
     if(ShouldBeClosed())
         return;
     // Clear radius preview on the game world
+    hoveredBldIcon_ = nullptr;
     gwv.SetRadiusPreview(boost::none);
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())

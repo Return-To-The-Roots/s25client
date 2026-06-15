@@ -763,7 +763,7 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
         if(ptWithRadius.second != radius)
             continue;
 
-        const Position pt(ptWithRadius.first);
+        const MapPoint& basePt = ptWithRadius.first;
 
         // Draw at all 9 toroidal copies (canonical ± 1 map dimension).
         // Using all copies guarantees the ring is continuous across the seam
@@ -772,9 +772,9 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
         {
             for(int dh : {-h, 0, h})
             {
-                const Position copyPos = pt + Position(dw, dh);
-                const auto alt = world.GetNode(MakeMapPoint(copyPos, mapSize)).altitude;
-                const DrawPoint scr = Position(GetNodePos(copyPos) - Position(0, HEIGHT_FACTOR * alt)) - offset;
+                const MapPoint copyPt = MakeMapPoint(Position(basePt.x + dw, basePt.y + dh), mapSize);
+                const auto alt = world.GetNode(copyPt).altitude;
+                const DrawPoint scr = GetNodePos(copyPt) - DrawPoint(0, HEIGHT_FACTOR * alt) - offset;
                 Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
             }
         }
