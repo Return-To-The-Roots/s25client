@@ -195,19 +195,8 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 }
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
-                ctrlBuildingIcon* icon = build_tab->GetGroup(static_cast<int>(bt))
+                build_tab->GetGroup(static_cast<int>(bt))
                   ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
-
-                // Set hover callback to show radius preview on the game world
-                if(radius > 0)
-                {
-                    icon->SetOnHoverChanged([this, radius](bool hovered) noexcept {
-                        if(hovered)
-                            this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, radius));
-                        else
-                            this->gwv.SetRadiusPreview(std::nullopt);
-                    });
-                }
 
                 ++k;
             }
@@ -547,6 +536,31 @@ void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned c
 void iwAction::Msg_PaintAfter()
 {
     IngameWindow::Msg_PaintAfter();
+
+    // Resolve building icon hover preview after all mouse events are processed
+    auto* mainTab = GetCtrl<ctrlTab>(0);
+    auto* buildTabCtrl = (mainTab && mainTab->GetCurrentTab() == TAB_BUILD)
+                           ? mainTab->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)
+                           : nullptr;
+    auto* bldGroup = buildTabCtrl ? buildTabCtrl->GetGroup(buildTabCtrl->GetCurrentTab()) : nullptr;
+
+    bool hasHoveredIcon = false;
+    if(bldGroup && gwv.GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS))
+    {
+        for(auto* icon : bldGroup->GetCtrls<ctrlBuildingIcon>())
+        {
+            const unsigned radius = GetBuildingRadius(icon->GetType());
+            if(icon->IsMouseOver() && radius > 0)
+            {
+                gwv.SetRadiusPreview(std::make_pair(selectedPt, radius));
+                hasHoveredIcon = true;
+                break;
+            }
+        }
+    }
+    if(!hasHoveredIcon)
+        gwv.SetRadiusPreview(std::nullopt);
+
     auto* tab = GetCtrl<ctrlTab>(0);
     if(tab)
     {
