@@ -8,8 +8,8 @@
 #include "DrawPoint.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
-#include <optional>
 #include <boost/signals2.hpp>
+#include <optional>
 #include <vector>
 
 class GameWorldBase;

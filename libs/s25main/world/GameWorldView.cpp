@@ -3,18 +3,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "world/GameWorldView.h"
-#include <optional>
 #include "CatapultStone.h"
 #include "Cheats.h"
 #include "FOWObjects.h"
-#include "ReturnMapPointWithRadius.h"
-#include "Window.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "MapGeometry.h"
+#include "ReturnMapPointWithRadius.h"
 #include "Settings.h"
+#include "Window.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
@@ -39,6 +38,7 @@
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>
+#include <optional>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
@@ -772,8 +772,8 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
         {
             for(int dh : {-h, 0, h})
             {
-                const DrawPoint scr = GetNodePos(Position(basePt.x + dw, basePt.y + dh))
-                                      - DrawPoint(0, HEIGHT_FACTOR * alt) - offset;
+                const DrawPoint scr =
+                  GetNodePos(Position(basePt.x + dw, basePt.y + dh)) - DrawPoint(0, HEIGHT_FACTOR * alt) - offset;
                 Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
             }
         }

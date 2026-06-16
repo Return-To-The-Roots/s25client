@@ -28,8 +28,8 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <sstream>
 #include <boost/format.hpp>
+#include <sstream>
 
 // Tab - Flags
 enum TabID
@@ -539,9 +539,8 @@ void iwAction::Msg_PaintAfter()
 
     // Resolve building icon hover preview after all mouse events are processed
     auto* mainTab = GetCtrl<ctrlTab>(0);
-    auto* buildTabCtrl = (mainTab && mainTab->GetCurrentTab() == TAB_BUILD)
-                           ? mainTab->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)
-                           : nullptr;
+    auto* buildTabCtrl =
+      (mainTab && mainTab->GetCurrentTab() == TAB_BUILD) ? mainTab->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1) : nullptr;
     auto* bldGroup = buildTabCtrl ? buildTabCtrl->GetGroup(buildTabCtrl->GetCurrentTab()) : nullptr;
 
     bool hasHoveredIcon = false;

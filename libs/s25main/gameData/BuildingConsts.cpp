@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "BuildingConsts.h"
-#include "mygettext/mygettext.h"
-#include "gameData/MilitaryConsts.h"
-#include "gameData/GameConsts.h"
-#include "figures/nofFarmhand.h"
 #include "figures/nofCatapultMan.h"
+#include "figures/nofFarmhand.h"
 #include "figures/nofHunter.h"
+#include "mygettext/mygettext.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameData/GameConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include <type_traits>
 
 const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
