@@ -129,26 +129,31 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
     }
 }
 
-void nofHunter::TryStartHunting()
+std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, const MapPoint pos,
+                                                      unsigned radius, unsigned maxDistance,
+                                                      bool (*isValidAnimal)(const noAnimal*))
 {
-    // Find animals in a circle around building
-    const auto pointToAnimal = [world = this->world](const MapPoint pt, unsigned) -> noAnimal* {
-        for(auto& figure : world->GetFigures(pt))
+    const auto pointToAnimal = [&world](const MapPoint pt, unsigned) -> noAnimal* {
+        for(auto& figure : world.GetFigures(pt))
         {
-            if(figure.GetType() != NodalObjectType::Animal)
-                continue;
-            return static_cast<noAnimal*>(&figure);
+            if(figure.GetType() == NodalObjectType::Animal)
+                return static_cast<noAnimal*>(&figure);
         }
         return nullptr;
     };
 
-    const auto canAnimalBeHunted = [pos = this->pos](const noAnimal* const animal) {
-        return animal && animal->CanHunted()
-               && (pos == animal->GetPos() || world->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE));
+    const auto canAnimalBeUsed = [pos, maxDistance, &world, isValidAnimal](const noAnimal* const animal) {
+        return animal && isValidAnimal(animal)
+               && (pos == animal->GetPos() || world.FindHumanPath(pos, animal->GetPos(), maxDistance));
     };
 
-    const auto available_animals =
-      world->GetPointsInRadius(pos, ANIMAL_RADIUS, pointToAnimal, canAnimalBeHunted, true);
+    return world.GetPointsInRadius(pos, radius, pointToAnimal, canAnimalBeUsed, true);
+}
+
+void nofHunter::TryStartHunting()
+{
+    const auto available_animals = GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
+                                                     [](const noAnimal* a) { return a->CanHunted(); });
 
     // Gibt es überhaupt ein Tier, das ich jagen kann?
     if(!available_animals.empty())

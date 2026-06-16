@@ -16,6 +16,7 @@
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
+#include "figures/nofHunter.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
@@ -188,23 +189,9 @@ void nofSkinner::TryStartSkinning()
         HandleStateWaiting1();
     else
     {
-        const auto pointToAnimal = [world = this->world](const MapPoint pt, unsigned) -> noAnimal* {
-            for(auto& figure : world->GetFigures(pt))
-            {
-                if(figure.GetType() != NodalObjectType::Animal)
-                    continue;
-                return checkedCast<noAnimal*>(&figure);
-            }
-            return nullptr;
-        };
-
-        const auto canAnimalBeSkinned = [pos = this->pos](const noAnimal* const animal) {
-            return animal && animal->CanBeSkinned()
-                   && (pos == animal->GetPos() || world->FindHumanPath(pos, animal->GetPos(), MAX_SKINNING_DISTANCE));
-        };
-
         const auto available_animals =
-          world->GetPointsInRadius(pos, ANIMAL_RADIUS, pointToAnimal, canAnimalBeSkinned, true);
+          nofHunter::GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE,
+                                       [](const noAnimal* a) { return a->CanBeSkinned(); });
 
         if(!available_animals.empty())
         {

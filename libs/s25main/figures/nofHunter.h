@@ -6,7 +6,9 @@
 
 #include "nofBuildingWorker.h"
 #include "gameTypes/Direction.h"
+#include <vector>
 
+class GameWorldBase;
 class noAnimal;
 class SerializedGameData;
 class nobUsual;
@@ -63,6 +65,11 @@ public:
     void HandleDerivedEvent(unsigned id) override;
 
     void TryStartHunting();
+
+    /// Find animals in a radius around a position that satisfy a predicate and are reachable
+    static std::vector<noAnimal*> GetAnimalsInRange(const GameWorldBase& world, const MapPoint pos,
+                                                     unsigned radius, unsigned maxDistance,
+                                                     bool (*isValidAnimal)(const noAnimal*));
 
     /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
     void AnimalLost();

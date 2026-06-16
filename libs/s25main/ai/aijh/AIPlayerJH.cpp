@@ -32,6 +32,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noTree.h"
+#include "figures/nofHunter.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
@@ -1965,24 +1966,10 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
     // check first if no other hunter(or hunter buildingsite) is nearby
     if(aii.isBuildingNearby(BuildingType::Hunter, pt, 14))
         return false;
-    const unsigned maxrange = 25;
+    constexpr unsigned maxrange = 25;
 
-    const auto pointToAnimal = [this](const MapPoint pt, unsigned) -> const noAnimal* {
-        for(const noBase& fig : gwb.GetFigures(pt))
-        {
-            if(fig.GetType() == NodalObjectType::Animal)
-                return static_cast<const noAnimal*>(&fig);
-        }
-        return nullptr;
-    };
-
-    const auto canAnimalBeHunted = [this, pt, maxrange](const noAnimal* const animal) {
-        return animal && animal->CanHunted()
-               && gwb.FindHumanPath(pt, animal->GetPos(), maxrange);
-    };
-
-    const auto available_animals =
-      gwb.GetPointsInRadius(pt, ANIMAL_RADIUS, pointToAnimal, canAnimalBeHunted, true);
+    const auto available_animals = nofHunter::GetAnimalsInRange(gwb, pt, ANIMAL_RADIUS, maxrange,
+                                                               [](const noAnimal* a) { return a->CanHunted(); });
 
     return available_animals.size() >= min;
 }
