@@ -10,6 +10,7 @@
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "figures/nofHunter.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -188,23 +189,8 @@ void nofSkinner::TryStartSkinning()
         HandleStateWaiting1();
     else
     {
-        const auto pointToAnimal = [world = this->world](const MapPoint pt, unsigned) -> noAnimal* {
-            for(auto& figure : world->GetFigures(pt))
-            {
-                if(figure.GetType() != NodalObjectType::Animal)
-                    continue;
-                return checkedCast<noAnimal*>(&figure);
-            }
-            return nullptr;
-        };
-
-        const auto canAnimalBeSkinned = [pos = this->pos](const noAnimal* const animal) {
-            return animal && animal->CanBeSkinned()
-                   && (pos == animal->GetPos() || world->FindHumanPath(pos, animal->GetPos(), MAX_SKINNING_DISTANCE));
-        };
-
-        const auto available_animals =
-          world->GetPointsInRadius(pos, ANIMAL_RADIUS, pointToAnimal, canAnimalBeSkinned, true);
+        const auto available_animals = nofHunter::GetAnimalsInRange(
+          *world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE, [](const noAnimal* a) { return a->CanBeSkinned(); });
 
         if(!available_animals.empty())
         {
