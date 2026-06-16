@@ -223,10 +223,12 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    // Draw radius preview outline — either from build-menu hover or from the building under the cursor
+    // Draw radius preview outline
     if(radiusPreview_)
         DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
-    else
+
+    // Auto-detect radius for the building under the cursor
+    if(!radiusPreview_ && GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS))
     {
         std::optional<BuildingType> bldType;
         const Visibility vis = gwv.GetVisibility(selPt);

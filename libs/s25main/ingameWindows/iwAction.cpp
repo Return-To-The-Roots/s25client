@@ -160,6 +160,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             building_available[BuildingType::LeatherWorks] = false;
         }
 
+        const bool showBuildingRadius = gwv.GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS);
         constexpr helpers::EnumArray<unsigned, BuildTab> NUM_TABS = {1, 2, 3, 1, 3};
 
         for(unsigned char i = 0; i < NUM_TABS[tabs.build_tabs]; ++i)
@@ -177,7 +178,9 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 tooltip << _(BUILDING_NAMES[bld]);
 
                 // Radius anzeigen falls vorhanden
-                const unsigned radius = GetBuildingRadius(bld);
+                unsigned radius = 0;
+                if(showBuildingRadius)
+                    radius = GetBuildingRadius(bld);
                 if(radius > 0)
                     tooltip << boost::format(_("\nRange: %1% tiles")) % radius;
 
