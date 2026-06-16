@@ -440,15 +440,23 @@ unsigned GetBuildingRadius(BuildingType bld)
         case BuildingType::CoalMine:
         case BuildingType::IronMine:
         case BuildingType::GoldMine: return MINER_RADIUS;
-        // For farmhand-based buildings, delegate to nofFarmhand::GetWorkRadius via the BLD_WORK_DESC
-        // job mapping. This is the single source of truth for worker reach radii, including
-        // addon-adjustable ranges (woodcutter, forester, stonemason).
-        default:
+        // Farmhand-based buildings — worker goes out to gather resources from the map.
+        // Map each building type to its job via BLD_WORK_DESC, then query the work
+        // radius from nofFarmhand::GetWorkRadius.
+        case BuildingType::Woodcutter:
+        case BuildingType::Forester:
+        case BuildingType::Fishery:
+        case BuildingType::Quarry:
+        case BuildingType::Farm:
+        case BuildingType::Vineyard:
+        case BuildingType::Charburner:
         {
             const auto job = BLD_WORK_DESC[bld].job;
             if(job)
                 return nofFarmhand::GetWorkRadius(*job);
             return 0;
         }
+        // All other building types have no relevant radius overlay
+        default: return 0;
     }
 }
