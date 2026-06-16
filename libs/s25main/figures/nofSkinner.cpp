@@ -10,13 +10,13 @@
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "figures/nofHunter.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
-#include "figures/nofHunter.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
@@ -189,9 +189,8 @@ void nofSkinner::TryStartSkinning()
         HandleStateWaiting1();
     else
     {
-        const auto available_animals =
-          nofHunter::GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE,
-                                       [](const noAnimal* a) { return a->CanBeSkinned(); });
+        const auto available_animals = nofHunter::GetAnimalsInRange(
+          *world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE, [](const noAnimal* a) { return a->CanBeSkinned(); });
 
         if(!available_animals.empty())
         {

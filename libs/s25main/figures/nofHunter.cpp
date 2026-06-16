@@ -129,9 +129,8 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
     }
 }
 
-std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, const MapPoint pos,
-                                                      unsigned radius, unsigned maxDistance,
-                                                      bool (*isValidAnimal)(const noAnimal*))
+std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, const MapPoint pos, unsigned radius,
+                                                    unsigned maxDistance, bool (*isValidAnimal)(const noAnimal*))
 {
     const auto pointToAnimal = [&world](const MapPoint pt, unsigned) -> noAnimal* {
         for(auto& figure : world.GetFigures(pt))

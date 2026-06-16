@@ -17,6 +17,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "figures/nofHunter.h"
 #include "helpers/IdRange.h"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/containerUtils.h"
@@ -32,7 +33,6 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noTree.h"
-#include "figures/nofHunter.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
@@ -1968,8 +1968,8 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
         return false;
     constexpr unsigned maxrange = 25;
 
-    const auto available_animals = nofHunter::GetAnimalsInRange(gwb, pt, ANIMAL_RADIUS, maxrange,
-                                                               [](const noAnimal* a) { return a->CanHunted(); });
+    const auto available_animals =
+      nofHunter::GetAnimalsInRange(gwb, pt, ANIMAL_RADIUS, maxrange, [](const noAnimal* a) { return a->CanHunted(); });
 
     return available_animals.size() >= min;
 }
