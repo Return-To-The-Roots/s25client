@@ -1705,7 +1705,7 @@ void AIPlayerJH::TrySeaAttack()
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(milBld);
-                    }  // else - no attackers - do nothing
+                    } // else - no attackers - do nothing
                 } else // normal target - check is done after random shuffle so we dont have to check every possible
                        // target and instead only enough to get 1 good one
                 {
