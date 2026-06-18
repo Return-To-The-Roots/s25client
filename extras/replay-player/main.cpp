@@ -34,34 +34,6 @@ namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
 namespace po = boost::program_options;
 
-static void printBriefUsage(const char* prog)
-{
-    bnw::cerr << "Usage: " << prog
-              << " [options] <replay-file>\n"
-                 "Run with --help or -h for a full list of options.\n";
-}
-
-static const char PATH_EXPANSION_HELP[] =
-  "\nPath expansion (--replay):\n"
-  "  The replay path supports <RTTR_X> placeholders and a leading ~.\n"
-  "  ~ is expanded by the application: %USERPROFILE%\\Saved Games on Windows,\n"
-  "  $HOME on Linux/macOS.\n"
-  "  Available placeholders:\n"
-  "    <RTTR_USERDATA>   user data dir\n"
-  "                        Windows : %USERPROFILE%\\Saved Games\\Return To The Roots\n"
-  "                        Linux   : $HOME/.s25rttr\n"
-  "                        macOS   : $HOME/Library/Application Support/Return To The Roots\n"
-  "    <RTTR_DATA>       RTTR data directory\n"
-  "    <RTTR_GAME>       directory containing S2 DATA/ and GFX/ folders\n"
-  "    <RTTR_RTTR>       <RTTR_DATA>/RTTR sub-directory\n"
-  "    <RTTR_BIN>        binary directory\n"
-  "    <RTTR_EXTRA_BIN>  extra binary directory\n"
-  "    <RTTR_LIB>        library directory\n"
-  "    <RTTR_DRIVER>     driver directory\n"
-  "  Each placeholder can be overridden with the RTTR_<ID>_DIR environment variable.\n"
-  "\nExample:\n"
-  "  replay-player \"<RTTR_USERDATA>/REPLAYS/game.rpl\"\n";
-
 int main(int argc, char** argv)
 {
     bnw::nowide_filesystem();
@@ -70,12 +42,11 @@ int main(int argc, char** argv)
     po::options_description desc("Allowed options");
     // clang-format off
     desc.add_options()
-        ("help,h",    "Show this detailed help and exit.")
-        ("replay,r",  po::value<std::string>()->required(),
-                      "Replay file (.rpl) to play back. Can also be passed as a positional argument.\n"
-                      "Supports <RTTR_X> path expansion (see Path expansion below).")
-        ("verbose,V", "Print the async-log entries when the first desync is detected.")
-        ("version,v", "Show version information and exit.")
+        ("help,h", "Show help")
+        ("replay,r", po::value<std::string>()->required(), "Replay file (.rpl) to play back\n"
+                        "Supports <RTTR_USERDATA> placeholder (user data dir)")
+        ("verbose,V", "Print the async-log entries when the first desync is detected")
+        ("version,v", "Show version information and exit")
     ;
     // clang-format on
     po::positional_options_description pos;
@@ -83,7 +54,7 @@ int main(int argc, char** argv)
 
     if(argc == 1)
     {
-        printBriefUsage(argv[0]);
+        bnw::cerr << desc << std::endl;
         return 1;
     }
 
@@ -93,21 +64,21 @@ int main(int argc, char** argv)
         po::store(po::command_line_parser(argc, argv).options(desc).positional(pos).run(), options);
         if(options.count("help"))
         {
-            bnw::cout << desc << PATH_EXPANSION_HELP;
+            bnw::cout << desc << std::endl;
             return 0;
         }
         if(options.count("version"))
         {
             bnw::cout << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-"
-                      << rttr::version::GetRevision() << "\n"
-                      << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << "\n";
+                      << rttr::version::GetRevision() << std::endl
+                      << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << std::endl;
             return 0;
         }
         po::notify(options);
     } catch(const std::exception& e)
     {
-        bnw::cerr << "Error: " << e.what() << "\n";
-        printBriefUsage(argv[0]);
+        bnw::cerr << "Error: " << e.what() << std::endl;
+        bnw::cerr << desc << std::endl;
         return 1;
     }
 
@@ -181,6 +152,7 @@ int main(int argc, char** argv)
                     bnw::cerr << "Failed to load embedded Lua script\n";
                     return 1;
                 }
+                gameWorld.GetLua().setSuppressStdout(true);
                 bnw::cout << "Lua script loaded from replay.\n";
             }
             const bool fixFish = !(replay.GetMajorVersion() == 8 && replay.GetMinorVersion() < 3);

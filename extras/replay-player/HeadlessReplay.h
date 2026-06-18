@@ -26,7 +26,7 @@ struct HeadlessGameState : ILocalGameState
     unsigned GetPlayerId() const override { return 0; }
     bool IsHost() const override { return true; }
     std::string FormatGFTime(unsigned) const override { return ""; }
-    void SystemChat(const std::string& msg) override;
+    void SystemChat(const std::string&) override {}
 };
 
 struct ReplayStatus

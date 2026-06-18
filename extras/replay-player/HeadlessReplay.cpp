@@ -71,11 +71,6 @@ static std::string fmtNum(unsigned n)
     return ss.str();
 }
 
-void HeadlessGameState::SystemChat(const std::string& msg)
-{
-    bnw::cout << "[sys] " << msg << "\n";
-}
-
 void printTable(const ReplayStatus& s)
 {
     const unsigned curGF = s.game.em_->GetCurrentGF();
