@@ -48,10 +48,10 @@ iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const u
 {
     using SRT = ctrlTable::SortType;
     AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(560, 300), TextureColor::Green2, NormalFont,
-             ctrlTable::Columns{{_("Filename"), 270, SRT::String},
+             ctrlTable::Columns{{_("Filename"), 320, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 250, SRT::Date},
-                                {_("Game Time"), 2026, SRT::Time},
+                                {_("Game Time"), 180, SRT::Time},
                                 {}});
 
     AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
