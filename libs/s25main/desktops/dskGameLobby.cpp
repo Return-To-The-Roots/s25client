@@ -946,10 +946,10 @@ void dskGameLobby::UpdateGGS()
 
     GlobalGameSettings& ggs = gameLobby_->getSettings();
 
-    ggs.speed = static_cast<GameSpeed>(*GetCtrl<ctrlComboBox>(ID_cbSpeed)->GetSelection());
-    ggs.objective = static_cast<GameObjective>(*GetCtrl<ctrlComboBox>(ID_cbGoals)->GetSelection());
-    ggs.startWares = static_cast<StartWares>(*GetCtrl<ctrlComboBox>(ID_cbGoods)->GetSelection());
-    ggs.exploration = static_cast<Exploration>(*GetCtrl<ctrlComboBox>(ID_cbExploration)->GetSelection());
+    ggs.speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(ID_cbSpeed)->GetSelection().value());
+    ggs.objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(ID_cbGoals)->GetSelection().value());
+    ggs.startWares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(ID_cbGoods)->GetSelection().value());
+    ggs.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(ID_cbExploration)->GetSelection().value());
     ggs.lockedTeams = GetCtrl<ctrlCheck>(ID_chkLockTeams)->isChecked();
     ggs.teamView = GetCtrl<ctrlCheck>(ID_chkSharedView)->isChecked();
     ggs.randomStartPosition = GetCtrl<ctrlCheck>(ID_chkRandomSpawn)->isChecked();

@@ -153,7 +153,7 @@ void dskCampaignSelection::showCampaignInfo(const bool show)
 
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
-    const auto& campaign = campaigns_.at(*GetCtrl<ctrlTable>(ID_Table)->GetSelection());
+    const auto& campaign = campaigns_.at(GetCtrl<ctrlTable>(ID_Table)->GetSelection().value());
     WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 

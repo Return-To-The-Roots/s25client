@@ -133,7 +133,7 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwMapGenerator::Apply()
 {
-    mapSettings.numPlayers = *GetCtrl<ctrlComboBox>(ID_cbNumPlayers)->GetSelection() + 2;
+    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(ID_cbNumPlayers)->GetSelection().value() + 2;
     mapSettings.ratioGold = GetCtrl<ctrlProgress>(ID_pgGoldRatio)->GetPosition();
     mapSettings.ratioIron = GetCtrl<ctrlProgress>(ID_pgIronRatio)->GetPosition();
     mapSettings.ratioCoal = GetCtrl<ctrlProgress>(ID_pgCoalRatio)->GetPosition();
@@ -142,14 +142,14 @@ void iwMapGenerator::Apply()
     mapSettings.trees = GetCtrl<ctrlProgress>(ID_pgTrees)->GetPosition();
     mapSettings.stonePiles = GetCtrl<ctrlProgress>(ID_pgStonePiles)->GetPosition();
 
-    switch(*GetCtrl<ctrlComboBox>(ID_cbMountainDist)->GetSelection())
+    switch(GetCtrl<ctrlComboBox>(ID_cbMountainDist)->GetSelection().value())
     {
         case 0: mapSettings.mountainDistance = MountainDistance::Close; break;
         case 1: mapSettings.mountainDistance = MountainDistance::Normal; break;
         case 2: mapSettings.mountainDistance = MountainDistance::Far; break;
         case 3: mapSettings.mountainDistance = MountainDistance::VeryFar; break;
     }
-    switch(*GetCtrl<ctrlComboBox>(ID_cbMapStyle)->GetSelection())
+    switch(GetCtrl<ctrlComboBox>(ID_cbMapStyle)->GetSelection().value())
     {
         case 0: mapSettings.style = MapStyle::Water; break;
         case 1: mapSettings.style = MapStyle::Land; break;
@@ -159,7 +159,7 @@ void iwMapGenerator::Apply()
       s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeX)->GetSelectedText().value_or("128"));
     mapSettings.size.y =
       s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeY)->GetSelectedText().value_or("128"));
-    switch(*GetCtrl<ctrlComboBox>(ID_cbIslands)->GetSelection())
+    switch(GetCtrl<ctrlComboBox>(ID_cbIslands)->GetSelection().value())
     {
         case 0: mapSettings.islands = IslandAmount::Few; break;
         case 1: mapSettings.islands = IslandAmount::Normal; break;

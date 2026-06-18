@@ -130,13 +130,14 @@ void iwSettings::Msg_ButtonClick(unsigned ctrl_id)
             SETTINGS.global.smartCursor = GetCtrl<ctrlCheck>(ID_cbSmartCursor)->isChecked();
             VIDEODRIVER.SetMouseWarping(SETTINGS.global.smartCursor);
             SETTINGS.ingame.scaleStatistics = GetCtrl<ctrlCheck>(ID_cbStatisticScale)->isChecked();
-            SETTINGS.video.displayMode = DisplayMode(*GetCtrl<ctrlComboBox>(ID_cbDisplayMode)->GetSelection());
+            SETTINGS.video.displayMode = DisplayMode(GetCtrl<ctrlComboBox>(ID_cbDisplayMode)->GetSelection().value());
             SETTINGS.video.displayMode.resizeable = !grpWindowSize.GetCtrl<ctrlCheck>(ID_cbLockWindowSize)->isChecked();
             SETTINGS.interface.mapScrollMode =
-              static_cast<MapScrollMode>(*GetCtrl<ctrlComboBox>(ID_cbMapScrollMode)->GetSelection());
+              static_cast<MapScrollMode>(GetCtrl<ctrlComboBox>(ID_cbMapScrollMode)->GetSelection().value());
             SETTINGS.video.fullscreenSize = supportedResolutions_
-              [*GetCtrl<ctrlGroup>(ID_grpResolution)->GetCtrl<ctrlComboBox>(ID_cbResolution)->GetSelection()];
-            const unsigned windowSizeSelection = *grpWindowSize.GetCtrl<ctrlComboBox>(ID_cbWindowSize)->GetSelection();
+              [GetCtrl<ctrlGroup>(ID_grpResolution)->GetCtrl<ctrlComboBox>(ID_cbResolution)->GetSelection().value()];
+            const unsigned windowSizeSelection =
+              grpWindowSize.GetCtrl<ctrlComboBox>(ID_cbWindowSize)->GetSelection().value();
             if(windowSizeSelection > 0)
                 SETTINGS.video.windowedSize = windowSizes_[windowSizeSelection - 1];
             else if(VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed)
@@ -220,5 +221,5 @@ void iwSettings::updateResolutionGroups()
 
 DisplayMode iwSettings::getDisplayModeSelection() const
 {
-    return DisplayMode(*GetCtrl<ctrlComboBox>(ID_cbDisplayMode)->GetSelection());
+    return static_cast<DisplayMode>(GetCtrl<ctrlComboBox>(ID_cbDisplayMode)->GetSelection().value());
 }
