@@ -88,7 +88,7 @@ void WaitForEnter()
     if(waited)
         return;
     waited = true;
-    bnw::cout << "\n\nPress ENTER to close this window . . ." << std::endl;
+    bnw::cerr << "\n\nPress ENTER to close this window . . .\n";
     bnw::cin.clear();
     bnw::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     bnw::cin.get();
@@ -244,39 +244,12 @@ void InstallSignalHandlers()
 #endif // _MSC_VER
 }
 
-void UninstallSignalHandlers()
-{
-#ifdef _WIN32
-    SetConsoleCtrlHandler(ConsoleSignalHandler, FALSE);
-#else
-    struct sigaction sa;
-    sa.sa_handler = SIG_DFL;
-    sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
-    sigemptyset(&sa.sa_mask);
-
-    sigaction(SIGINT, &sa, nullptr);
-    sigaction(SIGPIPE, &sa, nullptr);
-    sigaction(SIGALRM, &sa, nullptr);
-#endif // _WIN32
-
-#ifdef _MSC_VER
-    SetUnhandledExceptionFilter(nullptr);
-#else
-    signal(SIGSEGV, SIG_DFL);
-#endif
-}
-
 /**
  *  Exit-Handler, wird bei @p exit ausgeführt.
  */
 void ExitHandler()
 {
     Socket::Shutdown();
-    UninstallSignalHandlers();
-
-#ifdef _DEBUG
-    WaitForEnter();
-#endif
 }
 
 void SetAppSymbol()
