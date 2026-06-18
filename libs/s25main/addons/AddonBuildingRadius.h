@@ -16,6 +16,7 @@ public:
     AddonBuildingRadius()
         : AddonBool(AddonId::BUILDING_RADIUS, AddonGroup::GamePlay, _("Show building radius"),
                     _("Shows the working radius of buildings in the build menu tooltip and as an overlay on the map "
-                      "when hovering over a building icon or selecting a building."))
+                      "when hovering over a building icon or selecting a building."),
+                    1) // Enabled by default
     {}
 };
