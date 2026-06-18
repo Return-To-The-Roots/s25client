@@ -151,8 +151,37 @@ std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, 
 
 void nofHunter::TryStartHunting()
 {
-    const auto available_animals = GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
-                                                     [](const noAnimal* a) { return a->CanHunted(); });
+    std::vector<noAnimal*> available_animals;
+
+    if(world->GetReplayMinorVersion() >= 4)
+    {
+        available_animals = GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
+                                              [](const noAnimal* a) { return a->CanHunted(); });
+    } else
+    {
+        // Legacy square search for replays recorded with old code
+        const int SQUARE_SIZE = 19;
+        Position curPos;
+        for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
+        {
+            for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
+            {
+                MapPoint curMapPos = world->MakeMapPoint(curPos);
+                for(auto& figure : world->GetFigures(curMapPos))
+                {
+                    if(figure.GetType() != NodalObjectType::Animal)
+                        continue;
+                    auto& animal = static_cast<noAnimal&>(figure);
+                    if(!animal.CanHunted())
+                        continue;
+                    if(pos == animal.GetPos() || world->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
+                    {
+                        available_animals.push_back(&animal);
+                    }
+                }
+            }
+        }
+    }
 
     // Gibt es überhaupt ein Tier, das ich jagen kann?
     if(!available_animals.empty())

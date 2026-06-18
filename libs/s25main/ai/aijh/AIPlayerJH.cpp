@@ -1968,10 +1968,55 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
         return false;
     constexpr unsigned maxrange = 25;
 
-    const auto available_animals =
-      nofHunter::GetAnimalsInRange(gwb, pt, ANIMAL_RADIUS, maxrange, [](const noAnimal* a) { return a->CanHunted(); });
+    if(gwb.GetReplayMinorVersion() >= 4)
+    {
+        const auto available_animals =
+          nofHunter::GetAnimalsInRange(gwb, pt, ANIMAL_RADIUS, maxrange, [](const noAnimal* a) { return a->CanHunted(); });
 
-    return available_animals.size() >= min;
+        return available_animals.size() >= min;
+    } else
+    {
+        // Legacy square search for replays recorded with old code
+        unsigned short fx, fy, lx, ly;
+        const unsigned short SQUARE_SIZE = 19;
+        unsigned huntablecount = 0;
+        if(pt.x > SQUARE_SIZE)
+            fx = pt.x - SQUARE_SIZE;
+        else
+            fx = 0;
+        if(pt.y > SQUARE_SIZE)
+            fy = pt.y - SQUARE_SIZE;
+        else
+            fy = 0;
+        if(pt.x + SQUARE_SIZE < gwb.GetWidth())
+            lx = pt.x + SQUARE_SIZE;
+        else
+            lx = gwb.GetWidth() - 1;
+        if(pt.y + SQUARE_SIZE < gwb.GetHeight())
+            ly = pt.y + SQUARE_SIZE;
+        else
+            ly = gwb.GetHeight() - 1;
+        for(MapPoint p2(0, fy); p2.y <= ly; ++p2.y)
+        {
+            for(p2.x = fx; p2.x <= lx; ++p2.x)
+            {
+                for(const noBase& fig : gwb.GetFigures(p2))
+                {
+                    if(fig.GetType() == NodalObjectType::Animal)
+                    {
+                        if(!static_cast<const noAnimal&>(fig).CanHunted())
+                            continue;
+                        if(gwb.FindHumanPath(pt, static_cast<const noAnimal&>(fig).GetPos(), maxrange))
+                        {
+                            if(++huntablecount >= min)
+                                return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
 
 void AIPlayerJH::InitStoreAndMilitarylists()
