@@ -341,6 +341,8 @@ void GameClient::StartGame(const unsigned random_init)
         const bool fixFish = !GetReplay() || GetReplay()->GetMinorVersion() >= 3;
         MapLoader::SetupResources(gameWorld, fixFish);
     }
+    if(replayMode && replayinfo)
+        gameWorld.SetReplayMinorVersion(replayinfo->replay.GetMinorVersion());
     gameWorld.InitAfterLoad();
 
     // Update visual settings
