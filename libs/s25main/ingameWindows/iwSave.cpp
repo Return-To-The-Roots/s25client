@@ -51,7 +51,7 @@ iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const u
              ctrlTable::Columns{{_("Filename"), 320, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 250, SRT::Date},
-                                {_("Game Time"), 180, SRT::Time},
+                                {_("Game Time"), 320, SRT::Time},
                                 {}});
 
     AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
