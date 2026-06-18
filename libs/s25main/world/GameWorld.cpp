@@ -994,7 +994,7 @@ bool GameWorld::ValidWaitingAroundBuildingPoint(const MapPoint pt, const MapPoin
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
-    return FindHumanPath(pt, center, CalcDistance(pt, center)) != std::nullopt;
+    return FindHumanPath(pt, center, CalcDistance(pt, center)).has_value();
 }
 
 bool GameWorld::IsValidPointForFighting(MapPoint pt, const nofActiveSoldier& soldier,
