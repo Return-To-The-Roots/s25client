@@ -745,38 +745,57 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
     drawNodeCallbacks.erase(itPos);
 }
 
+// -----------------------------------------------------------------------------
+// Snap a point to the nearest toroidal copy relative to a reference position.
+// Same formula as s25edit's correctMouseBlit():
+//   k = round((reference - vertex) / mapSize)
+//   vertex += k * mapSize
+//
+// Reference: s25edit/external/s25edit/CMap.cpp :: correctMouseBlit() (line 1088)
+// -----------------------------------------------------------------------------
+DrawPoint GameWorldView::SnapToNearestCopy(DrawPoint pt, const DrawPoint& ref, const DrawPoint& mapPxSize)
+{
+    if(mapPxSize.x > 0)
+    {
+        int kx = static_cast<int>(std::floor((ref.x - pt.x) / static_cast<double>(mapPxSize.x) + 0.5));
+        pt.x += kx * mapPxSize.x;
+    }
+    if(mapPxSize.y > 0)
+    {
+        int ky = static_cast<int>(std::floor((ref.y - pt.y) / static_cast<double>(mapPxSize.y) + 0.5));
+        pt.y += ky * mapPxSize.y;
+    }
+    return pt;
+}
+
+// -----------------------------------------------------------------------------
+// Draw radius overlay using CorrectMouseBlit for toroidal wrapping.
+// Reference: s25edit/external/s25edit/CMap.cpp :: render() (lines 1159, 1230)
+//   - Computes brush blit positions via correctMouseBlit()
+//   - Draws overlay sprites at those positions
+// -----------------------------------------------------------------------------
 void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
 {
     const auto& world = GetWorld();
-    // Get all border points at the exact radius
     auto pts = world.GetPointsInRadius(center, radius, ReturnMapPointWithRadius{});
 
     const MapExtent mapSize = world.GetSize();
-    constexpr unsigned BORDER_COLOR = 0xFFFF0000; // Red with full alpha
+    constexpr unsigned BORDER_COLOR = 0xFFFF0000;
+    const DrawPoint mapPxSize(mapSize.x * TR_W, mapSize.y * TR_H);
 
-    const int w = mapSize.x;
-    const int h = mapSize.y;
+    // Reference: screen position of the center vertex (with seam offset).
+    const auto centerAlt = world.GetNode(center).altitude;
+    const DrawPoint ref = GetNodePos(center) - DrawPoint(0, HEIGHT_FACTOR * centerAlt) + selPtOffset;
 
-    for(const auto& ptWithRadius : pts)
+    for(const auto& [basePt, dist] : pts)
     {
-        if(ptWithRadius.second != radius)
+        if(dist != radius)
             continue;
 
-        const MapPoint& basePt = ptWithRadius.first;
-        const auto alt = world.GetNode(basePt).altitude;
+        DrawPoint scr = GetNodePos(basePt, world.GetNode(basePt).altitude);
+        scr = SnapToNearestCopy(scr, ref, mapPxSize) - offset;
 
-        // Draw at the canonical position and its 8 toroidal copies (shifted by ± map dimensions).
-        // We use Position arithmetic (no modulo) so each shifted copy produces a different screen
-        // position. Copies outside the viewport are clipped by the renderer.
-        for(int dw : {-w, 0, w})
-        {
-            for(int dh : {-h, 0, h})
-            {
-                const DrawPoint scr =
-                  GetNodePos(Position(basePt.x + dw, basePt.y + dh)) - DrawPoint(0, HEIGHT_FACTOR * alt) - offset;
-                Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
-            }
-        }
+        Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
     }
 }
 
