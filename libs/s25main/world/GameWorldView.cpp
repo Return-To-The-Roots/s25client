@@ -14,6 +14,7 @@
 #include "ReturnMapPointWithRadius.h"
 #include "Settings.h"
 #include "Window.h"
+#include "WindowManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
@@ -227,8 +228,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(radiusPreview_)
         DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
 
-    // Auto-detect radius for the building under the cursor
-    if(!radiusPreview_ && GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS))
+    // Auto-detect radius for the building under the cursor.
+    // Do not trigger hover when the mouse is over an ingame window.
+    if(!radiusPreview_ && GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS)
+       && !WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()))
     {
         std::optional<BuildingType> bldType;
         const Visibility vis = gwv.GetVisibility(selPt);
