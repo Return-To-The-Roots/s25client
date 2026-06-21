@@ -217,9 +217,6 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
             between_line.obj.Draw(between_line.pos);
     }
 
-    if(show_names || show_productivity)
-        DrawNameProductivityOverlay(terrainRenderer);
-
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Draw catapult stones
@@ -238,7 +235,26 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     }
     glPopMatrix();
 
+    // Draw name/productivity overlay after zoom pop so text is not affected by zoom
+    if(show_names || show_productivity)
+        DrawNameProductivityOverlay(terrainRenderer);
+
     glScissor(0, 0, windowSize.width, windowSize.height);
+}
+
+DrawPoint GameWorldView::WorldToScreen(const DrawPoint& worldPt) const
+{
+    const float eff = effectiveZoomFactor_;
+    if(eff == 1.f)
+        return worldPt + DrawPoint(origin_);
+
+    const PointF diff((size_.x - size_.x / eff) / 2.f, (size_.y - size_.y / eff) / 2.f);
+
+    // screen = (worldPt - diff) * eff + origin_
+    const float sx = (worldPt.x - diff.x) * eff + static_cast<float>(origin_.x);
+    const float sy = (worldPt.y - diff.y) * eff + static_cast<float>(origin_.y);
+
+    return DrawPoint(static_cast<int>(sx + 0.5f), static_cast<int>(sy + 0.5f));
 }
 
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer,
@@ -378,8 +394,11 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(!no)
                 continue;
 
-            Position curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
-            curPos.y -= 22;
+            // Convert world position to screen position (undo zoom effect)
+            Position worldPos = GetWorld().GetNodePos(pt) - offset + curOffset;
+            DrawPoint screenPos = WorldToScreen(worldPos);
+            // Apply a constant pixel offset above the building in screen space
+            screenPos.y -= 22;
 
             // Is object not belonging to local player?
             if(no->GetPlayer() != gwv.GetPlayerId())
@@ -387,7 +406,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
                 if(!isAllVisible && gwv.GetVisibility(pt, false) != Visibility::Visible)
                     continue;
                 if(attackAidImage && gwv.GetNumSoldiersForAttack(pt) > 0)
-                    attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
+                    attackAidImage->DrawFull(screenPos - DrawPoint(0, attackAidImage->getHeight()));
                 // Do not draw enemy productivity overlay unless the related cheat is on
                 if(!showEnemyProductivity)
                     continue;
@@ -397,14 +416,14 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(show_names)
             {
                 unsigned color = (no->GetGOT() == GO_Type::Buildingsite) ? COLOR_GREY : COLOR_YELLOW;
-                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]),
+                SmallFont->Draw(screenPos, _(BUILDING_NAMES[no->GetBuildingType()]),
                                 FontStyle::CENTER | FontStyle::VCENTER, color);
-                curPos.y += SmallFont->getHeight();
+                screenPos.y += SmallFont->getHeight();
             }
 
             // Draw productivity/soldiers
             if(show_productivity)
-                DrawProductivity(*no, curPos);
+                DrawProductivity(*no, screenPos);
         }
     }
 }

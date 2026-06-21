@@ -146,6 +146,9 @@ private:
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
 
+    /// Convert a world pixel position to screen pixel position (undoing zoom)
+    DrawPoint WorldToScreen(const DrawPoint& worldPt) const;
+
     void SaveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();
 };
