@@ -6,15 +6,22 @@
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
 #include "buildings/nobBaseMilitary.h"
+#include "buildings/nobUsual.h"
 #include "desktops/dskGameInterface.h"
+#include "factories/BuildingFactory.h"
+#include "figures/nofFarmhand.h"
+#include "figures/nofFisher.h"
 #include "helpers/containerUtils.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "world/GameWorldViewer.h"
+#include "world/MapLoader.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameTypes/Resource.h"
 #include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
@@ -476,4 +483,63 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(FisherIgnoresIsolatedFishWater, EmptyWorldFixture1PBiggest)
+{
+    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.GetDescription());
+
+    const MapPoint fisheryPos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(6, 6));
+    auto* fishery = dynamic_cast<nobUsual*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Fishery, fisheryPos, 0, Nation::Romans));
+    BOOST_TEST_REQUIRE(fishery);
+
+    nofFisher fisher(fisheryPos, 0, fishery);
+
+    const MapPoint workPt = world.MakeMapPoint(fisheryPos + Position(4, 0));
+    const MapPoint fishPt = world.GetNeighbour(workPt, Direction::East);
+
+    auto makeWaterPoint = [&](const MapPoint pt) {
+        MapNode& nwNode = world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthWest));
+        MapNode& neNode = world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthEast));
+        MapNode& curNode = world.GetNodeWriteable(pt);
+        MapNode& wNode = world.GetNodeWriteable(world.GetNeighbour(pt, Direction::West));
+
+        nwNode.t1 = tWater;
+        nwNode.t2 = tWater;
+        neNode.t1 = tWater;
+        curNode.t1 = tWater;
+        curNode.t2 = tWater;
+        wNode.t2 = tWater;
+    };
+
+    makeWaterPoint(fishPt);
+    world.SetResource(fishPt, Resource(ResourceType::Fish, 4));
+    MapLoader::SetupResources(world);
+
+    BOOST_TEST_REQUIRE(!world.GetNode(fishPt).resources.has(ResourceType::Fish));
+    BOOST_TEST_REQUIRE((fisher.GetPointQuality(workPt, false) == nofFarmhand::PointQuality::NotPossible));
+
+    const MapPoint connectedFishPt = world.GetNeighbour(fishPt, Direction::East);
+    makeWaterPoint(connectedFishPt);
+    world.SetResource(fishPt, Resource(ResourceType::Fish, 4));
+    world.SetResource(connectedFishPt, Resource(ResourceType::Fish, 4));
+    MapLoader::SetupResources(world);
+
+    BOOST_TEST_REQUIRE(world.GetNode(fishPt).resources.has(ResourceType::Fish));
+    BOOST_TEST_REQUIRE(world.GetNode(connectedFishPt).resources.has(ResourceType::Fish));
+    BOOST_TEST_REQUIRE((fisher.GetPointQuality(workPt, false) == nofFarmhand::PointQuality::Class1));
+
+    const MapPoint rowEndFishPt(world.GetWidth() - 1, 10);
+    const MapPoint rowEndConnectedWaterPt = world.GetNeighbour(rowEndFishPt, Direction::West);
+    const MapPoint nextRowFishPt(0, rowEndFishPt.y + 1);
+
+    makeWaterPoint(rowEndFishPt);
+    makeWaterPoint(rowEndConnectedWaterPt);
+    makeWaterPoint(nextRowFishPt);
+    world.SetResource(rowEndFishPt, Resource(ResourceType::Fish, 4));
+    world.SetResource(nextRowFishPt, Resource(ResourceType::Fish, 4));
+    MapLoader::SetupResources(world);
+
+    BOOST_TEST_REQUIRE(world.GetNode(rowEndFishPt).resources.has(ResourceType::Fish));
+    BOOST_TEST_REQUIRE(!world.GetNode(nextRowFishPt).resources.has(ResourceType::Fish));
+}
 BOOST_AUTO_TEST_SUITE_END()

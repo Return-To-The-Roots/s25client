@@ -6,14 +6,37 @@
 
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "addons/const_addons.h"
+#include "buildings/noBaseBuilding.h"
 #include "network/GameClient.h"
+#include "nofFarmer.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noTree.h"
 #include <boost/container/static_vector.hpp>
+
+namespace {
+bool IsPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const unsigned char player)
+{
+    if(nofFarmer::GetNewFieldPointQuality(world, pt) == nofFarmhand::PointQuality::NotPossible)
+        return false;
+
+    return world.CheckPointsInRadius(
+      pt, nofFarmhand::GetWorkRadius(Job::Farmer),
+      [&world, player](const MapPoint farmPt, unsigned) {
+          if(world.GetNO(farmPt)->GetType() != NodalObjectType::Building)
+              return false;
+
+          const auto* building = world.GetSpecObj<noBaseBuilding>(farmPt);
+          return building && building->GetPlayer() == player && building->GetBuildingType() == BuildingType::Farm;
+      },
+      false);
+}
+} // namespace
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(Job::Forester, pos, player, workplace)
@@ -109,6 +132,10 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt, bool /
         if(world->GetNO(nb)->GetType() == NodalObjectType::Building)
             return PointQuality::NotPossible;
     }
+
+    if(world->GetGGS().isEnabled(AddonId::FORESTER_FARM_FIELD_AVOIDANCE)
+       && IsPotentialNewFieldForOwnFarm(*world, pt, player))
+        return PointQuality::NotPossible;
 
     // Terrain untersuchen
     if(world->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))

@@ -337,7 +337,9 @@ void GameClient::StartGame(const unsigned random_init)
             OnError(ClientError::InvalidMap);
             return;
         }
-        gameWorld.SetupResources();
+        // TODO (Replay): Always use true
+        const bool fixFish = !GetReplay() || GetReplay()->GetMinorVersion() >= 3;
+        MapLoader::SetupResources(gameWorld, fixFish);
     }
     gameWorld.InitAfterLoad();
 
@@ -928,7 +930,10 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
         OnError(ClientError::InvalidMap);
         return true;
     }
-    mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / portFilename;
+    const auto targetPath =
+      RTTRCONFIG.ExpandPath((msg.mt == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed);
+    bfs::create_directories(targetPath);
+    mapinfo.filepath = targetPath / portFilename;
     mapinfo.type = msg.mt;
 
     // lua script file path
@@ -1869,9 +1874,14 @@ void GameClient::ToggleHumanAIPlayer(const AI::Info& aiInfo)
     auto it = helpers::find_if(game->aiPlayers_,
                                [id = this->GetPlayerId()](const auto& player) { return player.GetPlayerId() == id; });
     if(it != game->aiPlayers_.end())
+    {
         game->aiPlayers_.erase(it);
-    else
+        SystemChat(_("Disabled AI for current player"));
+    } else
+    {
         game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), aiInfo));
+        SystemChat(_("Enabled AI for current player"));
+    }
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)
