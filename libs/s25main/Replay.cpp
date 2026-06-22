@@ -40,7 +40,8 @@ uint8_t Replay::GetLatestMinorVersion() const
     // 8.1: Portraits support
     // 8.2: Set correct initial distributions if replay starts without savegame for leather addon (see GameClient.cpp
     //      StartReplay function for detailed description)
-    return 2;
+    // 8.3  Remove invalid fish for replays started from start (i.e. map instead of savegame)
+    return 3;
 }
 
 uint8_t Replay::GetLatestMajorVersion() const
@@ -71,6 +72,15 @@ bool Replay::StopRecording()
     const auto replayDataSize = file_.Tell();
     isRecording_ = false;
     file_.Close();
+
+    // Remove empty replay recordings. They are mostly produced when a game is aborted
+    // during startup, for example after an early script error.
+    if(lastGF_ == 0)
+    {
+        boost::system::error_code ec;
+        boost::filesystem::remove(filepath_, ec);
+        return !ec;
+    }
 
     BinaryFile file;
     if(!file.Open(filepath_, OpenFileMode::Read))
