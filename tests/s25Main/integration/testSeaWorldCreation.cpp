@@ -108,11 +108,20 @@ unsigned countHarborBQ(const GameWorld& world)
 std::vector<MapPoint> getMarkerlessHarborCandidates(const GameWorld& world)
 {
     std::vector<MapPoint> result;
-    BQCalculator calcBQ(world, true);
+    BQCalculator calcBQ(world);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        if(calcBQ(pt, [](const MapPoint&) { return false; }) == BuildingQuality::Harbor)
-            result.push_back(pt);
+        if(calcBQ(pt, [](const MapPoint&) { return false; }) != BuildingQuality::Castle)
+            continue;
+
+        for(const auto dir : helpers::EnumRange<Direction>{})
+        {
+            if(dir != Direction::NorthWest && world.GetSeaFromCoastalPoint(world.GetNeighbour(pt, dir)))
+            {
+                result.push_back(pt);
+                break;
+            }
+        }
     }
     return result;
 }
@@ -284,6 +293,25 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIs
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonIsDeterministic, MarkerlessIslandFixture)
+{
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
+    world.InitAfterLoad();
+    const std::vector<MapPoint> generatedHarbors = getHarborPointsFrom(world, 1);
+    BOOST_TEST_REQUIRE(!generatedHarbors.empty());
+
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
+    world.InitAfterLoad();
+    const std::vector<MapPoint> generatedHarborsAgain = getHarborPointsFrom(world, 1);
+
+    BOOST_TEST_REQUIRE(generatedHarborsAgain.size() == generatedHarbors.size());
+    for(unsigned i = 0; i < generatedHarbors.size(); ++i)
+    {
+        BOOST_TEST_REQUIRE(generatedHarborsAgain[i].x == generatedHarbors[i].x);
+        BOOST_TEST_REQUIRE(generatedHarborsAgain[i].y == generatedHarbors[i].y);
+    }
+}
+
 BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonKeepsGeneratedHarborsAwayFromExistingOnes, MarkerlessIslandFixture)
 {
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
@@ -315,6 +343,19 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonDoesNotAffectRuntimeBQRecalculation,
 
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);
     BOOST_TEST_REQUIRE(world.GetNode(candidates.front()).bq != BuildingQuality::Harbor);
+}
+
+BOOST_FIXTURE_TEST_CASE(RuntimeBQRecalculationKeepsExistingHarborBQ, SeaWorldFixture)
+{
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
+    world.InitAfterLoad();
+
+    const MapPoint harborPt = world.GetHarborPoint(HarborId(1));
+    BOOST_TEST_REQUIRE(world.GetNode(harborPt).bq == BuildingQuality::Harbor);
+
+    world.RecalcBQ(harborPt);
+
+    BOOST_TEST_REQUIRE(world.GetNode(harborPt).bq == BuildingQuality::Harbor);
 }
 
 BOOST_FIXTURE_TEST_CASE(HarborNeighbors, SeaWorldWithGCExecution<>)

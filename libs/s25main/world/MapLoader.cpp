@@ -14,6 +14,7 @@
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "helpers/IdRange.h"
+#include "helpers/containerUtils.h"
 #include "lua/GameDataLoader.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
@@ -423,26 +424,21 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPo
 }
 
 namespace {
-bool hasHarborAt(const World& world, const MapPoint pt)
+bool hasEligibleHarborCoast(const World& world, const MapPoint pt)
 {
-    for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(world.GetHarborPoint(harborId) == pt)
+        if(dir != Direction::NorthWest && world.GetSeaFromCoastalPoint(world.GetNeighbour(pt, dir)))
             return true;
     }
     return false;
 }
 
-bool isFarEnoughFromHarbors(const World& world, const MapPoint pt, const std::vector<MapPoint>& generatedHarbors)
+bool isFarEnoughFromHarbors(const World& world, const MapPoint pt, const std::vector<MapPoint>& harborPositions)
 {
-    for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+    for(const MapPoint harborPt : harborPositions)
     {
-        if(world.CalcDistance(pt, world.GetHarborPoint(harborId)) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
-            return false;
-    }
-    for(const MapPoint generatedHarbor : generatedHarbors)
-    {
-        if(world.CalcDistance(pt, generatedHarbor) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
+        if(world.CalcDistance(pt, harborPt) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
             return false;
     }
     return true;
@@ -451,16 +447,27 @@ bool isFarEnoughFromHarbors(const World& world, const MapPoint pt, const std::ve
 std::vector<MapPoint> getGeneratedHarbors(const World& world)
 {
     std::vector<MapPoint> generatedHarbors;
-    BQCalculator calcBQ(world, true);
+    std::vector<MapPoint> harborPositions;
+    harborPositions.reserve(world.GetNumHarborPoints() + MapLoader::MAX_GENERATED_HARBOR_SPOTS);
+    for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+        harborPositions.push_back(world.GetHarborPoint(harborId));
+
+    BQCalculator calcBQ(world);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        if(!hasHarborAt(world, pt) && calcBQ(pt, [](const MapPoint&) { return false; }) == BuildingQuality::Harbor
-           && isFarEnoughFromHarbors(world, pt, generatedHarbors))
-        {
-            generatedHarbors.push_back(pt);
-            if(generatedHarbors.size() == MapLoader::MAX_GENERATED_HARBOR_SPOTS)
-                return generatedHarbors;
-        }
+        if(helpers::contains(harborPositions, pt))
+            continue;
+        if(calcBQ(pt, [](const MapPoint&) { return false; }) != BuildingQuality::Castle)
+            continue;
+        if(!hasEligibleHarborCoast(world, pt))
+            continue;
+        if(!isFarEnoughFromHarbors(world, pt, harborPositions))
+            continue;
+
+        generatedHarbors.push_back(pt);
+        harborPositions.push_back(pt);
+        if(generatedHarbors.size() == MapLoader::MAX_GENERATED_HARBOR_SPOTS)
+            return generatedHarbors;
     }
     return generatedHarbors;
 }
