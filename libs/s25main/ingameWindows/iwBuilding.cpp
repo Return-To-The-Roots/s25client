@@ -32,7 +32,7 @@ const unsigned IODAT_SHIP_ID = 218;
 iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building, Extent extent)
     : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, extent,
                    _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gcFactory(gcFactory), building(building), displayProductivity(building->GetDisplayProductivity())
+      gwv(gwv), gcFactory(gcFactory), building(building), productivity(building->GetProductivity())
 {
     // Arbeitersymbol
     AddImage(0, DrawPoint(28, 39), LOADER.GetMapTexture(2298));
@@ -83,8 +83,8 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
                    _("Go to place"));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
-    Window* productivity = AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TextureColor::Grey, 0xFFFFFF00, SmallFont,
-                                      &displayProductivity);
+    Window* productivity =
+      AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TextureColor::Grey, 0xFFFFFF00, SmallFont, &this->productivity);
     if(building->GetBuildingType() == BuildingType::Catapult
        || building->GetBuildingType() == BuildingType::LookoutTower)
         productivity->SetVisible(false);
@@ -99,7 +99,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
 void iwBuilding::Msg_PaintBefore()
 {
     IngameWindow::Msg_PaintBefore();
-    displayProductivity = building->GetDisplayProductivity();
+    productivity = building->GetProductivity();
 
     // Haus unbesetzt ggf ausblenden
     GetCtrl<ctrlText>(10)->SetVisible(!building->HasWorker());

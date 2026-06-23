@@ -170,21 +170,6 @@ helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcProductivities(
     return productivities;
 }
 
-helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcDisplayProductivities() const
-{
-    helpers::EnumArray<uint16_t, BuildingType> productivities;
-
-    for(const auto bld : helpers::enumRange<BuildingType>())
-    {
-        if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bld].producedWare))
-            productivities[bld] = 0;
-        else
-            productivities[bld] =
-              static_cast<uint16_t>(::CalcAverageProductivity(GetBuildings(bld), &nobUsual::GetDisplayProductivity));
-    }
-    return productivities;
-}
-
 unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
 {
     if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))

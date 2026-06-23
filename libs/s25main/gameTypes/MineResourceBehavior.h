@@ -5,24 +5,31 @@
 #pragma once
 
 #include "helpers/OptionalEnum.h"
+#include "gameTypes/MapCoordinates.h"
 #include <cstdint>
 
 class GlobalGameSettings;
+class GameWorld;
 enum class AddonId;
 enum class BuildingType : unsigned char;
 enum class ResourceType : uint8_t;
 
-enum class MineResourceBehavior : unsigned
+enum class MineResourceBehavior
 {
-    Default = 0,
-    Inexhaustible = 1,
-    S4LikeExhaustion = 2,
-    WorkEverywhere = 3
+    Default,
+    Inexhaustible,
+    S4LikeExhaustion,
+    WorkEverywhere
 };
+constexpr auto maxEnumValue(MineResourceBehavior)
+{
+    return MineResourceBehavior::WorkEverywhere;
+}
 
 AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
 ResourceType GetMineResourceType(BuildingType buildingType);
 helpers::OptionalEnum<BuildingType> GetMineBuildingType(ResourceType resourceType);
+unsigned GetRemainingMineResources(const GameWorld& world, MapPoint pos, ResourceType resourceType);
 /// Remaining matching resources at which S4-like mines reach full productivity.
 unsigned GetS4LikeMineFullProductivityResourceAmount();
 unsigned GetS4LikeMineProductionChance(unsigned remainingMatchingResources);

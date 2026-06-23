@@ -27,24 +27,10 @@ constexpr unsigned S4LIKE_MIN_RESOURCE_AMOUNT = 1;
 
 MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& settings)
 {
-    switch(static_cast<MineNoOutputFallback>(settings.getSelection(AddonId::MINE_NO_OUTPUT_FALLBACK)))
-    {
-        case MineNoOutputFallback::ProduceGranite25: return MineNoOutputFallback::ProduceGranite25;
-        case MineNoOutputFallback::ProduceGranite50: return MineNoOutputFallback::ProduceGranite50;
-        case MineNoOutputFallback::ProduceGranite100: return MineNoOutputFallback::ProduceGranite100;
-        case MineNoOutputFallback::ProduceLowerGradeResource: return MineNoOutputFallback::ProduceLowerGradeResource;
-        default: return MineNoOutputFallback::ProduceNothing;
-    }
-}
-
-unsigned GetS4LikeProductionChanceForRemainingResources(const GameWorld& world,
-                                                        const std::vector<MapPoint>& resourcePts)
-{
-    unsigned resourceAmount = 0;
-    for(const MapPoint pt : resourcePts)
-        resourceAmount += world.GetNode(pt).resources.getAmount();
-
-    return GetS4LikeMineProductionChance(resourceAmount);
+    const unsigned selection = settings.getSelection(AddonId::MINE_NO_OUTPUT_FALLBACK);
+    if(!helpers::isValidEnumValue<MineNoOutputFallback>(selection))
+        return MineNoOutputFallback::ProduceNothing;
+    return static_cast<MineNoOutputFallback>(selection);
 }
 
 unsigned GetGraniteFallbackChance(const MineNoOutputFallback fallback)
@@ -164,8 +150,9 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
     {
         const std::vector<MapPoint> resourcePts = GetPointsWithResource(*world, pos, GetRequiredResType());
         const auto productionRoll = static_cast<unsigned>(RANDOM_RAND(MAX_PRODUCTION_PERCENT));
-        const bool produceNothingThisCycle =
-          resourcePts.empty() || productionRoll >= GetS4LikeProductionChanceForRemainingResources(*world, resourcePts);
+        const bool produceNothingThisCycle = resourcePts.empty()
+                                             || productionRoll >= GetS4LikeMineProductionChance(
+                                                  GetRemainingMineResources(*world, pos, GetRequiredResType()));
         if(produceNothingThisCycle)
             return GetNoOutputFallbackGood(settings, workplace->GetBuildingType(), GetObjId());
 

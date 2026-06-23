@@ -38,7 +38,8 @@
 //
 // Add the #include for your AddonXXX.h in Addons.h!
 //
-// TODO: INEXHAUSTIBLE_MINES is kept only for loading old settings/savegames until the gamedata version can be raised.
+// TODO(Savegame): Remove INEXHAUSTIBLE_MINES once the gamedata version can be raised and legacy settings/savegames no
+// longer need migration.
 ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x00000001, REFUND_MATERIALS = 0x00000002,
                  EXHAUSTIBLE_WATER = 0x00000003, REFUND_ON_EMERGENCY = 0x00000004, MANUAL_ROAD_ENLARGEMENT = 0x00000005,
                  CATAPULT_GRAPHICS = 0x00000006, METALWORKSBEHAVIORONZERO = 0x00000007,

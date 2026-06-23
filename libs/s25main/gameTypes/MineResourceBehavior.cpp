@@ -5,8 +5,11 @@
 #include "MineResourceBehavior.h"
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
+#include "world/GameWorld.h"
 #include "gameTypes/BuildingType.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
+#include "gameData/GameConsts.h"
 #include <algorithm>
 
 namespace {
@@ -48,6 +51,17 @@ helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resou
     }
 }
 
+unsigned GetRemainingMineResources(const GameWorld& world, const MapPoint pos, const ResourceType resourceType)
+{
+    unsigned resourceAmount = 0;
+    const auto resourcePts = world.GetMatchingPointsInRadius<1>(
+      pos, MINER_RADIUS,
+      [&world, resourceType](const MapPoint pt) { return world.GetNode(pt).resources.has(resourceType); }, true);
+    for(const MapPoint pt : resourcePts)
+        resourceAmount += world.GetNode(pt).resources.getAmount();
+    return resourceAmount;
+}
+
 unsigned GetS4LikeMineFullProductivityResourceAmount()
 {
     return S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT;
@@ -64,13 +78,10 @@ unsigned GetS4LikeMineProductionChance(const unsigned remainingMatchingResources
 
 MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, const BuildingType buildingType)
 {
-    switch(static_cast<MineResourceBehavior>(settings.getSelection(GetMineResourceBehaviorAddonId(buildingType))))
-    {
-        case MineResourceBehavior::Inexhaustible: return MineResourceBehavior::Inexhaustible;
-        case MineResourceBehavior::S4LikeExhaustion: return MineResourceBehavior::S4LikeExhaustion;
-        case MineResourceBehavior::WorkEverywhere: return MineResourceBehavior::WorkEverywhere;
-        default: return MineResourceBehavior::Default;
-    }
+    const unsigned selection = settings.getSelection(GetMineResourceBehaviorAddonId(buildingType));
+    if(!helpers::isValidEnumValue<MineResourceBehavior>(selection))
+        return MineResourceBehavior::Default;
+    return static_cast<MineResourceBehavior>(selection);
 }
 
 bool IsMineResourceDepletable(const GlobalGameSettings& settings, const BuildingType buildingType)

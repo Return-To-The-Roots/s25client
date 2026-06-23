@@ -4,7 +4,9 @@
 
 #pragma once
 
-enum class MineNoOutputFallback : unsigned
+#include "helpers/MaxEnumValue.h"
+
+enum class MineNoOutputFallback
 {
     ProduceNothing,
     ProduceGranite25,
@@ -12,3 +14,8 @@ enum class MineNoOutputFallback : unsigned
     ProduceGranite100,
     ProduceLowerGradeResource
 };
+
+constexpr auto maxEnumValue(MineNoOutputFallback)
+{
+    return MineNoOutputFallback::ProduceLowerGradeResource;
+}
