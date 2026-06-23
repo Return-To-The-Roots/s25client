@@ -9,9 +9,13 @@
 #include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "addons/const_addons.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "helpers/IdRange.h"
+#include "helpers/Range.h"
+#include "helpers/containerUtils.h"
+#include "helpers/mathFuncs.h"
 #include "lua/GameDataLoader.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
@@ -106,6 +110,105 @@ bool MapLoader::PlaceHQs(bool addStartWares)
     return PlaceHQs(world_, hqPositions, addStartWares);
 }
 
+void MapLoader::SetupResources(GameWorldBase& world, const bool fixFish)
+{
+    ResourceType target;
+    switch(world.GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
+    {
+        case 0:
+        default: target = ResourceType::Gold; break;
+        case 1: target = ResourceType::Nothing; break;
+        case 2: target = ResourceType::Iron; break;
+        case 3: target = ResourceType::Coal; break;
+        case 4: target = ResourceType::Granite; break;
+    }
+    ConvertMineResourceTypes(world, ResourceType::Gold, target);
+    PlaceAndFixWater(world);
+    if(fixFish)
+        RemoveUnusableFishResources(world);
+}
+
+void MapLoader::ConvertMineResourceTypes(GameWorldBase& world, ResourceType from, ResourceType to)
+{
+    // LOG.write(("Convert map resources from %i to %i\n", from, to);
+    if(from == to)
+        return;
+
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        Resource resources = world.GetNode(pt).resources;
+        // Gibt es Ressourcen dieses Typs?
+        // Wenn ja, dann umwandeln bzw löschen
+        if(resources.getType() == from)
+        {
+            resources.setType(to);
+            world.SetResource(pt, resources);
+        }
+    }
+}
+
+void MapLoader::PlaceAndFixWater(GameWorldBase& world)
+{
+    const bool waterEverywhere = world.GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
+
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        Resource curNodeResource = world.GetNode(pt).resources;
+
+        if(curNodeResource.getType() == ResourceType::Nothing)
+        {
+            if(!waterEverywhere)
+                continue;
+        } else if(curNodeResource.getType() != ResourceType::Water)
+            continue; // do not override maps resource.
+
+        uint8_t minHumidity = 100;
+        for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
+        {
+            const uint8_t curHumidity = world.GetDescription().get(tIdx).humidity;
+            if(curHumidity < minHumidity)
+            {
+                minHumidity = curHumidity;
+                if(minHumidity == 0)
+                    break;
+            }
+        }
+        if(minHumidity)
+        {
+            curNodeResource =
+              Resource(ResourceType::Water, waterEverywhere ? 7 : helpers::iround<uint8_t>(minHumidity * 7. / 100.));
+        } else
+            curNodeResource = Resource(ResourceType::Nothing, 0);
+
+        world.SetResource(pt, curNodeResource);
+    }
+}
+
+void MapLoader::RemoveUnusableFishResources(GameWorldBase& world)
+{
+    const auto isWaterPoint = [&world](const MapPoint nb) { return world.IsWaterPoint(nb); };
+    for(const MapCoord y : helpers::range(world.GetHeight()))
+    {
+        // Optimization: When there was fish on the previous node (in the same row)
+        // we do not need to check for isolated water points, as there is at least that water point
+        bool previousHasFish = false;
+        for(const MapCoord x : helpers::range(world.GetWidth()))
+        {
+            const MapPoint pt(x, y);
+            bool hasFish = false;
+
+            if(world.GetNode(pt).resources.has(ResourceType::Fish))
+            {
+                if(isWaterPoint(pt) && (previousHasFish || helpers::contains_if(world.GetNeighbours(pt), isWaterPoint)))
+                    hasFish = true;
+                else
+                    world.SetResource(pt, Resource(ResourceType::Nothing, 0));
+            }
+            previousHasFish = hasFish;
+        }
+    }
+}
+
 void MapLoader::InitShadows(World& world)
 {
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -117,7 +220,7 @@ void MapLoader::SetMapExplored(World& world)
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         // For every player
-        for(unsigned i = 0; i < MAX_PLAYERS; ++i)
+        for(const auto i : helpers::range(MAX_PLAYERS))
         {
             // If we have FoW here, save it
             if(world.GetNode(pt).fow[i].visibility == Visibility::FogOfWar)

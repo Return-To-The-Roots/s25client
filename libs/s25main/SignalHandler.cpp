@@ -37,9 +37,9 @@ void ConsoleSignalHandler(int sig)
     if(sig == SIGINT)
     {
         if(!killme)
-            boost::nowide::cout << "Do you really want to terminate the program (y/n) : " << std::flush;
+            boost::nowide::cerr << "Do you really want to terminate the program (y/n) : ";
         else
-            boost::nowide::cout << "Do you really want to kill the program (y/n) : " << std::flush;
+            boost::nowide::cerr << "Do you really want to kill the program (y/n) : ";
 
         int c = getchar();
         if(c == 'j' || c == 'y' || c == 1079565930)

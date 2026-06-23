@@ -57,6 +57,7 @@ void CheatCommandTracker::onSpecialKeyEvent(const KeyEvent& ke)
 
     switch(ke.kt)
     {
+        case KeyType::F6: cheats_.toggleHumanAIPlayer(); break;
         case KeyType::F7:
         {
             if(ke.alt)
@@ -65,7 +66,6 @@ void CheatCommandTracker::onSpecialKeyEvent(const KeyEvent& ke)
                 cheats_.toggleAllVisible();
         }
         break;
-        case KeyType::F10: cheats_.toggleHumanAIPlayer(); break;
         default: break;
     }
 }

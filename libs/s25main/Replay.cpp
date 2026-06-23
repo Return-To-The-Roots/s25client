@@ -40,7 +40,8 @@ uint8_t Replay::GetLatestMinorVersion() const
     // 8.1: Portraits support
     // 8.2: Set correct initial distributions if replay starts without savegame for leather addon (see GameClient.cpp
     //      StartReplay function for detailed description)
-    return 2;
+    // 8.3  Remove invalid fish for replays started from start (i.e. map instead of savegame)
+    return 3;
 }
 
 uint8_t Replay::GetLatestMajorVersion() const

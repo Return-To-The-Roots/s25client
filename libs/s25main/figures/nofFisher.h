@@ -26,9 +26,6 @@ private:
     /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
     void WorkFinished() override;
 
-    /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
-
 public:
     nofFisher(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFisher(SerializedGameData& sgd, unsigned obj_id);
@@ -38,4 +35,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const final { return GO_Type::NofFisher; }
+
+    /// Returns the quality of this working point or determines if the worker can work here at all
+    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
 };
