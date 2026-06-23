@@ -522,21 +522,13 @@ bool nobUsual::HasWorker() const
     return worker && worker->GetState() != nofBuildingWorker::State::FigureWork;
 }
 
-unsigned short nobUsual::GetDisplayProductivity() const
+unsigned short nobUsual::GetProductivity() const
 {
     if(!BuildingProperties::IsMine(bldType_)
        || GetMineResourceBehavior(world->GetGGS(), bldType_) != MineResourceBehavior::S4LikeExhaustion)
         return productivity;
 
-    const ResourceType resourceType = GetMineResourceType(bldType_);
-    const std::vector<MapPoint> resourcePts = world->GetMatchingPointsInRadius<1>(
-      pos, MINER_RADIUS,
-      [this, resourceType](const MapPoint pt) { return world->GetNode(pt).resources.has(resourceType); }, true);
-
-    unsigned resourceAmount = 0;
-    for(const MapPoint pt : resourcePts)
-        resourceAmount += world->GetNode(pt).resources.getAmount();
-
+    const unsigned resourceAmount = GetRemainingMineResources(*world, pos, GetMineResourceType(bldType_));
     return static_cast<unsigned short>(
       (static_cast<unsigned>(productivity) * GetS4LikeMineProductionChance(resourceAmount)) / 100u);
 }

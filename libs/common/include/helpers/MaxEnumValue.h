@@ -30,4 +30,11 @@ inline constexpr unsigned MaxEnumValue_v = static_cast<std::underlying_type_t<T_
 template<class T_Enum>
 inline constexpr unsigned NumEnumValues_v = MaxEnumValue_v<T_Enum> + 1u;
 
+/// Check whether a numeric value is a valid enumerator for an enum type
+template<class T_Enum>
+inline constexpr bool isValidEnumValue(unsigned value)
+{
+    return value <= MaxEnumValue_v<T_Enum>;
+}
+
 } // namespace helpers

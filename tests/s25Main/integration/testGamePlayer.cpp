@@ -123,7 +123,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
 }
 
-BOOST_FIXTURE_TEST_CASE(MineDisplayProductivityAccountsForS4LikeResourceChance, WorldFixtureEmpty1P)
+BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, WorldFixtureEmpty1P)
 {
     MapPoint minePos(0, 0);
     while(world.GetNode(minePos).bq != BuildingQuality::Castle)
@@ -135,21 +135,19 @@ BOOST_FIXTURE_TEST_CASE(MineDisplayProductivityAccountsForS4LikeResourceChance, 
 
     world.SetResource(minePos, Resource(ResourceType::Coal, 1));
     BOOST_TEST(coalMine->GetProductivity() == 100u);
-    BOOST_TEST(coalMine->GetDisplayProductivity() == 100u);
 
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
-    BOOST_TEST(coalMine->GetProductivity() == 100u);
-    BOOST_TEST(coalMine->GetDisplayProductivity() == 5u);
+    BOOST_TEST(coalMine->GetProductivity() == 5u);
 
     setProductivity(coalMine, 80);
     world.SetResource(minePos, Resource(ResourceType::Coal, 10));
-    BOOST_TEST(coalMine->GetDisplayProductivity() == 40u);
-    BOOST_TEST(world.GetPlayer(0).GetBuildingRegister().CalcDisplayProductivities()[BuildingType::CoalMine] == 40u);
+    BOOST_TEST(coalMine->GetProductivity() == 40u);
+    BOOST_TEST(world.GetPlayer(0).GetBuildingRegister().CalcProductivities()[BuildingType::CoalMine] == 40u);
 
     setProductivity(coalMine, 100);
     world.SetResource(minePos, Resource(ResourceType::Coal, 15));
-    BOOST_TEST(coalMine->GetDisplayProductivity() == 75u);
+    BOOST_TEST(coalMine->GetProductivity() == 75u);
 }
 
 BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsFalse_IfPrimaryHQIsNotTent, WorldFixtureEmpty1P)

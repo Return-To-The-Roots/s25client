@@ -16,7 +16,7 @@ protected:
     GameWorldView& gwv;
     GameCommandFactory& gcFactory;
     nobUsual* const building; /// Das zugehörige Gebäudeobjekt
-    unsigned short displayProductivity;
+    unsigned short productivity;
 
 public:
     iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* building, Extent extent = Extent(226, 194));
