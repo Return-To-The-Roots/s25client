@@ -59,6 +59,22 @@ RTTR_ATTRIBUTE_NO_UBSAN(vptr) void setProductivity(nobUsual* bld, unsigned short
 
 using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEnumValue_v<BuildingType> + 14, 4>;
 using WorldFixtureMineRadius1P = WorldFixture<CreateEmptyWorld, 1, 20, 12>;
+
+MapPoint FindMinePosition(const WorldFixtureMineRadius1P& fixture)
+{
+    for(MapCoord y = MINER_RADIUS; y + MINER_RADIUS < fixture.world.GetSize().y; ++y)
+    {
+        for(MapCoord x = MINER_RADIUS; x + MINER_RADIUS < fixture.world.GetSize().x; ++x)
+        {
+            const MapPoint pt(x, y);
+            if(fixture.world.GetNode(pt).bq == BuildingQuality::Castle)
+                return pt;
+        }
+    }
+
+    return MapPoint::Invalid();
+}
+
 BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
 {
     using boost::test_tools::per_element;
@@ -142,31 +158,31 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, WorldFi
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
     BOOST_TEST(coalMine->GetProductivity() == 5u);
 
+    world.SetResource(minePos, Resource(ResourceType::Coal, 15));
+    world.SetResource(world.GetNeighbour(minePos, Direction::East), Resource(ResourceType::Coal, 5));
+    BOOST_TEST(coalMine->GetProductivity() == 100u);
+
     setProductivity(coalMine, 80);
     world.SetResource(minePos, Resource(ResourceType::Coal, 10));
+    world.SetResource(world.GetNeighbour(minePos, Direction::East), Resource());
     BOOST_TEST(coalMine->GetProductivity() == 40u);
     BOOST_TEST(world.GetPlayer(0).GetBuildingRegister().CalcProductivities()[BuildingType::CoalMine] == 40u);
 
     setProductivity(coalMine, 100);
     world.SetResource(minePos, Resource(ResourceType::Coal, 15));
+    world.SetResource(world.GetNeighbour(minePos, Direction::East), Resource());
     BOOST_TEST(coalMine->GetProductivity() == 75u);
+
+    world.SetResource(minePos, Resource());
+    BOOST_TEST(coalMine->GetProductivity() == 0u);
+
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
+    BOOST_TEST(coalMine->GetProductivity() == 100u);
 }
 
 BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius, WorldFixtureMineRadius1P)
 {
-    MapPoint minePos = MapPoint::Invalid();
-    for(MapCoord y = MINER_RADIUS; y + MINER_RADIUS < world.GetSize().y && !minePos.isValid(); ++y)
-    {
-        for(MapCoord x = MINER_RADIUS; x + MINER_RADIUS < world.GetSize().x; ++x)
-        {
-            const MapPoint pt(x, y);
-            if(world.GetNode(pt).bq == BuildingQuality::Castle)
-            {
-                minePos = pt;
-                break;
-            }
-        }
-    }
+    const MapPoint minePos = FindMinePosition(*this);
     BOOST_TEST_REQUIRE(minePos.isValid());
 
     auto* coalMine = static_cast<nobUsual*>(
@@ -179,19 +195,34 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius
     for(const MapPoint pt : inRangePts)
         world.SetResource(pt, Resource());
 
+    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 0u);
+    BOOST_TEST(coalMine->GetProductivity() == 0u);
+
     const MapPoint westPt = world.GetNeighbour(minePos, Direction::West);
     const MapPoint eastPt = world.GetNeighbour(minePos, Direction::East);
     world.SetResource(westPt, Resource(ResourceType::Coal, 4));
     world.SetResource(eastPt, Resource(ResourceType::Coal, 6));
+    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 10u);
     BOOST_TEST(coalMine->GetProductivity() == 50u);
     BOOST_TEST(world.GetPlayer(0).GetBuildingRegister().CalcProductivities()[BuildingType::CoalMine] == 50u);
+
+    world.SetResource(world.GetNeighbour(minePos, Direction::NorthWest), Resource(ResourceType::Iron, 15));
+    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 10u);
+    BOOST_TEST(coalMine->GetProductivity() == 50u);
 
     const MapPoint outOfRangePt = world.GetNeighbour(
       world.GetNeighbour(world.GetNeighbour(minePos, Direction::East), Direction::East), Direction::East);
     const bool isOutOfRange = std::find(inRangePts.begin(), inRangePts.end(), outOfRangePt) == inRangePts.end();
     BOOST_TEST_REQUIRE(isOutOfRange);
     world.SetResource(outOfRangePt, Resource(ResourceType::Coal, 15));
+    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 10u);
     BOOST_TEST(coalMine->GetProductivity() == 50u);
+
+    setProductivity(coalMine, 99);
+    world.SetResource(westPt, Resource(ResourceType::Coal, 5));
+    world.SetResource(eastPt, Resource(ResourceType::Coal, 6));
+    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 11u);
+    BOOST_TEST(coalMine->GetProductivity() == 54u);
 }
 
 BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsFalse_IfPrimaryHQIsNotTent, WorldFixtureEmpty1P)
