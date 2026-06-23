@@ -54,7 +54,7 @@ helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resou
 unsigned GetRemainingMineResources(const GameWorld& world, const MapPoint pos, const ResourceType resourceType)
 {
     unsigned resourceAmount = 0;
-    const auto resourcePts = world.GetMatchingPointsInRadius<1>(
+    const auto resourcePts = world.GetMatchingPointsInRadius(
       pos, MINER_RADIUS,
       [&world, resourceType](const MapPoint pt) { return world.GetNode(pt).resources.has(resourceType); }, true);
     for(const MapPoint pt : resourcePts)

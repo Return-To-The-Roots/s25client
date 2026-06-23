@@ -78,7 +78,7 @@ helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings
 
 std::vector<MapPoint> GetPointsWithResource(const GameWorld& world, const MapPoint pos, const ResourceType type)
 {
-    return world.GetMatchingPointsInRadius<1>(
+    return world.GetMatchingPointsInRadius(
       pos, MINER_RADIUS, [&world, type](const MapPoint pt) { return world.GetNode(pt).resources.has(type); }, true);
 }
 
