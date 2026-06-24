@@ -36,6 +36,8 @@
 #include "s25util/Log.h"
 #include <boost/filesystem/operations.hpp>
 #include <algorithm>
+#include <iterator>
+#include <limits>
 #include <map>
 #include <queue>
 
@@ -545,14 +547,22 @@ bool isFarEnoughFromHarbors(const World& world, const MapPoint pt, const std::ve
     return true;
 }
 
+unsigned getMinimumHarborDistance(const World& world, const MapPoint pt, const std::vector<MapPoint>& harborPositions)
+{
+    unsigned minDistance = std::numeric_limits<unsigned>::max();
+    for(const MapPoint harborPt : harborPositions)
+        minDistance = std::min(minDistance, world.CalcDistance(pt, harborPt));
+    return minDistance;
+}
+
 std::vector<MapPoint> getGeneratedHarbors(const World& world)
 {
-    std::vector<MapPoint> generatedHarbors;
     std::vector<MapPoint> harborPositions;
     harborPositions.reserve(world.GetNumHarborPoints() + MapLoader::MAX_GENERATED_HARBOR_SPOTS);
     for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
         harborPositions.push_back(world.GetHarborPoint(harborId));
 
+    std::vector<MapPoint> candidates;
     BQCalculator calcBQ(world);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -565,10 +575,30 @@ std::vector<MapPoint> getGeneratedHarbors(const World& world)
         if(!isFarEnoughFromHarbors(world, pt, harborPositions))
             continue;
 
-        generatedHarbors.push_back(pt);
-        harborPositions.push_back(pt);
-        if(generatedHarbors.size() == MapLoader::MAX_GENERATED_HARBOR_SPOTS)
-            return generatedHarbors;
+        candidates.push_back(pt);
+    }
+
+    std::vector<MapPoint> generatedHarbors;
+    while(!candidates.empty() && generatedHarbors.size() < MapLoader::MAX_GENERATED_HARBOR_SPOTS)
+    {
+        auto bestCandidate = candidates.begin();
+        unsigned bestDistance = getMinimumHarborDistance(world, *bestCandidate, harborPositions);
+        for(auto it = std::next(candidates.begin()); it != candidates.end(); ++it)
+        {
+            const unsigned distance = getMinimumHarborDistance(world, *it, harborPositions);
+            if(distance > bestDistance)
+            {
+                bestDistance = distance;
+                bestCandidate = it;
+            }
+        }
+
+        if(bestDistance < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
+            break;
+
+        generatedHarbors.push_back(*bestCandidate);
+        harborPositions.push_back(*bestCandidate);
+        candidates.erase(bestCandidate);
     }
     return generatedHarbors;
 }

@@ -17,6 +17,7 @@
 #include "gameTypes/ShipDirection.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
+#include <algorithm>
 
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
@@ -70,11 +71,12 @@ void testShipDir(const MapBase& world, const MapPoint fromPt)
     BOOST_TEST_REQUIRE(getShipDir(world, fromPt, DiffPt(100, -174)) == ShipDirection::North);
 }
 
-void createMarkerlessIslandWorld(GameWorld& world)
+void createMarkerlessRectangularIslandWorld(GameWorld& world, const MapExtent size, const MapPoint topLeft,
+                                            const MapPoint bottomRight)
 {
     world.Unload();
     loadGameData(world.GetDescriptionWriteable());
-    world.Init(MapExtent(30, 30));
+    world.Init(size);
 
     const auto water = GetWaterTerrain(world.GetDescription());
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -84,14 +86,19 @@ void createMarkerlessIslandWorld(GameWorld& world)
     }
 
     const auto land = GetLandTerrain(world.GetDescription(), ETerrain::Buildable);
-    for(MapPoint pt(8, 8); pt.y < 22; ++pt.y)
+    for(MapPoint pt(topLeft); pt.y < bottomRight.y; ++pt.y)
     {
-        for(pt.x = 8; pt.x < 22; ++pt.x)
+        for(pt.x = topLeft.x; pt.x < bottomRight.x; ++pt.x)
         {
             MapNode& node = world.GetNodeWriteable(pt);
             node.t1 = node.t2 = land;
         }
     }
+}
+
+void createMarkerlessIslandWorld(GameWorld& world)
+{
+    createMarkerlessRectangularIslandWorld(world, MapExtent(30, 30), MapPoint(8, 8), MapPoint(22, 22));
 }
 
 unsigned countHarborBQ(const GameWorld& world)
@@ -173,6 +180,14 @@ using SeaWorldFixture = WorldFixture<CreateSeaWorld, 3, SeaWorldDefault::width, 
 struct MarkerlessIslandFixture : WorldFixtureBase
 {
     MarkerlessIslandFixture() : WorldFixtureBase(3) { createMarkerlessIslandWorld(world); }
+};
+
+struct LargeMarkerlessIslandFixture : WorldFixtureBase
+{
+    LargeMarkerlessIslandFixture() : WorldFixtureBase(3)
+    {
+        createMarkerlessRectangularIslandWorld(world, MapExtent(96, 96), MapPoint(16, 16), MapPoint(80, 80));
+    }
 };
 } // namespace
 
@@ -300,9 +315,10 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonIsDeterministic, MarkerlessIslandFix
     const std::vector<MapPoint> generatedHarbors = getHarborPointsFrom(world, 1);
     BOOST_TEST_REQUIRE(!generatedHarbors.empty());
 
-    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
-    world.InitAfterLoad();
-    const std::vector<MapPoint> generatedHarborsAgain = getHarborPointsFrom(world, 1);
+    MarkerlessIslandFixture repeatedWorld;
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(repeatedWorld.world, std::vector<MapPoint>(), true));
+    repeatedWorld.world.InitAfterLoad();
+    const std::vector<MapPoint> generatedHarborsAgain = getHarborPointsFrom(repeatedWorld.world, 1);
 
     BOOST_TEST_REQUIRE(generatedHarborsAgain.size() == generatedHarbors.size());
     for(unsigned i = 0; i < generatedHarbors.size(); ++i)
@@ -310,6 +326,21 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonIsDeterministic, MarkerlessIslandFix
         BOOST_TEST_REQUIRE(generatedHarborsAgain[i].x == generatedHarbors[i].x);
         BOOST_TEST_REQUIRE(generatedHarborsAgain[i].y == generatedHarbors[i].y);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonSpreadsGeneratedHarborsBeyondEarlyScanCluster, LargeMarkerlessIslandFixture)
+{
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
+    world.InitAfterLoad();
+
+    const std::vector<MapPoint> generatedHarbors = getHarborPointsFrom(world, 1);
+    BOOST_TEST_REQUIRE(generatedHarbors.size() == MapLoader::MAX_GENERATED_HARBOR_SPOTS);
+    testMinimumHarborDistance(world, generatedHarbors);
+
+    BOOST_TEST_REQUIRE(
+      std::any_of(generatedHarbors.begin(), generatedHarbors.end(), [](const MapPoint pt) { return pt.x >= 70; }));
+    BOOST_TEST_REQUIRE(
+      std::any_of(generatedHarbors.begin(), generatedHarbors.end(), [](const MapPoint pt) { return pt.y >= 70; }));
 }
 
 BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonKeepsGeneratedHarborsAwayFromExistingOnes, MarkerlessIslandFixture)
