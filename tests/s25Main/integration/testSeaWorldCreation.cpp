@@ -182,6 +182,14 @@ struct MarkerlessIslandFixture : WorldFixtureBase
     MarkerlessIslandFixture() : WorldFixtureBase(3) { createMarkerlessIslandWorld(world); }
 };
 
+struct SmallMarkerlessIslandFixture : WorldFixtureBase
+{
+    SmallMarkerlessIslandFixture() : WorldFixtureBase(3)
+    {
+        createMarkerlessRectangularIslandWorld(world, MapExtent(24, 24), MapPoint(8, 8), MapPoint(16, 16));
+    }
+};
+
 struct LargeMarkerlessIslandFixture : WorldFixtureBase
 {
     LargeMarkerlessIslandFixture() : WorldFixtureBase(3)
@@ -306,6 +314,29 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIs
     {
         testHarborPoint(world, harborId);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonStopsWhenRemainingCandidatesAreTooClose, SmallMarkerlessIslandFixture)
+{
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
+    const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
+    BOOST_TEST_REQUIRE(candidates.size() > MapLoader::MAX_GENERATED_HARBOR_SPOTS);
+
+    for(const MapPoint candidate : candidates)
+    {
+        BOOST_TEST_REQUIRE(world.CalcDistance(candidates.front(), candidate)
+                           < MapLoader::MIN_GENERATED_HARBOR_DISTANCE);
+    }
+
+    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
+    world.InitAfterLoad();
+
+    const std::vector<MapPoint> generatedHarbors = getHarborPointsFrom(world, 1);
+    BOOST_TEST_REQUIRE(generatedHarbors.size() == 1u);
+    BOOST_TEST_REQUIRE(generatedHarbors.front().x == candidates.front().x);
+    BOOST_TEST_REQUIRE(generatedHarbors.front().y == candidates.front().y);
+    testMinimumHarborDistance(world, generatedHarbors);
+    testHarborPoint(world, HarborId(1));
 }
 
 BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonIsDeterministic, MarkerlessIslandFixture)
