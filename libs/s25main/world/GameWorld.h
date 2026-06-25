@@ -145,15 +145,6 @@ public:
     /// Return whether this is a border node (node belongs to player, but not all others around)
     bool IsBorderNode(MapPoint pt, unsigned char owner) const;
 
-    // Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
-    // Für Spiele ohne Gold.
-    void ConvertMineResourceTypes(ResourceType from, ResourceType to);
-    // Setup resources like gold and water after loading a new map
-    void SetupResources();
-
-    // Fills water depending on terrain and Addon setting
-    void PlaceAndFixWater();
-
     /// Gründet vom Schiff aus eine neue Kolonie, gibt true zurück bei Erfolg
     bool FoundColony(HarborId harbor, unsigned char player, SeaId seaId);
     /// Registriert eine Baustelle eines Hafens, die vom Schiff aus gesetzt worden ist

@@ -26,6 +26,8 @@
 // 00E Jonathan
 // 00F Jarno
 // 010 aztimh
+// 011 DevOpsOfChaos
+// 012 MichalLabuda
 
 // Do not forget to add your Addon to GlobalGameSettings::registerAllAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -75,7 +77,12 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
                  AUTOFLAGS = 0x00F00000,
 
                  WINE = 0x01000000, LEATHER = 0x01000001, NO_ARMOR_DEFAULT = 0x01000002,
-                 ARMOR_CAPTURED_BLD = 0x01000003)
+                 ARMOR_CAPTURED_BLD = 0x01000003,
+
+                 FORESTER_FARM_FIELD_AVOIDANCE = 0x01100000,
+
+                 FORESTER_REACH_RADIUS = 0x01200000, WOODCUTTER_REACH_RADIUS = 0x01200001,
+                 STONEMASON_REACH_RADIUS = 0x01200002)
 //-V:AddonId:801
 
 enum class AddonGroup : unsigned

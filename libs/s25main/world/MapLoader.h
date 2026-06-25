@@ -7,6 +7,7 @@
 #include "gameTypes/GameSettingTypes.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/Resource.h"
 #include "gameData/DescIdx.h"
 #include <boost/filesystem/path.hpp>
 #include <vector>
@@ -50,6 +51,9 @@ public:
     /// Optionally add the starting wares to the HQs.
     /// Return false if there was an error (e.g. invalid start position)
     bool PlaceHQs(bool addStartWares = true);
+    /// Setup resources like gold and water after loading a new map.
+    /// TODO(Replay): Remove fixFish (always set to true)
+    static void SetupResources(GameWorldBase& world, bool fixFish = true);
 
     /// Return the (original/unshuffled) position of the players HQ (only valid after successful load)
     MapPoint GetOriginalHQPos(unsigned player) const { return hqPositions_[player]; }
@@ -61,4 +65,12 @@ public:
     /// Place the HQs on a loaded map and add starting wares if desired.
     /// Return false if there was an error.
     static bool PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, bool addStartWares = true);
+
+private:
+    /// Converts map resources between types or deletes them. Used for games without gold.
+    static void ConvertMineResourceTypes(GameWorldBase& world, ResourceType from, ResourceType to);
+    /// Fills water depending on terrain and Addon setting.
+    static void PlaceAndFixWater(GameWorldBase& world);
+    /// Removes fish resources that cannot be reached by fisheries.
+    static void RemoveUnusableFishResources(GameWorldBase& world);
 };
