@@ -14,6 +14,8 @@
 
 namespace {
 constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
+// S4-like productivity reaches 100% at this remaining-resource amount instead of using the theoretical maximum
+// resources in the mine radius. Below this reference amount, the production chance degrades linearly.
 constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT = 20;
 } // namespace
 
@@ -62,17 +64,10 @@ unsigned GetRemainingMineResources(const GameWorld& world, const MapPoint pos, c
     return resourceAmount;
 }
 
-unsigned GetS4LikeMineFullProductivityResourceAmount()
-{
-    return S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT;
-}
-
 unsigned GetS4LikeMineProductionChance(const unsigned remainingMatchingResources)
 {
-    // S4-like productivity is intentionally based on a 20-resource reference amount, not the theoretical maximum
-    // resources in the mine radius. Below that amount, the production chance degrades linearly.
     const unsigned chancePercent =
-      remainingMatchingResources * MAX_PRODUCTION_PERCENT / GetS4LikeMineFullProductivityResourceAmount();
+      remainingMatchingResources * MAX_PRODUCTION_PERCENT / S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT;
     return std::min(MAX_PRODUCTION_PERCENT, chancePercent);
 }
 
