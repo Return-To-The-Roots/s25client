@@ -30,8 +30,6 @@ AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
 ResourceType GetMineResourceType(BuildingType buildingType);
 helpers::OptionalEnum<BuildingType> GetMineBuildingType(ResourceType resourceType);
 unsigned GetRemainingMineResources(const GameWorld& world, MapPoint pos, ResourceType resourceType);
-/// Remaining matching resources at which S4-like mines reach full productivity.
-unsigned GetS4LikeMineFullProductivityResourceAmount();
 unsigned GetS4LikeMineProductionChance(unsigned remainingMatchingResources);
 MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
 bool IsMineResourceDepletable(const GlobalGameSettings& settings, BuildingType buildingType);
