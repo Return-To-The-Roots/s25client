@@ -104,7 +104,7 @@ void noShip::Destroy()
     RTTR_Assert(wares.empty());
     world->GetNotifications().publish(ShipNote(ShipNote::Destroyed, ownerId_, pos));
     // Schiff wieder abmelden
-    world->GetPlayer(ownerId_).RemoveShip(this);
+    world->GetPlayer(ownerId_).RemoveShip(*this);
 }
 
 void noShip::Draw(DrawPoint drawPt)
@@ -1222,4 +1222,26 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
             LOG.write("Bug detected: Invalid state in NewHarborBuilt");
             break;
     }
+}
+
+void noShip::Sink()
+{
+    for(auto& figure : figures)
+    {
+        figure->Abrogate();
+        figure->SetGoalTonullptr();
+        figure->RemoveFromInventory();
+    }
+    figures.clear();
+
+    for(auto& ware : wares)
+    {
+        ware->WareLost(ownerId_);
+        ware->Destroy();
+    }
+    wares.clear();
+
+    GetEvMgr().RemoveEvent(current_ev);
+    GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
+    world->RecalcVisibilitiesAroundPoint(pos, GetVisualRange(), ownerId_, nullptr);
 }
