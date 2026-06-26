@@ -41,6 +41,9 @@ constexpr auto gfs_to_duration(const unsigned gfs)
 /// Reichweite der Bergarbeiter
 constexpr unsigned MINER_RADIUS = 2;
 
+/// Search radius for animals (hunter, skinner, AI)
+constexpr unsigned ANIMAL_RADIUS = 19;
+
 /// Konstante für die Pfadrichtung bei einer Schiffsverbindung
 constexpr unsigned char SHIP_DIR = 100;
 constexpr unsigned char INVALID_DIR = 0xFF;

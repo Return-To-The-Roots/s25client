@@ -67,6 +67,8 @@ protected:
     GameInterface* gi;
     std::unique_ptr<EconomyModeHandler> econHandler;
     std::unique_ptr<TradePathCache> tradePathCache;
+    /// Replay minor version when replaying. Set to current minor version for live games.
+    uint8_t replayMinorVersion_ = 255;
 
 public:
     GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em);
@@ -162,6 +164,11 @@ public:
     bool IsSinglePlayer() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
+    /// Get the replay minor version (used for backward compatibility)
+    uint8_t GetReplayMinorVersion() const { return replayMinorVersion_; }
+    /// Set the replay minor version (called when loading a replay)
+    void SetReplayMinorVersion(uint8_t version) { replayMinorVersion_ = version; }
+
     EventManager& GetEvMgr() { return em; }
     const EventManager& GetEvMgr() const { return em; }
     SoundManager& GetSoundMgr() { return *soundManager; }

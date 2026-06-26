@@ -129,37 +129,55 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
     }
 }
 
+std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, const MapPoint pos, unsigned radius,
+                                                    unsigned maxDistance, bool (*isValidAnimal)(const noAnimal*))
+{
+    const auto pointToAnimal = [&world](const MapPoint pt, unsigned) -> noAnimal* {
+        for(auto& figure : world.GetFigures(pt))
+        {
+            if(figure.GetType() == NodalObjectType::Animal)
+                return static_cast<noAnimal*>(&figure);
+        }
+        return nullptr;
+    };
+
+    const auto canAnimalBeUsed = [pos, maxDistance, &world, isValidAnimal](const noAnimal* const animal) {
+        return animal && isValidAnimal(animal)
+               && (pos == animal->GetPos() || world.FindHumanPath(pos, animal->GetPos(), maxDistance));
+    };
+
+    return world.GetPointsInRadius(pos, radius, pointToAnimal, canAnimalBeUsed, true);
+}
+
 void nofHunter::TryStartHunting()
 {
-    // Find animals in a square around building (actually should be circle, but animals are moving anyway)
-    const int SQUARE_SIZE = 19;
-
-    // Liste mit den gefundenen Tieren
     std::vector<noAnimal*> available_animals;
 
-    // Durchgehen und nach Tieren suchen
-    Position curPos;
-    for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
+    if(world->GetReplayMinorVersion() >= 4)
     {
-        for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
+        available_animals = GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
+                                              [](const noAnimal* a) { return a->CanHunted(); });
+    } else
+    {
+        // Legacy square search for replays recorded with old code
+        const int SQUARE_SIZE = 19;
+        Position curPos;
+        for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
         {
-            MapPoint curMapPos = world->MakeMapPoint(curPos);
-
-            // nach Tieren suchen
-            for(auto& figure : world->GetFigures(curMapPos))
+            for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
             {
-                if(figure.GetType() != NodalObjectType::Animal)
-                    continue;
-                // Ist das Tier überhaupt zum Jagen geeignet?
-                auto& animal = static_cast<noAnimal&>(figure);
-                if(!animal.CanHunted())
-                    continue;
-
-                // Und komme ich hin?
-                if(pos == animal.GetPos() || world->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
+                MapPoint curMapPos = world->MakeMapPoint(curPos);
+                for(auto& figure : world->GetFigures(curMapPos))
                 {
-                    // Dann nehmen wir es
-                    available_animals.push_back(&animal);
+                    if(figure.GetType() != NodalObjectType::Animal)
+                        continue;
+                    auto& animal = static_cast<noAnimal&>(figure);
+                    if(!animal.CanHunted())
+                        continue;
+                    if(pos == animal.GetPos() || world->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
+                    {
+                        available_animals.push_back(&animal);
+                    }
                 }
             }
         }

@@ -17,6 +17,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "figures/nofHunter.h"
 #include "helpers/IdRange.h"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/containerUtils.h"
@@ -1704,7 +1705,7 @@ void AIPlayerJH::TrySeaAttack()
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(milBld);
-                    }  // else - no attackers - do nothing
+                    } // else - no attackers - do nothing
                 } else // normal target - check is done after random shuffle so we dont have to check every possible
                        // target and instead only enough to get 1 good one
                 {
@@ -1965,51 +1966,57 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
     // check first if no other hunter(or hunter buildingsite) is nearby
     if(aii.isBuildingNearby(BuildingType::Hunter, pt, 14))
         return false;
-    unsigned maxrange = 25;
-    unsigned short fx, fy, lx, ly;
-    const unsigned short SQUARE_SIZE = 19;
-    unsigned huntablecount = 0;
-    if(pt.x > SQUARE_SIZE)
-        fx = pt.x - SQUARE_SIZE;
-    else
-        fx = 0;
-    if(pt.y > SQUARE_SIZE)
-        fy = pt.y - SQUARE_SIZE;
-    else
-        fy = 0;
-    if(pt.x + SQUARE_SIZE < gwb.GetWidth())
-        lx = pt.x + SQUARE_SIZE;
-    else
-        lx = gwb.GetWidth() - 1;
-    if(pt.y + SQUARE_SIZE < gwb.GetHeight())
-        ly = pt.y + SQUARE_SIZE;
-    else
-        ly = gwb.GetHeight() - 1;
-    // Durchgehen und nach Tieren suchen
-    for(MapPoint p2(0, fy); p2.y <= ly; ++p2.y)
+    constexpr unsigned maxrange = 25;
+
+    if(gwb.GetReplayMinorVersion() >= 4)
     {
-        for(p2.x = fx; p2.x <= lx; ++p2.x)
+        const auto available_animals =
+          nofHunter::GetAnimalsInRange(gwb, pt, ANIMAL_RADIUS, maxrange, [](const noAnimal* a) { return a->CanHunted(); });
+
+        return available_animals.size() >= min;
+    } else
+    {
+        // Legacy square search for replays recorded with old code
+        unsigned short fx, fy, lx, ly;
+        const unsigned short SQUARE_SIZE = 19;
+        unsigned huntablecount = 0;
+        if(pt.x > SQUARE_SIZE)
+            fx = pt.x - SQUARE_SIZE;
+        else
+            fx = 0;
+        if(pt.y > SQUARE_SIZE)
+            fy = pt.y - SQUARE_SIZE;
+        else
+            fy = 0;
+        if(pt.x + SQUARE_SIZE < gwb.GetWidth())
+            lx = pt.x + SQUARE_SIZE;
+        else
+            lx = gwb.GetWidth() - 1;
+        if(pt.y + SQUARE_SIZE < gwb.GetHeight())
+            ly = pt.y + SQUARE_SIZE;
+        else
+            ly = gwb.GetHeight() - 1;
+        for(MapPoint p2(0, fy); p2.y <= ly; ++p2.y)
         {
-            // Search for animals
-            for(const noBase& fig : gwb.GetFigures(p2))
+            for(p2.x = fx; p2.x <= lx; ++p2.x)
             {
-                if(fig.GetType() == NodalObjectType::Animal)
+                for(const noBase& fig : gwb.GetFigures(p2))
                 {
-                    // Ist das Tier überhaupt zum Jagen geeignet?
-                    if(!static_cast<const noAnimal&>(fig).CanHunted())
-                        continue;
-                    // Und komme ich hin?
-                    if(gwb.FindHumanPath(pt, static_cast<const noAnimal&>(fig).GetPos(), maxrange))
-                    // Dann nehmen wir es
+                    if(fig.GetType() == NodalObjectType::Animal)
                     {
-                        if(++huntablecount >= min)
-                            return true;
+                        if(!static_cast<const noAnimal&>(fig).CanHunted())
+                            continue;
+                        if(gwb.FindHumanPath(pt, static_cast<const noAnimal&>(fig).GetPos(), maxrange))
+                        {
+                            if(++huntablecount >= min)
+                                return true;
+                        }
                     }
                 }
             }
         }
+        return false;
     }
-    return false;
 }
 
 void AIPlayerJH::InitStoreAndMilitarylists()
