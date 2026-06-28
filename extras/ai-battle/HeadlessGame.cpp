@@ -4,6 +4,7 @@
 
 #include "HeadlessGame.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
 #include "Savegame.h"
@@ -52,6 +53,14 @@ HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, 
     if(!loader.Load(map))
         throw std::runtime_error("Could not load " + map.string());
     MapLoader::SetupResources(world_);
+
+    // Establish the team alliances (ally + non-aggression pacts) exactly like GameClient::StartGame does
+    // for a fresh map. Without this, teammates have no pacts and are mutually attackable, so the AIs attack
+    // their own team; on replay GameClient *does* set up the pacts, so those recorded attack commands are
+    // handled differently and the replay desyncs (object-count divergence). MakeStartPacts is a no-op for
+    // teamless players, so this is safe regardless of whether --teams was given.
+    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
+        world_.GetPlayer(i).MakeStartPacts();
 
     if(!luaPath.empty())
     {
