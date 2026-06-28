@@ -22,7 +22,7 @@
 #    include "Windows.h"
 #endif
 
-std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais);
+std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams);
 std::string ToString(const std::chrono::milliseconds& time);
 std::string HumanReadableNumber(unsigned num);
 
@@ -44,8 +44,8 @@ void printConsole(const char* fmt, ...);
 #endif
 
 HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais,
-                           const bfs::path& luaPath)
-    : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais)), world_(game_.world_),
+                           const bfs::path& luaPath, const std::vector<Team>& teams)
+    : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais, teams)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
     MapLoader loader(world_);
@@ -234,7 +234,7 @@ void HeadlessGame::PrintState()
     lastReportGf_ = em_.GetCurrentGF();
 }
 
-std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
+std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams)
 {
     std::vector<PlayerInfo> ret;
     for(const AI::Info& ai : ais)
@@ -249,7 +249,7 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
             default: pi.name = "Dummy " + std::to_string(ret.size()); break;
         }
         pi.nation = Nation::Romans;
-        pi.team = Team::None;
+        pi.team = (ret.size() < teams.size()) ? teams[ret.size()] : Team::None;
         pi.color = PLAYER_COLORS[ret.size() % PLAYER_COLORS.size()];
         ret.push_back(pi);
     }
