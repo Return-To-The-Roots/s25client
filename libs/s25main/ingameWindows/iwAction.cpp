@@ -47,7 +47,7 @@ enum TabID
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt,
                    const DrawPoint& mousePos, Params params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.GetImageN("io", 1)), gi(gi),
-      gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos)
+      gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos), activeHoveredIcon_(nullptr)
 {
     /*
         TAB_FLAG    1 = Land road
@@ -195,8 +195,26 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 }
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
-                build_tab->GetGroup(static_cast<int>(bt))
+                ctrlBuildingIcon* icon = build_tab->GetGroup(static_cast<int>(bt))
                   ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
+
+                // Store hover callback; activeHoveredIcon_ guards against stale leaves from
+                // reversed child iteration order in Msg_MouseMove dispatch
+                if(radius > 0)
+                {
+                    icon->SetOnHoverChanged([this, icon, radius](bool hovered) noexcept {
+                        if(hovered)
+                        {
+                            this->activeHoveredIcon_ = icon;
+                            this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, radius));
+                        } else if(this->activeHoveredIcon_ == icon)
+                        {
+                            this->activeHoveredIcon_ = nullptr;
+                            this->gwv.SetRadiusPreview(std::nullopt);
+                        }
+                        // else: stale leave from a previously-hovered icon, ignore
+                    });
+                }
 
                 ++k;
             }
@@ -416,6 +434,7 @@ void iwAction::Close()
 {
     if(ShouldBeClosed())
         return;
+    activeHoveredIcon_ = nullptr;
     gwv.SetRadiusPreview(std::nullopt);
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
@@ -536,29 +555,6 @@ void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned c
 void iwAction::Msg_PaintAfter()
 {
     IngameWindow::Msg_PaintAfter();
-
-    // Resolve building icon hover preview after all mouse events are processed
-    auto* mainTab = GetCtrl<ctrlTab>(0);
-    auto* buildTabCtrl =
-      (mainTab && mainTab->GetCurrentTab() == TAB_BUILD) ? mainTab->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1) : nullptr;
-    auto* bldGroup = buildTabCtrl ? buildTabCtrl->GetGroup(buildTabCtrl->GetCurrentTab()) : nullptr;
-
-    bool hasHoveredIcon = false;
-    if(bldGroup && gwv.GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS))
-    {
-        for(auto* icon : bldGroup->GetCtrls<ctrlBuildingIcon>())
-        {
-            const unsigned radius = GetBuildingRadius(icon->GetType());
-            if(icon->IsMouseOver() && radius > 0)
-            {
-                gwv.SetRadiusPreview(std::make_pair(selectedPt, radius));
-                hasHoveredIcon = true;
-                break;
-            }
-        }
-    }
-    if(!hasHoveredIcon)
-        gwv.SetRadiusPreview(std::nullopt);
 
     auto* tab = GetCtrl<ctrlTab>(0);
     if(tab)
